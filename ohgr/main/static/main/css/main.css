@@ -1,0 +1,102 @@
+body {
+    background-color: #faf0eb;
+}
+
+hr {
+    color: #96a052;
+    background-color: #96a052;
+    border-top: solid 1px #96a052;
+}
+
+.navbar {
+    background-image: linear-gradient(to bottom, #000000 0, #A0BD2E 100%);
+}
+
+.right_content {
+    border: solid 1px #96a052;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px #A0BD2E;
+}
+
+.content {
+    padding-top: 60px;
+    padding-bottom: 10px;
+    height: 100%;
+    max-height: 100%;
+}
+
+.footer {
+    height: 5%;
+}
+
+#messenger {
+    position: fixed;
+    top: 60px;
+    height: 120px;
+    left: 0px;
+    right: 0px;
+    margin-left: auto;
+    margin-right: auto;
+    z-index: 1000;
+}
+
+#messenger:not(empty) {
+    height: auto;
+}
+
+#messenger:empty {
+   height: 0px; /*120px;*/
+}
+
+.event {
+    font-family: "Lucida Blackletter";
+    font-size: 12px;
+    padding: 5px;
+}
+
+.event + .event {
+    border-top: solid 1px #A0BD2E;
+}
+
+.navbar-inverse .navbar-nav > li > a {
+    color: #bdbdbd;
+}
+
+a.welcome {
+    color: whitesmoke;
+}
+
+/* display only one alert at time */
+/*#messenger:not(empty) .alert:first-child {
+    display: block !important;
+}
+*/
+/* then mask the others */
+/*#messenger:not(empty) .alert:not(first-child) {
+    display: none !important;
+}*/
+
+.panel-heading .accordion-toggle:after {
+    /* symbol for "opening" panels */
+    font-family: 'Glyphicons Halflings';  /* essential for enabling glyphicon */
+    content: "\e114";    /* adjust as needed, taken from bootstrap.css */
+    float: right;        /* adjust as needed */
+    color: grey;         /* adjust as needed */
+}
+
+.panel-heading .accordion-toggle.collapsed:after {
+    /* symbol for "collapsed" panels */
+    content: "\e080";    /* adjust as needed, taken from bootstrap.css */
+}
+
+/* disable bootstrap collapsing animation */
+.collapsing {
+    -webkit-transition: none;
+    transition: none;
+}
+
+.btn-img {
+    background: none;
+    border: solid transparent;
+    box-shadow: none;
+}

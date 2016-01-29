@@ -1,0 +1,10 @@
+/*.egg-info
+/*.egg
+/build
+*.pyc
+*.sublime-*
+*.mo
+.idea
+__pycache__
+/logs/
+/static/
