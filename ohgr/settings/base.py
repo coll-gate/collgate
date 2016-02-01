@@ -65,6 +65,8 @@ BASE_DIR = dirname(dirname(__file__))
 # Append the path of the parent of 'common' project
 sys.path.insert(0, realpath(join(BASE_DIR, "..", "..")))
 
+# LOCALE_PATHS = [join(BASE_DIR, "locale"), ]
+
 MEDIA_ROOT = BASE_DIR
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
@@ -198,15 +200,19 @@ APPLICATIONS = {
             "fancytree": {
                 "default_version": "2.12.0",
                 "default_theme": "bootstrap",
-                ".glyph": {"default_version": "2.12.0"}
+                ".glyph": {"default_version": "2.12.0"},
             },
-        }
+            "select2": {
+                "default_version": "3.5.4",
+                ".bootstrap": {"default_version": "3.5.4"},
+            },
+        },
     },
     "igdectk.bootstrap": {
         "DB_DEFAULT_SETTINGS": {
             "bootstrap": {"default_version": "3.3.6"},
-        }
-    }
+        },
+    },
 }
 
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'

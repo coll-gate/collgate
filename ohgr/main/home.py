@@ -5,11 +5,7 @@
 """
 Views related to the home page.
 """
-
 from django.contrib import messages
-from django.utils.translation import get_language, activate, check_for_language
-from django.utils.translation import LANGUAGE_SESSION_KEY
-
 from igdectk.rest.handler import *
 
 
