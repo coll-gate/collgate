@@ -190,6 +190,7 @@ INSTALLED_APPS = (
     'igdectk.jquery',
     'igdectk.bootstrap',
     'main',
+    'taxonomy',
     # 'debug_toolbar',
 )
 

@@ -27,10 +27,18 @@ urlpatterns = [
         include('main.urls',
                 namespace='main',
                 app_name='main')),
+
+    # ohgr application
+    url(r'^ohgr/taxonomy',
+        include('taxonomy.urls',
+                namespace='taxonomy',
+                app_name='taxonomy')),
 ]
 
+RestHandler.register_urls()
+
 # debug only
-if settings.DEBUG:
+if settings.DEBUG and 'debug_toolbar' in settings.INSTALLED_APPS:
     import debug_toolbar
     urlpatterns += [
         url(r'^__debug__/', include(debug_toolbar.urls)),
@@ -55,5 +63,3 @@ if 'django.contrib.admin' in settings.INSTALLED_APPS:
         # url(r'^ohgr/admin/password_reset/done/$',
         #     'django.contrib.auth.views.password_reset_done'),
     ]
-
-RestHandler.register_urls()

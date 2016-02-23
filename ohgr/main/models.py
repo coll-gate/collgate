@@ -3,7 +3,7 @@
 # Copyright (c) 2014 INRA UMR1095 GDEC
 
 """
-PromoterAnalysis models.
+ohgr application models.
 """
 
 from django.db import models

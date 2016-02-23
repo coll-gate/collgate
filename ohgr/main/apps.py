@@ -22,6 +22,9 @@ _ = ugettext_noop  # ugettext
 class OhgrMain(ApplicationMain):
     name = '.'.join(__name__.split('.')[0:-1])
 
+    def __init__(self, app_name, app_module):
+        super(OhgrMain, self).__init__(app_name, app_module)
+
     def ready(self):
         super().ready()
 
@@ -30,18 +33,17 @@ class OhgrMain(ApplicationMain):
         from . import home
         from . import profile
 
-        # create defaults menus
         main_module = Module('main')
 
         # profile menu
-        menu_profile = ModuleMenu('profile', _('Profile'), auth=AUTH_USER)
+        menu_profile = ModuleMenu('profile', _('Profile'), auth=AUTH_USER, order=1000)
         menu_profile.add_entry(MenuEntry('edit', _('Edit information'), "main:profile-edit", icon=Glyph.USER, order=8))
         menu_profile.add_entry(MenuSeparator(9))
         menu_profile.add_entry(MenuEntry('logout', _('Logout'), "main:profile-logout", icon=Glyph.OFF, order=10))
         main_module.add_menu(menu_profile)
 
         # help menu
-        menu_help = ModuleMenu('help', _('Help'))
+        menu_help = ModuleMenu('help', _('Help'), order=1001)
         menu_help.add_entry(
             MenuEntry('manual', _('Manual index'), "main:help-manual", Glyph.BOOK, 50))
         menu_help.add_entry(MenuSeparator(100))
@@ -50,3 +52,6 @@ class OhgrMain(ApplicationMain):
         main_module.add_menu(menu_help)
 
         module_manager.register_module(main_module)
+
+        from igdectk.rest.handler import RestHandler
+        RestHandler.register_urls()

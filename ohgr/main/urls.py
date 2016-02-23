@@ -3,9 +3,7 @@
 # Copyright (c) 2014 INRA UMR1095 GDEC
 
 """
-ohgr.main url entry point.
-Any module containing URL handler must be imported
-into this module.
+ohgr main url entry point.
 """
 
 from django.conf.urls import include, url

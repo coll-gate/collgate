@@ -76,7 +76,8 @@ INSTALLED_APPS = (
     'igdectk.common',
     'igdectk.jquery',
     'igdectk.bootstrap',
-    'ohgr.main',
+    'main',
+    'taxonomy',
     # 'debug_toolbar',
 )
 
