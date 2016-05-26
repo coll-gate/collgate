@@ -1,0 +1,4 @@
+From this folder you must install some npm dependencies :
+
+$ npm install --save webpack
+$ npm install --save backbone backbone.marionette underscore backbone.wreqr backbone.babysitter underscore-template-loader

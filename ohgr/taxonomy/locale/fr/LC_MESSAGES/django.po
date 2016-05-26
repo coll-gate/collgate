@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-02-03 11:38+0100\n"
+"POT-Creation-Date: 2016-05-26 15:34+0200\n"
 "PO-Revision-Date:  2016-02-03 11:38+0100\n"
 "Last-Translator: Frederic SCHERMA <frederic.scherma@clermont.inra.fr>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,3 +21,102 @@ msgstr ""
 #: apps.py:33
 msgid "Taxonomy"
 msgstr "Taxinomie"
+
+#: apps.py:35
+msgid "Create taxon"
+msgstr "Créer une taxinomie"
+
+#: apps.py:38
+msgid "List taxons"
+msgstr "Liste des taxinomies"
+
+#: base.py:59
+msgid "You are not allowed to create a taxon"
+msgstr "Vous n'êtes pas autorisé à créer un taxon"
+
+#: base.py:146 base.py:164
+msgid "You are not allowed to modify a taxon"
+msgstr "Vous n'êtes pas autorisé à modifier un taxon"
+
+#: models.py:19
+msgid "Family"
+msgstr "Famille"
+
+#: models.py:20
+msgid "Sub-family"
+msgstr "Sous-famille"
+
+#: models.py:21
+msgid "Genus"
+msgstr "Genre"
+
+#: models.py:22
+msgid "Sub-genus"
+msgstr "Sous-genre"
+
+#: models.py:23
+msgid "Specie"
+msgstr "Espèce"
+
+#: models.py:24
+msgid "Sub-specie"
+msgstr "Sous-espèce"
+
+#: templates/taxonomy/createtaxon.html:11
+msgid "Creation of a new taxon"
+msgstr "Créer une taxinomie"
+
+#: templates/taxonomy/createtaxon.html:20
+msgid "Submit"
+msgstr "Soumettre"
+
+#: templates/taxonomy/createtaxon.html:43
+#: templates/taxonomy/createtaxon.html:89
+#: templates/taxonomy/taxondetails.html:81
+msgid "Invalid characters (alphanumeric, _ and - only)"
+msgstr "Caractères invalides (alphanumérique, _ et - seulement)"
+
+#: templates/taxonomy/createtaxon.html:126
+msgid "Create taxonomy"
+msgstr "Créer une taxinomie"
+
+#: templates/taxonomy/taxondetails.html:25
+msgid "Detail of a taxon"
+msgstr "Créer une taxinomie"
+
+#: templates/taxonomy/taxondetails.html:42
+msgid "Type"
+msgstr "Type"
+
+#: templates/taxonomy/taxondetails.html:43
+msgid "Name"
+msgstr "Nom"
+
+#: templates/taxonomy/taxondetails.html:44
+msgid "Language"
+msgstr "Langage"
+
+#: templates/taxonomy/taxondetails.html:149
+msgid "Unable to add the synonym"
+msgstr "Impossible de rajouter le synonyme"
+
+#: templates/taxonomy/taxondetails.html:171
+#: templates/taxonomy/taxondetails.html:175
+msgid "Unable to remove the synonym"
+msgstr "Impossible de supprimer le synonyme"
+
+#: templates/taxonomy/taxondetails.html:187
+msgid "Taxon details"
+msgstr "Détails du taxon"
+
+#~ msgid "Taxonomy level"
+#~ msgstr "Niveau taxinomique"
+
+#~ msgid "None"
+#~ msgstr "Aucun"
+
+#~ msgid "Parent"
+#~ msgstr "Parent"
+
+#~ msgid "Synonym type"
+#~ msgstr "Type de synonme"

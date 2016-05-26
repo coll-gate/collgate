@@ -31,16 +31,6 @@ DATABASES = {
     }
 }
 
-MONGODB_DATABASES = {
-    "default": {
-        "name": "ohgr",
-        "host": '127.0.0.1',
-        "password": 'ohgr',
-        "username": 'ohgr',
-        "tz_aware": True,  # if you using timezones in django (USE_TZ = True)
-    },
-}
-
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 # session cookie path
@@ -81,13 +71,15 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.admin',
+    'guardian',
     # 'django.contrib.admindocs',
-    'django_mongoengine',
     'igdectk.common',
     'igdectk.jquery',
     'igdectk.bootstrap',
     'main',
+    'permission',
     'taxonomy',
+    'accession',
     # 'debug_toolbar',
 )
 
@@ -101,7 +93,7 @@ LOGGING = {
             'datefmt': '%Y-%m-%d %H:%M:%S',
         },
         'colored': {
-            '()': 'igdectk.common.logging.ColoredFormatter',
+            '()': 'logging.Formatter', # '()': 'igdectk.common.logging.ColoredFormatter',
             'format': '[%(asctime)s] <%(levelname)s> %(name)s : %(message)s',
             'datefmt': '%d/%b/%Y %H:%M:%S',
         }
@@ -134,7 +126,7 @@ LOGGING = {
     'loggers': {
         'django': {
             'handlers': ['console', 'file'],
-            'level': 'WARNING',
+            'level': 'INFO',
             'propagate': True,
         },
         'django.request': {

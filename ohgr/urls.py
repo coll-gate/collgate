@@ -10,8 +10,6 @@ from django.conf.urls import include, url
 from django.views.generic import RedirectView
 from django.conf import settings
 
-from igdectk.rest.handler import RestHandler
-
 urlpatterns = [
     # chromium favicon fix
     url(r'^favicon\.ico$',
@@ -28,14 +26,12 @@ urlpatterns = [
                 namespace='main',
                 app_name='main')),
 
-    # ohgr application
-    url(r'^ohgr/taxonomy',
+    # taxonomy module
+    url(r'^ohgr/',
         include('taxonomy.urls',
                 namespace='taxonomy',
                 app_name='taxonomy')),
 ]
-
-RestHandler.register_urls()
 
 # debug only
 if settings.DEBUG and 'debug_toolbar' in settings.INSTALLED_APPS:

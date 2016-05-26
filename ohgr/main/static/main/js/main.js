@@ -1,24 +1,11 @@
 /**
- * @file alert.js
+ * @file main.js
  * @brief Main functions of the index.
  * @author Frederic SCHERMA
  * @date 2016-01-26
  * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
  * @license @todo
  */
-
-/**
- * @brief Comparison function for fancytree of cis motif
- * @param  {Object} a
- * @param  {Object} b
- * @return {integer} -1 0 or 1
- */
-function cismotifTreeCompare(a, b) {
-    if (a.folder != b.folder) {
-        return a.folder ? -1 : 1;
-    }
-    return a.title.toLowerCase().localeCompare(b.title.toLowerCase());
-}
 
 /**
  * @details For JQuery/Bootstrap form-control, allow to
@@ -107,3 +94,6 @@ $(function() {
         // nothing
     });
 });
+
+var _ = django.gettext;
+var title = _("Online Host of Genetics Resources");

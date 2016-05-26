@@ -1,0 +1,49 @@
+<!--
+ - @file taxon.html
+ - @brief Template for a taxon (model)
+ - @author Frederic SCHERMA
+ - @date 2016-04-12
+ - @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+ - @license @todo
+ - @details
+-->
+
+<div class="object taxon" object-type="taxon" object-id="<%= id %>" style="width:100%;">
+    <span style="font-weight:bold; font-size:18px;">
+        <span class="name taxon" taxonid="<%= id %>" style="cursor: pointer;"><%- name %></span><span class="taxon-rank badge left-margin" value="<%= rank %>"></span><br>
+    </span>
+    <hr>
+    <div class="taxon-synonyms"></div>
+        <h4>Synonyms</h4>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th><span class="glyphicon glyphicon-asterisk" /></th>
+                    <th><%= gettext("Type") %></th>
+                    <th><%= gettext("Name") %></th>
+                    <th><%= gettext("Language") %></th>
+                </tr>
+            </thead>
+            <tbody>
+                <% _.each(synonyms, function(synonym) { %>
+                <tr>
+                    <th scope="row">
+                        <% if (synonym.type != 0) { %><span class="action remove-synonym glyphicon glyphicon-minus-sign edit-mode"></span><% } %>
+                    </th>
+                    <td name="type" class="synonym-type" value="<%- synonym.type %>"></td>
+                    <td name="name"><%- synonym.name %></td>
+                    <td name="language" class="language" value="<%- synonym.language %>"></td>
+                </tr>
+                <% }) %>
+                <tr class="edit-mode dummy-synonym">
+                    <form>
+                        <th scope="row"><span class="add-synonym action glyphicon glyphicon-plus-sign" style="margin-top: 50%; margin-bottom: 50%;"></span></th>
+                        <td><select class="synonym-types" name="synonym-type"></select></td>
+                        <td><div class="form-group"><input class="form-control synonym-name" type="text" name="synonym-name" /></div></td>
+                        <td><select class="synonym-languages" name="synonym-language"></select></td>
+                    </form>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

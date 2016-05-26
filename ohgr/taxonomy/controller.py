@@ -3,9 +3,12 @@
 # Copyright (c) 2016 INRA UMR1095 GDEC
 
 """
-ohgr taxonomy module main
+ohgr taxonomy module controller
 """
-from .models import Taxon
+from django.core.exceptions import SuspiciousOperation, PermissionDenied
+
+from main.models import SynonymType, Languages
+from .models import Taxon, TaxonSynonym
 
 
 class Taxonomy(object):
@@ -23,7 +26,7 @@ class Taxonomy(object):
 
         curr_parent = parent
         while curr_parent is not None:
-            taxon.parent_list.append(curr_parent)
+            taxon.parent_list += str(curr_parent.id) + ','
 
             if curr_parent.parent:
                 curr_parent = curr_parent.parent
@@ -31,26 +34,26 @@ class Taxonomy(object):
                 break
 
     @classmethod
-    def create_taxon(cls, name, level, parent=None):
+    def create_taxon(cls, name, rank, parent=None):
         """
         Create a new taxon with a unique name. The level must be
         greater than its parent level.
         :param name: Unique taxon name.
-        :param level: Taxon level greater than parent level.
+        :param rank: Taxon rank greater than parent rank.
         :param parent: None or valid Taxon instance.
         :return: None or new Taxon instance.
         """
-        if Taxon.objects.filter(name=name).count() > 0:
+        if Taxon.objects.filter(name=name).exists():
             return None
 
-        if parent and level <= parent.level:
+        if parent and rank <= parent.rank:
             return None
 
         taxon = Taxon()
         taxon.name = name
-        taxon.level = level
+        taxon.rank = rank
         taxon.parent = parent
-        taxon.parent_list = []
+        taxon.parent_list = ""
 
         if parent:
             try:
@@ -59,6 +62,10 @@ class Taxonomy(object):
                 return None
 
         taxon.save()
+
+        # first name a primary synonym
+        primary = TaxonSynonym(taxon_id=taxon.id, name=name, type=int(SynonymType.PRIMARY), language=Languages.FR.value)
+        primary.save()
 
         return taxon
 
@@ -75,6 +82,15 @@ class Taxonomy(object):
             return None
         except Taxon.MultipleObjectsReturned:
             return None
+
+    @classmethod
+    def search_taxon_by_name(cls, name_part):
+        """
+        Return a list of taxon containing name_part.
+        :param name: Partial or complete taxon name.
+        :return: QuerySet of Taxon
+        """
+        return Taxon.objects.filter(name__contains=name_part)
 
     @classmethod
     def list_taxons_by_parent(cls, parent):
@@ -96,3 +112,40 @@ class Taxonomy(object):
             return Taxon.objects.filter(parent_list__in=[parent])
         elif isinstance(parent, list):
             return Taxon.objects.filter(parent_list__in=parent)
+
+    @classmethod
+    def add_synonym(cls, taxon, synonym):
+        """
+        Add one synonym to the given taxon.
+        """
+        if not synonym:
+            raise SuspiciousOperation('Empty synonym')
+
+        if not synonym['name'] or synonym['type'] == SynonymType.PRIMARY:
+            raise SuspiciousOperation('Undefined synonym name or primary synonym')
+
+        if not synonym['language']:
+            raise SuspiciousOperation('Undefined synonym langauge')
+
+        if TaxonSynonym.objects.filter(name=synonym['name']).exists():
+            raise PermissionDenied('Taxon synonym already exists')
+
+        synonym = TaxonSynonym(taxon=taxon,
+                               name=synonym['name'],
+                               type=synonym['type'],
+                               language=synonym['language'])
+        synonym.save()
+
+    @classmethod
+    def remove_synonym(cls, taxon, synonym):
+        """
+        Remove one synonyme from the given taxon.
+        """
+        if not synonym:
+            return
+
+        # cannot remove the primary synonym
+        if not synonym['name'] or synonym['type'] == SynonymType.PRIMARY:
+            return
+
+        TaxonSynonym.objects.filter(taxon=taxon, name=synonym['name']).delete()

@@ -7,35 +7,36 @@ ohgr taxonomy module models.
 """
 
 from django.db import models
-from django.contrib.auth.models import User
 
-import mongoengine
+from django.utils.translation import ugettext_lazy as _
+from igdectk.common.models import ChoiceEnum, IntegerChoice
 
-from mongoengine.fields import (
-    Document, DateTimeField, EmbeddedDocument, FloatField, IntField, StringField, ObjectId, ListField, ReferenceField
-)
+from main.models import SynonymType, Languages
 
 
-class Taxon(Document):
+class TaxonRank(ChoiceEnum):
 
-    TAXON_FAMILY = 60
-    TAXON_SUB_FAMILY = 61
-    TAXON_GENRE = 70
-    TAXON_SUB_GENRE = 71
-    TAXON_SPECIE = 80
-    TAXON_SUB_SPECIE = 81
+    FAMILY = IntegerChoice(60, _("Family"))
+    SUB_FAMILY = IntegerChoice(61, _("Sub-family"))
+    GENUS = IntegerChoice(70, _("Genus"))
+    SUB_GENUS = IntegerChoice(71, _("Sub-genus"))
+    SPECIE = IntegerChoice(80, _("Specie"))
+    SUB_SPECIE = IntegerChoice(81, _("Sub-specie"))
 
-    TAXON_LEVEL = (
-        (TAXON_FAMILY, TAXON_FAMILY),
-        (TAXON_SUB_FAMILY, TAXON_SUB_FAMILY),
-        (TAXON_GENRE, TAXON_GENRE),
-        (TAXON_SUB_GENRE, TAXON_SUB_GENRE),
-        (TAXON_SPECIE, TAXON_SPECIE),
-        (TAXON_SUB_SPECIE, TAXON_SUB_SPECIE),
-    )
 
-    name = StringField(unique=True)
-    level = IntField(null=False, choices=TAXON_LEVEL)
+class TaxonSynonym(models.Model):
 
-    parent = ReferenceField('Taxon', reverse_delete_rule=mongoengine.DENY)
-    parent_list = ListField(ReferenceField('Taxon', reverse_delete_rule=mongoengine.DENY))
+    name = models.CharField(unique=True, null=False, blank=False, max_length=255, db_index=True)
+    language = models.CharField(null=False, blank=False, max_length=2, choices=Languages.choices())
+    type = models.IntegerField(null=False, blank=False, choices=SynonymType.choices())
+
+    taxon = models.ForeignKey('Taxon', null=False, related_name='synonyms')
+
+
+class Taxon(models.Model):
+
+    name = models.CharField(unique=True, null=False, blank=False, max_length=255, db_index=True)
+    rank = models.IntegerField(null=False, blank=False, choices=TaxonRank.choices())
+
+    parent = models.ForeignKey('Taxon', null=True)
+    parent_list = models.CharField(max_length=1024, blank=True, default="")

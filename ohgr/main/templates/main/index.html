@@ -8,27 +8,43 @@
 
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1">    
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <html>
 <head>
     <title>Online Host of Genetic Resources</title>
     <link rel="shortcut icon" href="{% static 'main/img/favicon.png' %}" />
-    {% jquery ui_css %}
-    {% jquery jquery_js %}
 </head>
 
 <body>
+
+{% jquery ui_css %}
+{% jquery jquery_js %}
+
 {% load bootstrap3 %}
 
 {% bootstrap bootstrap_css %}
 {% bootstrap bootstrap_js %}
 {% jquery select2_css %}
 {% jquery select2.bootstrap_css %}
+{% bootstrap select_css %}
 
 {% include 'bootstrap/style.html' %}
 
 <link rel="stylesheet" href="{% static 'main/css/main.css' %}">
+
+<script type="text/javascript" src="{% url 'main:javascript-catalog' packages='main' domain='django' %}"></script>
+<script type="text/javascript" src="{% url 'main:javascript-catalog' packages='main' domain='djangojs' %}"></script>
+
+<script type="text/javascript" src="/ohgr/jsi18n/taxonomy/django/"></script>
+<script type="text/javascript" src="/ohgr/jsi18n/taxonomy/djangojs/"></script>
+
+<style type="text/css">
+/* autocompletion loading icon */
+.ui-autocomplete-loading {
+    background: white url("{% jquery ui_img#ui-anim_basic_16x16.gif %}") right center no-repeat;
+}
+</style>
 
 <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
     <div class="container">
@@ -39,11 +55,15 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="{% url 'main:home' %}">OHGR <span class="label">{% ohgr "version" %}</span></a>
+            <a class="navbar-brand url" href="#home/">OHGR <span class="label">{% ohgr "version" %}</span></a>
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
                 {% include 'bootstrap/menu.html' %}
+                <div class="navbar-form navbar-left" style="margin-top: 10px;">
+                    <button class="btn btn-sm btn-success" id="nav_back"><span class="glyphicon glyphicon-backward"></span></button>
+                    <button class="btn btn-sm btn-success" id="nav_fwd"><span class="glyphicon glyphicon-forward"></span></button>
+                </div>
             </ul>
             <div>
                 <form class="navbar-form navbar-right" id='profile_signin' role="form" method="post" action="{% url 'main:profile-signin' %}">
@@ -67,7 +87,7 @@
                 </form>
                 <form class="navbar-form navbar-right" style="padding-top: 4px;" id='set_language' role="form" method="post" action="/ohgr/i18n/setlang/">
                     {% csrf_token %}
-                    <input hidden id="lang_redirect" value="/oghr/" name="next">
+                    <input hidden id="lang_redirect" value="/ohgr/" name="next">
                     <select name="language" id="languages">
                         {% get_language_info_list for LANGUAGES as languages %}
                         {% for language in languages %}
@@ -101,13 +121,13 @@
             {% endblock %}
         </div>
         <div class="col-md-2" id="right_content">
-            <div class="right_content">
-                {% block right_content %}
-                {% endblock %}
-            </div>
+            {% block right_content %}
+            {% endblock %}
+        </div>
+        <div id="dialog_content">
         </div>
     </div>
-</div> <!-- /container --> 
+</div> <!-- /container -->
 
 <footer class="footer">
     <hr>
@@ -116,21 +136,41 @@
     </div>
 </footer>
 
+<script language="javascript">
+//
+// django user
+//
+
+user = function() {
+    if (typeof user !== 'undefined') {
+        return user;
+    } else {
+        return {};
+    }
+}();
+
+user.isAuth = {{ user.is_authenticated|yesno:"true,false" }};
+</script>
+
 <script src="{% static 'main/js/main.js' %}"></script>
 
 <script language="javascript">
     $(function() {
-       $("#lang_redirect").attr('value', window.location.href);
+        //
+        // multi languages support
+        //
 
-       function formatLanguage(language) {
-           if (!language.id) {
-               return language.text;
-           }
-           var img = language.element[0].getAttribute("img");
-           var lang = $(
-               '<span><img style="margin-bottom: 3px;" src="' + img + '" class="img-flag" /> ' + language.text + '</span>'
-           );
-           return lang;
+        $("#lang_redirect").attr('value', window.location.href);
+
+        function formatLanguage(language) {
+            if (!language.id) {
+                return language.text;
+            }
+            var img = language.element[0].getAttribute("img");
+            var lang = $(
+                '<span><img style="margin-bottom: 3px;" src="' + img + '" class="img-flag" /> ' + language.text + '</span>'
+            );
+            return lang;
         };
 
         $('#languages').select2({
@@ -139,21 +179,114 @@
         });
 
         $('#languages').on("select2-close", function(e) {
-           $("#set_language").submit();
+            // defines the current url for refreshing... and submit the form post
+            // but it can broke the Backbone history...
+            //$("#lang_redirect").attr("value", window.location);
+            //$("#set_language").submit();
+
+            $.ajax({
+                type: "POST",
+                url: ohgr.baseUrl + "i18n/setlang/",
+                //dataType: 'json',
+                data: {language: $('#languages').val()},
+            }).done(function(data) {
+                // reload the application
+                window.open(window.location, "_self", [], true);
+                //Backbone.history.navigate(window.location.replace(''), {replace: true, trigger: true});
+                //Backbone.history.loadUrl(Backbone.history.getFragment());
+            });
         });
 
         <!-- {% get_current_language as LANGUAGE_CODE %} -->
         $('#languages').select2("val", "{{ LANGUAGE_CODE }}");
+
+        //
+        // history navigation
+        //
+
+        $("#nav_back").click(function(e) {
+            Backbone.history.history.back();
+        });
+
+        $("#nav_fwd").click(function(e) {
+            Backbone.history.history.forward();
+        });
+
+        //
+        // single page navigation for menu links
+        //
+
+        $("a.url").each(function (index) {
+            var href = $(this).attr("href");
+
+            // href starting with ~ are action that directly call a controller,
+            // but doesn't modify the URL neither the history
+            if (href.startsWith("~")) {
+                $(this).attr("href", "#");
+                $(this).on("click", function(e) {
+                    var parts = href.slice(1).split('/');
+                    if (!ohgr[parts[0]]) {
+                        return false;
+                    };
+
+                    var ctrl = ohgr[parts[0]].controllers[parts[1]];
+                    if (!ctrl) {
+                        return false;
+                    }
+
+                    var method = parts[2];
+                    ctrl[method]();
+
+                    // close the menu and prevent default to open the url
+                    $(".dropdown").removeClass("open");
+                    $(".dropdown-toggle").attr("aria-expanded", false);
+
+                    return false;
+                });
+            } else {
+                // href starting with # are route that must be called
+                // using the navigation mechanism
+                href = href.replace('#', ohgr.baseUrl + 'app/');
+                $(this).attr("href", href);
+
+                $(this).click(function (e) {
+                    var href = $(this).attr("href").replace('/ohgr/', '');
+                    Backbone.history.navigate(href, {trigger: true});
+
+                    // close the menu and prevent default to open the url
+                    $(".dropdown").removeClass("open");
+                    $(".dropdown-toggle").attr("aria-expanded", false);
+
+                    return false;
+                });
+            }
+        });
     });
+</script>
+
+<script language="text/template" id="layout_view">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <span style="font-weight:bold; font-size:18px;">
+                <span class="panel-title"></span>
+            </span>
+        </div>
+        <div class="panel-body" style="overflow: auto;">
+        </div>
+    </div>
 </script>
 
 {% bootstrap igdectk.alert_js %}
 {% bootstrap igdectk.helper_js %}
+{% bootstrap select_js %}
 
 {% jquery ui_js %}
 {% jquery igdectk_js %}
 {% jquery igdectk.csrf_js %}
 {% jquery select2_js %}
+
+<!-- include application core -->
+<script src="{% static 'main/js/app.js' %}"></script>
 
 </body>
 </html>

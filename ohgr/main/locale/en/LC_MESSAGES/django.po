@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-02-01 12:25+0100\n"
+"POT-Creation-Date: 2016-04-07 14:41+0200\n"
 "PO-Revision-Date: 2016-02-01 11:53+0100\n"
 "Last-Translator: Frederic SCHERMA <frederic.scherma@clermont.inra.fr>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,30 +18,51 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: apps.py:37
+#: apps.py:33
 msgid "Profile"
 msgstr ""
 
-#: apps.py:38
+#: apps.py:34
 msgid "Edit information"
 msgstr "Edit information"
 
-#: apps.py:40
+#: apps.py:36
 msgid "Logout"
 msgstr "Logout"
 
-#: apps.py:44
+#: apps.py:40
 msgid "Help"
 msgstr ""
 
-#: apps.py:46
+#: apps.py:42 templates/main/help/manual_index.html.py:22
 msgid "Manual index"
 msgstr ""
 
-#: apps.py:49
+#: apps.py:45 templates/main/help/about.html.py:22
 msgid "About HOGR..."
 msgstr ""
 
-#: templates/main/index.html:59 templates/main/index.html.py:61
+#: models.py:46
+msgid "English"
+msgstr ""
+
+#: models.py:47
+msgid "French"
+msgstr ""
+
+#: models.py:52
+msgid "Primary"
+msgstr ""
+
+#: models.py:53
+msgid "Synonym"
+msgstr ""
+
+#: models.py:54
+msgid "Code"
+msgstr ""
+
+#: templates/main/home.html:22 templates/main/index.html.py:62
+#: templates/main/index.html:64
 msgid "Welcome"
 msgstr ""

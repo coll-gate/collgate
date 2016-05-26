@@ -145,6 +145,7 @@ MIDDLEWARE_CLASSES = (
 AUTHENTICATION_BACKENDS = (
     'igdectk.auth.ldap.LdapAuthenticationBackend',
     # 'django.contrib.auth.backends.ModelBackend'
+    'guardian.backends.ObjectPermissionBackend',
 )
 
 LDAPS = {
@@ -186,11 +187,14 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     # 'django.contrib.admin',
     # 'django.contrib.admindocs',
+    'guardian',
     'igdectk.common',
     'igdectk.jquery',
     'igdectk.bootstrap',
     'main',
+    'permission',
     'taxonomy',
+    'accession',
     # 'debug_toolbar',
 )
 

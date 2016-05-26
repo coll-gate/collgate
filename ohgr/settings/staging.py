@@ -71,11 +71,14 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admin',
     # 'django.contrib.admindocs',
+    'guardian',
     'igdectk.common',
     'igdectk.jquery',
     'igdectk.bootstrap',
     'main',
+    'permission',
     'taxonomy',
+    'accession',
     # 'debug_toolbar',
 )
 
