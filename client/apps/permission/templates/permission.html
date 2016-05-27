@@ -1,0 +1,42 @@
+<!--
+ - @file permission.html
+ - @brief Template for a permission (model)
+ - @author Frederic SCHERMA
+ - @date 2016-05-27
+ - @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+ - @license @todo
+ - @details
+-->
+
+<div class="element object permission" object-type="permission" style="width:100%;">
+    <span style="font-weight:bold; font-size:18px;"><% gettext("Model") %>
+        <span class="model permission label label-info" style="cursor: pointer;"><% gettext("Model") + ": " %><%= model %></span>
+        <% if (object_name) { %><span class="model object badge left-margin" style="cursor: pointer;" object-id="<%- object %>"><%= object_name %></span><% } %>
+        <br>
+    </span>
+    <hr class="hr-default">
+    <div class="permissions">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th><span class="glyphicon glyphicon-asterisk" /></th>
+                    <th><%= gettext("Module") %></th>
+                    <th><%= gettext("Name") %></th>
+                    <th><%= gettext("Code") %></th>
+                </tr>
+            </thead>
+            <tbody>
+                <% _.each(permissions, function(perm) { %>
+                <tr>
+                    <th scope="row">
+                        <span class="edition action remove-synonym glyphicon glyphicon-minus-sign"></span>
+                    </th>
+                    <td name="module" class="permission-module"><%- perm.app_label %></td>
+                    <td name="name"><%- perm.name %></td>
+                    <td name="code"><%- perm.id %></td>
+                </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+</div>

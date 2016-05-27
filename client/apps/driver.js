@@ -103,7 +103,9 @@ ohgr.on("before:start", function(options) {
 
     // each modules
     this.main = require('./main/init');
+    this.permission = require('./permission/init');
     this.taxonomy = require('./taxonomy/init');
+    this.accession = require('./accession/init');
 });
 
 ohgr.start({initialData: ''});

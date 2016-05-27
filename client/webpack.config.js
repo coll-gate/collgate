@@ -9,12 +9,12 @@ module.exports = {
     loaders: [
       {
         test: /\.html$/,
-        loader: 'underscore-template-loader'
+        loader: 'underscore-template-loader!html-minify'
       },
       {
           test: /\.css$/,
           loader: "style-loader!css-loader"
-      },
+      }
     ]
   },
   output: {
@@ -23,8 +23,8 @@ module.exports = {
   },
   plugins: [
     new webpack.ProvidePlugin({
-      _: 'underscore',
-    })
+      _: 'underscore'
+    }),
   ],
   resolve: {
     modulesDirectories: [__dirname + '/node_modules'],

@@ -19,18 +19,6 @@ urlpatterns = [
     #     'django.views.generic.simple.direct_to_template', {
     #       'template': 'robots.txt',
     #       'mimetype': 'text/plain'}),
-
-    # ohgr application
-    url(r'^ohgr/',
-        include('main.urls',
-                namespace='main',
-                app_name='main')),
-
-    # taxonomy module
-    url(r'^ohgr/',
-        include('taxonomy.urls',
-                namespace='taxonomy',
-                app_name='taxonomy')),
 ]
 
 # debug only

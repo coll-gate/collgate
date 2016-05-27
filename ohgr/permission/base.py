@@ -29,7 +29,7 @@ class RestPermissionUser(RestPermission):
 
 class RestPermissionUserName(RestPermissionUser):
     regex = r'^(?P<username>[a-zA-Z0-9\.\-_]+)/$'
-    suffix = 'name'
+    suffix = 'username'
 
 
 class RestPermissionGroup(RestPermission):
@@ -39,7 +39,7 @@ class RestPermissionGroup(RestPermission):
 
 class RestPermissionGroupName(RestPermissionGroup):
     regex = r'^(?P<groupname>[a-zA-Z0-9\.\-_]+)/$'
-    suffix = 'name'
+    suffix = 'groupname'
 
 
 @RestPermissionUser.def_admin_request(Method.GET, Format.JSON)
@@ -86,13 +86,68 @@ def get_groups_list(request):
 def get_user_permissions(request, username):
     user = get_object_or_404(User, username=username)
 
+    permissions = []
+
     response = {
         'username': user.username,
-        'permissions': [],
+        'permissions': permissions,
         'result': 'success'
     }
 
-    # TODO
+    # from taxonomy.models import Taxon
+    # content_type = ContentType.objects.get_by_natural_key('taxonomy', 'Taxon')
+    # obj = get_object_or_404(Taxon, id=1)
+    # UserObjectPermission.objects.assign_perm('change_taxon', user=User.objects.get(username='fscherma'), obj=obj)
+
+    checkout = Permission.objects.filter(user=user).select_related('content_type')
+    lookup = {}
+
+    for perm in checkout:
+        if perm.content_type.model in lookup:
+            perms = lookup[perm.content_type.model]
+        else:
+            perms = []
+            lookup[perm.content_type.model] = perms
+
+        perms.append({
+            'id': perm.codename,
+            'name': perm.name,
+            'app_label': perm.content_type.app_label,
+        })
+
+    for k, v in lookup.items():
+        permissions.append({
+            'permissions': v,
+            'model': k,
+            'object': None,
+            'object_name': None,
+        })
+
+    checkout = UserObjectPermission.objects.filter(user=user).select_related('permission', 'content_type')
+    lookup = {}
+
+    for perm in checkout:
+        obj_name = perm.content_type.get_object_for_this_type(id=perm.object_pk).name
+
+        if (perm.object_pk, perm.content_type.model, obj_name) in lookup:
+            perms = lookup[(perm.object_pk, perm.content_type.model, obj_name)]
+        else:
+            perms = []
+            lookup[(perm.object_pk, perm.content_type.model, obj_name)] = perms
+
+        perms.append({
+            'id': perm.permission.codename,
+            'name': perm.permission.name,
+            'app_label': perm.content_type.app_label,
+        })
+
+    for k, v in lookup.items():
+        permissions.append({
+            'permissions': v,
+            'model': k[1],
+            'object': k[0],
+            'object_name': k[2]
+        })
 
     return HttpResponseRest(request, response)
 
@@ -123,7 +178,8 @@ def add_user_permission(request, username):
         response = {'result': 'success'}
     elif object_id and content_type:
         app_label, model = content_type.split('.')
-        content_type = get_object_or_404(ContentType, app_label=app_label, model=model)
+        # content_type = get_object_or_404(ContentType, app_label=app_label, model=model)
+        content_type = ContentType.objects.get_by_natural_key(app_label, model)
         obj = get_object_or_404(content_type.model, id=object)
         UserObjectPermission.objects.assign_perm(permission, user=user, obj=obj)
 

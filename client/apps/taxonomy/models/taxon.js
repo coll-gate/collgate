@@ -1,3 +1,13 @@
+/**
+ * @file taxon.js
+ * @brief Taxon model
+ * @author Frederic SCHERMA
+ * @date 2016-04-12
+ * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+ * @license @todo
+ * @details
+ */
+
 var Backbone = require('backbone');
 
 var Taxon = Backbone.Model.extend({ 

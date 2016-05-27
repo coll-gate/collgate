@@ -22,7 +22,7 @@ class OhgrMain(ApplicationMain):
     def ready(self):
         super().ready()
 
-        main_module = Module('main')
+        main_module = Module('main', base_url='ohgr')
         main_module.include_urls((
             'help',
             'home',

@@ -5,14 +5,12 @@
 """
 ohgr taxonomy rest handler
 """
-from django import forms
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
 from main.models import Languages, SynonymType
-from . import widgets
 from .controller import Taxonomy
 from .models import Taxon, TaxonRank, TaxonSynonym
 
@@ -142,8 +140,12 @@ def search_taxon(request):
     return HttpResponseRest(request, response)
 
 
-@RestTaxonomyId.def_auth_request(Method.PUT, Format.JSON, content=('type', 'name', 'language'),
-                                 perms={'taxonomy.change_taxon': _("You are not allowed to modify a taxon")})
+@RestTaxonomyId.def_auth_request(
+    Method.PUT, Format.JSON, content=('type', 'name', 'language'), perms={
+        'taxonomy.change_taxon': _("You are not allowed to modify a taxon"),
+        'taxonomy.add_taxonsynonym': _("You are not allowed to add a synonym to a taxon"),
+    }
+)
 def taxon_add_synonym(request, id):
     taxon_id = int_arg(id)
     taxon = get_object_or_404(Taxon, id=taxon_id)
@@ -160,8 +162,13 @@ def taxon_add_synonym(request, id):
     return HttpResponseRest(request, response)
 
 
-@RestTaxonomyId.def_auth_request(Method.DELETE, Format.JSON, content=('type', 'name', 'language'),
-                                 perms={'taxonomy.change_taxon': _("You are not allowed to modify a taxon")})
+@RestTaxonomyId.def_auth_request(
+    Method.DELETE, Format.JSON, content=('type', 'name', 'language'),
+    perms={
+        'taxonomy.change_taxon': _("You are not allowed to modify a taxon"),
+        'taxonomy.delete_taxonsynonym': _("You are not allowed to delete a synonym from a taxon"),
+    }
+)
 def taxon_remove_synonym(request, id):
     taxon_id = int_arg(id)
     taxon = get_object_or_404(Taxon, id=taxon_id)

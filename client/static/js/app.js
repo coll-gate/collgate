@@ -149,7 +149,9 @@
 
 	    // each modules
 	    this.main = __webpack_require__(7);
-	    this.taxonomy = __webpack_require__(20);
+	    this.permission = __webpack_require__(20);
+	    this.taxonomy = __webpack_require__(29);
+	    this.accession = __webpack_require__(40);
 	});
 
 	ohgr.start({initialData: ''});
@@ -17774,7 +17776,7 @@
 
 
 	// module
-	exports.push([module.id, "body {\n    background-color: #faf0eb;\n}\n\nhr {\n    color: #96a052;\n    background-color: #96a052;\n    border-top: solid 1px #96a052;\n}\n\n.navbar {\n    background-image: linear-gradient(to bottom, #000000 0, #A0BD2E 100%);\n}\n\n.right_content {\n    border: solid 1px #96a052;\n    border-radius: 5px;\n    box-shadow: 0px 0px 10px #A0BD2E;\n}\n\n.content {\n    padding-top: 60px;\n    padding-bottom: 10px;\n    height: 100%;\n    max-height: 100%;\n}\n\n.footer {\n    height: 5%;\n}\n\n#messenger {\n    position: fixed;\n    top: 60px;\n    height: 120px;\n    left: 0px;\n    right: 0px;\n    margin-left: auto;\n    margin-right: auto;\n    z-index: 1000;\n}\n\n#messenger:not(empty) {\n    height: auto;\n}\n\n#messenger:empty {\n   height: 0px; /*120px;*/\n}\n\n.event {\n    font-family: \"Lucida Blackletter\";\n    font-size: 12px;\n    padding: 5px;\n}\n\n.event + .event {\n    border-top: solid 1px #A0BD2E;\n}\n\n.navbar-inverse .navbar-nav > li > a {\n    color: #bdbdbd;\n}\n\na.welcome {\n    color: whitesmoke;\n}\n\n/* display only one alert at time */\n/*#messenger:not(empty) .alert:first-child {\n    display: block !important;\n}\n*/\n/* then mask the others */\n/*#messenger:not(empty) .alert:not(first-child) {\n    display: none !important;\n}*/\n\n.panel-heading .accordion-toggle:after {\n    /* symbol for \"opening\" panels */\n    font-family: 'Glyphicons Halflings';  /* essential for enabling glyphicon */\n    content: \"\\E114\";    /* adjust as needed, taken from bootstrap.css */\n    float: right;        /* adjust as needed */\n    color: grey;         /* adjust as needed */\n}\n\n.panel-heading .accordion-toggle.collapsed:after {\n    /* symbol for \"collapsed\" panels */\n    content: \"\\E080\";    /* adjust as needed, taken from bootstrap.css */\n}\n\n/* disable bootstrap collapsing animation */\n.collapsing {\n    -webkit-transition: none;\n    transition: none;\n}\n\n.btn-img {\n    background: none;\n    border: solid transparent;\n    box-shadow: none;\n}\n", ""]);
+	exports.push([module.id, "body {\n    background-color: #faf0eb;\n}\n\nhr {\n    color: #96a052;\n    background-color: #96a052;\n    border-top: solid 1px #96a052;\n}\n\n.navbar {\n    background-image: linear-gradient(to bottom, #000000 0, #A0BD2E 100%);\n}\n\n.right_content {\n    border: solid 1px #96a052;\n    border-radius: 5px;\n    box-shadow: 0px 0px 10px #A0BD2E;\n}\n\n.content {\n    padding-top: 60px;\n    padding-bottom: 10px;\n    height: 100%;\n    max-height: 100%;\n}\n\n.footer {\n    height: 5%;\n}\n\n#messenger {\n    position: fixed;\n    top: 60px;\n    height: 120px;\n    left: 0px;\n    right: 0px;\n    margin-left: auto;\n    margin-right: auto;\n    z-index: 1000;\n}\n\n#messenger:not(empty) {\n    height: auto;\n}\n\n#messenger:empty {\n   height: 0px; /*120px;*/\n}\n\n.event {\n    font-family: \"Lucida Blackletter\";\n    font-size: 12px;\n    padding: 5px;\n}\n\n.event + .event {\n    border-top: solid 1px #A0BD2E;\n}\n\n.navbar-inverse .navbar-nav > li > a {\n    color: #bdbdbd;\n}\n\na.welcome {\n    color: whitesmoke;\n}\n\n/* display only one alert at time */\n/*#messenger:not(empty) .alert:first-child {\n    display: block !important;\n}\n*/\n/* then mask the others */\n/*#messenger:not(empty) .alert:not(first-child) {\n    display: none !important;\n}*/\n\n.panel-heading .accordion-toggle:after {\n    /* symbol for \"opening\" panels */\n    font-family: 'Glyphicons Halflings';  /* essential for enabling glyphicon */\n    content: \"\\E114\";    /* adjust as needed, taken from bootstrap.css */\n    float: right;        /* adjust as needed */\n    color: grey;         /* adjust as needed */\n}\n\n.panel-heading .accordion-toggle.collapsed:after {\n    /* symbol for \"collapsed\" panels */\n    content: \"\\E080\";    /* adjust as needed, taken from bootstrap.css */\n}\n\n/* disable bootstrap collapsing animation */\n.collapsing {\n    -webkit-transition: none;\n    transition: none;\n}\n\n.btn-img {\n    background: none;\n    border: solid transparent;\n    box-shadow: none;\n}\n\n/*.element {*/\n    /*border-bottom: 1px solid #96a052;*/\n    /*maring-top: 0px;*/\n    /*margin-bottom: 15px;*/\n/*}*/\n\n.hr-default {\n    margin-top: 10px;\n    margin-bottom: 0px;\n}\n\n/*.table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th {\n    padding: 3px !important;\n}*/\n", ""]);
 
 	// exports
 
@@ -18296,11 +18298,11 @@
 	module.exports = function(obj){
 	var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 	with(obj||{}){
-	__p+='<!--\n - @file home.html\n - @brief Template for a list of taxon (collection)\n - @author Frederic SCHERMA\n - @date 2016-04-12\n - @copyright Copyright (c) 2016 INRA UMR1095 GDEC\n - @license @todo\n - @details\n-->\n\n<div class="panel panel-default">\n    <div class="panel-heading">\n        <span style="font-weight:bold; font-size:18px;">\n            <span class="panel-title">'+
-	((__t=( gettext("Home") ))==null?'':__t)+
-	'</span>\n        </span>\n    </div>\n    <div class="panel-body" style="overflow: auto;">\n        <span>'+
-	((__t=( gettext("Welcome to the Online Host of Genetics Resources") ))==null?'':__t)+
-	'</span>\n    </div>\n</div>\n';
+	__p+='<div class="panel panel-default"><div class=panel-heading><span style="font-weight:bold; font-size:18px;"><span class=panel-title>'+
+	((__t=( gettext("home") ))==null?'':__t)+
+	'</%=></span></span></div><div class=panel-body style="overflow: auto;"><span>'+
+	((__t=( gettext("welcome to the online host of genetics resources") ))==null?'':__t)+
+	'</%=></span></div></div>';
 	}
 	return __p;
 	};
@@ -18378,6 +18380,383 @@
 
 	/**
 	 * @file init.js
+	 * @brief Permission module init entry point
+	 * @author Frederic SCHERMA
+	 * @date 2016-05-26
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+
+	var Marionette = __webpack_require__(4);
+
+	var PermissionModule = Marionette.Module.extend({
+
+	    initialize: function(moduleName, app, options) {
+	        this.models = {};
+	        this.collections = {};
+	        this.views = {};
+	        this.routers = {};
+	        this.controllers = {};
+
+	        //var PermissionController = require('./controllers/permission');
+	        //this.controllers.Permission = new PermissionController();
+	    },
+
+	    onStart: function(options) {
+	        var PermissionRouter = __webpack_require__(21);
+	        this.routers.permission = new PermissionRouter();
+	    },
+
+	    onStop: function(options) {
+
+	    },
+	});
+
+	// permission module
+	var permission = ohgr.module("permission", PermissionModule);
+
+	module.exports = permission;
+
+
+/***/ },
+/* 21 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file permission.js
+	 * @brief Permission router
+	 * @author Frederic SCHERMA
+	 * @date 2016-05-26
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+
+	var Marionette = __webpack_require__(4);
+	var PermissionCollection = __webpack_require__(22);
+	var PermissionListView = __webpack_require__(24);
+	var DefaultLayout = __webpack_require__(27);
+	var TitleView = __webpack_require__(28);
+
+	var PermissionRouter = Marionette.AppRouter.extend({
+	    routes : {
+	        "app/permission/user/:username/": "getPermissionsForUser",
+	    },
+
+	    getPermissionsForUser: function(username) {
+	        var permissionsCollection = new PermissionCollection([], {username: username})
+
+	        var defaultLayout = new DefaultLayout({});
+	        ohgr.mainRegion.show(defaultLayout);
+
+	        defaultLayout.title.show(new TitleView({title: gettext("List of permissions for user") + " " + username}));
+
+	        permissionsCollection.fetch().then(function () {
+	            defaultLayout.content.show(new PermissionListView({collection : permissionsCollection}));
+	        });
+	    },
+
+	    getAddPermissionToUser: function () {
+
+	    },
+	});
+
+	module.exports = PermissionRouter;
+
+
+/***/ },
+/* 22 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file permission.js
+	 * @brief Permission collection
+	 * @author Frederic SCHERMA
+	 * @date 2016-05-26
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+
+	var PermissionModel = __webpack_require__(23);
+
+	var PermissionCollection = Backbone.Collection.extend({
+	    url: function() { return ohgr.baseUrl + 'permission/user/' + this.username + '/' },
+	    model: PermissionModel,
+
+	    initialize: function(models, options) {
+	        this.username = options.username;
+	    },
+
+	    parse: function(data) {
+	        if (data.result != 'success')
+	            return [];
+
+	        return data.permissions;
+	    },
+	});
+
+	module.exports = PermissionCollection;
+
+
+/***/ },
+/* 23 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file permission.js
+	 * @brief Permission model
+	 * @author Frederic SCHERMA
+	 * @date 2016-05-26
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+
+	var Backbone = __webpack_require__(2);
+
+	var Permission = Backbone.Model.extend({
+	    url: function() { return ohgr.baseUrl + 'permission/user/' + this.username + '/' + this.permission + '/'; },
+
+	    defaults: {
+	        model: undefined,
+	        object: undefined,
+	        permissions: []  // { id: '', name: '', app_label: ''}
+	    },
+
+	    init: function(options) {
+	        options || (options = {});
+	        this.username = options.username;
+	    },
+
+	    parse: function(data) {
+	        return data;
+	    },
+
+	    validate: function(attrs) {
+	        var errors = {};
+	        var hasError = false;
+
+	        if (hasError) {
+	          return errors;
+	        }
+	    },
+	});
+
+	module.exports = Permission;
+
+
+/***/ },
+/* 24 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file permissionlist.js
+	 * @brief Permission list view
+	 * @author Frederic SCHERMA
+	 * @date 2016-05-26
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+
+	var Marionette = __webpack_require__(4);
+	var PermissionModel = __webpack_require__(23);
+	var PermissionView = __webpack_require__(25);
+
+	var PermissionListView = Marionette.CollectionView.extend({
+	    tagName: "div",
+	    template: "<div></div>",
+	    className: "permission-list",
+	    childView: PermissionView,
+
+	    ui: {
+	        remove_permission: 'span.remove-permission',
+	    },
+
+	    events: {
+	        'click @ui.delete_permission': 'removePermission',
+	    },
+
+	    initialize: function() {
+	        this.listenTo(this.collection, 'reset', this.render, this);
+	        //this.listenTo(this.collection, 'add', this.render, this);
+	        //this.listenTo(this.collection, 'remove', this.render, this);
+	        //this.listenTo(this.collection, 'change', this.render, this);
+	    },
+
+	    onRender: function() {
+	    },
+
+	    removePermission: function (e) {
+	        var permission = e.target.getAttribute("permission");
+	        var model = e.target.getAttribute("model");
+	        var object = e.target.getAttribute("object");
+	        var username = e.target.getAttribute("username");
+	        Backbone.history.navigate("app/permission/user/" + username + "/", {trigger: true});
+	    },
+	});
+
+	module.exports = PermissionListView;
+
+
+/***/ },
+/* 25 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file permission.js
+	 * @brief Permission item view
+	 * @author Frederic SCHERMA
+	 * @date 2016-05-27
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+
+	var Marionette = __webpack_require__(4);
+	var PermissionModel = __webpack_require__(23);
+
+	var PermissionItemView = Marionette.ItemView.extend({
+	    tagName: 'div',
+	    template: __webpack_require__(26),
+
+	    ui: {
+	        "remove_permission": ".remove-permission",
+	    },
+
+	    events: {
+	        'click @ui.remove_permission': 'onRemovePermission',
+	    },
+
+	    initialize: function() {
+	        this.listenTo(this.model, 'reset', this.render, this);
+	    },
+
+	    onRender: function() {
+	    },
+	});
+
+	module.exports = PermissionItemView;
+
+
+/***/ },
+/* 26 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(_) {module.exports = function(obj){
+	var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
+	with(obj||{}){
+	__p+='<div class="element object permission" object-type=permission style=width:100%;><span style="font-weight:bold; font-size:18px;">';
+	 gettext("model") 
+	__p+='<span class="model permission label label-info" style="cursor: pointer;">';
+	 gettext("model") + ": " 
+	__p+=''+
+	((__t=( model ))==null?'':__t)+
+	'</%=></%></span>';
+	 if (object_name) { 
+	__p+='<span class="model object badge left-margin" style="cursor: pointer;" object-id="'+
+	((__t=( object ))==null?'':_.escape(__t))+
+	'">'+
+	((__t=( object_name ))==null?'':__t)+
+	'</%=></span>';
+	 } 
+	__p+='<br></%></%></%></span><hr class=hr-default><div class=permissions><table class="table table-striped"><thead><tr><th><span class="glyphicon glyphicon-asterisk"></span></th><th>'+
+	((__t=( gettext("module") ))==null?'':__t)+
+	'</%=></th><th>'+
+	((__t=( gettext("name") ))==null?'':__t)+
+	'</%=></th><th>'+
+	((__t=( gettext("code") ))==null?'':__t)+
+	'</%=></th></tr></thead><tbody>';
+	 _.each(permissions, function(perm) { 
+	__p+='<tr><th scope=row><span class="edition action remove-synonym glyphicon glyphicon-minus-sign"></span></th><td name=module class=permission-module>'+
+	((__t=( perm.app_label ))==null?'':_.escape(__t))+
+	'</%-></td><td name=name>'+
+	((__t=( perm.name ))==null?'':_.escape(__t))+
+	'</%-></td><td name=code>'+
+	((__t=( perm.id ))==null?'':_.escape(__t))+
+	'</%-></td></tr>';
+	 }) 
+	__p+='</%></%></tbody></table></div></div>';
+	}
+	return __p;
+	};
+
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 27 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file defaultlayout.js
+	 * @brief Default layout with one Bootstrap panel
+	 * @author Frederic SCHERMA
+	 * @date 2016-04-22
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+
+	var Marionette = __webpack_require__(4);
+
+	var DefaultLayout = Marionette.LayoutView.extend({
+	    template: "#layout_view",
+
+	    regions: {
+	        title: ".panel-title",
+	        content: ".panel-body",
+	    },
+
+	    initialize: function() {
+	    },
+
+	    onRender: function() {
+	    },
+
+	    onBeforeShow: function() {
+	    },
+	});
+
+	module.exports = DefaultLayout;
+
+
+/***/ },
+/* 28 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file titleview.js
+	 * @brief Default layout title view for 'defaultlayout'
+	 * @author Frederic SCHERMA
+	 * @date 2016-04-22
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+
+	var Marionette = __webpack_require__(4);
+
+	var TitleView = Marionette.View.extend({
+	    tagName: "span",
+	    title: "Untitled",
+
+	    initialize: function(options) {
+	        this.options = options;
+	        $(this.el).html(Marionette.getOption(this, "title"));
+	    }
+	});
+
+	module.exports = TitleView;
+
+
+/***/ },
+/* 29 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file init.js
 	 * @brief Taxonomy module init entry point
 	 * @author Frederic SCHERMA
 	 * @date 2016-04-12
@@ -18399,7 +18778,7 @@
 
 	        var SelectOptionItemView = __webpack_require__(12);
 
-	        var TaxonRankCollection = __webpack_require__(21);
+	        var TaxonRankCollection = __webpack_require__(30);
 	        this.collections.taxonRanks = new TaxonRankCollection();
 
 	        this.views.taxonRanks = new SelectOptionItemView({
@@ -18407,15 +18786,15 @@
 	            collection: this.collections.taxonRanks,
 	        });
 
-	        var TaxonController = __webpack_require__(23);
+	        var TaxonController = __webpack_require__(32);
 	        this.controllers.Taxon = new TaxonController();
 	    },
 
 	    onStart: function(options) {
-	        var TaxonRouter = __webpack_require__(33);
+	        var TaxonRouter = __webpack_require__(39);
 	        this.routers.taxon = new TaxonRouter();
 
-	        var TaxonCollection = __webpack_require__(25);
+	        var TaxonCollection = __webpack_require__(34);
 	        this.collections.taxons = new TaxonCollection();
 	    },
 
@@ -18431,7 +18810,7 @@
 
 
 /***/ },
-/* 21 */
+/* 30 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -18444,7 +18823,7 @@
 	 * @details
 	 */
 
-	var TaxonRankModel = __webpack_require__(22);
+	var TaxonRankModel = __webpack_require__(31);
 
 	var TaxonRankCollection = Backbone.Collection.extend({
 	    url: ohgr.baseUrl + 'taxonomy/rank/',
@@ -18467,7 +18846,7 @@
 
 
 /***/ },
-/* 22 */
+/* 31 */
 /***/ function(module, exports) {
 
 	/**
@@ -18489,7 +18868,7 @@
 
 
 /***/ },
-/* 23 */
+/* 32 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -18503,12 +18882,11 @@
 	 */
 
 	var Marionette = __webpack_require__(4);
-	var TaxonModel = __webpack_require__(24);
-	var TaxonCollection = __webpack_require__(25);
-	var TaxonListView = __webpack_require__(26);
-	var TaxonDetailsView = __webpack_require__(29);
-	var DefaultLayout = __webpack_require__(30);
-	var TitleView = __webpack_require__(31);
+	var TaxonModel = __webpack_require__(33);
+	var TaxonCollection = __webpack_require__(34);
+	var TaxonListView = __webpack_require__(35);
+	var DefaultLayout = __webpack_require__(27);
+	var TitleView = __webpack_require__(28);
 
 	var TaxonController = Marionette.Controller.extend({
 
@@ -18516,7 +18894,7 @@
 	        var CreateTaxonView = Marionette.ItemView.extend({
 	            el: "#dialog_content",
 	            tagName: "div",
-	            template: __webpack_require__(32),
+	            template: __webpack_require__(38),
 
 	            ui: {
 	                "cancel": "button.cancel",
@@ -18743,8 +19121,18 @@
 
 
 /***/ },
-/* 24 */
+/* 33 */
 /***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file taxon.js
+	 * @brief Taxon model
+	 * @author Frederic SCHERMA
+	 * @date 2016-04-12
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
 
 	var Backbone = __webpack_require__(2);
 
@@ -18841,7 +19229,7 @@
 
 
 /***/ },
-/* 25 */
+/* 34 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -18854,7 +19242,7 @@
 	 * @details
 	 */
 
-	var TaxonModel = __webpack_require__(24);
+	var TaxonModel = __webpack_require__(33);
 
 	var TaxonCollection = Backbone.Collection.extend({
 	    url: ohgr.baseUrl + 'taxonomy/',
@@ -18896,7 +19284,7 @@
 
 
 /***/ },
-/* 26 */
+/* 35 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -18910,8 +19298,8 @@
 	 */
 
 	var Marionette = __webpack_require__(4);
-	var TaxonModel = __webpack_require__(24);
-	var TaxonView = __webpack_require__(27);
+	var TaxonModel = __webpack_require__(33);
+	var TaxonView = __webpack_require__(36);
 
 	var TaxonListView = Marionette.CollectionView.extend({
 	    //el: '#main_content',
@@ -18956,12 +19344,12 @@
 
 
 /***/ },
-/* 27 */
+/* 36 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
-	 * @file taxonview.js
-	 * @brief Taxon list view
+	 * @file taxon.js
+	 * @brief Taxon item view
 	 * @author Frederic SCHERMA
 	 * @date 2016-04-20
 	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
@@ -18970,11 +19358,11 @@
 	 */
 
 	var Marionette = __webpack_require__(4);
-	var TaxonModel = __webpack_require__(24);
+	var TaxonModel = __webpack_require__(33);
 
 	var TaxonItemView = Marionette.ItemView.extend({
 	    tagName: 'div',
-	    template: __webpack_require__(28),
+	    template: __webpack_require__(37),
 
 	    ui: {
 	        "synonym_name": ".synonym-name",
@@ -19100,41 +19488,41 @@
 
 
 /***/ },
-/* 28 */
+/* 37 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(_) {module.exports = function(obj){
 	var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 	with(obj||{}){
-	__p+='<!--\n - @file taxon.html\n - @brief Template for a taxon (model)\n - @author Frederic SCHERMA\n - @date 2016-04-12\n - @copyright Copyright (c) 2016 INRA UMR1095 GDEC\n - @license @todo\n - @details\n-->\n\n<div class="object taxon" object-type="taxon" object-id="'+
+	__p+='<div class="object taxon" object-type=taxon object-id="'+
 	((__t=( id ))==null?'':__t)+
-	'" style="width:100%;">\n    <span style="font-weight:bold; font-size:18px;">\n        <span class="name taxon" taxonid="'+
+	'" style=width:100%;><span style="font-weight:bold; font-size:18px;"><span class="name taxon" taxonid="'+
 	((__t=( id ))==null?'':__t)+
 	'" style="cursor: pointer;">'+
 	((__t=( name ))==null?'':_.escape(__t))+
-	'</span><span class="taxon-rank badge left-margin" value="'+
+	'</%-></span><span class="taxon-rank badge left-margin" value="'+
 	((__t=( rank ))==null?'':__t)+
-	'"></span><br>\n    </span>\n    <hr>\n    <div class="taxon-synonyms"></div>\n        <h4>Synonyms</h4>\n        <table class="table table-striped">\n            <thead>\n                <tr>\n                    <th><span class="glyphicon glyphicon-asterisk" /></th>\n                    <th>'+
-	((__t=( gettext("Type") ))==null?'':__t)+
-	'</th>\n                    <th>'+
-	((__t=( gettext("Name") ))==null?'':__t)+
-	'</th>\n                    <th>'+
-	((__t=( gettext("Language") ))==null?'':__t)+
-	'</th>\n                </tr>\n            </thead>\n            <tbody>\n                ';
+	'"></span><br></span><hr class=hr-default><div class=taxon-synonyms></div><h4>Synonyms</h4><table class="table table-striped"><thead><tr><th><span class="glyphicon glyphicon-asterisk"></span></th><th>'+
+	((__t=( gettext("type") ))==null?'':__t)+
+	'</%=></th><th>'+
+	((__t=( gettext("name") ))==null?'':__t)+
+	'</%=></th><th>'+
+	((__t=( gettext("language") ))==null?'':__t)+
+	'</%=></th></tr></thead><tbody>';
 	 _.each(synonyms, function(synonym) { 
-	__p+='\n                <tr>\n                    <th scope="row">\n                        ';
-	 if (synonym.type != 0) { 
+	__p+='<tr><th scope=row>';
+	 if (synonym.type !=0) { 
 	__p+='<span class="action remove-synonym glyphicon glyphicon-minus-sign edit-mode"></span>';
 	 } 
-	__p+='\n                    </th>\n                    <td name="type" class="synonym-type" value="'+
+	__p+='</%></%></th><td name=type class=synonym-type value="'+
 	((__t=( synonym.type ))==null?'':_.escape(__t))+
-	'"></td>\n                    <td name="name">'+
+	'"></td><td name=name>'+
 	((__t=( synonym.name ))==null?'':_.escape(__t))+
-	'</td>\n                    <td name="language" class="language" value="'+
+	'</%-></td><td name=language class=language value="'+
 	((__t=( synonym.language ))==null?'':_.escape(__t))+
-	'"></td>\n                </tr>\n                ';
+	'"></td></tr>';
 	 }) 
-	__p+='\n                <tr class="edit-mode dummy-synonym">\n                    <form>\n                        <th scope="row"><span class="add-synonym action glyphicon glyphicon-plus-sign" style="margin-top: 50%; margin-bottom: 50%;"></span></th>\n                        <td><select class="synonym-types" name="synonym-type"></select></td>\n                        <td><div class="form-group"><input class="form-control synonym-name" type="text" name="synonym-name" /></div></td>\n                        <td><select class="synonym-languages" name="synonym-language"></select></td>\n                    </form>\n                </tr>\n            </tbody>\n        </table>\n    </div>\n</div>\n';
+	__p+='<tr class="edit-mode dummy-synonym"><form><th scope=row><span class="add-synonym action glyphicon glyphicon-plus-sign" style="margin-top: 50%; margin-bottom: 50%;"></span></th><td><select class=synonym-types name=synonym-type></select></td><td><div class=form-group><input class="form-control synonym-name" type=text name=synonym-name></div></td><td><select class=synonym-languages name=synonym-language></select></td></form></tr></%></%></tbody></table></div>';
 	}
 	return __p;
 	};
@@ -19142,146 +19530,32 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 29 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file taxondetails.js
-	 * @brief Taxon detailed view
-	 * @author Frederic SCHERMA
-	 * @date 2016-04-20
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-
-	var Marionette = __webpack_require__(4);
-	var TaxonView = __webpack_require__(27);
-	var TaxonModel = __webpack_require__(24);
-
-	// TODO use of regions
-	/*
-	var TaxonDetailsView = Marionette.CompositeView.extend({
-	    el: '#main_content ',
-	    template: require('../templates/taxondetails.html'),
-	    childView: TaxonView,
-	    childViewContainer: 'div.panel-body',
-
-	    initialize: function() {
-	        this.model.fetch();
-
-	        // need some collections to be fetched
-	        this.listenTo(ohgr.main.collections.languages, 'sync', this.render, this);
-	        this.listenTo(ohgr.main.collections.synonymTypes, 'sync', this.render, this);
-	        this.listenTo(ohgr.taxonomy.collections.taxonRanks, 'sync', this.render, this);
-
-	        this.listenTo(this.model, 'sync', this.render, this);
-	    },
-
-	    onRender: function() {
-	        // render select fields
-	        ohgr.main.views.languages.render();
-	        ohgr.main.views.synonymTypes.render();
-	        ohgr.taxonomy.views.taxonRanks.render();
-	    }
-	});*/
-
-	//module.exports = TaxonDetailsView;
-
-
-/***/ },
-/* 30 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file defaultlayout.js
-	 * @brief Default layout with one Bootstrap panel
-	 * @author Frederic SCHERMA
-	 * @date 2016-04-22
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-
-	var Marionette = __webpack_require__(4);
-
-	var DefaultLayout = Marionette.LayoutView.extend({
-	    template: "#layout_view",
-
-	    regions: {
-	        title: ".panel-title",
-	        content: ".panel-body",
-	    },
-
-	    initialize: function() {
-	    },
-
-	    onRender: function() {
-	    },
-
-	    onBeforeShow: function() {
-	    },
-	});
-
-	module.exports = DefaultLayout;
-
-
-/***/ },
-/* 31 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file titleview.js
-	 * @brief Default layout title view for 'defaultlayout'
-	 * @author Frederic SCHERMA
-	 * @date 2016-04-22
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-
-	var Marionette = __webpack_require__(4);
-
-	var TitleView = Marionette.View.extend({
-	    tagName: "span",
-	    title: "Untitled",
-
-	    initialize: function(options) {
-	        this.options = options;
-	        $(this.el).html(Marionette.getOption(this, "title"));
-	    }
-	});
-
-	module.exports = TitleView;
-
-
-/***/ },
-/* 32 */
+/* 38 */
 /***/ function(module, exports) {
 
 	module.exports = function(obj){
 	var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 	with(obj||{}){
-	__p+='<div class="modal" id="dlg_create_taxon">\n    <div class="modal-dialog">\n        <div class="modal-content">\n            <div class="modal-header">\n                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>\n                <h4 class="modal-title">'+
-	((__t=( gettext("Create a new taxon") ))==null?'':__t)+
-	'</h4>\n            </div>\n            <div class="modal-body">\n                <form>\n                    <div class="form-group">\n                        <label class="control-label" for="taxon_name">'+
-	((__t=( gettext("Principal name of the taxon (must be unique)") ))==null?'':__t)+
-	'</label>\n                        <input class="form-control name" id="taxon_name" type="text" name="taxon" value="" maxlength="128" autofocus="" style="width:100%;">\n                    </div>\n                    <div class="form-group">\n                        <label class="control-label" for="taxon_rank">'+
-	((__t=( gettext("Taxon rank") ))==null?'':__t)+
-	'</label>\n                        <select class="form-control taxon-ranks" id="taxon_rank" name="taxonrank"></select>\n                    </div>\n                    <div class="form-group">\n                        <label class="control-label" for="taxon_parent">'+
-	((__t=( gettext("Direct parent") ))==null?'':__t)+
-	'</label>\n                        <input id="taxon_parent" type="text" value="" maxlength="128" style="width:100%;" class="form-control" placeholder="Enter a taxon name. 3 characters at least for auto-completion">\n                    </div>\n                </form>\n            </div>\n            <div class="modal-footer">\n                <button type="button" class="btn btn-default cancel" data-dismiss="modal">'+
-	((__t=( gettext("Cancel") ))==null?'':__t)+
-	'</button>\n                <button type="button" class="btn btn-primary create">'+
-	((__t=( gettext("Create") ))==null?'':__t)+
-	'</button>\n            </div>\n        </div><!-- /.modal-content -->\n    </div><!-- /.modal-dialog -->\n</div><!-- /.modal -->\n';
+	__p+='<div class=modal id=dlg_create_taxon><div class=modal-dialog><div class=modal-content><div class=modal-header><button type=button class=close data-dismiss=modal aria-hidden=true>&times;</button><h4 class=modal-title>'+
+	((__t=( gettext("create a new taxon") ))==null?'':__t)+
+	'</%=></h4></div><div class=modal-body><form><div class=form-group><label class=control-label for=taxon_name>'+
+	((__t=( gettext("principal name of the taxon (must be unique)") ))==null?'':__t)+
+	'</%=></label> <input class="form-control name" id=taxon_name type=text name=taxon maxlength=128 autofocus style=width:100%;></div><div class=form-group><label class=control-label for=taxon_rank>'+
+	((__t=( gettext("taxon rank") ))==null?'':__t)+
+	'</%=></label><select class="form-control taxon-ranks" id=taxon_rank name=taxonrank></select></div><div class=form-group><label class=control-label for=taxon_parent>'+
+	((__t=( gettext("direct parent") ))==null?'':__t)+
+	'</%=></label> <input id=taxon_parent type=text maxlength=128 style=width:100%; class=form-control placeholder="Enter a taxon name. 3 characters at least for auto-completion"></div></form></div><div class=modal-footer><button type=button class="btn btn-default cancel" data-dismiss=modal>'+
+	((__t=( gettext("cancel") ))==null?'':__t)+
+	'</%=></button> <button type=button class="btn btn-primary create">'+
+	((__t=( gettext("create") ))==null?'':__t)+
+	'</%=></button></div></div></div></div>';
 	}
 	return __p;
 	};
 
 
 /***/ },
-/* 33 */
+/* 39 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -19295,13 +19569,12 @@
 	 */
 
 	var Marionette = __webpack_require__(4);
-	var TaxonModel = __webpack_require__(24);
-	var TaxonCollection = __webpack_require__(25);
-	var TaxonListView = __webpack_require__(26);
-	var TaxonItemView = __webpack_require__(27);
-	var TaxonDetailsView = __webpack_require__(29);
-	var DefaultLayout = __webpack_require__(30);
-	var TitleView = __webpack_require__(31);
+	var TaxonModel = __webpack_require__(33);
+	var TaxonCollection = __webpack_require__(34);
+	var TaxonListView = __webpack_require__(35);
+	var TaxonItemView = __webpack_require__(36);
+	var DefaultLayout = __webpack_require__(27);
+	var TitleView = __webpack_require__(28);
 
 	var TaxonRouter = Marionette.AppRouter.extend({
 	    routes : {
@@ -19346,6 +19619,51 @@
 	});
 
 	module.exports = TaxonRouter;
+
+
+/***/ },
+/* 40 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file init.js
+	 * @brief Accession module init entry point
+	 * @author Frederic SCHERMA
+	 * @date 2016-05-26
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+
+	var Marionette = __webpack_require__(4);
+
+	var AccessionModule = Marionette.Module.extend({
+
+	    initialize: function(moduleName, app, options) {
+	        this.models = {};
+	        this.collections = {};
+	        this.views = {};
+	        this.routers = {};
+	        this.controllers = {};
+	    },
+
+	    onStart: function(options) {
+	        // var AccessionRouter = require('./routers/accession');
+	        // this.routers.accession = new AccessionRouter();
+
+	        // var AccessionCollection = require('./collections/accession');
+	        // this.collections.accession = new AccessionCollection();
+	    },
+
+	    onStop: function(options) {
+
+	    },
+	});
+
+	// accession module
+	var accession = ohgr.module("accession", AccessionModule);
+
+	module.exports = accession;
 
 
 /***/ }

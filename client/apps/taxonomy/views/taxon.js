@@ -1,6 +1,6 @@
 /**
- * @file taxonview.js
- * @brief Taxon list view
+ * @file taxon.js
+ * @brief Taxon item view
  * @author Frederic SCHERMA
  * @date 2016-04-20
  * @copyright Copyright (c) 2016 INRA UMR1095 GDEC

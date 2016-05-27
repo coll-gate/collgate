@@ -13,7 +13,6 @@ var TaxonModel = require('../models/taxon');
 var TaxonCollection = require('../collections/taxon');
 var TaxonListView = require('../views/taxonlist');
 var TaxonItemView = require('../views/taxon');
-var TaxonDetailsView = require('../views/taxondetails');
 var DefaultLayout = require('../../main/views/defaultlayout');
 var TitleView = require('../../main/views/titleview');
 
