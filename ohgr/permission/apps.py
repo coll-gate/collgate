@@ -32,12 +32,12 @@ class OhgrPermission(ApplicationMain):
         # permission menu
         menu_permission = ModuleMenu('permission', _('Permission'), order=999, auth=AUTH_USER)
         menu_permission.add_entry(
-            MenuEntry('user-permission', _('Manage users'), "#permission/user/permission", icon=Glyph.CONSOLE, order=1))
+            MenuEntry('user-permission', _('Manage users'), "#permission/user/", icon=Glyph.CONSOLE, order=1))
+        menu_permission.add_entry(
+            MenuEntry('group-permission', _('Manage groups'), "#permission/group/", icon=Glyph.FOLDER_CLOSE, order=2))
         menu_permission.add_entry(MenuSeparator(100))
         menu_permission.add_entry(
             MenuEntry('create-group', _('Create a group for permissions'), "~permission/Group/create/", icon=Glyph.PLUS_SIGN, order=101))
-        menu_permission.add_entry(
-            MenuEntry('list-group', _('List groups'), "#permission/group/", icon=Glyph.PLUS_SIGN, order=102))
         permission_module.add_menu(menu_permission)
 
         module_manager.register_menu(permission_module)

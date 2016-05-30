@@ -150,6 +150,7 @@ user = function() {
 }();
 
 user.isAuth = {{ user.is_authenticated|yesno:"true,false" }};
+user.username = "{{ user.username }}";
 </script>
 
 <script src="{% static 'main/js/main.js' %}"></script>
@@ -272,6 +273,8 @@ user.isAuth = {{ user.is_authenticated|yesno:"true,false" }};
             </span>
         </div>
         <div class="panel-body" style="overflow: auto;">
+        </div>
+        <div class="panel-bottom">
         </div>
     </div>
 </script>

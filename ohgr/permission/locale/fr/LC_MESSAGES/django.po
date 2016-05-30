@@ -7,8 +7,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
-"Report-Msgid-Bugs-To: frederic.scherma@clermont.inra.fr\n"
-"POT-Creation-Date: 2016-05-26 11:49+0200\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-05-30 10:49+0200\n"
 "PO-Revision-Date: 2016-05-26 11:49+0200\n"
 "Last-Translator: Frédéric SCHERMA <frederic.scherma@clermont.inra.fr>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,10 +26,11 @@ msgstr "Permission"
 msgid "Manage users"
 msgstr "Gérer les utilisateurs"
 
-#: apps.py:38
+#: apps.py:37
+msgid "Manage groups"
+msgstr "Gérer les groupes"
+
+#: apps.py:40
 msgid "Create a group for permissions"
 msgstr "Créer un groupe de permission"
 
-#: apps.py:40
-msgid "List groups"
-msgstr "Liste des groupes"

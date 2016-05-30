@@ -110,6 +110,14 @@
 	            if (opts)
 	                dfd.then(opts.success, opts.error);
 
+	            // insert csrf token when necessary
+	            opts.beforeSend = function(xhr) {
+	                // always add the csrf token to safe method ajax query
+	                if (!csrfSafeMethod(method) && !opts.crossDomain) {
+	                    xhr.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
+	                }
+	            };
+
 	            xhr = Backbone.originalSync(method, model, _.omit(opts, 'success', 'error'));
 
 	            // success : forward to the deferred
@@ -149,9 +157,9 @@
 
 	    // each modules
 	    this.main = __webpack_require__(7);
-	    this.permission = __webpack_require__(20);
-	    this.taxonomy = __webpack_require__(29);
-	    this.accession = __webpack_require__(40);
+	    this.permission = __webpack_require__(21);
+	    this.taxonomy = __webpack_require__(43);
+	    this.accession = __webpack_require__(54);
 	});
 
 	ohgr.start({initialData: ''});
@@ -17671,7 +17679,7 @@
 
 	        var SelectOptionItemView = __webpack_require__(12);
 
-	        var LanguageCollection = __webpack_require__(13);
+	        var LanguageCollection = __webpack_require__(14);
 	        this.collections.languages = new LanguageCollection();
 
 	        this.views.languages = new SelectOptionItemView({
@@ -17679,7 +17687,7 @@
 	            collection: this.collections.languages,
 	        });
 
-	        var SynoymTypeCollection = __webpack_require__(15);
+	        var SynoymTypeCollection = __webpack_require__(16);
 	        this.collections.synonymTypes = new SynoymTypeCollection();
 
 	        this.views.synonymTypes = new SelectOptionItemView({
@@ -17697,7 +17705,7 @@
 
 	        this.views.Home = Marionette.CompositeView.extend({
 	            el: '#main_content',
-	            template: __webpack_require__(17),
+	            template: __webpack_require__(18),
 	        });
 	    },
 
@@ -17724,10 +17732,10 @@
 	        });
 	        this.routers.main = new MainRouter();
 
-	        var LanguageRouter = __webpack_require__(18);
+	        var LanguageRouter = __webpack_require__(19);
 	        this.routers.language = new LanguageRouter();
 
-	        var ProfileRouter = __webpack_require__(19);
+	        var ProfileRouter = __webpack_require__(20);
 	        this.routers.profile = new ProfileRouter();
 	    },
 
@@ -18093,7 +18101,7 @@
 /* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(_) {/**
+	/**
 	 * @file item.js
 	 * @brief View for single value based on collection, and for select widgets.
 	 * @author Frederic SCHERMA
@@ -18106,12 +18114,26 @@
 	var Marionette = __webpack_require__(4);
 
 	var SelectOptionItemView = Marionette.ItemView.extend({
-	    template: _.template('<% _.each(items, function(item){ %><option value="<%= item.id %>"><%= gettext(item.value) %></option><% }) %>'),
+	    //template: _.template('<% _.each(items, function(item){ %><option value="<%= item.id %>"><%= gettext(item.value) %></option><% }) %>'),
+	    template: __webpack_require__(13),
 	    tagName: 'select',
 
-	    initialize: function() {
+	    initialize: function(options) {
+	        options || (options = {});
+	        Marionette.ItemView.prototype.initialize.apply(this, options);
+
 	        this.collection.fetch();  // lazy loading
 	        this.collection.on("sync", this.render, this);  // render the template once got
+	    },
+
+	    onBeforeRender: function() {
+	        if (this.options.groupBy) {
+	            // comment grouper ça efficacement coté vue ?
+	            // avec la regexp tant que pas de changement... grouper lors du parsing dans la collection::parse
+	            // puis amméliorer le template avec un if item.group != undefined... sinon normal
+	            //"<optgroup label="label"></optgroup>"
+	            //alert();
+	        }
 	    },
 
 	    onRender: function(e) {
@@ -18162,10 +18184,47 @@
 
 	module.exports = SelectOptionItemView;
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
 /* 13 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(_) {module.exports = function(obj){
+	var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
+	with(obj||{}){
+	__p+='';
+	 _.each(items, function(item) { 
+	__p+='';
+	 if (item.options !=undefined) { 
+	__p+='<optgroup label="'+
+	((__t=( item.value ))==null?'':__t)+
+	'">';
+	 _.each(item.options, function(subitem) { 
+	__p+='<option value="'+
+	((__t=( subitem.id ))==null?'':__t)+
+	'">'+
+	((__t=( gettext(subitem.value) ))==null?'':__t)+
+	'</%=></option>';
+	 }) 
+	__p+='</%></%></optgroup>';
+	 } else { 
+	__p+='<option value="'+
+	((__t=( item.id ))==null?'':__t)+
+	'">'+
+	((__t=( gettext(item.value) ))==null?'':__t)+
+	'</%=></option>';
+	 } 
+	__p+='';
+	 }) 
+	__p+='</%></%></%></%></%>';
+	}
+	return __p;
+	};
+
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -18178,7 +18237,7 @@
 	 * @details
 	 */
 
-	var LanguageModel = __webpack_require__(14);
+	var LanguageModel = __webpack_require__(15);
 
 	var LanguageCollection = Backbone.Collection.extend({
 	    url: ohgr.baseUrl + 'language',
@@ -18208,7 +18267,7 @@
 
 
 /***/ },
-/* 14 */
+/* 15 */
 /***/ function(module, exports) {
 
 	/**
@@ -18230,7 +18289,7 @@
 
 
 /***/ },
-/* 15 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -18243,7 +18302,7 @@
 	 * @details
 	 */
 
-	var SynonymTypeModel = __webpack_require__(16);
+	var SynonymTypeModel = __webpack_require__(17);
 
 	var SynonymTypeCollection = Backbone.Collection.extend({
 	    url: ohgr.baseUrl + 'synonym-type/',
@@ -18269,7 +18328,7 @@
 
 
 /***/ },
-/* 16 */
+/* 17 */
 /***/ function(module, exports) {
 
 	/**
@@ -18292,7 +18351,7 @@
 
 
 /***/ },
-/* 17 */
+/* 18 */
 /***/ function(module, exports) {
 
 	module.exports = function(obj){
@@ -18309,7 +18368,7 @@
 
 
 /***/ },
-/* 18 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -18336,7 +18395,7 @@
 
 
 /***/ },
-/* 19 */
+/* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -18375,7 +18434,7 @@
 
 
 /***/ },
-/* 20 */
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -18399,12 +18458,19 @@
 	        this.routers = {};
 	        this.controllers = {};
 
-	        //var PermissionController = require('./controllers/permission');
-	        //this.controllers.Permission = new PermissionController();
+	        var SelectOptionItemView = __webpack_require__(12);
+
+	        var PermissionTypeCollection = __webpack_require__(22);
+	        this.collections.permissionType = new PermissionTypeCollection();
+
+	        this.views.permissionType = new SelectOptionItemView({
+	            className: 'permission-type',
+	            collection: this.collections.permissionType,
+	        });
 	    },
 
 	    onStart: function(options) {
-	        var PermissionRouter = __webpack_require__(21);
+	        var PermissionRouter = __webpack_require__(24);
 	        this.routers.permission = new PermissionRouter();
 	    },
 
@@ -18420,7 +18486,88 @@
 
 
 /***/ },
-/* 21 */
+/* 22 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file permissiontype.js
+	 * @brief Permission type collection
+	 * @author Frederic SCHERMA
+	 * @date 2016-04-30
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+
+	var PermissionTypeModel = __webpack_require__(23);
+
+	var Collection = Backbone.Collection.extend({
+	    url: ohgr.baseUrl + 'permission/type/',
+	    model: PermissionTypeModel,
+
+	    parse: function(data) {
+	        var result = [];
+	        var prev = "";
+	        var group = {};
+
+	        for (var i = 0; i < data.length; ++i) {
+	            var id = data[i].id.split('.');
+	            var f = id[0] + '.' + id[1];
+
+	            if (f != prev) {
+	                group = {value: f, options: []};
+	                result.push(group);
+	            }
+
+	            group.options.push(data[i]);
+	            prev = f;
+	        }
+
+	        console.log(result);
+	        return result;
+	    },
+
+	    default: [
+	    ],
+
+	    findValue: function(id) {
+	        var res = this.findWhere({id: id});
+	        return res ? res.get('value') : '';
+	        /*for (var r in this.models) {
+	            var m = this.models[r];
+	            if (m.get('id') == id)
+	                return m.get('value');
+	        }*/
+	    },
+	});
+
+	module.exports = Collection;
+
+
+/***/ },
+/* 23 */
+/***/ function(module, exports) {
+
+	/**
+	 * @file permissiontype.js
+	 * @brief Permission type model
+	 * @author Frederic SCHERMA
+	 * @date 2016-04-30
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+
+	module.exports = Backbone.Model.extend({
+	    defaults: function() {
+	        return {id: '', value: ''}
+	    },
+	    url: ohgr.baseUrl + 'permission/type/:id'
+	});
+
+
+/***/ },
+/* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -18434,14 +18581,35 @@
 	 */
 
 	var Marionette = __webpack_require__(4);
-	var PermissionCollection = __webpack_require__(22);
-	var PermissionListView = __webpack_require__(24);
-	var DefaultLayout = __webpack_require__(27);
-	var TitleView = __webpack_require__(28);
+	var PermissionCollection = __webpack_require__(25);
+	var PermissionListView = __webpack_require__(27);
+	var PermissionUserCollection = __webpack_require__(30);
+	var PermissionUserListView = __webpack_require__(32);
+	var PermissionGroupCollection = __webpack_require__(36);
+	var PermissionGroupListView = __webpack_require__(38);
+	var AddPermissionType = __webpack_require__(39);
+	var DefaultLayout = __webpack_require__(41);
+	var TitleView = __webpack_require__(42);
 
 	var PermissionRouter = Marionette.AppRouter.extend({
 	    routes : {
+	        "app/permission/user/": "getUsers",
 	        "app/permission/user/:username/": "getPermissionsForUser",
+	        "app/permission/group/": "getGroups",
+	        "app/permission/group/:groupname/": "getPermissionsForGroup",
+	    },
+
+	    getUsers: function () {
+	        var userCollection = new PermissionUserCollection();
+
+	        var defaultLayout = new DefaultLayout({});
+	        ohgr.mainRegion.show(defaultLayout);
+
+	        defaultLayout.title.show(new TitleView({title: gettext("List of users")}));
+
+	        userCollection.fetch().then(function () {
+	            defaultLayout.content.show(new PermissionUserListView({collection : userCollection}));
+	        });
 	    },
 
 	    getPermissionsForUser: function(username) {
@@ -18455,10 +18623,15 @@
 	        permissionsCollection.fetch().then(function () {
 	            defaultLayout.content.show(new PermissionListView({collection : permissionsCollection}));
 	        });
+
+	        defaultLayout.bottom.show(new AddPermissionType({username: username}));
 	    },
 
-	    getAddPermissionToUser: function () {
+	    getGroups: function () {
 
+	    },
+
+	    getPermissionsForGroup: function(groupname) {
 	    },
 	});
 
@@ -18466,7 +18639,7 @@
 
 
 /***/ },
-/* 22 */
+/* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -18479,7 +18652,7 @@
 	 * @details
 	 */
 
-	var PermissionModel = __webpack_require__(23);
+	var PermissionModel = __webpack_require__(26);
 
 	var PermissionCollection = Backbone.Collection.extend({
 	    url: function() { return ohgr.baseUrl + 'permission/user/' + this.username + '/' },
@@ -18501,7 +18674,7 @@
 
 
 /***/ },
-/* 23 */
+/* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -18548,7 +18721,7 @@
 
 
 /***/ },
-/* 24 */
+/* 27 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -18562,12 +18735,11 @@
 	 */
 
 	var Marionette = __webpack_require__(4);
-	var PermissionModel = __webpack_require__(23);
-	var PermissionView = __webpack_require__(25);
+	var PermissionModel = __webpack_require__(26);
+	var PermissionView = __webpack_require__(28);
 
 	var PermissionListView = Marionette.CollectionView.extend({
 	    tagName: "div",
-	    template: "<div></div>",
 	    className: "permission-list",
 	    childView: PermissionView,
 
@@ -18602,7 +18774,7 @@
 
 
 /***/ },
-/* 25 */
+/* 28 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -18616,11 +18788,11 @@
 	 */
 
 	var Marionette = __webpack_require__(4);
-	var PermissionModel = __webpack_require__(23);
+	var PermissionModel = __webpack_require__(26);
 
 	var PermissionItemView = Marionette.ItemView.extend({
 	    tagName: 'div',
-	    template: __webpack_require__(26),
+	    template: __webpack_require__(29),
 
 	    ui: {
 	        "remove_permission": ".remove-permission",
@@ -18642,7 +18814,7 @@
 
 
 /***/ },
-/* 26 */
+/* 29 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(_) {module.exports = function(obj){
@@ -18686,7 +18858,435 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 27 */
+/* 30 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file user.js
+	 * @brief Permission user collection
+	 * @author Frederic SCHERMA
+	 * @date 2016-05-30
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+
+	var PermissionUserModel = __webpack_require__(31);
+
+	var Collection = Backbone.Collection.extend({
+	    url: function() { return ohgr.baseUrl + 'permission/user/'; },
+	    model: PermissionUserModel,
+
+	    parse: function(data) {
+	        if (data.result != 'success')
+	            return [];
+
+	        return data.users;
+	    },
+	});
+
+	module.exports = Collection;
+
+
+/***/ },
+/* 31 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file user.js
+	 * @brief User model
+	 * @author Frederic SCHERMA
+	 * @date 2016-05-30
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+
+	var Backbone = __webpack_require__(2);
+
+	var Model = Backbone.Model.extend({
+	    url: function() { return ohgr.baseUrl + 'permission/user/' + this.get('username') + '/'; },
+
+	    defaults: {
+	        id: undefined,
+	        username: '',
+	        first_name: '',
+	        last_name: '',
+	        email: '',
+	        is_active: false,
+	        is_staff: false
+	    },
+
+	    isNew : function () { return typeof(this.get('username')) != 'string'; },
+
+	    init: function(options) {
+	        options || (options = {});
+	        this.username = options.username;
+
+	        this.on('change:is_active', this.partialUpdate, this);
+	        this.on('change:is_staff', this.partialUpdate, this);
+	    },
+
+	    parse: function(data) {
+	        return data;
+	    },
+
+	    validate: function(attrs) {
+	        var errors = {};
+	        var hasError = false;
+
+	        if (hasError) {
+	          return errors;
+	        }
+	    },
+
+	    partialUpdate: function () {
+	        // why not working ???
+	        alert();
+	        this.save(this.model.changedAttributes(), {patch: true});
+	    }
+	});
+
+	module.exports = Model;
+
+
+/***/ },
+/* 32 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file userlist.js
+	 * @brief Permission user list view
+	 * @author Frederic SCHERMA
+	 * @date 2016-05-30
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+
+	var Marionette = __webpack_require__(4);
+	var PermissionUserModel = __webpack_require__(31);
+	var PermissionUserView = __webpack_require__(33);
+
+	var View = Marionette.CompositeView.extend({
+	    template: __webpack_require__(35),  // "<div></div>",
+	    childView: PermissionUserView,
+	    childViewContainer: 'tbody.permission-user-list',
+
+	    ui: {
+	        //viewPermissions: 'td.view-permissions',
+	    },
+
+	    events: {
+	        //'click @ui.viewPermissions': 'viewUserPermissions',
+	    },
+
+	    initialize: function() {
+	        this.listenTo(this.collection, 'reset', this.render, this);
+	        //this.listenTo(this.collection, 'add', this.render, this);
+	        //this.listenTo(this.collection, 'remove', this.render, this);
+	        this.listenTo(this.collection, 'change', this.render, this);
+	    },
+
+	    onRender: function() {
+	    },
+
+	    /*viewUserPermissions: function (e) {
+	        var username = e.target.getAttribute('value');
+	        Backbone.history.navigate("app/permission/user/" + username + "/", {trigger: true});
+	    },*/
+	});
+
+	module.exports = View;
+
+
+/***/ },
+/* 33 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file user.js
+	 * @brief Permission user item view
+	 * @author Frederic SCHERMA
+	 * @date 2016-05-30
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+
+	var Marionette = __webpack_require__(4);
+	var PermissionUserModel = __webpack_require__(31);
+
+	var View = Marionette.ItemView.extend({
+	    tagName: 'tr',
+	    className: 'element object user',
+	    template: __webpack_require__(34),
+
+	    ui: {
+	        enable_user: 'span.enable-user',
+	        disable_user: 'span.disable-user',
+	        set_admin: 'span.set-admin',
+	        set_regular: 'span.set-regular',
+	        viewPermissions: 'td.view-permissions',
+	    },
+
+	    events: {
+	        'click @ui.enable_user': 'enableUser',
+	        'click @ui.disable_user': 'disableUser',
+	        'click @ui.set_admin': 'setAdmin',
+	        'click @ui.set_regular': 'setRegular',
+	        'click @ui.viewPermissions': 'viewPermissions',
+	    },
+
+	    initialize: function() {
+	        this.listenTo(this.model, 'reset', this.render, this);
+	    },
+
+	    onRender: function() {
+	    },
+
+	    enableUser: function () {
+	        // can't modify himself
+	        if (user.username == this.model.get('username'))
+	            return;
+
+	        this.model.set('is_active', true);
+	        this.model.save(this.model.changedAttributes(), {patch: true});
+	    },
+
+	    disableUser: function () {
+	        // can't modify himself
+	        if (user.username == this.model.get('username'))
+	            return;
+
+	        this.model.set('is_active', false);
+	        this.model.save(this.model.changedAttributes(), {patch: true});
+	    },
+
+	    setAdmin: function () {
+	        // can't modify himself
+	        if (user.username == this.model.get('username'))
+	            return;
+
+	        this.model.set('is_staff', true);
+	        this.model.save(this.model.changedAttributes(), {patch: true});
+	    },
+
+	    setRegular: function () {
+	        // can't modify himself
+	        if (user.username == this.model.get('username'))
+	            return;
+
+	        this.model.set('is_staff', false);
+	        this.model.save(this.model.changedAttributes(), {patch: true});
+	    },
+	    
+	    viewPermissions: function () {
+	        Backbone.history.navigate("app/permission/user/" + this.model.get('username') + "/", {trigger: true});
+	    }
+	});
+
+	module.exports = View;
+
+
+/***/ },
+/* 34 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(_) {module.exports = function(obj){
+	var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
+	with(obj||{}){
+	__p+='<th scope=row class=action>';
+	 if (is_active) { 
+	__p+='<span class="disable-user glyphicon glyphicon-ok left-margin"></span>';
+	 } else { 
+	__p+='<span class="enable-user glyphicon glyphicon-remove left-margin"></span>';
+	 } 
+	__p+='</%></%></%></th><th name=is_staff class=action>';
+	 if (is_staff) { 
+	__p+='<span class="set-regular glyphicon glyphicon-ok left-margin"></span>';
+	 } else { 
+	__p+='<span class="set-admin glyphicon glyphicon-remove left-margin"></span>';
+	 } 
+	__p+='</%></%></%></th><td name=username class="action view-permissions" value="'+
+	((__t=( username ))==null?'':__t)+
+	'">'+
+	((__t=( username ))==null?'':_.escape(__t))+
+	'</%-></td><td name=first_name>'+
+	((__t=( first_name ))==null?'':_.escape(__t))+
+	'</%-></td><td name=last_name>'+
+	((__t=( last_name ))==null?'':_.escape(__t))+
+	'</%-></td>';
+	}
+	return __p;
+	};
+
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 35 */
+/***/ function(module, exports) {
+
+	module.exports = function(obj){
+	var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
+	with(obj||{}){
+	__p+='<div class="element object permission-user-list" object-type=user-list style=width:100%;><table class="table table-striped"><thead><tr><th>'+
+	((__t=( gettext("status") ))==null?'':__t)+
+	'</%=></th><th>'+
+	((__t=( gettext("admin") ))==null?'':__t)+
+	'</%=></th><th>'+
+	((__t=( gettext("username") ))==null?'':__t)+
+	'</%=></th><th>'+
+	((__t=( gettext("first name") ))==null?'':__t)+
+	'</%=></th><th>'+
+	((__t=( gettext("last name") ))==null?'':__t)+
+	'</%=></th></tr></thead><tbody class=permission-user-list></tbody></table></div>';
+	}
+	return __p;
+	};
+
+
+/***/ },
+/* 36 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file user.js
+	 * @brief Permission user collection
+	 * @author Frederic SCHERMA
+	 * @date 2016-05-30
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+
+	var PermissionGroupModel = __webpack_require__(37);
+
+	var Collection = Backbone.Collection.extend({
+	    url: function() { return ohgr.baseUrl + 'permission/group/'; },
+	    model: PermissionGroupModel,
+
+	    parse: function(data) {
+	        if (data.result != 'success')
+	            return [];
+
+	        return data.groups;
+	    },
+	});
+
+	module.exports = Collection;
+
+
+/***/ },
+/* 37 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file user.js
+	 * @brief User model
+	 * @author Frederic SCHERMA
+	 * @date 2016-05-30
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+
+	var Backbone = __webpack_require__(2);
+
+	var Model = Backbone.Model.extend({
+	    url: function() { return ohgr.baseUrl + 'permission/group/' + this.name + '/'; },
+
+	    defaults: {
+	        id: undefined,
+	        name: undefined,
+	    },
+
+	    init: function(options) {
+	        options || (options = {});
+	        this.name = options.name;
+	    },
+
+	    parse: function(data) {
+	        return data;
+	    },
+
+	    validate: function(attrs) {
+	        var errors = {};
+	        var hasError = false;
+
+	        if (hasError) {
+	          return errors;
+	        }
+	    },
+	});
+
+	module.exports = Model;
+
+
+/***/ },
+/* 38 */
+/***/ function(module, exports) {
+
+	/**
+	 * Created by fscherma on 30/05/16.
+	 */
+
+
+/***/ },
+/* 39 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file addpermissiontype.js
+	 * @brief Add permission type to a user, item view
+	 * @author Frederic SCHERMA
+	 * @date 2016-05-30
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+
+	var Marionette = __webpack_require__(4);
+
+	var View = Marionette.ItemView.extend({
+	    template: __webpack_require__(40),
+
+	    ui: {
+	        add_permission: ".add-permission",
+	        permissions_types: ".permissions-types",
+	    },
+
+	    events: {
+	        'click @ui.add_permission': 'onAddPermission',
+	    },
+
+	    initialize: function() {
+	        this.listenTo(this.model, 'reset', this.render, this);
+	    },
+
+	    onRender: function() {
+	        ohgr.permission.views.permissionType.drawSelect(this.ui.permissions_types);
+	    },
+	});
+
+	module.exports = View;
+
+
+/***/ },
+/* 40 */
+/***/ function(module, exports) {
+
+	module.exports = function(obj){
+	var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
+	with(obj||{}){
+	__p+='<table class="table table-striped"><tbody><tr class="edit-mode dummy-user-permission"><form><th scope=row><span class="add-permission action glyphicon glyphicon-plus-sign" style="margin-left:15px; margin-top:10px;"></span></th><td><select class=permissions-types name=permission-type data-style=btn-primary data-width=100%></select></td></form></tr></tbody></table>';
+	}
+	return __p;
+	};
+
+
+/***/ },
+/* 41 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -18707,6 +19307,7 @@
 	    regions: {
 	        title: ".panel-title",
 	        content: ".panel-body",
+	        bottom: ".panel-bottom",
 	    },
 
 	    initialize: function() {
@@ -18723,7 +19324,7 @@
 
 
 /***/ },
-/* 28 */
+/* 42 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -18752,7 +19353,7 @@
 
 
 /***/ },
-/* 29 */
+/* 43 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -18778,7 +19379,7 @@
 
 	        var SelectOptionItemView = __webpack_require__(12);
 
-	        var TaxonRankCollection = __webpack_require__(30);
+	        var TaxonRankCollection = __webpack_require__(44);
 	        this.collections.taxonRanks = new TaxonRankCollection();
 
 	        this.views.taxonRanks = new SelectOptionItemView({
@@ -18786,15 +19387,15 @@
 	            collection: this.collections.taxonRanks,
 	        });
 
-	        var TaxonController = __webpack_require__(32);
+	        var TaxonController = __webpack_require__(46);
 	        this.controllers.Taxon = new TaxonController();
 	    },
 
 	    onStart: function(options) {
-	        var TaxonRouter = __webpack_require__(39);
+	        var TaxonRouter = __webpack_require__(53);
 	        this.routers.taxon = new TaxonRouter();
 
-	        var TaxonCollection = __webpack_require__(34);
+	        var TaxonCollection = __webpack_require__(48);
 	        this.collections.taxons = new TaxonCollection();
 	    },
 
@@ -18810,7 +19411,7 @@
 
 
 /***/ },
-/* 30 */
+/* 44 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -18823,7 +19424,7 @@
 	 * @details
 	 */
 
-	var TaxonRankModel = __webpack_require__(31);
+	var TaxonRankModel = __webpack_require__(45);
 
 	var TaxonRankCollection = Backbone.Collection.extend({
 	    url: ohgr.baseUrl + 'taxonomy/rank/',
@@ -18846,7 +19447,7 @@
 
 
 /***/ },
-/* 31 */
+/* 45 */
 /***/ function(module, exports) {
 
 	/**
@@ -18868,7 +19469,7 @@
 
 
 /***/ },
-/* 32 */
+/* 46 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -18882,11 +19483,11 @@
 	 */
 
 	var Marionette = __webpack_require__(4);
-	var TaxonModel = __webpack_require__(33);
-	var TaxonCollection = __webpack_require__(34);
-	var TaxonListView = __webpack_require__(35);
-	var DefaultLayout = __webpack_require__(27);
-	var TitleView = __webpack_require__(28);
+	var TaxonModel = __webpack_require__(47);
+	var TaxonCollection = __webpack_require__(48);
+	var TaxonListView = __webpack_require__(49);
+	var DefaultLayout = __webpack_require__(41);
+	var TitleView = __webpack_require__(42);
 
 	var TaxonController = Marionette.Controller.extend({
 
@@ -18894,7 +19495,7 @@
 	        var CreateTaxonView = Marionette.ItemView.extend({
 	            el: "#dialog_content",
 	            tagName: "div",
-	            template: __webpack_require__(38),
+	            template: __webpack_require__(52),
 
 	            ui: {
 	                "cancel": "button.cancel",
@@ -19121,7 +19722,7 @@
 
 
 /***/ },
-/* 33 */
+/* 47 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -19229,7 +19830,7 @@
 
 
 /***/ },
-/* 34 */
+/* 48 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -19242,7 +19843,7 @@
 	 * @details
 	 */
 
-	var TaxonModel = __webpack_require__(33);
+	var TaxonModel = __webpack_require__(47);
 
 	var TaxonCollection = Backbone.Collection.extend({
 	    url: ohgr.baseUrl + 'taxonomy/',
@@ -19284,7 +19885,7 @@
 
 
 /***/ },
-/* 35 */
+/* 49 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -19298,8 +19899,8 @@
 	 */
 
 	var Marionette = __webpack_require__(4);
-	var TaxonModel = __webpack_require__(33);
-	var TaxonView = __webpack_require__(36);
+	var TaxonModel = __webpack_require__(47);
+	var TaxonView = __webpack_require__(50);
 
 	var TaxonListView = Marionette.CollectionView.extend({
 	    //el: '#main_content',
@@ -19344,7 +19945,7 @@
 
 
 /***/ },
-/* 36 */
+/* 50 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -19358,11 +19959,11 @@
 	 */
 
 	var Marionette = __webpack_require__(4);
-	var TaxonModel = __webpack_require__(33);
+	var TaxonModel = __webpack_require__(47);
 
 	var TaxonItemView = Marionette.ItemView.extend({
 	    tagName: 'div',
-	    template: __webpack_require__(37),
+	    template: __webpack_require__(51),
 
 	    ui: {
 	        "synonym_name": ".synonym-name",
@@ -19488,7 +20089,7 @@
 
 
 /***/ },
-/* 37 */
+/* 51 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(_) {module.exports = function(obj){
@@ -19530,7 +20131,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 38 */
+/* 52 */
 /***/ function(module, exports) {
 
 	module.exports = function(obj){
@@ -19555,7 +20156,7 @@
 
 
 /***/ },
-/* 39 */
+/* 53 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -19569,12 +20170,12 @@
 	 */
 
 	var Marionette = __webpack_require__(4);
-	var TaxonModel = __webpack_require__(33);
-	var TaxonCollection = __webpack_require__(34);
-	var TaxonListView = __webpack_require__(35);
-	var TaxonItemView = __webpack_require__(36);
-	var DefaultLayout = __webpack_require__(27);
-	var TitleView = __webpack_require__(28);
+	var TaxonModel = __webpack_require__(47);
+	var TaxonCollection = __webpack_require__(48);
+	var TaxonListView = __webpack_require__(49);
+	var TaxonItemView = __webpack_require__(50);
+	var DefaultLayout = __webpack_require__(41);
+	var TitleView = __webpack_require__(42);
 
 	var TaxonRouter = Marionette.AppRouter.extend({
 	    routes : {
@@ -19622,7 +20223,7 @@
 
 
 /***/ },
-/* 40 */
+/* 54 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**

@@ -1,0 +1,11 @@
+<% _.each(items, function(item) { %>
+    <% if (item.options != undefined) { %>
+        <optgroup label="<%= item.value %>">
+            <% _.each(item.options, function(subitem) { %>
+                <option value="<%= subitem.id %>"><%= gettext(subitem.value) %></option>
+            <% }) %>
+        </optgroup>
+    <% } else { %>
+        <option value="<%= item.id %>"><%= gettext(item.value) %></option>
+    <% } %>
+<% }) %>

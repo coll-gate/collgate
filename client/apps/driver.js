@@ -64,6 +64,14 @@ ohgr = new Marionette.Application({
             if (opts)
                 dfd.then(opts.success, opts.error);
 
+            // insert csrf token when necessary
+            opts.beforeSend = function(xhr) {
+                // always add the csrf token to safe method ajax query
+                if (!csrfSafeMethod(method) && !opts.crossDomain) {
+                    xhr.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
+                }
+            };
+
             xhr = Backbone.originalSync(method, model, _.omit(opts, 'success', 'error'));
 
             // success : forward to the deferred

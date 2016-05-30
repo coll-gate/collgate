@@ -19,8 +19,15 @@ var PermissionModule = Marionette.Module.extend({
         this.routers = {};
         this.controllers = {};
 
-        //var PermissionController = require('./controllers/permission');
-        //this.controllers.Permission = new PermissionController();
+        var SelectOptionItemView = require('../main/views/selectoptionitemview');
+
+        var PermissionTypeCollection = require('./collections/permissiontype');
+        this.collections.permissionType = new PermissionTypeCollection();
+
+        this.views.permissionType = new SelectOptionItemView({
+            className: 'permission-type',
+            collection: this.collections.permissionType,
+        });
     },
 
     onStart: function(options) {

@@ -11,12 +11,33 @@
 var Marionette = require('backbone.marionette');
 var PermissionCollection = require('../collections/permission');
 var PermissionListView = require('../views/permissionlist');
+var PermissionUserCollection = require('../collections/user');
+var PermissionUserListView = require('../views/userlist');
+var PermissionGroupCollection = require('../collections/group');
+var PermissionGroupListView = require('../views/grouplist');
+var AddPermissionType = require('../views/addpermissiontype');
 var DefaultLayout = require('../../main/views/defaultlayout');
 var TitleView = require('../../main/views/titleview');
 
 var PermissionRouter = Marionette.AppRouter.extend({
     routes : {
+        "app/permission/user/": "getUsers",
         "app/permission/user/:username/": "getPermissionsForUser",
+        "app/permission/group/": "getGroups",
+        "app/permission/group/:groupname/": "getPermissionsForGroup",
+    },
+
+    getUsers: function () {
+        var userCollection = new PermissionUserCollection();
+
+        var defaultLayout = new DefaultLayout({});
+        ohgr.mainRegion.show(defaultLayout);
+
+        defaultLayout.title.show(new TitleView({title: gettext("List of users")}));
+
+        userCollection.fetch().then(function () {
+            defaultLayout.content.show(new PermissionUserListView({collection : userCollection}));
+        });
     },
 
     getPermissionsForUser: function(username) {
@@ -30,10 +51,15 @@ var PermissionRouter = Marionette.AppRouter.extend({
         permissionsCollection.fetch().then(function () {
             defaultLayout.content.show(new PermissionListView({collection : permissionsCollection}));
         });
+
+        defaultLayout.bottom.show(new AddPermissionType({username: username}));
     },
 
-    getAddPermissionToUser: function () {
+    getGroups: function () {
 
+    },
+
+    getPermissionsForGroup: function(groupname) {
     },
 });
 

@@ -1,0 +1,27 @@
+<!--
+ - @file user.html
+ - @brief Template for a user permission (model)
+ - @author Frederic SCHERMA
+ - @date 2016-05-30
+ - @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+ - @license @todo
+ - @details
+-->
+
+<th scope="row" class="action">
+    <% if (is_active) { %>
+        <span class="disable-user glyphicon glyphicon-ok left-margin"></span>
+    <% } else { %>
+        <span class="enable-user glyphicon glyphicon-remove left-margin"></span>
+    <% } %>
+</th>
+<th name="is_staff" class="action">
+    <% if (is_staff) { %>
+        <span class="set-regular glyphicon glyphicon-ok left-margin"></span>
+    <% } else { %>
+        <span class="set-admin glyphicon glyphicon-remove left-margin"></span>
+    <% } %>
+</th>
+<td name="username" class="action view-permissions" value="<%= username %>"><%- username %></td>
+<td name="first_name"><%- first_name %></td>
+<td name="last_name"><%- last_name %></td>

@@ -10,3 +10,5 @@ __pycache__
 /static/
 /venv/
 /docs/_build/
+/client/npm-debug.log
+/ohgr/main/static/main/js/app.js

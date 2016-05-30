@@ -14,7 +14,6 @@ var PermissionView = require('../views/permission');
 
 var PermissionListView = Marionette.CollectionView.extend({
     tagName: "div",
-    template: "<div></div>",
     className: "permission-list",
     childView: PermissionView,
 
