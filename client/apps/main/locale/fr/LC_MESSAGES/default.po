@@ -8,15 +8,27 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-04-07 14:47+0200\n"
+"POT-Creation-Date: 2016-06-03 14:44+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: static/main/js/main.js:111
-msgid "Online Host of Genetics Resources"
-msgstr ""
+#: ../../../collections/language.js:22
+msgid "English"
+msgstr "Anglais"
+
+#: ../../../collections/language.js:23
+msgid "French"
+msgstr "Français"
+
+#: ../../../templates/home.html:14
+msgid "Home"
+msgstr "Accueil"
+
+#: ../../../templates/home.html:18
+msgid "Welcome to the Online Host of Genetics Resources"
+msgstr "Bienvenue sur Online Host of Genetics Resources"

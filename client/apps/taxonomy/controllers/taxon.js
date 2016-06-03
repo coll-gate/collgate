@@ -145,7 +145,7 @@ var TaxonController = Marionette.Controller.extend({
                             }
                         }/*,
                         error: function() {
-                            error(gettext('Unable to search taxon by name'));
+                            error(gt.gettext('Unable to search taxon by name'));
                         },*/
                     });
                 }

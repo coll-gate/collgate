@@ -32,7 +32,6 @@ var Collection = Backbone.Collection.extend({
             prev = f;
         }
 
-        console.log(result);
         return result;
     },
 

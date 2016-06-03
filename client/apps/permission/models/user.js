@@ -20,7 +20,8 @@ var Model = Backbone.Model.extend({
         last_name: '',
         email: '',
         is_active: false,
-        is_staff: false
+        is_staff: false,
+        is_superuser: false
     },
 
     isNew : function () { return typeof(this.get('username')) != 'string'; },
@@ -29,8 +30,9 @@ var Model = Backbone.Model.extend({
         options || (options = {});
         this.username = options.username;
 
-        this.on('change:is_active', this.partialUpdate, this);
-        this.on('change:is_staff', this.partialUpdate, this);
+        // this.on('change:is_active', this.partialUpdate, this);
+        // this.on('change:is_staff', this.partialUpdate, this);
+        // this.on('change:is_superuser', this.partialUpdate, this);
     },
 
     parse: function(data) {
@@ -46,11 +48,11 @@ var Model = Backbone.Model.extend({
         }
     },
 
-    partialUpdate: function () {
-        // why not working ???
-        alert();
-        this.save(this.model.changedAttributes(), {patch: true});
-    }
+    // partialUpdate: function () {
+    //     // why not working ???
+    //     console.log("user::partialUpdate");
+    //     this.save(this.model.changedAttributes(), {patch: true});
+    // },
 });
 
 module.exports = Model;

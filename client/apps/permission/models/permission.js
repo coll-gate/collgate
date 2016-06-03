@@ -11,7 +11,7 @@
 var Backbone = require('backbone');
 
 var Permission = Backbone.Model.extend({
-    url: function() { return ohgr.baseUrl + 'permission/user/' + this.username + '/' + this.permission + '/'; },
+    //url: function() { return ohgr.baseUrl + 'permission/user/' + this.username + '/' + this.permission + '/'; },
 
     defaults: {
         model: undefined,
@@ -36,6 +36,17 @@ var Permission = Backbone.Model.extend({
           return errors;
         }
     },
+
+    hasPerm: function (app_label, perm) {
+        for (var i = 0; i < this.permissions.length; ++i) {
+            if (app_label == this.permissions[i].app_label) {
+                if (perm == this.permissions[i].id) {
+                    return True;
+                }
+            }
+        }
+        return False;
+    }
 });
 
 module.exports = Permission;

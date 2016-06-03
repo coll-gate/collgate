@@ -16,6 +16,7 @@ var Model = Backbone.Model.extend({
     defaults: {
         id: undefined,
         name: undefined,
+        num_users: 0,
     },
 
     init: function(options) {

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-04-07 14:41+0200\n"
+"POT-Creation-Date: 2016-06-03 15:40+0200\n"
 "PO-Revision-Date: 2016-02-01 11:53+0100\n"
 "Last-Translator: Frederic SCHERMA <frederic.scherma@clermont.inra.fr>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,11 +34,11 @@ msgstr "Se déconnecter"
 msgid "Help"
 msgstr "Aide"
 
-#: apps.py:42 templates/main/help/manual_index.html.py:22
+#: apps.py:42 templates/main/help/manual_index.html:22
 msgid "Manual index"
 msgstr "Index du manuel"
 
-#: apps.py:45 templates/main/help/about.html.py:22
+#: apps.py:45 templates/main/help/about.html:22
 msgid "About HOGR..."
 msgstr "A propos de HOGR..."
 
@@ -62,7 +62,7 @@ msgstr "Synonyme"
 msgid "Code"
 msgstr "Code"
 
-#: templates/main/home.html:22 templates/main/index.html.py:62
-#: templates/main/index.html:64
+#: templates/main/home.html:20 templates/main/index.html:86
+#: templates/main/index.html:88
 msgid "Welcome"
 msgstr "Bienvenue"

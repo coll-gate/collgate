@@ -10,6 +10,7 @@
 
 var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
+var GetText = require("node-gettext");
 
 // ohgr global application
 ohgr = new Marionette.Application({
@@ -116,4 +117,5 @@ ohgr.on("before:start", function(options) {
     this.accession = require('./accession/init');
 });
 
+gt = new GetText();
 ohgr.start({initialData: ''});

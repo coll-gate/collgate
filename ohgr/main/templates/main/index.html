@@ -33,11 +33,16 @@
 
 <link rel="stylesheet" href="{% static 'main/css/main.css' %}">
 
+<!-- TODO load dynamically each i18n modules -->
+
 <script type="text/javascript" src="{% url 'main:javascript-catalog' packages='main' domain='django' %}"></script>
 <script type="text/javascript" src="{% url 'main:javascript-catalog' packages='main' domain='djangojs' %}"></script>
 
 <script type="text/javascript" src="/ohgr/jsi18n/taxonomy/django/"></script>
 <script type="text/javascript" src="/ohgr/jsi18n/taxonomy/djangojs/"></script>
+
+<script type="text/javascript" src="/ohgr/jsi18n/permission/django/"></script>
+<script type="text/javascript" src="/ohgr/jsi18n/permission/djangojs/"></script>
 
 <style type="text/css">
 /* autocompletion loading icon */
@@ -92,7 +97,7 @@
                         {% get_language_info_list for LANGUAGES as languages %}
                         {% for language in languages %}
                             {% with 'main/img/lang/'|add:language.code|add:'.png' as image_static %}
-                            <option value="{{ language.code }}" img="{% static image_static %}">{{ language.name_local }} ({{ language.code }})</option>
+                            <option value="{{ language.code }}" img="{% static image_static %}">{{ language.name_local|capfirst }} ({{ language.code }})</option>
                             {% endwith %}
                         {% endfor %}
                     </select>
@@ -151,6 +156,7 @@ user = function() {
 
 user.isAuth = {{ user.is_authenticated|yesno:"true,false" }};
 user.username = "{{ user.username }}";
+user.language = document.getElementById("languages").value;
 </script>
 
 <script src="{% static 'main/js/main.js' %}"></script>
@@ -167,6 +173,7 @@ user.username = "{{ user.username }}";
             if (!language.id) {
                 return language.text;
             }
+
             var img = language.element[0].getAttribute("img");
             var lang = $(
                 '<span><img style="margin-bottom: 3px;" src="' + img + '" class="img-flag" /> ' + language.text + '</span>'

@@ -13,17 +13,9 @@ var PermissionUserModel = require('../models/user');
 var PermissionUserView = require('../views/user');
 
 var View = Marionette.CompositeView.extend({
-    template: require("../templates/userlist.html"),  // "<div></div>",
+    template: require("../templates/userlist.html"),
     childView: PermissionUserView,
     childViewContainer: 'tbody.permission-user-list',
-
-    ui: {
-        //viewPermissions: 'td.view-permissions',
-    },
-
-    events: {
-        //'click @ui.viewPermissions': 'viewUserPermissions',
-    },
 
     initialize: function() {
         this.listenTo(this.collection, 'reset', this.render, this);
@@ -34,11 +26,6 @@ var View = Marionette.CompositeView.extend({
 
     onRender: function() {
     },
-
-    /*viewUserPermissions: function (e) {
-        var username = e.target.getAttribute('value');
-        Backbone.history.navigate("app/permission/user/" + username + "/", {trigger: true});
-    },*/
 });
 
 module.exports = View;

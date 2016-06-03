@@ -19,6 +19,18 @@ var TaxonomyModule = Marionette.Module.extend({
         this.routers = {};
         this.controllers = {};
 
+        // i18n
+        if (user.language === "en") {
+            var locale = require('./locale/en/LC_MESSAGES/default.po');
+            gt.addTextdomain('default', locale);
+        } else if (user.language === "fr") {
+            locale = require('./locale/fr/LC_MESSAGES/default.po');
+            gt.addTextdomain('default', locale);
+        } else {  // default to english
+            var locale = require('./locale/en/LC_MESSAGES/default.po');
+            gt.addTextdomain('default', locale);
+        }
+
         var SelectOptionItemView = require('../main/views/selectoptionitemview');
 
         var TaxonRankCollection = require('./collections/taxonrank');

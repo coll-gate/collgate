@@ -19,8 +19,8 @@ var LanguageCollection = Backbone.Collection.extend({
     },
 
     default: [
-        {value: 'en', name: gettext("English")},
-        {value: 'fr', name: gettext("French")},
+        {value: 'en', name: gt.gettext("English")},
+        {value: 'fr', name: gt.gettext("French")},
     ],
 
     findValue: function(id) {

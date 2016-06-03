@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-26 15:34+0200\n"
+"POT-Creation-Date: 2016-06-03 15:40+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,12 +29,20 @@ msgstr ""
 msgid "List taxons"
 msgstr ""
 
-#: base.py:59
+#: base.py:57
 msgid "You are not allowed to create a taxon"
 msgstr ""
 
-#: base.py:146 base.py:164
+#: base.py:145 base.py:168
 msgid "You are not allowed to modify a taxon"
+msgstr ""
+
+#: base.py:146
+msgid "You are not allowed to add a synonym to a taxon"
+msgstr ""
+
+#: base.py:169
+msgid "You are not allowed to delete a synonym from a taxon"
 msgstr ""
 
 #: models.py:19

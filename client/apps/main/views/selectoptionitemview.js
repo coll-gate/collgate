@@ -11,7 +11,7 @@
 var Marionette = require('backbone.marionette');
 
 var SelectOptionItemView = Marionette.ItemView.extend({
-    //template: _.template('<% _.each(items, function(item){ %><option value="<%= item.id %>"><%= gettext(item.value) %></option><% }) %>'),
+    //template: _.template('<% _.each(items, function(item){ %><option value="<%= item.id %>"><%= gt.gettext(item.value) %></option><% }) %>'),
     template: require('../templates/selectoption.html'),
     tagName: 'select',
 
@@ -21,16 +21,6 @@ var SelectOptionItemView = Marionette.ItemView.extend({
 
         this.collection.fetch();  // lazy loading
         this.collection.on("sync", this.render, this);  // render the template once got
-    },
-
-    onBeforeRender: function() {
-        if (this.options.groupBy) {
-            // comment grouper ça efficacement coté vue ?
-            // avec la regexp tant que pas de changement... grouper lors du parsing dans la collection::parse
-            // puis amméliorer le template avec un if item.group != undefined... sinon normal
-            //"<optgroup label="label"></optgroup>"
-            //alert();
-        }
     },
 
     onRender: function(e) {

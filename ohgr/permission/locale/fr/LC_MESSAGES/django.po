@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-05-30 10:49+0200\n"
+"POT-Creation-Date: 2016-06-03 15:40+0200\n"
 "PO-Revision-Date: 2016-05-26 11:49+0200\n"
 "Last-Translator: Frédéric SCHERMA <frederic.scherma@clermont.inra.fr>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,3 +34,40 @@ msgstr "Gérer les groupes"
 msgid "Create a group for permissions"
 msgstr "Créer un groupe de permission"
 
+#: base.py:270
+msgid "You are not allowed to add a permission"
+msgstr "Vous n'êtes pas autorisé à rajouter une permission"
+
+#: base.py:278 base.py:318
+msgid "Only a superuser can change an auth.permission"
+msgstr "Seulement un super-utilisateur peu changer une auth.permission"
+
+#: base.py:309
+msgid "You are not allowed to remove a permission"
+msgstr "Vous n'êtes pas autorisé à supprimer une permission"
+
+#~ msgid "Name"
+#~ msgstr "Nom"
+
+#, fuzzy
+#~| msgid "# of users"
+#~ msgid "Number of users"
+#~ msgstr "Nombre d'utilisateurs"
+
+#~ msgid "Status"
+#~ msgstr "Status"
+
+#~ msgid "Superuser"
+#~ msgstr "Super-utilisateur"
+
+#~ msgid "Staff"
+#~ msgstr "Employé"
+
+#~ msgid "Username"
+#~ msgstr "Nom d'utilisateur"
+
+#~ msgid "First name"
+#~ msgstr "Prénom"
+
+#~ msgid "Last name"
+#~ msgstr "Nom"

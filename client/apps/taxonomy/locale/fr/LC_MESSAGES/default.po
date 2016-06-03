@@ -1,0 +1,86 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-06-03 15:29+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../../views/taxon.js:56 ../../../controllers/taxon.js:159
+msgid "Invalid characters (alphanumeric, _ and - only)"
+msgstr "Caractères invalides (alphanumérique, _ et - seulement)"
+
+#: ../../../views/taxon.js:59 ../../../controllers/taxon.js:162
+msgid "3 characters min"
+msgstr "3 caractères au minimum"
+
+#: ../../../views/taxon.js:80 ../../../controllers/taxon.js:139
+msgid "Taxon name already in usage"
+msgstr "Ce nom de taxon est déjà utilisé"
+
+#: ../../../routers/taxon.js:40
+msgid "List of taxons"
+msgstr "Liste des taxons"
+
+#: ../../../routers/taxon.js:53
+msgid "Taxon details"
+msgstr "Détails du taxon"
+
+#: ../../../controllers/taxon.js:177
+msgid "Family rank cannot have a parent taxon"
+msgstr "Le rang taxinomique famille ne peut pas avoir de parent"
+
+#: ../../../controllers/taxon.js:182
+msgid "This rank must have a parent taxon"
+msgstr "Ce rang taxinomique doit avoir un parent"
+
+#: ../../../controllers/taxon.js:213
+msgid "Taxon successfully created !"
+msgstr "Taxon créé avec succès !"
+
+#: ../../../templates/taxon.html:22
+msgid "Type"
+msgstr "Type"
+
+#: ../../../templates/taxon.html:23
+msgid "Name"
+msgstr "Nom"
+
+#: ../../../templates/taxon.html:24
+msgid "Language"
+msgstr "Language"
+
+#: ../../../templates/taxoncreate.html:6
+msgid "Create a taxon"
+msgstr "Créer un taxon"
+
+#: ../../../templates/taxoncreate.html:11
+msgid "Principal name of the taxon (must be unique)"
+msgstr "Nom principal du taxon (doit être unique)"
+
+#: ../../../templates/taxoncreate.html:15
+msgid "Taxon rank"
+msgstr "Rank taxinomique"
+
+#: ../../../templates/taxoncreate.html:19
+msgid "Direct parent"
+msgstr "Parent directe"
+
+#: ../../../templates/taxoncreate.html:25
+msgid "Cancel"
+msgstr "Annuler"
+
+#: ../../../templates/taxoncreate.html:26
+msgid "Create"
+msgstr "Créer"

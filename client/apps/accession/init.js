@@ -18,6 +18,18 @@ var AccessionModule = Marionette.Module.extend({
         this.views = {};
         this.routers = {};
         this.controllers = {};
+
+        // i18n
+        if (user.language === "en") {
+            var locale = require('./locale/en/LC_MESSAGES/default.po');
+            gt.addTextdomain('default', locale);
+        } else if (user.language === "fr") {
+            locale = require('./locale/fr/LC_MESSAGES/default.po');
+            gt.addTextdomain('default', locale);
+        } else {  // default to english
+            var locale = require('./locale/en/LC_MESSAGES/default.po');
+            gt.addTextdomain('default', locale);
+        }
     },
 
     onStart: function(options) {

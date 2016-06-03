@@ -24,6 +24,18 @@ var MainModule = Marionette.Module.extend({
         this.views = {};
         this.routers = {};
 
+        // i18n
+        if (user.language === "en") {
+            var locale = require('./locale/en/LC_MESSAGES/default.po');
+            gt.addTextdomain('default', locale);
+        } else if (user.language === "fr") {
+            locale = require('./locale/fr/LC_MESSAGES/default.po');
+            gt.addTextdomain('default', locale);
+        } else {  // default to english
+            var locale = require('./locale/en/LC_MESSAGES/default.po');
+            gt.addTextdomain('default', locale);
+        }
+
         var SelectOptionItemView = require('./views/selectoptionitemview');
 
         var LanguageCollection = require('./collections/language');
@@ -41,12 +53,12 @@ var MainModule = Marionette.Module.extend({
             className: 'synonym-type',
             collection: this.collections.synonymTypes,/*
             collection: new Backbone.Collection([
-                {id: 60, value: gettext("Family")},
-                {id: 61, value: gettext("Sub-family")},
-                {id: 70, value: gettext("Genus")},
-                {id: 71, value: gettext("Sub-genus")},
-                {id: 80, value: gettext("Specie")},
-                {id: 81, value: gettext("Sub-specie")}
+                {id: 60, value: django.gettext("Family")},
+                {id: 61, value: django.gettext("Sub-family")},
+                {id: 70, value: django.gettext("Genus")},
+                {id: 71, value: django.gettext("Sub-genus")},
+                {id: 80, value: django.gettext("Specie")},
+                {id: 81, value: django.gettext("Sub-specie")}
             ]);*/
         });
 

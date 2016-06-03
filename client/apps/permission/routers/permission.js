@@ -15,7 +15,6 @@ var PermissionUserCollection = require('../collections/user');
 var PermissionUserListView = require('../views/userlist');
 var PermissionGroupCollection = require('../collections/group');
 var PermissionGroupListView = require('../views/grouplist');
-var AddPermissionType = require('../views/addpermissiontype');
 var DefaultLayout = require('../../main/views/defaultlayout');
 var TitleView = require('../../main/views/titleview');
 
@@ -33,7 +32,7 @@ var PermissionRouter = Marionette.AppRouter.extend({
         var defaultLayout = new DefaultLayout({});
         ohgr.mainRegion.show(defaultLayout);
 
-        defaultLayout.title.show(new TitleView({title: gettext("List of users")}));
+        defaultLayout.title.show(new TitleView({title: gt.gettext("List of users")}));
 
         userCollection.fetch().then(function () {
             defaultLayout.content.show(new PermissionUserListView({collection : userCollection}));
@@ -46,17 +45,24 @@ var PermissionRouter = Marionette.AppRouter.extend({
         var defaultLayout = new DefaultLayout({});
         ohgr.mainRegion.show(defaultLayout);
 
-        defaultLayout.title.show(new TitleView({title: gettext("List of permissions for user") + " " + username}));
+        defaultLayout.title.show(new TitleView({title: gt.gettext("List of permissions for user") + " " + username}));
 
         permissionsCollection.fetch().then(function () {
             defaultLayout.content.show(new PermissionListView({collection : permissionsCollection}));
         });
-
-        defaultLayout.bottom.show(new AddPermissionType({username: username}));
     },
 
     getGroups: function () {
+        var groupCollection = new PermissionGroupCollection();
 
+        var defaultLayout = new DefaultLayout({});
+        ohgr.mainRegion.show(defaultLayout);
+
+        defaultLayout.title.show(new TitleView({title: gt.gettext("List of groups")}));
+
+        groupCollection.fetch().then(function () {
+            defaultLayout.content.show(new PermissionGroupListView({collection : groupCollection}));
+        });
     },
 
     getPermissionsForGroup: function(groupname) {

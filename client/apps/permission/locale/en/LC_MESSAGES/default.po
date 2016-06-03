@@ -1,0 +1,74 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-06-03 15:10+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../../routers/permission.js:35
+msgid "List of users"
+msgstr ""
+
+#: ../../../routers/permission.js:48
+msgid "List of permissions for user"
+msgstr ""
+
+#: ../../../routers/permission.js:61
+msgid "List of groups"
+msgstr ""
+
+#: ../../../templates/grouplist.html:15 ../../../templates/permission.html:24
+msgid "Name"
+msgstr ""
+
+#: ../../../templates/grouplist.html:16
+msgid "Number of users"
+msgstr ""
+
+#: ../../../templates/permission.html:12 ../../../templates/permission.html:13
+msgid "Model"
+msgstr ""
+
+#: ../../../templates/permission.html:23
+msgid "Module"
+msgstr ""
+
+#: ../../../templates/permission.html:25
+msgid "Code"
+msgstr ""
+
+#: ../../../templates/userlist.html:15
+msgid "Status"
+msgstr ""
+
+#: ../../../templates/userlist.html:16
+msgid "Superuser"
+msgstr ""
+
+#: ../../../templates/userlist.html:17
+msgid "Staff"
+msgstr ""
+
+#: ../../../templates/userlist.html:18
+msgid "Username"
+msgstr ""
+
+#: ../../../templates/userlist.html:19
+msgid "First name"
+msgstr ""
+
+#: ../../../templates/userlist.html:20
+msgid "Last name"
+msgstr ""
