@@ -37938,15 +37938,10 @@
 	        this.routers = {};
 
 	        // i18n
-	        if (user.language === "en") {
-	            var locale = __webpack_require__(70);
-	            gt.addTextdomain('default', locale);
-	        } else if (user.language === "fr") {
-	            locale = __webpack_require__(71);
-	            gt.addTextdomain('default', locale);
+	        if (user.language === "fr") {
+	            gt.addTextdomain('default', __webpack_require__(70));
 	        } else {  // default to english
-	            var locale = __webpack_require__(70);
-	            gt.addTextdomain('default', locale);
+	            gt.addTextdomain('default', __webpack_require__(71));
 	        }
 
 	        var SelectOptionItemView = __webpack_require__(72);
@@ -38371,15 +38366,17 @@
 
 /***/ },
 /* 70 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
-	module.exports = "# SOME DESCRIPTIVE TITLE.\n# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER\n# This file is distributed under the same license as the PACKAGE package.\n# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.\n#\n#, fuzzy\nmsgid \"\"\nmsgstr \"\"\n\"Project-Id-Version: PACKAGE VERSION\\n\"\n\"Report-Msgid-Bugs-To: \\n\"\n\"POT-Creation-Date: 2016-06-03 14:43+0200\\n\"\n\"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\\n\"\n\"Last-Translator: FULL NAME <EMAIL@ADDRESS>\\n\"\n\"Language-Team: LANGUAGE <LL@li.org>\\n\"\n\"Language: en\\n\"\n\"MIME-Version: 1.0\\n\"\n\"Content-Type: text/plain; charset=UTF-8\\n\"\n\"Content-Transfer-Encoding: 8bit\\n\"\n\n#: ../../../collections/language.js:22\nmsgid \"English\"\nmsgstr \"\"\n\n#: ../../../collections/language.js:23\nmsgid \"French\"\nmsgstr \"\"\n\n#: ../../../templates/home.html:14\nmsgid \"Home\"\nmsgstr \"\"\n\n#: ../../../templates/home.html:18\nmsgid \"Welcome to the Online Host of Genetics Resources\"\nmsgstr \"\"\n"
+	/* WEBPACK VAR INJECTION */(function(Buffer) {module.exports = new Buffer([222,18,4,149,0,0,0,0,5,0,0,0,28,0,0,0,68,0,0,0,7,0,0,0,108,0,0,0,0,0,0,0,136,0,0,0,7,0,0,0,137,0,0,0,6,0,0,0,145,0,0,0,4,0,0,0,152,0,0,0,48,0,0,0,157,0,0,0,66,1,0,0,206,0,0,0,7,0,0,0,17,2,0,0,9,0,0,0,25,2,0,0,7,0,0,0,35,2,0,0,47,0,0,0,43,2,0,0,1,0,0,0,5,0,0,0,2,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,4,0,0,0,0,69,110,103,108,105,115,104,0,70,114,101,110,99,104,0,72,111,109,101,0,87,101,108,99,111,109,101,32,116,111,32,116,104,101,32,79,110,108,105,110,101,32,72,111,115,116,32,111,102,32,71,101,110,101,116,105,99,115,32,82,101,115,111,117,114,99,101,115,0,80,114,111,106,101,99,116,45,73,100,45,86,101,114,115,105,111,110,58,32,80,65,67,75,65,71,69,32,86,69,82,83,73,79,78,10,82,101,112,111,114,116,45,77,115,103,105,100,45,66,117,103,115,45,84,111,58,32,10,80,79,84,45,67,114,101,97,116,105,111,110,45,68,97,116,101,58,32,50,48,49,54,45,48,54,45,48,51,32,49,52,58,52,52,43,48,50,48,48,10,80,79,45,82,101,118,105,115,105,111,110,45,68,97,116,101,58,32,89,69,65,82,45,77,79,45,68,65,32,72,79,58,77,73,43,90,79,78,69,10,76,97,115,116,45,84,114,97,110,115,108,97,116,111,114,58,32,70,85,76,76,32,78,65,77,69,32,60,69,77,65,73,76,64,65,68,68,82,69,83,83,62,10,76,97,110,103,117,97,103,101,45,84,101,97,109,58,32,76,65,78,71,85,65,71,69,32,60,76,76,64,108,105,46,111,114,103,62,10,76,97,110,103,117,97,103,101,58,32,102,114,10,77,73,77,69,45,86,101,114,115,105,111,110,58,32,49,46,48,10,67,111,110,116,101,110,116,45,84,121,112,101,58,32,116,101,120,116,47,112,108,97,105,110,59,32,99,104,97,114,115,101,116,61,85,84,70,45,56,10,67,111,110,116,101,110,116,45,84,114,97,110,115,102,101,114,45,69,110,99,111,100,105,110,103,58,32,56,98,105,116,10,0,65,110,103,108,97,105,115,0,70,114,97,110,195,167,97,105,115,0,65,99,99,117,101,105,108,0,66,105,101,110,118,101,110,117,101,32,115,117,114,32,79,110,108,105,110,101,32,72,111,115,116,32,111,102,32,71,101,110,101,116,105,99,115,32,82,101,115,111,117,114,99,101,115,0])
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13).Buffer))
 
 /***/ },
 /* 71 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
-	module.exports = "# SOME DESCRIPTIVE TITLE.\n# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER\n# This file is distributed under the same license as the PACKAGE package.\n# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.\n#\n#, fuzzy\nmsgid \"\"\nmsgstr \"\"\n\"Project-Id-Version: PACKAGE VERSION\\n\"\n\"Report-Msgid-Bugs-To: \\n\"\n\"POT-Creation-Date: 2016-06-03 14:44+0200\\n\"\n\"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\\n\"\n\"Last-Translator: FULL NAME <EMAIL@ADDRESS>\\n\"\n\"Language-Team: LANGUAGE <LL@li.org>\\n\"\n\"Language: fr\\n\"\n\"MIME-Version: 1.0\\n\"\n\"Content-Type: text/plain; charset=UTF-8\\n\"\n\"Content-Transfer-Encoding: 8bit\\n\"\n\n#: ../../../collections/language.js:22\nmsgid \"English\"\nmsgstr \"Anglais\"\n\n#: ../../../collections/language.js:23\nmsgid \"French\"\nmsgstr \"Français\"\n\n#: ../../../templates/home.html:14\nmsgid \"Home\"\nmsgstr \"Accueil\"\n\n#: ../../../templates/home.html:18\nmsgid \"Welcome to the Online Host of Genetics Resources\"\nmsgstr \"Bienvenue sur Online Host of Genetics Resources\"\n"
+	/* WEBPACK VAR INJECTION */(function(Buffer) {module.exports = new Buffer([222,18,4,149,0,0,0,0,1,0,0,0,28,0,0,0,36,0,0,0,3,0,0,0,44,0,0,0,0,0,0,0,56,0,0,0,66,1,0,0,57,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,80,114,111,106,101,99,116,45,73,100,45,86,101,114,115,105,111,110,58,32,80,65,67,75,65,71,69,32,86,69,82,83,73,79,78,10,82,101,112,111,114,116,45,77,115,103,105,100,45,66,117,103,115,45,84,111,58,32,10,80,79,84,45,67,114,101,97,116,105,111,110,45,68,97,116,101,58,32,50,48,49,54,45,48,54,45,48,51,32,49,52,58,52,51,43,48,50,48,48,10,80,79,45,82,101,118,105,115,105,111,110,45,68,97,116,101,58,32,89,69,65,82,45,77,79,45,68,65,32,72,79,58,77,73,43,90,79,78,69,10,76,97,115,116,45,84,114,97,110,115,108,97,116,111,114,58,32,70,85,76,76,32,78,65,77,69,32,60,69,77,65,73,76,64,65,68,68,82,69,83,83,62,10,76,97,110,103,117,97,103,101,45,84,101,97,109,58,32,76,65,78,71,85,65,71,69,32,60,76,76,64,108,105,46,111,114,103,62,10,76,97,110,103,117,97,103,101,58,32,101,110,10,77,73,77,69,45,86,101,114,115,105,111,110,58,32,49,46,48,10,67,111,110,116,101,110,116,45,84,121,112,101,58,32,116,101,120,116,47,112,108,97,105,110,59,32,99,104,97,114,115,101,116,61,85,84,70,45,56,10,67,111,110,116,101,110,116,45,84,114,97,110,115,102,101,114,45,69,110,99,111,100,105,110,103,58,32,56,98,105,116,10,0])
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13).Buffer))
 
 /***/ },
 /* 72 */
@@ -38741,15 +38738,10 @@
 	        this.controllers = {};
 
 	        // i18n
-	        if (user.language === "en") {
-	            var locale = __webpack_require__(82);
-	            gt.addTextdomain('default', locale);
-	        } else if (user.language === "fr") {
-	            locale = __webpack_require__(83);
-	            gt.addTextdomain('default', locale);
+	        if (user.language === "fr") {
+	            gt.addTextdomain('default', __webpack_require__(82));
 	        } else {  // default to english
-	            var locale = __webpack_require__(82);
-	            gt.addTextdomain('default', locale);
+	            gt.addTextdomain('default', __webpack_require__(83));
 	        }
 
 	        var SelectOptionItemView = __webpack_require__(72);
@@ -38781,15 +38773,17 @@
 
 /***/ },
 /* 82 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
-	module.exports = "# SOME DESCRIPTIVE TITLE.\n# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER\n# This file is distributed under the same license as the PACKAGE package.\n# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.\n#\n#, fuzzy\nmsgid \"\"\nmsgstr \"\"\n\"Project-Id-Version: PACKAGE VERSION\\n\"\n\"Report-Msgid-Bugs-To: \\n\"\n\"POT-Creation-Date: 2016-06-03 15:10+0200\\n\"\n\"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\\n\"\n\"Last-Translator: FULL NAME <EMAIL@ADDRESS>\\n\"\n\"Language-Team: LANGUAGE <LL@li.org>\\n\"\n\"Language: en\\n\"\n\"MIME-Version: 1.0\\n\"\n\"Content-Type: text/plain; charset=UTF-8\\n\"\n\"Content-Transfer-Encoding: 8bit\\n\"\n\n#: ../../../routers/permission.js:35\nmsgid \"List of users\"\nmsgstr \"\"\n\n#: ../../../routers/permission.js:48\nmsgid \"List of permissions for user\"\nmsgstr \"\"\n\n#: ../../../routers/permission.js:61\nmsgid \"List of groups\"\nmsgstr \"\"\n\n#: ../../../templates/grouplist.html:15 ../../../templates/permission.html:24\nmsgid \"Name\"\nmsgstr \"\"\n\n#: ../../../templates/grouplist.html:16\nmsgid \"Number of users\"\nmsgstr \"\"\n\n#: ../../../templates/permission.html:12 ../../../templates/permission.html:13\nmsgid \"Model\"\nmsgstr \"\"\n\n#: ../../../templates/permission.html:23\nmsgid \"Module\"\nmsgstr \"\"\n\n#: ../../../templates/permission.html:25\nmsgid \"Code\"\nmsgstr \"\"\n\n#: ../../../templates/userlist.html:15\nmsgid \"Status\"\nmsgstr \"\"\n\n#: ../../../templates/userlist.html:16\nmsgid \"Superuser\"\nmsgstr \"\"\n\n#: ../../../templates/userlist.html:17\nmsgid \"Staff\"\nmsgstr \"\"\n\n#: ../../../templates/userlist.html:18\nmsgid \"Username\"\nmsgstr \"\"\n\n#: ../../../templates/userlist.html:19\nmsgid \"First name\"\nmsgstr \"\"\n\n#: ../../../templates/userlist.html:20\nmsgid \"Last name\"\nmsgstr \"\"\n"
+	/* WEBPACK VAR INJECTION */(function(Buffer) {module.exports = new Buffer([222,18,4,149,0,0,0,0,15,0,0,0,28,0,0,0,148,0,0,0,23,0,0,0,12,1,0,0,0,0,0,0,104,1,0,0,4,0,0,0,105,1,0,0,10,0,0,0,110,1,0,0,9,0,0,0,121,1,0,0,14,0,0,0,131,1,0,0,28,0,0,0,146,1,0,0,13,0,0,0,175,1,0,0,5,0,0,0,189,1,0,0,6,0,0,0,195,1,0,0,4,0,0,0,202,1,0,0,15,0,0,0,207,1,0,0,5,0,0,0,223,1,0,0,6,0,0,0,229,1,0,0,9,0,0,0,236,1,0,0,8,0,0,0,246,1,0,0,66,1,0,0,255,1,0,0,4,0,0,0,66,3,0,0,7,0,0,0,71,3,0,0,3,0,0,0,79,3,0,0,17,0,0,0,83,3,0,0,39,0,0,0,101,3,0,0,22,0,0,0,141,3,0,0,7,0,0,0,164,3,0,0,6,0,0,0,172,3,0,0,3,0,0,0,179,3,0,0,21,0,0,0,183,3,0,0,8,0,0,0,205,3,0,0,6,0,0,0,214,3,0,0,17,0,0,0,221,3,0,0,17,0,0,0,239,3,0,0,1,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,0,0,0,0,7,0,0,0,2,0,0,0,0,0,0,0,6,0,0,0,9,0,0,0,0,0,0,0,3,0,0,0,13,0,0,0,0,0,0,0,12,0,0,0,10,0,0,0,11,0,0,0,15,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,8,0,0,0,14,0,0,0,0,67,111,100,101,0,70,105,114,115,116,32,110,97,109,101,0,76,97,115,116,32,110,97,109,101,0,76,105,115,116,32,111,102,32,103,114,111,117,112,115,0,76,105,115,116,32,111,102,32,112,101,114,109,105,115,115,105,111,110,115,32,102,111,114,32,117,115,101,114,0,76,105,115,116,32,111,102,32,117,115,101,114,115,0,77,111,100,101,108,0,77,111,100,117,108,101,0,78,97,109,101,0,78,117,109,98,101,114,32,111,102,32,117,115,101,114,115,0,83,116,97,102,102,0,83,116,97,116,117,115,0,83,117,112,101,114,117,115,101,114,0,85,115,101,114,110,97,109,101,0,80,114,111,106,101,99,116,45,73,100,45,86,101,114,115,105,111,110,58,32,80,65,67,75,65,71,69,32,86,69,82,83,73,79,78,10,82,101,112,111,114,116,45,77,115,103,105,100,45,66,117,103,115,45,84,111,58,32,10,80,79,84,45,67,114,101,97,116,105,111,110,45,68,97,116,101,58,32,50,48,49,54,45,48,54,45,48,51,32,49,53,58,49,48,43,48,50,48,48,10,80,79,45,82,101,118,105,115,105,111,110,45,68,97,116,101,58,32,89,69,65,82,45,77,79,45,68,65,32,72,79,58,77,73,43,90,79,78,69,10,76,97,115,116,45,84,114,97,110,115,108,97,116,111,114,58,32,70,85,76,76,32,78,65,77,69,32,60,69,77,65,73,76,64,65,68,68,82,69,83,83,62,10,76,97,110,103,117,97,103,101,45,84,101,97,109,58,32,76,65,78,71,85,65,71,69,32,60,76,76,64,108,105,46,111,114,103,62,10,76,97,110,103,117,97,103,101,58,32,102,114,10,77,73,77,69,45,86,101,114,115,105,111,110,58,32,49,46,48,10,67,111,110,116,101,110,116,45,84,121,112,101,58,32,116,101,120,116,47,112,108,97,105,110,59,32,99,104,97,114,115,101,116,61,85,84,70,45,56,10,67,111,110,116,101,110,116,45,84,114,97,110,115,102,101,114,45,69,110,99,111,100,105,110,103,58,32,56,98,105,116,10,0,67,111,100,101,0,80,114,195,169,110,111,109,0,78,111,109,0,76,105,115,116,101,32,100,101,115,32,103,114,111,117,112,101,115,0,76,105,115,116,32,100,101,115,32,112,101,114,109,105,115,115,105,111,110,115,32,112,111,117,114,32,108,39,117,116,105,108,105,115,97,116,101,117,114,0,76,105,115,116,101,32,100,101,115,32,117,116,105,108,105,115,97,116,101,117,114,115,0,77,111,100,195,168,108,101,0,77,111,100,117,108,101,0,78,111,109,0,78,111,109,98,114,101,32,100,39,117,116,105,108,105,115,97,116,101,117,114,115,0,69,109,112,108,111,121,195,169,0,83,116,97,116,117,115,0,83,117,112,101,114,45,117,116,105,108,105,115,97,116,101,117,114,0,78,111,109,32,100,39,117,116,105,108,105,115,97,116,101,117,114,0])
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13).Buffer))
 
 /***/ },
 /* 83 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
-	module.exports = "# SOME DESCRIPTIVE TITLE.\n# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER\n# This file is distributed under the same license as the PACKAGE package.\n# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.\n#\n#, fuzzy\nmsgid \"\"\nmsgstr \"\"\n\"Project-Id-Version: PACKAGE VERSION\\n\"\n\"Report-Msgid-Bugs-To: \\n\"\n\"POT-Creation-Date: 2016-06-03 15:10+0200\\n\"\n\"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\\n\"\n\"Last-Translator: FULL NAME <EMAIL@ADDRESS>\\n\"\n\"Language-Team: LANGUAGE <LL@li.org>\\n\"\n\"Language: fr\\n\"\n\"MIME-Version: 1.0\\n\"\n\"Content-Type: text/plain; charset=UTF-8\\n\"\n\"Content-Transfer-Encoding: 8bit\\n\"\n\n#: ../../../routers/permission.js:35\nmsgid \"List of users\"\nmsgstr \"Liste des utilisateurs\"\n\n#: ../../../routers/permission.js:48\nmsgid \"List of permissions for user\"\nmsgstr \"List des permissions pour l'utilisateur\"\n\n#: ../../../routers/permission.js:61\nmsgid \"List of groups\"\nmsgstr \"Liste des groupes\"\n\n#: ../../../templates/grouplist.html:15 ../../../templates/permission.html:24\nmsgid \"Name\"\nmsgstr \"Nom\"\n\n#: ../../../templates/grouplist.html:16\nmsgid \"Number of users\"\nmsgstr \"Nombre d'utilisateurs\"\n\n#: ../../../templates/permission.html:12 ../../../templates/permission.html:13\nmsgid \"Model\"\nmsgstr \"Modèle\"\n\n#: ../../../templates/permission.html:23\nmsgid \"Module\"\nmsgstr \"Module\"\n\n#: ../../../templates/permission.html:25\nmsgid \"Code\"\nmsgstr \"Code\"\n\n#: ../../../templates/userlist.html:15\nmsgid \"Status\"\nmsgstr \"Status\"\n\n#: ../../../templates/userlist.html:16\nmsgid \"Superuser\"\nmsgstr \"Super-utilisateur\"\n\n#: ../../../templates/userlist.html:17\nmsgid \"Staff\"\nmsgstr \"Employé\"\n\n#: ../../../templates/userlist.html:18\nmsgid \"Username\"\nmsgstr \"Nom d'utilisateur\"\n\n#: ../../../templates/userlist.html:19\nmsgid \"First name\"\nmsgstr \"Prénom\"\n\n#: ../../../templates/userlist.html:20\nmsgid \"Last name\"\nmsgstr \"Nom\"\n"
+	/* WEBPACK VAR INJECTION */(function(Buffer) {module.exports = new Buffer([222,18,4,149,0,0,0,0,1,0,0,0,28,0,0,0,36,0,0,0,3,0,0,0,44,0,0,0,0,0,0,0,56,0,0,0,66,1,0,0,57,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,80,114,111,106,101,99,116,45,73,100,45,86,101,114,115,105,111,110,58,32,80,65,67,75,65,71,69,32,86,69,82,83,73,79,78,10,82,101,112,111,114,116,45,77,115,103,105,100,45,66,117,103,115,45,84,111,58,32,10,80,79,84,45,67,114,101,97,116,105,111,110,45,68,97,116,101,58,32,50,48,49,54,45,48,54,45,48,51,32,49,53,58,49,48,43,48,50,48,48,10,80,79,45,82,101,118,105,115,105,111,110,45,68,97,116,101,58,32,89,69,65,82,45,77,79,45,68,65,32,72,79,58,77,73,43,90,79,78,69,10,76,97,115,116,45,84,114,97,110,115,108,97,116,111,114,58,32,70,85,76,76,32,78,65,77,69,32,60,69,77,65,73,76,64,65,68,68,82,69,83,83,62,10,76,97,110,103,117,97,103,101,45,84,101,97,109,58,32,76,65,78,71,85,65,71,69,32,60,76,76,64,108,105,46,111,114,103,62,10,76,97,110,103,117,97,103,101,58,32,101,110,10,77,73,77,69,45,86,101,114,115,105,111,110,58,32,49,46,48,10,67,111,110,116,101,110,116,45,84,121,112,101,58,32,116,101,120,116,47,112,108,97,105,110,59,32,99,104,97,114,115,101,116,61,85,84,70,45,56,10,67,111,110,116,101,110,116,45,84,114,97,110,115,102,101,114,45,69,110,99,111,100,105,110,103,58,32,56,98,105,116,10,0])
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13).Buffer))
 
 /***/ },
 /* 84 */
@@ -40793,15 +40787,10 @@
 	        this.controllers = {};
 
 	        // i18n
-	        if (user.language === "en") {
-	            var locale = __webpack_require__(121);
-	            gt.addTextdomain('default', locale);
-	        } else if (user.language === "fr") {
-	            locale = __webpack_require__(122);
-	            gt.addTextdomain('default', locale);
+	        if (user.language === "fr") {
+	            gt.addTextdomain('default', __webpack_require__(121));
 	        } else {  // default to english
-	            var locale = __webpack_require__(121);
-	            gt.addTextdomain('default', locale);
+	            gt.addTextdomain('default', __webpack_require__(122));
 	        }
 	    },
 
@@ -40826,15 +40815,17 @@
 
 /***/ },
 /* 121 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
-	module.exports = "# SOME DESCRIPTIVE TITLE.\n# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER\n# This file is distributed under the same license as the PACKAGE package.\n# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.\n#\n#, fuzzy\nmsgid \"\"\nmsgstr \"\"\n\"Project-Id-Version: PACKAGE VERSION\\n\"\n\"Report-Msgid-Bugs-To: \\n\"\n\"POT-Creation-Date: 2016-06-03 15:30+0200\\n\"\n\"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\\n\"\n\"Last-Translator: FULL NAME <EMAIL@ADDRESS>\\n\"\n\"Language-Team: LANGUAGE <LL@li.org>\\n\"\n\"Language: en\\n\"\n\"MIME-Version: 1.0\\n\"\n\"Content-Type: text/plain; charset=UTF-8\\n\"\n\"Content-Transfer-Encoding: 8bit\\n\"\n"
+	/* WEBPACK VAR INJECTION */(function(Buffer) {module.exports = new Buffer([222,18,4,149,0,0,0,0,1,0,0,0,28,0,0,0,36,0,0,0,3,0,0,0,44,0,0,0,0,0,0,0,56,0,0,0,66,1,0,0,57,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,80,114,111,106,101,99,116,45,73,100,45,86,101,114,115,105,111,110,58,32,80,65,67,75,65,71,69,32,86,69,82,83,73,79,78,10,82,101,112,111,114,116,45,77,115,103,105,100,45,66,117,103,115,45,84,111,58,32,10,80,79,84,45,67,114,101,97,116,105,111,110,45,68,97,116,101,58,32,50,48,49,54,45,48,54,45,48,51,32,49,53,58,51,48,43,48,50,48,48,10,80,79,45,82,101,118,105,115,105,111,110,45,68,97,116,101,58,32,89,69,65,82,45,77,79,45,68,65,32,72,79,58,77,73,43,90,79,78,69,10,76,97,115,116,45,84,114,97,110,115,108,97,116,111,114,58,32,70,85,76,76,32,78,65,77,69,32,60,69,77,65,73,76,64,65,68,68,82,69,83,83,62,10,76,97,110,103,117,97,103,101,45,84,101,97,109,58,32,76,65,78,71,85,65,71,69,32,60,76,76,64,108,105,46,111,114,103,62,10,76,97,110,103,117,97,103,101,58,32,102,114,10,77,73,77,69,45,86,101,114,115,105,111,110,58,32,49,46,48,10,67,111,110,116,101,110,116,45,84,121,112,101,58,32,116,101,120,116,47,112,108,97,105,110,59,32,99,104,97,114,115,101,116,61,85,84,70,45,56,10,67,111,110,116,101,110,116,45,84,114,97,110,115,102,101,114,45,69,110,99,111,100,105,110,103,58,32,56,98,105,116,10,0])
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13).Buffer))
 
 /***/ },
 /* 122 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
-	module.exports = "# SOME DESCRIPTIVE TITLE.\n# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER\n# This file is distributed under the same license as the PACKAGE package.\n# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.\n#\n#, fuzzy\nmsgid \"\"\nmsgstr \"\"\n\"Project-Id-Version: PACKAGE VERSION\\n\"\n\"Report-Msgid-Bugs-To: \\n\"\n\"POT-Creation-Date: 2016-06-03 15:30+0200\\n\"\n\"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\\n\"\n\"Last-Translator: FULL NAME <EMAIL@ADDRESS>\\n\"\n\"Language-Team: LANGUAGE <LL@li.org>\\n\"\n\"Language: fr\\n\"\n\"MIME-Version: 1.0\\n\"\n\"Content-Type: text/plain; charset=UTF-8\\n\"\n\"Content-Transfer-Encoding: 8bit\\n\"\n"
+	/* WEBPACK VAR INJECTION */(function(Buffer) {module.exports = new Buffer([222,18,4,149,0,0,0,0,1,0,0,0,28,0,0,0,36,0,0,0,3,0,0,0,44,0,0,0,0,0,0,0,56,0,0,0,66,1,0,0,57,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,80,114,111,106,101,99,116,45,73,100,45,86,101,114,115,105,111,110,58,32,80,65,67,75,65,71,69,32,86,69,82,83,73,79,78,10,82,101,112,111,114,116,45,77,115,103,105,100,45,66,117,103,115,45,84,111,58,32,10,80,79,84,45,67,114,101,97,116,105,111,110,45,68,97,116,101,58,32,50,48,49,54,45,48,54,45,48,51,32,49,53,58,51,48,43,48,50,48,48,10,80,79,45,82,101,118,105,115,105,111,110,45,68,97,116,101,58,32,89,69,65,82,45,77,79,45,68,65,32,72,79,58,77,73,43,90,79,78,69,10,76,97,115,116,45,84,114,97,110,115,108,97,116,111,114,58,32,70,85,76,76,32,78,65,77,69,32,60,69,77,65,73,76,64,65,68,68,82,69,83,83,62,10,76,97,110,103,117,97,103,101,45,84,101,97,109,58,32,76,65,78,71,85,65,71,69,32,60,76,76,64,108,105,46,111,114,103,62,10,76,97,110,103,117,97,103,101,58,32,101,110,10,77,73,77,69,45,86,101,114,115,105,111,110,58,32,49,46,48,10,67,111,110,116,101,110,116,45,84,121,112,101,58,32,116,101,120,116,47,112,108,97,105,110,59,32,99,104,97,114,115,101,116,61,85,84,70,45,56,10,67,111,110,116,101,110,116,45,84,114,97,110,115,102,101,114,45,69,110,99,111,100,105,110,103,58,32,56,98,105,116,10,0])
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13).Buffer))
 
 /***/ }
 /******/ ]);

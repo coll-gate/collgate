@@ -13,6 +13,10 @@ var defaults = {
         ],
         loaders: [
             {
+                test: /\.mo$/,
+                loader: 'buffer'  // binary returns string and not Buffer
+            },
+            {
                 test: /\.po$/,
                 loader: 'raw'
             },

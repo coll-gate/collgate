@@ -20,15 +20,10 @@ var PermissionModule = Marionette.Module.extend({
         this.controllers = {};
 
         // i18n
-        if (user.language === "en") {
-            var locale = require('./locale/en/LC_MESSAGES/default.po');
-            gt.addTextdomain('default', locale);
-        } else if (user.language === "fr") {
-            locale = require('./locale/fr/LC_MESSAGES/default.po');
-            gt.addTextdomain('default', locale);
+        if (user.language === "fr") {
+            gt.addTextdomain('default', require('./locale/fr/LC_MESSAGES/default.mo'));
         } else {  // default to english
-            var locale = require('./locale/en/LC_MESSAGES/default.po');
-            gt.addTextdomain('default', locale);
+            gt.addTextdomain('default', require('./locale/en/LC_MESSAGES/default.mo'));
         }
 
         var SelectOptionItemView = require('../main/views/selectoptionitemview');
