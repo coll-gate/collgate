@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-03 15:40+0200\n"
+"POT-Creation-Date: 2016-06-07 10:55+0200\n"
 "PO-Revision-Date: 2016-02-01 11:53+0100\n"
 "Last-Translator: Frederic SCHERMA <frederic.scherma@clermont.inra.fr>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -40,7 +40,15 @@ msgstr "Index du manuel"
 
 #: apps.py:45 templates/main/help/about.html:22
 msgid "About HOGR..."
-msgstr "A propos de HOGR..."
+msgstr "A propos d'HOGR..."
+
+#: home.py:47 home.py:73
+msgid "You are not authenticated."
+msgstr "Vous n'êtes pas identifié."
+
+#: home.py:57 home.py:83
+msgid "Please, you must enable your cookies."
+msgstr "Merci d'activer la gestion des cookies."
 
 #: models.py:46
 msgid "English"
@@ -62,7 +70,39 @@ msgstr "Synonyme"
 msgid "Code"
 msgstr "Code"
 
-#: templates/main/home.html:20 templates/main/index.html:86
-#: templates/main/index.html:88
+#: profile.py:47 profile.py:83
+msgid "Logged out"
+msgstr "Déconnecté"
+
+#: profile.py:58
+msgid "Successfully logged"
+msgstr "Identifié avec succès"
+
+#: profile.py:67
+msgid "Unable to login"
+msgstr "Impossible de s'identifier"
+
+#: profile.py:70
+msgid "Username or password"
+msgstr "Identifiant ou mot de passe"
+
+#: profile.py:137
+msgid "User successfully updated"
+msgstr "Utilisateur mis-à-jour avec succès"
+
+#: templates/main/home.html:20 templates/main/index.html:82
+#: templates/main/index.html:84
 msgid "Welcome"
 msgstr "Bienvenue"
+
+#: templates/main/index.html:74
+msgid "Username"
+msgstr "Identifiant"
+
+#: templates/main/index.html:77
+msgid "Password"
+msgstr "Mot de passe"
+
+#: templates/main/index.html:79
+msgid "Sign in"
+msgstr "Se connecter"

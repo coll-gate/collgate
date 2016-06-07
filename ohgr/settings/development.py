@@ -31,7 +31,7 @@ DATABASES = {
     }
 }
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '147.99.146.242']
 
 # session cookie path
 SESSION_COOKIE_PATH = "/ohgr/"

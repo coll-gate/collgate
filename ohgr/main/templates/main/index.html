@@ -36,13 +36,9 @@
 <!-- TODO load dynamically each i18n modules -->
 
 <script type="text/javascript" src="{% url 'main:javascript-catalog' packages='main' domain='django' %}"></script>
-<script type="text/javascript" src="{% url 'main:javascript-catalog' packages='main' domain='djangojs' %}"></script>
-
+<script type="text/javascript" src="/ohgr/jsi18n/accession/django/"></script>
 <script type="text/javascript" src="/ohgr/jsi18n/taxonomy/django/"></script>
-<script type="text/javascript" src="/ohgr/jsi18n/taxonomy/djangojs/"></script>
-
 <script type="text/javascript" src="/ohgr/jsi18n/permission/django/"></script>
-<script type="text/javascript" src="/ohgr/jsi18n/permission/djangojs/"></script>
 
 <style type="text/css">
 /* autocompletion loading icon */
@@ -75,12 +71,12 @@
                     {% csrf_token %}
                     {% if not user.is_authenticated %}
                     <div class="form-group">
-                        <input type="text" placeholder="Username" class="form-control" name="username">
+                        <input type="text" placeholder="{% trans 'Username' %}" class="form-control" name="username">
                     </div>
                     <div class="form-group">
-                        <input type="password" placeholder="Password" class="form-control" name="password">
+                        <input type="password" placeholder="{% trans 'Password' %}" class="form-control" name="password">
                     </div>
-                    <button type="submit" class="btn btn-success">Sign in</button>
+                    <button type="submit" class="btn btn-success">{% trans "Sign in" %}</button>
                     {% else %}
                     {% if user.first_name and user.last_name %}
                         <a class="text welcome">{% blocktrans %}Welcome{% endblocktrans %} {{ user.first_name }} {{ user.last_name }}</a>
@@ -110,7 +106,12 @@
 {% spaceless %}
 <div class="container" id="messenger">
     {# Display django.contrib.messages as Bootstrap alerts #}
-    {% bootstrap_messages %}
+    {% for message in messages %}
+    <div class="{{ message|bootstrap_message_classes }} alert-dismissable">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&#215;</button>
+        <span class="message-content">{{ message }}</span>
+    </div>
+    {% endfor %}
 </div>
 {% endspaceless %}
 
@@ -156,7 +157,9 @@ user = function() {
 
 user.isAuth = {{ user.is_authenticated|yesno:"true,false" }};
 user.username = "{{ user.username }}";
-user.language = document.getElementById("languages").value;
+
+<!-- {% get_current_language as LANGUAGE_CODE %} -->
+user.language = "{{ LANGUAGE_CODE }}";
 </script>
 
 <script src="{% static 'main/js/main.js' %}"></script>
@@ -199,14 +202,13 @@ user.language = document.getElementById("languages").value;
                 data: {language: $('#languages').val()},
             }).done(function(data) {
                 // reload the application
-                window.open(window.location, "_self", [], true);
+                window.open(window.location, "_self", "", true);
                 //Backbone.history.navigate(window.location.replace(''), {replace: true, trigger: true});
                 //Backbone.history.loadUrl(Backbone.history.getFragment());
             });
         });
 
-        <!-- {% get_current_language as LANGUAGE_CODE %} -->
-        $('#languages').select2("val", "{{ LANGUAGE_CODE }}");
+        $('#languages').select2("val", user.language);
 
         //
         // history navigation

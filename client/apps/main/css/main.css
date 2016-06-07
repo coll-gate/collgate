@@ -12,7 +12,7 @@ hr {
     background-image: linear-gradient(to bottom, #000000 0, #A0BD2E 100%);
 }
 
-.right_content {
+#right_content {
     border: solid 1px #96a052;
     border-radius: 5px;
     box-shadow: 0px 0px 10px #A0BD2E;
@@ -42,6 +42,7 @@ hr {
 
 #messenger:not(empty) {
     height: auto;
+    z-index:10000;
 }
 
 #messenger:empty {
@@ -49,7 +50,7 @@ hr {
 }
 
 .event {
-    font-family: "Lucida Blackletter";
+    font-family: "DejaVu Serif";
     font-size: 12px;
     padding: 5px;
 }
@@ -101,10 +102,28 @@ a.welcome {
     box-shadow: none;
 }
 
+span.url {
+    cursor: pointer;
+}
+
+.action {
+    cursor: pointer;
+}
+
+.left-margin {
+    margin-left: 10px;
+}
+
 /*.element {*/
     /*border-bottom: 1px solid #96a052;*/
     /*maring-top: 0px;*/
     /*margin-bottom: 15px;*/
+/*}*/
+
+/*.ui-autocomplete {*/
+    /*position: absolute;*/
+    /*cursor: default;*/
+    /*z-index:10000 !important;*/
 /*}*/
 
 .hr-default {

@@ -19,6 +19,8 @@ from igdectk.rest.handler import *
 
 from .models import Profile
 
+from django.utils.translation import gettext_noop as _
+
 
 class RestProfile(RestHandler):
     regex = r'^profile/$'
@@ -42,7 +44,7 @@ def profile_signin(request):
     """
     if request.user.is_authenticated():
         logout(request)
-        messages.add_message(request, messages.INFO, 'Logged out')
+        messages.add_message(request, messages.INFO, _('Logged out'))
         return redirect('/ohgr/')
 
     username = request.POST['username']
@@ -53,7 +55,7 @@ def profile_signin(request):
         if user.is_active:
             login(request, user)
             messages.add_message(
-                request, messages.INFO, 'Successfully logged')
+                request, messages.INFO, _('Successfully logged'))
 
             # expires in 12h
             request.session.set_expiry(12*60*60)
@@ -62,10 +64,10 @@ def profile_signin(request):
             profile = Profile.objects.get_or_create(user=user)
         else:
             messages.add_message(
-                request, messages.ERROR, 'Unable to login')
+                request, messages.ERROR, _('Unable to login'))
     else:
         messages.add_message(
-            request, messages.ERROR, 'Username or password')
+            request, messages.ERROR, _('Username or password'))
 
     # messages are saved into DB and consumed by the next template rendering
     return redirect('/ohgr/')
@@ -78,7 +80,7 @@ def profile_logout(request):
     """
     if request.user.is_authenticated():
         logout(request)
-        messages.add_message(request, messages.INFO, 'Logged out')
+        messages.add_message(request, messages.INFO, _('Logged out'))
 
     return redirect('/ohgr/')
 
@@ -132,4 +134,4 @@ class RestProfileEditForm(RestForm, RestProfile):
         profile.company = form.data['company']
         profile.save()
 
-        messages.info(request, 'User successfully updated')
+        messages.info(request, _('User successfully updated'))

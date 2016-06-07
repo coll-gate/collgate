@@ -158,9 +158,9 @@
 
 	    // each modules
 	    this.main = __webpack_require__(65);
-	    this.permission = __webpack_require__(81);
-	    this.taxonomy = __webpack_require__(107);
-	    this.accession = __webpack_require__(120);
+	    this.permission = __webpack_require__(77);
+	    this.taxonomy = __webpack_require__(103);
+	    this.accession = __webpack_require__(116);
 	});
 
 	gt = new GetText();
@@ -37923,7 +37923,7 @@
 
 	var Marionette = __webpack_require__(4);
 
-	mainStyle = __webpack_require__(66);
+	//mainStyle = require('./css/main.css');  // included in main.html on django side
 
 	//
 	// Main module definition
@@ -37939,14 +37939,14 @@
 
 	        // i18n
 	        if (user.language === "fr") {
-	            gt.addTextdomain('default', __webpack_require__(70));
+	            gt.addTextdomain('default', __webpack_require__(66));
 	        } else {  // default to english
-	            gt.addTextdomain('default', __webpack_require__(71));
+	            gt.addTextdomain('default', __webpack_require__(67));
 	        }
 
-	        var SelectOptionItemView = __webpack_require__(72);
+	        var SelectOptionItemView = __webpack_require__(68);
 
-	        var LanguageCollection = __webpack_require__(74);
+	        var LanguageCollection = __webpack_require__(70);
 	        this.collections.languages = new LanguageCollection();
 
 	        this.views.languages = new SelectOptionItemView({
@@ -37954,7 +37954,7 @@
 	            collection: this.collections.languages,
 	        });
 
-	        var SynoymTypeCollection = __webpack_require__(76);
+	        var SynoymTypeCollection = __webpack_require__(72);
 	        this.collections.synonymTypes = new SynoymTypeCollection();
 
 	        this.views.synonymTypes = new SelectOptionItemView({
@@ -37972,7 +37972,7 @@
 
 	        this.views.Home = Marionette.CompositeView.extend({
 	            el: '#main_content',
-	            template: __webpack_require__(78),
+	            template: __webpack_require__(74),
 	        });
 	    },
 
@@ -37999,10 +37999,10 @@
 	        });
 	        this.routers.main = new MainRouter();
 
-	        var LanguageRouter = __webpack_require__(79);
+	        var LanguageRouter = __webpack_require__(75);
 	        this.routers.language = new LanguageRouter();
 
-	        var ProfileRouter = __webpack_require__(80);
+	        var ProfileRouter = __webpack_require__(76);
 	        this.routers.profile = new ProfileRouter();
 	    },
 
@@ -38020,366 +38020,18 @@
 /* 66 */
 /***/ function(module, exports, __webpack_require__) {
 
-	// style-loader: Adds some css to the DOM by adding a <style> tag
-
-	// load the styles
-	var content = __webpack_require__(67);
-	if(typeof content === 'string') content = [[module.id, content, '']];
-	// add the styles to the DOM
-	var update = __webpack_require__(69)(content, {});
-	if(content.locals) module.exports = content.locals;
-	// Hot Module Replacement
-	if(false) {
-		// When the styles change, update the <style> tags
-		if(!content.locals) {
-			module.hot.accept("!!./../../../node_modules/css-loader/index.js!./main.css", function() {
-				var newContent = require("!!./../../../node_modules/css-loader/index.js!./main.css");
-				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-				update(newContent);
-			});
-		}
-		// When the module is disposed, remove the <style> tags
-		module.hot.dispose(function() { update(); });
-	}
-
-/***/ },
-/* 67 */
-/***/ function(module, exports, __webpack_require__) {
-
-	exports = module.exports = __webpack_require__(68)();
-	// imports
-
-
-	// module
-	exports.push([module.id, "body {\n    background-color: #faf0eb;\n}\n\nhr {\n    color: #96a052;\n    background-color: #96a052;\n    border-top: solid 1px #96a052;\n}\n\n.navbar {\n    background-image: linear-gradient(to bottom, #000000 0, #A0BD2E 100%);\n}\n\n.right_content {\n    border: solid 1px #96a052;\n    border-radius: 5px;\n    box-shadow: 0px 0px 10px #A0BD2E;\n}\n\n.content {\n    padding-top: 60px;\n    padding-bottom: 10px;\n    height: 100%;\n    max-height: 100%;\n}\n\n.footer {\n    height: 5%;\n}\n\n#messenger {\n    position: fixed;\n    top: 60px;\n    height: 120px;\n    left: 0px;\n    right: 0px;\n    margin-left: auto;\n    margin-right: auto;\n    z-index: 1000;\n}\n\n#messenger:not(empty) {\n    height: auto;\n}\n\n#messenger:empty {\n   height: 0px; /*120px;*/\n}\n\n.event {\n    font-family: \"Lucida Blackletter\";\n    font-size: 12px;\n    padding: 5px;\n}\n\n.event + .event {\n    border-top: solid 1px #A0BD2E;\n}\n\n.navbar-inverse .navbar-nav > li > a {\n    color: #bdbdbd;\n}\n\na.welcome {\n    color: whitesmoke;\n}\n\n/* display only one alert at time */\n/*#messenger:not(empty) .alert:first-child {\n    display: block !important;\n}\n*/\n/* then mask the others */\n/*#messenger:not(empty) .alert:not(first-child) {\n    display: none !important;\n}*/\n\n.panel-heading .accordion-toggle:after {\n    /* symbol for \"opening\" panels */\n    font-family: 'Glyphicons Halflings';  /* essential for enabling glyphicon */\n    content: \"\\E114\";    /* adjust as needed, taken from bootstrap.css */\n    float: right;        /* adjust as needed */\n    color: grey;         /* adjust as needed */\n}\n\n.panel-heading .accordion-toggle.collapsed:after {\n    /* symbol for \"collapsed\" panels */\n    content: \"\\E080\";    /* adjust as needed, taken from bootstrap.css */\n}\n\n/* disable bootstrap collapsing animation */\n.collapsing {\n    -webkit-transition: none;\n    transition: none;\n}\n\n.btn-img {\n    background: none;\n    border: solid transparent;\n    box-shadow: none;\n}\n\n/*.element {*/\n    /*border-bottom: 1px solid #96a052;*/\n    /*maring-top: 0px;*/\n    /*margin-bottom: 15px;*/\n/*}*/\n\n.hr-default {\n    margin-top: 10px;\n    margin-bottom: 0px;\n}\n\n/*.table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th {\n    padding: 3px !important;\n}*/\n", ""]);
-
-	// exports
-
-
-/***/ },
-/* 68 */
-/***/ function(module, exports) {
-
-	/*
-		MIT License http://www.opensource.org/licenses/mit-license.php
-		Author Tobias Koppers @sokra
-	*/
-	// css base code, injected by the css-loader
-	module.exports = function() {
-		var list = [];
-
-		// return the list of modules as css string
-		list.toString = function toString() {
-			var result = [];
-			for(var i = 0; i < this.length; i++) {
-				var item = this[i];
-				if(item[2]) {
-					result.push("@media " + item[2] + "{" + item[1] + "}");
-				} else {
-					result.push(item[1]);
-				}
-			}
-			return result.join("");
-		};
-
-		// import a list of modules into the list
-		list.i = function(modules, mediaQuery) {
-			if(typeof modules === "string")
-				modules = [[null, modules, ""]];
-			var alreadyImportedModules = {};
-			for(var i = 0; i < this.length; i++) {
-				var id = this[i][0];
-				if(typeof id === "number")
-					alreadyImportedModules[id] = true;
-			}
-			for(i = 0; i < modules.length; i++) {
-				var item = modules[i];
-				// skip already imported module
-				// this implementation is not 100% perfect for weird media query combinations
-				//  when a module is imported multiple times with different media queries.
-				//  I hope this will never occur (Hey this way we have smaller bundles)
-				if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
-					if(mediaQuery && !item[2]) {
-						item[2] = mediaQuery;
-					} else if(mediaQuery) {
-						item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
-					}
-					list.push(item);
-				}
-			}
-		};
-		return list;
-	};
-
-
-/***/ },
-/* 69 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/*
-		MIT License http://www.opensource.org/licenses/mit-license.php
-		Author Tobias Koppers @sokra
-	*/
-	var stylesInDom = {},
-		memoize = function(fn) {
-			var memo;
-			return function () {
-				if (typeof memo === "undefined") memo = fn.apply(this, arguments);
-				return memo;
-			};
-		},
-		isOldIE = memoize(function() {
-			return /msie [6-9]\b/.test(window.navigator.userAgent.toLowerCase());
-		}),
-		getHeadElement = memoize(function () {
-			return document.head || document.getElementsByTagName("head")[0];
-		}),
-		singletonElement = null,
-		singletonCounter = 0,
-		styleElementsInsertedAtTop = [];
-
-	module.exports = function(list, options) {
-		if(false) {
-			if(typeof document !== "object") throw new Error("The style-loader cannot be used in a non-browser environment");
-		}
-
-		options = options || {};
-		// Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
-		// tags it will allow on a page
-		if (typeof options.singleton === "undefined") options.singleton = isOldIE();
-
-		// By default, add <style> tags to the bottom of <head>.
-		if (typeof options.insertAt === "undefined") options.insertAt = "bottom";
-
-		var styles = listToStyles(list);
-		addStylesToDom(styles, options);
-
-		return function update(newList) {
-			var mayRemove = [];
-			for(var i = 0; i < styles.length; i++) {
-				var item = styles[i];
-				var domStyle = stylesInDom[item.id];
-				domStyle.refs--;
-				mayRemove.push(domStyle);
-			}
-			if(newList) {
-				var newStyles = listToStyles(newList);
-				addStylesToDom(newStyles, options);
-			}
-			for(var i = 0; i < mayRemove.length; i++) {
-				var domStyle = mayRemove[i];
-				if(domStyle.refs === 0) {
-					for(var j = 0; j < domStyle.parts.length; j++)
-						domStyle.parts[j]();
-					delete stylesInDom[domStyle.id];
-				}
-			}
-		};
-	}
-
-	function addStylesToDom(styles, options) {
-		for(var i = 0; i < styles.length; i++) {
-			var item = styles[i];
-			var domStyle = stylesInDom[item.id];
-			if(domStyle) {
-				domStyle.refs++;
-				for(var j = 0; j < domStyle.parts.length; j++) {
-					domStyle.parts[j](item.parts[j]);
-				}
-				for(; j < item.parts.length; j++) {
-					domStyle.parts.push(addStyle(item.parts[j], options));
-				}
-			} else {
-				var parts = [];
-				for(var j = 0; j < item.parts.length; j++) {
-					parts.push(addStyle(item.parts[j], options));
-				}
-				stylesInDom[item.id] = {id: item.id, refs: 1, parts: parts};
-			}
-		}
-	}
-
-	function listToStyles(list) {
-		var styles = [];
-		var newStyles = {};
-		for(var i = 0; i < list.length; i++) {
-			var item = list[i];
-			var id = item[0];
-			var css = item[1];
-			var media = item[2];
-			var sourceMap = item[3];
-			var part = {css: css, media: media, sourceMap: sourceMap};
-			if(!newStyles[id])
-				styles.push(newStyles[id] = {id: id, parts: [part]});
-			else
-				newStyles[id].parts.push(part);
-		}
-		return styles;
-	}
-
-	function insertStyleElement(options, styleElement) {
-		var head = getHeadElement();
-		var lastStyleElementInsertedAtTop = styleElementsInsertedAtTop[styleElementsInsertedAtTop.length - 1];
-		if (options.insertAt === "top") {
-			if(!lastStyleElementInsertedAtTop) {
-				head.insertBefore(styleElement, head.firstChild);
-			} else if(lastStyleElementInsertedAtTop.nextSibling) {
-				head.insertBefore(styleElement, lastStyleElementInsertedAtTop.nextSibling);
-			} else {
-				head.appendChild(styleElement);
-			}
-			styleElementsInsertedAtTop.push(styleElement);
-		} else if (options.insertAt === "bottom") {
-			head.appendChild(styleElement);
-		} else {
-			throw new Error("Invalid value for parameter 'insertAt'. Must be 'top' or 'bottom'.");
-		}
-	}
-
-	function removeStyleElement(styleElement) {
-		styleElement.parentNode.removeChild(styleElement);
-		var idx = styleElementsInsertedAtTop.indexOf(styleElement);
-		if(idx >= 0) {
-			styleElementsInsertedAtTop.splice(idx, 1);
-		}
-	}
-
-	function createStyleElement(options) {
-		var styleElement = document.createElement("style");
-		styleElement.type = "text/css";
-		insertStyleElement(options, styleElement);
-		return styleElement;
-	}
-
-	function createLinkElement(options) {
-		var linkElement = document.createElement("link");
-		linkElement.rel = "stylesheet";
-		insertStyleElement(options, linkElement);
-		return linkElement;
-	}
-
-	function addStyle(obj, options) {
-		var styleElement, update, remove;
-
-		if (options.singleton) {
-			var styleIndex = singletonCounter++;
-			styleElement = singletonElement || (singletonElement = createStyleElement(options));
-			update = applyToSingletonTag.bind(null, styleElement, styleIndex, false);
-			remove = applyToSingletonTag.bind(null, styleElement, styleIndex, true);
-		} else if(obj.sourceMap &&
-			typeof URL === "function" &&
-			typeof URL.createObjectURL === "function" &&
-			typeof URL.revokeObjectURL === "function" &&
-			typeof Blob === "function" &&
-			typeof btoa === "function") {
-			styleElement = createLinkElement(options);
-			update = updateLink.bind(null, styleElement);
-			remove = function() {
-				removeStyleElement(styleElement);
-				if(styleElement.href)
-					URL.revokeObjectURL(styleElement.href);
-			};
-		} else {
-			styleElement = createStyleElement(options);
-			update = applyToTag.bind(null, styleElement);
-			remove = function() {
-				removeStyleElement(styleElement);
-			};
-		}
-
-		update(obj);
-
-		return function updateStyle(newObj) {
-			if(newObj) {
-				if(newObj.css === obj.css && newObj.media === obj.media && newObj.sourceMap === obj.sourceMap)
-					return;
-				update(obj = newObj);
-			} else {
-				remove();
-			}
-		};
-	}
-
-	var replaceText = (function () {
-		var textStore = [];
-
-		return function (index, replacement) {
-			textStore[index] = replacement;
-			return textStore.filter(Boolean).join('\n');
-		};
-	})();
-
-	function applyToSingletonTag(styleElement, index, remove, obj) {
-		var css = remove ? "" : obj.css;
-
-		if (styleElement.styleSheet) {
-			styleElement.styleSheet.cssText = replaceText(index, css);
-		} else {
-			var cssNode = document.createTextNode(css);
-			var childNodes = styleElement.childNodes;
-			if (childNodes[index]) styleElement.removeChild(childNodes[index]);
-			if (childNodes.length) {
-				styleElement.insertBefore(cssNode, childNodes[index]);
-			} else {
-				styleElement.appendChild(cssNode);
-			}
-		}
-	}
-
-	function applyToTag(styleElement, obj) {
-		var css = obj.css;
-		var media = obj.media;
-
-		if(media) {
-			styleElement.setAttribute("media", media)
-		}
-
-		if(styleElement.styleSheet) {
-			styleElement.styleSheet.cssText = css;
-		} else {
-			while(styleElement.firstChild) {
-				styleElement.removeChild(styleElement.firstChild);
-			}
-			styleElement.appendChild(document.createTextNode(css));
-		}
-	}
-
-	function updateLink(linkElement, obj) {
-		var css = obj.css;
-		var sourceMap = obj.sourceMap;
-
-		if(sourceMap) {
-			// http://stackoverflow.com/a/26603875
-			css += "\n/*# sourceMappingURL=data:application/json;base64," + btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))) + " */";
-		}
-
-		var blob = new Blob([css], { type: "text/css" });
-
-		var oldSrc = linkElement.href;
-
-		linkElement.href = URL.createObjectURL(blob);
-
-		if(oldSrc)
-			URL.revokeObjectURL(oldSrc);
-	}
-
-
-/***/ },
-/* 70 */
-/***/ function(module, exports, __webpack_require__) {
-
 	/* WEBPACK VAR INJECTION */(function(Buffer) {module.exports = new Buffer([222,18,4,149,0,0,0,0,5,0,0,0,28,0,0,0,68,0,0,0,7,0,0,0,108,0,0,0,0,0,0,0,136,0,0,0,7,0,0,0,137,0,0,0,6,0,0,0,145,0,0,0,4,0,0,0,152,0,0,0,48,0,0,0,157,0,0,0,66,1,0,0,206,0,0,0,7,0,0,0,17,2,0,0,9,0,0,0,25,2,0,0,7,0,0,0,35,2,0,0,47,0,0,0,43,2,0,0,1,0,0,0,5,0,0,0,2,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,4,0,0,0,0,69,110,103,108,105,115,104,0,70,114,101,110,99,104,0,72,111,109,101,0,87,101,108,99,111,109,101,32,116,111,32,116,104,101,32,79,110,108,105,110,101,32,72,111,115,116,32,111,102,32,71,101,110,101,116,105,99,115,32,82,101,115,111,117,114,99,101,115,0,80,114,111,106,101,99,116,45,73,100,45,86,101,114,115,105,111,110,58,32,80,65,67,75,65,71,69,32,86,69,82,83,73,79,78,10,82,101,112,111,114,116,45,77,115,103,105,100,45,66,117,103,115,45,84,111,58,32,10,80,79,84,45,67,114,101,97,116,105,111,110,45,68,97,116,101,58,32,50,48,49,54,45,48,54,45,48,51,32,49,52,58,52,52,43,48,50,48,48,10,80,79,45,82,101,118,105,115,105,111,110,45,68,97,116,101,58,32,89,69,65,82,45,77,79,45,68,65,32,72,79,58,77,73,43,90,79,78,69,10,76,97,115,116,45,84,114,97,110,115,108,97,116,111,114,58,32,70,85,76,76,32,78,65,77,69,32,60,69,77,65,73,76,64,65,68,68,82,69,83,83,62,10,76,97,110,103,117,97,103,101,45,84,101,97,109,58,32,76,65,78,71,85,65,71,69,32,60,76,76,64,108,105,46,111,114,103,62,10,76,97,110,103,117,97,103,101,58,32,102,114,10,77,73,77,69,45,86,101,114,115,105,111,110,58,32,49,46,48,10,67,111,110,116,101,110,116,45,84,121,112,101,58,32,116,101,120,116,47,112,108,97,105,110,59,32,99,104,97,114,115,101,116,61,85,84,70,45,56,10,67,111,110,116,101,110,116,45,84,114,97,110,115,102,101,114,45,69,110,99,111,100,105,110,103,58,32,56,98,105,116,10,0,65,110,103,108,97,105,115,0,70,114,97,110,195,167,97,105,115,0,65,99,99,117,101,105,108,0,66,105,101,110,118,101,110,117,101,32,115,117,114,32,79,110,108,105,110,101,32,72,111,115,116,32,111,102,32,71,101,110,101,116,105,99,115,32,82,101,115,111,117,114,99,101,115,0])
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13).Buffer))
 
 /***/ },
-/* 71 */
+/* 67 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer) {module.exports = new Buffer([222,18,4,149,0,0,0,0,1,0,0,0,28,0,0,0,36,0,0,0,3,0,0,0,44,0,0,0,0,0,0,0,56,0,0,0,66,1,0,0,57,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,80,114,111,106,101,99,116,45,73,100,45,86,101,114,115,105,111,110,58,32,80,65,67,75,65,71,69,32,86,69,82,83,73,79,78,10,82,101,112,111,114,116,45,77,115,103,105,100,45,66,117,103,115,45,84,111,58,32,10,80,79,84,45,67,114,101,97,116,105,111,110,45,68,97,116,101,58,32,50,48,49,54,45,48,54,45,48,51,32,49,52,58,52,51,43,48,50,48,48,10,80,79,45,82,101,118,105,115,105,111,110,45,68,97,116,101,58,32,89,69,65,82,45,77,79,45,68,65,32,72,79,58,77,73,43,90,79,78,69,10,76,97,115,116,45,84,114,97,110,115,108,97,116,111,114,58,32,70,85,76,76,32,78,65,77,69,32,60,69,77,65,73,76,64,65,68,68,82,69,83,83,62,10,76,97,110,103,117,97,103,101,45,84,101,97,109,58,32,76,65,78,71,85,65,71,69,32,60,76,76,64,108,105,46,111,114,103,62,10,76,97,110,103,117,97,103,101,58,32,101,110,10,77,73,77,69,45,86,101,114,115,105,111,110,58,32,49,46,48,10,67,111,110,116,101,110,116,45,84,121,112,101,58,32,116,101,120,116,47,112,108,97,105,110,59,32,99,104,97,114,115,101,116,61,85,84,70,45,56,10,67,111,110,116,101,110,116,45,84,114,97,110,115,102,101,114,45,69,110,99,111,100,105,110,103,58,32,56,98,105,116,10,0])
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13).Buffer))
 
 /***/ },
-/* 72 */
+/* 68 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -38396,7 +38048,7 @@
 
 	var SelectOptionItemView = Marionette.ItemView.extend({
 	    //template: _.template('<% _.each(items, function(item){ %><option value="<%= item.id %>"><%= gt.gettext(item.value) %></option><% }) %>'),
-	    template: __webpack_require__(73),
+	    template: __webpack_require__(69),
 	    tagName: 'select',
 
 	    initialize: function(options) {
@@ -38457,7 +38109,7 @@
 
 
 /***/ },
-/* 73 */
+/* 69 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -38499,7 +38151,7 @@
 
 
 /***/ },
-/* 74 */
+/* 70 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -38512,7 +38164,7 @@
 	 * @details
 	 */
 
-	var LanguageModel = __webpack_require__(75);
+	var LanguageModel = __webpack_require__(71);
 
 	var LanguageCollection = Backbone.Collection.extend({
 	    url: ohgr.baseUrl + 'language',
@@ -38542,7 +38194,7 @@
 
 
 /***/ },
-/* 75 */
+/* 71 */
 /***/ function(module, exports) {
 
 	/**
@@ -38564,7 +38216,7 @@
 
 
 /***/ },
-/* 76 */
+/* 72 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -38577,7 +38229,7 @@
 	 * @details
 	 */
 
-	var SynonymTypeModel = __webpack_require__(77);
+	var SynonymTypeModel = __webpack_require__(73);
 
 	var SynonymTypeCollection = Backbone.Collection.extend({
 	    url: ohgr.baseUrl + 'synonym-type/',
@@ -38603,7 +38255,7 @@
 
 
 /***/ },
-/* 77 */
+/* 73 */
 /***/ function(module, exports) {
 
 	/**
@@ -38626,7 +38278,7 @@
 
 
 /***/ },
-/* 78 */
+/* 74 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -38647,7 +38299,7 @@
 
 
 /***/ },
-/* 79 */
+/* 75 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -38674,7 +38326,7 @@
 
 
 /***/ },
-/* 80 */
+/* 76 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -38713,7 +38365,7 @@
 
 
 /***/ },
-/* 81 */
+/* 77 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -38739,14 +38391,14 @@
 
 	        // i18n
 	        if (user.language === "fr") {
-	            gt.addTextdomain('default', __webpack_require__(82));
+	            gt.addTextdomain('default', __webpack_require__(78));
 	        } else {  // default to english
-	            gt.addTextdomain('default', __webpack_require__(83));
+	            gt.addTextdomain('default', __webpack_require__(79));
 	        }
 
-	        var SelectOptionItemView = __webpack_require__(72);
+	        var SelectOptionItemView = __webpack_require__(68);
 
-	        var PermissionTypeCollection = __webpack_require__(84);
+	        var PermissionTypeCollection = __webpack_require__(80);
 	        this.collections.permissionType = new PermissionTypeCollection();
 
 	        this.views.permissionType = new SelectOptionItemView({
@@ -38756,7 +38408,7 @@
 	    },
 
 	    onStart: function(options) {
-	        var PermissionRouter = __webpack_require__(86);
+	        var PermissionRouter = __webpack_require__(82);
 	        this.routers.permission = new PermissionRouter();
 	    },
 
@@ -38772,21 +38424,21 @@
 
 
 /***/ },
-/* 82 */
+/* 78 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer) {module.exports = new Buffer([222,18,4,149,0,0,0,0,15,0,0,0,28,0,0,0,148,0,0,0,23,0,0,0,12,1,0,0,0,0,0,0,104,1,0,0,4,0,0,0,105,1,0,0,10,0,0,0,110,1,0,0,9,0,0,0,121,1,0,0,14,0,0,0,131,1,0,0,28,0,0,0,146,1,0,0,13,0,0,0,175,1,0,0,5,0,0,0,189,1,0,0,6,0,0,0,195,1,0,0,4,0,0,0,202,1,0,0,15,0,0,0,207,1,0,0,5,0,0,0,223,1,0,0,6,0,0,0,229,1,0,0,9,0,0,0,236,1,0,0,8,0,0,0,246,1,0,0,66,1,0,0,255,1,0,0,4,0,0,0,66,3,0,0,7,0,0,0,71,3,0,0,3,0,0,0,79,3,0,0,17,0,0,0,83,3,0,0,39,0,0,0,101,3,0,0,22,0,0,0,141,3,0,0,7,0,0,0,164,3,0,0,6,0,0,0,172,3,0,0,3,0,0,0,179,3,0,0,21,0,0,0,183,3,0,0,8,0,0,0,205,3,0,0,6,0,0,0,214,3,0,0,17,0,0,0,221,3,0,0,17,0,0,0,239,3,0,0,1,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,0,0,0,0,7,0,0,0,2,0,0,0,0,0,0,0,6,0,0,0,9,0,0,0,0,0,0,0,3,0,0,0,13,0,0,0,0,0,0,0,12,0,0,0,10,0,0,0,11,0,0,0,15,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,8,0,0,0,14,0,0,0,0,67,111,100,101,0,70,105,114,115,116,32,110,97,109,101,0,76,97,115,116,32,110,97,109,101,0,76,105,115,116,32,111,102,32,103,114,111,117,112,115,0,76,105,115,116,32,111,102,32,112,101,114,109,105,115,115,105,111,110,115,32,102,111,114,32,117,115,101,114,0,76,105,115,116,32,111,102,32,117,115,101,114,115,0,77,111,100,101,108,0,77,111,100,117,108,101,0,78,97,109,101,0,78,117,109,98,101,114,32,111,102,32,117,115,101,114,115,0,83,116,97,102,102,0,83,116,97,116,117,115,0,83,117,112,101,114,117,115,101,114,0,85,115,101,114,110,97,109,101,0,80,114,111,106,101,99,116,45,73,100,45,86,101,114,115,105,111,110,58,32,80,65,67,75,65,71,69,32,86,69,82,83,73,79,78,10,82,101,112,111,114,116,45,77,115,103,105,100,45,66,117,103,115,45,84,111,58,32,10,80,79,84,45,67,114,101,97,116,105,111,110,45,68,97,116,101,58,32,50,48,49,54,45,48,54,45,48,51,32,49,53,58,49,48,43,48,50,48,48,10,80,79,45,82,101,118,105,115,105,111,110,45,68,97,116,101,58,32,89,69,65,82,45,77,79,45,68,65,32,72,79,58,77,73,43,90,79,78,69,10,76,97,115,116,45,84,114,97,110,115,108,97,116,111,114,58,32,70,85,76,76,32,78,65,77,69,32,60,69,77,65,73,76,64,65,68,68,82,69,83,83,62,10,76,97,110,103,117,97,103,101,45,84,101,97,109,58,32,76,65,78,71,85,65,71,69,32,60,76,76,64,108,105,46,111,114,103,62,10,76,97,110,103,117,97,103,101,58,32,102,114,10,77,73,77,69,45,86,101,114,115,105,111,110,58,32,49,46,48,10,67,111,110,116,101,110,116,45,84,121,112,101,58,32,116,101,120,116,47,112,108,97,105,110,59,32,99,104,97,114,115,101,116,61,85,84,70,45,56,10,67,111,110,116,101,110,116,45,84,114,97,110,115,102,101,114,45,69,110,99,111,100,105,110,103,58,32,56,98,105,116,10,0,67,111,100,101,0,80,114,195,169,110,111,109,0,78,111,109,0,76,105,115,116,101,32,100,101,115,32,103,114,111,117,112,101,115,0,76,105,115,116,32,100,101,115,32,112,101,114,109,105,115,115,105,111,110,115,32,112,111,117,114,32,108,39,117,116,105,108,105,115,97,116,101,117,114,0,76,105,115,116,101,32,100,101,115,32,117,116,105,108,105,115,97,116,101,117,114,115,0,77,111,100,195,168,108,101,0,77,111,100,117,108,101,0,78,111,109,0,78,111,109,98,114,101,32,100,39,117,116,105,108,105,115,97,116,101,117,114,115,0,69,109,112,108,111,121,195,169,0,83,116,97,116,117,115,0,83,117,112,101,114,45,117,116,105,108,105,115,97,116,101,117,114,0,78,111,109,32,100,39,117,116,105,108,105,115,97,116,101,117,114,0])
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13).Buffer))
 
 /***/ },
-/* 83 */
+/* 79 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer) {module.exports = new Buffer([222,18,4,149,0,0,0,0,1,0,0,0,28,0,0,0,36,0,0,0,3,0,0,0,44,0,0,0,0,0,0,0,56,0,0,0,66,1,0,0,57,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,80,114,111,106,101,99,116,45,73,100,45,86,101,114,115,105,111,110,58,32,80,65,67,75,65,71,69,32,86,69,82,83,73,79,78,10,82,101,112,111,114,116,45,77,115,103,105,100,45,66,117,103,115,45,84,111,58,32,10,80,79,84,45,67,114,101,97,116,105,111,110,45,68,97,116,101,58,32,50,48,49,54,45,48,54,45,48,51,32,49,53,58,49,48,43,48,50,48,48,10,80,79,45,82,101,118,105,115,105,111,110,45,68,97,116,101,58,32,89,69,65,82,45,77,79,45,68,65,32,72,79,58,77,73,43,90,79,78,69,10,76,97,115,116,45,84,114,97,110,115,108,97,116,111,114,58,32,70,85,76,76,32,78,65,77,69,32,60,69,77,65,73,76,64,65,68,68,82,69,83,83,62,10,76,97,110,103,117,97,103,101,45,84,101,97,109,58,32,76,65,78,71,85,65,71,69,32,60,76,76,64,108,105,46,111,114,103,62,10,76,97,110,103,117,97,103,101,58,32,101,110,10,77,73,77,69,45,86,101,114,115,105,111,110,58,32,49,46,48,10,67,111,110,116,101,110,116,45,84,121,112,101,58,32,116,101,120,116,47,112,108,97,105,110,59,32,99,104,97,114,115,101,116,61,85,84,70,45,56,10,67,111,110,116,101,110,116,45,84,114,97,110,115,102,101,114,45,69,110,99,111,100,105,110,103,58,32,56,98,105,116,10,0])
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13).Buffer))
 
 /***/ },
-/* 84 */
+/* 80 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -38799,7 +38451,7 @@
 	 * @details
 	 */
 
-	var PermissionTypeModel = __webpack_require__(85);
+	var PermissionTypeModel = __webpack_require__(81);
 
 	var Collection = Backbone.Collection.extend({
 	    url: ohgr.baseUrl + 'permission/type/',
@@ -38844,7 +38496,7 @@
 
 
 /***/ },
-/* 85 */
+/* 81 */
 /***/ function(module, exports) {
 
 	/**
@@ -38866,7 +38518,7 @@
 
 
 /***/ },
-/* 86 */
+/* 82 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -38880,14 +38532,14 @@
 	 */
 
 	var Marionette = __webpack_require__(4);
-	var PermissionCollection = __webpack_require__(87);
-	var PermissionListView = __webpack_require__(89);
-	var PermissionUserCollection = __webpack_require__(93);
-	var PermissionUserListView = __webpack_require__(95);
-	var PermissionGroupCollection = __webpack_require__(99);
-	var PermissionGroupListView = __webpack_require__(101);
-	var DefaultLayout = __webpack_require__(105);
-	var TitleView = __webpack_require__(106);
+	var PermissionCollection = __webpack_require__(83);
+	var PermissionListView = __webpack_require__(85);
+	var PermissionUserCollection = __webpack_require__(89);
+	var PermissionUserListView = __webpack_require__(91);
+	var PermissionGroupCollection = __webpack_require__(95);
+	var PermissionGroupListView = __webpack_require__(97);
+	var DefaultLayout = __webpack_require__(101);
+	var TitleView = __webpack_require__(102);
 
 	var PermissionRouter = Marionette.AppRouter.extend({
 	    routes : {
@@ -38944,7 +38596,7 @@
 
 
 /***/ },
-/* 87 */
+/* 83 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -38957,7 +38609,7 @@
 	 * @details
 	 */
 
-	var PermissionModel = __webpack_require__(88);
+	var PermissionModel = __webpack_require__(84);
 
 	var PermissionCollection = Backbone.Collection.extend({
 	    url: function() { return ohgr.baseUrl + 'permission/user/' + this.username + '/' },
@@ -38980,7 +38632,7 @@
 
 
 /***/ },
-/* 88 */
+/* 84 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -39038,7 +38690,7 @@
 
 
 /***/ },
-/* 89 */
+/* 85 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -39052,11 +38704,11 @@
 	 */
 
 	var Marionette = __webpack_require__(4);
-	var PermissionModel = __webpack_require__(88);
-	var PermissionView = __webpack_require__(90);
+	var PermissionModel = __webpack_require__(84);
+	var PermissionView = __webpack_require__(86);
 
 	var PermissionListView = Marionette.CompositeView.extend({
-	    template: __webpack_require__(92),
+	    template: __webpack_require__(88),
 	    childViewContainer: ".permission-list",
 	    childView: PermissionView,
 
@@ -39164,7 +38816,7 @@
 
 
 /***/ },
-/* 90 */
+/* 86 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -39178,11 +38830,11 @@
 	 */
 
 	var Marionette = __webpack_require__(4);
-	var PermissionModel = __webpack_require__(88);
+	var PermissionModel = __webpack_require__(84);
 
 	var View = Marionette.ItemView.extend({
 	    tagName: 'div',
-	    template: __webpack_require__(91),
+	    template: __webpack_require__(87),
 
 	    ui: {
 	        "remove_permission": ".remove-permission",
@@ -39204,7 +38856,7 @@
 
 
 /***/ },
-/* 91 */
+/* 87 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -39260,7 +38912,7 @@
 
 
 /***/ },
-/* 92 */
+/* 88 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -39277,7 +38929,7 @@
 
 
 /***/ },
-/* 93 */
+/* 89 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -39290,7 +38942,7 @@
 	 * @details
 	 */
 
-	var PermissionUserModel = __webpack_require__(94);
+	var PermissionUserModel = __webpack_require__(90);
 
 	var Collection = Backbone.Collection.extend({
 	    url: function() { return ohgr.baseUrl + 'permission/user/'; },
@@ -39308,7 +38960,7 @@
 
 
 /***/ },
-/* 94 */
+/* 90 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -39372,7 +39024,7 @@
 
 
 /***/ },
-/* 95 */
+/* 91 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -39386,11 +39038,11 @@
 	 */
 
 	var Marionette = __webpack_require__(4);
-	var PermissionUserModel = __webpack_require__(94);
-	var PermissionUserView = __webpack_require__(96);
+	var PermissionUserModel = __webpack_require__(90);
+	var PermissionUserView = __webpack_require__(92);
 
 	var View = Marionette.CompositeView.extend({
-	    template: __webpack_require__(98),
+	    template: __webpack_require__(94),
 	    childView: PermissionUserView,
 	    childViewContainer: 'tbody.permission-user-list',
 
@@ -39409,7 +39061,7 @@
 
 
 /***/ },
-/* 96 */
+/* 92 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -39423,12 +39075,12 @@
 	 */
 
 	var Marionette = __webpack_require__(4);
-	var PermissionUserModel = __webpack_require__(94);
+	var PermissionUserModel = __webpack_require__(90);
 
 	var View = Marionette.ItemView.extend({
 	    tagName: 'tr',
 	    className: 'element object user',
-	    template: __webpack_require__(97),
+	    template: __webpack_require__(93),
 
 	    ui: {
 	        enable_user: 'span.enable-user',
@@ -39516,7 +39168,7 @@
 
 
 /***/ },
-/* 97 */
+/* 93 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -39560,7 +39212,7 @@
 
 
 /***/ },
-/* 98 */
+/* 94 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -39589,7 +39241,7 @@
 
 
 /***/ },
-/* 99 */
+/* 95 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -39602,7 +39254,7 @@
 	 * @details
 	 */
 
-	var PermissionGroupModel = __webpack_require__(100);
+	var PermissionGroupModel = __webpack_require__(96);
 
 	var Collection = Backbone.Collection.extend({
 	    url: function() { return ohgr.baseUrl + 'permission/group/'; },
@@ -39620,7 +39272,7 @@
 
 
 /***/ },
-/* 100 */
+/* 96 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -39667,7 +39319,7 @@
 
 
 /***/ },
-/* 101 */
+/* 97 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -39681,11 +39333,11 @@
 	 */
 
 	var Marionette = __webpack_require__(4);
-	var PermissionGroupModel = __webpack_require__(100);
-	var PermissionGroupView = __webpack_require__(102);
+	var PermissionGroupModel = __webpack_require__(96);
+	var PermissionGroupView = __webpack_require__(98);
 
 	var View = Marionette.CompositeView.extend({
-	    template: __webpack_require__(104),
+	    template: __webpack_require__(100),
 	    childView: PermissionGroupView,
 	    childViewContainer: 'tbody.permission-group-list',
 
@@ -39704,7 +39356,7 @@
 
 
 /***/ },
-/* 102 */
+/* 98 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -39718,12 +39370,12 @@
 	 */
 
 	var Marionette = __webpack_require__(4);
-	var PermissionGroupModel = __webpack_require__(100);
+	var PermissionGroupModel = __webpack_require__(96);
 
 	var View = Marionette.ItemView.extend({
 	    tagName: 'tr',
 	    className: 'element object group',
-	    template: __webpack_require__(103),
+	    template: __webpack_require__(99),
 
 	    ui: {
 	        viewPermissions: 'td.view-permissions',
@@ -39749,7 +39401,7 @@
 
 
 /***/ },
-/* 103 */
+/* 99 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -39772,7 +39424,7 @@
 
 
 /***/ },
-/* 104 */
+/* 100 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -39793,7 +39445,7 @@
 
 
 /***/ },
-/* 105 */
+/* 101 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -39831,7 +39483,7 @@
 
 
 /***/ },
-/* 106 */
+/* 102 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -39860,7 +39512,7 @@
 
 
 /***/ },
-/* 107 */
+/* 103 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -39886,19 +39538,19 @@
 
 	        // i18n
 	        if (user.language === "en") {
-	            var locale = __webpack_require__(108);
+	            var locale = __webpack_require__(104);
 	            gt.addTextdomain('default', locale);
 	        } else if (user.language === "fr") {
-	            locale = __webpack_require__(109);
+	            locale = __webpack_require__(105);
 	            gt.addTextdomain('default', locale);
 	        } else {  // default to english
-	            var locale = __webpack_require__(108);
+	            var locale = __webpack_require__(104);
 	            gt.addTextdomain('default', locale);
 	        }
 
-	        var SelectOptionItemView = __webpack_require__(72);
+	        var SelectOptionItemView = __webpack_require__(68);
 
-	        var TaxonRankCollection = __webpack_require__(110);
+	        var TaxonRankCollection = __webpack_require__(106);
 	        this.collections.taxonRanks = new TaxonRankCollection();
 
 	        this.views.taxonRanks = new SelectOptionItemView({
@@ -39906,15 +39558,15 @@
 	            collection: this.collections.taxonRanks,
 	        });
 
-	        var TaxonController = __webpack_require__(112);
+	        var TaxonController = __webpack_require__(108);
 	        this.controllers.Taxon = new TaxonController();
 	    },
 
 	    onStart: function(options) {
-	        var TaxonRouter = __webpack_require__(119);
+	        var TaxonRouter = __webpack_require__(115);
 	        this.routers.taxon = new TaxonRouter();
 
-	        var TaxonCollection = __webpack_require__(114);
+	        var TaxonCollection = __webpack_require__(110);
 	        this.collections.taxons = new TaxonCollection();
 	    },
 
@@ -39930,19 +39582,19 @@
 
 
 /***/ },
-/* 108 */
+/* 104 */
 /***/ function(module, exports) {
 
-	module.exports = "# SOME DESCRIPTIVE TITLE.\n# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER\n# This file is distributed under the same license as the PACKAGE package.\n# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.\n#\n#, fuzzy\nmsgid \"\"\nmsgstr \"\"\n\"Project-Id-Version: PACKAGE VERSION\\n\"\n\"Report-Msgid-Bugs-To: \\n\"\n\"POT-Creation-Date: 2016-06-03 15:29+0200\\n\"\n\"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\\n\"\n\"Last-Translator: FULL NAME <EMAIL@ADDRESS>\\n\"\n\"Language-Team: LANGUAGE <LL@li.org>\\n\"\n\"Language: en\\n\"\n\"MIME-Version: 1.0\\n\"\n\"Content-Type: text/plain; charset=UTF-8\\n\"\n\"Content-Transfer-Encoding: 8bit\\n\"\n\n#: ../../../views/taxon.js:56 ../../../controllers/taxon.js:159\nmsgid \"Invalid characters (alphanumeric, _ and - only)\"\nmsgstr \"\"\n\n#: ../../../views/taxon.js:59 ../../../controllers/taxon.js:162\nmsgid \"3 characters min\"\nmsgstr \"\"\n\n#: ../../../views/taxon.js:80 ../../../controllers/taxon.js:139\nmsgid \"Taxon name already in usage\"\nmsgstr \"\"\n\n#: ../../../routers/taxon.js:40\nmsgid \"List of taxons\"\nmsgstr \"\"\n\n#: ../../../routers/taxon.js:53\nmsgid \"Taxon details\"\nmsgstr \"\"\n\n#: ../../../controllers/taxon.js:177\nmsgid \"Family rank cannot have a parent taxon\"\nmsgstr \"\"\n\n#: ../../../controllers/taxon.js:182\nmsgid \"This rank must have a parent taxon\"\nmsgstr \"\"\n\n#: ../../../controllers/taxon.js:213\nmsgid \"Taxon successfully created !\"\nmsgstr \"\"\n\n#: ../../../templates/taxon.html:22\nmsgid \"Type\"\nmsgstr \"\"\n\n#: ../../../templates/taxon.html:23\nmsgid \"Name\"\nmsgstr \"\"\n\n#: ../../../templates/taxon.html:24\nmsgid \"Language\"\nmsgstr \"\"\n\n#: ../../../templates/taxoncreate.html:6\nmsgid \"Create a taxon\"\nmsgstr \"\"\n\n#: ../../../templates/taxoncreate.html:11\nmsgid \"Principal name of the taxon (must be unique)\"\nmsgstr \"\"\n\n#: ../../../templates/taxoncreate.html:15\nmsgid \"Taxon rank\"\nmsgstr \"\"\n\n#: ../../../templates/taxoncreate.html:19\nmsgid \"Direct parent\"\nmsgstr \"\"\n\n#: ../../../templates/taxoncreate.html:25\nmsgid \"Cancel\"\nmsgstr \"\"\n\n#: ../../../templates/taxoncreate.html:26\nmsgid \"Create\"\nmsgstr \"\"\n"
+	module.exports = "# SOME DESCRIPTIVE TITLE.\n# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER\n# This file is distributed under the same license as the PACKAGE package.\n# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.\n#\n#, fuzzy\nmsgid \"\"\nmsgstr \"\"\n\"Project-Id-Version: PACKAGE VERSION\\n\"\n\"Report-Msgid-Bugs-To: \\n\"\n\"POT-Creation-Date: 2016-06-07 11:11+0200\\n\"\n\"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\\n\"\n\"Last-Translator: FULL NAME <EMAIL@ADDRESS>\\n\"\n\"Language-Team: LANGUAGE <LL@li.org>\\n\"\n\"Language: en\\n\"\n\"MIME-Version: 1.0\\n\"\n\"Content-Type: text/plain; charset=UTF-8\\n\"\n\"Content-Transfer-Encoding: 8bit\\n\"\n\n#: ../../../views/taxon.js:56 ../../../controllers/taxon.js:159\nmsgid \"Invalid characters (alphanumeric, _ and - only)\"\nmsgstr \"\"\n\n#: ../../../views/taxon.js:59 ../../../controllers/taxon.js:162\nmsgid \"3 characters min\"\nmsgstr \"\"\n\n#: ../../../views/taxon.js:80 ../../../controllers/taxon.js:139\nmsgid \"Taxon name already in usage\"\nmsgstr \"\"\n\n#: ../../../routers/taxon.js:40\nmsgid \"List of taxons\"\nmsgstr \"\"\n\n#: ../../../routers/taxon.js:53\nmsgid \"Taxon details\"\nmsgstr \"\"\n\n#: ../../../controllers/taxon.js:177\nmsgid \"Family rank cannot have a parent taxon\"\nmsgstr \"\"\n\n#: ../../../controllers/taxon.js:182\nmsgid \"This rank must have a parent taxon\"\nmsgstr \"\"\n\n#: ../../../controllers/taxon.js:213\nmsgid \"Taxon successfully created !\"\nmsgstr \"\"\n\n#: ../../../templates/taxon.html:17\nmsgid \"Synonyms\"\nmsgstr \"\"\n\n#: ../../../templates/taxon.html:22\nmsgid \"Type\"\nmsgstr \"\"\n\n#: ../../../templates/taxon.html:23\nmsgid \"Name\"\nmsgstr \"\"\n\n#: ../../../templates/taxon.html:24\nmsgid \"Language\"\nmsgstr \"\"\n\n#: ../../../templates/taxoncreate.html:6\nmsgid \"Create a taxon\"\nmsgstr \"\"\n\n#: ../../../templates/taxoncreate.html:11\nmsgid \"Principal name of the taxon (must be unique)\"\nmsgstr \"\"\n\n#: ../../../templates/taxoncreate.html:15\nmsgid \"Taxon rank\"\nmsgstr \"\"\n\n#: ../../../templates/taxoncreate.html:19\nmsgid \"Direct parent\"\nmsgstr \"\"\n\n#: ../../../templates/taxoncreate.html:25\nmsgid \"Cancel\"\nmsgstr \"\"\n\n#: ../../../templates/taxoncreate.html:26\nmsgid \"Create\"\nmsgstr \"\"\n"
 
 /***/ },
-/* 109 */
+/* 105 */
 /***/ function(module, exports) {
 
-	module.exports = "# SOME DESCRIPTIVE TITLE.\n# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER\n# This file is distributed under the same license as the PACKAGE package.\n# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.\n#\n#, fuzzy\nmsgid \"\"\nmsgstr \"\"\n\"Project-Id-Version: PACKAGE VERSION\\n\"\n\"Report-Msgid-Bugs-To: \\n\"\n\"POT-Creation-Date: 2016-06-03 15:29+0200\\n\"\n\"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\\n\"\n\"Last-Translator: FULL NAME <EMAIL@ADDRESS>\\n\"\n\"Language-Team: LANGUAGE <LL@li.org>\\n\"\n\"Language: fr\\n\"\n\"MIME-Version: 1.0\\n\"\n\"Content-Type: text/plain; charset=UTF-8\\n\"\n\"Content-Transfer-Encoding: 8bit\\n\"\n\n#: ../../../views/taxon.js:56 ../../../controllers/taxon.js:159\nmsgid \"Invalid characters (alphanumeric, _ and - only)\"\nmsgstr \"Caractères invalides (alphanumérique, _ et - seulement)\"\n\n#: ../../../views/taxon.js:59 ../../../controllers/taxon.js:162\nmsgid \"3 characters min\"\nmsgstr \"3 caractères au minimum\"\n\n#: ../../../views/taxon.js:80 ../../../controllers/taxon.js:139\nmsgid \"Taxon name already in usage\"\nmsgstr \"Ce nom de taxon est déjà utilisé\"\n\n#: ../../../routers/taxon.js:40\nmsgid \"List of taxons\"\nmsgstr \"Liste des taxons\"\n\n#: ../../../routers/taxon.js:53\nmsgid \"Taxon details\"\nmsgstr \"Détails du taxon\"\n\n#: ../../../controllers/taxon.js:177\nmsgid \"Family rank cannot have a parent taxon\"\nmsgstr \"Le rang taxinomique famille ne peut pas avoir de parent\"\n\n#: ../../../controllers/taxon.js:182\nmsgid \"This rank must have a parent taxon\"\nmsgstr \"Ce rang taxinomique doit avoir un parent\"\n\n#: ../../../controllers/taxon.js:213\nmsgid \"Taxon successfully created !\"\nmsgstr \"Taxon créé avec succès !\"\n\n#: ../../../templates/taxon.html:22\nmsgid \"Type\"\nmsgstr \"Type\"\n\n#: ../../../templates/taxon.html:23\nmsgid \"Name\"\nmsgstr \"Nom\"\n\n#: ../../../templates/taxon.html:24\nmsgid \"Language\"\nmsgstr \"Language\"\n\n#: ../../../templates/taxoncreate.html:6\nmsgid \"Create a taxon\"\nmsgstr \"Créer un taxon\"\n\n#: ../../../templates/taxoncreate.html:11\nmsgid \"Principal name of the taxon (must be unique)\"\nmsgstr \"Nom principal du taxon (doit être unique)\"\n\n#: ../../../templates/taxoncreate.html:15\nmsgid \"Taxon rank\"\nmsgstr \"Rank taxinomique\"\n\n#: ../../../templates/taxoncreate.html:19\nmsgid \"Direct parent\"\nmsgstr \"Parent directe\"\n\n#: ../../../templates/taxoncreate.html:25\nmsgid \"Cancel\"\nmsgstr \"Annuler\"\n\n#: ../../../templates/taxoncreate.html:26\nmsgid \"Create\"\nmsgstr \"Créer\"\n"
+	module.exports = "# SOME DESCRIPTIVE TITLE.\n# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER\n# This file is distributed under the same license as the PACKAGE package.\n# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.\n#\n#, fuzzy\nmsgid \"\"\nmsgstr \"\"\n\"Project-Id-Version: PACKAGE VERSION\\n\"\n\"Report-Msgid-Bugs-To: \\n\"\n\"POT-Creation-Date: 2016-06-07 11:12+0200\\n\"\n\"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\\n\"\n\"Last-Translator: FULL NAME <EMAIL@ADDRESS>\\n\"\n\"Language-Team: LANGUAGE <LL@li.org>\\n\"\n\"Language: fr\\n\"\n\"MIME-Version: 1.0\\n\"\n\"Content-Type: text/plain; charset=UTF-8\\n\"\n\"Content-Transfer-Encoding: 8bit\\n\"\n\n#: ../../../views/taxon.js:56 ../../../controllers/taxon.js:159\nmsgid \"Invalid characters (alphanumeric, _ and - only)\"\nmsgstr \"Caractères invalides (alphanumérique, _ et - seulement)\"\n\n#: ../../../views/taxon.js:59 ../../../controllers/taxon.js:162\nmsgid \"3 characters min\"\nmsgstr \"3 caractères au minimum\"\n\n#: ../../../views/taxon.js:80 ../../../controllers/taxon.js:139\nmsgid \"Taxon name already in usage\"\nmsgstr \"Ce nom de taxon est déjà utilisé\"\n\n#: ../../../routers/taxon.js:40\nmsgid \"List of taxons\"\nmsgstr \"Liste des taxons\"\n\n#: ../../../routers/taxon.js:53\nmsgid \"Taxon details\"\nmsgstr \"Détails du taxon\"\n\n#: ../../../controllers/taxon.js:177\nmsgid \"Family rank cannot have a parent taxon\"\nmsgstr \"Le rang taxinomique famille ne peut pas avoir de parent\"\n\n#: ../../../controllers/taxon.js:182\nmsgid \"This rank must have a parent taxon\"\nmsgstr \"Ce rang taxinomique doit avoir un parent\"\n\n#: ../../../controllers/taxon.js:213\nmsgid \"Taxon successfully created !\"\nmsgstr \"Taxon créé avec succès !\"\n\n#: ../../../templates/taxon.html:17\nmsgid \"Synonyms\"\nmsgstr \"Synonymes\"\n\n#: ../../../templates/taxon.html:22\nmsgid \"Type\"\nmsgstr \"Type\"\n\n#: ../../../templates/taxon.html:23\nmsgid \"Name\"\nmsgstr \"Nom\"\n\n#: ../../../templates/taxon.html:24\nmsgid \"Language\"\nmsgstr \"Language\"\n\n#: ../../../templates/taxoncreate.html:6\nmsgid \"Create a taxon\"\nmsgstr \"Créer un taxon\"\n\n#: ../../../templates/taxoncreate.html:11\nmsgid \"Principal name of the taxon (must be unique)\"\nmsgstr \"Nom principal du taxon (doit être unique)\"\n\n#: ../../../templates/taxoncreate.html:15\nmsgid \"Taxon rank\"\nmsgstr \"Rank taxinomique\"\n\n#: ../../../templates/taxoncreate.html:19\nmsgid \"Direct parent\"\nmsgstr \"Parent directe\"\n\n#: ../../../templates/taxoncreate.html:25\nmsgid \"Cancel\"\nmsgstr \"Annuler\"\n\n#: ../../../templates/taxoncreate.html:26\nmsgid \"Create\"\nmsgstr \"Créer\"\n"
 
 /***/ },
-/* 110 */
+/* 106 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -39955,7 +39607,7 @@
 	 * @details
 	 */
 
-	var TaxonRankModel = __webpack_require__(111);
+	var TaxonRankModel = __webpack_require__(107);
 
 	var TaxonRankCollection = Backbone.Collection.extend({
 	    url: ohgr.baseUrl + 'taxonomy/rank/',
@@ -39978,7 +39630,7 @@
 
 
 /***/ },
-/* 111 */
+/* 107 */
 /***/ function(module, exports) {
 
 	/**
@@ -40000,7 +39652,7 @@
 
 
 /***/ },
-/* 112 */
+/* 108 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -40014,11 +39666,11 @@
 	 */
 
 	var Marionette = __webpack_require__(4);
-	var TaxonModel = __webpack_require__(113);
-	var TaxonCollection = __webpack_require__(114);
-	var TaxonListView = __webpack_require__(115);
-	var DefaultLayout = __webpack_require__(105);
-	var TitleView = __webpack_require__(106);
+	var TaxonModel = __webpack_require__(109);
+	var TaxonCollection = __webpack_require__(110);
+	var TaxonListView = __webpack_require__(111);
+	var DefaultLayout = __webpack_require__(101);
+	var TitleView = __webpack_require__(102);
 
 	var TaxonController = Marionette.Controller.extend({
 
@@ -40026,7 +39678,7 @@
 	        var CreateTaxonView = Marionette.ItemView.extend({
 	            el: "#dialog_content",
 	            tagName: "div",
-	            template: __webpack_require__(118),
+	            template: __webpack_require__(114),
 
 	            ui: {
 	                "cancel": "button.cancel",
@@ -40253,7 +39905,7 @@
 
 
 /***/ },
-/* 113 */
+/* 109 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -40361,7 +40013,7 @@
 
 
 /***/ },
-/* 114 */
+/* 110 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -40374,7 +40026,7 @@
 	 * @details
 	 */
 
-	var TaxonModel = __webpack_require__(113);
+	var TaxonModel = __webpack_require__(109);
 
 	var TaxonCollection = Backbone.Collection.extend({
 	    url: ohgr.baseUrl + 'taxonomy/',
@@ -40416,7 +40068,7 @@
 
 
 /***/ },
-/* 115 */
+/* 111 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -40430,8 +40082,8 @@
 	 */
 
 	var Marionette = __webpack_require__(4);
-	var TaxonModel = __webpack_require__(113);
-	var TaxonView = __webpack_require__(116);
+	var TaxonModel = __webpack_require__(109);
+	var TaxonView = __webpack_require__(112);
 
 	var TaxonListView = Marionette.CollectionView.extend({
 	    //el: '#main_content',
@@ -40476,7 +40128,7 @@
 
 
 /***/ },
-/* 116 */
+/* 112 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -40490,11 +40142,11 @@
 	 */
 
 	var Marionette = __webpack_require__(4);
-	var TaxonModel = __webpack_require__(113);
+	var TaxonModel = __webpack_require__(109);
 
 	var TaxonItemView = Marionette.ItemView.extend({
 	    tagName: 'div',
-	    template: __webpack_require__(117),
+	    template: __webpack_require__(113),
 
 	    ui: {
 	        "synonym_name": ".synonym-name",
@@ -40620,7 +40272,7 @@
 
 
 /***/ },
-/* 117 */
+/* 113 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -40638,7 +40290,9 @@
 	__e( name ) +
 	'</span><span class="taxon-rank badge left-margin" value="' +
 	((__t = ( rank )) == null ? '' : __t) +
-	'"></span><br></span><hr class="hr-default"><div class="taxon-synonyms"></div><h4>Synonyms</h4><table class="table table-striped"><thead><tr><th><span class="glyphicon glyphicon-asterisk"></span></th><th>' +
+	'"></span><br></span><hr class="hr-default"><div class="taxon-synonyms"></div><h4>' +
+	((__t = ( gt.gettext("Synonyms") )) == null ? '' : __t) +
+	'</h4><table class="table table-striped"><thead><tr><th><span class="glyphicon glyphicon-asterisk"></span></th><th>' +
 	((__t = ( gt.gettext("Type") )) == null ? '' : __t) +
 	'</th><th>' +
 	((__t = ( gt.gettext("Name") )) == null ? '' : __t) +
@@ -40666,7 +40320,7 @@
 
 
 /***/ },
-/* 118 */
+/* 114 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -40695,7 +40349,7 @@
 
 
 /***/ },
-/* 119 */
+/* 115 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -40709,12 +40363,12 @@
 	 */
 
 	var Marionette = __webpack_require__(4);
-	var TaxonModel = __webpack_require__(113);
-	var TaxonCollection = __webpack_require__(114);
-	var TaxonListView = __webpack_require__(115);
-	var TaxonItemView = __webpack_require__(116);
-	var DefaultLayout = __webpack_require__(105);
-	var TitleView = __webpack_require__(106);
+	var TaxonModel = __webpack_require__(109);
+	var TaxonCollection = __webpack_require__(110);
+	var TaxonListView = __webpack_require__(111);
+	var TaxonItemView = __webpack_require__(112);
+	var DefaultLayout = __webpack_require__(101);
+	var TitleView = __webpack_require__(102);
 
 	var TaxonRouter = Marionette.AppRouter.extend({
 	    routes : {
@@ -40762,7 +40416,7 @@
 
 
 /***/ },
-/* 120 */
+/* 116 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -40788,9 +40442,9 @@
 
 	        // i18n
 	        if (user.language === "fr") {
-	            gt.addTextdomain('default', __webpack_require__(121));
+	            gt.addTextdomain('default', __webpack_require__(117));
 	        } else {  // default to english
-	            gt.addTextdomain('default', __webpack_require__(122));
+	            gt.addTextdomain('default', __webpack_require__(118));
 	        }
 	    },
 
@@ -40814,14 +40468,14 @@
 
 
 /***/ },
-/* 121 */
+/* 117 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer) {module.exports = new Buffer([222,18,4,149,0,0,0,0,1,0,0,0,28,0,0,0,36,0,0,0,3,0,0,0,44,0,0,0,0,0,0,0,56,0,0,0,66,1,0,0,57,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,80,114,111,106,101,99,116,45,73,100,45,86,101,114,115,105,111,110,58,32,80,65,67,75,65,71,69,32,86,69,82,83,73,79,78,10,82,101,112,111,114,116,45,77,115,103,105,100,45,66,117,103,115,45,84,111,58,32,10,80,79,84,45,67,114,101,97,116,105,111,110,45,68,97,116,101,58,32,50,48,49,54,45,48,54,45,48,51,32,49,53,58,51,48,43,48,50,48,48,10,80,79,45,82,101,118,105,115,105,111,110,45,68,97,116,101,58,32,89,69,65,82,45,77,79,45,68,65,32,72,79,58,77,73,43,90,79,78,69,10,76,97,115,116,45,84,114,97,110,115,108,97,116,111,114,58,32,70,85,76,76,32,78,65,77,69,32,60,69,77,65,73,76,64,65,68,68,82,69,83,83,62,10,76,97,110,103,117,97,103,101,45,84,101,97,109,58,32,76,65,78,71,85,65,71,69,32,60,76,76,64,108,105,46,111,114,103,62,10,76,97,110,103,117,97,103,101,58,32,102,114,10,77,73,77,69,45,86,101,114,115,105,111,110,58,32,49,46,48,10,67,111,110,116,101,110,116,45,84,121,112,101,58,32,116,101,120,116,47,112,108,97,105,110,59,32,99,104,97,114,115,101,116,61,85,84,70,45,56,10,67,111,110,116,101,110,116,45,84,114,97,110,115,102,101,114,45,69,110,99,111,100,105,110,103,58,32,56,98,105,116,10,0])
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13).Buffer))
 
 /***/ },
-/* 122 */
+/* 118 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer) {module.exports = new Buffer([222,18,4,149,0,0,0,0,1,0,0,0,28,0,0,0,36,0,0,0,3,0,0,0,44,0,0,0,0,0,0,0,56,0,0,0,66,1,0,0,57,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,80,114,111,106,101,99,116,45,73,100,45,86,101,114,115,105,111,110,58,32,80,65,67,75,65,71,69,32,86,69,82,83,73,79,78,10,82,101,112,111,114,116,45,77,115,103,105,100,45,66,117,103,115,45,84,111,58,32,10,80,79,84,45,67,114,101,97,116,105,111,110,45,68,97,116,101,58,32,50,48,49,54,45,48,54,45,48,51,32,49,53,58,51,48,43,48,50,48,48,10,80,79,45,82,101,118,105,115,105,111,110,45,68,97,116,101,58,32,89,69,65,82,45,77,79,45,68,65,32,72,79,58,77,73,43,90,79,78,69,10,76,97,115,116,45,84,114,97,110,115,108,97,116,111,114,58,32,70,85,76,76,32,78,65,77,69,32,60,69,77,65,73,76,64,65,68,68,82,69,83,83,62,10,76,97,110,103,117,97,103,101,45,84,101,97,109,58,32,76,65,78,71,85,65,71,69,32,60,76,76,64,108,105,46,111,114,103,62,10,76,97,110,103,117,97,103,101,58,32,101,110,10,77,73,77,69,45,86,101,114,115,105,111,110,58,32,49,46,48,10,67,111,110,116,101,110,116,45,84,121,112,101,58,32,116,101,120,116,47,112,108,97,105,110,59,32,99,104,97,114,115,101,116,61,85,84,70,45,56,10,67,111,110,116,101,110,116,45,84,114,97,110,115,102,101,114,45,69,110,99,111,100,105,110,103,58,32,56,98,105,116,10,0])

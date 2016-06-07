@@ -50,7 +50,7 @@ hr {
 }
 
 .event {
-    font-family: "Lucida Blackletter";
+    font-family: "DejaVu Serif";
     font-size: 12px;
     padding: 5px;
 }
@@ -114,8 +114,23 @@ span.url {
     margin-left: 10px;
 }
 
+/*.element {*/
+    /*border-bottom: 1px solid #96a052;*/
+    /*maring-top: 0px;*/
+    /*margin-bottom: 15px;*/
+/*}*/
+
 /*.ui-autocomplete {*/
     /*position: absolute;*/
     /*cursor: default;*/
     /*z-index:10000 !important;*/
 /*}*/
+
+.hr-default {
+    margin-top: 10px;
+    margin-bottom: 0px;
+}
+
+/*.table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th {
+    padding: 3px !important;
+}*/

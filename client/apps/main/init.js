@@ -10,7 +10,7 @@
 
 var Marionette = require('backbone.marionette');
 
-mainStyle = require('./css/main.css');
+//mainStyle = require('./css/main.css');  // included in main.html on django side
 
 //
 // Main module definition

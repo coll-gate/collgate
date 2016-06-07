@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-03 15:40+0200\n"
+"POT-Creation-Date: 2016-06-07 11:10+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -45,6 +45,18 @@ msgstr ""
 msgid "You are not allowed to delete a synonym from a taxon"
 msgstr ""
 
+#: controller.py:127
+msgid "Undefined synonym name or primary synonym"
+msgstr ""
+
+#: controller.py:130
+msgid "Undefined synonym language"
+msgstr ""
+
+#: controller.py:133
+msgid "Taxon synonym already exists"
+msgstr ""
+
 #: models.py:19
 msgid "Family"
 msgstr ""
@@ -67,51 +79,4 @@ msgstr ""
 
 #: models.py:24
 msgid "Sub-specie"
-msgstr ""
-
-#: templates/taxonomy/createtaxon.html:11
-msgid "Creation of a new taxon"
-msgstr ""
-
-#: templates/taxonomy/createtaxon.html:20
-msgid "Submit"
-msgstr ""
-
-#: templates/taxonomy/createtaxon.html:43
-#: templates/taxonomy/createtaxon.html:89
-#: templates/taxonomy/taxondetails.html:81
-msgid "Invalid characters (alphanumeric, _ and - only)"
-msgstr ""
-
-#: templates/taxonomy/createtaxon.html:126
-msgid "Create taxonomy"
-msgstr ""
-
-#: templates/taxonomy/taxondetails.html:25
-msgid "Detail of a taxon"
-msgstr ""
-
-#: templates/taxonomy/taxondetails.html:42
-msgid "Type"
-msgstr ""
-
-#: templates/taxonomy/taxondetails.html:43
-msgid "Name"
-msgstr ""
-
-#: templates/taxonomy/taxondetails.html:44
-msgid "Language"
-msgstr ""
-
-#: templates/taxonomy/taxondetails.html:149
-msgid "Unable to add the synonym"
-msgstr ""
-
-#: templates/taxonomy/taxondetails.html:171
-#: templates/taxonomy/taxondetails.html:175
-msgid "Unable to remove the synonym"
-msgstr ""
-
-#: templates/taxonomy/taxondetails.html:187
-msgid "Taxon details"
 msgstr ""

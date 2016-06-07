@@ -10,6 +10,8 @@ from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
 from .models import Languages, SynonymType
 
+from django.utils.translation import ugettext_lazy as _
+
 
 # for single app page with html5 navigation
 class RestApp(RestHandler):
@@ -42,7 +44,7 @@ def index(request):
             request.session.set_test_cookie()
 
             messages.add_message(
-                request, messages.INFO, 'You are not authenticated.')
+                request, messages.INFO, _('You are not authenticated.'))
 
             request.session['validated'] = False
         else:
@@ -52,7 +54,7 @@ def index(request):
             elif not request.session['validated']:
                 request.session.set_test_cookie()
                 messages.add_message(
-                    request, messages.WARNING, 'Please, you must enable your cookies.')
+                    request, messages.WARNING, _('Please, you must enable your cookies.'))
 
     context = {}
     return render(request, 'main/home.html', context)
@@ -68,7 +70,7 @@ def index(request, path):
             request.session.set_test_cookie()
 
             messages.add_message(
-                request, messages.INFO, 'You are not authenticated.')
+                request, messages.INFO, _('You are not authenticated.'))
 
             request.session['validated'] = False
         else:
@@ -78,7 +80,7 @@ def index(request, path):
             elif not request.session['validated']:
                 request.session.set_test_cookie()
                 messages.add_message(
-                    request, messages.WARNING, 'Please, you must enable your cookies.')
+                    request, messages.WARNING, _('Please, you must enable your cookies.'))
 
     context = {'path': path + "/"}
     return render(request, 'main/home.html', context)

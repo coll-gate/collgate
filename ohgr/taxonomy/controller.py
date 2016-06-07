@@ -10,6 +10,8 @@ from django.core.exceptions import SuspiciousOperation, PermissionDenied
 from main.models import SynonymType, Languages
 from .models import Taxon, TaxonSynonym
 
+from django.utils.translation import ugettext_noop as _
+
 
 class Taxonomy(object):
 
@@ -122,13 +124,13 @@ class Taxonomy(object):
             raise SuspiciousOperation('Empty synonym')
 
         if not synonym['name'] or synonym['type'] == SynonymType.PRIMARY:
-            raise SuspiciousOperation('Undefined synonym name or primary synonym')
+            raise SuspiciousOperation(_('Undefined synonym name or primary synonym'))
 
         if not synonym['language']:
-            raise SuspiciousOperation('Undefined synonym langauge')
+            raise SuspiciousOperation(_('Undefined synonym language'))
 
         if TaxonSynonym.objects.filter(name=synonym['name']).exists():
-            raise PermissionDenied('Taxon synonym already exists')
+            raise PermissionDenied(_('Taxon synonym already exists'))
 
         synonym = TaxonSynonym(taxon=taxon,
                                name=synonym['name'],

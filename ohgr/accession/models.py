@@ -8,7 +8,6 @@ ohgr accession module models.
 
 from django.db import models
 
-from django.utils.translation import ugettext_lazy as _
 from igdectk.common.models import ChoiceEnum, IntegerChoice
 
 from main.models import SynonymType, Languages
