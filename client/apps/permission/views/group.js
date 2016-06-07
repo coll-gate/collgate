@@ -19,12 +19,13 @@ var View = Marionette.ItemView.extend({
     ui: {
         delete_group: 'span.delete-group',
         view_permissions: 'td.view-permissions',
-        //group_add_user: 'td.group-add-user',
+        view_users: 'th.view-users',
     },
 
     events: {
-        'click @ui.view_permissions': 'viewPermissions',
         'click @ui.delete_group': 'deleteGroup',
+        'click @ui.view_permissions': 'viewPermissions',
+        'click @ui.view_users': 'viewUsers',
     },
 
     initialize: function() {
@@ -38,7 +39,11 @@ var View = Marionette.ItemView.extend({
     },
 
     viewPermissions: function () {
-        Backbone.history.navigate("app/permission/group/" + this.model.get('name') + "/", {trigger: true});
+        Backbone.history.navigate("app/permission/group/" + this.model.get('name') + "/permission/", {trigger: true});
+    },
+
+    viewUsers: function () {
+        Backbone.history.navigate("app/permission/group/" + this.model.get('name') + "/user/", {trigger: true});
     }
 });
 

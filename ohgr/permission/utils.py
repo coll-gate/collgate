@@ -7,10 +7,10 @@ ohgr permission utilities
 """
 
 
-def get_permissions_for(user, app_label, model, obj=None):
+def get_permissions_for(user_or_group, app_label, model, obj=None):
     # _p = Permission.objects.filter(content_type__app_label=app_label, content_type__model=model)
     # perms = UserObjectPermission.objects.filter(user=user, permission__in=_p)
-    perms = user.get_all_permissions()
+    perms = user_or_group.get_all_permissions()
 
     results = []
 
@@ -20,7 +20,7 @@ def get_permissions_for(user, app_label, model, obj=None):
             results.append(perm)
 
     if obj:
-        perms = user.get_all_permissions(obj=obj)
+        perms = user_or_group.get_all_permissions(obj=obj)
 
         for perm in perms:
             p = perm.split('_')

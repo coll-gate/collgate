@@ -9,5 +9,5 @@
 -->
 
 <th scope="row"><span class="delete-group action glyphicon glyphicon-minus-sign"></span></th>
-<td name="name" class="action view-permissions" value="<%= name %>"><%- name %></td>
-<td name="num_users"><%- num_users %></td>
+<td name="name" class="action view-permissions" value="<%= name %>"><%= name %></td>
+<th scope="row" class="action view-users" name="num_users"><abbr class="badge" title="<%= gt.gettext('Manage user list') %>"><%= num_users %></abbr></th>

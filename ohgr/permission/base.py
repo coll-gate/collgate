@@ -55,8 +55,18 @@ class RestTaxonomyGroupSearch(RestPermissionGroup):
 
 
 class RestPermissionGroupName(RestPermissionGroup):
-    regex = r'^(?P<groupname>[a-zA-Z0-9\.\-_]+)/$'
-    suffix = 'groupname'
+    regex = r'^(?P<name>[a-zA-Z0-9\.\-_]+)/$'
+    suffix = 'name'
+
+
+class RestPermissionGroupNameUser(RestPermissionGroupName):
+    regex = r'^user/$'
+    suffix = 'user'
+
+
+class RestPermissionGroupNamePermission(RestPermissionGroupName):
+    regex = r'^permission/$'
+    suffix = 'permission'
 
 
 @RestPermissionType.def_request(Method.GET, Format.JSON)
@@ -154,6 +164,22 @@ def add_group(request):
 
     response = {
         'id': group.id,
+        'result': 'success',
+    }
+
+    return HttpResponseRest(request, response)
+
+
+@RestPermissionGroupName.def_auth_request(Method.DELETE, Format.JSON, staff=True)
+def delete_group(request, name):
+    group = get_object_or_404(Group, name__exact=name)
+
+    if group.user_set.all().count() > 0:
+        raise SuspiciousOperation(_("Only empty groups can be deleted"))
+
+    group.delete()
+
+    response = {
         'result': 'success',
     }
 
@@ -379,6 +405,64 @@ def delete_user_permission(request, username):
             raise SuspiciousOperation('Invalid patch action')
 
     response = {'result': 'success'}
+    return HttpResponseRest(request, response)
+
+
+@RestPermissionGroupNamePermission.def_auth_request(Method.GET, Format.JSON, staff=True)
+def get_group_permissions(request, name):
+    group = get_object_or_404(Group, name=name)
+
+    permissions = []
+
+    checkout = Permission.objects.filter(group=group).select_related('content_type')
+    lookup = {}
+
+    for perm in checkout:
+        if perm.content_type.model in lookup:
+            perms = lookup[perm.content_type.model]
+        else:
+            perms = []
+            lookup[perm.content_type.model] = perms
+
+        perms.append({
+            'id': perm.codename,
+            'name': perm.name,
+            'app_label': perm.content_type.app_label,
+        })
+
+    for k, v in lookup.items():
+        permissions.append(Perm(v, k, None, None))
+
+    checkout = UserObjectPermission.objects.filter(group=group).select_related('permission', 'content_type')
+    lookup = {}
+
+    for perm in checkout:
+        obj_name = perm.content_type.get_object_for_this_type(id=perm.object_pk).name
+
+        if (perm.object_pk, perm.content_type.model, obj_name) in lookup:
+            perms = lookup[(perm.object_pk, perm.content_type.model, obj_name)]
+        else:
+            perms = []
+            lookup[(perm.object_pk, perm.content_type.model, obj_name)] = perms
+
+        perms.append({
+            'id': perm.permission.codename,
+            'name': perm.permission.name,
+            'app_label': perm.content_type.app_label,
+        })
+
+    for k, v in lookup.items():
+        permissions.append(Perm(v, k[1], k[0], k[2]))
+
+    permissions.sort()
+
+    response = {
+        'name': name,
+        'permissions': permissions,
+        'perms': get_permissions_for(group, "auth", "permission"),
+        'result': 'success'
+    }
+
     return HttpResponseRest(request, response)
 
 
