@@ -39264,6 +39264,7 @@
 	        if (data.result != 'success')
 	            return [];
 
+	        this.perms = data.perms;
 	        return data.groups;
 	    },
 	});
@@ -39288,7 +39289,7 @@
 	var Backbone = __webpack_require__(2);
 
 	var Model = Backbone.Model.extend({
-	    url: function() { return ohgr.baseUrl + 'permission/group/' + this.name + '/'; },
+	    //url: function() { return ohgr.baseUrl + 'permission/group/' + this.name + '/'; },
 
 	    defaults: {
 	        id: undefined,
@@ -39302,6 +39303,7 @@
 	    },
 
 	    parse: function(data) {
+	        this.perms = data.perms;
 	        return data;
 	    },
 
@@ -39341,6 +39343,17 @@
 	    childView: PermissionGroupView,
 	    childViewContainer: 'tbody.permission-group-list',
 
+	    ui: {
+	        add_group_panel: 'div.add-group-panel',
+	        add_group_btn: 'span.add-group',
+	        add_group_name: 'input.group-name',
+	    },
+
+	    events: {
+	        'click @ui.add_group_btn': 'addGroup',
+	        'input @ui.add_group_name': 'onGroupNameInput',
+	    },
+
 	    initialize: function() {
 	        this.listenTo(this.collection, 'reset', this.render, this);
 	        //this.listenTo(this.collection, 'add', this.render, this);
@@ -39349,6 +39362,55 @@
 	    },
 
 	    onRender: function() {
+	        if ($.inArray("auth.add_group", this.collection.perms) < 0) {
+	            $(this.ui.add_group_panel).remove();
+	        }
+	    },
+
+	    addGroup: function () {
+	        this.collection.create({name: this.ui.add_group_name.val()}, {wait: true});
+	        //group.save({wait: true});
+	    },
+
+	    validateGroupName: function() {
+	        var v = this.ui.add_group_name.val();
+	        var re = /^[a-zA-Z0-9_\-]+$/i;
+
+	        if (v.length > 0 && !re.test(v)) {
+	            validateInput(this.ui.add_group_name, 'failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
+	            return false;
+	        } else if (v.length < 3) {
+	            validateInput(this.ui.add_group_name, 'failed', gt.gettext('3 characters min'));
+	            return false;
+	        }
+
+	        return true;
+	    },
+
+	    onGroupNameInput: function () {
+	        if (this.validateGroupName()) {
+	            $.ajax({
+	                type: "GET",
+	                url: ohgr.baseUrl + 'permission/group/search/',
+	                dataType: 'json',
+	                data: {term: this.ui.add_group_name.val(), type: "name", mode: "ieq"},
+	                el: this.ui.add_group_name,
+	                success: function(data) {
+	                    if (data.length > 0) {
+	                        for (var i in data) {
+	                            var t = data[i];
+
+	                            if (t.value.toUpperCase() == this.el.val().toUpperCase()) {
+	                                validateInput(this.el, 'failed', gt.gettext('Group name already in usage'));
+	                                break;
+	                            }
+	                        }
+	                    } else {
+	                        validateInput(this.el, 'ok');
+	                    }
+	                }
+	            });
+	        }
 	    },
 	});
 
@@ -39378,11 +39440,14 @@
 	    template: __webpack_require__(99),
 
 	    ui: {
-	        viewPermissions: 'td.view-permissions',
+	        delete_group: 'span.delete-group',
+	        view_permissions: 'td.view-permissions',
+	        //group_add_user: 'td.group-add-user',
 	    },
 
 	    events: {
-	        'click @ui.viewPermissions': 'viewPermissions',
+	        'click @ui.view_permissions': 'viewPermissions',
+	        'click @ui.delete_group': 'deleteGroup',
 	    },
 
 	    initialize: function() {
@@ -39390,6 +39455,9 @@
 	    },
 
 	    onRender: function() {
+	        if ($.inArray("auth.delete_group", this.model.perms) < 0) {
+	            $(this.ui.delete_group).remove();
+	        }
 	    },
 
 	    viewPermissions: function () {
@@ -39410,7 +39478,7 @@
 	obj || (obj = {});
 	var __t, __p = '', __e = _.escape;
 	with (obj) {
-	__p += '<td name="name" class="action view-permissions" value="' +
+	__p += '<th scope="row"><span class="delete-group action glyphicon glyphicon-minus-sign"></span></th><td name="name" class="action view-permissions" value="' +
 	((__t = ( name )) == null ? '' : __t) +
 	'">' +
 	__e( name ) +
@@ -39433,11 +39501,11 @@
 	obj || (obj = {});
 	var __t, __p = '';
 	with (obj) {
-	__p += '<div class="element object permission-group-list" object-type="group-list" style="width:100%"><table class="table table-striped"><thead><tr><th>' +
+	__p += '<div class="element object permission-group-list" object-type="group-list" style="width:100%"><table class="table table-striped"><thead><tr><th scope="row"><span class="glyphicon glyphicon-asterisk"></span></th><th>' +
 	((__t = ( gt.gettext("Name") )) == null ? '' : __t) +
 	'</th><th>' +
 	((__t = ( gt.gettext("Number of users") )) == null ? '' : __t) +
-	'</th></tr></thead><tbody class="permission-group-list"></tbody></table></div>';
+	'</th></tr></thead><tbody class="permission-group-list"></tbody></table></div><div class="add-group-panel"><table class="table table-striped"><tbody><tr class="edit-mode"><th scope="row"><span style="margin-top: 10px" class="add-group action glyphicon glyphicon-plus-sign"></span></th><td><div class="form-group"><input type="text" class="group-name form-control" name="group"></div></td></tr></tbody></table></div>';
 
 	}
 	return __p
@@ -40186,10 +40254,10 @@
 	        var re = /^[a-zA-Z0-9_\-]+$/i;
 
 	        if (v.length > 0 && !re.test(v)) {
-	            validateInput(this.ui.synonym_name, 'failed', gettext("Invalid characters (alphanumeric, _ and - only)"));
+	            validateInput(this.ui.synonym_name, 'failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
 	            return false;
 	        } else if (v.length < 3) {
-	            validateInput(this.ui.synonym_name, 'failed', gettext('3 characters min'));
+	            validateInput(this.ui.synonym_name, 'failed', gt.gettext('3 characters min'));
 	            return false;
 	        }
 
@@ -40210,7 +40278,7 @@
 	                            var t = data[i];
 
 	                            if (t.value.toUpperCase() == this.el.val().toUpperCase()) {
-	                                validateInput(this.el, 'failed', gettext('Taxon name already in usage'));
+	                                validateInput(this.el, 'failed', gt.gettext('Taxon name already in usage'));
 	                                break;
 	                            }
 	                        }

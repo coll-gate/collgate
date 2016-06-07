@@ -12,11 +12,22 @@
     <table class="table table-striped">
         <thead>
             <tr>
+                <th scope="row"><span class="glyphicon glyphicon-asterisk"></span></th>
                 <th><%= gt.gettext("Name") %></th>
                 <th><%= gt.gettext("Number of users") %></th>
             </tr>
         </thead>
         <tbody class="permission-group-list">
+        </tbody>
+    </table>
+</div>
+<div class="add-group-panel">
+    <table class="table table-striped">
+        <tbody>
+            <tr class="edit-mode">
+                <th scope="row"><span style="margin-top: 10px;" class="add-group action glyphicon glyphicon-plus-sign"></span></th>
+                <td><div class="form-group"><input type="text" class="group-name form-control" name="group"/></div></td>
+            </tr>
         </tbody>
     </table>
 </div>

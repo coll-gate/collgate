@@ -11,7 +11,7 @@
 var Backbone = require('backbone');
 
 var Model = Backbone.Model.extend({
-    url: function() { return ohgr.baseUrl + 'permission/group/' + this.name + '/'; },
+    //url: function() { return ohgr.baseUrl + 'permission/group/' + this.name + '/'; },
 
     defaults: {
         id: undefined,
@@ -25,6 +25,7 @@ var Model = Backbone.Model.extend({
     },
 
     parse: function(data) {
+        this.perms = data.perms;
         return data;
     },
 

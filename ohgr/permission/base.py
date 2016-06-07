@@ -3,7 +3,7 @@
 # Copyright (c) 2016 INRA UMR1095 GDEC
 
 """
-ohgr permission rest handler
+ohgr permission REST API
 """
 from django.contrib.auth.models import Permission, User, Group
 from django.contrib.contenttypes.models import ContentType
@@ -15,6 +15,8 @@ from guardian.models import UserObjectPermission
 
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
+
+from .utils import get_permissions_for
 
 
 class RestPermission(RestHandler):
@@ -45,6 +47,11 @@ class RestPermissionUserNamePermission(RestPermissionUserName):
 class RestPermissionGroup(RestPermission):
     regex = r'^group/$'
     suffix = 'group'
+
+
+class RestTaxonomyGroupSearch(RestPermissionGroup):
+    regex = r'^search/$'
+    suffix = 'search'
 
 
 class RestPermissionGroupName(RestPermissionGroup):
@@ -91,7 +98,8 @@ def get_users_list(request):
 
     response = {
         'users': users,
-        'result': 'success'
+        'result': 'success',
+        'perms': get_permissions_for(request.user, "auth", "user")
     }
 
     for user in query:
@@ -103,42 +111,71 @@ def get_users_list(request):
             'email': user.email,
             'is_active': user.is_active,
             'is_staff': user.is_staff,
-            'is_superuser': user.is_superuser
+            'is_superuser': user.is_superuser,
         })
 
     return HttpResponseRest(request, response)
 
 
-@RestPermissionGroup.def_admin_request(Method.GET, Format.JSON)
+@RestPermissionGroup.def_auth_request(Method.GET, Format.JSON, staff=True)
 def get_groups_list(request):
     groups = Group.objects.all()
 
     response = {
         'groups': [],
-        'result': 'success'
+        'result': 'success',
+        'perms': get_permissions_for(request.user, "auth", "group"),
     }
 
     for group in groups:
-        response['groups'].add({
+        response['groups'].append({
             'name': group.name,
-            'num_users': group.user_set.all().count()
+            'num_users': group.user_set.all().count(),
+            'perms': get_permissions_for(request.user, "auth", "group", group),
         })
 
     return HttpResponseRest(request, response)
 
 
-def get_permissions_for(user, app_label, model):
-    # _p = Permission.objects.filter(content_type__app_label=app_label, content_type__model=model)
-    # perms = UserObjectPermission.objects.filter(user=user, permission__in=_p)
-    perms = user.get_all_permissions()
+@RestPermissionGroup.def_auth_request(Method.POST, Format.JSON, staff=True, content={
+    "type": "object",
+    "properties": {
+        "name": {"type": "string", "minLength": 3, "maxLength": 64},
+    },
+})
+def add_group(request):
+    group_name = request.data['name']
 
-    results = []
+    if Group.objects.filter(name__exact=group_name).exists():
+        raise SuspiciousOperation(_("Group name already in usage"))
 
-    for perm in perms:
-        if perm.startswith(app_label) and perm.endswith("_" + model):
-            results.append(perm)
+    group = Group(name=group_name)
+    group.save()
 
-    return results
+    response = {
+        'id': group.id,
+        'result': 'success',
+    }
+
+    return HttpResponseRest(request, response)
+
+
+@RestTaxonomyGroupSearch.def_auth_request(Method.GET, Format.JSON, ('term', 'type', 'mode'))
+def search_group(request):
+    groups = None
+
+    if request.GET['mode'] == 'ieq' and request.GET['type'] == 'name':
+        groups = Group.objects.filter(name__iexact=request.GET['term'])
+    elif request.GET['mode'] == 'icontains' and request.GET['type'] == 'name':
+        groups = Group.objects.filter(name__icontains=request.GET['term'])
+
+    response = []
+
+    if groups:
+        for g in groups:
+            response.append({"id": str(g.id), "label": g.name, "value": g.name})
+
+    return HttpResponseRest(request, response)
 
 
 class Perm:

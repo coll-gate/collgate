@@ -17,11 +17,14 @@ var View = Marionette.ItemView.extend({
     template: require('../templates/group.html'),
 
     ui: {
-        viewPermissions: 'td.view-permissions',
+        delete_group: 'span.delete-group',
+        view_permissions: 'td.view-permissions',
+        //group_add_user: 'td.group-add-user',
     },
 
     events: {
-        'click @ui.viewPermissions': 'viewPermissions',
+        'click @ui.view_permissions': 'viewPermissions',
+        'click @ui.delete_group': 'deleteGroup',
     },
 
     initialize: function() {
@@ -29,6 +32,9 @@ var View = Marionette.ItemView.extend({
     },
 
     onRender: function() {
+        if ($.inArray("auth.delete_group", this.model.perms) < 0) {
+            $(this.ui.delete_group).remove();
+        }
     },
 
     viewPermissions: function () {
