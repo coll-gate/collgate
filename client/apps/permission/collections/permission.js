@@ -22,7 +22,7 @@ var PermissionCollection = Backbone.Collection.extend({
 
     initialize: function(models, options) {
         this.is_group = options.is_group || false;
-        this.username = options.name;
+        this.name = options.name;
     },
 
     parse: function(data) {

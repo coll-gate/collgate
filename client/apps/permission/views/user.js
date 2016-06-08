@@ -94,7 +94,7 @@ var View = Marionette.ItemView.extend({
     },
 
     viewPermissions: function () {
-        Backbone.history.navigate("app/permission/user/" + this.model.get('username') + "/", {trigger: true});
+        Backbone.history.navigate("app/permission/user/" + this.model.get('username') + "/permission/", {trigger: true});
     }
 });
 

@@ -53,10 +53,10 @@ var TaxonItemView = Marionette.ItemView.extend({
         var re = /^[a-zA-Z0-9_\-]+$/i;
 
         if (v.length > 0 && !re.test(v)) {
-            validateInput(this.ui.synonym_name, 'failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
+            $(this.ui.synonym_name).validateField('failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
             return false;
         } else if (v.length < 3) {
-            validateInput(this.ui.synonym_name, 'failed', gt.gettext('3 characters min'));
+            $(this.ui.synonym_name).validateField('failed', gt.gettext('3 characters min'));
             return false;
         }
 
@@ -77,12 +77,12 @@ var TaxonItemView = Marionette.ItemView.extend({
                             var t = data[i];
 
                             if (t.value.toUpperCase() == this.el.val().toUpperCase()) {
-                                validateInput(this.el, 'failed', gt.gettext('Taxon name already in usage'));
+                                $(this.el).validateField('failed', gt.gettext('Taxon name already in usage'));
                                 break;
                             }
                         }
                     } else {
-                        validateInput(this.el, 'ok');
+                        $(this.el).validateField('ok');
                     }
                 }
             });

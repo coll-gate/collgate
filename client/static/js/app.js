@@ -130,7 +130,7 @@
 	                    dfd.resolve.apply(xhr, arguments);
 	                } else {
 	                    var data = JSON.parse(xhr.responseText);
-	                    if ((xhr.status >= 401 && xhr.status <= 599) && data.cause) {
+	                    if ((xhr.status >= 400 && xhr.status <= 599) && data.cause) {
 	                        error(gettext(data.cause));
 	                    }
 	                    dfd.reject.apply(xhr, arguments);
@@ -38544,9 +38544,10 @@
 	var PermissionRouter = Marionette.AppRouter.extend({
 	    routes : {
 	        "app/permission/user/": "getUsers",
-	        "app/permission/user/:username/": "getPermissionsForUser",
+	        "app/permission/user/:username/permission/": "getPermissionsForUser",
 	        "app/permission/group/": "getGroups",
-	        "app/permission/group/:groupname/": "getPermissionsForGroup",
+	        "app/permission/group/:groupname/permission/": "getPermissionsForGroup",
+	        "app/permission/group/:groupname/user/": "getUsersForGroup",
 	    },
 
 	    getUsers: function () {
@@ -38589,7 +38590,7 @@
 	    },
 
 	    getPermissionsForGroup: function(name) {
-	        var permissionsCollection = new PermissionCollection([], {name: name})
+	        var permissionsCollection = new PermissionCollection([], {name: name, is_group: true})
 
 	        var defaultLayout = new DefaultLayout({});
 	        ohgr.mainRegion.show(defaultLayout);
@@ -38633,7 +38634,7 @@
 
 	    initialize: function(models, options) {
 	        this.is_group = options.is_group || false;
-	        this.username = options.name;
+	        this.name = options.name;
 	    },
 
 	    parse: function(data) {
@@ -38791,7 +38792,7 @@
 
 	         $.ajax({
 	             type: "PATCH",
-	             url: ohgr.baseUrl + "permission/user/" + this.collection.name + "/permission/",
+	             url: this.collection.url(),
 	             dataType: 'json',
 	             contentType: "application/json; charset=utf-8",
 	             collection: this.collection,
@@ -38810,16 +38811,16 @@
 	    addPermission: function () {
 	        var permission = $(this.ui.permissions_types).val().split('.');
 
-	         $.ajax({
-	             type: "POST",
-	             url: ohgr.baseUrl + "permission/user/" + this.collection.name + "/permission/",
-	             dataType: 'json',
-	             contentType: "application/json; charset=utf-8",
-	             collection: this.collection,
-	             data: JSON.stringify({
-	                 content_type: permission[0] + '.' + permission[1],
-	                 permission: permission[2]
-	             })
+	        $.ajax({
+	            type: "POST",
+	            url: this.collection.url(),
+	            dataType: 'json',
+	            contentType: "application/json; charset=utf-8",
+	            collection: this.collection,
+	            data: JSON.stringify({
+	                content_type: permission[0] + '.' + permission[1],
+	                permission: permission[2]
+	            })
 	        }).done(function(data) {
 	            this.collection.fetch();
 	        });
@@ -38902,7 +38903,7 @@
 	((__t = ( gt.gettext("Code") )) == null ? '' : __t) +
 	'</th></tr></thead><tbody> ';
 	 _.each(permissions, function(perm) { ;
-	__p += ' <tr><th scope="row"><span class="edition action remove-permission glyphicon glyphicon-minus-sign" model="' +
+	__p += ' <tr><th><span class="edition action remove-permission glyphicon glyphicon-minus-sign" model="' +
 	__e( model ) +
 	'" object="' +
 	__e( object ) +
@@ -38935,7 +38936,7 @@
 	obj || (obj = {});
 	var __t, __p = '';
 	with (obj) {
-	__p += '<div class="permission-list"></div><div class="permission-add"><table class="table table-striped"><tbody><tr class="edit-mode dummy-user-permission"><form><th scope="row"><span class="add-permission action glyphicon glyphicon-plus-sign"></span></th><td><select class="permissions-types" name="permission-type" data-style="btn-primary" data-width="100%"></select></td></form></tr></tbody></table></div>';
+	__p += '<div class="permission-list"></div><div class="permission-add"><table class="table table-striped"><tbody><tr class="edit-mode dummy-user-permission"><form><th><span class="add-permission action glyphicon glyphicon-plus-sign"></span></th><td><select class="permissions-types" name="permission-type" data-style="btn-primary" data-width="100%"></select></td></form></tr></tbody></table></div>';
 
 	}
 	return __p
@@ -39007,7 +39008,7 @@
 
 	    init: function(options) {
 	        options || (options = {});
-	        this.username = options.username;
+	        this.name = options.name;
 
 	        // this.on('change:is_active', this.partialUpdate, this);
 	        // this.on('change:is_staff', this.partialUpdate, this);
@@ -39174,7 +39175,7 @@
 	    },
 
 	    viewPermissions: function () {
-	        Backbone.history.navigate("app/permission/user/" + this.model.get('username') + "/", {trigger: true});
+	        Backbone.history.navigate("app/permission/user/" + this.model.get('username') + "/permission/", {trigger: true});
 	    }
 	});
 
@@ -39192,25 +39193,25 @@
 	var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 	function print() { __p += __j.call(arguments, '') }
 	with (obj) {
-	__p += '<th scope="row" class="action"> ';
+	__p += '<td name="is_active" class="action"> ';
 	 if (is_active) { ;
 	__p += ' <span class="disable-user glyphicon glyphicon-ok left-margin"></span> ';
 	 } else { ;
 	__p += ' <span class="enable-user glyphicon glyphicon-remove left-margin"></span> ';
 	 } ;
-	__p += ' </th><th name="is_superuser" class="action"> ';
+	__p += ' </td><td name="is_superuser" class="action"> ';
 	 if (is_superuser) { ;
 	__p += ' <span class="set-user glyphicon glyphicon-ok left-margin"></span> ';
 	 } else { ;
 	__p += ' <span class="set-superuser glyphicon glyphicon-remove left-margin"></span> ';
 	 } ;
-	__p += ' </th><th name="is_staff" class="action"> ';
+	__p += ' </td><td name="is_staff" class="action"> ';
 	 if (is_staff) { ;
 	__p += ' <span class="set-regular glyphicon glyphicon-ok left-margin"></span> ';
 	 } else { ;
 	__p += ' <span class="set-staff glyphicon glyphicon-remove left-margin"></span> ';
 	 } ;
-	__p += ' </th><td name="username" class="action view-permissions" value="' +
+	__p += ' </td><td name="username" class="action view-permissions" value="' +
 	((__t = ( username )) == null ? '' : __t) +
 	'">' +
 	__e( username ) +
@@ -39291,8 +39292,8 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
-	 * @file user.js
-	 * @brief User model
+	 * @file group.js
+	 * @brief Group model
 	 * @author Frederic SCHERMA
 	 * @date 2016-05-30
 	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
@@ -39303,12 +39304,18 @@
 	var Backbone = __webpack_require__(2);
 
 	var Model = Backbone.Model.extend({
-	    //url: function() { return ohgr.baseUrl + 'permission/group/' + this.name + '/'; },
+	    url: function() {
+	        if (this.isNew())
+	            return ohgr.baseUrl + 'permission/group/';
+	        else
+	            return ohgr.baseUrl + 'permission/group/' + this.get('name') + '/';
+	    },
 
 	    defaults: {
 	        id: undefined,
 	        name: undefined,
 	        num_users: 0,
+	        num_permissions: 0,
 	    },
 
 	    init: function(options) {
@@ -39384,6 +39391,7 @@
 	    addGroup: function () {
 	        if (!this.ui.add_group_name.hasClass('invalid')) {
 	            this.collection.create({name: this.ui.add_group_name.val()}, {wait: true});
+	            $(this.ui.add_group_name).cleanField();
 	        }
 	    },
 
@@ -39392,10 +39400,10 @@
 	        var re = /^[a-zA-Z0-9_\-]+$/i;
 
 	        if (v.length > 0 && !re.test(v)) {
-	            validateInput(this.ui.add_group_name, 'failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
+	            $(this.ui.add_group_name).validateField('failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
 	            return false;
 	        } else if (v.length < 3) {
-	            validateInput(this.ui.add_group_name, 'failed', gt.gettext('3 characters min'));
+	            $(this.ui.add_group_name).validateField('failed', gt.gettext('3 characters min'));
 	            return false;
 	        }
 
@@ -39416,12 +39424,12 @@
 	                            var t = data[i];
 
 	                            if (t.value.toUpperCase() == this.el.val().toUpperCase()) {
-	                                validateInput(this.el, 'failed', gt.gettext('Group name already in usage'));
+	                                $(this.el).validateField('failed', gt.gettext('Group name already in usage'));
 	                                break;
 	                            }
 	                        }
 	                    } else {
-	                        validateInput(this.el, 'ok');
+	                        $(this.el).validateField('ok');
 	                    }
 	                }
 	            });
@@ -39457,7 +39465,7 @@
 	    ui: {
 	        delete_group: 'span.delete-group',
 	        view_permissions: 'td.view-permissions',
-	        view_users: 'th.view-users',
+	        view_users: 'td.view-users',
 	    },
 
 	    events: {
@@ -39482,6 +39490,10 @@
 
 	    viewUsers: function () {
 	        Backbone.history.navigate("app/permission/group/" + this.model.get('name') + "/user/", {trigger: true});
+	    },
+
+	    deleteGroup: function () {
+	        this.model.destroy({wait: true});
 	    }
 	});
 
@@ -39498,15 +39510,19 @@
 	obj || (obj = {});
 	var __t, __p = '';
 	with (obj) {
-	__p += '<th scope="row"><span class="delete-group action glyphicon glyphicon-minus-sign"></span></th><td name="name" class="action view-permissions" value="' +
+	__p += '<th><span class="delete-group action glyphicon glyphicon-minus-sign"></span></th><td class="action view-permissions" name="name" value="' +
 	((__t = ( name )) == null ? '' : __t) +
 	'">' +
 	((__t = ( name )) == null ? '' : __t) +
-	'</td><th scope="row" class="action view-users" name="num_users"><abbr class="badge" title="' +
+	'</td><td class="action view-users" name="num_users"><abbr class="badge" style="cursor: pointer" title="' +
 	((__t = ( gt.gettext('Manage user list') )) == null ? '' : __t) +
 	'">' +
 	((__t = ( num_users )) == null ? '' : __t) +
-	'</abbr></th>';
+	'</abbr></td><td class="action view-permissions" name="num_permissions"><abbr class="badge" style="cursor: pointer" title="' +
+	((__t = ( gt.gettext('Manage permission list') )) == null ? '' : __t) +
+	'">' +
+	((__t = ( num_permissions )) == null ? '' : __t) +
+	'</abbr></td>';
 
 	}
 	return __p
@@ -39523,11 +39539,13 @@
 	obj || (obj = {});
 	var __t, __p = '';
 	with (obj) {
-	__p += '<div class="element object permission-group-list" object-type="group-list" style="width:100%"><table class="table table-striped"><thead><tr><th scope="row"><span class="glyphicon glyphicon-asterisk"></span></th><th>' +
+	__p += '<div class="element object permission-group-list" object-type="group-list" style="width:100%"><table class="table table-striped"><thead><tr><th><span class="glyphicon glyphicon-asterisk"></span></th><th>' +
 	((__t = ( gt.gettext("Name") )) == null ? '' : __t) +
 	'</th><th>' +
 	((__t = ( gt.gettext("Number of users") )) == null ? '' : __t) +
-	'</th></tr></thead><tbody class="permission-group-list"></tbody></table></div><div class="add-group-panel"><table class="table table-striped"><tbody><tr class="edit-mode"><th scope="row"><span style="margin-top: 10px" class="add-group action glyphicon glyphicon-plus-sign"></span></th><td><div class="form-group"><input type="text" class="group-name form-control" name="group"></div></td></tr></tbody></table></div>';
+	'</th><th>' +
+	((__t = ( gt.gettext("Number of permissions") )) == null ? '' : __t) +
+	'</th></tr></thead><tbody class="permission-group-list"></tbody></table></div><div class="add-group-panel"><table class="table table-striped"><tbody><tr class="edit-mode"><th><span style="margin-top: 10px" class="add-group action glyphicon glyphicon-plus-sign"></span></th><td><div class="form-group"><input type="text" class="group-name form-control" name="group"></div></td></tr></tbody></table></div>';
 
 	}
 	return __p
@@ -39771,12 +39789,13 @@
 	            template: __webpack_require__(114),
 
 	            ui: {
-	                "cancel": "button.cancel",
-	                "create": "button.create",
-	                "dialog": "#dlg_create_taxon",
-	                "name": "#taxon_name",
-	                "rank": "#taxon_rank",
-	                "parent": "#taxon_parent",
+	                cancel: "button.cancel",
+	                create: "button.create",
+	                dialog: "#dlg_create_taxon",
+	                name: "#taxon_name",
+	                rank: "#taxon_rank",
+	                parent: "#taxon_parent",
+	                parent_group: ".taxon-parent-group",
 	            },
 
 	            events: {
@@ -39792,6 +39811,7 @@
 
 	            onRender: function () {
 	                $(this.ui.dialog).modal();
+	                this.ui.parent_group.hide();
 
 	                ohgr.taxonomy.views.taxonRanks.drawSelect(this.ui.rank);
 
@@ -39825,35 +39845,53 @@
 	                            cache: true,
 	                            success: function(data) {
 	                                callback(data);
-	                                validateInput( $("#taxon_parent"), '');
 	                                $("#taxon_parent").attr("parent-id", 0);
+
+	                                if (data.length == 0) {
+	                                    $("#taxon_parent").validateField('failed');
+	                                } else {
+	                                    $("#taxon_parent").validateField('');
+	                                }
 	                            }
 	                        });
 	                    },
 	                    minLength: 3,
 	                    delay: 100,
+	                    //autoFocus: true,
 	                    search: function(event, ui) {
 	                        return true;
 	                    },
-	                    focus: function(event, ui) {
+	                    close: function (event, ui) {
+	                        var tp = $("#taxon_parent");
 
+	                        if (tp.val() === "") {
+	                            $("#taxon_parent").validateField('failed');
+	                        }
 	                    },
 	                    change: function (event, ui) {
-	                        // TODO
-	                        var tr = $("#taxon_parent");
+	                        var tp = $("#taxon_parent");
+	                        var rank = $("#taxon_rank").val();
 
-	                        if (ui.item == null) {
-	                            tr.attr("parent-id", 0);
-
-	                            if (tr.val() != "") {
-	                                validateInput(tr, 'failed');
-	                            }
-	                        }
+	                        $.ajax({
+	                            type: "GET",
+	                            url: ohgr.baseUrl + 'taxonomy/search/',
+	                            dataType: 'json',
+	                            data: {term: tp.val(), type: "name", mode: "ieq", rank: rank},
+	                            async: true,
+	                            cache: true,
+	                            success: function(data) {
+	                                if (data.length == 1) {
+	                                    $("#taxon_parent").attr("parent-id", data[0].id).validateField('ok');
+	                                } else {
+	                                     tp.validateField('failed');
+	                                }
+	                            },
+	                        });
 	                    },
 	                    select: function(event, ui) {
 	                        var tp = $("#taxon_parent");
 	                        tp.attr("parent-id", ui.item.id);
-	                        validateInput(tp, 'ok');
+	                        tp.validateField('ok');
 	                    }
 	                });
 	            },
@@ -39864,9 +39902,13 @@
 
 	            onChangeRank: function () {
 	                // reset parent
-	                this.ui.parent.val('');
 	                this.ui.parent.attr('parent-id', 0);
-	                validateInput(this.ui.parent, '');
+	                $(this.ui.parent).cleanField();
+
+	                if (this.ui.rank.val() == 60)
+	                    this.ui.parent_group.hide();
+	                else
+	                    this.ui.parent_group.show();
 	            },
 
 	            onNameInput: function () {
@@ -39883,17 +39925,14 @@
 	                                    var t = data[i];
 
 	                                    if (t.value.toUpperCase() == this.el.val().toUpperCase()) {
-	                                        validateInput(this.el, 'failed', gettext('Taxon name already in usage'));
+	                                        $(this.el).validateField('failed', gettext('Taxon name already in usage'));
 	                                        break;
 	                                    }
 	                                }
 	                            } else {
-	                                validateInput(this.el, 'ok');
+	                                $(this.el).validateField('ok');
 	                            }
-	                        }/*,
-	                        error: function() {
-	                            error(gt.gettext('Unable to search taxon by name'));
-	                        },*/
+	                        }
 	                    });
 	                }
 	            },
@@ -39903,10 +39942,10 @@
 	                var re = /^[a-zA-Z0-9_\-]+$/i;
 
 	                if (v.length > 0 && !re.test(v)) {
-	                    validateInput(this.ui.name, 'failed', gettext("Invalid characters (alphanumeric, _ and - only)"));
+	                    $(this.ui.name).validateField('failed', gettext("Invalid characters (alphanumeric, _ and - only)"));
 	                    return false;
 	                } else if (v.length < 3) {
-	                    validateInput(this.ui.name, 'failed', gettext('3 characters min'));
+	                    $(this.ui.name).validateField('failed', gettext('3 characters min'));
 	                    return false;
 	                }
 
@@ -39921,12 +39960,12 @@
 	                var parentId = parseInt(this.ui.parent.attr('parent-id') || '0');
 
 	                if (rankId == 60 && parentId != 0) {
-	                    validateInput(this.ui.parent, 'failed', gettext("Family rank cannot have a parent taxon"));
+	                    $(this.ui.parent).validateField('failed', gettext("Family rank cannot have a parent taxon"));
 	                    valid = false;
 	                }
 
 	                if (rankId > 60 && parentId <= 0) {
-	                    validateInput(this.ui.parent, 'failed', gettext("This rank must have a parent taxon"));
+	                    $(this.ui.parent).validateField('failed', gettext("This rank must have a parent taxon"));
 	                    valid = false;
 	                }
 
@@ -40276,10 +40315,10 @@
 	        var re = /^[a-zA-Z0-9_\-]+$/i;
 
 	        if (v.length > 0 && !re.test(v)) {
-	            validateInput(this.ui.synonym_name, 'failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
+	            $(this.ui.synonym_name).validateField('failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
 	            return false;
 	        } else if (v.length < 3) {
-	            validateInput(this.ui.synonym_name, 'failed', gt.gettext('3 characters min'));
+	            $(this.ui.synonym_name).validateField('failed', gt.gettext('3 characters min'));
 	            return false;
 	        }
 
@@ -40300,12 +40339,12 @@
 	                            var t = data[i];
 
 	                            if (t.value.toUpperCase() == this.el.val().toUpperCase()) {
-	                                validateInput(this.el, 'failed', gt.gettext('Taxon name already in usage'));
+	                                $(this.el).validateField('failed', gt.gettext('Taxon name already in usage'));
 	                                break;
 	                            }
 	                        }
 	                    } else {
-	                        validateInput(this.el, 'ok');
+	                        $(this.el).validateField('ok');
 	                    }
 	                }
 	            });
@@ -40423,9 +40462,9 @@
 	((__t = ( gt.gettext("Create a taxon") )) == null ? '' : __t) +
 	'</h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="taxon_name">' +
 	((__t = ( gt.gettext("Principal name of the taxon (must be unique)") )) == null ? '' : __t) +
-	'</label><input class="form-control name" id="taxon_name" type="text" name="taxon" value="" maxlength="128" autofocus="" style="width:100%"></div><div class="form-group"><label class="control-label" for="taxon_rank">' +
+	'</label><input class="form-control name" id="taxon_name" type="text" name="taxon" value="" maxlength="128" autofocus="" autocomplete="off" style="width:100%"></div><div class="form-group"><label class="control-label" for="taxon_rank">' +
 	((__t = ( gt.gettext("Taxon rank") )) == null ? '' : __t) +
-	'</label><select class="form-control taxon-ranks" id="taxon_rank" name="taxonrank"></select></div><div class="form-group"><label class="control-label" for="taxon_parent">' +
+	'</label><select class="form-control taxon-ranks" id="taxon_rank" name="taxonrank"></select></div><div class="form-group taxon-parent-group"><label class="control-label" for="taxon_parent">' +
 	((__t = ( gt.gettext("Direct parent") )) == null ? '' : __t) +
 	'</label><input id="taxon_parent" type="text" value="" maxlength="128" style="width:100%" class="form-control" placeholder="Enter a taxon name. 3 characters at least for auto-completion"></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal">' +
 	((__t = ( gt.gettext("Cancel") )) == null ? '' : __t) +

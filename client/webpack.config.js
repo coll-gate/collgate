@@ -22,7 +22,7 @@ var defaults = {
             },
             {
                 test: /\.json$/,
-                loader: 'json-loader'
+                loader: 'json-loader',
             },
             {
                 test: /\.html$/,

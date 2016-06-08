@@ -120,7 +120,11 @@ def search_taxon(request):
     # TODO for rank search with taxon but into synonym too, then select_related... join...
     if 'rank' in request.GET:
         rank = int_arg(request.GET['rank'])
-        taxons = Taxon.objects.filter(Q(name__icontains=request.GET['term']), Q(rank__lt=rank))
+        # taxons = Taxon.objects.filter(Q(name__icontains=request.GET['term']), Q(rank__lt=rank))
+        if request.GET['mode'] == 'ieq':
+            synonyms = TaxonSynonym.objects.filter(Q(name=request.GET['term']), Q(taxon__rank__lt=rank))
+        elif request.GET['mode'] == 'icontains':
+            synonyms = TaxonSynonym.objects.filter(Q(name__icontains=request.GET['term']), Q(taxon__rank__lt=rank))
     elif request.GET['mode'] == 'ieq' and request.GET['type'] == 'name':
         # taxons = Taxon.objects.filter(name__iexact=request.GET['term'])
         synonyms = TaxonSynonym.objects.filter(name__iexact=request.GET['term'])

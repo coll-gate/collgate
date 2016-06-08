@@ -95,5 +95,27 @@ $(function() {
     });
 });
 
+// validation function on jQuery selectors
+(function($) {
+    // clean bootstrap field validator
+    $.fn.cleanField = function() {
+        this.each(function(){
+            validateInput($(this), '', '');
+            $(this).val("");
+
+            return $(this); // support chaining
+        });
+    };
+
+    // fulfill bootstrap field validator
+    $.fn.validateField = function (validity, comment) {
+        this.each(function(){
+            validateInput($(this), validity, comment);
+
+            return $(this); // support chaining
+        });
+    };
+})(jQuery);
+
 var _ = django.gettext;
 var title = _("Online Host of Genetics Resources");

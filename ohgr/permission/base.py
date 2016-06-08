@@ -11,7 +11,7 @@ from django.core.exceptions import SuspiciousOperation
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_noop as _
 
-from guardian.models import UserObjectPermission
+from guardian.models import UserObjectPermission, GroupObjectPermission
 
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
@@ -62,6 +62,11 @@ class RestPermissionGroupName(RestPermissionGroup):
 class RestPermissionGroupNameUser(RestPermissionGroupName):
     regex = r'^user/$'
     suffix = 'user'
+
+
+class RestPermissionGroupNameUserName(RestPermissionGroupNameUser):
+    regex = r'^(?P<username>[a-zA-Z0-9\.\-_]+)/$'
+    suffix = 'username'
 
 
 class RestPermissionGroupNamePermission(RestPermissionGroupName):
@@ -139,8 +144,10 @@ def get_groups_list(request):
 
     for group in groups:
         response['groups'].append({
+            'id': group.id,
             'name': group.name,
             'num_users': group.user_set.all().count(),
+            'num_permissions': group.permissions.all().count(),
             'perms': get_permissions_for(request.user, "auth", "group", group),
         })
 
@@ -227,7 +234,7 @@ class Perm:
         return (self.object_name == other.object_name) and (self.model == other.model)
 
 
-@RestPermissionUserName.def_auth_request(Method.GET, Format.JSON, staff=True)
+@RestPermissionUserNamePermission.def_auth_request(Method.GET, Format.JSON, staff=True)
 def get_user_permissions(request, username):
     user = get_object_or_404(User, username=username)
 
@@ -384,7 +391,6 @@ def delete_user_permission(request, username):
     user = get_object_or_404(User, username=username)
 
     app_label, model = content_type.split('.')
-    # content_type = get_object_or_404(ContentType, app_label=app_label, model=model)
     content_type = ContentType.objects.get_by_natural_key(app_label, model)
 
     if not object_id:
@@ -412,7 +418,6 @@ def delete_user_permission(request, username):
 @RestPermissionGroupNamePermission.def_auth_request(Method.GET, Format.JSON, staff=True)
 def get_group_permissions(request, name):
     group = get_object_or_404(Group, name=name)
-
     permissions = []
 
     checkout = Permission.objects.filter(group=group).select_related('content_type')
@@ -434,7 +439,7 @@ def get_group_permissions(request, name):
     for k, v in lookup.items():
         permissions.append(Perm(v, k, None, None))
 
-    checkout = UserObjectPermission.objects.filter(group=group).select_related('permission', 'content_type')
+    checkout = GroupObjectPermission.objects.filter(group=group).select_related('permission', 'content_type')
     lookup = {}
 
     for perm in checkout:
@@ -460,13 +465,113 @@ def get_group_permissions(request, name):
     response = {
         'name': name,
         'permissions': permissions,
-        'perms': get_permissions_for(group, "auth", "permission"),
+        'perms': get_permissions_for(request.user, "auth", "permission"),
         'result': 'success'
     }
 
     return HttpResponseRest(request, response)
 
 
-# TODO list, add, delete, permissions to group
-# TODO add, delete, user from group
-# TODO add, delete, group
+@RestPermissionGroupNamePermission.def_auth_request(
+    Method.POST, Format.JSON, content={
+        "type": "object",
+        "properties": {
+            "permission": {"type": "string", 'minLength': 3, 'maxLength': 32},
+            "content_type": {"type": "string", 'minLength': 3, 'maxLength': 64},
+            "object": {"type": "string", 'maxLength': 255, 'required': False},
+        },
+    },
+    perms={'auth.add_permission': _("You are not allowed to add a permission")},
+    staff=True)
+def add_group_permission(request, name):
+    permission = request.data['permission']
+    content_type = request.data['content_type']
+    object_id = request.data['object'] if 'object' in request.data else None
+
+    if content_type == "auth.permission" and not request.user.is_superuser:
+        raise PermissionDenied(_("Only a superuser can change an auth.permission"))
+
+    group = get_object_or_404(Group, name=name)
+
+    app_label, model = content_type.split('.')
+    content_type = ContentType.objects.get_by_natural_key(app_label, model)
+
+    if not object_id:
+        perm = get_object_or_404(Permission, codename=permission, content_type=content_type)
+        group.permissions.add(perm)
+        response = {'result': 'success'}
+    else:
+        obj = get_object_or_404(content_type.model, id=object)
+        GroupObjectPermission.objects.assign_perm(permission, group=group, obj=obj)
+        response = {'result': 'success'}
+
+    return HttpResponseRest(request, response)
+
+
+@RestPermissionGroupNamePermission.def_auth_request(
+    Method.PATCH, Format.JSON, content={
+        "type": "object",
+        "properties": {
+            "action": {"type": "string", "pattern": "^(add|remove)$"},
+            "target": {"type": "string", "pattern": "^permission$"},
+            "permission": {"type": "string", 'minLength': 3, 'maxLength': 32},
+            "content_type": {"type": "string", 'minLength': 3, 'maxLength': 64},
+            "object": {"type": "string", 'maxLength': 255, 'required': False},
+        },
+    },
+    perms={'auth.delete_permission': _("You are not allowed to remove a permission")},
+    staff=True)
+def delete_group_permission(request, name):
+    action = request.data['action']
+    permission = request.data['permission']
+    content_type = request.data['content_type']
+    object_id = request.data['object'] if 'object' in request.data else None
+
+    if content_type == "auth.permission" and not request.user.is_superuser:
+        raise PermissionDenied(_("Only a superuser can change an auth.permission"))
+
+    group = get_object_or_404(Group, name=name)
+
+    app_label, model = content_type.split('.')
+    content_type = ContentType.objects.get_by_natural_key(app_label, model)
+
+    if not object_id:
+        perm = get_object_or_404(Permission, codename=permission, content_type=content_type)
+        if action == "add":
+            group.permissions.add(perm)
+        elif action == "remove":
+            group.permissions.remove(perm)
+        else:
+            raise SuspiciousOperation('Invalid patch action')
+    else:
+        obj = get_object_or_404(content_type.model, id=object)
+
+        if action == "add":
+            GroupObjectPermission.objects.assign_perm(permission, group=group, obj=obj)
+        elif action == "remove":
+            GroupObjectPermission.objects.remove_perm(permission, group=group, obj=obj)
+        else:
+            raise SuspiciousOperation('Invalid patch action')
+
+    response = {'result': 'success'}
+    return HttpResponseRest(request, response)
+
+
+@RestPermissionGroupNameUser.def_auth_request(Method.POST, Format.JSON, content={
+        "type": "object",
+        "properties": {
+            "username": {"type": "string", 'minLength': 3, 'maxLength': 64},
+        },
+    },
+    perms={'auth.change_group': _("You are not allowed to add a user into a group")},
+    staff=True)
+def group_add_user(request, name):
+    raise Exception("Not yet implemented")
+
+
+@RestPermissionGroupNameUserName.def_auth_request(
+    Method.DELETE, Format.JSON,
+    perms={'auth.change_group': _("You are not allowed to remove a user from a group")},
+    staff=True)
+def group_delete_user(request, name, username):
+    raise Exception("Not yet implemented")

@@ -1,6 +1,6 @@
 /**
- * @file user.js
- * @brief User model
+ * @file group.js
+ * @brief Group model
  * @author Frederic SCHERMA
  * @date 2016-05-30
  * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
@@ -11,12 +11,18 @@
 var Backbone = require('backbone');
 
 var Model = Backbone.Model.extend({
-    //url: function() { return ohgr.baseUrl + 'permission/group/' + this.name + '/'; },
+    url: function() {
+        if (this.isNew())
+            return ohgr.baseUrl + 'permission/group/';
+        else
+            return ohgr.baseUrl + 'permission/group/' + this.get('name') + '/';
+    },
 
     defaults: {
         id: undefined,
         name: undefined,
         num_users: 0,
+        num_permissions: 0,
     },
 
     init: function(options) {

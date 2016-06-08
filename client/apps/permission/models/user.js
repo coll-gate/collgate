@@ -28,7 +28,7 @@ var Model = Backbone.Model.extend({
 
     init: function(options) {
         options || (options = {});
-        this.username = options.username;
+        this.name = options.name;
 
         // this.on('change:is_active', this.partialUpdate, this);
         // this.on('change:is_staff', this.partialUpdate, this);

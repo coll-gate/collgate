@@ -84,7 +84,7 @@ ohgr = new Marionette.Application({
                     dfd.resolve.apply(xhr, arguments);
                 } else {
                     var data = JSON.parse(xhr.responseText);
-                    if ((xhr.status >= 401 && xhr.status <= 599) && data.cause) {
+                    if ((xhr.status >= 400 && xhr.status <= 599) && data.cause) {
                         error(gettext(data.cause));
                     }
                     dfd.reject.apply(xhr, arguments);

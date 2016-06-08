@@ -80,7 +80,7 @@ var PermissionListView = Marionette.CompositeView.extend({
 
          $.ajax({
              type: "PATCH",
-             url: ohgr.baseUrl + "permission/user/" + this.collection.name + "/permission/",
+             url: this.collection.url(),
              dataType: 'json',
              contentType: "application/json; charset=utf-8",
              collection: this.collection,
@@ -99,16 +99,16 @@ var PermissionListView = Marionette.CompositeView.extend({
     addPermission: function () {
         var permission = $(this.ui.permissions_types).val().split('.');
 
-         $.ajax({
-             type: "POST",
-             url: ohgr.baseUrl + "permission/user/" + this.collection.name + "/permission/",
-             dataType: 'json',
-             contentType: "application/json; charset=utf-8",
-             collection: this.collection,
-             data: JSON.stringify({
-                 content_type: permission[0] + '.' + permission[1],
-                 permission: permission[2]
-             })
+        $.ajax({
+            type: "POST",
+            url: this.collection.url(),
+            dataType: 'json',
+            contentType: "application/json; charset=utf-8",
+            collection: this.collection,
+            data: JSON.stringify({
+                content_type: permission[0] + '.' + permission[1],
+                permission: permission[2]
+            })
         }).done(function(data) {
             this.collection.fetch();
         });

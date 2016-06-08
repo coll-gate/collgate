@@ -28,9 +28,7 @@
             <tbody>
                 <% _.each(permissions, function(perm) { %>
                 <tr>
-                    <th scope="row">
-                        <span class="edition action remove-permission glyphicon glyphicon-minus-sign" model="<%- model %>" object="<%- object %>" codename="<%- perm.id %>" app_label="<%- perm.app_label %>"></span>
-                    </th>
+                    <th><span class="edition action remove-permission glyphicon glyphicon-minus-sign" model="<%- model %>" object="<%- object %>" codename="<%- perm.id %>" app_label="<%- perm.app_label %>"></span></th>
                     <td name="module" class="permission-module"><%- perm.app_label %></td>
                     <td name="name"><%- perm.name %></td>
                     <td name="code"><%- perm.id %></td>

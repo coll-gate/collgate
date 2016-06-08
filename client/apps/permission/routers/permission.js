@@ -21,9 +21,10 @@ var TitleView = require('../../main/views/titleview');
 var PermissionRouter = Marionette.AppRouter.extend({
     routes : {
         "app/permission/user/": "getUsers",
-        "app/permission/user/:username/": "getPermissionsForUser",
+        "app/permission/user/:username/permission/": "getPermissionsForUser",
         "app/permission/group/": "getGroups",
-        "app/permission/group/:groupname/": "getPermissionsForGroup",
+        "app/permission/group/:groupname/permission/": "getPermissionsForGroup",
+        "app/permission/group/:groupname/user/": "getUsersForGroup",
     },
 
     getUsers: function () {
@@ -66,7 +67,7 @@ var PermissionRouter = Marionette.AppRouter.extend({
     },
 
     getPermissionsForGroup: function(name) {
-        var permissionsCollection = new PermissionCollection([], {name: name})
+        var permissionsCollection = new PermissionCollection([], {name: name, is_group: true})
 
         var defaultLayout = new DefaultLayout({});
         ohgr.mainRegion.show(defaultLayout);

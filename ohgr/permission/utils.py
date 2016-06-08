@@ -5,12 +5,15 @@
 """
 ohgr permission utilities
 """
+from django.contrib.auth.models import Group
+from guardian.core import ObjectPermissionChecker
 
 
 def get_permissions_for(user_or_group, app_label, model, obj=None):
-    # _p = Permission.objects.filter(content_type__app_label=app_label, content_type__model=model)
-    # perms = UserObjectPermission.objects.filter(user=user, permission__in=_p)
-    perms = user_or_group.get_all_permissions()
+    if isinstance(user_or_group, Group):
+        perms = user_or_group.permissions.all()
+    else:
+        perms = user_or_group.get_all_permissions()
 
     results = []
 
@@ -20,7 +23,10 @@ def get_permissions_for(user_or_group, app_label, model, obj=None):
             results.append(perm)
 
     if obj:
-        perms = user_or_group.get_all_permissions(obj=obj)
+        if isinstance(user_or_group, Group):
+            perms = ObjectPermissionChecker(user_or_group).get_perms(obj=obj)
+        else:
+            perms = user_or_group.get_all_permissions(obj=obj)
 
         for perm in perms:
             p = perm.split('_')

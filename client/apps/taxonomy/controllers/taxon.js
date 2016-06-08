@@ -24,12 +24,13 @@ var TaxonController = Marionette.Controller.extend({
             template: require('../templates/taxoncreate.html'),
 
             ui: {
-                "cancel": "button.cancel",
-                "create": "button.create",
-                "dialog": "#dlg_create_taxon",
-                "name": "#taxon_name",
-                "rank": "#taxon_rank",
-                "parent": "#taxon_parent",
+                cancel: "button.cancel",
+                create: "button.create",
+                dialog: "#dlg_create_taxon",
+                name: "#taxon_name",
+                rank: "#taxon_rank",
+                parent: "#taxon_parent",
+                parent_group: ".taxon-parent-group",
             },
 
             events: {
@@ -45,6 +46,7 @@ var TaxonController = Marionette.Controller.extend({
 
             onRender: function () {
                 $(this.ui.dialog).modal();
+                this.ui.parent_group.hide();
 
                 ohgr.taxonomy.views.taxonRanks.drawSelect(this.ui.rank);
 
@@ -78,35 +80,53 @@ var TaxonController = Marionette.Controller.extend({
                             cache: true,
                             success: function(data) {
                                 callback(data);
-                                validateInput( $("#taxon_parent"), '');
                                 $("#taxon_parent").attr("parent-id", 0);
+
+                                if (data.length == 0) {
+                                    $("#taxon_parent").validateField('failed');
+                                } else {
+                                    $("#taxon_parent").validateField('');
+                                }
                             }
                         });
                     },
                     minLength: 3,
                     delay: 100,
+                    //autoFocus: true,
                     search: function(event, ui) {
                         return true;
                     },
-                    focus: function(event, ui) {
+                    close: function (event, ui) {
+                        var tp = $("#taxon_parent");
 
+                        if (tp.val() === "") {
+                            $("#taxon_parent").validateField('failed');
+                        }
                     },
                     change: function (event, ui) {
-                        // TODO
-                        var tr = $("#taxon_parent");
+                        var tp = $("#taxon_parent");
+                        var rank = $("#taxon_rank").val();
 
-                        if (ui.item == null) {
-                            tr.attr("parent-id", 0);
-
-                            if (tr.val() != "") {
-                                validateInput(tr, 'failed');
-                            }
-                        }
+                        $.ajax({
+                            type: "GET",
+                            url: ohgr.baseUrl + 'taxonomy/search/',
+                            dataType: 'json',
+                            data: {term: tp.val(), type: "name", mode: "ieq", rank: rank},
+                            async: true,
+                            cache: true,
+                            success: function(data) {
+                                if (data.length == 1) {
+                                    $("#taxon_parent").attr("parent-id", data[0].id).validateField('ok');
+                                } else {
+                                     tp.validateField('failed');
+                                }
+                            },
+                        });
                     },
                     select: function(event, ui) {
                         var tp = $("#taxon_parent");
                         tp.attr("parent-id", ui.item.id);
-                        validateInput(tp, 'ok');
+                        tp.validateField('ok');
                     }
                 });
             },
@@ -117,9 +137,13 @@ var TaxonController = Marionette.Controller.extend({
 
             onChangeRank: function () {
                 // reset parent
-                this.ui.parent.val('');
                 this.ui.parent.attr('parent-id', 0);
-                validateInput(this.ui.parent, '');
+                $(this.ui.parent).cleanField();
+
+                if (this.ui.rank.val() == 60)
+                    this.ui.parent_group.hide();
+                else
+                    this.ui.parent_group.show();
             },
 
             onNameInput: function () {
@@ -136,17 +160,14 @@ var TaxonController = Marionette.Controller.extend({
                                     var t = data[i];
 
                                     if (t.value.toUpperCase() == this.el.val().toUpperCase()) {
-                                        validateInput(this.el, 'failed', gettext('Taxon name already in usage'));
+                                        $(this.el).validateField('failed', gettext('Taxon name already in usage'));
                                         break;
                                     }
                                 }
                             } else {
-                                validateInput(this.el, 'ok');
+                                $(this.el).validateField('ok');
                             }
-                        }/*,
-                        error: function() {
-                            error(gt.gettext('Unable to search taxon by name'));
-                        },*/
+                        }
                     });
                 }
             },
@@ -156,10 +177,10 @@ var TaxonController = Marionette.Controller.extend({
                 var re = /^[a-zA-Z0-9_\-]+$/i;
 
                 if (v.length > 0 && !re.test(v)) {
-                    validateInput(this.ui.name, 'failed', gettext("Invalid characters (alphanumeric, _ and - only)"));
+                    $(this.ui.name).validateField('failed', gettext("Invalid characters (alphanumeric, _ and - only)"));
                     return false;
                 } else if (v.length < 3) {
-                    validateInput(this.ui.name, 'failed', gettext('3 characters min'));
+                    $(this.ui.name).validateField('failed', gettext('3 characters min'));
                     return false;
                 }
 
@@ -174,12 +195,12 @@ var TaxonController = Marionette.Controller.extend({
                 var parentId = parseInt(this.ui.parent.attr('parent-id') || '0');
 
                 if (rankId == 60 && parentId != 0) {
-                    validateInput(this.ui.parent, 'failed', gettext("Family rank cannot have a parent taxon"));
+                    $(this.ui.parent).validateField('failed', gettext("Family rank cannot have a parent taxon"));
                     valid = false;
                 }
 
                 if (rankId > 60 && parentId <= 0) {
-                    validateInput(this.ui.parent, 'failed', gettext("This rank must have a parent taxon"));
+                    $(this.ui.parent).validateField('failed', gettext("This rank must have a parent taxon"));
                     valid = false;
                 }
 

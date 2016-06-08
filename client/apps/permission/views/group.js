@@ -19,7 +19,7 @@ var View = Marionette.ItemView.extend({
     ui: {
         delete_group: 'span.delete-group',
         view_permissions: 'td.view-permissions',
-        view_users: 'th.view-users',
+        view_users: 'td.view-users',
     },
 
     events: {
@@ -44,6 +44,10 @@ var View = Marionette.ItemView.extend({
 
     viewUsers: function () {
         Backbone.history.navigate("app/permission/group/" + this.model.get('name') + "/user/", {trigger: true});
+    },
+
+    deleteGroup: function () {
+        this.model.destroy({wait: true});
     }
 });
 
