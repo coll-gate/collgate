@@ -165,6 +165,7 @@ def add_group(request):
     response = {
         'id': group.id,
         'result': 'success',
+        'perms': get_permissions_for(request.user, "auth", "group"),
     }
 
     return HttpResponseRest(request, response)

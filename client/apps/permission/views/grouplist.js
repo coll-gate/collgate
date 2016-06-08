@@ -42,8 +42,9 @@ var View = Marionette.CompositeView.extend({
     },
 
     addGroup: function () {
-        this.collection.create({name: this.ui.add_group_name.val()}, {wait: true});
-        //group.save({wait: true});
+        if (!this.ui.add_group_name.hasClass('invalid')) {
+            this.collection.create({name: this.ui.add_group_name.val()}, {wait: true});
+        }
     },
 
     validateGroupName: function() {

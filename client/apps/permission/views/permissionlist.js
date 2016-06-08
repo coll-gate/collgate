@@ -80,7 +80,7 @@ var PermissionListView = Marionette.CompositeView.extend({
 
          $.ajax({
              type: "PATCH",
-             url: ohgr.baseUrl + "permission/user/" + this.collection.username + "/permission/",
+             url: ohgr.baseUrl + "permission/user/" + this.collection.name + "/permission/",
              dataType: 'json',
              contentType: "application/json; charset=utf-8",
              collection: this.collection,
@@ -93,7 +93,6 @@ var PermissionListView = Marionette.CompositeView.extend({
              })
         }).done(function(data) {
             this.collection.fetch();
-            //Backbone.history.navigate("app/permission/user/" + this.collection.username + "/", {trigger: true});
         });
     },
 
@@ -102,7 +101,7 @@ var PermissionListView = Marionette.CompositeView.extend({
 
          $.ajax({
              type: "POST",
-             url: ohgr.baseUrl + "permission/user/" + this.collection.username + "/permission/",
+             url: ohgr.baseUrl + "permission/user/" + this.collection.name + "/permission/",
              dataType: 'json',
              contentType: "application/json; charset=utf-8",
              collection: this.collection,
@@ -112,7 +111,6 @@ var PermissionListView = Marionette.CompositeView.extend({
              })
         }).done(function(data) {
             this.collection.fetch();
-            //Backbone.history.navigate("app/permission/user/" + this.collection.username + "/", {trigger: true});
         });
     },
 });

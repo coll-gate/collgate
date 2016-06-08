@@ -38563,7 +38563,7 @@
 	    },
 
 	    getPermissionsForUser: function(username) {
-	        var permissionsCollection = new PermissionCollection([], {username: username})
+	        var permissionsCollection = new PermissionCollection([], {name: username})
 
 	        var defaultLayout = new DefaultLayout({});
 	        ohgr.mainRegion.show(defaultLayout);
@@ -38588,7 +38588,17 @@
 	        });
 	    },
 
-	    getPermissionsForGroup: function(groupname) {
+	    getPermissionsForGroup: function(name) {
+	        var permissionsCollection = new PermissionCollection([], {name: name})
+
+	        var defaultLayout = new DefaultLayout({});
+	        ohgr.mainRegion.show(defaultLayout);
+
+	        defaultLayout.title.show(new TitleView({title: gt.gettext("List of permissions for group") + " " + name}));
+
+	        permissionsCollection.fetch().then(function () {
+	            defaultLayout.content.show(new PermissionListView({collection : permissionsCollection}));
+	        });
 	    },
 	});
 
@@ -38612,11 +38622,18 @@
 	var PermissionModel = __webpack_require__(84);
 
 	var PermissionCollection = Backbone.Collection.extend({
-	    url: function() { return ohgr.baseUrl + 'permission/user/' + this.username + '/' },
+	    url: function() {
+	        if (this.is_group)
+	            return ohgr.baseUrl + 'permission/group/' + this.name + '/permission/';
+	        else
+	            return ohgr.baseUrl + 'permission/user/' + this.name + '/permission/';
+	    },
+
 	    model: PermissionModel,
 
 	    initialize: function(models, options) {
-	        this.username = options.username;
+	        this.is_group = options.is_group || false;
+	        this.username = options.name;
 	    },
 
 	    parse: function(data) {
@@ -38648,8 +38665,6 @@
 	var Backbone = __webpack_require__(2);
 
 	var Permission = Backbone.Model.extend({
-	    //url: function() { return ohgr.baseUrl + 'permission/user/' + this.username + '/' + this.permission + '/'; },
-
 	    defaults: {
 	        model: undefined,
 	        object: undefined,
@@ -38658,7 +38673,8 @@
 
 	    init: function(options) {
 	        options || (options = {});
-	        this.username = options.username;
+	        this.is_group = options.is_group || false;
+	        this.name = options.name;
 	    },
 
 	    parse: function(data) {
@@ -38678,11 +38694,11 @@
 	        for (var i = 0; i < this.permissions.length; ++i) {
 	            if (app_label == this.permissions[i].app_label) {
 	                if (perm == this.permissions[i].id) {
-	                    return True;
+	                    return true;
 	                }
 	            }
 	        }
-	        return False;
+	        return false;
 	    }
 	});
 
@@ -38775,7 +38791,7 @@
 
 	         $.ajax({
 	             type: "PATCH",
-	             url: ohgr.baseUrl + "permission/user/" + this.collection.username + "/permission/",
+	             url: ohgr.baseUrl + "permission/user/" + this.collection.name + "/permission/",
 	             dataType: 'json',
 	             contentType: "application/json; charset=utf-8",
 	             collection: this.collection,
@@ -38788,7 +38804,6 @@
 	             })
 	        }).done(function(data) {
 	            this.collection.fetch();
-	            //Backbone.history.navigate("app/permission/user/" + this.collection.username + "/", {trigger: true});
 	        });
 	    },
 
@@ -38797,7 +38812,7 @@
 
 	         $.ajax({
 	             type: "POST",
-	             url: ohgr.baseUrl + "permission/user/" + this.collection.username + "/permission/",
+	             url: ohgr.baseUrl + "permission/user/" + this.collection.name + "/permission/",
 	             dataType: 'json',
 	             contentType: "application/json; charset=utf-8",
 	             collection: this.collection,
@@ -38807,7 +38822,6 @@
 	             })
 	        }).done(function(data) {
 	            this.collection.fetch();
-	            //Backbone.history.navigate("app/permission/user/" + this.collection.username + "/", {trigger: true});
 	        });
 	    },
 	});
@@ -39368,8 +39382,9 @@
 	    },
 
 	    addGroup: function () {
-	        this.collection.create({name: this.ui.add_group_name.val()}, {wait: true});
-	        //group.save({wait: true});
+	        if (!this.ui.add_group_name.hasClass('invalid')) {
+	            this.collection.create({name: this.ui.add_group_name.val()}, {wait: true});
+	        }
 	    },
 
 	    validateGroupName: function() {

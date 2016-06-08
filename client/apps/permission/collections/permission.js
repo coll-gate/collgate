@@ -11,11 +11,18 @@
 var PermissionModel = require('../models/permission');
 
 var PermissionCollection = Backbone.Collection.extend({
-    url: function() { return ohgr.baseUrl + 'permission/user/' + this.username + '/' },
+    url: function() {
+        if (this.is_group)
+            return ohgr.baseUrl + 'permission/group/' + this.name + '/permission/';
+        else
+            return ohgr.baseUrl + 'permission/user/' + this.name + '/permission/';
+    },
+
     model: PermissionModel,
 
     initialize: function(models, options) {
-        this.username = options.username;
+        this.is_group = options.is_group || false;
+        this.username = options.name;
     },
 
     parse: function(data) {

@@ -40,7 +40,7 @@ var PermissionRouter = Marionette.AppRouter.extend({
     },
 
     getPermissionsForUser: function(username) {
-        var permissionsCollection = new PermissionCollection([], {username: username})
+        var permissionsCollection = new PermissionCollection([], {name: username})
 
         var defaultLayout = new DefaultLayout({});
         ohgr.mainRegion.show(defaultLayout);
@@ -65,7 +65,17 @@ var PermissionRouter = Marionette.AppRouter.extend({
         });
     },
 
-    getPermissionsForGroup: function(groupname) {
+    getPermissionsForGroup: function(name) {
+        var permissionsCollection = new PermissionCollection([], {name: name})
+
+        var defaultLayout = new DefaultLayout({});
+        ohgr.mainRegion.show(defaultLayout);
+
+        defaultLayout.title.show(new TitleView({title: gt.gettext("List of permissions for group") + " " + name}));
+
+        permissionsCollection.fetch().then(function () {
+            defaultLayout.content.show(new PermissionListView({collection : permissionsCollection}));
+        });
     },
 });
 
