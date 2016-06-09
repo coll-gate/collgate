@@ -70,8 +70,10 @@ def create_taxon(request):
         parent)
 
     response = {
-        'result': 'success',
-        'id': taxon.pk,
+        'id': taxon.id,
+        'name': taxon.name,
+        'rank': taxon.rank,
+        'parent': taxon.parent
     }
 
     return HttpResponseRest(request, response)
@@ -83,7 +85,6 @@ def taxon_list(request):
     synonyms = TaxonSynonym.objects.all()
 
     response = {
-        'result': 'success',
         'taxons': taxons,
         'synonyms': synonyms,
     }
@@ -161,9 +162,8 @@ def taxon_add_synonym(request, id):
     }
 
     Taxonomy.add_synonym(taxon, synonym)
-    response = {'result': 'success'}
 
-    return HttpResponseRest(request, response)
+    return HttpResponseRest(request, {})
 
 
 @RestTaxonomyId.def_auth_request(
@@ -184,9 +184,8 @@ def taxon_remove_synonym(request, id):
     }
 
     Taxonomy.remove_synonym(taxon, synonym)
-    response = {'result': 'success'}
 
-    return HttpResponseRest(request, response)
+    return HttpResponseRest(request, {})
 
 
 @RestTaxonomyRank.def_request(Method.GET, Format.JSON)

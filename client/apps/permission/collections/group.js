@@ -15,9 +15,6 @@ var Collection = Backbone.Collection.extend({
     model: PermissionGroupModel,
 
     parse: function(data) {
-        if (data.result != 'success')
-            return [];
-
         this.perms = data.perms;
         return data.groups;
     },

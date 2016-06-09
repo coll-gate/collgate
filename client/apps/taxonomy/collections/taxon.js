@@ -15,9 +15,6 @@ var TaxonCollection = Backbone.Collection.extend({
     model: TaxonModel,
     
     parse: function(data) {
-        if (data.result != 'success')
-            return {};
-
         var taxons = data.taxons;
         var results = [];
         for (var taxon in taxons) {

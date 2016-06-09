@@ -115,6 +115,21 @@ $(function() {
             return $(this); // support chaining
         });
     };
+
+    // is valid field (bootstrap field validator)
+    $.fn.isValidField = function () {
+        var result = true;
+
+        this.each(function(){
+            if ($(this).hasClass('invalid')) {
+                result = false;
+            }
+
+            return $(this); // support chaining
+        });
+
+        return result;
+    };
 })(jQuery);
 
 var _ = django.gettext;

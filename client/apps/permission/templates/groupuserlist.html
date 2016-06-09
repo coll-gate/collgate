@@ -1,0 +1,36 @@
+<!--
+ - @file groupuserlist.html
+ - @brief Template for a permission list of user into a group (model)
+ - @author Frederic SCHERMA
+ - @date 2016-06-09
+ - @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+ - @license @todo
+ - @details
+-->
+
+<div class="element object group-user-list" object-type="user-list" style="width:100%;">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th><span class="glyphicon glyphicon-asterisk"></span></th>
+                <th><%= gt.gettext("Username") %></th>
+                <th><%= gt.gettext("First name") %></th>
+                <th><%= gt.gettext("Last name") %></th>
+            </tr>
+        </thead>
+        <tbody class="group-user-list">
+        </tbody>
+    </table>
+</div>
+<div class="user-add">
+    <table class="table table-striped">
+        <tbody>
+            <tr class="edit-mode">
+                <form>
+                    <th><span class="add-user action glyphicon glyphicon-plus-sign" style="margin-top: 10px;"></span></th>
+                    <td><div class="form-group"><input class="form-control username" type="text" name="username" autocomplete="off" /></div></td>
+                </form>
+            </tr>
+        </tbody>
+    </table>
+</div>

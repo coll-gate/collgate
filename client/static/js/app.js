@@ -126,7 +126,9 @@
 
 	            // failure : resolve or reject the deferred according to your cases
 	            xhr.fail(function() {
+	                console.log("ajaxError: " + xhr.statusText + " " + xhr.responseText);
 	                if (xhr.status === 200 && xhr.responseText === "") {
+	                    alert("!! this should not arrives !!");
 	                    dfd.resolve.apply(xhr, arguments);
 	                } else {
 	                    var data = JSON.parse(xhr.responseText);
@@ -159,8 +161,8 @@
 	    // each modules
 	    this.main = __webpack_require__(65);
 	    this.permission = __webpack_require__(77);
-	    this.taxonomy = __webpack_require__(103);
-	    this.accession = __webpack_require__(116);
+	    this.taxonomy = __webpack_require__(109);
+	    this.accession = __webpack_require__(122);
 	});
 
 	gt = new GetText();
@@ -38538,8 +38540,10 @@
 	var PermissionUserListView = __webpack_require__(91);
 	var PermissionGroupCollection = __webpack_require__(95);
 	var PermissionGroupListView = __webpack_require__(97);
-	var DefaultLayout = __webpack_require__(101);
-	var TitleView = __webpack_require__(102);
+	var PermissionGroupUserCollection = __webpack_require__(101);
+	var PermissionGroupUserListView = __webpack_require__(103);
+	var DefaultLayout = __webpack_require__(107);
+	var TitleView = __webpack_require__(108);
 
 	var PermissionRouter = Marionette.AppRouter.extend({
 	    routes : {
@@ -38601,6 +38605,19 @@
 	            defaultLayout.content.show(new PermissionListView({collection : permissionsCollection}));
 	        });
 	    },
+
+	    getUsersForGroup: function(name) {
+	        var userCollection = new PermissionGroupUserCollection([], {name: name});
+
+	        var defaultLayout = new DefaultLayout({});
+	        ohgr.mainRegion.show(defaultLayout);
+
+	        defaultLayout.title.show(new TitleView({title: gt.gettext("List of users for group") + " " + name}));
+
+	        userCollection.fetch().then(function () {
+	            defaultLayout.content.show(new PermissionGroupUserListView({collection : userCollection}));
+	        });
+	    },
 	});
 
 	module.exports = PermissionRouter;
@@ -38638,9 +38655,6 @@
 	    },
 
 	    parse: function(data) {
-	        if (data.result != 'success')
-	            return [];
-
 	        this.perms = data.perms;
 	        return data.permissions;
 	    },
@@ -38960,13 +38974,25 @@
 	var PermissionUserModel = __webpack_require__(90);
 
 	var Collection = Backbone.Collection.extend({
-	    url: function() { return ohgr.baseUrl + 'permission/user/'; },
+	    url: function() {
+	        if (this.is_group)
+	            return ohgr.baseUrl + 'permission/group/' + this.name + '/user/';
+	        else
+	            return ohgr.baseUrl + 'permission/user/';
+	    },
+
 	    model: PermissionUserModel,
 
-	    parse: function(data) {
-	        if (data.result != 'success')
-	            return [];
+	    initialize: function(models, options) {
+	        options || (options = {});
+	        this.is_group = options.is_group || false;
 
+	        if (options.name)
+	            this.name = options.name;
+	    },
+
+	    parse: function(data) {
+	        this.perms = data.perms;
 	        return data.users;
 	    },
 	});
@@ -39276,9 +39302,6 @@
 	    model: PermissionGroupModel,
 
 	    parse: function(data) {
-	        if (data.result != 'success')
-	            return [];
-
 	        this.perms = data.perms;
 	        return data.groups;
 	    },
@@ -39557,6 +39580,320 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
+	 * @file groupuser.js
+	 * @brief Permission user collection from a group
+	 * @author Frederic SCHERMA
+	 * @date 2016-06-09
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+
+	var PermissionGroupUserModel = __webpack_require__(102);
+
+	var Collection = Backbone.Collection.extend({
+	    url: function() { return ohgr.baseUrl + 'permission/group/' + this.name + '/user/'; },
+	    model: PermissionGroupUserModel,
+
+	    initialize: function(models, options) {
+	        options || (options = {});
+	        this.name = options.name;
+	    },
+
+	    parse: function(data) {
+	        this.perms = data.perms;
+	        return data.users;
+	    },
+	});
+
+	module.exports = Collection;
+
+
+/***/ },
+/* 102 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file groupuser.js
+	 * @brief User model from a group
+	 * @author Frederic SCHERMA
+	 * @date 2016-06-09
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+
+	var Backbone = __webpack_require__(2);
+
+	var Model = Backbone.Model.extend({
+	    url: function() {
+	        if (this.isNew())
+	            return ohgr.baseUrl + 'permission/group/' + this.collection.name + '/user/';
+	        else
+	            return ohgr.baseUrl + 'permission/group/' + this.collection.name + '/user/' + this.get('username') + '/';
+	    },
+
+	    defaults: {
+	        id: undefined,
+	        username: '',
+	        first_name: '',
+	        last_name: '',
+	        email: '',
+	    },
+
+	    init: function(options) {
+	        options || (options = {});
+	        this.name = options.name;
+	    },
+
+	    parse: function(data) {
+	        return data;
+	    },
+
+	    validate: function(attrs) {
+	        var errors = {};
+	        var hasError = false;
+
+	        if (hasError) {
+	          return errors;
+	        }
+	    },
+	});
+
+	module.exports = Model;
+
+
+/***/ },
+/* 103 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file groupuserlist.js
+	 * @brief Permission user list from a group view
+	 * @author Frederic SCHERMA
+	 * @date 2016-06-09
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+
+	var Marionette = __webpack_require__(4);
+	var PermissionGroupUserModel = __webpack_require__(102);
+	var PermissionGroupUserView = __webpack_require__(104);
+
+	var View = Marionette.CompositeView.extend({
+	    template: __webpack_require__(106),
+	    childView: PermissionGroupUserView,
+	    childViewContainer: 'tbody.group-user-list',
+
+	    ui: {
+	        add_user: 'span.add-user',
+	        username: 'input.username',
+	    },
+
+	    events: {
+	        'click @ui.add_user': 'addUserToGroup',
+	    },
+
+	    initialize: function() {
+	        this.listenTo(this.collection, 'reset', this.render, this);
+	        //this.listenTo(this.collection, 'add', this.render, this);
+	        //this.listenTo(this.collection, 'remove', this.render, this);
+	        this.listenTo(this.collection, 'change', this.render, this);
+	    },
+
+	    onRender: function() {
+	        // TODO could be a select2 widget because of templating and more efficient selection
+	        $(this.ui.username).autocomplete({
+	            open: function () {
+	                $(this).autocomplete('widget').zIndex(10000);
+	                $(this).validateField('');
+	            },
+	            source: function(req, callback) {
+	                var lterms = req.term.split(' ');
+	                var terms = [];
+
+	                // TODO exclude results contained in ... ...group/:groupname/user/
+	                for (var t in lterms) {
+	                    if (lterms[t].length >= 3) {
+	                        terms.push(lterms[t]);
+	                    }
+	                }
+
+	                $.ajax({
+	                    type: "GET",
+	                    url: ohgr.baseUrl + 'permission/user/search/',
+	                    dataType: 'json',
+	                    data: {term: JSON.stringify(terms), type: "*", mode: "icontains", exclude: ""},
+	                    el: this.element,
+	                    async: true,
+	                    cache: true,
+	                    success: function(data) {
+	                        callback(data);
+	                    }
+	                });
+	            },
+	            minLength: 3,
+	            delay: 100,
+	            autoFocus: true,
+	            search: function(event, ui) {
+	                var lterms = $(this).val().split(' ');
+	                var terms = [];
+
+	                for (var t in lterms) {
+	                    if (lterms[t].length >= 3) {
+	                        terms.push(lterms[t]);
+	                    }
+	                }
+
+	                return terms.length > 0;
+	            },
+	            close: function (event, ui) {
+	                if ($(this).val() === "") {
+	                    $(this).validateField('');
+	                }
+	            },
+	            response: function (event, ui) {
+	                if (ui.content.length == 0) {
+	                    $(this).validateField('failed');
+	                }
+	            },
+	            change: function (event, ui) {
+	                if ($(this).val() === "") {
+	                    $(this).validateField('');
+	                } else if (!ui.item) {
+	                    $(this).validateField('failed');
+	                }
+	            },
+	            select: function(event, ui) {
+	                $(this).validateField('ok');
+	            }
+	        });
+	    },
+
+	    addUserToGroup: function () {
+	        var el = this.ui.username;
+
+	        if ($(el).isValidField()) {
+	            var username = el.val();
+	            this.collection.create({username: username}, {wait: true});
+	            $(el).cleanField();
+	        }
+	    }
+	});
+
+	module.exports = View;
+
+
+/***/ },
+/* 104 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file groupuser.js
+	 * @brief Permission user from group item view
+	 * @author Frederic SCHERMA
+	 * @date 2016-06-09
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+
+	var Marionette = __webpack_require__(4);
+	var PermissionGroupUserModel = __webpack_require__(102);
+
+	var View = Marionette.ItemView.extend({
+	    tagName: 'tr',
+	    className: 'element object user',
+	    template: __webpack_require__(105),
+
+	    ui: {
+	        remove_user: 'span.remove-user',
+	        view_user: 'td.view-user',
+	    },
+
+	    events: {
+	        'click @ui.remove_user': 'removeUserFromGroup',
+	        'click @ui.view_user': 'viewUserDetails',
+	    },
+
+	    initialize: function() {
+	        this.listenTo(this.model, 'reset', this.render, this);
+	    },
+
+	    onRender: function() {
+	    },
+
+	    removeUserFromGroup: function () {
+	        // can't remove himself
+	        /*if (user.username == this.model.get('username'))
+	            return;
+
+	        this.model.save({is_superuser: false}, {patch: true, wait: true});*/
+	        this.model.destroy();
+	    },
+
+	    viewUserDetails: function () {
+	        Backbone.history.navigate("app/permission/user/" + this.model.get('username'), {trigger: true});
+	    }
+	});
+
+	module.exports = View;
+
+
+/***/ },
+/* 105 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '', __e = _.escape;
+	with (obj) {
+	__p += '<th name="remove-user" class="action"><span class="remove-user glyphicon glyphicon-remove"></span></th><td name="username" class="action view-user" value="' +
+	((__t = ( username )) == null ? '' : __t) +
+	'">' +
+	__e( username ) +
+	'</td><td name="first_name">' +
+	__e( first_name ) +
+	'</td><td name="last_name">' +
+	__e( last_name ) +
+	'</td>';
+
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 106 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<div class="element object group-user-list" object-type="user-list" style="width:100%"><table class="table table-striped"><thead><tr><th><span class="glyphicon glyphicon-asterisk"></span></th><th>' +
+	((__t = ( gt.gettext("Username") )) == null ? '' : __t) +
+	'</th><th>' +
+	((__t = ( gt.gettext("First name") )) == null ? '' : __t) +
+	'</th><th>' +
+	((__t = ( gt.gettext("Last name") )) == null ? '' : __t) +
+	'</th></tr></thead><tbody class="group-user-list"></tbody></table></div><div class="user-add"><table class="table table-striped"><tbody><tr class="edit-mode"><form><th><span class="add-user action glyphicon glyphicon-plus-sign" style="margin-top: 10px"></span></th><td><div class="form-group"><input class="form-control username" type="text" name="username" autocomplete="off"></div></td></form></tr></tbody></table></div>';
+
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 107 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
 	 * @file defaultlayout.js
 	 * @brief Default layout with one Bootstrap panel
 	 * @author Frederic SCHERMA
@@ -39591,7 +39928,7 @@
 
 
 /***/ },
-/* 102 */
+/* 108 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -39620,7 +39957,7 @@
 
 
 /***/ },
-/* 103 */
+/* 109 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -39646,19 +39983,19 @@
 
 	        // i18n
 	        if (user.language === "en") {
-	            var locale = __webpack_require__(104);
+	            var locale = __webpack_require__(110);
 	            gt.addTextdomain('default', locale);
 	        } else if (user.language === "fr") {
-	            locale = __webpack_require__(105);
+	            locale = __webpack_require__(111);
 	            gt.addTextdomain('default', locale);
 	        } else {  // default to english
-	            var locale = __webpack_require__(104);
+	            var locale = __webpack_require__(110);
 	            gt.addTextdomain('default', locale);
 	        }
 
 	        var SelectOptionItemView = __webpack_require__(68);
 
-	        var TaxonRankCollection = __webpack_require__(106);
+	        var TaxonRankCollection = __webpack_require__(112);
 	        this.collections.taxonRanks = new TaxonRankCollection();
 
 	        this.views.taxonRanks = new SelectOptionItemView({
@@ -39666,15 +40003,15 @@
 	            collection: this.collections.taxonRanks,
 	        });
 
-	        var TaxonController = __webpack_require__(108);
+	        var TaxonController = __webpack_require__(114);
 	        this.controllers.Taxon = new TaxonController();
 	    },
 
 	    onStart: function(options) {
-	        var TaxonRouter = __webpack_require__(115);
+	        var TaxonRouter = __webpack_require__(121);
 	        this.routers.taxon = new TaxonRouter();
 
-	        var TaxonCollection = __webpack_require__(110);
+	        var TaxonCollection = __webpack_require__(116);
 	        this.collections.taxons = new TaxonCollection();
 	    },
 
@@ -39690,19 +40027,19 @@
 
 
 /***/ },
-/* 104 */
+/* 110 */
 /***/ function(module, exports) {
 
 	module.exports = "# SOME DESCRIPTIVE TITLE.\n# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER\n# This file is distributed under the same license as the PACKAGE package.\n# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.\n#\n#, fuzzy\nmsgid \"\"\nmsgstr \"\"\n\"Project-Id-Version: PACKAGE VERSION\\n\"\n\"Report-Msgid-Bugs-To: \\n\"\n\"POT-Creation-Date: 2016-06-07 11:11+0200\\n\"\n\"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\\n\"\n\"Last-Translator: FULL NAME <EMAIL@ADDRESS>\\n\"\n\"Language-Team: LANGUAGE <LL@li.org>\\n\"\n\"Language: en\\n\"\n\"MIME-Version: 1.0\\n\"\n\"Content-Type: text/plain; charset=UTF-8\\n\"\n\"Content-Transfer-Encoding: 8bit\\n\"\n\n#: ../../../views/taxon.js:56 ../../../controllers/taxon.js:159\nmsgid \"Invalid characters (alphanumeric, _ and - only)\"\nmsgstr \"\"\n\n#: ../../../views/taxon.js:59 ../../../controllers/taxon.js:162\nmsgid \"3 characters min\"\nmsgstr \"\"\n\n#: ../../../views/taxon.js:80 ../../../controllers/taxon.js:139\nmsgid \"Taxon name already in usage\"\nmsgstr \"\"\n\n#: ../../../routers/taxon.js:40\nmsgid \"List of taxons\"\nmsgstr \"\"\n\n#: ../../../routers/taxon.js:53\nmsgid \"Taxon details\"\nmsgstr \"\"\n\n#: ../../../controllers/taxon.js:177\nmsgid \"Family rank cannot have a parent taxon\"\nmsgstr \"\"\n\n#: ../../../controllers/taxon.js:182\nmsgid \"This rank must have a parent taxon\"\nmsgstr \"\"\n\n#: ../../../controllers/taxon.js:213\nmsgid \"Taxon successfully created !\"\nmsgstr \"\"\n\n#: ../../../templates/taxon.html:17\nmsgid \"Synonyms\"\nmsgstr \"\"\n\n#: ../../../templates/taxon.html:22\nmsgid \"Type\"\nmsgstr \"\"\n\n#: ../../../templates/taxon.html:23\nmsgid \"Name\"\nmsgstr \"\"\n\n#: ../../../templates/taxon.html:24\nmsgid \"Language\"\nmsgstr \"\"\n\n#: ../../../templates/taxoncreate.html:6\nmsgid \"Create a taxon\"\nmsgstr \"\"\n\n#: ../../../templates/taxoncreate.html:11\nmsgid \"Principal name of the taxon (must be unique)\"\nmsgstr \"\"\n\n#: ../../../templates/taxoncreate.html:15\nmsgid \"Taxon rank\"\nmsgstr \"\"\n\n#: ../../../templates/taxoncreate.html:19\nmsgid \"Direct parent\"\nmsgstr \"\"\n\n#: ../../../templates/taxoncreate.html:25\nmsgid \"Cancel\"\nmsgstr \"\"\n\n#: ../../../templates/taxoncreate.html:26\nmsgid \"Create\"\nmsgstr \"\"\n"
 
 /***/ },
-/* 105 */
+/* 111 */
 /***/ function(module, exports) {
 
 	module.exports = "# SOME DESCRIPTIVE TITLE.\n# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER\n# This file is distributed under the same license as the PACKAGE package.\n# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.\n#\n#, fuzzy\nmsgid \"\"\nmsgstr \"\"\n\"Project-Id-Version: PACKAGE VERSION\\n\"\n\"Report-Msgid-Bugs-To: \\n\"\n\"POT-Creation-Date: 2016-06-07 11:12+0200\\n\"\n\"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\\n\"\n\"Last-Translator: FULL NAME <EMAIL@ADDRESS>\\n\"\n\"Language-Team: LANGUAGE <LL@li.org>\\n\"\n\"Language: fr\\n\"\n\"MIME-Version: 1.0\\n\"\n\"Content-Type: text/plain; charset=UTF-8\\n\"\n\"Content-Transfer-Encoding: 8bit\\n\"\n\n#: ../../../views/taxon.js:56 ../../../controllers/taxon.js:159\nmsgid \"Invalid characters (alphanumeric, _ and - only)\"\nmsgstr \"Caractères invalides (alphanumérique, _ et - seulement)\"\n\n#: ../../../views/taxon.js:59 ../../../controllers/taxon.js:162\nmsgid \"3 characters min\"\nmsgstr \"3 caractères au minimum\"\n\n#: ../../../views/taxon.js:80 ../../../controllers/taxon.js:139\nmsgid \"Taxon name already in usage\"\nmsgstr \"Ce nom de taxon est déjà utilisé\"\n\n#: ../../../routers/taxon.js:40\nmsgid \"List of taxons\"\nmsgstr \"Liste des taxons\"\n\n#: ../../../routers/taxon.js:53\nmsgid \"Taxon details\"\nmsgstr \"Détails du taxon\"\n\n#: ../../../controllers/taxon.js:177\nmsgid \"Family rank cannot have a parent taxon\"\nmsgstr \"Le rang taxinomique famille ne peut pas avoir de parent\"\n\n#: ../../../controllers/taxon.js:182\nmsgid \"This rank must have a parent taxon\"\nmsgstr \"Ce rang taxinomique doit avoir un parent\"\n\n#: ../../../controllers/taxon.js:213\nmsgid \"Taxon successfully created !\"\nmsgstr \"Taxon créé avec succès !\"\n\n#: ../../../templates/taxon.html:17\nmsgid \"Synonyms\"\nmsgstr \"Synonymes\"\n\n#: ../../../templates/taxon.html:22\nmsgid \"Type\"\nmsgstr \"Type\"\n\n#: ../../../templates/taxon.html:23\nmsgid \"Name\"\nmsgstr \"Nom\"\n\n#: ../../../templates/taxon.html:24\nmsgid \"Language\"\nmsgstr \"Language\"\n\n#: ../../../templates/taxoncreate.html:6\nmsgid \"Create a taxon\"\nmsgstr \"Créer un taxon\"\n\n#: ../../../templates/taxoncreate.html:11\nmsgid \"Principal name of the taxon (must be unique)\"\nmsgstr \"Nom principal du taxon (doit être unique)\"\n\n#: ../../../templates/taxoncreate.html:15\nmsgid \"Taxon rank\"\nmsgstr \"Rank taxinomique\"\n\n#: ../../../templates/taxoncreate.html:19\nmsgid \"Direct parent\"\nmsgstr \"Parent directe\"\n\n#: ../../../templates/taxoncreate.html:25\nmsgid \"Cancel\"\nmsgstr \"Annuler\"\n\n#: ../../../templates/taxoncreate.html:26\nmsgid \"Create\"\nmsgstr \"Créer\"\n"
 
 /***/ },
-/* 106 */
+/* 112 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -39715,7 +40052,7 @@
 	 * @details
 	 */
 
-	var TaxonRankModel = __webpack_require__(107);
+	var TaxonRankModel = __webpack_require__(113);
 
 	var TaxonRankCollection = Backbone.Collection.extend({
 	    url: ohgr.baseUrl + 'taxonomy/rank/',
@@ -39738,7 +40075,7 @@
 
 
 /***/ },
-/* 107 */
+/* 113 */
 /***/ function(module, exports) {
 
 	/**
@@ -39760,7 +40097,7 @@
 
 
 /***/ },
-/* 108 */
+/* 114 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -39774,11 +40111,11 @@
 	 */
 
 	var Marionette = __webpack_require__(4);
-	var TaxonModel = __webpack_require__(109);
-	var TaxonCollection = __webpack_require__(110);
-	var TaxonListView = __webpack_require__(111);
-	var DefaultLayout = __webpack_require__(101);
-	var TitleView = __webpack_require__(102);
+	var TaxonModel = __webpack_require__(115);
+	var TaxonCollection = __webpack_require__(116);
+	var TaxonListView = __webpack_require__(117);
+	var DefaultLayout = __webpack_require__(107);
+	var TitleView = __webpack_require__(108);
 
 	var TaxonController = Marionette.Controller.extend({
 
@@ -39786,7 +40123,7 @@
 	        var CreateTaxonView = Marionette.ItemView.extend({
 	            el: "#dialog_content",
 	            tagName: "div",
-	            template: __webpack_require__(114),
+	            template: __webpack_require__(120),
 
 	            ui: {
 	                cancel: "button.cancel",
@@ -39993,19 +40330,17 @@
 	                            }
 	                        }),
 	                        success: function (data) {
-	                            if (data.result == "success") {
-	                                $(this.view.ui.dialog).modal('hide');
-	                                this.view.remove();
-	                                success(gettext("Taxon successfully created !"));
+	                            $(this.view.ui.dialog).modal('hide');
+	                            this.view.remove();
+	                            success(gettext("Taxon successfully created !"));
 
-	                                var collection = ohgr.taxonomy.collections.taxons;
-	                                collection.add({
-	                                    id: data.id,
-	                                    name: this.view.ui.name.val(),
-	                                    rank: this.view.ui.rank.val(),
-	                                    parent: this.view.ui.parent.attr('parent-id'),
-	                                });
-	                            }
+	                            var collection = ohgr.taxonomy.collections.taxons;
+	                            collection.add({
+	                                id: data.id,
+	                                name: this.view.ui.name.val(),
+	                                rank: this.view.ui.rank.val(),
+	                                parent: this.view.ui.parent.attr('parent-id'),
+	                            });
 	                        }
 	                    });
 	                }
@@ -40034,7 +40369,7 @@
 
 
 /***/ },
-/* 109 */
+/* 115 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -40142,7 +40477,7 @@
 
 
 /***/ },
-/* 110 */
+/* 116 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -40155,16 +40490,13 @@
 	 * @details
 	 */
 
-	var TaxonModel = __webpack_require__(109);
+	var TaxonModel = __webpack_require__(115);
 
 	var TaxonCollection = Backbone.Collection.extend({
 	    url: ohgr.baseUrl + 'taxonomy/',
 	    model: TaxonModel,
 	    
 	    parse: function(data) {
-	        if (data.result != 'success')
-	            return {};
-
 	        var taxons = data.taxons;
 	        var results = [];
 	        for (var taxon in taxons) {
@@ -40197,7 +40529,7 @@
 
 
 /***/ },
-/* 111 */
+/* 117 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -40211,8 +40543,8 @@
 	 */
 
 	var Marionette = __webpack_require__(4);
-	var TaxonModel = __webpack_require__(109);
-	var TaxonView = __webpack_require__(112);
+	var TaxonModel = __webpack_require__(115);
+	var TaxonView = __webpack_require__(118);
 
 	var TaxonListView = Marionette.CollectionView.extend({
 	    //el: '#main_content',
@@ -40257,7 +40589,7 @@
 
 
 /***/ },
-/* 112 */
+/* 118 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -40271,11 +40603,11 @@
 	 */
 
 	var Marionette = __webpack_require__(4);
-	var TaxonModel = __webpack_require__(109);
+	var TaxonModel = __webpack_require__(115);
 
 	var TaxonItemView = Marionette.ItemView.extend({
 	    tagName: 'div',
-	    template: __webpack_require__(113),
+	    template: __webpack_require__(119),
 
 	    ui: {
 	        "synonym_name": ".synonym-name",
@@ -40365,10 +40697,8 @@
 	            dataType: 'json',
 	            data: JSON.stringify({type: type, name: name, language: language}),
 	            success: function(data) {
-	               if (data.result == "success") {
-	                   this.view.model.addSynonym(type, name, language);
-	                   this.view.render();
-	               }
+	               this.view.model.addSynonym(type, name, language);
+	               this.view.render();
 	            }
 	        });
 	    },
@@ -40388,10 +40718,8 @@
 	            dataType: 'json',
 	            data: JSON.stringify({type: type, name: name, language: language}),
 	            success: function(data) {
-	                if (data.result == "success") {
-	                    this.view.model.removeSynonym(type, name, language);
-	                    this.view.render();
-	                }
+	                this.view.model.removeSynonym(type, name, language);
+	                this.view.render();
 	            }
 	        });
 	    },
@@ -40401,7 +40729,7 @@
 
 
 /***/ },
-/* 113 */
+/* 119 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -40449,7 +40777,7 @@
 
 
 /***/ },
-/* 114 */
+/* 120 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -40478,7 +40806,7 @@
 
 
 /***/ },
-/* 115 */
+/* 121 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -40492,12 +40820,12 @@
 	 */
 
 	var Marionette = __webpack_require__(4);
-	var TaxonModel = __webpack_require__(109);
-	var TaxonCollection = __webpack_require__(110);
-	var TaxonListView = __webpack_require__(111);
-	var TaxonItemView = __webpack_require__(112);
-	var DefaultLayout = __webpack_require__(101);
-	var TitleView = __webpack_require__(102);
+	var TaxonModel = __webpack_require__(115);
+	var TaxonCollection = __webpack_require__(116);
+	var TaxonListView = __webpack_require__(117);
+	var TaxonItemView = __webpack_require__(118);
+	var DefaultLayout = __webpack_require__(107);
+	var TitleView = __webpack_require__(108);
 
 	var TaxonRouter = Marionette.AppRouter.extend({
 	    routes : {
@@ -40545,7 +40873,7 @@
 
 
 /***/ },
-/* 116 */
+/* 122 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -40571,9 +40899,9 @@
 
 	        // i18n
 	        if (user.language === "fr") {
-	            gt.addTextdomain('default', __webpack_require__(117));
+	            gt.addTextdomain('default', __webpack_require__(123));
 	        } else {  // default to english
-	            gt.addTextdomain('default', __webpack_require__(118));
+	            gt.addTextdomain('default', __webpack_require__(124));
 	        }
 	    },
 
@@ -40597,14 +40925,14 @@
 
 
 /***/ },
-/* 117 */
+/* 123 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer) {module.exports = new Buffer([222,18,4,149,0,0,0,0,1,0,0,0,28,0,0,0,36,0,0,0,3,0,0,0,44,0,0,0,0,0,0,0,56,0,0,0,66,1,0,0,57,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,80,114,111,106,101,99,116,45,73,100,45,86,101,114,115,105,111,110,58,32,80,65,67,75,65,71,69,32,86,69,82,83,73,79,78,10,82,101,112,111,114,116,45,77,115,103,105,100,45,66,117,103,115,45,84,111,58,32,10,80,79,84,45,67,114,101,97,116,105,111,110,45,68,97,116,101,58,32,50,48,49,54,45,48,54,45,48,51,32,49,53,58,51,48,43,48,50,48,48,10,80,79,45,82,101,118,105,115,105,111,110,45,68,97,116,101,58,32,89,69,65,82,45,77,79,45,68,65,32,72,79,58,77,73,43,90,79,78,69,10,76,97,115,116,45,84,114,97,110,115,108,97,116,111,114,58,32,70,85,76,76,32,78,65,77,69,32,60,69,77,65,73,76,64,65,68,68,82,69,83,83,62,10,76,97,110,103,117,97,103,101,45,84,101,97,109,58,32,76,65,78,71,85,65,71,69,32,60,76,76,64,108,105,46,111,114,103,62,10,76,97,110,103,117,97,103,101,58,32,102,114,10,77,73,77,69,45,86,101,114,115,105,111,110,58,32,49,46,48,10,67,111,110,116,101,110,116,45,84,121,112,101,58,32,116,101,120,116,47,112,108,97,105,110,59,32,99,104,97,114,115,101,116,61,85,84,70,45,56,10,67,111,110,116,101,110,116,45,84,114,97,110,115,102,101,114,45,69,110,99,111,100,105,110,103,58,32,56,98,105,116,10,0])
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13).Buffer))
 
 /***/ },
-/* 118 */
+/* 124 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer) {module.exports = new Buffer([222,18,4,149,0,0,0,0,1,0,0,0,28,0,0,0,36,0,0,0,3,0,0,0,44,0,0,0,0,0,0,0,56,0,0,0,66,1,0,0,57,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,80,114,111,106,101,99,116,45,73,100,45,86,101,114,115,105,111,110,58,32,80,65,67,75,65,71,69,32,86,69,82,83,73,79,78,10,82,101,112,111,114,116,45,77,115,103,105,100,45,66,117,103,115,45,84,111,58,32,10,80,79,84,45,67,114,101,97,116,105,111,110,45,68,97,116,101,58,32,50,48,49,54,45,48,54,45,48,51,32,49,53,58,51,48,43,48,50,48,48,10,80,79,45,82,101,118,105,115,105,111,110,45,68,97,116,101,58,32,89,69,65,82,45,77,79,45,68,65,32,72,79,58,77,73,43,90,79,78,69,10,76,97,115,116,45,84,114,97,110,115,108,97,116,111,114,58,32,70,85,76,76,32,78,65,77,69,32,60,69,77,65,73,76,64,65,68,68,82,69,83,83,62,10,76,97,110,103,117,97,103,101,45,84,101,97,109,58,32,76,65,78,71,85,65,71,69,32,60,76,76,64,108,105,46,111,114,103,62,10,76,97,110,103,117,97,103,101,58,32,101,110,10,77,73,77,69,45,86,101,114,115,105,111,110,58,32,49,46,48,10,67,111,110,116,101,110,116,45,84,121,112,101,58,32,116,101,120,116,47,112,108,97,105,110,59,32,99,104,97,114,115,101,116,61,85,84,70,45,56,10,67,111,110,116,101,110,116,45,84,114,97,110,115,102,101,114,45,69,110,99,111,100,105,110,103,58,32,56,98,105,116,10,0])

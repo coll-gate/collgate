@@ -80,7 +80,9 @@ ohgr = new Marionette.Application({
 
             // failure : resolve or reject the deferred according to your cases
             xhr.fail(function() {
+                console.log("ajaxError: " + xhr.statusText + " " + xhr.responseText);
                 if (xhr.status === 200 && xhr.responseText === "") {
+                    alert("!! this should not arrives !!");
                     dfd.resolve.apply(xhr, arguments);
                 } else {
                     var data = JSON.parse(xhr.responseText);

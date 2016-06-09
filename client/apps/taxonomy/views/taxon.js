@@ -103,10 +103,8 @@ var TaxonItemView = Marionette.ItemView.extend({
             dataType: 'json',
             data: JSON.stringify({type: type, name: name, language: language}),
             success: function(data) {
-               if (data.result == "success") {
-                   this.view.model.addSynonym(type, name, language);
-                   this.view.render();
-               }
+               this.view.model.addSynonym(type, name, language);
+               this.view.render();
             }
         });
     },
@@ -126,10 +124,8 @@ var TaxonItemView = Marionette.ItemView.extend({
             dataType: 'json',
             data: JSON.stringify({type: type, name: name, language: language}),
             success: function(data) {
-                if (data.result == "success") {
-                    this.view.model.removeSynonym(type, name, language);
-                    this.view.render();
-                }
+                this.view.model.removeSynonym(type, name, language);
+                this.view.render();
             }
         });
     },

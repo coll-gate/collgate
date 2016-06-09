@@ -5,11 +5,15 @@
 """
 ohgr permission REST API
 """
+import operator
+
 from django.contrib.auth.models import Permission, User, Group
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import SuspiciousOperation
+from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_noop as _
+from functools import reduce
 
 from guardian.models import UserObjectPermission, GroupObjectPermission
 
@@ -34,6 +38,11 @@ class RestPermissionUser(RestPermission):
     suffix = 'user'
 
 
+class RestPermissionUserSearch(RestPermissionUser):
+    regex = r'^search/$'
+    suffix = 'search'
+
+
 class RestPermissionUserName(RestPermissionUser):
     regex = r'^(?P<username>[a-zA-Z0-9\.\-_]+)/$'
     suffix = 'username'
@@ -49,7 +58,7 @@ class RestPermissionGroup(RestPermission):
     suffix = 'group'
 
 
-class RestTaxonomyGroupSearch(RestPermissionGroup):
+class RestPermissionGroupSearch(RestPermissionGroup):
     regex = r'^search/$'
     suffix = 'search'
 
@@ -113,7 +122,6 @@ def get_users_list(request):
 
     response = {
         'users': users,
-        'result': 'success',
         'perms': get_permissions_for(request.user, "auth", "user")
     }
 
@@ -138,7 +146,6 @@ def get_groups_list(request):
 
     response = {
         'groups': [],
-        'result': 'success',
         'perms': get_permissions_for(request.user, "auth", "group"),
     }
 
@@ -171,7 +178,7 @@ def add_group(request):
 
     response = {
         'id': group.id,
-        'result': 'success',
+        'name': group_name,
         'perms': get_permissions_for(request.user, "auth", "group"),
     }
 
@@ -187,14 +194,10 @@ def delete_group(request, name):
 
     group.delete()
 
-    response = {
-        'result': 'success',
-    }
-
-    return HttpResponseRest(request, response)
+    return HttpResponseRest(request, {})
 
 
-@RestTaxonomyGroupSearch.def_auth_request(Method.GET, Format.JSON, ('term', 'type', 'mode'))
+@RestPermissionGroupSearch.def_auth_request(Method.GET, Format.JSON, ('term', 'type', 'mode'))
 def search_group(request):
     groups = None
 
@@ -208,6 +211,31 @@ def search_group(request):
     if groups:
         for g in groups:
             response.append({"id": str(g.id), "label": g.name, "value": g.name})
+
+    return HttpResponseRest(request, response)
+
+
+@RestPermissionUserSearch.def_auth_request(Method.GET, Format.JSON, ('term', 'type', 'mode'))
+def search_user(request):
+    users = None
+
+    terms = json.loads(request.GET['term'])
+    if not terms:
+        raise SuspiciousOperation(_("Missing terms for search expression"))
+
+    if request.GET['mode'] == 'ieq' and request.GET['type'] == 'name':
+        users = User.objects.filter(username__iexact=terms[0])
+    elif request.GET['mode'] == 'icontains':
+        if request.GET['type'] == 'name':
+            users = User.objects.filter(username__icontains=terms[0])
+        elif request.GET['type'] == '*':
+            users = reduce(operator.or_, (User.objects.filter(Q(username__icontains=term) | Q(first_name__icontains=term) | Q(last_name__icontains=term)) for term in terms))
+
+    response = []
+
+    if users:
+        for u in users:
+            response.append({"id": str(u.id), "label": "%s (%s)" % (u.get_full_name(), u.username), "value": u.username})
 
     return HttpResponseRest(request, response)
 
@@ -291,7 +319,6 @@ def get_user_permissions(request, username):
         'username': user.username,
         'permissions': permissions,
         'perms': get_permissions_for(request.user, "auth", "permission"),
-        'result': 'success'
     }
 
     return HttpResponseRest(request, response)
@@ -324,9 +351,7 @@ def patch_user(request, username):
     if update:
         user.save()
 
-    response = {'result': 'success'}
-
-    return HttpResponseRest(request, response)
+    return HttpResponseRest(request, {})
 
 
 @RestPermissionUserNamePermission.def_auth_request(
@@ -357,13 +382,11 @@ def add_user_permission(request, username):
     if not object_id:
         perm = get_object_or_404(Permission, codename=permission, content_type=content_type)
         user.user_permissions.add(perm)
-        response = {'result': 'success'}
     else:
         obj = get_object_or_404(content_type.model, id=object)
         UserObjectPermission.objects.assign_perm(permission, user=user, obj=obj)
-        response = {'result': 'success'}
 
-    return HttpResponseRest(request, response)
+    return HttpResponseRest(request, {})
 
 
 @RestPermissionUserNamePermission.def_auth_request(
@@ -411,8 +434,7 @@ def delete_user_permission(request, username):
         else:
             raise SuspiciousOperation('Invalid patch action')
 
-    response = {'result': 'success'}
-    return HttpResponseRest(request, response)
+    return HttpResponseRest(request, {})
 
 
 @RestPermissionGroupNamePermission.def_auth_request(Method.GET, Format.JSON, staff=True)
@@ -466,7 +488,6 @@ def get_group_permissions(request, name):
         'name': name,
         'permissions': permissions,
         'perms': get_permissions_for(request.user, "auth", "permission"),
-        'result': 'success'
     }
 
     return HttpResponseRest(request, response)
@@ -499,13 +520,11 @@ def add_group_permission(request, name):
     if not object_id:
         perm = get_object_or_404(Permission, codename=permission, content_type=content_type)
         group.permissions.add(perm)
-        response = {'result': 'success'}
     else:
         obj = get_object_or_404(content_type.model, id=object)
         GroupObjectPermission.objects.assign_perm(permission, group=group, obj=obj)
-        response = {'result': 'success'}
 
-    return HttpResponseRest(request, response)
+    return HttpResponseRest(request, {})
 
 
 @RestPermissionGroupNamePermission.def_auth_request(
@@ -553,8 +572,7 @@ def delete_group_permission(request, name):
         else:
             raise SuspiciousOperation('Invalid patch action')
 
-    response = {'result': 'success'}
-    return HttpResponseRest(request, response)
+    return HttpResponseRest(request, {})
 
 
 @RestPermissionGroupNameUser.def_auth_request(Method.POST, Format.JSON, content={
@@ -566,7 +584,22 @@ def delete_group_permission(request, name):
     perms={'auth.change_group': _("You are not allowed to add a user into a group")},
     staff=True)
 def group_add_user(request, name):
-    raise Exception("Not yet implemented")
+    group = get_object_or_404(Group, name=name)
+    user = get_object_or_404(User, username=request.data['username'])
+
+    if user in group.user_set.all():
+        raise SuspiciousOperation(_("User already exists into the group"))
+
+    user.groups.add(group)
+
+    response = {
+        'id': user.id,
+        'username': user.username,
+        'first_name': user.first_name,
+        'last_name': user.last_name,
+        'email': user.email}
+
+    return HttpResponseRest(request, response)
 
 
 @RestPermissionGroupNameUserName.def_auth_request(
@@ -574,4 +607,47 @@ def group_add_user(request, name):
     perms={'auth.change_group': _("You are not allowed to remove a user from a group")},
     staff=True)
 def group_delete_user(request, name, username):
-    raise Exception("Not yet implemented")
+    group = get_object_or_404(Group, name=name)
+    user = get_object_or_404(User, username=username)
+
+    if user not in group.user_set.all():
+        raise SuspiciousOperation(_("User does not exists into the group"))
+
+    user.groups.remove(group)
+
+    return HttpResponseRest(request, {})
+
+
+@RestPermissionGroupNameUser.def_auth_request(Method.OPTIONS, Format.JSON, staff=True)
+def opt_users_list_for_group(request, name):
+    response = {
+        'perms': get_permissions_for(request.user, "auth", "group")
+    }
+
+    return HttpResponseRest(request, response)
+
+
+@RestPermissionGroupNameUser.def_auth_request(Method.GET, Format.JSON, staff=True)
+def get_users_list_for_group(request, name):
+    query = get_object_or_404(Group, name=name).user_set.all()
+
+    users = []
+
+    response = {
+        'users': users,
+        'perms': get_permissions_for(request.user, "auth", "group")
+    }
+
+    for user in query:
+        users.append({
+            'id': user.id,
+            'username': user.username,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'email': user.email,
+            'is_active': user.is_active,
+            'is_staff': user.is_staff,
+            'is_superuser': user.is_superuser,
+        })
+
+    return HttpResponseRest(request, response)

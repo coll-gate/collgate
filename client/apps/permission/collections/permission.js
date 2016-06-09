@@ -26,9 +26,6 @@ var PermissionCollection = Backbone.Collection.extend({
     },
 
     parse: function(data) {
-        if (data.result != 'success')
-            return [];
-
         this.perms = data.perms;
         return data.permissions;
     },

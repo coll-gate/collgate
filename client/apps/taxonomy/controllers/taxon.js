@@ -228,19 +228,17 @@ var TaxonController = Marionette.Controller.extend({
                             }
                         }),
                         success: function (data) {
-                            if (data.result == "success") {
-                                $(this.view.ui.dialog).modal('hide');
-                                this.view.remove();
-                                success(gettext("Taxon successfully created !"));
+                            $(this.view.ui.dialog).modal('hide');
+                            this.view.remove();
+                            success(gettext("Taxon successfully created !"));
 
-                                var collection = ohgr.taxonomy.collections.taxons;
-                                collection.add({
-                                    id: data.id,
-                                    name: this.view.ui.name.val(),
-                                    rank: this.view.ui.rank.val(),
-                                    parent: this.view.ui.parent.attr('parent-id'),
-                                });
-                            }
+                            var collection = ohgr.taxonomy.collections.taxons;
+                            collection.add({
+                                id: data.id,
+                                name: this.view.ui.name.val(),
+                                rank: this.view.ui.rank.val(),
+                                parent: this.view.ui.parent.attr('parent-id'),
+                            });
                         }
                     });
                 }

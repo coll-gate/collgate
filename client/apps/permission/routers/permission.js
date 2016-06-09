@@ -15,6 +15,8 @@ var PermissionUserCollection = require('../collections/user');
 var PermissionUserListView = require('../views/userlist');
 var PermissionGroupCollection = require('../collections/group');
 var PermissionGroupListView = require('../views/grouplist');
+var PermissionGroupUserCollection = require('../collections/groupuser');
+var PermissionGroupUserListView = require('../views/groupuserlist');
 var DefaultLayout = require('../../main/views/defaultlayout');
 var TitleView = require('../../main/views/titleview');
 
@@ -76,6 +78,19 @@ var PermissionRouter = Marionette.AppRouter.extend({
 
         permissionsCollection.fetch().then(function () {
             defaultLayout.content.show(new PermissionListView({collection : permissionsCollection}));
+        });
+    },
+
+    getUsersForGroup: function(name) {
+        var userCollection = new PermissionGroupUserCollection([], {name: name});
+
+        var defaultLayout = new DefaultLayout({});
+        ohgr.mainRegion.show(defaultLayout);
+
+        defaultLayout.title.show(new TitleView({title: gt.gettext("List of users for group") + " " + name}));
+
+        userCollection.fetch().then(function () {
+            defaultLayout.content.show(new PermissionGroupUserListView({collection : userCollection}));
         });
     },
 });
