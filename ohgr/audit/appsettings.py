@@ -8,10 +8,9 @@ ohgr application settings
 
 # Default settings of the application
 APP_DB_DEFAULT_SETTINGS = {
-    "emailer": '"frederic.scherma@clermont.inra.fr"',
 }
 
-APP_VERBOSE_NAME = "Online Host of Genetic Resource :: Main"
+APP_VERBOSE_NAME = "Online Host of Genetic Resource :: Audit"
 
 APP_SETTINGS_MODEL = 'main.models.Settings'
 

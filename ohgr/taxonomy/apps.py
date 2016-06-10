@@ -26,6 +26,8 @@ class OhgrTaxonomy(ApplicationMain):
         taxonomy_module = Module('taxonomy', base_url='ohgr')
         taxonomy_module.include_urls((
             'base',
+            'taxon',
+            'taxonsynonym',
             'addtaxon')
         )
 

@@ -18,9 +18,9 @@ var TaxonItemView = Marionette.ItemView.extend({
     ui: {
         "synonym_name": ".synonym-name",
         "synonym_language": ".synonym-languages",
-        "synonym_type": ".synonym-types",
+        "taxon_synonym_type": ".taxon-synonym-types",
         "taxon_rank": ".taxon-ranks",
-        "editmode": ".edit-mode",
+        "edit_mode": ".edit-mode",
         "add_synonym": ".add-synonym",
         "remove_synonym": ".remove-synonym",
     },
@@ -37,15 +37,15 @@ var TaxonItemView = Marionette.ItemView.extend({
 
     onRender: function() {
         ohgr.main.views.languages.drawSelect(this.ui.synonym_language);
-        ohgr.main.views.synonymTypes.drawSelect(this.ui.synonym_type);
+        ohgr.taxonomy.views.taxonSynonymTypes.drawSelect(this.ui.taxon_synonym_type);
         ohgr.taxonomy.views.taxonRanks.drawSelect(this.ui.taxon_rank);
         
         ohgr.main.views.languages.htmlFromValue(this.el);
-        ohgr.main.views.synonymTypes.htmlFromValue(this.el);
+        ohgr.taxonomy.views.taxonSynonymTypes.htmlFromValue(this.el);
         ohgr.taxonomy.views.taxonRanks.htmlFromValue(this.el);
 
-        this.ui.synonym_type.find('option[value="0"]').remove();
-        $(this.ui.synonym_type).selectpicker('refresh');
+        this.ui.taxon_synonym_type.find('option[value="0"]').remove();
+        $(this.ui.taxon_synonym_type).selectpicker('refresh');
     },
 
     validateName: function() {
@@ -90,7 +90,7 @@ var TaxonItemView = Marionette.ItemView.extend({
     },
 
     onAddSynonym: function () {
-        var type = $(this.ui.synonym_type).val();
+        var type = $(this.ui.taxon_synonym_type).val();
         var name = $(this.ui.synonym_name).val();
         var language = $(this.ui.synonym_language).val();
 

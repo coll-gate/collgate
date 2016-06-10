@@ -13,7 +13,11 @@
 <html>
 <head>
     <title>Online Host of Genetic Resources</title>
-    <link rel="shortcut icon" href="{% static 'main/img/favicon.png' %}" />
+    {% if debug %}
+        <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
+    {% else %}
+        <link rel="shortcut icon" href="{% static 'main/img/favicon.png' %}" />
+    {% endif %}
 </head>
 
 <body>

@@ -133,4 +133,3 @@ $(function() {
 })(jQuery);
 
 var _ = django.gettext;
-var title = _("Online Host of Genetics Resources");

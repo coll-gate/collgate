@@ -41,22 +41,6 @@ var MainModule = Marionette.Module.extend({
             collection: this.collections.languages,
         });
 
-        var SynoymTypeCollection = require('./collections/synonymtype');
-        this.collections.synonymTypes = new SynoymTypeCollection();
-
-        this.views.synonymTypes = new SelectOptionItemView({
-            className: 'synonym-type',
-            collection: this.collections.synonymTypes,/*
-            collection: new Backbone.Collection([
-                {id: 60, value: django.gettext("Family")},
-                {id: 61, value: django.gettext("Sub-family")},
-                {id: 70, value: django.gettext("Genus")},
-                {id: 71, value: django.gettext("Sub-genus")},
-                {id: 80, value: django.gettext("Specie")},
-                {id: 81, value: django.gettext("Sub-specie")}
-            ]);*/
-        });
-
         this.views.Home = Marionette.CompositeView.extend({
             el: '#main_content',
             template: require('./templates/home.html'),

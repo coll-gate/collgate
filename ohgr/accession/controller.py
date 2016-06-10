@@ -6,8 +6,8 @@
 ohgr accession module controller
 """
 
-from main.models import SynonymType, Languages
-from .models import Accession, AccessionSynonym
+from main.models import Languages
+from .models import Accession, AccessionSynonym, AccessionSynonymType
 
 
 class Accession(object):
@@ -28,7 +28,7 @@ class Accession(object):
         accession.save()
 
         # first name a primary synonym
-        primary = AccessionSynonym(accession_id=accession.id, name=name, type=int(SynonymType.PRIMARY), language=Languages.FR.value)
+        primary = AccessionSynonym(accession_id=accession.id, name=name, type=int(AccessionSynonymType.PRIMARY), language=Languages.FR.value)
         primary.save()
 
         return accession
@@ -64,7 +64,7 @@ class Accession(object):
         if not synonym:
             raise Exception('Empty synonym')
 
-        if not synonym['name'] or synonym['type'] == SynonymType.PRIMARY:
+        if not synonym['name'] or synonym['type'] == AccessionSynonymType.PRIMARY:
             raise Exception('Undefined synonym name or primary synonym')
 
         if not synonym['language']:
@@ -85,7 +85,7 @@ class Accession(object):
             return
 
         # cannot remove the primary synonym
-        if not synonym['name'] or synonym['type'] == SynonymType.PRIMARY:
+        if not synonym['name'] or synonym['type'] == AccessionSynonymType.PRIMARY:
             return
 
         AccessionSynonym.objects.filter(accession_id=accession_id, name=synonym['name']).delete()

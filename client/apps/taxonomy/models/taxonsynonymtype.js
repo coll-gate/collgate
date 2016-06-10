@@ -1,6 +1,6 @@
 /**
- * @file synonymtype.js
- * @brief Synonym type model
+ * @file taxonsynonymtype.js
+ * @brief Taxon synonym type model
  * @author Frederic SCHERMA
  * @date 2016-04-13
  * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
@@ -9,7 +9,7 @@
  */
 
 module.exports = Backbone.Model.extend({
-    url: ohgr.baseUrl + 'synonym-type/:id',
+    url: ohgr.baseUrl + 'taxonomy/taxon-synonym-type/:id',
 
     defaults: function() {
         return {id: '', value: ''}

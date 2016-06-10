@@ -193,9 +193,9 @@ INSTALLED_APPS = (
     'igdectk.bootstrap',
     'main',
     'permission',
+    'audit',
     'taxonomy',
     'accession',
-    # 'debug_toolbar',
 )
 
 APPLICATIONS = {
@@ -257,3 +257,10 @@ DEFAULT_FROM_EMAIL = "frederic.scherma@clermont.inra.fr"
 EMAIL_HOST = "smtp.clermont.inra.fr"
 EMAIL_PORT = 25
 EMAIL_SUBJECT_PREFIX = "Online Host of Genetics Resources"
+
+# CACHES = {
+#     'default': {
+#         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+#         'LOCATION': '/var/tmp/django_cache',
+#     }
+# }

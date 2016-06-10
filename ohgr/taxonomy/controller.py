@@ -7,8 +7,8 @@ ohgr taxonomy module controller
 """
 from django.core.exceptions import SuspiciousOperation, PermissionDenied
 
-from main.models import SynonymType, Languages
-from .models import Taxon, TaxonSynonym
+from main.models import Languages
+from .models import Taxon, TaxonSynonym, TaxonSynonymType
 
 from django.utils.translation import ugettext_noop as _
 
@@ -66,7 +66,7 @@ class Taxonomy(object):
         taxon.save()
 
         # first name a primary synonym
-        primary = TaxonSynonym(taxon_id=taxon.id, name=name, type=int(SynonymType.PRIMARY), language=Languages.FR.value)
+        primary = TaxonSynonym(taxon_id=taxon.id, name=name, type=int(TaxonSynonymType.PRIMARY), language=Languages.FR.value)
         primary.save()
 
         return taxon
@@ -123,7 +123,7 @@ class Taxonomy(object):
         if not synonym:
             raise SuspiciousOperation('Empty synonym')
 
-        if not synonym['name'] or synonym['type'] == SynonymType.PRIMARY:
+        if not synonym['name'] or synonym['type'] == TaxonSynonymType.PRIMARY:
             raise SuspiciousOperation(_('Undefined synonym name or primary synonym'))
 
         if not synonym['language']:
@@ -147,7 +147,7 @@ class Taxonomy(object):
             return
 
         # cannot remove the primary synonym
-        if not synonym['name'] or synonym['type'] == SynonymType.PRIMARY:
+        if not synonym['name'] or synonym['type'] == TaxonSynonymType.PRIMARY:
             return
 
         TaxonSynonym.objects.filter(taxon=taxon, name=synonym['name']).delete()

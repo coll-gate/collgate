@@ -7,17 +7,28 @@ ohgr accession module models.
 """
 
 from django.db import models
+from django.utils.translation import ugettext_lazy as _
 
 from igdectk.common.models import ChoiceEnum, IntegerChoice
 
-from main.models import SynonymType, Languages
+from main.models import Languages
+
+
+class AccessionSynonymType(ChoiceEnum):
+    """
+    Static but could evolve to DB in order to customize this types on a client.
+    """
+
+    PRIMARY = IntegerChoice(0, _('Primary'))
+    SYNONYM = IntegerChoice(1, _('Synonym'))
+    CODE = IntegerChoice(2, _('Code'))
 
 
 class AccessionSynonym(models.Model):
 
     name = models.CharField(unique=True, null=False, blank=False, max_length=255, db_index=True)
     language = models.CharField(null=False, blank=False, max_length=2, choices=Languages.choices())
-    type = models.IntegerField(null=False, blank=False, choices=SynonymType.choices())
+    type = models.IntegerField(null=False, blank=False, choices=AccessionSynonymType.choices())
 
     accession = models.ForeignKey('Accession', null=False, related_name='synonyms')
 

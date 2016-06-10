@@ -8,7 +8,7 @@ Views related to the home page.
 from django.contrib import messages
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
-from .models import Languages, SynonymType
+from .models import Languages
 
 from django.utils.translation import ugettext_lazy as _
 
@@ -98,17 +98,3 @@ def language(request):
         languages.append({"id": language.value, "value": str(language.label)})
 
     return HttpResponseRest(request, languages)
-
-
-# TODO Django cache
-@RestSynonymType.def_request(Method.GET, Format.JSON)
-def synonym_type(request):
-    """
-    Get the list of type of synonym in JSON
-    """
-    synonym_types = []
-
-    for st in SynonymType:
-        synonym_types.append({"id": st.value, "value": str(st.label)})
-
-    return HttpResponseRest(request, synonym_types)

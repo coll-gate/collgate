@@ -5,16 +5,11 @@
 """
 ohgr accession rest handler
 """
-from django.db.models import Q
-from django.shortcuts import render, get_object_or_404
 
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
-from igdectk.rest.restmiddleware import HttpResponseUnauthorized
 
-from main.models import Languages, SynonymType
 from .models import Accession, AccessionSynonym
-# from .controller import Accession
 
 from django.utils.translation import ugettext_lazy as _
 
@@ -58,8 +53,8 @@ def create_accession(request):
     )
 
     response = {
-        'result': 'success',
         'id': accession.pk,
+        'name': accession.name,
     }
 
     return HttpResponseRest(request, response)
@@ -72,7 +67,6 @@ def accession_list(request):
     synonyms = AccessionSynonym.objects.all()
 
     response = {
-        'result': 'success',
         'accessions': accessions,
         'synonyms': synonyms,
     }

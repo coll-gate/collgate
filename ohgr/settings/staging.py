@@ -50,10 +50,7 @@ STATIC_URL = '/static/'
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    # 'debug_toolbar.middleware.DebugToolbarMiddleware',
-    'debug_panel.middleware.DebugPanelMiddleware',
     'igdectk.rest.csrf.CsrfViewMiddleware',
-    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'igdectk.rest.restmiddleware.IGdecTkRestMiddleware',
@@ -70,16 +67,15 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.admin',
-    # 'django.contrib.admindocs',
     'guardian',
     'igdectk.common',
     'igdectk.jquery',
     'igdectk.bootstrap',
     'main',
+    'audit',
     'permission',
     'taxonomy',
     'accession',
-    # 'debug_toolbar',
 )
 
 LOGGING = {

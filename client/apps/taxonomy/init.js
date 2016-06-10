@@ -20,15 +20,10 @@ var TaxonomyModule = Marionette.Module.extend({
         this.controllers = {};
 
         // i18n
-        if (user.language === "en") {
-            var locale = require('./locale/en/LC_MESSAGES/default.po');
-            gt.addTextdomain('default', locale);
-        } else if (user.language === "fr") {
-            locale = require('./locale/fr/LC_MESSAGES/default.po');
-            gt.addTextdomain('default', locale);
+        if (user.language === "fr") {
+            gt.addTextdomain('default', require('./locale/fr/LC_MESSAGES/default.mo'));
         } else {  // default to english
-            var locale = require('./locale/en/LC_MESSAGES/default.po');
-            gt.addTextdomain('default', locale);
+            gt.addTextdomain('default', require('./locale/en/LC_MESSAGES/default.mo'));
         }
 
         var SelectOptionItemView = require('../main/views/selectoptionitemview');
@@ -39,8 +34,24 @@ var TaxonomyModule = Marionette.Module.extend({
         this.views.taxonRanks = new SelectOptionItemView({
             className: "taxon-rank",
             collection: this.collections.taxonRanks,
+            /*collection: new Backbone.Collection([
+                {id: 60, value: gt.gettext("Family")},
+                {id: 61, value: gt.gettext("Sub-family")},
+                {id: 70, value: gt.gettext("Genus")},
+                {id: 71, value: gt.gettext("Sub-genus")},
+                {id: 80, value: gt.gettext("Specie")},
+                {id: 81, value: gt.gettext("Sub-specie")}
+            ]);*/
         });
 
+        var TaxonSynonymTypeCollection = require('./collections/taxonsynonymtype');
+        this.collections.taxonSynonymTypes = new TaxonSynonymTypeCollection();
+
+        this.views.taxonSynonymTypes = new SelectOptionItemView({
+            className: 'taxon-synonym-type',
+            collection: this.collections.taxonSynonymTypes,
+        });
+        
         var TaxonController = require('./controllers/taxon');
         this.controllers.Taxon = new TaxonController();
     },

@@ -1,5 +1,5 @@
 /**
- * @file synonymtype.js
+ * @file taxonsynonymtype.js
  * @brief Taxon synonym type collection
  * @author Frederic SCHERMA
  * @date 2016-04-12
@@ -8,11 +8,11 @@
  * @details
  */
 
-var SynonymTypeModel = require('../models/synonymtype');
+var TaxonSynonymTypeModel = require('../models/taxonsynonymtype');
 
-var SynonymTypeCollection = Backbone.Collection.extend({
-    url: ohgr.baseUrl + 'synonym-type/',
-    model: SynonymTypeModel,
+var Collection = Backbone.Collection.extend({
+    url: ohgr.baseUrl + 'taxonomy/taxon-synonym-type/',
+    model: TaxonSynonymTypeModel,
 
     parse: function(data) {
         return data;
@@ -30,4 +30,4 @@ var SynonymTypeCollection = Backbone.Collection.extend({
     },
 });
 
-module.exports = SynonymTypeCollection;
+module.exports = Collection;

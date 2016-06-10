@@ -160,8 +160,8 @@
 
 	    // each modules
 	    this.main = __webpack_require__(65);
-	    this.permission = __webpack_require__(77);
-	    this.taxonomy = __webpack_require__(109);
+	    this.permission = __webpack_require__(75);
+	    this.taxonomy = __webpack_require__(107);
 	    this.accession = __webpack_require__(122);
 	});
 
@@ -37956,25 +37956,9 @@
 	            collection: this.collections.languages,
 	        });
 
-	        var SynoymTypeCollection = __webpack_require__(72);
-	        this.collections.synonymTypes = new SynoymTypeCollection();
-
-	        this.views.synonymTypes = new SelectOptionItemView({
-	            className: 'synonym-type',
-	            collection: this.collections.synonymTypes,/*
-	            collection: new Backbone.Collection([
-	                {id: 60, value: django.gettext("Family")},
-	                {id: 61, value: django.gettext("Sub-family")},
-	                {id: 70, value: django.gettext("Genus")},
-	                {id: 71, value: django.gettext("Sub-genus")},
-	                {id: 80, value: django.gettext("Specie")},
-	                {id: 81, value: django.gettext("Sub-specie")}
-	            ]);*/
-	        });
-
 	        this.views.Home = Marionette.CompositeView.extend({
 	            el: '#main_content',
-	            template: __webpack_require__(74),
+	            template: __webpack_require__(72),
 	        });
 	    },
 
@@ -38001,10 +37985,10 @@
 	        });
 	        this.routers.main = new MainRouter();
 
-	        var LanguageRouter = __webpack_require__(75);
+	        var LanguageRouter = __webpack_require__(73);
 	        this.routers.language = new LanguageRouter();
 
-	        var ProfileRouter = __webpack_require__(76);
+	        var ProfileRouter = __webpack_require__(74);
 	        this.routers.profile = new ProfileRouter();
 	    },
 
@@ -38221,68 +38205,6 @@
 /* 72 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/**
-	 * @file synonymtype.js
-	 * @brief Taxon synonym type collection
-	 * @author Frederic SCHERMA
-	 * @date 2016-04-12
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-
-	var SynonymTypeModel = __webpack_require__(73);
-
-	var SynonymTypeCollection = Backbone.Collection.extend({
-	    url: ohgr.baseUrl + 'synonym-type/',
-	    model: SynonymTypeModel,
-
-	    parse: function(data) {
-	        return data;
-	    },
-
-	    default: [
-	    ],
-	    
-	    findValue: function(id) {
-	        for (var r in this.models) {
-	            var m = this.models[r];
-	            if (m.get('id') == id)
-	                return m.get('value');
-	        }
-	    },
-	});
-
-	module.exports = SynonymTypeCollection;
-
-
-/***/ },
-/* 73 */
-/***/ function(module, exports) {
-
-	/**
-	 * @file synonymtype.js
-	 * @brief Synonym type model
-	 * @author Frederic SCHERMA
-	 * @date 2016-04-13
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-
-	module.exports = Backbone.Model.extend({
-	    url: ohgr.baseUrl + 'synonym-type/:id',
-
-	    defaults: function() {
-	        return {id: '', value: ''}
-	    },
-	});
-
-
-/***/ },
-/* 74 */
-/***/ function(module, exports, __webpack_require__) {
-
 	var _ = __webpack_require__(1);
 
 	module.exports = function (obj) {
@@ -38301,7 +38223,7 @@
 
 
 /***/ },
-/* 75 */
+/* 73 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -38328,7 +38250,7 @@
 
 
 /***/ },
-/* 76 */
+/* 74 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -38367,7 +38289,7 @@
 
 
 /***/ },
-/* 77 */
+/* 75 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -38393,14 +38315,14 @@
 
 	        // i18n
 	        if (user.language === "fr") {
-	            gt.addTextdomain('default', __webpack_require__(78));
+	            gt.addTextdomain('default', __webpack_require__(76));
 	        } else {  // default to english
-	            gt.addTextdomain('default', __webpack_require__(79));
+	            gt.addTextdomain('default', __webpack_require__(77));
 	        }
 
 	        var SelectOptionItemView = __webpack_require__(68);
 
-	        var PermissionTypeCollection = __webpack_require__(80);
+	        var PermissionTypeCollection = __webpack_require__(78);
 	        this.collections.permissionType = new PermissionTypeCollection();
 
 	        this.views.permissionType = new SelectOptionItemView({
@@ -38410,7 +38332,7 @@
 	    },
 
 	    onStart: function(options) {
-	        var PermissionRouter = __webpack_require__(82);
+	        var PermissionRouter = __webpack_require__(80);
 	        this.routers.permission = new PermissionRouter();
 	    },
 
@@ -38426,21 +38348,21 @@
 
 
 /***/ },
-/* 78 */
+/* 76 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer) {module.exports = new Buffer([222,18,4,149,0,0,0,0,15,0,0,0,28,0,0,0,148,0,0,0,23,0,0,0,12,1,0,0,0,0,0,0,104,1,0,0,4,0,0,0,105,1,0,0,10,0,0,0,110,1,0,0,9,0,0,0,121,1,0,0,14,0,0,0,131,1,0,0,28,0,0,0,146,1,0,0,13,0,0,0,175,1,0,0,5,0,0,0,189,1,0,0,6,0,0,0,195,1,0,0,4,0,0,0,202,1,0,0,15,0,0,0,207,1,0,0,5,0,0,0,223,1,0,0,6,0,0,0,229,1,0,0,9,0,0,0,236,1,0,0,8,0,0,0,246,1,0,0,66,1,0,0,255,1,0,0,4,0,0,0,66,3,0,0,7,0,0,0,71,3,0,0,3,0,0,0,79,3,0,0,17,0,0,0,83,3,0,0,39,0,0,0,101,3,0,0,22,0,0,0,141,3,0,0,7,0,0,0,164,3,0,0,6,0,0,0,172,3,0,0,3,0,0,0,179,3,0,0,21,0,0,0,183,3,0,0,8,0,0,0,205,3,0,0,6,0,0,0,214,3,0,0,17,0,0,0,221,3,0,0,17,0,0,0,239,3,0,0,1,0,0,0,0,0,0,0,5,0,0,0,0,0,0,0,0,0,0,0,7,0,0,0,2,0,0,0,0,0,0,0,6,0,0,0,9,0,0,0,0,0,0,0,3,0,0,0,13,0,0,0,0,0,0,0,12,0,0,0,10,0,0,0,11,0,0,0,15,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,8,0,0,0,14,0,0,0,0,67,111,100,101,0,70,105,114,115,116,32,110,97,109,101,0,76,97,115,116,32,110,97,109,101,0,76,105,115,116,32,111,102,32,103,114,111,117,112,115,0,76,105,115,116,32,111,102,32,112,101,114,109,105,115,115,105,111,110,115,32,102,111,114,32,117,115,101,114,0,76,105,115,116,32,111,102,32,117,115,101,114,115,0,77,111,100,101,108,0,77,111,100,117,108,101,0,78,97,109,101,0,78,117,109,98,101,114,32,111,102,32,117,115,101,114,115,0,83,116,97,102,102,0,83,116,97,116,117,115,0,83,117,112,101,114,117,115,101,114,0,85,115,101,114,110,97,109,101,0,80,114,111,106,101,99,116,45,73,100,45,86,101,114,115,105,111,110,58,32,80,65,67,75,65,71,69,32,86,69,82,83,73,79,78,10,82,101,112,111,114,116,45,77,115,103,105,100,45,66,117,103,115,45,84,111,58,32,10,80,79,84,45,67,114,101,97,116,105,111,110,45,68,97,116,101,58,32,50,48,49,54,45,48,54,45,48,51,32,49,53,58,49,48,43,48,50,48,48,10,80,79,45,82,101,118,105,115,105,111,110,45,68,97,116,101,58,32,89,69,65,82,45,77,79,45,68,65,32,72,79,58,77,73,43,90,79,78,69,10,76,97,115,116,45,84,114,97,110,115,108,97,116,111,114,58,32,70,85,76,76,32,78,65,77,69,32,60,69,77,65,73,76,64,65,68,68,82,69,83,83,62,10,76,97,110,103,117,97,103,101,45,84,101,97,109,58,32,76,65,78,71,85,65,71,69,32,60,76,76,64,108,105,46,111,114,103,62,10,76,97,110,103,117,97,103,101,58,32,102,114,10,77,73,77,69,45,86,101,114,115,105,111,110,58,32,49,46,48,10,67,111,110,116,101,110,116,45,84,121,112,101,58,32,116,101,120,116,47,112,108,97,105,110,59,32,99,104,97,114,115,101,116,61,85,84,70,45,56,10,67,111,110,116,101,110,116,45,84,114,97,110,115,102,101,114,45,69,110,99,111,100,105,110,103,58,32,56,98,105,116,10,0,67,111,100,101,0,80,114,195,169,110,111,109,0,78,111,109,0,76,105,115,116,101,32,100,101,115,32,103,114,111,117,112,101,115,0,76,105,115,116,32,100,101,115,32,112,101,114,109,105,115,115,105,111,110,115,32,112,111,117,114,32,108,39,117,116,105,108,105,115,97,116,101,117,114,0,76,105,115,116,101,32,100,101,115,32,117,116,105,108,105,115,97,116,101,117,114,115,0,77,111,100,195,168,108,101,0,77,111,100,117,108,101,0,78,111,109,0,78,111,109,98,114,101,32,100,39,117,116,105,108,105,115,97,116,101,117,114,115,0,69,109,112,108,111,121,195,169,0,83,116,97,116,117,115,0,83,117,112,101,114,45,117,116,105,108,105,115,97,116,101,117,114,0,78,111,109,32,100,39,117,116,105,108,105,115,97,116,101,117,114,0])
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13).Buffer))
 
 /***/ },
-/* 79 */
+/* 77 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer) {module.exports = new Buffer([222,18,4,149,0,0,0,0,1,0,0,0,28,0,0,0,36,0,0,0,3,0,0,0,44,0,0,0,0,0,0,0,56,0,0,0,66,1,0,0,57,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,80,114,111,106,101,99,116,45,73,100,45,86,101,114,115,105,111,110,58,32,80,65,67,75,65,71,69,32,86,69,82,83,73,79,78,10,82,101,112,111,114,116,45,77,115,103,105,100,45,66,117,103,115,45,84,111,58,32,10,80,79,84,45,67,114,101,97,116,105,111,110,45,68,97,116,101,58,32,50,48,49,54,45,48,54,45,48,51,32,49,53,58,49,48,43,48,50,48,48,10,80,79,45,82,101,118,105,115,105,111,110,45,68,97,116,101,58,32,89,69,65,82,45,77,79,45,68,65,32,72,79,58,77,73,43,90,79,78,69,10,76,97,115,116,45,84,114,97,110,115,108,97,116,111,114,58,32,70,85,76,76,32,78,65,77,69,32,60,69,77,65,73,76,64,65,68,68,82,69,83,83,62,10,76,97,110,103,117,97,103,101,45,84,101,97,109,58,32,76,65,78,71,85,65,71,69,32,60,76,76,64,108,105,46,111,114,103,62,10,76,97,110,103,117,97,103,101,58,32,101,110,10,77,73,77,69,45,86,101,114,115,105,111,110,58,32,49,46,48,10,67,111,110,116,101,110,116,45,84,121,112,101,58,32,116,101,120,116,47,112,108,97,105,110,59,32,99,104,97,114,115,101,116,61,85,84,70,45,56,10,67,111,110,116,101,110,116,45,84,114,97,110,115,102,101,114,45,69,110,99,111,100,105,110,103,58,32,56,98,105,116,10,0])
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13).Buffer))
 
 /***/ },
-/* 80 */
+/* 78 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -38453,7 +38375,7 @@
 	 * @details
 	 */
 
-	var PermissionTypeModel = __webpack_require__(81);
+	var PermissionTypeModel = __webpack_require__(79);
 
 	var Collection = Backbone.Collection.extend({
 	    url: ohgr.baseUrl + 'permission/type/',
@@ -38498,7 +38420,7 @@
 
 
 /***/ },
-/* 81 */
+/* 79 */
 /***/ function(module, exports) {
 
 	/**
@@ -38520,7 +38442,7 @@
 
 
 /***/ },
-/* 82 */
+/* 80 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -38534,16 +38456,16 @@
 	 */
 
 	var Marionette = __webpack_require__(4);
-	var PermissionCollection = __webpack_require__(83);
-	var PermissionListView = __webpack_require__(85);
-	var PermissionUserCollection = __webpack_require__(89);
-	var PermissionUserListView = __webpack_require__(91);
-	var PermissionGroupCollection = __webpack_require__(95);
-	var PermissionGroupListView = __webpack_require__(97);
-	var PermissionGroupUserCollection = __webpack_require__(101);
-	var PermissionGroupUserListView = __webpack_require__(103);
-	var DefaultLayout = __webpack_require__(107);
-	var TitleView = __webpack_require__(108);
+	var PermissionCollection = __webpack_require__(81);
+	var PermissionListView = __webpack_require__(83);
+	var PermissionUserCollection = __webpack_require__(87);
+	var PermissionUserListView = __webpack_require__(89);
+	var PermissionGroupCollection = __webpack_require__(93);
+	var PermissionGroupListView = __webpack_require__(95);
+	var PermissionGroupUserCollection = __webpack_require__(99);
+	var PermissionGroupUserListView = __webpack_require__(101);
+	var DefaultLayout = __webpack_require__(105);
+	var TitleView = __webpack_require__(106);
 
 	var PermissionRouter = Marionette.AppRouter.extend({
 	    routes : {
@@ -38624,7 +38546,7 @@
 
 
 /***/ },
-/* 83 */
+/* 81 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -38637,7 +38559,7 @@
 	 * @details
 	 */
 
-	var PermissionModel = __webpack_require__(84);
+	var PermissionModel = __webpack_require__(82);
 
 	var PermissionCollection = Backbone.Collection.extend({
 	    url: function() {
@@ -38664,7 +38586,7 @@
 
 
 /***/ },
-/* 84 */
+/* 82 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -38721,7 +38643,7 @@
 
 
 /***/ },
-/* 85 */
+/* 83 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -38735,11 +38657,11 @@
 	 */
 
 	var Marionette = __webpack_require__(4);
-	var PermissionModel = __webpack_require__(84);
-	var PermissionView = __webpack_require__(86);
+	var PermissionModel = __webpack_require__(82);
+	var PermissionView = __webpack_require__(84);
 
 	var PermissionListView = Marionette.CompositeView.extend({
-	    template: __webpack_require__(88),
+	    template: __webpack_require__(86),
 	    childViewContainer: ".permission-list",
 	    childView: PermissionView,
 
@@ -38845,7 +38767,7 @@
 
 
 /***/ },
-/* 86 */
+/* 84 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -38859,11 +38781,11 @@
 	 */
 
 	var Marionette = __webpack_require__(4);
-	var PermissionModel = __webpack_require__(84);
+	var PermissionModel = __webpack_require__(82);
 
 	var View = Marionette.ItemView.extend({
 	    tagName: 'div',
-	    template: __webpack_require__(87),
+	    template: __webpack_require__(85),
 
 	    ui: {
 	        "remove_permission": ".remove-permission",
@@ -38885,7 +38807,7 @@
 
 
 /***/ },
-/* 87 */
+/* 85 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -38941,7 +38863,7 @@
 
 
 /***/ },
-/* 88 */
+/* 86 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -38958,7 +38880,7 @@
 
 
 /***/ },
-/* 89 */
+/* 87 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -38971,7 +38893,7 @@
 	 * @details
 	 */
 
-	var PermissionUserModel = __webpack_require__(90);
+	var PermissionUserModel = __webpack_require__(88);
 
 	var Collection = Backbone.Collection.extend({
 	    url: function() {
@@ -39001,7 +38923,7 @@
 
 
 /***/ },
-/* 90 */
+/* 88 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -39065,7 +38987,7 @@
 
 
 /***/ },
-/* 91 */
+/* 89 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -39079,11 +39001,11 @@
 	 */
 
 	var Marionette = __webpack_require__(4);
-	var PermissionUserModel = __webpack_require__(90);
-	var PermissionUserView = __webpack_require__(92);
+	var PermissionUserModel = __webpack_require__(88);
+	var PermissionUserView = __webpack_require__(90);
 
 	var View = Marionette.CompositeView.extend({
-	    template: __webpack_require__(94),
+	    template: __webpack_require__(92),
 	    childView: PermissionUserView,
 	    childViewContainer: 'tbody.permission-user-list',
 
@@ -39102,7 +39024,7 @@
 
 
 /***/ },
-/* 92 */
+/* 90 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -39116,12 +39038,12 @@
 	 */
 
 	var Marionette = __webpack_require__(4);
-	var PermissionUserModel = __webpack_require__(90);
+	var PermissionUserModel = __webpack_require__(88);
 
 	var View = Marionette.ItemView.extend({
 	    tagName: 'tr',
 	    className: 'element object user',
-	    template: __webpack_require__(93),
+	    template: __webpack_require__(91),
 
 	    ui: {
 	        enable_user: 'span.enable-user',
@@ -39209,7 +39131,7 @@
 
 
 /***/ },
-/* 93 */
+/* 91 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -39253,7 +39175,7 @@
 
 
 /***/ },
-/* 94 */
+/* 92 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -39282,7 +39204,7 @@
 
 
 /***/ },
-/* 95 */
+/* 93 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -39295,7 +39217,7 @@
 	 * @details
 	 */
 
-	var PermissionGroupModel = __webpack_require__(96);
+	var PermissionGroupModel = __webpack_require__(94);
 
 	var Collection = Backbone.Collection.extend({
 	    url: function() { return ohgr.baseUrl + 'permission/group/'; },
@@ -39311,7 +39233,7 @@
 
 
 /***/ },
-/* 96 */
+/* 94 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -39365,7 +39287,7 @@
 
 
 /***/ },
-/* 97 */
+/* 95 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -39379,11 +39301,11 @@
 	 */
 
 	var Marionette = __webpack_require__(4);
-	var PermissionGroupModel = __webpack_require__(96);
-	var PermissionGroupView = __webpack_require__(98);
+	var PermissionGroupModel = __webpack_require__(94);
+	var PermissionGroupView = __webpack_require__(96);
 
 	var View = Marionette.CompositeView.extend({
-	    template: __webpack_require__(100),
+	    template: __webpack_require__(98),
 	    childView: PermissionGroupView,
 	    childViewContainer: 'tbody.permission-group-list',
 
@@ -39464,7 +39386,7 @@
 
 
 /***/ },
-/* 98 */
+/* 96 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -39478,12 +39400,12 @@
 	 */
 
 	var Marionette = __webpack_require__(4);
-	var PermissionGroupModel = __webpack_require__(96);
+	var PermissionGroupModel = __webpack_require__(94);
 
 	var View = Marionette.ItemView.extend({
 	    tagName: 'tr',
 	    className: 'element object group',
-	    template: __webpack_require__(99),
+	    template: __webpack_require__(97),
 
 	    ui: {
 	        delete_group: 'span.delete-group',
@@ -39524,7 +39446,7 @@
 
 
 /***/ },
-/* 99 */
+/* 97 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -39553,7 +39475,7 @@
 
 
 /***/ },
-/* 100 */
+/* 98 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -39576,7 +39498,7 @@
 
 
 /***/ },
-/* 101 */
+/* 99 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -39589,7 +39511,7 @@
 	 * @details
 	 */
 
-	var PermissionGroupUserModel = __webpack_require__(102);
+	var PermissionGroupUserModel = __webpack_require__(100);
 
 	var Collection = Backbone.Collection.extend({
 	    url: function() { return ohgr.baseUrl + 'permission/group/' + this.name + '/user/'; },
@@ -39610,7 +39532,7 @@
 
 
 /***/ },
-/* 102 */
+/* 100 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -39664,7 +39586,7 @@
 
 
 /***/ },
-/* 103 */
+/* 101 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -39678,11 +39600,11 @@
 	 */
 
 	var Marionette = __webpack_require__(4);
-	var PermissionGroupUserModel = __webpack_require__(102);
-	var PermissionGroupUserView = __webpack_require__(104);
+	var PermissionGroupUserModel = __webpack_require__(100);
+	var PermissionGroupUserView = __webpack_require__(102);
 
 	var View = Marionette.CompositeView.extend({
-	    template: __webpack_require__(106),
+	    template: __webpack_require__(104),
 	    childView: PermissionGroupUserView,
 	    childViewContainer: 'tbody.group-user-list',
 
@@ -39786,7 +39708,7 @@
 
 
 /***/ },
-/* 104 */
+/* 102 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -39800,12 +39722,12 @@
 	 */
 
 	var Marionette = __webpack_require__(4);
-	var PermissionGroupUserModel = __webpack_require__(102);
+	var PermissionGroupUserModel = __webpack_require__(100);
 
 	var View = Marionette.ItemView.extend({
 	    tagName: 'tr',
 	    className: 'element object user',
-	    template: __webpack_require__(105),
+	    template: __webpack_require__(103),
 
 	    ui: {
 	        remove_user: 'span.remove-user',
@@ -39842,7 +39764,7 @@
 
 
 /***/ },
-/* 105 */
+/* 103 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -39867,7 +39789,7 @@
 
 
 /***/ },
-/* 106 */
+/* 104 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -39890,7 +39812,7 @@
 
 
 /***/ },
-/* 107 */
+/* 105 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -39928,7 +39850,7 @@
 
 
 /***/ },
-/* 108 */
+/* 106 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -39957,7 +39879,7 @@
 
 
 /***/ },
-/* 109 */
+/* 107 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -39982,27 +39904,38 @@
 	        this.controllers = {};
 
 	        // i18n
-	        if (user.language === "en") {
-	            var locale = __webpack_require__(110);
-	            gt.addTextdomain('default', locale);
-	        } else if (user.language === "fr") {
-	            locale = __webpack_require__(111);
-	            gt.addTextdomain('default', locale);
+	        if (user.language === "fr") {
+	            gt.addTextdomain('default', __webpack_require__(108));
 	        } else {  // default to english
-	            var locale = __webpack_require__(110);
-	            gt.addTextdomain('default', locale);
+	            gt.addTextdomain('default', __webpack_require__(109));
 	        }
 
 	        var SelectOptionItemView = __webpack_require__(68);
 
-	        var TaxonRankCollection = __webpack_require__(112);
+	        var TaxonRankCollection = __webpack_require__(110);
 	        this.collections.taxonRanks = new TaxonRankCollection();
 
 	        this.views.taxonRanks = new SelectOptionItemView({
 	            className: "taxon-rank",
 	            collection: this.collections.taxonRanks,
+	            /*collection: new Backbone.Collection([
+	                {id: 60, value: gt.gettext("Family")},
+	                {id: 61, value: gt.gettext("Sub-family")},
+	                {id: 70, value: gt.gettext("Genus")},
+	                {id: 71, value: gt.gettext("Sub-genus")},
+	                {id: 80, value: gt.gettext("Specie")},
+	                {id: 81, value: gt.gettext("Sub-specie")}
+	            ]);*/
 	        });
 
+	        var TaxonSynonymTypeCollection = __webpack_require__(112);
+	        this.collections.taxonSynonymTypes = new TaxonSynonymTypeCollection();
+
+	        this.views.taxonSynonymTypes = new SelectOptionItemView({
+	            className: 'taxon-synonym-type',
+	            collection: this.collections.taxonSynonymTypes,
+	        });
+	        
 	        var TaxonController = __webpack_require__(114);
 	        this.controllers.Taxon = new TaxonController();
 	    },
@@ -40027,19 +39960,21 @@
 
 
 /***/ },
+/* 108 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(Buffer) {module.exports = new Buffer([222,18,4,149,0,0,0,0,19,0,0,0,28,0,0,0,180,0,0,0,29,0,0,0,76,1,0,0,0,0,0,0,192,1,0,0,16,0,0,0,193,1,0,0,6,0,0,0,210,1,0,0,6,0,0,0,217,1,0,0,14,0,0,0,224,1,0,0,13,0,0,0,239,1,0,0,38,0,0,0,253,1,0,0,47,0,0,0,36,2,0,0,8,0,0,0,84,2,0,0,14,0,0,0,93,2,0,0,4,0,0,0,108,2,0,0,44,0,0,0,113,2,0,0,8,0,0,0,158,2,0,0,13,0,0,0,167,2,0,0,27,0,0,0,181,2,0,0,10,0,0,0,209,2,0,0,28,0,0,0,220,2,0,0,34,0,0,0,249,2,0,0,4,0,0,0,28,3,0,0,66,1,0,0,33,3,0,0,24,0,0,0,100,4,0,0,7,0,0,0,125,4,0,0,6,0,0,0,133,4,0,0,15,0,0,0,140,4,0,0,14,0,0,0,156,4,0,0,55,0,0,0,171,4,0,0,57,0,0,0,227,4,0,0,8,0,0,0,29,5,0,0,16,0,0,0,38,5,0,0,3,0,0,0,55,5,0,0,42,0,0,0,59,5,0,0,9,0,0,0,102,5,0,0,17,0,0,0,112,5,0,0,35,0,0,0,130,5,0,0,16,0,0,0,166,5,0,0,27,0,0,0,183,5,0,0,40,0,0,0,211,5,0,0,4,0,0,0,252,5,0,0,1,0,0,0,16,0,0,0,8,0,0,0,10,0,0,0,0,0,0,0,19,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,18,0,0,0,5,0,0,0,0,0,0,0,6,0,0,0,17,0,0,0,14,0,0,0,9,0,0,0,4,0,0,0,12,0,0,0,15,0,0,0,7,0,0,0,3,0,0,0,11,0,0,0,0,0,0,0,0,0,0,0,13,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,51,32,99,104,97,114,97,99,116,101,114,115,32,109,105,110,0,67,97,110,99,101,108,0,67,114,101,97,116,101,0,67,114,101,97,116,101,32,97,32,116,97,120,111,110,0,68,105,114,101,99,116,32,112,97,114,101,110,116,0,70,97,109,105,108,121,32,114,97,110,107,32,99,97,110,110,111,116,32,104,97,118,101,32,97,32,112,97,114,101,110,116,32,116,97,120,111,110,0,73,110,118,97,108,105,100,32,99,104,97,114,97,99,116,101,114,115,32,40,97,108,112,104,97,110,117,109,101,114,105,99,44,32,95,32,97,110,100,32,45,32,111,110,108,121,41,0,76,97,110,103,117,97,103,101,0,76,105,115,116,32,111,102,32,116,97,120,111,110,115,0,78,97,109,101,0,80,114,105,110,99,105,112,97,108,32,110,97,109,101,32,111,102,32,116,104,101,32,116,97,120,111,110,32,40,109,117,115,116,32,98,101,32,117,110,105,113,117,101,41,0,83,121,110,111,110,121,109,115,0,84,97,120,111,110,32,100,101,116,97,105,108,115,0,84,97,120,111,110,32,110,97,109,101,32,97,108,114,101,97,100,121,32,105,110,32,117,115,97,103,101,0,84,97,120,111,110,32,114,97,110,107,0,84,97,120,111,110,32,115,117,99,99,101,115,115,102,117,108,108,121,32,99,114,101,97,116,101,100,32,33,0,84,104,105,115,32,114,97,110,107,32,109,117,115,116,32,104,97,118,101,32,97,32,112,97,114,101,110,116,32,116,97,120,111,110,0,84,121,112,101,0,80,114,111,106,101,99,116,45,73,100,45,86,101,114,115,105,111,110,58,32,80,65,67,75,65,71,69,32,86,69,82,83,73,79,78,10,82,101,112,111,114,116,45,77,115,103,105,100,45,66,117,103,115,45,84,111,58,32,10,80,79,84,45,67,114,101,97,116,105,111,110,45,68,97,116,101,58,32,50,48,49,54,45,48,54,45,48,55,32,49,49,58,49,50,43,48,50,48,48,10,80,79,45,82,101,118,105,115,105,111,110,45,68,97,116,101,58,32,89,69,65,82,45,77,79,45,68,65,32,72,79,58,77,73,43,90,79,78,69,10,76,97,115,116,45,84,114,97,110,115,108,97,116,111,114,58,32,70,85,76,76,32,78,65,77,69,32,60,69,77,65,73,76,64,65,68,68,82,69,83,83,62,10,76,97,110,103,117,97,103,101,45,84,101,97,109,58,32,76,65,78,71,85,65,71,69,32,60,76,76,64,108,105,46,111,114,103,62,10,76,97,110,103,117,97,103,101,58,32,102,114,10,77,73,77,69,45,86,101,114,115,105,111,110,58,32,49,46,48,10,67,111,110,116,101,110,116,45,84,121,112,101,58,32,116,101,120,116,47,112,108,97,105,110,59,32,99,104,97,114,115,101,116,61,85,84,70,45,56,10,67,111,110,116,101,110,116,45,84,114,97,110,115,102,101,114,45,69,110,99,111,100,105,110,103,58,32,56,98,105,116,10,0,51,32,99,97,114,97,99,116,195,168,114,101,115,32,97,117,32,109,105,110,105,109,117,109,0,65,110,110,117,108,101,114,0,67,114,195,169,101,114,0,67,114,195,169,101,114,32,117,110,32,116,97,120,111,110,0,80,97,114,101,110,116,32,100,105,114,101,99,116,101,0,76,101,32,114,97,110,103,32,116,97,120,105,110,111,109,105,113,117,101,32,102,97,109,105,108,108,101,32,110,101,32,112,101,117,116,32,112,97,115,32,97,118,111,105,114,32,100,101,32,112,97,114,101,110,116,0,67,97,114,97,99,116,195,168,114,101,115,32,105,110,118,97,108,105,100,101,115,32,40,97,108,112,104,97,110,117,109,195,169,114,105,113,117,101,44,32,95,32,101,116,32,45,32,115,101,117,108,101,109,101,110,116,41,0,76,97,110,103,117,97,103,101,0,76,105,115,116,101,32,100,101,115,32,116,97,120,111,110,115,0,78,111,109,0,78,111,109,32,112,114,105,110,99,105,112,97,108,32,100,117,32,116,97,120,111,110,32,40,100,111,105,116,32,195,170,116,114,101,32,117,110,105,113,117,101,41,0,83,121,110,111,110,121,109,101,115,0,68,195,169,116,97,105,108,115,32,100,117,32,116,97,120,111,110,0,67,101,32,110,111,109,32,100,101,32,116,97,120,111,110,32,101,115,116,32,100,195,169,106,195,160,32,117,116,105,108,105,115,195,169,0,82,97,110,107,32,116,97,120,105,110,111,109,105,113,117,101,0,84,97,120,111,110,32,99,114,195,169,195,169,32,97,118,101,99,32,115,117,99,99,195,168,115,32,33,0,67,101,32,114,97,110,103,32,116,97,120,105,110,111,109,105,113,117,101,32,100,111,105,116,32,97,118,111,105,114,32,117,110,32,112,97,114,101,110,116,0,84,121,112,101,0])
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13).Buffer))
+
+/***/ },
+/* 109 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(Buffer) {module.exports = new Buffer([222,18,4,149,0,0,0,0,1,0,0,0,28,0,0,0,36,0,0,0,3,0,0,0,44,0,0,0,0,0,0,0,56,0,0,0,66,1,0,0,57,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,80,114,111,106,101,99,116,45,73,100,45,86,101,114,115,105,111,110,58,32,80,65,67,75,65,71,69,32,86,69,82,83,73,79,78,10,82,101,112,111,114,116,45,77,115,103,105,100,45,66,117,103,115,45,84,111,58,32,10,80,79,84,45,67,114,101,97,116,105,111,110,45,68,97,116,101,58,32,50,48,49,54,45,48,54,45,48,55,32,49,49,58,49,49,43,48,50,48,48,10,80,79,45,82,101,118,105,115,105,111,110,45,68,97,116,101,58,32,89,69,65,82,45,77,79,45,68,65,32,72,79,58,77,73,43,90,79,78,69,10,76,97,115,116,45,84,114,97,110,115,108,97,116,111,114,58,32,70,85,76,76,32,78,65,77,69,32,60,69,77,65,73,76,64,65,68,68,82,69,83,83,62,10,76,97,110,103,117,97,103,101,45,84,101,97,109,58,32,76,65,78,71,85,65,71,69,32,60,76,76,64,108,105,46,111,114,103,62,10,76,97,110,103,117,97,103,101,58,32,101,110,10,77,73,77,69,45,86,101,114,115,105,111,110,58,32,49,46,48,10,67,111,110,116,101,110,116,45,84,121,112,101,58,32,116,101,120,116,47,112,108,97,105,110,59,32,99,104,97,114,115,101,116,61,85,84,70,45,56,10,67,111,110,116,101,110,116,45,84,114,97,110,115,102,101,114,45,69,110,99,111,100,105,110,103,58,32,56,98,105,116,10,0])
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(13).Buffer))
+
+/***/ },
 /* 110 */
-/***/ function(module, exports) {
-
-	module.exports = "# SOME DESCRIPTIVE TITLE.\n# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER\n# This file is distributed under the same license as the PACKAGE package.\n# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.\n#\n#, fuzzy\nmsgid \"\"\nmsgstr \"\"\n\"Project-Id-Version: PACKAGE VERSION\\n\"\n\"Report-Msgid-Bugs-To: \\n\"\n\"POT-Creation-Date: 2016-06-07 11:11+0200\\n\"\n\"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\\n\"\n\"Last-Translator: FULL NAME <EMAIL@ADDRESS>\\n\"\n\"Language-Team: LANGUAGE <LL@li.org>\\n\"\n\"Language: en\\n\"\n\"MIME-Version: 1.0\\n\"\n\"Content-Type: text/plain; charset=UTF-8\\n\"\n\"Content-Transfer-Encoding: 8bit\\n\"\n\n#: ../../../views/taxon.js:56 ../../../controllers/taxon.js:159\nmsgid \"Invalid characters (alphanumeric, _ and - only)\"\nmsgstr \"\"\n\n#: ../../../views/taxon.js:59 ../../../controllers/taxon.js:162\nmsgid \"3 characters min\"\nmsgstr \"\"\n\n#: ../../../views/taxon.js:80 ../../../controllers/taxon.js:139\nmsgid \"Taxon name already in usage\"\nmsgstr \"\"\n\n#: ../../../routers/taxon.js:40\nmsgid \"List of taxons\"\nmsgstr \"\"\n\n#: ../../../routers/taxon.js:53\nmsgid \"Taxon details\"\nmsgstr \"\"\n\n#: ../../../controllers/taxon.js:177\nmsgid \"Family rank cannot have a parent taxon\"\nmsgstr \"\"\n\n#: ../../../controllers/taxon.js:182\nmsgid \"This rank must have a parent taxon\"\nmsgstr \"\"\n\n#: ../../../controllers/taxon.js:213\nmsgid \"Taxon successfully created !\"\nmsgstr \"\"\n\n#: ../../../templates/taxon.html:17\nmsgid \"Synonyms\"\nmsgstr \"\"\n\n#: ../../../templates/taxon.html:22\nmsgid \"Type\"\nmsgstr \"\"\n\n#: ../../../templates/taxon.html:23\nmsgid \"Name\"\nmsgstr \"\"\n\n#: ../../../templates/taxon.html:24\nmsgid \"Language\"\nmsgstr \"\"\n\n#: ../../../templates/taxoncreate.html:6\nmsgid \"Create a taxon\"\nmsgstr \"\"\n\n#: ../../../templates/taxoncreate.html:11\nmsgid \"Principal name of the taxon (must be unique)\"\nmsgstr \"\"\n\n#: ../../../templates/taxoncreate.html:15\nmsgid \"Taxon rank\"\nmsgstr \"\"\n\n#: ../../../templates/taxoncreate.html:19\nmsgid \"Direct parent\"\nmsgstr \"\"\n\n#: ../../../templates/taxoncreate.html:25\nmsgid \"Cancel\"\nmsgstr \"\"\n\n#: ../../../templates/taxoncreate.html:26\nmsgid \"Create\"\nmsgstr \"\"\n"
-
-/***/ },
-/* 111 */
-/***/ function(module, exports) {
-
-	module.exports = "# SOME DESCRIPTIVE TITLE.\n# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER\n# This file is distributed under the same license as the PACKAGE package.\n# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.\n#\n#, fuzzy\nmsgid \"\"\nmsgstr \"\"\n\"Project-Id-Version: PACKAGE VERSION\\n\"\n\"Report-Msgid-Bugs-To: \\n\"\n\"POT-Creation-Date: 2016-06-07 11:12+0200\\n\"\n\"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\\n\"\n\"Last-Translator: FULL NAME <EMAIL@ADDRESS>\\n\"\n\"Language-Team: LANGUAGE <LL@li.org>\\n\"\n\"Language: fr\\n\"\n\"MIME-Version: 1.0\\n\"\n\"Content-Type: text/plain; charset=UTF-8\\n\"\n\"Content-Transfer-Encoding: 8bit\\n\"\n\n#: ../../../views/taxon.js:56 ../../../controllers/taxon.js:159\nmsgid \"Invalid characters (alphanumeric, _ and - only)\"\nmsgstr \"Caractères invalides (alphanumérique, _ et - seulement)\"\n\n#: ../../../views/taxon.js:59 ../../../controllers/taxon.js:162\nmsgid \"3 characters min\"\nmsgstr \"3 caractères au minimum\"\n\n#: ../../../views/taxon.js:80 ../../../controllers/taxon.js:139\nmsgid \"Taxon name already in usage\"\nmsgstr \"Ce nom de taxon est déjà utilisé\"\n\n#: ../../../routers/taxon.js:40\nmsgid \"List of taxons\"\nmsgstr \"Liste des taxons\"\n\n#: ../../../routers/taxon.js:53\nmsgid \"Taxon details\"\nmsgstr \"Détails du taxon\"\n\n#: ../../../controllers/taxon.js:177\nmsgid \"Family rank cannot have a parent taxon\"\nmsgstr \"Le rang taxinomique famille ne peut pas avoir de parent\"\n\n#: ../../../controllers/taxon.js:182\nmsgid \"This rank must have a parent taxon\"\nmsgstr \"Ce rang taxinomique doit avoir un parent\"\n\n#: ../../../controllers/taxon.js:213\nmsgid \"Taxon successfully created !\"\nmsgstr \"Taxon créé avec succès !\"\n\n#: ../../../templates/taxon.html:17\nmsgid \"Synonyms\"\nmsgstr \"Synonymes\"\n\n#: ../../../templates/taxon.html:22\nmsgid \"Type\"\nmsgstr \"Type\"\n\n#: ../../../templates/taxon.html:23\nmsgid \"Name\"\nmsgstr \"Nom\"\n\n#: ../../../templates/taxon.html:24\nmsgid \"Language\"\nmsgstr \"Language\"\n\n#: ../../../templates/taxoncreate.html:6\nmsgid \"Create a taxon\"\nmsgstr \"Créer un taxon\"\n\n#: ../../../templates/taxoncreate.html:11\nmsgid \"Principal name of the taxon (must be unique)\"\nmsgstr \"Nom principal du taxon (doit être unique)\"\n\n#: ../../../templates/taxoncreate.html:15\nmsgid \"Taxon rank\"\nmsgstr \"Rank taxinomique\"\n\n#: ../../../templates/taxoncreate.html:19\nmsgid \"Direct parent\"\nmsgstr \"Parent directe\"\n\n#: ../../../templates/taxoncreate.html:25\nmsgid \"Cancel\"\nmsgstr \"Annuler\"\n\n#: ../../../templates/taxoncreate.html:26\nmsgid \"Create\"\nmsgstr \"Créer\"\n"
-
-/***/ },
-/* 112 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -40052,7 +39987,7 @@
 	 * @details
 	 */
 
-	var TaxonRankModel = __webpack_require__(113);
+	var TaxonRankModel = __webpack_require__(111);
 
 	var TaxonRankCollection = Backbone.Collection.extend({
 	    url: ohgr.baseUrl + 'taxonomy/rank/',
@@ -40075,7 +40010,7 @@
 
 
 /***/ },
-/* 113 */
+/* 111 */
 /***/ function(module, exports) {
 
 	/**
@@ -40097,6 +40032,68 @@
 
 
 /***/ },
+/* 112 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file taxonsynonymtype.js
+	 * @brief Taxon synonym type collection
+	 * @author Frederic SCHERMA
+	 * @date 2016-04-12
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+
+	var TaxonSynonymTypeModel = __webpack_require__(113);
+
+	var Collection = Backbone.Collection.extend({
+	    url: ohgr.baseUrl + 'taxonomy/taxon-synonym-type/',
+	    model: TaxonSynonymTypeModel,
+
+	    parse: function(data) {
+	        return data;
+	    },
+
+	    default: [
+	    ],
+	    
+	    findValue: function(id) {
+	        for (var r in this.models) {
+	            var m = this.models[r];
+	            if (m.get('id') == id)
+	                return m.get('value');
+	        }
+	    },
+	});
+
+	module.exports = Collection;
+
+
+/***/ },
+/* 113 */
+/***/ function(module, exports) {
+
+	/**
+	 * @file taxonsynonymtype.js
+	 * @brief Taxon synonym type model
+	 * @author Frederic SCHERMA
+	 * @date 2016-04-13
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+
+	module.exports = Backbone.Model.extend({
+	    url: ohgr.baseUrl + 'taxonomy/taxon-synonym-type/:id',
+
+	    defaults: function() {
+	        return {id: '', value: ''}
+	    },
+	});
+
+
+/***/ },
 /* 114 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -40114,8 +40111,8 @@
 	var TaxonModel = __webpack_require__(115);
 	var TaxonCollection = __webpack_require__(116);
 	var TaxonListView = __webpack_require__(117);
-	var DefaultLayout = __webpack_require__(107);
-	var TitleView = __webpack_require__(108);
+	var DefaultLayout = __webpack_require__(105);
+	var TitleView = __webpack_require__(106);
 
 	var TaxonController = Marionette.Controller.extend({
 
@@ -40262,7 +40259,7 @@
 	                                    var t = data[i];
 
 	                                    if (t.value.toUpperCase() == this.el.val().toUpperCase()) {
-	                                        $(this.el).validateField('failed', gettext('Taxon name already in usage'));
+	                                        $(this.el).validateField('failed', gt.gettext('Taxon name already in usage'));
 	                                        break;
 	                                    }
 	                                }
@@ -40279,10 +40276,10 @@
 	                var re = /^[a-zA-Z0-9_\-]+$/i;
 
 	                if (v.length > 0 && !re.test(v)) {
-	                    $(this.ui.name).validateField('failed', gettext("Invalid characters (alphanumeric, _ and - only)"));
+	                    $(this.ui.name).validateField('failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
 	                    return false;
 	                } else if (v.length < 3) {
-	                    $(this.ui.name).validateField('failed', gettext('3 characters min'));
+	                    $(this.ui.name).validateField('failed', gt.gettext('3 characters min'));
 	                    return false;
 	                }
 
@@ -40297,12 +40294,12 @@
 	                var parentId = parseInt(this.ui.parent.attr('parent-id') || '0');
 
 	                if (rankId == 60 && parentId != 0) {
-	                    $(this.ui.parent).validateField('failed', gettext("Family rank cannot have a parent taxon"));
+	                    $(this.ui.parent).validateField('failed', gt.gettext("Family rank cannot have a parent taxon"));
 	                    valid = false;
 	                }
 
 	                if (rankId > 60 && parentId <= 0) {
-	                    $(this.ui.parent).validateField('failed', gettext("This rank must have a parent taxon"));
+	                    $(this.ui.parent).validateField('failed', gt.gettext("This rank must have a parent taxon"));
 	                    valid = false;
 	                }
 
@@ -40612,9 +40609,9 @@
 	    ui: {
 	        "synonym_name": ".synonym-name",
 	        "synonym_language": ".synonym-languages",
-	        "synonym_type": ".synonym-types",
+	        "taxon_synonym_type": ".taxon-synonym-types",
 	        "taxon_rank": ".taxon-ranks",
-	        "editmode": ".edit-mode",
+	        "edit_mode": ".edit-mode",
 	        "add_synonym": ".add-synonym",
 	        "remove_synonym": ".remove-synonym",
 	    },
@@ -40631,15 +40628,15 @@
 
 	    onRender: function() {
 	        ohgr.main.views.languages.drawSelect(this.ui.synonym_language);
-	        ohgr.main.views.synonymTypes.drawSelect(this.ui.synonym_type);
+	        ohgr.taxonomy.views.taxonSynonymTypes.drawSelect(this.ui.taxon_synonym_type);
 	        ohgr.taxonomy.views.taxonRanks.drawSelect(this.ui.taxon_rank);
 	        
 	        ohgr.main.views.languages.htmlFromValue(this.el);
-	        ohgr.main.views.synonymTypes.htmlFromValue(this.el);
+	        ohgr.taxonomy.views.taxonSynonymTypes.htmlFromValue(this.el);
 	        ohgr.taxonomy.views.taxonRanks.htmlFromValue(this.el);
 
-	        this.ui.synonym_type.find('option[value="0"]').remove();
-	        $(this.ui.synonym_type).selectpicker('refresh');
+	        this.ui.taxon_synonym_type.find('option[value="0"]').remove();
+	        $(this.ui.taxon_synonym_type).selectpicker('refresh');
 	    },
 
 	    validateName: function() {
@@ -40684,7 +40681,7 @@
 	    },
 
 	    onAddSynonym: function () {
-	        var type = $(this.ui.synonym_type).val();
+	        var type = $(this.ui.taxon_synonym_type).val();
 	        var name = $(this.ui.synonym_name).val();
 	        var language = $(this.ui.synonym_language).val();
 
@@ -40761,7 +40758,7 @@
 	 if (synonym.type != 0) { ;
 	__p += '<span class="action remove-synonym glyphicon glyphicon-minus-sign edit-mode"></span>';
 	 } ;
-	__p += ' </th><td name="type" class="synonym-type" value="' +
+	__p += ' </th><td name="type" class="taxon-synonym-type" value="' +
 	__e( synonym.type ) +
 	'"></td><td name="name">' +
 	__e( synonym.name ) +
@@ -40769,7 +40766,7 @@
 	__e( synonym.language ) +
 	'"></td></tr> ';
 	 }) ;
-	__p += ' <tr class="edit-mode dummy-synonym"><form><th scope="row"><span class="add-synonym action glyphicon glyphicon-plus-sign" style="margin-top: 50%; margin-bottom: 50%"></span></th><td><select class="synonym-types" name="synonym-type"></select></td><td><div class="form-group"><input class="form-control synonym-name" type="text" name="synonym-name"></div></td><td><select class="synonym-languages" name="synonym-language"></select></td></form></tr></tbody></table></div>';
+	__p += ' <tr class="edit-mode dummy-synonym"><form><th scope="row"><span class="add-synonym action glyphicon glyphicon-plus-sign" style="margin-top: 50%; margin-bottom: 50%"></span></th><td><select class="taxon-synonym-types" name="taxon-synonym-type"></select></td><td><div class="form-group"><input class="form-control synonym-name" type="text" name="synonym-name"></div></td><td><select class="synonym-languages" name="synonym-language"></select></td></form></tr></tbody></table></div>';
 
 	}
 	return __p
@@ -40824,8 +40821,8 @@
 	var TaxonCollection = __webpack_require__(116);
 	var TaxonListView = __webpack_require__(117);
 	var TaxonItemView = __webpack_require__(118);
-	var DefaultLayout = __webpack_require__(107);
-	var TitleView = __webpack_require__(108);
+	var DefaultLayout = __webpack_require__(105);
+	var TitleView = __webpack_require__(106);
 
 	var TaxonRouter = Marionette.AppRouter.extend({
 	    routes : {
@@ -40848,7 +40845,7 @@
 	        var defaultLayout = new DefaultLayout({});
 	        ohgr.mainRegion.show(defaultLayout);
 
-	        defaultLayout.title.show(new TitleView({title: gettext("List of taxons")}));
+	        defaultLayout.title.show(new TitleView({title: gt.gettext("List of taxons")}));
 
 	        collection.fetch().then(function () {
 	            defaultLayout.content.show(new TaxonListView({edit: false, collection : collection}));
@@ -40861,7 +40858,7 @@
 	        var defaultLayout = new DefaultLayout();
 	        ohgr.mainRegion.show(defaultLayout);
 
-	        defaultLayout.title.show(new TitleView({title: gettext("Taxon details")}));
+	        defaultLayout.title.show(new TitleView({title: gt.gettext("Taxon details")}));
 
 	        taxon.fetch().then(function() {
 	            defaultLayout.content.show(new TaxonItemView({model: taxon}));

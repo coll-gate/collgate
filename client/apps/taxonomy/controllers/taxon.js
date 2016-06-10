@@ -160,7 +160,7 @@ var TaxonController = Marionette.Controller.extend({
                                     var t = data[i];
 
                                     if (t.value.toUpperCase() == this.el.val().toUpperCase()) {
-                                        $(this.el).validateField('failed', gettext('Taxon name already in usage'));
+                                        $(this.el).validateField('failed', gt.gettext('Taxon name already in usage'));
                                         break;
                                     }
                                 }
@@ -177,10 +177,10 @@ var TaxonController = Marionette.Controller.extend({
                 var re = /^[a-zA-Z0-9_\-]+$/i;
 
                 if (v.length > 0 && !re.test(v)) {
-                    $(this.ui.name).validateField('failed', gettext("Invalid characters (alphanumeric, _ and - only)"));
+                    $(this.ui.name).validateField('failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
                     return false;
                 } else if (v.length < 3) {
-                    $(this.ui.name).validateField('failed', gettext('3 characters min'));
+                    $(this.ui.name).validateField('failed', gt.gettext('3 characters min'));
                     return false;
                 }
 
@@ -195,12 +195,12 @@ var TaxonController = Marionette.Controller.extend({
                 var parentId = parseInt(this.ui.parent.attr('parent-id') || '0');
 
                 if (rankId == 60 && parentId != 0) {
-                    $(this.ui.parent).validateField('failed', gettext("Family rank cannot have a parent taxon"));
+                    $(this.ui.parent).validateField('failed', gt.gettext("Family rank cannot have a parent taxon"));
                     valid = false;
                 }
 
                 if (rankId > 60 && parentId <= 0) {
-                    $(this.ui.parent).validateField('failed', gettext("This rank must have a parent taxon"));
+                    $(this.ui.parent).validateField('failed', gt.gettext("This rank must have a parent taxon"));
                     valid = false;
                 }
 
