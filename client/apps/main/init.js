@@ -70,9 +70,6 @@ var MainModule = Marionette.Module.extend({
         });
         this.routers.main = new MainRouter();
 
-        var LanguageRouter = require('./routers/language');
-        this.routers.language = new LanguageRouter();
-
         var ProfileRouter = require('./routers/profile');
         this.routers.profile = new ProfileRouter();
     },

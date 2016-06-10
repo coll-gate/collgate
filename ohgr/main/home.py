@@ -45,7 +45,7 @@ def get_home(request):
 
 
 @RestApp.def_request(Method.GET, Format.HTML)
-def get_index(request, path):
+def get_app(request, path):
     """
     Render the home page and the client will dynamically route to the given path
     """
@@ -65,6 +65,9 @@ def get_index(request, path):
                 request.session.set_test_cookie()
                 messages.add_message(
                     request, messages.WARNING, _('Please, you must enable your cookies.'))
+
+    if not path:
+        path = 'home'
 
     context = {'path': path + "/"}
     return render(request, 'main/home.html', context)

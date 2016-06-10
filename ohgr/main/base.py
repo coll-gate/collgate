@@ -11,5 +11,5 @@ from igdectk.rest.handler import *
 
 # for single app page with html5 navigation
 class RestApp(RestHandler):
-    regex = r'^app/(?P<path>\S+?)/$'
+    regex = r'^app/((?P<path>\S*)/){0,1}$'
     name = 'home'
