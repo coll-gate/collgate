@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-07 14:29+0200\n"
+"POT-Creation-Date: 2016-06-10 16:52+0200\n"
 "PO-Revision-Date: 2016-02-01 11:53+0100\n"
 "Last-Translator: Frederic SCHERMA <frederic.scherma@clermont.inra.fr>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -50,25 +50,13 @@ msgstr "Vous n'êtes pas identifié."
 msgid "Please, you must enable your cookies."
 msgstr "Merci d'activer la gestion des cookies."
 
-#: models.py:46
+#: models.py:49
 msgid "English"
 msgstr "Anglais"
 
-#: models.py:47
+#: models.py:50
 msgid "French"
 msgstr "Français"
-
-#: models.py:52
-msgid "Primary"
-msgstr "Primaire"
-
-#: models.py:53
-msgid "Synonym"
-msgstr "Synonyme"
-
-#: models.py:54
-msgid "Code"
-msgstr "Code"
 
 #: profile.py:47 profile.py:83
 msgid "Logged out"
@@ -90,19 +78,28 @@ msgstr "Identifiant ou mot de passe"
 msgid "User successfully updated"
 msgstr "Utilisateur mis-à-jour avec succès"
 
-#: templates/main/home.html:20 templates/main/index.html:82
-#: templates/main/index.html:84
+#: templates/main/home.html:20 templates/main/index.html:86
+#: templates/main/index.html:88
 msgid "Welcome"
 msgstr "Bienvenue"
 
-#: templates/main/index.html:74
+#: templates/main/index.html:78
 msgid "Username"
 msgstr "Identifiant"
 
-#: templates/main/index.html:77
+#: templates/main/index.html:81
 msgid "Password"
 msgstr "Mot de passe"
 
-#: templates/main/index.html:79
+#: templates/main/index.html:83
 msgid "Sign in"
 msgstr "Se connecter"
+
+#~ msgid "Primary"
+#~ msgstr "Primaire"
+
+#~ msgid "Synonym"
+#~ msgstr "Synonyme"
+
+#~ msgid "Code"
+#~ msgstr "Code"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-07 14:29+0200\n"
+"POT-Creation-Date: 2016-06-10 16:52+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,32 +17,16 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: apps.py:33
+#: apps.py:35
 msgid "Taxonomy"
 msgstr ""
 
-#: apps.py:35
+#: apps.py:37
 msgid "Create taxon"
 msgstr ""
 
-#: apps.py:38
+#: apps.py:40
 msgid "List taxons"
-msgstr ""
-
-#: base.py:57
-msgid "You are not allowed to create a taxon"
-msgstr ""
-
-#: base.py:145 base.py:168
-msgid "You are not allowed to modify a taxon"
-msgstr ""
-
-#: base.py:146
-msgid "You are not allowed to add a synonym to a taxon"
-msgstr ""
-
-#: base.py:169
-msgid "You are not allowed to delete a synonym from a taxon"
 msgstr ""
 
 #: controller.py:127
@@ -57,26 +41,54 @@ msgstr ""
 msgid "Taxon synonym already exists"
 msgstr ""
 
-#: models.py:19
-msgid "Family"
-msgstr ""
-
-#: models.py:20
-msgid "Sub-family"
-msgstr ""
-
-#: models.py:21
-msgid "Genus"
-msgstr ""
-
 #: models.py:22
-msgid "Sub-genus"
+msgid "Primary"
 msgstr ""
 
 #: models.py:23
-msgid "Specie"
+msgid "Synonym"
 msgstr ""
 
 #: models.py:24
+msgid "Code"
+msgstr ""
+
+#: models.py:29
+msgid "Family"
+msgstr ""
+
+#: models.py:30
+msgid "Sub-family"
+msgstr ""
+
+#: models.py:31
+msgid "Genus"
+msgstr ""
+
+#: models.py:32
+msgid "Sub-genus"
+msgstr ""
+
+#: models.py:33
+msgid "Specie"
+msgstr ""
+
+#: models.py:34
 msgid "Sub-specie"
+msgstr ""
+
+#: taxon.py:53
+msgid "You are not allowed to create a taxon"
+msgstr ""
+
+#: taxon.py:146 taxon.py:168
+msgid "You are not allowed to modify a taxon"
+msgstr ""
+
+#: taxon.py:147
+msgid "You are not allowed to add a synonym to a taxon"
+msgstr ""
+
+#: taxon.py:169
+msgid "You are not allowed to delete a synonym from a taxon"
 msgstr ""

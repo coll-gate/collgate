@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-07 14:29+0200\n"
+"POT-Creation-Date: 2016-06-10 16:52+0200\n"
 "PO-Revision-Date: 2016-02-01 11:53+0100\n"
 "Last-Translator: Frederic SCHERMA <frederic.scherma@clermont.inra.fr>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -50,24 +50,12 @@ msgstr ""
 msgid "Please, you must enable your cookies."
 msgstr ""
 
-#: models.py:46
+#: models.py:49
 msgid "English"
 msgstr ""
 
-#: models.py:47
+#: models.py:50
 msgid "French"
-msgstr ""
-
-#: models.py:52
-msgid "Primary"
-msgstr ""
-
-#: models.py:53
-msgid "Synonym"
-msgstr ""
-
-#: models.py:54
-msgid "Code"
 msgstr ""
 
 #: profile.py:47 profile.py:83
@@ -90,19 +78,19 @@ msgstr ""
 msgid "User successfully updated"
 msgstr ""
 
-#: templates/main/home.html:20 templates/main/index.html:82
-#: templates/main/index.html:84
+#: templates/main/home.html:20 templates/main/index.html:86
+#: templates/main/index.html:88
 msgid "Welcome"
 msgstr ""
 
-#: templates/main/index.html:74
+#: templates/main/index.html:78
 msgid "Username"
 msgstr ""
 
-#: templates/main/index.html:77
+#: templates/main/index.html:81
 msgid "Password"
 msgstr ""
 
-#: templates/main/index.html:79
+#: templates/main/index.html:83
 msgid "Sign in"
 msgstr ""

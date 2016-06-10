@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-07 14:29+0200\n"
+"POT-Creation-Date: 2016-06-10 16:52+0200\n"
 "PO-Revision-Date:  2016-02-03 11:38+0100\n"
 "Last-Translator: Frederic SCHERMA <frederic.scherma@clermont.inra.fr>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,37 +18,17 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: apps.py:33
+#: apps.py:35
 msgid "Taxonomy"
 msgstr "Taxinomie"
 
-#: apps.py:35
+#: apps.py:37
 msgid "Create taxon"
 msgstr "Créer une taxinomie"
 
-#: apps.py:38
+#: apps.py:40
 msgid "List taxons"
 msgstr "Liste des taxinomies"
-
-#: base.py:57
-msgid "You are not allowed to create a taxon"
-msgstr "Vous n'êtes pas autorisé à créer un taxon"
-
-#: base.py:145 base.py:168
-msgid "You are not allowed to modify a taxon"
-msgstr "Vous n'êtes pas autorisé à modifier un taxon"
-
-#: base.py:146
-#, fuzzy
-#| msgid "You are not allowed to create a taxon"
-msgid "You are not allowed to add a synonym to a taxon"
-msgstr "Vous n'êtes pas autorisé à créer un taxon"
-
-#: base.py:169
-#, fuzzy
-#| msgid "You are not allowed to create a taxon"
-msgid "You are not allowed to delete a synonym from a taxon"
-msgstr "Vous n'êtes pas autorisé à créer un taxon"
 
 #: controller.py:127
 msgid "Undefined synonym name or primary synonym"
@@ -62,29 +42,63 @@ msgstr "Langue du synonym indéfinie"
 msgid "Taxon synonym already exists"
 msgstr "Ce synonyme de taxon existe déjà"
 
-#: models.py:19
+#: models.py:22
+msgid "Primary"
+msgstr ""
+
+#: models.py:23
+#, fuzzy
+#| msgid "Synonym type"
+msgid "Synonym"
+msgstr "Type de synonme"
+
+#: models.py:24
+msgid "Code"
+msgstr ""
+
+#: models.py:29
 msgid "Family"
 msgstr "Famille"
 
-#: models.py:20
+#: models.py:30
 msgid "Sub-family"
 msgstr "Sous-famille"
 
-#: models.py:21
+#: models.py:31
 msgid "Genus"
 msgstr "Genre"
 
-#: models.py:22
+#: models.py:32
 msgid "Sub-genus"
 msgstr "Sous-genre"
 
-#: models.py:23
+#: models.py:33
 msgid "Specie"
 msgstr "Espèce"
 
-#: models.py:24
+#: models.py:34
 msgid "Sub-specie"
 msgstr "Sous-espèce"
+
+#: taxon.py:53
+msgid "You are not allowed to create a taxon"
+msgstr "Vous n'êtes pas autorisé à créer un taxon"
+
+#: taxon.py:146 taxon.py:168
+msgid "You are not allowed to modify a taxon"
+msgstr "Vous n'êtes pas autorisé à modifier un taxon"
+
+#: taxon.py:147
+#, fuzzy
+#| msgid "You are not allowed to create a taxon"
+msgid "You are not allowed to add a synonym to a taxon"
+msgstr "Vous n'êtes pas autorisé à créer un taxon"
+
+#: taxon.py:169
+#, fuzzy
+#| msgid "You are not allowed to create a taxon"
+msgid "You are not allowed to delete a synonym from a taxon"
+msgstr "Vous n'êtes pas autorisé à créer un taxon"
 
 #~ msgid "Creation of a new taxon"
 #~ msgstr "Créer une taxinomie"
@@ -127,6 +141,3 @@ msgstr "Sous-espèce"
 
 #~ msgid "Parent"
 #~ msgstr "Parent"
-
-#~ msgid "Synonym type"
-#~ msgstr "Type de synonme"

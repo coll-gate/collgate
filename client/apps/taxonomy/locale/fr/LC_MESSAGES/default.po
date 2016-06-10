@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-07 11:12+0200\n"
+"POT-Creation-Date: 2016-06-10 16:53+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,15 +17,15 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../../views/taxon.js:56 ../../../controllers/taxon.js:159
+#: ../../../views/taxon.js:56 ../../../controllers/taxon.js:180
 msgid "Invalid characters (alphanumeric, _ and - only)"
 msgstr "Caractères invalides (alphanumérique, _ et - seulement)"
 
-#: ../../../views/taxon.js:59 ../../../controllers/taxon.js:162
+#: ../../../views/taxon.js:59 ../../../controllers/taxon.js:183
 msgid "3 characters min"
 msgstr "3 caractères au minimum"
 
-#: ../../../views/taxon.js:80 ../../../controllers/taxon.js:139
+#: ../../../views/taxon.js:80 ../../../controllers/taxon.js:163
 msgid "Taxon name already in usage"
 msgstr "Ce nom de taxon est déjà utilisé"
 
@@ -37,15 +37,15 @@ msgstr "Liste des taxons"
 msgid "Taxon details"
 msgstr "Détails du taxon"
 
-#: ../../../controllers/taxon.js:177
+#: ../../../controllers/taxon.js:198
 msgid "Family rank cannot have a parent taxon"
 msgstr "Le rang taxinomique famille ne peut pas avoir de parent"
 
-#: ../../../controllers/taxon.js:182
+#: ../../../controllers/taxon.js:203
 msgid "This rank must have a parent taxon"
 msgstr "Ce rang taxinomique doit avoir un parent"
 
-#: ../../../controllers/taxon.js:213
+#: ../../../controllers/taxon.js:233
 msgid "Taxon successfully created !"
 msgstr "Taxon créé avec succès !"
 

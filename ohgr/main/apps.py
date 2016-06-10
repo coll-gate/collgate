@@ -24,8 +24,10 @@ class OhgrMain(ApplicationMain):
 
         main_module = Module('main', base_url='ohgr')
         main_module.include_urls((
+            'base',
             'help',
             'home',
+            'language',
             'profile')
         )
 

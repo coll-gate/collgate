@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-07 14:29+0200\n"
+"POT-Creation-Date: 2016-06-10 16:52+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,10 +29,22 @@ msgstr ""
 msgid "List accessions"
 msgstr ""
 
-#: base.py:52
+#: base.py:47
 msgid "You are not allowed to create an accession"
 msgstr ""
 
-#: base.py:69
+#: base.py:64
 msgid "You are not allowed to list the accessions"
+msgstr ""
+
+#: models.py:22
+msgid "Primary"
+msgstr ""
+
+#: models.py:23
+msgid "Synonym"
+msgstr ""
+
+#: models.py:24
+msgid "Code"
 msgstr ""
