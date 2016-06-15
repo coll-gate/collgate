@@ -29,20 +29,19 @@
 
 {% bootstrap bootstrap_css %}
 {% bootstrap bootstrap_js %}
-{% jquery select2_css %}
-{% jquery select2.bootstrap_css %}
+{% jquery igdectk.validator_js %}
 {% bootstrap select_css %}
 
 {% include 'bootstrap/style.html' %}
 
 <link rel="stylesheet" href="{% static 'main/css/main.css' %}">
 
-<!-- TODO load dynamically each i18n modules -->
+<!-- TODO load dynamically each i18n modules but could need js client side dynamic menu -->
 
 <script type="text/javascript" src="{% url 'main:javascript-catalog' packages='main' domain='django' %}"></script>
-<script type="text/javascript" src="/ohgr/jsi18n/accession/django/"></script>
-<script type="text/javascript" src="/ohgr/jsi18n/taxonomy/django/"></script>
-<script type="text/javascript" src="/ohgr/jsi18n/permission/django/"></script>
+<script type="text/javascript" src="{% url 'main:javascript-catalog' packages='accession' domain='django' %}"></script>
+<script type="text/javascript" src="{% url 'main:javascript-catalog' packages='taxonomy' domain='django' %}"></script>
+<script type="text/javascript" src="{% url 'main:javascript-catalog' packages='permission' domain='django' %}"></script>
 
 <style type="text/css">
 /* autocompletion loading icon */
@@ -51,7 +50,7 @@
 }
 </style>
 
-<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+<div class="navbar navbar-inverse navbar-static-top" role="navigation">
     <div class="container">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -83,9 +82,9 @@
                     <button type="submit" class="btn btn-success">{% trans "Sign in" %}</button>
                     {% else %}
                     {% if user.first_name and user.last_name %}
-                        <a class="text welcome">{% blocktrans %}Welcome{% endblocktrans %} {{ user.first_name }} {{ user.last_name }}</a>
+                        <a class="text login">{{ user.first_name }} {{ user.last_name }}</a>
                     {% else %}
-                        <a class="text welcome">{% blocktrans %}Welcome{% endblocktrans %} {{ user.username }}</a>
+                        <a class="text login">{{ user.username }}</a>
                     {% endif %}
                     <button type="submit" class="btn btn-danger"><span class="glyphicon glyphicon-off"></span></button>
                     {% endif %}
@@ -93,7 +92,7 @@
                 <form class="navbar-form navbar-right" style="padding-top: 4px;" id='set_language' role="form" method="post" action="/ohgr/i18n/setlang/">
                     {% csrf_token %}
                     <input hidden id="lang_redirect" value="/ohgr/" name="next">
-                    <select name="language" id="languages">
+                    <select name="language" id="languages" style="width: 100%;">
                         {% get_language_info_list for LANGUAGES as languages %}
                         {% for language in languages %}
                             {% with 'main/img/lang/'|add:language.code|add:'.png' as image_static %}
@@ -121,7 +120,7 @@
 
 <div class="container content">
     <!-- 1 row 3 columns -->
-    <div class="row">
+    <div class="column">
         <div class="col-md-2" id="left_details">
             {% block left_content %}
             {% endblock %}
@@ -146,11 +145,10 @@
     </div>
 </footer>
 
-<script language="javascript">
-//
-// django user
-//
+{% get_current_language as LANGUAGE_CODE %}
 
+<script language="javascript">
+// django user
 user = function() {
     if (typeof user !== 'undefined') {
         return user;
@@ -161,22 +159,26 @@ user = function() {
 
 user.isAuth = {{ user.is_authenticated|yesno:"true,false" }};
 user.username = "{{ user.username }}";
-
-<!-- {% get_current_language as LANGUAGE_CODE %} -->
 user.language = "{{ LANGUAGE_CODE }}";
 </script>
 
-<script src="{% static 'main/js/main.js' %}"></script>
-
 <script language="javascript">
+    var _ = django.gettext;
+
     $(function() {
+        // avoid FancyTree error message on console
+        // (opening an empty node, or with invisible nodes as first)
+        $(document).on( "error", function() {
+            // nothing
+        });
+
         //
         // multi languages support
         //
 
         $("#lang_redirect").attr('value', window.location.href);
 
-        function formatLanguage(language) {
+        /*function formatLanguage(language) {
             if (!language.id) {
                 return language.text;
             }
@@ -186,14 +188,29 @@ user.language = "{{ LANGUAGE_CODE }}";
                 '<span><img style="margin-bottom: 3px;" src="' + img + '" class="img-flag" /> ' + language.text + '</span>'
             );
             return lang;
+        };*/
+
+        function formatLanguage(language) {
+            if (!language.id) {
+                return language.text;
+            }
+
+            var img = language.element.getAttribute("img");
+            var lang = $(
+                '<span><img style="margin-bottom: 3px;" src="' + img + '" class="img-flag" /> ' + language.text + '</span>'
+            );
+            return lang;
         };
 
         $('#languages').select2({
-            formatSelection: formatLanguage,
-            formatResult: formatLanguage
+            //formatSelection: formatLanguage,
+            //formatResult: formatLanguage,
+            templateSelection: formatLanguage,
+            templateResult: formatLanguage,
         });
 
-        $('#languages').on("select2-close", function(e) {
+        $('#languages').on("select2:close", function(e) {
+        //$('#languages').on("select2-close", function(e) {
             // defines the current url for refreshing... and submit the form post
             // but it can broke the Backbone history...
             //$("#lang_redirect").attr("value", window.location);
@@ -212,7 +229,8 @@ user.language = "{{ LANGUAGE_CODE }}";
             });
         });
 
-        $('#languages').select2("val", user.language);
+        //$('#languages').select2("val", user.language);
+        $('#languages').val(user.language).trigger("change");;
 
         //
         // history navigation
@@ -285,7 +303,7 @@ user.language = "{{ LANGUAGE_CODE }}";
                 <span class="panel-title"></span>
             </span>
         </div>
-        <div class="panel-body" style="overflow: auto;">
+        <div class="panel-body">
         </div>
         <div class="panel-bottom">
         </div>
@@ -299,10 +317,11 @@ user.language = "{{ LANGUAGE_CODE }}";
 {% jquery ui_js %}
 {% jquery igdectk_js %}
 {% jquery igdectk.csrf_js %}
-{% jquery select2_js %}
 
 <!-- include application core -->
 <script src="{% static 'main/js/app.js' %}"></script>
 
 </body>
+
 </html>
+

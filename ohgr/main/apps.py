@@ -41,10 +41,10 @@ class OhgrMain(ApplicationMain):
         # help menu
         menu_help = ModuleMenu('help', _('Help'), order=1001)
         menu_help.add_entry(
-            MenuEntry('manual', _('Manual index'), "#help/manual/", Glyph.BOOK, 50))
+            MenuEntry('manual', _('Manual index'), "#main/help/", Glyph.BOOK, 50))
         menu_help.add_entry(MenuSeparator(100))
         menu_help.add_entry(
-            MenuEntry('about', _('About HOGR...'), "#help/about/", Glyph.INFO_SIGN, 101))
+            MenuEntry('about', _('About HOGR...'), "#main/about/", Glyph.INFO_SIGN, 101))
         main_module.add_menu(menu_help)
 
         module_manager.register_menu(main_module)

@@ -12,6 +12,9 @@ var Marionette = require('backbone.marionette');
 
 var DefaultLayout = Marionette.LayoutView.extend({
     template: "#layout_view",
+    attributes: {
+        style: "height: 100%;"
+    },
 
     regions: {
         title: ".panel-title",
@@ -26,6 +29,11 @@ var DefaultLayout = Marionette.LayoutView.extend({
     },
 
     onBeforeShow: function() {
+    },
+
+    onBeforeDestroy: function () {
+        // reset to default global display mode
+        ohgr.setDisplay("2-8-2");
     },
 });
 

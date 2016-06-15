@@ -215,11 +215,11 @@ def search_group(request):
     return HttpResponseRest(request, response)
 
 
-@RestPermissionUserSearch.def_auth_request(Method.GET, Format.JSON, ('term', 'type', 'mode'))
+@RestPermissionUserSearch.def_auth_request(Method.GET, Format.JSON, ('terms', 'type', 'mode'))
 def search_user(request):
     users = None
 
-    terms = json.loads(request.GET['term'])
+    terms = json.loads(request.GET['terms'])
     if not terms:
         raise SuspiciousOperation(_("Missing terms for search expression"))
 
@@ -231,11 +231,17 @@ def search_user(request):
         elif request.GET['type'] == '*':
             users = reduce(operator.or_, (User.objects.filter(Q(username__icontains=term) | Q(first_name__icontains=term) | Q(last_name__icontains=term)) for term in terms))
 
-    response = []
+    items = []
+
+    response = {
+        'total_count': users.count(),
+        'page': 1,
+        'items': items
+    }
 
     if users:
         for u in users:
-            response.append({"id": str(u.id), "label": "%s (%s)" % (u.get_full_name(), u.username), "value": u.username})
+            items.append({"id": str(u.id), "label": "%s (%s)" % (u.get_full_name(), u.username), "value": u.username})
 
     return HttpResponseRest(request, response)
 

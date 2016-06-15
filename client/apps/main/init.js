@@ -19,17 +19,17 @@ var Marionette = require('backbone.marionette');
 var MainModule = Marionette.Module.extend({
 
     initialize: function(moduleName, app, options) {
-        this.models = {};
-        this.collections = {};
-        this.views = {};
-        this.routers = {};
-
         // i18n
         if (user.language === "fr") {
             gt.addTextdomain('default', require('./locale/fr/LC_MESSAGES/default.mo'));
         } else {  // default to english
             gt.addTextdomain('default', require('./locale/en/LC_MESSAGES/default.mo'));
         }
+
+        this.models = {};
+        this.collections = {};
+        this.views = {};
+        this.routers = {};
 
         var SelectOptionItemView = require('./views/selectoptionitemview');
 
@@ -48,26 +48,7 @@ var MainModule = Marionette.Module.extend({
     },
 
     onStart: function(options) {
-        var module = this;
-
-        var MainRouter = Marionette.AppRouter.extend({
-            routes : {
-                "app/home/": "getHome",
-                "app/profile/logout": "getHome",
-                "app/profile/edit": "editProfile",
-                "app/*actions": "default",
-            },
-            default: function(p) {
-                alert("what ??! : " + p);
-            },
-            getHome: function() {
-                var home = new module.views.Home();
-                home.render();
-            },
-            editProfile: function () {
-
-            }
-        });
+        var MainRouter = require('./routers/main');
         this.routers.main = new MainRouter();
 
         var ProfileRouter = require('./routers/profile');

@@ -18,49 +18,16 @@ var PermissionListView = Marionette.CompositeView.extend({
     childView: PermissionView,
 
     ui: {
-        permission_add: ".permission-add",
-        add_permission: ".add-permission",
-        permissions_types: ".permissions-types",
         remove_permission: 'span.remove-permission',
     },
 
     events: {
-        'click @ui.add_permission': 'addPermission',
         'click @ui.remove_permission': 'removePermission',
     },
 
     initialize: function() {
         this.listenTo(this.collection, 'reset', this.render, this);
-        this.listenTo(this.collection, 'add', this.updatePermissionSelect, this);
-        this.listenTo(this.collection, 'remove', this.updatePermissionSelect, this);
         this.listenTo(this.collection, 'change', this.render, this);
-    },
-
-    onRender: function() {
-        if ($.inArray("auth.add_permission", this.collection.perms) < 0) {
-            $(this.ui.permission_add).remove();
-        }
-    },
-
-    updatePermissionSelect: function () {
-        ohgr.permission.views.permissionType.drawSelect(this.ui.permissions_types);
-
-        // remove defined permissions
-        var select = this.ui.permissions_types;
-
-        for (var i = 0; i < this.collection.size(); ++i) {
-            var model = this.collection.at(i);
-            for (var j = 0; j < model.get('permissions').length; ++j) {
-                var permission = model.get('permissions')[j];
-                select.find('option[value="' + permission.app_label + "." + model.get('model') + "." + permission.id + '"]').remove();
-            }
-        }
-
-        $(this.ui.permissions_types).selectpicker('refresh');
-    },
-
-    onDomRefresh: function () {
-        this.updatePermissionSelect();
     },
 
     removePermission: function (e) {
@@ -91,24 +58,6 @@ var PermissionListView = Marionette.CompositeView.extend({
                  content_type: appLabel + '.' + modelName,
                  permission: codename
              })
-        }).done(function(data) {
-            this.collection.fetch();
-        });
-    },
-
-    addPermission: function () {
-        var permission = $(this.ui.permissions_types).val().split('.');
-
-        $.ajax({
-            type: "POST",
-            url: this.collection.url(),
-            dataType: 'json',
-            contentType: "application/json; charset=utf-8",
-            collection: this.collection,
-            data: JSON.stringify({
-                content_type: permission[0] + '.' + permission[1],
-                permission: permission[2]
-            })
         }).done(function(data) {
             this.collection.fetch();
         });

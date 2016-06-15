@@ -3,11 +3,9 @@ var path = require('path');
 
 var defaults = {
     entry: './apps/driver.js',
-    /*externals: {
-     'jquery': '$'
-     },*/
-    plugins: [
-    ],
+    externals: {
+        'jquery': '$'
+    },
     module: {
         preLoaders: [
         ],

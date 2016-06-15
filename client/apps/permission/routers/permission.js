@@ -11,12 +11,15 @@
 var Marionette = require('backbone.marionette');
 var PermissionCollection = require('../collections/permission');
 var PermissionListView = require('../views/permissionlist');
+var PermissionAddView = require('../views/addpermission');
 var PermissionUserCollection = require('../collections/user');
 var PermissionUserListView = require('../views/userlist');
 var PermissionGroupCollection = require('../collections/group');
 var PermissionGroupListView = require('../views/grouplist');
 var PermissionGroupUserCollection = require('../collections/groupuser');
 var PermissionGroupUserListView = require('../views/groupuserlist');
+var PermissionGroupAddUserView = require('../views/addusergroup');
+var PermissionAddGroupView = require('../views/addgroup');
 var DefaultLayout = require('../../main/views/defaultlayout');
 var TitleView = require('../../main/views/titleview');
 
@@ -52,6 +55,10 @@ var PermissionRouter = Marionette.AppRouter.extend({
 
         permissionsCollection.fetch().then(function () {
             defaultLayout.content.show(new PermissionListView({collection : permissionsCollection}));
+
+            if ($.inArray("auth.add_permission", permissionsCollection.perms) >= 0) {
+                defaultLayout.bottom.show(new PermissionAddView({collection : permissionsCollection}));
+            }
         });
     },
 
@@ -65,6 +72,10 @@ var PermissionRouter = Marionette.AppRouter.extend({
 
         groupCollection.fetch().then(function () {
             defaultLayout.content.show(new PermissionGroupListView({collection : groupCollection}));
+
+            if ($.inArray("auth.add_group", groupCollection.perms) >= 0) {
+                defaultLayout.bottom.show(new PermissionAddGroupView({collection : groupCollection}));
+            }
         });
     },
 
@@ -78,6 +89,10 @@ var PermissionRouter = Marionette.AppRouter.extend({
 
         permissionsCollection.fetch().then(function () {
             defaultLayout.content.show(new PermissionListView({collection : permissionsCollection}));
+
+            if ($.inArray("auth.add_permission", permissionsCollection.perms) >= 0) {
+                defaultLayout.bottom.show(new PermissionAddView({collection : permissionsCollection}));
+            }
         });
     },
 
@@ -91,6 +106,10 @@ var PermissionRouter = Marionette.AppRouter.extend({
 
         userCollection.fetch().then(function () {
             defaultLayout.content.show(new PermissionGroupUserListView({collection : userCollection}));
+
+            if ($.inArray("auth.change_group", userCollection.perms) >= 0) {
+                defaultLayout.bottom.show(new PermissionGroupAddUserView({collection : userCollection}));
+            }
         });
     },
 });

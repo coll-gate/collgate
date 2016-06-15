@@ -12,6 +12,10 @@ var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
 var GetText = require("node-gettext");
 
+// select2
+$.select2 = require("select2");
+require("select2/dist/css/select2.min.css");
+
 // ohgr global application
 ohgr = new Marionette.Application({
     initialize: function(options) {
@@ -111,6 +115,48 @@ ohgr.addRegions({
 
 ohgr.on("before:start", function(options) {
     this.baseUrl = '/ohgr/';
+
+    /**
+     * @brief Set the display layout of the 3 columns of content (bootstrap layout grid system).
+     * @param mode Must be a string with numeric between 1..10 and split by dashes -. The sums of
+     * the columns must not exceed 12.
+     * @example 2-8-2 Make left column visible with a width of 2, middle size of 8 and right of 2.
+     * 0 or empty value mean not displayed column. For a single content column uses -12-.
+     */
+    this.setDisplay = function(mode) {
+        if (typeof(mode) !== 'string' || !mode)
+            return;
+
+        var m = mode.split('-');
+        if (m.length == 3) {
+            var panels = [
+                $("#left_details"),
+                $("#main_content"),
+                $("#right_content")
+            ];
+
+            for (var i = 0; i < panels.length; ++i) {
+                panels[i].removeClass();
+                if (m[i] && m[i] > 0) {
+                    panels[i].addClass("col-md-" + m[i]);
+                    panels[i].css("display", "block");
+                }
+                else {
+                    panels[i].addClass("col-md-" + m[i]);
+                    panels[i].css("display", "none");
+                }
+            }
+        }
+    };
+
+    // i18n
+    if (user.language === "fr") {
+        require('select2/dist/js/i18n/fr');
+    } else {  // default to english
+
+    }
+
+    $.fn.select2.defaults.set('language', user.language);
 
     // each modules
     this.main = require('./main/init');

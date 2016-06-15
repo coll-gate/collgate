@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-10 16:53+0200\n"
+"POT-Creation-Date: 2016-06-15 18:08+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,37 +17,41 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+#: ../../../views/addusergroup.js:84
+msgid "Select a username"
+msgstr "Saisissez un nom d'utilisateur"
+
 #: ../../../views/grouplist.js:56
 msgid "Invalid characters (alphanumeric, _ and - only)"
-msgstr ""
+msgstr "Caractères invalides (alphanumeric, _ et - seulement)"
 
 #: ../../../views/grouplist.js:59
 msgid "3 characters min"
-msgstr ""
+msgstr "3 caractères minimum"
 
 #: ../../../views/grouplist.js:80
 msgid "Group name already in usage"
-msgstr ""
+msgstr "Nom de groupe déjà utilisé"
 
-#: ../../../routers/permission.js:38
+#: ../../../routers/permission.js:40
 msgid "List of users"
 msgstr "Liste des utilisateurs"
 
-#: ../../../routers/permission.js:51
+#: ../../../routers/permission.js:53
 msgid "List of permissions for user"
 msgstr "List des permissions pour l'utilisateur"
 
-#: ../../../routers/permission.js:64
+#: ../../../routers/permission.js:70
 msgid "List of groups"
 msgstr "Liste des groupes"
 
-#: ../../../routers/permission.js:77
+#: ../../../routers/permission.js:83
 msgid "List of permissions for group"
-msgstr ""
+msgstr "Liste des permissions pour le groupe"
 
-#: ../../../routers/permission.js:90
+#: ../../../routers/permission.js:100
 msgid "List of users for group"
-msgstr ""
+msgstr "Liste des utilisateurs pour le groupe"
 
 #: ../../../templates/grouplist.html:16 ../../../templates/permission.html:24
 msgid "Name"
@@ -59,7 +63,7 @@ msgstr "Nombre d'utilisateurs"
 
 #: ../../../templates/grouplist.html:18
 msgid "Number of permissions"
-msgstr ""
+msgstr "Nombre de permissions"
 
 #: ../../../templates/groupuserlist.html:16
 #: ../../../templates/userlist.html:18

@@ -46,24 +46,29 @@ var SelectOptionItemView = Marionette.ItemView.extend({
         }
     },
 
-    drawSelect: function(sel) {
+    drawSelect: function(sel, widget) {
         var view = this;
+        widget !== 'undefined' || (widget = true);
 
         if (this.collection.size() > 0) {
             var s = $(sel);
             s.html(view.el.innerHTML);
-            s.selectpicker({
-                style: 'btn-default',
-                container: 'body',
-            });
-        } else {
-            this.collection.on("sync", function () {
-                var s = $(sel);
-                s.html(view.el.innerHTML);
+            if (widget) {
                 s.selectpicker({
                     style: 'btn-default',
                     container: 'body',
                 });
+            }
+        } else {
+            this.collection.on("sync", function () {
+                var s = $(sel);
+                s.html(view.el.innerHTML);
+                if (widget) {
+                    s.selectpicker({
+                        style: 'btn-default',
+                        container: 'body',
+                    });
+                }
             }, this);
         }
     },
