@@ -21,6 +21,7 @@ from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
 
 from .utils import get_permissions_for
+from .filters import GroupFilter, UserFilter
 
 
 class RestPermission(RestHandler):
@@ -197,39 +198,28 @@ def delete_group(request, name):
     return HttpResponseRest(request, {})
 
 
-@RestPermissionGroupSearch.def_auth_request(Method.GET, Format.JSON, ('term', 'type', 'mode'))
+@RestPermissionGroupSearch.def_auth_request(Method.GET, Format.JSON, ('filters',))
 def search_group(request):
-    groups = None
+    groups = GroupFilter.search(json.loads(request.GET['filters']))
 
-    if request.GET['mode'] == 'ieq' and request.GET['type'] == 'name':
-        groups = Group.objects.filter(name__iexact=request.GET['term'])
-    elif request.GET['mode'] == 'icontains' and request.GET['type'] == 'name':
-        groups = Group.objects.filter(name__icontains=request.GET['term'])
+    items = []
 
-    response = []
+    response = {
+        'total_count': groups.count(),
+        'page': 1,
+        'items': items
+    }
 
     if groups:
         for g in groups:
-            response.append({"id": str(g.id), "label": g.name, "value": g.name})
+            items.append({"id": str(g.id), "label": g.name, "value": g.name})
 
     return HttpResponseRest(request, response)
 
 
-@RestPermissionUserSearch.def_auth_request(Method.GET, Format.JSON, ('terms', 'type', 'mode'))
+@RestPermissionUserSearch.def_auth_request(Method.GET, Format.JSON, ('filters',))
 def search_user(request):
-    users = None
-
-    terms = json.loads(request.GET['terms'])
-    if not terms:
-        raise SuspiciousOperation(_("Missing terms for search expression"))
-
-    if request.GET['mode'] == 'ieq' and request.GET['type'] == 'name':
-        users = User.objects.filter(username__iexact=terms[0])
-    elif request.GET['mode'] == 'icontains':
-        if request.GET['type'] == 'name':
-            users = User.objects.filter(username__icontains=terms[0])
-        elif request.GET['type'] == '*':
-            users = reduce(operator.or_, (User.objects.filter(Q(username__icontains=term) | Q(first_name__icontains=term) | Q(last_name__icontains=term)) for term in terms))
+    users = UserFilter.search(json.loads(request.GET['filters']))
 
     items = []
 
@@ -603,6 +593,9 @@ def group_add_user(request, name):
         'username': user.username,
         'first_name': user.first_name,
         'last_name': user.last_name,
+        'is_active': user.is_active,
+        'is_staff': user.is_staff,
+        'is_superuser': user.is_superuser,
         'email': user.email}
 
     return HttpResponseRest(request, response)

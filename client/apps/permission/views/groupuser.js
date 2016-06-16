@@ -34,16 +34,15 @@ var View = Marionette.ItemView.extend({
     },
 
     removeUserFromGroup: function () {
-        // can't remove himself
-        /*if (user.username == this.model.get('username'))
+        // can't remove himself if it is not staff or superuser
+        if (user.username == this.model.get('username') && !(this.model.get('is_staff') || this.model.get('is_superuser')))
             return;
 
-        this.model.save({is_superuser: false}, {patch: true, wait: true});*/
-        this.model.destroy();
+        this.model.destroy({wait: true});
     },
 
     viewUserDetails: function () {
-        Backbone.history.navigate("app/permission/user/" + this.model.get('username'), {trigger: true});
+        Backbone.history.navigate("app/permission/user/" + this.model.get('username') + '/permission/', {trigger: true});
     }
 });
 

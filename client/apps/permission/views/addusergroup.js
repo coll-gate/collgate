@@ -37,22 +37,26 @@ var View = Marionette.ItemView.extend({
                 dataType: 'json',
                 delay: 250,
                 data: function (params) {
+                    params.term || (params.term = '');
                     var lterms = params.term.split(' ');
-                    var terms = [];
+
+                    // TODO exclude results contained in ... ...group/:groupname/user/
+                    var filters = {
+                        method: 'icontains',
+                        fields: '*',
+                        '*': [],
+                    };
 
                     // TODO exclude results contained in ... ...group/:groupname/user/
                     for (var t in lterms) {
                         if (lterms[t].length >= 3) {
-                            terms.push(lterms[t]);
+                            filters['*'].push(lterms[t]);
                         }
                     }
 
                     return {
                         page: params.page,
-                        terms: JSON.stringify(terms),
-                        type: "*",
-                        mode: "icontains",
-                        exclude: ""
+                        filters: JSON.stringify(filters),
                     };
                 },
                 processResults: function (data, params) {

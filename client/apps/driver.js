@@ -86,11 +86,11 @@ ohgr = new Marionette.Application({
             xhr.fail(function() {
                 console.log("ajaxError: " + xhr.statusText + " " + xhr.responseText);
                 if (xhr.status === 200 && xhr.responseText === "") {
-                    alert("!! this should not arrives !!");
+                    alert("!! this should not arrives, please contact your administrator !!");
                     dfd.resolve.apply(xhr, arguments);
                 } else {
                     var data = JSON.parse(xhr.responseText);
-                    if ((xhr.status >= 400 && xhr.status <= 599) && data.cause) {
+                    if ((xhr.status >= 400 && xhr.status <= 599) && data && (typeof(data.cause) === "string")) {
                         error(gettext(data.cause));
                     }
                     dfd.reject.apply(xhr, arguments);
@@ -153,7 +153,6 @@ ohgr.on("before:start", function(options) {
     if (user.language === "fr") {
         require('select2/dist/js/i18n/fr');
     } else {  // default to english
-
     }
 
     $.fn.select2.defaults.set('language', user.language);

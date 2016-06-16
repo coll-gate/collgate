@@ -132,11 +132,11 @@
 	            xhr.fail(function() {
 	                console.log("ajaxError: " + xhr.statusText + " " + xhr.responseText);
 	                if (xhr.status === 200 && xhr.responseText === "") {
-	                    alert("!! this should not arrives !!");
+	                    alert("!! this should not arrives, please contact your administrator !!");
 	                    dfd.resolve.apply(xhr, arguments);
 	                } else {
 	                    var data = JSON.parse(xhr.responseText);
-	                    if ((xhr.status >= 400 && xhr.status <= 599) && data.cause) {
+	                    if ((xhr.status >= 400 && xhr.status <= 599) && data && (typeof(data.cause) === "string")) {
 	                        error(gettext(data.cause));
 	                    }
 	                    dfd.reject.apply(xhr, arguments);
@@ -199,7 +199,6 @@
 	    if (user.language === "fr") {
 	        __webpack_require__(70);
 	    } else {  // default to english
-
 	    }
 
 	    $.fn.select2.defaults.set('language', user.language);
@@ -35490,7 +35489,7 @@
 	obj || (obj = {});
 	var __t, __p = '';
 	with (obj) {
-	__p += '<table class="table table-striped" style="margin-bottom: 0px"><tbody><tr class="edit-mode"><th><span class="add-permission action glyphicon glyphicon-plus-sign" style="margin-top: 10px; margin-left: 15px"></span></th><td><select class="permissions-types" name="permission-type" style="width: 100%"></select></td></tr></tbody></table>';
+	__p += '<table class="table table-striped" style="margin-bottom: 0px"><tbody><tr class="edit-mode"><th><span class="add-permission action glyphicon glyphicon-plus-sign" style="margin-top: 6px; margin-left: 15px"></span></th><td style="width: 100%"><select class="permissions-types" name="permission-type" style="width: 100%"></select></td></tr></tbody></table>';
 
 	}
 	return __p
@@ -35927,17 +35926,6 @@
 	    childView: PermissionGroupView,
 	    childViewContainer: 'tbody.permission-group-list',
 
-	    ui: {
-	        add_group_panel: 'div.add-group-panel',
-	        add_group_btn: 'span.add-group',
-	        add_group_name: 'input.group-name',
-	    },
-
-	    events: {
-	        'click @ui.add_group_btn': 'addGroup',
-	        'input @ui.add_group_name': 'onGroupNameInput',
-	    },
-
 	    initialize: function() {
 	        this.listenTo(this.collection, 'reset', this.render, this);
 	        //this.listenTo(this.collection, 'add', this.render, this);
@@ -35946,57 +35934,6 @@
 	    },
 
 	    onRender: function() {
-	        if ($.inArray("auth.add_group", this.collection.perms) < 0) {
-	            $(this.ui.add_group_panel).remove();
-	        }
-	    },
-
-	    addGroup: function () {
-	        if (!this.ui.add_group_name.hasClass('invalid')) {
-	            this.collection.create({name: this.ui.add_group_name.val()}, {wait: true});
-	            $(this.ui.add_group_name).cleanField();
-	        }
-	    },
-
-	    validateGroupName: function() {
-	        var v = this.ui.add_group_name.val();
-	        var re = /^[a-zA-Z0-9_\-]+$/i;
-
-	        if (v.length > 0 && !re.test(v)) {
-	            $(this.ui.add_group_name).validateField('failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
-	            return false;
-	        } else if (v.length < 3) {
-	            $(this.ui.add_group_name).validateField('failed', gt.gettext('3 characters min'));
-	            return false;
-	        }
-
-	        return true;
-	    },
-
-	    onGroupNameInput: function () {
-	        if (this.validateGroupName()) {
-	            $.ajax({
-	                type: "GET",
-	                url: ohgr.baseUrl + 'permission/group/search/',
-	                dataType: 'json',
-	                data: {term: this.ui.add_group_name.val(), type: "name", mode: "ieq"},
-	                el: this.ui.add_group_name,
-	                success: function(data) {
-	                    if (data.length > 0) {
-	                        for (var i in data) {
-	                            var t = data[i];
-
-	                            if (t.value.toUpperCase() == this.el.val().toUpperCase()) {
-	                                $(this.el).validateField('failed', gt.gettext('Group name already in usage'));
-	                                break;
-	                            }
-	                        }
-	                    } else {
-	                        $(this.el).validateField('ok');
-	                    }
-	                }
-	            });
-	        }
 	    },
 	});
 
@@ -36108,7 +36045,7 @@
 	((__t = ( gt.gettext("Number of users") )) == null ? '' : __t) +
 	'</th><th>' +
 	((__t = ( gt.gettext("Number of permissions") )) == null ? '' : __t) +
-	'</th></tr></thead><tbody class="permission-group-list"></tbody></table></div><div class="add-group-panel"><table class="table table-striped"><tbody><tr class="edit-mode"><th><span style="margin-top: 10px" class="add-group action glyphicon glyphicon-plus-sign"></span></th><td><div class="form-group"><input type="text" class="group-name form-control" name="group"></div></td></tr></tbody></table></div>';
+	'</th></tr></thead><tbody class="permission-group-list"></tbody></table></div>';
 
 	}
 	return __p
@@ -36277,16 +36214,15 @@
 	    },
 
 	    removeUserFromGroup: function () {
-	        // can't remove himself
-	        /*if (user.username == this.model.get('username'))
+	        // can't remove himself if it is not staff or superuser
+	        if (user.username == this.model.get('username') && !(this.model.get('is_staff') || this.model.get('is_superuser')))
 	            return;
 
-	        this.model.save({is_superuser: false}, {patch: true, wait: true});*/
-	        this.model.destroy();
+	        this.model.destroy({wait: true});
 	    },
 
 	    viewUserDetails: function () {
-	        Backbone.history.navigate("app/permission/user/" + this.model.get('username'), {trigger: true});
+	        Backbone.history.navigate("app/permission/user/" + this.model.get('username') + '/permission/', {trigger: true});
 	    }
 	});
 
@@ -36384,22 +36320,26 @@
 	                dataType: 'json',
 	                delay: 250,
 	                data: function (params) {
+	                    params.term || (params.term = '');
 	                    var lterms = params.term.split(' ');
-	                    var terms = [];
+
+	                    // TODO exclude results contained in ... ...group/:groupname/user/
+	                    var filters = {
+	                        method: 'icontains',
+	                        fields: '*',
+	                        '*': [],
+	                    };
 
 	                    // TODO exclude results contained in ... ...group/:groupname/user/
 	                    for (var t in lterms) {
 	                        if (lterms[t].length >= 3) {
-	                            terms.push(lterms[t]);
+	                            filters['*'].push(lterms[t]);
 	                        }
 	                    }
 
 	                    return {
 	                        page: params.page,
-	                        terms: JSON.stringify(terms),
-	                        type: "*",
-	                        mode: "icontains",
-	                        exclude: ""
+	                        filters: JSON.stringify(filters),
 	                    };
 	                },
 	                processResults: function (data, params) {
@@ -36527,12 +36467,16 @@
 	                type: "GET",
 	                url: ohgr.baseUrl + 'permission/group/search/',
 	                dataType: 'json',
-	                data: {term: this.ui.add_group_name.val(), type: "name", mode: "ieq"},
+	                data: {filters: JSON.stringify({
+	                    method: 'iexact',
+	                    fields: 'name',
+	                    name: this.ui.add_group_name.val()})
+	                },
 	                el: this.ui.add_group_name,
 	                success: function(data) {
-	                    if (data.length > 0) {
-	                        for (var i in data) {
-	                            var t = data[i];
+	                    if (data.items.length > 0) {
+	                        for (var i in data.items) {
+	                            var t = data.items[i];
 
 	                            if (t.value.toUpperCase() == this.el.val().toUpperCase()) {
 	                                $(this.el).validateField('failed', gt.gettext('Group name already in usage'));
@@ -36561,7 +36505,7 @@
 	obj || (obj = {});
 	var __t, __p = '';
 	with (obj) {
-	__p += '<table class="table table-striped" style="margin-bottom: 0px"><tbody><tr class="edit-mode" style="height: 95px"><th><span class="add-user action glyphicon glyphicon-plus-sign" style="margin-top: 6px; margin-left: 10px"></span></th><td style="width: 100%"><div class="form-group"><input type="text" class="group-name form-control" name="group"></div></td></tr></tbody></table>';
+	__p += '<table class="table table-striped" style="margin-bottom: 0px"><tbody><tr class="edit-mode" style="height: 95px"><th><span class="add-group action glyphicon glyphicon-plus-sign" style="margin-top: 9px; margin-left: 10px"></span></th><td style="width: 100%"><div class="form-group"><input type="text" class="group-name form-control" name="group"></div></td></tr></tbody></table>';
 
 	}
 	return __p

@@ -58,12 +58,16 @@ var View = Marionette.ItemView.extend({
                 type: "GET",
                 url: ohgr.baseUrl + 'permission/group/search/',
                 dataType: 'json',
-                data: {term: this.ui.add_group_name.val(), type: "name", mode: "ieq"},
+                data: {filters: JSON.stringify({
+                    method: 'iexact',
+                    fields: 'name',
+                    name: this.ui.add_group_name.val()})
+                },
                 el: this.ui.add_group_name,
                 success: function(data) {
-                    if (data.length > 0) {
-                        for (var i in data) {
-                            var t = data[i];
+                    if (data.items.length > 0) {
+                        for (var i in data.items) {
+                            var t = data.items[i];
 
                             if (t.value.toUpperCase() == this.el.val().toUpperCase()) {
                                 $(this.el).validateField('failed', gt.gettext('Group name already in usage'));

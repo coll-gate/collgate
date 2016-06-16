@@ -188,6 +188,7 @@ INSTALLED_APPS = (
     # 'django.contrib.admin',
     # 'django.contrib.admindocs',
     'guardian',
+    'django_filters',
     'igdectk.common',
     'igdectk.jquery',
     'igdectk.bootstrap',
