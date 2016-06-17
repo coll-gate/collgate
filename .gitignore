@@ -4,6 +4,7 @@
 *.pyc
 *.sublime-*
 *.mo
+*.po~
 .idea
 __pycache__
 /logs/
