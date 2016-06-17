@@ -36,7 +36,7 @@ var ProfileRouter = Marionette.AppRouter.extend({
         defaultLayout.title.show(new TitleView({title: gt.gettext("Edit my profile informations")}));
         defaultLayout.content.show(new EditProfileView());
 
-        ohgr.setDisplay('0-10-2');
+        //ohgr.setDisplay('0-10-2');
     }
 });
 

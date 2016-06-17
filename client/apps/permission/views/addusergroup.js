@@ -31,6 +31,8 @@ var View = Marionette.ItemView.extend({
 
     onDomRefresh: function () {
         var select = this.ui.username;
+        var collection = this.collection;
+
         $(select).select2({
             ajax: {
                 url: ohgr.baseUrl + "permission/user/search/",
@@ -38,21 +40,12 @@ var View = Marionette.ItemView.extend({
                 delay: 250,
                 data: function (params) {
                     params.term || (params.term = '');
-                    var lterms = params.term.split(' ');
 
-                    // TODO exclude results contained in ... ...group/:groupname/user/
                     var filters = {
                         method: 'icontains',
                         fields: '*',
-                        '*': [],
+                        '*': params.term.split(' ').filter(function (t) { return t.length > 2; }),
                     };
-
-                    // TODO exclude results contained in ... ...group/:groupname/user/
-                    for (var t in lterms) {
-                        if (lterms[t].length >= 3) {
-                            filters['*'].push(lterms[t]);
-                        }
-                    }
 
                     return {
                         page: params.page,
@@ -60,19 +53,19 @@ var View = Marionette.ItemView.extend({
                     };
                 },
                 processResults: function (data, params) {
-                    // parse the results into the format expected by Select2
-                    // since we are using custom formatting functions we do not need to
-                    // alter the remote JSON data, except to indicate that infinite
-                    // scrolling can be used
+                    // no pagination
                     params.page = params.page || 1;
 
                     var results = [];
 
                     for (var i = 0; i < data.items.length; ++i) {
-                        results.push({
-                            id: data.items[i].value,
-                            text: data.items[i].label
-                        })
+                        // ignore results in collection of users
+                        if (collection.findWhere({username: data.items[i].value}) == undefined) {
+                            results.push({
+                                id: data.items[i].value,
+                                text: data.items[i].label
+                            });
+                        }
                     }
 
                     return {

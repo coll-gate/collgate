@@ -32387,10 +32387,10 @@
 	      top: container.bottom
 	    };
 
-	    // Determine what the parent element is to use for calciulating the offset
+	    // Determine what the parent element is to use for calculating the offset
 	    var $offsetParent = this.$dropdownParent;
 
-	    // For statically positoned elements, we need to get the element
+	    // For statically positioned elements, we need to get the element
 	    // that is determining the offset
 	    if ($offsetParent.css('position') === 'static') {
 	      $offsetParent = $offsetParent.offsetParent();
@@ -34777,7 +34777,7 @@
 	        defaultLayout.title.show(new TitleView({title: gt.gettext("Edit my profile informations")}));
 	        defaultLayout.content.show(new EditProfileView());
 
-	        ohgr.setDisplay('0-10-2');
+	        //ohgr.setDisplay('0-10-2');
 	    }
 	});
 
@@ -35349,11 +35349,11 @@
 	((__t = ( object_name )) == null ? '' : __t) +
 	'</span>';
 	 } ;
-	__p += ' <br></span><hr class="hr-default"><div class="permissions"><table class="table table-striped"><thead><tr><th><span class="glyphicon glyphicon-asterisk"></span></th><th>' +
+	__p += ' <br></span><hr class="hr-default"><div class="permissions"><table class="table table-striped"><thead><tr><th style="width: 5%"><span class="glyphicon glyphicon-asterisk"></span></th><th style="width: 20%">' +
 	((__t = ( gt.gettext("Module") )) == null ? '' : __t) +
-	'</th><th>' +
+	'</th><th style="width: 40%">' +
 	((__t = ( gt.gettext("Name") )) == null ? '' : __t) +
-	'</th><th>' +
+	'</th><th style="width: 35%">' +
 	((__t = ( gt.gettext("Code") )) == null ? '' : __t) +
 	'</th></tr></thead><tbody> ';
 	 _.each(permissions, function(perm) { ;
@@ -36314,6 +36314,8 @@
 
 	    onDomRefresh: function () {
 	        var select = this.ui.username;
+	        var collection = this.collection;
+
 	        $(select).select2({
 	            ajax: {
 	                url: ohgr.baseUrl + "permission/user/search/",
@@ -36321,21 +36323,12 @@
 	                delay: 250,
 	                data: function (params) {
 	                    params.term || (params.term = '');
-	                    var lterms = params.term.split(' ');
 
-	                    // TODO exclude results contained in ... ...group/:groupname/user/
 	                    var filters = {
 	                        method: 'icontains',
 	                        fields: '*',
-	                        '*': [],
+	                        '*': params.term.split(' ').filter(function (t) { return t.length > 2; }),
 	                    };
-
-	                    // TODO exclude results contained in ... ...group/:groupname/user/
-	                    for (var t in lterms) {
-	                        if (lterms[t].length >= 3) {
-	                            filters['*'].push(lterms[t]);
-	                        }
-	                    }
 
 	                    return {
 	                        page: params.page,
@@ -36343,19 +36336,19 @@
 	                    };
 	                },
 	                processResults: function (data, params) {
-	                    // parse the results into the format expected by Select2
-	                    // since we are using custom formatting functions we do not need to
-	                    // alter the remote JSON data, except to indicate that infinite
-	                    // scrolling can be used
+	                    // no pagination
 	                    params.page = params.page || 1;
 
 	                    var results = [];
 
 	                    for (var i = 0; i < data.items.length; ++i) {
-	                        results.push({
-	                            id: data.items[i].value,
-	                            text: data.items[i].label
-	                        })
+	                        // ignore results in collection of users
+	                        if (collection.findWhere({username: data.items[i].value}) == undefined) {
+	                            results.push({
+	                                id: data.items[i].value,
+	                                text: data.items[i].label
+	                            });
+	                        }
 	                    }
 
 	                    return {
