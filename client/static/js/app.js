@@ -34338,7 +34338,7 @@
 
 	    drawSelect: function(sel, widget) {
 	        var view = this;
-	        widget !== 'undefined' || (widget = true);
+	        typeof widget !== 'undefined' || (widget = true);
 
 	        if (this.collection.size() > 0) {
 	            var s = $(sel);
