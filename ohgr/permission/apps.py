@@ -9,7 +9,7 @@ ohgr taxonomy module main
 from django.utils.translation import ugettext_lazy as _
 
 from igdectk.common.apphelpers import ApplicationMain
-from igdectk.module import AUTH_USER
+from igdectk.module import AUTH_STAFF
 from igdectk.module.manager import module_manager
 from igdectk.module.menu import MenuEntry, MenuSeparator
 from igdectk.module.module import Module, ModuleMenu
@@ -30,7 +30,7 @@ class OhgrPermission(ApplicationMain):
         )
 
         # permission menu
-        menu_permission = ModuleMenu('permission', _('Permission'), order=999, auth=AUTH_USER)
+        menu_permission = ModuleMenu('permission', _('Permission'), order=999, auth=AUTH_STAFF)
         menu_permission.add_entry(
             MenuEntry('user-permission', _('Manage users'), "#permission/user/", icon=Glyph.CONSOLE, order=1))
         menu_permission.add_entry(

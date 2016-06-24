@@ -23,10 +23,10 @@ DATABASES = {
     'default': {
         'HOST': '',
         'PORT': '',
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'ohgr',
-        'USER': 'root',
-        'PASSWORD': 'root',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'collgate_dev',
+        'USER': 'collgate_dev',
+        'PASSWORD': 'collgate_dev',
         'CONN_MAX_AGE': 86400
     }
 }
@@ -57,7 +57,7 @@ MIDDLEWARE_CLASSES = (
     'igdectk.rest.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'igdectk.rest.restmiddleware.IGdecTkRestMiddleware',
+    'igdectk.rest.restmiddleware.RestMiddleware',
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )

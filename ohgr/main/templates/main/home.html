@@ -6,10 +6,7 @@
 {% block main_content %}
 
 <script language="JavaScript">
-$(function() {
-    var path = '{{path|default:"home/"}}';
-    Backbone.history.navigate('app/' + path, {trigger: true});
-});
+window.initialPath = '{{path|default:"home/"}}';
 </script>
 
 {% endblock %}

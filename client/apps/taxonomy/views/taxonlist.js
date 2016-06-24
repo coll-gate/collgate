@@ -17,11 +17,16 @@ var TaxonListView = Marionette.CollectionView.extend({
     //template: require('../templates/taxonlist.html'),
     template: "<div></div>",
     className: "taxon-list",
-    childView: TaxonView,
     //childViewContainer: 'div.panel-body',
+    childView: TaxonView,
+    childViewOptions: function(model, index) {
+        return {
+            read_only: this.options.read_only
+        }
+    },
 
     ui: {
-        editmode: '.edit-mode',
+        add_synonyom_panel: 'tr.add-synonym-panel',
         taxon: 'span.taxon',
     },
 
@@ -29,13 +34,12 @@ var TaxonListView = Marionette.CollectionView.extend({
         'click @ui.taxon': 'clickTaxon',
     },
 
-    initialize: function() {
+    initialize: function(options) {
+        options || (options = {});
         this.listenTo(this.collection, 'reset', this.render, this);
         //this.listenTo(this.collection, 'add', this.render, this);
         //this.listenTo(this.collection, 'remove', this.render, this);
         //this.listenTo(this.collection, 'change', this.render, this);
-
-        ohgr.main.readonly = true;
     },
 
     onRender: function() {
@@ -47,7 +51,8 @@ var TaxonListView = Marionette.CollectionView.extend({
     },
 
     onDomRefresh: function () {
-        $(this.ui.editmode).hide();
+    //    if (this.options.read_only)
+    //        $(this.ui.add_synonyom_panel).remove();
     },
 });
 

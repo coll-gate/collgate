@@ -44,7 +44,6 @@ def profile_signin(request):
     """
     if request.user.is_authenticated():
         logout(request)
-        messages.add_message(request, messages.INFO, _('Logged out'))
         return redirect('/ohgr/')
 
     username = request.POST['username']

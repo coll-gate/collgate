@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-10 16:52+0200\n"
+"POT-Creation-Date: 2016-06-20 15:15+0200\n"
 "PO-Revision-Date: 2016-02-01 11:53+0100\n"
 "Last-Translator: Frederic SCHERMA <frederic.scherma@clermont.inra.fr>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,35 +18,35 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: apps.py:33
+#: apps.py:35
 msgid "Profile"
 msgstr ""
 
-#: apps.py:34
+#: apps.py:36
 msgid "Edit information"
 msgstr "Edit information"
 
-#: apps.py:36
+#: apps.py:38
 msgid "Logout"
 msgstr "Logout"
 
-#: apps.py:40
+#: apps.py:42
 msgid "Help"
 msgstr ""
 
-#: apps.py:42 templates/main/help/manual_index.html:22
+#: apps.py:44
 msgid "Manual index"
 msgstr ""
 
-#: apps.py:45 templates/main/help/about.html:22
+#: apps.py:47
 msgid "About HOGR..."
 msgstr ""
 
-#: home.py:47 home.py:73
+#: home.py:31 home.py:57
 msgid "You are not authenticated."
 msgstr ""
 
-#: home.py:57 home.py:83
+#: home.py:41 home.py:67
 msgid "Please, you must enable your cookies."
 msgstr ""
 
@@ -78,19 +78,18 @@ msgstr ""
 msgid "User successfully updated"
 msgstr ""
 
-#: templates/main/home.html:20 templates/main/index.html:86
-#: templates/main/index.html:88
+#: templates/main/home.html:20
 msgid "Welcome"
 msgstr ""
 
-#: templates/main/index.html:78
+#: templates/main/index.html:77
 msgid "Username"
 msgstr ""
 
-#: templates/main/index.html:81
+#: templates/main/index.html:80
 msgid "Password"
 msgstr ""
 
-#: templates/main/index.html:83
+#: templates/main/index.html:82
 msgid "Sign in"
 msgstr ""

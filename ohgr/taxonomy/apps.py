@@ -22,6 +22,9 @@ class OhgrTaxonomy(ApplicationMain):
     def ready(self):
         super().ready()
 
+        from audit.models import register_models
+        register_models(OhgrTaxonomy.name)
+
         # create a module taxonomy
         taxonomy_module = Module('taxonomy', base_url='ohgr')
         taxonomy_module.include_urls((
@@ -34,7 +37,7 @@ class OhgrTaxonomy(ApplicationMain):
         # taxonomy menu
         menu_taxonomy = ModuleMenu('taxonomy', _('Taxonomy'), auth=AUTH_USER)
         menu_taxonomy.add_entry(
-            MenuEntry('create-taxon', _('Create taxon'), "~taxonomy/Taxon/create", icon=Glyph.PLUS_SIGN, order=1))
+            MenuEntry('create-taxon', _('Create taxon'), "~taxonomy/taxon/create", icon=Glyph.PLUS_SIGN, order=1))
         menu_taxonomy.add_entry(MenuSeparator(100))
         menu_taxonomy.add_entry(
             MenuEntry('list-taxon', _('List taxons'), "#taxonomy/", icon=Glyph.LIST, order=101))

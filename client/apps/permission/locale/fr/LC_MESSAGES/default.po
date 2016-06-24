@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-15 18:08+0200\n"
+"POT-Creation-Date: 2016-06-20 15:14+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,39 +17,39 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../../views/addusergroup.js:84
-msgid "Select a username"
-msgstr "Saisissez un nom d'utilisateur"
-
-#: ../../../views/grouplist.js:56
+#: ../../../views/addgroup.js:45
 msgid "Invalid characters (alphanumeric, _ and - only)"
 msgstr "Caractères invalides (alphanumeric, _ et - seulement)"
 
-#: ../../../views/grouplist.js:59
+#: ../../../views/addgroup.js:48
 msgid "3 characters min"
 msgstr "3 caractères minimum"
 
-#: ../../../views/grouplist.js:80
+#: ../../../views/addgroup.js:73
 msgid "Group name already in usage"
 msgstr "Nom de groupe déjà utilisé"
 
-#: ../../../routers/permission.js:40
+#: ../../../views/addusergroup.js:81
+msgid "Select a username"
+msgstr "Saisissez un nom d'utilisateur"
+
+#: ../../../routers/permission.js:41
 msgid "List of users"
 msgstr "Liste des utilisateurs"
 
-#: ../../../routers/permission.js:53
+#: ../../../routers/permission.js:54
 msgid "List of permissions for user"
 msgstr "List des permissions pour l'utilisateur"
 
-#: ../../../routers/permission.js:70
+#: ../../../routers/permission.js:71
 msgid "List of groups"
 msgstr "Liste des groupes"
 
-#: ../../../routers/permission.js:83
+#: ../../../routers/permission.js:88
 msgid "List of permissions for group"
 msgstr "Liste des permissions pour le groupe"
 
-#: ../../../routers/permission.js:100
+#: ../../../routers/permission.js:105
 msgid "List of users for group"
 msgstr "Liste des utilisateurs pour le groupe"
 
@@ -65,18 +65,15 @@ msgstr "Nombre d'utilisateurs"
 msgid "Number of permissions"
 msgstr "Nombre de permissions"
 
-#: ../../../templates/groupuserlist.html:16
-#: ../../../templates/userlist.html:18
+#: ../../../templates/groupuserlist.html:16 ../../../templates/userlist.html:18
 msgid "Username"
 msgstr "Nom d'utilisateur"
 
-#: ../../../templates/groupuserlist.html:17
-#: ../../../templates/userlist.html:19
+#: ../../../templates/groupuserlist.html:17 ../../../templates/userlist.html:19
 msgid "First name"
 msgstr "Prénom"
 
-#: ../../../templates/groupuserlist.html:18
-#: ../../../templates/userlist.html:20
+#: ../../../templates/groupuserlist.html:18 ../../../templates/userlist.html:20
 msgid "Last name"
 msgstr "Nom"
 

@@ -21,9 +21,11 @@ var MainModule = Marionette.Module.extend({
     initialize: function(moduleName, app, options) {
         // i18n
         if (user.language === "fr") {
-            gt.addTextdomain('default', require('./locale/fr/LC_MESSAGES/default.mo'));
+            i18next.addResources('fr', 'default', require('./locale/fr/LC_MESSAGES/default.json'));
+            //gt.addTextdomain('default', require('./locale/fr/LC_MESSAGES/default.mo'));
         } else {  // default to english
-            gt.addTextdomain('default', require('./locale/en/LC_MESSAGES/default.mo'));
+            i18next.addResources('en', 'default', require('./locale/en/LC_MESSAGES/default.json'));
+            //gt.addTextdomain('default', require('./locale/en/LC_MESSAGES/default.mo'));
         }
 
         this.models = {};

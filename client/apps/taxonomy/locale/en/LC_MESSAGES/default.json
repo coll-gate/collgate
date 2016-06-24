@@ -1,0 +1,20 @@
+{
+    "Invalid characters (alphanumeric, _ and - only)": "",
+    "3 characters min": "",
+    "Taxon name already in usage": "",
+    "List of taxons": "",
+    "Taxon details": "",
+    "Family rank cannot have a parent taxon": "",
+    "This rank must have a parent taxon": "",
+    "Taxon successfully created !": "",
+    "Synonyms": "",
+    "Type": "",
+    "Name": "",
+    "Language": "",
+    "Create a taxon": "",
+    "Principal name of the taxon (must be unique)": "",
+    "Taxon rank": "",
+    "Direct parent": "",
+    "Cancel": "",
+    "Create": ""
+}

@@ -5,6 +5,8 @@
 """
 ohgr application models.
 """
+import uuid as uuid
+
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
@@ -69,3 +71,31 @@ class Action(models.Model):
         unique_together = (("app_label", "codename"),)
 
         default_permissions = list()
+
+
+class EntityStatus(ChoiceEnum):
+    """
+    Status of an entity (pending, active, hidden, removed...).
+    """
+
+    PENDING = IntegerChoice(0, _('Pending'))
+    VALID = IntegerChoice(1, _('Valid'))
+    HIDDEN = IntegerChoice(2, _('Hidden'))
+    REMOVED = IntegerChoice(3, _('Removed'))
+
+
+class Entity(models.Model):
+    """
+    Base model for any object that must support audit, history, or
+    any other modular features.
+    """
+    entity_status = models.IntegerField(
+        null=False, blank=False, choices=EntityStatus.choices(), default=EntityStatus.VALID.value)
+
+    created_date = models.DateTimeField(auto_now_add=True)
+    modified_date = models.DateTimeField(auto_now=True)
+
+    uuid = models.UUIDField(db_index=True, default=uuid.uuid4, editable=False, unique=True)
+
+    class Meta:
+        abstract = True

@@ -19,28 +19,19 @@ var TitleView = require('../../main/views/titleview');
 var TaxonRouter = Marionette.AppRouter.extend({
     routes : {
         "app/taxonomy/": "getTaxonList",
-        "app/taxonomy/create/": "getTaxonCreate",
         "app/taxonomy/:id/": "getTaxon",
     },
 
     getTaxonList : function() {
         var collection = ohgr.taxonomy.collections.taxons;
-  /*      var taxonListView = new TaxonListView({
-            edit: false,
-            collection : ohgr.taxonomy.collections.taxons,
-            // collection: new Backbone.Collection([
-            //      {id: 1, name: 'Family1', rank: 60, synonyms: [{name: 'Family1', language_code:'en', type_code: 60}]},
-            //      {id: 2, name: 'Genus1', rank: 70, synonyms: []}
-            //  ]),
-        });
-*/
+
         var defaultLayout = new DefaultLayout({});
         ohgr.mainRegion.show(defaultLayout);
 
         defaultLayout.title.show(new TitleView({title: gt.gettext("List of taxons")}));
 
         collection.fetch().then(function () {
-            defaultLayout.content.show(new TaxonListView({edit: false, collection : collection}));
+            defaultLayout.content.show(new TaxonListView({read_only: true, collection : collection}));
         });
     },
 

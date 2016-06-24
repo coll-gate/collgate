@@ -23,6 +23,7 @@ var TaxonItemView = Marionette.ItemView.extend({
         "edit_mode": ".edit-mode",
         "add_synonym": ".add-synonym",
         "remove_synonym": ".remove-synonym",
+        "add_synonyom_panel": "tr.add-synonym-panel"
     },
 
     events: {
@@ -31,8 +32,9 @@ var TaxonItemView = Marionette.ItemView.extend({
         'click @ui.remove_synonym': 'onRemoveSynonym',
     },
 
-    initialize: function() {
+    initialize: function(options) {
         this.listenTo(this.model, 'reset', this.render, this);
+        this.options.read_only = this.options.read_only || false;
     },
 
     onRender: function() {
@@ -46,6 +48,11 @@ var TaxonItemView = Marionette.ItemView.extend({
 
         this.ui.taxon_synonym_type.find('option[value="0"]').remove();
         $(this.ui.taxon_synonym_type).selectpicker('refresh');
+    },
+
+    onDomRefresh: function () {
+        if (this.options.read_only)
+            this.ui.add_synonyom_panel.remove();
     },
 
     validateName: function() {

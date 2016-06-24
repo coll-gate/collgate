@@ -59,7 +59,7 @@ var Taxon = Backbone.Model.extend({
                 return;
             }
         }
-    }
+    },
 });
 
 /*sample for collection into model

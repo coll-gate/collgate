@@ -7,6 +7,7 @@ ohgr accession module models.
 """
 
 from django.db import models
+from django.contrib.postgres.fields import HStoreField
 from django.utils.translation import ugettext_lazy as _
 
 from igdectk.common.models import ChoiceEnum, IntegerChoice
@@ -42,6 +43,7 @@ class Asset(models.Model):
 class Accession(models.Model):
 
     name = models.CharField(unique=True, null=False, blank=False, max_length=255, db_index=True)
+    data = HStoreField()
 
 
 class Batch(models.Model):

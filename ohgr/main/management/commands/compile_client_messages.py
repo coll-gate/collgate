@@ -20,6 +20,11 @@ class Command(BaseCommand):
         base_path = os.path.join(settings.BASE_DIR, '..', 'client', 'apps')
         os.chdir(base_path)
 
+        # get local npm .bin path
+        cmd = 'npm bin'
+        process = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
+        npm_bin = process.communicate()[0].decode('utf-8').rstrip('\n')
+
         for ldir in os.listdir():
             if os.path.isdir(ldir):
 
@@ -36,6 +41,12 @@ class Command(BaseCommand):
                         output = process.communicate()[0]
 
                         print("msgfmt on %s for local %s" % (os.getcwd(), sdir))
+
+                        cmd = 'node %s -l default -s default.po -t default.json' % (os.path.join(npm_bin, 'i18next-conv'))
+                        process = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
+                        output = process.communicate()[0]
+
+                        print("i18next-iconv on %s for local %s" % (os.getcwd(), sdir))
                         os.chdir("../..")
 
                 os.chdir("../..")

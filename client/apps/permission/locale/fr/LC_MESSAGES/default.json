@@ -1,0 +1,23 @@
+{
+    "Invalid characters (alphanumeric, _ and - only)": "Caractères invalides (alphanumeric, _ et - seulement)",
+    "3 characters min": "3 caractères minimum",
+    "Group name already in usage": "Nom de groupe déjà utilisé",
+    "Select a username": "Saisissez un nom d'utilisateur",
+    "List of users": "Liste des utilisateurs",
+    "List of permissions for user": "List des permissions pour l'utilisateur",
+    "List of groups": "Liste des groupes",
+    "List of permissions for group": "Liste des permissions pour le groupe",
+    "List of users for group": "Liste des utilisateurs pour le groupe",
+    "Name": "Nom",
+    "Number of users": "Nombre d'utilisateurs",
+    "Number of permissions": "Nombre de permissions",
+    "Username": "Nom d'utilisateur",
+    "First name": "Prénom",
+    "Last name": "Nom",
+    "Model": "Modèle",
+    "Module": "Module",
+    "Code": "Code",
+    "Status": "Status",
+    "Superuser": "Super-utilisateur",
+    "Staff": "Employé"
+}

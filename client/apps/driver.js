@@ -10,7 +10,8 @@
 
 var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
-var GetText = require("node-gettext");
+//var GetText = require("node-gettext");
+i18next = require('i18next');
 
 // select2
 $.select2 = require("select2");
@@ -90,9 +91,9 @@ ohgr = new Marionette.Application({
                     dfd.resolve.apply(xhr, arguments);
                 } else {
                     var data = JSON.parse(xhr.responseText);
-                    if ((xhr.status >= 400 && xhr.status <= 599) && data && (typeof(data.cause) === "string")) {
-                        error(gettext(data.cause));
-                    }
+                    //if ((xhr.status >= 400 && xhr.status <= 599) && data && (typeof(data.cause) === "string")) {
+                    //    error(gettext(data.cause));
+                    //}
                     dfd.reject.apply(xhr, arguments);
                 }
             });
@@ -102,8 +103,8 @@ ohgr = new Marionette.Application({
         };
     },
     onStart: function(options) {
-        // Starts the URL handling framework
-        Backbone.history.start({pushState: true, silent: true, root: '/ohgr'});
+        // Starts the URL handling framework and automatically route as possible
+        Backbone.history.start({pushState: true, silent: false, root: '/ohgr'});
     }
 });
 
@@ -150,6 +151,19 @@ ohgr.on("before:start", function(options) {
     };
 
     // i18n
+    i18next.init({
+        initImmediate: false,  // avoid setTimeout
+        lng: user.language,
+        ns: 'default',
+        debug: false,
+        fallbackLng: 'en'
+    });
+    i18next.setDefaultNamespace('default');
+
+    window.gt = i18next;
+    window.gt.gettext = i18next.t;
+    window.gt._ = i18next.t;
+
     if (user.language === "fr") {
         require('select2/dist/js/i18n/fr');
     } else {  // default to english
@@ -160,9 +174,10 @@ ohgr.on("before:start", function(options) {
     // each modules
     this.main = require('./main/init');
     this.permission = require('./permission/init');
+    this.audit = require('./audit/init');
     this.taxonomy = require('./taxonomy/init');
     this.accession = require('./accession/init');
 });
 
-gt = new GetText();
+//gt = new GetText();
 ohgr.start({initialData: ''});

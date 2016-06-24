@@ -20,6 +20,11 @@ class Command(BaseCommand):
         base_path = os.path.join(settings.BASE_DIR, '..', 'client', 'apps')
         os.chdir(base_path)
 
+        # get local npm .bin path
+        cmd = 'npm bin'
+        process = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
+        npm_bin = process.communicate()[0].decode('utf-8').rstrip('\n')
+
         for ldir in os.listdir():
             if os.path.isdir(ldir):
 
@@ -31,9 +36,13 @@ class Command(BaseCommand):
                 for sdir in os.listdir():
                     if os.path.isdir(sdir) and os.path.exists(os.path.join(sdir, 'LC_MESSAGES')):
                         os.chdir(os.path.join(sdir, 'LC_MESSAGES'))
-                        cmd = 'node /usr/bin/make-gettext -l default -e "js,html" -d ../../../'
+
+                        cmd = 'node %s -l default -e "js,html" -d ../../../' % (os.path.join(npm_bin, 'make-gettext'),)
                         process = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
                         output = process.communicate()[0]
+
+                        if os.path.exists("default.po~"):
+                            os.remove("default.po~")
 
                         print("make-gettext on %s for locale %s" % (os.getcwd(), sdir))
                         os.chdir("../..")

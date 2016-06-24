@@ -55,7 +55,7 @@ MIDDLEWARE_CLASSES = (
     'igdectk.rest.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'igdectk.rest.restmiddleware.IGdecTkRestMiddleware',
+    'igdectk.rest.restmiddleware.RestMiddleware',
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )

@@ -1,6 +1,6 @@
 /**
- * @file user.js
- * @brief Permission user collection
+ * @file group.js
+ * @brief Permission group collection
  * @author Frederic SCHERMA
  * @date 2016-05-30
  * @copyright Copyright (c) 2016 INRA UMR1095 GDEC

@@ -1,0 +1,20 @@
+{
+    "Invalid characters (alphanumeric, _ and - only)": "Caractères invalides (alphanumérique, _ et - seulement)",
+    "3 characters min": "3 caractères au minimum",
+    "Taxon name already in usage": "Ce nom de taxon est déjà utilisé",
+    "List of taxons": "Liste des taxons",
+    "Taxon details": "Détails du taxon",
+    "Family rank cannot have a parent taxon": "Le rang taxinomique famille ne peut pas avoir de parent",
+    "This rank must have a parent taxon": "Ce rang taxinomique doit avoir un parent",
+    "Taxon successfully created !": "Taxon créé avec succès !",
+    "Synonyms": "Synonymes",
+    "Type": "Type",
+    "Name": "Nom",
+    "Language": "Language",
+    "Create a taxon": "Créer un taxon",
+    "Principal name of the taxon (must be unique)": "Nom principal du taxon (doit être unique)",
+    "Taxon rank": "Rank taxinomique",
+    "Direct parent": "Parent directe",
+    "Cancel": "Annuler",
+    "Create": "Créer"
+}

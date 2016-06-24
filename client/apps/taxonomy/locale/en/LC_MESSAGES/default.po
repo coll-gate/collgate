@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-10 16:53+0200\n"
+"POT-Creation-Date: 2016-06-24 17:23+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,23 +17,23 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../../views/taxon.js:56 ../../../controllers/taxon.js:180
+#: ../../../views/taxon.js:63 ../../../controllers/taxon.js:180
 msgid "Invalid characters (alphanumeric, _ and - only)"
 msgstr ""
 
-#: ../../../views/taxon.js:59 ../../../controllers/taxon.js:183
+#: ../../../views/taxon.js:66 ../../../controllers/taxon.js:183
 msgid "3 characters min"
 msgstr ""
 
-#: ../../../views/taxon.js:80 ../../../controllers/taxon.js:163
+#: ../../../views/taxon.js:87 ../../../controllers/taxon.js:163
 msgid "Taxon name already in usage"
 msgstr ""
 
-#: ../../../routers/taxon.js:40
+#: ../../../routers/taxon.js:32
 msgid "List of taxons"
 msgstr ""
 
-#: ../../../routers/taxon.js:53
+#: ../../../routers/taxon.js:45
 msgid "Taxon details"
 msgstr ""
 

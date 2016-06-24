@@ -19,15 +19,15 @@ msgstr ""
 
 #: ../../../routers/main.js:38
 msgid "About..."
-msgstr ""
+msgstr "A propos..."
 
 #: ../../../routers/main.js:46
 msgid "Help..."
-msgstr ""
+msgstr "Aide.."
 
 #: ../../../routers/profile.js:36
 msgid "Edit my profile informations"
-msgstr ""
+msgstr "Mettre à jour mon profil"
 
 #: ../../../collections/language.js:22
 msgid "English"

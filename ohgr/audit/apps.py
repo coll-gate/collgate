@@ -29,8 +29,9 @@ class OhgrAudit(ApplicationMain):
 
         # audit menu
         menu_audit = ModuleMenu('audit', _('Audit'), auth=AUTH_STAFF, order=1000)
-        # menu_audit.add_entry(MenuEntry('edit', _('Edit information'), "#profile/edit/", icon=Glyph.USER, order=8))
-        menu_audit.add_entry(MenuSeparator(9))
+        menu_audit.add_entry(MenuEntry('audit-user', _('Audit for a user'), "~audit/audit/byUserName", icon=Glyph.USER, order=1))
+        menu_audit.add_entry(MenuEntry('audit-entity', _('Audit for an entity'), "~audit/audit/byEntityUUID", icon=Glyph.BOOK, order=2))
+        # menu_audit.add_entry(MenuSeparator(9))
         audit_module.add_menu(menu_audit)
 
         module_manager.register_menu(audit_module)

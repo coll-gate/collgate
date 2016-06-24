@@ -11,7 +11,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from igdectk.common.models import ChoiceEnum, IntegerChoice
 
-from main.models import Languages
+from main.models import Languages, Entity
 
 
 class TaxonSynonymType(ChoiceEnum):
@@ -34,7 +34,7 @@ class TaxonRank(ChoiceEnum):
     SUB_SPECIE = IntegerChoice(81, _("Sub-specie"))
 
 
-class TaxonSynonym(models.Model):
+class TaxonSynonym(Entity):
 
     name = models.CharField(unique=True, null=False, blank=False, max_length=255, db_index=True)
     language = models.CharField(null=False, blank=False, max_length=2, choices=Languages.choices())
@@ -42,8 +42,14 @@ class TaxonSynonym(models.Model):
 
     taxon = models.ForeignKey('Taxon', null=False, related_name='synonyms')
 
+    def audit_create(self, user):
+        return "Create TaxonSynonym %s for taxon(id=%s)" % (self.name, self.taxon.pk)
 
-class Taxon(models.Model):
+    def audit_delete(self, user):
+        return "Delete TaxonSynonym %s for taxon(id=%s)" % (self.name, self.taxon.pk)
+
+
+class Taxon(Entity):
 
     name = models.CharField(unique=True, null=False, blank=False, max_length=255, db_index=True)
     rank = models.IntegerField(null=False, blank=False, choices=TaxonRank.choices())
