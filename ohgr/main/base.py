@@ -13,3 +13,8 @@ from igdectk.rest.handler import *
 class RestApp(RestHandler):
     regex = r'^app/((?P<path>\S*)/){0,1}$'
     name = 'home'
+
+
+class RestMain(RestHandler):
+    regex = r'^main$'
+    name = 'main'

@@ -228,7 +228,6 @@ var TaxonController = Marionette.Controller.extend({
                             }
                         }),
                         success: function (data) {
-                            $(this.view.ui.dialog).modal('hide');
                             this.view.remove();
                             success(gettext("Taxon successfully created !"));
 
@@ -252,9 +251,10 @@ var TaxonController = Marionette.Controller.extend({
             },
 
             remove: function() {
-              this.$el.empty().off(); /* off to unbind the events */
-              this.stopListening();
-              return this;
+                $(this.ui.dialog).modal('hide').data('bs.modal', null);
+                this.$el.empty().off();  // unbind the events
+                this.stopListening();
+                return this;
             }
         });
 

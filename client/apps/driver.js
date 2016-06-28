@@ -112,6 +112,7 @@ ohgr.addRegions({
     mainRegion: "#main_content",
     leftRegion: "#left_details",
     rightRegion: "#right_content",
+    modalRegion: "#dialog_content"
 });
 
 ohgr.on("before:start", function(options) {

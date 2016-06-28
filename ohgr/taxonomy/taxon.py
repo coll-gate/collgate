@@ -8,6 +8,7 @@ ohgr taxonomy taxon rest handlers
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 
+from permission.utils import get_permissions_for
 from .base import RestTaxonomy
 
 from igdectk.rest.handler import *
@@ -75,8 +76,16 @@ def create_taxon(request):
     return HttpResponseRest(request, response)
 
 
+@RestTaxonomy.def_auth_request(Method.OPTIONS, Format.JSON)
+def opt_taxon_list(request):
+    response = {
+        'perms': get_permissions_for(request.user, "taxonomy", "taxon")
+    }
+    return HttpResponseRest(request, response)
+
+
 @RestTaxonomy.def_auth_request(Method.GET, Format.JSON)
-def taxon_list(request):
+def get_taxon_list(request):
     taxons = Taxon.objects.all()
     synonyms = TaxonSynonym.objects.all()
 
@@ -88,9 +97,18 @@ def taxon_list(request):
     return HttpResponseRest(request, response)
 
 
+@RestTaxonomyId.def_auth_request(Method.OPTIONS, Format.JSON)
+def opt_taxon_list(request, id):
+    taxon = get_object_or_404(Taxon, id=int_arg(id))
+    response = {
+        'perms': get_permissions_for(request.user, "taxonomy", "taxon", taxon)
+    }
+    return HttpResponseRest(request, response)
+
+
 @RestTaxonomyId.def_auth_request(Method.GET, Format.JSON)
-def taxon_details_json(request, id):
-    taxon = Taxon.objects.get(id=str(id))
+def get_taxon_details_json(request, id):
+    taxon = Taxon.objects.get(id=int_arg(id))
 
     result = {
         'id': taxon.id,
@@ -107,6 +125,14 @@ def taxon_details_json(request, id):
         })
 
     return HttpResponseRest(request, result)
+
+
+@RestTaxonomySearch.def_auth_request(Method.OPTIONS, Format.JSON)
+def opt_search_taxon(request):
+    response = {
+        'perms': get_permissions_for(request.user, "taxonomy", "taxon")
+    }
+    return HttpResponseRest(request, response)
 
 
 @RestTaxonomySearch.def_auth_request(Method.GET, Format.JSON, ('term', 'type', 'mode'))

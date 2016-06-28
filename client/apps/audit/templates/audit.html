@@ -1,0 +1,38 @@
+<!--
+ - @file audit.html
+ - @brief Template for an audit entry (model)
+ - @author Frederic SCHERMA
+ - @date 2016-06-27
+ - @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+ - @license @todo
+ - @details
+-->
+
+<div class="element object audit" object-type="audit" style="width:100%;">
+    <div>
+        <span style="font-weight:bold; font-size:18px;"><% gt.gettext("Audit") %>
+            <span class="model audit label label-info date" style="cursor: pointer;" date="<%= timestamp %>"><% gt.gettext("Audit") + ": " %><%= timestamp %></span>
+            <% if (object_name) { %><span class="model object badge left-margin" style="cursor: pointer;" object-id="<%- object_id %>"><%= object_name %></span><% } %>
+            <br>
+        </span>
+    </div>
+    <hr class="hr-default">
+    <div class="details">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th style="width: 20%;"><%= gt.gettext("User") %></th>
+                    <th style="width: 40%;"><%= gt.gettext("Reason") %></th>
+                    <th style="width: 35%;"><%= gt.gettext("Fields") %></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td name="username"><%- username %></td>
+                    <td name="reason"><%- reason %></td>
+                    <td name="fields"><%- fields %></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

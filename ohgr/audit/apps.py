@@ -24,13 +24,13 @@ class OhgrAudit(ApplicationMain):
 
         audit_module = Module('audit', base_url='ohgr')
         audit_module.include_urls((
-            'base')
+            'base',)
         )
 
         # audit menu
         menu_audit = ModuleMenu('audit', _('Audit'), auth=AUTH_STAFF, order=1000)
-        menu_audit.add_entry(MenuEntry('audit-user', _('Audit for a user'), "~audit/audit/byUserName", icon=Glyph.USER, order=1))
-        menu_audit.add_entry(MenuEntry('audit-entity', _('Audit for an entity'), "~audit/audit/byEntityUUID", icon=Glyph.BOOK, order=2))
+        menu_audit.add_entry(MenuEntry('audit-user', _('Audit for a user'), "~audit/audit/searchByUserName", icon=Glyph.USER, order=1))
+        menu_audit.add_entry(MenuEntry('audit-entity', _('Audit for an entity'), "~audit/audit/searchByEntityUUID", icon=Glyph.BOOK, order=2))
         # menu_audit.add_entry(MenuSeparator(9))
         audit_module.add_menu(menu_audit)
 

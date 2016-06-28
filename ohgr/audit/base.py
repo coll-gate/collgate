@@ -16,6 +16,7 @@ from django.utils.translation import ugettext_noop as _
 
 from guardian.models import UserObjectPermission, GroupObjectPermission
 
+from audit.models import Audit
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
 
@@ -23,6 +24,11 @@ from igdectk.rest.response import HttpResponseRest
 class RestAudit(RestHandler):
     regex = r'^audit/$'
     name = 'audit'
+
+
+class RestAuditSearch(RestAudit):
+    regex = r'^search/$'
+    suffix = 'search'
 
 
 class RestAuditUserUserName(RestAudit):
@@ -35,11 +41,38 @@ class RestAuditObjectId(RestAudit):
     suffix = 'object'
 
 
-@RestAuditUserUserName.def_auth_request(Method.GET, Format.JSON, staff=True)
-def get_audit_for_user(request, username):
+@RestAudit.def_auth_request(Method.GET, Format.JSON, staff=True)
+def get_audit_list(request):
     pass
 
 
-@RestAuditUserUserName.def_auth_request(Method.GET, Format.JSON, staff=True)
-def get_audit_for_object(request, object_id):
+@RestAuditSearch.def_auth_request(Method.GET, Format.JSON,  staff=True)
+def search_audit(request):
+    user = get_object_or_404(User, username=request.GET['username'])
+    audits = Audit.objects.filter(user=user)
+
+    audit_list = []
+
+    for audit in audits:
+        audit_list.append({
+            'id': audit.id,
+            'user_id': user.id,
+            'username': user.username,
+            'timestamp': audit.timestamp,
+            'object_id': audit.object_id,
+            'object_name': '',
+            'reason': audit.reason,
+            'fields': audit.fields
+        })
+
+    results = {
+        'perms': [],
+        'audits': audit_list
+    }
+
+    return HttpResponseRest(request, results)
+
+
+@RestAudit.def_auth_request(Method.GET, Format.JSON, parameters=('object_id',), staff=True)
+def get_audit_for_object(request):
     pass

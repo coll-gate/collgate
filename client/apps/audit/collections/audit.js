@@ -11,7 +11,7 @@
 var AuditModel = require('../models/audit');
 
 var Collection = Backbone.Collection.extend({
-    url: function() { return ohgr.baseUrl + 'audit/'; },
+    url: function() { return ohgr.baseUrl + 'audit/search/'; },
     model: AuditModel,
 
     parse: function(data) {

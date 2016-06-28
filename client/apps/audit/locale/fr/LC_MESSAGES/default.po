@@ -23,7 +23,7 @@ msgstr "Liste des entrées d'audits par date"
 
 #: ../../../controllers/audit.js:25
 msgid "List of audit entries related to user"
-msgstr "Liste des entrées d'audits pour l'utilisiteur"
+msgstr "Liste des entrées d'audits pour l'utilisateur"
 
 #: ../../../controllers/audit.js:38
 msgid "List of audit entries related to entity"

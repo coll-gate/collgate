@@ -13,9 +13,15 @@ var Backbone = require('backbone');
 var Model = Backbone.Model.extend({
     defaults: {
         id: undefined,
-        user: undefined,
-        audit_type: '',
-        content_type: '',
+        type: 0,
+        user_id: undefined,
+        username: '',
+        app_label: '',
+        model: undefined,
+        object_id: undefined,
+        object_name: '',
+        reason: '',
+        fields: []
     },
 
     init: function(options) {

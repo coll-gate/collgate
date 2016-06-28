@@ -10,7 +10,9 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<html>
+{% get_current_language as LANGUAGE_CODE %}
+
+<html lang="{{ LANGUAGE_CODE }}">
 <head>
     <title>Online Host of Genetic Resources</title>
     {% if debug %}
@@ -144,8 +146,6 @@
         <p style="text-align:center;">OHGR {% ohgr "version" %} Copyright &copy; 2016 INRA UMR1095</p>
     </div>
 </footer>
-
-{% get_current_language as LANGUAGE_CODE %}
 
 <script language="javascript">
 // django user
@@ -315,6 +315,11 @@ user.language = "{{ LANGUAGE_CODE }}";
 {% bootstrap select_js %}
 
 {% jquery ui_js %}
+
+{% if LANGUAGE_CODE == 'fr' %}
+    {% jquery ui.datepicker-fr_js %}
+{% endif %}
+
 {% jquery igdectk_js %}
 {% jquery igdectk.csrf_js %}
 

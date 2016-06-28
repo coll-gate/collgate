@@ -158,6 +158,7 @@
 	    mainRegion: "#main_content",
 	    leftRegion: "#left_details",
 	    rightRegion: "#right_content",
+	    modalRegion: "#dialog_content"
 	});
 
 	ohgr.on("before:start", function(options) {
@@ -18726,7 +18727,7 @@
 
 	module.exports = {
 		"List of audit entries by date": "Liste des entrées d'audits par date",
-		"List of audit entries related to user": "Liste des entrées d'audits pour l'utilisiteur",
+		"List of audit entries related to user": "Liste des entrées d'audits pour l'utilisateur",
 		"List of audit entries related to entity": "Liste des entrées d'audits pour l'entité"
 	};
 
@@ -18762,10 +18763,14 @@
 
 	var Controller = Marionette.Controller.extend({
 
-	    byUserName: function (username) {
+	    searchByUserName: function () {
 	        var ModalView = Marionette.ItemView.extend({
-	            el: "#dialog_content",
-	            tagName: "div",
+	            tagName: 'div',
+	            attributes: {
+	                'id': 'dlg_audit_by_username',
+	                'class': 'modal',
+	                'tabindex': -1
+	            },
 	            template: __webpack_require__(93),
 
 	            ui: {
@@ -18777,20 +18782,24 @@
 
 	            events: {
 	                'click @ui.cancel': 'onCancel',
-	                'click @ui.search': 'onSearch',
 	                'keydown': 'keyAction',
 	                'input @ui.username': 'onUserNameInput',
+	            },
+
+	            triggers: {
+	                'click @ui.search': 'view:search',
 	            },
 
 	            initialize: function () {
 	            },
 
 	            onRender: function () {
-	                $(this.ui.dialog).modal();
+	                $(this.el).modal();
 
 	                $(this.ui.username).select2({
+	                    dropdownParent: $(this.el),
 	                    ajax: {
-	                        url: ohgr.baseUrl + "permission/user/search/",  // TODO to main/user/search and same for group
+	                        url: ohgr.baseUrl + "permission/user/search/",
 	                        dataType: 'json',
 	                        delay: 250,
 	                        data: function (params) {
@@ -18831,50 +18840,113 @@
 	                    },
 	                    minimumInputLength: 3,
 	                    placeholder: gt.gettext("Select a username"),
-	                }).select2('open');
+	                });
+	                /*$(this.ui.username).autocomplete({
+	                    open: function () {
+	                        $(this).autocomplete('widget').zIndex(10000);
+	                    },
+	                    source: function(req, callback) {
+	                        var terms = req.term || '';
+
+	                        var filters = {
+	                            method: 'icontains',
+	                            fields: '*',
+	                            '*': terms.split(' ').filter(function (t) { return t.length > 2; }),
+	                        };
+
+	                        $.ajax({
+	                            type: "GET",
+	                            url: ohgr.baseUrl + 'permission/user/search/',
+	                            dataType: 'json',
+	                            data: {filters: JSON.stringify(filters), page: 1},
+	                            async: true,
+	                            cache: true,
+	                            success: function(data) {
+	                                var results = [];
+
+	                                for (var i = 0; i < data.items.length; ++i) {
+	                                    results.push({
+	                                        value: data.items[i].value,
+	                                        label: data.items[i].label
+	                                    })
+	                                }
+
+	                                callback(results);
+	                            }
+	                        });
+	                    },
+	                    minLength: 3,
+	                    delay: 100,
+	                    //autoFocus: true,
+	                    search: function(event, ui) {
+	                        return true;
+	                    },
+	                    close: function (event, ui) {
+	                    },
+	                    change: function (event, ui) {
+	                    },
+	                    select: function(event, ui) {
+	                    }
+	                });*/
+	            },
+
+	            closeAndDestroy: function() {
+	                ohgr.getRegion('modalRegion').reset();
 	            },
 
 	            onCancel: function () {
-	                this.remove();
-	            },
-
-	            onSearch: function () {
-	                this.remove();
-
-	                var username = $(this.ui.username).val();
-	                var auditCollection = new AuditCollection([]);
-
-	                var defaultLayout = new DefaultLayout({});
-	                ohgr.mainRegion.show(defaultLayout);
-
-	                defaultLayout.title.show(new TitleView({title: gt.gettext("List of audit entries related to user") + " " + username}));
-
-	                auditCollection.fetch({data: {username: username, page: 1}, processData: true}).then(function () {
-	                    defaultLayout.content.show(new AuditListView({collection : auditCollection}));
-	                });
+	                this.closeAndDestroy();
 	            },
 
 	            keyAction: function(e) {
 	                var code = e.keyCode || e.which;
 	                if (code == 27) {
-	                    this.remove();
+	                    this.closeAndDestroy();
 	                }
 	            },
 
-	            remove: function() {
-	              this.$el.empty().off(); /* off to unbind the events */
-	              this.stopListening();
-	              return this;
-	            }
+	            close: function () {
+	                $(this.ui.username).select2('destroy');
+	                $(this.el).modal('hide').data('bs.modal', null);
+	            },
+
+	            onBeforeDestroy: function() {
+	                // this.$el.empty().off();  // unbind the events
+	                // this.stopListening();
+	                this.close();
+	            },
 	        });
 
-	        var modal = new ModalView();
-	        modal.render();
+	        var modal = new ModalView({controller: this});
+	        ohgr.getRegion('modalRegion').show(modal);
+
+	        modal.on("view:search", function(args) {
+	            var username = $(args.view.ui.username).val();
+	            if (username) {
+	                this.getAuditListByUsername(username);
+	                args.view.closeAndDestroy();
+	            }
+	        }, this);
 	    },
 
-	    byEntityUUID: function (uuid) {
+	    getAuditListByUsername: function (username) {
+	        var auditCollection = new AuditCollection([]);
+
+	        var defaultLayout = new DefaultLayout({});
+	        ohgr.mainRegion.show(defaultLayout);
+
+	        defaultLayout.title.show(new TitleView({title: gt.gettext("List of audit entries related to user") + " " + username}));
+
+	        auditCollection.fetch({data: {username: username, page: 1}, processData: true}).then(function () {
+	            defaultLayout.content.show(new AuditListView({collection: auditCollection}));
+	        });
+	    },
+
+	    searchByEntityUUID: function (uuid) {
 	        alert("TODO");
-	        return;
+	    },
+
+	    getAuditListByUUID: function (uuid) {
 	        var auditCollection = new AuditCollection([]);
 
 	        var defaultLayout = new DefaultLayout({});
@@ -18883,7 +18955,7 @@
 	        defaultLayout.title.show(new TitleView({title: gt.gettext("List of audit entries related to entity") + " " + uuid}));
 
 	        auditCollection.fetch({data: {uuid: uuid, page: 1}, processData: true}).then(function () {
-	            defaultLayout.content.show(new AuditListView({collection : auditCollection}));
+	            defaultLayout.content.show(new AuditListView({collection: auditCollection}));
 	        });
 	    }
 	});
@@ -18908,7 +18980,7 @@
 	var AuditModel = __webpack_require__(88);
 
 	var Collection = Backbone.Collection.extend({
-	    url: function() { return ohgr.baseUrl + 'audit/'; },
+	    url: function() { return ohgr.baseUrl + 'audit/search/'; },
 	    model: AuditModel,
 
 	    parse: function(data) {
@@ -18939,9 +19011,15 @@
 	var Model = Backbone.Model.extend({
 	    defaults: {
 	        id: undefined,
-	        user: undefined,
-	        audit_type: '',
-	        content_type: '',
+	        type: 0,
+	        user_id: undefined,
+	        username: '',
+	        app_label: '',
+	        model: undefined,
+	        object_id: undefined,
+	        object_name: '',
+	        reason: '',
+	        fields: []
 	    },
 
 	    init: function(options) {
@@ -18986,7 +19064,7 @@
 	var View = Marionette.CompositeView.extend({
 	    template: __webpack_require__(92),
 	    childView: AuditView,
-	    childViewContainer: 'tbody.audit-list',
+	    childViewContainer: 'div.audit-list',
 
 	    initialize: function() {
 	        this.listenTo(this.collection, 'reset', this.render, this);
@@ -18994,6 +19072,7 @@
 	    },
 
 	    onRender: function() {
+	        $("span.date").localizeDate();
 	    },
 	});
 
@@ -19018,7 +19097,7 @@
 	var AuditModel = __webpack_require__(88);
 
 	var View = Marionette.ItemView.extend({
-	    tagName: 'tr',
+	    tagName: 'div',
 	    className: 'element object audit',
 	    template: __webpack_require__(91),
 
@@ -19041,9 +19120,38 @@
 
 	module.exports = function (obj) {
 	obj || (obj = {});
-	var __t, __p = '';
+	var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+	function print() { __p += __j.call(arguments, '') }
 	with (obj) {
-	__p += '';
+	__p += '<div class="element object audit" object-type="audit" style="width:100%"><div><span style="font-weight:bold; font-size:18px">';
+	 gt.gettext("Audit") ;
+	__p += ' <span class="model audit label label-info date" style="cursor: pointer" date="' +
+	((__t = ( timestamp )) == null ? '' : __t) +
+	'">';
+	 gt.gettext("Audit") + ": " ;
+	__p +=
+	((__t = ( timestamp )) == null ? '' : __t) +
+	'</span> ';
+	 if (object_name) { ;
+	__p += '<span class="model object badge left-margin" style="cursor: pointer" object-id="' +
+	__e( object_id ) +
+	'">' +
+	((__t = ( object_name )) == null ? '' : __t) +
+	'</span>';
+	 } ;
+	__p += ' <br></span></div><hr class="hr-default"><div class="details"><table class="table table-striped"><thead><tr><th style="width: 20%">' +
+	((__t = ( gt.gettext("User") )) == null ? '' : __t) +
+	'</th><th style="width: 40%">' +
+	((__t = ( gt.gettext("Reason") )) == null ? '' : __t) +
+	'</th><th style="width: 35%">' +
+	((__t = ( gt.gettext("Fields") )) == null ? '' : __t) +
+	'</th></tr></thead><tbody><tr><td name="username">' +
+	__e( username ) +
+	'</td><td name="reason">' +
+	__e( reason ) +
+	'</td><td name="fields">' +
+	__e( fields ) +
+	'</td></tr></tbody></table></div></div>';
 
 	}
 	return __p
@@ -19060,7 +19168,7 @@
 	obj || (obj = {});
 	var __t, __p = '';
 	with (obj) {
-	__p += '';
+	__p += '<div class="audit-list"></div>';
 
 	}
 	return __p
@@ -19077,15 +19185,15 @@
 	obj || (obj = {});
 	var __t, __p = '';
 	with (obj) {
-	__p += '<div class="modal" id="dlg_audit_by_username"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title">' +
+	__p += '<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title">' +
 	((__t = ( gt.gettext("Get audits entries for a user") )) == null ? '' : __t) +
-	'</h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="taxon_rank">' +
+	'</h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="username">' +
 	((__t = ( gt.gettext("Username") )) == null ? '' : __t) +
 	'</label><select class="form-control usernames" id="username" name="username"></select></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal">' +
 	((__t = ( gt.gettext("Cancel") )) == null ? '' : __t) +
 	'</button> <button type="button" class="btn btn-primary search">' +
 	((__t = ( gt.gettext("Search") )) == null ? '' : __t) +
-	'</button></div></div></div></div>';
+	'</button></div></div></div>';
 
 	}
 	return __p
@@ -19579,7 +19687,6 @@
 	                            }
 	                        }),
 	                        success: function (data) {
-	                            $(this.view.ui.dialog).modal('hide');
 	                            this.view.remove();
 	                            success(gettext("Taxon successfully created !"));
 
@@ -19603,9 +19710,10 @@
 	            },
 
 	            remove: function() {
-	              this.$el.empty().off(); /* off to unbind the events */
-	              this.stopListening();
-	              return this;
+	                $(this.ui.dialog).modal('hide').data('bs.modal', null);
+	                this.$el.empty().off();  // unbind the events
+	                this.stopListening();
+	                return this;
 	            }
 	        });
 
