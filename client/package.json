@@ -5,6 +5,7 @@
   "main": "./apps/driver.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "./node_modules/.bin/webpack-dev-server",
     "browserify": "./node_modules/browserify/bin/cmd.js -t node-underscorify apps/driver.js -o static/js/app.js",
     "build": "./node_modules/.bin/webpack",
     "build_prod": "./node_modules/.bin/webpack --minimized"
@@ -33,6 +34,8 @@
     "css-loader": "^0.23.1",
     "html-minifier-loader": "^1.0.14",
     "html-minify-loader": "^1.1.0",
+    "jshint": "^2.9.2",
+    "jshint-loader": "^0.8.3",
     "json-loader": "^0.5.4",
     "node-gettext": "^1.1.0",
     "raw-loader": "^0.5.1",
@@ -40,6 +43,7 @@
     "style-loader": "^0.13.1",
     "uglify-loader": "^1.3.0",
     "underscore-loader": "^0.1.0",
-    "webpack": "^1.12.14"
+    "webpack": "^1.12.14",
+    "webpack-dev-server": "^1.14.1"
   }
 }

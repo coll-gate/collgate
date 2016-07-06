@@ -157,9 +157,20 @@ user = function() {
     }
 }();
 
-user.isAuth = {{ user.is_authenticated|yesno:"true,false" }};
 user.username = "{{ user.username }}";
 user.language = "{{ LANGUAGE_CODE }}";
+
+{% if user.is_authenticated %}
+user.id = {{ user.id }};
+user.isAuth = {{ user.is_authenticated|yesno:"true,false" }};
+user.isSuperUser = {{ user.is_superuser|yesno:"true,false" }};
+user.isStaff = {{ user.is_staff|yesno:"true,false" }};
+{% else %}
+user.id = 0;
+user.isAuth = false;
+user.isSuperUser = false;
+user.isStaff = false;
+{% endif %}
 </script>
 
 <script language="javascript">
@@ -324,7 +335,11 @@ user.language = "{{ LANGUAGE_CODE }}";
 {% jquery igdectk.csrf_js %}
 
 <!-- include application core -->
+{% if debug %}
+<script src="http://127.0.0.1:8080/static/js/app.js"></script>
+{% else %}
 <script src="{% static 'main/js/app.js' %}"></script>
+{% endif %}
 
 </body>
 

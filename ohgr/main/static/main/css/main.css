@@ -65,8 +65,8 @@ div.panel div.panel-bottom {
 .content {
     /*margin-top: 60px;*/
     margin-bottom: 10px;
-    /*padding-top: 60px;
-    padding-bottom: 10px;*/
+    /*padding-top: 60px;*/
+    padding-bottom: 10px;
     height: 94%;
 }
 
@@ -76,12 +76,18 @@ div.panel div.panel-bottom {
 
 #messenger {
     position: fixed;
-    top: 60px;
-    height: 120px;
-    left: 0px;
-    right: 0px;
-    margin-left: auto;
-    margin-right: auto;
+    /*top: 60px;*/
+    /*left: 0px;*/
+    /*right: 0px;*/
+    /*margin-left: 50%;*/
+    /*margin-right: 50%;*/
+    /*left: 0;*/
+    /*right: 0;*/
+    top: 20%;
+    min-height: 40%;
+    width: 30%;
+    left: 35%;
+    right: 35%;
     z-index: 1000;
 }
 
@@ -91,7 +97,8 @@ div.panel div.panel-bottom {
 }
 
 #messenger:empty {
-   height: 0px; /*120px;*/
+    height: 0px;
+    visibility: hidden;
 }
 
 .event {

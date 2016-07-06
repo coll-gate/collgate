@@ -1,4 +1,26 @@
 From this folder you must install some npm dependencies :
 
-$ npm install --save webpack
-$ npm install --save backbone backbone.marionette underscore backbone.wreqr backbone.babysitter underscore-template-loader
+$ npm install
+
+
+Fix iconv warning
+=================
+
+Change the content of client/node_modules/encoding/lib/iconv_loader.js with :
+
+'use strict';
+
+var iconv_package;
+var Iconv;
+
+try {
+    // this is to fool browserify so it doesn't try (in vain) to install iconv.
+    //iconv_package = 'iconv';
+    //Iconv = require(iconv_package).Iconv;
+} catch (E) {
+    // node-iconv not present
+}
+
+module.exports = Iconv;
+
+This is because of the browserify workaround that webpack doesn't likes.

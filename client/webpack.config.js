@@ -8,6 +8,11 @@ var defaults = {
     },
     module: {
         preLoaders: [
+            /*{
+                test: /\.js$/,
+                exclude: /node_modules/,
+                loader: 'jshint-loader'
+            }*/
         ],
         loaders: [
             {
@@ -59,12 +64,11 @@ var defaults = {
     },
     output: {
         path: __dirname + '/static/js',
-        filename: 'app.js'
+        filename: 'app.js',
+        publicPath: '/static/js/'
     },
     plugins: [
-        new webpack.ProvidePlugin({
-            _: 'underscore'
-        }),
+        new webpack.ProvidePlugin({_: 'underscore'}),
     ],
     resolve: {
         modulesDirectories: [__dirname + '/node_modules'],
@@ -72,7 +76,7 @@ var defaults = {
     },
     resolveLoader: {
         root: __dirname + '/node_modules'
-    }
+    },
 };
 
 minimize = process.argv.indexOf('--minimize') !== -1,
@@ -93,6 +97,19 @@ if (minimize) {
         }
     }));
     defaults.output.filename = 'app.min.js';
+} else {
+    defaults.devtool ="source-map";
+    defaults.debug = true;
+
+    defaults.devServer = {
+        contentBase: __dirname + '/apps',
+        hot: true,
+        inline: true
+    };
+
+    defaults.plugins.push(
+        new webpack.HotModuleReplacementPlugin()
+    );
 }
 
 module.exports = defaults;
