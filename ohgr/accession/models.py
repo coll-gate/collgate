@@ -12,7 +12,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from igdectk.common.models import ChoiceEnum, IntegerChoice
 
-from main.models import Languages
+from main.models import Languages, Entity
 
 
 class AccessionSynonymType(ChoiceEnum):
@@ -27,28 +27,24 @@ class AccessionSynonymType(ChoiceEnum):
 
 class AccessionSynonym(models.Model):
 
-    name = models.CharField(unique=True, null=False, blank=False, max_length=255, db_index=True)
     language = models.CharField(null=False, blank=False, max_length=2, choices=Languages.choices())
     type = models.IntegerField(null=False, blank=False, choices=AccessionSynonymType.choices())
 
     accession = models.ForeignKey('Accession', null=False, related_name='synonyms')
 
 
-class Asset(models.Model):
+class Asset(Entity):
 
-    name = models.CharField(unique=True, null=False, blank=False, max_length=255, db_index=True)
     accessions = models.ManyToManyField('Accession', related_name='assets')
 
 
-class Accession(models.Model):
+class Accession(Entity):
 
-    name = models.CharField(unique=True, null=False, blank=False, max_length=255, db_index=True)
     data = HStoreField()
 
 
-class Batch(models.Model):
+class Batch(Entity):
 
-    name = models.CharField(unique=True, null=False, blank=False, max_length=255, db_index=True)
     accession = models.ForeignKey('Accession', null=False, related_name='bundles')
 
 

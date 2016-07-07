@@ -65,7 +65,7 @@
 /******/ 	}
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "61fb2c23e11f43a49e2b"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "2794e838751a098c7b7a"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -583,14 +583,6 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	__webpack_require__(1);
-	module.exports = __webpack_require__(1);
-
-
-/***/ },
-/* 1 */
-/***/ function(module, exports, __webpack_require__) {
-
 	/* WEBPACK VAR INJECTION */(function(_) {/**
 	 * @file driver.js
 	 * @brief Client side main entry
@@ -601,12 +593,12 @@
 	 * @details
 	 */
 	
-	var Backbone = __webpack_require__(3);
-	var Marionette = __webpack_require__(5);
+	var Backbone = __webpack_require__(2);
+	var Marionette = __webpack_require__(4);
 	//var GetText = require("node-gettext");
-	i18next = __webpack_require__(8);
-	
-	// select2
+	i18next = __webpack_require__(7);
+	logger = __webpack_require__(23);
+	// select2 as jquery plugin
 	$.select2 = __webpack_require__(24);
 	__webpack_require__(25);
 	
@@ -771,15 +763,28 @@
 	    this.audit = __webpack_require__(84);
 	    this.taxonomy = __webpack_require__(95);
 	    this.accession = __webpack_require__(110);
+	
+	    var client = loggly.createClient({
+	        token: "your-really-long-input-token",
+	        subdomain: baseUrl,
+	        auth: {
+	            username: "your-username",
+	            password: "your-password"
+	        },
+	        tags: ['global-tag']
+	    });
+	
+	
+	    client.info('Application started');
 	});
 	
 	//gt = new GetText();
 	ohgr.start({initialData: ''});
 	
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 2 */
+/* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//     Underscore.js 1.8.3
@@ -2333,7 +2338,7 @@
 
 
 /***/ },
-/* 3 */
+/* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(global) {//     Backbone.js 1.3.3
@@ -2352,7 +2357,7 @@
 	
 	  // Set up Backbone appropriately for the environment. Start with AMD.
 	  if (true) {
-	    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(2), __webpack_require__(4), exports], __WEBPACK_AMD_DEFINE_RESULT__ = function(_, $, exports) {
+	    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(1), __webpack_require__(3), exports], __WEBPACK_AMD_DEFINE_RESULT__ = function(_, $, exports) {
 	      // Export global even in AMD case in case this script is loaded with
 	      // others that may still expect a global Backbone.
 	      root.Backbone = factory(root, exports, _, $);
@@ -4260,13 +4265,13 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 4 */
+/* 3 */
 /***/ function(module, exports) {
 
 	module.exports = $;
 
 /***/ },
-/* 5 */
+/* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// MarionetteJS (Backbone.Marionette)
@@ -4281,7 +4286,7 @@
 	(function(root, factory) {
 	
 	  if (true) {
-	    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(3), __webpack_require__(2), __webpack_require__(6), __webpack_require__(7)], __WEBPACK_AMD_DEFINE_RESULT__ = function(Backbone, _) {
+	    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(2), __webpack_require__(1), __webpack_require__(5), __webpack_require__(6)], __WEBPACK_AMD_DEFINE_RESULT__ = function(Backbone, _) {
 	      return (root.Marionette = root.Mn = factory(root, Backbone, _));
 	    }.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 	  } else if (typeof exports !== 'undefined') {
@@ -7781,7 +7786,7 @@
 
 
 /***/ },
-/* 6 */
+/* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Backbone.Wreqr (Backbone.Marionette)
@@ -7797,7 +7802,7 @@
 	(function(root, factory) {
 	
 	  if (true) {
-	    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(3), __webpack_require__(2)], __WEBPACK_AMD_DEFINE_RESULT__ = function(Backbone, _) {
+	    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(2), __webpack_require__(1)], __WEBPACK_AMD_DEFINE_RESULT__ = function(Backbone, _) {
 	      return factory(Backbone, _);
 	    }.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 	  } else if (typeof exports !== 'undefined') {
@@ -8222,7 +8227,7 @@
 
 
 /***/ },
-/* 7 */
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Backbone.BabySitter
@@ -8237,7 +8242,7 @@
 	(function(root, factory) {
 	
 	  if (true) {
-	    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(3), __webpack_require__(2)], __WEBPACK_AMD_DEFINE_RESULT__ = function(Backbone, _) {
+	    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(2), __webpack_require__(1)], __WEBPACK_AMD_DEFINE_RESULT__ = function(Backbone, _) {
 	      return factory(Backbone, _);
 	    }.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 	  } else if (typeof exports !== 'undefined') {
@@ -8418,14 +8423,14 @@
 
 
 /***/ },
-/* 8 */
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(9).default;
+	module.exports = __webpack_require__(8).default;
 
 
 /***/ },
-/* 9 */
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -8434,7 +8439,7 @@
 	  value: true
 	});
 	
-	var _i18next = __webpack_require__(10);
+	var _i18next = __webpack_require__(9);
 	
 	var _i18next2 = _interopRequireDefault(_i18next);
 	
@@ -8443,7 +8448,7 @@
 	exports.default = _i18next2.default;
 
 /***/ },
-/* 10 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -8456,49 +8461,49 @@
 	
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 	
-	var _logger = __webpack_require__(11);
+	var _logger = __webpack_require__(10);
 	
 	var _logger2 = _interopRequireDefault(_logger);
 	
-	var _EventEmitter2 = __webpack_require__(12);
+	var _EventEmitter2 = __webpack_require__(11);
 	
 	var _EventEmitter3 = _interopRequireDefault(_EventEmitter2);
 	
-	var _ResourceStore = __webpack_require__(13);
+	var _ResourceStore = __webpack_require__(12);
 	
 	var _ResourceStore2 = _interopRequireDefault(_ResourceStore);
 	
-	var _Translator = __webpack_require__(15);
+	var _Translator = __webpack_require__(14);
 	
 	var _Translator2 = _interopRequireDefault(_Translator);
 	
-	var _LanguageUtils = __webpack_require__(18);
+	var _LanguageUtils = __webpack_require__(17);
 	
 	var _LanguageUtils2 = _interopRequireDefault(_LanguageUtils);
 	
-	var _PluralResolver = __webpack_require__(19);
+	var _PluralResolver = __webpack_require__(18);
 	
 	var _PluralResolver2 = _interopRequireDefault(_PluralResolver);
 	
-	var _Interpolator = __webpack_require__(20);
+	var _Interpolator = __webpack_require__(19);
 	
 	var _Interpolator2 = _interopRequireDefault(_Interpolator);
 	
-	var _BackendConnector = __webpack_require__(21);
+	var _BackendConnector = __webpack_require__(20);
 	
 	var _BackendConnector2 = _interopRequireDefault(_BackendConnector);
 	
-	var _CacheConnector = __webpack_require__(22);
+	var _CacheConnector = __webpack_require__(21);
 	
 	var _CacheConnector2 = _interopRequireDefault(_CacheConnector);
 	
-	var _defaults2 = __webpack_require__(23);
+	var _defaults2 = __webpack_require__(22);
 	
-	var _postProcessor = __webpack_require__(16);
+	var _postProcessor = __webpack_require__(15);
 	
 	var _postProcessor2 = _interopRequireDefault(_postProcessor);
 	
-	var _v = __webpack_require__(17);
+	var _v = __webpack_require__(16);
 	
 	var compat = _interopRequireWildcard(_v);
 	
@@ -8840,7 +8845,7 @@
 	exports.default = new I18n();
 
 /***/ },
-/* 11 */
+/* 10 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -8937,7 +8942,7 @@
 	exports.default = new Logger();
 
 /***/ },
-/* 12 */
+/* 11 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -9009,7 +9014,7 @@
 	exports.default = EventEmitter;
 
 /***/ },
-/* 13 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -9020,11 +9025,11 @@
 	
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 	
-	var _EventEmitter2 = __webpack_require__(12);
+	var _EventEmitter2 = __webpack_require__(11);
 	
 	var _EventEmitter3 = _interopRequireDefault(_EventEmitter2);
 	
-	var _utils = __webpack_require__(14);
+	var _utils = __webpack_require__(13);
 	
 	var utils = _interopRequireWildcard(_utils);
 	
@@ -9171,7 +9176,7 @@
 	exports.default = ResourceStore;
 
 /***/ },
-/* 14 */
+/* 13 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -9293,7 +9298,7 @@
 	}
 
 /***/ },
-/* 15 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -9306,23 +9311,23 @@
 	
 	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 	
-	var _logger = __webpack_require__(11);
+	var _logger = __webpack_require__(10);
 	
 	var _logger2 = _interopRequireDefault(_logger);
 	
-	var _EventEmitter2 = __webpack_require__(12);
+	var _EventEmitter2 = __webpack_require__(11);
 	
 	var _EventEmitter3 = _interopRequireDefault(_EventEmitter2);
 	
-	var _postProcessor = __webpack_require__(16);
+	var _postProcessor = __webpack_require__(15);
 	
 	var _postProcessor2 = _interopRequireDefault(_postProcessor);
 	
-	var _v = __webpack_require__(17);
+	var _v = __webpack_require__(16);
 	
 	var compat = _interopRequireWildcard(_v);
 	
-	var _utils = __webpack_require__(14);
+	var _utils = __webpack_require__(13);
 	
 	var utils = _interopRequireWildcard(_utils);
 	
@@ -9606,7 +9611,7 @@
 	exports.default = Translator;
 
 /***/ },
-/* 16 */
+/* 15 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -9633,7 +9638,7 @@
 	};
 
 /***/ },
-/* 17 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -9646,7 +9651,7 @@
 	exports.convertTOptions = convertTOptions;
 	exports.appendBackwardsAPI = appendBackwardsAPI;
 	
-	var _logger = __webpack_require__(11);
+	var _logger = __webpack_require__(10);
 	
 	var _logger2 = _interopRequireDefault(_logger);
 	
@@ -9792,7 +9797,7 @@
 	}
 
 /***/ },
-/* 18 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -9801,7 +9806,7 @@
 	  value: true
 	});
 	
-	var _logger = __webpack_require__(11);
+	var _logger = __webpack_require__(10);
 	
 	var _logger2 = _interopRequireDefault(_logger);
 	
@@ -9905,7 +9910,7 @@
 	exports.default = LanguageUtil;
 
 /***/ },
-/* 19 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -9916,7 +9921,7 @@
 	
 	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 	
-	var _logger = __webpack_require__(11);
+	var _logger = __webpack_require__(10);
 	
 	var _logger2 = _interopRequireDefault(_logger);
 	
@@ -10109,7 +10114,7 @@
 	exports.default = PluralResolver;
 
 /***/ },
-/* 20 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -10118,11 +10123,11 @@
 	  value: true
 	});
 	
-	var _utils = __webpack_require__(14);
+	var _utils = __webpack_require__(13);
 	
 	var utils = _interopRequireWildcard(_utils);
 	
-	var _logger = __webpack_require__(11);
+	var _logger = __webpack_require__(10);
 	
 	var _logger2 = _interopRequireDefault(_logger);
 	
@@ -10259,7 +10264,7 @@
 	exports.default = Interpolator;
 
 /***/ },
-/* 21 */
+/* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -10272,15 +10277,15 @@
 	
 	var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 	
-	var _utils = __webpack_require__(14);
+	var _utils = __webpack_require__(13);
 	
 	var utils = _interopRequireWildcard(_utils);
 	
-	var _logger = __webpack_require__(11);
+	var _logger = __webpack_require__(10);
 	
 	var _logger2 = _interopRequireDefault(_logger);
 	
-	var _EventEmitter2 = __webpack_require__(12);
+	var _EventEmitter2 = __webpack_require__(11);
 	
 	var _EventEmitter3 = _interopRequireDefault(_EventEmitter2);
 	
@@ -10593,7 +10598,7 @@
 	exports.default = Connector;
 
 /***/ },
-/* 22 */
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -10604,15 +10609,15 @@
 	
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 	
-	var _utils = __webpack_require__(14);
+	var _utils = __webpack_require__(13);
 	
 	var utils = _interopRequireWildcard(_utils);
 	
-	var _logger = __webpack_require__(11);
+	var _logger = __webpack_require__(10);
 	
 	var _logger2 = _interopRequireDefault(_logger);
 	
-	var _EventEmitter2 = __webpack_require__(12);
+	var _EventEmitter2 = __webpack_require__(11);
 	
 	var _EventEmitter3 = _interopRequireDefault(_EventEmitter2);
 	
@@ -10686,7 +10691,7 @@
 	exports.default = Connector;
 
 /***/ },
-/* 23 */
+/* 22 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -10762,6 +10767,269 @@
 	}
 
 /***/ },
+/* 23 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
+	 * js-logger - http://github.com/jonnyreeves/js-logger
+	 * Jonny Reeves, http://jonnyreeves.co.uk/
+	 * js-logger may be freely distributed under the MIT license.
+	 */
+	(function (global) {
+		"use strict";
+	
+		// Top level module for the global, static logger instance.
+		var Logger = { };
+	
+		// For those that are at home that are keeping score.
+		Logger.VERSION = "1.3.0";
+	
+		// Function which handles all incoming log messages.
+		var logHandler;
+	
+		// Map of ContextualLogger instances by name; used by Logger.get() to return the same named instance.
+		var contextualLoggersByNameMap = {};
+	
+		// Polyfill for ES5's Function.bind.
+		var bind = function(scope, func) {
+			return function() {
+				return func.apply(scope, arguments);
+			};
+		};
+	
+		// Super exciting object merger-matron 9000 adding another 100 bytes to your download.
+		var merge = function () {
+			var args = arguments, target = args[0], key, i;
+			for (i = 1; i < args.length; i++) {
+				for (key in args[i]) {
+					if (!(key in target) && args[i].hasOwnProperty(key)) {
+						target[key] = args[i][key];
+					}
+				}
+			}
+			return target;
+		};
+	
+		// Helper to define a logging level object; helps with optimisation.
+		var defineLogLevel = function(value, name) {
+			return { value: value, name: name };
+		};
+	
+		// Predefined logging levels.
+		Logger.DEBUG = defineLogLevel(1, 'DEBUG');
+		Logger.INFO = defineLogLevel(2, 'INFO');
+		Logger.TIME = defineLogLevel(3, 'TIME');
+		Logger.WARN = defineLogLevel(4, 'WARN');
+		Logger.ERROR = defineLogLevel(8, 'ERROR');
+		Logger.OFF = defineLogLevel(99, 'OFF');
+	
+		// Inner class which performs the bulk of the work; ContextualLogger instances can be configured independently
+		// of each other.
+		var ContextualLogger = function(defaultContext) {
+			this.context = defaultContext;
+			this.setLevel(defaultContext.filterLevel);
+			this.log = this.info;  // Convenience alias.
+		};
+	
+		ContextualLogger.prototype = {
+			// Changes the current logging level for the logging instance.
+			setLevel: function (newLevel) {
+				// Ensure the supplied Level object looks valid.
+				if (newLevel && "value" in newLevel) {
+					this.context.filterLevel = newLevel;
+				}
+			},
+	
+			// Is the logger configured to output messages at the supplied level?
+			enabledFor: function (lvl) {
+				var filterLevel = this.context.filterLevel;
+				return lvl.value >= filterLevel.value;
+			},
+	
+			debug: function () {
+				this.invoke(Logger.DEBUG, arguments);
+			},
+	
+			info: function () {
+				this.invoke(Logger.INFO, arguments);
+			},
+	
+			warn: function () {
+				this.invoke(Logger.WARN, arguments);
+			},
+	
+			error: function () {
+				this.invoke(Logger.ERROR, arguments);
+			},
+	
+			time: function (label) {
+				if (typeof label === 'string' && label.length > 0) {
+					this.invoke(Logger.TIME, [ label, 'start' ]);
+				}
+			},
+	
+			timeEnd: function (label) {
+				if (typeof label === 'string' && label.length > 0) {
+					this.invoke(Logger.TIME, [ label, 'end' ]);
+				}
+			},
+	
+			// Invokes the logger callback if it's not being filtered.
+			invoke: function (level, msgArgs) {
+				if (logHandler && this.enabledFor(level)) {
+					logHandler(msgArgs, merge({ level: level }, this.context));
+				}
+			}
+		};
+	
+		// Protected instance which all calls to the to level `Logger` module will be routed through.
+		var globalLogger = new ContextualLogger({ filterLevel: Logger.OFF });
+	
+		// Configure the global Logger instance.
+		(function() {
+			// Shortcut for optimisers.
+			var L = Logger;
+	
+			L.enabledFor = bind(globalLogger, globalLogger.enabledFor);
+			L.debug = bind(globalLogger, globalLogger.debug);
+			L.time = bind(globalLogger, globalLogger.time);
+			L.timeEnd = bind(globalLogger, globalLogger.timeEnd);
+			L.info = bind(globalLogger, globalLogger.info);
+			L.warn = bind(globalLogger, globalLogger.warn);
+			L.error = bind(globalLogger, globalLogger.error);
+	
+			// Don't forget the convenience alias!
+			L.log = L.info;
+		}());
+	
+		// Set the global logging handler.  The supplied function should expect two arguments, the first being an arguments
+		// object with the supplied log messages and the second being a context object which contains a hash of stateful
+		// parameters which the logging function can consume.
+		Logger.setHandler = function (func) {
+			logHandler = func;
+		};
+	
+		// Sets the global logging filter level which applies to *all* previously registered, and future Logger instances.
+		// (note that named loggers (retrieved via `Logger.get`) can be configured independently if required).
+		Logger.setLevel = function(level) {
+			// Set the globalLogger's level.
+			globalLogger.setLevel(level);
+	
+			// Apply this level to all registered contextual loggers.
+			for (var key in contextualLoggersByNameMap) {
+				if (contextualLoggersByNameMap.hasOwnProperty(key)) {
+					contextualLoggersByNameMap[key].setLevel(level);
+				}
+			}
+		};
+	
+		// Retrieve a ContextualLogger instance.  Note that named loggers automatically inherit the global logger's level,
+		// default context and log handler.
+		Logger.get = function (name) {
+			// All logger instances are cached so they can be configured ahead of use.
+			return contextualLoggersByNameMap[name] ||
+				(contextualLoggersByNameMap[name] = new ContextualLogger(merge({ name: name }, globalLogger.context)));
+		};
+	
+		// CreateDefaultHandler returns a handler function which can be passed to `Logger.setHandler()` which will
+		// write to the window's console object (if present); the optional options object can be used to customise the
+		// formatter used to format each log message.
+		Logger.createDefaultHandler = function (options) {
+			options = options || {};
+	
+			options.formatter = options.formatter || function defaultMessageFormatter(messages, context) {
+				// Prepend the logger's name to the log message for easy identification.
+				if (context.name) {
+					messages.unshift("[" + context.name + "]");
+				}
+			};
+	
+			// Map of timestamps by timer labels used to track `#time` and `#timeEnd()` invocations in environments
+			// that don't offer a native console method.
+			var timerStartTimeByLabelMap = {};
+	
+			// Support for IE8+ (and other, slightly more sane environments)
+			var invokeConsoleMethod = function (hdlr, messages) {
+				Function.prototype.apply.call(hdlr, console, messages);
+			};
+	
+			// Check for the presence of a logger.
+			if (typeof console === "undefined") {
+				return function () { /* no console */ };
+			}
+	
+			return function(messages, context) {
+				// Convert arguments object to Array.
+				messages = Array.prototype.slice.call(messages);
+	
+				var hdlr = console.log;
+				var timerLabel;
+	
+				if (context.level === Logger.TIME) {
+					timerLabel = (context.name ? '[' + context.name + '] ' : '') + messages[0];
+	
+					if (messages[1] === 'start') {
+						if (console.time) {
+							console.time(timerLabel);
+						}
+						else {
+							timerStartTimeByLabelMap[timerLabel] = new Date().getTime();
+						}
+					}
+					else {
+						if (console.timeEnd) {
+							console.timeEnd(timerLabel);
+						}
+						else {
+							invokeConsoleMethod(hdlr, [ timerLabel + ': ' +
+								(new Date().getTime() - timerStartTimeByLabelMap[timerLabel]) + 'ms' ]);
+						}
+					}
+				}
+				else {
+					// Delegate through to custom warn/error loggers if present on the console.
+					if (context.level === Logger.WARN && console.warn) {
+						hdlr = console.warn;
+					} else if (context.level === Logger.ERROR && console.error) {
+						hdlr = console.error;
+					} else if (context.level === Logger.INFO && console.info) {
+						hdlr = console.info;
+					}
+	
+					options.formatter(messages, context);
+					invokeConsoleMethod(hdlr, messages);
+				}
+			};
+		};
+	
+		// Configure and example a Default implementation which writes to the `window.console` (if present).  The
+		// `options` hash can be used to configure the default logLevel and provide a custom message formatter.
+		Logger.useDefaults = function(options) {
+			Logger.setLevel(options && options.defaultLevel || Logger.DEBUG);
+			Logger.setHandler(Logger.createDefaultHandler(options));
+		};
+	
+		// Export to popular environments boilerplate.
+		if (true) {
+			!(__WEBPACK_AMD_DEFINE_FACTORY__ = (Logger), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.call(exports, __webpack_require__, exports, module)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+		}
+		else if (typeof module !== 'undefined' && module.exports) {
+			module.exports = Logger;
+		}
+		else {
+			Logger._prevLogger = global.Logger;
+	
+			Logger.noConflict = function () {
+				global.Logger = Logger._prevLogger;
+				return Logger;
+			};
+	
+			global.Logger = Logger;
+		}
+	}(this));
+
+
+/***/ },
 /* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -10775,7 +11043,7 @@
 	(function (factory) {
 	  if (true) {
 	    // AMD. Register as an anonymous module.
-	    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(4)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(3)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 	  } else if (typeof exports === 'object') {
 	    // Node/CommonJS
 	    factory(require('jquery'));
@@ -16862,7 +17130,7 @@
 	 * @details
 	 */
 	
-	var Marionette = __webpack_require__(5);
+	var Marionette = __webpack_require__(4);
 	
 	//mainStyle = require('./css/main.css');  // included in main.html on django side
 	
@@ -16963,7 +17231,7 @@
 	 * @details
 	 */
 	
-	var Marionette = __webpack_require__(5);
+	var Marionette = __webpack_require__(4);
 	
 	var SelectOptionItemView = Marionette.ItemView.extend({
 	    //template: _.template('<% _.each(items, function(item){ %><option value="<%= item.id %>"><%= gt.gettext(item.value) %></option><% }) %>'),
@@ -17036,7 +17304,7 @@
 /* 34 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var _ = __webpack_require__(2);
+	var _ = __webpack_require__(1);
 	
 	module.exports = function (obj) {
 	obj || (obj = {});
@@ -17143,7 +17411,7 @@
 /* 37 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var _ = __webpack_require__(2);
+	var _ = __webpack_require__(1);
 	
 	module.exports = function (obj) {
 	obj || (obj = {});
@@ -17174,7 +17442,7 @@
 	 * @details
 	 */
 	
-	var Marionette = __webpack_require__(5);
+	var Marionette = __webpack_require__(4);
 	var AboutView = __webpack_require__(39);
 	var HelpIndexView = __webpack_require__(41);
 	var DefaultLayout = __webpack_require__(43);
@@ -17231,7 +17499,7 @@
 	 * @details
 	 */
 	
-	var Marionette = __webpack_require__(5);
+	var Marionette = __webpack_require__(4);
 	
 	var View = Marionette.ItemView.extend({
 	    tagName: 'div',
@@ -17258,7 +17526,7 @@
 /* 40 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var _ = __webpack_require__(2);
+	var _ = __webpack_require__(1);
 	
 	module.exports = function (obj) {
 	obj || (obj = {});
@@ -17285,7 +17553,7 @@
 	 * @details
 	 */
 	
-	var Marionette = __webpack_require__(5);
+	var Marionette = __webpack_require__(4);
 	
 	var View = Marionette.ItemView.extend({
 	    tagName: 'div',
@@ -17312,7 +17580,7 @@
 /* 42 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var _ = __webpack_require__(2);
+	var _ = __webpack_require__(1);
 	
 	module.exports = function (obj) {
 	obj || (obj = {});
@@ -17339,7 +17607,7 @@
 	 * @details
 	 */
 	
-	var Marionette = __webpack_require__(5);
+	var Marionette = __webpack_require__(4);
 	
 	var DefaultLayout = Marionette.LayoutView.extend({
 	    template: "#layout_view",
@@ -17385,7 +17653,7 @@
 	 * @details
 	 */
 	
-	var Marionette = __webpack_require__(5);
+	var Marionette = __webpack_require__(4);
 	
 	var TitleView = Marionette.View.extend({
 	    tagName: "span",
@@ -17414,7 +17682,7 @@
 	 * @details
 	 */
 	
-	var Marionette = __webpack_require__(5);
+	var Marionette = __webpack_require__(4);
 	var EditProfileView = __webpack_require__(46);
 	var DefaultLayout = __webpack_require__(43);
 	var TitleView = __webpack_require__(44);
@@ -17463,7 +17731,7 @@
 	 * @details
 	 */
 	
-	var Marionette = __webpack_require__(5);
+	var Marionette = __webpack_require__(4);
 	
 	var View = Marionette.ItemView.extend({
 	    tagName: 'div',
@@ -17490,7 +17758,7 @@
 /* 47 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var _ = __webpack_require__(2);
+	var _ = __webpack_require__(1);
 	
 	module.exports = function (obj) {
 	obj || (obj = {});
@@ -17517,7 +17785,7 @@
 	 * @details
 	 */
 	
-	var Marionette = __webpack_require__(5);
+	var Marionette = __webpack_require__(4);
 	
 	var PermissionModule = Marionette.Module.extend({
 	
@@ -17714,7 +17982,7 @@
 	 * @details
 	 */
 	
-	var Marionette = __webpack_require__(5);
+	var Marionette = __webpack_require__(4);
 	var PermissionCollection = __webpack_require__(54);
 	var PermissionListView = __webpack_require__(56);
 	var PermissionAddView = __webpack_require__(60);
@@ -17877,7 +18145,7 @@
 	 * @details
 	 */
 	
-	var Backbone = __webpack_require__(3);
+	var Backbone = __webpack_require__(2);
 	
 	var Permission = Backbone.Model.extend({
 	    defaults: {
@@ -17934,7 +18202,7 @@
 	 * @details
 	 */
 	
-	var Marionette = __webpack_require__(5);
+	var Marionette = __webpack_require__(4);
 	var PermissionModel = __webpack_require__(55);
 	var PermissionView = __webpack_require__(57);
 	
@@ -18007,7 +18275,7 @@
 	 * @details
 	 */
 	
-	var Marionette = __webpack_require__(5);
+	var Marionette = __webpack_require__(4);
 	var PermissionModel = __webpack_require__(55);
 	
 	var View = Marionette.ItemView.extend({
@@ -18037,7 +18305,7 @@
 /* 58 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var _ = __webpack_require__(2);
+	var _ = __webpack_require__(1);
 	
 	module.exports = function (obj) {
 	obj || (obj = {});
@@ -18093,7 +18361,7 @@
 /* 59 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var _ = __webpack_require__(2);
+	var _ = __webpack_require__(1);
 	
 	module.exports = function (obj) {
 	obj || (obj = {});
@@ -18120,7 +18388,7 @@
 	 * @details
 	 */
 	
-	var Marionette = __webpack_require__(5);
+	var Marionette = __webpack_require__(4);
 	
 	var View = Marionette.ItemView.extend({
 	    tagName: 'div',
@@ -18192,7 +18460,7 @@
 /* 61 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var _ = __webpack_require__(2);
+	var _ = __webpack_require__(1);
 	
 	module.exports = function (obj) {
 	obj || (obj = {});
@@ -18262,7 +18530,7 @@
 	 * @details
 	 */
 	
-	var Backbone = __webpack_require__(3);
+	var Backbone = __webpack_require__(2);
 	
 	var Model = Backbone.Model.extend({
 	    url: function() { return ohgr.baseUrl + 'permission/user/' + this.get('username') + '/'; },
@@ -18326,7 +18594,7 @@
 	 * @details
 	 */
 	
-	var Marionette = __webpack_require__(5);
+	var Marionette = __webpack_require__(4);
 	var PermissionUserModel = __webpack_require__(63);
 	var PermissionUserView = __webpack_require__(65);
 	
@@ -18363,7 +18631,7 @@
 	 * @details
 	 */
 	
-	var Marionette = __webpack_require__(5);
+	var Marionette = __webpack_require__(4);
 	var PermissionUserModel = __webpack_require__(63);
 	
 	var View = Marionette.ItemView.extend({
@@ -18460,7 +18728,7 @@
 /* 66 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var _ = __webpack_require__(2);
+	var _ = __webpack_require__(1);
 	
 	module.exports = function (obj) {
 	obj || (obj = {});
@@ -18504,7 +18772,7 @@
 /* 67 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var _ = __webpack_require__(2);
+	var _ = __webpack_require__(1);
 	
 	module.exports = function (obj) {
 	obj || (obj = {});
@@ -18572,7 +18840,7 @@
 	 * @details
 	 */
 	
-	var Backbone = __webpack_require__(3);
+	var Backbone = __webpack_require__(2);
 	
 	var Model = Backbone.Model.extend({
 	    url: function() {
@@ -18626,7 +18894,7 @@
 	 * @details
 	 */
 	
-	var Marionette = __webpack_require__(5);
+	var Marionette = __webpack_require__(4);
 	var PermissionGroupModel = __webpack_require__(69);
 	var PermissionGroupView = __webpack_require__(71);
 	
@@ -18663,7 +18931,7 @@
 	 * @details
 	 */
 	
-	var Marionette = __webpack_require__(5);
+	var Marionette = __webpack_require__(4);
 	var PermissionGroupModel = __webpack_require__(69);
 	
 	var View = Marionette.ItemView.extend({
@@ -18713,7 +18981,7 @@
 /* 72 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var _ = __webpack_require__(2);
+	var _ = __webpack_require__(1);
 	
 	module.exports = function (obj) {
 	obj || (obj = {});
@@ -18742,7 +19010,7 @@
 /* 73 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var _ = __webpack_require__(2);
+	var _ = __webpack_require__(1);
 	
 	module.exports = function (obj) {
 	obj || (obj = {});
@@ -18809,7 +19077,7 @@
 	 * @details
 	 */
 	
-	var Backbone = __webpack_require__(3);
+	var Backbone = __webpack_require__(2);
 	
 	var Model = Backbone.Model.extend({
 	    url: function() {
@@ -18863,7 +19131,7 @@
 	 * @details
 	 */
 	
-	var Marionette = __webpack_require__(5);
+	var Marionette = __webpack_require__(4);
 	var PermissionGroupUserModel = __webpack_require__(75);
 	var PermissionGroupUserView = __webpack_require__(77);
 	
@@ -18897,7 +19165,7 @@
 	 * @details
 	 */
 	
-	var Marionette = __webpack_require__(5);
+	var Marionette = __webpack_require__(4);
 	var PermissionGroupUserModel = __webpack_require__(75);
 	
 	var View = Marionette.ItemView.extend({
@@ -18942,7 +19210,7 @@
 /* 78 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var _ = __webpack_require__(2);
+	var _ = __webpack_require__(1);
 	
 	module.exports = function (obj) {
 	obj || (obj = {});
@@ -18967,7 +19235,7 @@
 /* 79 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var _ = __webpack_require__(2);
+	var _ = __webpack_require__(1);
 	
 	module.exports = function (obj) {
 	obj || (obj = {});
@@ -19000,7 +19268,7 @@
 	 * @details
 	 */
 	
-	var Marionette = __webpack_require__(5);
+	var Marionette = __webpack_require__(4);
 	
 	var View = Marionette.ItemView.extend({
 	    tagName: 'div',
@@ -19092,7 +19360,7 @@
 /* 81 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var _ = __webpack_require__(2);
+	var _ = __webpack_require__(1);
 	
 	module.exports = function (obj) {
 	obj || (obj = {});
@@ -19119,7 +19387,7 @@
 	 * @details
 	 */
 	
-	var Marionette = __webpack_require__(5);
+	var Marionette = __webpack_require__(4);
 	
 	var View = Marionette.ItemView.extend({
 	    tagName: 'div',
@@ -19201,7 +19469,7 @@
 /* 83 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var _ = __webpack_require__(2);
+	var _ = __webpack_require__(1);
 	
 	module.exports = function (obj) {
 	obj || (obj = {});
@@ -19228,7 +19496,7 @@
 	 * @details
 	 */
 	
-	var Marionette = __webpack_require__(5);
+	var Marionette = __webpack_require__(4);
 	
 	var AuditModule = Marionette.Module.extend({
 	
@@ -19302,7 +19570,7 @@
 	 * @details
 	 */
 	
-	var Marionette = __webpack_require__(5);
+	var Marionette = __webpack_require__(4);
 	var AuditCollection = __webpack_require__(88);
 	var AuditListView = __webpack_require__(90);
 	var DefaultLayout = __webpack_require__(43);
@@ -19553,7 +19821,7 @@
 	 * @details
 	 */
 	
-	var Backbone = __webpack_require__(3);
+	var Backbone = __webpack_require__(2);
 	
 	var Model = Backbone.Model.extend({
 	    defaults: {
@@ -19605,7 +19873,7 @@
 	 * @details
 	 */
 	
-	var Marionette = __webpack_require__(5);
+	var Marionette = __webpack_require__(4);
 	var AuditView = __webpack_require__(91);
 	
 	var View = Marionette.CompositeView.extend({
@@ -19640,7 +19908,7 @@
 	 * @details
 	 */
 	
-	var Marionette = __webpack_require__(5);
+	var Marionette = __webpack_require__(4);
 	var AuditModel = __webpack_require__(89);
 	
 	var View = Marionette.ItemView.extend({
@@ -19663,7 +19931,7 @@
 /* 92 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var _ = __webpack_require__(2);
+	var _ = __webpack_require__(1);
 	
 	module.exports = function (obj) {
 	obj || (obj = {});
@@ -19709,7 +19977,7 @@
 /* 93 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var _ = __webpack_require__(2);
+	var _ = __webpack_require__(1);
 	
 	module.exports = function (obj) {
 	obj || (obj = {});
@@ -19726,7 +19994,7 @@
 /* 94 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var _ = __webpack_require__(2);
+	var _ = __webpack_require__(1);
 	
 	module.exports = function (obj) {
 	obj || (obj = {});
@@ -19761,7 +20029,7 @@
 	 * @details
 	 */
 	
-	var Marionette = __webpack_require__(5);
+	var Marionette = __webpack_require__(4);
 	
 	var TaxonomyModule = Marionette.Module.extend({
 	
@@ -20014,7 +20282,7 @@
 	 * @details
 	 */
 	
-	var Marionette = __webpack_require__(5);
+	var Marionette = __webpack_require__(4);
 	var TaxonModel = __webpack_require__(103);
 	var TaxonCollection = __webpack_require__(104);
 	var TaxonListView = __webpack_require__(105);
@@ -20286,7 +20554,7 @@
 	 * @details
 	 */
 	
-	var Backbone = __webpack_require__(3);
+	var Backbone = __webpack_require__(2);
 	
 	var Taxon = Backbone.Model.extend({ 
 	    url: function() { return ohgr.baseUrl + 'taxonomy/' + this.id + '/'; },
@@ -20446,7 +20714,7 @@
 	 * @details
 	 */
 	
-	var Marionette = __webpack_require__(5);
+	var Marionette = __webpack_require__(4);
 	var TaxonModel = __webpack_require__(103);
 	var TaxonView = __webpack_require__(106);
 	
@@ -20511,7 +20779,7 @@
 	 * @details
 	 */
 	
-	var Marionette = __webpack_require__(5);
+	var Marionette = __webpack_require__(4);
 	var TaxonModel = __webpack_require__(103);
 	
 	var TaxonItemView = Marionette.ItemView.extend({
@@ -20648,7 +20916,7 @@
 /* 107 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var _ = __webpack_require__(2);
+	var _ = __webpack_require__(1);
 	
 	module.exports = function (obj) {
 	obj || (obj = {});
@@ -20696,7 +20964,7 @@
 /* 108 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var _ = __webpack_require__(2);
+	var _ = __webpack_require__(1);
 	
 	module.exports = function (obj) {
 	obj || (obj = {});
@@ -20735,7 +21003,7 @@
 	 * @details
 	 */
 	
-	var Marionette = __webpack_require__(5);
+	var Marionette = __webpack_require__(4);
 	var TaxonModel = __webpack_require__(103);
 	var TaxonCollection = __webpack_require__(104);
 	var TaxonListView = __webpack_require__(105);
@@ -20793,7 +21061,7 @@
 	 * @details
 	 */
 	
-	var Marionette = __webpack_require__(5);
+	var Marionette = __webpack_require__(4);
 	
 	var AccessionModule = Marionette.Module.extend({
 	

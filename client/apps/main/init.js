@@ -19,8 +19,10 @@ var Marionette = require('backbone.marionette');
 var MainModule = Marionette.Module.extend({
 
     initialize: function(moduleName, app, options) {
+        Logger.time("Init main module");
+
         // i18n
-        if (user.language === "fr") {
+        if (session.language === "fr") {
             i18next.addResources('fr', 'default', require('./locale/fr/LC_MESSAGES/default.json'));
             //gt.addTextdomain('default', require('./locale/fr/LC_MESSAGES/default.mo'));
         } else {  // default to english
@@ -47,14 +49,20 @@ var MainModule = Marionette.Module.extend({
             el: '#main_content',
             template: require('./templates/home.html'),
         });
+
+        Logger.timeEnd("Init main module");
     },
 
     onStart: function(options) {
+        Logger.time("Start main module");
+
         var MainRouter = require('./routers/main');
         this.routers.main = new MainRouter();
 
         var ProfileRouter = require('./routers/profile');
         this.routers.profile = new ProfileRouter();
+
+        Logger.timeEnd("Start main module");
     },
 
     onStop: function(options) {

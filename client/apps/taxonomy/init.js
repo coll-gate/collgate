@@ -13,6 +13,8 @@ var Marionette = require('backbone.marionette');
 var TaxonomyModule = Marionette.Module.extend({
 
     initialize: function(moduleName, app, options) {
+        Logger.time("Init taxonomy module");
+
         this.models = {};
         this.collections = {};
         this.views = {};
@@ -20,7 +22,7 @@ var TaxonomyModule = Marionette.Module.extend({
         this.controllers = {};
 
         // i18n
-        if (user.language === "fr") {
+        if (session.language === "fr") {
             i18next.addResources('fr', 'default', require('./locale/fr/LC_MESSAGES/default.json'));
             //gt.addTextdomain('default', require('./locale/fr/LC_MESSAGES/default.mo'));
         } else {  // default to english
@@ -56,14 +58,20 @@ var TaxonomyModule = Marionette.Module.extend({
         
         var TaxonController = require('./controllers/taxon');
         this.controllers.taxon = new TaxonController();
+
+        Logger.timeEnd("Init taxonomy module");
     },
 
     onStart: function(options) {
+        Logger.time("Start taxonomy module");
+
         var TaxonRouter = require('./routers/taxon');
         this.routers.taxon = new TaxonRouter();
 
         var TaxonCollection = require('./collections/taxon');
         this.collections.taxons = new TaxonCollection();
+
+        Logger.timeEnd("Start taxonomy module");
     },
 
     onStop: function(options) {

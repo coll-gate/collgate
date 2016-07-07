@@ -35,7 +35,7 @@ var View = Marionette.ItemView.extend({
 
     removeUserFromGroup: function () {
         // can't remove himself if it is not staff or superuser
-        if (user.username == this.model.get('username') && !(this.model.get('is_staff') || this.model.get('is_superuser')))
+        if (session.user.username == this.model.get('username') && !(this.model.get('is_staff') || this.model.get('is_superuser')))
             return;
 
         this.model.destroy({wait: true});

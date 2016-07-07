@@ -6,6 +6,8 @@
 Views related to the home page.
 """
 from django.contrib import messages
+from django.conf import settings
+
 from igdectk.rest.handler import *
 
 from .base import RestApp
@@ -43,7 +45,14 @@ def get_app(request, path):
     if not path:
         path = 'home'
 
-    context = {'path': path + "/"}
+    context = {
+        'path': path + "/"
+    }
+
+    if settings.DEBUG:
+        context['webpack_host'] = settings.WEBPACK['host']
+        context['webpack_entry'] = settings.WEBPACK['entry']
+
     return render(request, 'main/home.html', context)
 
 
@@ -53,4 +62,3 @@ def get_home(request):
     Redirect to app/home
     """
     return redirect('/ohgr/app/home/', permanent=True)
-

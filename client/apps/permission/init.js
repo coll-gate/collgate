@@ -13,6 +13,8 @@ var Marionette = require('backbone.marionette');
 var PermissionModule = Marionette.Module.extend({
 
     initialize: function(moduleName, app, options) {
+        Logger.time("Init permission module");
+
         this.models = {};
         this.collections = {};
         this.views = {};
@@ -20,7 +22,7 @@ var PermissionModule = Marionette.Module.extend({
         this.controllers = {};
 
         // i18n
-        if (user.language === "fr") {
+        if (session.language === "fr") {
             i18next.addResources('fr', 'default', require('./locale/fr/LC_MESSAGES/default.json'));
             //gt.addTextdomain('default', require('./locale/fr/LC_MESSAGES/default.mo'));
         } else {  // default to english
@@ -37,15 +39,20 @@ var PermissionModule = Marionette.Module.extend({
             className: 'permission-type',
             collection: this.collections.permissionType,
         });
+
+        Logger.timeEnd("Init permission module");
     },
 
     onStart: function(options) {
+        Logger.time("Start permission module");
+
         var PermissionRouter = require('./routers/permission');
         this.routers.permission = new PermissionRouter();
+
+        Logger.timeEnd("Start permission module");
     },
 
     onStop: function(options) {
-
     },
 });
 

@@ -13,6 +13,8 @@ var Marionette = require('backbone.marionette');
 var AuditModule = Marionette.Module.extend({
 
     initialize: function(moduleName, app, options) {
+        Logger.time("Init audit module");
+
         this.models = {};
         this.collections = {};
         this.views = {};
@@ -20,21 +22,27 @@ var AuditModule = Marionette.Module.extend({
         this.controllers = {};
 
         // i18n
-        if (user.language === "fr") {
+        if (session.language === "fr") {
             i18next.addResources('fr', 'default', require('./locale/fr/LC_MESSAGES/default.json'));
             //gt.addTextdomain('default', require('./locale/fr/LC_MESSAGES/default.mo'));
         } else {  // default to english
             i18next.addResources('en', 'default', require('./locale/en/LC_MESSAGES/default.json'));
             //gt.addTextdomain('default', require('./locale/en/LC_MESSAGES/default.mo'));
         }
+        
+        Logger.timeEnd("Init audit module");
     },
 
     onStart: function(options) {
+        Logger.time("Start audit module");
+        
         // var AuditRouter = require('./routers/audit');
         // this.routers.audit = new AuditRouter();
 
         var AuditController = require('./controllers/audit');
         this.controllers.audit = new AuditController();
+
+        Logger.timeEnd("Start audit module");
     },
 
     onStop: function(options) {

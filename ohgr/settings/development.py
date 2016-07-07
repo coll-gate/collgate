@@ -153,3 +153,8 @@ DEFAULT_FROM_EMAIL = "frederic.scherma@clermont.inra.fr"
 EMAIL_HOST = "smtp.clermont.inra.fr"
 EMAIL_PORT = 25
 EMAIL_SUBJECT_PREFIX = "Online Host of Genetics Resources"
+
+WEBPACK = {
+    'host': 'http://127.0.0.1:8080',
+    'entry': '/static/js/app.js'
+}

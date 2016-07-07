@@ -45,7 +45,7 @@ var View = Marionette.ItemView.extend({
 
     enableUser: function () {
         // can't modify himself
-        if (user.username == this.model.get('username'))
+        if (session.user.username == this.model.get('username'))
             return;
 
         this.model.save({is_active: true}, {patch: true, wait: true});
@@ -53,7 +53,7 @@ var View = Marionette.ItemView.extend({
 
     disableUser: function () {
         // can't modify himself
-        if (user.username == this.model.get('username'))
+        if (session.user.username == this.model.get('username'))
             return;
 
         // this.model.set('is_active', false);
@@ -63,7 +63,7 @@ var View = Marionette.ItemView.extend({
 
     setStaff: function () {
         // can't modify himself
-        if (user.username == this.model.get('username'))
+        if (session.user.username == this.model.get('username'))
             return;
 
         this.model.save({is_staff: true}, {patch: true, wait: true});
@@ -71,7 +71,7 @@ var View = Marionette.ItemView.extend({
 
     setRegular: function () {
         // can't modify himself
-        if (user.username == this.model.get('username'))
+        if (session.user.username == this.model.get('username'))
             return;
 
         this.model.save({is_staff: false}, {patch: true, wait: true});
@@ -79,7 +79,7 @@ var View = Marionette.ItemView.extend({
 
     setSuperUser: function () {
         // can't modify himself
-        if (user.username == this.model.get('username'))
+        if (session.user.username == this.model.get('username'))
             return;
 
         this.model.save({is_superuser: true}, {patch: true, wait: true});
@@ -87,7 +87,7 @@ var View = Marionette.ItemView.extend({
 
     setUser: function () {
         // can't modify himself
-        if (user.username == this.model.get('username'))
+        if (session.user.username == this.model.get('username'))
             return;
 
         this.model.save({is_superuser: false}, {patch: true, wait: true});

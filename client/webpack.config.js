@@ -4,7 +4,7 @@ var path = require('path');
 var defaults = {
     entry: './apps/driver.js',
     externals: {
-        'jquery': '$'
+        'jquery': '$',
     },
     module: {
         preLoaders: [
@@ -44,6 +44,7 @@ var defaults = {
             lowerCaseAttributeNames: false,      // do not call .toLowerCase for each attribute name (issue with gettext parameters else)
         }
     },
+
     underscoreTemplateLoader: {
         engine: 'underscore',
         engineFull: null,

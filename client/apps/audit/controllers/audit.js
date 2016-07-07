@@ -29,7 +29,6 @@ var Controller = Marionette.Controller.extend({
             ui: {
                 cancel: "button.cancel",
                 search: "button.search",
-                dialog: "#dlg_audit_by_username",
                 username: "#username",
             },
 
@@ -94,53 +93,6 @@ var Controller = Marionette.Controller.extend({
                     minimumInputLength: 3,
                     placeholder: gt.gettext("Select a username"),
                 });
-                /*$(this.ui.username).autocomplete({
-                    open: function () {
-                        $(this).autocomplete('widget').zIndex(10000);
-                    },
-                    source: function(req, callback) {
-                        var terms = req.term || '';
-
-                        var filters = {
-                            method: 'icontains',
-                            fields: '*',
-                            '*': terms.split(' ').filter(function (t) { return t.length > 2; }),
-                        };
-
-                        $.ajax({
-                            type: "GET",
-                            url: ohgr.baseUrl + 'permission/user/search/',
-                            dataType: 'json',
-                            data: {filters: JSON.stringify(filters), page: 1},
-                            async: true,
-                            cache: true,
-                            success: function(data) {
-                                var results = [];
-
-                                for (var i = 0; i < data.items.length; ++i) {
-                                    results.push({
-                                        value: data.items[i].value,
-                                        label: data.items[i].label
-                                    })
-                                }
-
-                                callback(results);
-                            }
-                        });
-                    },
-                    minLength: 3,
-                    delay: 100,
-                    //autoFocus: true,
-                    search: function(event, ui) {
-                        return true;
-                    },
-                    close: function (event, ui) {
-                    },
-                    change: function (event, ui) {
-                    },
-                    select: function(event, ui) {
-                    }
-                });*/
             },
 
             closeAndDestroy: function() {
@@ -196,16 +148,150 @@ var Controller = Marionette.Controller.extend({
     },
 
     searchByEntityUUID: function (uuid) {
-        alert("TODO");
+            var ModalView = Marionette.ItemView.extend({
+            tagName: 'div',
+            attributes: {
+                'id': 'dlg_audit_by_uuuid',
+                'class': 'modal',
+                'tabindex': -1
+            },
+            template: require('../templates/auditbyuuid.html'),
+
+            ui: {
+                cancel: "button.cancel",
+                search: "button.search",
+                dialog: "#dlg_audit_by_uuid",
+                uuid: "#uuid",
+            },
+
+            events: {
+                'click @ui.cancel': 'onCancel',
+                'keydown': 'keyAction',
+                'input @ui.uuid': 'onUUIDInput',
+            },
+
+            triggers: {
+                'click @ui.search': 'view:search',
+            },
+
+            initialize: function () {
+            },
+
+            onRender: function () {
+                $(this.el).modal();
+
+                $(this.ui.uuid).select2({
+                    dropdownParent: $(this.el),
+                    ajax: {
+                        url: ohgr.baseUrl + "main/entity/search/",
+                        dataType: 'json',
+                        delay: 250,
+                        data: function (params) {
+                            params.term || (params.term = '');
+
+                            var match1 = params.term.match(/^([a-zA-Z_]{3,}).([a-zA-Z_]{3,})\s+([a-zA-Z0-9_]{3,})$/);
+                            var match2 = params.term.match(/^[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}$/);
+
+                            var filters = {
+                                method: 'icontains'
+                            };
+
+                            if (match1 && match1.length == 4) {
+                                filters.fields = ['app_label', 'model', 'object_name'];
+                                filters.app_label = match1[1];
+                                filters.model = match1[2];
+                                filters.object_name = match1[3];
+                            } else if (match2) {
+                                filters.fields = 'uuid';
+                                filters.uuid = params.term;
+                            } else {
+                                filters.fields = ['app_label', 'model', 'object_name'];
+                                filters.app_label = 'taxonomy';
+                                filters.model = 'taxon';
+                                filters.object_name = '_';
+
+                                return {
+                                    page: params.page,
+                                    filters: JSON.stringify(filters),
+                                }
+                            }
+
+                            return {
+                                page: params.page,
+                                filters: JSON.stringify(filters),
+                            };
+                        },
+                        processResults: function (data, params) {
+                            // no pagination
+                            params.page = params.page || 1;
+
+                            var results = [];
+
+                            for (var i = 0; i < data.items.length; ++i) {
+                                results.push({
+                                    id: data.items[i].id,
+                                    text: data.items[i].name
+                                });
+                            }
+
+                            return {
+                                results: results,
+                                pagination: {
+                                    more: (params.page * 30) < data.total_count
+                                }
+                            };
+                        },
+                        cache: true
+                    },
+                    minimumInputLength: 3,
+                    placeholder: gt.gettext("Select an entity UUID or a app_label.model object_name"),
+                });
+            },
+
+            closeAndDestroy: function() {
+                ohgr.getRegion('modalRegion').reset();
+            },
+
+            onCancel: function () {
+                this.closeAndDestroy();
+            },
+
+            keyAction: function(e) {
+                var code = e.keyCode || e.which;
+                if (code == 27) {
+                    this.closeAndDestroy();
+                }
+            },
+
+            close: function () {
+                $(this.ui.uuid).select2('destroy');
+                $(this.el).modal('hide').data('bs.modal', null);
+            },
+
+            onBeforeDestroy: function() {
+                this.close();
+            },
+        });
+
+        var modal = new ModalView({controller: this});
+        ohgr.getRegion('modalRegion').show(modal);
+
+        modal.on("view:search", function(args) {
+            var uuid = $(args.view.ui.uuid).val();
+            if (uuid) {
+                this.getAuditListByUUID(uuid, uuid); // TODO how to get label from select2 selection (data ?)
+                args.view.closeAndDestroy();
+            }
+        }, this);
     },
 
-    getAuditListByUUID: function (uuid) {
+    getAuditListByUUID: function (uuid, name) {
         var auditCollection = new AuditCollection([]);
 
         var defaultLayout = new DefaultLayout({});
         ohgr.mainRegion.show(defaultLayout);
 
-        defaultLayout.title.show(new TitleView({title: gt.gettext("List of audit entries related to entity") + " " + uuid}));
+        defaultLayout.title.show(new TitleView({title: gt.gettext("List of audit entries related to entity") + " " + name}));
 
         auditCollection.fetch({data: {uuid: uuid, page: 1}, processData: true}).then(function () {
             defaultLayout.content.show(new AuditListView({collection: auditCollection}));

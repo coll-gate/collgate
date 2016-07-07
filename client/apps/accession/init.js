@@ -13,6 +13,8 @@ var Marionette = require('backbone.marionette');
 var AccessionModule = Marionette.Module.extend({
 
     initialize: function(moduleName, app, options) {
+        Logger.time("Init accession module");
+
         this.models = {};
         this.collections = {};
         this.views = {};
@@ -20,21 +22,27 @@ var AccessionModule = Marionette.Module.extend({
         this.controllers = {};
 
         // i18n
-        if (user.language === "fr") {
+        if (session.language === "fr") {
             i18next.addResources('fr', 'default', require('./locale/fr/LC_MESSAGES/default.json'));
             //gt.addTextdomain('default', require('./locale/fr/LC_MESSAGES/default.mo'));
         } else {  // default to english
             i18next.addResources('en', 'default', require('./locale/en/LC_MESSAGES/default.json'));
             //gt.addTextdomain('default', require('./locale/en/LC_MESSAGES/default.mo'));
         }
+
+        Logger.timeEnd("Init accession module");
     },
 
     onStart: function(options) {
+        Logger.time("Start accession module");
+
         // var AccessionRouter = require('./routers/accession');
         // this.routers.accession = new AccessionRouter();
 
         // var AccessionCollection = require('./collections/accession');
         // this.collections.accession = new AccessionCollection();
+
+        Logger.timeEnd("Start accession module");
     },
 
     onStop: function(options) {

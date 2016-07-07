@@ -84,18 +84,45 @@ class EntityStatus(ChoiceEnum):
     REMOVED = IntegerChoice(3, _('Removed'))
 
 
+class EntityManager(models.Manager):
+    # TODO est ce que django-polymorphic serait util ? car il apporte un iterator
+    # et une optimisation via union sur les QuerySet, et aussi un cast automatique
+
+    def get_by_uuid(self, uuid):
+        return self.get(uuid=uuid)
+
+    def get_by_content_type_and_id(self, app_label, model, id):
+        content_type = ContentType.objects.get_by_natural_key(app_label, model)
+        return self.get(content_type=content_type, id=id)
+
+
 class Entity(models.Model):
     """
     Base model for any object that must support audit, history, or
     any other modular features.
     """
+    content_type = models.ForeignKey(ContentType, editable=False)
     entity_status = models.IntegerField(
         null=False, blank=False, choices=EntityStatus.choices(), default=EntityStatus.VALID.value)
 
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now=True)
 
+    name = models.CharField(unique=True, null=False, blank=False, max_length=255, db_index=True)
     uuid = models.UUIDField(db_index=True, default=uuid.uuid4, editable=False, unique=True)
+
+    objects = EntityManager()
 
     class Meta:
         abstract = True
+
+    def _get_content_type(self):
+        return ContentType.objects.get_for_model(type(self))
+
+    def save(self, *args, **kwargs):
+        if not self.content_type:
+            self.content_type = self._get_content_type()
+        super(Entity, self).save(*args, **kwargs)
+
+    def cast(self):
+        return self.content_type.get_object_for_this_type(pk=self.pk)

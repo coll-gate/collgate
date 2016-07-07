@@ -12,14 +12,30 @@ var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
 //var GetText = require("node-gettext");
 i18next = require('i18next');
-
-// select2
+Logger = require('js-logger');
+// select2 as jquery plugin
 $.select2 = require("select2");
 require("select2/dist/css/select2.min.css");
 
 // ohgr global application
 ohgr = new Marionette.Application({
     initialize: function(options) {
+        Logger.useDefaults({
+            defaultLevel: Logger.WARN,
+            formatter: function (messages, context) {
+                messages.unshift(new Date().toLocaleString());
+            }
+        })
+
+        if (session.debug) {
+            Logger.setLevel(Logger.DEBUG);
+        }
+
+        Logger.time('Application startup');
+
+        // create a global default logger
+        session.logger = Logger.get('default');
+
         // // capture error on models
         // var ErrorHandlingModel = Backbone.Model.extend({
         //     initialize: function(attributes, options) {
@@ -105,8 +121,12 @@ ohgr = new Marionette.Application({
     onStart: function(options) {
         // Starts the URL handling framework and automatically route as possible
         Backbone.history.start({pushState: true, silent: false, root: '/ohgr'});
+
+        Logger.timeEnd('Application startup');
     }
 });
+
+application = ohgr;
 
 ohgr.addRegions({
     mainRegion: "#main_content",
@@ -154,7 +174,7 @@ ohgr.on("before:start", function(options) {
     // i18n
     i18next.init({
         initImmediate: false,  // avoid setTimeout
-        lng: user.language,
+        lng: session.language,
         ns: 'default',
         debug: false,
         fallbackLng: 'en'
@@ -165,12 +185,12 @@ ohgr.on("before:start", function(options) {
     window.gt.gettext = i18next.t;
     window.gt._ = i18next.t;
 
-    if (user.language === "fr") {
+    if (session.language === "fr") {
         require('select2/dist/js/i18n/fr');
     } else {  // default to english
     }
 
-    $.fn.select2.defaults.set('language', user.language);
+    $.fn.select2.defaults.set('language', session.language);
 
     // each modules
     this.main = require('./main/init');

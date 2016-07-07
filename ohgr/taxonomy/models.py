@@ -36,7 +36,6 @@ class TaxonRank(ChoiceEnum):
 
 class TaxonSynonym(Entity):
 
-    name = models.CharField(unique=True, null=False, blank=False, max_length=255, db_index=True)
     language = models.CharField(null=False, blank=False, max_length=2, choices=Languages.choices())
     type = models.IntegerField(null=False, blank=False, choices=TaxonSynonymType.choices())
 
@@ -51,7 +50,6 @@ class TaxonSynonym(Entity):
 
 class Taxon(Entity):
 
-    name = models.CharField(unique=True, null=False, blank=False, max_length=255, db_index=True)
     rank = models.IntegerField(null=False, blank=False, choices=TaxonRank.choices())
 
     parent = models.ForeignKey('Taxon', null=True)
