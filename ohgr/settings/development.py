@@ -156,5 +156,5 @@ EMAIL_SUBJECT_PREFIX = "Online Host of Genetics Resources"
 
 WEBPACK = {
     'host': 'http://127.0.0.1:8080',
-    'entry': '/static/js/app.js'
+    'entry': '/build/app.js'
 }

@@ -35,7 +35,7 @@ class RestAuditUserUserName(RestAudit):
     suffix = 'user-username'
 
 
-class RestAuditEntityID(RestAudit):
+class RestAuditEntityUUID(RestAudit):
     regex = r'^object/(?P<uuid>[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12})/$'
     suffix = 'entity-uuid'
 
@@ -74,18 +74,18 @@ def search_audit(request):
     return HttpResponseRest(request, results)
 
 
-@RestAuditEntityID.def_auth_request(Method.GET, Format.JSON, parameters=('app_label', 'model', 'object_id'), staff=True)
+@RestAuditSearch.def_auth_request(Method.GET, Format.JSON, parameters=('app_label', 'model', 'object_id'), staff=True)
 def search_audit_for_entity(request):
-    filters = json.loads(request.GET['filters'])
+    page = int_arg(request.GET.get('page', 1))
     # TODO page offset limit page = int_arg(request.GET['page'])
 
-    app_label = filters.get('app_label', 'main')
-    model = filters.get('models', '')
-    object_id = int_arg(filters.get('object_id', -1))
+    app_label = request.GET['app_label']
+    model = request.GET['model']
+    object_id = int_arg(request.GET['object_id'])
 
     content_type = ContentType.objects.get_by_natural_key(app_label, model)
-    entity = get_object_or_404(Entity, id=object_id)
-    audits = Audit.objects.filter(content_type=content_type, object_id=entity.id)
+    entity = content_type.get_object_for_this_type(id=object_id)
+    audits = Audit.objects.filter(content_type=content_type, object_id=object_id)
 
     audit_list = []
 

@@ -24,6 +24,11 @@ class RestMain(RestHandler):
     name = 'main'
 
 
+class RestMainContentType(RestMain):
+    regex = r'^content-type/$'
+    suffix = 'content-type'
+
+
 class RestMainEntity(RestMain):
     regex = r'^entity/$'
     suffix = 'entity'
@@ -51,7 +56,6 @@ def search_entity(request):
         raise SuspiciousOperation("Not yet implemented")
     if app_label and model and object_name:
         content_type = ContentType.objects.get_by_natural_key(app_label, model)
-        print(object_name)
         entities = content_type.get_all_objects_for_this_type(name__icontains=object_name)
 
     entities_list = []
@@ -70,3 +74,36 @@ def search_entity(request):
     }
 
     return HttpResponseRest(request, results)
+
+
+@RestMainContentType.def_request(Method.GET, Format.JSON)
+def get_contents_types(request):
+    """
+    Get the list of contents types in JSON
+    """
+
+    ignore_list = (
+        'admin.',
+        'audit.',
+        'auth.',
+        'contenttypes.',
+        'guardian.',
+        'main.',
+        'sessions.',
+        'sites.',
+    )
+
+    types = []
+    add = False
+    for content_type in ContentType.objects.all():
+        cts = "%s.%s" % (content_type.app_label, content_type.model)
+        add = True
+        for ignore_pattern in ignore_list:
+            if cts.startswith(ignore_pattern):
+                add = False
+                break
+
+        if add:
+            types.append({'id': cts, 'value': cts})
+
+    return HttpResponseRest(request, types)

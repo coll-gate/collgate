@@ -7,8 +7,12 @@
         <div class="modal-body">
             <form>
                 <div class="form-group">
-                    <label class="control-label" for="uuid"><%= gt.gettext("Entity UUID or app_label.model object_name") %></label>
-                     <select class="form-control uuids" id="uuid" name="uuid"></select>
+                    <label class="control-label" for="entity"><%= gt.gettext("Entity content type") %></label>
+                    <select class="form-control contents-types" id="content_type" name="content-type"></select>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for="entity"><%= gt.gettext("Entity UUID or name") %></label>
+                    <select class="form-control entities" id="entity" name="entity"></select>
                 </div>
             </form>
         </div>

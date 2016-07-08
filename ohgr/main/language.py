@@ -11,11 +11,12 @@ from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
 
 from .models import Languages
+from .base import RestMain
 
 
-class RestLanguage(RestHandler):
+class RestLanguage(RestMain):
     regex = r'^language/$'
-    name = 'language'
+    suffix = 'language'
 
 
 @cache_page(60*60*24)

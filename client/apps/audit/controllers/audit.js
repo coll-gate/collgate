@@ -147,27 +147,27 @@ var Controller = Marionette.Controller.extend({
         });
     },
 
-    searchByEntityUUID: function (uuid) {
+    searchByEntity: function (uuid) {
             var ModalView = Marionette.ItemView.extend({
             tagName: 'div',
             attributes: {
-                'id': 'dlg_audit_by_uuuid',
+                'id': 'dlg_audit_by_entity',
                 'class': 'modal',
                 'tabindex': -1
             },
-            template: require('../templates/auditbyuuid.html'),
+            template: require('../templates/auditbyentity.html'),
 
             ui: {
                 cancel: "button.cancel",
                 search: "button.search",
-                dialog: "#dlg_audit_by_uuid",
-                uuid: "#uuid",
+                entity: "#entity",
+                content_type: "#content_type"
             },
 
             events: {
                 'click @ui.cancel': 'onCancel',
                 'keydown': 'keyAction',
-                'input @ui.uuid': 'onUUIDInput',
+                'input @ui.entity': 'onEntityInput',
             },
 
             triggers: {
@@ -178,10 +178,15 @@ var Controller = Marionette.Controller.extend({
             },
 
             onRender: function () {
+                var view = this;
                 $(this.el).modal();
 
-                $(this.ui.uuid).select2({
+                ohgr.main.views.contentTypes.drawSelect(this.ui.content_type);
+                ohgr.main.views.contentTypes.htmlFromValue(this.el);
+
+                $(this.ui.entity).select2({
                     dropdownParent: $(this.el),
+                    content_type: $(this.ui.content_type),
                     ajax: {
                         url: ohgr.baseUrl + "main/entity/search/",
                         dataType: 'json',
@@ -189,31 +194,23 @@ var Controller = Marionette.Controller.extend({
                         data: function (params) {
                             params.term || (params.term = '');
 
-                            var match1 = params.term.match(/^([a-zA-Z_]{3,}).([a-zA-Z_]{3,})\s+([a-zA-Z0-9_]{3,})$/);
-                            var match2 = params.term.match(/^[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}$/);
+                            //var name_match = params.term.match(/^([a-zA-Z0-9_-]{1,})$/);
+                            var uuid_match = params.term.match(/^[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}$/);
 
                             var filters = {
                                 method: 'icontains'
                             };
 
-                            if (match1 && match1.length == 4) {
-                                filters.fields = ['app_label', 'model', 'object_name'];
-                                filters.app_label = match1[1];
-                                filters.model = match1[2];
-                                filters.object_name = match1[3];
-                            } else if (match2) {
+                            if (uuid_match) {
                                 filters.fields = 'uuid';
                                 filters.uuid = params.term;
                             } else {
-                                filters.fields = ['app_label', 'model', 'object_name'];
-                                filters.app_label = 'taxonomy';
-                                filters.model = 'taxon';
-                                filters.object_name = '_';
+                                var ct = view.ui.content_type.val().split('.');
 
-                                return {
-                                    page: params.page,
-                                    filters: JSON.stringify(filters),
-                                }
+                                filters.fields = ['app_label', 'model', 'object_name'];
+                                filters.app_label = ct[0];
+                                filters.model = ct[1];
+                                filters.object_name = params.term;
                             }
 
                             return {
@@ -244,7 +241,7 @@ var Controller = Marionette.Controller.extend({
                         cache: true
                     },
                     minimumInputLength: 3,
-                    placeholder: gt.gettext("Select an entity UUID or a app_label.model object_name"),
+                    placeholder: gt.gettext("Select an entity UUID or name"),
                 });
             },
 
@@ -277,23 +274,25 @@ var Controller = Marionette.Controller.extend({
         ohgr.getRegion('modalRegion').show(modal);
 
         modal.on("view:search", function(args) {
-            var uuid = $(args.view.ui.uuid).val();
-            if (uuid) {
-                this.getAuditListByUUID(uuid, uuid); // TODO how to get label from select2 selection (data ?)
+            var object_id = $(args.view.ui.entity).val();
+            var object_name = $(args.view.ui.entity).select2('data')[0].text;
+            var ct = $(args.view.ui.content_type).val().split('.');
+            if (ct.length == 2 && object_id) {
+                this.getAuditListByEntity(ct[0], ct[1], object_id, object_name);
                 args.view.closeAndDestroy();
             }
         }, this);
     },
 
-    getAuditListByUUID: function (uuid, name) {
+    getAuditListByEntity: function (app_label, model, object_id, object_name) {
         var auditCollection = new AuditCollection([]);
 
         var defaultLayout = new DefaultLayout({});
         ohgr.mainRegion.show(defaultLayout);
 
-        defaultLayout.title.show(new TitleView({title: gt.gettext("List of audit entries related to entity") + " " + name}));
+        defaultLayout.title.show(new TitleView({title: gt.gettext("List of audit entries related to entity") + " " + app_label + "." + model + " " + object_name}));
 
-        auditCollection.fetch({data: {uuid: uuid, page: 1}, processData: true}).then(function () {
+        auditCollection.fetch({data: {app_label: app_label, model: model, object_id:object_id, page: 1}, processData: true}).then(function () {
             defaultLayout.content.show(new AuditListView({collection: auditCollection}));
         });
     }

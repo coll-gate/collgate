@@ -64,9 +64,9 @@ var defaults = {
         /* */
     },
     output: {
-        path: __dirname + '/static/js',
+        path: __dirname + '/build',
         filename: 'app.js',
-        publicPath: '/static/js/'
+        publicPath: '/build'
     },
     plugins: [
         new webpack.ProvidePlugin({_: 'underscore'}),
