@@ -120,7 +120,7 @@ class Entity(models.Model):
         return ContentType.objects.get_for_model(type(self))
 
     def save(self, *args, **kwargs):
-        if not self.content_type:
+        if not self.content_type_id:
             self.content_type = self._get_content_type()
         super(Entity, self).save(*args, **kwargs)
 
