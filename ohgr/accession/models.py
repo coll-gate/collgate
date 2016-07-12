@@ -32,23 +32,38 @@ class AccessionSynonym(models.Model):
 
     accession = models.ForeignKey('Accession', null=False, related_name='synonyms')
 
+    class Meta:
+        verbose_name = _("accession synonym")
+
 
 class Asset(Entity):
 
     accessions = models.ManyToManyField('Accession', related_name='assets')
+
+    class Meta:
+        verbose_name = _("panel")
 
 
 class Accession(Entity):
 
     data = HStoreField()
 
+    class Meta:
+        verbose_name = _("accession")
+
 
 class Batch(Entity):
 
     accession = models.ForeignKey('Accession', null=False, related_name='bundles')
+
+    class Meta:
+        verbose_name = _("batch")
 
 
 class Sample(models.Model):
 
     name = models.CharField(unique=True, null=False, blank=False, max_length=255, db_index=True)
     batch = models.ForeignKey('Batch', null=False, related_name='samples')
+
+    class Meta:
+        verbose_name = _("sample")

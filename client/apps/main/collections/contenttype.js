@@ -27,7 +27,7 @@ var Collection = Backbone.Collection.extend({
                 result.push(group);
             }
 
-            group.options.push({id: data[i].id, value: id[1]});
+            group.options.push({id: data[i].id, value: data[i].value});
             prev = id[0];
         }
 

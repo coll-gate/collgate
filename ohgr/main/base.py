@@ -97,6 +97,7 @@ def get_contents_types(request):
     add = False
     for content_type in ContentType.objects.all():
         cts = "%s.%s" % (content_type.app_label, content_type.model)
+        label = content_type.name.title()
         add = True
         for ignore_pattern in ignore_list:
             if cts.startswith(ignore_pattern):
@@ -104,6 +105,6 @@ def get_contents_types(request):
                 break
 
         if add:
-            types.append({'id': cts, 'value': cts})
+            types.append({'id': cts, 'value': label})
 
     return HttpResponseRest(request, types)

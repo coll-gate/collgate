@@ -34,12 +34,23 @@ class TaxonRank(ChoiceEnum):
     SUB_SPECIE = IntegerChoice(81, _("Sub-specie"))
 
 
+class Taxon(Entity):
+
+    rank = models.IntegerField(null=False, blank=False, choices=TaxonRank.choices())
+
+    parent = models.ForeignKey('Taxon', null=True)
+    parent_list = models.CharField(max_length=1024, blank=True, default="")
+
+    class Meta:
+        verbose_name = _("taxon")
+
+
 class TaxonSynonym(Entity):
 
     language = models.CharField(null=False, blank=False, max_length=2, choices=Languages.choices())
     type = models.IntegerField(null=False, blank=False, choices=TaxonSynonymType.choices())
 
-    taxon = models.ForeignKey('Taxon', null=False, related_name='synonyms')
+    taxon = models.ForeignKey(Taxon, null=False, related_name='synonyms')
 
     def audit_create(self, user):
         return "Create TaxonSynonym %s for taxon(id=%s)" % (self.name, self.taxon.pk)
@@ -47,10 +58,5 @@ class TaxonSynonym(Entity):
     def audit_delete(self, user):
         return "Delete TaxonSynonym %s for taxon(id=%s)" % (self.name, self.taxon.pk)
 
-
-class Taxon(Entity):
-
-    rank = models.IntegerField(null=False, blank=False, choices=TaxonRank.choices())
-
-    parent = models.ForeignKey('Taxon', null=True)
-    parent_list = models.CharField(max_length=1024, blank=True, default="")
+    class Meta:
+        verbose_name = _("taxon synonym")

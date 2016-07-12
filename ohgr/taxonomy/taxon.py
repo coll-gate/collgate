@@ -5,7 +5,7 @@
 """
 ohgr taxonomy taxon rest handlers
 """
-from django.db.models import Q
+from django.db.models import Q, Prefetch
 from django.shortcuts import get_object_or_404
 
 from permission.utils import get_permissions_for
@@ -42,19 +42,14 @@ class RestTaxonomyRank(RestTaxonomy):
 @RestTaxonomy.def_auth_request(Method.POST, Format.JSON, content={
     "type": "object",
     "properties": {
-        "taxon": {
-            "type": "object",
-            "properties": {
-                "name": {"type": "string", 'minLength': 3, 'maxLength': 32},
-                "rank": {"type": "number", 'minimum': 0, 'maximum': 100},
-                "parent": {"type": "number", 'minimum': 0},
-            },
-        },
+        "name": {"type": "string", 'minLength': 3, 'maxLength': 32},
+        "rank": {"type": "number", 'minimum': 0, 'maximum': 100},
+        "parent": {"type": "number", 'minimum': 0},
     },
 }, perms={'taxonomy.add_taxon': _('You are not allowed to create a taxon')}
 )
 def create_taxon(request):
-    taxon = request.data['taxon']
+    taxon = request.data
 
     parent_id = int_arg(taxon['parent'])
     parent = None
@@ -70,8 +65,16 @@ def create_taxon(request):
         'id': taxon.id,
         'name': taxon.name,
         'rank': taxon.rank,
-        'parent': taxon.parent
+        'parent': taxon.parent,
+        'synonyms': [],
     }
+
+    for s in taxon.synonyms.all():
+        response['synonyms'].append({
+            'name': s.name,
+            'type': s.type,
+            'language': s.language,
+        })
 
     return HttpResponseRest(request, response)
 
@@ -86,12 +89,37 @@ def opt_taxon_list(request):
 
 @RestTaxonomy.def_auth_request(Method.GET, Format.JSON)
 def get_taxon_list(request):
-    taxons = Taxon.objects.all()
-    synonyms = TaxonSynonym.objects.all()
+    results_per_page = 10
+    page = int_arg(request.GET.get('page', 1))
+    offset = (page-1) * results_per_page
+    limit = offset + results_per_page
+
+    taxons = Taxon.objects.prefetch_related('synonyms').all()[offset:limit]
+
+    taxons_list = []
+    for taxon in taxons:
+        t = {
+            'id': taxon.pk,
+            'name': taxon.name,
+            'parent': taxon.parent,
+            'parent_list': taxon.parent_list.split(','),
+            'synonyms': []
+        }
+
+        for synonym in taxon.synonyms.all():
+            t['synonyms'].append({
+                'id': synonym.id,
+                'name': synonym.name,
+                'type': synonym.type,
+                'language': synonym.language
+            })
+
+        taxons_list.append(t)
 
     response = {
-        'taxons': taxons,
-        'synonyms': synonyms,
+        'items': taxons_list,
+        'total_count': Taxon.objects.all().count(),
+        'page': 1,
     }
 
     return HttpResponseRest(request, response)
@@ -135,34 +163,42 @@ def opt_search_taxon(request):
     return HttpResponseRest(request, response)
 
 
-@RestTaxonomySearch.def_auth_request(Method.GET, Format.JSON, ('term', 'type', 'mode'))
+@RestTaxonomySearch.def_auth_request(Method.GET, Format.JSON, ('filters',))
 def search_taxon(request):
+    filters = json.loads(request.GET['filters'])
+    page = int_arg(request.GET.get('page', 1))
+
     taxons = None
     synonyms = None
 
     # TODO for rank search with taxon but into synonym too, then select_related... join...
-    if 'rank' in request.GET:
-        rank = int_arg(request.GET['rank'])
-        # taxons = Taxon.objects.filter(Q(name__icontains=request.GET['term']), Q(rank__lt=rank))
-        if request.GET['mode'] == 'ieq':
-            synonyms = TaxonSynonym.objects.filter(Q(name=request.GET['term']), Q(taxon__rank__lt=rank))
-        elif request.GET['mode'] == 'icontains':
-            synonyms = TaxonSynonym.objects.filter(Q(name__icontains=request.GET['term']), Q(taxon__rank__lt=rank))
-    elif request.GET['mode'] == 'ieq' and request.GET['type'] == 'name':
-        # taxons = Taxon.objects.filter(name__iexact=request.GET['term'])
-        synonyms = TaxonSynonym.objects.filter(name__iexact=request.GET['term'])
-    elif request.GET['mode'] == 'icontains' and request.GET['type'] == 'name':
-        synonyms = TaxonSynonym.objects.filter(name__icontains=request.GET['term'])
+    if 'rank' in filters['fields']:
+        rank = int_arg(filters['rank'])
+        # taxons = Taxon.objects.filter(Q(name__icontains=filters['name']), Q(rank__lt=rank))
+        if filters['method'] == 'ieq':
+            synonyms = TaxonSynonym.objects.filter(Q(name=filters['name']), Q(taxon__rank__lt=rank))
+        elif filters['method'] == 'icontains':
+            synonyms = TaxonSynonym.objects.filter(Q(name__icontains=filters['name']), Q(taxon__rank__lt=rank))
+    elif filters['method'] == 'ieq' and 'name' in filters['fields']:
+        # taxons = Taxon.objects.filter(name__iexact=filters['name'])
+        synonyms = TaxonSynonym.objects.filter(name__iexact=filters['name'])
+    elif filters['method'] == 'icontains' and 'name' in filters['fields']:
+        synonyms = TaxonSynonym.objects.filter(name__icontains=filters['name'])
 
-    response = []
+    taxons_list = []
 
     if synonyms:
         for s in synonyms:
-            response.append({"id": str(s.taxon_id), "label": s.name, "value": s.name})
+            taxons_list.append({"id": str(s.taxon_id), "label": s.name, "value": s.name})
 
     if taxons:
         for t in taxons:
-            response.append({"id": str(t.id), "label": t.name, "value": t.name})
+            taxons_list.append({"id": str(t.id), "label": t.name, "value": t.name})
+
+    response = {
+        'items': taxons_list,
+        'page': page
+    }
 
     return HttpResponseRest(request, response)
 
