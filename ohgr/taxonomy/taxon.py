@@ -182,6 +182,7 @@ def search_taxon(request):
     elif filters['method'] == 'ieq' and 'name' in filters['fields']:
         # taxons = Taxon.objects.filter(name__iexact=filters['name'])
         synonyms = TaxonSynonym.objects.filter(name__iexact=filters['name'])
+        print(synonyms.count())
     elif filters['method'] == 'icontains' and 'name' in filters['fields']:
         synonyms = TaxonSynonym.objects.filter(name__icontains=filters['name'])
 

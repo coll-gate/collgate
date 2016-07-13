@@ -72,16 +72,22 @@ var TaxonItemView = Marionette.ItemView.extend({
 
     onSynonymNameInput: function () {
         if (this.validateName()) {
+            var filters = {
+                fields: ["name"],
+                method: "ieq",
+                name: this.ui.synonym_name.val()
+            };
+
             $.ajax({
                 type: "GET",
                 url: ohgr.baseUrl + 'taxonomy/search/',
                 dataType: 'json',
-                data: {term: this.ui.synonym_name.val(), type: "name", mode: "ieq"},
+                data: {filters: JSON.stringify(filters)},
                 el: this.ui.synonym_name,
                 success: function(data) {
-                    if (data.length > 0) {
-                        for (var i in data) {
-                            var t = data[i];
+                    if (data.items.length > 0) {
+                        for (var i in data.items) {
+                            var t = data.items[i];
 
                             if (t.value.toUpperCase() == this.el.val().toUpperCase()) {
                                 $(this.el).validateField('failed', gt.gettext('Taxon name already in usage'));
@@ -101,7 +107,9 @@ var TaxonItemView = Marionette.ItemView.extend({
         var name = $(this.ui.synonym_name).val();
         var language = $(this.ui.synonym_language).val();
 
-        // HOW TODO that using backbones model
+        // TODO Is using a backbone plugin in way to manage nested models will be interesting,
+        // to replace this manual ajax query and array in models ?
+        // same for removeSynonym
         $.ajax({
             view: this,
             type: "PUT",

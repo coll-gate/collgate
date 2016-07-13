@@ -111,8 +111,8 @@ var Controller = Marionette.Controller.extend({
             },
 
             close: function () {
-                $(this.ui.username).select2('destroy');
-                $(this.el).modal('hide').data('bs.modal', null);
+                $(this.ui.username).select2('destroy');  // destroy completely the dialog
+                $(this.el).modal('hide').data('bs.modal', null);  // and hide the glass-pan
             },
 
             onBeforeDestroy: function() {
