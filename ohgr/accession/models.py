@@ -41,7 +41,7 @@ class DescriptorType(models.Model):
     description = models.TextField()
 
     # JSON encoded values (mostly a dict) and generally extracted from crop-ontology minus some useless details.
-    values = models.TextField()
+    values = models.TextField(default="", null=False)
 
 
 class AccessionSynonymType(ChoiceEnum):

@@ -14,7 +14,7 @@ GROUPS = {
 
 
 def fixture():
-    sys.stdout.write(" + Create descriptors types groups...")
+    sys.stdout.write(" + Create descriptors types groups...\n")
 
     for group_name in GROUPS:
         group, created = DescriptorGroup.objects.get_or_create(name=group_name)

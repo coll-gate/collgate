@@ -3,4 +3,5 @@
 ORDER = [
     'descriptorsgroups',
     'descriptorstypes',
+    'countries'
 ]

@@ -10,6 +10,8 @@ import sys
 import importlib
 
 from django.core.management.base import BaseCommand
+from django.db import transaction
+
 from igdectk.module.manager import module_manager
 
 
@@ -17,6 +19,16 @@ class Command(BaseCommand):
     help = "Install fixtures for each application."
 
     def handle(self, *args, **options):
+        connection = None
+        error = False
+
+        sys.stdout.write(" + Begin transaction...\n")
+        connection = transaction.get_connection()
+
+        connection.set_autocommit(False)
+
+        error = False
+
         for module in module_manager.modules:
             sys.stdout.write("Lookups for fixtures in module '%s'\n" % module.name)
 
@@ -35,7 +47,17 @@ class Command(BaseCommand):
                         foo.fixture()
                         sys.stdout.write("  - Done fixture '%s':\n" % fixture)
                     except BaseException as e:
-                        continue
+                        sys.stderr.write(e + "\n")
+                        error = True
 
             except BaseException:
                 continue
+
+        if not error:
+            sys.stdout.write(" + Commit transaction...\n")
+            connection.commit()
+        else:
+            sys.stdout.write(" ! Rollback transaction...\n")
+            connection.rollback()
+
+        connection.close()
