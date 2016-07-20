@@ -39,7 +39,7 @@ msgstr "Liste des utilisateurs"
 
 #: ../../../routers/permission.js:54
 msgid "List of permissions for user"
-msgstr "List des permissions pour l'utilisateur"
+msgstr "Liste des permissions pour l'utilisateur"
 
 #: ../../../routers/permission.js:71
 msgid "List of groups"

@@ -28,7 +28,7 @@ msgstr "Créer une accession"
 
 #: apps.py:38
 msgid "List accessions"
-msgstr "List des accessions"
+msgstr "Liste des accessions"
 
 #: base.py:47
 msgid "You are not allowed to create an accession"

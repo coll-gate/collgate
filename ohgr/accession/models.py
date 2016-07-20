@@ -35,13 +35,28 @@ class DescriptorType(models.Model):
     code = models.CharField(unique=True, max_length=64, null=False, blank=False)
 
     # default should belong to the general group.
-    group = models.ForeignKey(DescriptorGroup, null=False)
+    group = models.ForeignKey(DescriptorGroup, null=False, related_name='types_set')
 
     # informative description.
     description = models.TextField()
 
     # JSON encoded values (mostly a dict) and generally extracted from crop-ontology minus some useless details.
     values = models.TextField(default="", null=False)
+
+
+class DescriptorValue(models.Model):
+    """
+    For some descriptors value are in a specific table.
+    """
+
+    descriptor = models.ForeignKey(DescriptorType, null=False, related_name='values_set')
+
+    # Can be none, one or multiples parents values (ie: city in region in country...)
+    # syntax could be "1,2" for two directs parent, and "1.2.3,4" with two parents and a hierarchy using dot
+    parents = models.CharField(max_length=255, default="")
+
+    # JSON encoded single value as property (type, format, range, value...)
+    value = models.CharField(max_length=512, blank=False, null=False)
 
 
 class AccessionSynonymType(ChoiceEnum):

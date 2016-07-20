@@ -26,16 +26,24 @@ class OhgrAccession(ApplicationMain):
         accession_module = Module('accession', base_url='ohgr')
         accession_module.include_urls((
             'base',
+            'descriptor',
             )
         )
 
         # accession menu
         menu_accession = ModuleMenu('accession', _('Accession'), auth=AUTH_USER)
         menu_accession.add_entry(
-            MenuEntry('create-accession', _('Create accession'), "~accession/Accession/create", icon=Glyph.PLUS_SIGN, order=1))
+            MenuEntry('create-accession', _('Create accession'), "~accession/Accession/create",
+                      icon=Glyph.PLUS_SIGN, order=1))
+        menu_accession.add_entry(
+            MenuEntry('create-batch', _('Create batch'), "~accession/Batch/create",
+                      icon=Glyph.PLUS_SIGN, order=2))
         menu_accession.add_entry(MenuSeparator(100))
         menu_accession.add_entry(
-            MenuEntry('list-accession', _('List accessions'), "#accession/", icon=Glyph.LIST, order=101))
+            MenuEntry('list-accession', _('List accessions'), "#accession/accession/", icon=Glyph.LIST, order=101))
+        menu_accession.add_entry(MenuSeparator(200))
+        menu_accession.add_entry(
+            MenuEntry('list-descriptor-group', _('List groups of descriptors'), "#accession/descriptor/group/", icon=Glyph.LEAF, order=201))
         accession_module.add_menu(menu_accession)
 
         module_manager.register_menu(accession_module)

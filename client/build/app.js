@@ -65,7 +65,7 @@
 /******/ 	}
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "2794e838751a098c7b7a"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "b96cd525aa415c677e9d"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -570,7 +570,7 @@
 /******/ 	__webpack_require__.c = installedModules;
 /******/
 /******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "/static/js/";
+/******/ 	__webpack_require__.p = "/build";
 /******/
 /******/ 	// __webpack_hash__
 /******/ 	__webpack_require__.h = function() { return hotCurrentHash; };
@@ -597,7 +597,7 @@
 	var Marionette = __webpack_require__(4);
 	//var GetText = require("node-gettext");
 	i18next = __webpack_require__(7);
-	logger = __webpack_require__(23);
+	Logger = __webpack_require__(23);
 	// select2 as jquery plugin
 	$.select2 = __webpack_require__(24);
 	__webpack_require__(25);
@@ -605,6 +605,22 @@
 	// ohgr global application
 	ohgr = new Marionette.Application({
 	    initialize: function(options) {
+	        Logger.useDefaults({
+	            defaultLevel: Logger.WARN,
+	            formatter: function (messages, context) {
+	                messages.unshift(new Date().toLocaleString());
+	            }
+	        })
+	
+	        if (session.debug) {
+	            Logger.setLevel(Logger.DEBUG);
+	        }
+	
+	        Logger.time('Application startup');
+	
+	        // create a global default logger
+	        session.logger = Logger.get('default');
+	
 	        // // capture error on models
 	        // var ErrorHandlingModel = Backbone.Model.extend({
 	        //     initialize: function(attributes, options) {
@@ -690,8 +706,12 @@
 	    onStart: function(options) {
 	        // Starts the URL handling framework and automatically route as possible
 	        Backbone.history.start({pushState: true, silent: false, root: '/ohgr'});
+	
+	        Logger.timeEnd('Application startup');
 	    }
 	});
+	
+	application = ohgr;
 	
 	ohgr.addRegions({
 	    mainRegion: "#main_content",
@@ -739,7 +759,7 @@
 	    // i18n
 	    i18next.init({
 	        initImmediate: false,  // avoid setTimeout
-	        lng: user.language,
+	        lng: session.language,
 	        ns: 'default',
 	        debug: false,
 	        fallbackLng: 'en'
@@ -750,32 +770,19 @@
 	    window.gt.gettext = i18next.t;
 	    window.gt._ = i18next.t;
 	
-	    if (user.language === "fr") {
+	    if (session.language === "fr") {
 	        __webpack_require__(29);
 	    } else {  // default to english
 	    }
 	
-	    $.fn.select2.defaults.set('language', user.language);
+	    $.fn.select2.defaults.set('language', session.language);
 	
 	    // each modules
 	    this.main = __webpack_require__(30);
-	    this.permission = __webpack_require__(48);
-	    this.audit = __webpack_require__(84);
-	    this.taxonomy = __webpack_require__(95);
-	    this.accession = __webpack_require__(110);
-	
-	    var client = loggly.createClient({
-	        token: "your-really-long-input-token",
-	        subdomain: baseUrl,
-	        auth: {
-	            username: "your-username",
-	            password: "your-password"
-	        },
-	        tags: ['global-tag']
-	    });
-	
-	
-	    client.info('Application started');
+	    this.permission = __webpack_require__(50);
+	    this.audit = __webpack_require__(86);
+	    this.taxonomy = __webpack_require__(98);
+	    this.accession = __webpack_require__(113);
 	});
 	
 	//gt = new GetText();
@@ -17141,8 +17148,10 @@
 	var MainModule = Marionette.Module.extend({
 	
 	    initialize: function(moduleName, app, options) {
+	        Logger.time("Init main module");
+	
 	        // i18n
-	        if (user.language === "fr") {
+	        if (session.language === "fr") {
 	            i18next.addResources('fr', 'default', __webpack_require__(31));
 	            //gt.addTextdomain('default', require('./locale/fr/LC_MESSAGES/default.mo'));
 	        } else {  // default to english
@@ -17165,18 +17174,32 @@
 	            collection: this.collections.languages,
 	        });
 	
+	        var ContentTypeCollection = __webpack_require__(37);
+	        this.collections.contentType = new ContentTypeCollection();
+	
+	        this.views.contentTypes = new SelectOptionItemView({
+	            className: 'content-type',
+	            collection: this.collections.contentType,
+	        });
+	
 	        this.views.Home = Marionette.CompositeView.extend({
 	            el: '#main_content',
-	            template: __webpack_require__(37),
+	            template: __webpack_require__(39),
 	        });
+	
+	        Logger.timeEnd("Init main module");
 	    },
 	
 	    onStart: function(options) {
-	        var MainRouter = __webpack_require__(38);
+	        Logger.time("Start main module");
+	
+	        var MainRouter = __webpack_require__(40);
 	        this.routers.main = new MainRouter();
 	
-	        var ProfileRouter = __webpack_require__(45);
+	        var ProfileRouter = __webpack_require__(47);
 	        this.routers.profile = new ProfileRouter();
+	
+	        Logger.timeEnd("Start main module");
 	    },
 	
 	    onStop: function(options) {
@@ -17359,7 +17382,7 @@
 	var LanguageModel = __webpack_require__(36);
 	
 	var LanguageCollection = Backbone.Collection.extend({
-	    url: ohgr.baseUrl + 'language',
+	    url: ohgr.baseUrl + 'main/language',
 	    model: LanguageModel,
 	
 	    parse: function(data) {
@@ -17403,12 +17426,85 @@
 	    defaults: function() {
 	        return {id: '', value: ''}
 	    },
-	    url: ohgr.baseUrl + 'language/:id'
+	    url: ohgr.baseUrl + 'main/language/:id'
 	});
 
 
 /***/ },
 /* 37 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file contenttype.js
+	 * @brief Content type collection
+	 * @author Frederic SCHERMA
+	 * @date 2016-07-08
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var ContentTypeModel = __webpack_require__(38);
+	
+	var Collection = Backbone.Collection.extend({
+	    url: ohgr.baseUrl + 'main/content-type',
+	    model: ContentTypeModel,
+	
+	    parse: function(data) {
+	        var result = [];
+	        var prev = "";
+	        var group = {};
+	
+	        for (var i = 0; i < data.length; ++i) {
+	            var id = data[i].id.split('.');
+	
+	            if (id[0] != prev) {
+	                group = {value: id[0], options: []};
+	                result.push(group);
+	            }
+	
+	            group.options.push({id: data[i].id, value: data[i].value});
+	            prev = id[0];
+	        }
+	
+	        return result;
+	    },
+	
+	    default: [],
+	
+	    findValue: function(id) {
+	        var res = this.findWhere({id: id});
+	        return res ? res.get('value') : '';
+	    },
+	});
+	
+	module.exports = Collection;
+
+
+/***/ },
+/* 38 */
+/***/ function(module, exports) {
+
+	/**
+	 * @file contenttype.js
+	 * @brief Content type model
+	 * @author Frederic SCHERMA
+	 * @date 2016-07-08
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	module.exports = Backbone.Model.extend({
+	    defaults: function() {
+	        return {id: '', value: ''}
+	    },
+	    url: ohgr.baseUrl + 'main/content-type/:id'
+	});
+
+
+/***/ },
+/* 39 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -17429,7 +17525,7 @@
 
 
 /***/ },
-/* 38 */
+/* 40 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -17443,10 +17539,10 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var AboutView = __webpack_require__(39);
-	var HelpIndexView = __webpack_require__(41);
-	var DefaultLayout = __webpack_require__(43);
-	var TitleView = __webpack_require__(44);
+	var AboutView = __webpack_require__(41);
+	var HelpIndexView = __webpack_require__(43);
+	var DefaultLayout = __webpack_require__(45);
+	var TitleView = __webpack_require__(46);
 	
 	var Router = Marionette.AppRouter.extend({
 	    routes : {
@@ -17486,7 +17582,7 @@
 
 
 /***/ },
-/* 39 */
+/* 41 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -17504,60 +17600,6 @@
 	var View = Marionette.ItemView.extend({
 	    tagName: 'div',
 	    className: 'about',
-	    template: __webpack_require__(40),
-	
-	    ui: {
-	    },
-	
-	    events: {
-	    },
-	
-	    initialize: function() {
-	    },
-	
-	    onRender: function() {
-	    },
-	});
-	
-	module.exports = View;
-
-
-/***/ },
-/* 40 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var _ = __webpack_require__(1);
-	
-	module.exports = function (obj) {
-	obj || (obj = {});
-	var __t, __p = '';
-	with (obj) {
-	__p += '<p>Online Host of Genetics Resources alias Coll-Gate Copyright &copy; 2016 INRA and OpenSource project under XXX.</p><div class="help-about-authors"><span>List of authors :</span><ul class="author-list"><li><span style="font-weight: bold">Frédéric SCHERMA</span> at INRA UMR1095 GDEC</li><li><span style="font-weight: bold">Nicolas GUILHOT</span> at INRA UMR1095 GDEC</li></ul></div>';
-	
-	}
-	return __p
-	};
-
-
-/***/ },
-/* 41 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file index.js
-	 * @brief Help index view
-	 * @author Frederic SCHERMA
-	 * @date 2016-06-14
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var Marionette = __webpack_require__(4);
-	
-	var View = Marionette.ItemView.extend({
-	    tagName: 'div',
-	    className: 'help-index',
 	    template: __webpack_require__(42),
 	
 	    ui: {
@@ -17586,7 +17628,7 @@
 	obj || (obj = {});
 	var __t, __p = '';
 	with (obj) {
-	__p += '<span>TODO</span>';
+	__p += '<p>Online Host of Genetics Resources alias Coll-Gate Copyright &copy; 2016 INRA and OpenSource project under XXX.</p><div class="help-about-authors"><span>List of authors :</span><ul class="author-list"><li><span style="font-weight: bold">Frédéric SCHERMA</span> at INRA UMR1095 GDEC</li><li><span style="font-weight: bold">Nicolas GUILHOT</span> at INRA UMR1095 GDEC</li></ul></div>';
 	
 	}
 	return __p
@@ -17595,6 +17637,60 @@
 
 /***/ },
 /* 43 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file index.js
+	 * @brief Help index view
+	 * @author Frederic SCHERMA
+	 * @date 2016-06-14
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	
+	var View = Marionette.ItemView.extend({
+	    tagName: 'div',
+	    className: 'help-index',
+	    template: __webpack_require__(44),
+	
+	    ui: {
+	    },
+	
+	    events: {
+	    },
+	
+	    initialize: function() {
+	    },
+	
+	    onRender: function() {
+	    },
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 44 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<span>TODO</span>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 45 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -17640,7 +17736,7 @@
 
 
 /***/ },
-/* 44 */
+/* 46 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -17669,7 +17765,7 @@
 
 
 /***/ },
-/* 45 */
+/* 47 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -17683,9 +17779,9 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var EditProfileView = __webpack_require__(46);
-	var DefaultLayout = __webpack_require__(43);
-	var TitleView = __webpack_require__(44);
+	var EditProfileView = __webpack_require__(48);
+	var DefaultLayout = __webpack_require__(45);
+	var TitleView = __webpack_require__(46);
 	
 	var ProfileRouter = Marionette.AppRouter.extend({
 	    routes : {
@@ -17718,7 +17814,7 @@
 
 
 /***/ },
-/* 46 */
+/* 48 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -17736,7 +17832,7 @@
 	var View = Marionette.ItemView.extend({
 	    tagName: 'div',
 	    className: 'profile-edit',
-	    template: __webpack_require__(47),
+	    template: __webpack_require__(49),
 	
 	    ui: {
 	    },
@@ -17755,7 +17851,7 @@
 
 
 /***/ },
-/* 47 */
+/* 49 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -17772,7 +17868,7 @@
 
 
 /***/ },
-/* 48 */
+/* 50 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -17790,6 +17886,8 @@
 	var PermissionModule = Marionette.Module.extend({
 	
 	    initialize: function(moduleName, app, options) {
+	        Logger.time("Init permission module");
+	
 	        this.models = {};
 	        this.collections = {};
 	        this.views = {};
@@ -17797,32 +17895,37 @@
 	        this.controllers = {};
 	
 	        // i18n
-	        if (user.language === "fr") {
-	            i18next.addResources('fr', 'default', __webpack_require__(49));
+	        if (session.language === "fr") {
+	            i18next.addResources('fr', 'default', __webpack_require__(51));
 	            //gt.addTextdomain('default', require('./locale/fr/LC_MESSAGES/default.mo'));
 	        } else {  // default to english
-	            i18next.addResources('en', 'default', __webpack_require__(50));
+	            i18next.addResources('en', 'default', __webpack_require__(52));
 	            //gt.addTextdomain('default', require('./locale/en/LC_MESSAGES/default.mo'));
 	        }
 	
 	        var SelectOptionItemView = __webpack_require__(33);
 	
-	        var PermissionTypeCollection = __webpack_require__(51);
+	        var PermissionTypeCollection = __webpack_require__(53);
 	        this.collections.permissionType = new PermissionTypeCollection();
 	
 	        this.views.permissionType = new SelectOptionItemView({
 	            className: 'permission-type',
 	            collection: this.collections.permissionType,
 	        });
+	
+	        Logger.timeEnd("Init permission module");
 	    },
 	
 	    onStart: function(options) {
-	        var PermissionRouter = __webpack_require__(53);
+	        Logger.time("Start permission module");
+	
+	        var PermissionRouter = __webpack_require__(55);
 	        this.routers.permission = new PermissionRouter();
+	
+	        Logger.timeEnd("Start permission module");
 	    },
 	
 	    onStop: function(options) {
-	
 	    },
 	});
 	
@@ -17833,7 +17936,7 @@
 
 
 /***/ },
-/* 49 */
+/* 51 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -17861,7 +17964,7 @@
 	};
 
 /***/ },
-/* 50 */
+/* 52 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -17889,7 +17992,7 @@
 	};
 
 /***/ },
-/* 51 */
+/* 53 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -17902,7 +18005,7 @@
 	 * @details
 	 */
 	
-	var PermissionTypeModel = __webpack_require__(52);
+	var PermissionTypeModel = __webpack_require__(54);
 	
 	var Collection = Backbone.Collection.extend({
 	    url: ohgr.baseUrl + 'permission/type/',
@@ -17947,7 +18050,7 @@
 
 
 /***/ },
-/* 52 */
+/* 54 */
 /***/ function(module, exports) {
 
 	/**
@@ -17969,7 +18072,7 @@
 
 
 /***/ },
-/* 53 */
+/* 55 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -17983,19 +18086,19 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var PermissionCollection = __webpack_require__(54);
-	var PermissionListView = __webpack_require__(56);
-	var PermissionAddView = __webpack_require__(60);
-	var PermissionUserCollection = __webpack_require__(62);
-	var PermissionUserListView = __webpack_require__(64);
-	var PermissionGroupCollection = __webpack_require__(68);
-	var PermissionGroupListView = __webpack_require__(70);
-	var PermissionGroupUserCollection = __webpack_require__(74);
-	var PermissionGroupUserListView = __webpack_require__(76);
-	var PermissionGroupAddUserView = __webpack_require__(80);
-	var PermissionAddGroupView = __webpack_require__(82);
-	var DefaultLayout = __webpack_require__(43);
-	var TitleView = __webpack_require__(44);
+	var PermissionCollection = __webpack_require__(56);
+	var PermissionListView = __webpack_require__(58);
+	var PermissionAddView = __webpack_require__(62);
+	var PermissionUserCollection = __webpack_require__(64);
+	var PermissionUserListView = __webpack_require__(66);
+	var PermissionGroupCollection = __webpack_require__(70);
+	var PermissionGroupListView = __webpack_require__(72);
+	var PermissionGroupUserCollection = __webpack_require__(76);
+	var PermissionGroupUserListView = __webpack_require__(78);
+	var PermissionGroupAddUserView = __webpack_require__(82);
+	var PermissionAddGroupView = __webpack_require__(84);
+	var DefaultLayout = __webpack_require__(45);
+	var TitleView = __webpack_require__(46);
 	
 	var PermissionRouter = Marionette.AppRouter.extend({
 	    routes : {
@@ -18092,7 +18195,7 @@
 
 
 /***/ },
-/* 54 */
+/* 56 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -18105,7 +18208,7 @@
 	 * @details
 	 */
 	
-	var PermissionModel = __webpack_require__(55);
+	var PermissionModel = __webpack_require__(57);
 	
 	var PermissionCollection = Backbone.Collection.extend({
 	    url: function() {
@@ -18132,7 +18235,7 @@
 
 
 /***/ },
-/* 55 */
+/* 57 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -18189,7 +18292,7 @@
 
 
 /***/ },
-/* 56 */
+/* 58 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -18203,11 +18306,11 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var PermissionModel = __webpack_require__(55);
-	var PermissionView = __webpack_require__(57);
+	var PermissionModel = __webpack_require__(57);
+	var PermissionView = __webpack_require__(59);
 	
 	var PermissionListView = Marionette.CompositeView.extend({
-	    template: __webpack_require__(59),
+	    template: __webpack_require__(61),
 	    childViewContainer: ".permission-list",
 	    childView: PermissionView,
 	
@@ -18262,7 +18365,7 @@
 
 
 /***/ },
-/* 57 */
+/* 59 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -18276,11 +18379,11 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var PermissionModel = __webpack_require__(55);
+	var PermissionModel = __webpack_require__(57);
 	
 	var View = Marionette.ItemView.extend({
 	    tagName: 'div',
-	    template: __webpack_require__(58),
+	    template: __webpack_require__(60),
 	
 	    ui: {
 	        "remove_permission": ".remove-permission",
@@ -18302,7 +18405,7 @@
 
 
 /***/ },
-/* 58 */
+/* 60 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -18358,7 +18461,7 @@
 
 
 /***/ },
-/* 59 */
+/* 61 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -18375,7 +18478,7 @@
 
 
 /***/ },
-/* 60 */
+/* 62 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -18393,7 +18496,7 @@
 	var View = Marionette.ItemView.extend({
 	    tagName: 'div',
 	    className: 'permission-add',
-	    template: __webpack_require__(61),
+	    template: __webpack_require__(63),
 	
 	    ui: {
 	        add_permission: ".add-permission",
@@ -18457,7 +18560,7 @@
 
 
 /***/ },
-/* 61 */
+/* 63 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -18474,7 +18577,7 @@
 
 
 /***/ },
-/* 62 */
+/* 64 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -18487,7 +18590,7 @@
 	 * @details
 	 */
 	
-	var PermissionUserModel = __webpack_require__(63);
+	var PermissionUserModel = __webpack_require__(65);
 	
 	var Collection = Backbone.Collection.extend({
 	    url: function() {
@@ -18517,7 +18620,7 @@
 
 
 /***/ },
-/* 63 */
+/* 65 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -18581,7 +18684,7 @@
 
 
 /***/ },
-/* 64 */
+/* 66 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -18595,11 +18698,11 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var PermissionUserModel = __webpack_require__(63);
-	var PermissionUserView = __webpack_require__(65);
+	var PermissionUserModel = __webpack_require__(65);
+	var PermissionUserView = __webpack_require__(67);
 	
 	var View = Marionette.CompositeView.extend({
-	    template: __webpack_require__(67),
+	    template: __webpack_require__(69),
 	    childView: PermissionUserView,
 	    childViewContainer: 'tbody.permission-user-list',
 	
@@ -18618,7 +18721,7 @@
 
 
 /***/ },
-/* 65 */
+/* 67 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -18632,12 +18735,12 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var PermissionUserModel = __webpack_require__(63);
+	var PermissionUserModel = __webpack_require__(65);
 	
 	var View = Marionette.ItemView.extend({
 	    tagName: 'tr',
 	    className: 'element object user',
-	    template: __webpack_require__(66),
+	    template: __webpack_require__(68),
 	
 	    ui: {
 	        enable_user: 'span.enable-user',
@@ -18668,7 +18771,7 @@
 	
 	    enableUser: function () {
 	        // can't modify himself
-	        if (user.username == this.model.get('username'))
+	        if (session.user.username == this.model.get('username'))
 	            return;
 	
 	        this.model.save({is_active: true}, {patch: true, wait: true});
@@ -18676,7 +18779,7 @@
 	
 	    disableUser: function () {
 	        // can't modify himself
-	        if (user.username == this.model.get('username'))
+	        if (session.user.username == this.model.get('username'))
 	            return;
 	
 	        // this.model.set('is_active', false);
@@ -18686,7 +18789,7 @@
 	
 	    setStaff: function () {
 	        // can't modify himself
-	        if (user.username == this.model.get('username'))
+	        if (session.user.username == this.model.get('username'))
 	            return;
 	
 	        this.model.save({is_staff: true}, {patch: true, wait: true});
@@ -18694,7 +18797,7 @@
 	
 	    setRegular: function () {
 	        // can't modify himself
-	        if (user.username == this.model.get('username'))
+	        if (session.user.username == this.model.get('username'))
 	            return;
 	
 	        this.model.save({is_staff: false}, {patch: true, wait: true});
@@ -18702,7 +18805,7 @@
 	
 	    setSuperUser: function () {
 	        // can't modify himself
-	        if (user.username == this.model.get('username'))
+	        if (session.user.username == this.model.get('username'))
 	            return;
 	
 	        this.model.save({is_superuser: true}, {patch: true, wait: true});
@@ -18710,7 +18813,7 @@
 	
 	    setUser: function () {
 	        // can't modify himself
-	        if (user.username == this.model.get('username'))
+	        if (session.user.username == this.model.get('username'))
 	            return;
 	
 	        this.model.save({is_superuser: false}, {patch: true, wait: true});
@@ -18725,7 +18828,7 @@
 
 
 /***/ },
-/* 66 */
+/* 68 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -18769,7 +18872,7 @@
 
 
 /***/ },
-/* 67 */
+/* 69 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -18798,7 +18901,7 @@
 
 
 /***/ },
-/* 68 */
+/* 70 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -18811,7 +18914,7 @@
 	 * @details
 	 */
 	
-	var PermissionGroupModel = __webpack_require__(69);
+	var PermissionGroupModel = __webpack_require__(71);
 	
 	var Collection = Backbone.Collection.extend({
 	    url: function() { return ohgr.baseUrl + 'permission/group/'; },
@@ -18827,7 +18930,7 @@
 
 
 /***/ },
-/* 69 */
+/* 71 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -18881,7 +18984,7 @@
 
 
 /***/ },
-/* 70 */
+/* 72 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -18895,11 +18998,11 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var PermissionGroupModel = __webpack_require__(69);
-	var PermissionGroupView = __webpack_require__(71);
+	var PermissionGroupModel = __webpack_require__(71);
+	var PermissionGroupView = __webpack_require__(73);
 	
 	var View = Marionette.CompositeView.extend({
-	    template: __webpack_require__(73),
+	    template: __webpack_require__(75),
 	    childView: PermissionGroupView,
 	    childViewContainer: 'tbody.permission-group-list',
 	
@@ -18918,7 +19021,7 @@
 
 
 /***/ },
-/* 71 */
+/* 73 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -18932,12 +19035,12 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var PermissionGroupModel = __webpack_require__(69);
+	var PermissionGroupModel = __webpack_require__(71);
 	
 	var View = Marionette.ItemView.extend({
 	    tagName: 'tr',
 	    className: 'element object group',
-	    template: __webpack_require__(72),
+	    template: __webpack_require__(74),
 	
 	    ui: {
 	        delete_group: 'span.delete-group',
@@ -18978,7 +19081,7 @@
 
 
 /***/ },
-/* 72 */
+/* 74 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -19007,7 +19110,7 @@
 
 
 /***/ },
-/* 73 */
+/* 75 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -19030,7 +19133,7 @@
 
 
 /***/ },
-/* 74 */
+/* 76 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -19043,7 +19146,7 @@
 	 * @details
 	 */
 	
-	var PermissionGroupUserModel = __webpack_require__(75);
+	var PermissionGroupUserModel = __webpack_require__(77);
 	
 	var Collection = Backbone.Collection.extend({
 	    url: function() { return ohgr.baseUrl + 'permission/group/' + this.name + '/user/'; },
@@ -19064,7 +19167,7 @@
 
 
 /***/ },
-/* 75 */
+/* 77 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -19118,7 +19221,7 @@
 
 
 /***/ },
-/* 76 */
+/* 78 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -19132,11 +19235,11 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var PermissionGroupUserModel = __webpack_require__(75);
-	var PermissionGroupUserView = __webpack_require__(77);
+	var PermissionGroupUserModel = __webpack_require__(77);
+	var PermissionGroupUserView = __webpack_require__(79);
 	
 	var View = Marionette.CompositeView.extend({
-	    template: __webpack_require__(79),
+	    template: __webpack_require__(81),
 	    childView: PermissionGroupUserView,
 	    childViewContainer: 'tbody.group-user-list',
 	
@@ -19152,7 +19255,7 @@
 
 
 /***/ },
-/* 77 */
+/* 79 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -19166,12 +19269,12 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var PermissionGroupUserModel = __webpack_require__(75);
+	var PermissionGroupUserModel = __webpack_require__(77);
 	
 	var View = Marionette.ItemView.extend({
 	    tagName: 'tr',
 	    className: 'element object user',
-	    template: __webpack_require__(78),
+	    template: __webpack_require__(80),
 	
 	    ui: {
 	        remove_user: 'span.remove-user',
@@ -19192,7 +19295,7 @@
 	
 	    removeUserFromGroup: function () {
 	        // can't remove himself if it is not staff or superuser
-	        if (user.username == this.model.get('username') && !(this.model.get('is_staff') || this.model.get('is_superuser')))
+	        if (session.user.username == this.model.get('username') && !(this.model.get('is_staff') || this.model.get('is_superuser')))
 	            return;
 	
 	        this.model.destroy({wait: true});
@@ -19207,7 +19310,7 @@
 
 
 /***/ },
-/* 78 */
+/* 80 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -19232,7 +19335,7 @@
 
 
 /***/ },
-/* 79 */
+/* 81 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -19255,7 +19358,7 @@
 
 
 /***/ },
-/* 80 */
+/* 82 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -19273,7 +19376,7 @@
 	var View = Marionette.ItemView.extend({
 	    tagName: 'div',
 	    className: 'user-add',
-	    template: __webpack_require__(81),
+	    template: __webpack_require__(83),
 	
 	    ui: {
 	        add_user: ".add-user",
@@ -19357,7 +19460,7 @@
 
 
 /***/ },
-/* 81 */
+/* 83 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -19374,7 +19477,7 @@
 
 
 /***/ },
-/* 82 */
+/* 84 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -19392,7 +19495,7 @@
 	var View = Marionette.ItemView.extend({
 	    tagName: 'div',
 	    className: 'group-add',
-	    template: __webpack_require__(83),
+	    template: __webpack_require__(85),
 	
 	    ui: {
 	        add_group_btn: 'span.add-group',
@@ -19466,7 +19569,7 @@
 
 
 /***/ },
-/* 83 */
+/* 85 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -19483,7 +19586,7 @@
 
 
 /***/ },
-/* 84 */
+/* 86 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -19501,6 +19604,8 @@
 	var AuditModule = Marionette.Module.extend({
 	
 	    initialize: function(moduleName, app, options) {
+	        Logger.time("Init audit module");
+	
 	        this.models = {};
 	        this.collections = {};
 	        this.views = {};
@@ -19508,21 +19613,27 @@
 	        this.controllers = {};
 	
 	        // i18n
-	        if (user.language === "fr") {
-	            i18next.addResources('fr', 'default', __webpack_require__(85));
+	        if (session.language === "fr") {
+	            i18next.addResources('fr', 'default', __webpack_require__(87));
 	            //gt.addTextdomain('default', require('./locale/fr/LC_MESSAGES/default.mo'));
 	        } else {  // default to english
-	            i18next.addResources('en', 'default', __webpack_require__(86));
+	            i18next.addResources('en', 'default', __webpack_require__(88));
 	            //gt.addTextdomain('default', require('./locale/en/LC_MESSAGES/default.mo'));
 	        }
+	        
+	        Logger.timeEnd("Init audit module");
 	    },
 	
 	    onStart: function(options) {
+	        Logger.time("Start audit module");
+	        
 	        // var AuditRouter = require('./routers/audit');
 	        // this.routers.audit = new AuditRouter();
 	
-	        var AuditController = __webpack_require__(87);
+	        var AuditController = __webpack_require__(89);
 	        this.controllers.audit = new AuditController();
+	
+	        Logger.timeEnd("Start audit module");
 	    },
 	
 	    onStop: function(options) {
@@ -19537,7 +19648,7 @@
 
 
 /***/ },
-/* 85 */
+/* 87 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -19547,7 +19658,7 @@
 	};
 
 /***/ },
-/* 86 */
+/* 88 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -19557,7 +19668,7 @@
 	};
 
 /***/ },
-/* 87 */
+/* 89 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -19571,10 +19682,10 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var AuditCollection = __webpack_require__(88);
-	var AuditListView = __webpack_require__(90);
-	var DefaultLayout = __webpack_require__(43);
-	var TitleView = __webpack_require__(44);
+	var AuditCollection = __webpack_require__(90);
+	var AuditListView = __webpack_require__(92);
+	var DefaultLayout = __webpack_require__(45);
+	var TitleView = __webpack_require__(46);
 	
 	var Controller = Marionette.Controller.extend({
 	
@@ -19586,12 +19697,11 @@
 	                'class': 'modal',
 	                'tabindex': -1
 	            },
-	            template: __webpack_require__(94),
+	            template: __webpack_require__(96),
 	
 	            ui: {
 	                cancel: "button.cancel",
 	                search: "button.search",
-	                dialog: "#dlg_audit_by_username",
 	                username: "#username",
 	            },
 	
@@ -19656,53 +19766,6 @@
 	                    minimumInputLength: 3,
 	                    placeholder: gt.gettext("Select a username"),
 	                });
-	                /*$(this.ui.username).autocomplete({
-	                    open: function () {
-	                        $(this).autocomplete('widget').zIndex(10000);
-	                    },
-	                    source: function(req, callback) {
-	                        var terms = req.term || '';
-	
-	                        var filters = {
-	                            method: 'icontains',
-	                            fields: '*',
-	                            '*': terms.split(' ').filter(function (t) { return t.length > 2; }),
-	                        };
-	
-	                        $.ajax({
-	                            type: "GET",
-	                            url: ohgr.baseUrl + 'permission/user/search/',
-	                            dataType: 'json',
-	                            data: {filters: JSON.stringify(filters), page: 1},
-	                            async: true,
-	                            cache: true,
-	                            success: function(data) {
-	                                var results = [];
-	
-	                                for (var i = 0; i < data.items.length; ++i) {
-	                                    results.push({
-	                                        value: data.items[i].value,
-	                                        label: data.items[i].label
-	                                    })
-	                                }
-	
-	                                callback(results);
-	                            }
-	                        });
-	                    },
-	                    minLength: 3,
-	                    delay: 100,
-	                    //autoFocus: true,
-	                    search: function(event, ui) {
-	                        return true;
-	                    },
-	                    close: function (event, ui) {
-	                    },
-	                    change: function (event, ui) {
-	                    },
-	                    select: function(event, ui) {
-	                    }
-	                });*/
 	            },
 	
 	            closeAndDestroy: function() {
@@ -19721,8 +19784,8 @@
 	            },
 	
 	            close: function () {
-	                $(this.ui.username).select2('destroy');
-	                $(this.el).modal('hide').data('bs.modal', null);
+	                $(this.ui.username).select2('destroy');  // destroy completely the dialog
+	                $(this.el).modal('hide').data('bs.modal', null);  // and hide the glass-pan
 	            },
 	
 	            onBeforeDestroy: function() {
@@ -19757,19 +19820,152 @@
 	        });
 	    },
 	
-	    searchByEntityUUID: function (uuid) {
-	        alert("TODO");
+	    searchByEntity: function (uuid) {
+	            var ModalView = Marionette.ItemView.extend({
+	            tagName: 'div',
+	            attributes: {
+	                'id': 'dlg_audit_by_entity',
+	                'class': 'modal',
+	                'tabindex': -1
+	            },
+	            template: __webpack_require__(97),
+	
+	            ui: {
+	                cancel: "button.cancel",
+	                search: "button.search",
+	                entity: "#entity",
+	                content_type: "#content_type"
+	            },
+	
+	            events: {
+	                'click @ui.cancel': 'onCancel',
+	                'keydown': 'keyAction',
+	                'input @ui.entity': 'onEntityInput',
+	            },
+	
+	            triggers: {
+	                'click @ui.search': 'view:search',
+	            },
+	
+	            initialize: function () {
+	            },
+	
+	            onRender: function () {
+	                var view = this;
+	                $(this.el).modal();
+	
+	                ohgr.main.views.contentTypes.drawSelect(this.ui.content_type);
+	                ohgr.main.views.contentTypes.htmlFromValue(this.el);
+	
+	                $(this.ui.entity).select2({
+	                    dropdownParent: $(this.el),
+	                    content_type: $(this.ui.content_type),
+	                    ajax: {
+	                        url: ohgr.baseUrl + "main/entity/search/",
+	                        dataType: 'json',
+	                        delay: 250,
+	                        data: function (params) {
+	                            params.term || (params.term = '');
+	
+	                            //var name_match = params.term.match(/^([a-zA-Z0-9_-]{1,})$/);
+	                            var uuid_match = params.term.match(/^[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}$/);
+	
+	                            var filters = {
+	                                method: 'icontains'
+	                            };
+	
+	                            if (uuid_match) {
+	                                filters.fields = 'uuid';
+	                                filters.uuid = params.term;
+	                            } else {
+	                                var ct = view.ui.content_type.val().split('.');
+	
+	                                filters.fields = ['app_label', 'model', 'object_name'];
+	                                filters.app_label = ct[0];
+	                                filters.model = ct[1];
+	                                filters.object_name = params.term;
+	                            }
+	
+	                            return {
+	                                page: params.page,
+	                                filters: JSON.stringify(filters),
+	                            };
+	                        },
+	                        processResults: function (data, params) {
+	                            // no pagination
+	                            params.page = params.page || 1;
+	
+	                            var results = [];
+	
+	                            for (var i = 0; i < data.items.length; ++i) {
+	                                results.push({
+	                                    id: data.items[i].id,
+	                                    text: data.items[i].name
+	                                });
+	                            }
+	
+	                            return {
+	                                results: results,
+	                                pagination: {
+	                                    more: (params.page * 30) < data.total_count
+	                                }
+	                            };
+	                        },
+	                        cache: true
+	                    },
+	                    minimumInputLength: 3,
+	                    placeholder: gt.gettext("Select an entity UUID or name"),
+	                });
+	            },
+	
+	            closeAndDestroy: function() {
+	                ohgr.getRegion('modalRegion').reset();
+	            },
+	
+	            onCancel: function () {
+	                this.closeAndDestroy();
+	            },
+	
+	            keyAction: function(e) {
+	                var code = e.keyCode || e.which;
+	                if (code == 27) {
+	                    this.closeAndDestroy();
+	                }
+	            },
+	
+	            close: function () {
+	                $(this.ui.uuid).select2('destroy');
+	                $(this.el).modal('hide').data('bs.modal', null);
+	            },
+	
+	            onBeforeDestroy: function() {
+	                this.close();
+	            },
+	        });
+	
+	        var modal = new ModalView({controller: this});
+	        ohgr.getRegion('modalRegion').show(modal);
+	
+	        modal.on("view:search", function(args) {
+	            var object_id = $(args.view.ui.entity).val();
+	            var object_name = $(args.view.ui.entity).select2('data')[0].text;
+	            var ct = $(args.view.ui.content_type).val().split('.');
+	            if (ct.length == 2 && object_id) {
+	                this.getAuditListByEntity(ct[0], ct[1], object_id, object_name);
+	                args.view.closeAndDestroy();
+	            }
+	        }, this);
 	    },
 	
-	    getAuditListByUUID: function (uuid) {
+	    getAuditListByEntity: function (app_label, model, object_id, object_name) {
 	        var auditCollection = new AuditCollection([]);
 	
 	        var defaultLayout = new DefaultLayout({});
 	        ohgr.mainRegion.show(defaultLayout);
 	
-	        defaultLayout.title.show(new TitleView({title: gt.gettext("List of audit entries related to entity") + " " + uuid}));
+	        defaultLayout.title.show(new TitleView({title: gt.gettext("List of audit entries related to entity") + " " + app_label + "." + model + " " + object_name}));
 	
-	        auditCollection.fetch({data: {uuid: uuid, page: 1}, processData: true}).then(function () {
+	        auditCollection.fetch({data: {app_label: app_label, model: model, object_id:object_id, page: 1}, processData: true}).then(function () {
 	            defaultLayout.content.show(new AuditListView({collection: auditCollection}));
 	        });
 	    }
@@ -19779,7 +19975,7 @@
 
 
 /***/ },
-/* 88 */
+/* 90 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -19792,7 +19988,7 @@
 	 * @details
 	 */
 	
-	var AuditModel = __webpack_require__(89);
+	var AuditModel = __webpack_require__(91);
 	
 	var Collection = Backbone.Collection.extend({
 	    url: function() { return ohgr.baseUrl + 'audit/search/'; },
@@ -19808,7 +20004,7 @@
 
 
 /***/ },
-/* 89 */
+/* 91 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -19860,7 +20056,7 @@
 
 
 /***/ },
-/* 90 */
+/* 92 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -19874,10 +20070,10 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var AuditView = __webpack_require__(91);
+	var AuditView = __webpack_require__(93);
 	
 	var View = Marionette.CompositeView.extend({
-	    template: __webpack_require__(93),
+	    template: __webpack_require__(95),
 	    childView: AuditView,
 	    childViewContainer: 'div.audit-list',
 	
@@ -19895,7 +20091,7 @@
 
 
 /***/ },
-/* 91 */
+/* 93 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -19909,12 +20105,12 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var AuditModel = __webpack_require__(89);
+	var AuditModel = __webpack_require__(91);
 	
 	var View = Marionette.ItemView.extend({
 	    tagName: 'div',
 	    className: 'element object audit',
-	    template: __webpack_require__(92),
+	    template: __webpack_require__(94),
 	
 	    initialize: function() {
 	        this.listenTo(this.model, 'reset', this.render, this);
@@ -19928,7 +20124,7 @@
 
 
 /***/ },
-/* 92 */
+/* 94 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -19974,7 +20170,7 @@
 
 
 /***/ },
-/* 93 */
+/* 95 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -19991,7 +20187,7 @@
 
 
 /***/ },
-/* 94 */
+/* 96 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -20016,7 +20212,34 @@
 
 
 /***/ },
-/* 95 */
+/* 97 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title">' +
+	((__t = ( gt.gettext("Get audits entries for an entity") )) == null ? '' : __t) +
+	'</h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="entity">' +
+	((__t = ( gt.gettext("Entity content type") )) == null ? '' : __t) +
+	'</label><select class="form-control contents-types" id="content_type" name="content-type"></select></div><div class="form-group"><label class="control-label" for="entity">' +
+	((__t = ( gt.gettext("Entity UUID or name") )) == null ? '' : __t) +
+	'</label><select class="form-control entities" id="entity" name="entity"></select></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal">' +
+	((__t = ( gt.gettext("Cancel") )) == null ? '' : __t) +
+	'</button> <button type="button" class="btn btn-primary search">' +
+	((__t = ( gt.gettext("Search") )) == null ? '' : __t) +
+	'</button></div></div></div>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 98 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -20034,6 +20257,8 @@
 	var TaxonomyModule = Marionette.Module.extend({
 	
 	    initialize: function(moduleName, app, options) {
+	        Logger.time("Init taxonomy module");
+	
 	        this.models = {};
 	        this.collections = {};
 	        this.views = {};
@@ -20041,17 +20266,17 @@
 	        this.controllers = {};
 	
 	        // i18n
-	        if (user.language === "fr") {
-	            i18next.addResources('fr', 'default', __webpack_require__(96));
+	        if (session.language === "fr") {
+	            i18next.addResources('fr', 'default', __webpack_require__(99));
 	            //gt.addTextdomain('default', require('./locale/fr/LC_MESSAGES/default.mo'));
 	        } else {  // default to english
-	            i18next.addResources('en', 'default', __webpack_require__(97));
+	            i18next.addResources('en', 'default', __webpack_require__(100));
 	            //gt.addTextdomain('default', require('./locale/en/LC_MESSAGES/default.mo'));
 	        }
 	
 	        var SelectOptionItemView = __webpack_require__(33);
 	
-	        var TaxonRankCollection = __webpack_require__(98);
+	        var TaxonRankCollection = __webpack_require__(101);
 	        this.collections.taxonRanks = new TaxonRankCollection();
 	
 	        this.views.taxonRanks = new SelectOptionItemView({
@@ -20067,7 +20292,7 @@
 	            ]);*/
 	        });
 	
-	        var TaxonSynonymTypeCollection = __webpack_require__(100);
+	        var TaxonSynonymTypeCollection = __webpack_require__(103);
 	        this.collections.taxonSynonymTypes = new TaxonSynonymTypeCollection();
 	
 	        this.views.taxonSynonymTypes = new SelectOptionItemView({
@@ -20075,16 +20300,22 @@
 	            collection: this.collections.taxonSynonymTypes,
 	        });
 	        
-	        var TaxonController = __webpack_require__(102);
+	        var TaxonController = __webpack_require__(105);
 	        this.controllers.taxon = new TaxonController();
+	
+	        Logger.timeEnd("Init taxonomy module");
 	    },
 	
 	    onStart: function(options) {
-	        var TaxonRouter = __webpack_require__(109);
+	        Logger.time("Start taxonomy module");
+	
+	        var TaxonRouter = __webpack_require__(112);
 	        this.routers.taxon = new TaxonRouter();
 	
-	        var TaxonCollection = __webpack_require__(104);
+	        var TaxonCollection = __webpack_require__(107);
 	        this.collections.taxons = new TaxonCollection();
+	
+	        Logger.timeEnd("Start taxonomy module");
 	    },
 	
 	    onStop: function(options) {
@@ -20099,7 +20330,7 @@
 
 
 /***/ },
-/* 96 */
+/* 99 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -20124,7 +20355,7 @@
 	};
 
 /***/ },
-/* 97 */
+/* 100 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -20149,7 +20380,7 @@
 	};
 
 /***/ },
-/* 98 */
+/* 101 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -20162,7 +20393,7 @@
 	 * @details
 	 */
 	
-	var TaxonRankModel = __webpack_require__(99);
+	var TaxonRankModel = __webpack_require__(102);
 	
 	var TaxonRankCollection = Backbone.Collection.extend({
 	    url: ohgr.baseUrl + 'taxonomy/rank/',
@@ -20185,7 +20416,7 @@
 
 
 /***/ },
-/* 99 */
+/* 102 */
 /***/ function(module, exports) {
 
 	/**
@@ -20207,7 +20438,7 @@
 
 
 /***/ },
-/* 100 */
+/* 103 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -20220,7 +20451,7 @@
 	 * @details
 	 */
 	
-	var TaxonSynonymTypeModel = __webpack_require__(101);
+	var TaxonSynonymTypeModel = __webpack_require__(104);
 	
 	var Collection = Backbone.Collection.extend({
 	    url: ohgr.baseUrl + 'taxonomy/taxon-synonym-type/',
@@ -20246,7 +20477,7 @@
 
 
 /***/ },
-/* 101 */
+/* 104 */
 /***/ function(module, exports) {
 
 	/**
@@ -20269,7 +20500,7 @@
 
 
 /***/ },
-/* 102 */
+/* 105 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -20283,24 +20514,27 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var TaxonModel = __webpack_require__(103);
-	var TaxonCollection = __webpack_require__(104);
-	var TaxonListView = __webpack_require__(105);
-	var DefaultLayout = __webpack_require__(43);
-	var TitleView = __webpack_require__(44);
+	var TaxonModel = __webpack_require__(106);
+	var TaxonCollection = __webpack_require__(107);
+	var TaxonListView = __webpack_require__(108);
+	var DefaultLayout = __webpack_require__(45);
+	var TitleView = __webpack_require__(46);
 	
 	var TaxonController = Marionette.Controller.extend({
 	
 	    create: function() {
 	        var CreateTaxonView = Marionette.ItemView.extend({
-	            el: "#dialog_content",
 	            tagName: "div",
-	            template: __webpack_require__(108),
+	            attributes: {
+	                'id': 'dlg_create_taxon',
+	                'class': 'modal',
+	                'tabindex': -1
+	            },
+	            template: __webpack_require__(111),
 	
 	            ui: {
 	                cancel: "button.cancel",
 	                create: "button.create",
-	                dialog: "#dlg_create_taxon",
 	                name: "#taxon_name",
 	                rank: "#taxon_rank",
 	                parent: "#taxon_parent",
@@ -20319,32 +20553,70 @@
 	            },
 	
 	            onRender: function () {
-	                $(this.ui.dialog).modal();
+	                $(this.el).modal();
 	                this.ui.parent_group.hide();
 	
 	                ohgr.taxonomy.views.taxonRanks.drawSelect(this.ui.rank);
 	
+	                $(this.ui.parent).select2({
+	                    dropdownParent: $(this.el),
+	                    ajax: {
+	                        url: ohgr.baseUrl + "taxonomy/search/",
+	                        dataType: 'json',
+	                        delay: 250,
+	                        data: function (params) {
+	                            params.term || (params.term = '');
+	
+	                            var filters = {
+	                                method: 'icontains',
+	                                fields: ['name', 'rank'],
+	                                'name': params.term,
+	                                'rank': $("#taxon_rank").val()
+	                            };
+	
+	                            return {
+	                                page: params.page,
+	                                filters: JSON.stringify(filters),
+	                            };
+	                        },
+	                        processResults: function (data, params) {
+	                            // no pagination
+	                            params.page = params.page || 1;
+	
+	                            var results = [];
+	
+	                            for (var i = 0; i < data.items.length; ++i) {
+	                                results.push({
+	                                    id: data.items[i].id,
+	                                    text: data.items[i].label
+	                                });
+	                            }
+	
+	                            return {
+	                                results: results,
+	                                pagination: {
+	                                    more: (params.page * 30) < data.total_count
+	                                }
+	                            };
+	                        },
+	                        cache: true
+	                    },
+	                    minimumInputLength: 3,
+	                    placeholder: gt.gettext("Enter a taxon name. 3 characters at least for auto-completion"),
+	                });
+	
+	                $(this.ui.parent).on('select2:select', function (e) {
+	                    //var id = e.params.data.id;
+	                });
+	                /*
 	                $(this.ui.parent).autocomplete({
 	                    open: function () {
 	                        $(this).autocomplete('widget').zIndex(10000);
 	                    },
 	                    source: function(req, callback) {
 	                        var rank = $("#taxon_rank").val();
-	                        var terms = req.term;/*
-	                        var terms = [];
-	                        var exprs = req.term.split('+')
-	                        var matched;
-	                        for (var i = 0; i < exprs.length; ++i) {
-	                            var expr = exprs[i].trim();
-	                            matched = expr.match(/^\[(.+)\](.*)/);
+	                        var terms = req.term;
 	
-	                            if (matched) {
-	                                terms.push({term: matched[2], type: matched[1], mode: 'icontains'});
-	                            } else {
-	                                terms.push({term: expr, type: 'name', mode: 'icontains'});
-	                            }
-	                        }
-	            */
 	                        $.ajax({
 	                            type: "GET",
 	                            url: ohgr.baseUrl + 'taxonomy/search/',
@@ -20402,7 +20674,7 @@
 	                        tp.attr("parent-id", ui.item.id);
 	                        tp.validateField('ok');
 	                    }
-	                });
+	                });*/
 	            },
 	
 	            onCancel: function () {
@@ -20411,8 +20683,9 @@
 	
 	            onChangeRank: function () {
 	                // reset parent
-	                this.ui.parent.attr('parent-id', 0);
-	                $(this.ui.parent).cleanField();
+	                $(this.ui.parent).val('').trigger('change');
+	                //this.ui.parent.attr('parent-id', 0);
+	                //$(this.ui.parent).cleanField();
 	
 	                if (this.ui.rank.val() == 60)
 	                    this.ui.parent_group.hide();
@@ -20422,16 +20695,22 @@
 	
 	            onNameInput: function () {
 	                if (this.validateName()) {
+	                    var filters = {
+	                        method: 'ieq',
+	                        fields: ['name'],
+	                        'name': this.ui.name.val()
+	                    };
+	
 	                    $.ajax({
 	                        type: "GET",
 	                        url: ohgr.baseUrl + 'taxonomy/search/',
 	                        dataType: 'json',
-	                        data: {term: this.ui.name.val(), type: "name", mode: "ieq"},
+	                        data: {filters: JSON.stringify(filters)},
 	                        el: this.ui.name,
 	                        success: function(data) {
-	                            if (data.length > 0) {
-	                                for (var i in data) {
-	                                    var t = data[i];
+	                            if (data.items.length > 0) {
+	                                for (var i in data.items) {
+	                                    var t = data.items[i];
 	
 	                                    if (t.value.toUpperCase() == this.el.val().toUpperCase()) {
 	                                        $(this.el).validateField('failed', gt.gettext('Taxon name already in usage'));
@@ -20466,15 +20745,18 @@
 	
 	                // need parent if not family
 	                var rankId = parseInt(this.ui.rank.val());
-	                var parentId = parseInt(this.ui.parent.attr('parent-id') || '0');
+	                var parentId = 0;
+	
+	                if ($(this.ui.parent).val())
+	                    parentId = parseInt($(this.ui.parent).select2('data')[0].id || '0');
 	
 	                if (rankId == 60 && parentId != 0) {
-	                    $(this.ui.parent).validateField('failed', gt.gettext("Family rank cannot have a parent taxon"));
+	                    error(gt.gettext("Family rank cannot have a parent taxon"));
 	                    valid = false;
 	                }
 	
 	                if (rankId > 60 && parentId <= 0) {
-	                    $(this.ui.parent).validateField('failed', gt.gettext("This rank must have a parent taxon"));
+	                    error(gt.gettext("This rank must have a parent taxon"));
 	                    valid = false;
 	                }
 	
@@ -20486,7 +20768,22 @@
 	            },
 	
 	            onCreate: function() {
+	                var view = this;
+	
 	                if (this.validate()) {
+	                    ohgr.taxonomy.collections.taxons.create({
+	                        name: this.ui.name.val(),
+	                        rank: parseInt(this.ui.rank.val()),
+	                        parent: parseInt(this.ui.parent.attr('parent-id') || '0'),
+	                        synonyms: [{name: this.ui.name.val(), type: 0, language: 'fr'}]
+	                    }, {
+	                        wait: true,
+	                        success: function (model, resp, options) {
+	                            view.remove();
+	                            success(gettext("Taxon successfully created !"));
+	                        }
+	                    });
+	                    /*
 	                    // send
 	                    $.ajax({
 	                        type: "POST",
@@ -20513,7 +20810,7 @@
 	                                parent: this.view.ui.parent.attr('parent-id'),
 	                            });
 	                        }
-	                    });
+	                    });*/
 	                }
 	            },
 	
@@ -20525,7 +20822,7 @@
 	            },
 	
 	            remove: function() {
-	                $(this.ui.dialog).modal('hide').data('bs.modal', null);
+	                $(this.el).modal('hide').data('bs.modal', null);
 	                this.$el.empty().off();  // unbind the events
 	                this.stopListening();
 	                return this;
@@ -20541,7 +20838,7 @@
 
 
 /***/ },
-/* 103 */
+/* 106 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -20557,7 +20854,11 @@
 	var Backbone = __webpack_require__(2);
 	
 	var Taxon = Backbone.Model.extend({ 
-	    url: function() { return ohgr.baseUrl + 'taxonomy/' + this.id + '/'; },
+	    url: function() {
+	        if (this.isNew())
+	            return ohgr.baseUrl + 'taxonomy/';
+	        else
+	            return ohgr.baseUrl + 'taxonomy/' + this.id + '/'; },
 	
 	    defaults: {
 	      id: null,
@@ -20649,7 +20950,7 @@
 
 
 /***/ },
-/* 104 */
+/* 107 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -20662,38 +20963,17 @@
 	 * @details
 	 */
 	
-	var TaxonModel = __webpack_require__(103);
+	var TaxonModel = __webpack_require__(106);
 	
 	var TaxonCollection = Backbone.Collection.extend({
 	    url: ohgr.baseUrl + 'taxonomy/',
 	    model: TaxonModel,
-	    
+	
 	    parse: function(data) {
-	        var taxons = data.taxons;
-	        var results = [];
-	        for (var taxon in taxons) {
-	            var elt = {};
+	        this.page = data.page;
+	        this.total_count = data.total_count;
 	
-	            elt = taxons[taxon].fields;
-	            elt.id = taxons[taxon].pk;
-	            elt.parent_list = elt.parent_list.split(',');
-	            elt.synonyms = [];
-	
-	            for (var s in data.synonyms) {
-	                var synonym = data.synonyms[s].fields;
-	                if (synonym.taxon == elt.id) {
-	                    elt.synonyms.push({
-	                        name: synonym.name,
-	                        type: synonym.type,
-	                        language: synonym.language,
-	                    });
-	                }
-	            }
-	
-	            results.push(elt);
-	        }
-	
-	        return results;
+	        return data.items;
 	    },
 	});
 	
@@ -20701,7 +20981,7 @@
 
 
 /***/ },
-/* 105 */
+/* 108 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -20715,8 +20995,8 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var TaxonModel = __webpack_require__(103);
-	var TaxonView = __webpack_require__(106);
+	var TaxonModel = __webpack_require__(106);
+	var TaxonView = __webpack_require__(109);
 	
 	var TaxonListView = Marionette.CollectionView.extend({
 	    //el: '#main_content',
@@ -20732,7 +21012,7 @@
 	    },
 	
 	    ui: {
-	        add_synonyom_panel: 'tr.add-synonym-panel',
+	        add_synonym_panel: 'tr.add-synonym-panel',
 	        taxon: 'span.taxon',
 	    },
 	
@@ -20746,6 +21026,11 @@
 	        //this.listenTo(this.collection, 'add', this.render, this);
 	        //this.listenTo(this.collection, 'remove', this.render, this);
 	        //this.listenTo(this.collection, 'change', this.render, this);
+	
+	        this.page = 1;
+	
+	        // pagination on scrolling
+	        $("div.panel-body").scroll($.proxy(function(e) { this.scroll(e); }, this));
 	    },
 	
 	    onRender: function() {
@@ -20756,9 +21041,18 @@
 	        Backbone.history.navigate("app/taxonomy/" + id + "/", {trigger: true});
 	    },
 	
+	    scroll: function(e) {
+	        if (e.target.scrollHeight-e.target.clientHeight == e.target.scrollTop) {
+	            if (this.collection.size() < this.collection.total_count) {
+	                Logger.debug("fetch page " + (this.page+1) + " for " + this.collection.total_count + " items");
+	                this.collection.fetch({update: true, remove: false, data: {page: ++this.page}});
+	            }
+	        }
+	    },
+	
 	    onDomRefresh: function () {
 	    //    if (this.options.read_only)
-	    //        $(this.ui.add_synonyom_panel).remove();
+	    //        $(this.ui.add_synonym_panel).remove();
 	    },
 	});
 	
@@ -20766,7 +21060,7 @@
 
 
 /***/ },
-/* 106 */
+/* 109 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -20780,11 +21074,11 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var TaxonModel = __webpack_require__(103);
+	var TaxonModel = __webpack_require__(106);
 	
 	var TaxonItemView = Marionette.ItemView.extend({
 	    tagName: 'div',
-	    template: __webpack_require__(107),
+	    template: __webpack_require__(110),
 	
 	    ui: {
 	        "synonym_name": ".synonym-name",
@@ -20843,16 +21137,22 @@
 	
 	    onSynonymNameInput: function () {
 	        if (this.validateName()) {
+	            var filters = {
+	                fields: ["name"],
+	                method: "ieq",
+	                name: this.ui.synonym_name.val()
+	            };
+	
 	            $.ajax({
 	                type: "GET",
 	                url: ohgr.baseUrl + 'taxonomy/search/',
 	                dataType: 'json',
-	                data: {term: this.ui.synonym_name.val(), type: "name", mode: "ieq"},
+	                data: {filters: JSON.stringify(filters)},
 	                el: this.ui.synonym_name,
 	                success: function(data) {
-	                    if (data.length > 0) {
-	                        for (var i in data) {
-	                            var t = data[i];
+	                    if (data.items.length > 0) {
+	                        for (var i in data.items) {
+	                            var t = data.items[i];
 	
 	                            if (t.value.toUpperCase() == this.el.val().toUpperCase()) {
 	                                $(this.el).validateField('failed', gt.gettext('Taxon name already in usage'));
@@ -20872,7 +21172,9 @@
 	        var name = $(this.ui.synonym_name).val();
 	        var language = $(this.ui.synonym_language).val();
 	
-	        // HOW TODO that using backbones model
+	        // TODO Is using a backbone plugin in way to manage nested models will be interesting,
+	        // to replace this manual ajax query and array in models ?
+	        // same for removeSynonym
 	        $.ajax({
 	            view: this,
 	            type: "PUT",
@@ -20913,7 +21215,7 @@
 
 
 /***/ },
-/* 107 */
+/* 110 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -20961,7 +21263,7 @@
 
 
 /***/ },
-/* 108 */
+/* 111 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -20970,7 +21272,7 @@
 	obj || (obj = {});
 	var __t, __p = '';
 	with (obj) {
-	__p += '<div class="modal" id="dlg_create_taxon"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title">' +
+	__p += '<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title">' +
 	((__t = ( gt.gettext("Create a taxon") )) == null ? '' : __t) +
 	'</h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="taxon_name">' +
 	((__t = ( gt.gettext("Principal name of the taxon (must be unique)") )) == null ? '' : __t) +
@@ -20978,11 +21280,11 @@
 	((__t = ( gt.gettext("Taxon rank") )) == null ? '' : __t) +
 	'</label><select class="form-control taxon-ranks" id="taxon_rank" name="taxonrank"></select></div><div class="form-group taxon-parent-group"><label class="control-label" for="taxon_parent">' +
 	((__t = ( gt.gettext("Direct parent") )) == null ? '' : __t) +
-	'</label><input id="taxon_parent" type="text" value="" maxlength="128" style="width:100%" class="form-control" placeholder="Enter a taxon name. 3 characters at least for auto-completion"></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal">' +
+	'</label><select id="taxon_parent" style="width:100%" class="form-control"></select></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal">' +
 	((__t = ( gt.gettext("Cancel") )) == null ? '' : __t) +
 	'</button> <button type="button" class="btn btn-primary create">' +
 	((__t = ( gt.gettext("Create") )) == null ? '' : __t) +
-	'</button></div></div></div></div>';
+	'</button></div></div></div>';
 	
 	}
 	return __p
@@ -20990,7 +21292,7 @@
 
 
 /***/ },
-/* 109 */
+/* 112 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -21004,12 +21306,12 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var TaxonModel = __webpack_require__(103);
-	var TaxonCollection = __webpack_require__(104);
-	var TaxonListView = __webpack_require__(105);
-	var TaxonItemView = __webpack_require__(106);
-	var DefaultLayout = __webpack_require__(43);
-	var TitleView = __webpack_require__(44);
+	var TaxonModel = __webpack_require__(106);
+	var TaxonCollection = __webpack_require__(107);
+	var TaxonListView = __webpack_require__(108);
+	var TaxonItemView = __webpack_require__(109);
+	var DefaultLayout = __webpack_require__(45);
+	var TitleView = __webpack_require__(46);
 	
 	var TaxonRouter = Marionette.AppRouter.extend({
 	    routes : {
@@ -21048,7 +21350,7 @@
 
 
 /***/ },
-/* 110 */
+/* 113 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -21066,6 +21368,8 @@
 	var AccessionModule = Marionette.Module.extend({
 	
 	    initialize: function(moduleName, app, options) {
+	        Logger.time("Init accession module");
+	
 	        this.models = {};
 	        this.collections = {};
 	        this.views = {};
@@ -21073,21 +21377,33 @@
 	        this.controllers = {};
 	
 	        // i18n
-	        if (user.language === "fr") {
-	            i18next.addResources('fr', 'default', __webpack_require__(111));
+	        if (session.language === "fr") {
+	            i18next.addResources('fr', 'default', __webpack_require__(114));
 	            //gt.addTextdomain('default', require('./locale/fr/LC_MESSAGES/default.mo'));
 	        } else {  // default to english
-	            i18next.addResources('en', 'default', __webpack_require__(112));
+	            i18next.addResources('en', 'default', __webpack_require__(115));
 	            //gt.addTextdomain('default', require('./locale/en/LC_MESSAGES/default.mo'));
 	        }
+	
+	        Logger.timeEnd("Init accession module");
 	    },
 	
 	    onStart: function(options) {
-	        // var AccessionRouter = require('./routers/accession');
-	        // this.routers.accession = new AccessionRouter();
+	        Logger.time("Start accession module");
+	
+	        var AccessionRouter = __webpack_require__(116);
+	        this.routers.accession = new AccessionRouter();
+	
+	        var DescriptorRouter = __webpack_require__(117);
+	        this.routers.descriptor = new DescriptorRouter();
 	
 	        // var AccessionCollection = require('./collections/accession');
 	        // this.collections.accession = new AccessionCollection();
+	
+	        var DescriptorGroupCollection = __webpack_require__(120);
+	        this.collections.descriptorGroup = new DescriptorGroupCollection();
+	
+	        Logger.timeEnd("Start accession module");
 	    },
 	
 	    onStop: function(options) {
@@ -21102,16 +21418,356 @@
 
 
 /***/ },
-/* 111 */
+/* 114 */
 /***/ function(module, exports) {
 
 	module.exports = {};
 
 /***/ },
-/* 112 */
+/* 115 */
 /***/ function(module, exports) {
 
 	module.exports = {};
+
+/***/ },
+/* 116 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file accession.js
+	 * @brief Accession router
+	 * @author Frederic SCHERMA
+	 * @date 2016-07-19
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	// var AccessionModel = require('../models/accession');
+	// var BatchModel = require('../models/batch');
+	// var AccessionCollection = require('../collections/accession');
+	// var BatchCollection = require('../collections/batch');
+	// var AccessionListView = require('../views/accessionlist');
+	// var BatchListView = require('../views/batchlist');
+	// var AccessionItemView = require('../views/accessionitem');
+	// var BatchItemView = require('../views/batchitem');
+	var DefaultLayout = __webpack_require__(45);
+	var TitleView = __webpack_require__(46);
+	
+	var Router = Marionette.AppRouter.extend({
+	    routes : {
+	        "app/accession/accession/": "getAccessionList",
+	        "app/accession/accession/:id/": "getAccession",
+	        "app/accession/accession/:id/batch/": "getBatchList",
+	        "app/accession/accession/:id/batch/:id": "getBatch",
+	    },
+	
+	    getAccessionList : function() {
+	        alert("Not yet implemented");
+	        // var collection = ohgr.accession.collections.accession;
+	        //
+	        // var defaultLayout = new DefaultLayout({});
+	        // ohgr.mainRegion.show(defaultLayout);
+	        //
+	        // defaultLayout.title.show(new TitleView({title: gt.gettext("List of accessions")}));
+	        //
+	        // collection.fetch().then(function () {
+	        //     defaultLayout.content.show(new AccessionListView({read_only: true, collection : collection}));
+	        // });
+	    },
+	
+	    getAccession : function(id) {
+	        alert("Not yet implemented");
+	    },
+	
+	    getBatchList : function(id) {
+	        alert("Not yet implemented");
+	    },
+	
+	    getBatch : function(id) {
+	        alert("Not yet implemented");
+	    },
+	});
+	
+	module.exports = Router;
+
+
+/***/ },
+/* 117 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptor.js
+	 * @brief Descriptor router
+	 * @author Frederic SCHERMA
+	 * @date 2016-07-19
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	var DescpritorGroupModel = __webpack_require__(118);
+	var DescpritorTypeModel = __webpack_require__(119);
+	var DescriptorGroupCollection = __webpack_require__(120);
+	var DescriptorTypeCollection = __webpack_require__(121);
+	var DescriptorGroupListView = __webpack_require__(122);
+	var DescriptorTypeListView = __webpack_require__(124);
+	var DescritporTypeItemView = __webpack_require__(125);
+	var DefaultLayout = __webpack_require__(45);
+	var TitleView = __webpack_require__(46);
+	
+	var Router = Marionette.AppRouter.extend({
+	    routes : {
+	        "app/accession/descriptor/group/": "getDescriptorGroupList",
+	        // "app/accession/descriptor/group/:id/": "getDescriptorGroup", only POST here
+	        "app/accession/descriptor/group/:id/type/": "getDescriptorTypeListForGroup",
+	        "app/accession/descriptor/group/:id/type/:id/": "getDescriptorTypeForGroup",
+	    },
+	
+	    getDescriptorGroupList : function() {
+	        var collection = ohgr.accession.collections.descriptorGroup;
+	
+	        var defaultLayout = new DefaultLayout({});
+	        ohgr.mainRegion.show(defaultLayout);
+	
+	        defaultLayout.title.show(new TitleView({title: gt.gettext("List of groups of descriptors")}));
+	
+	        collection.fetch().then(function () {
+	            defaultLayout.content.show(new DescriptorGroupListView({read_only: true, collection : collection}));
+	        });
+	    },
+	
+	    getDescriptorTypeListForGroup : function(id) {
+	        var collection = new DescriptorTypeCollection({id: id});
+	
+	        var defaultLayout = new DefaultLayout();
+	        ohgr.mainRegion.show(defaultLayout);
+	
+	        defaultLayout.title.show(new TitleView({title: gt.gettext("Types of descriptors for the group")}));
+	
+	        collection.fetch().then(function () {
+	            defaultLayout.content.show(new DescriptorTypeListView({read_only: true, collection : collection}));
+	        });
+	    },
+	
+	    getDescriptorTypeForGroup : function(id) {
+	        alert("Not yet implemented");
+	    },    
+	});
+	
+	module.exports = Router;
+
+
+/***/ },
+/* 118 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptorgroup.js
+	 * @brief Group of descriptor model
+	 * @author Frederic SCHERMA
+	 * @date 2016-07-20
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Backbone = __webpack_require__(2);
+	
+	var Model = Backbone.Model.extend({
+	    url: function() {
+	        if (this.isNew())
+	            return ohgr.baseUrl + 'accession/descriptor/group/';
+	        else
+	            return ohgr.baseUrl + 'accession/descriptor/group/' + this.id + '/'; },
+	
+	    defaults: {
+	        id: null,
+	        name: '',
+	        num_descriptors_types: 0,
+	    },
+	
+	    parse: function(data) {
+	        //this.perms = data.perms;
+	        return data;
+	    },
+	
+	    validate: function(attrs) {
+	        var errors = {};
+	        var hasError = false;
+	
+	        if (hasError) {
+	          return errors;
+	        }
+	    },
+	});
+	
+	module.exports = Model;
+
+
+/***/ },
+/* 119 */
+/***/ function(module, exports) {
+
+
+
+/***/ },
+/* 120 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptorgroup.js
+	 * @brief Groups of descriptors collection
+	 * @author Frederic SCHERMA
+	 * @date 2016-07-19
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var DescriptorGroupModel = __webpack_require__(118);
+	
+	var Collection = Backbone.Collection.extend({
+	    url: ohgr.baseUrl + 'accession/descriptor/group/',
+	    model: DescriptorGroupModel,
+	
+	    parse: function(data) {
+	        this.page = data.page;
+	        this.total_count = data.total_count;
+	
+	        return data.items;
+	    },
+	});
+	
+	module.exports = Collection;
+
+
+/***/ },
+/* 121 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptortype.js
+	 * @brief Types of descriptors collection
+	 * @author Frederic SCHERMA
+	 * @date 2016-07-19
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var DescriptorTypeModel = __webpack_require__(119);
+	
+	var Collection = Backbone.Collection.extend({
+	    url: function() {
+	        return ohgr.baseUrl + 'accession/descriptor/group/' + this.get('id') + '/type/';
+	    },
+	    model: DescriptorTypeModel,
+	
+	    parse: function(data) {
+	        this.page = data.page;
+	        this.total_count = data.total_count;
+	
+	        return data.items;
+	    },
+	});
+	
+	module.exports = Collection;
+
+
+/***/ },
+/* 122 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptorgrouplist.js
+	 * @brief List of group of type of permission item view
+	 * @author Frederic SCHERMA
+	 * @date 2016-07-20
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	var DescriptorGroupModel = __webpack_require__(118);
+	
+	var View = Marionette.ItemView.extend({
+	    tagName: 'tr',
+	    className: 'element object descriptor-group',
+	    template: __webpack_require__(123),
+	
+	    ui: {
+	        delete_descriptor_group: 'span.delete-descriptor-group',
+	        view_descriptors_types: 'td.view-descriptors-types'
+	    },
+	
+	    events: {
+	        'click @ui.delete_descriptor_group': 'deleteDescriptorGroup',
+	        'click @ui.view_descriptors_types': 'viewDescriptorsTypes'
+	    },
+	
+	    initialize: function() {
+	        this.listenTo(this.model, 'reset', this.render, this);
+	    },
+	
+	    onRender: function() {
+	        /*if ($.inArray("auth.delete_descriptorgroup", this.model.perms) < 0) {
+	            $(this.ui.delete_descriptor_group).remove();
+	        }*/
+	    },
+	
+	    viewDescriptorsTypes: function () {
+	        Backbone.history.navigate("app/accession/descriptor/group/" + this.model.id + "/type/", {trigger: true});
+	    },
+	
+	    deleteDescriptorGroup: function () {
+	        //this.model.destroy({wait: true});
+	    }
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 123 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<th><span class="delete-descriptor-group action glyphicon glyphicon-minus-sign"></span></th><td class="action view-descriptor-group" name="name" value="' +
+	((__t = ( name )) == null ? '' : __t) +
+	'">' +
+	((__t = ( name )) == null ? '' : __t) +
+	'</td><td class="action view-descriptor-type" name="num_descriptors_types"><abbr class="badge" style="cursor: pointer" title="' +
+	((__t = ( gt.gettext('Manage types of descriptors') )) == null ? '' : __t) +
+	'">' +
+	((__t = ( num_descriptors_types )) == null ? '' : __t) +
+	'</abbr></td>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 124 */
+/***/ function(module, exports) {
+
+
+
+/***/ },
+/* 125 */
+/***/ function(module, exports) {
+
+	
+
 
 /***/ }
 /******/ ]);
