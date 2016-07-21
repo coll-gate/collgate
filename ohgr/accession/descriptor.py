@@ -44,6 +44,11 @@ class RestDescriptorGroupIdTypeId(RestDescriptorGroupIdType):
     suffix = 'id'
 
 
+class RestDescriptorGroupIdTypeIdValue(RestDescriptorGroupIdTypeId):
+    regex = r'^value/$'
+    suffix = 'value'
+
+
 @RestDescriptorGroup.def_auth_request(Method.GET, Format.JSON)
 def get_descriptor_groups(request):
     results_per_page = 30
@@ -51,7 +56,7 @@ def get_descriptor_groups(request):
     offset = (page-1) * results_per_page
     limit = offset + results_per_page
 
-    descriptors = DescriptorGroup.objects.all()[offset:limit]
+    descriptors = DescriptorGroup.objects.all().order_by('name')[offset:limit]
 
     descriptors_list = []
     for descr in descriptors:
@@ -72,6 +77,20 @@ def get_descriptor_groups(request):
     return HttpResponseRest(request, response)
 
 
+@RestDescriptorGroupId.def_auth_request(Method.GET, Format.JSON)
+def get_descriptor_groups(request, id):
+    descriptor_id = int_arg(id)
+    group = get_object_or_404(DescriptorGroup, id=descriptor_id)
+
+    response = {
+        'id': group.id,
+        'name': group.name,
+        'num_descriptors_types': group.types_set.all().count()
+    }
+
+    return HttpResponseRest(request, response)
+
+
 @RestDescriptorGroupIdType.def_auth_request(Method.GET, Format.JSON)
 def get_descriptor_types_for_group(request, id):
     results_per_page = 30
@@ -81,15 +100,23 @@ def get_descriptor_types_for_group(request, id):
 
     group_id = int(id)
     group = get_object_or_404(DescriptorGroup, id=group_id)
-    types = group.type_set.all()[offset:limit]
+    types = group.types_set.all().order_by('name')[offset:limit]
 
     types_list = []
     for descr_type in types:
+        if descr_type.values:
+            values = json.loads(descr_type.values)
+            count = len(values)
+        else:
+            count = descr_type.values_set.all().count()
+
         t = {
             'id': descr_type.pk,
+            'group': group_id,
             'name': descr_type.name,
             'code': descr_type.code,
-            'description': descr_type.description
+            'description': descr_type.description,
+            'num_descriptors_values': count
         }
 
         types_list.append(t)
@@ -104,11 +131,37 @@ def get_descriptor_types_for_group(request, id):
 
 
 @RestDescriptorGroupIdTypeId.def_auth_request(Method.GET, Format.JSON)
+def get_descriptor_types_for_group(request, id, tid):
+    group_id = int_arg(id)
+    type_id= int_arg(tid)
+    group = get_object_or_404(DescriptorGroup, id=group_id)
+    descr_type = get_object_or_404(DescriptorType, id=type_id)
+
+    if descr_type.values:
+        values = json.loads(descr_type.values)
+        count = len(values)
+    else:
+        count = descr_type.values_set.all().count()
+
+    response = {
+        'id': descr_type.id,
+        'name': descr_type.name,
+        'code': descr_type.code,
+        'description': descr_type.description,
+        'group': group.id,
+        'num_descriptors_values': count,
+    }
+
+    return HttpResponseRest(request, response)
+
+
+@RestDescriptorGroupIdTypeIdValue.def_auth_request(Method.GET, Format.JSON)
 def get_descriptor_type_for_group(request, id, tid):
     results_per_page = 30
     page = int_arg(request.GET.get('page', 1))
     offset = (page-1) * results_per_page
     limit = offset + results_per_page
+    sort_by = request.GET.get('sort_by', 'value')
 
     group_id = int(id)
     type_id = int(tid)
@@ -117,31 +170,37 @@ def get_descriptor_type_for_group(request, id, tid):
     descr_type = get_object_or_404(DescriptorType, id=type_id, group=group)
 
     # internally stored values
-    if descr_type.value:
-        values = json.loads(descr_type.value)
+    if descr_type.values:
+        values = json.loads(descr_type.values)
         count = len(values)
 
         values_list = []
-        for value in values:
+        for k, v in values.items():
             t = {
-                'id': value['id'],
-                'value': value['value'],
+                'id': k,
+                'value': v['name'],
             }
 
             values_list.append(t)
+
+        values_list = sorted(values_list, key=lambda v: v[sort_by])[offset:limit]
     else:
         # values in the value table
         qs = descr_type.values_set.all()
         values = qs[offset:limit]
         count = qs.count()
 
+        # TODO see for ordering, because if we have json field...
+        # maybe could we use hstore ?
+        # or a value field plus an informational field about value type
+
         values_list = []
         for value in values:
             t = {
                 'id': value.id,
                 'name': descr_type.name,
-                'code': descr_type.code,
-                'description': descr_type.description
+                'value': descr_type.value,
+                # 'description': descr_type.description
             }
 
             values_list.append(t)

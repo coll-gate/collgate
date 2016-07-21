@@ -16,7 +16,20 @@ var TitleView = Marionette.View.extend({
 
     initialize: function(options) {
         this.options = options;
-        $(this.el).html(Marionette.getOption(this, "title"));
+
+        var title = $("<span></span>");
+        title.html(Marionette.getOption(this, "title"));
+
+        $(this.el).empty();
+        $(this.el).append(title);
+
+        if (typeof(options.object) != "undefined") {
+            var object = $("<span></span>");
+            object.addClass("heading")
+            object.html(options.object);
+
+            $(this.el).append(object);
+        };
     }
 });
 

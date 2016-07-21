@@ -1,18 +1,18 @@
 /**
- * @file descriptortype.js
- * @brief Types of descriptors collection
+ * @file descriptorvalue.js
+ * @brief List of value for a type of descriptor (collection)
  * @author Frederic SCHERMA
- * @date 2016-07-19
+ * @date 2016-07-21
  * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
  * @license @todo
  * @details
  */
 
-var DescriptorTypeModel = require('../models/descriptortype');
+var DescriptorTypeModel = require('../models/descriptorvalue');
 
 var Collection = Backbone.Collection.extend({
     url: function() {
-        return ohgr.baseUrl + 'accession/descriptor/group/' + this.group_id + '/type/';
+        return ohgr.baseUrl + 'accession/descriptor/group/' + this.group_id + '/type/' + this.type_id + '/value/';
     },
 
     model: DescriptorTypeModel,
@@ -20,6 +20,7 @@ var Collection = Backbone.Collection.extend({
     initialize: function(models, options) {
         options || (options = {});
         this.group_id = options.group_id;
+        this.type_id = options.type_id;
     },
 
     parse: function(data) {

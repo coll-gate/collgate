@@ -18,12 +18,12 @@ var View = Marionette.ItemView.extend({
 
     ui: {
         delete_descriptor_group: 'span.delete-descriptor-group',
-        view_descriptors_types: 'td.view-descriptors-types'
+        view_descriptor_type: 'td.view-descriptor-type'
     },
 
     events: {
         'click @ui.delete_descriptor_group': 'deleteDescriptorGroup',
-        'click @ui.view_descriptors_types': 'viewDescriptorsTypes'
+        'click @ui.view_descriptor_type': 'viewDescriptorType'
     },
 
     initialize: function() {
@@ -36,7 +36,7 @@ var View = Marionette.ItemView.extend({
         }*/
     },
 
-    viewDescriptorsTypes: function () {
+    viewDescriptorType: function () {
         Backbone.history.navigate("app/accession/descriptor/group/" + this.model.id + "/type/", {trigger: true});
     },
 

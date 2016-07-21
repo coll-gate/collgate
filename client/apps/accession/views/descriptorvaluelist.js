@@ -1,6 +1,6 @@
 /**
- * @file descriptortypelist.js
- * @brief List of types of descriptors for a group view
+ * @file descriptorvaluelist.js
+ * @brief List of values for a type of descriptor item view
  * @author Frederic SCHERMA
  * @date 2016-07-21
  * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
@@ -9,13 +9,13 @@
  */
 
 var Marionette = require('backbone.marionette');
-var DescriptorTypeModel = require('../models/descriptortype');
-var DescriptorTypeView = require('../views/descriptortype');
+var DescriptorValueModel = require('../models/descriptorvalue');
+var DescriptorValueView = require('../views/descriptorvalue');
 
 var View = Marionette.CompositeView.extend({
-    template: require("../templates/descriptortypelist.html"),
-    childView: DescriptorTypeView,
-    childViewContainer: 'tbody.descriptor-type-list',
+    template: require("../templates/descriptorvaluelist.html"),
+    childView: DescriptorValueView,
+    childViewContainer: 'tbody.descriptor-value-list',
 
     initialize: function() {
         this.listenTo(this.collection, 'reset', this.render, this);

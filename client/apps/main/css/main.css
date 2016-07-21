@@ -185,3 +185,10 @@ span.url {
 /*.table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th {
     padding: 3px !important;
 }*/
+
+.heading {
+    background-color: #6c995a;
+    padding: 5px;
+    margin-left: 0.25em;
+    border-radius: 5px;
+}

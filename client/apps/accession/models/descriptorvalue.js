@@ -1,6 +1,6 @@
 /**
- * @file descriptortype.js
- * @brief Type of descriptor model
+ * @file descriptorvalue.js
+ * @brief Value for a type of descriptor model
  * @author Frederic SCHERMA
  * @date 2016-07-21
  * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
@@ -13,16 +13,14 @@ var Backbone = require('backbone');
 var Model = Backbone.Model.extend({
     url: function() {
         if (this.isNew())
-            return ohgr.baseUrl + 'accession/descriptor/group/' + this.group_id + '/type/';
+            return ohgr.baseUrl + 'accession/descriptor/group/' + this.group_id + '/type/' + this.type_id + '/value/';
         else
-            return ohgr.baseUrl + 'accession/descriptor/group/' + this.group_id + '/type/' + this.id + '/';
+            return ohgr.baseUrl + 'accession/descriptor/group/' + this.group_id + '/type/' + this.type_id + '/value/' + this.id + '/';
     },
 
     defaults: {
         id: null,
-        group: null,
-        name: '',
-        values: null,
+        value: null,
     },
 
     initialize: function(options) {
@@ -31,6 +29,10 @@ var Model = Backbone.Model.extend({
         options || (options = {});
         if (typeof (options.group_id) != "undefined") {
             this.group_id = options.group_id;
+        }
+
+        if (typeof (options.type_id) != "undefined") {
+            this.type_id = options.type_id;
         }
     },
 

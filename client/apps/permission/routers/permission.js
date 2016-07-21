@@ -51,7 +51,7 @@ var PermissionRouter = Marionette.AppRouter.extend({
         var defaultLayout = new DefaultLayout({});
         ohgr.mainRegion.show(defaultLayout);
 
-        defaultLayout.title.show(new TitleView({title: gt.gettext("List of permissions for user") + " " + username}));
+        defaultLayout.title.show(new TitleView({title: gt.gettext("List of permissions for user"), object: username}));
 
         permissionsCollection.fetch().then(function () {
             defaultLayout.content.show(new PermissionListView({collection : permissionsCollection}));
@@ -85,7 +85,7 @@ var PermissionRouter = Marionette.AppRouter.extend({
         var defaultLayout = new DefaultLayout({});
         ohgr.mainRegion.show(defaultLayout);
 
-        defaultLayout.title.show(new TitleView({title: gt.gettext("List of permissions for group") + " " + name}));
+        defaultLayout.title.show(new TitleView({title: gt.gettext("List of permissions for group"), object: name}));
 
         permissionsCollection.fetch().then(function () {
             defaultLayout.content.show(new PermissionListView({collection : permissionsCollection}));
@@ -102,7 +102,7 @@ var PermissionRouter = Marionette.AppRouter.extend({
         var defaultLayout = new DefaultLayout({});
         ohgr.mainRegion.show(defaultLayout);
 
-        defaultLayout.title.show(new TitleView({title: gt.gettext("List of users for group") + " " + name}));
+        defaultLayout.title.show(new TitleView({title: gt.gettext("List of users for group"), object: name}));
 
         userCollection.fetch().then(function () {
             defaultLayout.content.show(new PermissionGroupUserListView({collection : userCollection}));
