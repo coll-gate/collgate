@@ -12,21 +12,20 @@ from .descriptorstypes import DESCRIPTORS
 
 
 def fixture():
-    sys.stdout.write(" + Create descriptors values for countries...\n")
+    sys.stdout.write(" + Create descriptors values for accession_synonym_types...\n")
 
     # load JSON data
-    handler = open(os.path.join('accession', 'fixtures', 'countries.json'), 'rU')
+    handler = open(os.path.join('accession', 'fixtures', 'accessionsynonymtypes.json'), 'rU')
     data = json.loads(handler.read())
     handler.close()
 
-    descriptor = DESCRIPTORS.get('country')
+    descriptor = DESCRIPTORS.get('accession_synonym_types')
     results = {}
 
     # curate data
-    for code, country in data.items():
+    for code, type in data.items():
         results[code] = {
-            'name': country['name'],
-            'iso': ''
+            'name': type['name']
         }
 
     if descriptor is not None and results is not None:

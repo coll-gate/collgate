@@ -22,6 +22,12 @@ class DescriptorGroup(models.Model):
 
     name = models.CharField(unique=True, max_length=255, null=False, blank=False)
 
+    # Is this group of descriptor can be deleted when it is empty
+    can_delete = models.BooleanField(default=True)
+    # Is this group of descriptor can be modified (rename, add/remove descriptors)
+    # by an authorized staff people
+    can_modify = models.BooleanField(default=True)
+
 
 class DescriptorType(models.Model):
     """
@@ -30,8 +36,9 @@ class DescriptorType(models.Model):
     """
 
     name = models.CharField(unique=True, max_length=255, null=False, blank=False)
-    # code can be a Crop Ontology (CO_XYZ:NNNNNN) code (see http://www.cropontology.org/ontology)
+    # code can be a Crop Ontology ('CO_XYZ:NNNNNN') code (see http://www.cropontology.org/ontology)
     # and http://www.cropontology.org/get-ontology/CO_[0-9]+ to get a JSON version.
+    # Internals codes are prefixed by 'ID_'.
     code = models.CharField(unique=True, max_length=64, null=False, blank=False)
 
     # default should belong to the general group.
@@ -40,8 +47,20 @@ class DescriptorType(models.Model):
     # informative description.
     description = models.TextField()
 
-    # JSON encoded values (mostly a dict) and generally extracted from crop-ontology minus some useless details.
+    # JSON encoded values (mostly a dict) and generally extracted
+    # from crop-ontology minus some useless details.
     values = models.TextField(default="", null=False)
+
+    # JSON encoded format of the descriptor
+    format = models.TextField(default='{"type": "string"}', null=False, blank=False)
+
+    # Is this descriptor can be deleted by an authorised staff people
+    can_delete = models.BooleanField(default=True)
+    # Is this descriptor can be modified (rename, add/remove/modify its values)
+    # by an authorised staff people
+    can_modify = models.BooleanField(default=True)
+    # For which types of entities this descriptor is mandatory. Values are ContentType ids.
+    mandatory_for = models.CommaSeparatedIntegerField(default="", blank=True, null=False, max_length=255)
 
 
 class DescriptorValue(models.Model):
@@ -61,8 +80,8 @@ class DescriptorValue(models.Model):
 
 class AccessionSynonymType(ChoiceEnum):
     """
-    Static but may evolve into a DB model in order to be more dynamic and as a
-    specialized type of descriptor.
+    Static but may evolve into a DB editable descriptor type. general::accession_synonym.
+    And must be a mandatory descriptor (created by fixtures during initialization).
     """
 
     PRIMARY = IntegerChoice(0, _('Primary'))

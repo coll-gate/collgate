@@ -3,5 +3,6 @@
 ORDER = [
     'descriptorsgroups',
     'descriptorstypes',
-    'countries'
+    'accessionsynonymtypes',
+    'countries',
 ]
