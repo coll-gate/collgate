@@ -1,8 +1,8 @@
 /**
- * @file addgroup.js
- * @brief Add a user to a group collection
+ * @file descriptorgroupadd.js
+ * @brief Add a group of descriptor
  * @author Frederic SCHERMA
- * @date 2016-06-15
+ * @date 2016-08-05
  * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
  * @license @todo
  * @details
@@ -13,7 +13,7 @@ var Marionette = require('backbone.marionette');
 var View = Marionette.ItemView.extend({
     tagName: 'div',
     className: 'group-add',
-    template: require('../templates/addgroup.html'),
+    template: require('../templates/descriptorgroupadd.html'),
 
     ui: {
         add_group_btn: 'span.add-group',
@@ -56,7 +56,7 @@ var View = Marionette.ItemView.extend({
         if (this.validateGroupName()) {
             $.ajax({
                 type: "GET",
-                url: ohgr.baseUrl + 'permission/group/search/',
+                url: ohgr.baseUrl + 'accession/descriptor/group/search/',
                 dataType: 'json',
                 data: {filters: JSON.stringify({
                     method: 'ieq',
@@ -69,7 +69,7 @@ var View = Marionette.ItemView.extend({
                         for (var i in data.items) {
                             var t = data.items[i];
 
-                            if (t.value.toUpperCase() == this.el.val().toUpperCase()) {
+                            if (t.name.toUpperCase() == this.el.val().toUpperCase()) {
                                 $(this.el).validateField('failed', gt.gettext('Group name already in usage'));
                                 break;
                             }

@@ -1,0 +1,18 @@
+<!--
+ - @file descriptorvaluepair.html
+ - @brief Template for the pair value of a type of descriptor (model)
+ - @author Frederic SCHERMA
+ - @date 2016-08-01
+ - @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+ - @license @todo
+ - @details
+-->
+
+<% if (can_delete) { %>
+<th><span class="delete-descriptor-value action glyphicon glyphicon-minus-sign"></span></th>
+<% } else { %>
+<th><span class="delete-descriptor-value action"></span></th>
+<% } %>
+<td class="action edit-descriptor-id" name="id" value="<%= id %>"><%= id %></td>
+<td class="action edit-descriptor-field0" name="code"><%= value[format.fields[0]] %></td>
+<td class="action edit-descriptor-field1" name="name"><%= value[format.fields[1]] %></td>

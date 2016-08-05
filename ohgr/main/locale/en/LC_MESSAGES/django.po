@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-20 15:15+0200\n"
+"POT-Creation-Date: 2016-08-05 14:35+0200\n"
 "PO-Revision-Date: 2016-02-01 11:53+0100\n"
 "Last-Translator: Frederic SCHERMA <frederic.scherma@clermont.inra.fr>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -42,54 +42,70 @@ msgstr ""
 msgid "About HOGR..."
 msgstr ""
 
-#: home.py:31 home.py:57
+#: home.py:33
 msgid "You are not authenticated."
 msgstr ""
 
-#: home.py:41 home.py:67
+#: home.py:43
 msgid "Please, you must enable your cookies."
 msgstr ""
 
-#: models.py:49
+#: models.py:51
 msgid "English"
 msgstr ""
 
-#: models.py:50
+#: models.py:52
 msgid "French"
 msgstr ""
 
-#: profile.py:47 profile.py:83
-msgid "Logged out"
+#: models.py:81
+msgid "Pending"
 msgstr ""
 
-#: profile.py:58
+#: models.py:82
+msgid "Valid"
+msgstr ""
+
+#: models.py:83
+msgid "Hidden"
+msgstr ""
+
+#: models.py:84
+msgid "Removed"
+msgstr ""
+
+#: profile.py:57
 msgid "Successfully logged"
 msgstr ""
 
-#: profile.py:67
+#: profile.py:66
 msgid "Unable to login"
 msgstr ""
 
-#: profile.py:70
+#: profile.py:69
 msgid "Username or password"
 msgstr ""
 
-#: profile.py:137
+#: profile.py:82
+msgid "Logged out"
+msgstr ""
+
+#: profile.py:136
 msgid "User successfully updated"
 msgstr ""
 
-#: templates/main/home.html:20
+#: templates/main/home.html:17
 msgid "Welcome"
 msgstr ""
 
-#: templates/main/index.html:77
+#: templates/main/index.html:79
 msgid "Username"
 msgstr ""
 
-#: templates/main/index.html:80
+#: templates/main/index.html:82
 msgid "Password"
 msgstr ""
 
-#: templates/main/index.html:82
+#: templates/main/index.html:84
 msgid "Sign in"
 msgstr ""

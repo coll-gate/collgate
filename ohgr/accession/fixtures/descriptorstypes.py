@@ -15,16 +15,20 @@ DESCRIPTORS = {
         'name': 'country',
         'code': 'CO_705',
         'group': 'general',
+        'can_delete': False,
+        'can_modify': False,
         'description': 'List of countries codes',
-        'format': {'type': 'tuple', 'fields': ['name', 'iso']}
+        'format': {'type': 'enum_pair', 'fields': ['name', 'iso']}
     },
     'accession_synonym_types': {
         'id': None,
         'name': 'accession_synonym_types',
         'code': 'ID_001',
         'group': 'general',
+        'can_delete': False,
+        'can_modify': False,
         'description': 'List of types of synonyms for an accession',
-        'format': {'type': 'string'}
+        'format': {'type': 'enum_single'}
     }
 }
 
@@ -38,8 +42,10 @@ def fixture():
         descriptor, created = DescriptorType.objects.get_or_create(name=descriptor_name, defaults={
             'code': descriptor_data.get('code', ''),
             'description': descriptor_data.get('description', ''),
-            'group_id': GROUPS.get(descriptor_data.get('group', 'general')),
+            'group_id': GROUPS.get(descriptor_data.get('group', 'general'))['id'],
             'format': json.dumps(descriptor_data.get('format', {'type': 'string'})),
+            'can_delete': descriptor_data.get('can_delete', False),
+            'can_modify': descriptor_data.get('can_modify', False),
         })
 
         # keep id for others fixtures

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-24 17:23+0200\n"
+"POT-Creation-Date: 2016-08-05 14:30+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,35 +17,39 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../../views/taxon.js:63 ../../../controllers/taxon.js:180
+#: ../../../views/taxon.js:63 ../../../controllers/taxon.js:228
 msgid "Invalid characters (alphanumeric, _ and - only)"
 msgstr ""
 
-#: ../../../views/taxon.js:66 ../../../controllers/taxon.js:183
+#: ../../../views/taxon.js:66 ../../../controllers/taxon.js:231
 msgid "3 characters min"
 msgstr ""
 
-#: ../../../views/taxon.js:87 ../../../controllers/taxon.js:163
+#: ../../../views/taxon.js:93 ../../../controllers/taxon.js:211
 msgid "Taxon name already in usage"
 msgstr ""
 
-#: ../../../routers/taxon.js:32
+#: ../../../routers/taxon.js:31
 msgid "List of taxons"
 msgstr ""
 
-#: ../../../routers/taxon.js:45
+#: ../../../routers/taxon.js:44
 msgid "Taxon details"
 msgstr ""
 
-#: ../../../controllers/taxon.js:198
+#: ../../../controllers/taxon.js:100
+msgid "Enter a taxon name. 3 characters at least for auto-completion"
+msgstr ""
+
+#: ../../../controllers/taxon.js:249
 msgid "Family rank cannot have a parent taxon"
 msgstr ""
 
-#: ../../../controllers/taxon.js:203
+#: ../../../controllers/taxon.js:254
 msgid "This rank must have a parent taxon"
 msgstr ""
 
-#: ../../../controllers/taxon.js:233
+#: ../../../controllers/taxon.js:278
 msgid "Taxon successfully created !"
 msgstr ""
 
@@ -65,19 +69,19 @@ msgstr ""
 msgid "Language"
 msgstr ""
 
-#: ../../../templates/taxoncreate.html:6
+#: ../../../templates/taxoncreate.html:5
 msgid "Create a taxon"
 msgstr ""
 
-#: ../../../templates/taxoncreate.html:11
+#: ../../../templates/taxoncreate.html:10
 msgid "Principal name of the taxon (must be unique)"
 msgstr ""
 
-#: ../../../templates/taxoncreate.html:15
+#: ../../../templates/taxoncreate.html:14
 msgid "Taxon rank"
 msgstr ""
 
-#: ../../../templates/taxoncreate.html:19
+#: ../../../templates/taxoncreate.html:18
 msgid "Direct parent"
 msgstr ""
 

@@ -12,10 +12,13 @@ var Backbone = require('backbone');
 
 var Model = Backbone.Model.extend({
     url: function() {
-        if (this.isNew())
-            return ohgr.baseUrl + 'accession/descriptor/group/' + this.group_id + '/type/';
+        var group_id = this.group_id || this.get('group') || this.collection.group_id;
+
+        if (this.isNew()) {
+            return ohgr.baseUrl + 'accession/descriptor/group/' + group_id + '/type/';
+        }
         else
-            return ohgr.baseUrl + 'accession/descriptor/group/' + this.group_id + '/type/' + this.id + '/';
+            return ohgr.baseUrl + 'accession/descriptor/group/' + group_id + '/type/' + this.get('id') + '/';
     },
 
     defaults: {
@@ -23,19 +26,26 @@ var Model = Backbone.Model.extend({
         group: null,
         name: '',
         values: null,
+        format: {type: 'string'},
+        can_delete: false,
+        can_modify: false
     },
 
     initialize: function(options) {
         Model.__super__.initialize.apply(this, arguments);
 
         options || (options = {});
-        if (typeof (options.group_id) != "undefined") {
-            this.group_id = options.group_id;
+        this.group_id = options.group_id;
+        this.collection = options.collection;
+
+        if (options.collection) {
+            this.group_id = options.collection.group_id;
         }
     },
 
     parse: function(data) {
         //this.perms = data.perms;
+        this.group = data.group;
         return data;
     },
 

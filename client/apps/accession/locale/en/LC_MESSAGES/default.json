@@ -1,1 +1,14 @@
-{}
+{
+    "Invalid characters (alphanumeric, _ and - only)": "",
+    "3 characters min": "",
+    "Group name already in usage": "",
+    "Descriptor type name already in usage": "",
+    "List of groups of descriptors": "",
+    "Types of descriptors for the group": "",
+    "Details for the type of descriptor": "",
+    "Values for the type of descriptor": "",
+    "Name": "",
+    "Number of types of descriptors": "",
+    "Number of values": "",
+    "Id": ""
+}

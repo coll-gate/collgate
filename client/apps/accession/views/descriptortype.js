@@ -18,11 +18,13 @@ var View = Marionette.ItemView.extend({
 
     ui: {
         delete_descriptor_type: 'span.delete-descriptor-type',
+        view_descriptor_type: 'td.view-descriptor-type',
         view_descriptor_value: 'td.view-descriptor-value'
     },
 
     events: {
         'click @ui.delete_descriptor_type': 'deleteDescriptorType',
+        'click @ui.view_descriptor_type': 'viewDescriptorType',
         'click @ui.view_descriptor_value': 'viewDescriptorValue'
     },
 
@@ -31,9 +33,13 @@ var View = Marionette.ItemView.extend({
     },
 
     onRender: function() {
-        /*if ($.inArray("auth.delete_descriptorvalue", this.model.perms) < 0) {
-            $(this.ui.delete_descriptor_value).remove();
-        }*/
+        if (!this.model.get('can_delete') || !session.user.isSuperUser) {
+            $(this.ui.delete_descriptor_type).hide();
+        }
+    },
+
+    viewDescriptorType: function() {
+        Backbone.history.navigate("app/accession/descriptor/group/" + this.model.get('group') + "/type/" + this.model.id + '/', {trigger: true});
     },
 
     viewDescriptorValue: function () {
@@ -41,7 +47,9 @@ var View = Marionette.ItemView.extend({
     },
 
     deleteDescriptorType: function () {
-        //this.model.destroy({wait: true});
+        if (this.model.get('num_descriptors_values') == 0) {
+            this.model.destroy({wait: true});
+        }
     }
 });
 

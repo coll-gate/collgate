@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-20 15:15+0200\n"
+"POT-Creation-Date: 2016-08-05 14:35+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,16 +17,24 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: apps.py:33
+#: apps.py:34
 msgid "Accession"
 msgstr ""
 
-#: apps.py:35
+#: apps.py:36
 msgid "Create accession"
 msgstr ""
 
-#: apps.py:38
+#: apps.py:39
+msgid "Create batch"
+msgstr ""
+
+#: apps.py:43
 msgid "List accessions"
+msgstr ""
+
+#: apps.py:46
+msgid "List groups of descriptors"
 msgstr ""
 
 #: base.py:47
@@ -37,14 +45,34 @@ msgstr ""
 msgid "You are not allowed to list the accessions"
 msgstr ""
 
-#: models.py:22
+#: models.py:88
 msgid "Primary"
 msgstr ""
 
-#: models.py:23
+#: models.py:89
 msgid "Synonym"
 msgstr ""
 
-#: models.py:24
+#: models.py:90
 msgid "Code"
+msgstr ""
+
+#: models.py:104
+msgid "accession synonym"
+msgstr ""
+
+#: models.py:115
+msgid "panel"
+msgstr ""
+
+#: models.py:126
+msgid "accession"
+msgstr ""
+
+#: models.py:139
+msgid "batch"
+msgstr ""
+
+#: models.py:153
+msgid "sample"
 msgstr ""

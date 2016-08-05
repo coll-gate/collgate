@@ -31,17 +31,20 @@ var View = Marionette.ItemView.extend({
     },
 
     onRender: function() {
-        /*if ($.inArray("auth.delete_descriptorgroup", this.model.perms) < 0) {
-            $(this.ui.delete_descriptor_group).remove();
-        }*/
+        // TODO check with user permission
+        if (!this.model.get('can_delete') || !session.user.isSuperUser) {
+            $(this.ui.delete_descriptor_group).hide();
+        }
     },
 
-    viewDescriptorType: function () {
+    viewDescriptorType: function() {
         Backbone.history.navigate("app/accession/descriptor/group/" + this.model.id + "/type/", {trigger: true});
     },
 
-    deleteDescriptorGroup: function () {
-        //this.model.destroy({wait: true});
+    deleteDescriptorGroup: function() {
+        if (this.model.get('num_descriptors_types') == 0) {
+            this.model.destroy({wait: true});
+        }
     }
 });
 

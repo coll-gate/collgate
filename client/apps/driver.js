@@ -10,12 +10,16 @@
 
 var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
+
 //var GetText = require("node-gettext");
 i18next = require('i18next');
 Logger = require('js-logger');
+
 // select2 as jquery plugin
 $.select2 = require("select2");
 require("select2/dist/css/select2.min.css");
+
+$.stickyTableHeaders = require("sticky-table-headers");
 
 // ohgr global application
 ohgr = new Marionette.Application({
@@ -25,7 +29,7 @@ ohgr = new Marionette.Application({
             formatter: function (messages, context) {
                 messages.unshift(new Date().toLocaleString());
             }
-        })
+        });
 
         if (session.debug) {
             Logger.setLevel(Logger.DEBUG);

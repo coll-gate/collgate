@@ -1,0 +1,167 @@
+<!--
+ - @file descriptortypedetail.html
+ - @brief Template for the detailed view of a type of descriptor (model)
+ - @author Frederic SCHERMA
+ - @date 2016-07-29
+ - @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+ - @license @todo
+ - @details
+-->
+
+<div class="descriptor-detail">
+    <div class="descriptor-type-name form-group" style="width: 50%;">
+        <label for="descriptor_type_name">Descriptor type name</label>
+        <input id="descriptor_type_name" class="form-control" type="text" readonly="readonly" maxlength="255" value="<%= name %>">
+    </div>
+    <div class="descriptor-type-format form-group" style="width: 50%;">
+        <label for="format_type">Type of format</label>
+        <select id="format_type" class="form-control">
+            <optgroup label="Single value">
+                <option value="boolean">Boolean</option>
+                <option value="numeric">Numeric</option>
+                <option value="numeric_range">Numeric range</option>
+                <option value="ordinal">Ordinal</option>
+                <option value="gps">GPS coordinate</option>
+                <option value="text">Text</option>
+            </optgroup>
+            <optgroup label="List of values">
+                <option value="enum_single">Single enumeration</option>
+                <option value="enum_pair">Pair enumeration</option>
+                <option value="scale_with_text">Scale with text</option>
+            </optgroup>
+        </select>
+    </div>
+    <div class="descriptor-type-unit form-group" style="width: 50%;">
+        <div class="row">
+            <div class="col-xs-4">
+                <label for="format_unit">Unit of the format</label>
+                <select id="format_unit" class="form-control">
+                    <optgroup label="Chroma">
+                        <option value="chroma_L_value">L value</option>
+                        <option value="chroma_a_value">a value</option>
+                        <option value="chroma_b_value">b value</option>
+                    </optgroup>
+                    <optgroup label="Common">
+                        <option value="degree_celsius">°C (celcius degree)</option>
+                        <option value="class">Category</option>
+                        <option value="custom" style="font-style: italic;">Custom</option>
+                        <option value="joule">J (joule)</option>
+                        <option value="norm1">Norm 1</option>
+                        <option value="note">Note</option>
+                        <option value="percent">% (percent)</option>
+                        <option value="regexp">Regular expression</option>
+                        <option value="scale">Scale</option>
+                    </optgroup>
+                    <optgroup label="Grain">
+                        <option value="gram_per_100_grain">g/100 grain</option>
+                        <option value="gram_per_200_grain">g/200 grain</option>
+                        <option value="gram_per_1000_grain">g/1000 grain</option>
+                        <option value="grain_per_meter2">grain/m²</option>
+                        <option value="grain_per_spike">grain/spike</option>
+                        <option value="grain_per_spikelet">grain/spikelet</option>
+                    </optgroup>
+                    <optgroup label="Meter">
+                        <option value="micrometer">um</option>
+                        <option value="millimeter">mm</option>
+                        <option value="centimeter">cm</option>
+                        <option value="centimeter">dm</option>
+                        <option value="meter">m</option>
+                        <option value="kilometer">km</option>
+                    </optgroup>
+                    <optgroup label="Plant and plot">
+                        <option value="plant_per_meter">plant/m</option>
+                        <option value="plant_per_meter2">plant/m²</option>
+                        <option value="plant_per_hectare">plant/ha</option>
+                        <option value="plant_per_plot">plant/plot</option>
+                        <option value="gram_per_plant">g/plant</option>
+                        <option value="gram_per_plot">g/plot</option>
+                        <option value="kilogram_per_plot">kg/plot</option>
+                        <option value="stoma_per_millimeter2">stoma/mm²</option>
+                        <option value="node">node</option>
+                        <option value="spikelet">spikelet</option>
+                        <option value="spike_per_meter2">spike/m²</option>
+                        <option value="tiller_per_meter">tiller/m</option>
+                        <option value="tiller_per_meter2">tiller/m²</option>
+                    </optgroup>
+                    <optgroup label="Quantity and volume">
+                        <option value="milliliter">ml</option>
+                        <option value="milliliter_per_percent">ml/%</option>
+                        <option value="ppm">ppm</option>
+                        <option value="milligram_per_kilogram">mg/kg</option>
+                        <option value="gram_per_kilogram">g/kg</option>
+                        <option value="gram_per_meter2">g/m²</option>
+                        <option value="kilogram_per_hectare">kg/ha</option>
+                        <option value="tonne_per_hectare">t/ha</option>
+                        <option value="gram_per_liter">g/l</option>
+                        <option value="kilogram_per_hectolitre">kg/hl</option>
+                        <option value="millimol_per_meter2_per_second">mmol/m²/s</option>
+                        <option value="gram_per_meter2_per_day">g/m²/day</option>
+                        <option value="cci">CCI (chlore)</option>
+                        <option value="delta_13c">delta 13C (carbon)</option>
+                    </optgroup>
+                    <optgroup label="Surface">
+                        <option value="millimeter2">mm²</option>
+                        <option value="centimeter2">cm²</option>
+                        <option value="meter2">m²</option>
+                        <option value="hectare">ha</option>
+                        <option value="kilometer2">km²</option>
+                    </optgroup>
+                    <optgroup label="Time">
+                        <option value="millisecond">ms</option>
+                        <option value="second">s</option>
+                        <option value="minute">min</option>
+                        <option value="hour">hour</option>
+                        <option value="day">day</option>
+                        <option value="month">month</option>
+                        <option value="year">year</option>
+                        <option value="date">date (yyyy/mm/dd)</option>
+                        <option value="time">time (hh:mm:ss.ms)</option>
+                        <option value="datetime">date+time</option>
+                        <option value="percent_per_minute">%/min</option>
+                        <option value="percent_per_hour">%/hour</option>
+                        <option value="percent_per_day">%/day</option>
+                    </optgroup>
+                </select>
+            </div>
+            <div class="col-xs-4">
+                <label for="format_unit_custom">Custom unit name</label>
+                <input id="format_unit_custom" class="form-control" type="text" readonly="readonly" maxlength="32" value="">
+            </div>
+        </div>
+    </div>
+    <div class="descriptor-type-precision form-group" style="width: 50%;">
+        <label for="format_precision">Precision of the decimal</label>
+        <select id="format_precision" class="form-control">
+            <option value="0.0">0.0</option>
+            <option value="1.0">1.0</option>
+            <option value="2.0">2.0</option>
+            <option value="3.0">3.0</option>
+            <option value="4.0">4.0</option>
+            <option value="5.0">5.0</option>
+            <option value="6.0">6.0</option>
+            <option value="7.0">7.0</option>
+            <option value="8.0">8.0</option>
+            <option value="9.0">9.0</option>
+        </select>
+    </div>
+    <div class="descriptor-type-range form-group" style="width: 50%;">
+        <div class="row">
+            <div class="col-xs-4">
+                <label for="format_range_min">Minimal range value</label>
+                <input id="format_range_min" class="form-control" type="text" readonly="readonly" maxlength="32" value="0">
+            </div>
+            <div class="col-xs-4">
+                <label for="format_range_max">Maximal range value</label>
+                <input id="format_range_max" class="form-control" type="text" readonly="readonly" maxlength="32" value="1">
+            </div>
+        </div>
+    </div>
+    <div class="descriptor-type-regexp form-group" style="width: 50%;">
+        <label for="format_regexp">Regular expression</label>
+        <input id="format_regexp" class="form-control" type="text" readonly="readonly" maxlength="255">
+    </div>
+    <div class="descriptor-type-target form-group" style="width: 50%;">
+        <label for="target">Descriptor is mandatory for those selected type of entities</label>
+        <select id="target" style="width: 100%;" class="form-control"></select>
+    </div>
+</div>

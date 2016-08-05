@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-20 15:15+0200\n"
+"POT-Creation-Date: 2016-08-05 14:35+0200\n"
 "PO-Revision-Date: 2016-05-26 11:49+0200\n"
 "Last-Translator: Frédéric SCHERMA <frederic.scherma@clermont.inra.fr>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -30,45 +30,45 @@ msgstr "Gérer les utilisateurs"
 msgid "Manage groups"
 msgstr "Gérer les groupes"
 
-#: base.py:175
+#: base.py:191
 msgid "Group name already in usage"
-msgstr ""
+msgstr "Nom de groupe déjà utilisé"
 
-#: base.py:194
+#: base.py:210
 msgid "Only empty groups can be deleted"
-msgstr ""
+msgstr "Seul les groupes vides peuvent être supprimés"
 
-#: base.py:362 base.py:501
+#: base.py:386 base.py:533
 msgid "You are not allowed to add a permission"
 msgstr "Vous n'êtes pas autorisé à rajouter une permission"
 
-#: base.py:370 base.py:408 base.py:509 base.py:546
+#: base.py:394 base.py:432 base.py:541 base.py:578
 msgid "Only a superuser can change an auth.permission"
 msgstr "Seulement un super-utilisateur peu changer une auth.permission"
 
-#: base.py:399 base.py:537
+#: base.py:423 base.py:569
 msgid "You are not allowed to remove a permission"
 msgstr "Vous n'êtes pas autorisé à supprimer une permission"
 
-#: base.py:580
+#: base.py:612
 #, fuzzy
 #| msgid "You are not allowed to add a permission"
 msgid "You are not allowed to add a user into a group"
 msgstr "Vous n'êtes pas autorisé à rajouter une permission"
 
-#: base.py:587
+#: base.py:619
 msgid "User already exists into the group"
-msgstr ""
+msgstr "L'utilisateur existe déjà dans ce groupe"
 
-#: base.py:606
+#: base.py:638
 #, fuzzy
 #| msgid "You are not allowed to remove a permission"
 msgid "You are not allowed to remove a user from a group"
 msgstr "Vous n'êtes pas autorisé à supprimer une permission"
 
-#: base.py:613
+#: base.py:645
 msgid "User does not exists into the group"
-msgstr ""
+msgstr "L'utilisateur n'existe pas dans ce groupe"
 
 #~ msgid "Create a group for permissions"
 #~ msgstr "Créer un groupe de permission"

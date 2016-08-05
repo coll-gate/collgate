@@ -1,1 +1,14 @@
-{}
+{
+    "Invalid characters (alphanumeric, _ and - only)": "Caractères invalides (alphanumeric, _ et - seulement)",
+    "3 characters min": "3 caractères minimum",
+    "Group name already in usage": "Nom de group déjà utilisé",
+    "Descriptor type name already in usage": "Nom de type de descriptor déjà utilisé",
+    "List of groups of descriptors": "Liste de groupes de descripteurs",
+    "Types of descriptors for the group": "Types de descripteurs pour le groupe",
+    "Details for the type of descriptor": "Détails pour le type de descripteur",
+    "Values for the type of descriptor": "Valeurs pour le type de descripteur",
+    "Name": "Nom",
+    "Number of types of descriptors": "Nombre de types de descripteurs",
+    "Number of values": "Nombre de valeurs",
+    "Id": "Id"
+}

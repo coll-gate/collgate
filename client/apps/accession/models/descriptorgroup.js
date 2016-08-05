@@ -15,13 +15,15 @@ var Model = Backbone.Model.extend({
         if (this.isNew())
             return ohgr.baseUrl + 'accession/descriptor/group/';
         else
-            return ohgr.baseUrl + 'accession/descriptor/group/' + this.id + '/';
+            return ohgr.baseUrl + 'accession/descriptor/group/' + this.get('id') + '/';
     },
 
     defaults: {
         id: null,
         name: '',
         num_descriptors_types: 0,
+        can_delete: false,
+        can_modify: false
     },
 
     parse: function(data) {

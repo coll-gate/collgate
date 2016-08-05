@@ -1,8 +1,8 @@
 /**
- * @file descriptorvaluelist.js
- * @brief List of values for a type of descriptor item view
+ * @file descriptorvaluepairlist.js
+ * @brief List of pair values for a type of descriptor item view
  * @author Frederic SCHERMA
- * @date 2016-07-21
+ * @date 2016-08-01
  * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
  * @license @todo
  * @details
@@ -10,11 +10,23 @@
 
 var Marionette = require('backbone.marionette');
 var DescriptorValueModel = require('../models/descriptorvalue');
-var DescriptorValueView = require('../views/descriptorvalue');
+var DescriptorValuePairView = require('../views/descriptorvaluepair');
 
 var View = Marionette.CompositeView.extend({
-    template: require("../templates/descriptorvaluelist.html"),
-    childView: DescriptorValueView,
+    template: require("../templates/descriptorvaluepairlist.html"),
+    templateHelpers: function() {
+        return {
+            format: this.collection.format,
+            items: this.collection.toJSON()
+        };
+    },
+    childViewOptions: function () {
+        return {
+            can_delete: this.model.get('can_delete'),
+            can_modify: this.model.get('can_modify')
+        }
+    },
+    childView: DescriptorValuePairView,
     childViewContainer: 'tbody.descriptor-value-list',
 
     ui: {

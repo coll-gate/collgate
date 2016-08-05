@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-24 17:26+0200\n"
+"POT-Creation-Date: 2016-08-05 14:30+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,10 +21,64 @@ msgstr ""
 msgid "List of audit entries by date"
 msgstr "Liste des entrées d'audits par date"
 
-#: ../../../controllers/audit.js:25
+#: ../../../controllers/audit.js:94
+msgid "Select a username"
+msgstr ""
+
+#: ../../../controllers/audit.js:143
 msgid "List of audit entries related to user"
 msgstr "Liste des entrées d'audits pour l'utilisateur"
 
-#: ../../../controllers/audit.js:38
+#: ../../../controllers/audit.js:244
+msgid "Select an entity UUID or name"
+msgstr ""
+
+#: ../../../controllers/audit.js:293
 msgid "List of audit entries related to entity"
 msgstr "Liste des entrées d'audits pour l'entité"
+
+#: ../../../templates/audit.html:13 ../../../templates/audit.html:14
+msgid "Audit"
+msgstr ""
+
+#: ../../../templates/audit.html:24
+msgid "User"
+msgstr ""
+
+#: ../../../templates/audit.html:25
+msgid "Reason"
+msgstr ""
+
+#: ../../../templates/audit.html:26
+msgid "Fields"
+msgstr ""
+
+#: ../../../templates/auditbyentity.html:5
+msgid "Get audits entries for an entity"
+msgstr ""
+
+#: ../../../templates/auditbyentity.html:10
+msgid "Entity content type"
+msgstr ""
+
+#: ../../../templates/auditbyentity.html:14
+msgid "Entity UUID or name"
+msgstr ""
+
+#: ../../../templates/auditbyentity.html:20
+#: ../../../templates/auditbyusername.html:16
+msgid "Cancel"
+msgstr ""
+
+#: ../../../templates/auditbyentity.html:21
+#: ../../../templates/auditbyusername.html:17
+msgid "Search"
+msgstr ""
+
+#: ../../../templates/auditbyusername.html:5
+msgid "Get audits entries for a user"
+msgstr ""
+
+#: ../../../templates/auditbyusername.html:10
+msgid "Username"
+msgstr ""

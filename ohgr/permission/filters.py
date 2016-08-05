@@ -59,7 +59,7 @@ class GroupFilter:
         if method:
             if method == 'icontains':
                 return cls.name_partial(filters)
-            elif method == 'iexact':
+            elif method == 'ieq':
                 return cls.name_exact(filters)
 
         raise SuspiciousOperation("Unsupported search method")
@@ -157,7 +157,7 @@ class UserFilter:
                     return cls.username_partial(filters)
                 elif fields == '*':
                     return cls.any_name_partial(filters)
-            elif method == 'iexact':
+            elif method == 'ieq':
                 if fields == 'username':
                     return cls.username_exact(filters)
                 elif fields == '*':

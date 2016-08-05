@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-03 15:30+0200\n"
+"POT-Creation-Date: 2016-08-05 14:30+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,3 +16,56 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#: ../../../views/descriptorgroupadd.js:45
+#: ../../../views/descriptorgrouptypeadd.js:45
+msgid "Invalid characters (alphanumeric, _ and - only)"
+msgstr ""
+
+#: ../../../views/descriptorgroupadd.js:48
+#: ../../../views/descriptorgrouptypeadd.js:48
+msgid "3 characters min"
+msgstr ""
+
+#: ../../../views/descriptorgroupadd.js:73
+msgid "Group name already in usage"
+msgstr ""
+
+#: ../../../views/descriptorgrouptypeadd.js:73
+msgid "Descriptor type name already in usage"
+msgstr ""
+
+#: ../../../routers/descriptor.js:49
+msgid "List of groups of descriptors"
+msgstr ""
+
+#: ../../../routers/descriptor.js:69
+msgid "Types of descriptors for the group"
+msgstr ""
+
+#: ../../../routers/descriptor.js:89
+msgid "Details for the type of descriptor"
+msgstr ""
+
+#: ../../../routers/descriptor.js:104
+msgid "Values for the type of descriptor"
+msgstr ""
+
+#: ../../../templates/descriptorgrouplist.html:16
+#: ../../../templates/descriptortypelist.html:16
+#: ../../../templates/descriptorvaluelist.html:17
+msgid "Name"
+msgstr ""
+
+#: ../../../templates/descriptorgrouplist.html:17
+msgid "Number of types of descriptors"
+msgstr ""
+
+#: ../../../templates/descriptortypelist.html:17
+msgid "Number of values"
+msgstr ""
+
+#: ../../../templates/descriptorvaluelist.html:16
+#: ../../../templates/descriptorvaluepairlist.html:16
+msgid "Id"
+msgstr ""

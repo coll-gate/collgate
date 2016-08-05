@@ -36,8 +36,9 @@ class DescriptorType(models.Model):
     """
 
     name = models.CharField(unique=True, max_length=255, null=False, blank=False)
-    # code can be a Crop Ontology ('CO_XYZ:NNNNNN') code (see http://www.cropontology.org/ontology)
-    # and http://www.cropontology.org/get-ontology/CO_[0-9]+ to get a JSON version.
+
+    # code can be a Crop Ontology ('CO_XYZ') code (see http://www.cropontology.org/ontology)
+    # and http://www.cropontology.org/get-ontology/CO_[0-9]{3,} to get a JSON version.
     # Internals codes are prefixed by 'ID_'.
     code = models.CharField(unique=True, max_length=64, null=False, blank=False)
 
@@ -47,8 +48,7 @@ class DescriptorType(models.Model):
     # informative description.
     description = models.TextField()
 
-    # JSON encoded values (mostly a dict) and generally extracted
-    # from crop-ontology minus some useless details.
+    # JSON encoded values (mostly a dict or empty)
     values = models.TextField(default="", null=False)
 
     # JSON encoded format of the descriptor
@@ -59,6 +59,7 @@ class DescriptorType(models.Model):
     # Is this descriptor can be modified (rename, add/remove/modify its values)
     # by an authorised staff people
     can_modify = models.BooleanField(default=True)
+
     # For which types of entities this descriptor is mandatory. Values are ContentType ids.
     mandatory_for = models.CommaSeparatedIntegerField(default="", blank=True, null=False, max_length=255)
 

@@ -1,5 +1,18 @@
 {
     "List of audit entries by date": "Liste des entrées d'audits par date",
+    "Select a username": "",
     "List of audit entries related to user": "Liste des entrées d'audits pour l'utilisateur",
-    "List of audit entries related to entity": "Liste des entrées d'audits pour l'entité"
+    "Select an entity UUID or name": "",
+    "List of audit entries related to entity": "Liste des entrées d'audits pour l'entité",
+    "Audit": "",
+    "User": "",
+    "Reason": "",
+    "Fields": "",
+    "Get audits entries for an entity": "",
+    "Entity content type": "",
+    "Entity UUID or name": "",
+    "Cancel": "",
+    "Search": "",
+    "Get audits entries for a user": "",
+    "Username": ""
 }

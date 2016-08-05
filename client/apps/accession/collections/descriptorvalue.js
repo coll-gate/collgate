@@ -21,9 +21,14 @@ var Collection = Backbone.Collection.extend({
         options || (options = {});
         this.group_id = options.group_id;
         this.type_id = options.type_id;
+        this.format = options.format || {type: "string", fields: ["name"]};
     },
 
     parse: function(data) {
+        if (data.format) {
+            this.format = data.format;
+        }
+
         this.page = data.page;
         this.total_count = data.total_count;
 

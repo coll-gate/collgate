@@ -4,6 +4,7 @@
     "Taxon name already in usage": "",
     "List of taxons": "",
     "Taxon details": "",
+    "Enter a taxon name. 3 characters at least for auto-completion": "",
     "Family rank cannot have a parent taxon": "",
     "This rank must have a parent taxon": "",
     "Taxon successfully created !": "",

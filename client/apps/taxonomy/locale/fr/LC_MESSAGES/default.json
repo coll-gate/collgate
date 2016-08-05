@@ -4,6 +4,7 @@
     "Taxon name already in usage": "Ce nom de taxon est déjà utilisé",
     "List of taxons": "Liste des taxons",
     "Taxon details": "Détails du taxon",
+    "Enter a taxon name. 3 characters at least for auto-completion": "",
     "Family rank cannot have a parent taxon": "Le rang taxinomique famille ne peut pas avoir de parent",
     "This rank must have a parent taxon": "Ce rang taxinomique doit avoir un parent",
     "Taxon successfully created !": "Taxon créé avec succès !",
