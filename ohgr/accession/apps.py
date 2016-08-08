@@ -22,6 +22,9 @@ class OhgrAccession(ApplicationMain):
     def ready(self):
         super().ready()
 
+        from audit.models import register_models
+        register_models(OhgrAccession.name)
+
         # create a module accession
         accession_module = Module('accession', base_url='ohgr')
         accession_module.include_urls((

@@ -26,7 +26,6 @@ var View = Marionette.ItemView.extend({
 
     initialize: function() {
         this.listenTo(this.model, 'reset', this.render, this);
-        console.log(this.model.collection);
     },
 
     onRender: function() {

@@ -10,6 +10,7 @@
 
 <th><span class="delete-descriptor-type action glyphicon glyphicon-minus-sign"></span></th>
 <td class="action view-descriptor-type" name="name" value="<%= name %>"><%= name %></td>
+<td name="code"><%= code %></td>
 <% if (format.type === "enum_single" || format.type === "enum_pair") { %>
 <td class="action view-descriptor-value" name="num_descriptors_values"><abbr class="badge" style="cursor: pointer;" title="<%= gt.gettext('Manage values of the descriptor') %>"><%= num_descriptors_values %></abbr></td>
 <% } else { %>

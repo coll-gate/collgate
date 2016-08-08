@@ -15,12 +15,10 @@ from igdectk.common.models import ChoiceEnum, IntegerChoice
 from main.models import Languages, Entity
 
 
-class DescriptorGroup(models.Model):
+class DescriptorGroup(Entity):
     """
     Category of a type of descriptor for an accession.
     """
-
-    name = models.CharField(unique=True, max_length=255, null=False, blank=False)
 
     # Is this group of descriptor can be deleted when it is empty
     can_delete = models.BooleanField(default=True)
@@ -29,13 +27,11 @@ class DescriptorGroup(models.Model):
     can_modify = models.BooleanField(default=True)
 
 
-class DescriptorType(models.Model):
+class DescriptorType(Entity):
     """
     Type of descriptor for an accession.
     Mostly related to a Crop Ontology code.
     """
-
-    name = models.CharField(unique=True, max_length=255, null=False, blank=False)
 
     # code can be a Crop Ontology ('CO_XYZ') code (see http://www.cropontology.org/ontology)
     # and http://www.cropontology.org/get-ontology/CO_[0-9]{3,} to get a JSON version.
@@ -52,7 +48,10 @@ class DescriptorType(models.Model):
     values = models.TextField(default="", null=False)
 
     # JSON encoded format of the descriptor
-    format = models.TextField(default='{"type": "string"}', null=False, blank=False)
+    format = models.TextField(
+        default='{"type": "string", "unit": "custom", "precision": "0.0", "fields": []}',
+        null=False,
+        blank=False)
 
     # Is this descriptor can be deleted by an authorised staff people
     can_delete = models.BooleanField(default=True)
@@ -60,11 +59,8 @@ class DescriptorType(models.Model):
     # by an authorised staff people
     can_modify = models.BooleanField(default=True)
 
-    # For which types of entities this descriptor is mandatory. Values are ContentType ids.
-    mandatory_for = models.CommaSeparatedIntegerField(default="", blank=True, null=False, max_length=255)
 
-
-class DescriptorValue(models.Model):
+class DescriptorValue(Entity):
     """
     For some descriptors value are in a specific table.
     """
@@ -75,7 +71,7 @@ class DescriptorValue(models.Model):
     # syntax could be "1,2" for two directs parent, and "1.2.3,4" with two parents and a hierarchy using dot
     parents = models.CharField(max_length=255, default="")
 
-    # JSON encoded single value as property (type, format, range, value...)
+    # JSON encoded single value or object
     value = models.CharField(max_length=512, blank=False, null=False)
 
 
@@ -90,7 +86,7 @@ class AccessionSynonymType(ChoiceEnum):
     CODE = IntegerChoice(2, _('Code'))
 
 
-class AccessionSynonym(models.Model):
+class AccessionSynonym(Entity):
     """
     Table specific to accession to defines the synonyms.
     """

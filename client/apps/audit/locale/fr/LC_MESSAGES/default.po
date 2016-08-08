@@ -23,7 +23,7 @@ msgstr "Liste des entrées d'audits par date"
 
 #: ../../../controllers/audit.js:94
 msgid "Select a username"
-msgstr ""
+msgstr "Saisissez un nom d'utilisateur"
 
 #: ../../../controllers/audit.js:143
 msgid "List of audit entries related to user"
@@ -31,7 +31,7 @@ msgstr "Liste des entrées d'audits pour l'utilisateur"
 
 #: ../../../controllers/audit.js:244
 msgid "Select an entity UUID or name"
-msgstr ""
+msgstr "Sélectionnez une entité par son UUID ou son nom"
 
 #: ../../../controllers/audit.js:293
 msgid "List of audit entries related to entity"
@@ -39,46 +39,46 @@ msgstr "Liste des entrées d'audits pour l'entité"
 
 #: ../../../templates/audit.html:13 ../../../templates/audit.html:14
 msgid "Audit"
-msgstr ""
+msgstr "Audit"
 
 #: ../../../templates/audit.html:24
 msgid "User"
-msgstr ""
+msgstr "Utilisateur"
 
 #: ../../../templates/audit.html:25
 msgid "Reason"
-msgstr ""
+msgstr "Raison"
 
 #: ../../../templates/audit.html:26
 msgid "Fields"
-msgstr ""
+msgstr "Champs"
 
 #: ../../../templates/auditbyentity.html:5
 msgid "Get audits entries for an entity"
-msgstr ""
+msgstr "Récupérer les entrées d'audits pour une entité"
 
 #: ../../../templates/auditbyentity.html:10
 msgid "Entity content type"
-msgstr ""
+msgstr "Type entité"
 
 #: ../../../templates/auditbyentity.html:14
 msgid "Entity UUID or name"
-msgstr ""
+msgstr "UUID ou nom de l'entité"
 
 #: ../../../templates/auditbyentity.html:20
 #: ../../../templates/auditbyusername.html:16
 msgid "Cancel"
-msgstr ""
+msgstr "Annuler"
 
 #: ../../../templates/auditbyentity.html:21
 #: ../../../templates/auditbyusername.html:17
 msgid "Search"
-msgstr ""
+msgstr "Chercher"
 
 #: ../../../templates/auditbyusername.html:5
 msgid "Get audits entries for a user"
-msgstr ""
+msgstr "Récupérer les entrées d'audits pour un utilisateur"
 
 #: ../../../templates/auditbyusername.html:10
 msgid "Username"
-msgstr ""
+msgstr "Nom d'utilisateur"

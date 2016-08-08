@@ -8,10 +8,21 @@
  - @details
 -->
 
+<style>
+    /* adjust the form validation glyph position */
+    #format_unit_custom ~ span.form-control-feedback {
+        right: 15px;
+    }
+</style>
+
 <div class="descriptor-detail">
     <div class="descriptor-type-name form-group" style="width: 50%;">
         <label for="descriptor_type_name">Descriptor type name</label>
-        <input id="descriptor_type_name" class="form-control" type="text" readonly="readonly" maxlength="255" value="<%= name %>">
+        <input id="descriptor_type_name" class="form-control" type="text" maxlength="255" value="<%= name %>">
+    </div>
+    <div class="descriptor-type-code form-group" style="width: 50%;">
+        <label for="descriptor_type_code">Descriptor type code</label>
+        <input id="descriptor_type_code" class="form-control" type="text" readonly="readonly" maxlength="255" value="<%= code %>">
     </div>
     <div class="descriptor-type-format form-group" style="width: 50%;">
         <label for="format_type">Type of format</label>
@@ -22,18 +33,30 @@
                 <option value="numeric_range">Numeric range</option>
                 <option value="ordinal">Ordinal</option>
                 <option value="gps">GPS coordinate</option>
-                <option value="text">Text</option>
+                <option value="string">Text</option>
             </optgroup>
             <optgroup label="List of values">
                 <option value="enum_single">Single enumeration</option>
                 <option value="enum_pair">Pair enumeration</option>
-                <option value="scale_with_text">Scale with text</option>
+                <option value="enum_ordinal_text">Ordinal with text</option>
             </optgroup>
         </select>
     </div>
+    <div class="descriptor-type-fields form-group" style="width: 50%;">
+        <div class="row">
+            <div class="col-xs-6">
+                <label for="type_field0">First field</label>
+                <input id="type_field0" class="form-control" type="text" maxlength="32" value="">
+            </div>
+            <div class="col-xs-6">
+                <label for="type_field1">Second field</label>
+                <input id="type_field1" class="form-control" type="text" maxlength="32" value="">
+            </div>
+        </div>
+    </div>
     <div class="descriptor-type-unit form-group" style="width: 50%;">
         <div class="row">
-            <div class="col-xs-4">
+            <div class="col-xs-6">
                 <label for="format_unit">Unit of the format</label>
                 <select id="format_unit" class="form-control">
                     <optgroup label="Chroma">
@@ -43,7 +66,7 @@
                     </optgroup>
                     <optgroup label="Common">
                         <option value="degree_celsius">°C (celcius degree)</option>
-                        <option value="class">Category</option>
+                        <option value="category">Category</option>
                         <option value="custom" style="font-style: italic;">Custom</option>
                         <option value="joule">J (joule)</option>
                         <option value="norm1">Norm 1</option>
@@ -123,7 +146,7 @@
                     </optgroup>
                 </select>
             </div>
-            <div class="col-xs-4">
+            <div class="col-xs-6">
                 <label for="format_unit_custom">Custom unit name</label>
                 <input id="format_unit_custom" class="form-control" type="text" readonly="readonly" maxlength="32" value="">
             </div>
@@ -146,11 +169,11 @@
     </div>
     <div class="descriptor-type-range form-group" style="width: 50%;">
         <div class="row">
-            <div class="col-xs-4">
+            <div class="col-xs-6">
                 <label for="format_range_min">Minimal range value</label>
                 <input id="format_range_min" class="form-control" type="text" readonly="readonly" maxlength="32" value="0">
             </div>
-            <div class="col-xs-4">
+            <div class="col-xs-6">
                 <label for="format_range_max">Maximal range value</label>
                 <input id="format_range_max" class="form-control" type="text" readonly="readonly" maxlength="32" value="1">
             </div>
@@ -159,9 +182,5 @@
     <div class="descriptor-type-regexp form-group" style="width: 50%;">
         <label for="format_regexp">Regular expression</label>
         <input id="format_regexp" class="form-control" type="text" readonly="readonly" maxlength="255">
-    </div>
-    <div class="descriptor-type-target form-group" style="width: 50%;">
-        <label for="target">Descriptor is mandatory for those selected type of entities</label>
-        <select id="target" style="width: 100%;" class="form-control"></select>
     </div>
 </div>

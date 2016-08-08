@@ -298,7 +298,7 @@ def get_descriptor_type_for_group(request, id, tid):
         "properties": {
             "name": {"type": "string", 'minLength': 3, 'maxLength': 32}
         },
-    },  # perms={'accession.add_descriptorgroup': _('You are not allowed to create a group of descriptor')}
+    },  # perms={'accession.add_descriptortype': _('You are not allowed to create a type of descriptor')}
 )
 def create_descriptor_type(request, id):
     descr_type_params = request.data
@@ -333,6 +333,24 @@ def create_descriptor_type(request, id):
     }
 
     return HttpResponseRest(request, response)
+
+
+@RestDescriptorGroupIdTypeId.def_auth_request(
+    Method.DELETE, Format.JSON,
+    perms={
+        #  'accession.delete_descriptortype': _("You are not allowed to delete a type of descriptor"),
+    }
+)
+def delete_descriptor_group(request, id, tid):
+    group_id = int_arg(id)
+    group = get_object_or_404(DescriptorGroup, id=group_id)
+
+    descr_type_id = int_arg(tid)
+    descr_type = get_object_or_404(DescriptorType, id=descr_type_id, group=group)
+
+    descr_type.delete()
+
+    return HttpResponseRest(request, {})
 
 
 @RestDescriptorGroupIdTypeIdValue.def_auth_request(Method.GET, Format.JSON)
