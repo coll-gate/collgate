@@ -16,10 +16,14 @@ i18next = require('i18next');
 Logger = require('js-logger');
 
 // select2 as jquery plugin
-$.select2 = require("select2");
+/*$.select2 = */require("select2");
 require("select2/dist/css/select2.min.css");
 
-$.stickyTableHeaders = require("sticky-table-headers");
+// numeric validator
+/*$.numeric = */require("./deps/js/jquery.numeric");
+
+// make table header fixed position
+/*$.stickyTableHeaders = */require("sticky-table-headers");
 
 // ohgr global application
 ohgr = new Marionette.Application({

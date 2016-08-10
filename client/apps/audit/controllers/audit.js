@@ -135,14 +135,14 @@ var Controller = Marionette.Controller.extend({
     },
 
     getAuditListByUsername: function (username) {
-        var auditCollection = new AuditCollection([]);
+        var auditCollection = new AuditCollection([], {username: username});
 
         var defaultLayout = new DefaultLayout({});
         ohgr.mainRegion.show(defaultLayout);
 
         defaultLayout.title.show(new TitleView({title: gt.gettext("List of audit entries related to user") + " " + username}));
 
-        auditCollection.fetch({data: {username: username, page: 1}, processData: true}).then(function () {
+        auditCollection.fetch({data: {page: 1}, processData: true}).then(function () {
             defaultLayout.content.show(new AuditListView({collection: auditCollection}));
         });
     },
@@ -285,14 +285,14 @@ var Controller = Marionette.Controller.extend({
     },
 
     getAuditListByEntity: function (app_label, model, object_id, object_name) {
-        var auditCollection = new AuditCollection([]);
+        var auditCollection = new AuditCollection([], {entity: {app_label: app_label, model: model, object_id: object_id}});
 
         var defaultLayout = new DefaultLayout({});
         ohgr.mainRegion.show(defaultLayout);
 
         defaultLayout.title.show(new TitleView({title: gt.gettext("List of audit entries related to entity") + " " + app_label + "." + model + " " + object_name}));
 
-        auditCollection.fetch({data: {app_label: app_label, model: model, object_id:object_id, page: 1}, processData: true}).then(function () {
+        auditCollection.fetch({data: {page: 1}, processData: true}).then(function () {
             defaultLayout.content.show(new AuditListView({collection: auditCollection}));
         });
     }

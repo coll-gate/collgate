@@ -353,6 +353,56 @@ def delete_descriptor_group(request, id, tid):
     return HttpResponseRest(request, {})
 
 
+@RestDescriptorGroupIdTypeId.def_auth_request(Method.PUT, Format.JSON, content={
+        "type": "object",
+        "properties": {
+            "name": {"type": "string", 'minLength': 3, 'maxLength': 32},
+            "code": {"type": "string", 'minLength': 3, 'maxLength': 32},
+            "format": {
+                "type": "object",
+                "properties": {
+                }
+            },
+        },
+    },  # perms={'accession.change_descriptortype': _('You are not allowed to modify a type of descriptor')}
+)
+def update_descriptor_type(request, id, tid):
+    descr_type_params = request.data
+
+    group_id = int_arg(id)
+    group = get_object_or_404(DescriptorGroup, id=group_id)
+
+    type_id = int_arg(tid)
+
+    descr_type = get_object_or_404(DescriptorType, id=type_id, group=group)
+
+    descr_type.name = descr_type_params['name']
+    descr_type.format = json.dumps(descr_type_params['format'])
+
+    # internally stored values
+    if descr_type.values:
+        values = json.loads(descr_type.values)
+        count = len(values)
+    else:
+        # values in the value table
+        count = descr_type.values_set.all().count()
+
+    descr_type.save()
+
+    response = {
+        'id': descr_type.id,
+        'name': descr_type.name,
+        'code': descr_type.code,
+        'format': json.loads(descr_type.format),
+        'group': group.id,
+        'num_descriptors_values': count,
+        'can_delete': descr_type.can_delete,
+        'can_modify': descr_type.can_modify
+    }
+
+    return HttpResponseRest(request, response)
+
+
 @RestDescriptorGroupIdTypeIdValue.def_auth_request(Method.GET, Format.JSON)
 def get_descriptor_values_for_type(request, id, tid):
     results_per_page = 30

@@ -21,6 +21,7 @@ var View = Marionette.ItemView.extend({
         view_descriptor_value: 'td.view-descriptor-value',
         target: '#target',
         name: '#descriptor_type_name',
+        code: '#descriptor_type_code',
         format_type: '#format_type',
         fields: 'div.descriptor-type-fields',
         field0: '#type_field0',
@@ -31,13 +32,16 @@ var View = Marionette.ItemView.extend({
         range: 'div.descriptor-type-range',
         format_range_min: '#format_range_min',
         format_range_max: '#format_range_max',
-        format_regexp: '#format_regexp'
+        format_regexp: '#format_regexp',
+        save: '#save'
     },
 
     events: {
         'click @ui.delete_descriptor_type': 'deleteDescriptorType',
         'click @ui.view_descriptor_type': 'viewDescriptorType',
         'click @ui.view_descriptor_value': 'viewDescriptorValue',
+        'click @ui.save': 'saveDescriptorType',
+        'input @ui.name': 'inputName',
         'change @ui.format_type': 'changeFormatType',
         'change @ui.format_unit': 'changeFormatUnit',
         'input @ui.format_unit_custom': 'inputFormatUnitCustom',
@@ -52,6 +56,9 @@ var View = Marionette.ItemView.extend({
     },
 
     onRender: function() {
+        $(this.ui.format_range_min).numeric({decimal : '.', negative : false});
+        $(this.ui.format_range_max).numeric({decimal : '.', negative : false});
+
         var format = this.model.get('format');
 
         $(this.ui.format_type).val(format.type).trigger('change');
@@ -173,12 +180,67 @@ var View = Marionette.ItemView.extend({
         var re = /^[a-zA-Z0-9_\-%°⁼⁺⁻⁰¹²³⁴⁵⁶⁷⁸⁹/µ]+$/i;
 
         if (v.length > 0 && !re.test(v)) {
-            $(this.ui.format_unit_custom).validateField('failed', gt.gettext("Invalid characters (alphanumeric, _-°%²³⁴⁵⁶⁷⁸⁹⁰ allowed)"));
+            $(this.ui.format_unit_custom).validateField('failed', gt.gettext("Invalid characters (alphanumeric, _-°%°⁼⁺⁻⁰¹²³⁴⁵⁶⁷⁸⁹/µ allowed)"));
         } else if (v.length < 1) {
             $(this.ui.format_unit_custom).validateField('failed', gt.gettext('1 character min'));
         } else {
             $(this.ui.format_unit_custom).validateField('ok');
         }
+    },
+
+    inputName: function () {
+        var v = this.ui.name.val();
+        var re = /^[a-zA-Z0-9_-]+$/i;
+
+        if (v.length > 0 && !re.test(v)) {
+            $(this.ui.name).validateField('failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
+        } else if (v.length < 1) {
+            $(this.ui.name).validateField('failed', gt.gettext('3 characters min'));
+        } else {
+            $(this.ui.name).validateField('ok');
+        }
+    },
+
+    saveDescriptorType: function () {
+        if (!$(this.ui.name.isValidField()))
+            return;
+
+        var name = this.ui.name.val();
+        var code = this.ui.code.val();
+        var format = {
+            type: this.ui.format_type.val(),
+            unit: this.ui.format_unit.val(),
+            precision: this.ui.format_precision.val(),
+            fields: [],
+        };
+
+        var field0 = this.ui.field0.val();
+        var field1 = this.ui.field1.val();
+
+        if (field0 && field1) {
+            format.fields = [field0, field1];
+        }
+
+        if (this.ui.format_unit.val() == 'custom') {
+            format.custom_unit = this.ui.format_unit_custom.val();
+        }
+
+        if (this.ui.format_type.val() =="numeric_range") {
+            format.range = [
+                this.ui.format_range_min.val(),
+                this.ui.format_range_max.val()
+            ];
+        }
+
+        if (this.ui.format_type.val() == 'string') {
+            format.regexp = this.ui.format_regexp.val();
+        }
+
+        this.model.save({
+            name: name,
+            code: code,
+            format: format,
+        }, {wait: true});
     }
 });
 
