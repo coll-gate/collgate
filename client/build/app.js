@@ -65,7 +65,7 @@
 /******/ 	}
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "b96cd525aa415c677e9d"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "bb6299497ecf008a10ef"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -595,12 +595,20 @@
 	
 	var Backbone = __webpack_require__(2);
 	var Marionette = __webpack_require__(4);
+	
 	//var GetText = require("node-gettext");
 	i18next = __webpack_require__(7);
 	Logger = __webpack_require__(23);
+	
 	// select2 as jquery plugin
-	$.select2 = __webpack_require__(24);
+	/*$.select2 = */__webpack_require__(24);
 	__webpack_require__(25);
+	
+	// numeric validator
+	/*$.numeric = */__webpack_require__(29);
+	
+	// make table header fixed position
+	/*$.stickyTableHeaders = */__webpack_require__(30);
 	
 	// ohgr global application
 	ohgr = new Marionette.Application({
@@ -610,7 +618,7 @@
 	            formatter: function (messages, context) {
 	                messages.unshift(new Date().toLocaleString());
 	            }
-	        })
+	        });
 	
 	        if (session.debug) {
 	            Logger.setLevel(Logger.DEBUG);
@@ -771,18 +779,18 @@
 	    window.gt._ = i18next.t;
 	
 	    if (session.language === "fr") {
-	        __webpack_require__(29);
+	        __webpack_require__(31);
 	    } else {  // default to english
 	    }
 	
 	    $.fn.select2.defaults.set('language', session.language);
 	
 	    // each modules
-	    this.main = __webpack_require__(30);
-	    this.permission = __webpack_require__(50);
+	    this.main = __webpack_require__(32);
+	    this.permission = __webpack_require__(51);
 	    this.audit = __webpack_require__(86);
-	    this.taxonomy = __webpack_require__(98);
-	    this.accession = __webpack_require__(113);
+	    this.taxonomy = __webpack_require__(97);
+	    this.accession = __webpack_require__(111);
 	});
 	
 	//gt = new GetText();
@@ -17119,12 +17127,697 @@
 /* 29 */
 /***/ function(module, exports) {
 
+	/*
+	 *
+	 * Copyright (c) 2006-2014 Sam Collett (http://www.texotela.co.uk)
+	 * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
+	 * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
+	 *
+	 * Version 1.4.1
+	 * Demo: http://www.texotela.co.uk/code/jquery/numeric/
+	 *
+	 * Changes done by Frederic Scherma :
+	 * Add support for min and max values with default when empty
+	 */
+	(function($) {
+	/*
+	 * Allows only valid characters to be entered into input boxes.
+	 * Note: fixes value when pasting via Ctrl+V, but not when using the mouse to paste
+	  *      side-effect: Ctrl+A does not work, though you can still use the mouse to select (or double-click to select all)
+	 *
+	 * @name     numeric
+	 * @param    config      { decimal : "." , negative : true }
+	 * @param    callback     A function that runs if the number is not valid (fires onblur)
+	 * @author   Sam Collett (http://www.texotela.co.uk)
+	 * @example  $(".numeric").numeric();
+	 * @example  $(".numeric").numeric(","); // use , as separator
+	 * @example  $(".numeric").numeric({ decimal : "," }); // use , as separator
+	 * @example  $(".numeric").numeric({ negative : false }); // do not allow negative values
+	 * @example  $(".numeric").numeric(null, callback); // use default values, pass on the 'callback' function
+	 *
+	 */
+	$.fn.numeric = function(config, callback)
+	{
+	    if(typeof config === 'boolean')
+	    {
+	        config = { decimal: config };
+	    }
+	    config = config || {};
+	    // if config.negative undefined, set to true (default is to allow negative numbers)
+	    if(typeof config.negative == "undefined") { config.negative = true; }
+	    // set decimal point
+	    var decimal = (config.decimal === false) ? "" : config.decimal || ".";
+	    // allow negatives
+	    var negative = (config.negative === true) ? true : false;
+	    // callback function
+	    callback = (typeof(callback) == "function" ? callback : function() {});
+	
+	    // min value
+	    var min = 0;
+	
+	    if (typeof(config.min) !== "number") {
+	        if (negative) {
+	            min = (config.decimal == false) ? Number.MIN_SAFE_INTEGER : Number.MIN_VALUE;
+	        }
+	    } else {
+	        min = config.min;
+	    }
+	
+	    // max value
+	    var max = 0;
+	
+	    if (typeof(config.max) !== "number") {
+	        max = (config.decimal == false) ? Number.MAX_SAFE_INTEGER : Number.MAX_VALUE;
+	    } else {
+	        max = config.max;
+	    }
+	
+	    // set data and methods
+	    return this.data("numeric.min", min).data("numeric.max", max).data("numeric.decimal", decimal).data("numeric.negative", negative).data("numeric.callback", callback).keypress($.fn.numeric.keypress).keyup($.fn.numeric.keyup).blur($.fn.numeric.blur);
+	};
+	
+	$.fn.numeric.keypress = function(e)
+	{
+	    // get decimal character and determine if negatives are allowed
+	    var decimal = $.data(this, "numeric.decimal");
+	    var negative = $.data(this, "numeric.negative");
+	    // get the key that was pressed
+	    var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
+	    // allow enter/return key (only when in an input box)
+	    if(key == 13 && this.nodeName.toLowerCase() == "input")
+	    {
+	        return true;
+	    }
+	    else if(key == 13)
+	    {
+	        return false;
+	    }
+	    var allow = false;
+	    // allow Ctrl+A
+	    if((e.ctrlKey && key == 97 /* firefox */) || (e.ctrlKey && key == 65) /* opera */) { return true; }
+	    // allow Ctrl+X (cut)
+	    if((e.ctrlKey && key == 120 /* firefox */) || (e.ctrlKey && key == 88) /* opera */) { return true; }
+	    // allow Ctrl+C (copy)
+	    if((e.ctrlKey && key == 99 /* firefox */) || (e.ctrlKey && key == 67) /* opera */) { return true; }
+	    // allow Ctrl+Z (undo)
+	    if((e.ctrlKey && key == 122 /* firefox */) || (e.ctrlKey && key == 90) /* opera */) { return true; }
+	    // allow or deny Ctrl+V (paste), Shift+Ins
+	    if((e.ctrlKey && key == 118 /* firefox */) || (e.ctrlKey && key == 86) /* opera */ ||
+	      (e.shiftKey && key == 45)) { return true; }
+	    // if a number was not pressed
+	    if(key < 48 || key > 57)
+	    {
+	      var value = $(this).val();
+	        /* '-' only allowed at start and if negative numbers allowed */
+	        if($.inArray('-', value.split('')) !== 0 && negative && key == 45 && (value.length === 0 || parseInt($.fn.getSelectionStart(this), 10) === 0)) { return true; }
+	        /* only one decimal separator allowed */
+	        if(decimal && key == decimal.charCodeAt(0) && $.inArray(decimal, value.split('')) != -1)
+	        {
+	            allow = false;
+	        }
+	        // check for other keys that have special purposes
+	        if(
+	            key != 8 /* backspace */ &&
+	            key != 9 /* tab */ &&
+	            key != 13 /* enter */ &&
+	            key != 35 /* end */ &&
+	            key != 36 /* home */ &&
+	            key != 37 /* left */ &&
+	            key != 39 /* right */ &&
+	            key != 46 /* del */
+	        )
+	        {
+	            allow = false;
+	        }
+	        else
+	        {
+	            // for detecting special keys (listed above)
+	            // IE does not support 'charCode' and ignores them in keypress anyway
+	            if(typeof e.charCode != "undefined")
+	            {
+	                // special keys have 'keyCode' and 'which' the same (e.g. backspace)
+	                if(e.keyCode == e.which && e.which !== 0)
+	                {
+	                    allow = true;
+	                    // . and delete share the same code, don't allow . (will be set to true later if it is the decimal point)
+	                    if(e.which == 46) { allow = false; }
+	                }
+	                // or keyCode != 0 and 'charCode'/'which' = 0
+	                else if(e.keyCode !== 0 && e.charCode === 0 && e.which === 0)
+	                {
+	                    allow = true;
+	                }
+	            }
+	        }
+	        // if key pressed is the decimal and it is not already in the field
+	        if(decimal && key == decimal.charCodeAt(0))
+	        {
+	            if($.inArray(decimal, value.split('')) == -1)
+	            {
+	                allow = true;
+	            }
+	            else
+	            {
+	                allow = false;
+	            }
+	        }
+	    }
+	    else
+	    {
+	        allow = true;
+	    }
+	    return allow;
+	};
+	
+	$.fn.numeric.keyup = function(e)
+	{
+	    var val = $(this).val();
+	    if(val && val.length > 0)
+	    {
+	        // get carat (cursor) position
+	        var carat = $.fn.getSelectionStart(this);
+	        var selectionEnd = $.fn.getSelectionEnd(this);
+	        // get decimal character and determine if negatives are allowed
+	        var decimal = $.data(this, "numeric.decimal");
+	        var negative = $.data(this, "numeric.negative");
+	        var min = $.data(this, "numeric.min");
+	        var max = $.data(this, "numeric.max");
+	
+	        // prepend a 0 if necessary
+	        if(decimal !== "" && decimal !== null)
+	        {
+	            // find decimal point
+	            var dot = $.inArray(decimal, val.split(''));
+	            // if dot at start, add 0 before
+	            if(dot === 0)
+	            {
+	                this.value = "0" + val;
+	                carat++;
+	                        selectionEnd++;
+	            }
+	            // if dot at position 1, check if there is a - symbol before it
+	            if(dot == 1 && val.charAt(0) == "-")
+	            {
+	                this.value = "-0" + val.substring(1);
+	                carat++;
+	                        selectionEnd++;
+	            }
+	            val = this.value;
+	        }
+	
+	        // if pasted in, only allow the following characters
+	        var validChars = [0,1,2,3,4,5,6,7,8,9,'-',decimal];
+	        // get length of the value (to loop through)
+	        var length = val.length;
+	        // loop backwards (to prevent going out of bounds)
+	        for(var i = length - 1; i >= 0; i--)
+	        {
+	            var ch = val.charAt(i);
+	            // remove '-' if it is in the wrong place
+	            if(i !== 0 && ch == "-")
+	            {
+	                val = val.substring(0, i) + val.substring(i + 1);
+	            }
+	            // remove character if it is at the start, a '-' and negatives aren't allowed
+	            else if(i === 0 && !negative && ch == "-")
+	            {
+	                val = val.substring(1);
+	            }
+	            var validChar = false;
+	            // loop through validChars
+	            for(var j = 0; j < validChars.length; j++)
+	            {
+	                // if it is valid, break out the loop
+	                if(ch == validChars[j])
+	                {
+	                    validChar = true;
+	                    break;
+	                }
+	            }
+	            // if not a valid character, or a space, remove
+	            if(!validChar || ch == " ")
+	            {
+	                val = val.substring(0, i) + val.substring(i + 1);
+	            }
+	        }
+	        // remove extra decimal characters
+	        var firstDecimal = $.inArray(decimal, val.split(''));
+	        if(firstDecimal > 0)
+	        {
+	            for(var k = length - 1; k > firstDecimal; k--)
+	            {
+	                var chch = val.charAt(k);
+	                // remove decimal character
+	                if(chch == decimal)
+	                {
+	                    val = val.substring(0, k) + val.substring(k + 1);
+	                }
+	            }
+	        }
+	        // min/max
+	        if (val > max) {
+	            val = max;
+	        } else if (val < min) {
+	            val = min;
+	        }
+	
+	        // set the value and prevent the cursor moving to the end
+	        this.value = val;
+	        $.fn.setSelection(this, [carat, selectionEnd]);
+	    }
+	};
+	
+	$.fn.numeric.blur = function()
+	{
+	    var decimal = $.data(this, "numeric.decimal");
+	    var callback = $.data(this, "numeric.callback");
+	    var min = $.data(this, "numeric.min");
+	    var val = this.value;
+	    // empty then min value
+	    if(val === "") {
+	        val = this.value = Math.max(0, min);
+	    }
+	    if(val !== "")
+	    {
+	        var re = new RegExp("^\\d+$|^\\d*" + decimal + "\\d+$");
+	        if(!re.exec(val))
+	        {
+	            callback.apply(this);
+	        }
+	    }
+	};
+	
+	$.fn.removeNumeric = function()
+	{
+	    return this.data("numeric.decimal", null).data("numeric.negative", null).data("numeric.callback", null).unbind("keypress", $.fn.numeric.keypress).unbind("blur", $.fn.numeric.blur);
+	};
+	
+	// Based on code from http://javascript.nwbox.com/cursor_position/ (Diego Perini <dperini@nwbox.com>)
+	$.fn.getSelectionStart = function(o)
+	{
+	    if(o.type === "number"){
+	        return undefined;
+	    }
+	    else if (o.createTextRange)
+	    {
+	        var r;
+	        if(typeof document.selection == "undefined") {
+	            //On IE < 9 && IE >= 11 : "document.selection" is deprecated and you should use "document.getSelection()"
+	            //https://github.com/SamWM/jQuery-Plugins/issues/62
+	            r = document.getSelection();
+	        } else {
+	            r = document.selection.createRange().duplicate();
+	            r.moveEnd('character', o.value.length);
+	        }
+	        if (r.text == '') return o.value.length;
+	
+	        return o.value.lastIndexOf(r.text);
+	    } else {
+	        try { return o.selectionStart; }
+	        catch(e) { return 0; }
+	    }
+	};
+	
+	// Based on code from http://javascript.nwbox.com/cursor_position/ (Diego Perini <dperini@nwbox.com>)
+	$.fn.getSelectionEnd = function(o)
+	{
+	    if(o.type === "number"){
+	        return undefined;
+	    }
+	    else if (o.createTextRange) {
+	        var r = document.selection.createRange().duplicate()
+	        r.moveStart('character', -o.value.length)
+	        return r.text.length
+	    } else return o.selectionEnd
+	}
+	
+	// set the selection, o is the object (input), p is the position ([start, end] or just start)
+	$.fn.setSelection = function(o, p)
+	{
+	    // if p is number, start and end are the same
+	    if(typeof p == "number") { p = [p, p]; }
+	    // only set if p is an array of length 2
+	    if(p && p.constructor == Array && p.length == 2)
+	    {
+	        if(o.type === "number") {
+	            o.focus();
+	        }
+	        else if (o.createTextRange)
+	        {
+	            var r = o.createTextRange();
+	            r.collapse(true);
+	            r.moveStart('character', p[0]);
+	            r.moveEnd('character', p[1]);
+	            r.select();
+	        }
+	        else {
+	            o.focus();
+	            try{
+	                if(o.setSelectionRange)
+	                {
+	                    o.setSelectionRange(p[0], p[1]);
+	                }
+	            } catch(e) {
+	            }
+	        }
+	    }
+	};
+	
+	})(jQuery);
+
+
+/***/ },
+/* 30 */
+/***/ function(module, exports) {
+
+	/*! Copyright (c) 2011 by Jonas Mosbech - https://github.com/jmosbech/StickyTableHeaders
+		MIT license info: https://github.com/jmosbech/StickyTableHeaders/blob/master/license.txt */
+	
+	;(function ($, window, undefined) {
+		'use strict';
+	
+		var name = 'stickyTableHeaders',
+			id = 0,
+			defaults = {
+				fixedOffset: 0,
+				leftOffset: 0,
+				marginTop: 0,
+				objDocument: document,
+				objHead: 'head',
+				objWindow: window,
+				scrollableArea: window,
+				cacheHeaderHeight: false
+			};
+	
+		function Plugin (el, options) {
+			// To avoid scope issues, use 'base' instead of 'this'
+			// to reference this class from internal events and functions.
+			var base = this;
+	
+			// Access to jQuery and DOM versions of element
+			base.$el = $(el);
+			base.el = el;
+			base.id = id++;
+	
+			// Listen for destroyed, call teardown
+			base.$el.bind('destroyed',
+				$.proxy(base.teardown, base));
+	
+			// Cache DOM refs for performance reasons
+			base.$clonedHeader = null;
+			base.$originalHeader = null;
+	
+			// Cache header height for performance reasons
+			base.cachedHeaderHeight = null;
+	
+			// Keep track of state
+			base.isSticky = false;
+			base.hasBeenSticky = false;
+			base.leftOffset = null;
+			base.topOffset = null;
+	
+			base.init = function () {
+				base.setOptions(options);
+	
+				base.$el.each(function () {
+					var $this = $(this);
+	
+					// remove padding on <table> to fix issue #7
+					$this.css('padding', 0);
+	
+					base.$originalHeader = $('thead:first', this);
+					base.$clonedHeader = base.$originalHeader.clone();
+					$this.trigger('clonedHeader.' + name, [base.$clonedHeader]);
+	
+					base.$clonedHeader.addClass('tableFloatingHeader');
+					base.$clonedHeader.css({display: 'none', opacity: 0.0});
+	
+					base.$originalHeader.addClass('tableFloatingHeaderOriginal');
+	
+					base.$originalHeader.after(base.$clonedHeader);
+	
+					base.$printStyle = $('<style type="text/css" media="print">' +
+						'.tableFloatingHeader{display:none !important;}' +
+						'.tableFloatingHeaderOriginal{position:static !important;}' +
+						'</style>');
+					base.$head.append(base.$printStyle);
+				});
+	
+				base.updateWidth();
+				base.toggleHeaders();
+				base.bind();
+			};
+	
+			base.destroy = function (){
+				base.$el.unbind('destroyed', base.teardown);
+				base.teardown();
+			};
+	
+			base.teardown = function(){
+				if (base.isSticky) {
+					base.$originalHeader.css('position', 'static');
+				}
+				$.removeData(base.el, 'plugin_' + name);
+				base.unbind();
+	
+				base.$clonedHeader.remove();
+				base.$originalHeader.removeClass('tableFloatingHeaderOriginal');
+				base.$originalHeader.css('visibility', 'visible');
+				base.$printStyle.remove();
+	
+				base.el = null;
+				base.$el = null;
+			};
+	
+			base.bind = function(){
+				base.$scrollableArea.on('scroll.' + name, base.toggleHeaders);
+				if (!base.isWindowScrolling) {
+					base.$window.on('scroll.' + name + base.id, base.setPositionValues);
+					base.$window.on('resize.' + name + base.id, base.toggleHeaders);
+				}
+				base.$scrollableArea.on('resize.' + name, base.toggleHeaders);
+				base.$scrollableArea.on('resize.' + name, base.updateWidth);
+			};
+	
+			base.unbind = function(){
+				// unbind window events by specifying handle so we don't remove too much
+				base.$scrollableArea.off('.' + name, base.toggleHeaders);
+				if (!base.isWindowScrolling) {
+					base.$window.off('.' + name + base.id, base.setPositionValues);
+					base.$window.off('.' + name + base.id, base.toggleHeaders);
+				}
+				base.$scrollableArea.off('.' + name, base.updateWidth);
+			};
+	
+			// We debounce the functions bound to the scroll and resize events
+			base.debounce = function (fn, delay) {
+				var timer = null;
+				return function () {
+					var context = this, args = arguments;
+					clearTimeout(timer);
+					timer = setTimeout(function () {
+						fn.apply(context, args);
+					}, delay);
+				};
+			};
+	
+			base.toggleHeaders = base.debounce(function () {
+				if (base.$el) {
+					base.$el.each(function () {
+						var $this = $(this),
+							newLeft,
+							newTopOffset = base.isWindowScrolling ? (
+										isNaN(base.options.fixedOffset) ?
+										base.options.fixedOffset.outerHeight() :
+										base.options.fixedOffset
+									) :
+									base.$scrollableArea.offset().top + (!isNaN(base.options.fixedOffset) ? base.options.fixedOffset : 0),
+							offset = $this.offset(),
+	
+							scrollTop = base.$scrollableArea.scrollTop() + newTopOffset,
+							scrollLeft = base.$scrollableArea.scrollLeft(),
+	
+							headerHeight = base.options.cacheHeaderHeight ? base.cachedHeaderHeight : base.$clonedHeader.height(),
+	
+							scrolledPastTop = base.isWindowScrolling ?
+									scrollTop > offset.top :
+									newTopOffset > offset.top,
+							notScrolledPastBottom = (base.isWindowScrolling ? scrollTop : 0) <
+								(offset.top + $this.height() - headerHeight - (base.isWindowScrolling ? 0 : newTopOffset));
+	
+						if (scrolledPastTop && notScrolledPastBottom) {
+							newLeft = offset.left - scrollLeft + base.options.leftOffset;
+							base.$originalHeader.css({
+								'position': 'fixed',
+								'margin-top': base.options.marginTop,
+								'left': newLeft,
+								'z-index': 3 // #18: opacity bug
+							});
+							base.leftOffset = newLeft;
+							base.topOffset = newTopOffset;
+							base.$clonedHeader.css('display', '');
+							if (!base.isSticky) {
+								base.isSticky = true;
+								// make sure the width is correct: the user might have resized the browser while in static mode
+								base.updateWidth();
+								$this.trigger('enabledStickiness.' + name);
+							}
+							base.setPositionValues();
+						} else if (base.isSticky) {
+							base.$originalHeader.css('position', 'static');
+							base.$clonedHeader.css('display', 'none');
+							base.isSticky = false;
+							base.resetWidth($('td,th', base.$clonedHeader), $('td,th', base.$originalHeader));
+							$this.trigger('disabledStickiness.' + name);
+						}
+					});
+				}
+			}, 0);
+	
+			base.setPositionValues = base.debounce(function () {
+				var winScrollTop = base.$window.scrollTop(),
+					winScrollLeft = base.$window.scrollLeft();
+				if (!base.isSticky ||
+						winScrollTop < 0 || winScrollTop + base.$window.height() > base.$document.height() ||
+						winScrollLeft < 0 || winScrollLeft + base.$window.width() > base.$document.width()) {
+					return;
+				}
+				base.$originalHeader.css({
+					'top': base.topOffset - (base.isWindowScrolling ? 0 : winScrollTop),
+					'left': base.leftOffset - (base.isWindowScrolling ? 0 : winScrollLeft)
+				});
+			}, 0);
+	
+			base.updateWidth = base.debounce(function () {
+				if (!base.isSticky) {
+					return;
+				}
+				// Copy cell widths from clone
+				if (!base.$originalHeaderCells) {
+					base.$originalHeaderCells = $('th,td', base.$originalHeader);
+				}
+				if (!base.$clonedHeaderCells) {
+					base.$clonedHeaderCells = $('th,td', base.$clonedHeader);
+				}
+				var cellWidths = base.getWidth(base.$clonedHeaderCells);
+				base.setWidth(cellWidths, base.$clonedHeaderCells, base.$originalHeaderCells);
+	
+				// Copy row width from whole table
+				base.$originalHeader.css('width', base.$clonedHeader.width());
+	
+				// If we're caching the height, we need to update the cached value when the width changes
+				if (base.options.cacheHeaderHeight) {
+					base.cachedHeaderHeight = base.$clonedHeader.height();
+				}
+			}, 0);
+	
+			base.getWidth = function ($clonedHeaders) {
+				var widths = [];
+				$clonedHeaders.each(function (index) {
+					var width, $this = $(this);
+	
+					if ($this.css('box-sizing') === 'border-box') {
+						var boundingClientRect = $this[0].getBoundingClientRect();
+						if(boundingClientRect.width) {
+							width = boundingClientRect.width; // #39: border-box bug
+						} else {
+							width = boundingClientRect.right - boundingClientRect.left; // ie8 bug: getBoundingClientRect() does not have a width property
+						}
+					} else {
+						var $origTh = $('th', base.$originalHeader);
+						if ($origTh.css('border-collapse') === 'collapse') {
+							if (window.getComputedStyle) {
+								width = parseFloat(window.getComputedStyle(this, null).width);
+							} else {
+								// ie8 only
+								var leftPadding = parseFloat($this.css('padding-left'));
+								var rightPadding = parseFloat($this.css('padding-right'));
+								// Needs more investigation - this is assuming constant border around this cell and it's neighbours.
+								var border = parseFloat($this.css('border-width'));
+								width = $this.outerWidth() - leftPadding - rightPadding - border;
+							}
+						} else {
+							width = $this.width();
+						}
+					}
+	
+					widths[index] = width;
+				});
+				return widths;
+			};
+	
+			base.setWidth = function (widths, $clonedHeaders, $origHeaders) {
+				$clonedHeaders.each(function (index) {
+					var width = widths[index];
+					$origHeaders.eq(index).css({
+						'min-width': width,
+						'max-width': width
+					});
+				});
+			};
+	
+			base.resetWidth = function ($clonedHeaders, $origHeaders) {
+				$clonedHeaders.each(function (index) {
+					var $this = $(this);
+					$origHeaders.eq(index).css({
+						'min-width': $this.css('min-width'),
+						'max-width': $this.css('max-width')
+					});
+				});
+			};
+	
+			base.setOptions = function (options) {
+				base.options = $.extend({}, defaults, options);
+				base.$window = $(base.options.objWindow);
+				base.$head = $(base.options.objHead);
+				base.$document = $(base.options.objDocument);
+				base.$scrollableArea = $(base.options.scrollableArea);
+				base.isWindowScrolling = base.$scrollableArea[0] === base.$window[0];
+			};
+	
+			base.updateOptions = function (options) {
+				base.setOptions(options);
+				// scrollableArea might have changed
+				base.unbind();
+				base.bind();
+				base.updateWidth();
+				base.toggleHeaders();
+			};
+	
+			// Run initializer
+			base.init();
+		}
+	
+		// A plugin wrapper around the constructor,
+		// preventing against multiple instantiations
+		$.fn[name] = function ( options ) {
+			return this.each(function () {
+				var instance = $.data(this, 'plugin_' + name);
+				if (instance) {
+					if (typeof options === 'string') {
+						instance[options].apply(instance);
+					} else {
+						instance.updateOptions(options);
+					}
+				} else if(options !== 'destroy') {
+					$.data(this, 'plugin_' + name, new Plugin( this, options ));
+				}
+			});
+		};
+	
+	})(jQuery, window);
+
+
+/***/ },
+/* 31 */
+/***/ function(module, exports) {
+
 	/*! Select2 4.0.3 | https://github.com/select2/select2/blob/master/LICENSE.md */
 	
 	(function(){if(jQuery&&jQuery.fn&&jQuery.fn.select2&&jQuery.fn.select2.amd)var e=jQuery.fn.select2.amd;return e.define("select2/i18n/fr",[],function(){return{errorLoading:function(){return"Les résultats ne peuvent pas être chargés."},inputTooLong:function(e){var t=e.input.length-e.maximum,n="Supprimez "+t+" caractère";return t!==1&&(n+="s"),n},inputTooShort:function(e){var t=e.minimum-e.input.length,n="Saisissez "+t+" caractère";return t!==1&&(n+="s"),n},loadingMore:function(){return"Chargement de résultats supplémentaires…"},maximumSelected:function(e){var t="Vous pouvez seulement sélectionner "+e.maximum+" élément";return e.maximum!==1&&(t+="s"),t},noResults:function(){return"Aucun résultat trouvé"},searching:function(){return"Recherche en cours…"}}}),{define:e.define,require:e.require}})();
 
 /***/ },
-/* 30 */
+/* 32 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -17152,10 +17845,10 @@
 	
 	        // i18n
 	        if (session.language === "fr") {
-	            i18next.addResources('fr', 'default', __webpack_require__(31));
+	            i18next.addResources('fr', 'default', __webpack_require__(33));
 	            //gt.addTextdomain('default', require('./locale/fr/LC_MESSAGES/default.mo'));
 	        } else {  // default to english
-	            i18next.addResources('en', 'default', __webpack_require__(32));
+	            //i18next.addResources('en', 'default', require('./locale/en/LC_MESSAGES/default.json'));
 	            //gt.addTextdomain('default', require('./locale/en/LC_MESSAGES/default.mo'));
 	        }
 	
@@ -17164,9 +17857,9 @@
 	        this.views = {};
 	        this.routers = {};
 	
-	        var SelectOptionItemView = __webpack_require__(33);
+	        var SelectOptionItemView = __webpack_require__(34);
 	
-	        var LanguageCollection = __webpack_require__(35);
+	        var LanguageCollection = __webpack_require__(36);
 	        this.collections.languages = new LanguageCollection();
 	
 	        this.views.languages = new SelectOptionItemView({
@@ -17174,7 +17867,7 @@
 	            collection: this.collections.languages,
 	        });
 	
-	        var ContentTypeCollection = __webpack_require__(37);
+	        var ContentTypeCollection = __webpack_require__(38);
 	        this.collections.contentType = new ContentTypeCollection();
 	
 	        this.views.contentTypes = new SelectOptionItemView({
@@ -17184,7 +17877,7 @@
 	
 	        this.views.Home = Marionette.CompositeView.extend({
 	            el: '#main_content',
-	            template: __webpack_require__(39),
+	            template: __webpack_require__(40),
 	        });
 	
 	        Logger.timeEnd("Init main module");
@@ -17193,10 +17886,10 @@
 	    onStart: function(options) {
 	        Logger.time("Start main module");
 	
-	        var MainRouter = __webpack_require__(40);
+	        var MainRouter = __webpack_require__(41);
 	        this.routers.main = new MainRouter();
 	
-	        var ProfileRouter = __webpack_require__(47);
+	        var ProfileRouter = __webpack_require__(48);
 	        this.routers.profile = new ProfileRouter();
 	
 	        Logger.timeEnd("Start main module");
@@ -17213,7 +17906,7 @@
 
 
 /***/ },
-/* 31 */
+/* 33 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -17227,21 +17920,7 @@
 	};
 
 /***/ },
-/* 32 */
-/***/ function(module, exports) {
-
-	module.exports = {
-		"About...": "",
-		"Help...": "",
-		"Edit my profile informations": "",
-		"English": "",
-		"French": "",
-		"Home": "",
-		"Welcome to the Online Host of Genetics Resources": ""
-	};
-
-/***/ },
-/* 33 */
+/* 34 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -17258,7 +17937,7 @@
 	
 	var SelectOptionItemView = Marionette.ItemView.extend({
 	    //template: _.template('<% _.each(items, function(item){ %><option value="<%= item.id %>"><%= gt.gettext(item.value) %></option><% }) %>'),
-	    template: __webpack_require__(34),
+	    template: __webpack_require__(35),
 	    tagName: 'select',
 	
 	    initialize: function(options) {
@@ -17324,7 +18003,7 @@
 
 
 /***/ },
-/* 34 */
+/* 35 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -17366,7 +18045,7 @@
 
 
 /***/ },
-/* 35 */
+/* 36 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -17379,7 +18058,7 @@
 	 * @details
 	 */
 	
-	var LanguageModel = __webpack_require__(36);
+	var LanguageModel = __webpack_require__(37);
 	
 	var LanguageCollection = Backbone.Collection.extend({
 	    url: ohgr.baseUrl + 'main/language',
@@ -17409,7 +18088,7 @@
 
 
 /***/ },
-/* 36 */
+/* 37 */
 /***/ function(module, exports) {
 
 	/**
@@ -17431,7 +18110,7 @@
 
 
 /***/ },
-/* 37 */
+/* 38 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -17444,7 +18123,7 @@
 	 * @details
 	 */
 	
-	var ContentTypeModel = __webpack_require__(38);
+	var ContentTypeModel = __webpack_require__(39);
 	
 	var Collection = Backbone.Collection.extend({
 	    url: ohgr.baseUrl + 'main/content-type',
@@ -17482,7 +18161,7 @@
 
 
 /***/ },
-/* 38 */
+/* 39 */
 /***/ function(module, exports) {
 
 	/**
@@ -17504,7 +18183,7 @@
 
 
 /***/ },
-/* 39 */
+/* 40 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -17525,7 +18204,7 @@
 
 
 /***/ },
-/* 40 */
+/* 41 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -17539,10 +18218,10 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var AboutView = __webpack_require__(41);
-	var HelpIndexView = __webpack_require__(43);
-	var DefaultLayout = __webpack_require__(45);
-	var TitleView = __webpack_require__(46);
+	var AboutView = __webpack_require__(42);
+	var HelpIndexView = __webpack_require__(44);
+	var DefaultLayout = __webpack_require__(46);
+	var TitleView = __webpack_require__(47);
 	
 	var Router = Marionette.AppRouter.extend({
 	    routes : {
@@ -17582,7 +18261,7 @@
 
 
 /***/ },
-/* 41 */
+/* 42 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -17600,7 +18279,7 @@
 	var View = Marionette.ItemView.extend({
 	    tagName: 'div',
 	    className: 'about',
-	    template: __webpack_require__(42),
+	    template: __webpack_require__(43),
 	
 	    ui: {
 	    },
@@ -17619,7 +18298,7 @@
 
 
 /***/ },
-/* 42 */
+/* 43 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -17636,7 +18315,7 @@
 
 
 /***/ },
-/* 43 */
+/* 44 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -17654,7 +18333,7 @@
 	var View = Marionette.ItemView.extend({
 	    tagName: 'div',
 	    className: 'help-index',
-	    template: __webpack_require__(44),
+	    template: __webpack_require__(45),
 	
 	    ui: {
 	    },
@@ -17673,7 +18352,7 @@
 
 
 /***/ },
-/* 44 */
+/* 45 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -17690,7 +18369,7 @@
 
 
 /***/ },
-/* 45 */
+/* 46 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -17736,7 +18415,7 @@
 
 
 /***/ },
-/* 46 */
+/* 47 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -17757,7 +18436,20 @@
 	
 	    initialize: function(options) {
 	        this.options = options;
-	        $(this.el).html(Marionette.getOption(this, "title"));
+	
+	        var title = $("<span></span>");
+	        title.html(Marionette.getOption(this, "title"));
+	
+	        $(this.el).empty();
+	        $(this.el).append(title);
+	
+	        if (typeof(options.object) != "undefined") {
+	            var object = $("<span></span>");
+	            object.addClass("heading")
+	            object.html(options.object);
+	
+	            $(this.el).append(object);
+	        };
 	    }
 	});
 	
@@ -17765,7 +18457,7 @@
 
 
 /***/ },
-/* 47 */
+/* 48 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -17779,9 +18471,9 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var EditProfileView = __webpack_require__(48);
-	var DefaultLayout = __webpack_require__(45);
-	var TitleView = __webpack_require__(46);
+	var EditProfileView = __webpack_require__(49);
+	var DefaultLayout = __webpack_require__(46);
+	var TitleView = __webpack_require__(47);
 	
 	var ProfileRouter = Marionette.AppRouter.extend({
 	    routes : {
@@ -17814,7 +18506,7 @@
 
 
 /***/ },
-/* 48 */
+/* 49 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -17832,7 +18524,7 @@
 	var View = Marionette.ItemView.extend({
 	    tagName: 'div',
 	    className: 'profile-edit',
-	    template: __webpack_require__(49),
+	    template: __webpack_require__(50),
 	
 	    ui: {
 	    },
@@ -17851,7 +18543,7 @@
 
 
 /***/ },
-/* 49 */
+/* 50 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -17868,7 +18560,7 @@
 
 
 /***/ },
-/* 50 */
+/* 51 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -17896,14 +18588,14 @@
 	
 	        // i18n
 	        if (session.language === "fr") {
-	            i18next.addResources('fr', 'default', __webpack_require__(51));
+	            i18next.addResources('fr', 'default', __webpack_require__(52));
 	            //gt.addTextdomain('default', require('./locale/fr/LC_MESSAGES/default.mo'));
 	        } else {  // default to english
-	            i18next.addResources('en', 'default', __webpack_require__(52));
+	            //i18next.addResources('en', 'default', require('./locale/en/LC_MESSAGES/default.json'));
 	            //gt.addTextdomain('default', require('./locale/en/LC_MESSAGES/default.mo'));
 	        }
 	
-	        var SelectOptionItemView = __webpack_require__(33);
+	        var SelectOptionItemView = __webpack_require__(34);
 	
 	        var PermissionTypeCollection = __webpack_require__(53);
 	        this.collections.permissionType = new PermissionTypeCollection();
@@ -17936,7 +18628,7 @@
 
 
 /***/ },
-/* 51 */
+/* 52 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -17945,7 +18637,7 @@
 		"Group name already in usage": "Nom de groupe déjà utilisé",
 		"Select a username": "Saisissez un nom d'utilisateur",
 		"List of users": "Liste des utilisateurs",
-		"List of permissions for user": "List des permissions pour l'utilisateur",
+		"List of permissions for user": "Liste des permissions pour l'utilisateur",
 		"List of groups": "Liste des groupes",
 		"List of permissions for group": "Liste des permissions pour le groupe",
 		"List of users for group": "Liste des utilisateurs pour le groupe",
@@ -17961,34 +18653,6 @@
 		"Status": "Status",
 		"Superuser": "Super-utilisateur",
 		"Staff": "Employé"
-	};
-
-/***/ },
-/* 52 */
-/***/ function(module, exports) {
-
-	module.exports = {
-		"Invalid characters (alphanumeric, _ and - only)": "",
-		"3 characters min": "",
-		"Group name already in usage": "",
-		"Select a username": "",
-		"List of users": "",
-		"List of permissions for user": "",
-		"List of groups": "",
-		"List of permissions for group": "",
-		"List of users for group": "",
-		"Name": "",
-		"Number of users": "",
-		"Number of permissions": "",
-		"Username": "",
-		"First name": "",
-		"Last name": "",
-		"Model": "",
-		"Module": "",
-		"Code": "",
-		"Status": "",
-		"Superuser": "",
-		"Staff": ""
 	};
 
 /***/ },
@@ -18097,8 +18761,8 @@
 	var PermissionGroupUserListView = __webpack_require__(78);
 	var PermissionGroupAddUserView = __webpack_require__(82);
 	var PermissionAddGroupView = __webpack_require__(84);
-	var DefaultLayout = __webpack_require__(45);
-	var TitleView = __webpack_require__(46);
+	var DefaultLayout = __webpack_require__(46);
+	var TitleView = __webpack_require__(47);
 	
 	var PermissionRouter = Marionette.AppRouter.extend({
 	    routes : {
@@ -18128,7 +18792,7 @@
 	        var defaultLayout = new DefaultLayout({});
 	        ohgr.mainRegion.show(defaultLayout);
 	
-	        defaultLayout.title.show(new TitleView({title: gt.gettext("List of permissions for user") + " " + username}));
+	        defaultLayout.title.show(new TitleView({title: gt.gettext("List of permissions for user"), object: username}));
 	
 	        permissionsCollection.fetch().then(function () {
 	            defaultLayout.content.show(new PermissionListView({collection : permissionsCollection}));
@@ -18162,7 +18826,7 @@
 	        var defaultLayout = new DefaultLayout({});
 	        ohgr.mainRegion.show(defaultLayout);
 	
-	        defaultLayout.title.show(new TitleView({title: gt.gettext("List of permissions for group") + " " + name}));
+	        defaultLayout.title.show(new TitleView({title: gt.gettext("List of permissions for group"), object: name}));
 	
 	        permissionsCollection.fetch().then(function () {
 	            defaultLayout.content.show(new PermissionListView({collection : permissionsCollection}));
@@ -18179,7 +18843,7 @@
 	        var defaultLayout = new DefaultLayout({});
 	        ohgr.mainRegion.show(defaultLayout);
 	
-	        defaultLayout.title.show(new TitleView({title: gt.gettext("List of users for group") + " " + name}));
+	        defaultLayout.title.show(new TitleView({title: gt.gettext("List of users for group"), object: name}));
 	
 	        userCollection.fetch().then(function () {
 	            defaultLayout.content.show(new PermissionGroupUserListView({collection : userCollection}));
@@ -19541,7 +20205,7 @@
 	                url: ohgr.baseUrl + 'permission/group/search/',
 	                dataType: 'json',
 	                data: {filters: JSON.stringify({
-	                    method: 'iexact',
+	                    method: 'ieq',
 	                    fields: 'name',
 	                    name: this.ui.add_group_name.val()})
 	                },
@@ -19617,7 +20281,7 @@
 	            i18next.addResources('fr', 'default', __webpack_require__(87));
 	            //gt.addTextdomain('default', require('./locale/fr/LC_MESSAGES/default.mo'));
 	        } else {  // default to english
-	            i18next.addResources('en', 'default', __webpack_require__(88));
+	            //i18next.addResources('en', 'default', require('./locale/en/LC_MESSAGES/default.json'));
 	            //gt.addTextdomain('default', require('./locale/en/LC_MESSAGES/default.mo'));
 	        }
 	        
@@ -19630,7 +20294,7 @@
 	        // var AuditRouter = require('./routers/audit');
 	        // this.routers.audit = new AuditRouter();
 	
-	        var AuditController = __webpack_require__(89);
+	        var AuditController = __webpack_require__(88);
 	        this.controllers.audit = new AuditController();
 	
 	        Logger.timeEnd("Start audit module");
@@ -19653,22 +20317,25 @@
 
 	module.exports = {
 		"List of audit entries by date": "Liste des entrées d'audits par date",
+		"Select a username": "Saisissez un nom d'utilisateur",
 		"List of audit entries related to user": "Liste des entrées d'audits pour l'utilisateur",
-		"List of audit entries related to entity": "Liste des entrées d'audits pour l'entité"
+		"Select an entity UUID or name": "Sélectionnez une entité par son UUID ou son nom",
+		"List of audit entries related to entity": "Liste des entrées d'audits pour l'entité",
+		"Audit": "Audit",
+		"User": "Utilisateur",
+		"Reason": "Raison",
+		"Fields": "Champs",
+		"Get audits entries for an entity": "Récupérer les entrées d'audits pour une entité",
+		"Entity content type": "Type entité",
+		"Entity UUID or name": "UUID ou nom de l'entité",
+		"Cancel": "Annuler",
+		"Search": "Chercher",
+		"Get audits entries for a user": "Récupérer les entrées d'audits pour un utilisateur",
+		"Username": "Nom d'utilisateur"
 	};
 
 /***/ },
 /* 88 */
-/***/ function(module, exports) {
-
-	module.exports = {
-		"List of audit entries by date": "",
-		"List of audit entries related to user": "",
-		"List of audit entries related to entity": ""
-	};
-
-/***/ },
-/* 89 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -19682,10 +20349,10 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var AuditCollection = __webpack_require__(90);
-	var AuditListView = __webpack_require__(92);
-	var DefaultLayout = __webpack_require__(45);
-	var TitleView = __webpack_require__(46);
+	var AuditCollection = __webpack_require__(89);
+	var AuditListView = __webpack_require__(91);
+	var DefaultLayout = __webpack_require__(46);
+	var TitleView = __webpack_require__(47);
 	
 	var Controller = Marionette.Controller.extend({
 	
@@ -19697,7 +20364,7 @@
 	                'class': 'modal',
 	                'tabindex': -1
 	            },
-	            template: __webpack_require__(96),
+	            template: __webpack_require__(95),
 	
 	            ui: {
 	                cancel: "button.cancel",
@@ -19808,14 +20475,14 @@
 	    },
 	
 	    getAuditListByUsername: function (username) {
-	        var auditCollection = new AuditCollection([]);
+	        var auditCollection = new AuditCollection([], {username: username});
 	
 	        var defaultLayout = new DefaultLayout({});
 	        ohgr.mainRegion.show(defaultLayout);
 	
 	        defaultLayout.title.show(new TitleView({title: gt.gettext("List of audit entries related to user") + " " + username}));
 	
-	        auditCollection.fetch({data: {username: username, page: 1}, processData: true}).then(function () {
+	        auditCollection.fetch({data: {page: 1}, processData: true}).then(function () {
 	            defaultLayout.content.show(new AuditListView({collection: auditCollection}));
 	        });
 	    },
@@ -19828,7 +20495,7 @@
 	                'class': 'modal',
 	                'tabindex': -1
 	            },
-	            template: __webpack_require__(97),
+	            template: __webpack_require__(96),
 	
 	            ui: {
 	                cancel: "button.cancel",
@@ -19958,14 +20625,14 @@
 	    },
 	
 	    getAuditListByEntity: function (app_label, model, object_id, object_name) {
-	        var auditCollection = new AuditCollection([]);
+	        var auditCollection = new AuditCollection([], {entity: {app_label: app_label, model: model, object_id: object_id}});
 	
 	        var defaultLayout = new DefaultLayout({});
 	        ohgr.mainRegion.show(defaultLayout);
 	
 	        defaultLayout.title.show(new TitleView({title: gt.gettext("List of audit entries related to entity") + " " + app_label + "." + model + " " + object_name}));
 	
-	        auditCollection.fetch({data: {app_label: app_label, model: model, object_id:object_id, page: 1}, processData: true}).then(function () {
+	        auditCollection.fetch({data: {page: 1}, processData: true}).then(function () {
 	            defaultLayout.content.show(new AuditListView({collection: auditCollection}));
 	        });
 	    }
@@ -19975,7 +20642,7 @@
 
 
 /***/ },
-/* 90 */
+/* 89 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -19988,23 +20655,60 @@
 	 * @details
 	 */
 	
-	var AuditModel = __webpack_require__(91);
+	var AuditModel = __webpack_require__(90);
 	
 	var Collection = Backbone.Collection.extend({
-	    url: function() { return ohgr.baseUrl + 'audit/search/'; },
+	    url: function() {
+	        return ohgr.baseUrl + 'audit/search/';
+	    },
 	    model: AuditModel,
 	
-	    parse: function(data) {
-	        this.perms = data.perms;
-	        return data.audits;
+	    initialize: function(models, options) {
+	        options || (options = {});
+	
+	         if (typeof(options.username) !== "undefined") {
+	             this.username = options.username;
+	        } else if (typeof(options.entity) !== "undefined") {
+	             this.entity = options.entity; /*{
+	                 app_label: options.app_label,
+	                 model: options.model,
+	                 object_id: options.object_id
+	            }*/
+	        }
 	    },
+	
+	    parse: function(data) {
+	        this.prev = data.prev;
+	        this.page = data.page;
+	        this.next = data.next;
+	
+	        this.perms = data.perms;
+	        return data.items;
+	    },
+	
+	    fetch: function(options) {
+	        options || (options = {});
+	        var data = (options.data || {});
+	
+	        if (typeof(this.username) !== "undefined") {
+	            data.username = this.username;
+	        } else if (typeof(this.entity) !== "undefined") {
+	            data.app_label = this.entity.app_label;
+	            data.model = this.entity.model;
+	            data.object_id = this.entity.object_id;
+	        }
+	
+	        options.data = data;
+	
+	        return Backbone.Collection.prototype.fetch.call(this, options);
+	    }
 	});
 	
 	module.exports = Collection;
 
 
 /***/ },
-/* 91 */
+/* 90 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -20056,7 +20760,7 @@
 
 
 /***/ },
-/* 92 */
+/* 91 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -20070,20 +20774,32 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var AuditView = __webpack_require__(93);
+	var AuditView = __webpack_require__(92);
 	
 	var View = Marionette.CompositeView.extend({
-	    template: __webpack_require__(95),
+	    template: __webpack_require__(94),
 	    childView: AuditView,
 	    childViewContainer: 'div.audit-list',
 	
 	    initialize: function() {
 	        this.listenTo(this.collection, 'reset', this.render, this);
 	        this.listenTo(this.collection, 'change', this.render, this);
+	
+	        // pagination on scrolling
+	        $("div.panel-body").scroll($.proxy(function(e) { this.scroll(e); }, this));
 	    },
 	
 	    onRender: function() {
 	        $("span.date").localizeDate();
+	    },
+	
+	    scroll: function(e) {
+	        if (e.target.scrollHeight-e.target.clientHeight == e.target.scrollTop) {
+	            if (this.collection.next != null) {
+	                Logger.debug("fetch page " + (this.collection.next));
+	                this.collection.fetch({update: true, remove: false, data: {cursor: this.collection.next}});
+	            }
+	        }
 	    },
 	});
 	
@@ -20091,7 +20807,7 @@
 
 
 /***/ },
-/* 93 */
+/* 92 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -20105,12 +20821,12 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var AuditModel = __webpack_require__(91);
+	var AuditModel = __webpack_require__(90);
 	
 	var View = Marionette.ItemView.extend({
 	    tagName: 'div',
 	    className: 'element object audit',
-	    template: __webpack_require__(94),
+	    template: __webpack_require__(93),
 	
 	    initialize: function() {
 	        this.listenTo(this.model, 'reset', this.render, this);
@@ -20124,7 +20840,7 @@
 
 
 /***/ },
-/* 94 */
+/* 93 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -20170,7 +20886,7 @@
 
 
 /***/ },
-/* 95 */
+/* 94 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -20187,7 +20903,7 @@
 
 
 /***/ },
-/* 96 */
+/* 95 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -20212,7 +20928,7 @@
 
 
 /***/ },
-/* 97 */
+/* 96 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -20239,7 +20955,7 @@
 
 
 /***/ },
-/* 98 */
+/* 97 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -20267,16 +20983,16 @@
 	
 	        // i18n
 	        if (session.language === "fr") {
-	            i18next.addResources('fr', 'default', __webpack_require__(99));
+	            i18next.addResources('fr', 'default', __webpack_require__(98));
 	            //gt.addTextdomain('default', require('./locale/fr/LC_MESSAGES/default.mo'));
 	        } else {  // default to english
-	            i18next.addResources('en', 'default', __webpack_require__(100));
+	            //i18next.addResources('en', 'default', require('./locale/en/LC_MESSAGES/default.json'));
 	            //gt.addTextdomain('default', require('./locale/en/LC_MESSAGES/default.mo'));
 	        }
 	
-	        var SelectOptionItemView = __webpack_require__(33);
+	        var SelectOptionItemView = __webpack_require__(34);
 	
-	        var TaxonRankCollection = __webpack_require__(101);
+	        var TaxonRankCollection = __webpack_require__(99);
 	        this.collections.taxonRanks = new TaxonRankCollection();
 	
 	        this.views.taxonRanks = new SelectOptionItemView({
@@ -20292,7 +21008,7 @@
 	            ]);*/
 	        });
 	
-	        var TaxonSynonymTypeCollection = __webpack_require__(103);
+	        var TaxonSynonymTypeCollection = __webpack_require__(101);
 	        this.collections.taxonSynonymTypes = new TaxonSynonymTypeCollection();
 	
 	        this.views.taxonSynonymTypes = new SelectOptionItemView({
@@ -20300,7 +21016,7 @@
 	            collection: this.collections.taxonSynonymTypes,
 	        });
 	        
-	        var TaxonController = __webpack_require__(105);
+	        var TaxonController = __webpack_require__(103);
 	        this.controllers.taxon = new TaxonController();
 	
 	        Logger.timeEnd("Init taxonomy module");
@@ -20309,10 +21025,10 @@
 	    onStart: function(options) {
 	        Logger.time("Start taxonomy module");
 	
-	        var TaxonRouter = __webpack_require__(112);
+	        var TaxonRouter = __webpack_require__(110);
 	        this.routers.taxon = new TaxonRouter();
 	
-	        var TaxonCollection = __webpack_require__(107);
+	        var TaxonCollection = __webpack_require__(105);
 	        this.collections.taxons = new TaxonCollection();
 	
 	        Logger.timeEnd("Start taxonomy module");
@@ -20330,7 +21046,7 @@
 
 
 /***/ },
-/* 99 */
+/* 98 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -20339,6 +21055,7 @@
 		"Taxon name already in usage": "Ce nom de taxon est déjà utilisé",
 		"List of taxons": "Liste des taxons",
 		"Taxon details": "Détails du taxon",
+		"Enter a taxon name. 3 characters at least for auto-completion": "",
 		"Family rank cannot have a parent taxon": "Le rang taxinomique famille ne peut pas avoir de parent",
 		"This rank must have a parent taxon": "Ce rang taxinomique doit avoir un parent",
 		"Taxon successfully created !": "Taxon créé avec succès !",
@@ -20355,32 +21072,7 @@
 	};
 
 /***/ },
-/* 100 */
-/***/ function(module, exports) {
-
-	module.exports = {
-		"Invalid characters (alphanumeric, _ and - only)": "",
-		"3 characters min": "",
-		"Taxon name already in usage": "",
-		"List of taxons": "",
-		"Taxon details": "",
-		"Family rank cannot have a parent taxon": "",
-		"This rank must have a parent taxon": "",
-		"Taxon successfully created !": "",
-		"Synonyms": "",
-		"Type": "",
-		"Name": "",
-		"Language": "",
-		"Create a taxon": "",
-		"Principal name of the taxon (must be unique)": "",
-		"Taxon rank": "",
-		"Direct parent": "",
-		"Cancel": "",
-		"Create": ""
-	};
-
-/***/ },
-/* 101 */
+/* 99 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -20393,7 +21085,7 @@
 	 * @details
 	 */
 	
-	var TaxonRankModel = __webpack_require__(102);
+	var TaxonRankModel = __webpack_require__(100);
 	
 	var TaxonRankCollection = Backbone.Collection.extend({
 	    url: ohgr.baseUrl + 'taxonomy/rank/',
@@ -20416,7 +21108,7 @@
 
 
 /***/ },
-/* 102 */
+/* 100 */
 /***/ function(module, exports) {
 
 	/**
@@ -20438,7 +21130,7 @@
 
 
 /***/ },
-/* 103 */
+/* 101 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -20451,7 +21143,7 @@
 	 * @details
 	 */
 	
-	var TaxonSynonymTypeModel = __webpack_require__(104);
+	var TaxonSynonymTypeModel = __webpack_require__(102);
 	
 	var Collection = Backbone.Collection.extend({
 	    url: ohgr.baseUrl + 'taxonomy/taxon-synonym-type/',
@@ -20477,7 +21169,7 @@
 
 
 /***/ },
-/* 104 */
+/* 102 */
 /***/ function(module, exports) {
 
 	/**
@@ -20500,7 +21192,7 @@
 
 
 /***/ },
-/* 105 */
+/* 103 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -20514,11 +21206,11 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var TaxonModel = __webpack_require__(106);
-	var TaxonCollection = __webpack_require__(107);
-	var TaxonListView = __webpack_require__(108);
-	var DefaultLayout = __webpack_require__(45);
-	var TitleView = __webpack_require__(46);
+	var TaxonModel = __webpack_require__(104);
+	var TaxonCollection = __webpack_require__(105);
+	var TaxonListView = __webpack_require__(106);
+	var DefaultLayout = __webpack_require__(46);
+	var TitleView = __webpack_require__(47);
 	
 	var TaxonController = Marionette.Controller.extend({
 	
@@ -20530,7 +21222,7 @@
 	                'class': 'modal',
 	                'tabindex': -1
 	            },
-	            template: __webpack_require__(111),
+	            template: __webpack_require__(109),
 	
 	            ui: {
 	                cancel: "button.cancel",
@@ -20838,7 +21530,7 @@
 
 
 /***/ },
-/* 106 */
+/* 104 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -20950,7 +21642,7 @@
 
 
 /***/ },
-/* 107 */
+/* 105 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -20963,7 +21655,7 @@
 	 * @details
 	 */
 	
-	var TaxonModel = __webpack_require__(106);
+	var TaxonModel = __webpack_require__(104);
 	
 	var TaxonCollection = Backbone.Collection.extend({
 	    url: ohgr.baseUrl + 'taxonomy/',
@@ -20981,7 +21673,7 @@
 
 
 /***/ },
-/* 108 */
+/* 106 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -20995,8 +21687,8 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var TaxonModel = __webpack_require__(106);
-	var TaxonView = __webpack_require__(109);
+	var TaxonModel = __webpack_require__(104);
+	var TaxonView = __webpack_require__(107);
 	
 	var TaxonListView = Marionette.CollectionView.extend({
 	    //el: '#main_content',
@@ -21060,7 +21752,7 @@
 
 
 /***/ },
-/* 109 */
+/* 107 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -21074,11 +21766,11 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var TaxonModel = __webpack_require__(106);
+	var TaxonModel = __webpack_require__(104);
 	
 	var TaxonItemView = Marionette.ItemView.extend({
 	    tagName: 'div',
-	    template: __webpack_require__(110),
+	    template: __webpack_require__(108),
 	
 	    ui: {
 	        "synonym_name": ".synonym-name",
@@ -21215,7 +21907,7 @@
 
 
 /***/ },
-/* 110 */
+/* 108 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -21263,7 +21955,7 @@
 
 
 /***/ },
-/* 111 */
+/* 109 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -21292,7 +21984,7 @@
 
 
 /***/ },
-/* 112 */
+/* 110 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -21306,12 +21998,12 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var TaxonModel = __webpack_require__(106);
-	var TaxonCollection = __webpack_require__(107);
-	var TaxonListView = __webpack_require__(108);
-	var TaxonItemView = __webpack_require__(109);
-	var DefaultLayout = __webpack_require__(45);
-	var TitleView = __webpack_require__(46);
+	var TaxonModel = __webpack_require__(104);
+	var TaxonCollection = __webpack_require__(105);
+	var TaxonListView = __webpack_require__(106);
+	var TaxonItemView = __webpack_require__(107);
+	var DefaultLayout = __webpack_require__(46);
+	var TitleView = __webpack_require__(47);
 	
 	var TaxonRouter = Marionette.AppRouter.extend({
 	    routes : {
@@ -21350,7 +22042,7 @@
 
 
 /***/ },
-/* 113 */
+/* 111 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -21378,10 +22070,10 @@
 	
 	        // i18n
 	        if (session.language === "fr") {
-	            i18next.addResources('fr', 'default', __webpack_require__(114));
+	            i18next.addResources('fr', 'default', __webpack_require__(112));
 	            //gt.addTextdomain('default', require('./locale/fr/LC_MESSAGES/default.mo'));
 	        } else {  // default to english
-	            i18next.addResources('en', 'default', __webpack_require__(115));
+	            //i18next.addResources('en', 'default', require('./locale/en/LC_MESSAGES/default.json'));
 	            //gt.addTextdomain('default', require('./locale/en/LC_MESSAGES/default.mo'));
 	        }
 	
@@ -21391,16 +22083,16 @@
 	    onStart: function(options) {
 	        Logger.time("Start accession module");
 	
-	        var AccessionRouter = __webpack_require__(116);
+	        var AccessionRouter = __webpack_require__(113);
 	        this.routers.accession = new AccessionRouter();
 	
-	        var DescriptorRouter = __webpack_require__(117);
+	        var DescriptorRouter = __webpack_require__(114);
 	        this.routers.descriptor = new DescriptorRouter();
 	
 	        // var AccessionCollection = require('./collections/accession');
 	        // this.collections.accession = new AccessionCollection();
 	
-	        var DescriptorGroupCollection = __webpack_require__(120);
+	        var DescriptorGroupCollection = __webpack_require__(118);
 	        this.collections.descriptorGroup = new DescriptorGroupCollection();
 	
 	        Logger.timeEnd("Start accession module");
@@ -21418,19 +22110,26 @@
 
 
 /***/ },
-/* 114 */
+/* 112 */
 /***/ function(module, exports) {
 
-	module.exports = {};
+	module.exports = {
+		"Invalid characters (alphanumeric, _ and - only)": "Caractères invalides (alphanumeric, _ et - seulement)",
+		"3 characters min": "3 caractères minimum",
+		"Group name already in usage": "Nom de group déjà utilisé",
+		"Descriptor type name already in usage": "Nom de type de descriptor déjà utilisé",
+		"List of groups of descriptors": "Liste de groupes de descripteurs",
+		"Types of descriptors for the group": "Types de descripteurs pour le groupe",
+		"Details for the type of descriptor": "Détails pour le type de descripteur",
+		"Values for the type of descriptor": "Valeurs pour le type de descripteur",
+		"Name": "Nom",
+		"Number of types of descriptors": "Nombre de types de descripteurs",
+		"Number of values": "Nombre de valeurs",
+		"Id": "Id"
+	};
 
 /***/ },
-/* 115 */
-/***/ function(module, exports) {
-
-	module.exports = {};
-
-/***/ },
-/* 116 */
+/* 113 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -21452,8 +22151,8 @@
 	// var BatchListView = require('../views/batchlist');
 	// var AccessionItemView = require('../views/accessionitem');
 	// var BatchItemView = require('../views/batchitem');
-	var DefaultLayout = __webpack_require__(45);
-	var TitleView = __webpack_require__(46);
+	var DefaultLayout = __webpack_require__(46);
+	var TitleView = __webpack_require__(47);
 	
 	var Router = Marionette.AppRouter.extend({
 	    routes : {
@@ -21494,7 +22193,7 @@
 
 
 /***/ },
-/* 117 */
+/* 114 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -21508,15 +22207,26 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var DescpritorGroupModel = __webpack_require__(118);
-	var DescpritorTypeModel = __webpack_require__(119);
-	var DescriptorGroupCollection = __webpack_require__(120);
-	var DescriptorTypeCollection = __webpack_require__(121);
-	var DescriptorGroupListView = __webpack_require__(122);
-	var DescriptorTypeListView = __webpack_require__(124);
-	var DescritporTypeItemView = __webpack_require__(125);
-	var DefaultLayout = __webpack_require__(45);
-	var TitleView = __webpack_require__(46);
+	var DescriptorGroupModel = __webpack_require__(115);
+	var DescriptorTypeModel = __webpack_require__(116);
+	var DescriptorValueModel = __webpack_require__(117);
+	var DescriptorGroupCollection = __webpack_require__(118);
+	var DescriptorTypeCollection = __webpack_require__(119);
+	var DescriptorValueCollection = __webpack_require__(120);
+	var DescriptorGroupListView = __webpack_require__(121);
+	var DescriptorTypeListView = __webpack_require__(125);
+	
+	var DescriptorValueListView = __webpack_require__(129);
+	var DescriptorValuePairListView = __webpack_require__(133);
+	
+	var DescriptorTypeItemView = __webpack_require__(126);
+	var DescriptorTypeDetailView = __webpack_require__(137);
+	var DescriptorValueItemView = __webpack_require__(130);
+	var DefaultLayout = __webpack_require__(46);
+	var TitleView = __webpack_require__(47);
+	
+	var DescriptorGroupAddView = __webpack_require__(139);
+	var DescriptorGroupTypeAddView = __webpack_require__(141);
 	
 	var Router = Marionette.AppRouter.extend({
 	    routes : {
@@ -21524,6 +22234,8 @@
 	        // "app/accession/descriptor/group/:id/": "getDescriptorGroup", only POST here
 	        "app/accession/descriptor/group/:id/type/": "getDescriptorTypeListForGroup",
 	        "app/accession/descriptor/group/:id/type/:id/": "getDescriptorTypeForGroup",
+	        "app/accession/descriptor/group/:id/type/:id/value/": "getDescriptorValueListForType",
+	        "app/accession/descriptor/group/:id/type/:id/value/:id": "getDescriptorValueForType"
 	    },
 	
 	    getDescriptorGroupList : function() {
@@ -21537,31 +22249,86 @@
 	        collection.fetch().then(function () {
 	            defaultLayout.content.show(new DescriptorGroupListView({read_only: true, collection : collection}));
 	        });
+	
+	        // TODO lookup for permission
+	        if (session.user.isAuth && (session.user.isSuperUser || session.user.isStaff)) {
+	            defaultLayout.bottom.show(new DescriptorGroupAddView({collection: collection}));
+	        }
 	    },
 	
 	    getDescriptorTypeListForGroup : function(id) {
-	        var collection = new DescriptorTypeCollection({id: id});
+	        var collection = new DescriptorTypeCollection([], {group_id: id});
 	
 	        var defaultLayout = new DefaultLayout();
 	        ohgr.mainRegion.show(defaultLayout);
 	
-	        defaultLayout.title.show(new TitleView({title: gt.gettext("Types of descriptors for the group")}));
+	        var model = new DescriptorGroupModel({id: id});
+	        model.fetch().then(function () {
+	            defaultLayout.title.show(new TitleView({title: gt.gettext("Types of descriptors for the group"), object: model.get('name')}));
+	
+	            // TODO lookup for permission
+	            if (session.user.isAuth && (session.user.isSuperUser || session.user.isStaff) && model.get('can_modify')) {
+	                defaultLayout.bottom.show(new DescriptorGroupTypeAddView({collection: collection}));
+	            }
+	        });
 	
 	        collection.fetch().then(function () {
 	            defaultLayout.content.show(new DescriptorTypeListView({read_only: true, collection : collection}));
 	        });
 	    },
 	
-	    getDescriptorTypeForGroup : function(id) {
-	        alert("Not yet implemented");
-	    },    
+	    getDescriptorTypeForGroup : function(gid, tid) {
+	        var defaultLayout = new DefaultLayout();
+	        ohgr.mainRegion.show(defaultLayout);
+	
+	        var model = new DescriptorTypeModel({group_id: gid, id: tid});
+	
+	        model.fetch().then(function () {
+	            defaultLayout.title.show(new TitleView({title: gt.gettext("Details for the type of descriptor"), object: model.get('name')}));
+	            defaultLayout.content.show(new DescriptorTypeDetailView({model : model}));
+	        });
+	    },
+	
+	    getDescriptorValueListForType : function(gid, tid) {
+	        var collection = new DescriptorValueCollection([], {group_id: gid, type_id: tid});
+	
+	        var defaultLayout = new DefaultLayout();
+	        ohgr.mainRegion.show(defaultLayout);
+	
+	        collection.fetch();
+	
+	        var model = new DescriptorTypeModel({group_id: gid, id: tid});
+	        model.fetch().then(function () {
+	            defaultLayout.title.show(new TitleView({title: gt.gettext("Values for the type of descriptor"), object: model.get('name')}));
+	
+	            collection.fetch().then(function () {
+	                if (model.get('format').type === "enum_single") {
+	                    defaultLayout.content.show(new DescriptorValueListView({
+	                        read_only: true,
+	                        collection: collection,
+	                        model: model
+	                    }));
+	                } else if (model.get('format').type === "enum_pair") {
+	                    defaultLayout.content.show(new DescriptorValuePairListView({
+	                        read_only: true,
+	                        collection: collection,
+	                        model: model
+	                    }));
+	                }
+	            });
+	        });
+	    },
+	
+	    /*getDescriptorValueForType: function (gid, tid, id) {
+	        alert(gid); alert(tid);
+	    }*/
 	});
 	
 	module.exports = Router;
 
 
 /***/ },
-/* 118 */
+/* 115 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -21581,12 +22348,15 @@
 	        if (this.isNew())
 	            return ohgr.baseUrl + 'accession/descriptor/group/';
 	        else
-	            return ohgr.baseUrl + 'accession/descriptor/group/' + this.id + '/'; },
+	            return ohgr.baseUrl + 'accession/descriptor/group/' + this.get('id') + '/';
+	    },
 	
 	    defaults: {
 	        id: null,
 	        name: '',
 	        num_descriptors_types: 0,
+	        can_delete: false,
+	        can_modify: false
 	    },
 	
 	    parse: function(data) {
@@ -21608,13 +22378,135 @@
 
 
 /***/ },
-/* 119 */
-/***/ function(module, exports) {
+/* 116 */
+/***/ function(module, exports, __webpack_require__) {
 
+	/**
+	 * @file descriptortype.js
+	 * @brief Type of descriptor model
+	 * @author Frederic SCHERMA
+	 * @date 2016-07-21
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Backbone = __webpack_require__(2);
+	
+	var Model = Backbone.Model.extend({
+	    url: function() {
+	        var group_id = this.group_id || this.get('group') || this.collection.group_id;
+	
+	        if (this.isNew()) {
+	            return ohgr.baseUrl + 'accession/descriptor/group/' + group_id + '/type/';
+	        }
+	        else
+	            return ohgr.baseUrl + 'accession/descriptor/group/' + group_id + '/type/' + this.get('id') + '/';
+	    },
+	
+	    defaults: {
+	        id: null,
+	        group: null,
+	        name: '',
+	        values: null,
+	        format: {type: 'string'},
+	        can_delete: false,
+	        can_modify: false
+	    },
+	
+	    initialize: function(options) {
+	        Model.__super__.initialize.apply(this, arguments);
+	
+	        options || (options = {});
+	        this.group_id = options.group_id;
+	        this.collection = options.collection;
+	
+	        if (options.collection) {
+	            this.group_id = options.collection.group_id;
+	        }
+	    },
+	
+	    parse: function(data) {
+	        //this.perms = data.perms;
+	        this.group = data.group;
+	        return data;
+	    },
+	
+	    validate: function(attrs) {
+	        var errors = {};
+	        var hasError = false;
+	
+	        if (hasError) {
+	          return errors;
+	        }
+	    },
+	});
+	
+	module.exports = Model;
 
 
 /***/ },
-/* 120 */
+/* 117 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptorvalue.js
+	 * @brief Value for a type of descriptor model
+	 * @author Frederic SCHERMA
+	 * @date 2016-07-21
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Backbone = __webpack_require__(2);
+	
+	var Model = Backbone.Model.extend({
+	    url: function() {
+	        if (this.isNew())
+	            return ohgr.baseUrl + 'accession/descriptor/group/' + this.group_id + '/type/' + this.type_id + '/value/';
+	        else
+	            return ohgr.baseUrl + 'accession/descriptor/group/' + this.group_id + '/type/' + this.type_id + '/value/' + this.id + '/';
+	    },
+	
+	    defaults: {
+	        id: null,
+	        value: null,
+	    },
+	
+	    initialize: function(options) {
+	        Model.__super__.initialize.apply(this, arguments);
+	
+	        options || (options = {});
+	        if (typeof (options.group_id) != "undefined") {
+	            this.group_id = options.group_id;
+	        }
+	
+	        if (typeof (options.type_id) != "undefined") {
+	            this.type_id = options.type_id;
+	        }
+	    },
+	
+	    parse: function(data) {
+	        //this.perms = data.perms;
+	        return data;
+	    },
+	
+	    validate: function(attrs) {
+	        var errors = {};
+	        var hasError = false;
+	
+	        if (hasError) {
+	          return errors;
+	        }
+	    },
+	});
+	
+	module.exports = Model;
+
+
+/***/ },
+/* 118 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -21627,7 +22519,7 @@
 	 * @details
 	 */
 	
-	var DescriptorGroupModel = __webpack_require__(118);
+	var DescriptorGroupModel = __webpack_require__(115);
 	
 	var Collection = Backbone.Collection.extend({
 	    url: ohgr.baseUrl + 'accession/descriptor/group/',
@@ -21645,7 +22537,7 @@
 
 
 /***/ },
-/* 121 */
+/* 119 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -21658,13 +22550,19 @@
 	 * @details
 	 */
 	
-	var DescriptorTypeModel = __webpack_require__(119);
+	var DescriptorTypeModel = __webpack_require__(116);
 	
 	var Collection = Backbone.Collection.extend({
 	    url: function() {
-	        return ohgr.baseUrl + 'accession/descriptor/group/' + this.get('id') + '/type/';
+	        return ohgr.baseUrl + 'accession/descriptor/group/' + this.group_id + '/type/';
 	    },
+	
 	    model: DescriptorTypeModel,
+	
+	    initialize: function(models, options) {
+	        options || (options = {});
+	        this.group_id = options.group_id;
+	    },
 	
 	    parse: function(data) {
 	        this.page = data.page;
@@ -21678,12 +22576,57 @@
 
 
 /***/ },
-/* 122 */
+/* 120 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptorvalue.js
+	 * @brief List of value for a type of descriptor (collection)
+	 * @author Frederic SCHERMA
+	 * @date 2016-07-21
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var DescriptorTypeModel = __webpack_require__(117);
+	
+	var Collection = Backbone.Collection.extend({
+	    url: function() {
+	        return ohgr.baseUrl + 'accession/descriptor/group/' + this.group_id + '/type/' + this.type_id + '/value/';
+	    },
+	
+	    model: DescriptorTypeModel,
+	
+	    initialize: function(models, options) {
+	        options || (options = {});
+	        this.group_id = options.group_id;
+	        this.type_id = options.type_id;
+	        this.format = options.format || {type: "string", fields: ["name"]};
+	    },
+	
+	    parse: function(data) {
+	        if (data.format) {
+	            this.format = data.format;
+	        }
+	
+	        this.page = data.page;
+	        this.total_count = data.total_count;
+	
+	        return data.items;
+	    },
+	});
+	
+	module.exports = Collection;
+
+
+/***/ },
+/* 121 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
 	 * @file descriptorgrouplist.js
-	 * @brief List of group of type of permission item view
+	 * @brief List of groups of types of descriptors view
 	 * @author Frederic SCHERMA
 	 * @date 2016-07-20
 	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
@@ -21692,7 +22635,58 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var DescriptorGroupModel = __webpack_require__(118);
+	var DescriptorGroupModel = __webpack_require__(115);
+	var DescriptorGroupView = __webpack_require__(122);
+	
+	var View = Marionette.CompositeView.extend({
+	    template: __webpack_require__(124),
+	    childView: DescriptorGroupView,
+	    childViewContainer: 'tbody.descriptor-group-list',
+	
+	    initialize: function() {
+	        this.listenTo(this.collection, 'reset', this.render, this);
+	        //this.listenTo(this.collection, 'add', this.render, this);
+	        //this.listenTo(this.collection, 'remove', this.render, this);
+	        this.listenTo(this.collection, 'change', this.render, this);
+	
+	        this.page = 1;
+	
+	        // pagination on scrolling
+	        $("div.panel-body").scroll($.proxy(function(e) { this.scroll(e); }, this));
+	    },
+	
+	    onRender: function() {
+	    },
+	
+	    scroll: function(e) {
+	        if (e.target.scrollHeight-e.target.clientHeight == e.target.scrollTop) {
+	            if (this.collection.size() < this.collection.total_count) {
+	                Logger.debug("fetch page " + (this.page+1) + " for " + this.collection.total_count + " items");
+	                this.collection.fetch({update: true, remove: false, data: {page: ++this.page}});
+	            }
+	        }
+	    },
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 122 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptorgroup.js
+	 * @brief Group of type of permission item view
+	 * @author Frederic SCHERMA
+	 * @date 2016-07-20
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	var DescriptorGroupModel = __webpack_require__(115);
 	
 	var View = Marionette.ItemView.extend({
 	    tagName: 'tr',
@@ -21701,12 +22695,12 @@
 	
 	    ui: {
 	        delete_descriptor_group: 'span.delete-descriptor-group',
-	        view_descriptors_types: 'td.view-descriptors-types'
+	        view_descriptor_type: 'td.view-descriptor-type'
 	    },
 	
 	    events: {
 	        'click @ui.delete_descriptor_group': 'deleteDescriptorGroup',
-	        'click @ui.view_descriptors_types': 'viewDescriptorsTypes'
+	        'click @ui.view_descriptor_type': 'viewDescriptorType'
 	    },
 	
 	    initialize: function() {
@@ -21714,17 +22708,20 @@
 	    },
 	
 	    onRender: function() {
-	        /*if ($.inArray("auth.delete_descriptorgroup", this.model.perms) < 0) {
-	            $(this.ui.delete_descriptor_group).remove();
-	        }*/
+	        // TODO check with user permission
+	        if (!this.model.get('can_delete') || !session.user.isSuperUser) {
+	            $(this.ui.delete_descriptor_group).hide();
+	        }
 	    },
 	
-	    viewDescriptorsTypes: function () {
+	    viewDescriptorType: function() {
 	        Backbone.history.navigate("app/accession/descriptor/group/" + this.model.id + "/type/", {trigger: true});
 	    },
 	
-	    deleteDescriptorGroup: function () {
-	        //this.model.destroy({wait: true});
+	    deleteDescriptorGroup: function() {
+	        if (this.model.get('num_descriptors_types') == 0) {
+	            this.model.destroy({wait: true});
+	        }
 	    }
 	});
 	
@@ -21758,15 +22755,1040 @@
 
 /***/ },
 /* 124 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<div class="element object descriptor-group-list" object-type="descriptor-group-list" style="width:100%"><table class="table table-striped"><thead><tr><th><span class="glyphicon glyphicon-asterisk"></span></th><th>' +
+	((__t = ( gt.gettext("Name") )) == null ? '' : __t) +
+	'</th><th>' +
+	((__t = ( gt.gettext("Number of types of descriptors") )) == null ? '' : __t) +
+	'</th></tr></thead><tbody class="descriptor-group-list"></tbody></table></div>';
+	
+	}
+	return __p
+	};
 
 
 /***/ },
 /* 125 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
+	/**
+	 * @file descriptortypelist.js
+	 * @brief List of types of descriptors for a group view
+	 * @author Frederic SCHERMA
+	 * @date 2016-07-21
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
 	
+	var Marionette = __webpack_require__(4);
+	var DescriptorTypeModel = __webpack_require__(116);
+	var DescriptorTypeView = __webpack_require__(126);
+	
+	var View = Marionette.CompositeView.extend({
+	    template: __webpack_require__(128),
+	    childView: DescriptorTypeView,
+	    childViewContainer: 'tbody.descriptor-type-list',
+	
+	    initialize: function() {
+	        this.listenTo(this.collection, 'reset', this.render, this);
+	        //this.listenTo(this.collection, 'add', this.render, this);
+	        //this.listenTo(this.collection, 'remove', this.render, this);
+	        this.listenTo(this.collection, 'change', this.render, this);
+	
+	        this.page = 1;
+	
+	        // pagination on scrolling
+	        $("div.panel-body").scroll($.proxy(function(e) { this.scroll(e); }, this));
+	    },
+	
+	    onRender: function() {
+	    },
+	
+	    scroll: function(e) {
+	        if (e.target.scrollHeight-e.target.clientHeight == e.target.scrollTop) {
+	            if (this.collection.size() < this.collection.total_count) {
+	                Logger.debug("fetch page " + (this.page+1) + " for " + this.collection.total_count + " items");
+	                this.collection.fetch({update: true, remove: false, data: {page: ++this.page}});
+	            }
+	        }
+	    },
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 126 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptortype.js
+	 * @brief Type of descriptor item view
+	 * @author Frederic SCHERMA
+	 * @date 2016-07-21
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	var DescriptorTypeModel = __webpack_require__(116);
+	
+	var View = Marionette.ItemView.extend({
+	    tagName: 'tr',
+	    className: 'element object descriptor-type',
+	    template: __webpack_require__(127),
+	
+	    ui: {
+	        delete_descriptor_type: 'span.delete-descriptor-type',
+	        view_descriptor_type: 'td.view-descriptor-type',
+	        view_descriptor_value: 'td.view-descriptor-value'
+	    },
+	
+	    events: {
+	        'click @ui.delete_descriptor_type': 'deleteDescriptorType',
+	        'click @ui.view_descriptor_type': 'viewDescriptorType',
+	        'click @ui.view_descriptor_value': 'viewDescriptorValue'
+	    },
+	
+	    initialize: function() {
+	        this.listenTo(this.model, 'reset', this.render, this);
+	    },
+	
+	    onRender: function() {
+	        if (!this.model.get('can_delete') || !session.user.isSuperUser) {
+	            $(this.ui.delete_descriptor_type).hide();
+	        }
+	    },
+	
+	    viewDescriptorType: function() {
+	        Backbone.history.navigate("app/accession/descriptor/group/" + this.model.get('group') + "/type/" + this.model.id + '/', {trigger: true});
+	    },
+	
+	    viewDescriptorValue: function () {
+	        Backbone.history.navigate("app/accession/descriptor/group/" + this.model.get('group') + "/type/" + this.model.id + '/value/', {trigger: true});
+	    },
+	
+	    deleteDescriptorType: function () {
+	        if (this.model.get('num_descriptors_values') == 0) {
+	            this.model.destroy({wait: true});
+	        }
+	    }
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 127 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '', __j = Array.prototype.join;
+	function print() { __p += __j.call(arguments, '') }
+	with (obj) {
+	__p += '<th><span class="delete-descriptor-type action glyphicon glyphicon-minus-sign"></span></th><td class="action view-descriptor-type" name="name" value="' +
+	((__t = ( name )) == null ? '' : __t) +
+	'">' +
+	((__t = ( name )) == null ? '' : __t) +
+	'</td><td name="code">' +
+	((__t = ( code )) == null ? '' : __t) +
+	'</td> ';
+	 if (format.type === "enum_single" || format.type === "enum_pair") { ;
+	__p += ' <td class="action view-descriptor-value" name="num_descriptors_values"><abbr class="badge" style="cursor: pointer" title="' +
+	((__t = ( gt.gettext('Manage values of the descriptor') )) == null ? '' : __t) +
+	'">' +
+	((__t = ( num_descriptors_values )) == null ? '' : __t) +
+	'</abbr></td> ';
+	 } else { ;
+	__p += ' <td class="" name="num_descriptors_values"><abbr class="badge" title="' +
+	((__t = ( gt.gettext('No values for this descriptor') )) == null ? '' : __t) +
+	'">N/A</abbr></td> ';
+	 } ;
+	
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 128 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<div class="element object descriptor-type-list" object-type="descriptor-type-list" style="width:100%"><table class="table table-striped"><thead><tr><th><span class="glyphicon glyphicon-asterisk"></span></th><th>' +
+	((__t = ( gt.gettext("Name") )) == null ? '' : __t) +
+	'</th><th>' +
+	((__t = ( gt.gettext("Code") )) == null ? '' : __t) +
+	'</th><th>' +
+	((__t = ( gt.gettext("Number of values") )) == null ? '' : __t) +
+	'</th></tr></thead><tbody class="descriptor-type-list"></tbody></table></div>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 129 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptorvaluelist.js
+	 * @brief List of values for a type of descriptor item view
+	 * @author Frederic SCHERMA
+	 * @date 2016-07-21
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	var DescriptorValueModel = __webpack_require__(117);
+	var DescriptorValueView = __webpack_require__(130);
+	
+	var View = Marionette.CompositeView.extend({
+	    template: __webpack_require__(132),
+	    childView: DescriptorValueView,
+	    childViewContainer: 'tbody.descriptor-value-list',
+	
+	    ui: {
+	        table: "table.descriptor-table"
+	    },
+	
+	    initialize: function() {
+	        this.listenTo(this.collection, 'reset', this.render, this);
+	        //this.listenTo(this.collection, 'add', this.render, this);
+	        //this.listenTo(this.collection, 'remove', this.render, this);
+	        this.listenTo(this.collection, 'change', this.render, this);
+	
+	        this.page = 1;
+	
+	        // pagination on scrolling
+	        $("div.panel-body").scroll($.proxy(function(e) { this.scroll(e); }, this));
+	    },
+	
+	    onRender: function() {
+	        $(this.ui.table).stickyTableHeaders({scrollableArea: $('div.panel-body')});
+	    },
+	
+	    scroll: function(e) {
+	        if (e.target.scrollHeight-e.target.clientHeight == e.target.scrollTop) {
+	            if (this.collection.size() < this.collection.total_count) {
+	                Logger.debug("fetch page " + (this.page+1) + " for " + this.collection.total_count + " items");
+	                this.collection.fetch({update: true, remove: false, data: {page: ++this.page}});
+	            }
+	        }
+	    },
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 130 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptorvalue.js
+	 * @brief Value for a type of descriptor view
+	 * @author Frederic SCHERMA
+	 * @date 2016-07-21
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	var DescriptorValueModel = __webpack_require__(117);
+	
+	var View = Marionette.ItemView.extend({
+	    tagName: 'tr',
+	    className: 'element object descriptor-value',
+	    template: __webpack_require__(131),
+	
+	    ui: {
+	        delete_descriptor_value: 'span.delete-descriptor-value',
+	    },
+	
+	    events: {
+	        'click @ui.delete_descriptor_value': 'deleteDescriptorValue',
+	    },
+	
+	    initialize: function() {
+	        this.listenTo(this.model, 'reset', this.render, this);
+	    },
+	
+	    onRender: function() {
+	        // TODO check with user permission
+	        //if ($.inArray("auth.delete_descriptorvalue", this.model.perms) < 0) {
+	        if (!this.model.get('can_delete') || !session.user.isSuperUser) {
+	            $(this.ui.delete_descriptor_value).hide();
+	        }
+	    },
+	
+	    deleteDescriptorValue: function () {
+	        // TODO check with user permission
+	        //if ($.inArray("auth.delete_descriptorvalue", this.model.perms) < 0) {
+	        if (!this.model.get('can_delete') || !session.user.isSuperUser) {
+	            //this.model.destroy({wait: true});
+	            alert("not yet implemented");
+	        }
+	    }
+	});
+	
+	module.exports = View;
+
+/***/ },
+/* 131 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<th><span class="delete-descriptor-value action glyphicon glyphicon-minus-sign"></span></th><td class="action edit-descriptor-id" name="id" value="' +
+	((__t = ( id )) == null ? '' : __t) +
+	'">' +
+	((__t = ( id )) == null ? '' : __t) +
+	'</td><td class="action edit-descriptor-name" name="name" value="' +
+	((__t = ( value.name )) == null ? '' : __t) +
+	'">' +
+	((__t = ( value.name )) == null ? '' : __t) +
+	'</td>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 132 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<div class="element object descriptor-value-list" object-type="descriptor-value-list" style="width:100%"><table class="table table-striped descriptor-table"><thead><tr><th><span class="glyphicon glyphicon-asterisk"></span></th><th>' +
+	((__t = ( gt.gettext("Id") )) == null ? '' : __t) +
+	'</th><th>' +
+	((__t = ( gt.gettext("Value") )) == null ? '' : __t) +
+	'</th></tr></thead><tbody class="descriptor-value-list"></tbody></table></div>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 133 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptorvaluepairlist.js
+	 * @brief List of pair values for a type of descriptor item view
+	 * @author Frederic SCHERMA
+	 * @date 2016-08-01
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	var DescriptorValueModel = __webpack_require__(117);
+	var DescriptorValuePairView = __webpack_require__(134);
+	
+	var View = Marionette.CompositeView.extend({
+	    template: __webpack_require__(136),
+	    templateHelpers: function() {
+	        return {
+	            format: this.collection.format,
+	            items: this.collection.toJSON()
+	        };
+	    },
+	    childViewOptions: function () {
+	        return {
+	            can_delete: this.model.get('can_delete'),
+	            can_modify: this.model.get('can_modify')
+	        }
+	    },
+	    childView: DescriptorValuePairView,
+	    childViewContainer: 'tbody.descriptor-value-list',
+	
+	    ui: {
+	        table: "table.descriptor-table"
+	    },
+	
+	    initialize: function() {
+	        this.listenTo(this.collection, 'reset', this.render, this);
+	        //this.listenTo(this.collection, 'add', this.render, this);
+	        //this.listenTo(this.collection, 'remove', this.render, this);
+	        this.listenTo(this.collection, 'change', this.render, this);
+	
+	        this.page = 1;
+	
+	        // pagination on scrolling
+	        $("div.panel-body").scroll($.proxy(function(e) { this.scroll(e); }, this));
+	    },
+	
+	    onRender: function() {
+	        $(this.ui.table).stickyTableHeaders({scrollableArea: $('div.panel-body')});
+	    },
+	
+	    scroll: function(e) {
+	        if (e.target.scrollHeight-e.target.clientHeight == e.target.scrollTop) {
+	            if (this.collection.size() < this.collection.total_count) {
+	                Logger.debug("fetch page " + (this.page+1) + " for " + this.collection.total_count + " items");
+	                this.collection.fetch({update: true, remove: false, data: {page: ++this.page}});
+	            }
+	        }
+	    },
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 134 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptorvaluepair.js
+	 * @brief Value for a type of descriptor view
+	 * @author Frederic SCHERMA
+	 * @date 2016-08-01
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	var DescriptorValueModel = __webpack_require__(117);
+	
+	var View = Marionette.ItemView.extend({
+	    tagName: 'tr',
+	    className: 'element object descriptor-value',
+	    template: __webpack_require__(135),
+	    templateHelpers: function() {
+	        var ctx = this.model;
+	        ctx.format = this.model.collection.format;
+	        ctx.can_delete = this.getOption('can_delete');
+	        ctx.can_modify = this.getOption('can_modify');
+	        return ctx;
+	    },
+	    ui: {
+	        delete_descriptor_value: 'span.delete-descriptor-value',
+	    },
+	
+	    events: {
+	        'click @ui.delete_descriptor_value': 'deleteDescriptorValue',
+	    },
+	
+	    initialize: function() {
+	        this.listenTo(this.model, 'reset', this.render, this);
+	    },
+	
+	    onRender: function() {
+	        /*if ($.inArray("auth.delete_descriptorvalue", this.model.perms) < 0) {
+	            $(this.ui.delete_descriptor_value).remove();
+	        }*/
+	    },
+	
+	    deleteDescriptorValue: function () {
+	        //this.model.destroy({wait: true});
+	    }
+	});
+	
+	module.exports = View;
+
+/***/ },
+/* 135 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '', __j = Array.prototype.join;
+	function print() { __p += __j.call(arguments, '') }
+	with (obj) {
+	
+	 if (can_delete) { ;
+	__p += ' <th><span class="delete-descriptor-value action glyphicon glyphicon-minus-sign"></span></th> ';
+	 } else { ;
+	__p += ' <th><span class="delete-descriptor-value action"></span></th> ';
+	 } ;
+	__p += ' <td class="action edit-descriptor-id" name="id" value="' +
+	((__t = ( id )) == null ? '' : __t) +
+	'">' +
+	((__t = ( id )) == null ? '' : __t) +
+	'</td><td class="action edit-descriptor-field0" name="code">' +
+	((__t = ( value[format.fields[0]] )) == null ? '' : __t) +
+	'</td><td class="action edit-descriptor-field1" name="name">' +
+	((__t = ( value[format.fields[1]] )) == null ? '' : __t) +
+	'</td>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 136 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<div class="element object descriptor-value-list" object-type="descriptor-value-list" style="width:100%"><table class="table table-striped descriptor-table"><thead><tr style="background-color: white"><th><span class="glyphicon glyphicon-asterisk"></span></th><th>' +
+	((__t = ( gt.gettext("Id") )) == null ? '' : __t) +
+	'</th><th>' +
+	((__t = ( gt.gettext(format.fields[0]) )) == null ? '' : __t) +
+	'</th><th>' +
+	((__t = ( gt.gettext(format.fields[1]) )) == null ? '' : __t) +
+	'</th></tr></thead><tbody class="descriptor-value-list"></tbody></table></div>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 137 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptortypedetail.js
+	 * @brief Detail for a type of descriptor view
+	 * @author Frederic SCHERMA
+	 * @date 2016-07-29
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	var DescriptorTypeModel = __webpack_require__(116);
+	
+	var View = Marionette.ItemView.extend({
+	    className: 'element object descriptor-type-detail',
+	    template: __webpack_require__(138),
+	
+	    ui: {
+	        delete_descriptor_type: 'span.delete-descriptor-type',
+	        view_descriptor_type: 'td.view-descriptor-type',
+	        view_descriptor_value: 'td.view-descriptor-value',
+	        target: '#target',
+	        name: '#descriptor_type_name',
+	        code: '#descriptor_type_code',
+	        format_type: '#format_type',
+	        fields: 'div.descriptor-type-fields',
+	        field0: '#type_field0',
+	        field1: '#type_field1',
+	        format_unit: '#format_unit',
+	        format_unit_custom: '#format_unit_custom',
+	        format_precision: '#format_precision',
+	        range: 'div.descriptor-type-range',
+	        format_range_min: '#format_range_min',
+	        format_range_max: '#format_range_max',
+	        format_regexp: '#format_regexp',
+	        save: '#save'
+	    },
+	
+	    events: {
+	        'click @ui.delete_descriptor_type': 'deleteDescriptorType',
+	        'click @ui.view_descriptor_type': 'viewDescriptorType',
+	        'click @ui.view_descriptor_value': 'viewDescriptorValue',
+	        'click @ui.save': 'saveDescriptorType',
+	        'input @ui.name': 'inputName',
+	        'change @ui.format_type': 'changeFormatType',
+	        'change @ui.format_unit': 'changeFormatUnit',
+	        'input @ui.format_unit_custom': 'inputFormatUnitCustom',
+	    },
+	
+	    initialize: function() {
+	        this.listenTo(this.model, 'reset', this.render, this);
+	
+	        $(this.ui.format_type).select2({
+	            dropdownParent: $(this.el),
+	        });
+	    },
+	
+	    onRender: function() {
+	        var format = this.model.get('format');
+	
+	        $(this.ui.format_type).val(format.type).trigger('change');
+	        $(this.ui.format_unit).val(format.unit).trigger('change');
+	        $(this.ui.format_precision).val(format.precision).trigger('change');
+	
+	        if (format.fields && format.fields.length >= 2) {
+	            $(this.ui.field0).val(format.fields[0]);
+	            $(this.ui.field1).val(format.fields[1]);
+	        } else {
+	            $(this.ui.fields).hide(false);
+	
+	            $(this.ui.field0).val("");
+	            $(this.ui.field1).val("");
+	        }
+	
+	        switch (format.type) {
+	            case "ordinal":
+	            case "enum_ordinal":
+	                $(this.ui.format_range_min).numeric({decimal: false, negative: false});
+	                $(this.ui.format_range_max).numeric({decimal: false, negative: false});
+	                break;
+	            case "numeric_range":
+	                $(this.ui.format_range_min).numeric({decimal: '.', negative: false});
+	                $(this.ui.format_range_max).numeric({decimal: '.', negative: false});
+	                break;
+	            default:
+	                $(this.ui.format_range_min).attr("readonly", "readonly").val("");
+	                $(this.ui.format_range_max).attr("readonly", "readonly").val("");
+	
+	                if ($(this.ui.range).css('display') != 'none') {
+	                    $(this.ui.range).hide(false);
+	                }
+	                break;
+	        }
+	
+	        if (format.type != "numeric" && format.type != "numeric_range") {
+	            if ($(this.ui.format_precision).parent().css('display') != 'none') {
+	                $(this.ui.format_precision).parent().hide(false);
+	            }
+	        }
+	
+	        if (format.type != "string") {
+	            if ($(this.ui.format_regexp).parent().css('display') != 'none') {
+	                $(this.ui.format_regexp).parent().hide(false);
+	            }
+	        }
+	    },
+	
+	    changeFormatType: function () {
+	        var type = $(this.ui.format_type).val();
+	
+	        // related fields
+	        switch (type) {
+	            case "boolean":
+	            case "gps":
+	            case "string":
+	            case "enum_single":
+	            case "enum_pair":
+	            case "enum_ordinal":
+	            case "ordinal":
+	                $(this.ui.format_precision).attr("disabled", "disabled").val("0.0");
+	                if ($(this.ui.format_precision).parent().css('display') != 'none') {
+	                    $(this.ui.format_precision).parent().hide(true);
+	                }
+	                break;
+	            case "numeric":
+	            case "numeric_range":
+	                $(this.ui.format_precision).attr("disabled", null).val("1.0");
+	                if ($(this.ui.format_precision).parent().css('display') == 'none') {
+	                    $(this.ui.format_precision).parent().show(true);
+	                }
+	                break;
+	            default:
+	                break;
+	        }
+	
+	        if (type == "string") {
+	            $(this.ui.format_regexp).attr("readonly", null).val("");
+	
+	            if ($(this.ui.format_regexp).parent().css('display') == 'none') {
+	                $(this.ui.format_regexp).parent().show(true);
+	            }
+	        } else {
+	            $(this.ui.format_regexp).attr("readonly", "readonly").val("");
+	
+	            if ($(this.ui.format_regexp).parent().css('display') != 'none') {
+	                $(this.ui.format_regexp).parent().hide(true);
+	            }
+	        }
+	
+	        if (type == "numeric_range") {
+	            $(this.ui.format_range_min).attr("readonly", null).val("0.0").numeric({decimal : '.', negative : false});
+	            $(this.ui.format_range_max).attr("readonly", null).val("100.0").numeric({decimal : '.', negative : false});
+	
+	            if ($(this.ui.range).css('display') == 'none') {
+	                $(this.ui.range).show(true);
+	            }
+	        } else if (type == "enum_ordinal" || type == "ordinal") {
+	            $(this.ui.format_range_min).attr("readonly", null).val("0").numeric({decimal : false, negative : false});
+	            $(this.ui.format_range_max).attr("readonly", null).val("10").numeric({decimal : false, negative : false});
+	
+	            if ($(this.ui.range).css('display') == 'none') {
+	                $(this.ui.range).show(true);
+	            }
+	        } else {
+	            $(this.ui.format_range_min).attr("readonly", "readonly").val("");
+	            $(this.ui.format_range_max).attr("readonly", "readonly").val("");
+	
+	            if ($(this.ui.range).css('display') != 'none') {
+	                $(this.ui.range).hide(true);
+	            }
+	        }
+	
+	        if (type == "enum_pair" && ($(this.ui.fields).css('display') == 'none')) {
+	            $(this.ui.fields).show(true);
+	        } else {
+	            $(this.ui.fields).hide(true);
+	        }
+	    },
+	    
+	    changeFormatUnit: function () {
+	        var unit = $(this.ui.format_unit).val();
+	
+	        switch (unit) {
+	            case "custom":
+	                $(this.ui.format_unit_custom).attr("readonly", null).val("");
+	                break;
+	            default:
+	                $(this.ui.format_unit_custom).attr("readonly", "readonly").val("");
+	                break;
+	        }
+	    },
+	    
+	    inputFormatUnitCustom: function () {
+	        var v = this.ui.format_unit_custom.val();
+	        var re = /^[a-zA-Z0-9_\-%°⁼⁺⁻⁰¹²³⁴⁵⁶⁷⁸⁹/µ]+$/i;
+	
+	        if (v.length > 0 && !re.test(v)) {
+	            $(this.ui.format_unit_custom).validateField('failed', gt.gettext("Invalid characters (alphanumeric, _-°%°⁼⁺⁻⁰¹²³⁴⁵⁶⁷⁸⁹/µ allowed)"));
+	        } else if (v.length < 1) {
+	            $(this.ui.format_unit_custom).validateField('failed', gt.gettext('1 character min'));
+	        } else {
+	            $(this.ui.format_unit_custom).validateField('ok');
+	        }
+	    },
+	
+	    inputName: function () {
+	        var v = this.ui.name.val();
+	        var re = /^[a-zA-Z0-9_-]+$/i;
+	
+	        if (v.length > 0 && !re.test(v)) {
+	            $(this.ui.name).validateField('failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
+	        } else if (v.length < 1) {
+	            $(this.ui.name).validateField('failed', gt.gettext('3 characters min'));
+	        } else {
+	            $(this.ui.name).validateField('ok');
+	        }
+	    },
+	
+	    saveDescriptorType: function () {
+	        if (!$(this.ui.name.isValidField()))
+	            return;
+	
+	        var name = this.ui.name.val();
+	        var code = this.ui.code.val();
+	        var format = {
+	            type: this.ui.format_type.val(),
+	            unit: this.ui.format_unit.val(),
+	            precision: this.ui.format_precision.val(),
+	            fields: [],
+	        };
+	
+	        var field0 = this.ui.field0.val();
+	        var field1 = this.ui.field1.val();
+	
+	        if (field0 && field1) {
+	            format.fields = [field0, field1];
+	        }
+	
+	        if (this.ui.format_unit.val() == 'custom') {
+	            format.custom_unit = this.ui.format_unit_custom.val();
+	        }
+	
+	        if (this.ui.format_type.val() =="numeric_range") {
+	            format.range = [
+	                this.ui.format_range_min.val(),
+	                this.ui.format_range_max.val()
+	            ];
+	        }
+	
+	        if (this.ui.format_type.val() == 'string') {
+	            format.regexp = this.ui.format_regexp.val();
+	        }
+	
+	        this.model.save({
+	            name: name,
+	            code: code,
+	            format: format,
+	        }, {wait: true});
+	    }
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 138 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<style>/* adjust the form validation glyph position */\n    #format_unit_custom ~ span.form-control-feedback {\n        right: 15px;\n    }</style><div class="descriptor-detail"><div class="descriptor-type-name form-group" style="width: 50%"><label for="descriptor_type_name">Descriptor type name</label><input id="descriptor_type_name" class="form-control" type="text" maxlength="255" value="' +
+	((__t = ( name )) == null ? '' : __t) +
+	'"></div><div class="descriptor-type-code form-group" style="width: 50%"><label for="descriptor_type_code">Descriptor type code</label><input id="descriptor_type_code" class="form-control" type="text" readonly="readonly" maxlength="255" value="' +
+	((__t = ( code )) == null ? '' : __t) +
+	'"></div><div class="descriptor-type-format form-group" style="width: 50%"><label for="format_type">Type of format</label><select id="format_type" class="form-control"><optgroup label="Single value"><option value="boolean">Boolean</option><option value="numeric">Numeric</option><option value="numeric_range">Numeric range</option><option value="ordinal">Ordinal</option><option value="gps">GPS coordinate</option><option value="string">Text</option></optgroup><optgroup label="List of values"><option value="enum_single">Single enumeration</option><option value="enum_pair">Pair enumeration</option><option value="enum_ordinal">Ordinal with text</option></optgroup></select></div><div class="descriptor-type-fields form-group" style="width: 50%"><div class="row"><div class="col-xs-6"><label for="type_field0">First field</label><input id="type_field0" class="form-control" type="text" maxlength="32" value=""></div><div class="col-xs-6"><label for="type_field1">Second field</label><input id="type_field1" class="form-control" type="text" maxlength="32" value=""></div></div></div><div class="descriptor-type-unit form-group" style="width: 50%"><div class="row"><div class="col-xs-6"><label for="format_unit">Unit of the format</label><select id="format_unit" class="form-control"><optgroup label="Chroma"><option value="chroma_L_value">L value</option><option value="chroma_a_value">a value</option><option value="chroma_b_value">b value</option></optgroup><optgroup label="Common"><option value="degree_celsius">°C (celcius degree)</option><option value="category">Category</option><option value="custom" style="font-style: italic">Custom</option><option value="joule">J (joule)</option><option value="norm1">Norm 1</option><option value="note">Note</option><option value="percent">% (percent)</option><option value="regexp">Regular expression</option><option value="scale">Scale</option></optgroup><optgroup label="Grain"><option value="gram_per_100_grain">g/100 grain</option><option value="gram_per_200_grain">g/200 grain</option><option value="gram_per_1000_grain">g/1000 grain</option><option value="grain_per_meter2">grain/m²</option><option value="grain_per_spike">grain/spike</option><option value="grain_per_spikelet">grain/spikelet</option></optgroup><optgroup label="Meter"><option value="micrometer">um</option><option value="millimeter">mm</option><option value="centimeter">cm</option><option value="centimeter">dm</option><option value="meter">m</option><option value="kilometer">km</option></optgroup><optgroup label="Plant and plot"><option value="plant_per_meter">plant/m</option><option value="plant_per_meter2">plant/m²</option><option value="plant_per_hectare">plant/ha</option><option value="plant_per_plot">plant/plot</option><option value="gram_per_plant">g/plant</option><option value="gram_per_plot">g/plot</option><option value="kilogram_per_plot">kg/plot</option><option value="stoma_per_millimeter2">stoma/mm²</option><option value="node">node</option><option value="spikelet">spikelet</option><option value="spike_per_meter2">spike/m²</option><option value="tiller_per_meter">tiller/m</option><option value="tiller_per_meter2">tiller/m²</option></optgroup><optgroup label="Quantity and volume"><option value="milliliter">ml</option><option value="milliliter_per_percent">ml/%</option><option value="ppm">ppm</option><option value="milligram_per_kilogram">mg/kg</option><option value="gram_per_kilogram">g/kg</option><option value="gram_per_meter2">g/m²</option><option value="kilogram_per_hectare">kg/ha</option><option value="tonne_per_hectare">t/ha</option><option value="gram_per_liter">g/l</option><option value="kilogram_per_hectolitre">kg/hl</option><option value="millimol_per_meter2_per_second">mmol/m²/s</option><option value="gram_per_meter2_per_day">g/m²/day</option><option value="cci">CCI (chlore)</option><option value="delta_13c">delta 13C (carbon)</option></optgroup><optgroup label="Surface"><option value="millimeter2">mm²</option><option value="centimeter2">cm²</option><option value="meter2">m²</option><option value="hectare">ha</option><option value="kilometer2">km²</option></optgroup><optgroup label="Time"><option value="millisecond">ms</option><option value="second">s</option><option value="minute">min</option><option value="hour">hour</option><option value="day">day</option><option value="month">month</option><option value="year">year</option><option value="date">date (yyyy/mm/dd)</option><option value="time">time (hh:mm:ss.ms)</option><option value="datetime">date+time</option><option value="percent_per_minute">%/min</option><option value="percent_per_hour">%/hour</option><option value="percent_per_day">%/day</option></optgroup></select></div><div class="col-xs-6"><label for="format_unit_custom">Custom unit name</label><input id="format_unit_custom" class="form-control" type="text" readonly="readonly" maxlength="32" value=""></div></div></div><div class="descriptor-type-precision form-group" style="width: 50%"><label for="format_precision">Precision of the decimal</label><select id="format_precision" class="form-control"><option value="0.0">0.0</option><option value="1.0">1.0</option><option value="2.0">2.0</option><option value="3.0">3.0</option><option value="4.0">4.0</option><option value="5.0">5.0</option><option value="6.0">6.0</option><option value="7.0">7.0</option><option value="8.0">8.0</option><option value="9.0">9.0</option></select></div><div class="descriptor-type-range form-group" style="width: 50%"><div class="row"><div class="col-xs-6"><label for="format_range_min">Minimal range value</label><input id="format_range_min" class="form-control" type="text" readonly="readonly" maxlength="32" value="0"></div><div class="col-xs-6"><label for="format_range_max">Maximal range value</label><input id="format_range_max" class="form-control" type="text" readonly="readonly" maxlength="32" value="1"></div></div></div><div class="descriptor-type-regexp form-group" style="width: 50%"><label for="format_regexp">Regular expression</label><input id="format_regexp" class="form-control" type="text" readonly="readonly" maxlength="255"></div><div class="descriptor-type-regexp form-group" style="width: 100px; margin-left: 20%; margin-top: 25px"><button id="save" class="form-control btn btn-primary">Update</button></div></div>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 139 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptorgroupadd.js
+	 * @brief Add a group of descriptor
+	 * @author Frederic SCHERMA
+	 * @date 2016-08-05
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	
+	var View = Marionette.ItemView.extend({
+	    tagName: 'div',
+	    className: 'group-add',
+	    template: __webpack_require__(140),
+	
+	    ui: {
+	        add_group_btn: 'span.add-group',
+	        add_group_name: 'input.group-name',
+	    },
+	
+	    events: {
+	        'click @ui.add_group_btn': 'addGroup',
+	        'input @ui.add_group_name': 'onGroupNameInput',
+	    },
+	
+	    initialize: function(options) {
+	        options || (options = {});
+	        this.collection = options.collection;
+	    },
+	
+	    addGroup: function () {
+	        if (!this.ui.add_group_name.hasClass('invalid')) {
+	            this.collection.create({name: this.ui.add_group_name.val()}, {wait: true});
+	            $(this.ui.add_group_name).cleanField();
+	        }
+	    },
+	
+	    validateGroupName: function() {
+	        var v = this.ui.add_group_name.val();
+	        var re = /^[a-zA-Z0-9_\-]+$/i;
+	
+	        if (v.length > 0 && !re.test(v)) {
+	            $(this.ui.add_group_name).validateField('failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
+	            return false;
+	        } else if (v.length < 3) {
+	            $(this.ui.add_group_name).validateField('failed', gt.gettext('3 characters min'));
+	            return false;
+	        }
+	
+	        return true;
+	    },
+	
+	    onGroupNameInput: function () {
+	        if (this.validateGroupName()) {
+	            $.ajax({
+	                type: "GET",
+	                url: ohgr.baseUrl + 'accession/descriptor/group/search/',
+	                dataType: 'json',
+	                data: {filters: JSON.stringify({
+	                    method: 'ieq',
+	                    fields: 'name',
+	                    name: this.ui.add_group_name.val()})
+	                },
+	                el: this.ui.add_group_name,
+	                success: function(data) {
+	                    if (data.items.length > 0) {
+	                        for (var i in data.items) {
+	                            var t = data.items[i];
+	
+	                            if (t.name.toUpperCase() == this.el.val().toUpperCase()) {
+	                                $(this.el).validateField('failed', gt.gettext('Group name already in usage'));
+	                                break;
+	                            }
+	                        }
+	                    } else {
+	                        $(this.el).validateField('ok');
+	                    }
+	                }
+	            });
+	        }
+	    },
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 140 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<table class="table table-striped" style="margin-bottom: 0px"><tbody><tr class="edit-mode" style="height: 95px"><th><span class="add-group action glyphicon glyphicon-plus-sign" style="margin-top: 9px; margin-left: 10px"></span></th><td style="width: 100%"><div class="form-group"><input type="text" class="group-name form-control" name="group"></div></td></tr></tbody></table>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 141 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptorgrouptypeadd.js
+	 * @brief Add a descriptor type into a group of descriptor
+	 * @author Frederic SCHERMA
+	 * @date 2016-08-05
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	
+	var View = Marionette.ItemView.extend({
+	    tagName: 'div',
+	    className: 'type-add',
+	    template: __webpack_require__(142),
+	
+	    ui: {
+	        add_type_btn: 'span.add-type',
+	        add_type_name: 'input.type-name',
+	    },
+	
+	    events: {
+	        'click @ui.add_type_btn': 'addType',
+	        'input @ui.add_type_name': 'onTypeNameInput',
+	    },
+	
+	    initialize: function(options) {
+	        options || (options = {});
+	        this.collection = options.collection;
+	    },
+	
+	    addType: function () {
+	        if (!this.ui.add_type_name.hasClass('invalid')) {
+	            this.collection.create({
+	                name: this.ui.add_type_name.val(),
+	                group_id: this.collection.group_id,  // set according from the URI path
+	                //can_delete: true,  // default is true
+	                //can_modify: true,  // default is true
+	            }, {wait: true});
+	
+	            $(this.ui.add_type_name).cleanField();
+	        }
+	    },
+	
+	    validateTypeName: function() {
+	        var v = this.ui.add_type_name.val();
+	        var re = /^[a-zA-Z0-9_\-]+$/i;
+	
+	        if (v.length > 0 && !re.test(v)) {
+	            $(this.ui.add_type_name).validateField('failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
+	            return false;
+	        } else if (v.length < 3) {
+	            $(this.ui.add_type_name).validateField('failed', gt.gettext('3 characters min'));
+	            return false;
+	        }
+	
+	        return true;
+	    },
+	
+	    onTypeNameInput: function () {
+	        if (this.validateTypeName()) {
+	            $.ajax({
+	                type: "GET",
+	                url: ohgr.baseUrl + 'accession/descriptor/group/' + this.collection.group_id + '/type/search/',
+	                dataType: 'json',
+	                data: {filters: JSON.stringify({
+	                    method: 'ieq',
+	                    fields: 'name',
+	                    name: this.ui.add_type_name.val()})
+	                },
+	                el: this.ui.add_type_name,
+	                success: function(data) {
+	                    if (data.items.length > 0) {
+	                        for (var i in data.items) {
+	                            var t = data.items[i];
+	
+	                            if (t.name.toUpperCase() == this.el.val().toUpperCase()) {
+	                                $(this.el).validateField('failed', gt.gettext('Descriptor type name already in usage'));
+	                                break;
+	                            }
+	                        }
+	                    } else {
+	                        $(this.el).validateField('ok');
+	                    }
+	                }
+	            });
+	        }
+	    },
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 142 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<table class="table table-striped" style="margin-bottom: 0px"><tbody><tr class="edit-mode" style="height: 95px"><th><span class="add-type action glyphicon glyphicon-plus-sign" style="margin-top: 9px; margin-left: 10px"></span></th><td style="width: 100%"><div class="form-group"><input type="text" class="type-name form-control" name="type"></div></td></tr></tbody></table>';
+	
+	}
+	return __p
+	};
 
 
 /***/ }

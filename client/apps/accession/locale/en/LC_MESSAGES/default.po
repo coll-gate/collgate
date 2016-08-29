@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-08-05 14:30+0200\n"
+"POT-Creation-Date: 2016-08-26 15:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,12 +18,14 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: ../../../views/descriptorgroupadd.js:45
-#: ../../../views/descriptorgrouptypeadd.js:45
+#: ../../../views/descriptorgrouptypeadd.js:51
+#: ../../../views/descriptortypedetail.js:211
 msgid "Invalid characters (alphanumeric, _ and - only)"
 msgstr ""
 
 #: ../../../views/descriptorgroupadd.js:48
-#: ../../../views/descriptorgrouptypeadd.js:48
+#: ../../../views/descriptorgrouptypeadd.js:54
+#: ../../../views/descriptortypedetail.js:213
 msgid "3 characters min"
 msgstr ""
 
@@ -31,8 +33,12 @@ msgstr ""
 msgid "Group name already in usage"
 msgstr ""
 
-#: ../../../views/descriptorgrouptypeadd.js:73
+#: ../../../views/descriptorgrouptypeadd.js:79
 msgid "Descriptor type name already in usage"
+msgstr ""
+
+#: ../../../views/descriptortypedetail.js:200
+msgid "1 character min"
 msgstr ""
 
 #: ../../../routers/descriptor.js:49
@@ -53,7 +59,6 @@ msgstr ""
 
 #: ../../../templates/descriptorgrouplist.html:16
 #: ../../../templates/descriptortypelist.html:16
-#: ../../../templates/descriptorvaluelist.html:17
 msgid "Name"
 msgstr ""
 
@@ -62,10 +67,18 @@ msgid "Number of types of descriptors"
 msgstr ""
 
 #: ../../../templates/descriptortypelist.html:17
+msgid "Code"
+msgstr ""
+
+#: ../../../templates/descriptortypelist.html:18
 msgid "Number of values"
 msgstr ""
 
 #: ../../../templates/descriptorvaluelist.html:16
 #: ../../../templates/descriptorvaluepairlist.html:16
 msgid "Id"
+msgstr ""
+
+#: ../../../templates/descriptorvaluelist.html:17
+msgid "Value"
 msgstr ""

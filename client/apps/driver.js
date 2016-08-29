@@ -11,7 +11,6 @@
 var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
 
-//var GetText = require("node-gettext");
 i18next = require('i18next');
 Logger = require('js-logger');
 
@@ -208,5 +207,4 @@ ohgr.on("before:start", function(options) {
     this.accession = require('./accession/init');
 });
 
-//gt = new GetText();
 ohgr.start({initialData: ''});

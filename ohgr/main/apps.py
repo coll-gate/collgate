@@ -5,7 +5,7 @@
 """
 ohgr application main
 """
-# from django.utils.translation import ugettext_noop as _
+
 from django.utils.translation import ugettext_lazy as _
 
 from igdectk.common.apphelpers import ApplicationMain
@@ -25,17 +25,18 @@ class OhgrMain(ApplicationMain):
         main_module = Module('main', base_url='ohgr')
         main_module.include_urls((
             'base',
-            'help',
             'home',
+            'profile',
             'language',
-            'profile')
+            'help'
+            )
         )
 
         # profile menu
         menu_profile = ModuleMenu('profile', _('Profile'), auth=AUTH_USER, order=1000)
-        menu_profile.add_entry(MenuEntry('edit', _('Edit information'), "#profile/edit/", icon=Glyph.USER, order=8))
+        menu_profile.add_entry(MenuEntry('edit', _('Edit information'), "#main/profile/edit/", icon=Glyph.USER, order=8))
         menu_profile.add_entry(MenuSeparator(9))
-        menu_profile.add_entry(MenuEntry('logout', _('Logout'), "#profile/logout/", icon=Glyph.OFF, order=10))
+        menu_profile.add_entry(MenuEntry('logout', _('Logout'), "#main/profile/logout/", icon=Glyph.OFF, order=10))
         main_module.add_menu(menu_profile)
 
         # help menu

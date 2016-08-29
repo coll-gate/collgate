@@ -3,12 +3,15 @@
     "3 characters min": "3 caractères minimum",
     "Group name already in usage": "Nom de group déjà utilisé",
     "Descriptor type name already in usage": "Nom de type de descriptor déjà utilisé",
+    "1 character min": "",
     "List of groups of descriptors": "Liste de groupes de descripteurs",
     "Types of descriptors for the group": "Types de descripteurs pour le groupe",
     "Details for the type of descriptor": "Détails pour le type de descripteur",
     "Values for the type of descriptor": "Valeurs pour le type de descripteur",
     "Name": "Nom",
     "Number of types of descriptors": "Nombre de types de descripteurs",
+    "Code": "",
     "Number of values": "Nombre de valeurs",
-    "Id": "Id"
+    "Id": "Id",
+    "Value": ""
 }

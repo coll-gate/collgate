@@ -10,7 +10,7 @@ from django.core.exceptions import SuspiciousOperation, PermissionDenied
 from main.models import Languages
 from .models import Taxon, TaxonSynonym, TaxonSynonymType
 
-from django.utils.translation import ugettext_noop as _
+from django.utils.translation import ugettext_lazy as _
 
 
 class Taxonomy(object):

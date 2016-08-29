@@ -12,7 +12,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import SuspiciousOperation
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
-from django.utils.translation import ugettext_noop as _
+from django.utils.translation import ugettext_lazy as _
 from functools import reduce
 
 from guardian.models import UserObjectPermission, GroupObjectPermission

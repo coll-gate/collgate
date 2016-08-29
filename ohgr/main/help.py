@@ -7,8 +7,10 @@ ohgr help views
 """
 from igdectk.rest.handler import *
 
+from .main import RestMain
 
-class RestHelp(RestHandler):
+
+class RestHelp(RestMain):
     regex = r'^help/$'
     name = 'help'
 

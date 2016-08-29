@@ -28,7 +28,7 @@ class Command(BaseCommand):
 
                 if os.path.exists(os.path.join(ldir, 'locale')):
                     os.chdir(ldir)
-                    print("processing compilmessage on %s for any locale %s" % (os.getcwd(), ldir))
+                    print("processing compilemessage on %s for any locale %s" % (os.getcwd(), ldir))
                     call_command('compilemessages', verbosity=0)
 
                     os.chdir('..')

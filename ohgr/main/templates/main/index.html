@@ -39,11 +39,12 @@
 <link rel="stylesheet" href="{% static 'main/css/main.css' %}">
 
 <!-- TODO load dynamically each i18n modules but could need js client side dynamic menu -->
-
+<!--
 <script type="text/javascript" src="{% url 'main:javascript-catalog' packages='main' domain='django' %}"></script>
 <script type="text/javascript" src="{% url 'main:javascript-catalog' packages='accession' domain='django' %}"></script>
 <script type="text/javascript" src="{% url 'main:javascript-catalog' packages='taxonomy' domain='django' %}"></script>
 <script type="text/javascript" src="{% url 'main:javascript-catalog' packages='permission' domain='django' %}"></script>
+-->
 
 <style type="text/css">
 /* autocompletion loading icon */
@@ -178,12 +179,10 @@ session.user.isStaff = {{ user.is_staff|yesno:"true,false" }};
 </script>
 
 <script language="javascript">
-    //var _ = django.gettext;
-
     $(function() {
         // avoid FancyTree error message on console
         // (opening an empty node, or with invisible nodes as first)
-        $(document).on( "error", function() {
+        $(document).on("error", function() {
             // nothing
         });
 

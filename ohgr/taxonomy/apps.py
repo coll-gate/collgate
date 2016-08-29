@@ -5,7 +5,7 @@
 """
 ohgr taxonomy module main
 """
-# from django.utils.translation import ugettext_noop as _
+
 from django.utils.translation import ugettext_lazy as _
 
 from igdectk.common.apphelpers import ApplicationMain

@@ -16,7 +16,7 @@ from igdectk.rest.response import HttpResponseRest
 from .controller import Taxonomy
 from .models import Taxon, TaxonRank, TaxonSynonym
 
-from django.utils.translation import ugettext_noop as _
+from django.utils.translation import ugettext_lazy as _
 
 
 class RestTaxonomySearch(RestTaxonomy):

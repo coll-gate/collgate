@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-08-05 14:30+0200\n"
+"POT-Creation-Date: 2016-08-26 15:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,12 +18,14 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: ../../../views/descriptorgroupadd.js:45
-#: ../../../views/descriptorgrouptypeadd.js:45
+#: ../../../views/descriptorgrouptypeadd.js:51
+#: ../../../views/descriptortypedetail.js:211
 msgid "Invalid characters (alphanumeric, _ and - only)"
 msgstr "Caractères invalides (alphanumeric, _ et - seulement)"
 
 #: ../../../views/descriptorgroupadd.js:48
-#: ../../../views/descriptorgrouptypeadd.js:48
+#: ../../../views/descriptorgrouptypeadd.js:54
+#: ../../../views/descriptortypedetail.js:213
 msgid "3 characters min"
 msgstr "3 caractères minimum"
 
@@ -31,9 +33,13 @@ msgstr "3 caractères minimum"
 msgid "Group name already in usage"
 msgstr "Nom de group déjà utilisé"
 
-#: ../../../views/descriptorgrouptypeadd.js:73
+#: ../../../views/descriptorgrouptypeadd.js:79
 msgid "Descriptor type name already in usage"
 msgstr "Nom de type de descriptor déjà utilisé"
+
+#: ../../../views/descriptortypedetail.js:200
+msgid "1 character min"
+msgstr ""
 
 #: ../../../routers/descriptor.js:49
 msgid "List of groups of descriptors"
@@ -53,7 +59,6 @@ msgstr "Valeurs pour le type de descripteur"
 
 #: ../../../templates/descriptorgrouplist.html:16
 #: ../../../templates/descriptortypelist.html:16
-#: ../../../templates/descriptorvaluelist.html:17
 msgid "Name"
 msgstr "Nom"
 
@@ -62,6 +67,10 @@ msgid "Number of types of descriptors"
 msgstr "Nombre de types de descripteurs"
 
 #: ../../../templates/descriptortypelist.html:17
+msgid "Code"
+msgstr ""
+
+#: ../../../templates/descriptortypelist.html:18
 msgid "Number of values"
 msgstr "Nombre de valeurs"
 
@@ -69,3 +78,7 @@ msgstr "Nombre de valeurs"
 #: ../../../templates/descriptorvaluepairlist.html:16
 msgid "Id"
 msgstr "Id"
+
+#: ../../../templates/descriptorvaluelist.html:17
+msgid "Value"
+msgstr ""

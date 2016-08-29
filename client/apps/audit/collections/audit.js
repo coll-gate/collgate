@@ -31,8 +31,9 @@ var Collection = Backbone.Collection.extend({
     },
 
     parse: function(data) {
+        this.prev = data.prev;
         this.page = data.page;
-        this.total_count = data.total_count;
+        this.next = data.next;
 
         this.perms = data.perms;
         return data.items;

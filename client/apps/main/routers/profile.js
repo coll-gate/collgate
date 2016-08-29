@@ -12,29 +12,35 @@ var Marionette = require('backbone.marionette');
 var EditProfileView = require('../views/editprofile');
 var DefaultLayout = require('../views/defaultlayout');
 var TitleView = require('../views/titleview');
+var ProfileModel = require('../models/profile');
 
 var ProfileRouter = Marionette.AppRouter.extend({
     routes : {
-        "app/profile/logout/": "logout",
-        "app/profile/edit/": "edit",
+        "app/main/profile/logout/": "logout",
+        "app/main/profile/edit/": "edit",
     },
     
-    logout : function() {
+    logout: function() {
         $.ajax({
             type: "POST",
-            url: ohgr.baseUrl + "profile/logout/",
+            url: ohgr.baseUrl + "main/profile/logout/",
             data: {},
         }).done(function(data) {
             window.open(ohgr.baseUrl, "_self", "", true);
         });
     },
 
-    edit : function() {
+    edit: function() {
         var defaultLayout = new DefaultLayout({});
         ohgr.mainRegion.show(defaultLayout);
 
+        model = new ProfileModel({username: session.user.username});
+
         defaultLayout.title.show(new TitleView({title: gt.gettext("Edit my profile informations")}));
-        defaultLayout.content.show(new EditProfileView());
+
+        model.fetch().done(function() {
+            defaultLayout.content.show(new EditProfileView({model: model}));
+        });
 
         //ohgr.setDisplay('0-10-2');
     }

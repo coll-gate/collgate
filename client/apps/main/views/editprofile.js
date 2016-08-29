@@ -16,16 +16,25 @@ var View = Marionette.ItemView.extend({
     template: require('../templates/editprofile.html'),
 
     ui: {
+        username: '#username',
+        email: '#email',
+        first_name: '#first_name',
+        last_name: '#last_name',
+        save: '#save'
     },
 
     events: {
+        'click @ui.save': 'updateProfile'
     },
 
-    initialize: function() {
+    initialize: function(options) {
+        options || (options = {});
+        this.model = options.model;
     },
 
-    onRender: function() {
-    },
+    updateProfile: function () {
+        //this.model.save();
+    }
 });
 
 module.exports = View;

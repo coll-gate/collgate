@@ -24,10 +24,8 @@ var PermissionModule = Marionette.Module.extend({
         // i18n
         if (session.language === "fr") {
             i18next.addResources('fr', 'default', require('./locale/fr/LC_MESSAGES/default.json'));
-            //gt.addTextdomain('default', require('./locale/fr/LC_MESSAGES/default.mo'));
         } else {  // default to english
-            i18next.addResources('en', 'default', require('./locale/en/LC_MESSAGES/default.json'));
-            //gt.addTextdomain('default', require('./locale/en/LC_MESSAGES/default.mo'));
+            //i18next.addResources('en', 'default', require('./locale/en/LC_MESSAGES/default.json'));
         }
 
         var SelectOptionItemView = require('../main/views/selectoptionitemview');

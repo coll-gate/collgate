@@ -21,19 +21,26 @@ var MainModule = Marionette.Module.extend({
     initialize: function(moduleName, app, options) {
         Logger.time("Init main module");
 
-        // i18n
-        if (session.language === "fr") {
-            i18next.addResources('fr', 'default', require('./locale/fr/LC_MESSAGES/default.json'));
-            //gt.addTextdomain('default', require('./locale/fr/LC_MESSAGES/default.mo'));
-        } else {  // default to english
-            i18next.addResources('en', 'default', require('./locale/en/LC_MESSAGES/default.json'));
-            //gt.addTextdomain('default', require('./locale/en/LC_MESSAGES/default.mo'));
-        }
+        //var deferred = $.Deferred();
+        //this.loaded = deferred.promise();
 
         this.models = {};
         this.collections = {};
         this.views = {};
         this.routers = {};
+
+        // i18n
+        if (session.language === "fr") {
+            i18next.addResources('fr', 'default', require('./locale/fr/LC_MESSAGES/default.json'));
+
+            /*// inject django json catalog
+            $.get(ohgr.baseUrl + 'jsoni18n/main/django').done(function (data) {
+                i18next.addResources('fr', 'default', data.catalog);
+                deferred.resolve("jsoni18n");
+            });*/
+        } else {  // default to english
+            //i18next.addResources('en', 'default', require('./locale/en/LC_MESSAGES/default.json'));
+        }
 
         var SelectOptionItemView = require('./views/selectoptionitemview');
 

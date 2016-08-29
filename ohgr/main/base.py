@@ -7,21 +7,17 @@ Rest handlers.
 """
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import SuspiciousOperation
-from django.shortcuts import get_object_or_404
 
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
+
+from .main import RestMain
 
 
 # for single app page with html5 navigation
 class RestApp(RestHandler):
     regex = r'^app/((?P<path>\S*)/){0,1}$'
     name = 'home'
-
-
-class RestMain(RestHandler):
-    regex = r'^main/$'
-    name = 'main'
 
 
 class RestMainContentType(RestMain):

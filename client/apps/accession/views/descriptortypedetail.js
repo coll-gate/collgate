@@ -56,9 +56,6 @@ var View = Marionette.ItemView.extend({
     },
 
     onRender: function() {
-        $(this.ui.format_range_min).numeric({decimal : '.', negative : false});
-        $(this.ui.format_range_max).numeric({decimal : '.', negative : false});
-
         var format = this.model.get('format');
 
         $(this.ui.format_type).val(format.type).trigger('change');
@@ -75,13 +72,24 @@ var View = Marionette.ItemView.extend({
             $(this.ui.field1).val("");
         }
 
-        if (format.type != "numeric_range") {
-            $(this.ui.format_range_min).attr("readonly", "readonly").val("");
-            $(this.ui.format_range_max).attr("readonly", "readonly").val("");
+        switch (format.type) {
+            case "ordinal":
+            case "enum_ordinal":
+                $(this.ui.format_range_min).numeric({decimal: false, negative: false});
+                $(this.ui.format_range_max).numeric({decimal: false, negative: false});
+                break;
+            case "numeric_range":
+                $(this.ui.format_range_min).numeric({decimal: '.', negative: false});
+                $(this.ui.format_range_max).numeric({decimal: '.', negative: false});
+                break;
+            default:
+                $(this.ui.format_range_min).attr("readonly", "readonly").val("");
+                $(this.ui.format_range_max).attr("readonly", "readonly").val("");
 
-            if ($(this.ui.range).css('display') != 'none') {
-                $(this.ui.range).hide(false);
-            }
+                if ($(this.ui.range).css('display') != 'none') {
+                    $(this.ui.range).hide(false);
+                }
+                break;
         }
 
         if (format.type != "numeric" && format.type != "numeric_range") {
@@ -107,7 +115,7 @@ var View = Marionette.ItemView.extend({
             case "string":
             case "enum_single":
             case "enum_pair":
-            case "enum_ordinal_text":
+            case "enum_ordinal":
             case "ordinal":
                 $(this.ui.format_precision).attr("disabled", "disabled").val("0.0");
                 if ($(this.ui.format_precision).parent().css('display') != 'none') {
@@ -139,9 +147,16 @@ var View = Marionette.ItemView.extend({
             }
         }
 
-        if (type =="numeric_range") {
-            $(this.ui.format_range_min).attr("readonly", null).val("0.0");
-            $(this.ui.format_range_max).attr("readonly", null).val("100.0");
+        if (type == "numeric_range") {
+            $(this.ui.format_range_min).attr("readonly", null).val("0.0").numeric({decimal : '.', negative : false});
+            $(this.ui.format_range_max).attr("readonly", null).val("100.0").numeric({decimal : '.', negative : false});
+
+            if ($(this.ui.range).css('display') == 'none') {
+                $(this.ui.range).show(true);
+            }
+        } else if (type == "enum_ordinal" || type == "ordinal") {
+            $(this.ui.format_range_min).attr("readonly", null).val("0").numeric({decimal : false, negative : false});
+            $(this.ui.format_range_max).attr("readonly", null).val("10").numeric({decimal : false, negative : false});
 
             if ($(this.ui.range).css('display') == 'none') {
                 $(this.ui.range).show(true);

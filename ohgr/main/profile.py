@@ -8,21 +8,20 @@ Views related to the management of the user profile.
 
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from django import forms
-from django.db.models import Q
 
 from django.contrib.auth.models import User
-from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 
 from igdectk.rest.handler import *
+from igdectk.rest.response import HttpResponseRest
 
 from .models import Profile
+from .main import RestMain
 
-from django.utils.translation import gettext_noop as _
+from django.utils.translation import gettext_lazy as _
 
 
-class RestProfile(RestHandler):
+class RestProfile(RestMain):
     regex = r'^profile/$'
     name = 'profile'
 
@@ -40,7 +39,7 @@ class RestProfileLogout(RestProfile):
 @RestProfileSignIn.def_request(Method.POST, Format.HTML)
 def profile_signin(request):
     """
-    Login with email and password
+    Login with username and password
     """
     if request.user.is_authenticated():
         logout(request)
@@ -66,7 +65,7 @@ def profile_signin(request):
                 request, messages.ERROR, _('Unable to login'))
     else:
         messages.add_message(
-            request, messages.ERROR, _('Username or password'))
+            request, messages.ERROR, _('Invalid username or password'))
 
     # messages are saved into DB and consumed by the next template rendering
     return redirect('/ohgr/')
@@ -84,53 +83,22 @@ def profile_logout(request):
     return redirect('/ohgr/')
 
 
-class UpdateUserForm(forms.Form):
-    username = forms.CharField(
-        max_length=30,
-        widget=forms.TextInput(attrs={'readonly': 'readonly'}))
+@RestProfile.def_auth_request(Method.GET, Format.JSON)
+def get_self_profile(request):
+    """
+    Get current session profile details
+    """
+    user = get_object_or_404(User, id=request.user.id)
 
-    email = forms.EmailField()
-    first_name = forms.CharField(max_length=127)
-    last_name = forms.CharField(max_length=127)
-    company = forms.CharField(max_length=127)
+    result = {
+        'id': user.id,
+        'username': user.username,
+        'first_name': user.first_name,
+        'last_name': user.last_name,
+        'email': user.email,
+        'is_active': user.is_active,
+        'is_staff': user.is_staff,
+        'is_superuser': user.is_superuser
+    }
 
-    def clean_email(self):
-        if User.objects.filter(Q(email=self.data['email']),
-                               ~Q(username=self.data['username'])):
-            raise ValidationError('Email already used')
-
-        return self.data['email']
-
-
-class RestProfileEditForm(RestForm, RestProfile):
-    regex = r'^edit/$'
-    suffix = 'edit'
-    auth = True
-
-    form_class = UpdateUserForm
-    form_template = 'main/profile_edit.html'
-
-    success = '/ohgr/'
-
-    @classmethod
-    def get(cls, request, form):
-        form.initial['username'] = request.user.username
-        form.initial['email'] = request.user.email
-        form.initial['first_name'] = request.user.first_name
-        form.initial['last_name'] = request.user.last_name
-
-        profile = get_object_or_404(Profile, user=request.user)
-        form.initial['company'] = profile.company
-
-    @classmethod
-    def valid_form(cls, request, form):
-        request.user.first_name = form.data['first_name']
-        request.user.last_name = form.data['last_name']
-        request.user.email = form.data['email']
-        request.user.save()
-
-        profile = get_object_or_404(Profile, user=request.user)
-        profile.company = form.data['company']
-        profile.save()
-
-        messages.info(request, _('User successfully updated'))
+    return HttpResponseRest(request, result)

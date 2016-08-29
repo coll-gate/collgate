@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-08-05 14:35+0200\n"
+"POT-Creation-Date: 2016-08-26 15:44+0200\n"
 "PO-Revision-Date: 2016-02-01 11:53+0100\n"
 "Last-Translator: Frederic SCHERMA <frederic.scherma@clermont.inra.fr>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -50,27 +50,27 @@ msgstr "Vous n'êtes pas identifié."
 msgid "Please, you must enable your cookies."
 msgstr "Merci d'activer la gestion des cookies."
 
-#: models.py:51
+#: models.py:52
 msgid "English"
 msgstr "Anglais"
 
-#: models.py:52
+#: models.py:53
 msgid "French"
 msgstr "Français"
 
-#: models.py:81
+#: models.py:82
 msgid "Pending"
 msgstr "Attente"
 
-#: models.py:82
+#: models.py:83
 msgid "Valid"
 msgstr "Valide"
 
-#: models.py:83
+#: models.py:84
 msgid "Hidden"
 msgstr "Cahé"
 
-#: models.py:84
+#: models.py:85
 msgid "Removed"
 msgstr "Supprimé"
 
@@ -83,8 +83,8 @@ msgid "Unable to login"
 msgstr "Impossible de s'identifier"
 
 #: profile.py:69
-msgid "Username or password"
-msgstr "Identifiant ou mot de passe"
+msgid "Invalid username or password"
+msgstr "Identifiant ou mot de passe invalide"
 
 #: profile.py:82
 msgid "Logged out"

@@ -2,10 +2,10 @@
     <% if (item.options != undefined) { %>
         <optgroup label="<%= item.value %>">
             <% _.each(item.options, function(subitem) { %>
-                <option value="<%= subitem.id %>"><%= gettext(subitem.value) %></option>
+                <option value="<%= subitem.id %>"><%= /*django.gettext*/(subitem.value) %></option>
             <% }) %>
         </optgroup>
     <% } else { %>
-        <option value="<%= item.id %>"><%= gettext(item.value) %></option>
+        <option value="<%= item.id %>"><%= /*django.gettext*/(item.value) %></option>
     <% } %>
 <% }) %>

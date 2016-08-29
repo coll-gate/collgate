@@ -12,7 +12,6 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import SuspiciousOperation
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
-from django.utils.translation import ugettext_noop as _
 
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
@@ -40,25 +39,36 @@ class RestAuditEntityUUID(RestAudit):
     suffix = 'entity-uuid'
 
 
-@RestAudit.def_auth_request(Method.GET, Format.JSON, staff=True)
-def get_audit_list(request):
-    pass
-
-
 @RestAuditSearch.def_auth_request(Method.GET, Format.JSON, parameters=('username',), staff=True)
-def search_audit(request):
-    results_per_page = 30
-    page = int_arg(request.GET.get('page', 1))
-    offset = (page - 1) * results_per_page
-    limit = offset + results_per_page
+def search_audit_for_username(request):
+    """
+    Search audits entry for a specific username and ordered by timestamp.
+    Infinite pagination with cursor returned by next and desc order on timestamp.
+    """
+    results_per_page = int_arg(request.GET.get('more', 30))
+    # page = int_arg(request.GET.get('page', 1))
+    # offset = (page - 1) * results_per_page
+    # limit = offset + results_per_page
+
+    cursor = request.GET.get('cursor')
+    limit = results_per_page
 
     user = get_object_or_404(User, username=request.GET['username'])
-    qs = Audit.objects.filter(user=user)
-    audits = qs.order_by('-timestamp')[offset:limit]
+
+    # qs = Audit.objects.filter(user=user)
+    # audits = qs.order_by('-timestamp')[offset:limit]
+    #
+    # total_count = qs.count()
+
+    if cursor:
+        cursor_time, cursor_id = cursor.split('/')
+        qs = Audit.objects.filter(Q(user=user), Q(timestamp__lte=cursor_time) & Q(timestamp__lt=cursor_time) | (Q(timestamp=cursor_time) & Q(id__lt=cursor_id)))
+    else:
+        qs = Audit.objects.filter(user=user)
+
+    audits = qs.order_by('-timestamp').order_by('-id')[:limit]
 
     audit_list = []
-
-    # TODO page offset limit
 
     for audit in audits:
         audit_list.append({
@@ -72,11 +82,30 @@ def search_audit(request):
             'fields': audit.fields
         })
 
+    # prev cursor (desc order)
+    if len(audit_list) > 0:
+        audit = audit_list[0]
+        prev_cursor = "%s/%s" % (audit['timestamp'], audit['id'])
+    else:
+        prev_cursor = None
+
+    # next cursor (desc order)
+    if len(audit_list) > 0:
+        audit = audit_list[-1]
+        next_cursor = "%s/%s" % (audit['timestamp'], audit['id'])
+    else:
+        next_cursor = None
+
     results = {
         'perms': [],
         'items': audit_list,
-        'total_count': qs.count(),
-        'page': 1,
+        'prev': prev_cursor,
+        'cursor': cursor,
+        'next': next_cursor,
+        'total_count': None,  # total_count,
+        # 'prev': page-1 if offset > 0 else None,
+        # 'page': page,
+        # 'next': page+1 if offset + results_per_page < total_count else None
     }
 
     return HttpResponseRest(request, results)
@@ -84,11 +113,10 @@ def search_audit(request):
 
 @RestAuditSearch.def_auth_request(Method.GET, Format.JSON, parameters=('app_label', 'model', 'object_id'), staff=True)
 def search_audit_for_entity(request):
-    results_per_page = 30
-    page = int_arg(request.GET.get('page', 1))
-    offset = (page - 1) * results_per_page
-    limit = offset + results_per_page
-    # TODO page offset limit page = int_arg(request.GET['page'])
+    results_per_page = int_arg(request.GET.get('more', 30))
+    # page = int_arg(request.GET.get('page', 1))
+    # offset = (page - 1) * results_per_page
+    # limit = offset + results_per_page
 
     app_label = request.GET['app_label']
     model = request.GET['model']
@@ -97,8 +125,23 @@ def search_audit_for_entity(request):
     content_type = ContentType.objects.get_by_natural_key(app_label, model)
     entity = content_type.get_object_for_this_type(id=object_id)
 
-    qs = Audit.objects.filter(content_type=content_type, object_id=object_id)[offset:limit]
-    audits = qs.order_by('-timestamp')[offset:limit]
+    cursor = request.GET.get('cursor')
+    limit = results_per_page
+
+    # qs = Audit.objects.filter(content_type=content_type, object_id=object_id)[offset:limit]
+    # audits = qs.order_by('-timestamp')[offset:limit]
+
+    if cursor:
+        cursor_time, cursor_id = cursor.split('/')
+        qs = Audit.objects.filter(Q(content_type=content_type),
+                                  Q(object_id=object_id),
+                                  Q(timestamp__lte=cursor_time) & Q(timestamp__lt=cursor_time) | (Q(timestamp=cursor_time) & Q(id__lt=cursor_id)))
+    else:
+        qs = Audit.objects.filter(content_type=content_type, object_id=object_id)
+
+    audits = qs.order_by('-timestamp').order_by('-id')[:limit]
+
+    # total_count = qs.count()
 
     audit_list = []
 
@@ -114,11 +157,30 @@ def search_audit_for_entity(request):
             'fields': audit.fields
         })
 
+    # prev cursor (desc order)
+    if len(audit_list) > 0:
+        audit = audit_list[0]
+        prev_cursor = "%s/%s" % (audit['timestamp'], audit['id'])
+    else:
+        prev_cursor = None
+
+    # next cursor (desc order)
+    if len(audit_list) > 0:
+        audit = audit_list[-1]
+        next_cursor = "%s/%s" % (audit['timestamp'], audit['id'])
+    else:
+        next_cursor = None
+
     results = {
         'perms': [],
         'items': audit_list,
-        'total_count': qs.count(),
-        'page': 1,
+        'prev': prev_cursor,
+        'cursor': cursor,
+        'next': next_cursor,
+        'total_count': None,  # total_count,
+        # 'prev': page-1 if offset > 0 else None,
+        # 'page': page,
+        # 'next': page+1 if offset + results_per_page < total_count else None
     }
 
     return HttpResponseRest(request, results)
