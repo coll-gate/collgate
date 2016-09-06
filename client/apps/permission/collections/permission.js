@@ -13,9 +13,9 @@ var PermissionModel = require('../models/permission');
 var PermissionCollection = Backbone.Collection.extend({
     url: function() {
         if (this.is_group)
-            return ohgr.baseUrl + 'permission/group/' + this.name + '/permission/';
+            return application.baseUrl + 'permission/group/' + this.name + '/permission/';
         else
-            return ohgr.baseUrl + 'permission/user/' + this.name + '/permission/';
+            return application.baseUrl + 'permission/user/' + this.name + '/permission/';
     },
 
     model: PermissionModel,

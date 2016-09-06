@@ -13,9 +13,9 @@ var Backbone = require('backbone');
 var Model = Backbone.Model.extend({
     url: function() {
         if (this.isNew())
-            return ohgr.baseUrl + 'permission/group/' + this.collection.name + '/user/';
+            return application.baseUrl + 'permission/group/' + this.collection.name + '/user/';
         else
-            return ohgr.baseUrl + 'permission/group/' + this.collection.name + '/user/' + this.get('username') + '/';
+            return application.baseUrl + 'permission/group/' + this.collection.name + '/user/' + this.get('username') + '/';
     },
 
     defaults: {

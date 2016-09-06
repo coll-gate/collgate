@@ -11,7 +11,7 @@
 var PermissionTypeModel = require('../models/permissiontype');
 
 var Collection = Backbone.Collection.extend({
-    url: ohgr.baseUrl + 'permission/type/',
+    url: application.baseUrl + 'permission/type/',
     model: PermissionTypeModel,
 
     parse: function(data) {

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-15 14:02+0200\n"
+"POT-Creation-Date: 2016-09-06 17:42+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,8 +25,16 @@ msgstr ""
 msgid "Help..."
 msgstr ""
 
-#: ../../../routers/profile.js:36
+#: ../../../routers/profile.js:39
 msgid "Edit my profile informations"
+msgstr ""
+
+#: ../../../collections/contenttype.js:49
+msgid "Taxon"
+msgstr ""
+
+#: ../../../collections/contenttype.js:51
+msgid "Taxon synonym"
 msgstr ""
 
 #: ../../../collections/language.js:22
@@ -42,5 +50,5 @@ msgid "Home"
 msgstr ""
 
 #: ../../../templates/home.html:18
-msgid "Welcome to the Online Host of Genetics Resources"
+msgid "Welcome to Coll-Gate"
 msgstr ""

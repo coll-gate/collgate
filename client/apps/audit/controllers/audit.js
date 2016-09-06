@@ -51,7 +51,7 @@ var Controller = Marionette.Controller.extend({
                 $(this.ui.username).select2({
                     dropdownParent: $(this.el),
                     ajax: {
-                        url: ohgr.baseUrl + "permission/user/search/",
+                        url: application.baseUrl + "permission/user/search/",
                         dataType: 'json',
                         delay: 250,
                         data: function (params) {
@@ -96,7 +96,7 @@ var Controller = Marionette.Controller.extend({
             },
 
             closeAndDestroy: function() {
-                ohgr.getRegion('modalRegion').reset();
+                application.getRegion('modalRegion').reset();
             },
 
             onCancel: function () {
@@ -123,7 +123,7 @@ var Controller = Marionette.Controller.extend({
         });
 
         var modal = new ModalView({controller: this});
-        ohgr.getRegion('modalRegion').show(modal);
+        application.getRegion('modalRegion').show(modal);
 
         modal.on("view:search", function(args) {
             var username = $(args.view.ui.username).val();
@@ -138,7 +138,7 @@ var Controller = Marionette.Controller.extend({
         var auditCollection = new AuditCollection([], {username: username});
 
         var defaultLayout = new DefaultLayout({});
-        ohgr.mainRegion.show(defaultLayout);
+        application.mainRegion.show(defaultLayout);
 
         defaultLayout.title.show(new TitleView({title: gt.gettext("List of audit entries related to user") + " " + username}));
 
@@ -181,14 +181,14 @@ var Controller = Marionette.Controller.extend({
                 var view = this;
                 $(this.el).modal();
 
-                ohgr.main.views.contentTypes.drawSelect(this.ui.content_type);
-                ohgr.main.views.contentTypes.htmlFromValue(this.el);
+                application.main.views.contentTypes.drawSelect(this.ui.content_type);
+                application.main.views.contentTypes.htmlFromValue(this.el);
 
                 $(this.ui.entity).select2({
                     dropdownParent: $(this.el),
                     content_type: $(this.ui.content_type),
                     ajax: {
-                        url: ohgr.baseUrl + "main/entity/search/",
+                        url: application.baseUrl + "main/entity/search/",
                         dataType: 'json',
                         delay: 250,
                         data: function (params) {
@@ -246,7 +246,7 @@ var Controller = Marionette.Controller.extend({
             },
 
             closeAndDestroy: function() {
-                ohgr.getRegion('modalRegion').reset();
+                application.getRegion('modalRegion').reset();
             },
 
             onCancel: function () {
@@ -271,7 +271,7 @@ var Controller = Marionette.Controller.extend({
         });
 
         var modal = new ModalView({controller: this});
-        ohgr.getRegion('modalRegion').show(modal);
+        application.getRegion('modalRegion').show(modal);
 
         modal.on("view:search", function(args) {
             var object_id = $(args.view.ui.entity).val();
@@ -288,7 +288,7 @@ var Controller = Marionette.Controller.extend({
         var auditCollection = new AuditCollection([], {entity: {app_label: app_label, model: model, object_id: object_id}});
 
         var defaultLayout = new DefaultLayout({});
-        ohgr.mainRegion.show(defaultLayout);
+        application.mainRegion.show(defaultLayout);
 
         defaultLayout.title.show(new TitleView({title: gt.gettext("List of audit entries related to entity") + " " + app_label + "." + model + " " + object_name}));
 

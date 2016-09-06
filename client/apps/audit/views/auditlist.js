@@ -14,7 +14,11 @@ var AuditView = require('../views/audit');
 var View = Marionette.CompositeView.extend({
     template: require("../templates/auditlist.html"),
     childView: AuditView,
-    childViewContainer: 'div.audit-list',
+    childViewContainer: 'tbody.audit-list',
+
+    ui: {
+        table: 'table.table'
+    },
 
     initialize: function() {
         this.listenTo(this.collection, 'reset', this.render, this);
@@ -25,6 +29,7 @@ var View = Marionette.CompositeView.extend({
     },
 
     onRender: function() {
+        $(this.ui.table).stickyTableHeaders({scrollableArea: $('div.panel-body')});
         $("span.date").localizeDate();
     },
 

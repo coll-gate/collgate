@@ -23,16 +23,16 @@ var ProfileRouter = Marionette.AppRouter.extend({
     logout: function() {
         $.ajax({
             type: "POST",
-            url: ohgr.baseUrl + "main/profile/logout/",
+            url: application.baseUrl + "main/profile/logout/",
             data: {},
         }).done(function(data) {
-            window.open(ohgr.baseUrl, "_self", "", true);
+            window.open(application.baseUrl, "_self", "", true);
         });
     },
 
     edit: function() {
         var defaultLayout = new DefaultLayout({});
-        ohgr.mainRegion.show(defaultLayout);
+        application.mainRegion.show(defaultLayout);
 
         model = new ProfileModel({username: session.user.username});
 
@@ -42,7 +42,7 @@ var ProfileRouter = Marionette.AppRouter.extend({
             defaultLayout.content.show(new EditProfileView({model: model}));
         });
 
-        //ohgr.setDisplay('0-10-2');
+        //application.setDisplay('0-10-2');
     }
 });
 

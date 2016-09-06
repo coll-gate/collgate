@@ -10,8 +10,16 @@
     "Values for the type of descriptor": "Valeurs pour le type de descripteur",
     "Name": "Nom",
     "Number of types of descriptors": "Nombre de types de descripteurs",
-    "Code": "",
+    "Code": "Code",
     "Number of values": "Nombre de valeurs",
     "Id": "Id",
-    "Value": ""
+    "Value": "Valeur",
+    "taxonomy.accession": "Accession",
+    "taxonomy.accessionsynonym": "Synonyme d'accession",
+    "taxonomy.batch": "Lot",
+    "taxonomy.sample": "Sample",
+    "taxonomy.asset": "Panel",
+    "taxonomy.descriptorgroup": "Group de type de descripteur",
+    "taxonomy.descriptortype": "Type de descripteur",
+    "taxonomy.descriptorvalue": "Valeur de descripteur"
 }

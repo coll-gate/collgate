@@ -9,7 +9,7 @@
  */
 
 module.exports = Backbone.Model.extend({
-    url: ohgr.baseUrl + 'taxonomy/taxon-synonym-type/:id',
+    url: application.baseUrl + 'taxonomy/taxon-synonym-type/:id',
 
     defaults: function() {
         return {id: '', value: ''}

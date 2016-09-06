@@ -35,7 +35,7 @@ var View = Marionette.ItemView.extend({
 
         $(select).select2({
             ajax: {
-                url: ohgr.baseUrl + "permission/user/search/",
+                url: application.baseUrl + "permission/user/search/",
                 dataType: 'json',
                 delay: 250,
                 data: function (params) {

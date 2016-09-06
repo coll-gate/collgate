@@ -11,7 +11,7 @@
 var DescriptorGroupModel = require('../models/descriptorgroup');
 
 var Collection = Backbone.Collection.extend({
-    url: ohgr.baseUrl + 'accession/descriptor/group/',
+    url: application.baseUrl + 'accession/descriptor/group/',
     model: DescriptorGroupModel,
 
     parse: function(data) {

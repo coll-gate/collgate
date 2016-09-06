@@ -49,6 +49,6 @@ var AuditModule = Marionette.Module.extend({
 });
 
 // audit module
-var audit = ohgr.module("audit", AuditModule);
+var audit = application.module("audit", AuditModule);
 
 module.exports = audit;

@@ -62,7 +62,7 @@ var View = Marionette.ItemView.extend({
         if (this.validateTypeName()) {
             $.ajax({
                 type: "GET",
-                url: ohgr.baseUrl + 'accession/descriptor/group/' + this.collection.group_id + '/type/search/',
+                url: application.baseUrl + 'accession/descriptor/group/' + this.collection.group_id + '/type/search/',
                 dataType: 'json',
                 data: {filters: JSON.stringify({
                     method: 'ieq',

@@ -12,4 +12,4 @@ __pycache__
 /venv/
 /docs/_build/
 /client/npm-debug.log
-/ohgr/main/static/main/js/app.js
+/server/main/static/main/js/app.min.js

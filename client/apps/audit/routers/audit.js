@@ -23,7 +23,7 @@ var Router = Marionette.AppRouter.extend({
         var auditCollection = new AuditCollection([], {data: {page: 1}, processData: true});
 
         var defaultLayout = new DefaultLayout({});
-        ohgr.mainRegion.show(defaultLayout);
+        application.mainRegion.show(defaultLayout);
 
         defaultLayout.title.show(new TitleView({title: gt.gettext("List of audit entries by date")}));
 

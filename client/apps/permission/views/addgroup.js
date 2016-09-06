@@ -56,7 +56,7 @@ var View = Marionette.ItemView.extend({
         if (this.validateGroupName()) {
             $.ajax({
                 type: "GET",
-                url: ohgr.baseUrl + 'permission/group/search/',
+                url: application.baseUrl + 'permission/group/search/',
                 dataType: 'json',
                 data: {filters: JSON.stringify({
                     method: 'ieq',

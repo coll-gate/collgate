@@ -11,7 +11,7 @@
 var TaxonModel = require('../models/taxon');
 
 var TaxonCollection = Backbone.Collection.extend({
-    url: ohgr.baseUrl + 'taxonomy/',
+    url: application.baseUrl + 'taxonomy/',
     model: TaxonModel,
 
     parse: function(data) {

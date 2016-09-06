@@ -12,5 +12,5 @@ module.exports = Backbone.Model.extend({
     defaults: function() {
         return {id: '', value: ''}
     },
-    url: ohgr.baseUrl + 'main/language/:id'
+    url: application.baseUrl + 'main/language/:id'
 });

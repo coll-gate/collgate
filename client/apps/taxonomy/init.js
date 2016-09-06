@@ -78,6 +78,6 @@ var TaxonomyModule = Marionette.Module.extend({
 });
 
 // taxonomy module
-var taxonomy = ohgr.module("taxonomy", TaxonomyModule);
+var taxonomy = application.module("taxonomy", TaxonomyModule);
 
 module.exports = taxonomy;

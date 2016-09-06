@@ -13,9 +13,9 @@ var Backbone = require('backbone');
 var Model = Backbone.Model.extend({
     url: function() {
         if (this.isNew())
-            return ohgr.baseUrl + 'accession/descriptor/group/' + this.group_id + '/type/' + this.type_id + '/value/';
+            return application.baseUrl + 'accession/descriptor/group/' + this.group_id + '/type/' + this.type_id + '/value/';
         else
-            return ohgr.baseUrl + 'accession/descriptor/group/' + this.group_id + '/type/' + this.type_id + '/value/' + this.id + '/';
+            return application.baseUrl + 'accession/descriptor/group/' + this.group_id + '/type/' + this.type_id + '/value/' + this.id + '/';
     },
 
     defaults: {

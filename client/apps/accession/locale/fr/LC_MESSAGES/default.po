@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-08-26 15:33+0200\n"
+"POT-Creation-Date: 2016-09-06 17:42+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -68,7 +68,7 @@ msgstr "Nombre de types de descripteurs"
 
 #: ../../../templates/descriptortypelist.html:17
 msgid "Code"
-msgstr ""
+msgstr "Code"
 
 #: ../../../templates/descriptortypelist.html:18
 msgid "Number of values"
@@ -81,4 +81,28 @@ msgstr "Id"
 
 #: ../../../templates/descriptorvaluelist.html:17
 msgid "Value"
-msgstr ""
+msgstr "Valeur"
+
+#~ msgid "taxonomy.accession"
+#~ msgstr "Accession"
+
+#~ msgid "taxonomy.accessionsynonym"
+#~ msgstr "Synonyme d'accession"
+
+#~ msgid "taxonomy.batch"
+#~ msgstr "Lot"
+
+#~ msgid "taxonomy.sample"
+#~ msgstr "Sample"
+
+#~ msgid "taxonomy.asset"
+#~ msgstr "Panel"
+
+#~ msgid "taxonomy.descriptorgroup"
+#~ msgstr "Group de type de descripteur"
+
+#~ msgid "taxonomy.descriptortype"
+#~ msgstr "Type de descripteur"
+
+#~ msgid "taxonomy.descriptorvalue"
+#~ msgstr "Valeur de descripteur"

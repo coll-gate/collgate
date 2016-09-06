@@ -15,10 +15,10 @@ var Model = Backbone.Model.extend({
         var group_id = this.group_id || this.get('group') || this.collection.group_id;
 
         if (this.isNew()) {
-            return ohgr.baseUrl + 'accession/descriptor/group/' + group_id + '/type/';
+            return application.baseUrl + 'accession/descriptor/group/' + group_id + '/type/';
         }
         else
-            return ohgr.baseUrl + 'accession/descriptor/group/' + group_id + '/type/' + this.get('id') + '/';
+            return application.baseUrl + 'accession/descriptor/group/' + group_id + '/type/' + this.get('id') + '/';
     },
 
     defaults: {

@@ -3,7 +3,7 @@
 # Copyright (c) 2016 INRA UMR1095 GDEC
 
 """
-Django settings for ohgr documentation project.
+Django settings for coll-gate documentation project.
 
 For more information on this file, see
 https://docs.djangoproject.com/en/1.9/topics/settings/

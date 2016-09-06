@@ -1,7 +1,7 @@
 {
-  "name": "ohgr",
+  "name": "coll-gate",
   "version": "1.0.0",
-  "description": "Online host of Genetics Resources",
+  "description": "Collection of Genetics Resources",
   "main": "./apps/driver.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

@@ -55,6 +55,6 @@ var PermissionModule = Marionette.Module.extend({
 });
 
 // permission module
-var permission = ohgr.module("permission", PermissionModule);
+var permission = application.module("permission", PermissionModule);
 
 module.exports = permission;

@@ -10,7 +10,7 @@
 
 var Marionette = require('backbone.marionette');
 
-//mainStyle = require('./css/main.css');  // included in main.html on django side
+require('./css/main.css');
 
 //
 // Main module definition
@@ -34,7 +34,7 @@ var MainModule = Marionette.Module.extend({
             i18next.addResources('fr', 'default', require('./locale/fr/LC_MESSAGES/default.json'));
 
             /*// inject django json catalog
-            $.get(ohgr.baseUrl + 'jsoni18n/main/django').done(function (data) {
+            $.get(application.baseUrl + 'jsoni18n/main/django').done(function (data) {
                 i18next.addResources('fr', 'default', data.catalog);
                 deferred.resolve("jsoni18n");
             });*/
@@ -85,6 +85,6 @@ var MainModule = Marionette.Module.extend({
     },
 });
 
-var main =  ohgr.module("main", MainModule);
+var main =  application.module("main", MainModule);
 
 module.exports = main;

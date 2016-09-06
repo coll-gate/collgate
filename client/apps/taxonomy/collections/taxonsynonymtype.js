@@ -11,7 +11,7 @@
 var TaxonSynonymTypeModel = require('../models/taxonsynonymtype');
 
 var Collection = Backbone.Collection.extend({
-    url: ohgr.baseUrl + 'taxonomy/taxon-synonym-type/',
+    url: application.baseUrl + 'taxonomy/taxon-synonym-type/',
     model: TaxonSynonymTypeModel,
 
     parse: function(data) {

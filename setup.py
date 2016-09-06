@@ -18,7 +18,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 with open(os.path.join(here, 'README.rst'), encoding='utf-8') as f:
     long_description = f.read()
 # Get the long description from the LICENSE file
-with open(os.path.join(here, 'ohgr/LICENSE'), encoding='utf-8') as f:
+with open(os.path.join(here, 'server/LICENSE'), encoding='utf-8') as f:
     license = f.read()
 
 
@@ -55,14 +55,14 @@ def get_package_data(package):
     return {package: filepaths}
 
 setup(
-    name='ohgr',
+    name='coll-gate',
 
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version=get_version('ohgr'),
+    version=get_version('server'),
 
-    description='Online Host of Genetics Resources',
+    description='Collection of Genetics Resources',
     long_description=long_description,
 
     # The project's main homepage.

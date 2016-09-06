@@ -34,7 +34,7 @@ var View = Marionette.ItemView.extend({
     },
 
     updatePermissionSelect: function () {
-        ohgr.permission.views.permissionType.drawSelect(this.ui.permissions_types, false);
+        application.permission.views.permissionType.drawSelect(this.ui.permissions_types, false);
 
         // remove defined permissions
         var select = this.ui.permissions_types;

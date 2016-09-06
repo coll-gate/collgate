@@ -1,0 +1,78 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-09-06 17:41+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: apps.py:37
+msgid "Accession"
+msgstr ""
+
+#: apps.py:39
+msgid "Create accession"
+msgstr ""
+
+#: apps.py:42
+msgid "Create batch"
+msgstr ""
+
+#: apps.py:46
+msgid "List accessions"
+msgstr ""
+
+#: apps.py:49
+msgid "List groups of descriptors"
+msgstr ""
+
+#: base.py:47
+msgid "You are not allowed to create an accession"
+msgstr ""
+
+#: base.py:64
+msgid "You are not allowed to list the accessions"
+msgstr ""
+
+#: models.py:84
+msgid "Primary"
+msgstr ""
+
+#: models.py:85
+msgid "Synonym"
+msgstr ""
+
+#: models.py:86
+msgid "Code"
+msgstr ""
+
+#: models.py:100
+msgid "accession synonym"
+msgstr ""
+
+#: models.py:111
+msgid "panel"
+msgstr ""
+
+#: models.py:122
+msgid "accession"
+msgstr ""
+
+#: models.py:135
+msgid "batch"
+msgstr ""
+
+#: models.py:149
+msgid "sample"
+msgstr ""

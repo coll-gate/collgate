@@ -41,10 +41,10 @@ var Router = Marionette.AppRouter.extend({
     },
 
     getDescriptorGroupList : function() {
-        var collection = ohgr.accession.collections.descriptorGroup;
+        var collection = application.accession.collections.descriptorGroup;
 
         var defaultLayout = new DefaultLayout({});
-        ohgr.mainRegion.show(defaultLayout);
+        application.mainRegion.show(defaultLayout);
 
         defaultLayout.title.show(new TitleView({title: gt.gettext("List of groups of descriptors")}));
 
@@ -62,7 +62,7 @@ var Router = Marionette.AppRouter.extend({
         var collection = new DescriptorTypeCollection([], {group_id: id});
 
         var defaultLayout = new DefaultLayout();
-        ohgr.mainRegion.show(defaultLayout);
+        application.mainRegion.show(defaultLayout);
 
         var model = new DescriptorGroupModel({id: id});
         model.fetch().then(function () {
@@ -81,7 +81,7 @@ var Router = Marionette.AppRouter.extend({
 
     getDescriptorTypeForGroup : function(gid, tid) {
         var defaultLayout = new DefaultLayout();
-        ohgr.mainRegion.show(defaultLayout);
+        application.mainRegion.show(defaultLayout);
 
         var model = new DescriptorTypeModel({group_id: gid, id: tid});
 
@@ -95,7 +95,7 @@ var Router = Marionette.AppRouter.extend({
         var collection = new DescriptorValueCollection([], {group_id: gid, type_id: tid});
 
         var defaultLayout = new DefaultLayout();
-        ohgr.mainRegion.show(defaultLayout);
+        application.mainRegion.show(defaultLayout);
 
         collection.fetch();
 

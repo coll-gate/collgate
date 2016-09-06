@@ -11,7 +11,7 @@
 var Backbone = require('backbone');
 
 var Model = Backbone.Model.extend({
-    url: function() { return ohgr.baseUrl + 'permission/user/' + this.get('username') + '/'; },
+    url: function() { return application.baseUrl + 'permission/user/' + this.get('username') + '/'; },
 
     defaults: {
         id: undefined,

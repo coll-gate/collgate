@@ -23,10 +23,10 @@ var TaxonRouter = Marionette.AppRouter.extend({
     },
 
     getTaxonList : function() {
-        var collection = ohgr.taxonomy.collections.taxons;
+        var collection = application.taxonomy.collections.taxons;
 
         var defaultLayout = new DefaultLayout({});
-        ohgr.mainRegion.show(defaultLayout);
+        application.mainRegion.show(defaultLayout);
 
         defaultLayout.title.show(new TitleView({title: gt.gettext("List of taxons")}));
 
@@ -39,7 +39,7 @@ var TaxonRouter = Marionette.AppRouter.extend({
         var taxon = new TaxonModel({id: id});
 
         var defaultLayout = new DefaultLayout();
-        ohgr.mainRegion.show(defaultLayout);
+        application.mainRegion.show(defaultLayout);
 
         defaultLayout.title.show(new TitleView({title: gt.gettext("Taxon details")}));
 

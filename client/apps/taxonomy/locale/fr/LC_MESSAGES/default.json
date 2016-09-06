@@ -15,7 +15,9 @@
     "Create a taxon": "Créer un taxon",
     "Principal name of the taxon (must be unique)": "Nom principal du taxon (doit être unique)",
     "Taxon rank": "Rank taxinomique",
-    "Direct parent": "Parent directe",
+    "Direct parent": "Parent direct",
     "Cancel": "Annuler",
-    "Create": "Créer"
+    "Create": "Créer",
+    "taxonomy.taxon": "Taxon",
+    "taxonomy.taxonsynonym": "Synonyme de taxon"
 }

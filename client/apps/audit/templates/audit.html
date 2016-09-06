@@ -8,31 +8,28 @@
  - @details
 -->
 
-<div class="element object audit" object-type="audit" style="width:100%;">
-    <div>
-        <span style="font-weight:bold; font-size:18px;"><% gt.gettext("Audit") %>
-            <span class="model audit label label-info date" style="cursor: pointer;" date="<%= timestamp %>"><% gt.gettext("Audit") + ": " %><%= timestamp %></span>
-            <% if (object_name) { %><span class="model object badge left-margin" style="cursor: pointer;" object-id="<%- object_id %>"><%= object_name %></span><% } %>
-            <br>
-        </span>
-    </div>
-    <hr class="hr-default">
-    <div class="details">
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th style="width: 20%;"><%= gt.gettext("User") %></th>
-                    <th style="width: 40%;"><%= gt.gettext("Reason") %></th>
-                    <th style="width: 35%;"><%= gt.gettext("Fields") %></th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td name="username"><%- username %></td>
-                    <td name="reason"><%- reason %></td>
-                    <td name="fields"><%- fields %></td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-</div>
+<td><%- username %></td>
+<!--<td class="datetime" date="<%- timestamp %>"><%- timestamp %></td>-->
+<td><abbr class="datetime" date="<%- timestamp %>" title="<%- timestamp %>"><%- timestamp %></abbr></td>
+<% if (object_name) { %>
+<td object-id="<%- object_id %>"><abbr title="<%- content_type %>"><%= object_name %></abbr></td>
+<% } else { %>
+<td>N/A</td>
+<% } %>
+<td>
+<% if (type == 0) { %>
+    <abbr title="<%= gt.gettext('Created') %>"><span class="glyphicon glyphicon-plus-sign" style="color: #4cae4c;"></span></abbr>
+<% } else if (type == 1) { %>
+    <abbr title="<%= gt.gettext('Modified') %>"><span class="glyphicon glyphicon-retweet" style="color: #c77405;"></span></abbr>
+<% } else if (type == 2) { %>
+    <abbr title="<%= gt.gettext('Removed') %>"><span class="glyphicon glyphicon-remove-circle" style="color: #ac2925"></span></abbr>
+<% } else if (type == 3) { %>
+    <abbr title="<%= gt.gettext('Deleted') %>"><span class="glyphicon glyphicon-trash" style="color: #ac2925;"></span></abbr>
+<% } else if (type == 4) { %>
+    <abbr title="<%= gt.gettext('Action') %>"><span class="glyphicon glyphicon-tasks" style="color: #4cae4c;"></span></abbr>
+<% } else { %>
+    <abbr title="<%= gt.gettext('Unkown') %>"><span class="glyphicon glyphicon-question-sign"></span></abbr>
+<% } %>
+</td>
+<td><%- reason %></td>
+<td><%- fields %></td>

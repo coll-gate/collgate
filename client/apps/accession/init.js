@@ -55,6 +55,6 @@ var AccessionModule = Marionette.Module.extend({
 });
 
 // accession module
-var accession = ohgr.module("accession", AccessionModule);
+var accession = application.module("accession", AccessionModule);
 
 module.exports = accession;

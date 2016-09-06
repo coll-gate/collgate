@@ -27,13 +27,13 @@ var Router = Marionette.AppRouter.extend({
     },
 
     home: function() {
-        var home = new ohgr.main.views.Home();
+        var home = new application.main.views.Home();
         home.render();
     },
 
     about: function() {
         var defaultLayout = new DefaultLayout({});
-        ohgr.mainRegion.show(defaultLayout);
+        application.mainRegion.show(defaultLayout);
 
         defaultLayout.title.show(new TitleView({title: gt.gettext("About...")}));
         defaultLayout.content.show(new AboutView());
@@ -41,7 +41,7 @@ var Router = Marionette.AppRouter.extend({
 
     help: function() {
         var defaultLayout = new DefaultLayout({});
-        ohgr.mainRegion.show(defaultLayout);
+        application.mainRegion.show(defaultLayout);
 
         defaultLayout.title.show(new TitleView({title: gt.gettext("Help...")}));
         defaultLayout.content.show(new HelpIndexView());

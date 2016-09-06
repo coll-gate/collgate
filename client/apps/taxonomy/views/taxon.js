@@ -38,13 +38,13 @@ var TaxonItemView = Marionette.ItemView.extend({
     },
 
     onRender: function() {
-        ohgr.main.views.languages.drawSelect(this.ui.synonym_language);
-        ohgr.taxonomy.views.taxonSynonymTypes.drawSelect(this.ui.taxon_synonym_type);
-        ohgr.taxonomy.views.taxonRanks.drawSelect(this.ui.taxon_rank);
+        application.main.views.languages.drawSelect(this.ui.synonym_language);
+        application.taxonomy.views.taxonSynonymTypes.drawSelect(this.ui.taxon_synonym_type);
+        application.taxonomy.views.taxonRanks.drawSelect(this.ui.taxon_rank);
         
-        ohgr.main.views.languages.htmlFromValue(this.el);
-        ohgr.taxonomy.views.taxonSynonymTypes.htmlFromValue(this.el);
-        ohgr.taxonomy.views.taxonRanks.htmlFromValue(this.el);
+        application.main.views.languages.htmlFromValue(this.el);
+        application.taxonomy.views.taxonSynonymTypes.htmlFromValue(this.el);
+        application.taxonomy.views.taxonRanks.htmlFromValue(this.el);
 
         this.ui.taxon_synonym_type.find('option[value="0"]').remove();
         $(this.ui.taxon_synonym_type).selectpicker('refresh');
@@ -80,7 +80,7 @@ var TaxonItemView = Marionette.ItemView.extend({
 
             $.ajax({
                 type: "GET",
-                url: ohgr.baseUrl + 'taxonomy/search/',
+                url: application.baseUrl + 'taxonomy/search/',
                 dataType: 'json',
                 data: {filters: JSON.stringify(filters)},
                 el: this.ui.synonym_name,
@@ -113,7 +113,7 @@ var TaxonItemView = Marionette.ItemView.extend({
         $.ajax({
             view: this,
             type: "PUT",
-            url: ohgr.baseUrl + 'taxonomy/' + this.model.id + "/",
+            url: application.baseUrl + 'taxonomy/' + this.model.id + "/",
             contentType: "application/json; charset=utf-8",
             dataType: 'json',
             data: JSON.stringify({type: type, name: name, language: language}),
@@ -134,7 +134,7 @@ var TaxonItemView = Marionette.ItemView.extend({
         $.ajax({
             view: this,
             type: "DELETE",
-            url: ohgr.baseUrl + 'taxonomy/' + this.model.id + "/",
+            url: application.baseUrl + 'taxonomy/' + this.model.id + "/",
             contentType: "application/json; charset=utf-8",
             dataType: 'json',
             data: JSON.stringify({type: type, name: name, language: language}),

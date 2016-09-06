@@ -24,8 +24,8 @@ require("select2/dist/css/select2.min.css");
 // make table header fixed position
 /*$.stickyTableHeaders = */require("sticky-table-headers");
 
-// ohgr global application
-ohgr = new Marionette.Application({
+// global application
+application = new Marionette.Application({
     initialize: function(options) {
         Logger.useDefaults({
             defaultLevel: Logger.WARN,
@@ -127,23 +127,21 @@ ohgr = new Marionette.Application({
     },
     onStart: function(options) {
         // Starts the URL handling framework and automatically route as possible
-        Backbone.history.start({pushState: true, silent: false, root: '/ohgr'});
+        Backbone.history.start({pushState: true, silent: false, root: '/coll-gate'});
 
         Logger.timeEnd('Application startup');
     }
 });
 
-application = ohgr;
-
-ohgr.addRegions({
+application.addRegions({
     mainRegion: "#main_content",
     leftRegion: "#left_details",
     rightRegion: "#right_content",
     modalRegion: "#dialog_content"
 });
 
-ohgr.on("before:start", function(options) {
-    this.baseUrl = '/ohgr/';
+application.on("before:start", function(options) {
+    this.baseUrl = '/coll-gate/';
 
     /**
      * @brief Set the display layout of the 3 columns of content (bootstrap layout grid system).
@@ -207,4 +205,4 @@ ohgr.on("before:start", function(options) {
     this.accession = require('./accession/init');
 });
 
-ohgr.start({initialData: ''});
+application.start({initialData: ''});

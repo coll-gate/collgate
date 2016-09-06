@@ -30,10 +30,10 @@ var Router = Marionette.AppRouter.extend({
 
     getAccessionList : function() {
         alert("Not yet implemented");
-        // var collection = ohgr.accession.collections.accession;
+        // var collection = application.accession.collections.accession;
         //
         // var defaultLayout = new DefaultLayout({});
-        // ohgr.mainRegion.show(defaultLayout);
+        // application.mainRegion.show(defaultLayout);
         //
         // defaultLayout.title.show(new TitleView({title: gt.gettext("List of accessions")}));
         //

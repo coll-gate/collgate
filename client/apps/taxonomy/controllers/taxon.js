@@ -51,12 +51,12 @@ var TaxonController = Marionette.Controller.extend({
                 $(this.el).modal();
                 this.ui.parent_group.hide();
 
-                ohgr.taxonomy.views.taxonRanks.drawSelect(this.ui.rank);
+                application.taxonomy.views.taxonRanks.drawSelect(this.ui.rank);
 
                 $(this.ui.parent).select2({
                     dropdownParent: $(this.el),
                     ajax: {
-                        url: ohgr.baseUrl + "taxonomy/search/",
+                        url: application.baseUrl + "taxonomy/search/",
                         dataType: 'json',
                         delay: 250,
                         data: function (params) {
@@ -114,7 +114,7 @@ var TaxonController = Marionette.Controller.extend({
 
                         $.ajax({
                             type: "GET",
-                            url: ohgr.baseUrl + 'taxonomy/search/',
+                            url: application.baseUrl + 'taxonomy/search/',
                             dataType: 'json',
                             data: {term: terms, type: "name", mode: "icontains", rank: rank},
                             async: true,
@@ -150,7 +150,7 @@ var TaxonController = Marionette.Controller.extend({
 
                         $.ajax({
                             type: "GET",
-                            url: ohgr.baseUrl + 'taxonomy/search/',
+                            url: application.baseUrl + 'taxonomy/search/',
                             dataType: 'json',
                             data: {term: tp.val(), type: "name", mode: "ieq", rank: rank},
                             async: true,
@@ -198,7 +198,7 @@ var TaxonController = Marionette.Controller.extend({
 
                     $.ajax({
                         type: "GET",
-                        url: ohgr.baseUrl + 'taxonomy/search/',
+                        url: application.baseUrl + 'taxonomy/search/',
                         dataType: 'json',
                         data: {filters: JSON.stringify(filters)},
                         el: this.ui.name,
@@ -266,7 +266,7 @@ var TaxonController = Marionette.Controller.extend({
                 var view = this;
 
                 if (this.validate()) {
-                    ohgr.taxonomy.collections.taxons.create({
+                    application.taxonomy.collections.taxons.create({
                         name: this.ui.name.val(),
                         rank: parseInt(this.ui.rank.val()),
                         parent: parseInt(this.ui.parent.attr('parent-id') || '0'),
@@ -282,7 +282,7 @@ var TaxonController = Marionette.Controller.extend({
                     // send
                     $.ajax({
                         type: "POST",
-                        url: ohgr.baseUrl + "taxonomy/",
+                        url: application.baseUrl + "taxonomy/",
                         dataType: 'json',
                         contentType: "application/json; charset=utf-8",
                         view: this,
@@ -297,7 +297,7 @@ var TaxonController = Marionette.Controller.extend({
                             this.view.remove();
                             success(gettext("Taxon successfully created !"));
 
-                            var collection = ohgr.taxonomy.collections.taxons;
+                            var collection = application.taxonomy.collections.taxons;
                             collection.add({
                                 id: data.id,
                                 name: this.view.ui.name.val(),

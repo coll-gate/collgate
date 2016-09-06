@@ -12,5 +12,5 @@ module.exports = Backbone.Model.extend({
     defaults: function() {
         return {id: '', value: ''}
     },
-    url: ohgr.baseUrl + 'taxonomy/rank/:id'
+    url: application.baseUrl + 'taxonomy/rank/:id'
 });

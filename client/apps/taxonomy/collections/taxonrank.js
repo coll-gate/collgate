@@ -11,7 +11,7 @@
 var TaxonRankModel = require('../models/taxonrank');
 
 var TaxonRankCollection = Backbone.Collection.extend({
-    url: ohgr.baseUrl + 'taxonomy/rank/',
+    url: application.baseUrl + 'taxonomy/rank/',
     model: TaxonRankModel,
 
     parse: function(data) {

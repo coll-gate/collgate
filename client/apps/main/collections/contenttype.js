@@ -11,7 +11,7 @@
 var ContentTypeModel = require('../models/contenttype');
 
 var Collection = Backbone.Collection.extend({
-    url: ohgr.baseUrl + 'main/content-type',
+    url: application.baseUrl + 'main/content-type',
     model: ContentTypeModel,
 
     parse: function(data) {
@@ -40,6 +40,20 @@ var Collection = Backbone.Collection.extend({
         var res = this.findWhere({id: id});
         return res ? res.get('value') : '';
     },
+
+    getVerboseName: function(id) {
+        var res = this.findWhere({id: id});
+
+        switch (res.get('value')) {
+            case "taxonomy.taxon":
+                return gt.gettext("Taxon");
+            case "taxonomy.taxonsynonym":
+                return gt.gettext("Taxon synonym");
+
+            default:
+                return res.get('value');
+        }
+    }
 });
 
 module.exports = Collection;

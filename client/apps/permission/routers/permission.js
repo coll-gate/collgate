@@ -36,7 +36,7 @@ var PermissionRouter = Marionette.AppRouter.extend({
         var userCollection = new PermissionUserCollection();
 
         var defaultLayout = new DefaultLayout({});
-        ohgr.mainRegion.show(defaultLayout);
+        application.mainRegion.show(defaultLayout);
 
         defaultLayout.title.show(new TitleView({title: gt.gettext("List of users")}));
 
@@ -49,7 +49,7 @@ var PermissionRouter = Marionette.AppRouter.extend({
         var permissionsCollection = new PermissionCollection([], {name: username})
 
         var defaultLayout = new DefaultLayout({});
-        ohgr.mainRegion.show(defaultLayout);
+        application.mainRegion.show(defaultLayout);
 
         defaultLayout.title.show(new TitleView({title: gt.gettext("List of permissions for user"), object: username}));
 
@@ -66,7 +66,7 @@ var PermissionRouter = Marionette.AppRouter.extend({
         var groupCollection = new PermissionGroupCollection();
 
         var defaultLayout = new DefaultLayout({});
-        ohgr.mainRegion.show(defaultLayout);
+        application.mainRegion.show(defaultLayout);
 
         defaultLayout.title.show(new TitleView({title: gt.gettext("List of groups")}));
 
@@ -83,7 +83,7 @@ var PermissionRouter = Marionette.AppRouter.extend({
         var permissionsCollection = new PermissionCollection([], {name: name, is_group: true})
 
         var defaultLayout = new DefaultLayout({});
-        ohgr.mainRegion.show(defaultLayout);
+        application.mainRegion.show(defaultLayout);
 
         defaultLayout.title.show(new TitleView({title: gt.gettext("List of permissions for group"), object: name}));
 
@@ -100,7 +100,7 @@ var PermissionRouter = Marionette.AppRouter.extend({
         var userCollection = new PermissionGroupUserCollection([], {name: name});
 
         var defaultLayout = new DefaultLayout({});
-        ohgr.mainRegion.show(defaultLayout);
+        application.mainRegion.show(defaultLayout);
 
         defaultLayout.title.show(new TitleView({title: gt.gettext("List of users for group"), object: name}));
 

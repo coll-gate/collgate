@@ -12,8 +12,11 @@ var Marionette = require('backbone.marionette');
 var AuditModel = require('../models/audit');
 
 var View = Marionette.ItemView.extend({
-    tagName: 'div',
-    className: 'element object audit',
+    tagName: 'tr',
+    className: 'object audit',
+    attributes: {
+        'scope': 'row',
+    },
     template: require('../templates/audit.html'),
 
     initialize: function() {
@@ -21,6 +24,7 @@ var View = Marionette.ItemView.extend({
     },
 
     onRender: function() {
+        $(this.el).find("td abbr.datetime").localizeDate(null, session.language);
     },
 });
 
