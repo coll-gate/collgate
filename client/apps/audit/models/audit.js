@@ -20,8 +20,7 @@ var Model = Backbone.Model.extend({
         model: undefined,
         object_id: undefined,
         object_name: '',
-        reason: '',
-        fields: []
+        fields: {}
     },
 
     init: function(options) {

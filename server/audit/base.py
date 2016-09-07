@@ -71,10 +71,17 @@ def search_audit_for_username(request):
     audit_list = []
 
     for audit in audits:
-        try:
-            entity = audit.content_type.get_object_for_this_type(id=audit.object_id)
-        except ObjectDoesNotExist:
-            entity = None
+        fields = json.loads(audit.fields)
+
+        # name in fields, if not query the entity
+        if 'name' in fields:
+            entity_name = fields['name']
+        else:
+            try:
+                entity = audit.content_type.get_object_for_this_type(id=audit.object_id)
+                entity_name = entity.name
+            except ObjectDoesNotExist:
+                entity_name = ""
 
         audit_list.append({
             'id': audit.id,
@@ -84,8 +91,7 @@ def search_audit_for_username(request):
             'type': audit.type,
             'content_type': '.'.join(audit.content_type.natural_key()),
             'object_id': audit.object_id,
-            'object_name': entity.name if entity else "",
-            'reason': audit.reason,
+            'object_name': entity_name,
             'fields': audit.fields
         })
 
@@ -162,8 +168,7 @@ def search_audit_for_entity(request):
             'content_type': '.'.join(audit.content_type.natural_key()),
             'object_id': entity.id,
             'object_name': entity.name,
-            'reason': audit.reason,
-            'fields': audit.fields
+            'fields': json.loads(audit.fields)
         })
 
     # prev cursor (desc order)

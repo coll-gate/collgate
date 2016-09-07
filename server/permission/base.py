@@ -110,7 +110,11 @@ def get_permissions_types(request):
                 break
 
         if add:
-            types.append({'id': pid, 'value': perm.name})
+            types.append({
+                'id': perm.id,
+                'value': pid,
+                'label': perm.name
+            })
 
     return HttpResponseRest(request, types)
 

@@ -14,10 +14,6 @@ var TaxonRankCollection = Backbone.Collection.extend({
     url: application.baseUrl + 'taxonomy/rank/',
     model: TaxonRankModel,
 
-    parse: function(data) {
-        return data;
-    },
-
     findValue: function(id) {
         for (var r in this.models) {
             var rank = this.models[r];
@@ -25,6 +21,14 @@ var TaxonRankCollection = Backbone.Collection.extend({
                 return rank.get('value');
         }
     },
+
+    findLabel: function(value) {
+        for (var r in this.models) {
+            var rank = this.models[r];
+            if (rank.get('value') == value)
+                return rank.get('label');
+        }
+    }
 });
 
 module.exports = TaxonRankCollection;

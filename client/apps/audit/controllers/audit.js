@@ -182,7 +182,7 @@ var Controller = Marionette.Controller.extend({
                 $(this.el).modal();
 
                 application.main.views.contentTypes.drawSelect(this.ui.content_type);
-                application.main.views.contentTypes.htmlFromValue(this.el);
+                //application.main.views.contentTypes.htmlFromValue(this.el);
 
                 $(this.ui.entity).select2({
                     dropdownParent: $(this.el),

@@ -102,6 +102,7 @@ def get_taxon_list(request):
             'id': taxon.pk,
             'name': taxon.name,
             'parent': taxon.parent,
+            'rank': taxon.rank,
             'parent_list': taxon.parent_list.split(','),
             'synonyms': []
         }
@@ -255,6 +256,10 @@ def rank(request):
 
     taxon_ranks = []
     for tl in TaxonRank:
-        taxon_ranks.append({'id': tl.value, 'value': str(tl.label)})
+        taxon_ranks.append({
+            'id': tl.value,
+            'value': tl.value,
+            'label': str(tl.label)
+        })
 
     return HttpResponseRest(request, taxon_ranks)

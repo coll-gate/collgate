@@ -12,10 +12,13 @@
 <!--<td class="datetime" date="<%- timestamp %>"><%- timestamp %></td>-->
 <td><abbr class="datetime" date="<%- timestamp %>" title="<%- timestamp %>"><%- timestamp %></abbr></td>
 <% if (object_name) { %>
-<td object-id="<%- object_id %>"><abbr title="<%- content_type %>"><%= object_name %></abbr></td>
+<td object-id="<%- object_id %>"><abbr title="<%- object_id %>"><%= object_name %></abbr></td>
+<% } else if (typeof(fields.name) !== "undefined") { %>
+<td object-id="<%- object_id %>"><abbr title="<%- object_id %>"><%= fields.name %></abbr></td>
 <% } else { %>
 <td>N/A</td>
 <% } %>
+<td><abbr title="<%- content_type %>"><%- application.main.collections.contentType.findLabel(content_type) %></abbr></td>
 <td>
 <% if (type == 0) { %>
     <abbr title="<%= gt.gettext('Created') %>"><span class="glyphicon glyphicon-plus-sign" style="color: #4cae4c;"></span></abbr>
@@ -31,5 +34,4 @@
     <abbr title="<%= gt.gettext('Unkown') %>"><span class="glyphicon glyphicon-question-sign"></span></abbr>
 <% } %>
 </td>
-<td><%- reason %></td>
-<td><%- fields %></td>
+<td><span class="btn btn-xs btn-primary show-entity">Show</span></td>

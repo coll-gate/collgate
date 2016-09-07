@@ -79,7 +79,7 @@ class AuditManager(models.Manager):
 
         return Audit.objects.filter(user=user, content_type=content_type, object_id=object_id)
 
-    def create_audit(self, user, content_type, object_id, audit_type, reason, fields=[]):
+    def create_audit(self, user, content_type, object_id, audit_type, fields={}):
         """
         Create a new audit entry for a user and an object.
 
@@ -87,7 +87,6 @@ class AuditManager(models.Manager):
         :param content_type: ContentType model or string like "appname.modelname"
         :param object: Valid object identifier
         :param type: One of the models.AuditType integer value
-        :param reason: Cause of the audit operation. Can be a succinct comment or a more detailed message.
         :param fields: A list of modified field name or empty list
         :return:
         """
@@ -104,15 +103,11 @@ class AuditManager(models.Manager):
         if not user or not isinstance(user, User):
             raise SuspiciousOperation(_("Invalid user"))
 
-        if not reason:
-            raise SuspiciousOperation(_("Missing audit reason"))
-
         audit = Audit(
             user=user,
             content_type=content_type,
             object_id=object_id,
             type=audit_type,
-            reason=reason,
             fields=json.dumps(fields))
 
         audit.save()
@@ -165,7 +160,6 @@ class Audit(models.Model):
 
     type = models.IntegerField(null=False, blank=False, choices=AuditType.choices(), default=0)
     timestamp = models.DateTimeField(auto_now_add=True)
-    reason = models.TextField(null=False, blank=False)
     fields = models.TextField(null=False, blank=True)
 
     objects = AuditManager()
@@ -204,32 +198,31 @@ def get_current_request_params():
 @receiver(models.signals.post_save, sender=Entity)
 def entity_post_save(sender, instance, created, **kwargs):
     user, remote_addr = get_current_request_params()
-    update_fields = kwargs.get('update_fields') or []
 
     if created:
-        type = AuditType.CREATE
+        a_type = AuditType.CREATE
 
         if hasattr(sender, 'audit_create'):
-            reason = instance.audit_create(user)
+            fields = instance.audit_create(user)
         else:  # generic
-            reason = "Create %s with id %s" % (sender.__name__, instance.pk)
+            fields = {'name': instance.name, 'descriptors': instance.descriptors}
     elif instance.entity_status == EntityStatus.REMOVED:
-        type = AuditType.REMOVE
+        a_type = AuditType.REMOVE
 
         if hasattr(sender, 'audit_update'):
-            reason = instance.audit_update(user)
+            fields = instance.audit_update(user)
         else:  # generic
-            reason = "Update %s(id=%s)" % (sender.__name__, instance.pk)
+            fields = {'name': instance.name, 'descriptors': instance.descriptors}
     else:
-        type = AuditType.UPDATE
+        a_type = AuditType.UPDATE
 
         if hasattr(sender, 'audit_update'):
-            reason = instance.audit_update(user)
+            fields = instance.audit_update(user)
         else:  # generic
-            reason = "Update %s(id=%s)" % (sender.__name__, instance.pk)
+            fields = {'name': instance.name, 'descriptors': instance.descriptors}
 
     content_type = ContentType.objects.get_for_model(sender)
-    Audit.objects.create_audit(user, content_type, instance.pk, type, reason, update_fields)
+    Audit.objects.create_audit(user, content_type, instance.pk, a_type, fields)
 
 
 @receiver(models.signals.post_delete, sender=Entity)
@@ -237,12 +230,12 @@ def entity_post_delete(sender, instance, **kwargs):
     user, remote_addr = get_current_request_params()
 
     if hasattr(sender, 'audit_delete'):
-        reason = instance.audit_delete(user)
+        fields = instance.audit_delete(user)
     else:
-        reason = "Delete %s(id=%s)" % (sender.__name__, instance.pk)
+        fields = {'name': instance.name, 'descriptors': instance.descriptors}
 
     content_type = ContentType.objects.get_for_model(sender)
-    Audit.objects.create_audit(user, content_type, instance.pk, AuditType.DELETE, reason, [])
+    Audit.objects.create_audit(user, content_type, instance.pk, AuditType.DELETE, fields)
 
 
 @receiver(models.signals.m2m_changed, sender=Entity)
@@ -250,12 +243,12 @@ def entity_m2m_changed(sender, instance, action, reverse, model, **kwargs):
     user, remote_addr = get_current_request_params()
 
     if hasattr(sender, 'audit_m2m'):
-        reason = instance.audit_m2m(user)
+        fields = instance.audit_m2m(user)
     else:
-        reason = "%s %s m2m %s" % (sender.__name__, instance.pk, action)
+        fields = {'name': instance.name, 'descriptors': instance.descriptors}
 
     content_type = ContentType.objects.get_for_model(sender)
-    Audit.objects.create_audit(user, content_type, instance.pk, AuditType.M2M_CHANGE, reason, [])
+    Audit.objects.create_audit(user, content_type, instance.pk, AuditType.M2M_CHANGE, fields)
 
 
 def register_models(app_name):

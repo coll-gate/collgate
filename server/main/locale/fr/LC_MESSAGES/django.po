@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-09-06 17:41+0200\n"
+"POT-Creation-Date: 2016-09-07 17:04+0200\n"
 "PO-Revision-Date: 2016-02-01 11:53+0100\n"
 "Last-Translator: Frederic SCHERMA <frederic.scherma@clermont.inra.fr>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,27 +18,27 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: apps.py:36
+#: apps.py:38
 msgid "Profile"
 msgstr "Profil"
 
-#: apps.py:37
+#: apps.py:39
 msgid "Edit information"
 msgstr "Mise à jour des informations"
 
-#: apps.py:39
+#: apps.py:41
 msgid "Logout"
 msgstr "Se déconnecter"
 
-#: apps.py:43
+#: apps.py:45
 msgid "Help"
 msgstr "Aide"
 
-#: apps.py:45
+#: apps.py:47
 msgid "Manual index"
 msgstr "Index du manuel"
 
-#: apps.py:48
+#: apps.py:50
 msgid "About HOGR..."
 msgstr "A propos d'HOGR..."
 

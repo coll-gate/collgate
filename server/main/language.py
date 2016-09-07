@@ -11,7 +11,7 @@ from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
 
 from .models import Languages
-from .base import RestMain
+from .main import RestMain
 
 
 class RestLanguage(RestMain):
@@ -28,6 +28,10 @@ def language(request):
     languages = []
 
     for language in Languages:
-        languages.append({"id": language.value, "value": str(language.label)})
+        languages.append({
+            'id': language.value,
+            'value': language.value,
+            'label': str(language.label)
+        })
 
     return HttpResponseRest(request, languages)

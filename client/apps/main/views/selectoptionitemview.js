@@ -1,5 +1,5 @@
 /**
- * @file item.js
+ * @file selectoptionitemview.js
  * @brief View for single value based on collection, and for select widgets.
  * @author Frederic SCHERMA
  * @date 2016-05-20
@@ -23,24 +23,39 @@ var SelectOptionItemView = Marionette.ItemView.extend({
         this.collection.on("sync", this.render, this);  // render the template once got
     },
 
+    onBeforeRender: function(e) {
+        console.log(this)
+    },
+
     onRender: function(e) {
     },
 
-    htmlFromValue: function(parent) {
+    htmlFromValue: function(parent, idOrValue) {
         var view = this;
+        idOrValue || (idOrValue = 'value');
 
         if (this.collection.size() > 0) {
             $(parent).find('.' + view.className).each(function (idx, el) {
                 var _el = $(el);
-                var html = view.collection.findValue(_el.attr("value"));
-                _el.html(html);
+                var value = _el.attr("value");
+
+                var model = view.collection.find(function(model) {
+                    return model.get(idOrValue) == value;
+                });
+
+                _el.html(model ? model.get('label') : "");
             });
         } else {
             this.collection.on("sync", function () {
                 $(parent).find('.' + view.className).each(function (idx, el) {
                     var _el = $(el);
-                    var html = view.collection.findValue(_el.attr("value"));
-                    _el.html(html);
+                    var value = _el.attr("value");
+
+                    var model = view.collection.find(function(model) {
+                        return model.get(idOrValue) == value;
+                    });
+
+                    _el.html(model ? model.get('label') : "");
                 });
             }, this);
         }

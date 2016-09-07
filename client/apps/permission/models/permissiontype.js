@@ -9,8 +9,13 @@
  */
 
 module.exports = Backbone.Model.extend({
+    url: application.baseUrl + 'permission/type/:id',
+
     defaults: function() {
-        return {id: '', value: ''}
-    },
-    url: application.baseUrl + 'permission/type/:id'
+        return {
+            id: 0,
+            value: '',
+            name: ''
+        }
+    }
 });

@@ -28,6 +28,10 @@ def synonym_type(request):
     synonym_types = []
 
     for st in TaxonSynonymType:
-        synonym_types.append({"id": st.value, "value": str(st.label)})
+        synonym_types.append({
+            'id': st.value,
+            'value': st.value,
+            'label': str(st.label)
+        })
 
     return HttpResponseRest(request, synonym_types)

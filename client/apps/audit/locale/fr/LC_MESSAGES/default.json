@@ -4,15 +4,17 @@
     "List of audit entries related to user": "Liste des entrées d'audits pour l'utilisateur",
     "Select an entity UUID or name": "Sélectionnez une entité par son UUID ou son nom",
     "List of audit entries related to entity": "Liste des entrées d'audits pour l'entité",
-    "Audit": "Audit",
-    "User": "Utilisateur",
-    "Reason": "Raison",
-    "Fields": "Champs",
     "Get audits entries for an entity": "Récupérer les entrées d'audits pour une entité",
     "Entity content type": "Type entité",
     "Entity UUID or name": "UUID ou nom de l'entité",
     "Cancel": "Annuler",
     "Search": "Chercher",
     "Get audits entries for a user": "Récupérer les entrées d'audits pour un utilisateur",
-    "Username": "Nom d'utilisateur"
+    "Username": "Nom d'utilisateur",
+    "User": "Utilisateur",
+    "Date": "Date",
+    "Entity": "Entité",
+    "Type": "",
+    "Action": "",
+    "Details": ""
 }

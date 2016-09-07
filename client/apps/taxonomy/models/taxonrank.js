@@ -9,8 +9,13 @@
  */
 
 module.exports = Backbone.Model.extend({
+    url: application.baseUrl + 'taxonomy/rank/:id',
+
     defaults: function() {
-        return {id: '', value: ''}
-    },
-    url: application.baseUrl + 'taxonomy/rank/:id'
+        return {
+            id: 0,
+            value: 0,
+            label: ''
+        }
+    }
 });

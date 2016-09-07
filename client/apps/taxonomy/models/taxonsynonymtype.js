@@ -12,6 +12,10 @@ module.exports = Backbone.Model.extend({
     url: application.baseUrl + 'taxonomy/taxon-synonym-type/:id',
 
     defaults: function() {
-        return {id: '', value: ''}
+        return {
+            id: 0,
+            value: 0,
+            label: ''
+        }
     },
 });

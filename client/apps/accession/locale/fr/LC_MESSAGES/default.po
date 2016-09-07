@@ -82,27 +82,3 @@ msgstr "Id"
 #: ../../../templates/descriptorvaluelist.html:17
 msgid "Value"
 msgstr "Valeur"
-
-#~ msgid "taxonomy.accession"
-#~ msgstr "Accession"
-
-#~ msgid "taxonomy.accessionsynonym"
-#~ msgstr "Synonyme d'accession"
-
-#~ msgid "taxonomy.batch"
-#~ msgstr "Lot"
-
-#~ msgid "taxonomy.sample"
-#~ msgstr "Sample"
-
-#~ msgid "taxonomy.asset"
-#~ msgstr "Panel"
-
-#~ msgid "taxonomy.descriptorgroup"
-#~ msgstr "Group de type de descripteur"
-
-#~ msgid "taxonomy.descriptortype"
-#~ msgstr "Type de descripteur"
-
-#~ msgid "taxonomy.descriptorvalue"
-#~ msgstr "Valeur de descripteur"

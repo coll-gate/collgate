@@ -39,7 +39,7 @@ msgstr "Détails du taxon"
 
 #: ../../../controllers/taxon.js:100
 msgid "Enter a taxon name. 3 characters at least for auto-completion"
-msgstr ""
+msgstr "Saisissez un nom de taxon. 3 caractères minimum pour l'auto-complétion"
 
 #: ../../../controllers/taxon.js:249
 msgid "Family rank cannot have a parent taxon"
@@ -92,9 +92,3 @@ msgstr "Annuler"
 #: ../../../templates/taxoncreate.html:26
 msgid "Create"
 msgstr "Créer"
-
-#~ msgid "taxonomy.taxon"
-#~ msgstr "Taxon"
-
-#~ msgid "taxonomy.taxonsynonym"
-#~ msgstr "Synonyme de taxon"

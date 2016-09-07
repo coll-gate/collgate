@@ -19,6 +19,14 @@ var View = Marionette.ItemView.extend({
     },
     template: require('../templates/audit.html'),
 
+    ui: {
+        show: 'span.show-entity',
+    },
+
+    events: {
+        'click @ui.show': 'showEntity',
+    },
+
     initialize: function() {
         this.listenTo(this.model, 'reset', this.render, this);
     },
@@ -26,6 +34,10 @@ var View = Marionette.ItemView.extend({
     onRender: function() {
         $(this.el).find("td abbr.datetime").localizeDate(null, session.language);
     },
+
+    showEntity: function () {
+        alert();
+    }
 });
 
 module.exports = View;

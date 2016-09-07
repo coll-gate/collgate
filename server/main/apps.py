@@ -26,6 +26,8 @@ class CollGateMain(ApplicationMain):
         main_module.include_urls((
             'base',
             'home',
+            'contenttype',
+            'entity',
             'profile',
             'language',
             'help'

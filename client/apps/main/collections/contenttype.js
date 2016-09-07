@@ -14,21 +14,27 @@ var Collection = Backbone.Collection.extend({
     url: application.baseUrl + 'main/content-type',
     model: ContentTypeModel,
 
-    parse: function(data) {
+    toJSON: function() {
         var result = [];
         var prev = "";
         var group = {};
 
-        for (var i = 0; i < data.length; ++i) {
-            var id = data[i].id.split('.');
+        for (var i = 0; i < this.models.length; ++i) {
+            var model = this.models[i];
+            var value = model.get('value').split('.');
 
-            if (id[0] != prev) {
-                group = {value: id[0], options: []};
+            if (value[0] != prev) {
+                group = {id: -1, value: value[0], label: value[0], options: []};
                 result.push(group);
             }
 
-            group.options.push({id: data[i].id, value: data[i].value});
-            prev = id[0];
+            group.options.push({
+                id: model.get('id'),
+                value: model.get('value'),
+                label: model.get('label')
+            });
+
+            prev = value[0];
         }
 
         return result;
@@ -41,18 +47,9 @@ var Collection = Backbone.Collection.extend({
         return res ? res.get('value') : '';
     },
 
-    getVerboseName: function(id) {
-        var res = this.findWhere({id: id});
-
-        switch (res.get('value')) {
-            case "taxonomy.taxon":
-                return gt.gettext("Taxon");
-            case "taxonomy.taxonsynonym":
-                return gt.gettext("Taxon synonym");
-
-            default:
-                return res.get('value');
-        }
+    findLabel: function(value) {
+        var res = this.findWhere({value: value});
+        return res ? res.get('label') : '';
     }
 });
 

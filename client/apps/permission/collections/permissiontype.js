@@ -14,39 +14,52 @@ var Collection = Backbone.Collection.extend({
     url: application.baseUrl + 'permission/type/',
     model: PermissionTypeModel,
 
-    parse: function(data) {
+    toJSON: function() {
         var result = [];
         var prev = "";
         var group = {};
 
-        for (var i = 0; i < data.length; ++i) {
-            var id = data[i].id.split('.');
-            var f = id[0] + '.' + id[1];
+        for (var i = 0; i < this.models.length; ++i) {
+            var model = this.models[i];
+            var value = model.get('value').split('.');
+            var f = value[0] + '.' + value[1];
 
             if (f != prev) {
-                group = {value: f, options: []};
+                group = {id: -1, value: "", label: f, options: []};
                 result.push(group);
             }
 
-            group.options.push(data[i]);
+            group.options.push({
+                id: model.get('id'),
+                value: model.get('value'),
+                label: model.get('label')
+            });
+
             prev = f;
         }
 
         return result;
     },
 
-    default: [
-    ],
-
     findValue: function(id) {
-        var res = this.findWhere({id: id});
-        return res ? res.get('value') : '';
-        /*for (var r in this.models) {
+        for (var r in this.models) {
             var m = this.models[r];
             if (m.get('id') == id)
                 return m.get('value');
-        }*/
+        }
+        // var res = this.findWhere({id: id});
+        // return res ? res.get('value') : '';
     },
+
+    findLabel: function(value) {
+        for (var r in this.models) {
+            var m = this.models[r];
+            if (m.get('value') == value)
+                return m.get('label');
+        }
+        // var res = this.findWhere({id: id});
+        // return res ? res.get('label') : '';
+    }
 });
 
 module.exports = Collection;

@@ -19,17 +19,17 @@ var LanguageCollection = Backbone.Collection.extend({
     },
 
     default: [
-        {value: 'en', name: gt.gettext("English")},
-        {value: 'fr', name: gt.gettext("French")},
+        {id: 'en', value: 'en', label: gt.gettext("English")},
+        {id: 'fr', value: 'fr', label: gt.gettext("French")},
     ],
 
-    findValue: function(id) {
-        var res = this.findWhere({id: id});
-        return res ? res.get('value') : '';
+    findLabel: function(value) {
+        var res = this.findWhere({value: value});
+        return res ? res.get('label') : '';
         /*for (var r in this.models) {
             var m = this.models[r];
-            if (m.get('id') == id)
-                return m.get('value');
+            if (m.get('value') == value)
+                return m.get('label');
         }*/
     },
 });

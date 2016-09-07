@@ -14,13 +14,6 @@ var Collection = Backbone.Collection.extend({
     url: application.baseUrl + 'taxonomy/taxon-synonym-type/',
     model: TaxonSynonymTypeModel,
 
-    parse: function(data) {
-        return data;
-    },
-
-    default: [
-    ],
-    
     findValue: function(id) {
         for (var r in this.models) {
             var m = this.models[r];
@@ -28,6 +21,14 @@ var Collection = Backbone.Collection.extend({
                 return m.get('value');
         }
     },
+
+    findLabel: function(value) {
+        for (var r in this.models) {
+            var m = this.models[r];
+            if (m.get('value') == value)
+                return m.get('label');
+        }
+    }
 });
 
 module.exports = Collection;

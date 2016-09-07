@@ -53,10 +53,10 @@ class TaxonSynonym(Entity):
     taxon = models.ForeignKey(Taxon, null=False, related_name='synonyms')
 
     def audit_create(self, user):
-        return "Create TaxonSynonym %s for taxon(id=%s)" % (self.name, self.taxon.pk)
+        return {'name': self.name, 'taxon_id': self.taxon.pk}
 
     def audit_delete(self, user):
-        return "Delete TaxonSynonym %s for taxon(id=%s)" % (self.name, self.taxon.pk)
+        return {'name': self.name, 'taxon_id': self.taxon.pk}
 
     class Meta:
         verbose_name = _("taxon synonym")

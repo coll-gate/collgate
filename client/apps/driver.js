@@ -43,44 +43,6 @@ application = new Marionette.Application({
         // create a global default logger
         session.logger = Logger.get('default');
 
-        // // capture error on models
-        // var ErrorHandlingModel = Backbone.Model.extend({
-        //     initialize: function(attributes, options) {
-        //         options || (options = {});
-        //         this.bind("error", this.defaultErrorHandler);
-        //         this.init && this.init(attributes, options);
-        //     },
-        //
-        //     defaultErrorHandler: function(model, error) {
-        //         var data = JSON.parse(xhr.responseText);
-        //         if ((xhr.status >= 401 && xhr.status <= 599) && data.cause) {
-        //             error(gettext(data.cause));
-        //         }
-        //     }
-        // });
-        //
-        // // and set as default Model class
-        // Backbone.Model = ErrorHandlingModel;
-        //
-        // // capture error on collections
-        // var ErrorHandlingCollection = Backbone.Collection.extend({
-        //     initialize: function(attributes, options) {
-        //         options || (options = {});
-        //         this.bind("error", this.defaultErrorHandler);
-        //         this.init && this.init(attributes, options);
-        //     },
-        //
-        //     defaultErrorHandler: function(model, xhr) {
-        //         var data = JSON.parse(xhr.responseText);
-        //         if ((xhr.status >= 401 && xhr.status <= 599) && data.cause) {
-        //             error(gettext(data.cause));
-        //         }
-        //     }
-        // });
-        //
-        // // and set as default Collection class
-        // Backbone.Collection = ErrorHandlingCollection;
-
         // capture most of HTTP error and display an alert message
         Backbone.originalSync = Backbone.sync;
         Backbone.sync = function (method, model, opts) {
@@ -112,6 +74,11 @@ application = new Marionette.Application({
                 if (xhr.status === 200 && xhr.responseText === "") {
                     alert("!! this should not arrives, please contact your administrator !!");
                     dfd.resolve.apply(xhr, arguments);
+                } else if (xhr.status === 401) {
+                    dfd.reject.apply(xhr, arguments);
+
+                    // fallback to home page to force user to log
+                    Backbone.history.navigate('/home/', {trigger: true});
                 } else {
                     var data = JSON.parse(xhr.responseText);
                     //if ((xhr.status >= 400 && xhr.status <= 599) && data && (typeof(data.cause) === "string")) {

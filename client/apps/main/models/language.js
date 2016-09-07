@@ -10,7 +10,11 @@
 
 module.exports = Backbone.Model.extend({
     defaults: function() {
-        return {id: '', value: ''}
+        return {
+            id: 0,
+            value: '',
+            label: ''
+        }
     },
     url: application.baseUrl + 'main/language/:id'
 });
