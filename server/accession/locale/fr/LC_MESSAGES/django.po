@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-09-07 17:04+0200\n"
+"POT-Creation-Date: 2016-09-07 18:22+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,8 +27,6 @@ msgid "Create accession"
 msgstr "Créer une accession"
 
 #: apps.py:42
-#, fuzzy
-#| msgid "Create accession"
 msgid "Create batch"
 msgstr "Créer une accession"
 
@@ -48,38 +46,46 @@ msgstr "Vous n'êtes pas autorisé à créer une accession"
 msgid "You are not allowed to list the accessions"
 msgstr "Vous n'êtes pas autorisé à lister les accessions"
 
+#: models.py:30
+msgid "descriptor group"
+msgstr "groupe de descripteur"
+
+#: models.py:66
+msgid "descriptor type"
+msgstr "type de descripteur"
+
 #: models.py:84
+msgid "descriptor value"
+msgstr "valeur de descripteur"
+
+#: models.py:93
 msgid "Primary"
 msgstr "Primaire"
 
-#: models.py:85
+#: models.py:94
 msgid "Synonym"
 msgstr "Synonyme"
 
-#: models.py:86
+#: models.py:95
 msgid "Code"
 msgstr "Code"
 
-#: models.py:100
-#, fuzzy
-#| msgid "List accessions"
+#: models.py:109
 msgid "accession synonym"
 msgstr "synonym d'accession"
 
-#: models.py:111
+#: models.py:120
 msgid "panel"
 msgstr "collection"
 
-#: models.py:122
-#, fuzzy
-#| msgid "Accession"
+#: models.py:131
 msgid "accession"
 msgstr "accession"
 
-#: models.py:135
+#: models.py:144
 msgid "batch"
 msgstr "lot"
 
-#: models.py:149
+#: models.py:158
 msgid "sample"
 msgstr "échantillon"

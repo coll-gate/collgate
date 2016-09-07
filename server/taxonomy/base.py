@@ -5,6 +5,7 @@
 """
 coll-gate taxonomy base rest handler.
 """
+from django.utils.translation import ugettext
 from igdectk.rest.handler import *
 
 

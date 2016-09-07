@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-09-07 17:04+0200\n"
+"POT-Creation-Date: 2016-09-07 18:22+0200\n"
 "PO-Revision-Date:  2016-02-03 11:38+0100\n"
 "Last-Translator: Frederic SCHERMA <frederic.scherma@clermont.inra.fr>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -47,10 +47,8 @@ msgid "Primary"
 msgstr "Primaire"
 
 #: models.py:23
-#, fuzzy
-#| msgid "Synonym type"
 msgid "Synonym"
-msgstr "Type de synonyme"
+msgstr "Synonyme"
 
 #: models.py:24
 msgid "Code"
@@ -81,16 +79,12 @@ msgid "Sub-specie"
 msgstr "Sous-espèce"
 
 #: models.py:45
-#, fuzzy
-#| msgid "List taxons"
 msgid "taxon"
-msgstr "Liste des taxinomies"
+msgstr "taxon"
 
 #: models.py:62
-#, fuzzy
-#| msgid "Synonym type"
 msgid "taxon synonym"
-msgstr "Type de synonyme"
+msgstr "synonyme de taxon"
 
 #: taxon.py:49
 msgid "You are not allowed to create a taxon"
@@ -101,55 +95,9 @@ msgid "You are not allowed to modify a taxon"
 msgstr "Vous n'êtes pas autorisé à modifier un taxon"
 
 #: taxon.py:211
-#, fuzzy
-#| msgid "You are not allowed to create a taxon"
 msgid "You are not allowed to add a synonym to a taxon"
 msgstr "Vous n'êtes pas autorisé à créer un taxon"
 
 #: taxon.py:233
-#, fuzzy
-#| msgid "You are not allowed to create a taxon"
 msgid "You are not allowed to delete a synonym from a taxon"
 msgstr "Vous n'êtes pas autorisé à créer un taxon"
-
-#~ msgid "Creation of a new taxon"
-#~ msgstr "Créer une taxinomie"
-
-#~ msgid "Submit"
-#~ msgstr "Soumettre"
-
-#~ msgid "Invalid characters (alphanumeric, _ and - only)"
-#~ msgstr "Caractères invalides (alphanumérique, _ et - seulement)"
-
-#~ msgid "Create taxonomy"
-#~ msgstr "Créer une taxinomie"
-
-#~ msgid "Detail of a taxon"
-#~ msgstr "Créer une taxinomie"
-
-#~ msgid "Type"
-#~ msgstr "Type"
-
-#~ msgid "Name"
-#~ msgstr "Nom"
-
-#~ msgid "Language"
-#~ msgstr "Langage"
-
-#~ msgid "Unable to add the synonym"
-#~ msgstr "Impossible de rajouter le synonyme"
-
-#~ msgid "Unable to remove the synonym"
-#~ msgstr "Impossible de supprimer le synonyme"
-
-#~ msgid "Taxon details"
-#~ msgstr "Détails du taxon"
-
-#~ msgid "Taxonomy level"
-#~ msgstr "Niveau taxinomique"
-
-#~ msgid "None"
-#~ msgstr "Aucun"
-
-#~ msgid "Parent"
-#~ msgstr "Parent"

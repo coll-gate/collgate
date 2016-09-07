@@ -39,7 +39,7 @@ msgstr "Nom de type de descriptor déjà utilisé"
 
 #: ../../../views/descriptortypedetail.js:200
 msgid "1 character min"
-msgstr ""
+msgstr "1 caractère minimum"
 
 #: ../../../routers/descriptor.js:49
 msgid "List of groups of descriptors"

@@ -7,6 +7,7 @@ Rest handlers.
 """
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import SuspiciousOperation
+from django.utils.translation import ugettext_lazy
 
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
@@ -39,8 +40,8 @@ def get_contents_types(request):
     types = []
     add = False
     for content_type in ContentType.objects.all():
-        value = "%s.%s" % (content_type.app_label, content_type.model)
-        label = content_type.name.title()
+        value = "%s.%s" % content_type.natural_key()
+        label = ugettext_lazy(content_type.model_class()._meta.verbose_name).capitalize()
         add = True
         for ignore_pattern in ignore_list:
             if value.startswith(ignore_pattern):

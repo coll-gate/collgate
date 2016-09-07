@@ -26,6 +26,9 @@ class DescriptorGroup(Entity):
     # by an authorized staff people
     can_modify = models.BooleanField(default=True)
 
+    class Meta:
+        verbose_name = _("descriptor group")
+
 
 class DescriptorType(Entity):
     """
@@ -59,6 +62,9 @@ class DescriptorType(Entity):
     # by an authorised staff people
     can_modify = models.BooleanField(default=True)
 
+    class Meta:
+        verbose_name = _("descriptor type")
+
 
 class DescriptorValue(Entity):
     """
@@ -73,6 +79,9 @@ class DescriptorValue(Entity):
 
     # JSON encoded single value or object
     value = models.CharField(max_length=512, blank=False, null=False)
+
+    class Meta:
+        verbose_name = _("descriptor value")
 
 
 class AccessionSynonymType(ChoiceEnum):

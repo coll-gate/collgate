@@ -45,8 +45,3 @@ msgstr "Accueil"
 msgid "Welcome to Coll-Gate"
 msgstr "Bienvenue sur Coll-Gate"
 
-#~ msgid "Taxon"
-#~ msgstr "Taxon"
-
-#~ msgid "Taxon synonym"
-#~ msgstr "Synonym de taxon"
