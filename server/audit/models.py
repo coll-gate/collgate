@@ -204,22 +204,28 @@ def entity_post_save(sender, instance, created, **kwargs):
 
         if hasattr(sender, 'audit_create'):
             fields = instance.audit_create(user)
-        else:  # generic
+        elif hasattr(instance, 'descriptors'):
             fields = {'name': instance.name, 'descriptors': instance.descriptors}
+        else:  # generic
+            fields = {'name': instance.name}
     elif instance.entity_status == EntityStatus.REMOVED:
         a_type = AuditType.REMOVE
 
         if hasattr(sender, 'audit_update'):
             fields = instance.audit_update(user)
-        else:  # generic
+        elif hasattr(instance, 'descriptors'):
             fields = {'name': instance.name, 'descriptors': instance.descriptors}
+        else:  # generic
+            fields = {'name': instance.name}
     else:
         a_type = AuditType.UPDATE
 
         if hasattr(sender, 'audit_update'):
             fields = instance.audit_update(user)
-        else:  # generic
+        elif hasattr(instance, 'descriptors'):
             fields = {'name': instance.name, 'descriptors': instance.descriptors}
+        else:  # generic
+            fields = {'name': instance.name}
 
     content_type = ContentType.objects.get_for_model(sender)
     Audit.objects.create_audit(user, content_type, instance.pk, a_type, fields)
@@ -231,8 +237,10 @@ def entity_post_delete(sender, instance, **kwargs):
 
     if hasattr(sender, 'audit_delete'):
         fields = instance.audit_delete(user)
-    else:
+    elif hasattr(instance, 'descriptors'):
         fields = {'name': instance.name, 'descriptors': instance.descriptors}
+    else:  # generic
+        fields = {'name': instance.name}
 
     content_type = ContentType.objects.get_for_model(sender)
     Audit.objects.create_audit(user, content_type, instance.pk, AuditType.DELETE, fields)
@@ -244,8 +252,10 @@ def entity_m2m_changed(sender, instance, action, reverse, model, **kwargs):
 
     if hasattr(sender, 'audit_m2m'):
         fields = instance.audit_m2m(user)
-    else:
+    elif hasattr(instance, 'descriptors'):
         fields = {'name': instance.name, 'descriptors': instance.descriptors}
+    else:  # generic
+        fields = {'name': instance.name}
 
     content_type = ContentType.objects.get_for_model(sender)
     Audit.objects.create_audit(user, content_type, instance.pk, AuditType.M2M_CHANGE, fields)
@@ -258,3 +268,12 @@ def register_models(app_name):
         models.signals.post_save.connect(entity_post_save, sender=model)
         models.signals.post_delete.connect(entity_post_delete, sender=model)
         models.signals.m2m_changed.connect(entity_m2m_changed, sender=model)
+
+
+def unregister_models(app_name):
+    content_types = ContentType.objects.filter(app_label=app_name)
+    for content_type in content_types:
+        model = content_type.model_class()
+        models.signals.post_save.disconnect(entity_post_save, sender=model)
+        models.signals.post_delete.disconnect(entity_post_delete, sender=model)
+        models.signals.m2m_changed.disconnect(entity_m2m_changed, sender=model)

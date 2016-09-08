@@ -1,11 +1,24 @@
 {
-  "ID_001:0000001": {
-    "name": "Primary"
+  "en": {
+    "ID_001:0000001": {
+      "name": "Primary"
+    },
+    "ID_001:0000002": {
+      "name": "Synonym"
+    },
+    "ID_001:0000003": {
+      "name": "Code"
+    }
   },
-  "ID_001:0000002": {
-    "name": "Synonym"
-  },
-  "ID_001:0000003": {
-    "name": "Code"
+  "fr": {
+    "ID_001:0000001": {
+      "name": "Primaire"
+    },
+    "ID_001:0000002": {
+      "name": "Synonyme"
+    },
+    "ID_001:0000003": {
+      "name": "Code"
+    }
   }
 }

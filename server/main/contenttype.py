@@ -41,7 +41,7 @@ def get_contents_types(request):
     add = False
     for content_type in ContentType.objects.all():
         value = "%s.%s" % content_type.natural_key()
-        label = ugettext_lazy(content_type.model_class()._meta.verbose_name).capitalize()
+        label = content_type.model_class()._meta.verbose_name.capitalize()
         add = True
         for ignore_pattern in ignore_list:
             if value.startswith(ignore_pattern):

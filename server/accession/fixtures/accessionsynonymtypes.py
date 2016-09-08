@@ -23,10 +23,15 @@ def fixture():
     results = {}
 
     # curate data
-    for code, type in data.items():
-        results[code] = {
-            'name': type['name']
-        }
+    for lang, subdata in data.items():
+        types = {}
+
+        for code, type in subdata.items():
+            types[code] = {
+                'name': type['name']
+            }
+
+        results[lang] = types
 
     if descriptor is not None and results is not None:
         DescriptorType.objects.filter(name=descriptor['name']).update(values=json.dumps(results))

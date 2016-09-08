@@ -7,16 +7,17 @@ coll-gate accession module, descriptor API
 """
 import json
 
+from django.core.exceptions import SuspiciousOperation
 from django.shortcuts import get_object_or_404
+from django.utils import translation
+from django.utils.translation import ugettext_lazy as _
 
 from igdectk.common.helpers import int_arg
 from igdectk.rest import Format, Method
 from igdectk.rest.response import HttpResponseRest
 
-from main.models import Languages
-
 from .base import RestAccession
-from .models import DescriptorType, DescriptorGroup, DescriptorValue
+from .models import DescriptorType, DescriptorGroup
 
 
 class RestDescriptor(RestAccession):
@@ -89,12 +90,15 @@ def get_descriptor_groups(request):
     return HttpResponseRest(request, response)
 
 
-@RestDescriptorGroup.def_auth_request(Method.POST, Format.JSON, content={
+@RestDescriptorGroup.def_auth_request(
+    Method.POST, Format.JSON, content={
         "type": "object",
         "properties": {
             "name": {"type": "string", 'minLength': 3, 'maxLength': 32}
         },
-    },  # perms={'accession.add_descriptorgroup': _('You are not allowed to create a group of descriptor')}
+    },
+    # perms={'accession.add_descriptorgroup': _('You are not allowed to create a group of descriptor')},
+    staff=True
 )
 def create_descriptor_group(request):
     group_params = request.data
@@ -119,18 +123,24 @@ def create_descriptor_group(request):
     Method.DELETE, Format.JSON,
     perms={
         #  'accession.delete_descriptorgroup': _("You are not allowed to delete a group of descriptor"),
-    }
+    },
+    staff=True
 )
 def delete_descriptor_group(request, id):
     group_id = int_arg(id)
     group = get_object_or_404(DescriptorGroup, id=group_id)
+
+    if group.types_set.count() > 0:
+        raise SuspiciousOperation(_("Only an empty group of descriptors can be deleted"))
 
     group.delete()
 
     return HttpResponseRest(request, {})
 
 
-@RestDescriptorGroupSearch.def_auth_request(Method.GET, Format.JSON, ('filters',))
+@RestDescriptorGroupSearch.def_auth_request(
+    Method.GET, Format.JSON, ('filters',),
+    staff=True)
 def search_descriptor_groups(request):
     filters = json.loads(request.GET['filters'])
     page = int_arg(request.GET.get('page', 1))
@@ -191,11 +201,7 @@ def get_descriptor_types_for_group(request, id):
 
     types_list = []
     for descr_type in types:
-        if descr_type.values:
-            values = json.loads(descr_type.values)
-            count = len(values)
-        else:
-            count = descr_type.values_set.all().count()
+        count = descr_type.count_num_values()
 
         t = {
             'id': descr_type.pk,
@@ -220,7 +226,9 @@ def get_descriptor_types_for_group(request, id):
     return HttpResponseRest(request, response)
 
 
-@RestDescriptorGroupIdTypeSearch.def_auth_request(Method.GET, Format.JSON, ('filters',))
+@RestDescriptorGroupIdTypeSearch.def_auth_request(
+    Method.GET, Format.JSON, ('filters',),
+    staff=True)
 def search_descriptor_types_for_group(request, id):
     filters = json.loads(request.GET['filters'])
     page = int_arg(request.GET.get('page', 1))
@@ -239,11 +247,7 @@ def search_descriptor_types_for_group(request, id):
 
     if descr_types:
         for descr_type in descr_types:
-            if descr_type.values:
-                values = json.loads(descr_type.values)
-                count = len(values)
-            else:
-                count = descr_type.values_set.all().count()
+            count = descr_type.count_num_values()
 
             descr_types_list.append({
                 'id': descr_type.id,
@@ -272,11 +276,7 @@ def get_descriptor_type_for_group(request, id, tid):
     group = get_object_or_404(DescriptorGroup, id=group_id)
     descr_type = get_object_or_404(DescriptorType, id=type_id)
 
-    if descr_type.values:
-        values = json.loads(descr_type.values)
-        count = len(values)
-    else:
-        count = descr_type.values_set.all().count()
+    count = descr_type.count_num_values()
 
     response = {
         'id': descr_type.id,
@@ -293,12 +293,15 @@ def get_descriptor_type_for_group(request, id, tid):
     return HttpResponseRest(request, response)
 
 
-@RestDescriptorGroupIdType.def_auth_request(Method.POST, Format.JSON, content={
+@RestDescriptorGroupIdType.def_auth_request(
+    Method.POST, Format.JSON, content={
         "type": "object",
         "properties": {
             "name": {"type": "string", 'minLength': 3, 'maxLength': 32}
         },
-    },  # perms={'accession.add_descriptortype': _('You are not allowed to create a type of descriptor')}
+    },
+    # perms={'accession.add_descriptortype': _('You are not allowed to create a type of descriptor')},
+    staff=True
 )
 def create_descriptor_type(request, id):
     descr_type_params = request.data
@@ -339,7 +342,8 @@ def create_descriptor_type(request, id):
     Method.DELETE, Format.JSON,
     perms={
         #  'accession.delete_descriptortype': _("You are not allowed to delete a type of descriptor"),
-    }
+    },
+    staff=True
 )
 def delete_descriptor_group(request, id, tid):
     group_id = int_arg(id)
@@ -348,12 +352,16 @@ def delete_descriptor_group(request, id, tid):
     descr_type_id = int_arg(tid)
     descr_type = get_object_or_404(DescriptorType, id=descr_type_id, group=group)
 
+    if descr_type.has_values():
+        raise SuspiciousOperation(_("Only an empty of values type of descriptors can be deleted"))
+
     descr_type.delete()
 
     return HttpResponseRest(request, {})
 
 
-@RestDescriptorGroupIdTypeId.def_auth_request(Method.PUT, Format.JSON, content={
+@RestDescriptorGroupIdTypeId.def_auth_request(
+    Method.PUT, Format.JSON, content={
         "type": "object",
         "properties": {
             "name": {"type": "string", 'minLength': 3, 'maxLength': 32},
@@ -364,7 +372,9 @@ def delete_descriptor_group(request, id, tid):
                 }
             },
         },
-    },  # perms={'accession.change_descriptortype': _('You are not allowed to modify a type of descriptor')}
+    },
+    # perms={'accession.change_descriptortype': _('You are not allowed to modify a type of descriptor')},
+    staff=True
 )
 def update_descriptor_type(request, id, tid):
     descr_type_params = request.data
@@ -379,13 +389,7 @@ def update_descriptor_type(request, id, tid):
     descr_type.name = descr_type_params['name']
     descr_type.format = json.dumps(descr_type_params['format'])
 
-    # internally stored values
-    if descr_type.values:
-        values = json.loads(descr_type.values)
-        count = len(values)
-    else:
-        # values in the value table
-        count = descr_type.values_set.all().count()
+    count = descr_type.count_num_values()
 
     descr_type.save()
 
@@ -405,6 +409,13 @@ def update_descriptor_type(request, id, tid):
 
 @RestDescriptorGroupIdTypeIdValue.def_auth_request(Method.GET, Format.JSON)
 def get_descriptor_values_for_type(request, id, tid):
+    """
+    Get the list of values for a given group and type of descriptor and according to the current language.
+
+    :param id: Descriptor group id
+    :param tid: Descriptor type id
+    """
+
     results_per_page = 30
     page = int_arg(request.GET.get('page', 1))
     offset = (page-1) * results_per_page
@@ -417,10 +428,23 @@ def get_descriptor_values_for_type(request, id, tid):
     group = get_object_or_404(DescriptorGroup, id=group_id)
     descr_type = get_object_or_404(DescriptorType, id=type_id, group=group)
 
+    lang = translation.get_language()
+    format = json.loads(descr_type.format)
+    trans = format.get('trans', False)
+
     # internally stored values
     if descr_type.values:
-        values = json.loads(descr_type.values)
-        count = len(values)
+        if trans:
+            pre_values = json.loads(descr_type.values)
+            if lang in pre_values:
+                values = pre_values[lang]
+                count = len(values)
+            else:
+                values = {}
+                count = 0
+        else:
+            values = json.loads(descr_type.values)
+            count = len(values)
 
         values_list = []
         for k, v in values.items():
@@ -440,6 +464,7 @@ def get_descriptor_values_for_type(request, id, tid):
         values = qs[offset:limit]
         count = qs.count()
 
+        # TODO query with i18n
         # TODO see for ordering, because if we have json field...
         # maybe could we use hstore ?
         # or a value field plus an informational field about value type

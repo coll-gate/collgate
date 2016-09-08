@@ -5,9 +5,11 @@
 """
 coll-gate accession module models.
 """
+import json
 
 from django.db import models
 from django.contrib.postgres.fields import HStoreField
+from django.utils import translation
 from django.utils.translation import ugettext_lazy as _
 
 from igdectk.common.models import ChoiceEnum, IntegerChoice
@@ -47,12 +49,13 @@ class DescriptorType(Entity):
     # informative description.
     description = models.TextField()
 
-    # JSON encoded values (mostly a dict or empty)
+    # JSON encoded values (mostly a dict or empty). Value are classified by language at the first
+    # level of JSON dict.
     values = models.TextField(default="", null=False)
 
     # JSON encoded format of the descriptor
     format = models.TextField(
-        default='{"type": "string", "unit": "custom", "precision": "0.0", "fields": []}',
+        default='{"type": "string", "unit": "custom", "precision": "0.0", "fields": [], "trans": false}',
         null=False,
         blank=False)
 
@@ -62,14 +65,63 @@ class DescriptorType(Entity):
     # by an authorised staff people
     can_modify = models.BooleanField(default=True)
 
+    def count_num_values(self):
+        """
+        Counts and returns the number of values related to this descriptor according to the current language
+        if there is translations otherwise the number of values.
+
+        :return: Number of values
+        :rtype: Integer
+        """
+        descriptor_format = json.loads(self.format)
+        lang = translation.get_language()
+        trans = descriptor_format.get('trans', False)
+
+        if self.values:
+            values = json.loads(self.values)
+
+            if trans:
+                count = len(values.get(lang, {}))
+            else:
+                count = len(values)
+        else:
+            if trans:
+                count = self.values_set.filter(language=lang).count()
+            else:
+                count = self.values_set.all().count()
+
+        return count
+
     class Meta:
         verbose_name = _("descriptor type")
+
+    def has_values(self):
+        """
+        Check if there is some values for this descriptor for any languages
+
+        :return: True if there is somes values
+        :rtype: Boolean
+        """
+        if self.values:
+            values = json.loads(self.values)
+
+            return len(values) == 0
+        else:
+            return self.values_set.all().exists()
 
 
 class DescriptorValue(Entity):
     """
     For some descriptors value are in a specific table.
     """
+
+    # A value is dedicated for a descriptor and an language
+    language = models.CharField(
+        null=False,
+        blank=False,
+        max_length=8,
+        choices=Languages.choices(),
+        default=Languages.EN.value)
 
     descriptor = models.ForeignKey(DescriptorType, null=False, related_name='values_set')
 
@@ -82,6 +134,10 @@ class DescriptorValue(Entity):
 
     class Meta:
         verbose_name = _("descriptor value")
+
+        unique_together = (
+            ('language', 'descriptor'),
+        )
 
 
 class AccessionSynonymType(ChoiceEnum):
@@ -100,10 +156,16 @@ class AccessionSynonym(Entity):
     Table specific to accession to defines the synonyms.
     """
 
-    language = models.CharField(null=False, blank=False, max_length=2, choices=Languages.choices())
-    type = models.IntegerField(null=False, blank=False, choices=AccessionSynonymType.choices())
+    language = models.CharField(
+        null=False,
+        blank=False,
+        max_length=8,
+        choices=Languages.choices(),
+        default=Languages.EN.value)
 
-    accession = models.ForeignKey('Accession', null=False, related_name='synonyms')
+    # TODO evolve in a CharField which takes its value from a specific descriptor added by fixtures
+    # Fix this descriptor code as ID_001
+    type = models.IntegerField(null=False, blank=False, choices=AccessionSynonymType.choices())
 
     class Meta:
         verbose_name = _("accession synonym")
@@ -126,6 +188,9 @@ class Accession(Entity):
     """
 
     descriptors = HStoreField()
+
+    # Can have many synonyms, and some synonyms can sometimes be shared by multiples accessions.
+    synonyms = models.ManyToManyField(AccessionSynonym, related_name='accessions')
 
     class Meta:
         verbose_name = _("accession")
