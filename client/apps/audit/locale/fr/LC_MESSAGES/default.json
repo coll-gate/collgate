@@ -14,7 +14,7 @@
     "User": "Utilisateur",
     "Date": "Date",
     "Entity": "Entité",
-    "Type": "",
-    "Action": "",
-    "Details": ""
+    "Type": "Type",
+    "Action": "Action",
+    "Details": "Détails"
 }

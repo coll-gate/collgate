@@ -81,18 +81,12 @@ msgstr "Entité"
 
 #: ../../../templates/auditlist.html:7
 msgid "Type"
-msgstr ""
+msgstr "Type"
 
 #: ../../../templates/auditlist.html:8
 msgid "Action"
-msgstr ""
+msgstr "Action"
 
 #: ../../../templates/auditlist.html:9
 msgid "Details"
-msgstr ""
-
-#~ msgid "Reason"
-#~ msgstr "Raison"
-
-#~ msgid "Field"
-#~ msgstr "Champ"
+msgstr "Détails"

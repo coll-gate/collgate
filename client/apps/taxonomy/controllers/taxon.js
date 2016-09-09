@@ -246,12 +246,12 @@ var TaxonController = Marionette.Controller.extend({
                     parentId = parseInt($(this.ui.parent).select2('data')[0].id || '0');
 
                 if (rankId == 60 && parentId != 0) {
-                    error(gt.gettext("Family rank cannot have a parent taxon"));
+                    $.alert.error(gt.gettext("Family rank cannot have a parent taxon"));
                     valid = false;
                 }
 
                 if (rankId > 60 && parentId <= 0) {
-                    error(gt.gettext("This rank must have a parent taxon"));
+                    $.alert.error(gt.gettext("This rank must have a parent taxon"));
                     valid = false;
                 }
 
@@ -275,7 +275,7 @@ var TaxonController = Marionette.Controller.extend({
                         wait: true,
                         success: function (model, resp, options) {
                             view.remove();
-                            success(gettext("Taxon successfully created !"));
+                            $.alert.success(gt.gettext("Taxon successfully created !"));
                         }
                     });
                     /*

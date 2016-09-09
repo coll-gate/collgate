@@ -38,7 +38,8 @@
 
 <link rel="stylesheet" href="{% static 'main/css/index.css' %}">
 
-<!-- TODO load dynamically each i18n modules but could need js client side dynamic menu -->
+<!-- TODO no longer necessary, and can be loaded dynamically if needed, but need a synchronization for
+some translations before every catalogs are loaded, and normally the server sent translated strings. -->
 <!--
 <script type="text/javascript" src="{% url 'main:javascript-catalog' packages='main' domain='django' %}"></script>
 <script type="text/javascript" src="{% url 'main:javascript-catalog' packages='accession' domain='django' %}"></script>
@@ -109,18 +110,6 @@
     </div>
 </div>
 
-{% spaceless %}
-<div class="container" id="messenger">
-    {# Display django.contrib.messages as Bootstrap alerts #}
-    {% for message in messages %}
-    <div class="{{ message|bootstrap_message_classes }} alert-dismissable">
-        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&#215;</button>
-        <span class="message-content">{{ message }}</span>
-    </div>
-    {% endfor %}
-</div>
-{% endspaceless %}
-
 <div class="container content">
     <!-- 1 row 3 columns -->
     <div class="column">
@@ -149,6 +138,13 @@
 </footer>
 
 <script language="javascript">
+// initials alerts coming from django templating
+initials_alerts = [{% spaceless %}
+{% for message in messages %}
+    {type: "{{ message|bootstrap_message_classes }}".split('-')[1], msg: "{{ message }}"},
+{% endfor %}
+{% endspaceless %}];
+
 // client session
 session = function() {
     if (typeof session !== 'undefined') {

@@ -21,7 +21,7 @@ msgstr ""
 #: ../../../views/descriptorgrouptypeadd.js:51
 #: ../../../views/descriptortypedetail.js:211
 msgid "Invalid characters (alphanumeric, _ and - only)"
-msgstr "Caractères invalides (alphanumeric, _ et - seulement)"
+msgstr "Caractères invalides (alphanumérique, _ et - seulement)"
 
 #: ../../../views/descriptorgroupadd.js:48
 #: ../../../views/descriptorgrouptypeadd.js:54
@@ -31,7 +31,7 @@ msgstr "3 caractères minimum"
 
 #: ../../../views/descriptorgroupadd.js:73
 msgid "Group name already in usage"
-msgstr "Nom de group déjà utilisé"
+msgstr "Nom de groupe déjà utilisé"
 
 #: ../../../views/descriptorgrouptypeadd.js:79
 msgid "Descriptor type name already in usage"

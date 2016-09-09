@@ -171,6 +171,14 @@ class AccessionSynonym(Entity):
         verbose_name = _("accession synonym")
 
 
+class DescriptorModel(Entity):
+
+    # TODO
+
+    class Meta:
+        verbose_name = _("descriptor model")
+
+
 class Asset(Entity):
     """
     Defines a collection of accessions, with particular permissions on it.
@@ -191,6 +199,9 @@ class Accession(Entity):
 
     # Can have many synonyms, and some synonyms can sometimes be shared by multiples accessions.
     synonyms = models.ManyToManyField(AccessionSynonym, related_name='accessions')
+
+    # Model of accession refers to a model of type of descriptors related to a specific accession
+    descriptor_model = models.ForeignKey(DescriptorModel, related_name='accessions')
 
     class Meta:
         verbose_name = _("accession")

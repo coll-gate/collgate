@@ -74,25 +74,6 @@ div.panel div.panel-bottom {
     height: 25px;
 }
 
-#messenger {
-    position: fixed;
-    top: 55px;
-    left: 0px;
-    right: 0px;
-    padding: 15px;
-    width: 66.666666667%;
-}
-
-#messenger:not(empty) {
-    height: auto;
-    z-index:10000;
-}
-
-#messenger:empty {
-    height: 0px;
-    visibility: hidden;
-}
-
 .event {
     font-family: "DejaVu Serif";
     font-size: 12px;
@@ -110,16 +91,6 @@ div.panel div.panel-bottom {
 a.login {
     color: whitesmoke;
 }
-
-/* display only one alert at time */
-/*#messenger:not(empty) .alert:first-child {
-    display: block !important;
-}
-*/
-/* then mask the others */
-/*#messenger:not(empty) .alert:not(first-child) {
-    display: none !important;
-}*/
 
 .panel-heading .accordion-toggle:after {
     /* symbol for "opening" panels */

@@ -217,6 +217,9 @@ APPLICATIONS = {
     "igdectk.bootstrap": {
         "DB_DEFAULT_SETTINGS": {
             "bootstrap": {"default_version": "3.3.6"},
+            "igdectk": {
+                ".alert": {"default_version": "2.0.0"},
+            }
         },
     },
 }

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-09-07 18:22+0200\n"
+"POT-Creation-Date: 2016-09-09 16:58+0200\n"
 "PO-Revision-Date: 2016-05-26 11:49+0200\n"
 "Last-Translator: Frédéric SCHERMA <frederic.scherma@clermont.inra.fr>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -51,50 +51,17 @@ msgid "You are not allowed to remove a permission"
 msgstr "Vous n'êtes pas autorisé à supprimer une permission"
 
 #: base.py:616
-#, fuzzy
-#| msgid "You are not allowed to add a permission"
 msgid "You are not allowed to add a user into a group"
-msgstr "Vous n'êtes pas autorisé à rajouter une permission"
+msgstr "Vous n'êtes pas autorisé à rajouter un utilisateur dans un groupe"
 
 #: base.py:623
 msgid "User already exists into the group"
 msgstr "L'utilisateur existe déjà dans ce groupe"
 
 #: base.py:642
-#, fuzzy
-#| msgid "You are not allowed to remove a permission"
 msgid "You are not allowed to remove a user from a group"
-msgstr "Vous n'êtes pas autorisé à supprimer une permission"
+msgstr "Vous n'êtes pas autorisé à supprimer un utilisateur d'un groupe"
 
 #: base.py:649
 msgid "User does not exists into the group"
 msgstr "L'utilisateur n'existe pas dans ce groupe"
-
-#~ msgid "Create a group for permissions"
-#~ msgstr "Créer un groupe de permission"
-
-#~ msgid "Name"
-#~ msgstr "Nom"
-
-#, fuzzy
-#~| msgid "# of users"
-#~ msgid "Number of users"
-#~ msgstr "Nombre d'utilisateurs"
-
-#~ msgid "Status"
-#~ msgstr "Status"
-
-#~ msgid "Superuser"
-#~ msgstr "Super-utilisateur"
-
-#~ msgid "Staff"
-#~ msgstr "Employé"
-
-#~ msgid "Username"
-#~ msgstr "Nom d'utilisateur"
-
-#~ msgid "First name"
-#~ msgstr "Prénom"
-
-#~ msgid "Last name"
-#~ msgstr "Nom"

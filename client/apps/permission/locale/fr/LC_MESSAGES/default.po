@@ -19,7 +19,7 @@ msgstr ""
 
 #: ../../../views/addgroup.js:45
 msgid "Invalid characters (alphanumeric, _ and - only)"
-msgstr "Caractères invalides (alphanumeric, _ et - seulement)"
+msgstr "Caractères invalides (alphanumerique, _ et - seulement)"
 
 #: ../../../views/addgroup.js:48
 msgid "3 characters min"

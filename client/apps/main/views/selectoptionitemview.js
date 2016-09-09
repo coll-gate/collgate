@@ -23,10 +23,6 @@ var SelectOptionItemView = Marionette.ItemView.extend({
         this.collection.on("sync", this.render, this);  // render the template once got
     },
 
-    onBeforeRender: function(e) {
-        console.log(this)
-    },
-
     onRender: function(e) {
     },
 

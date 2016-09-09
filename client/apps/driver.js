@@ -82,7 +82,7 @@ application = new Marionette.Application({
                 } else {
                     var data = JSON.parse(xhr.responseText);
                     //if ((xhr.status >= 400 && xhr.status <= 599) && data && (typeof(data.cause) === "string")) {
-                    //    error(gettext(data.cause));
+                    //    $.alert.error(gettext(data.cause));
                     //}
                     dfd.reject.apply(xhr, arguments);
                 }
@@ -95,6 +95,18 @@ application = new Marionette.Application({
     onStart: function(options) {
         // Starts the URL handling framework and automatically route as possible
         Backbone.history.start({pushState: true, silent: false, root: '/coll-gate'});
+
+        $.alert({container: 'div.panel-body'/*'#main_content'*/, className: 'alert'});
+        $.alert.update();
+
+        // add alerted initiated by django server side
+        if (typeof initials_alerts !== "undefined") {
+            for (var alert in initials_alerts) {
+                $.alert.message(initials_alerts[alert].type, initials_alerts[alert].msg);
+            }
+
+            delete initials_alerts;
+        }
 
         Logger.timeEnd('Application startup');
     }

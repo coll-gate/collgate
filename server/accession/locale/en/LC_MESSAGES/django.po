@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-09-07 18:22+0200\n"
+"POT-Creation-Date: 2016-09-09 16:58+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -37,6 +37,10 @@ msgstr ""
 msgid "List groups of descriptors"
 msgstr ""
 
+#: apps.py:52
+msgid "List models of descriptors"
+msgstr ""
+
 #: base.py:47
 msgid "You are not allowed to create an accession"
 msgstr ""
@@ -45,46 +49,54 @@ msgstr ""
 msgid "You are not allowed to list the accessions"
 msgstr ""
 
-#: models.py:30
+#: descriptor.py:134
+msgid "Only an empty group of descriptors can be deleted"
+msgstr ""
+
+#: descriptor.py:356
+msgid "Only an empty of values type of descriptors can be deleted"
+msgstr ""
+
+#: models.py:32
 msgid "descriptor group"
 msgstr ""
 
-#: models.py:66
+#: models.py:96
 msgid "descriptor type"
 msgstr ""
 
-#: models.py:84
+#: models.py:136
 msgid "descriptor value"
 msgstr ""
 
-#: models.py:93
+#: models.py:149
 msgid "Primary"
 msgstr ""
 
-#: models.py:94
+#: models.py:150
 msgid "Synonym"
 msgstr ""
 
-#: models.py:95
+#: models.py:151
 msgid "Code"
 msgstr ""
 
-#: models.py:109
+#: models.py:171
 msgid "accession synonym"
 msgstr ""
 
-#: models.py:120
+#: models.py:182
 msgid "panel"
 msgstr ""
 
-#: models.py:131
+#: models.py:196
 msgid "accession"
 msgstr ""
 
-#: models.py:144
+#: models.py:209
 msgid "batch"
 msgstr ""
 
-#: models.py:158
+#: models.py:223
 msgid "sample"
 msgstr ""
