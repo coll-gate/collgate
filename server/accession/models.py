@@ -171,9 +171,82 @@ class AccessionSynonym(Entity):
         verbose_name = _("accession synonym")
 
 
-class DescriptorModel(Entity):
+class DescriptorPanel(Entity):
+    """
+    A panel is a displayable entity that is a association of values of descriptors.
+    It is only defined for a specific model of descriptor (one to many relation).
+    There is many panels per model of descriptor.
+    It has many types of models of descriptors. For example we can have a general panel,
+    a passport panel...
+    Panels are created and modified by staff people.
+    The textual resources of a panel are i18nable because they are displayed for users.
+    """
 
-    # TODO
+    # Label of the panel (can be used for a tab, or any dialog title).
+    # It is i18nized used JSON dict with language code as key and label as value (string:string).
+    label = models.TextField(null=False, default={})
+
+    # Position priority into the display. Lesser is before. Negative value are possibles.
+    position = models.IntegerField(null=False, default=0)
+
+    class Meta:
+        verbose_name = _("descriptor panel")
+
+    def get_label(self):
+        """
+        Get the label for this panel in the current regional.
+        """
+        data = json.loads(self.label)
+        lang = translation.get_language()
+
+        return data.get(lang, "")
+
+    def set_label(self, lang, label):
+        """
+        Set the label for a specific language.
+        :param str lang: language code string
+        :param str label: Localized label
+        :note Model instance save() is not called.
+        """
+        data = json.loads(self.label)
+        data[lang] = label
+        self.label = json.dumps(data)
+
+
+class DescriptorModelType(models.Model):
+    """
+    This is a basic entity of the model of descriptor. It makes the relation between a panel and
+    its descriptors. And it makes the relation between him and the model of descriptor.
+    """
+
+    # Relate the descriptor model (one descriptor model can have many descriptor model types)
+    descriptor_model = models.ForeignKey('DescriptorModel', related_name='descriptors_types')
+
+    # Related type of descriptor (relate on a specific one's)
+    descriptor_type = models.ForeignKey(DescriptorType, null=False, blank=False)
+
+    # True if this type of descriptor is mandatory for an accession (model)
+    mandatory = models.BooleanField(null=False, blank=False, default=False)
+
+    # Set once, read many means that the value of the descriptor can be set only at creation
+    set_once = models.BooleanField(null=False, blank=False, default=False)
+
+    # Related panel of descriptors
+    panel = models.ForeignKey(DescriptorPanel, null=False, blank=False)
+
+
+class DescriptorModel(Entity):
+    """
+    A model of descriptor is like a template of descriptor that is related to a kind of accession.
+    Many accession can share the same model of descriptors.
+    """
+
+    # Verbose name describing the model of descriptor. There is no translation for this
+    # name because it is used internally by staff.
+    verbose_name = models.CharField(null=False, max_length=255, default="")
+
+    # Textual description of the model of descriptor. There is no translation like the verbose name.
+    description = models.TextField(null=False, default="")
 
     class Meta:
         verbose_name = _("descriptor model")

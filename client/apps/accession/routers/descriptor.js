@@ -116,6 +116,14 @@ var Router = Marionette.AppRouter.extend({
                         collection: collection,
                         model: model
                     }));
+                } else if (model.get('format').type === "enum_ordinal") {
+                    // TODO specific view in way to only edit the label
+                    // and to not add/remove some value
+                    defaultLayout.content.show(new DescriptorValuePairListView({
+                        read_only: true,
+                        collection: collection,
+                        model: model
+                    }));
                 }
             });
         });
