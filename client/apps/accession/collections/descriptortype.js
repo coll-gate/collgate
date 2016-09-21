@@ -23,8 +23,9 @@ var Collection = Backbone.Collection.extend({
     },
 
     parse: function(data) {
-        this.page = data.page;
-        this.total_count = data.total_count;
+        this.prev = data.prev;
+        this.cursor = data.cursor;
+        this.next = data.next;
 
         return data.items;
     },

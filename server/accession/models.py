@@ -7,6 +7,7 @@ coll-gate accession module models.
 """
 import json
 
+from django.core.exceptions import SuspiciousOperation
 from django.db import models
 from django.contrib.postgres.fields import HStoreField
 from django.utils import translation
@@ -108,6 +109,104 @@ class DescriptorType(Entity):
             return len(values) == 0
         else:
             return self.values_set.all().exists()
+
+    def get_values(self, sort_by='id', reverse=False, cursor=None, limit=30):
+        """
+        Query for a list of value ordered by id or name, with a limit of number of results.
+        :return: A triplet with previous and next cursors strings and the array of values
+                like {'name', 'value'} with value can be a dict.
+        """
+        descriptor_format = json.loads(self.format)
+        lang = translation.get_language()
+        trans = descriptor_format.get('trans', False)
+
+        prev_cursor = None
+        next_cursor = None
+        values_list = []
+
+        # internally stored values
+        if self.values:
+            if trans:
+                pre_values = json.loads(self.values)
+                if lang in pre_values:
+                    values = pre_values[lang]
+                    count = len(values)
+                else:
+                    values = {}
+                    count = 0
+            else:
+                values = json.loads(self.values)
+                count = len(values)
+
+            values_list = []
+
+            if sort_by == 'id' :
+                next_id = int(cursor.split('/')[0]) if cursor else -1
+
+                for k, v in values.items():
+                    if k > next_id:
+                        values_list.append({
+                            'id': k,
+                            'value': v,
+                        })
+
+                values_list = sorted(values_list, key=lambda v: v['id'], reverse=reverse)[:limit]
+
+                # cursors
+                if len(values_list) > 0:
+                    val = values_list[0]
+                    prev_cursor = "%s/%s" % (val['id'], val['id'])
+
+                    val = values_list[-1]
+                    next_cursor = "%s/%s" % (val['id'], val['id'])
+            else:
+                next_name = str(cursor.split('/')[0]) if cursor else ""
+
+                for k, v in values.items():
+                    if sort_by not in v:
+                        raise SuspiciousOperation("Invalid value field name")
+
+                    if v[sort_by] > next_name:
+                        values_list.append({
+                            'id': k,
+                            'value': v
+                        })
+
+                values_list = sorted(values_list, key=lambda v: v['value'][sort_by], reverse=reverse)[:limit]
+
+                # cursors
+                if len(values_list) > 0:
+                    val = values_list[0]
+                    prev_cursor = "%s/%s" % (val['value'][sort_by], val['id'])
+
+                    val = values_list[-1]
+                    next_cursor = "%s/%s" % (val['value'][sort_by], val['id'])
+        else:
+            pass
+            # TODO
+            # values in the value table
+            # if sort_by == 'id':
+            #     qs = descr_type.values_set.all().order_by('id')
+            #     qs = descr_type.values_set.get
+            # else:
+            #     # TODO query with i18n
+            #     # TODO see for ordering, because if we have json field...
+            #     # maybe could we use hstore ?
+            #     # or a value field plus an informational field about value type
+            #     qs = descr_type.values_set.all()
+            #
+            # values = qs[offset:limit]
+            # count = qs.count()
+            #
+            # values_list = []
+            # for value in values:
+            #     values_list.append({
+            #         'id': value.id,
+            #         'parents': value.parents,
+            #         'value': value.value
+            #     })
+
+        return prev_cursor, next_cursor, values_list
 
 
 class DescriptorValue(Entity):

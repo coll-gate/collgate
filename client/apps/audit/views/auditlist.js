@@ -36,7 +36,7 @@ var View = Marionette.CompositeView.extend({
     scroll: function(e) {
         if (e.target.scrollHeight-e.target.clientHeight == e.target.scrollTop) {
             if (this.collection.next != null) {
-                Logger.debug("fetch page " + (this.collection.next));
+                Logger.debug("audit::fetch next with cursor=" + (this.collection.next));
                 this.collection.fetch({update: true, remove: false, data: {cursor: this.collection.next}});
             }
         }

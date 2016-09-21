@@ -8,6 +8,7 @@ coll-gate accession module, descriptor API
 import json
 
 from django.core.exceptions import SuspiciousOperation
+from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.utils import translation
 from django.utils.translation import ugettext_lazy as _
@@ -62,33 +63,52 @@ class RestDescriptorGroupIdTypeIdValue(RestDescriptorGroupIdTypeId):
 
 @RestDescriptorGroup.def_auth_request(Method.GET, Format.JSON)
 def get_descriptor_groups(request):
-    raise BaseException("tototo")
-    results_per_page = 30
-    page = int_arg(request.GET.get('page', 1))
-    offset = (page-1) * results_per_page
-    limit = offset + results_per_page
+    """
+    Descriptor group name is unique and indexed.
+    """
+    results_per_page = int_arg(request.GET.get('more', 30))
+    cursor = request.GET.get('cursor')
+    limit = results_per_page
 
-    descriptors = DescriptorGroup.objects.all().order_by('name')[offset:limit]
+    if cursor:
+        cursor_name, cursor_id = cursor.split('/')
+        qs = DescriptorGroup.objects.filter(Q(name__gt=cursor_name))
+    else:
+        qs = DescriptorGroup.objects.all()
 
-    descriptors_list = []
-    for descr in descriptors:
-        t = {
-            'id': descr.pk,
-            'name': descr.name,
-            'num_descriptors_types': descr.types_set.all().count(),
-            'can_delete': descr.can_delete,
-            'can_modify': descr.can_modify
-        }
+    dgs = qs.order_by('name')[:limit]
 
-        descriptors_list.append(t)
+    group_list = []
+    for group in dgs:
+        group_list.append({
+            'id': group.pk,
+            'name': group.name,
+            'num_descriptors_types': group.types_set.all().count(),
+            'can_delete': group.can_delete,
+            'can_modify': group.can_modify
+        })
 
-    response = {
-        'items': descriptors_list,
-        'total_count': DescriptorGroup.objects.all().count(),
-        'page': page,
+    if len(group_list) > 0:
+        # prev cursor (asc order)
+        dm = group_list[0]
+        prev_cursor = "%s/%s" % (dm['name'], dm['id'])
+
+        # next cursor (asc order)
+        dm = group_list[-1]
+        next_cursor = "%s/%s" % (dm['name'], dm['id'])
+    else:
+        prev_cursor = None
+        next_cursor = None
+
+    results = {
+        'perms': [],
+        'items': group_list,
+        'prev': prev_cursor,
+        'cursor': cursor,
+        'next': next_cursor,
     }
 
-    return HttpResponseRest(request, response)
+    return HttpResponseRest(request, results)
 
 
 @RestDescriptorGroup.def_auth_request(
@@ -143,6 +163,10 @@ def delete_descriptor_group(request, id):
     Method.GET, Format.JSON, ('filters',),
     staff=True)
 def search_descriptor_groups(request):
+    """
+    Filters the groups of descriptors by name.
+    @todo needs pagination
+    """
     filters = json.loads(request.GET['filters'])
     page = int_arg(request.GET.get('page', 1))
 
@@ -191,20 +215,26 @@ def get_descriptor_groups(request, id):
 
 @RestDescriptorGroupIdType.def_auth_request(Method.GET, Format.JSON)
 def get_descriptor_types_for_group(request, id):
-    results_per_page = 30
-    page = int_arg(request.GET.get('page', 1))
-    offset = (page-1) * results_per_page
-    limit = offset + results_per_page
+    results_per_page = int_arg(request.GET.get('more', 30))
+    cursor = request.GET.get('cursor')
+    limit = results_per_page
 
     group_id = int(id)
     group = get_object_or_404(DescriptorGroup, id=group_id)
-    types = group.types_set.all().order_by('name')[offset:limit]
+
+    if cursor:
+        cursor_name, cursor_id = cursor.split('/')
+        qs = group.types_set.filter(Q(name__gt=cursor_name))
+    else:
+        qs = group.types_set.all()
+
+    dts = qs.order_by('name')[:limit]
 
     types_list = []
-    for descr_type in types:
+    for descr_type in dts:
         count = descr_type.count_num_values()
 
-        t = {
+        types_list.append({
             'id': descr_type.pk,
             'group': group_id,
             'name': descr_type.name,
@@ -214,23 +244,39 @@ def get_descriptor_types_for_group(request, id):
             'can_delete': descr_type.can_delete,
             'can_modify': descr_type.can_modify,
             'format': json.loads(descr_type.format)
-        }
+        })
 
-        types_list.append(t)
+    if len(types_list) > 0:
+        # prev cursor (asc order)
+        dm = types_list[0]
+        prev_cursor = "%s/%s" % (dm['name'], dm['id'])
 
-    response = {
+        # next cursor (asc order)
+        dm = types_list[-1]
+        next_cursor = "%s/%s" % (dm['name'], dm['id'])
+    else:
+        prev_cursor = None
+        next_cursor = None
+
+    results = {
+        'perms': [],
         'items': types_list,
-        'total_count': group.types_set.all().count(),
-        'page': page,
+        'prev': prev_cursor,
+        'cursor': cursor,
+        'next': next_cursor,
     }
 
-    return HttpResponseRest(request, response)
+    return HttpResponseRest(request, results)
 
 
 @RestDescriptorGroupIdTypeSearch.def_auth_request(
     Method.GET, Format.JSON, ('filters',),
     staff=True)
 def search_descriptor_types_for_group(request, id):
+    """
+    Filters the type of descriptors by name for a specific group.
+    @todo needs pagination
+    """
     filters = json.loads(request.GET['filters'])
     page = int_arg(request.GET.get('page', 1))
 
@@ -415,12 +461,12 @@ def get_descriptor_values_for_type(request, id, tid):
 
     :param id: Descriptor group id
     :param tid: Descriptor type id
-    """
 
-    results_per_page = 30
-    page = int_arg(request.GET.get('page', 1))
-    offset = (page-1) * results_per_page
-    limit = offset + results_per_page
+    """
+    results_per_page = int_arg(request.GET.get('more', 30))
+    cursor = request.GET.get('cursor')
+    limit = results_per_page
+
     sort_by = request.GET.get('sort_by', 'name')
 
     group_id = int(id)
@@ -429,62 +475,21 @@ def get_descriptor_values_for_type(request, id, tid):
     group = get_object_or_404(DescriptorGroup, id=group_id)
     descr_type = get_object_or_404(DescriptorType, id=type_id, group=group)
 
-    lang = translation.get_language()
-    format = json.loads(descr_type.format)
-    trans = format.get('trans', False)
-
-    # internally stored values
-    if descr_type.values:
-        if trans:
-            pre_values = json.loads(descr_type.values)
-            if lang in pre_values:
-                values = pre_values[lang]
-                count = len(values)
-            else:
-                values = {}
-                count = 0
-        else:
-            values = json.loads(descr_type.values)
-            count = len(values)
-
-        values_list = []
-        for k, v in values.items():
-            t = {
-                'id': k,
-                'value': v,
-            }
-            values_list.append(t)
-
-        if sort_by == 'id':
-            values_list = sorted(values_list, key=lambda v: v['id'])[offset:limit]
-        else:
-            values_list = sorted(values_list, key=lambda v: v['value'][sort_by])[offset:limit]
+    if sort_by.startswith('-'):
+        order_by = sort_by[1:]
+        reverse = True
     else:
-        # values in the value table
-        qs = descr_type.values_set.all()
-        values = qs[offset:limit]
-        count = qs.count()
+        order_by = sort_by
+        reverse = False
 
-        # TODO query with i18n
-        # TODO see for ordering, because if we have json field...
-        # maybe could we use hstore ?
-        # or a value field plus an informational field about value type
+    prev_cursor, next_cursor, values_list = descr_type.get_values(order_by, reverse, cursor, limit)
 
-        values_list = []
-        for value in values:
-            t = {
-                'id': value.id,
-                'parents': value.parents,
-                'value': value.value
-            }
-
-            values_list.append(t)
-
-    response = {
+    results = {
+        'prev': prev_cursor,
+        'cursor': cursor,
+        'next': next_cursor,
         'format': json.loads(descr_type.format),
         'items': values_list,
-        'total_count': count,
-        'page': 1,
     }
 
-    return HttpResponseRest(request, response)
+    return HttpResponseRest(request, results)

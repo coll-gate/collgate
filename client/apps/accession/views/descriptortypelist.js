@@ -23,8 +23,6 @@ var View = Marionette.CompositeView.extend({
         //this.listenTo(this.collection, 'remove', this.render, this);
         this.listenTo(this.collection, 'change', this.render, this);
 
-        this.page = 1;
-
         // pagination on scrolling
         $("div.panel-body").scroll($.proxy(function(e) { this.scroll(e); }, this));
     },
@@ -34,9 +32,9 @@ var View = Marionette.CompositeView.extend({
 
     scroll: function(e) {
         if (e.target.scrollHeight-e.target.clientHeight == e.target.scrollTop) {
-            if (this.collection.size() < this.collection.total_count) {
-                Logger.debug("fetch page " + (this.page+1) + " for " + this.collection.total_count + " items");
-                this.collection.fetch({update: true, remove: false, data: {page: ++this.page}});
+            if (this.collection.next != null) {
+                Logger.debug("descriptorType::fetch next with cursor=" + (this.collection.next));
+                this.collection.fetch({update: true, remove: false, data: {cursor: this.collection.next}});
             }
         }
     },
