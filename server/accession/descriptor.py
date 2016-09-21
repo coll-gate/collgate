@@ -62,6 +62,7 @@ class RestDescriptorGroupIdTypeIdValue(RestDescriptorGroupIdTypeId):
 
 @RestDescriptorGroup.def_auth_request(Method.GET, Format.JSON)
 def get_descriptor_groups(request):
+    raise BaseException("tototo")
     results_per_page = 30
     page = int_arg(request.GET.get('page', 1))
     offset = (page-1) * results_per_page

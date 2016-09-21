@@ -33,7 +33,7 @@ var DescriptorGroupTypeAddView = require('../views/descriptorgrouptypeadd');
 var Router = Marionette.AppRouter.extend({
     routes : {
         "app/accession/descriptor/group/": "getDescriptorGroupList",
-        // "app/accession/descriptor/group/:id/": "getDescriptorGroup", only POST here
+        // "app/accession/descriptor/group/:id/": "getDescriptorGroup",  // only POST
         "app/accession/descriptor/group/:id/type/": "getDescriptorTypeListForGroup",
         "app/accession/descriptor/group/:id/type/:id/": "getDescriptorTypeForGroup",
         "app/accession/descriptor/group/:id/type/:id/value/": "getDescriptorValueListForType",
@@ -105,12 +105,14 @@ var Router = Marionette.AppRouter.extend({
 
             collection.fetch().then(function () {
                 if (model.get('format').type === "enum_single") {
+                    // TODO edit value
                     defaultLayout.content.show(new DescriptorValueListView({
                         read_only: true,
                         collection: collection,
                         model: model
                     }));
                 } else if (model.get('format').type === "enum_pair") {
+                    // TODO edit values
                     defaultLayout.content.show(new DescriptorValuePairListView({
                         read_only: true,
                         collection: collection,
@@ -128,10 +130,6 @@ var Router = Marionette.AppRouter.extend({
             });
         });
     },
-
-    /*getDescriptorValueForType: function (gid, tid, id) {
-        alert(gid); alert(tid);
-    }*/
 });
 
 module.exports = Router;

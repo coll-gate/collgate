@@ -6,6 +6,7 @@
 The related tag.
 """
 
+from django.conf import settings
 from django.template import TemplateSyntaxError, Variable, Node, Library
 
 from .. import appsettings
@@ -47,6 +48,12 @@ class TemplateAppValue(Node):
         # custom variable 'version'
         if arg_repr == "version":
             ret_val = '.'.join([str(x) for x in appsettings.APP_VERSION])
+        elif arg_repr == "webpack_host":
+            attr = getattr(settings, 'WEBPACK', {})
+            ret_val = attr['host'] if 'host' in attr else 'localhost'
+        elif arg_repr == "webpack_entry":
+            attr = getattr(settings, 'WEBPACK', {})
+            ret_val = attr['entry'] if 'entry' in attr else '/build/app.js'
         else:
             ret_val = getattr(appsettings, arg_repr)
 

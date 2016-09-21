@@ -17,39 +17,39 @@
 
 <div class="descriptor-detail">
     <div class="descriptor-type-name form-group" style="width: 50%;">
-        <label for="descriptor_type_name">Descriptor type name</label>
+        <label for="descriptor_type_name"><%- gt.gettext('Descriptor type name') %></label>
         <input id="descriptor_type_name" class="form-control" type="text" maxlength="255" value="<%= name %>">
     </div>
     <div class="descriptor-type-code form-group" style="width: 50%;">
-        <label for="descriptor_type_code">Descriptor type code</label>
+        <label for="descriptor_type_code"><%- gt.gettext('Descriptor type code') %></label>
         <input id="descriptor_type_code" class="form-control" type="text" readonly="readonly" maxlength="255" value="<%= code %>">
     </div>
     <div class="descriptor-type-format form-group" style="width: 50%;">
-        <label for="format_type">Type of format</label>
+        <label for="format_type"><%- gt.gettext('Type of format') %></label>
         <select id="format_type" class="form-control">
-            <optgroup label="Single value">
-                <option value="boolean">Boolean</option>
-                <option value="numeric">Numeric</option>
-                <option value="numeric_range">Numeric range</option>
-                <option value="ordinal">Ordinal</option>
-                <option value="gps">GPS coordinate</option>
-                <option value="string">Text</option>
+            <optgroup label="<%- gt.gettext('Single value') %>"><!-- <%- gt.gettext('Single value') %> -->
+                <option value="boolean"><%- gt.gettext('Boolean') %></option>
+                <option value="numeric"><%- gt.gettext('Numeric') %></option>
+                <option value="numeric_range"><%- gt.gettext('Numeric range') %></option>
+                <option value="ordinal"><%- gt.gettext('Ordinal') %></option>
+                <option value="gps"><%- gt.gettext('GPS coordinate') %></option>
+                <option value="string"><%- gt.gettext('Text') %></option>
             </optgroup>
-            <optgroup label="List of values">
-                <option value="enum_single">Single enumeration</option>
-                <option value="enum_pair">Pair enumeration</option>
-                <option value="enum_ordinal">Ordinal with text</option>
+            <optgroup label="<%- gt.gettext('List of values') %>"><!-- <%- gt.gettext('List of values') %> -->
+                <option value="enum_single"><%- gt.gettext('Single enumeration') %></option>
+                <option value="enum_pair"><%- gt.gettext('Pair enumeration') %></option>
+                <option value="enum_ordinal"><%- gt.gettext('Ordinal with text') %></option>
             </optgroup>
         </select>
     </div>
     <div class="descriptor-type-fields form-group" style="width: 50%;">
         <div class="row">
             <div class="col-xs-6">
-                <label for="type_field0">First field</label>
+                <label for="type_field0"><%- gt.gettext('First field') %></label>
                 <input id="type_field0" class="form-control" type="text" maxlength="32" value="">
             </div>
             <div class="col-xs-6">
-                <label for="type_field1">Second field</label>
+                <label for="type_field1"><%- gt.gettext('Second field') %></label>
                 <input id="type_field1" class="form-control" type="text" maxlength="32" value="">
             </div>
         </div>
@@ -57,7 +57,7 @@
     <div class="descriptor-type-unit form-group" style="width: 50%;">
         <div class="row">
             <div class="col-xs-6">
-                <label for="format_unit">Unit of the format</label>
+                <label for="format_unit"><%- gt.gettext('Unit of the format') %></label>
                 <select id="format_unit" class="form-control">
                     <optgroup label="Chroma">
                         <option value="chroma_L_value">L value</option>
@@ -147,13 +147,13 @@
                 </select>
             </div>
             <div class="col-xs-6">
-                <label for="format_unit_custom">Custom unit name</label>
+                <label for="format_unit_custom"><%- gt.gettext('Custom unit name') %></label>
                 <input id="format_unit_custom" class="form-control" type="text" readonly="readonly" maxlength="32" value="">
             </div>
         </div>
     </div>
     <div class="descriptor-type-precision form-group" style="width: 50%;">
-        <label for="format_precision">Precision of the decimal</label>
+        <label for="format_precision"><%- gt.gettext('Precision of the decimal') %></label>
         <select id="format_precision" class="form-control">
             <option value="0.0">0.0</option>
             <option value="1.0">1.0</option>
@@ -170,20 +170,20 @@
     <div class="descriptor-type-range form-group" style="width: 50%;">
         <div class="row">
             <div class="col-xs-6">
-                <label for="format_range_min">Minimal range value</label>
+                <label for="format_range_min"><%- gt.gettext('Minimal range value') %></label>
                 <input id="format_range_min" class="form-control" type="text" readonly="readonly" maxlength="32" value="0">
             </div>
             <div class="col-xs-6">
-                <label for="format_range_max">Maximal range value</label>
+                <label for="format_range_max"><%- gt.gettext('Maximal range value') %></label>
                 <input id="format_range_max" class="form-control" type="text" readonly="readonly" maxlength="32" value="1">
             </div>
         </div>
     </div>
     <div class="descriptor-type-regexp form-group" style="width: 50%;">
-        <label for="format_regexp">Regular expression</label>
+        <label for="format_regexp"><%- gt.gettext('Regular expression') %></label>
         <input id="format_regexp" class="form-control" type="text" readonly="readonly" maxlength="255">
     </div>
     <div class="descriptor-type-regexp form-group" style="width: 100px; margin-left: 20%; margin-top: 25px;">
-        <button id="save" class="form-control btn btn-primary">Update</button>
+        <button id="save" class="form-control btn btn-primary"><%- gt.gettext('Update') %></button>
     </div>
 </div>

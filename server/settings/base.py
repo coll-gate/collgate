@@ -129,7 +129,20 @@ TEMPLATES = [
     },
 ]
 
-MIDDLEWARE_CLASSES = (
+# MIDDLEWARE_CLASSES = (
+#     'django.contrib.sessions.middleware.SessionMiddleware',
+#     'django.middleware.locale.LocaleMiddleware',
+#     'django.middleware.common.CommonMiddleware',
+#     'igdectk.rest.csrf.CsrfViewMiddleware',
+#     # 'django.middleware.csrf.CsrfViewMiddleware',
+#     'django.contrib.auth.middleware.AuthenticationMiddleware',
+#     'django.contrib.messages.middleware.MessageMiddleware',
+#     'igdectk.rest.restmiddleware.RestMiddleware',
+#     # Uncomment the next line for simple clickjacking protection:
+#     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
+# )
+
+MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -140,7 +153,8 @@ MIDDLEWARE_CLASSES = (
     'igdectk.rest.restmiddleware.RestMiddleware',
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
-)
+]
+
 
 AUTHENTICATION_BACKENDS = (
     'igdectk.auth.ldap.LdapAuthenticationBackend',
@@ -212,6 +226,9 @@ APPLICATIONS = {
                 "default_version": "3.5.4",
                 ".bootstrap": {"default_version": "3.5.4"},
             },
+            "igdectk": {
+                ".csrf": {"default_version": "2.0.0"},
+            }
         },
     },
     "igdectk.bootstrap": {

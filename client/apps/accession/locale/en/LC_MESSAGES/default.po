@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-08-26 15:33+0200\n"
+"POT-Creation-Date: 2016-09-19 16:39+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -64,6 +64,98 @@ msgstr ""
 
 #: ../../../templates/descriptorgrouplist.html:17
 msgid "Number of types of descriptors"
+msgstr ""
+
+#: ../../../templates/descriptortypedetail.html:20
+msgid "Descriptor type name"
+msgstr ""
+
+#: ../../../templates/descriptortypedetail.html:24
+msgid "Descriptor type code"
+msgstr ""
+
+#: ../../../templates/descriptortypedetail.html:28
+msgid "Type of format"
+msgstr ""
+
+#: ../../../templates/descriptortypedetail.html:30
+msgid "Single value"
+msgstr ""
+
+#: ../../../templates/descriptortypedetail.html:31
+msgid "Boolean"
+msgstr ""
+
+#: ../../../templates/descriptortypedetail.html:32
+msgid "Numeric"
+msgstr ""
+
+#: ../../../templates/descriptortypedetail.html:33
+msgid "Numeric range"
+msgstr ""
+
+#: ../../../templates/descriptortypedetail.html:34
+msgid "Ordinal"
+msgstr ""
+
+#: ../../../templates/descriptortypedetail.html:35
+msgid "GPS coordinate"
+msgstr ""
+
+#: ../../../templates/descriptortypedetail.html:36
+msgid "Text"
+msgstr ""
+
+#: ../../../templates/descriptortypedetail.html:38
+msgid "List of values"
+msgstr ""
+
+#: ../../../templates/descriptortypedetail.html:39
+msgid "Single enumeration"
+msgstr ""
+
+#: ../../../templates/descriptortypedetail.html:40
+msgid "Pair enumeration"
+msgstr ""
+
+#: ../../../templates/descriptortypedetail.html:41
+msgid "Ordinal with text"
+msgstr ""
+
+#: ../../../templates/descriptortypedetail.html:48
+msgid "First field"
+msgstr ""
+
+#: ../../../templates/descriptortypedetail.html:52
+msgid "Second field"
+msgstr ""
+
+#: ../../../templates/descriptortypedetail.html:60
+msgid "Unit of the format"
+msgstr ""
+
+#: ../../../templates/descriptortypedetail.html:150
+msgid "Custom unit name"
+msgstr ""
+
+#: ../../../templates/descriptortypedetail.html:156
+msgid "Precision of the decimal"
+msgstr ""
+
+#: ../../../templates/descriptortypedetail.html:173
+msgid "Minimal range value"
+msgstr ""
+
+#: ../../../templates/descriptortypedetail.html:177
+msgid "Maximal range value"
+msgstr ""
+
+#: ../../../templates/descriptortypedetail.html:183
+msgid "Regular expression"
+msgstr ""
+
+#: ../../../templates/descriptortypedetail.html:187
+msgid "Update"
 msgstr ""
 
 #: ../../../templates/descriptortypelist.html:17

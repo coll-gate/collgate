@@ -319,7 +319,7 @@ session.user.isStaff = {{ user.is_staff|yesno:"true,false" }};
 
 <!-- include application core -->
 {% if debug %}
-<script src="{{ webpack_host }}{{ webpack_entry }}"></script>
+<script src='{% collgate "webpack_host" %}{% collgate "webpack_entry" %}'></script>
 {% else %}
 <script src="{% static 'main/js/app.min.js' %}"></script>
 {% endif %}

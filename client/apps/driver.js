@@ -57,16 +57,24 @@ application = new Marionette.Application({
 
             // insert csrf token when necessary
             opts.beforeSend = function(xhr) {
-                // always add the csrf token to safe method ajax query
-                if (!csrfSafeMethod(method) && !opts.crossDomain) {
+                // always add the csrf token to non safe method ajax query
+                if (method !== "read" && !opts.crossDomain) {
                     xhr.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
-                }
+                 }
             };
 
             xhr = Backbone.originalSync(method, model, _.omit(opts, 'success', 'error'));
 
             // success : forward to the deferred
             xhr.done(dfd.resolve);
+
+            // for each form automatically add the CSRF token
+            xhr.done(function() {
+                var csrftoken = getCookie('csrftoken');
+                $('form').each(function(index, el) {
+                    $(this).find('input[name="csrfmiddlewaretoken"]').attr('value', csrftoken)
+                });
+            });
 
             // failure : resolve or reject the deferred according to your cases
             xhr.fail(function() {

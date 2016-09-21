@@ -48,7 +48,21 @@ STATIC_ROOT = 'static/'
 
 STATIC_URL = '/static/'
 
-MIDDLEWARE_CLASSES = (
+# MIDDLEWARE_CLASSES = (
+#     'django.contrib.sessions.middleware.SessionMiddleware',
+#     'django.middleware.locale.LocaleMiddleware',
+#     'django.middleware.common.CommonMiddleware',
+#     # 'debug_toolbar.middleware.DebugToolbarMiddleware',
+#     # 'debug_panel.middleware.DebugPanelMiddleware',
+#     'igdectk.rest.csrf.CsrfViewMiddleware',
+#     'django.contrib.auth.middleware.AuthenticationMiddleware',
+#     'django.contrib.messages.middleware.MessageMiddleware',
+#     'igdectk.rest.restmiddleware.RestMiddleware',
+#     # Uncomment the next line for simple clickjacking protection:
+#     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
+# )
+
+MIDDLEWARE = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',

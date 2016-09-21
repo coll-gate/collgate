@@ -219,11 +219,18 @@ class DescriptorModelType(models.Model):
     its descriptors. And it makes the relation between him and the model of descriptor.
     """
 
+    # Label of the type of descriptor.
+    # It is i18nized used JSON dict with language code as key and label as value (string:string).
+    label = models.TextField(null=False, default={})
+
     # Relate the descriptor model (one descriptor model can have many descriptor model types)
     descriptor_model = models.ForeignKey('DescriptorModel', related_name='descriptors_types')
 
     # Related type of descriptor (relate on a specific one's)
     descriptor_type = models.ForeignKey(DescriptorType, null=False, blank=False)
+
+    # Related panel of descriptors
+    panel = models.ForeignKey(DescriptorPanel, null=False, blank=False)
 
     # True if this type of descriptor is mandatory for an accession (model)
     mandatory = models.BooleanField(null=False, blank=False, default=False)
@@ -231,8 +238,31 @@ class DescriptorModelType(models.Model):
     # Set once, read many means that the value of the descriptor can be set only at creation
     set_once = models.BooleanField(null=False, blank=False, default=False)
 
-    # Related panel of descriptors
-    panel = models.ForeignKey(DescriptorPanel, null=False, blank=False)
+    # Position priority into the display. Lesser is before. Negative value are possibles.
+    position = models.IntegerField(null=False, default=0)
+
+    class Meta:
+        verbose_name = _("descriptor model type")
+
+    def get_label(self):
+        """
+        Get the label for this panel in the current regional.
+        """
+        data = json.loads(self.label)
+        lang = translation.get_language()
+
+        return data.get(lang, "")
+
+    def set_label(self, lang, label):
+        """
+        Set the label for a specific language.
+        :param str lang: language code string
+        :param str label: Localized label
+        :note Model instance save() is not called.
+        """
+        data = json.loads(self.label)
+        data[lang] = label
+        self.label = json.dumps(data)
 
 
 class DescriptorModel(Entity):

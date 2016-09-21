@@ -6,7 +6,7 @@
 coll-gate main url registration.
 """
 
-from django.conf.urls import include, url, patterns
+from django.conf.urls import include, url
 from django.conf import settings
 
 # from django.contrib.staticfiles.views import serve as serve_static
@@ -20,9 +20,9 @@ urlpatterns = [
 ]
 
 # if settings.DEBUG:
-#     urlpatterns += patterns('',
+#     urlpatterns += [
 #         url(r'^static/(?P<path>.*)$', cache_control(maxage=60*60*24)(serve_static)),
-#     )
+#     }
 
 # debug only
 if settings.DEBUG and 'debug_toolbar' in settings.INSTALLED_APPS:

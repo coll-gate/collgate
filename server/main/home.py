@@ -49,10 +49,6 @@ def get_app(request, path):
         'path': path + "/"
     }
 
-    if settings.DEBUG:
-        context['webpack_host'] = settings.WEBPACK['host']
-        context['webpack_entry'] = settings.WEBPACK['entry']
-
     return render(request, 'main/home.html', context)
 
 

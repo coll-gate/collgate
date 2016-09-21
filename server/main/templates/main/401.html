@@ -1,5 +1,8 @@
 {% extends "main/index.html" %}
 
+{% load i18n %}
+{% load bootstrap3 %}
+
 {# main_content #}
 {% block main_content %}
 
@@ -19,4 +22,5 @@
 {% endblock %}
 
 {% block right_content %}
+{% include "main/side_bar.html" %}
 {% endblock %}
