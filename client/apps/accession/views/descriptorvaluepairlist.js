@@ -49,12 +49,15 @@ var View = Marionette.CompositeView.extend({
         //this.listenTo(this.collection, 'remove', this.render, this);
         this.listenTo(this.collection, 'change', this.render, this);
 
-        // pagination on scrolling
+        // pagination on scrolling (done here because on once, and auto off when view destroy)
         $("div.panel-body").scroll($.proxy(function(e) { this.scroll(e); }, this));
     },
 
+    onUpdate: function() {
+        alert();
+    },
+
     onRender: function() {
-        console.log(this.collection.sort_by);
         var sort_by = /([+\-]{0,1})([a-z0-9]+)/.exec(this.collection.sort_by);
         var sort_el = this.$el.find('span[column-name="' + sort_by[2] + '"]');
 
@@ -74,21 +77,31 @@ var View = Marionette.CompositeView.extend({
             sort_el.data('sort', 'asc');
         }
 
-        $(this.ui.table).stickyTableHeaders({scrollableArea: $('div.panel-body')});
+        // reset scrolling
+        this.$el.parent().scrollTop(0);
+    },
+
+    onDomRefresh: function() {
+        // init/reinit sticky table header
+        $(this.ui.table).stickyTableHeaders({scrollableArea: this.$el.parent()});
     },
 
     scroll: function(e) {
+        var view = this;
+
         if (e.target.scrollHeight-e.target.clientHeight == e.target.scrollTop) {
             if (this.collection.next != null) {
                 Logger.debug("descriptorTypeValue::fetch next with cursor=" + (this.collection.next));
                 this.collection.fetch({update: true, remove: false, data: {
-                    cursor: this.collection.next, sort_by: this.collection.sort_by}});
+                    cursor: this.collection.next, sort_by: this.collection.sort_by}}).done(function() {
+                        // resync the sticky table header during scrolling
+                        $(view.ui.table).stickyTableHeaders({scrollableArea: view.$el.parent()});
+                });
             }
-            /*if (this.collection.size() < this.collection.total_count) {
-                Logger.debug("fetch page " + (this.page+1) + " for " + this.collection.total_count + " items");
-                this.collection.fetch({update: true, remove: false, data: {page: ++this.page}});
-            }*/
         }
+
+        // resync the sticky table header during scrolling
+        //$(this.ui.table).stickyTableHeaders({scrollableArea: this.$el.parent()});
     },
 
     sortColumn: function (e) {
@@ -101,11 +114,8 @@ var View = Marionette.CompositeView.extend({
             sort_by = "+" + column;
         }
 
-        console.log(order, sort_by)
-
-        this.collection.reset();
         this.collection.next = null;
-        this.collection.fetch({update: false, remove: true, data: {cursor: null, sort_by: sort_by}});
+        this.collection.fetch({reset: true, update: false, remove: true, data: {cursor: null, sort_by: sort_by}});
     }
 });
 

@@ -19,6 +19,7 @@ var Collection = Backbone.Collection.extend({
 
     initialize: function(models, options) {
         options || (options = {});
+        this.sort_by = "id";
         this.group_id = options.group_id;
         this.type_id = options.type_id;
         this.format = options.format || {type: "string", fields: []};
