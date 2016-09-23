@@ -28,8 +28,8 @@ def fixture():
 
         for code, country in subdata.items():
             countries[code] = {
-                'name': country['name'],
-                'iso': country.get('iso_a2', '')
+                'value0': country['name'],
+                'value1': country.get('iso_a2', '')
             }
 
         results[lang] = countries

@@ -5,23 +5,22 @@
 """
 coll-gate permission REST API
 """
-import operator
 
 from django.contrib.auth.models import Permission, User, Group
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import SuspiciousOperation
-from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
-from functools import reduce
+from django.views.decorators.cache import cache_page
 
 from guardian.models import UserObjectPermission, GroupObjectPermission
 
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
+from igdectk.module.manager import module_manager
 
-from .utils import get_permissions_for
 from .filters import GroupFilter, UserFilter
+from .utils import get_permissions_for
 
 
 class RestPermission(RestHandler):
@@ -85,19 +84,26 @@ class RestPermissionGroupNamePermission(RestPermissionGroupName):
 
 
 @RestPermissionType.def_request(Method.GET, Format.JSON)
-def get_permissions_types(request):
+@cache_page(60*60*24, cache='default', key_prefix='collgate-cache')
+def get_permission_types(request):
     """
     Get the list of permissions type in JSON
     """
+    logger.debug("Cache miss for permission.permission-type")
 
-    ignore_list = (
+    ignore_list = [
         'admin.',
         'contenttypes.',
         'guardian.',
+        'main.profile.',
         'main.settings.',
         'sessions.',
         'sites.',
-    )
+    ]
+
+    for module in module_manager.modules:
+        if hasattr(module, 'ignored_permission_types'):
+            ignore_list.extend(module.ignored_permission_types)
 
     types = []
     add = False

@@ -65,7 +65,7 @@
 /******/ 	}
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "fa478835eaae6a389e05"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "d6db2506ae3f9c221b63"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -628,44 +628,6 @@
 	        // create a global default logger
 	        session.logger = Logger.get('default');
 	
-	        // // capture error on models
-	        // var ErrorHandlingModel = Backbone.Model.extend({
-	        //     initialize: function(attributes, options) {
-	        //         options || (options = {});
-	        //         this.bind("error", this.defaultErrorHandler);
-	        //         this.init && this.init(attributes, options);
-	        //     },
-	        //
-	        //     defaultErrorHandler: function(model, error) {
-	        //         var data = JSON.parse(xhr.responseText);
-	        //         if ((xhr.status >= 401 && xhr.status <= 599) && data.cause) {
-	        //             error(gettext(data.cause));
-	        //         }
-	        //     }
-	        // });
-	        //
-	        // // and set as default Model class
-	        // Backbone.Model = ErrorHandlingModel;
-	        //
-	        // // capture error on collections
-	        // var ErrorHandlingCollection = Backbone.Collection.extend({
-	        //     initialize: function(attributes, options) {
-	        //         options || (options = {});
-	        //         this.bind("error", this.defaultErrorHandler);
-	        //         this.init && this.init(attributes, options);
-	        //     },
-	        //
-	        //     defaultErrorHandler: function(model, xhr) {
-	        //         var data = JSON.parse(xhr.responseText);
-	        //         if ((xhr.status >= 401 && xhr.status <= 599) && data.cause) {
-	        //             error(gettext(data.cause));
-	        //         }
-	        //     }
-	        // });
-	        //
-	        // // and set as default Collection class
-	        // Backbone.Collection = ErrorHandlingCollection;
-	
 	        // capture most of HTTP error and display an alert message
 	        Backbone.originalSync = Backbone.sync;
 	        Backbone.sync = function (method, model, opts) {
@@ -680,10 +642,10 @@
 	
 	            // insert csrf token when necessary
 	            opts.beforeSend = function(xhr) {
-	                // always add the csrf token to safe method ajax query
-	                if (!csrfSafeMethod(method) && !opts.crossDomain) {
+	                // always add the csrf token to non safe method ajax query
+	                if (method !== "read" && !opts.crossDomain) {
 	                    xhr.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
-	                }
+	                 }
 	            };
 	
 	            xhr = Backbone.originalSync(method, model, _.omit(opts, 'success', 'error'));
@@ -691,16 +653,30 @@
 	            // success : forward to the deferred
 	            xhr.done(dfd.resolve);
 	
+	            // for each form automatically add the CSRF token
+	            xhr.done(function() {
+	                var csrftoken = getCookie('csrftoken');
+	                $('form').each(function(index, el) {
+	                    $(this).find('input[name="csrfmiddlewaretoken"]').attr('value', csrftoken)
+	                });
+	            });
+	
 	            // failure : resolve or reject the deferred according to your cases
 	            xhr.fail(function() {
 	                console.log("ajaxError: " + xhr.statusText + " " + xhr.responseText);
 	                if (xhr.status === 200 && xhr.responseText === "") {
 	                    alert("!! this should not arrives, please contact your administrator !!");
 	                    dfd.resolve.apply(xhr, arguments);
+	                } else if (xhr.status === 401) {
+	                    dfd.reject.apply(xhr, arguments);
+	
+	                    // fallback to home page to force user to log
+	                    // Backbone.history.navigate('/home/', {trigger: true});
+	                    window.location.assign(application.baseUrl + 'app/home/');
 	                } else {
 	                    var data = JSON.parse(xhr.responseText);
 	                    //if ((xhr.status >= 400 && xhr.status <= 599) && data && (typeof(data.cause) === "string")) {
-	                    //    error(gettext(data.cause));
+	                    //    $.alert.error(gettext(data.cause));
 	                    //}
 	                    dfd.reject.apply(xhr, arguments);
 	                }
@@ -713,6 +689,18 @@
 	    onStart: function(options) {
 	        // Starts the URL handling framework and automatically route as possible
 	        Backbone.history.start({pushState: true, silent: false, root: '/coll-gate'});
+	
+	        $.alert({container: 'div.panel-body'/*'#main_content'*/, className: 'alert'});
+	        $.alert.update();
+	
+	        // add alerted initiated by django server side
+	        if (typeof initials_alerts !== "undefined") {
+	            for (var alert in initials_alerts) {
+	                $.alert.message(initials_alerts[alert].type, initials_alerts[alert].msg);
+	            }
+	
+	            delete initials_alerts;
+	        }
 	
 	        Logger.timeEnd('Application startup');
 	    }
@@ -17967,7 +17955,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
-	 * @file item.js
+	 * @file selectoptionitemview.js
 	 * @brief View for single value based on collection, and for select widgets.
 	 * @author Frederic SCHERMA
 	 * @date 2016-05-20
@@ -17994,21 +17982,32 @@
 	    onRender: function(e) {
 	    },
 	
-	    htmlFromValue: function(parent) {
+	    htmlFromValue: function(parent, idOrValue) {
 	        var view = this;
+	        idOrValue || (idOrValue = 'value');
 	
 	        if (this.collection.size() > 0) {
 	            $(parent).find('.' + view.className).each(function (idx, el) {
 	                var _el = $(el);
-	                var html = view.collection.findValue(_el.attr("value"));
-	                _el.html(html);
+	                var value = _el.attr("value");
+	
+	                var model = view.collection.find(function(model) {
+	                    return model.get(idOrValue) == value;
+	                });
+	
+	                _el.html(model ? model.get('label') : "");
 	            });
 	        } else {
 	            this.collection.on("sync", function () {
 	                $(parent).find('.' + view.className).each(function (idx, el) {
 	                    var _el = $(el);
-	                    var html = view.collection.findValue(_el.attr("value"));
-	                    _el.html(html);
+	                    var value = _el.attr("value");
+	
+	                    var model = view.collection.find(function(model) {
+	                        return model.get(idOrValue) == value;
+	                    });
+	
+	                    _el.html(model ? model.get('label') : "");
 	                });
 	            }, this);
 	        }
@@ -18061,21 +18060,21 @@
 	__p += ' ';
 	 if (item.options != undefined) { ;
 	__p += ' <optgroup label="' +
-	((__t = ( item.value )) == null ? '' : __t) +
+	((__t = ( item.label )) == null ? '' : __t) +
 	'"> ';
 	 _.each(item.options, function(subitem) { ;
 	__p += ' <option value="' +
-	((__t = ( subitem.id )) == null ? '' : __t) +
+	((__t = ( subitem.value )) == null ? '' : __t) +
 	'">' +
-	((__t = ( /*django.gettext*/(subitem.value) )) == null ? '' : __t) +
+	((__t = ( subitem.label )) == null ? '' : __t) +
 	'</option> ';
 	 }) ;
 	__p += ' </optgroup> ';
 	 } else { ;
 	__p += ' <option value="' +
-	((__t = ( item.id )) == null ? '' : __t) +
+	((__t = ( item.value )) == null ? '' : __t) +
 	'">' +
-	((__t = ( /*django.gettext*/(item.value) )) == null ? '' : __t) +
+	((__t = ( item.label )) == null ? '' : __t) +
 	'</option> ';
 	 } ;
 	__p += ' ';
@@ -18112,17 +18111,17 @@
 	    },
 	
 	    default: [
-	        {value: 'en', name: gt.gettext("English")},
-	        {value: 'fr', name: gt.gettext("French")},
+	        {id: 'en', value: 'en', label: gt.gettext("English")},
+	        {id: 'fr', value: 'fr', label: gt.gettext("French")},
 	    ],
 	
-	    findValue: function(id) {
-	        var res = this.findWhere({id: id});
-	        return res ? res.get('value') : '';
+	    findLabel: function(value) {
+	        var res = this.findWhere({value: value});
+	        return res ? res.get('label') : '';
 	        /*for (var r in this.models) {
 	            var m = this.models[r];
-	            if (m.get('id') == id)
-	                return m.get('value');
+	            if (m.get('value') == value)
+	                return m.get('label');
 	        }*/
 	    },
 	});
@@ -18146,7 +18145,11 @@
 	
 	module.exports = Backbone.Model.extend({
 	    defaults: function() {
-	        return {id: '', value: ''}
+	        return {
+	            id: 0,
+	            value: '',
+	            label: ''
+	        }
 	    },
 	    url: application.baseUrl + 'main/language/:id'
 	});
@@ -18172,21 +18175,27 @@
 	    url: application.baseUrl + 'main/content-type',
 	    model: ContentTypeModel,
 	
-	    parse: function(data) {
+	    toJSON: function() {
 	        var result = [];
 	        var prev = "";
 	        var group = {};
 	
-	        for (var i = 0; i < data.length; ++i) {
-	            var id = data[i].id.split('.');
+	        for (var i = 0; i < this.models.length; ++i) {
+	            var model = this.models[i];
+	            var value = model.get('value').split('.');
 	
-	            if (id[0] != prev) {
-	                group = {value: id[0], options: []};
+	            if (value[0] != prev) {
+	                group = {id: -1, value: value[0], label: value[0], options: []};
 	                result.push(group);
 	            }
 	
-	            group.options.push({id: data[i].id, value: data[i].value});
-	            prev = id[0];
+	            group.options.push({
+	                id: model.get('id'),
+	                value: model.get('value'),
+	                label: model.get('label')
+	            });
+	
+	            prev = value[0];
 	        }
 	
 	        return result;
@@ -18199,18 +18208,9 @@
 	        return res ? res.get('value') : '';
 	    },
 	
-	    getVerboseName: function(id) {
-	        var res = this.findWhere({id: id});
-	
-	        switch (res.get('value')) {
-	            case "taxonomy.taxon":
-	                return gt.gettext("Taxon");
-	            case "taxonomy.taxonsynonym":
-	                return gt.gettext("Taxon synonym");
-	
-	            default:
-	                return res.get('value');
-	        }
+	    findLabel: function(value) {
+	        var res = this.findWhere({value: value});
+	        return res ? res.get('label') : '';
 	    }
 	});
 	
@@ -18236,9 +18236,10 @@
 	
 	    defaults: function() {
 	        return {
-	            id: '',
-	            name: '',
-	            value: ''
+	            id: 0,
+	            value: '',
+	            label: '',
+	            group: ''
 	        }
 	    }
 	});
@@ -18746,7 +18747,7 @@
 /***/ function(module, exports) {
 
 	module.exports = {
-		"Invalid characters (alphanumeric, _ and - only)": "Caractères invalides (alphanumeric, _ et - seulement)",
+		"Invalid characters (alphanumeric, _ and - only)": "Caractères invalides (alphanumerique, _ et - seulement)",
 		"3 characters min": "3 caractères minimum",
 		"Group name already in usage": "Nom de groupe déjà utilisé",
 		"Select a username": "Saisissez un nom d'utilisateur",
@@ -18789,39 +18790,52 @@
 	    url: application.baseUrl + 'permission/type/',
 	    model: PermissionTypeModel,
 	
-	    parse: function(data) {
+	    toJSON: function() {
 	        var result = [];
 	        var prev = "";
 	        var group = {};
 	
-	        for (var i = 0; i < data.length; ++i) {
-	            var id = data[i].id.split('.');
-	            var f = id[0] + '.' + id[1];
+	        for (var i = 0; i < this.models.length; ++i) {
+	            var model = this.models[i];
+	            var value = model.get('value').split('.');
+	            var f = value[0] + '.' + value[1];
 	
 	            if (f != prev) {
-	                group = {value: f, options: []};
+	                group = {id: -1, value: "", label: f, options: []};
 	                result.push(group);
 	            }
 	
-	            group.options.push(data[i]);
+	            group.options.push({
+	                id: model.get('id'),
+	                value: model.get('value'),
+	                label: model.get('label')
+	            });
+	
 	            prev = f;
 	        }
 	
 	        return result;
 	    },
 	
-	    default: [
-	    ],
-	
 	    findValue: function(id) {
-	        var res = this.findWhere({id: id});
-	        return res ? res.get('value') : '';
-	        /*for (var r in this.models) {
+	        for (var r in this.models) {
 	            var m = this.models[r];
 	            if (m.get('id') == id)
 	                return m.get('value');
-	        }*/
+	        }
+	        // var res = this.findWhere({id: id});
+	        // return res ? res.get('value') : '';
 	    },
+	
+	    findLabel: function(value) {
+	        for (var r in this.models) {
+	            var m = this.models[r];
+	            if (m.get('value') == value)
+	                return m.get('label');
+	        }
+	        // var res = this.findWhere({id: id});
+	        // return res ? res.get('label') : '';
+	    }
 	});
 	
 	module.exports = Collection;
@@ -18842,10 +18856,15 @@
 	 */
 	
 	module.exports = Backbone.Model.extend({
+	    url: application.baseUrl + 'permission/type/:id',
+	
 	    defaults: function() {
-	        return {id: '', value: ''}
-	    },
-	    url: application.baseUrl + 'permission/type/:id'
+	        return {
+	            id: 0,
+	            value: '',
+	            name: ''
+	        }
+	    }
 	});
 
 
@@ -20433,17 +20452,19 @@
 		"List of audit entries related to user": "Liste des entrées d'audits pour l'utilisateur",
 		"Select an entity UUID or name": "Sélectionnez une entité par son UUID ou son nom",
 		"List of audit entries related to entity": "Liste des entrées d'audits pour l'entité",
-		"Audit": "Audit",
-		"User": "Utilisateur",
-		"Reason": "Raison",
-		"Fields": "Champs",
 		"Get audits entries for an entity": "Récupérer les entrées d'audits pour une entité",
 		"Entity content type": "Type entité",
 		"Entity UUID or name": "UUID ou nom de l'entité",
 		"Cancel": "Annuler",
 		"Search": "Chercher",
 		"Get audits entries for a user": "Récupérer les entrées d'audits pour un utilisateur",
-		"Username": "Nom d'utilisateur"
+		"Username": "Nom d'utilisateur",
+		"User": "Utilisateur",
+		"Date": "Date",
+		"Entity": "Entité",
+		"Type": "Type",
+		"Action": "Action",
+		"Details": "Détails"
 	};
 
 /***/ },
@@ -20634,7 +20655,7 @@
 	                $(this.el).modal();
 	
 	                application.main.views.contentTypes.drawSelect(this.ui.content_type);
-	                application.main.views.contentTypes.htmlFromValue(this.el);
+	                //application.main.views.contentTypes.htmlFromValue(this.el);
 	
 	                $(this.ui.entity).select2({
 	                    dropdownParent: $(this.el),
@@ -20845,8 +20866,7 @@
 	        model: undefined,
 	        object_id: undefined,
 	        object_name: '',
-	        reason: '',
-	        fields: []
+	        fields: {}
 	    },
 	
 	    init: function(options) {
@@ -20913,7 +20933,7 @@
 	    scroll: function(e) {
 	        if (e.target.scrollHeight-e.target.clientHeight == e.target.scrollTop) {
 	            if (this.collection.next != null) {
-	                Logger.debug("fetch page " + (this.collection.next));
+	                Logger.debug("audit::fetch next with cursor=" + (this.collection.next));
 	                this.collection.fetch({update: true, remove: false, data: {cursor: this.collection.next}});
 	            }
 	        }
@@ -20948,6 +20968,14 @@
 	    },
 	    template: __webpack_require__(96),
 	
+	    ui: {
+	        show: 'span.show-entity',
+	    },
+	
+	    events: {
+	        'click @ui.show': 'showEntity',
+	    },
+	
 	    initialize: function() {
 	        this.listenTo(this.model, 'reset', this.render, this);
 	    },
@@ -20955,6 +20983,10 @@
 	    onRender: function() {
 	        $(this.el).find("td abbr.datetime").localizeDate(null, session.language);
 	    },
+	
+	    showEntity: function () {
+	        alert();
+	    }
 	});
 	
 	module.exports = View;
@@ -20984,14 +21016,26 @@
 	__p += ' <td object-id="' +
 	__e( object_id ) +
 	'"><abbr title="' +
-	__e( content_type ) +
+	__e( object_id ) +
 	'">' +
 	((__t = ( object_name )) == null ? '' : __t) +
+	'</abbr></td> ';
+	 } else if (typeof(fields.name) !== "undefined") { ;
+	__p += ' <td object-id="' +
+	__e( object_id ) +
+	'"><abbr title="' +
+	__e( object_id ) +
+	'">' +
+	((__t = ( fields.name )) == null ? '' : __t) +
 	'</abbr></td> ';
 	 } else { ;
 	__p += ' <td>N/A</td> ';
 	 } ;
-	__p += ' <td> ';
+	__p += ' <td><abbr title="' +
+	__e( content_type ) +
+	'">' +
+	__e( application.main.collections.contentType.findLabel(content_type) ) +
+	'</abbr></td><td> ';
 	 if (type == 0) { ;
 	__p += ' <abbr title="' +
 	((__t = ( gt.gettext('Created') )) == null ? '' : __t) +
@@ -21017,11 +21061,7 @@
 	((__t = ( gt.gettext('Unkown') )) == null ? '' : __t) +
 	'"><span class="glyphicon glyphicon-question-sign"></span></abbr> ';
 	 } ;
-	__p += ' </td><td>' +
-	__e( reason ) +
-	'</td><td>' +
-	__e( fields ) +
-	'</td>';
+	__p += ' </td><td><span class="btn btn-xs btn-primary show-entity">Show</span></td>';
 	
 	}
 	return __p
@@ -21045,11 +21085,11 @@
 	'</th><th>' +
 	((__t = ( gt.gettext("Entity") )) == null ? '' : __t) +
 	'</th><th>' +
+	((__t = ( gt.gettext("Type") )) == null ? '' : __t) +
+	'</th><th>' +
 	((__t = ( gt.gettext("Action") )) == null ? '' : __t) +
 	'</th><th>' +
-	((__t = ( gt.gettext("Reason") )) == null ? '' : __t) +
-	'</th><th>' +
-	((__t = ( gt.gettext("Field") )) == null ? '' : __t) +
+	((__t = ( gt.gettext("Details") )) == null ? '' : __t) +
 	'</th></tr></thead><tbody class="audit-list"></tbody></table>';
 	
 	}
@@ -21208,7 +21248,7 @@
 		"Taxon name already in usage": "Ce nom de taxon est déjà utilisé",
 		"List of taxons": "Liste des taxons",
 		"Taxon details": "Détails du taxon",
-		"Enter a taxon name. 3 characters at least for auto-completion": "",
+		"Enter a taxon name. 3 characters at least for auto-completion": "Saisissez un nom de taxon. 3 caractères minimum pour l'auto-complétion",
 		"Family rank cannot have a parent taxon": "Le rang taxinomique famille ne peut pas avoir de parent",
 		"This rank must have a parent taxon": "Ce rang taxinomique doit avoir un parent",
 		"Taxon successfully created !": "Taxon créé avec succès !",
@@ -21221,9 +21261,7 @@
 		"Taxon rank": "Rank taxinomique",
 		"Direct parent": "Parent direct",
 		"Cancel": "Annuler",
-		"Create": "Créer",
-		"taxonomy.taxon": "Taxon",
-		"taxonomy.taxonsynonym": "Synonyme de taxon"
+		"Create": "Créer"
 	};
 
 /***/ },
@@ -21246,10 +21284,6 @@
 	    url: application.baseUrl + 'taxonomy/rank/',
 	    model: TaxonRankModel,
 	
-	    parse: function(data) {
-	        return data;
-	    },
-	
 	    findValue: function(id) {
 	        for (var r in this.models) {
 	            var rank = this.models[r];
@@ -21257,6 +21291,14 @@
 	                return rank.get('value');
 	        }
 	    },
+	
+	    findLabel: function(value) {
+	        for (var r in this.models) {
+	            var rank = this.models[r];
+	            if (rank.get('value') == value)
+	                return rank.get('label');
+	        }
+	    }
 	});
 	
 	module.exports = TaxonRankCollection;
@@ -21277,10 +21319,15 @@
 	 */
 	
 	module.exports = Backbone.Model.extend({
+	    url: application.baseUrl + 'taxonomy/rank/:id',
+	
 	    defaults: function() {
-	        return {id: '', value: ''}
-	    },
-	    url: application.baseUrl + 'taxonomy/rank/:id'
+	        return {
+	            id: 0,
+	            value: 0,
+	            label: ''
+	        }
+	    }
 	});
 
 
@@ -21304,13 +21351,6 @@
 	    url: application.baseUrl + 'taxonomy/taxon-synonym-type/',
 	    model: TaxonSynonymTypeModel,
 	
-	    parse: function(data) {
-	        return data;
-	    },
-	
-	    default: [
-	    ],
-	    
 	    findValue: function(id) {
 	        for (var r in this.models) {
 	            var m = this.models[r];
@@ -21318,6 +21358,14 @@
 	                return m.get('value');
 	        }
 	    },
+	
+	    findLabel: function(value) {
+	        for (var r in this.models) {
+	            var m = this.models[r];
+	            if (m.get('value') == value)
+	                return m.get('label');
+	        }
+	    }
 	});
 	
 	module.exports = Collection;
@@ -21341,7 +21389,11 @@
 	    url: application.baseUrl + 'taxonomy/taxon-synonym-type/:id',
 	
 	    defaults: function() {
-	        return {id: '', value: ''}
+	        return {
+	            id: 0,
+	            value: 0,
+	            label: ''
+	        }
 	    },
 	});
 
@@ -21598,12 +21650,12 @@
 	                    parentId = parseInt($(this.ui.parent).select2('data')[0].id || '0');
 	
 	                if (rankId == 60 && parentId != 0) {
-	                    error(gt.gettext("Family rank cannot have a parent taxon"));
+	                    $.alert.error(gt.gettext("Family rank cannot have a parent taxon"));
 	                    valid = false;
 	                }
 	
 	                if (rankId > 60 && parentId <= 0) {
-	                    error(gt.gettext("This rank must have a parent taxon"));
+	                    $.alert.error(gt.gettext("This rank must have a parent taxon"));
 	                    valid = false;
 	                }
 	
@@ -21627,7 +21679,7 @@
 	                        wait: true,
 	                        success: function (model, resp, options) {
 	                            view.remove();
-	                            success(gettext("Taxon successfully created !"));
+	                            $.alert.success(gt.gettext("Taxon successfully created !"));
 	                        }
 	                    });
 	                    /*
@@ -22242,8 +22294,8 @@
 	        var DescriptorRouter = __webpack_require__(117);
 	        this.routers.descriptor = new DescriptorRouter();
 	
-	        // var AccessionCollection = require('./collections/accession');
-	        // this.collections.accession = new AccessionCollection();
+	        var DescriptorModelRouter = __webpack_require__(146);
+	        this.routers.descriptorModel = new DescriptorModelRouter();
 	
 	        var DescriptorGroupCollection = __webpack_require__(121);
 	        this.collections.descriptorGroup = new DescriptorGroupCollection();
@@ -22267,29 +22319,44 @@
 /***/ function(module, exports) {
 
 	module.exports = {
-		"Invalid characters (alphanumeric, _ and - only)": "Caractères invalides (alphanumeric, _ et - seulement)",
+		"Invalid characters (alphanumeric, _ and - only)": "Caractères invalides (alphanumérique, _ et - seulement)",
 		"3 characters min": "3 caractères minimum",
-		"Group name already in usage": "Nom de group déjà utilisé",
+		"Group name already in usage": "Nom de groupe déjà utilisé",
 		"Descriptor type name already in usage": "Nom de type de descriptor déjà utilisé",
-		"1 character min": "",
+		"1 character min": "1 caractère minimum",
 		"List of groups of descriptors": "Liste de groupes de descripteurs",
 		"Types of descriptors for the group": "Types de descripteurs pour le groupe",
 		"Details for the type of descriptor": "Détails pour le type de descripteur",
 		"Values for the type of descriptor": "Valeurs pour le type de descripteur",
 		"Name": "Nom",
 		"Number of types of descriptors": "Nombre de types de descripteurs",
+		"Descriptor type name": "Nom du type de descripteur",
+		"Descriptor type code": "Code du type de descripteur",
+		"Type of format": "Type de format",
+		"Boolean": "Booléen",
+		"Numeric": "Numérique",
+		"Numeric range": "Plage numérique",
+		"Ordinal": "Ordinal",
+		"GPS coordinate": "Coordonnée GPS",
+		"Text": "Texte",
+		"Single enumeration": "Simple énumération",
+		"Pair enumeration": "Enumération de paires",
+		"Ordinal with text": "Ordinal avec texte",
+		"First field": "Premier champs",
+		"Second field": "Second champs",
+		"Unit of the format": "Unité du format",
+		"Custom unit name": "Nom d'unité personnalisée",
+		"Precision of the decimal": "Précision de la décimale",
+		"Minimal range value": "Valeur minimale",
+		"Maximal range value": "Valeur maximale",
+		"Regular expression": "Expression régulière",
+		"Update": "Mettre à jour",
 		"Code": "Code",
 		"Number of values": "Nombre de valeurs",
 		"Id": "Id",
 		"Value": "Valeur",
-		"taxonomy.accession": "Accession",
-		"taxonomy.accessionsynonym": "Synonyme d'accession",
-		"taxonomy.batch": "Lot",
-		"taxonomy.sample": "Sample",
-		"taxonomy.asset": "Panel",
-		"taxonomy.descriptorgroup": "Group de type de descripteur",
-		"taxonomy.descriptortype": "Type de descripteur",
-		"taxonomy.descriptorvalue": "Valeur de descripteur"
+		"Single value": "Valeur simple",
+		"List of values": "Liste de valeurs"
 	};
 
 /***/ },
@@ -22395,7 +22462,7 @@
 	var Router = Marionette.AppRouter.extend({
 	    routes : {
 	        "app/accession/descriptor/group/": "getDescriptorGroupList",
-	        // "app/accession/descriptor/group/:id/": "getDescriptorGroup", only POST here
+	        // "app/accession/descriptor/group/:id/": "getDescriptorGroup",  // only POST
 	        "app/accession/descriptor/group/:id/type/": "getDescriptorTypeListForGroup",
 	        "app/accession/descriptor/group/:id/type/:id/": "getDescriptorTypeForGroup",
 	        "app/accession/descriptor/group/:id/type/:id/value/": "getDescriptorValueListForType",
@@ -22459,20 +22526,28 @@
 	        var defaultLayout = new DefaultLayout();
 	        application.mainRegion.show(defaultLayout);
 	
-	        collection.fetch();
-	
 	        var model = new DescriptorTypeModel({group_id: gid, id: tid});
 	        model.fetch().then(function () {
 	            defaultLayout.title.show(new TitleView({title: gt.gettext("Values for the type of descriptor"), object: model.get('name')}));
 	
 	            collection.fetch().then(function () {
 	                if (model.get('format').type === "enum_single") {
+	                    // TODO edit value
 	                    defaultLayout.content.show(new DescriptorValueListView({
 	                        read_only: true,
 	                        collection: collection,
 	                        model: model
 	                    }));
 	                } else if (model.get('format').type === "enum_pair") {
+	                    // TODO edit values
+	                    defaultLayout.content.show(new DescriptorValuePairListView({
+	                        read_only: true,
+	                        collection: collection,
+	                        model: model
+	                    }));
+	                } else if (model.get('format').type === "enum_ordinal") {
+	                    // TODO specific view in way to only edit the label
+	                    // and to not add/remove some value
 	                    defaultLayout.content.show(new DescriptorValuePairListView({
 	                        read_only: true,
 	                        collection: collection,
@@ -22482,10 +22557,6 @@
 	            });
 	        });
 	    },
-	
-	    /*getDescriptorValueForType: function (gid, tid, id) {
-	        alert(gid); alert(tid);
-	    }*/
 	});
 	
 	module.exports = Router;
@@ -22635,7 +22706,10 @@
 	
 	    defaults: {
 	        id: null,
-	        value: null,
+	        parent: null,
+	        ordinal: null,
+	        value0: null,
+	        value1: null,
 	    },
 	
 	    initialize: function(options) {
@@ -22690,8 +22764,9 @@
 	    model: DescriptorGroupModel,
 	
 	    parse: function(data) {
-	        this.page = data.page;
-	        this.total_count = data.total_count;
+	        this.prev = data.prev;
+	        this.cursor = data.cursor;
+	        this.next = data.next;
 	
 	        return data.items;
 	    },
@@ -22729,8 +22804,9 @@
 	    },
 	
 	    parse: function(data) {
-	        this.page = data.page;
-	        this.total_count = data.total_count;
+	        this.prev = data.prev;
+	        this.cursor = data.cursor;
+	        this.next = data.next;
 	
 	        return data.items;
 	    },
@@ -22766,7 +22842,7 @@
 	        options || (options = {});
 	        this.group_id = options.group_id;
 	        this.type_id = options.type_id;
-	        this.format = options.format || {type: "string", fields: ["name"]};
+	        this.format = options.format || {type: "string", fields: []};
 	    },
 	
 	    parse: function(data) {
@@ -22774,8 +22850,10 @@
 	            this.format = data.format;
 	        }
 	
-	        this.page = data.page;
-	        this.total_count = data.total_count;
+	        this.prev = data.prev;
+	        this.cursor = data.cursor;
+	        this.next = data.next;
+	        this.sort_by = data.sort_by;
 	
 	        return data.items;
 	    },
@@ -22813,8 +22891,6 @@
 	        //this.listenTo(this.collection, 'remove', this.render, this);
 	        this.listenTo(this.collection, 'change', this.render, this);
 	
-	        this.page = 1;
-	
 	        // pagination on scrolling
 	        $("div.panel-body").scroll($.proxy(function(e) { this.scroll(e); }, this));
 	    },
@@ -22824,9 +22900,9 @@
 	
 	    scroll: function(e) {
 	        if (e.target.scrollHeight-e.target.clientHeight == e.target.scrollTop) {
-	            if (this.collection.size() < this.collection.total_count) {
-	                Logger.debug("fetch page " + (this.page+1) + " for " + this.collection.total_count + " items");
-	                this.collection.fetch({update: true, remove: false, data: {page: ++this.page}});
+	            if (this.collection.next != null) {
+	                Logger.debug("descriptorGroup::fetch next with cursor=" + (this.collection.next));
+	                this.collection.fetch({update: true, remove: false, data: {cursor: this.collection.next}});
 	            }
 	        }
 	    },
@@ -22967,8 +23043,6 @@
 	        //this.listenTo(this.collection, 'remove', this.render, this);
 	        this.listenTo(this.collection, 'change', this.render, this);
 	
-	        this.page = 1;
-	
 	        // pagination on scrolling
 	        $("div.panel-body").scroll($.proxy(function(e) { this.scroll(e); }, this));
 	    },
@@ -22978,9 +23052,9 @@
 	
 	    scroll: function(e) {
 	        if (e.target.scrollHeight-e.target.clientHeight == e.target.scrollTop) {
-	            if (this.collection.size() < this.collection.total_count) {
-	                Logger.debug("fetch page " + (this.page+1) + " for " + this.collection.total_count + " items");
-	                this.collection.fetch({update: true, remove: false, data: {page: ++this.page}});
+	            if (this.collection.next != null) {
+	                Logger.debug("descriptorType::fetch next with cursor=" + (this.collection.next));
+	                this.collection.fetch({update: true, remove: false, data: {cursor: this.collection.next}});
 	            }
 	        }
 	    },
@@ -23134,7 +23208,14 @@
 	    childViewContainer: 'tbody.descriptor-value-list',
 	
 	    ui: {
-	        table: "table.descriptor-table"
+	        table: "table.descriptor-table",
+	        sort_by_id: "th span.action.column-sort-id",
+	        sort_by_value0: "th span.action.column-sort-value0"
+	    },
+	
+	    events: {
+	        'click @ui.sort_by_id': 'sortColumn',
+	        'click @ui.sort_by_value0': 'sortColumn',
 	    },
 	
 	    initialize: function() {
@@ -23143,24 +23224,60 @@
 	        //this.listenTo(this.collection, 'remove', this.render, this);
 	        this.listenTo(this.collection, 'change', this.render, this);
 	
-	        this.page = 1;
-	
 	        // pagination on scrolling
 	        $("div.panel-body").scroll($.proxy(function(e) { this.scroll(e); }, this));
 	    },
 	
 	    onRender: function() {
+	        var sort_by = /([+\-]{0,1})([a-z0-9]+)/.exec(this.collection.sort_by);
+	        var sort_el = this.$el.find('span[column-name="' + sort_by[2] + '"]');
+	
+	        if (sort_by[1] === '-') {
+	            if ((sort_el.attr('column-type') || "alpha") === "numeric") {
+	                sort_el.addClass('glyphicon-sort-by-order-alt');
+	            } else {
+	                sort_el.addClass('glyphicon-sort-by-alphabet-alt');
+	            }
+	            sort_el.data('sort', 'desc');
+	        } else {
+	            if ((sort_el.attr('column-type') || "alpha") === "numeric") {
+	                sort_el.addClass('glyphicon-sort-by-order');
+	            } else {
+	                sort_el.addClass('glyphicon-sort-by-alphabet');
+	            }
+	            sort_el.data('sort', 'asc');
+	        }
+	
 	        $(this.ui.table).stickyTableHeaders({scrollableArea: $('div.panel-body')});
 	    },
 	
 	    scroll: function(e) {
 	        if (e.target.scrollHeight-e.target.clientHeight == e.target.scrollTop) {
-	            if (this.collection.size() < this.collection.total_count) {
+	            if (this.collection.next != null) {
+	                Logger.debug("descriptorTypeValue::fetch next with cursor=" + (this.collection.next));
+	                this.collection.fetch({update: true, remove: false, data: {cursor: this.collection.next}});
+	            }
+	  /*          if (this.collection.size() < this.collection.total_count) {
 	                Logger.debug("fetch page " + (this.page+1) + " for " + this.collection.total_count + " items");
 	                this.collection.fetch({update: true, remove: false, data: {page: ++this.page}});
-	            }
+	            }*/
 	        }
 	    },
+	
+	    sortColumn: function (e) {
+	        var column = $(e.target).attr('column-name') || "id";
+	        var order = $(e.target).data('sort') || "none";
+	
+	        if (order === "asc") {
+	            sort_by = "-" + column;
+	        } else {
+	            sort_by = "+" + column;
+	        }
+	
+	        //this.collection.reset();
+	        this.collection.next = null;
+	        this.collection.fetch({update: false, remove: true, data: {cursor: null, sort_by: sort_by}});
+	    }
 	});
 	
 	module.exports = View;
@@ -23234,10 +23351,10 @@
 	((__t = ( id )) == null ? '' : __t) +
 	'">' +
 	((__t = ( id )) == null ? '' : __t) +
-	'</td><td class="action edit-descriptor-name" name="name" value="' +
-	((__t = ( value.name )) == null ? '' : __t) +
+	'</td><td class="action edit-descriptor-value0" name="value0" value="' +
+	((__t = ( value0 )) == null ? '' : __t) +
 	'">' +
-	((__t = ( value.name )) == null ? '' : __t) +
+	((__t = ( value0 )) == null ? '' : __t) +
 	'</td>';
 	
 	}
@@ -23255,11 +23372,11 @@
 	obj || (obj = {});
 	var __t, __p = '';
 	with (obj) {
-	__p += '<div class="element object descriptor-value-list" object-type="descriptor-value-list" style="width:100%"><table class="table table-striped descriptor-table"><thead><tr class="sticky-header"><th><span class="glyphicon glyphicon-asterisk"></span></th><th>' +
+	__p += '<div class="element object descriptor-value-list" object-type="descriptor-value-list" style="width:100%"><table class="table table-striped descriptor-table"><thead><tr class="sticky-header"><th class="unselectable"><span class="glyphicon glyphicon-asterisk"></span></th><th class="unselectable">' +
 	((__t = ( gt.gettext("Id") )) == null ? '' : __t) +
-	'</th><th>' +
+	'&nbsp;<span class="action column-sort-id glyphicon glyphicon-sort" column-name="id" column-type="numeric"></span></th><th class="unselectable">' +
 	((__t = ( gt.gettext("Value") )) == null ? '' : __t) +
-	'</th></tr></thead><tbody class="descriptor-value-list"></tbody></table></div>';
+	'&nbsp;<span class="action column-sort-value0 glyphicon glyphicon-sort" column-name="value0" column-type="alpha"></span></th></tr></thead><tbody class="descriptor-value-list"></tbody></table></div>';
 	
 	}
 	return __p
@@ -23286,23 +23403,33 @@
 	
 	var View = Marionette.CompositeView.extend({
 	    template: __webpack_require__(139),
-	    templateHelpers: function() {
+	    childView: DescriptorValuePairView,
+	    childViewContainer: 'tbody.descriptor-value-list',
+	
+	    /*templateHelpers: function() {
 	        return {
 	            format: this.collection.format,
 	            items: this.collection.toJSON()
 	        };
-	    },
+	    },*/
 	    childViewOptions: function () {
 	        return {
 	            can_delete: this.model.get('can_delete'),
 	            can_modify: this.model.get('can_modify')
 	        }
 	    },
-	    childView: DescriptorValuePairView,
-	    childViewContainer: 'tbody.descriptor-value-list',
 	
 	    ui: {
-	        table: "table.descriptor-table"
+	        table: "table.descriptor-table",
+	        sort_by_id: "th span.action.column-sort-id",
+	        sort_by_value0: "th span.action.column-sort-value0",
+	        sort_by_value1: "th span.action.column-sort-value1"
+	    },
+	
+	    events: {
+	        'click @ui.sort_by_id': 'sortColumn',
+	        'click @ui.sort_by_value0': 'sortColumn',
+	        'click @ui.sort_by_value1': 'sortColumn',
 	    },
 	
 	    initialize: function() {
@@ -23311,24 +23438,63 @@
 	        //this.listenTo(this.collection, 'remove', this.render, this);
 	        this.listenTo(this.collection, 'change', this.render, this);
 	
-	        this.page = 1;
-	
 	        // pagination on scrolling
 	        $("div.panel-body").scroll($.proxy(function(e) { this.scroll(e); }, this));
 	    },
 	
 	    onRender: function() {
+	        console.log(this.collection.sort_by);
+	        var sort_by = /([+\-]{0,1})([a-z0-9]+)/.exec(this.collection.sort_by);
+	        var sort_el = this.$el.find('span[column-name="' + sort_by[2] + '"]');
+	
+	        if (sort_by[1] === '-') {
+	            if ((sort_el.attr('column-type') || "alpha") === "numeric") {
+	                sort_el.addClass('glyphicon-sort-by-order-alt');
+	            } else {
+	                sort_el.addClass('glyphicon-sort-by-alphabet-alt');
+	            }
+	            sort_el.data('sort', 'desc');
+	        } else {
+	            if ((sort_el.attr('column-type') || "alpha") === "numeric") {
+	                sort_el.addClass('glyphicon-sort-by-order');
+	            } else {
+	                sort_el.addClass('glyphicon-sort-by-alphabet');
+	            }
+	            sort_el.data('sort', 'asc');
+	        }
+	
 	        $(this.ui.table).stickyTableHeaders({scrollableArea: $('div.panel-body')});
 	    },
 	
 	    scroll: function(e) {
 	        if (e.target.scrollHeight-e.target.clientHeight == e.target.scrollTop) {
-	            if (this.collection.size() < this.collection.total_count) {
+	            if (this.collection.next != null) {
+	                Logger.debug("descriptorTypeValue::fetch next with cursor=" + (this.collection.next));
+	                this.collection.fetch({update: true, remove: false, data: {cursor: this.collection.next}});
+	            }
+	            /*if (this.collection.size() < this.collection.total_count) {
 	                Logger.debug("fetch page " + (this.page+1) + " for " + this.collection.total_count + " items");
 	                this.collection.fetch({update: true, remove: false, data: {page: ++this.page}});
-	            }
+	            }*/
 	        }
 	    },
+	
+	    sortColumn: function (e) {
+	        var column = $(e.target).attr('column-name') || "id";
+	        var order = $(e.target).data('sort') || "none";
+	
+	        if (order === "asc") {
+	            sort_by = "-" + column;
+	        } else {
+	            sort_by = "+" + column;
+	        }
+	
+	        console.log(sort_by)
+	
+	        //this.collection.reset();
+	        this.collection.next = null;
+	        this.collection.fetch({update: false, remove: true, data: {cursor: null, sort_by: sort_by}});
+	    }
 	});
 	
 	module.exports = View;
@@ -23408,10 +23574,10 @@
 	((__t = ( id )) == null ? '' : __t) +
 	'">' +
 	((__t = ( id )) == null ? '' : __t) +
-	'</td><td class="action edit-descriptor-field0" name="code">' +
-	((__t = ( value[format.fields[0]] )) == null ? '' : __t) +
-	'</td><td class="action edit-descriptor-field1" name="name">' +
-	((__t = ( value[format.fields[1]] )) == null ? '' : __t) +
+	'</td><td class="action edit-descriptor-field0" name="value0">' +
+	((__t = ( value0 )) == null ? '' : __t) +
+	'</td><td class="action edit-descriptor-field1" name="value1">' +
+	((__t = ( value1 )) == null ? '' : __t) +
 	'</td>';
 	
 	}
@@ -23429,13 +23595,13 @@
 	obj || (obj = {});
 	var __t, __p = '';
 	with (obj) {
-	__p += '<div class="element object descriptor-value-list" object-type="descriptor-value-list" style="width:100%"><table class="table table-striped descriptor-table"><thead><tr class="sticky-header"><th><span class="glyphicon glyphicon-asterisk"></span></th><th>' +
+	__p += '<div class="element object descriptor-value-list" object-type="descriptor-value-list" style="width:100%"><table class="table table-striped descriptor-table"><thead><tr class="sticky-header"><th><span class="glyphicon glyphicon-asterisk"></span></th><th class="unselectable">' +
 	((__t = ( gt.gettext("Id") )) == null ? '' : __t) +
-	'</th><th>' +
+	'&nbsp;<span class="action column-sort-id glyphicon glyphicon-sort" column-name="id" column-type="numeric"></span></th><th class="unselectable">' +
 	((__t = ( gt.gettext(format.fields[0]) )) == null ? '' : __t) +
-	'</th><th>' +
+	'&nbsp;<span class="action column-sort-value0 glyphicon glyphicon-sort" column-name="value0" column-type="alpha"></span></th><th class="unselectable">' +
 	((__t = ( gt.gettext(format.fields[1]) )) == null ? '' : __t) +
-	'</th></tr></thead><tbody class="descriptor-value-list"></tbody></table></div>';
+	'&nbsp;<span class="action column-sort-value1 glyphicon glyphicon-sort" column-name="value1" column-type="alpha"></span></th></tr></thead><tbody class="descriptor-value-list"></tbody></table></div>';
 	
 	}
 	return __p
@@ -23718,13 +23884,59 @@
 	
 	module.exports = function (obj) {
 	obj || (obj = {});
-	var __t, __p = '';
+	var __t, __p = '', __e = _.escape;
 	with (obj) {
-	__p += '<style>/* adjust the form validation glyph position */\n    #format_unit_custom ~ span.form-control-feedback {\n        right: 15px;\n    }</style><div class="descriptor-detail"><div class="descriptor-type-name form-group" style="width: 50%"><label for="descriptor_type_name">Descriptor type name</label><input id="descriptor_type_name" class="form-control" type="text" maxlength="255" value="' +
+	__p += '<style>/* adjust the form validation glyph position */\n    #format_unit_custom ~ span.form-control-feedback {\n        right: 15px;\n    }</style><div class="descriptor-detail"><div class="descriptor-type-name form-group" style="width: 50%"><label for="descriptor_type_name">' +
+	__e( gt.gettext('Descriptor type name') ) +
+	'</label><input id="descriptor_type_name" class="form-control" type="text" maxlength="255" value="' +
 	((__t = ( name )) == null ? '' : __t) +
-	'"></div><div class="descriptor-type-code form-group" style="width: 50%"><label for="descriptor_type_code">Descriptor type code</label><input id="descriptor_type_code" class="form-control" type="text" readonly="readonly" maxlength="255" value="' +
+	'"></div><div class="descriptor-type-code form-group" style="width: 50%"><label for="descriptor_type_code">' +
+	__e( gt.gettext('Descriptor type code') ) +
+	'</label><input id="descriptor_type_code" class="form-control" type="text" readonly="readonly" maxlength="255" value="' +
 	((__t = ( code )) == null ? '' : __t) +
-	'"></div><div class="descriptor-type-format form-group" style="width: 50%"><label for="format_type">Type of format</label><select id="format_type" class="form-control"><optgroup label="Single value"><option value="boolean">Boolean</option><option value="numeric">Numeric</option><option value="numeric_range">Numeric range</option><option value="ordinal">Ordinal</option><option value="gps">GPS coordinate</option><option value="string">Text</option></optgroup><optgroup label="List of values"><option value="enum_single">Single enumeration</option><option value="enum_pair">Pair enumeration</option><option value="enum_ordinal">Ordinal with text</option></optgroup></select></div><div class="descriptor-type-fields form-group" style="width: 50%"><div class="row"><div class="col-xs-6"><label for="type_field0">First field</label><input id="type_field0" class="form-control" type="text" maxlength="32" value=""></div><div class="col-xs-6"><label for="type_field1">Second field</label><input id="type_field1" class="form-control" type="text" maxlength="32" value=""></div></div></div><div class="descriptor-type-unit form-group" style="width: 50%"><div class="row"><div class="col-xs-6"><label for="format_unit">Unit of the format</label><select id="format_unit" class="form-control"><optgroup label="Chroma"><option value="chroma_L_value">L value</option><option value="chroma_a_value">a value</option><option value="chroma_b_value">b value</option></optgroup><optgroup label="Common"><option value="degree_celsius">°C (celcius degree)</option><option value="category">Category</option><option value="custom" style="font-style: italic">Custom</option><option value="joule">J (joule)</option><option value="norm1">Norm 1</option><option value="note">Note</option><option value="percent">% (percent)</option><option value="regexp">Regular expression</option><option value="scale">Scale</option></optgroup><optgroup label="Grain"><option value="gram_per_100_grain">g/100 grain</option><option value="gram_per_200_grain">g/200 grain</option><option value="gram_per_1000_grain">g/1000 grain</option><option value="grain_per_meter2">grain/m²</option><option value="grain_per_spike">grain/spike</option><option value="grain_per_spikelet">grain/spikelet</option></optgroup><optgroup label="Meter"><option value="micrometer">um</option><option value="millimeter">mm</option><option value="centimeter">cm</option><option value="centimeter">dm</option><option value="meter">m</option><option value="kilometer">km</option></optgroup><optgroup label="Plant and plot"><option value="plant_per_meter">plant/m</option><option value="plant_per_meter2">plant/m²</option><option value="plant_per_hectare">plant/ha</option><option value="plant_per_plot">plant/plot</option><option value="gram_per_plant">g/plant</option><option value="gram_per_plot">g/plot</option><option value="kilogram_per_plot">kg/plot</option><option value="stoma_per_millimeter2">stoma/mm²</option><option value="node">node</option><option value="spikelet">spikelet</option><option value="spike_per_meter2">spike/m²</option><option value="tiller_per_meter">tiller/m</option><option value="tiller_per_meter2">tiller/m²</option></optgroup><optgroup label="Quantity and volume"><option value="milliliter">ml</option><option value="milliliter_per_percent">ml/%</option><option value="ppm">ppm</option><option value="milligram_per_kilogram">mg/kg</option><option value="gram_per_kilogram">g/kg</option><option value="gram_per_meter2">g/m²</option><option value="kilogram_per_hectare">kg/ha</option><option value="tonne_per_hectare">t/ha</option><option value="gram_per_liter">g/l</option><option value="kilogram_per_hectolitre">kg/hl</option><option value="millimol_per_meter2_per_second">mmol/m²/s</option><option value="gram_per_meter2_per_day">g/m²/day</option><option value="cci">CCI (chlore)</option><option value="delta_13c">delta 13C (carbon)</option></optgroup><optgroup label="Surface"><option value="millimeter2">mm²</option><option value="centimeter2">cm²</option><option value="meter2">m²</option><option value="hectare">ha</option><option value="kilometer2">km²</option></optgroup><optgroup label="Time"><option value="millisecond">ms</option><option value="second">s</option><option value="minute">min</option><option value="hour">hour</option><option value="day">day</option><option value="month">month</option><option value="year">year</option><option value="date">date (yyyy/mm/dd)</option><option value="time">time (hh:mm:ss.ms)</option><option value="datetime">date+time</option><option value="percent_per_minute">%/min</option><option value="percent_per_hour">%/hour</option><option value="percent_per_day">%/day</option></optgroup></select></div><div class="col-xs-6"><label for="format_unit_custom">Custom unit name</label><input id="format_unit_custom" class="form-control" type="text" readonly="readonly" maxlength="32" value=""></div></div></div><div class="descriptor-type-precision form-group" style="width: 50%"><label for="format_precision">Precision of the decimal</label><select id="format_precision" class="form-control"><option value="0.0">0.0</option><option value="1.0">1.0</option><option value="2.0">2.0</option><option value="3.0">3.0</option><option value="4.0">4.0</option><option value="5.0">5.0</option><option value="6.0">6.0</option><option value="7.0">7.0</option><option value="8.0">8.0</option><option value="9.0">9.0</option></select></div><div class="descriptor-type-range form-group" style="width: 50%"><div class="row"><div class="col-xs-6"><label for="format_range_min">Minimal range value</label><input id="format_range_min" class="form-control" type="text" readonly="readonly" maxlength="32" value="0"></div><div class="col-xs-6"><label for="format_range_max">Maximal range value</label><input id="format_range_max" class="form-control" type="text" readonly="readonly" maxlength="32" value="1"></div></div></div><div class="descriptor-type-regexp form-group" style="width: 50%"><label for="format_regexp">Regular expression</label><input id="format_regexp" class="form-control" type="text" readonly="readonly" maxlength="255"></div><div class="descriptor-type-regexp form-group" style="width: 100px; margin-left: 20%; margin-top: 25px"><button id="save" class="form-control btn btn-primary">Update</button></div></div>';
+	'"></div><div class="descriptor-type-format form-group" style="width: 50%"><label for="format_type">' +
+	__e( gt.gettext('Type of format') ) +
+	'</label><select id="format_type" class="form-control"><optgroup label="' +
+	__e( gt.gettext('Single value') ) +
+	'"><option value="boolean">' +
+	__e( gt.gettext('Boolean') ) +
+	'</option><option value="numeric">' +
+	__e( gt.gettext('Numeric') ) +
+	'</option><option value="numeric_range">' +
+	__e( gt.gettext('Numeric range') ) +
+	'</option><option value="ordinal">' +
+	__e( gt.gettext('Ordinal') ) +
+	'</option><option value="gps">' +
+	__e( gt.gettext('GPS coordinate') ) +
+	'</option><option value="string">' +
+	__e( gt.gettext('Text') ) +
+	'</option></optgroup><optgroup label="' +
+	__e( gt.gettext('List of values') ) +
+	'"><option value="enum_single">' +
+	__e( gt.gettext('Single enumeration') ) +
+	'</option><option value="enum_pair">' +
+	__e( gt.gettext('Pair enumeration') ) +
+	'</option><option value="enum_ordinal">' +
+	__e( gt.gettext('Ordinal with text') ) +
+	'</option></optgroup></select></div><div class="descriptor-type-fields form-group" style="width: 50%"><div class="row"><div class="col-xs-6"><label for="type_field0">' +
+	__e( gt.gettext('First field') ) +
+	'</label><input id="type_field0" class="form-control" type="text" maxlength="32" value=""></div><div class="col-xs-6"><label for="type_field1">' +
+	__e( gt.gettext('Second field') ) +
+	'</label><input id="type_field1" class="form-control" type="text" maxlength="32" value=""></div></div></div><div class="descriptor-type-unit form-group" style="width: 50%"><div class="row"><div class="col-xs-6"><label for="format_unit">' +
+	__e( gt.gettext('Unit of the format') ) +
+	'</label><select id="format_unit" class="form-control"><optgroup label="Chroma"><option value="chroma_L_value">L value</option><option value="chroma_a_value">a value</option><option value="chroma_b_value">b value</option></optgroup><optgroup label="Common"><option value="degree_celsius">°C (celcius degree)</option><option value="category">Category</option><option value="custom" style="font-style: italic">Custom</option><option value="joule">J (joule)</option><option value="norm1">Norm 1</option><option value="note">Note</option><option value="percent">% (percent)</option><option value="regexp">Regular expression</option><option value="scale">Scale</option></optgroup><optgroup label="Grain"><option value="gram_per_100_grain">g/100 grain</option><option value="gram_per_200_grain">g/200 grain</option><option value="gram_per_1000_grain">g/1000 grain</option><option value="grain_per_meter2">grain/m²</option><option value="grain_per_spike">grain/spike</option><option value="grain_per_spikelet">grain/spikelet</option></optgroup><optgroup label="Meter"><option value="micrometer">um</option><option value="millimeter">mm</option><option value="centimeter">cm</option><option value="centimeter">dm</option><option value="meter">m</option><option value="kilometer">km</option></optgroup><optgroup label="Plant and plot"><option value="plant_per_meter">plant/m</option><option value="plant_per_meter2">plant/m²</option><option value="plant_per_hectare">plant/ha</option><option value="plant_per_plot">plant/plot</option><option value="gram_per_plant">g/plant</option><option value="gram_per_plot">g/plot</option><option value="kilogram_per_plot">kg/plot</option><option value="stoma_per_millimeter2">stoma/mm²</option><option value="node">node</option><option value="spikelet">spikelet</option><option value="spike_per_meter2">spike/m²</option><option value="tiller_per_meter">tiller/m</option><option value="tiller_per_meter2">tiller/m²</option></optgroup><optgroup label="Quantity and volume"><option value="milliliter">ml</option><option value="milliliter_per_percent">ml/%</option><option value="ppm">ppm</option><option value="milligram_per_kilogram">mg/kg</option><option value="gram_per_kilogram">g/kg</option><option value="gram_per_meter2">g/m²</option><option value="kilogram_per_hectare">kg/ha</option><option value="tonne_per_hectare">t/ha</option><option value="gram_per_liter">g/l</option><option value="kilogram_per_hectolitre">kg/hl</option><option value="millimol_per_meter2_per_second">mmol/m²/s</option><option value="gram_per_meter2_per_day">g/m²/day</option><option value="cci">CCI (chlore)</option><option value="delta_13c">delta 13C (carbon)</option></optgroup><optgroup label="Surface"><option value="millimeter2">mm²</option><option value="centimeter2">cm²</option><option value="meter2">m²</option><option value="hectare">ha</option><option value="kilometer2">km²</option></optgroup><optgroup label="Time"><option value="millisecond">ms</option><option value="second">s</option><option value="minute">min</option><option value="hour">hour</option><option value="day">day</option><option value="month">month</option><option value="year">year</option><option value="date">date (yyyy/mm/dd)</option><option value="time">time (hh:mm:ss.ms)</option><option value="datetime">date+time</option><option value="percent_per_minute">%/min</option><option value="percent_per_hour">%/hour</option><option value="percent_per_day">%/day</option></optgroup></select></div><div class="col-xs-6"><label for="format_unit_custom">' +
+	__e( gt.gettext('Custom unit name') ) +
+	'</label><input id="format_unit_custom" class="form-control" type="text" readonly="readonly" maxlength="32" value=""></div></div></div><div class="descriptor-type-precision form-group" style="width: 50%"><label for="format_precision">' +
+	__e( gt.gettext('Precision of the decimal') ) +
+	'</label><select id="format_precision" class="form-control"><option value="0.0">0.0</option><option value="1.0">1.0</option><option value="2.0">2.0</option><option value="3.0">3.0</option><option value="4.0">4.0</option><option value="5.0">5.0</option><option value="6.0">6.0</option><option value="7.0">7.0</option><option value="8.0">8.0</option><option value="9.0">9.0</option></select></div><div class="descriptor-type-range form-group" style="width: 50%"><div class="row"><div class="col-xs-6"><label for="format_range_min">' +
+	__e( gt.gettext('Minimal range value') ) +
+	'</label><input id="format_range_min" class="form-control" type="text" readonly="readonly" maxlength="32" value="0"></div><div class="col-xs-6"><label for="format_range_max">' +
+	__e( gt.gettext('Maximal range value') ) +
+	'</label><input id="format_range_max" class="form-control" type="text" readonly="readonly" maxlength="32" value="1"></div></div></div><div class="descriptor-type-regexp form-group" style="width: 50%"><label for="format_regexp">' +
+	__e( gt.gettext('Regular expression') ) +
+	'</label><input id="format_regexp" class="form-control" type="text" readonly="readonly" maxlength="255"></div><div class="descriptor-type-regexp form-group" style="width: 100px; margin-left: 20%; margin-top: 25px"><button id="save" class="form-control btn btn-primary">' +
+	__e( gt.gettext('Update') ) +
+	'</button></div></div>';
 	
 	}
 	return __p
@@ -23953,6 +24165,51 @@
 	}
 	return __p
 	};
+
+
+/***/ },
+/* 146 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptormodel.js
+	 * @brief Descriptor model router
+	 * @author Frederic SCHERMA
+	 * @date 2016-09-19
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	
+	var Router = Marionette.AppRouter.extend({
+	    routes : {
+	        "app/accession/descriptor/model/": "getDescriptorModelList",
+	        "app/accession/descriptor/model/:id/": "getDescriptorModel",
+	        "app/accession/descriptor/model/:id/panel/": "getDescriptorPanelListForModel",
+	        "app/accession/descriptor/model/:id/panel/:id/": "getDescriptorPanelForModel",
+	        // how are organized the level of types of descriptors
+	    },
+	
+	    getDescriptorModelList: function () {
+	
+	    },
+	
+	    getDescriptorModel: function (id) {
+	
+	    },
+	
+	    getDescriptorPanelListForModel: function (id) {
+	
+	    },
+	
+	    getDescriptorPanelForModel: function (id, pid) {
+	
+	    },
+	});
+	
+	module.exports = Router;
 
 
 /***/ }

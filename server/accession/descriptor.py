@@ -467,7 +467,7 @@ def get_descriptor_values_for_type(request, id, tid):
     cursor = request.GET.get('cursor')
     limit = results_per_page
 
-    sort_by = request.GET.get('sort_by', 'name')
+    sort_by = request.GET.get('sort_by', 'id')
 
     group_id = int(id)
     type_id = int(tid)
@@ -478,6 +478,9 @@ def get_descriptor_values_for_type(request, id, tid):
     if sort_by.startswith('-'):
         order_by = sort_by[1:]
         reverse = True
+    elif sort_by.startswith('+'):
+        order_by = sort_by[1:]
+        reverse = False
     else:
         order_by = sort_by
         reverse = False
@@ -485,6 +488,7 @@ def get_descriptor_values_for_type(request, id, tid):
     prev_cursor, next_cursor, values_list = descr_type.get_values(order_by, reverse, cursor, limit)
 
     results = {
+        'sort_by': sort_by,
         'prev': prev_cursor,
         'cursor': cursor,
         'next': next_cursor,

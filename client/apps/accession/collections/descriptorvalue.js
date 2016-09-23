@@ -21,7 +21,7 @@ var Collection = Backbone.Collection.extend({
         options || (options = {});
         this.group_id = options.group_id;
         this.type_id = options.type_id;
-        this.format = options.format || {type: "string", fields: ["name"]};
+        this.format = options.format || {type: "string", fields: []};
     },
 
     parse: function(data) {
@@ -32,12 +32,22 @@ var Collection = Backbone.Collection.extend({
         this.prev = data.prev;
         this.cursor = data.cursor;
         this.next = data.next;
-
-        //this.page = data.page;
-        //this.total_count = data.total_count;
+        this.sort_by = data.sort_by;
 
         return data.items;
     },
+
+    fetch: function(options) {
+        options || (options = {});
+        var data = (options.data || {});
+
+        options.data = data;
+
+        this.cursor = options.data.cursor;
+        this.sort_by = options.data.sort_by;
+
+        return Backbone.Collection.prototype.fetch.call(this, options);
+    }
 });
 
 module.exports = Collection;

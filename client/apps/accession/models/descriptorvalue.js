@@ -20,7 +20,10 @@ var Model = Backbone.Model.extend({
 
     defaults: {
         id: null,
-        value: null,
+        parent: null,
+        ordinal: null,
+        value0: null,
+        value1: null,
     },
 
     initialize: function(options) {

@@ -86,7 +86,8 @@ application = new Marionette.Application({
                     dfd.reject.apply(xhr, arguments);
 
                     // fallback to home page to force user to log
-                    Backbone.history.navigate('/home/', {trigger: true});
+                    // Backbone.history.navigate('/home/', {trigger: true});
+                    window.location.assign(application.baseUrl + 'app/home/');
                 } else {
                     var data = JSON.parse(xhr.responseText);
                     //if ((xhr.status >= 400 && xhr.status <= 599) && data && (typeof(data.cause) === "string")) {

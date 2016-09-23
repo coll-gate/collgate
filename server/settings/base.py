@@ -129,19 +129,6 @@ TEMPLATES = [
     },
 ]
 
-# MIDDLEWARE_CLASSES = (
-#     'django.contrib.sessions.middleware.SessionMiddleware',
-#     'django.middleware.locale.LocaleMiddleware',
-#     'django.middleware.common.CommonMiddleware',
-#     'igdectk.rest.csrf.CsrfViewMiddleware',
-#     # 'django.middleware.csrf.CsrfViewMiddleware',
-#     'django.contrib.auth.middleware.AuthenticationMiddleware',
-#     'django.contrib.messages.middleware.MessageMiddleware',
-#     'igdectk.rest.restmiddleware.RestMiddleware',
-#     # Uncomment the next line for simple clickjacking protection:
-#     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
-# )
-
 MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
@@ -279,9 +266,13 @@ EMAIL_HOST = "smtp.clermont.inra.fr"
 EMAIL_PORT = 25
 EMAIL_SUBJECT_PREFIX = "Coll-Gate IS"
 
-# CACHES = {
-#     'default': {
-#         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-#         'LOCATION': '/var/tmp/django_cache',
-#     }
-# }
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'collgate-cache',
+        'TIMEOUT': 60*60*24,
+        'OPTIONS': {
+            'MAX_ENTRIES': 1000
+        }
+    }
+}

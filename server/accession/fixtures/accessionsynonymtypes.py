@@ -28,7 +28,7 @@ def fixture():
 
         for code, type in subdata.items():
             types[code] = {
-                'name': type['name']
+                'value0': type['name']
             }
 
         results[lang] = types

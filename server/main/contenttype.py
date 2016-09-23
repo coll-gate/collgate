@@ -6,13 +6,19 @@
 Rest handlers.
 """
 from django.contrib.contenttypes.models import ContentType
+from django.core.cache import cache
 from django.core.exceptions import SuspiciousOperation
 from django.utils.translation import ugettext_lazy
+from django.views.decorators.cache import cache_page
 
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
 
+from igdectk.module.manager import module_manager
+
 from .main import RestMain
+
+logger = logging.getLogger('collgate')
 
 
 class RestMainContentType(RestMain):
@@ -21,21 +27,26 @@ class RestMainContentType(RestMain):
 
 
 @RestMainContentType.def_request(Method.GET, Format.JSON)
-def get_contents_types(request):
+@cache_page(60*60*24, cache='default', key_prefix='collgate-cache')
+def get_content_types(request):
     """
     Get the list of contents types in JSON
     """
+    logger.debug("Cache miss for main.content-type")
 
-    ignore_list = (
+    ignore_list = [
         'admin.',
-        'audit.',
         'auth.',
         'contenttypes.',
         'guardian.',
         'main.',
         'sessions.',
         'sites.',
-    )
+    ]
+
+    for module in module_manager.modules:
+        if hasattr(module, 'ignored_content_types'):
+            ignore_list.extend(module.ignored_content_types)
 
     types = []
     add = False

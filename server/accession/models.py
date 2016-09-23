@@ -113,16 +113,25 @@ class DescriptorType(Entity):
     def get_values(self, sort_by='id', reverse=False, cursor=None, limit=30):
         """
         Query for a list of value ordered by id or name, with a limit of number of results.
+
         :return: A triplet with previous and next cursors strings and the array of values
                 like {'name', 'value'} with value can be a dict.
+        :rtype: tuple
         """
-        descriptor_format = json.loads(self.format)
+        format = json.loads(self.format)
         lang = translation.get_language()
-        trans = descriptor_format.get('trans', False)
+        trans = format.get('trans', False)
 
         prev_cursor = None
         next_cursor = None
         values_list = []
+
+        fields = format.get('fields', [])
+        if fields:
+            if sort_by == fields[0]:
+                sort_by = "value0"
+            elif sort_by == fields[1]:
+                sort_by = "value1"
 
         # internally stored values
         if self.values:
@@ -130,25 +139,38 @@ class DescriptorType(Entity):
                 pre_values = json.loads(self.values)
                 if lang in pre_values:
                     values = pre_values[lang]
-                    count = len(values)
                 else:
                     values = {}
-                    count = 0
             else:
                 values = json.loads(self.values)
-                count = len(values)
 
-            values_list = []
+            if sort_by == 'id':
+                # sort by id (code)
+                # name are unique so its a trivial case
+                if reverse:
+                    next_code = str(cursor.split('/')[0]) if cursor else "ID_9999:99999999"
 
-            if sort_by == 'id' :
-                next_id = int(cursor.split('/')[0]) if cursor else -1
+                    for k, v in values.items():
+                        if k < next_code:
+                            values_list.append({
+                                'id': k,
+                                'parent': v.get('parent', None),
+                                'ordinal': v.get('ordinal', None),
+                                'value0': v.get('value0', None),
+                                'value1': v.get('value1', None),
+                            })
+                else:
+                    next_code = str(cursor.split('/')[0]) if cursor else ""
 
-                for k, v in values.items():
-                    if k > next_id:
-                        values_list.append({
-                            'id': k,
-                            'value': v,
-                        })
+                    for k, v in values.items():
+                        if k > next_code:
+                            values_list.append({
+                                'id': k,
+                                'parent': v.get('parent', None),
+                                'ordinal': v.get('ordinal', None),
+                                'value0': v.get('value0', None),
+                                'value1': v.get('value1', None),
+                            })
 
                 values_list = sorted(values_list, key=lambda v: v['id'], reverse=reverse)[:limit]
 
@@ -159,52 +181,237 @@ class DescriptorType(Entity):
 
                     val = values_list[-1]
                     next_cursor = "%s/%s" % (val['id'], val['id'])
-            else:
-                next_name = str(cursor.split('/')[0]) if cursor else ""
+            elif sort_by == 'ordinal':
+                # sort by its ordinal value (a ordinal field in value) as integer compare
+                # duplicated ordinals values are supported by string concatenation of ordinal+code during sorting
+                next_ordinal = int(cursor.split('/')[0]) if cursor else -1
 
-                for k, v in values.items():
-                    if sort_by not in v:
-                        raise SuspiciousOperation("Invalid value field name")
+                if reverse:
+                    for k, v in values.items():
+                        if 'ordinal' not in v:
+                            raise SuspiciousOperation("Missing ordinal field")
 
-                    if v[sort_by] > next_name:
-                        values_list.append({
-                            'id': k,
-                            'value': v
-                        })
+                        if v['ordinal'] < next_ordinal:
+                            values_list.append({
+                                'id': k,
+                                'parent': v.get('parent', None),
+                                'ordinal': v.get('ordinal', None),
+                                'value0': v.get('value0', None),
+                                'value1': v.get('value1', None),
+                            })
+                else:
+                    for k, v in values.items():
+                        if 'ordinal' not in v:
+                            raise SuspiciousOperation("Missing ordinal field")
 
-                values_list = sorted(values_list, key=lambda v: v['value'][sort_by], reverse=reverse)[:limit]
+                        if v['ordinal'] > next_ordinal:
+                            values_list.append({
+                                'id': k,
+                                'parent': v.get('parent', None),
+                                'ordinal': v.get('ordinal', None),
+                                'value0': v.get('value0', None),
+                                'value1': v.get('value1', None),
+                            })
+
+                values_list = sorted(values_list, key=lambda v: v['ordinal']+v['id'], reverse=reverse)[:limit]
 
                 # cursors
                 if len(values_list) > 0:
                     val = values_list[0]
-                    prev_cursor = "%s/%s" % (val['value'][sort_by], val['id'])
+                    prev_cursor = "%s/%s" % (val['ordinal'], val['id'])
 
                     val = values_list[-1]
-                    next_cursor = "%s/%s" % (val['value'][sort_by], val['id'])
-        else:
-            pass
-            # TODO
-            # values in the value table
-            # if sort_by == 'id':
-            #     qs = descr_type.values_set.all().order_by('id')
-            #     qs = descr_type.values_set.get
-            # else:
-            #     # TODO query with i18n
-            #     # TODO see for ordering, because if we have json field...
-            #     # maybe could we use hstore ?
-            #     # or a value field plus an informational field about value type
-            #     qs = descr_type.values_set.all()
-            #
-            # values = qs[offset:limit]
-            # count = qs.count()
-            #
-            # values_list = []
-            # for value in values:
-            #     values_list.append({
-            #         'id': value.id,
-            #         'parents': value.parents,
-            #         'value': value.value
-            #     })
+                    next_cursor = "%s/%s" % (val['ordinal'], val['id'])
+            else:
+                # sort by a field contained in the values as string compare
+                # its not a trivial case because of blank values and duplications
+                # blank values are supported, but there is not consistency if duplicated values
+                # duplicated values are supported by string concatenation of value+code during sorting
+                next_value, next_code = cursor.split('/') if cursor else (None, None)
+
+                if next_code is None:
+                    next_code = ""
+
+                extra_list = []
+
+                if reverse:
+                    if cursor:
+                        for k, v in values.items():
+                            value = v.get(sort_by)
+
+                            if value is None:
+                                raise SuspiciousOperation("Invalid value field name")
+
+                            if value is "" and k > next_code:
+                                extra_list.append({
+                                    'id': k,
+                                    'parent': v.get('parent', None),
+                                    'ordinal': v.get('ordinal', None),
+                                    'value0': v.get('value0', None),
+                                    'value1': v.get('value1', None),
+                                })
+                            elif next_value and value < next_value:
+                                values_list.append({
+                                    'id': k,
+                                    'parent': v.get('parent', None),
+                                    'ordinal': v.get('ordinal', None),
+                                    'value0': v.get('value0', None),
+                                    'value1': v.get('value1', None),
+                                })
+                    else:
+                        for k, v in values.items():
+                            value = v.get(sort_by)
+
+                            if value is None:
+                                raise SuspiciousOperation("Invalid value field name")
+
+                            if value is "":
+                                extra_list.append({
+                                    'id': k,
+                                    'parent': v.get('parent', None),
+                                    'ordinal': v.get('ordinal', None),
+                                    'value0': v.get('value0', None),
+                                    'value1': v.get('value1', None),
+                                })
+                            else:
+                                values_list.append({
+                                    'id': k,
+                                    'parent': v.get('parent', None),
+                                    'ordinal': v.get('ordinal', None),
+                                    'value0': v.get('value0', None),
+                                    'value1': v.get('value1', None),
+                                })
+                else:
+                    if cursor:
+                        for k, v in values.items():
+                            value = v.get(sort_by)
+
+                            if value is None:
+                                raise SuspiciousOperation("Invalid value field name")
+
+                            if value is "" and k > next_code:
+                                extra_list.append({
+                                    'id': k,
+                                    'parent': v.get('parent', None),
+                                    'ordinal': v.get('ordinal', None),
+                                    'value0': v.get('value0', None),
+                                    'value1': v.get('value1', None),
+                                })
+                            elif next_value and value > next_value:
+                                values_list.append({
+                                    'id': k,
+                                    'parent': v.get('parent', None),
+                                    'ordinal': v.get('ordinal', None),
+                                    'value0': v.get('value0', None),
+                                    'value1': v.get('value1', None),
+                                })
+                    else:
+                        for k, v in values.items():
+                            value = v.get(sort_by)
+
+                            if value is None:
+                                raise SuspiciousOperation("Invalid value field name")
+
+                            if value is "":
+                                extra_list.append({
+                                    'id': k,
+                                    'parent': v.get('parent', None),
+                                    'ordinal': v.get('ordinal', None),
+                                    'value0': v.get('value0', None),
+                                    'value1': v.get('value1', None),
+                                })
+                            else:
+                                values_list.append({
+                                    'id': k,
+                                    'parent': v.get('parent', None),
+                                    'ordinal': v.get('ordinal', None),
+                                    'value0': v.get('value0', None),
+                                    'value1': v.get('value1', None),
+                                })
+
+                values_list = sorted(values_list, key=lambda v: v[sort_by]+v['id'], reverse=reverse)[:limit]
+                extra_size = limit - len(values_list)
+
+                if extra_size > 0:
+                    extra_list = sorted(extra_list, key=lambda v: v['id'])[:extra_size]
+                    values_list += extra_list
+
+                # cursors
+                if len(values_list) > 0:
+                    val = values_list[0]
+                    prev_cursor = "%s/%s" % (val[sort_by], val['id'])
+
+                    val = values_list[-1]
+                    next_cursor = "%s/%s" % (val[sort_by], val['id'])
+        else:  # per row value
+            if trans:
+                qs = self.values_set.filter(language=lang).prefetch_related('parent')
+            else:
+                qs = self.values_set.all().prefetch_related('parent')
+
+            if sort_by == 'id':
+                next_code = str(cursor.split('/')[0]) if cursor else None
+
+                if reverse:
+                    if next_code:
+                        qs = qs.filter(name__lt=next_code).order_by('-name')
+                    else:
+                        qs = qs.order_by('-name')
+                else:
+                    if next_code:
+                        qs = qs.filter(name__gt=next_code).order_by('name')
+                    else:
+                        qs = qs.order_by('name')
+            elif sort_by == 'ordinal':
+                next_ordinal = int(cursor.split('/')[0]) if cursor else None
+
+                if reverse:
+                    if next_ordinal:
+                        qs = qs.filter(ordinal__lt=next_ordinal).order_by('-ordinal')
+                    else:
+                        qs = qs.order_by('-ordinal')
+                else:
+                    if next_ordinal:
+                        qs = qs.filter(ordinal__gt=next_ordinal).order_by('ordinal')
+                    else:
+                        qs = qs.order_by('ordinal')
+            elif sort_by == 'value0':
+                next_value0 = str(cursor.split('/')[0]) if cursor else None
+
+                if reverse:
+                    if next_value0:
+                        qs = qs.filter(value0__lt=next_value0).order_by('-value0')
+                    else:
+                        qs = qs.order_by('-value0')
+                else:
+                    if next_value0:
+                        qs = qs.filter(value0__gt=next_value0).order_by('value0')
+                    else:
+                        qs = qs.order_by('value0')
+            elif sort_by == 'value1':
+                next_value1 = str(cursor.split('/')[0]) if cursor else None
+
+                if reverse:
+                    if next_value1:
+                        qs = qs.filter(value1__lt=next_value1).order_by('-value1')
+                    else:
+                        qs = qs.order_by('-value1')
+                else:
+                    if next_value1:
+                        qs = qs.filter(value1__gt=next_value1).order_by('value1')
+                    else:
+                        qs = qs.order_by('value1')
+
+            qs = qs[:limit]
+
+            for value in qs:
+                values_list.append({
+                    'id': value.name,
+                    'parent': value.parent,
+                    'ordinal': value.ordinal,
+                    'value0': value.value0,
+                    'value1': value.value1
+                })
 
         return prev_cursor, next_cursor, values_list
 
@@ -212,6 +419,9 @@ class DescriptorType(Entity):
 class DescriptorValue(Entity):
     """
     For some descriptors value are in a specific table.
+    Value are per language.
+    A value can have a parent des
+    The field name represent the code of the value according to its type.
     """
 
     # A value is dedicated for a descriptor and an language
@@ -222,32 +432,33 @@ class DescriptorValue(Entity):
         choices=Languages.choices(),
         default=Languages.EN.value)
 
+    # Related type of descriptor.
     descriptor = models.ForeignKey(DescriptorType, null=False, related_name='values_set')
 
-    # Can be none, one or multiples parents values (ie: city in region in country...)
-    # syntax could be "1,2" for two directs parent, and "1.2.3,4" with two parents and a hierarchy using dot
-    parents = models.CharField(max_length=255, default="")
+    # Direct parent descriptor value, in case of one level hierarchy.
+    parent = models.ForeignKey('DescriptorValue', null=True, related_name='children_set')
 
-    # JSON encoded single value or object
-    value = models.CharField(max_length=512, blank=False, null=False)
+    # Ordinal with numeric value index for ordinal_with_text type of format.
+    ordinal = models.IntegerField(default=0, null=False, blank=False)
+
+    # Single enumeration field, or pair enumeration first field
+    value0 = models.CharField(max_length=127, default="", blank=True, null=False)
+
+    # Pair enumeration second field
+    value1 = models.CharField(max_length=127, default="", blank=True, null=False)
 
     class Meta:
         verbose_name = _("descriptor value")
 
         unique_together = (
-            ('language', 'descriptor'),
+            ('descriptor', 'language'),
         )
 
-
-class AccessionSynonymType(ChoiceEnum):
-    """
-    Static but may evolve into a DB editable descriptor type. general::accession_synonym.
-    And must be a mandatory descriptor (created by fixtures during initialization).
-    """
-
-    PRIMARY = IntegerChoice(0, _('Primary'))
-    SYNONYM = IntegerChoice(1, _('Synonym'))
-    CODE = IntegerChoice(2, _('Code'))
+        index_together = (
+            ('descriptor', 'language', 'ordinal'),   # index for ordinals
+            ('descriptor', 'language', 'value0'),  # index for value0
+            ('descriptor', 'language', 'value1'),  # index for value1
+        )
 
 
 class AccessionSynonym(Entity):
@@ -262,9 +473,8 @@ class AccessionSynonym(Entity):
         choices=Languages.choices(),
         default=Languages.EN.value)
 
-    # TODO evolve in a CharField which takes its value from a specific descriptor added by fixtures
-    # Fix this descriptor code as ID_001
-    type = models.IntegerField(null=False, blank=False, choices=AccessionSynonymType.choices())
+    # Type of synonym is related to the type of descriptor ID_001 that is an 'enum_single'.
+    type = models.CharField(max_length=16, null=False, blank=False, default='ID_001:0000001')
 
     class Meta:
         verbose_name = _("accession synonym")

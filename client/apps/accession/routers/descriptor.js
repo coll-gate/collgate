@@ -97,8 +97,6 @@ var Router = Marionette.AppRouter.extend({
         var defaultLayout = new DefaultLayout();
         application.mainRegion.show(defaultLayout);
 
-        collection.fetch();
-
         var model = new DescriptorTypeModel({group_id: gid, id: tid});
         model.fetch().then(function () {
             defaultLayout.title.show(new TitleView({title: gt.gettext("Values for the type of descriptor"), object: model.get('name')}));

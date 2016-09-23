@@ -48,20 +48,6 @@ STATIC_ROOT = 'static/'
 
 STATIC_URL = '/static/'
 
-# MIDDLEWARE_CLASSES = (
-#     'django.contrib.sessions.middleware.SessionMiddleware',
-#     'django.middleware.locale.LocaleMiddleware',
-#     'django.middleware.common.CommonMiddleware',
-#     # 'debug_toolbar.middleware.DebugToolbarMiddleware',
-#     # 'debug_panel.middleware.DebugPanelMiddleware',
-#     'igdectk.rest.csrf.CsrfViewMiddleware',
-#     'django.contrib.auth.middleware.AuthenticationMiddleware',
-#     'django.contrib.messages.middleware.MessageMiddleware',
-#     'igdectk.rest.restmiddleware.RestMiddleware',
-#     # Uncomment the next line for simple clickjacking protection:
-#     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
-# )
-
 MIDDLEWARE = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
@@ -109,7 +95,7 @@ LOGGING = {
             'datefmt': '%Y-%m-%d %H:%M:%S',
         },
         'colored': {
-            '()': 'logging.Formatter', # '()': 'igdectk.common.logging.ColoredFormatter',
+            '()': 'igdectk.common.logging.ColoredFormatter',
             'format': '[%(asctime)s] <%(levelname)s> %(name)s : %(message)s',
             'datefmt': '%d/%b/%Y %H:%M:%S',
         }
@@ -172,3 +158,9 @@ WEBPACK = {
     'host': 'http://127.0.0.1:8080',
     'entry': '/build/app.js'
 }
+
+# CACHES = {
+#     'default': {
+#         'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+#     }
+# }

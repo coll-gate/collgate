@@ -27,11 +27,20 @@ class CollGateAudit(ApplicationMain):
             'base',)
         )
 
+        # ignore audit from content types
+        audit_module.ignored_content_types = [
+            'audit.'
+        ]
+
+        # ignore audit from permission types
+        audit_module.ignored_permission_types = [
+            'audit.'
+        ]
+
         # audit menu
         menu_audit = ModuleMenu('audit', _('Audit'), auth=AUTH_STAFF, order=1000)
         menu_audit.add_entry(MenuEntry('audit-user', _('Audit for a user'), "~audit/audit/searchByUserName", icon=Glyph.USER, order=1))
         menu_audit.add_entry(MenuEntry('audit-entity', _('Audit for an entity'), "~audit/audit/searchByEntity", icon=Glyph.BOOK, order=2))
-        # menu_audit.add_entry(MenuSeparator(9))
         audit_module.add_menu(menu_audit)
 
         module_manager.register_menu(audit_module)
