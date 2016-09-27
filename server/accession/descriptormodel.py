@@ -22,8 +22,13 @@ from .models import DescriptorModel, DescriptorModelType, DescriptorPanel
 
 
 class RestDescriptorModel(RestAccession):
-    regex = r'^descriptor/model$'
+    regex = r'^descriptor/model/$'
     name = 'descriptor-model'
+
+
+class RestDescriptorModelSearch(RestDescriptorModel):
+    regex = r'^search/$'
+    suffix = 'search'
 
 
 class RestDescriptorModelId(RestDescriptorModel):
@@ -32,12 +37,12 @@ class RestDescriptorModelId(RestDescriptorModel):
 
 
 class RestDescriptorModelIdType(RestDescriptorModelId):
-    regex = r'^type$'
+    regex = r'^type/$'
     suffix = 'type'
 
 
 class RestDescriptorModelIdPanel(RestDescriptorModelId):
-    regex = r'^panel'
+    regex = r'^panel/'
     suffix = 'panel'
 
 
@@ -57,7 +62,7 @@ def get_descriptors_models(request):
 
     if cursor:
         cursor_name, cursor_id = cursor.split('/')
-        qs = DescriptorModel.objects.filter(Q(name__lte=cursor_name) & Q(name__lt=cursor_name) | (Q(name=cursor_name) & Q(id__lt=cursor_id)))
+        qs = DescriptorModel.objects.filter(Q(name__gt=cursor_name))
     else:
         qs = DescriptorModel.objects.all()
 
@@ -118,8 +123,8 @@ def get_descriptor_model(request, id):
         "type": "object",
         "properties": {
             "name": {"type": "string", 'minLength': 3, 'maxLength': 32},
-            "verbose_name": {"type": "string", 'minLength': 3, 'maxLength': 255},
-            "description": {"type": "string", 'maxLength': 1024},
+            "verbose_name": {"type": "string", 'maxLength': 255, "required": False, "blank": True},
+            "description": {"type": "string", 'maxLength': 1024, "required": False, "blank": True},
         },
     },
     # perms={'accession.add_descriptormodel': _('You are not allowed to create a model of descriptor')},
@@ -131,8 +136,14 @@ def create_descriptor_model(request):
 
     # create descriptor model
     dm = DescriptorModel(name=request.data['name'])
-    dm.verbose_name = request.data['verbose_name']
-    dm.description = request.data['description']
+
+    verbose_name = request.data.get('verbose_name')
+    if verbose_name:
+        dm.verbose_name = request.data.get('verbose_name', '')
+    else:
+        dm.verbose_name = request.data['name'].capitalize()
+
+    dm.description = request.data.get('description', None)
     dm.save()
 
     result = {
@@ -147,7 +158,7 @@ def create_descriptor_model(request):
 
 
 @RestDescriptorModelId.def_auth_request(
-    Method.POST, Format.JSON, content={
+    Method.PUT, Format.JSON, content={
         "type": "object",
         "properties": {
             "name": {"type": "string", 'minLength': 3, 'maxLength': 32}
@@ -165,7 +176,52 @@ def modify_descriptor_model(request):
     staff=True)
 def remove_descriptor_model(request, id):
     dm_id = int(id)
-    pass
+
+    model = get_object_or_404(DescriptorModel, id=dm_id)
+
+    if model.descriptors_types.all().exists():
+        raise SuspiciousOperation(_("Only empty models of descriptors can be removed"))
+
+    model.delete()
+    return HttpResponseRest(request, {})
+
+
+@RestDescriptorModelSearch.def_auth_request(
+    Method.GET, Format.JSON, ('filters',),
+    staff=True)
+def search_descriptor_models(request):
+    """
+    Filters the models of descriptors by name.
+    @todo could needs pagination
+    """
+    filters = json.loads(request.GET['filters'])
+    page = int_arg(request.GET.get('page', 1))
+
+    models = None
+
+    if filters['method'] == 'ieq' and 'name' in filters['fields']:
+        models = DescriptorModel.objects.filter(name__iexact=filters['name'])
+    elif filters['method'] == 'icontains' and 'name' in filters['fields']:
+        models = DescriptorModel.objects.filter(name__icontains=filters['name'])
+
+    models_list = []
+
+    if models:
+        for model in models:
+            models_list.append({
+                "id": model.id,
+                "name": model.name,
+                'num_descriptors_types': model.descriptors_types.all().count(),
+                # 'can_delete': model.can_delete,
+                # 'can_modify': model.can_modify
+            })
+
+    response = {
+        'items': models_list,
+        'page': page
+    }
+
+    return HttpResponseRest(request, response)
 
 
 @RestDescriptorModelIdPanel.def_auth_request(Method.GET, Format.JSON)

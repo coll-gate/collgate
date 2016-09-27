@@ -165,7 +165,7 @@ def delete_descriptor_group(request, id):
 def search_descriptor_groups(request):
     """
     Filters the groups of descriptors by name.
-    @todo needs pagination
+    @todo could needs pagination
     """
     filters = json.loads(request.GET['filters'])
     page = int_arg(request.GET.get('page', 1))

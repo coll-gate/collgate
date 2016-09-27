@@ -585,7 +585,7 @@ class DescriptorModel(Entity):
     verbose_name = models.CharField(null=False, max_length=255, default="")
 
     # Textual description of the model of descriptor. There is no translation like the verbose name.
-    description = models.TextField(null=False, default="")
+    description = models.TextField(null=False, blank=True, default="")
 
     class Meta:
         verbose_name = _("descriptor model")

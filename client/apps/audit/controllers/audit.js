@@ -13,6 +13,7 @@ var AuditCollection = require('../collections/audit');
 var AuditListView = require('../views/auditlist');
 var DefaultLayout = require('../../main/views/defaultlayout');
 var TitleView = require('../../main/views/titleview');
+var ScrollingMoreView = require('../../main/views/scrollingmore');
 
 var Controller = Marionette.Controller.extend({
 
@@ -130,6 +131,8 @@ var Controller = Marionette.Controller.extend({
             if (username) {
                 this.getAuditListByUsername(username);
                 args.view.closeAndDestroy();
+
+                Backbone.history.navigate('app/audit/search/?username=' + username, {silent: true});
             }
         }, this);
     },
@@ -140,10 +143,13 @@ var Controller = Marionette.Controller.extend({
         var defaultLayout = new DefaultLayout({});
         application.mainRegion.show(defaultLayout);
 
-        defaultLayout.title.show(new TitleView({title: gt.gettext("List of audit entries related to user") + " " + username}));
+        defaultLayout.title.show(new TitleView({title: gt.gettext("List of audit entries related to user"), object: username}));
 
-        auditCollection.fetch({data: {page: 1}, processData: true}).then(function () {
-            defaultLayout.content.show(new AuditListView({collection: auditCollection}));
+        auditCollection.fetch({data: {cursor: null}, processData: true}).then(function () {
+            var auditListView = new AuditListView({collection: auditCollection});
+
+            defaultLayout.content.show(auditListView);
+            defaultLayout.bottom.show(new ScrollingMoreView({targetView: auditListView}));
         });
     },
 
@@ -280,6 +286,8 @@ var Controller = Marionette.Controller.extend({
             if (ct.length == 2 && object_id) {
                 this.getAuditListByEntity(ct[0], ct[1], object_id, object_name);
                 args.view.closeAndDestroy();
+
+                Backbone.history.navigate('app/audit/search/?app_label=' + ct[0] + '&model=' + ct[1] + '&object_id=' + object_id, {silent: true});
             }
         }, this);
     },
@@ -290,10 +298,35 @@ var Controller = Marionette.Controller.extend({
         var defaultLayout = new DefaultLayout({});
         application.mainRegion.show(defaultLayout);
 
-        defaultLayout.title.show(new TitleView({title: gt.gettext("List of audit entries related to entity") + " " + app_label + "." + model + " " + object_name}));
+        // if not specified retrieve the entity name
+        if (object_name == null) {
+            $.ajax({
+                url: application.baseUrl + "main/entity/",
+                dataType: 'json',
+                data: {
+                    app_label: app_label,
+                    model: model,
+                    object_id: object_id
+                },
+            }).done
+            (function (data) {
+                defaultLayout.title.show(new TitleView({
+                    title: gt.gettext("List of audit entries related to entity"),
+                    object: data.name
+                }));
+            });
+        } else {
+            defaultLayout.title.show(new TitleView({
+                title: gt.gettext("List of audit entries related to entity"),
+                object: object_name
+            }));
+        }
 
-        auditCollection.fetch({data: {page: 1}, processData: true}).then(function () {
-            defaultLayout.content.show(new AuditListView({collection: auditCollection}));
+        auditCollection.fetch({data: {cursor: null}, processData: true}).then(function () {
+            var auditListView = new AuditListView({collection: auditCollection});
+
+            defaultLayout.content.show(auditListView);
+            defaultLayout.bottom.show(new ScrollingMoreView({targetView: auditListView}));
         });
     }
 });

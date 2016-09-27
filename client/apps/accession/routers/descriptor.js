@@ -26,6 +26,7 @@ var DescriptorTypeDetailView = require('../views/descriptortypedetail');
 var DescriptorValueItemView = require('../views/descriptorvalue');
 var DefaultLayout = require('../../main/views/defaultlayout');
 var TitleView = require('../../main/views/titleview');
+var ScrollingMoreView = require('../../main/views/scrollingmore');
 
 var DescriptorGroupAddView = require('../views/descriptorgroupadd');
 var DescriptorGroupTypeAddView = require('../views/descriptorgrouptypeadd');
@@ -102,28 +103,35 @@ var Router = Marionette.AppRouter.extend({
             defaultLayout.title.show(new TitleView({title: gt.gettext("Values for the type of descriptor"), object: model.get('name')}));
 
             collection.fetch().then(function () {
+                var valueListView = null;
+
                 if (model.get('format').type === "enum_single") {
                     // TODO edit value
-                    defaultLayout.content.show(new DescriptorValueListView({
+                    valueListView = new DescriptorValueListView({
                         read_only: true,
                         collection: collection,
                         model: model
-                    }));
+                    });
                 } else if (model.get('format').type === "enum_pair") {
                     // TODO edit values
-                    defaultLayout.content.show(new DescriptorValuePairListView({
+                    valueListView = new DescriptorValuePairListView({
                         read_only: true,
                         collection: collection,
                         model: model
-                    }));
+                    });
                 } else if (model.get('format').type === "enum_ordinal") {
                     // TODO specific view in way to only edit the label
                     // and to not add/remove some value
-                    defaultLayout.content.show(new DescriptorValuePairListView({
+                    valueListView = new DescriptorValuePairListView({
                         read_only: true,
                         collection: collection,
                         model: model
-                    }));
+                    });
+                }
+
+                if (valueListView != null) {
+                    defaultLayout.content.show(valueListView);
+                    defaultLayout.bottom.show(new ScrollingMoreView({targetView: valueListView, more: -1}));
                 }
             });
         });

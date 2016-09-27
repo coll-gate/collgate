@@ -34,11 +34,11 @@ var AuditModule = Marionette.Module.extend({
     onStart: function(options) {
         Logger.time("Start audit module");
         
-        // var AuditRouter = require('./routers/audit');
-        // this.routers.audit = new AuditRouter();
-
         var AuditController = require('./controllers/audit');
         this.controllers.audit = new AuditController();
+
+        var AuditRouter = require('./routers/audit');
+        this.routers.audit = new AuditRouter();
 
         Logger.timeEnd("Start audit module");
     },

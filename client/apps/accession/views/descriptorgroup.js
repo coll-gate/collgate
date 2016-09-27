@@ -1,6 +1,6 @@
 /**
  * @file descriptorgroup.js
- * @brief Group of type of permission item view
+ * @brief Group of type of descriptor item view
  * @author Frederic SCHERMA
  * @date 2016-07-20
  * @copyright Copyright (c) 2016 INRA UMR1095 GDEC

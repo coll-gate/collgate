@@ -21,6 +21,7 @@ var View = Marionette.ItemView.extend({
 
     ui: {
         show: 'span.show-entity',
+        datetime: 'td abbr.datetime'
     },
 
     events: {
@@ -32,11 +33,14 @@ var View = Marionette.ItemView.extend({
     },
 
     onRender: function() {
-        $(this.el).find("td abbr.datetime").localizeDate(null, session.language);
+        // localize content-type
+        application.main.views.contentTypes.htmlFromValue(this.el);
+        // and date-time
+        this.ui.datetime.localizeDate(null, session.language);
     },
 
     showEntity: function () {
-        alert();
+        alert("Not yet implemented");
     }
 });
 

@@ -18,7 +18,7 @@
 <% } else { %>
 <td>N/A</td>
 <% } %>
-<td><abbr title="<%- content_type %>"><%- application.main.collections.contentType.findLabel(content_type) %></abbr></td>
+<td><abbr class="content-type" title="<%- content_type %>" value="<%- content_type %>"></abbr></td>
 <td>
 <% if (type == 0) { %>
     <abbr title="<%= gt.gettext('Created') %>"><span class="glyphicon glyphicon-plus-sign" style="color: #4cae4c;"></span></abbr>

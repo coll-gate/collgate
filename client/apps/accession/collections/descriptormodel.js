@@ -15,7 +15,11 @@ var Collection = Backbone.Collection.extend({
     model: DescriptorModelModel,
 
     parse: function(data) {
-        this.total_count = data.total_count;
+        this.prev = data.prev;
+        this.cursor = data.cursor;
+        this.next = data.next;
+
+        this.perms = data.perms;
 
         return data.items;
     },

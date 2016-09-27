@@ -53,10 +53,6 @@ var View = Marionette.CompositeView.extend({
         $("div.panel-body").scroll($.proxy(function(e) { this.scroll(e); }, this));
     },
 
-    onUpdate: function() {
-        alert();
-    },
-
     onRender: function() {
         var sort_by = /([+\-]{0,1})([a-z0-9]+)/.exec(this.collection.sort_by);
         var sort_el = this.$el.find('span[column-name="' + sort_by[2] + '"]');
@@ -86,22 +82,46 @@ var View = Marionette.CompositeView.extend({
         $(this.ui.table).stickyTableHeaders({scrollableArea: this.$el.parent()});
     },
 
-    scroll: function(e) {
+    capacity: function() {
+        var rowHeight = 1+8+20+8;
+        return Math.max(1, Math.floor(this.$el.parent().prop('clientHeight') / rowHeight) - 1);
+    },
+
+    moreResults: function(more, scroll) {
+        scroll || (scroll=false);
+        more || (more=20);
+
         var view = this;
 
-        if (e.target.scrollHeight-e.target.clientHeight == e.target.scrollTop) {
-            if (this.collection.next != null) {
-                Logger.debug("descriptorTypeValue::fetch next with cursor=" + (this.collection.next));
-                this.collection.fetch({update: true, remove: false, data: {
-                    cursor: this.collection.next, sort_by: this.collection.sort_by}}).done(function() {
-                        // resync the sticky table header during scrolling
-                        $(view.ui.table).stickyTableHeaders({scrollableArea: view.$el.parent()});
-                });
-            }
+        if (more == -1) {
+            more = this.capacity();
         }
 
-        // resync the sticky table header during scrolling
-        //$(this.ui.table).stickyTableHeaders({scrollableArea: this.$el.parent()});
+        if (this.collection.next != null) {
+            Logger.debug("descriptorTypeValue::fetch next with cursor=" + (this.collection.next));
+            this.collection.fetch({update: true, remove: false, data: {
+                cursor: this.collection.next,
+                sort_by: this.collection.sort_by,
+                more: more
+            }}).done(function() {
+                // resync the sticky table header during scrolling
+                $(view.ui.table).stickyTableHeaders({scrollableArea: view.$el.parent()});
+
+                if (scroll) {
+                    var scrollEl = view.$el.parent();
+
+                    var height = scrollEl.prop('scrollHeight');
+                    var clientHeight = scrollEl.prop('clientHeight');
+                    scrollEl.scrollTop(height - clientHeight - (1+8+20+8));
+                }
+            });
+        }
+    },
+
+    scroll: function(e) {
+        if (e.target.scrollHeight-e.target.clientHeight == e.target.scrollTop) {
+            this.moreResults();
+        }
     },
 
     sortColumn: function (e) {
@@ -115,7 +135,11 @@ var View = Marionette.CompositeView.extend({
         }
 
         this.collection.next = null;
-        this.collection.fetch({reset: true, update: false, remove: true, data: {cursor: null, sort_by: sort_by}});
+        this.collection.fetch({reset: true, update: false, remove: true, data: {
+            more: this.capacity(),
+            cursor: null,
+            sort_by: sort_by
+        }});
     }
 });
 

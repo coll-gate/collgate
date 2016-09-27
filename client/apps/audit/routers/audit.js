@@ -13,24 +13,24 @@ var AuditCollection = require('../collections/audit');
 var AuditListView = require('../views/auditlist');
 var DefaultLayout = require('../../main/views/defaultlayout');
 var TitleView = require('../../main/views/titleview');
+var ScrollingMoreView = require('../../main/views/scrollingmore');
 
 var Router = Marionette.AppRouter.extend({
-    routes : {
-        "app/audit/": "getAudit",
+    controller: application.audit.controllers.audit,
+    appRoutes : {
+        "app/audit/search/?username=:username": "getAuditListByUsername",
+        "app/audit/search/?app_label=:app_label&model=:model&object_id=:object_id": "getAuditListByEntity",
     },
 
-    getAudit: function () {
-        var auditCollection = new AuditCollection([], {data: {page: 1}, processData: true});
-
-        var defaultLayout = new DefaultLayout({});
-        application.mainRegion.show(defaultLayout);
-
-        defaultLayout.title.show(new TitleView({title: gt.gettext("List of audit entries by date")}));
-
-        auditCollection.fetch().then(function () {
-            defaultLayout.content.show(new AuditListView({collection : auditCollection}));
-        });
-    },
+    // getAuditListByUsername: function(username) {
+    //     var controller = new AuditController();
+    //     controller.getAuditListByUsername(username);
+    // },
+    //
+    // getAuditListByEntity: function(app_label, model, object_id) {
+    //     var controller = new AuditController();
+    //     controller.getAuditListByEntity(app_label, model, object_id);
+    // }
 });
 
 module.exports = Router;
