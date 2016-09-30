@@ -10,7 +10,6 @@ import json
 from django.core.exceptions import SuspiciousOperation
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
-from django.utils import translation
 from django.utils.translation import ugettext_lazy as _
 
 from igdectk.common.helpers import int_arg
@@ -74,7 +73,7 @@ def get_descriptors_models(request):
         dm_list.append({
             'id': dm.id,
             'name': dm.name,
-            'verbose_name': dm.name,
+            'verbose_name': dm.verbose_name,
             'description': dm.description,
             'num_descriptors_types': dm.descriptors_types.all().count()
         })
@@ -161,13 +160,30 @@ def create_descriptor_model(request):
     Method.PUT, Format.JSON, content={
         "type": "object",
         "properties": {
-            "name": {"type": "string", 'minLength': 3, 'maxLength': 32}
+            "name": {"type": "string", 'minLength': 3, 'maxLength': 32},
+            "verbose_name": {"type": "string", 'maxLength': 255, "required": False, "blank": True},
+            "description": {"type": "string", 'maxLength': 1024, "required": False, "blank": True},
         },
     },
     # perms={'accession.add_descriptormodel': _('You are not allowed to create a model of descriptor')},
     staff=True)
-def modify_descriptor_model(request):
-    pass
+def update_descriptor_model(request, id):
+    dm_id = int(id)
+
+    model = get_object_or_404(DescriptorModel, id=dm_id)
+
+    name = request.data['name']
+    verbose_name = request.data.get('verbose_name', '')
+    description = request.data.get('description', '')
+
+    model.name = name
+    model.verbose_name = verbose_name
+    model.description = description
+
+    model.full_clean()
+    model.save()
+
+    return HttpResponseRest(request, {})
 
 
 @RestDescriptorModelId.def_auth_request(

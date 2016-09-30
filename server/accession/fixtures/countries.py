@@ -7,7 +7,7 @@ import json
 import sys
 import os.path
 
-from ..models import DescriptorType
+from ..models import DescriptorType, DescriptorValue
 from .descriptorstypes import DESCRIPTORS
 
 
@@ -20,19 +20,29 @@ def fixture():
     handler.close()
 
     descriptor = DESCRIPTORS.get('country')
-    results = {}
+
+    if not descriptor or not descriptor.get('id'):
+        raise Exception('Missing country descriptor')
+
+    descriptor_object = DescriptorType.objects.get(id=descriptor['id'])
 
     # curate data
     for lang, subdata, in data.items():
         countries = {}
 
         for code, country in subdata.items():
-            countries[code] = {
-                'value0': country['name'],
-                'value1': country.get('iso_a2', '')
-            }
+            value = DescriptorValue()
 
-        results[lang] = countries
+            value.descriptor = descriptor_object
 
-    if descriptor is not None and results is not None:
-        DescriptorType.objects.filter(name=descriptor['name']).update(values=json.dumps(results))
+            value.name = "%s:%s" % (code, lang)
+            value.language = lang
+            value.code = code
+
+            value.value0 = country['name']
+            value.value1 = country.get('iso_a2')
+
+            value.save()
+
+            # keep for cities
+            descriptor['lookup'][value.value1] = code

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-09-09 16:58+0200\n"
+"POT-Creation-Date: 2016-09-28 16:59+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,27 +18,27 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: apps.py:37
+#: apps.py:38
 msgid "Accession"
 msgstr "Accession"
 
-#: apps.py:39
+#: apps.py:40
 msgid "Create accession"
 msgstr "Créer une accession"
 
-#: apps.py:42
+#: apps.py:43
 msgid "Create batch"
 msgstr "Créer un lot"
 
-#: apps.py:46
+#: apps.py:47
 msgid "List accessions"
 msgstr "Liste des accessions"
 
-#: apps.py:49
+#: apps.py:50
 msgid "List groups of descriptors"
 msgstr "Liste des groupes de descripteurs"
 
-#: apps.py:52
+#: apps.py:53
 msgid "List models of descriptors"
 msgstr "Liste des models de descripteurs"
 
@@ -50,54 +50,72 @@ msgstr "Vous n'êtes pas autorisé à créer une accession"
 msgid "You are not allowed to list the accessions"
 msgstr "Vous n'êtes pas autorisé à lister les accessions"
 
-#: descriptor.py:134
+#: descriptor.py:155
 msgid "Only an empty group of descriptors can be deleted"
-msgstr ""
+msgstr "Seul les groupes de descripteurs vides peuvent être supprimés"
 
-#: descriptor.py:356
+#: descriptor.py:403
 msgid "Only an empty of values type of descriptors can be deleted"
 msgstr ""
+"Seul les type de descripteurs n'ayant aucun valeurs peuvent être supprimés"
 
-#: models.py:32
+#: descriptormodel.py:134
+msgid "A model of descriptor with a similar name already exists"
+msgstr "A model de descripteur avec un nom similaire existe déjà"
+
+#: descriptormodel.py:199
+msgid "Only empty models of descriptors can be removed"
+msgstr "Liste des models de descripteurs"
+
+#: models.py:33
 msgid "descriptor group"
 msgstr "groupe de descripteur"
 
-#: models.py:96
+#: models.py:97
 msgid "descriptor type"
 msgstr "type de descripteur"
 
-#: models.py:136
+#: models.py:451
 msgid "descriptor value"
 msgstr "valeur de descripteur"
 
-#: models.py:149
-msgid "Primary"
-msgstr "Primaire"
-
-#: models.py:150
-msgid "Synonym"
-msgstr "Synonyme"
-
-#: models.py:151
-msgid "Code"
-msgstr "Code"
-
-#: models.py:171
+#: models.py:480
 msgid "accession synonym"
 msgstr "synonym d'accession"
 
-#: models.py:182
+#: models.py:502
+msgid "descriptor panel"
+msgstr "type de descripteur"
+
+#: models.py:554
+msgid "descriptor model type"
+msgstr "type de descripteur"
+
+#: models.py:591
+msgid "descriptor model"
+msgstr "type de descripteur"
+
+#: models.py:602
 msgid "panel"
 msgstr "collection"
 
-#: models.py:196
+#: models.py:619
 msgid "accession"
 msgstr "accession"
 
-#: models.py:209
+#: models.py:632
 msgid "batch"
 msgstr "lot"
 
-#: models.py:223
+#: models.py:646
 msgid "sample"
 msgstr "échantillon"
+
+#~ msgid "Primary"
+#~ msgstr "Primaire"
+
+#~ msgid "Synonym"
+#~ msgstr "Synonyme"
+
+#~ msgid "Code"
+#~ msgstr "Code"

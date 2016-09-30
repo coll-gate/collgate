@@ -15,7 +15,39 @@ var TaxonListView = require('../views/taxonlist');
 var DefaultLayout = require('../../main/views/defaultlayout');
 var TitleView = require('../../main/views/titleview');
 
-var TaxonController = Marionette.Controller.extend({
+/* If using marionnete 3 and no longer Controller class or inherit from Marionette.Object
+Controller = function(options) {
+    this.options = options || {};
+
+    if (_.isFunction(this.initialize)) {
+        this.initialize(this.options);
+    }
+};
+
+Controller.extend = Backbone.Model.extend;
+
+_.extend(Controller.prototype, Backbone.Events, {
+    destroy: function() {
+      Marionette._triggerMethod(this, 'before:destroy', arguments);
+      Marionette._triggerMethod(this, 'destroy', arguments);
+
+      this.stopListening();
+      this.off();
+      return this;
+    },
+
+    // import the `triggerMethod` to trigger events with corresponding
+    // methods if the method exists
+    triggerMethod: Marionette.triggerMethod,
+
+    // A handy way to merge options onto the instance
+    mergeOptions: Marionette.mergeOptions,
+
+    // Proxy `getOption` to enable getting options from this or this.options by name.
+    getOption: Marionette.proxyGetOption
+});*/
+
+var TaxonController =  Marionette.Controller/*Object*/.extend({
 
     create: function() {
         var CreateTaxonView = Marionette.ItemView.extend({

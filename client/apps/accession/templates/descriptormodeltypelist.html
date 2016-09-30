@@ -1,0 +1,40 @@
+<!--
+ - @file descriptormodeltypelist.html
+ - @brief Template for a list of types into a model of descriptor (model)
+ - @author Frederic SCHERMA
+ - @date 2016-09-28
+ - @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+ - @license @todo
+ - @details
+-->
+
+<div class="col-4 element object descriptor-model-type-list" object-type="descriptor-model-type-list" style="width:50%;">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th><span class="glyphicon glyphicon-asterisk"></span></th>
+                <th><%= gt.gettext("Name") %></th>
+                <th><%= gt.gettext("Code") %></th>
+                <th><%= gt.gettext("Label") %></th>
+                <th><%= gt.gettext("Mandatory") %></th>
+                <th><%= gt.gettext("Set Once") %></th>
+            </tr>
+        </thead>
+        <tbody class="descriptor-model-type-list">
+        </tbody>
+    </table>
+</div>
+
+<div class="col-4 element object descriptor-type-list" object-type="descriptor-type-list" style="width:50%;">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th><span class="glyphicon glyphicon-asterisk"></span></th>
+                <th><%= gt.gettext("Name") %></th>
+                <th><%= gt.gettext("Code") %></th>
+            </tr>
+        </thead>
+        <tbody class="descriptor-type-list">
+        </tbody>
+    </table>
+</div>

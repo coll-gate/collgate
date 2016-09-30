@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-09-19 16:39+0200\n"
+"POT-Creation-Date: 2016-09-28 14:12+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,12 +19,14 @@ msgstr ""
 
 #: ../../../views/descriptorgroupadd.js:45
 #: ../../../views/descriptorgrouptypeadd.js:51
+#: ../../../views/descriptormodeladd.js:45
 #: ../../../views/descriptortypedetail.js:211
 msgid "Invalid characters (alphanumeric, _ and - only)"
 msgstr ""
 
 #: ../../../views/descriptorgroupadd.js:48
 #: ../../../views/descriptorgrouptypeadd.js:54
+#: ../../../views/descriptormodeladd.js:48
 #: ../../../views/descriptortypedetail.js:213
 msgid "3 characters min"
 msgstr ""
@@ -37,33 +39,47 @@ msgstr ""
 msgid "Descriptor type name already in usage"
 msgstr ""
 
+#: ../../../views/descriptormodeladd.js:73
+msgid "Name for model of descriptor already in usage"
+msgstr ""
+
 #: ../../../views/descriptortypedetail.js:200
 msgid "1 character min"
 msgstr ""
 
-#: ../../../routers/descriptor.js:49
+#: ../../../routers/descriptor.js:50
 msgid "List of groups of descriptors"
 msgstr ""
 
-#: ../../../routers/descriptor.js:69
+#: ../../../routers/descriptor.js:70
 msgid "Types of descriptors for the group"
 msgstr ""
 
-#: ../../../routers/descriptor.js:89
+#: ../../../routers/descriptor.js:90
 msgid "Details for the type of descriptor"
 msgstr ""
 
-#: ../../../routers/descriptor.js:104
+#: ../../../routers/descriptor.js:103
 msgid "Values for the type of descriptor"
 msgstr ""
 
+#: ../../../routers/descriptormodel.js:36
+msgid "List of models of descriptors"
+msgstr ""
+
 #: ../../../templates/descriptorgrouplist.html:16
+#: ../../../templates/descriptormodellist.html:16
 #: ../../../templates/descriptortypelist.html:16
 msgid "Name"
 msgstr ""
 
 #: ../../../templates/descriptorgrouplist.html:17
+#: ../../../templates/descriptormodellist.html:18
 msgid "Number of types of descriptors"
+msgstr ""
+
+#: ../../../templates/descriptormodellist.html:17
+msgid "Verbose name"
 msgstr ""
 
 #: ../../../templates/descriptortypedetail.html:20

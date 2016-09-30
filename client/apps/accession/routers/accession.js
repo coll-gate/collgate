@@ -33,12 +33,12 @@ var Router = Marionette.AppRouter.extend({
         // var collection = application.accession.collections.accession;
         //
         // var defaultLayout = new DefaultLayout({});
-        // application.mainRegion.show(defaultLayout);
+        // application.getRegion('mainRegion').show(defaultLayout);
         //
-        // defaultLayout.title.show(new TitleView({title: gt.gettext("List of accessions")}));
+        // defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of accessions")}));
         //
         // collection.fetch().then(function () {
-        //     defaultLayout.content.show(new AccessionListView({read_only: true, collection : collection}));
+        //     defaultLayout.getRegion('content').show(new AccessionListView({read_only: true, collection : collection}));
         // });
     },
 

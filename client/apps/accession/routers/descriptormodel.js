@@ -9,9 +9,11 @@
  */
 
 var Marionette = require('backbone.marionette');
+var DescriptorModelModel = require('../models/descriptormodel');
 var DescriptorModelCollection = require('../collections/descriptormodel');
 var DescriptorModelListView = require('../collections/descriptormodel');
 var DescriptorModelAddView = require('../views/descriptormodeladd');
+var DescriptorModelDetailView = require('../views/descriptormodeldetail');
 var DescriptorModelListView = require('../views/descriptormodellist');
 var DefaultLayout = require('../../main/views/defaultlayout');
 var TitleView = require('../../main/views/titleview');
@@ -31,22 +33,30 @@ var Router = Marionette.AppRouter.extend({
         var collection = new DescriptorModelCollection();
 
         var defaultLayout = new DefaultLayout({});
-        application.mainRegion.show(defaultLayout);
+        application.getRegion('mainRegion').show(defaultLayout);
 
-        defaultLayout.title.show(new TitleView({title: gt.gettext("List of models of descriptors")}));
+        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of models of descriptors")}));
 
         collection.fetch().then(function () {
-            defaultLayout.content.show(new DescriptorModelListView({collection : collection}));
+            defaultLayout.getRegion('content').show(new DescriptorModelListView({collection : collection}));
         });
 
         // TODO lookup for permission
         if (session.user.isAuth && (session.user.isSuperUser || session.user.isStaff)) {
-            defaultLayout.bottom.show(new DescriptorModelAddView({collection: collection}));
+            defaultLayout.getRegion('bottom').show(new DescriptorModelAddView({collection: collection}));
         }
     },
 
     getDescriptorModel: function (id) {
-        alert(id);
+        var defaultLayout = new DefaultLayout();
+        application.getRegion('mainRegion').show(defaultLayout);
+
+        var model = new DescriptorModelModel({id: id});
+
+        model.fetch().then(function () {
+            defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Details for the model of descriptor"), object: model.get('name')}));
+            defaultLayout.getRegion('content').show(new DescriptorModelDetailView({model : model}));
+        });
     },
 
     getDescriptorPanelListForModel: function (id) {

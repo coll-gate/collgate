@@ -33,7 +33,7 @@ var View = Marionette.ItemView.extend({
     },
 
     updateProfile: function () {
-        //this.model.save();
+        //this.model.save().done(function() { $.alert.success(gt.gettext("Done")); });;
     }
 });
 

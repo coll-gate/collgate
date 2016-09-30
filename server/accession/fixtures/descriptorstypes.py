@@ -10,25 +10,10 @@ from ..models import DescriptorGroup, DescriptorType
 from .descriptorsgroups import GROUPS
 
 DESCRIPTORS = {
-    'country': {
-        'id': None,
-        'name': 'country',
-        'code': 'CO_705',
-        'group': 'general',
-        'can_delete': False,
-        'can_modify': False,
-        'description': 'List of countries codes',
-        'format': {
-            'type': 'enum_pair',
-            'format': 'category',
-            'fields': ['name', 'iso'],
-            'trans': True
-        }
-    },
     'accession_synonym_types': {
         'id': None,
         'name': 'accession_synonym_types',
-        'code': 'ID_001',
+        'code': 'IN_001',
         'group': 'general',
         'can_delete': False,
         'can_modify': False,
@@ -38,7 +23,53 @@ DESCRIPTORS = {
             'format': 'category',
             'trans': True
         }
-    }
+    },
+    'country': {
+        'id': None,
+        'name': 'country',
+        'code': 'IN_002',
+        'group': 'general',
+        'can_delete': False,
+        'can_modify': False,
+        'description': 'List of countries with code',
+        'format': {
+            'type': 'enum_pair',
+            'format': 'category',
+            'fields': ['name', 'iso'],
+            'trans': True
+        },
+        'lookup': {}
+    },
+    'country2': {
+        'id': None,
+        'name': 'country2',
+        'code': 'EX_001',
+        'group': 'general',
+        'can_delete': False,
+        'can_modify': False,
+        'description': 'List of countries with code',
+        'format': {
+            'type': 'enum_pair',
+            'format': 'category',
+            'fields': ['name', 'iso'],
+            'trans': True
+        }
+    },
+    'city': {
+        'id': None,
+        'name': 'city',
+        'code': 'IN_003',
+        'group': 'general',
+        'can_delete': False,
+        'can_modify': False,
+        'description': 'List of cities with location',
+        'format': {
+            'type': 'enum_pair',
+            'format': 'category',
+            'fields': ['name', 'coord'],
+            'trans': True
+        }
+    },
 }
 
 
@@ -50,7 +81,7 @@ def fixture():
 
         src_format = descriptor_data.get('format', {})
 
-        format = {
+        type_format = {
             'type': src_format.get('type', 'string'),
             'format': src_format.get('format', 'category'),
             'unit': src_format.get('unit', 'custom'),
@@ -63,7 +94,7 @@ def fixture():
             'code': descriptor_data.get('code', ''),
             'description': descriptor_data.get('description', ''),
             'group_id': GROUPS.get(descriptor_data.get('group', 'general'))['id'],
-            'format': json.dumps(format),
+            'format': json.dumps(type_format),
             'can_delete': descriptor_data.get('can_delete', False),
             'can_modify': descriptor_data.get('can_modify', False)
         })

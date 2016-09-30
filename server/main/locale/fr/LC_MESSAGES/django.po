@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-09-09 16:58+0200\n"
+"POT-Creation-Date: 2016-09-28 16:59+0200\n"
 "PO-Revision-Date: 2016-02-01 11:53+0100\n"
 "Last-Translator: Frederic SCHERMA <frederic.scherma@clermont.inra.fr>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -50,29 +50,37 @@ msgstr "Vous n'êtes pas identifié."
 msgid "Please, you must enable your cookies."
 msgstr "Merci d'activer la gestion des cookies."
 
-#: models.py:52
+#: models.py:55
 msgid "English"
 msgstr "Anglais"
 
-#: models.py:53
+#: models.py:56
 msgid "French"
 msgstr "Français"
 
-#: models.py:82
+#: models.py:85
 msgid "Pending"
 msgstr "Attente"
 
-#: models.py:83
+#: models.py:86
 msgid "Valid"
 msgstr "Valide"
 
-#: models.py:84
+#: models.py:87
 msgid "Hidden"
 msgstr "Cahé"
 
-#: models.py:85
+#: models.py:88
 msgid "Removed"
 msgstr "Supprimé"
+
+#: models.py:121
+msgid ""
+"Name must contains only alphanumerics characters or _ or - and be at least 3 "
+"characters length"
+msgstr ""
+"Le nom doit contenir seulement des caractères alphanumériques ou _ ou - et "
+"faire au moins 3 caractères de long"
 
 #: profile.py:56
 msgid "Successfully logged"
@@ -94,14 +102,14 @@ msgstr "Déconnecté"
 msgid "Welcome"
 msgstr "Bienvenue"
 
-#: templates/main/index.html:81
+#: templates/main/index.html:82
 msgid "Username"
 msgstr "Identifiant"
 
-#: templates/main/index.html:84
+#: templates/main/index.html:85
 msgid "Password"
 msgstr "Mot de passe"
 
-#: templates/main/index.html:86
+#: templates/main/index.html:87
 msgid "Sign in"
 msgstr "Se connecter"

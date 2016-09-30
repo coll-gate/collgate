@@ -17,6 +17,37 @@ from igdectk.common.models import ChoiceEnum, IntegerChoice
 
 from main.models import Languages, Entity
 
+from django.db import connections, models
+from django.db.models.sql.compiler import SQLCompiler
+
+
+class NullsLastSQLCompiler(SQLCompiler):
+    def get_order_by(self):
+        result = super().get_order_by()
+        if result and self.connection.vendor == 'postgresql':
+            res = [(expr, (sql + ' NULLS LAST', params, is_ref))
+                    for (expr, (sql, params, is_ref)) in result]
+            print(res)
+            return res
+        return result
+
+
+class NullsLastQuery(models.sql.query.Query):
+    """Use a custom compiler to inject 'NULLS LAST' (for PostgreSQL)."""
+
+    def get_compiler(self, using=None, connection=None):
+        if using is None and connection is None:
+            raise ValueError("Need either using or connection")
+        if using:
+            connection = connections[using]
+        return NullsLastSQLCompiler(self, connection, using)
+
+
+class NullsLastQuerySet(models.QuerySet):
+    def __init__(self, model=None, query=None, using=None, hints=None):
+        super().__init__(model, query, using, hints)
+        self.query = query or NullsLastQuery(self.model)
+
 
 class DescriptorGroup(Entity):
     """
@@ -148,7 +179,7 @@ class DescriptorType(Entity):
                 # sort by id (code)
                 # name are unique so its a trivial case
                 if reverse:
-                    next_code = str(cursor.split('/')[0]) if cursor else "ID_9999:99999999"
+                    next_code = str(cursor.split('/')[0]) if cursor else "ZZ_9999:99999999"
 
                     for k, v in values.items():
                         if k < next_code:
@@ -173,60 +204,130 @@ class DescriptorType(Entity):
                             })
 
                 values_list = sorted(values_list, key=lambda v: v['id'], reverse=reverse)[:limit]
-
-                # cursors
-                if len(values_list) > 0:
-                    val = values_list[0]
-                    prev_cursor = "%s/%s" % (val['id'], val['id'])
-
-                    val = values_list[-1]
-                    next_cursor = "%s/%s" % (val['id'], val['id'])
             elif sort_by == 'ordinal':
-                # sort by its ordinal value (a ordinal field in value) as integer compare
-                # duplicated ordinals values are supported by string concatenation of ordinal+code during sorting
-                next_ordinal = int(cursor.split('/')[0]) if cursor else -1
+                # sort by a ordinal field as integer comparison.
+                # its not a trivial case because of null values and duplications.
+                # blank value are not allowed.
+                # null values are supported.
+                # duplicated values are supported by string concatenation of ordinal+code during sorting.
+                next_ordinal, next_code = cursor.split('/') if cursor else (None, None)
+
+                if next_code is None:
+                    next_code = ""
+
+                extra_list = []
 
                 if reverse:
-                    for k, v in values.items():
-                        if 'ordinal' not in v:
-                            raise SuspiciousOperation("Missing ordinal field")
+                    if next_ordinal:
+                        next_ordinal = int(next_ordinal)
+                    else:
+                        next_ordinal = 999999999
 
-                        if v['ordinal'] < next_ordinal:
-                            values_list.append({
-                                'id': k,
-                                'parent': v.get('parent', None),
-                                'ordinal': v.get('ordinal', None),
-                                'value0': v.get('value0', None),
-                                'value1': v.get('value1', None),
-                            })
+                    if cursor:
+                        for k, v in values.items():
+                            ordinal = v.get('ordinal')
+
+                            if ordinal is None and k > next_code:
+                                extra_list.append({
+                                    'id': k,
+                                    'parent': v.get('parent', None),
+                                    'ordinal': v.get('ordinal', None),
+                                    'value0': v.get('value0', None),
+                                    'value1': v.get('value1', None),
+                                })
+                            elif next_ordinal and ordinal and ordinal < next_ordinal:
+                                values_list.append({
+                                    'id': k,
+                                    'parent': v.get('parent', None),
+                                    'ordinal': v.get('ordinal', None),
+                                    'value0': v.get('value0', None),
+                                    'value1': v.get('value1', None),
+                                })
+                    else:
+                        for k, v in values.items():
+                            ordinal = v.get('ordinal')
+
+                            if ordinal is None:
+                                extra_list.append({
+                                    'id': k,
+                                    'parent': v.get('parent', None),
+                                    'ordinal': v.get('ordinal', None),
+                                    'value0': v.get('value0', None),
+                                    'value1': v.get('value1', None),
+                                })
+                            else:
+                                values_list.append({
+                                    'id': k,
+                                    'parent': v.get('parent', None),
+                                    'ordinal': v.get('ordinal', None),
+                                    'value0': v.get('value0', None),
+                                    'value1': v.get('value1', None),
+                                })
                 else:
-                    for k, v in values.items():
-                        if 'ordinal' not in v:
-                            raise SuspiciousOperation("Missing ordinal field")
+                    if next_ordinal:
+                        next_ordinal = int(next_ordinal)
+                    else:
+                        next_ordinal = -1
 
-                        if v['ordinal'] > next_ordinal:
-                            values_list.append({
-                                'id': k,
-                                'parent': v.get('parent', None),
-                                'ordinal': v.get('ordinal', None),
-                                'value0': v.get('value0', None),
-                                'value1': v.get('value1', None),
-                            })
+                    if cursor:
+                        for k, v in values.items():
+                            ordinal = v.get('ordinal')
 
-                values_list = sorted(values_list, key=lambda v: v['ordinal']+v['id'], reverse=reverse)[:limit]
+                            if ordinal is None and k > next_code:
+                                extra_list.append({
+                                    'id': k,
+                                    'parent': v.get('parent', None),
+                                    'ordinal': v.get('ordinal', None),
+                                    'value0': v.get('value0', None),
+                                    'value1': v.get('value1', None),
+                                })
+                            elif next_ordinal and ordinal and ordinal > next_ordinal:
+                                values_list.append({
+                                    'id': k,
+                                    'parent': v.get('parent', None),
+                                    'ordinal': v.get('ordinal', None),
+                                    'value0': v.get('value0', None),
+                                    'value1': v.get('value1', None),
+                                })
+                    else:
+                        for k, v in values.items():
+                            ordinal = v.get('ordinal')
 
-                # cursors
-                if len(values_list) > 0:
-                    val = values_list[0]
-                    prev_cursor = "%s/%s" % (val['ordinal'], val['id'])
+                            if ordinal is None:
+                                extra_list.append({
+                                    'id': k,
+                                    'parent': v.get('parent', None),
+                                    'ordinal': v.get('ordinal', None),
+                                    'value0': v.get('value0', None),
+                                    'value1': v.get('value1', None),
+                                })
+                            else:
+                                values_list.append({
+                                    'id': k,
+                                    'parent': v.get('parent', None),
+                                    'ordinal': v.get('ordinal', None),
+                                    'value0': v.get('value0', None),
+                                    'value1': v.get('value1', None),
+                                })
 
-                    val = values_list[-1]
-                    next_cursor = "%s/%s" % (val['ordinal'], val['id'])
+                def sort_method(v):
+                    if v['ordinal']:
+                        return v['ordinal']+v['id']
+                    else:
+                        return v['id']
+
+                values_list = sorted(values_list, key=sort_method, reverse=reverse)[:limit]
+                extra_size = limit - len(values_list)
+
+                if extra_size > 0:
+                    extra_list = sorted(extra_list, key=lambda v: v['id'])[:extra_size]
+                    values_list += extra_list
             else:
-                # sort by a field contained in the values as string compare
-                # its not a trivial case because of blank values and duplications
-                # blank values are supported, but there is not consistency if duplicated values
-                # duplicated values are supported by string concatenation of value+code during sorting
+                # sort by a field contained in the values as string compare.
+                # its not a trivial case because of null values and duplications.
+                # blank value are not allowed.
+                # null values are supported.
+                # duplicated values are supported by string concatenation of value+code during sorting.
                 next_value, next_code = cursor.split('/') if cursor else (None, None)
 
                 if next_code is None:
@@ -239,10 +340,11 @@ class DescriptorType(Entity):
                         for k, v in values.items():
                             value = v.get(sort_by)
 
-                            if value is None:
-                                raise SuspiciousOperation("Invalid value field name")
+                            # if value is None:
+                            #     raise SuspiciousOperation("Invalid value for field")
 
-                            if value is "" and k > next_code:
+                            # if value is "" and k > next_code:
+                            if value is None and k > next_code:
                                 extra_list.append({
                                     'id': k,
                                     'parent': v.get('parent', None),
@@ -250,7 +352,7 @@ class DescriptorType(Entity):
                                     'value0': v.get('value0', None),
                                     'value1': v.get('value1', None),
                                 })
-                            elif next_value and value < next_value:
+                            elif next_value and value and value < next_value:
                                 values_list.append({
                                     'id': k,
                                     'parent': v.get('parent', None),
@@ -262,10 +364,11 @@ class DescriptorType(Entity):
                         for k, v in values.items():
                             value = v.get(sort_by)
 
-                            if value is None:
-                                raise SuspiciousOperation("Invalid value field name")
+                            # if value is None:
+                            #     raise SuspiciousOperation("Invalid value for field")
 
-                            if value is "":
+                            # if value is "":
+                            if value is None:
                                 extra_list.append({
                                     'id': k,
                                     'parent': v.get('parent', None),
@@ -286,10 +389,11 @@ class DescriptorType(Entity):
                         for k, v in values.items():
                             value = v.get(sort_by)
 
-                            if value is None:
-                                raise SuspiciousOperation("Invalid value field name")
+                            # if value is None:
+                            #     raise SuspiciousOperation("Invalid value for field")
 
-                            if value is "" and k > next_code:
+                            # if value is "" and k > next_code:
+                            if value is None and k > next_code:
                                 extra_list.append({
                                     'id': k,
                                     'parent': v.get('parent', None),
@@ -297,7 +401,7 @@ class DescriptorType(Entity):
                                     'value0': v.get('value0', None),
                                     'value1': v.get('value1', None),
                                 })
-                            elif next_value and value > next_value:
+                            elif next_value and value and value > next_value:
                                 values_list.append({
                                     'id': k,
                                     'parent': v.get('parent', None),
@@ -309,10 +413,11 @@ class DescriptorType(Entity):
                         for k, v in values.items():
                             value = v.get(sort_by)
 
-                            if value is None:
-                                raise SuspiciousOperation("Invalid value field name")
+                            # if value is None:
+                            #     raise SuspiciousOperation("Invalid value for field")
 
-                            if value is "":
+                            # if value is "":
+                            if value is None:
                                 extra_list.append({
                                     'id': k,
                                     'parent': v.get('parent', None),
@@ -329,89 +434,116 @@ class DescriptorType(Entity):
                                     'value1': v.get('value1', None),
                                 })
 
-                values_list = sorted(values_list, key=lambda v: v[sort_by]+v['id'], reverse=reverse)[:limit]
+                def sort_method(v):
+                    if v[sort_by]:
+                        return v[sort_by]+v['id']
+                    else:
+                        return v['id']
+
+                values_list = sorted(values_list, key=sort_method, reverse=reverse)[:limit]
                 extra_size = limit - len(values_list)
 
                 if extra_size > 0:
                     extra_list = sorted(extra_list, key=lambda v: v['id'])[:extra_size]
                     values_list += extra_list
-
-                # cursors
-                if len(values_list) > 0:
-                    val = values_list[0]
-                    prev_cursor = "%s/%s" % (val[sort_by], val['id'])
-
-                    val = values_list[-1]
-                    next_cursor = "%s/%s" % (val[sort_by], val['id'])
         else:  # per row value
             if trans:
-                qs = self.values_set.filter(language=lang).prefetch_related('parent')
+                qs = self.values_set.filter(language=lang)
             else:
-                qs = self.values_set.all().prefetch_related('parent')
+                qs = self.values_set.all()
 
             if sort_by == 'id':
                 next_code = str(cursor.split('/')[0]) if cursor else None
 
                 if reverse:
                     if next_code:
-                        qs = qs.filter(name__lt=next_code).order_by('-name')
+                        qs = qs.filter(code__lt=next_code).order_by('-code')
                     else:
-                        qs = qs.order_by('-name')
+                        qs = qs.order_by('-code')
                 else:
                     if next_code:
-                        qs = qs.filter(name__gt=next_code).order_by('name')
+                        qs = qs.filter(code__gt=next_code).order_by('code')
                     else:
-                        qs = qs.order_by('name')
+                        qs = qs.order_by('code')
             elif sort_by == 'ordinal':
-                next_ordinal = int(cursor.split('/')[0]) if cursor else None
+                next_ordinal, next_code = cursor.split('/') if cursor else (None, None)
+
+                if next_ordinal:
+                    next_ordinal = int(next_ordinal)
 
                 if reverse:
                     if next_ordinal:
-                        qs = qs.filter(ordinal__lt=next_ordinal).order_by('-ordinal')
+                        qs = qs.filter(ordinal__lt=next_ordinal).order_by('-ordinal', 'code')
+                    elif next_code:
+                        qs = qs.filter(code__gt=next_code).order_by('-ordinal', 'code')
                     else:
-                        qs = qs.order_by('-ordinal')
+                        qs = qs.order_by('-ordinal', 'code')
                 else:
                     if next_ordinal:
-                        qs = qs.filter(ordinal__gt=next_ordinal).order_by('ordinal')
+                        qs = qs.filter(ordinal__gt=next_ordinal).order_by('ordinal', 'code')
+                    elif next_code:
+                        qs = qs.filter(code__gt=next_code).order_by('ordinal', 'code')
                     else:
-                        qs = qs.order_by('ordinal')
+                        qs = qs.order_by('ordinal', 'code')
             elif sort_by == 'value0':
-                next_value0 = str(cursor.split('/')[0]) if cursor else None
+                next_value0, next_code = cursor.split('/') if cursor else (None, None)
 
                 if reverse:
                     if next_value0:
-                        qs = qs.filter(value0__lt=next_value0).order_by('-value0')
+                        qs = qs.filter(value0__lt=next_value0).order_by('-value0', 'code')
+                    elif next_code:
+                        qs = qs.filter(code__gt=next_code).order_by('-value0', 'code')
                     else:
-                        qs = qs.order_by('-value0')
+                        qs = qs.order_by('-value0', 'code')
                 else:
                     if next_value0:
-                        qs = qs.filter(value0__gt=next_value0).order_by('value0')
+                        qs = qs.filter(value0__gt=next_value0).order_by('value0', 'code')
+                    elif next_code:
+                        qs = qs.filter(code__gt=next_code).order_by('value0', 'code')
                     else:
-                        qs = qs.order_by('value0')
+                        qs = qs.order_by('value0', 'code')
             elif sort_by == 'value1':
-                next_value1 = str(cursor.split('/')[0]) if cursor else None
+                next_value1, next_code = cursor.split('/') if cursor else (None, None)
 
                 if reverse:
                     if next_value1:
-                        qs = qs.filter(value1__lt=next_value1).order_by('-value1')
+                        qs = qs.filter(value1__lt=next_value1).order_by('-value1', 'code')
+                    elif next_code:
+                        qs = qs.filter(code__gt=next_code).order_by('-value1', 'code')
                     else:
-                        qs = qs.order_by('-value1')
+                        qs = qs.order_by('-value1', 'code')
                 else:
                     if next_value1:
-                        qs = qs.filter(value1__gt=next_value1).order_by('value1')
+                        qs = qs.filter(value1__gt=next_value1).order_by('value1', 'code')
+                    elif next_code:
+                        qs = qs.filter(code__gt=next_code).order_by('value1', 'code')
                     else:
-                        qs = qs.order_by('value1')
+                        qs = qs.order_by('value1', 'code')
 
             qs = qs[:limit]
 
             for value in qs:
                 values_list.append({
-                    'id': value.name,
+                    'id': value.code,
                     'parent': value.parent,
                     'ordinal': value.ordinal,
                     'value0': value.value0,
                     'value1': value.value1
                 })
+
+        # cursors
+        if len(values_list) > 0:
+            val = values_list[0]
+            if val[sort_by]:
+                prev_cursor = "%s/%s" % (val[sort_by], val['id'])
+            else:
+                prev_cursor = "/%s" % val['id']
+
+            val = values_list[-1]
+            if val[sort_by]:
+                next_cursor = "%s/%s" % (val[sort_by], val['id'])
+            else:
+                next_cursor = "/%s" % val['id']
 
         return prev_cursor, next_cursor, values_list
 
@@ -432,32 +564,40 @@ class DescriptorValue(Entity):
         choices=Languages.choices(),
         default=Languages.EN.value)
 
+    # Descriptor value code (unique with language)
+    code = models.CharField(max_length=64, null=False, blank=False)
+
     # Related type of descriptor.
     descriptor = models.ForeignKey(DescriptorType, null=False, related_name='values_set')
 
     # Direct parent descriptor value, in case of one level hierarchy.
-    parent = models.ForeignKey('DescriptorValue', null=True, related_name='children_set')
+    parent = models.CharField(max_length=64, null=True, blank=False)
 
     # Ordinal with numeric value index for ordinal_with_text type of format.
-    ordinal = models.IntegerField(default=0, null=False, blank=False)
+    ordinal = models.IntegerField(default=0, null=True, blank=False)
 
     # Single enumeration field, or pair enumeration first field
-    value0 = models.CharField(max_length=127, default="", blank=True, null=False)
+    value0 = models.CharField(max_length=127, default="", null=True, blank=False)
 
     # Pair enumeration second field
-    value1 = models.CharField(max_length=127, default="", blank=True, null=False)
+    value1 = models.CharField(max_length=127, default="", null=True, blank=False)
+
+    # NULLS LAST query set manager for PostgreSQL
+    objects = NullsLastQuerySet.as_manager()
 
     class Meta:
         verbose_name = _("descriptor value")
 
         unique_together = (
-            ('descriptor', 'language'),
+            ('code', 'language'),
         )
 
         index_together = (
-            ('descriptor', 'language', 'ordinal'),   # index for ordinals
-            ('descriptor', 'language', 'value0'),  # index for value0
-            ('descriptor', 'language', 'value1'),  # index for value1
+            ('code', 'language'),
+            ('descriptor', 'language'),
+            ('descriptor', 'language', 'ordinal'),  # index for ordinals
+            ('descriptor', 'language', 'value0'),   # index for value0
+            ('descriptor', 'language', 'value1'),   # index for value1
         )
 
 
@@ -473,8 +613,8 @@ class AccessionSynonym(Entity):
         choices=Languages.choices(),
         default=Languages.EN.value)
 
-    # Type of synonym is related to the type of descriptor ID_001 that is an 'enum_single'.
-    type = models.CharField(max_length=16, null=False, blank=False, default='ID_001:0000001')
+    # Type of synonym is related to the type of descriptor IN_001 that is an 'enum_single'.
+    type = models.CharField(max_length=64, null=False, blank=False, default='IN_001:0000001')
 
     class Meta:
         verbose_name = _("accession synonym")
@@ -490,6 +630,9 @@ class DescriptorPanel(Entity):
     Panels are created and modified by staff people.
     The textual resources of a panel are i18nable because they are displayed for users.
     """
+
+    # To which meta model this panel is attached.
+    descriptor_meta_model = models.ForeignKey('DescriptorMetaModel', related_name='panels', null=False)
 
     # Label of the panel (can be used for a tab, or any dialog title).
     # It is i18nized used JSON dict with language code as key and label as value (string:string).
@@ -537,9 +680,6 @@ class DescriptorModelType(models.Model):
 
     # Related type of descriptor (relate on a specific one's)
     descriptor_type = models.ForeignKey(DescriptorType, null=False, blank=False)
-
-    # Related panel of descriptors
-    panel = models.ForeignKey(DescriptorPanel, null=False, blank=False)
 
     # True if this type of descriptor is mandatory for an accession (model)
     mandatory = models.BooleanField(null=False, blank=False, default=False)
@@ -602,18 +742,63 @@ class Asset(Entity):
         verbose_name = _("panel")
 
 
-class Accession(Entity):
+class DescriptorMetaModel(Entity):
     """
-    Accession entity.
+    A meta model regroup many models of descriptors and many panels of descriptors.
+    Accession inherit of one of this model, in way to defines what descriptors are used,
+    and how they are displayed.
     """
 
+    # Label of the meta model of descriptor.
+    # It is i18nized used JSON dict with language code as key and label as value (string:string).
+    label = models.TextField(null=False, default={})
+
+    # Textual description of the model of descriptor. There is no translation. It is for staff usage.
+    description = models.TextField(null=False, blank=True, default="")
+
+    # List of model of descriptor attached to this meta model.
+    # The model of descriptors can be shared between many meta models.
+    descriptor_models = models.ManyToManyField(DescriptorModel, related_name='descriptor_meta_model')
+
+    class Meta:
+        verbose_name = _("descriptor meta model")
+
+    def get_label(self):
+        """
+        Get the label for this meta model in the current regional.
+        """
+        data = json.loads(self.label)
+        lang = translation.get_language()
+
+        return data.get(lang, "")
+
+    def set_label(self, lang, label):
+        """
+        Set the label for a specific language.
+        :param str lang: language code string
+        :param str label: Localized label
+        :note Model instance save() is not called.
+        """
+        data = json.loads(self.label)
+        data[lang] = label
+        self.label = json.dumps(data)
+
+
+class Accession(Entity):
+    """
+    Accession entity defines a physical or virtual accession.
+    """
+
+    # HStore contains the list of descriptors code as key, and descriptor value or value code as
+    # value of the dict.
     descriptors = HStoreField()
 
     # Can have many synonyms, and some synonyms can sometimes be shared by multiples accessions.
     synonyms = models.ManyToManyField(AccessionSynonym, related_name='accessions')
 
-    # Model of accession refers to a model of type of descriptors related to a specific accession
-    descriptor_model = models.ForeignKey(DescriptorModel, related_name='accessions')
+    # It refers to a model of type of descriptors related by a specific accession.
+    # An accession can only refers to a single meta model.
+    descriptor_meta_model = models.ForeignKey(DescriptorMetaModel, related_name='accessions')
 
     class Meta:
         verbose_name = _("accession")
@@ -627,6 +812,10 @@ class Batch(Entity):
     accession = models.ForeignKey('Accession', null=False, related_name='bundles')
 
     descriptors = HStoreField()
+
+    # It refers to a model of type of descriptors related by a specific batch.
+    # A batch can only refers to a single meta model.
+    descriptor_meta_model = models.ForeignKey(DescriptorMetaModel, related_name='batches')
 
     class Meta:
         verbose_name = _("batch")

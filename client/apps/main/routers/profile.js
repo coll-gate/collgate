@@ -32,14 +32,14 @@ var ProfileRouter = Marionette.AppRouter.extend({
 
     edit: function() {
         var defaultLayout = new DefaultLayout({});
-        application.mainRegion.show(defaultLayout);
+        application.getRegion('mainRegion').show(defaultLayout);
 
         model = new ProfileModel({username: session.user.username});
 
-        defaultLayout.title.show(new TitleView({title: gt.gettext("Edit my profile informations")}));
+        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Edit my profile informations")}));
 
         model.fetch().done(function() {
-            defaultLayout.content.show(new EditProfileView({model: model}));
+            defaultLayout.getRegion('content').show(new EditProfileView({model: model}));
         });
 
         //application.setDisplay('0-10-2');

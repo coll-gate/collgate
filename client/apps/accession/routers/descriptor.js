@@ -45,17 +45,17 @@ var Router = Marionette.AppRouter.extend({
         var collection = application.accession.collections.descriptorGroup;
 
         var defaultLayout = new DefaultLayout({});
-        application.mainRegion.show(defaultLayout);
+        application.getRegion('mainRegion').show(defaultLayout);
 
-        defaultLayout.title.show(new TitleView({title: gt.gettext("List of groups of descriptors")}));
+        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of groups of descriptors")}));
 
         collection.fetch().then(function () {
-            defaultLayout.content.show(new DescriptorGroupListView({read_only: true, collection : collection}));
+            defaultLayout.getRegion('content').show(new DescriptorGroupListView({read_only: true, collection : collection}));
         });
 
         // TODO lookup for permission
         if (session.user.isAuth && (session.user.isSuperUser || session.user.isStaff)) {
-            defaultLayout.bottom.show(new DescriptorGroupAddView({collection: collection}));
+            defaultLayout.getRegion('bottom').show(new DescriptorGroupAddView({collection: collection}));
         }
     },
 
@@ -63,32 +63,32 @@ var Router = Marionette.AppRouter.extend({
         var collection = new DescriptorTypeCollection([], {group_id: id});
 
         var defaultLayout = new DefaultLayout();
-        application.mainRegion.show(defaultLayout);
+        application.getRegion('mainRegion').show(defaultLayout);
 
         var model = new DescriptorGroupModel({id: id});
         model.fetch().then(function () {
-            defaultLayout.title.show(new TitleView({title: gt.gettext("Types of descriptors for the group"), object: model.get('name')}));
+            defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Types of descriptors for the group"), object: model.get('name')}));
 
             // TODO lookup for permission
             if (session.user.isAuth && (session.user.isSuperUser || session.user.isStaff) && model.get('can_modify')) {
-                defaultLayout.bottom.show(new DescriptorGroupTypeAddView({collection: collection}));
+                defaultLayout.getRegion('bottom').show(new DescriptorGroupTypeAddView({collection: collection}));
             }
         });
 
         collection.fetch().then(function () {
-            defaultLayout.content.show(new DescriptorTypeListView({read_only: true, collection : collection}));
+            defaultLayout.getRegion('content').show(new DescriptorTypeListView({read_only: true, collection : collection}));
         });
     },
 
     getDescriptorTypeForGroup : function(gid, tid) {
         var defaultLayout = new DefaultLayout();
-        application.mainRegion.show(defaultLayout);
+        application.getRegion('mainRegion').show(defaultLayout);
 
         var model = new DescriptorTypeModel({group_id: gid, id: tid});
 
         model.fetch().then(function () {
-            defaultLayout.title.show(new TitleView({title: gt.gettext("Details for the type of descriptor"), object: model.get('name')}));
-            defaultLayout.content.show(new DescriptorTypeDetailView({model : model}));
+            defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Details for the type of descriptor"), object: model.get('name')}));
+            defaultLayout.getRegion('content').show(new DescriptorTypeDetailView({model : model}));
         });
     },
 
@@ -96,11 +96,11 @@ var Router = Marionette.AppRouter.extend({
         var collection = new DescriptorValueCollection([], {group_id: gid, type_id: tid});
 
         var defaultLayout = new DefaultLayout();
-        application.mainRegion.show(defaultLayout);
+        application.getRegion('mainRegion').show(defaultLayout);
 
         var model = new DescriptorTypeModel({group_id: gid, id: tid});
         model.fetch().then(function () {
-            defaultLayout.title.show(new TitleView({title: gt.gettext("Values for the type of descriptor"), object: model.get('name')}));
+            defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Values for the type of descriptor"), object: model.get('name')}));
 
             collection.fetch().then(function () {
                 var valueListView = null;
@@ -130,8 +130,8 @@ var Router = Marionette.AppRouter.extend({
                 }
 
                 if (valueListView != null) {
-                    defaultLayout.content.show(valueListView);
-                    defaultLayout.bottom.show(new ScrollingMoreView({targetView: valueListView, more: -1}));
+                    defaultLayout.getRegion('content').show(valueListView);
+                    defaultLayout.getRegion('bottom').show(new ScrollingMoreView({targetView: valueListView, more: -1}));
                 }
             });
         });

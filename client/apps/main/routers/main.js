@@ -33,18 +33,18 @@ var Router = Marionette.AppRouter.extend({
 
     about: function() {
         var defaultLayout = new DefaultLayout({});
-        application.mainRegion.show(defaultLayout);
+        application.getRegion('mainRegion').show(defaultLayout);
 
-        defaultLayout.title.show(new TitleView({title: gt.gettext("About...")}));
-        defaultLayout.content.show(new AboutView());
+        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("About...")}));
+        defaultLayout.getRegion('content').show(new AboutView());
     },
 
     help: function() {
         var defaultLayout = new DefaultLayout({});
-        application.mainRegion.show(defaultLayout);
+        application.getRegion('mainRegion').show(defaultLayout);
 
-        defaultLayout.title.show(new TitleView({title: gt.gettext("Help...")}));
-        defaultLayout.content.show(new HelpIndexView());
+        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Help...")}));
+        defaultLayout.getRegion('content').show(new HelpIndexView());
     }
 });
 

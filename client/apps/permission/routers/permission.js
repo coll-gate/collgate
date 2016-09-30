@@ -36,12 +36,12 @@ var PermissionRouter = Marionette.AppRouter.extend({
         var userCollection = new PermissionUserCollection();
 
         var defaultLayout = new DefaultLayout({});
-        application.mainRegion.show(defaultLayout);
+        application.getRegion('mainRegion').show(defaultLayout);
 
-        defaultLayout.title.show(new TitleView({title: gt.gettext("List of users")}));
+        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of users")}));
 
         userCollection.fetch().then(function () {
-            defaultLayout.content.show(new PermissionUserListView({collection : userCollection}));
+            defaultLayout.getRegion('content').show(new PermissionUserListView({collection : userCollection}));
         });
     },
 
@@ -49,15 +49,15 @@ var PermissionRouter = Marionette.AppRouter.extend({
         var permissionsCollection = new PermissionCollection([], {name: username})
 
         var defaultLayout = new DefaultLayout({});
-        application.mainRegion.show(defaultLayout);
+        application.getRegion('mainRegion').show(defaultLayout);
 
-        defaultLayout.title.show(new TitleView({title: gt.gettext("List of permissions for user"), object: username}));
+        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of permissions for user"), object: username}));
 
         permissionsCollection.fetch().then(function () {
-            defaultLayout.content.show(new PermissionListView({collection : permissionsCollection}));
+            defaultLayout.getRegion('content').show(new PermissionListView({collection : permissionsCollection}));
 
             if ($.inArray("auth.add_permission", permissionsCollection.perms) >= 0) {
-                defaultLayout.bottom.show(new PermissionAddView({collection : permissionsCollection}));
+                defaultLayout.getRegion('bottom').show(new PermissionAddView({collection : permissionsCollection}));
             }
         });
     },
@@ -66,15 +66,15 @@ var PermissionRouter = Marionette.AppRouter.extend({
         var groupCollection = new PermissionGroupCollection();
 
         var defaultLayout = new DefaultLayout({});
-        application.mainRegion.show(defaultLayout);
+        application.getRegion('mainRegion').show(defaultLayout);
 
-        defaultLayout.title.show(new TitleView({title: gt.gettext("List of groups")}));
+        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of groups")}));
 
         groupCollection.fetch().then(function () {
-            defaultLayout.content.show(new PermissionGroupListView({collection : groupCollection}));
+            defaultLayout.getRegion('content').show(new PermissionGroupListView({collection : groupCollection}));
 
             if ($.inArray("auth.add_group", groupCollection.perms) >= 0) {
-                defaultLayout.bottom.show(new PermissionAddGroupView({collection : groupCollection}));
+                defaultLayout.getRegion('bottom').show(new PermissionAddGroupView({collection : groupCollection}));
             }
         });
     },
@@ -83,15 +83,15 @@ var PermissionRouter = Marionette.AppRouter.extend({
         var permissionsCollection = new PermissionCollection([], {name: name, is_group: true})
 
         var defaultLayout = new DefaultLayout({});
-        application.mainRegion.show(defaultLayout);
+        application.getRegion('mainRegion').show(defaultLayout);
 
-        defaultLayout.title.show(new TitleView({title: gt.gettext("List of permissions for group"), object: name}));
+        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of permissions for group"), object: name}));
 
         permissionsCollection.fetch().then(function () {
-            defaultLayout.content.show(new PermissionListView({collection : permissionsCollection}));
+            defaultLayout.getRegion('content').show(new PermissionListView({collection : permissionsCollection}));
 
             if ($.inArray("auth.add_permission", permissionsCollection.perms) >= 0) {
-                defaultLayout.bottom.show(new PermissionAddView({collection : permissionsCollection}));
+                defaultLayout.getRegion('bottom').show(new PermissionAddView({collection : permissionsCollection}));
             }
         });
     },
@@ -100,15 +100,15 @@ var PermissionRouter = Marionette.AppRouter.extend({
         var userCollection = new PermissionGroupUserCollection([], {name: name});
 
         var defaultLayout = new DefaultLayout({});
-        application.mainRegion.show(defaultLayout);
+        application.getRegion('mainRegion').show(defaultLayout);
 
-        defaultLayout.title.show(new TitleView({title: gt.gettext("List of users for group"), object: name}));
+        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of users for group"), object: name}));
 
         userCollection.fetch().then(function () {
-            defaultLayout.content.show(new PermissionGroupUserListView({collection : userCollection}));
+            defaultLayout.getRegion('content').show(new PermissionGroupUserListView({collection : userCollection}));
 
             if ($.inArray("auth.change_group", userCollection.perms) >= 0) {
-                defaultLayout.bottom.show(new PermissionGroupAddUserView({collection : userCollection}));
+                defaultLayout.getRegion('bottom').show(new PermissionGroupAddUserView({collection : userCollection}));
             }
         });
     },

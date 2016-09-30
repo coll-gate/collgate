@@ -11,7 +11,7 @@
 var Marionette = require('backbone.marionette');
 
 var View = Marionette.ItemView.extend({
-    template: _.template('<span class="scroll-more action label label-default"><span class="glyphicon glyphicon-option-horizontal"></span>'),
+    template: _.template('<span class="unselectable scroll-more action label label-default"><span class="glyphicon glyphicon-option-horizontal"></span>'),
     tagName: 'div',
     className: 'scrolling-more',
     attributes: {

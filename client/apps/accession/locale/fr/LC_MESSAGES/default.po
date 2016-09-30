@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-09-19 16:39+0200\n"
+"POT-Creation-Date: 2016-09-28 14:12+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,12 +18,14 @@ msgstr ""
 
 #: ../../../views/descriptorgroupadd.js:45
 #: ../../../views/descriptorgrouptypeadd.js:51
+#: ../../../views/descriptormodeladd.js:45
 #: ../../../views/descriptortypedetail.js:211
 msgid "Invalid characters (alphanumeric, _ and - only)"
 msgstr "Caractères invalides (alphanumérique, _ et - seulement)"
 
 #: ../../../views/descriptorgroupadd.js:48
 #: ../../../views/descriptorgrouptypeadd.js:54
+#: ../../../views/descriptormodeladd.js:48
 #: ../../../views/descriptortypedetail.js:213
 msgid "3 characters min"
 msgstr "3 caractères minimum"
@@ -36,34 +38,48 @@ msgstr "Nom de groupe déjà utilisé"
 msgid "Descriptor type name already in usage"
 msgstr "Nom de type de descriptor déjà utilisé"
 
+#: ../../../views/descriptormodeladd.js:73
+msgid "Name for model of descriptor already in usage"
+msgstr "Ce nom de modèle de descripteur est déjà utilisé"
+
 #: ../../../views/descriptortypedetail.js:200
 msgid "1 character min"
 msgstr "1 caractère minimum"
 
-#: ../../../routers/descriptor.js:49
+#: ../../../routers/descriptor.js:50
 msgid "List of groups of descriptors"
 msgstr "Liste de groupes de descripteurs"
 
-#: ../../../routers/descriptor.js:69
+#: ../../../routers/descriptor.js:70
 msgid "Types of descriptors for the group"
 msgstr "Types de descripteurs pour le groupe"
 
-#: ../../../routers/descriptor.js:89
+#: ../../../routers/descriptor.js:90
 msgid "Details for the type of descriptor"
 msgstr "Détails pour le type de descripteur"
 
-#: ../../../routers/descriptor.js:104
+#: ../../../routers/descriptor.js:103
 msgid "Values for the type of descriptor"
 msgstr "Valeurs pour le type de descripteur"
 
+#: ../../../routers/descriptormodel.js:36
+msgid "List of models of descriptors"
+msgstr "Liste des models de descripteurs"
+
 #: ../../../templates/descriptorgrouplist.html:16
+#: ../../../templates/descriptormodellist.html:16
 #: ../../../templates/descriptortypelist.html:16
 msgid "Name"
 msgstr "Nom"
 
 #: ../../../templates/descriptorgrouplist.html:17
+#: ../../../templates/descriptormodellist.html:18
 msgid "Number of types of descriptors"
 msgstr "Nombre de types de descripteurs"
+
+#: ../../../templates/descriptormodellist.html:17
+msgid "Verbose name"
+msgstr "Nom complet"
 
 #: ../../../templates/descriptortypedetail.html:20
 msgid "Descriptor type name"

@@ -26,12 +26,12 @@ var TaxonRouter = Marionette.AppRouter.extend({
         var collection = application.taxonomy.collections.taxons;
 
         var defaultLayout = new DefaultLayout({});
-        application.mainRegion.show(defaultLayout);
+        application.getRegion('mainRegion').show(defaultLayout);
 
-        defaultLayout.title.show(new TitleView({title: gt.gettext("List of taxons")}));
+        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of taxons")}));
 
         collection.fetch().then(function () {
-            defaultLayout.content.show(new TaxonListView({read_only: true, collection : collection}));
+            defaultLayout.getRegion('content').show(new TaxonListView({read_only: true, collection : collection}));
         });
     },
 
@@ -39,12 +39,12 @@ var TaxonRouter = Marionette.AppRouter.extend({
         var taxon = new TaxonModel({id: id});
 
         var defaultLayout = new DefaultLayout();
-        application.mainRegion.show(defaultLayout);
+        application.getRegion('mainRegion').show(defaultLayout);
 
-        defaultLayout.title.show(new TitleView({title: gt.gettext("Taxon details")}));
+        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Taxon details")}));
 
         taxon.fetch().then(function() {
-            defaultLayout.content.show(new TaxonItemView({model: taxon}));
+            defaultLayout.getRegion('content').show(new TaxonItemView({model: taxon}));
         });
     },
 });

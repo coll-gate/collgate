@@ -141,15 +141,15 @@ var Controller = Marionette.Controller.extend({
         var auditCollection = new AuditCollection([], {username: username});
 
         var defaultLayout = new DefaultLayout({});
-        application.mainRegion.show(defaultLayout);
+        application.getRegion('mainRegion').show(defaultLayout);
 
-        defaultLayout.title.show(new TitleView({title: gt.gettext("List of audit entries related to user"), object: username}));
+        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of audit entries related to user"), object: username}));
 
         auditCollection.fetch({data: {cursor: null}, processData: true}).then(function () {
             var auditListView = new AuditListView({collection: auditCollection});
 
-            defaultLayout.content.show(auditListView);
-            defaultLayout.bottom.show(new ScrollingMoreView({targetView: auditListView}));
+            defaultLayout.getRegion('content').show(auditListView);
+            defaultLayout.getRegion('bottom').show(new ScrollingMoreView({targetView: auditListView}));
         });
     },
 
@@ -296,7 +296,7 @@ var Controller = Marionette.Controller.extend({
         var auditCollection = new AuditCollection([], {entity: {app_label: app_label, model: model, object_id: object_id}});
 
         var defaultLayout = new DefaultLayout({});
-        application.mainRegion.show(defaultLayout);
+        application.getRegion('mainRegion').show(defaultLayout);
 
         // if not specified retrieve the entity name
         if (object_name == null) {
@@ -310,13 +310,13 @@ var Controller = Marionette.Controller.extend({
                 },
             }).done
             (function (data) {
-                defaultLayout.title.show(new TitleView({
+                defaultLayout.getRegion('title').show(new TitleView({
                     title: gt.gettext("List of audit entries related to entity"),
                     object: data.name
                 }));
             });
         } else {
-            defaultLayout.title.show(new TitleView({
+            defaultLayout.getRegion('title').show(new TitleView({
                 title: gt.gettext("List of audit entries related to entity"),
                 object: object_name
             }));
@@ -325,8 +325,8 @@ var Controller = Marionette.Controller.extend({
         auditCollection.fetch({data: {cursor: null}, processData: true}).then(function () {
             var auditListView = new AuditListView({collection: auditCollection});
 
-            defaultLayout.content.show(auditListView);
-            defaultLayout.bottom.show(new ScrollingMoreView({targetView: auditListView}));
+            defaultLayout.getRegion('content').show(auditListView);
+            defaultLayout.getRegion('bottom').show(new ScrollingMoreView({targetView: auditListView}));
         });
     }
 });

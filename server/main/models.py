@@ -5,8 +5,10 @@
 """
 coll-gate application models.
 """
+import re
 import uuid as uuid
 
+from django.core.validators import RegexValidator
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
@@ -102,6 +104,8 @@ class Entity(models.Model):
     Base model for any object that must support audit, history, or
     any other modular features.
     """
+    NAME_RE = re.compile(r'^[a-zA-Z0-9_-]{3,}$', re.IGNORECASE)
+
     content_type = models.ForeignKey(ContentType, editable=False)
     entity_status = models.IntegerField(
         null=False, blank=False, choices=EntityStatus.choices(), default=EntityStatus.VALID.value)
@@ -109,7 +113,14 @@ class Entity(models.Model):
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now=True)
 
-    name = models.CharField(unique=True, null=False, blank=False, max_length=255, db_index=True)
+    name = models.CharField(
+        unique=True, null=False, blank=False, max_length=255, db_index=True, validators=[
+            RegexValidator(
+                regex=NAME_RE,
+                message=_("Name must contains only alphanumerics characters or _ or - and be at least 3 characters length"),
+                code='invalid_name')
+        ])
+
     uuid = models.UUIDField(db_index=True, default=uuid.uuid4, editable=False, unique=True)
 
     objects = EntityManager()
@@ -127,3 +138,10 @@ class Entity(models.Model):
 
     def cast(self):
         return self.content_type.get_object_for_this_type(pk=self.pk)
+
+    @classmethod
+    def is_name_valid(cls, name):
+        """
+        Check wether or not the name respect the convention.
+        """
+        return Entity.NAME_RE.match(name) is not None

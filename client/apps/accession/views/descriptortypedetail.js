@@ -16,10 +16,6 @@ var View = Marionette.ItemView.extend({
     template: require('../templates/descriptortypedetail.html'),
 
     ui: {
-        delete_descriptor_type: 'span.delete-descriptor-type',
-        view_descriptor_type: 'td.view-descriptor-type',
-        view_descriptor_value: 'td.view-descriptor-value',
-        target: '#target',
         name: '#descriptor_type_name',
         code: '#descriptor_type_code',
         format_type: '#format_type',
@@ -37,9 +33,6 @@ var View = Marionette.ItemView.extend({
     },
 
     events: {
-        'click @ui.delete_descriptor_type': 'deleteDescriptorType',
-        'click @ui.view_descriptor_type': 'viewDescriptorType',
-        'click @ui.view_descriptor_value': 'viewDescriptorValue',
         'click @ui.save': 'saveDescriptorType',
         'input @ui.name': 'inputName',
         'change @ui.format_type': 'changeFormatType',
@@ -209,7 +202,7 @@ var View = Marionette.ItemView.extend({
 
         if (v.length > 0 && !re.test(v)) {
             $(this.ui.name).validateField('failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
-        } else if (v.length < 1) {
+        } else if (v.length < 3) {
             $(this.ui.name).validateField('failed', gt.gettext('3 characters min'));
         } else {
             $(this.ui.name).validateField('ok');
@@ -255,7 +248,7 @@ var View = Marionette.ItemView.extend({
             name: name,
             code: code,
             format: format,
-        }, {wait: true});
+        }, {wait: true}).done(function() { $.alert.success(gt.gettext("Done")); });;
     }
 });
 
