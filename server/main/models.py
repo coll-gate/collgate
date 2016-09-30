@@ -88,7 +88,7 @@ class EntityStatus(ChoiceEnum):
 
 
 class EntityManager(models.Manager):
-    # TODO est ce que django-polymorphic serait util ? car il apporte un iterator
+    # @todo est ce que django-polymorphic serait util ? car il apporte un iterator
     # et une optimisation via union sur les QuerySet, et aussi un cast automatique
 
     def get_by_uuid(self, uuid):

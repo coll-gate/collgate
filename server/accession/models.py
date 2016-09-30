@@ -10,6 +10,8 @@ import json
 from django.core.exceptions import SuspiciousOperation
 from django.db import models
 from django.contrib.postgres.fields import HStoreField
+from django.db.models import Q
+from django.shortcuts import get_object_or_404
 from django.utils import translation
 from django.utils.translation import ugettext_lazy as _
 
@@ -72,7 +74,7 @@ class DescriptorType(Entity):
 
     # code can be a Crop Ontology ('CO_XYZ') code (see http://www.cropontology.org/ontology)
     # and http://www.cropontology.org/get-ontology/CO_[0-9]{3,} to get a JSON version.
-    # Internals codes are prefixed by 'ID_'.
+    # Internals codes are prefixed by 'XY_' where 'XY' is 'IN' for initials values.
     code = models.CharField(unique=True, max_length=64, null=False, blank=False)
 
     # default should belong to the general group.
@@ -141,6 +143,16 @@ class DescriptorType(Entity):
         else:
             return self.values_set.all().exists()
 
+    # @property
+    # def _format_cache(self):
+    #     """
+    #     Format cache.
+    #     @todo reload if self.format changes.
+    #     """
+    #     if not self._format_cache:
+    #         self._format_cache = json.load(self.format)
+    #     return self._format_cache
+
     def get_values(self, sort_by='id', reverse=False, cursor=None, limit=30):
         """
         Query for a list of value ordered by id or name, with a limit of number of results.
@@ -157,6 +169,7 @@ class DescriptorType(Entity):
         next_cursor = None
         values_list = []
 
+        # map fields name with columns
         fields = format.get('fields', [])
         if fields:
             if sort_by == fields[0]:
@@ -546,6 +559,50 @@ class DescriptorType(Entity):
                 next_cursor = "/%s" % val['id']
 
         return prev_cursor, next_cursor, values_list
+
+    def get_value(self, code):
+        """
+        Get the ordinal, value0, value1, and parent code for a given value code
+        """
+        format = json.loads(self.format)
+        lang = translation.get_language()
+        trans = format.get('trans', False)
+
+        parent = None
+        ordinal = None
+        value0 = None
+        value1 = None
+
+        if self.values:
+            if trans:
+                pre_values = json.loads(self.values)
+                if lang in pre_values:
+                    values = pre_values[lang]
+                else:
+                    values = {}
+            else:
+                values = json.loads(self.values)
+
+            val = values.get(code)
+            if val:
+                parent = val.get('parent')
+                ordinal = val.get('ordinal')
+                value0 = val.get('value0')
+                value1 = val.get('value1')
+            else:
+                raise DescriptorValue.DoesNotExist()
+        else:
+            if trans:
+                value = get_object_or_404(DescriptorValue, Q(language=lang), Q(code=code))
+            else:
+                value = get_object_or_404(DescriptorValue, Q(language__is_null=True), Q(code=code))
+
+            parent = value.parent
+            ordinal = value.ordinal
+            value0 = value.value0
+            value1 = value.value1
+
+        return parent, ordinal, value0, value1
 
 
 class DescriptorValue(Entity):

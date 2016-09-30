@@ -52,6 +52,11 @@ div.panel div.panel-bottom {
     flex: 0 1 auto;
 }
 
+div.panel div.panel-body-bottom {
+    height: auto;
+    flex: 0 1 auto;
+}
+
 #right_content {
     border: solid 1px #96a052;
     border-radius: 5px;
