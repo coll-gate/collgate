@@ -31,7 +31,7 @@ DATABASES = {
     }
 }
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '147.99.144.145']
 
 # session cookie path
 SESSION_COOKIE_PATH = "/coll-gate/"
@@ -45,7 +45,7 @@ MEDIA_URL = 'media/'
 
 STATIC_ROOT = 'static/'
 
-STATIC_URL = '/static/'
+STATIC_URL = '/coll-gate/static/'
 
 MIDDLEWARE = (
     'django.middleware.common.CommonMiddleware',
