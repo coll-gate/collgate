@@ -65,7 +65,11 @@
 /******/ 	}
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
+<<<<<<< HEAD
 /******/ 	var hotCurrentHash = "5f065f2e05fd12e65eaf"; // eslint-disable-line no-unused-vars
+=======
+/******/ 	var hotCurrentHash = "04434b3ce6059b1f9f41"; // eslint-disable-line no-unused-vars
+>>>>>>> 9a1d028bda48268852119d0347c61d0861af0f5e
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -4275,7 +4279,7 @@
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// MarionetteJS (Backbone.Marionette)
 	// ----------------------------------
-	// v2.4.5
+	// v2.4.7
 	//
 	// Copyright (c)2016 Derick Bailey, Muted Solutions, LLC.
 	// Distributed under MIT license
@@ -4306,7 +4310,7 @@
 	
 	  var Marionette = Backbone.Marionette = {};
 	
-	  Marionette.VERSION = '2.4.5';
+	  Marionette.VERSION = '2.4.7';
 	
 	  Marionette.noConflict = function() {
 	    root.Marionette = previousMarionette;
@@ -6132,6 +6136,9 @@
 	    reorder: function() {
 	      var children = this.children;
 	      var models = this._filteredSortedModels();
+	  
+	      if (!models.length && this._showingEmptyView) { return this; }
+	  
 	      var anyModelsAdded = _.some(models, function(model) {
 	        return !children.findByModel(model);
 	      });
@@ -8810,6 +8817,7 @@
 	
 	  I18n.prototype.dir = function dir(lng) {
 	    if (!lng) lng = this.language;
+	    if (!lng) return 'rtl';
 	
 	    var rtlLngs = ['ar', 'shu', 'sqr', 'ssh', 'xaa', 'yhd', 'yud', 'aao', 'abh', 'abv', 'acm', 'acq', 'acw', 'acx', 'acy', 'adf', 'ads', 'aeb', 'aec', 'afb', 'ajp', 'apc', 'apd', 'arb', 'arq', 'ars', 'ary', 'arz', 'auz', 'avl', 'ayh', 'ayl', 'ayn', 'ayp', 'bbz', 'pga', 'he', 'iw', 'ps', 'pbt', 'pbu', 'pst', 'prp', 'prd', 'ur', 'ydd', 'yds', 'yih', 'ji', 'yi', 'hbo', 'men', 'xmn', 'fa', 'jpr', 'peo', 'pes', 'prs', 'dv', 'sam'];
 	
@@ -9511,7 +9519,7 @@
 	    // interpolate
 	    var data = options.replace && typeof options.replace !== 'string' ? options.replace : options;
 	    if (this.options.interpolation.defaultVariables) data = _extends({}, this.options.interpolation.defaultVariables, data);
-	    res = this.interpolator.interpolate(res, data);
+	    res = this.interpolator.interpolate(res, data, this.language);
 	
 	    // nesting
 	    res = this.interpolator.nest(res, function () {
@@ -9867,8 +9875,10 @@
 	    }
 	  };
 	
-	  LanguageUtil.prototype.isWhitelisted = function isWhitelisted(code) {
-	    if (this.options.load === 'languageOnly') code = this.getLanguagePartFromCode(code);
+	  LanguageUtil.prototype.isWhitelisted = function isWhitelisted(code, exactMatch) {
+	    if (this.options.load === 'languageOnly' || this.options.nonExplicitWhitelist && !exactMatch) {
+	      code = this.getLanguagePartFromCode(code);
+	    }
 	    return !this.whitelist || !this.whitelist.length || this.whitelist.indexOf(code) > -1 ? true : false;
 	  };
 	
@@ -9880,7 +9890,9 @@
 	
 	    var codes = [];
 	    var addCode = function addCode(code) {
-	      if (_this.isWhitelisted(code)) {
+	      var exactMatch = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+	
+	      if (_this.isWhitelisted(code, exactMatch)) {
 	        codes.push(code);
 	      } else {
 	        _this.logger.warn('rejecting non-whitelisted language code: ' + code);
@@ -9888,7 +9900,7 @@
 	    };
 	
 	    if (typeof code === 'string' && code.indexOf('-') > -1) {
-	      if (this.options.load !== 'languageOnly') addCode(this.formatLanguageCode(code));
+	      if (this.options.load !== 'languageOnly') addCode(this.formatLanguageCode(code), true);
 	      if (this.options.load !== 'currentOnly') addCode(this.getLanguagePartFromCode(code));
 	    } else if (typeof code === 'string') {
 	      addCode(this.formatLanguageCode(code));
@@ -10151,7 +10163,12 @@
 	    var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 	    var reset = arguments[1];
 	
-	    if (reset) this.options = options;
+	    if (reset) {
+	      this.options = options;
+	      this.format = options.interpolation && options.interpolation.format || function (value) {
+	        return value;
+	      };
+	    }
 	    if (!options.interpolation) options.interpolation = { escapeValue: true };
 	
 	    var iOpts = options.interpolation;
@@ -10160,6 +10177,7 @@
 	
 	    this.prefix = iOpts.prefix ? utils.regexEscape(iOpts.prefix) : iOpts.prefixEscaped || '{{';
 	    this.suffix = iOpts.suffix ? utils.regexEscape(iOpts.suffix) : iOpts.suffixEscaped || '}}';
+	    this.formatSeparator = iOpts.formatSeparator ? utils.regexEscape(iOpts.formatSeparator) : iOpts.formatSeparator || ',';
 	
 	    this.unescapePrefix = iOpts.unescapeSuffix ? '' : iOpts.unescapePrefix || '-';
 	    this.unescapeSuffix = this.unescapePrefix ? '' : iOpts.unescapeSuffix || '';
@@ -10167,6 +10185,15 @@
 	    this.nestingPrefix = iOpts.nestingPrefix ? utils.regexEscape(iOpts.nestingPrefix) : iOpts.nestingPrefixEscaped || utils.regexEscape('$t(');
 	    this.nestingSuffix = iOpts.nestingSuffix ? utils.regexEscape(iOpts.nestingSuffix) : iOpts.nestingSuffixEscaped || utils.regexEscape(')');
 	
+	    // the regexp
+	    this.resetRegExp();
+	  };
+	
+	  Interpolator.prototype.reset = function reset() {
+	    if (this.options) this.init(this.options);
+	  };
+	
+	  Interpolator.prototype.resetRegExp = function resetRegExp() {
 	    // the regexp
 	    var regexpStr = this.prefix + '(.+?)' + this.suffix;
 	    this.regexp = new RegExp(regexpStr, 'g');
@@ -10178,11 +10205,9 @@
 	    this.nestingRegexp = new RegExp(nestingRegexpStr, 'g');
 	  };
 	
-	  Interpolator.prototype.reset = function reset() {
-	    if (this.options) this.init(this.options);
-	  };
+	  Interpolator.prototype.interpolate = function interpolate(str, data, lng) {
+	    var _this = this;
 	
-	  Interpolator.prototype.interpolate = function interpolate(str, data) {
 	    var match = void 0,
 	        value = void 0;
 	
@@ -10190,15 +10215,28 @@
 	      return val.replace(/\$/g, '$$$$');
 	    }
 	
+	    var handleFormat = function handleFormat(key) {
+	      if (key.indexOf(_this.formatSeparator) < 0) return utils.getPath(data, key);
+	
+	      var p = key.split(_this.formatSeparator);
+	      var k = p.shift().trim();
+	      var f = p.join(_this.formatSeparator).trim();
+	
+	      return _this.format(utils.getPath(data, k), f, lng);
+	    };
+	
+	    this.resetRegExp();
+	
 	    // unescape if has unescapePrefix/Suffix
 	    while (match = this.regexpUnescape.exec(str)) {
-	      var _value = utils.getPath(data, match[1].trim());
+	      var _value = handleFormat(match[1].trim());
 	      str = str.replace(match[0], _value);
+	      this.regexpUnescape.lastIndex = 0;
 	    }
 	
 	    // regular escape on demand
 	    while (match = this.regexp.exec(str)) {
-	      value = utils.getPath(data, match[1].trim());
+	      value = handleFormat(match[1].trim());
 	      if (typeof value !== 'string') value = utils.makeString(value);
 	      if (!value) {
 	        this.logger.warn('missed to pass in variable ' + match[1] + ' for interpolating ' + str);
@@ -10711,6 +10749,7 @@
 	    fallbackNS: false, // string or array of namespaces
 	
 	    whitelist: false, // array with whitelisted languages
+	    nonExplicitWhitelist: false,
 	    load: 'all', // | currentOnly | languageOnly
 	    preload: false, // array with preload languages
 	
@@ -10737,8 +10776,12 @@
 	
 	    interpolation: {
 	      escapeValue: true,
+	      format: function format(value, _format, lng) {
+	        return value;
+	      },
 	      prefix: '{{',
 	      suffix: '}}',
+	      formatSeparator: ',',
 	      // prefixEscaped: '{{',
 	      // suffixEscaped: '}}',
 	      // unescapeSuffix: '',
@@ -23490,6 +23533,7 @@
 	
 	        // reset scrolling
 	        this.$el.parent().scrollTop(0);
+<<<<<<< HEAD
 	    },
 	
 	    onDomRefresh: function() {
@@ -23533,6 +23577,51 @@
 	        }
 	    },
 	
+=======
+	    },
+	
+	    onDomRefresh: function() {
+	        // init/reinit sticky table header
+	        $(this.ui.table).stickyTableHeaders({scrollableArea: this.$el.parent()});
+	    },
+	
+	    capacity: function() {
+	        var rowHeight = 1+8+20+8;
+	        return Math.max(1, Math.floor(this.$el.parent().prop('clientHeight') / rowHeight) - 1);
+	    },
+	
+	    moreResults: function(more, scroll) {
+	        scroll || (scroll=false);
+	        more || (more=20);
+	
+	        var view = this;
+	
+	        if (more == -1) {
+	            more = this.capacity();
+	        }
+	
+	        if (this.collection.next != null) {
+	            Logger.debug("descriptorTypeValue::fetch next with cursor=" + (this.collection.next));
+	            this.collection.fetch({update: true, remove: false, data: {
+	                cursor: this.collection.next,
+	                sort_by: this.collection.sort_by,
+	                more: more
+	            }}).done(function() {
+	                // resync the sticky table header during scrolling
+	                $(view.ui.table).stickyTableHeaders({scrollableArea: view.$el.parent()});
+	
+	                if (scroll) {
+	                    var scrollEl = view.$el.parent();
+	
+	                    var height = scrollEl.prop('scrollHeight');
+	                    var clientHeight = scrollEl.prop('clientHeight');
+	                    scrollEl.scrollTop(height - clientHeight - (1+8+20+8));
+	                }
+	            });
+	        }
+	    },
+	
+>>>>>>> 9a1d028bda48268852119d0347c61d0861af0f5e
 	    scroll: function(e) {
 	        if (e.target.scrollHeight-e.target.clientHeight == e.target.scrollTop) {
 	            this.moreResults();
@@ -24505,11 +24594,19 @@
 	        application.getRegion('mainRegion').show(defaultLayout);
 	
 	        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of models of descriptors")}));
+<<<<<<< HEAD
 	
 	        collection.fetch().then(function () {
 	            defaultLayout.getRegion('content').show(new DescriptorModelListView({collection : collection}));
 	        });
 	
+=======
+	
+	        collection.fetch().then(function () {
+	            defaultLayout.getRegion('content').show(new DescriptorModelListView({collection : collection}));
+	        });
+	
+>>>>>>> 9a1d028bda48268852119d0347c61d0861af0f5e
 	        // TODO lookup for permission
 	        if (session.user.isAuth && (session.user.isSuperUser || session.user.isStaff)) {
 	            defaultLayout.getRegion('bottom').show(new DescriptorModelAddView({collection: collection}));
