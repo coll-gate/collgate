@@ -80,10 +80,10 @@ var defaults = {
     },
 };
 
-minimize = process.argv.indexOf('--minimize') !== -1,
+minimized = process.argv.indexOf('--minimized') !== -1,
 plugins = [];
 
-if (minimize) {
+if (minimized) {
     defaults.module.loaders.push({
         test: /\.js$/,
         //exclude: /.app.js/,
