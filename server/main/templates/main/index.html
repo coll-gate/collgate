@@ -10,9 +10,9 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-{% get_current_language as LANGUAGE_CODE %}
+{% get_current_language as LANG_CODE %}
 
-<html lang="{{ LANGUAGE_CODE }}">
+<html lang="{{ LANG_CODE }}">
 <head>
     <title>Coll-Gate Collection of Genetic Resources</title>
     {% if debug %}
@@ -157,7 +157,7 @@ session = function() {
 }();
 
 session.debug = {{ debug|yesno:"true,false" }};
-session.language = "{{ LANGUAGE_CODE }}";
+session.language = "{{ LANG_CODE }}";
 
 session.user = {
     username: "{{ user.username }}",
@@ -313,7 +313,7 @@ session.user.isStaff = {{ user.is_staff|yesno:"true,false" }};
 
 {% jquery ui_js %}
 
-{% if LANGUAGE_CODE == 'fr' %}
+{% if LANG_CODE == 'fr' %}
     {% jquery ui.datepicker-fr_js %}
 {% endif %}
 
