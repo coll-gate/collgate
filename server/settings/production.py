@@ -10,7 +10,7 @@ import os
 
 from .base import *
 
-DEBUG = True
+DEBUG = False
 
 ADMINS = (
     ('admin_fscherma', 'frederic.scherma@clermont.inra.fr'),

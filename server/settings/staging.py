@@ -10,7 +10,7 @@ import os
 
 from .base import *
 
-DEBUG = True
+DEBUG = False
 
 ADMINS = (
     ('admin_fscherma', 'frederic.scherma@clermont.inra.fr'),
@@ -31,7 +31,7 @@ DATABASES = {
     }
 }
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '147.99.144.145']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '147.99.146.242', '147.99.144.145']
 
 # session cookie path
 SESSION_COOKIE_PATH = "/coll-gate/"
@@ -46,6 +46,8 @@ MEDIA_URL = 'media/'
 STATIC_ROOT = 'static/'
 
 STATIC_URL = '/coll-gate/static/'
+
+TEMPLATES[0]['OPTIONS']['debug'] = False
 
 MIDDLEWARE = (
     'django.middleware.common.CommonMiddleware',
