@@ -3,7 +3,6 @@
 /build
 *.pyc
 *.sublime-*
-*.mo
 *.po~
 .idea
 __pycache__
