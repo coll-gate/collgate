@@ -21,6 +21,10 @@ var Collection = Backbone.Collection.extend({
 
     parse: function(data) {
         this.perms = data.perms;
+        this.cursor = data.cursor;
+        this.prev = data.prev;
+        this.next = data.next;
+
         return data.users;
     },
 });

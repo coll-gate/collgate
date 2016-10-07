@@ -102,3 +102,24 @@ def get_self_profile(request):
     }
 
     return HttpResponseRest(request, result)
+
+
+@RestProfile.def_auth_request(Method.PUT, Format.JSON, content={
+    "type": "object",
+    "properties": {
+        "first_name": {"type": "string", 'minLength': 2, 'maxLength': 64},
+        "last_name": {"type": "string", 'minLength': 2, 'maxLength': 64},
+    }
+})
+def update_self_profile(request):
+    """
+    Get current session profile details
+    """
+    user = get_object_or_404(User, id=request.user.id)
+
+    user.first_name = request.data['first_name']
+    user.last_name = request.data['last_name']
+
+    user.save()
+
+    return HttpResponseRest(request, {})

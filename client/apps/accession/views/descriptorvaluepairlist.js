@@ -11,8 +11,9 @@
 var Marionette = require('backbone.marionette');
 var DescriptorValueModel = require('../models/descriptorvalue');
 var DescriptorValuePairView = require('../views/descriptorvaluepair');
+var ScrollView = require('../../main/views/scroll');
 
-var View = Marionette.CompositeView.extend({
+var View = ScrollView.extend({
     template: require("../templates/descriptorvaluepairlist.html"),
     childView: DescriptorValuePairView,
     childViewContainer: 'tbody.descriptor-value-list',
@@ -45,12 +46,11 @@ var View = Marionette.CompositeView.extend({
 
     initialize: function() {
         this.listenTo(this.collection, 'reset', this.render, this);
+        this.listenTo(this.collection, 'change', this.render, this);
         //this.listenTo(this.collection, 'add', this.render, this);
         //this.listenTo(this.collection, 'remove', this.render, this);
-        this.listenTo(this.collection, 'change', this.render, this);
 
-        // pagination on scrolling (done here because on once, and auto off when view destroy)
-        $("div.panel-body").scroll($.proxy(function(e) { this.scroll(e); }, this));
+        View.__super__.initialize.apply(this);
     },
 
     onRender: function() {
@@ -75,53 +75,6 @@ var View = Marionette.CompositeView.extend({
 
         // reset scrolling
         this.$el.parent().scrollTop(0);
-    },
-
-    onDomRefresh: function() {
-        // init/reinit sticky table header
-        $(this.ui.table).stickyTableHeaders({scrollableArea: this.$el.parent()});
-    },
-
-    capacity: function() {
-        var rowHeight = 1+8+20+8;
-        return Math.max(1, Math.floor(this.$el.parent().prop('clientHeight') / rowHeight) - 1);
-    },
-
-    moreResults: function(more, scroll) {
-        scroll || (scroll=false);
-        more || (more=20);
-
-        var view = this;
-
-        if (more == -1) {
-            more = this.capacity();
-        }
-
-        if (this.collection.next != null) {
-            Logger.debug("descriptorTypeValue::fetch next with cursor=" + (this.collection.next));
-            this.collection.fetch({update: true, remove: false, data: {
-                cursor: this.collection.next,
-                sort_by: this.collection.sort_by,
-                more: more
-            }}).done(function() {
-                // resync the sticky table header during scrolling
-                $(view.ui.table).stickyTableHeaders({scrollableArea: view.$el.parent()});
-
-                if (scroll) {
-                    var scrollEl = view.$el.parent();
-
-                    var height = scrollEl.prop('scrollHeight');
-                    var clientHeight = scrollEl.prop('clientHeight');
-                    scrollEl.scrollTop(height - clientHeight - (1+8+20+8));
-                }
-            });
-        }
-    },
-
-    scroll: function(e) {
-        if (e.target.scrollHeight-e.target.clientHeight == e.target.scrollTop) {
-            this.moreResults();
-        }
     },
 
     sortColumn: function (e) {

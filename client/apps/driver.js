@@ -78,7 +78,10 @@ application = new Marionette.Application({
 
             // failure : resolve or reject the deferred according to your cases
             xhr.fail(function() {
-                console.log("ajaxError: " + xhr.statusText + " " + xhr.responseText);
+                if (xhr.statusText && xhr.responseText) {
+                    console.log("ajaxError: " + xhr.statusText + " " + xhr.responseText);
+                }
+
                 if (xhr.status === 200 && xhr.responseText === "") {
                     alert("!! this should not arrives, please contact your administrator !!");
                     dfd.resolve.apply(xhr, arguments);
@@ -89,10 +92,12 @@ application = new Marionette.Application({
                     // Backbone.history.navigate('/home/', {trigger: true});
                     window.location.assign(application.baseUrl + 'app/home/');
                 } else {
-                    var data = JSON.parse(xhr.responseText);
-                    //if ((xhr.status >= 400 && xhr.status <= 599) && data && (typeof(data.cause) === "string")) {
-                    //    $.alert.error(gettext(data.cause));
-                    //}
+                    if (typeof(xhr.responseText) !== "undefined") {
+                        var data = JSON.parse(xhr.responseText);
+                        //if ((xhr.status >= 400 && xhr.status <= 599) && data && (typeof(data.cause) === "string")) {
+                        //    $.alert.error(gettext(data.cause));
+                        //}
+                    }
                     dfd.reject.apply(xhr, arguments);
                 }
             });

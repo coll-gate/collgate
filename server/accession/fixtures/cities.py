@@ -32,6 +32,8 @@ def fixture():
 
     # curate and insert data
     for city in data:
+        sys.stdout.write(" -> city: %i/%i\n" % (count, total))
+
         for lang in ['en', 'fr']:
             value = DescriptorValue()
 
@@ -40,8 +42,6 @@ def fixture():
             value.name = "%s:%07i:%s" % (descriptor['code'], int(city['_id']), lang)
             value.code = "%s:%07i" % (descriptor['code'], int(city['_id']))
             value.language = lang
-
-            sys.stdout.write(" -> city: %i/%i\n" % (count, total))
 
             value.value0 = city['name']
             value.value1 = "%s,%s" % (city['coord']['lon'], city['coord']['lat'])

@@ -9,6 +9,7 @@ coll-gate permission REST API
 from django.contrib.auth.models import Permission, User, Group
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import SuspiciousOperation
+from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.cache import cache_page
@@ -135,17 +136,22 @@ def opts_users_list(request):
 
 @RestPermissionUser.def_auth_request(Method.GET, Format.JSON, staff=True)
 def get_users_list(request):
-    query = User.objects.all()
+    results_per_page = int_arg(request.GET.get('more', 30))
+    cursor = request.GET.get('cursor')
+    limit = results_per_page
 
-    users = []
+    if cursor:
+        cursor_username, cursor_id = cursor.split('/')
+        qs = User.objects.filter(Q(username__gt=cursor_username))
+    else:
+        qs = User.objects.all()
 
-    response = {
-        'users': users,
-        'perms': get_permissions_for(request.user, "auth", "user")
-    }
+    qs = qs.order_by('username')[:limit]
 
-    for user in query:
-        users.append({
+    users_list = []
+
+    for user in qs:
+        users_list.append({
             'id': user.id,
             'username': user.username,
             'first_name': user.first_name,
@@ -156,34 +162,69 @@ def get_users_list(request):
             'is_superuser': user.is_superuser,
         })
 
-    return HttpResponseRest(request, response)
+    # prev/next cursor (desc order)
+    if len(users_list) > 0:
+        user = users_list[0]
+        prev_cursor = "%s/%s" % (user['username'], user['id'])
+        user = users_list[-1]
+        next_cursor = "%s/%s" % (user['username'], user['id'])
+    else:
+        prev_cursor = None
+        next_cursor = None
 
-
-@RestPermissionGroup.def_auth_request(Method.OPTIONS, Format.JSON, staff=True)
-def opts_groups_list(request):
     response = {
-        'perms': get_permissions_for(request.user, "auth", "group")
+        'users': users_list,
+        'perms': get_permissions_for(request.user, "auth", "user"),
+        'prev': prev_cursor,
+        'cursor': cursor,
+        'next': next_cursor
     }
+
     return HttpResponseRest(request, response)
 
 
 @RestPermissionGroup.def_auth_request(Method.GET, Format.JSON, staff=True)
 def get_groups_list(request):
-    groups = Group.objects.all()
+    results_per_page = int_arg(request.GET.get('more', 30))
+    cursor = request.GET.get('cursor')
+    limit = results_per_page
 
-    response = {
-        'groups': [],
-        'perms': get_permissions_for(request.user, "auth", "group"),
-    }
+    if cursor:
+        cursor_name, cursor_id = cursor.split('/')
+        qs = Group.objects.filter(Q(name__gt=cursor_name))
+    else:
+        qs = Group.objects.all()
 
-    for group in groups:
-        response['groups'].append({
+    qs = qs.order_by('name')[:limit]
+
+    group_list = []
+
+    for group in qs:
+        group_list.append({
             'id': group.id,
             'name': group.name,
             'num_users': group.user_set.all().count(),
             'num_permissions': group.permissions.all().count(),
             'perms': get_permissions_for(request.user, "auth", "group", group),
         })
+
+    # prev/next cursor (desc order)
+    if len(group_list) > 0:
+        user = group_list[0]
+        prev_cursor = "%s/%s" % (user['name'], user['id'])
+        user = group_list[-1]
+        next_cursor = "%s/%s" % (user['name'], user['id'])
+    else:
+        prev_cursor = None
+        next_cursor = None
+
+    response = {
+        'groups': group_list,
+        'perms': get_permissions_for(request.user, "auth", "group"),
+        'prev': prev_cursor,
+        'cursor': cursor,
+        'next': next_cursor
+    }
 
     return HttpResponseRest(request, response)
 
@@ -467,14 +508,6 @@ def delete_user_permission(request, username):
     return HttpResponseRest(request, {})
 
 
-@RestPermissionGroupNamePermission.def_auth_request(Method.OPTIONS, Format.JSON, staff=True)
-def opts_group_permissions(request, name):
-    response = {
-        'perms': get_permissions_for(request.user, "auth", "permission")
-    }
-    return HttpResponseRest(request, response)
-
-
 @RestPermissionGroupNamePermission.def_auth_request(Method.GET, Format.JSON, staff=True)
 def get_group_permissions(request, name):
     group = get_object_or_404(Group, name=name)
@@ -659,23 +692,27 @@ def group_delete_user(request, name, username):
     return HttpResponseRest(request, {})
 
 
-@RestPermissionGroupNameUser.def_auth_request(Method.OPTIONS, Format.JSON, staff=True)
-def opt_users_list_for_group(request, name):
-    response = {
-        'perms': get_permissions_for(request.user, "auth", "group", get_object_or_404(Group, name=name))
-    }
-    return HttpResponseRest(request, response)
-
-
 @RestPermissionGroupNameUser.def_auth_request(Method.GET, Format.JSON, staff=True)
 def get_users_list_for_group(request, name):
+    results_per_page = int_arg(request.GET.get('more', 30))
+    cursor = request.GET.get('cursor')
+    limit = results_per_page
+
     group = get_object_or_404(Group, name=name)
-    users = group.user_set.all()
+    users = group.user_set
 
-    users_results = []
+    if cursor:
+        cursor_username, cursor_id = cursor.split('/')
+        qs = users.filter(Q(username__gt=cursor_username))
+    else:
+        qs = users.all()
 
-    for user in users:
-        users_results.append({
+    qs = qs.order_by('username')[:limit]
+
+    users_list = []
+
+    for user in qs:
+        users_list.append({
             'id': user.id,
             'username': user.username,
             'first_name': user.first_name,
@@ -686,9 +723,22 @@ def get_users_list_for_group(request, name):
             'is_superuser': user.is_superuser,
         })
 
+    # prev/next cursor (desc order)
+    if len(users_list) > 0:
+        user = users_list[0]
+        prev_cursor = "%s/%s" % (user['username'], user['id'])
+        user = users_list[-1]
+        next_cursor = "%s/%s" % (user['username'], user['id'])
+    else:
+        prev_cursor = None
+        next_cursor = None
+
     response = {
-        'users': users_results,
-        'perms': get_permissions_for(request.user, "auth", "group", group)
+        'users': users_list,
+        'perms': get_permissions_for(request.user, "auth", "group", group),
+        'prev': prev_cursor,
+        'cursor': cursor,
+        'next': next_cursor
     }
 
     return HttpResponseRest(request, response)

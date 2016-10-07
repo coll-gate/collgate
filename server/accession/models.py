@@ -604,6 +604,86 @@ class DescriptorType(Entity):
 
         return parent, ordinal, value0, value1
 
+    def search_values(self, field_value, field_name="code"):
+        """
+        Search for values starting by value1, value2 or ordinal according to the
+        descriptor code and the current language.
+
+        :param value:
+        :return: The list of values with name starting with field_value on field_name.
+        """
+        format = json.loads(self.format)
+        lang = translation.get_language()
+        trans = format.get('trans', False)
+
+        values_list = []
+
+        if self.values:
+            if trans:
+                pre_values = json.loads(self.values)
+                if lang in pre_values:
+                    values = pre_values[lang]
+                else:
+                    values = {}
+            else:
+                values = json.loads(self.values)
+
+            if field_name == "ordinal":
+                for value in values:
+                    if value.ordinal == field_value:
+                        values_list.append({
+                            'code': value.code,
+                            'parent': value.parent,
+                            'oridinal': value.ordinal,
+                            'value0': value.value0,
+                            'value1': value.value1
+                        })
+                        break
+            elif field_name == "value0":
+                for value in values:
+                    if value.value0.startswith(field_value):
+                        values_list.append({
+                            'code': value.code,
+                            'parent': value.parent,
+                            'oridinal': value.ordinal,
+                            'value0': value.value0,
+                            'value1': value.value1
+                        })
+
+            elif field_name == "value1":
+                for value in values:
+                    if value.value1.startswith(field_value):
+                        values_list.append({
+                            'code': value.code,
+                            'parent': value.parent,
+                            'oridinal': value.ordinal,
+                            'value0': value.value0,
+                            'value1': value.value1
+                        })
+        else:
+            if trans:
+                qs = DescriptorValue.object.filter(Q(language=lang))
+            else:
+                qs = DescriptorValue.object
+
+            if field_name == "ordinal":
+                pass  # TODO
+            elif field_name == "value0":
+                pass  # TODO
+            elif field_name == "value1":
+                pass  # TODO
+
+            for value in qs:
+                values_list.append({
+                    'code': value.code,
+                    'parent': value.parent,
+                    'oridinal': value.ordinal,
+                    'value0': value.value0,
+                    'value1': value.value1
+                })
+
+        return values_list
+
 
 class DescriptorValue(Entity):
     """

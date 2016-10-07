@@ -46,19 +46,10 @@ def search_audit_for_username(request):
     Infinite pagination with cursor returned by next and desc order on timestamp.
     """
     results_per_page = int_arg(request.GET.get('more', 30))
-    # page = int_arg(request.GET.get('page', 1))
-    # offset = (page - 1) * results_per_page
-    # limit = offset + results_per_page
-
     cursor = request.GET.get('cursor')
     limit = results_per_page
 
     user = get_object_or_404(User, username=request.GET['username'])
-
-    # qs = Audit.objects.filter(user=user)
-    # audits = qs.order_by('-timestamp')[offset:limit]
-    #
-    # total_count = qs.count()
 
     if cursor:
         cursor_time, cursor_id = cursor.split('/')
@@ -95,18 +86,14 @@ def search_audit_for_username(request):
             'fields': audit.fields
         })
 
-    # prev cursor (desc order)
+    # prev/next cursor (desc order)
     if len(audit_list) > 0:
         audit = audit_list[0]
         prev_cursor = "%s/%s" % (audit['timestamp'].isoformat(), audit['id'])
-    else:
-        prev_cursor = None
-
-    # next cursor (desc order)
-    if len(audit_list) > 0:
         audit = audit_list[-1]
         next_cursor = "%s/%s" % (audit['timestamp'].isoformat(), audit['id'])
     else:
+        prev_cursor = None
         next_cursor = None
 
     results = {
@@ -115,10 +102,6 @@ def search_audit_for_username(request):
         'prev': prev_cursor,
         'cursor': cursor,
         'next': next_cursor,
-        'total_count': None,  # total_count,
-        # 'prev': page-1 if offset > 0 else None,
-        # 'page': page,
-        # 'next': page+1 if offset + results_per_page < total_count else None
     }
 
     return HttpResponseRest(request, results)

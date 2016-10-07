@@ -11,20 +11,20 @@
 var Marionette = require('backbone.marionette');
 var PermissionGroupModel = require('../models/group');
 var PermissionGroupView = require('../views/group');
+var ScrollView = require('../../main/views/scroll');
 
-var View = Marionette.CompositeView.extend({
+var View = ScrollView.extend({
     template: require("../templates/grouplist.html"),
     childView: PermissionGroupView,
     childViewContainer: 'tbody.permission-group-list',
 
     initialize: function() {
         this.listenTo(this.collection, 'reset', this.render, this);
+        this.listenTo(this.collection, 'change', this.render, this);
         //this.listenTo(this.collection, 'add', this.render, this);
         //this.listenTo(this.collection, 'remove', this.render, this);
-        this.listenTo(this.collection, 'change', this.render, this);
-    },
 
-    onRender: function() {
+        View.__super__.initialize.apply(this);
     },
 });
 
