@@ -145,3 +145,24 @@ class Entity(models.Model):
         Check wether or not the name respect the convention.
         """
         return Entity.NAME_RE.match(name) is not None
+
+    def remove_entity(self):
+        """
+        Set the entity status as removed and save.
+        """
+        self.entity_status = EntityStatus.REMOVED.value
+        self.save()
+
+    def validate_entity(self):
+        """
+        Set the entity status as active and save.
+        """
+        self.entity_status = EntityStatus.VALID.value
+        self.save()
+
+    def hide_entity(self):
+        """
+        Set the entity status as hidden and save.
+        """
+        self.entity_status = EntityStatus.HIDDEN.value
+        self.save()

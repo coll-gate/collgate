@@ -40,16 +40,6 @@ class RestDescriptorModelIdType(RestDescriptorModelId):
     suffix = 'type'
 
 
-class RestDescriptorModelIdPanel(RestDescriptorModelId):
-    regex = r'^panel/'
-    suffix = 'panel'
-
-
-class RestDescriptorModelIdPanelId(RestDescriptorModelIdPanel):
-    regex = r'^(?P<pid>[0-9]+)/$'
-    suffix = 'id'
-
-
 @RestDescriptorModel.def_auth_request(Method.GET, Format.JSON)
 def get_descriptors_models(request):
     """
@@ -65,7 +55,7 @@ def get_descriptors_models(request):
     else:
         qs = DescriptorModel.objects.all()
 
-    dms = qs.order_by('name').order_by('id')[:limit]
+    dms = qs.order_by('name')[:limit]
 
     dm_list = []
 
@@ -238,50 +228,3 @@ def search_descriptor_models(request):
     }
 
     return HttpResponseRest(request, response)
-
-
-@RestDescriptorModelIdPanel.def_auth_request(Method.GET, Format.JSON)
-def list_descriptor_model_panels(request, id):
-    dm_id = int(id)
-    pass
-
-
-@RestDescriptorModelIdPanel.def_auth_request(
-    Method.POST, Format.JSON, content={
-        "type": "object",
-        "properties": {
-            "name": {"type": "string", 'minLength': 3, 'maxLength': 32}
-        },
-    },
-    # perms={'accession.add_descriptorpanel': _('You are not allowed to create a panel of descriptor')},
-    staff=True)
-def create_descriptor_model_panel(request, id):
-    dm_id = int(id)
-    pass
-
-
-@RestDescriptorModelIdPanelId.def_auth_request(Method.GET, Format.JSON)
-def get_descriptor_model_panel(request, id, pid):
-    dm_id = int(id)
-    panel_id = int(pid)
-    pass
-
-
-@RestDescriptorModelIdPanelId.def_auth_request(
-    Method.DELETE, Format.JSON,
-    # perms={'accession.remove_descriptorpanel': _('You are not allowed to remove a panel of descriptor')},
-    staff=True)
-def remove_descriptor_model_panel(request, id, pid):
-    dm_id = int(id)
-    panel_id = int(pid)
-    pass
-
-
-@RestDescriptorModelIdPanelId.def_auth_request(
-    Method.PUT, Format.JSON,
-    # perms={'accession.change_descriptorpanel': _('You are not allowed to modify a panel of descriptor')},
-    staff=True)
-def modify_descriptor_model_panel(request, id, pid):
-    dm_id = int(id)
-    panel_id = int(pid)
-    pass

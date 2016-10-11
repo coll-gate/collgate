@@ -9,7 +9,7 @@ coll-gate accession module main
 from django.utils.translation import ugettext_lazy as _
 
 from igdectk.common.apphelpers import ApplicationMain
-from igdectk.module import AUTH_USER
+from igdectk.module import AUTH_USER, AUTH_STAFF
 from igdectk.module.manager import module_manager
 from igdectk.module.menu import MenuEntry, MenuSeparator
 from igdectk.module.module import Module, ModuleMenu
@@ -45,13 +45,18 @@ class CollGateAccession(ApplicationMain):
         menu_accession.add_entry(MenuSeparator(100))
         menu_accession.add_entry(
             MenuEntry('list-accession', _('List accessions'), "#accession/accession/", icon=Glyph.LIST, order=101))
-        menu_accession.add_entry(MenuSeparator(200))
+
+        # descriptor related menus
+        menu_accession.add_entry(MenuSeparator(200, auth=AUTH_STAFF))
         menu_accession.add_entry(
             MenuEntry('list-descriptor-group', _('List groups of descriptors'), "#accession/descriptor/group/",
-                      icon=Glyph.TH_LARGE, order=201))
+                      icon=Glyph.TH_LIST, order=201, auth=AUTH_STAFF))
         menu_accession.add_entry(
             MenuEntry('list-descriptor-model', _('List models of descriptors'), "#accession/descriptor/model/",
-                      icon=Glyph.TH_LIST, order=202))
+                      icon=Glyph.TH, order=202, auth=AUTH_STAFF))
+        menu_accession.add_entry(
+            MenuEntry('list-descriptor-meta-model', _('List meta-models of descriptors'), "#accession/descriptor/meta-model/",
+                      icon=Glyph.TH_LARGE, order=203, auth=AUTH_STAFF))
         accession_module.add_menu(menu_accession)
 
         module_manager.register_menu(accession_module)

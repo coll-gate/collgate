@@ -126,14 +126,6 @@ def get_permission_types(request):
     return HttpResponseRest(request, types)
 
 
-@RestPermissionUser.def_auth_request(Method.OPTIONS, Format.JSON, staff=True)
-def opts_users_list(request):
-    response = {
-        'perms': get_permissions_for(request.user, "auth", "user")
-    }
-    return HttpResponseRest(request, response)
-
-
 @RestPermissionUser.def_auth_request(Method.GET, Format.JSON, staff=True)
 def get_users_list(request):
     results_per_page = int_arg(request.GET.get('more', 30))
@@ -323,14 +315,6 @@ class Perm:
 
     def __eq__(self, other):
         return (self.object_name == other.object_name) and (self.model == other.model)
-
-
-@RestPermissionUserNamePermission.def_auth_request(Method.OPTIONS, Format.JSON, staff=True)
-def opts_user_permissions(request, username):
-    response = {
-        'perms': get_permissions_for(request.user, "auth", "permission")
-    }
-    return HttpResponseRest(request, response)
 
 
 @RestPermissionUserNamePermission.def_auth_request(Method.GET, Format.JSON, staff=True)
