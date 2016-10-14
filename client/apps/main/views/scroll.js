@@ -12,14 +12,26 @@ var Marionette = require('backbone.marionette');
 
 var View = Marionette.CompositeView.extend({
     rowHeight: 1+8+20+8,
+    scrollViewInitialized: false,
 
     ui: {
-        table: 'table.table'
+        table: 'table.table',
+        header: 'table.table thead'
     },
 
     initialize: function() {
-        // pagination on scrolling
-        $("div.panel-body").scroll($.proxy(function(e) { this.scroll(e); }, this));
+    },
+
+    onDomRefresh: function() {
+        // we can only init here because we need to known the parent container
+        if (!this.scrollViewInitialized) {
+            // pagination on scrolling using the direct parent as scroll container
+            $(this.$el.parent()).scroll($.proxy(function (e) { this.scroll(e); }, this));
+            // and sticky header on table
+            $(this.ui.table).stickyTableHeaders({scrollableArea: this.$el.parent()});
+
+            this.scrollViewInitialized = true;
+        }
     },
 
     capacity: function() {
@@ -57,6 +69,12 @@ var View = Marionette.CompositeView.extend({
     },
 
     scroll: function(e) {
+        if (e.target.scrollTop > 1) {
+            $(this.ui.table).children('thead').addClass("sticky");
+        } else{
+            $(this.ui.table).children('thead').removeClass("sticky");
+        }
+
         if (e.target.scrollHeight-e.target.clientHeight == e.target.scrollTop) {
             this.moreResults();
         }

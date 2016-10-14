@@ -751,6 +751,9 @@ class DescriptorPanel(Entity):
     # Position priority into the display. Lesser is before. Negative value are possibles.
     position = models.IntegerField(default=0)
 
+    # Related model of descriptor
+    descriptor_model = models.ForeignKey('DescriptorModel', related_name='panels')
+
     class Meta:
         verbose_name = _("descriptor panel")
 

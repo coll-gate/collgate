@@ -50,7 +50,7 @@ var Router = Marionette.AppRouter.extend({
         defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of groups of descriptors")}));
 
         collection.fetch().then(function () {
-            var descriptorGroupListView = new DescriptorGroupListView({read_only: true, collection : collection});
+            var descriptorGroupListView = new DescriptorGroupListView({read_only: true, collection: collection});
             defaultLayout.getRegion('content').show(descriptorGroupListView);
             defaultLayout.getRegion('content_bottom').show(new ScrollingMoreView({targetView: descriptorGroupListView}));
         });

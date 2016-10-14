@@ -15,7 +15,7 @@ var View = Marionette.ItemView.extend({
     tagName: 'div',
     className: 'scrolling-more',
     attributes: {
-        style: "width: 100%; margin: 5px; margin-left: 48%; margin-right: 52%;"
+        style: "margin: 5px; margin-left: 48%; margin-right: 52%;"
     },
 
     ui: {

@@ -36,6 +36,16 @@ div.panel.panel-default {
     height: 100%;
 }
 
+div.left, div.right {
+    padding-left: 5px;
+    padding-right: 5px;
+    height: 100%;
+}
+
+div.left {
+    border-right: 1px solid #d8d8d8;
+}
+
 div.panel div.panel-heading {
     height: 45px;
     flex: 0 1 auto;
@@ -43,13 +53,46 @@ div.panel div.panel-heading {
 
 div.panel div.panel-body {
     overflow-y: auto;
+    overflow-x: hidden;
     flex: 1 1 auto;
+    height: 100%;
+}
+
+div.right-up {
+    height: 52.5%;
+    border-bottom: 1px solid #d8d8d8;
+}
+
+div.right-down {
+    height: 47.5%;
+}
+
+div.left-content, div.right-content {
+    overflow-y: auto;
+    height: 100%;
+}
+
+div.right-up-content {
+    overflow-y: auto;
+    height: 90%;
+}
+
+div.right-down-content {
+    overflow-y: auto;
     height: 100%;
 }
 
 div.panel div.panel-bottom {
     height: auto;
     flex: 0 1 auto;
+}
+
+div.panel.panel-default {
+    margin: 0px;
+}
+
+div.left-bottom, div.right-bottom, div.right-up-bottom, div.right-down-bottom {
+    height: auto;
 }
 
 div.panel div.panel-body-bottom {
@@ -171,4 +214,22 @@ span.url {
     -khtml-user-select: none;
     -webkit-user-select: none;
     -o-user-select: none;
+}
+
+tr.element:hover {
+    background: #5cb85c !important;
+}
+
+[draggable=true] {
+    cursor: move;
+}
+
+[draggable] {
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+  /* Required to make elements draggable in old WebKit */
+  -khtml-user-drag: element;
+  -webkit-user-drag: element;
 }

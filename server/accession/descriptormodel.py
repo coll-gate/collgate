@@ -17,7 +17,7 @@ from igdectk.rest import Format, Method
 from igdectk.rest.response import HttpResponseRest
 
 from .base import RestAccession
-from .models import DescriptorModel, DescriptorModelType, DescriptorPanel
+from .models import DescriptorModel, DescriptorModelType
 
 
 class RestDescriptorModel(RestAccession):
@@ -38,6 +38,11 @@ class RestDescriptorModelId(RestDescriptorModel):
 class RestDescriptorModelIdType(RestDescriptorModelId):
     regex = r'^type/$'
     suffix = 'type'
+
+
+class RestDescriptorModelIdTypeId(RestDescriptorModelIdType):
+    regex = r'^type/^(?P<tid>[0-9]+)/$'
+    suffix = 'id'
 
 
 @RestDescriptorModel.def_auth_request(Method.GET, Format.JSON)
@@ -65,7 +70,7 @@ def get_descriptors_models(request):
             'name': dm.name,
             'verbose_name': dm.verbose_name,
             'description': dm.description,
-            'num_descriptors_types': dm.descriptors_types.all().count()
+            'num_descriptors_model_types': dm.descriptors_model_types.all().count()
         })
 
     if len(dm_list) > 0:
@@ -101,7 +106,7 @@ def get_descriptor_model(request, id):
         'name': dm.name,
         'verbose_name': dm.verbose_name,
         'description': dm.description,
-        'num_descriptors_types': dm.descriptors_types.all().count()
+        'num_descriptors_types': dm.descriptors_model_types.all().count()
     }
 
     return HttpResponseRest(request, result)
@@ -155,7 +160,7 @@ def create_descriptor_model(request):
             "description": {"type": "string", 'maxLength': 1024, "required": False, "blank": True},
         },
     },
-    # perms={'accession.add_descriptormodel': _('You are not allowed to create a model of descriptor')},
+    # perms={'accession.change_descriptormodel': _('You are not allowed to modify a model of descriptor')},
     staff=True)
 def update_descriptor_model(request, id):
     dm_id = int(id)
@@ -185,8 +190,11 @@ def remove_descriptor_model(request, id):
 
     model = get_object_or_404(DescriptorModel, id=dm_id)
 
-    if model.descriptors_types.all().exists():
+    if model.descriptors_model_types.all().exists():
         raise SuspiciousOperation(_("Only empty models of descriptors can be removed"))
+
+    if model.panels.all().exists():
+        raise SuspiciousOperation(_("Only unused models of descriptors can be removed"))
 
     model.delete()
     return HttpResponseRest(request, {})
@@ -217,7 +225,7 @@ def search_descriptor_models(request):
             models_list.append({
                 "id": model.id,
                 "name": model.name,
-                'num_descriptors_types': model.descriptors_types.all().count(),
+                'num_descriptors_types': model.descriptors_model_types.all().count(),
                 # 'can_delete': model.can_delete,
                 # 'can_modify': model.can_modify
             })
@@ -228,3 +236,111 @@ def search_descriptor_models(request):
     }
 
     return HttpResponseRest(request, response)
+
+
+@RestDescriptorModelIdType.def_auth_request(Method.GET, Format.JSON, staff=True)
+def list_descriptor_model_types_for_model(request, id):
+    """
+    Returns a list of type of descriptors ordered by name for a given model of descriptor.
+    """
+    results_per_page = int_arg(request.GET.get('more', 30))
+    cursor = request.GET.get('cursor')
+    limit = results_per_page
+
+    dm_id = int(id)
+    dm = get_object_or_404(DescriptorModel, id=dm_id)
+
+    if cursor:
+        cursor_position, cursor_id = cursor.split('/')
+        qs = dm.descriptors_model_types.filter(Q(name__gt=cursor_position)).prefetch_related('descriptor_type__code')
+    else:
+        qs = dm.descriptors_model_types.all()
+
+    dmts = qs.order_by('position')[:limit]
+
+    items_list = []
+
+    for dmt in dmts:
+        items_list.append({
+            'id': dmt.id,
+            'position': dmt.position,
+            'label': dmt.get_label(),
+            'description': dmt.description,
+            'descriptor_type': dmt.descriptor_type.id,
+            'descriptor_type_code': dmt.descriptor_type.code,
+            'mandatory': dmt.mandatory,
+            'set_once': dmt.set_once
+        })
+
+    if len(items_list) > 0:
+        # prev cursor (asc order)
+        obj = items_list[0]
+        prev_cursor = "%i/%s" % (obj['position'], obj['id'])
+
+        # next cursor (asc order)
+        dm = items_list[-1]
+        next_cursor = "%i/%s" % (obj['position'], obj['id'])
+    else:
+        prev_cursor = None
+        next_cursor = None
+
+    results = {
+        'perms': [],
+        'items': items_list,
+        'prev': prev_cursor,
+        'cursor': cursor,
+        'next': next_cursor,
+    }
+
+    return HttpResponseRest(request, results)
+
+
+@RestDescriptorModelIdType.def_auth_request(Method.POST, Format.JSON, content={
+        "type": "object",
+        "properties": {
+            "label": {"type": "string", 'maxLength': 64},
+            "mandatory": {"type": "boolean"},
+            "set_once": {"type": "boolean"},
+            "position": {"type": "number"},
+            "descriptor_type_code": {"type": "string", 'minLength': 3, 'maxLength': 64},
+        },
+    },
+    # perms={
+    #     'accession.change_descriptormodel': _('You are not allowed to modify a model of descriptor'),
+    #     'accession.add_descriptormodeltype': _('You are not allowed to create a type of model of descriptor'),
+    # },
+    staff=True)
+def create_descriptor_type_for_model(request, id):
+    dm_id = int(id)
+
+    dt_code = request.data['descriptor_type_code']
+
+    mandatory = bool(request.data['mandatory'])
+    set_once = bool(request.data['set_once'])
+    position = int(request.data['position'])
+
+    dm = get_object_or_404(DescriptorModel, id=dm_id)
+    dt = get_object_or_404(DescriptorModelType, code=dt_code)
+
+    dmt = DescriptorModelType()
+
+    dmt.descriptor_model = dm
+    dmt.set_label(request.data['label'])
+    dmt.mandatory = mandatory
+    dmt.set_once = set_once
+    dmt.position = position
+    dmt.descriptor_type = dt
+
+    dmt.save()
+
+    result = {
+        'id': dmt.id,
+        'label': dmt.get_label(),
+        'mandatory': dmt.mandatory,
+        'set_once': dmt.set_once,
+        'position': dmt.position,
+        'descriptor_type': dt.id,
+        'descriptor_type_code': dt.code
+    }
+
+    return HttpResponseRest(request, result)

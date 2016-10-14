@@ -65,11 +65,7 @@
 /******/ 	}
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-<<<<<<< HEAD
-/******/ 	var hotCurrentHash = "5f065f2e05fd12e65eaf"; // eslint-disable-line no-unused-vars
-=======
-/******/ 	var hotCurrentHash = "04434b3ce6059b1f9f41"; // eslint-disable-line no-unused-vars
->>>>>>> 9a1d028bda48268852119d0347c61d0861af0f5e
+/******/ 	var hotCurrentHash = "5d711a5b530150fa2b54"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -667,7 +663,10 @@
 	
 	            // failure : resolve or reject the deferred according to your cases
 	            xhr.fail(function() {
-	                console.log("ajaxError: " + xhr.statusText + " " + xhr.responseText);
+	                if (xhr.statusText && xhr.responseText) {
+	                    console.log("ajaxError: " + xhr.statusText + " " + xhr.responseText);
+	                }
+	
 	                if (xhr.status === 200 && xhr.responseText === "") {
 	                    alert("!! this should not arrives, please contact your administrator !!");
 	                    dfd.resolve.apply(xhr, arguments);
@@ -678,10 +677,12 @@
 	                    // Backbone.history.navigate('/home/', {trigger: true});
 	                    window.location.assign(application.baseUrl + 'app/home/');
 	                } else {
-	                    var data = JSON.parse(xhr.responseText);
-	                    //if ((xhr.status >= 400 && xhr.status <= 599) && data && (typeof(data.cause) === "string")) {
-	                    //    $.alert.error(gettext(data.cause));
-	                    //}
+	                    if (typeof(xhr.responseText) !== "undefined") {
+	                        var data = JSON.parse(xhr.responseText);
+	                        //if ((xhr.status >= 400 && xhr.status <= 599) && data && (typeof(data.cause) === "string")) {
+	                        //    $.alert.error(gettext(data.cause));
+	                        //}
+	                    }
 	                    dfd.reject.apply(xhr, arguments);
 	                }
 	            });
@@ -777,9 +778,9 @@
 	    // each modules
 	    this.main = __webpack_require__(32);
 	    this.permission = __webpack_require__(54);
-	    this.audit = __webpack_require__(89);
-	    this.taxonomy = __webpack_require__(102);
-	    this.accession = __webpack_require__(116);
+	    this.audit = __webpack_require__(91);
+	    this.taxonomy = __webpack_require__(103);
+	    this.accession = __webpack_require__(117);
 	});
 	
 	application.start({initialData: ''});
@@ -4279,7 +4280,7 @@
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// MarionetteJS (Backbone.Marionette)
 	// ----------------------------------
-	// v2.4.7
+	// v2.4.5
 	//
 	// Copyright (c)2016 Derick Bailey, Muted Solutions, LLC.
 	// Distributed under MIT license
@@ -4310,7 +4311,7 @@
 	
 	  var Marionette = Backbone.Marionette = {};
 	
-	  Marionette.VERSION = '2.4.7';
+	  Marionette.VERSION = '2.4.5';
 	
 	  Marionette.noConflict = function() {
 	    root.Marionette = previousMarionette;
@@ -6136,9 +6137,6 @@
 	    reorder: function() {
 	      var children = this.children;
 	      var models = this._filteredSortedModels();
-	  
-	      if (!models.length && this._showingEmptyView) { return this; }
-	  
 	      var anyModelsAdded = _.some(models, function(model) {
 	        return !children.findByModel(model);
 	      });
@@ -8817,7 +8815,6 @@
 	
 	  I18n.prototype.dir = function dir(lng) {
 	    if (!lng) lng = this.language;
-	    if (!lng) return 'rtl';
 	
 	    var rtlLngs = ['ar', 'shu', 'sqr', 'ssh', 'xaa', 'yhd', 'yud', 'aao', 'abh', 'abv', 'acm', 'acq', 'acw', 'acx', 'acy', 'adf', 'ads', 'aeb', 'aec', 'afb', 'ajp', 'apc', 'apd', 'arb', 'arq', 'ars', 'ary', 'arz', 'auz', 'avl', 'ayh', 'ayl', 'ayn', 'ayp', 'bbz', 'pga', 'he', 'iw', 'ps', 'pbt', 'pbu', 'pst', 'prp', 'prd', 'ur', 'ydd', 'yds', 'yih', 'ji', 'yi', 'hbo', 'men', 'xmn', 'fa', 'jpr', 'peo', 'pes', 'prs', 'dv', 'sam'];
 	
@@ -9519,7 +9516,7 @@
 	    // interpolate
 	    var data = options.replace && typeof options.replace !== 'string' ? options.replace : options;
 	    if (this.options.interpolation.defaultVariables) data = _extends({}, this.options.interpolation.defaultVariables, data);
-	    res = this.interpolator.interpolate(res, data, this.language);
+	    res = this.interpolator.interpolate(res, data);
 	
 	    // nesting
 	    res = this.interpolator.nest(res, function () {
@@ -9875,10 +9872,8 @@
 	    }
 	  };
 	
-	  LanguageUtil.prototype.isWhitelisted = function isWhitelisted(code, exactMatch) {
-	    if (this.options.load === 'languageOnly' || this.options.nonExplicitWhitelist && !exactMatch) {
-	      code = this.getLanguagePartFromCode(code);
-	    }
+	  LanguageUtil.prototype.isWhitelisted = function isWhitelisted(code) {
+	    if (this.options.load === 'languageOnly') code = this.getLanguagePartFromCode(code);
 	    return !this.whitelist || !this.whitelist.length || this.whitelist.indexOf(code) > -1 ? true : false;
 	  };
 	
@@ -9890,9 +9885,7 @@
 	
 	    var codes = [];
 	    var addCode = function addCode(code) {
-	      var exactMatch = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
-	
-	      if (_this.isWhitelisted(code, exactMatch)) {
+	      if (_this.isWhitelisted(code)) {
 	        codes.push(code);
 	      } else {
 	        _this.logger.warn('rejecting non-whitelisted language code: ' + code);
@@ -9900,7 +9893,7 @@
 	    };
 	
 	    if (typeof code === 'string' && code.indexOf('-') > -1) {
-	      if (this.options.load !== 'languageOnly') addCode(this.formatLanguageCode(code), true);
+	      if (this.options.load !== 'languageOnly') addCode(this.formatLanguageCode(code));
 	      if (this.options.load !== 'currentOnly') addCode(this.getLanguagePartFromCode(code));
 	    } else if (typeof code === 'string') {
 	      addCode(this.formatLanguageCode(code));
@@ -10163,12 +10156,7 @@
 	    var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 	    var reset = arguments[1];
 	
-	    if (reset) {
-	      this.options = options;
-	      this.format = options.interpolation && options.interpolation.format || function (value) {
-	        return value;
-	      };
-	    }
+	    if (reset) this.options = options;
 	    if (!options.interpolation) options.interpolation = { escapeValue: true };
 	
 	    var iOpts = options.interpolation;
@@ -10177,7 +10165,6 @@
 	
 	    this.prefix = iOpts.prefix ? utils.regexEscape(iOpts.prefix) : iOpts.prefixEscaped || '{{';
 	    this.suffix = iOpts.suffix ? utils.regexEscape(iOpts.suffix) : iOpts.suffixEscaped || '}}';
-	    this.formatSeparator = iOpts.formatSeparator ? utils.regexEscape(iOpts.formatSeparator) : iOpts.formatSeparator || ',';
 	
 	    this.unescapePrefix = iOpts.unescapeSuffix ? '' : iOpts.unescapePrefix || '-';
 	    this.unescapeSuffix = this.unescapePrefix ? '' : iOpts.unescapeSuffix || '';
@@ -10185,15 +10172,6 @@
 	    this.nestingPrefix = iOpts.nestingPrefix ? utils.regexEscape(iOpts.nestingPrefix) : iOpts.nestingPrefixEscaped || utils.regexEscape('$t(');
 	    this.nestingSuffix = iOpts.nestingSuffix ? utils.regexEscape(iOpts.nestingSuffix) : iOpts.nestingSuffixEscaped || utils.regexEscape(')');
 	
-	    // the regexp
-	    this.resetRegExp();
-	  };
-	
-	  Interpolator.prototype.reset = function reset() {
-	    if (this.options) this.init(this.options);
-	  };
-	
-	  Interpolator.prototype.resetRegExp = function resetRegExp() {
 	    // the regexp
 	    var regexpStr = this.prefix + '(.+?)' + this.suffix;
 	    this.regexp = new RegExp(regexpStr, 'g');
@@ -10205,9 +10183,11 @@
 	    this.nestingRegexp = new RegExp(nestingRegexpStr, 'g');
 	  };
 	
-	  Interpolator.prototype.interpolate = function interpolate(str, data, lng) {
-	    var _this = this;
+	  Interpolator.prototype.reset = function reset() {
+	    if (this.options) this.init(this.options);
+	  };
 	
+	  Interpolator.prototype.interpolate = function interpolate(str, data) {
 	    var match = void 0,
 	        value = void 0;
 	
@@ -10215,28 +10195,15 @@
 	      return val.replace(/\$/g, '$$$$');
 	    }
 	
-	    var handleFormat = function handleFormat(key) {
-	      if (key.indexOf(_this.formatSeparator) < 0) return utils.getPath(data, key);
-	
-	      var p = key.split(_this.formatSeparator);
-	      var k = p.shift().trim();
-	      var f = p.join(_this.formatSeparator).trim();
-	
-	      return _this.format(utils.getPath(data, k), f, lng);
-	    };
-	
-	    this.resetRegExp();
-	
 	    // unescape if has unescapePrefix/Suffix
 	    while (match = this.regexpUnescape.exec(str)) {
-	      var _value = handleFormat(match[1].trim());
+	      var _value = utils.getPath(data, match[1].trim());
 	      str = str.replace(match[0], _value);
-	      this.regexpUnescape.lastIndex = 0;
 	    }
 	
 	    // regular escape on demand
 	    while (match = this.regexp.exec(str)) {
-	      value = handleFormat(match[1].trim());
+	      value = utils.getPath(data, match[1].trim());
 	      if (typeof value !== 'string') value = utils.makeString(value);
 	      if (!value) {
 	        this.logger.warn('missed to pass in variable ' + match[1] + ' for interpolating ' + str);
@@ -10749,7 +10716,6 @@
 	    fallbackNS: false, // string or array of namespaces
 	
 	    whitelist: false, // array with whitelisted languages
-	    nonExplicitWhitelist: false,
 	    load: 'all', // | currentOnly | languageOnly
 	    preload: false, // array with preload languages
 	
@@ -10776,12 +10742,8 @@
 	
 	    interpolation: {
 	      escapeValue: true,
-	      format: function format(value, _format, lng) {
-	        return value;
-	      },
 	      prefix: '{{',
 	      suffix: '}}',
-	      formatSeparator: ',',
 	      // prefixEscaped: '{{',
 	      // suffixEscaped: '}}',
 	      // unescapeSuffix: '',
@@ -18657,7 +18619,10 @@
 	    },
 	
 	    updateProfile: function () {
-	        //this.model.save().done(function() { $.alert.success(gt.gettext("Done")); });;
+	        this.model.save({
+	            first_name: this.ui.first_name.val(),
+	            last_name: this.ui.last_name.val(),
+	        }).done(function() { $.alert.success(gt.gettext("Done")); });;
 	    }
 	});
 	
@@ -18932,14 +18897,15 @@
 	var PermissionAddView = __webpack_require__(65);
 	var PermissionUserCollection = __webpack_require__(67);
 	var PermissionUserListView = __webpack_require__(69);
-	var PermissionGroupCollection = __webpack_require__(73);
-	var PermissionGroupListView = __webpack_require__(75);
-	var PermissionGroupUserCollection = __webpack_require__(79);
-	var PermissionGroupUserListView = __webpack_require__(81);
-	var PermissionGroupAddUserView = __webpack_require__(85);
-	var PermissionAddGroupView = __webpack_require__(87);
+	var PermissionGroupCollection = __webpack_require__(74);
+	var PermissionGroupListView = __webpack_require__(76);
+	var PermissionGroupUserCollection = __webpack_require__(80);
+	var PermissionGroupUserListView = __webpack_require__(82);
+	var PermissionGroupAddUserView = __webpack_require__(86);
+	var PermissionAddGroupView = __webpack_require__(88);
 	var DefaultLayout = __webpack_require__(48);
 	var TitleView = __webpack_require__(49);
+	var ScrollingMoreView = __webpack_require__(90);
 	
 	var PermissionRouter = Marionette.AppRouter.extend({
 	    routes : {
@@ -18959,7 +18925,10 @@
 	        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of users")}));
 	
 	        userCollection.fetch().then(function () {
-	            defaultLayout.getRegion('content').show(new PermissionUserListView({collection : userCollection}));
+	            var permissionUserList = new PermissionUserListView({collection : userCollection});
+	
+	            defaultLayout.getRegion('content').show(permissionUserList);
+	            defaultLayout.getRegion('content_bottom').show(new ScrollingMoreView({targetView: permissionUserList}));
 	        });
 	    },
 	
@@ -18972,7 +18941,10 @@
 	        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of permissions for user"), object: username}));
 	
 	        permissionsCollection.fetch().then(function () {
-	            defaultLayout.getRegion('content').show(new PermissionListView({collection : permissionsCollection}));
+	            var permissionListView = new PermissionListView({collection : permissionsCollection});
+	
+	            defaultLayout.getRegion('content').show(permissionListView);
+	            defaultLayout.getRegion('content_bottom').show(new ScrollingMoreView({targetView: permissionListView}));
 	
 	            if ($.inArray("auth.add_permission", permissionsCollection.perms) >= 0) {
 	                defaultLayout.getRegion('bottom').show(new PermissionAddView({collection : permissionsCollection}));
@@ -18989,7 +18961,10 @@
 	        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of groups")}));
 	
 	        groupCollection.fetch().then(function () {
-	            defaultLayout.getRegion('content').show(new PermissionGroupListView({collection : groupCollection}));
+	            var permissionGroupList = new PermissionGroupListView({collection : groupCollection});
+	
+	            defaultLayout.getRegion('content').show(permissionGroupList);
+	            defaultLayout.getRegion('content_bottom').show(new ScrollingMoreView({targetView: permissionGroupList}));
 	
 	            if ($.inArray("auth.add_group", groupCollection.perms) >= 0) {
 	                defaultLayout.getRegion('bottom').show(new PermissionAddGroupView({collection : groupCollection}));
@@ -19006,7 +18981,10 @@
 	        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of permissions for group"), object: name}));
 	
 	        permissionsCollection.fetch().then(function () {
-	            defaultLayout.getRegion('content').show(new PermissionListView({collection : permissionsCollection}));
+	            var permissionList = new PermissionListView({collection : permissionsCollection})
+	
+	            defaultLayout.getRegion('content').show(permissionList);
+	            defaultLayout.getRegion('content_bottom').show(new ScrollingMoreView({targetView: permissionList}));
 	
 	            if ($.inArray("auth.add_permission", permissionsCollection.perms) >= 0) {
 	                defaultLayout.getRegion('bottom').show(new PermissionAddView({collection : permissionsCollection}));
@@ -19023,7 +19001,10 @@
 	        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of users for group"), object: name}));
 	
 	        userCollection.fetch().then(function () {
-	            defaultLayout.getRegion('content').show(new PermissionGroupUserListView({collection : userCollection}));
+	            var permissionGroupUserList = new PermissionGroupUserListView({collection : userCollection});
+	
+	            defaultLayout.getRegion('content').show(permissionGroupUserList);
+	            defaultLayout.getRegion('content_bottom').show(new ScrollingMoreView({targetView: permissionGroupUserList}));
 	
 	            if ($.inArray("auth.change_group", userCollection.perms) >= 0) {
 	                defaultLayout.getRegion('bottom').show(new PermissionGroupAddUserView({collection : userCollection}));
@@ -19453,6 +19434,10 @@
 	
 	    parse: function(data) {
 	        this.perms = data.perms;
+	        this.cursor = data.cursor;
+	        this.prev = data.prev;
+	        this.next = data.next;
+	
 	        return data.users;
 	    },
 	});
@@ -19541,20 +19526,20 @@
 	var Marionette = __webpack_require__(4);
 	var PermissionUserModel = __webpack_require__(68);
 	var PermissionUserView = __webpack_require__(70);
+	var ScrollView = __webpack_require__(72);
 	
-	var View = Marionette.CompositeView.extend({
-	    template: __webpack_require__(72),
+	var View = ScrollView.extend({
+	    template: __webpack_require__(73),
 	    childView: PermissionUserView,
 	    childViewContainer: 'tbody.permission-user-list',
 	
 	    initialize: function() {
 	        this.listenTo(this.collection, 'reset', this.render, this);
+	        this.listenTo(this.collection, 'change', this.render, this);
 	        //this.listenTo(this.collection, 'add', this.render, this);
 	        //this.listenTo(this.collection, 'remove', this.render, this);
-	        this.listenTo(this.collection, 'change', this.render, this);
-	    },
 	
-	    onRender: function() {
+	        View.__super__.initialize.apply(this);
 	    },
 	});
 	
@@ -19716,6 +19701,78 @@
 /* 72 */
 /***/ function(module, exports, __webpack_require__) {
 
+	/**
+	 * @file scrollview.js
+	 * @brief Base view for scrollable view with a cursor collection
+	 * @author Frederic SCHERMA
+	 * @date 2016-10-07
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	
+	var View = Marionette.CompositeView.extend({
+	    rowHeight: 1+8+20+8,
+	
+	    ui: {
+	        table: 'table.table'
+	    },
+	
+	    initialize: function() {
+	        // pagination on scrolling
+	        $("div.panel-body").scroll($.proxy(function(e) { this.scroll(e); }, this));
+	    },
+	
+	    capacity: function() {
+	        return Math.max(1, Math.floor(this.$el.parent().prop('clientHeight') / this.rowHeight) - 1);
+	    },
+	
+	    moreResults: function(more, scroll) {
+	        scroll || (scroll=false);
+	        more || (more=20);
+	
+	        var view = this;
+	
+	        if (more == -1) {
+	            more = this.capacity();
+	        }
+	
+	        if (this.collection.next != null) {
+	            this.collection.fetch({update: true, remove: false, data: {
+	                cursor: this.collection.next,
+	                sort_by: this.collection.sort_by,
+	                more: more
+	            }}).done(function() {
+	                // resync the sticky table header during scrolling
+	                $(view.ui.table).stickyTableHeaders({scrollableArea: view.$el.parent()});
+	
+	                if (scroll) {
+	                    var scrollEl = view.$el.parent();
+	
+	                    var height = scrollEl.prop('scrollHeight');
+	                    var clientHeight = scrollEl.prop('clientHeight');
+	                    scrollEl.scrollTop(height - clientHeight - view.rowHeight);
+	                }
+	            });
+	        }
+	    },
+	
+	    scroll: function(e) {
+	        if (e.target.scrollHeight-e.target.clientHeight == e.target.scrollTop) {
+	            this.moreResults();
+	        }
+	    },
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 73 */
+/***/ function(module, exports, __webpack_require__) {
+
 	var _ = __webpack_require__(1);
 	
 	module.exports = function (obj) {
@@ -19742,7 +19799,7 @@
 
 
 /***/ },
-/* 73 */
+/* 74 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -19755,7 +19812,7 @@
 	 * @details
 	 */
 	
-	var PermissionGroupModel = __webpack_require__(74);
+	var PermissionGroupModel = __webpack_require__(75);
 	
 	var Collection = Backbone.Collection.extend({
 	    url: function() { return application.baseUrl + 'permission/group/'; },
@@ -19763,6 +19820,10 @@
 	
 	    parse: function(data) {
 	        this.perms = data.perms;
+	        this.cursor = data.cursor;
+	        this.prev = data.prev;
+	        this.next = data.next;
+	
 	        return data.groups;
 	    },
 	});
@@ -19771,7 +19832,7 @@
 
 
 /***/ },
-/* 74 */
+/* 75 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -19825,7 +19886,7 @@
 
 
 /***/ },
-/* 75 */
+/* 76 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -19839,22 +19900,22 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var PermissionGroupModel = __webpack_require__(74);
-	var PermissionGroupView = __webpack_require__(76);
+	var PermissionGroupModel = __webpack_require__(75);
+	var PermissionGroupView = __webpack_require__(77);
+	var ScrollView = __webpack_require__(72);
 	
-	var View = Marionette.CompositeView.extend({
-	    template: __webpack_require__(78),
+	var View = ScrollView.extend({
+	    template: __webpack_require__(79),
 	    childView: PermissionGroupView,
 	    childViewContainer: 'tbody.permission-group-list',
 	
 	    initialize: function() {
 	        this.listenTo(this.collection, 'reset', this.render, this);
+	        this.listenTo(this.collection, 'change', this.render, this);
 	        //this.listenTo(this.collection, 'add', this.render, this);
 	        //this.listenTo(this.collection, 'remove', this.render, this);
-	        this.listenTo(this.collection, 'change', this.render, this);
-	    },
 	
-	    onRender: function() {
+	        View.__super__.initialize.apply(this);
 	    },
 	});
 	
@@ -19862,7 +19923,7 @@
 
 
 /***/ },
-/* 76 */
+/* 77 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -19876,12 +19937,12 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var PermissionGroupModel = __webpack_require__(74);
+	var PermissionGroupModel = __webpack_require__(75);
 	
 	var View = Marionette.ItemView.extend({
 	    tagName: 'tr',
 	    className: 'element object group',
-	    template: __webpack_require__(77),
+	    template: __webpack_require__(78),
 	
 	    ui: {
 	        delete_group: 'span.delete-group',
@@ -19922,7 +19983,7 @@
 
 
 /***/ },
-/* 77 */
+/* 78 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -19951,7 +20012,7 @@
 
 
 /***/ },
-/* 78 */
+/* 79 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -19974,7 +20035,7 @@
 
 
 /***/ },
-/* 79 */
+/* 80 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -19987,7 +20048,7 @@
 	 * @details
 	 */
 	
-	var PermissionGroupUserModel = __webpack_require__(80);
+	var PermissionGroupUserModel = __webpack_require__(81);
 	
 	var Collection = Backbone.Collection.extend({
 	    url: function() { return application.baseUrl + 'permission/group/' + this.name + '/user/'; },
@@ -20000,6 +20061,10 @@
 	
 	    parse: function(data) {
 	        this.perms = data.perms;
+	        this.cursor = data.cursor;
+	        this.prev = data.prev;
+	        this.next = data.next;
+	
 	        return data.users;
 	    },
 	});
@@ -20008,7 +20073,7 @@
 
 
 /***/ },
-/* 80 */
+/* 81 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -20062,7 +20127,7 @@
 
 
 /***/ },
-/* 81 */
+/* 82 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -20076,19 +20141,22 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var PermissionGroupUserModel = __webpack_require__(80);
-	var PermissionGroupUserView = __webpack_require__(82);
+	var PermissionGroupUserModel = __webpack_require__(81);
+	var PermissionGroupUserView = __webpack_require__(83);
+	var ScrollView = __webpack_require__(72);
 	
-	var View = Marionette.CompositeView.extend({
-	    template: __webpack_require__(84),
+	var View = ScrollView.extend({
+	    template: __webpack_require__(85),
 	    childView: PermissionGroupUserView,
 	    childViewContainer: 'tbody.group-user-list',
 	
 	    initialize: function() {
 	        this.listenTo(this.collection, 'reset', this.render, this);
+	        this.listenTo(this.collection, 'change', this.render, this);
 	        //this.listenTo(this.collection, 'add', this.render, this);
 	        //this.listenTo(this.collection, 'remove', this.render, this);
-	        this.listenTo(this.collection, 'change', this.render, this);
+	
+	        View.__super__.initialize.apply(this);
 	    },
 	});
 	
@@ -20096,7 +20164,7 @@
 
 
 /***/ },
-/* 82 */
+/* 83 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -20110,12 +20178,12 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var PermissionGroupUserModel = __webpack_require__(80);
+	var PermissionGroupUserModel = __webpack_require__(81);
 	
 	var View = Marionette.ItemView.extend({
 	    tagName: 'tr',
 	    className: 'element object user',
-	    template: __webpack_require__(83),
+	    template: __webpack_require__(84),
 	
 	    ui: {
 	        remove_user: 'span.remove-user',
@@ -20151,7 +20219,7 @@
 
 
 /***/ },
-/* 83 */
+/* 84 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -20176,7 +20244,7 @@
 
 
 /***/ },
-/* 84 */
+/* 85 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -20199,7 +20267,7 @@
 
 
 /***/ },
-/* 85 */
+/* 86 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -20217,7 +20285,7 @@
 	var View = Marionette.ItemView.extend({
 	    tagName: 'div',
 	    className: 'user-add',
-	    template: __webpack_require__(86),
+	    template: __webpack_require__(87),
 	
 	    ui: {
 	        add_user: ".add-user",
@@ -20301,7 +20369,7 @@
 
 
 /***/ },
-/* 86 */
+/* 87 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -20318,7 +20386,7 @@
 
 
 /***/ },
-/* 87 */
+/* 88 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -20336,7 +20404,7 @@
 	var View = Marionette.ItemView.extend({
 	    tagName: 'div',
 	    className: 'group-add',
-	    template: __webpack_require__(88),
+	    template: __webpack_require__(89),
 	
 	    ui: {
 	        add_group_btn: 'span.add-group',
@@ -20410,7 +20478,7 @@
 
 
 /***/ },
-/* 88 */
+/* 89 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -20427,7 +20495,67 @@
 
 
 /***/ },
-/* 89 */
+/* 90 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(_) {/**
+	 * @file scrollingmoreview.js
+	 * @brief Simple view that add a more button.
+	 * @author Frederic SCHERMA
+	 * @date 2016-09-26
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	
+	var View = Marionette.ItemView.extend({
+	    template: _.template('<span class="unselectable scroll-more action label label-default"><span class="glyphicon glyphicon-option-horizontal"></span>'),
+	    tagName: 'div',
+	    className: 'scrolling-more',
+	    attributes: {
+	        style: "width: 100%; margin: 5px; margin-left: 48%; margin-right: 52%;"
+	    },
+	
+	    ui: {
+	        'scroll-more': 'span.scroll-more'
+	    },
+	
+	    events: {
+	        'click @ui.scroll-more': 'onScroll'
+	    },
+	
+	    initialize: function(options) {
+	        options || (options = {});
+	
+	        if (options.targetView) {
+	            this.targetView = options.targetView;
+	        }
+	
+	        if (options.more) {
+	            this.more = options.more;
+	        } else {
+	            this.more = -1;
+	        }
+	    },
+	
+	    onRender: function() {
+	    },
+	
+	    onScroll: function() {
+	        if (this.targetView && this.targetView.moreResults) {
+	            this.targetView.moreResults(this.more, true);
+	        }
+	    }
+	});
+	
+	module.exports = View;
+	
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 91 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -20455,7 +20583,7 @@
 	
 	        // i18n
 	        if (session.language === "fr") {
-	            i18next.addResources('fr', 'default', __webpack_require__(90));
+	            i18next.addResources('fr', 'default', __webpack_require__(92));
 	        } else {  // default to english
 	            //i18next.addResources('en', 'default', require('./locale/en/LC_MESSAGES/default.json'));
 	        }
@@ -20466,10 +20594,10 @@
 	    onStart: function(options) {
 	        Logger.time("Start audit module");
 	        
-	        var AuditController = __webpack_require__(91);
+	        var AuditController = __webpack_require__(93);
 	        this.controllers.audit = new AuditController();
 	
-	        var AuditRouter = __webpack_require__(101);
+	        var AuditRouter = __webpack_require__(102);
 	        this.routers.audit = new AuditRouter();
 	
 	        Logger.timeEnd("Start audit module");
@@ -20487,7 +20615,7 @@
 
 
 /***/ },
-/* 90 */
+/* 92 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -20511,7 +20639,7 @@
 	};
 
 /***/ },
-/* 91 */
+/* 93 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -20525,11 +20653,11 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var AuditCollection = __webpack_require__(92);
-	var AuditListView = __webpack_require__(94);
+	var AuditCollection = __webpack_require__(94);
+	var AuditListView = __webpack_require__(96);
 	var DefaultLayout = __webpack_require__(48);
 	var TitleView = __webpack_require__(49);
-	var ScrollingMoreView = __webpack_require__(98);
+	var ScrollingMoreView = __webpack_require__(90);
 	
 	var Controller = Marionette.Controller.extend({
 	
@@ -20541,7 +20669,7 @@
 	                'class': 'modal',
 	                'tabindex': -1
 	            },
-	            template: __webpack_require__(99),
+	            template: __webpack_require__(100),
 	
 	            ui: {
 	                cancel: "button.cancel",
@@ -20665,7 +20793,7 @@
 	            var auditListView = new AuditListView({collection: auditCollection});
 	
 	            defaultLayout.getRegion('content').show(auditListView);
-	            defaultLayout.getRegion('bottom').show(new ScrollingMoreView({targetView: auditListView}));
+	            defaultLayout.getRegion('content_bottom').show(new ScrollingMoreView({targetView: auditListView}));
 	        });
 	    },
 	
@@ -20677,7 +20805,7 @@
 	                'class': 'modal',
 	                'tabindex': -1
 	            },
-	            template: __webpack_require__(100),
+	            template: __webpack_require__(101),
 	
 	            ui: {
 	                cancel: "button.cancel",
@@ -20842,7 +20970,7 @@
 	            var auditListView = new AuditListView({collection: auditCollection});
 	
 	            defaultLayout.getRegion('content').show(auditListView);
-	            defaultLayout.getRegion('bottom').show(new ScrollingMoreView({targetView: auditListView}));
+	            defaultLayout.getRegion('content_bottom').show(new ScrollingMoreView({targetView: auditListView}));
 	        });
 	    }
 	});
@@ -20851,7 +20979,7 @@
 
 
 /***/ },
-/* 92 */
+/* 94 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -20864,7 +20992,7 @@
 	 * @details
 	 */
 	
-	var AuditModel = __webpack_require__(93);
+	var AuditModel = __webpack_require__(95);
 	
 	var Collection = Backbone.Collection.extend({
 	    url: function() {
@@ -20917,7 +21045,7 @@
 
 
 /***/ },
-/* 93 */
+/* 95 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -20968,7 +21096,7 @@
 
 
 /***/ },
-/* 94 */
+/* 96 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -20982,76 +21110,19 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var AuditView = __webpack_require__(95);
+	var AuditView = __webpack_require__(97);
+	var ScrollView = __webpack_require__(72);
 	
-	var View = Marionette.CompositeView.extend({
-	    template: __webpack_require__(97),
+	var View = ScrollView.extend({
+	    template: __webpack_require__(99),
 	    childView: AuditView,
 	    childViewContainer: 'tbody.audit-list',
-	
-	    ui: {
-	        table: 'table.table'
-	    },
 	
 	    initialize: function() {
 	        this.listenTo(this.collection, 'reset', this.render, this);
 	        this.listenTo(this.collection, 'change', this.render, this);
 	
-	        // pagination on scrolling
-	        $("div.panel-body").scroll($.proxy(function(e) { this.scroll(e); }, this));
-	    },
-	
-	    onRender: function() {
-	    },
-	
-	    onDomRefresh: function() {
-	        // init/reinit sticky table header
-	        $(this.ui.table).stickyTableHeaders({scrollableArea: this.$el.parent()});
-	    },
-	
-	    capacity: function() {
-	        var rowHeight = 1+8+20+8;
-	        return Math.max(1, Math.floor(this.$el.parent().prop('clientHeight') / rowHeight) - 1);
-	    },
-	
-	    moreResults: function(more, scroll) {
-	        scroll || (scroll=false);
-	        more || (more=20);
-	
-	        var view = this;
-	
-	        if (more == -1) {
-	            more = this.capacity();
-	        }
-	
-	        if (this.collection.next != null) {
-	            Logger.debug("audit::fetch next with cursor=" + (this.collection.next));
-	            this.collection.fetch({update: true, remove: false, data: {
-	                cursor: this.collection.next,
-	                sort_by: this.collection.sort_by,
-	                more: more
-	            }}).done(function() {
-	                // resync the sticky table header during scrolling
-	                $(view.ui.table).stickyTableHeaders({scrollableArea: view.$el.parent()});
-	
-	                if (scroll) {
-	                    var scrollEl = view.$el.parent();
-	
-	                    var height = scrollEl.prop('scrollHeight');
-	                    var clientHeight = scrollEl.prop('clientHeight');
-	                    scrollEl.scrollTop(height - clientHeight - (1+8+20+8));
-	                }
-	            });
-	        }
-	
-	        // resync the sticky table header during scrolling
-	        $(this.ui.table).stickyTableHeaders({scrollableArea: this.$el.parent()});
-	    },
-	
-	    scroll: function(e) {
-	        if (e.target.scrollHeight-e.target.clientHeight == e.target.scrollTop) {
-	            this.moreResults();
-	        }
+	        View.__super__.initialize.apply(this);
 	    },
 	});
 	
@@ -21059,7 +21130,7 @@
 
 
 /***/ },
-/* 95 */
+/* 97 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -21073,7 +21144,7 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var AuditModel = __webpack_require__(93);
+	var AuditModel = __webpack_require__(95);
 	
 	var View = Marionette.ItemView.extend({
 	    tagName: 'tr',
@@ -21081,7 +21152,7 @@
 	    attributes: {
 	        'scope': 'row',
 	    },
-	    template: __webpack_require__(96),
+	    template: __webpack_require__(98),
 	
 	    ui: {
 	        show: 'span.show-entity',
@@ -21112,7 +21183,7 @@
 
 
 /***/ },
-/* 96 */
+/* 98 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -21165,11 +21236,11 @@
 	'"><span class="glyphicon glyphicon-retweet" style="color: #c77405"></span></abbr> ';
 	 } else if (type == 2) { ;
 	__p += ' <abbr title="' +
-	((__t = ( gt.gettext('Removed') )) == null ? '' : __t) +
+	((__t = ( gt.gettext('Deleted') )) == null ? '' : __t) +
 	'"><span class="glyphicon glyphicon-remove-circle" style="color: #ac2925"></span></abbr> ';
 	 } else if (type == 3) { ;
 	__p += ' <abbr title="' +
-	((__t = ( gt.gettext('Deleted') )) == null ? '' : __t) +
+	((__t = ( gt.gettext('Removed') )) == null ? '' : __t) +
 	'"><span class="glyphicon glyphicon-trash" style="color: #ac2925"></span></abbr> ';
 	 } else if (type == 4) { ;
 	__p += ' <abbr title="' +
@@ -21188,7 +21259,7 @@
 
 
 /***/ },
-/* 97 */
+/* 99 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -21217,67 +21288,7 @@
 
 
 /***/ },
-/* 98 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(_) {/**
-	 * @file scrollingmoreview.js
-	 * @brief Simple view that add a more button.
-	 * @author Frederic SCHERMA
-	 * @date 2016-09-26
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var Marionette = __webpack_require__(4);
-	
-	var View = Marionette.ItemView.extend({
-	    template: _.template('<span class="unselectable scroll-more action label label-default"><span class="glyphicon glyphicon-option-horizontal"></span>'),
-	    tagName: 'div',
-	    className: 'scrolling-more',
-	    attributes: {
-	        style: "width: 100%; margin: 5px; margin-left: 48%; margin-right: 52%;"
-	    },
-	
-	    ui: {
-	        'scroll-more': 'span.scroll-more'
-	    },
-	
-	    events: {
-	        'click @ui.scroll-more': 'onScroll'
-	    },
-	
-	    initialize: function(options) {
-	        options || (options = {});
-	
-	        if (options.targetView) {
-	            this.targetView = options.targetView;
-	        }
-	
-	        if (options.more) {
-	            this.more = options.more;
-	        } else {
-	            this.more = -1;
-	        }
-	    },
-	
-	    onRender: function() {
-	    },
-	
-	    onScroll: function() {
-	        if (this.targetView && this.targetView.moreResults) {
-	            this.targetView.moreResults(this.more, true);
-	        }
-	    }
-	});
-	
-	module.exports = View;
-	
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
-
-/***/ },
-/* 99 */
+/* 100 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -21302,7 +21313,7 @@
 
 
 /***/ },
-/* 100 */
+/* 101 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -21329,7 +21340,7 @@
 
 
 /***/ },
-/* 101 */
+/* 102 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -21343,11 +21354,11 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var AuditCollection = __webpack_require__(92);
-	var AuditListView = __webpack_require__(94);
+	var AuditCollection = __webpack_require__(94);
+	var AuditListView = __webpack_require__(96);
 	var DefaultLayout = __webpack_require__(48);
 	var TitleView = __webpack_require__(49);
-	var ScrollingMoreView = __webpack_require__(98);
+	var ScrollingMoreView = __webpack_require__(90);
 	
 	var Router = Marionette.AppRouter.extend({
 	    controller: application.audit.controllers.audit,
@@ -21371,7 +21382,7 @@
 
 
 /***/ },
-/* 102 */
+/* 103 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -21399,14 +21410,14 @@
 	
 	        // i18n
 	        if (session.language === "fr") {
-	            i18next.addResources('fr', 'default', __webpack_require__(103));
+	            i18next.addResources('fr', 'default', __webpack_require__(104));
 	        } else {  // default to english
 	            //i18next.addResources('en', 'default', require('./locale/en/LC_MESSAGES/default.json'));
 	        }
 	
 	        var SelectOptionItemView = __webpack_require__(36);
 	
-	        var TaxonRankCollection = __webpack_require__(104);
+	        var TaxonRankCollection = __webpack_require__(105);
 	        this.collections.taxonRanks = new TaxonRankCollection();
 	
 	        this.views.taxonRanks = new SelectOptionItemView({
@@ -21422,7 +21433,7 @@
 	            ]);*/
 	        });
 	
-	        var TaxonSynonymTypeCollection = __webpack_require__(106);
+	        var TaxonSynonymTypeCollection = __webpack_require__(107);
 	        this.collections.taxonSynonymTypes = new TaxonSynonymTypeCollection();
 	
 	        this.views.taxonSynonymTypes = new SelectOptionItemView({
@@ -21430,7 +21441,7 @@
 	            collection: this.collections.taxonSynonymTypes,
 	        });
 	        
-	        var TaxonController = __webpack_require__(108);
+	        var TaxonController = __webpack_require__(109);
 	        this.controllers.taxon = new TaxonController();
 	
 	        Logger.timeEnd("Init taxonomy module");
@@ -21439,10 +21450,10 @@
 	    onStart: function(options) {
 	        Logger.time("Start taxonomy module");
 	
-	        var TaxonRouter = __webpack_require__(115);
+	        var TaxonRouter = __webpack_require__(116);
 	        this.routers.taxon = new TaxonRouter();
 	
-	        var TaxonCollection = __webpack_require__(110);
+	        var TaxonCollection = __webpack_require__(111);
 	        this.collections.taxons = new TaxonCollection();
 	
 	        Logger.timeEnd("Start taxonomy module");
@@ -21460,7 +21471,7 @@
 
 
 /***/ },
-/* 103 */
+/* 104 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -21486,7 +21497,7 @@
 	};
 
 /***/ },
-/* 104 */
+/* 105 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -21499,7 +21510,7 @@
 	 * @details
 	 */
 	
-	var TaxonRankModel = __webpack_require__(105);
+	var TaxonRankModel = __webpack_require__(106);
 	
 	var TaxonRankCollection = Backbone.Collection.extend({
 	    url: application.baseUrl + 'taxonomy/rank/',
@@ -21526,7 +21537,7 @@
 
 
 /***/ },
-/* 105 */
+/* 106 */
 /***/ function(module, exports) {
 
 	/**
@@ -21553,7 +21564,7 @@
 
 
 /***/ },
-/* 106 */
+/* 107 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -21566,7 +21577,7 @@
 	 * @details
 	 */
 	
-	var TaxonSynonymTypeModel = __webpack_require__(107);
+	var TaxonSynonymTypeModel = __webpack_require__(108);
 	
 	var Collection = Backbone.Collection.extend({
 	    url: application.baseUrl + 'taxonomy/taxon-synonym-type/',
@@ -21593,7 +21604,7 @@
 
 
 /***/ },
-/* 107 */
+/* 108 */
 /***/ function(module, exports) {
 
 	/**
@@ -21620,7 +21631,7 @@
 
 
 /***/ },
-/* 108 */
+/* 109 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -21634,9 +21645,9 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var TaxonModel = __webpack_require__(109);
-	var TaxonCollection = __webpack_require__(110);
-	var TaxonListView = __webpack_require__(111);
+	var TaxonModel = __webpack_require__(110);
+	var TaxonCollection = __webpack_require__(111);
+	var TaxonListView = __webpack_require__(112);
 	var DefaultLayout = __webpack_require__(48);
 	var TitleView = __webpack_require__(49);
 	
@@ -21682,7 +21693,7 @@
 	                'class': 'modal',
 	                'tabindex': -1
 	            },
-	            template: __webpack_require__(114),
+	            template: __webpack_require__(115),
 	
 	            ui: {
 	                cancel: "button.cancel",
@@ -21990,7 +22001,7 @@
 
 
 /***/ },
-/* 109 */
+/* 110 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -22102,7 +22113,7 @@
 
 
 /***/ },
-/* 110 */
+/* 111 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -22115,7 +22126,7 @@
 	 * @details
 	 */
 	
-	var TaxonModel = __webpack_require__(109);
+	var TaxonModel = __webpack_require__(110);
 	
 	var TaxonCollection = Backbone.Collection.extend({
 	    url: application.baseUrl + 'taxonomy/',
@@ -22133,7 +22144,7 @@
 
 
 /***/ },
-/* 111 */
+/* 112 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -22147,8 +22158,8 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var TaxonModel = __webpack_require__(109);
-	var TaxonView = __webpack_require__(112);
+	var TaxonModel = __webpack_require__(110);
+	var TaxonView = __webpack_require__(113);
 	
 	var TaxonListView = Marionette.CollectionView.extend({
 	    //el: '#main_content',
@@ -22212,7 +22223,7 @@
 
 
 /***/ },
-/* 112 */
+/* 113 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -22226,11 +22237,11 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var TaxonModel = __webpack_require__(109);
+	var TaxonModel = __webpack_require__(110);
 	
 	var TaxonItemView = Marionette.ItemView.extend({
 	    tagName: 'div',
-	    template: __webpack_require__(113),
+	    template: __webpack_require__(114),
 	
 	    ui: {
 	        "synonym_name": ".synonym-name",
@@ -22367,7 +22378,7 @@
 
 
 /***/ },
-/* 113 */
+/* 114 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -22415,7 +22426,7 @@
 
 
 /***/ },
-/* 114 */
+/* 115 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -22444,7 +22455,7 @@
 
 
 /***/ },
-/* 115 */
+/* 116 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -22458,10 +22469,10 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var TaxonModel = __webpack_require__(109);
-	var TaxonCollection = __webpack_require__(110);
-	var TaxonListView = __webpack_require__(111);
-	var TaxonItemView = __webpack_require__(112);
+	var TaxonModel = __webpack_require__(110);
+	var TaxonCollection = __webpack_require__(111);
+	var TaxonListView = __webpack_require__(112);
+	var TaxonItemView = __webpack_require__(113);
 	var DefaultLayout = __webpack_require__(48);
 	var TitleView = __webpack_require__(49);
 	
@@ -22502,7 +22513,7 @@
 
 
 /***/ },
-/* 116 */
+/* 117 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -22530,7 +22541,7 @@
 	
 	        // i18n
 	        if (session.language === "fr") {
-	            i18next.addResources('fr', 'default', __webpack_require__(117));
+	            i18next.addResources('fr', 'default', __webpack_require__(118));
 	        } else {  // default to english
 	            //i18next.addResources('en', 'default', require('./locale/en/LC_MESSAGES/default.json'));
 	        }
@@ -22541,16 +22552,16 @@
 	    onStart: function(options) {
 	        Logger.time("Start accession module");
 	
-	        var AccessionRouter = __webpack_require__(118);
+	        var AccessionRouter = __webpack_require__(119);
 	        this.routers.accession = new AccessionRouter();
 	
-	        var DescriptorRouter = __webpack_require__(119);
+	        var DescriptorRouter = __webpack_require__(120);
 	        this.routers.descriptor = new DescriptorRouter();
 	
-	        var DescriptorModelRouter = __webpack_require__(148);
+	        var DescriptorModelRouter = __webpack_require__(149);
 	        this.routers.descriptorModel = new DescriptorModelRouter();
 	
-	        var DescriptorGroupCollection = __webpack_require__(123);
+	        var DescriptorGroupCollection = __webpack_require__(124);
 	        this.collections.descriptorGroup = new DescriptorGroupCollection();
 	
 	        Logger.timeEnd("Start accession module");
@@ -22568,7 +22579,7 @@
 
 
 /***/ },
-/* 117 */
+/* 118 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -22616,7 +22627,7 @@
 	};
 
 /***/ },
-/* 118 */
+/* 119 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -22680,7 +22691,7 @@
 
 
 /***/ },
-/* 119 */
+/* 120 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -22694,27 +22705,27 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var DescriptorGroupModel = __webpack_require__(120);
-	var DescriptorTypeModel = __webpack_require__(121);
-	var DescriptorValueModel = __webpack_require__(122);
-	var DescriptorGroupCollection = __webpack_require__(123);
-	var DescriptorTypeCollection = __webpack_require__(124);
-	var DescriptorValueCollection = __webpack_require__(125);
-	var DescriptorGroupListView = __webpack_require__(126);
-	var DescriptorTypeListView = __webpack_require__(130);
+	var DescriptorGroupModel = __webpack_require__(121);
+	var DescriptorTypeModel = __webpack_require__(122);
+	var DescriptorValueModel = __webpack_require__(123);
+	var DescriptorGroupCollection = __webpack_require__(124);
+	var DescriptorTypeCollection = __webpack_require__(125);
+	var DescriptorValueCollection = __webpack_require__(126);
+	var DescriptorGroupListView = __webpack_require__(127);
+	var DescriptorTypeListView = __webpack_require__(131);
 	
-	var DescriptorValueListView = __webpack_require__(134);
-	var DescriptorValuePairListView = __webpack_require__(138);
+	var DescriptorValueListView = __webpack_require__(135);
+	var DescriptorValuePairListView = __webpack_require__(139);
 	
-	var DescriptorTypeItemView = __webpack_require__(131);
-	var DescriptorTypeDetailView = __webpack_require__(142);
-	var DescriptorValueItemView = __webpack_require__(135);
+	var DescriptorTypeItemView = __webpack_require__(132);
+	var DescriptorTypeDetailView = __webpack_require__(143);
+	var DescriptorValueItemView = __webpack_require__(136);
 	var DefaultLayout = __webpack_require__(48);
 	var TitleView = __webpack_require__(49);
-	var ScrollingMoreView = __webpack_require__(98);
+	var ScrollingMoreView = __webpack_require__(90);
 	
-	var DescriptorGroupAddView = __webpack_require__(144);
-	var DescriptorGroupTypeAddView = __webpack_require__(146);
+	var DescriptorGroupAddView = __webpack_require__(145);
+	var DescriptorGroupTypeAddView = __webpack_require__(147);
 	
 	var Router = Marionette.AppRouter.extend({
 	    routes : {
@@ -22832,7 +22843,7 @@
 
 
 /***/ },
-/* 120 */
+/* 121 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -22882,10 +22893,10 @@
 
 
 /***/ },
-/* 121 */
+/* 122 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/**
+	a/**
 	 * @file descriptortype.js
 	 * @brief Type of descriptor model
 	 * @author Frederic SCHERMA
@@ -22950,7 +22961,7 @@
 
 
 /***/ },
-/* 122 */
+/* 123 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -23013,7 +23024,7 @@
 
 
 /***/ },
-/* 123 */
+/* 124 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -23026,7 +23037,7 @@
 	 * @details
 	 */
 	
-	var DescriptorGroupModel = __webpack_require__(120);
+	var DescriptorGroupModel = __webpack_require__(121);
 	
 	var Collection = Backbone.Collection.extend({
 	    url: application.baseUrl + 'accession/descriptor/group/',
@@ -23045,7 +23056,7 @@
 
 
 /***/ },
-/* 124 */
+/* 125 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -23058,7 +23069,7 @@
 	 * @details
 	 */
 	
-	var DescriptorTypeModel = __webpack_require__(121);
+	var DescriptorTypeModel = __webpack_require__(122);
 	
 	var Collection = Backbone.Collection.extend({
 	    url: function() {
@@ -23085,7 +23096,7 @@
 
 
 /***/ },
-/* 125 */
+/* 126 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -23098,7 +23109,7 @@
 	 * @details
 	 */
 	
-	var DescriptorTypeModel = __webpack_require__(122);
+	var DescriptorTypeModel = __webpack_require__(123);
 	
 	var Collection = Backbone.Collection.extend({
 	    url: function() {
@@ -23145,7 +23156,7 @@
 
 
 /***/ },
-/* 126 */
+/* 127 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -23159,42 +23170,30 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var DescriptorGroupModel = __webpack_require__(120);
-	var DescriptorGroupView = __webpack_require__(127);
+	var DescriptorGroupModel = __webpack_require__(121);
+	var DescriptorGroupView = __webpack_require__(128);
+	var ScrollView = __webpack_require__(72);
 	
-	var View = Marionette.CompositeView.extend({
-	    template: __webpack_require__(129),
+	var View = ScrollView.extend({
+	    template: __webpack_require__(130),
 	    childView: DescriptorGroupView,
 	    childViewContainer: 'tbody.descriptor-group-list',
 	
 	    initialize: function() {
 	        this.listenTo(this.collection, 'reset', this.render, this);
+	        this.listenTo(this.collection, 'change', this.render, this);
 	        //this.listenTo(this.collection, 'add', this.render, this);
 	        //this.listenTo(this.collection, 'remove', this.render, this);
-	        this.listenTo(this.collection, 'change', this.render, this);
 	
-	        // pagination on scrolling
-	        $("div.panel-body").scroll($.proxy(function(e) { this.scroll(e); }, this));
-	    },
-	
-	    onRender: function() {
-	    },
-	
-	    scroll: function(e) {
-	        if (e.target.scrollHeight-e.target.clientHeight == e.target.scrollTop) {
-	            if (this.collection.next != null) {
-	                Logger.debug("descriptorGroup::fetch next with cursor=" + (this.collection.next));
-	                this.collection.fetch({update: true, remove: false, data: {cursor: this.collection.next}});
-	            }
-	        }
-	    },
+	        View.__super__.initialize.apply(this);
+	    }
 	});
 	
 	module.exports = View;
 
 
 /***/ },
-/* 127 */
+/* 128 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -23208,12 +23207,12 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var DescriptorGroupModel = __webpack_require__(120);
+	var DescriptorGroupModel = __webpack_require__(121);
 	
 	var View = Marionette.ItemView.extend({
 	    tagName: 'tr',
 	    className: 'element object descriptor-group',
-	    template: __webpack_require__(128),
+	    template: __webpack_require__(129),
 	
 	    ui: {
 	        delete_descriptor_group: 'span.delete-descriptor-group',
@@ -23251,7 +23250,7 @@
 
 
 /***/ },
-/* 128 */
+/* 129 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -23276,7 +23275,7 @@
 
 
 /***/ },
-/* 129 */
+/* 130 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -23297,7 +23296,7 @@
 
 
 /***/ },
-/* 130 */
+/* 131 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -23311,42 +23310,30 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var DescriptorTypeModel = __webpack_require__(121);
-	var DescriptorTypeView = __webpack_require__(131);
+	var DescriptorTypeModel = __webpack_require__(122);
+	var DescriptorTypeView = __webpack_require__(132);
+	var ScrollView = __webpack_require__(72);
 	
-	var View = Marionette.CompositeView.extend({
-	    template: __webpack_require__(133),
+	var View = ScrollView.extend({
+	    template: __webpack_require__(134),
 	    childView: DescriptorTypeView,
 	    childViewContainer: 'tbody.descriptor-type-list',
 	
 	    initialize: function() {
 	        this.listenTo(this.collection, 'reset', this.render, this);
+	        this.listenTo(this.collection, 'change', this.render, this);
 	        //this.listenTo(this.collection, 'add', this.render, this);
 	        //this.listenTo(this.collection, 'remove', this.render, this);
-	        this.listenTo(this.collection, 'change', this.render, this);
 	
-	        // pagination on scrolling
-	        $("div.panel-body").scroll($.proxy(function(e) { this.scroll(e); }, this));
-	    },
-	
-	    onRender: function() {
-	    },
-	
-	    scroll: function(e) {
-	        if (e.target.scrollHeight-e.target.clientHeight == e.target.scrollTop) {
-	            if (this.collection.next != null) {
-	                Logger.debug("descriptorType::fetch next with cursor=" + (this.collection.next));
-	                this.collection.fetch({update: true, remove: false, data: {cursor: this.collection.next}});
-	            }
-	        }
-	    },
+	        View.__super__.initialize.apply(this);
+	    }
 	});
 	
 	module.exports = View;
 
 
 /***/ },
-/* 131 */
+/* 132 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -23360,12 +23347,12 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var DescriptorTypeModel = __webpack_require__(121);
+	var DescriptorTypeModel = __webpack_require__(122);
 	
 	var View = Marionette.ItemView.extend({
 	    tagName: 'tr',
 	    className: 'element object descriptor-type',
-	    template: __webpack_require__(132),
+	    template: __webpack_require__(133),
 	
 	    ui: {
 	        delete_descriptor_type: 'span.delete-descriptor-type',
@@ -23408,7 +23395,7 @@
 
 
 /***/ },
-/* 132 */
+/* 133 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -23444,7 +23431,7 @@
 
 
 /***/ },
-/* 133 */
+/* 134 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -23467,7 +23454,7 @@
 
 
 /***/ },
-/* 134 */
+/* 135 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -23481,11 +23468,12 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var DescriptorValueModel = __webpack_require__(122);
-	var DescriptorValueView = __webpack_require__(135);
+	var DescriptorValueModel = __webpack_require__(123);
+	var DescriptorValueView = __webpack_require__(136);
+	var ScrollView = __webpack_require__(72);
 	
-	var View = Marionette.CompositeView.extend({
-	    template: __webpack_require__(137),
+	var View = ScrollView.extend({
+	    template: __webpack_require__(138),
 	    childView: DescriptorValueView,
 	    childViewContainer: 'tbody.descriptor-value-list',
 	
@@ -23502,13 +23490,11 @@
 	
 	    initialize: function() {
 	        this.listenTo(this.collection, 'reset', this.render, this);
+	        this.listenTo(this.collection, 'change', this.render, this);
 	        //this.listenTo(this.collection, 'add', this.render, this);
 	        //this.listenTo(this.collection, 'remove', this.render, this);
-	        this.listenTo(this.collection, 'change', this.render, this);
 	
-	        // pagination on scrolling
-	        //$("div.panel-body").scroll($.proxy(function(e) { this.scroll(e); }, this));
-	        this.$el.scroll($.proxy(function(e) { this.scroll(e); }, this));
+	        View.__super__.initialize.apply(this);
 	    },
 	
 	    onRender: function() {
@@ -23533,99 +23519,6 @@
 	
 	        // reset scrolling
 	        this.$el.parent().scrollTop(0);
-<<<<<<< HEAD
-	    },
-	
-	    onDomRefresh: function() {
-	        // init/reinit sticky table header
-	        $(this.ui.table).stickyTableHeaders({scrollableArea: this.$el.parent()});
-	    },
-	
-	    capacity: function() {
-	        var rowHeight = 1+8+20+8;
-	        return Math.max(1, Math.floor(this.$el.parent().prop('clientHeight') / rowHeight) - 1);
-	    },
-	
-	    moreResults: function(more, scroll) {
-	        scroll || (scroll=false);
-	        more || (more=20);
-	
-	        var view = this;
-	
-	        if (more == -1) {
-	            more = this.capacity();
-	        }
-	
-	        if (this.collection.next != null) {
-	            Logger.debug("descriptorTypeValue::fetch next with cursor=" + (this.collection.next));
-	            this.collection.fetch({update: true, remove: false, data: {
-	                cursor: this.collection.next,
-	                sort_by: this.collection.sort_by,
-	                more: more
-	            }}).done(function() {
-	                // resync the sticky table header during scrolling
-	                $(view.ui.table).stickyTableHeaders({scrollableArea: view.$el.parent()});
-	
-	                if (scroll) {
-	                    var scrollEl = view.$el.parent();
-	
-	                    var height = scrollEl.prop('scrollHeight');
-	                    var clientHeight = scrollEl.prop('clientHeight');
-	                    scrollEl.scrollTop(height - clientHeight - (1+8+20+8));
-	                }
-	            });
-	        }
-	    },
-	
-=======
-	    },
-	
-	    onDomRefresh: function() {
-	        // init/reinit sticky table header
-	        $(this.ui.table).stickyTableHeaders({scrollableArea: this.$el.parent()});
-	    },
-	
-	    capacity: function() {
-	        var rowHeight = 1+8+20+8;
-	        return Math.max(1, Math.floor(this.$el.parent().prop('clientHeight') / rowHeight) - 1);
-	    },
-	
-	    moreResults: function(more, scroll) {
-	        scroll || (scroll=false);
-	        more || (more=20);
-	
-	        var view = this;
-	
-	        if (more == -1) {
-	            more = this.capacity();
-	        }
-	
-	        if (this.collection.next != null) {
-	            Logger.debug("descriptorTypeValue::fetch next with cursor=" + (this.collection.next));
-	            this.collection.fetch({update: true, remove: false, data: {
-	                cursor: this.collection.next,
-	                sort_by: this.collection.sort_by,
-	                more: more
-	            }}).done(function() {
-	                // resync the sticky table header during scrolling
-	                $(view.ui.table).stickyTableHeaders({scrollableArea: view.$el.parent()});
-	
-	                if (scroll) {
-	                    var scrollEl = view.$el.parent();
-	
-	                    var height = scrollEl.prop('scrollHeight');
-	                    var clientHeight = scrollEl.prop('clientHeight');
-	                    scrollEl.scrollTop(height - clientHeight - (1+8+20+8));
-	                }
-	            });
-	        }
-	    },
-	
->>>>>>> 9a1d028bda48268852119d0347c61d0861af0f5e
-	    scroll: function(e) {
-	        if (e.target.scrollHeight-e.target.clientHeight == e.target.scrollTop) {
-	            this.moreResults();
-	        }
 	    },
 	
 	    sortColumn: function (e) {
@@ -23647,7 +23540,7 @@
 
 
 /***/ },
-/* 135 */
+/* 136 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -23661,12 +23554,12 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var DescriptorValueModel = __webpack_require__(122);
+	var DescriptorValueModel = __webpack_require__(123);
 	
 	var View = Marionette.ItemView.extend({
 	    tagName: 'tr',
 	    className: 'element object descriptor-value',
-	    template: __webpack_require__(136),
+	    template: __webpack_require__(137),
 	
 	    ui: {
 	        delete_descriptor_value: 'span.delete-descriptor-value',
@@ -23701,7 +23594,7 @@
 	module.exports = View;
 
 /***/ },
-/* 136 */
+/* 137 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -23722,7 +23615,7 @@
 
 
 /***/ },
-/* 137 */
+/* 138 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -23743,7 +23636,7 @@
 
 
 /***/ },
-/* 138 */
+/* 139 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -23757,11 +23650,12 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var DescriptorValueModel = __webpack_require__(122);
-	var DescriptorValuePairView = __webpack_require__(139);
+	var DescriptorValueModel = __webpack_require__(123);
+	var DescriptorValuePairView = __webpack_require__(140);
+	var ScrollView = __webpack_require__(72);
 	
-	var View = Marionette.CompositeView.extend({
-	    template: __webpack_require__(141),
+	var View = ScrollView.extend({
+	    template: __webpack_require__(142),
 	    childView: DescriptorValuePairView,
 	    childViewContainer: 'tbody.descriptor-value-list',
 	
@@ -23793,12 +23687,11 @@
 	
 	    initialize: function() {
 	        this.listenTo(this.collection, 'reset', this.render, this);
+	        this.listenTo(this.collection, 'change', this.render, this);
 	        //this.listenTo(this.collection, 'add', this.render, this);
 	        //this.listenTo(this.collection, 'remove', this.render, this);
-	        this.listenTo(this.collection, 'change', this.render, this);
 	
-	        // pagination on scrolling (done here because on once, and auto off when view destroy)
-	        $("div.panel-body").scroll($.proxy(function(e) { this.scroll(e); }, this));
+	        View.__super__.initialize.apply(this);
 	    },
 	
 	    onRender: function() {
@@ -23825,53 +23718,6 @@
 	        this.$el.parent().scrollTop(0);
 	    },
 	
-	    onDomRefresh: function() {
-	        // init/reinit sticky table header
-	        $(this.ui.table).stickyTableHeaders({scrollableArea: this.$el.parent()});
-	    },
-	
-	    capacity: function() {
-	        var rowHeight = 1+8+20+8;
-	        return Math.max(1, Math.floor(this.$el.parent().prop('clientHeight') / rowHeight) - 1);
-	    },
-	
-	    moreResults: function(more, scroll) {
-	        scroll || (scroll=false);
-	        more || (more=20);
-	
-	        var view = this;
-	
-	        if (more == -1) {
-	            more = this.capacity();
-	        }
-	
-	        if (this.collection.next != null) {
-	            Logger.debug("descriptorTypeValue::fetch next with cursor=" + (this.collection.next));
-	            this.collection.fetch({update: true, remove: false, data: {
-	                cursor: this.collection.next,
-	                sort_by: this.collection.sort_by,
-	                more: more
-	            }}).done(function() {
-	                // resync the sticky table header during scrolling
-	                $(view.ui.table).stickyTableHeaders({scrollableArea: view.$el.parent()});
-	
-	                if (scroll) {
-	                    var scrollEl = view.$el.parent();
-	
-	                    var height = scrollEl.prop('scrollHeight');
-	                    var clientHeight = scrollEl.prop('clientHeight');
-	                    scrollEl.scrollTop(height - clientHeight - (1+8+20+8));
-	                }
-	            });
-	        }
-	    },
-	
-	    scroll: function(e) {
-	        if (e.target.scrollHeight-e.target.clientHeight == e.target.scrollTop) {
-	            this.moreResults();
-	        }
-	    },
-	
 	    sortColumn: function (e) {
 	        var column = $(e.target).attr('column-name') || "id";
 	        var order = $(e.target).data('sort') || "none";
@@ -23895,7 +23741,7 @@
 
 
 /***/ },
-/* 139 */
+/* 140 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -23909,12 +23755,12 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var DescriptorValueModel = __webpack_require__(122);
+	var DescriptorValueModel = __webpack_require__(123);
 	
 	var View = Marionette.ItemView.extend({
 	    tagName: 'tr',
 	    className: 'element object descriptor-value',
-	    template: __webpack_require__(140),
+	    template: __webpack_require__(141),
 	    templateHelpers: function() {
 	        var ctx = this.model;
 	        ctx.format = this.model.collection.format;
@@ -23948,7 +23794,7 @@
 	module.exports = View;
 
 /***/ },
-/* 140 */
+/* 141 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -23978,7 +23824,7 @@
 
 
 /***/ },
-/* 141 */
+/* 142 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -24001,7 +23847,7 @@
 
 
 /***/ },
-/* 142 */
+/* 143 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -24015,11 +23861,11 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var DescriptorTypeModel = __webpack_require__(121);
+	var DescriptorTypeModel = __webpack_require__(122);
 	
 	var View = Marionette.ItemView.extend({
 	    className: 'element object descriptor-type-detail',
-	    template: __webpack_require__(143),
+	    template: __webpack_require__(144),
 	
 	    ui: {
 	        name: '#descriptor_type_name',
@@ -24262,7 +24108,7 @@
 
 
 /***/ },
-/* 143 */
+/* 144 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -24329,7 +24175,7 @@
 
 
 /***/ },
-/* 144 */
+/* 145 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -24347,7 +24193,7 @@
 	var View = Marionette.ItemView.extend({
 	    tagName: 'div',
 	    className: 'group-add',
-	    template: __webpack_require__(145),
+	    template: __webpack_require__(146),
 	
 	    ui: {
 	        add_group_btn: 'span.add-group',
@@ -24421,7 +24267,7 @@
 
 
 /***/ },
-/* 145 */
+/* 146 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -24438,7 +24284,7 @@
 
 
 /***/ },
-/* 146 */
+/* 147 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -24456,7 +24302,7 @@
 	var View = Marionette.ItemView.extend({
 	    tagName: 'div',
 	    className: 'type-add',
-	    template: __webpack_require__(147),
+	    template: __webpack_require__(148),
 	
 	    ui: {
 	        add_type_btn: 'span.add-type',
@@ -24536,7 +24382,7 @@
 
 
 /***/ },
-/* 147 */
+/* 148 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -24553,7 +24399,7 @@
 
 
 /***/ },
-/* 148 */
+/* 149 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -24567,24 +24413,26 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var DescriptorModelModel = __webpack_require__(149);
-	var DescriptorModelCollection = __webpack_require__(150);
-	var DescriptorModelListView = __webpack_require__(150);
-	var DescriptorModelAddView = __webpack_require__(151);
-	var DescriptorModelDetailView = __webpack_require__(153);
-	var DescriptorModelListView = __webpack_require__(155);
+	
+	var DescriptorModelModel = __webpack_require__(150);
+	var DescriptorModelCollection = __webpack_require__(151);
+	var DescriptorModelTypeCollection = __webpack_require__(152);
+	
+	var DescriptorModelAddView = __webpack_require__(154);
+	var DescriptorModelDetailView = __webpack_require__(156);
+	var DescriptorModelListView = __webpack_require__(158);
+	var DescriptorTypeModelListView = __webpack_require__(162);
+	
 	var DefaultLayout = __webpack_require__(48);
 	var TitleView = __webpack_require__(49);
-	var ScrollingMoreView = __webpack_require__(98);
+	var ScrollingMoreView = __webpack_require__(90);
 	
 	var Router = Marionette.AppRouter.extend({
 	    routes : {
 	        "app/accession/descriptor/model/": "getDescriptorModelList",
 	        "app/accession/descriptor/model/:id/": "getDescriptorModel",
-	        //"app/accession/descriptor/model/:id/panel/": "getDescriptorPanelListForModel",
-	        //"app/accession/descriptor/model/:id/panel/:panel_id/": "getDescriptorPanelForModel",
 	        "app/accession/descriptor/model/:id/type/": "getDescriptorModelTypeListForModel",
-	        "app/accession/descriptor/model/:id/type/:type_id/": "getDescriptorModelTypePanelForModel",
+	        "app/accession/descriptor/model/:id/type/:type_id/": "getDescriptorModelTypeForModel",
 	    },
 	
 	    getDescriptorModelList: function () {
@@ -24594,19 +24442,13 @@
 	        application.getRegion('mainRegion').show(defaultLayout);
 	
 	        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of models of descriptors")}));
-<<<<<<< HEAD
 	
 	        collection.fetch().then(function () {
-	            defaultLayout.getRegion('content').show(new DescriptorModelListView({collection : collection}));
+	            var descriptorModelList = new DescriptorModelListView({collection : collection});
+	            defaultLayout.getRegion('content').show(descriptorModelList);
+	            defaultLayout.getRegion('content_bottom').show(new ScrollingMoreView({targetView: descriptorModelList}));
 	        });
 	
-=======
-	
-	        collection.fetch().then(function () {
-	            defaultLayout.getRegion('content').show(new DescriptorModelListView({collection : collection}));
-	        });
-	
->>>>>>> 9a1d028bda48268852119d0347c61d0861af0f5e
 	        // TODO lookup for permission
 	        if (session.user.isAuth && (session.user.isSuperUser || session.user.isStaff)) {
 	            defaultLayout.getRegion('bottom').show(new DescriptorModelAddView({collection: collection}));
@@ -24625,19 +24467,27 @@
 	        });
 	    },
 	
-	    getDescriptorPanelListForModel: function (id) {
-	        alert(id);
-	    },
-	
-	    getDescriptorPanelForModel: function (id, panelId) {
-	        alert(id, panelId);
-	    },
-	
 	    getDescriptorModelTypeListForModel: function(id) {
+	        var collection = new DescriptorModelTypeCollection([], {model_id: id});
 	
+	        var defaultLayout = new DefaultLayout({});
+	        application.getRegion('mainRegion').show(defaultLayout);
+	
+	        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of types of models of descriptors")}));
+	
+	        collection.fetch().then(function () {
+	            var descriptorTypeModelList = new DescriptorTypeModelListView({collection : collection});
+	            defaultLayout.getRegion('content').show(descriptorTypeModelList);
+	            defaultLayout.getRegion('content_bottom').show(new ScrollingMoreView({targetView: descriptorTypeModelList}));
+	        });
+	
+	        // TODO lookup for permission
+	        if (session.user.isAuth && (session.user.isSuperUser || session.user.isStaff)) {
+	            defaultLayout.getRegion('bottom').show(new DescriptorTypeModelAddView({collection: collection}));
+	        }
 	    },
 	
-	    getDescriptorModelTypePanelForModel: function (id, typeId) {
+	    getDescriptorModelTypeForModel: function (id, typeId) {
 	        alert(id, typeId);
 	    }
 	});
@@ -24646,7 +24496,7 @@
 
 
 /***/ },
-/* 149 */
+/* 150 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -24696,7 +24546,7 @@
 
 
 /***/ },
-/* 150 */
+/* 151 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -24709,7 +24559,7 @@
 	 * @details
 	 */
 	
-	var DescriptorModelModel = __webpack_require__(149);
+	var DescriptorModelModel = __webpack_require__(150);
 	
 	var Collection = Backbone.Collection.extend({
 	    url: application.baseUrl + 'accession/descriptor/model/',
@@ -24730,7 +24580,110 @@
 
 
 /***/ },
-/* 151 */
+/* 152 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptormodeltype.js
+	 * @brief Types of models of descriptors collection
+	 * @author Frederic SCHERMA
+	 * @date 2016-10-13
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var DescriptorModelTypeModel = __webpack_require__(153);
+	
+	var Collection = Backbone.Collection.extend({
+	    url: function() {
+	        return application.baseUrl + 'accession/descriptor/model/' + this.model_id + '/type/';
+	    },
+	
+	    model: DescriptorModelTypeModel,
+	
+	    initialize: function(models, options) {
+	        options || (options = {});
+	        this.model_id = options.model_id;
+	    },
+	
+	    parse: function(data) {
+	        this.prev = data.prev;
+	        this.cursor = data.cursor;
+	        this.next = data.next;
+	
+	        return data.items;
+	    },
+	});
+	
+	module.exports = Collection;
+
+
+/***/ },
+/* 153 */
+/***/ function(module, exports, __webpack_require__) {
+
+	a/**
+	 * @file descriptormodeltype.js
+	 * @brief Type of model of descriptor model
+	 * @author Frederic SCHERMA
+	 * @date 2016-10-13
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Backbone = __webpack_require__(2);
+	
+	var Model = Backbone.Model.extend({
+	    url: function() {
+	        var model_id = this.model_id || this.get('model') || this.collection.model_id;
+	
+	        if (this.isNew()) {
+	            return application.baseUrl + 'accession/descriptor/model/' + model_id + '/type/';
+	        }
+	        else
+	            return application.baseUrl + 'accession/descriptor/model/' + model_id + '/type/' + this.get('id') + '/';
+	    },
+	
+	    defaults: {
+	        id: null,
+	        model: null,
+	    },
+	
+	    initialize: function(options) {
+	        Model.__super__.initialize.apply(this, arguments);
+	
+	        options || (options = {});
+	        this.model_id = options.model_id;
+	        this.collection = options.collection;
+	
+	        if (options.collection) {
+	            this.model_id = options.collection.model_id;
+	        }
+	    },
+	
+	    parse: function(data) {
+	        //this.perms = data.perms;
+	        this.model = data.model;
+	        return data;
+	    },
+	
+	    validate: function(attrs) {
+	        var errors = {};
+	        var hasError = false;
+	
+	        if (hasError) {
+	          return errors;
+	        }
+	    },
+	});
+	
+	module.exports = Model;
+
+
+/***/ },
+/* 154 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -24748,7 +24701,7 @@
 	var View = Marionette.ItemView.extend({
 	    tagName: 'div',
 	    className: 'descriptor-model-add',
-	    template: __webpack_require__(152),
+	    template: __webpack_require__(155),
 	
 	    ui: {
 	        add_descriptor_model_btn: 'span.add-descriptor-model',
@@ -24822,7 +24775,7 @@
 
 
 /***/ },
-/* 152 */
+/* 155 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -24839,7 +24792,7 @@
 
 
 /***/ },
-/* 153 */
+/* 156 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -24853,11 +24806,11 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var DescriptorModelModel = __webpack_require__(149);
+	var DescriptorModelModel = __webpack_require__(150);
 	
 	var View = Marionette.ItemView.extend({
 	    className: 'element object descriptor-model-detail',
-	    template: __webpack_require__(154),
+	    template: __webpack_require__(157),
 	
 	    ui: {
 	        name: '#descriptor_model_name',
@@ -24912,7 +24865,7 @@
 
 
 /***/ },
-/* 154 */
+/* 157 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -24943,7 +24896,7 @@
 
 
 /***/ },
-/* 155 */
+/* 158 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -24957,11 +24910,11 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var DescriptorModelModel = __webpack_require__(149);
-	var DescriptorModelView = __webpack_require__(156);
+	var DescriptorModelModel = __webpack_require__(150);
+	var DescriptorModelView = __webpack_require__(159);
 	
 	var View = Marionette.CompositeView.extend({
-	    template: __webpack_require__(158),
+	    template: __webpack_require__(161),
 	    childView: DescriptorModelView,
 	    childViewContainer: 'tbody.descriptor-model-list',
 	
@@ -24992,7 +24945,7 @@
 
 
 /***/ },
-/* 156 */
+/* 159 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -25006,12 +24959,12 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var DescriptorModelModel = __webpack_require__(149);
+	var DescriptorModelModel = __webpack_require__(150);
 	
 	var View = Marionette.ItemView.extend({
 	    tagName: 'tr',
 	    className: 'element object descriptor-model',
-	    template: __webpack_require__(157),
+	    template: __webpack_require__(160),
 	
 	    ui: {
 	        delete_descriptor_model: 'span.delete-descriptor-model',
@@ -25061,7 +25014,7 @@
 
 
 /***/ },
-/* 157 */
+/* 160 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -25088,7 +25041,7 @@
 
 
 /***/ },
-/* 158 */
+/* 161 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -25106,6 +25059,154 @@
 	'</th><th>' +
 	((__t = ( gt.gettext("Description") )) == null ? '' : __t) +
 	'</th></tr></thead><tbody class="descriptor-model-list"></tbody></table></div>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 162 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptormodeltypelist.js
+	 * @brief List of type of model of descriptors for a model model of descriptor view
+	 * @author Frederic SCHERMA
+	 * @date 2016-09-28
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	var ScrollView = __webpack_require__(72);
+	
+	var DescriptorModelTypeModel = __webpack_require__(153);
+	var DescriptorModelTypeView = __webpack_require__(163);
+	
+	var View = ScrollView.extend({
+	    template: __webpack_require__(165),
+	    childView: DescriptorModelTypeView,
+	    childViewContainer: 'tbody.descriptor-model-type-list',
+	
+	    initialize: function() {
+	        this.listenTo(this.collection, 'reset', this.render, this);
+	        this.listenTo(this.collection, 'change', this.render, this);
+	        //this.listenTo(this.collection, 'add', this.render, this);
+	        //this.listenTo(this.collection, 'remove', this.render, this);
+	
+	        View.__super__.initialize.apply(this);
+	    },
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 163 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptortype.js
+	 * @brief Type of descriptor item view
+	 * @author Frederic SCHERMA
+	 * @date 2016-07-21
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	var DescriptorModelTypeModel = __webpack_require__(153);
+	
+	var View = Marionette.ItemView.extend({
+	    tagName: 'tr',
+	    className: 'element object descriptor-model-type',
+	    template: __webpack_require__(164),
+	/*
+	    ui: {
+	        delete_descriptor_type: 'span.delete-descriptor-type',
+	        view_descriptor_type: 'td.view-descriptor-type',
+	        view_descriptor_value: 'td.view-descriptor-value'
+	    },
+	
+	    events: {
+	        'click @ui.delete_descriptor_type': 'deleteDescriptorType',
+	        'click @ui.view_descriptor_type': 'viewDescriptorType',
+	        'click @ui.view_descriptor_value': 'viewDescriptorValue'
+	    },
+	*/
+	    initialize: function() {
+	        this.listenTo(this.model, 'reset', this.render, this);
+	    },
+	/*
+	    onRender: function() {
+	        if (!this.model.get('can_delete') || !session.user.isSuperUser) {
+	            $(this.ui.delete_descriptor_type).hide();
+	        }
+	    },
+	
+	    viewDescriptorType: function() {
+	        Backbone.history.navigate("app/accession/descriptor/group/" + this.model.get('group') + "/type/" + this.model.id + '/', {trigger: true});
+	    },
+	
+	    viewDescriptorValue: function () {
+	        Backbone.history.navigate("app/accession/descriptor/group/" + this.model.get('group') + "/type/" + this.model.id + '/value/', {trigger: true});
+	    },
+	
+	    deleteDescriptorType: function () {
+	        if (this.model.get('num_descriptors_values') == 0) {
+	            this.model.destroy({wait: true});
+	        }
+	    }*/
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 164 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<div></div>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 165 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<div class="col-4 element object descriptor-model-type-list" object-type="descriptor-model-type-list" style="width:50%"><table class="table table-striped"><thead><tr><th><span class="glyphicon glyphicon-asterisk"></span></th><th>' +
+	((__t = ( gt.gettext("Name") )) == null ? '' : __t) +
+	'</th><th>' +
+	((__t = ( gt.gettext("Code") )) == null ? '' : __t) +
+	'</th><th>' +
+	((__t = ( gt.gettext("Label") )) == null ? '' : __t) +
+	'</th><th>' +
+	((__t = ( gt.gettext("Mandatory") )) == null ? '' : __t) +
+	'</th><th>' +
+	((__t = ( gt.gettext("Set Once") )) == null ? '' : __t) +
+	'</th></tr></thead><tbody class="descriptor-model-type-list"></tbody></table></div><div class="col-4 element object descriptor-type-list" object-type="descriptor-type-list" style="width:50%"><table class="table table-striped"><thead><tr><th><span class="glyphicon glyphicon-asterisk"></span></th><th>' +
+	((__t = ( gt.gettext("Name") )) == null ? '' : __t) +
+	'</th><th>' +
+	((__t = ( gt.gettext("Code") )) == null ? '' : __t) +
+	'</th></tr></thead><tbody class="descriptor-type-list"></tbody></table></div>';
 	
 	}
 	return __p

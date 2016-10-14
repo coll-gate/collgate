@@ -1,8 +1,8 @@
 /**
- * @file descriptortypelist.js
- * @brief List of types of descriptors for a group view
+ * @file descriptortypelistalt.js
+ * @brief Alternative list of types of descriptors for a group view
  * @author Frederic SCHERMA
- * @date 2016-07-21
+ * @date 2016-10-14
  * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
  * @license @todo
  * @details
@@ -12,11 +12,11 @@ var Marionette = require('backbone.marionette');
 var ScrollView = require('../../main/views/scroll');
 
 var DescriptorTypeModel = require('../models/descriptortype');
-var DescriptorTypeView = require('../views/descriptortype');
+var DescriptorTypeAltView = require('../views/descriptortypealt');
 
 var View = ScrollView.extend({
-    template: require("../templates/descriptortypelist.html"),
-    childView: DescriptorTypeView,
+    template: require("../templates/descriptortypelistalt.html"),
+    childView: DescriptorTypeAltView,
     childViewContainer: 'tbody.descriptor-type-list',
 
     initialize: function() {

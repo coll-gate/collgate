@@ -31,6 +31,8 @@ class CollGateAccession(ApplicationMain):
             'base',
             'descriptor',
             'descriptormodel',
+            'descriptormetamodel',
+            'descriptorpanel',
             )
         )
 

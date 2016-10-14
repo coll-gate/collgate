@@ -110,7 +110,7 @@ def create_descriptor_meta_model(request):
 
     dmm = DescriptorMetaModel()
 
-    dmm.name = request.content['name']
+    dmm.name = request.data['name']
     dmm.description = ''
     dmm.target = content_type
 
@@ -184,16 +184,16 @@ def remove_descriptor_meta_model(request, id):
             "description": {"type": "string", 'minLength': 0, 'maxLength': 1024},
         },
     },
-    # perms={'accession.change_descriptormetamodel': _('You are not allowed to modify a meta-model of descriptor')},
+    # perms={'accession.change_descriptormeta   model': _('You are not allowed to modify a meta-model of descriptor')},
     staff=True)
 def modify_descriptor_meta_model(request, id):
     dmm_id = int(id)
 
     dmm = get_object_or_404(DescriptorMetaModel, id=dmm_id)
 
-    dmm.name = request.content['name']
-    dmm.set_label(request.content['label'])
-    dmm.description = request.content['description']
+    dmm.name = request.data['name']
+    dmm.set_label(request.data['label'])
+    dmm.description = request.data['description']
 
     dmm.save()
 
@@ -206,3 +206,184 @@ def modify_descriptor_meta_model(request, id):
     }
 
     return HttpResponseRest(request, result)
+
+
+@RestDescriptorMetaModelIdPanel.def_auth_request(Method.GET, Format.JSON)
+def list_descriptor_panels_for_meta_model(request, id):
+    """
+    Returns a list of panels for a metal-model of descriptors, ordered by position.
+    """
+    dmm_id = int(id)
+
+    results_per_page = int_arg(request.GET.get('more', 30))
+    cursor = request.GET.get('cursor')
+    limit = results_per_page
+
+    dmm = get_object_or_404(DescriptorMetaModel, id=dmm_id)
+
+    if cursor:
+        cursor_position, cursor_id = cursor.split('/')
+        qs = dmm.panels.filter(Q(position__gt=cursor_position))
+    else:
+        qs = dmm.panels.all()
+
+    panels = qs.order_by('position')[:limit]
+
+    panels_list = []
+
+    for panel in panels:
+        panels_list.append({
+            'id': panel.id,
+            'name': panel.name,
+            'label': panel.get_label(),
+            'position': panel.position,
+            'descriptor_model': panel.descriptor_model.id
+        })
+
+    if len(panels_list) > 0:
+        # prev cursor (asc order)
+        panel = panels_list[0]
+        prev_cursor = "%s/%s" % (panel['position'], panel['id'])
+
+        # next cursor (asc order)
+        panel = panels_list[-1]
+        next_cursor = "%s/%s" % (panel['position'], panel['id'])
+    else:
+        prev_cursor = None
+        next_cursor = None
+
+    results = {
+        'perms': [],
+        'items': panels_list,
+        'prev': prev_cursor,
+        'cursor': cursor,
+        'next': next_cursor,
+    }
+
+    return HttpResponseRest(request, results)
+
+
+@RestDescriptorMetaModelIdPanel.def_auth_request(
+    Method.POST, Format.JSON, content={
+        "type": "object",
+        "properties": {
+            "name": {"type": "string", 'minLength': 3, 'maxLength': 32},
+            "position": {"type": "number"},
+            "descriptor_model": {"type": "number"},
+        },
+    },
+    # perms={
+    #     'accession.change_descriptormetamodel': _('You are not allowed to modify a meta-model of descriptor'),
+    #     'accession.add_descriptorpanel': _('You are not allowed to create a panel of descriptor'),
+    # },
+    staff=True)
+def create_descriptor_panel_for_meta_model(request, id):
+    dmm_id = int(id)
+    position = int(request.data['position'])
+
+    dmm = get_object_or_404(DescriptorMetaModel, id=dmm_id)
+
+    # check if the position is available else raise an exception
+    if DescriptorPanel.objects.filter(descriptor_meta_model=dmm, position=position).exists():
+        raise SuspiciousOperation(
+            _("The position %i for the panel is already used into this meta-model of descriptor" % position))
+
+    dm_id = int(request.data['descriptor_model'])
+    dm = get_object_or_404(DescriptorModel, id=dm_id)
+
+    panel = DescriptorPanel()
+
+    panel.name = request.data['name']
+    panel.position = position
+    panel.descriptor_meta_model = dmm
+    panel.descriptor_model = dm
+
+    panel.save()
+
+    result = {
+        'id': panel.id,
+        'name': panel.name,
+        'label': '',
+        'position': panel.position,
+        'descriptor_model': dm.id
+    }
+
+    return HttpResponseRest(request, result)
+
+
+@RestDescriptorMetaModelIdPanelId.def_auth_request(Method.GET, Format.JSON)
+def get_descriptor_panel_for_meta_model(request, id, pid):
+    dmm_id = int(id)
+    panel_id = int(pid)
+
+    panel = get_object_or_404(DescriptorPanel, id=panel_id, descriptor_meta_model=dmm_id)
+
+    result = {
+        'id': panel.id,
+        'name': panel.name,
+        'label': panel.get_label(),
+        'position': panel.position,
+        'descriptor_model': panel.descriptor_model.id
+    }
+
+    return HttpResponseRest(request, result)
+
+
+@RestDescriptorMetaModelIdPanelId.def_auth_request(
+    Method.PUT, Format.JSON, content={
+        "type": "object",
+        "properties": {
+            "name": {"type": "string", 'minLength': 3, 'maxLength': 32},
+            "label": {"type": "string", 'minLength': 3, 'maxLength': 32},
+            "position": {"type": "number"},
+        },
+    },
+    # perms={
+    #     'accession.change_descriptormetamodel': _('You are not allowed to modify a meta-model of descriptor'),
+    #     'accession.change_descriptorpanel': _('You are not allowed to remove a panel of descriptor'),
+    # },
+    staff=True)
+def modify_descriptor_panel_for_meta_model(request, id, pid):
+    dmm_id = int(id)
+    panel_id = int(pid)
+    position = int(request.data['position'])
+
+    panel = get_object_or_404(DescriptorPanel, id=panel_id, descriptor_meta_model=dmm_id)
+
+    # check if the position is available else raise an exception
+    if DescriptorPanel.objects.filter(descriptor_meta_model=dmm_id, position=position).exists():
+        raise SuspiciousOperation(
+            _("The position %i for the panel is already used into this meta-model of descriptor" % position))
+
+    panel.name = request.data['name']
+    panel.set_label(request.data['label'])
+    panel.position = position
+
+    panel.save()
+
+    result = {
+        'id': panel.id,
+        'name': panel.name,
+        'label': panel.get_label(),
+        'position': panel.position,
+        'descriptor_model': panel.descriptor_model.id
+    }
+
+    return HttpResponseRest(request, result)
+
+
+@RestDescriptorMetaModelIdPanelId.def_auth_request(
+    Method.DELETE, Format.JSON,
+    # perms={
+    #     'accession.change_descriptormetamodel': _('You are not allowed to modify a meta-model of descriptor'),
+    #     'accession.remove_descriptorpanel': _('You are not allowed to remove a panel of descriptor'),
+    # },
+    staff=True)
+def remove_descriptor_panel_of_meta_model(request, id, pid):
+    dmm_id = int(id)
+    panel_id = int(pid)
+
+    panel = get_object_or_404(DescriptorPanel, id=panel_id, descriptor_meta_model=dmm_id)
+    panel.delete()
+
+    return HttpResponseRest(request, {})
