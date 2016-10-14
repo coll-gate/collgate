@@ -233,3 +233,8 @@ tr.element:hover {
   -khtml-user-drag: element;
   -webkit-user-drag: element;
 }
+
+.draggable-over {
+    border: 2px dashed #000;
+    border-radius: 5px;
+}

@@ -10,6 +10,7 @@ import json
 from django.core.exceptions import SuspiciousOperation
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
+from django.utils import translation
 from django.utils.translation import ugettext_lazy as _
 
 from igdectk.common.helpers import int_arg
@@ -17,7 +18,7 @@ from igdectk.rest import Format, Method
 from igdectk.rest.response import HttpResponseRest
 
 from .base import RestAccession
-from .models import DescriptorModel, DescriptorModelType
+from .models import DescriptorModel, DescriptorModelType, DescriptorType
 
 
 class RestDescriptorModel(RestAccession):
@@ -263,9 +264,9 @@ def list_descriptor_model_types_for_model(request, id):
     for dmt in dmts:
         items_list.append({
             'id': dmt.id,
+            'name': dmt.name,
             'position': dmt.position,
             'label': dmt.get_label(),
-            'description': dmt.description,
             'descriptor_type': dmt.descriptor_type.id,
             'descriptor_type_code': dmt.descriptor_type.code,
             'mandatory': dmt.mandatory,
@@ -315,17 +316,20 @@ def create_descriptor_type_for_model(request, id):
 
     dt_code = request.data['descriptor_type_code']
 
+    lang = translation.get_language()
+
     mandatory = bool(request.data['mandatory'])
     set_once = bool(request.data['set_once'])
     position = int(request.data['position'])
 
     dm = get_object_or_404(DescriptorModel, id=dm_id)
-    dt = get_object_or_404(DescriptorModelType, code=dt_code)
+    dt = get_object_or_404(DescriptorType, code=dt_code)
 
     dmt = DescriptorModelType()
 
+    dmt.name = "%s:%i:%i" % (dt_code, dm_id, position)
     dmt.descriptor_model = dm
-    dmt.set_label(request.data['label'])
+    dmt.set_label(lang, request.data['label'])
     dmt.mandatory = mandatory
     dmt.set_once = set_once
     dmt.position = position
@@ -335,6 +339,7 @@ def create_descriptor_type_for_model(request, id):
 
     result = {
         'id': dmt.id,
+        'name': dmt.name,
         'label': dmt.get_label(),
         'mandatory': dmt.mandatory,
         'set_once': dmt.set_once,

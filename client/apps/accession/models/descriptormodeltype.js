@@ -23,7 +23,13 @@ var Model = Backbone.Model.extend({
 
     defaults: {
         id: null,
+        name: '',
         model: null,
+        label: '',
+        mandatory: false,
+        set_once: false,
+        position: 0,
+        descriptor_type_code: null,
     },
 
     initialize: function(options) {

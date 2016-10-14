@@ -15,13 +15,16 @@ var View = Marionette.ItemView.extend({
     tagName: 'tr',
     className: 'element object descriptor-model-type',
     template: require('../templates/descriptormodeltype.html'),
-/*
-    ui: {
-        delete_descriptor_type: 'span.delete-descriptor-type',
-        view_descriptor_type: 'td.view-descriptor-type',
-        view_descriptor_value: 'td.view-descriptor-value'
-    },
 
+    events: {
+        'dragstart': 'dragStart',
+        'dragend': 'dragEnd',
+        'dragover': 'dragOver',
+        'dragenter': 'dragEnter',
+        'dragleave': 'dragLeave',
+        'drop': 'drop',
+    },
+/*
     events: {
         'click @ui.delete_descriptor_type': 'deleteDescriptorType',
         'click @ui.view_descriptor_type': 'viewDescriptorType',
@@ -38,6 +41,37 @@ var View = Marionette.ItemView.extend({
         }
     },
 */
+    dragStart: function(e) {
+        this.$el.css('opacity', '0.4');
+    },
+
+    dragEnd: function(e) {
+        this.$el.css('opacity', '1.0');
+    },
+
+    dragOver: function (e) {
+        if (e.preventDefault) {
+            e.preventDefault();
+        }
+
+        //e.dataTransfer.dropEffect = 'move';
+        return false;
+    },
+
+    dragEnter: function (e) {
+        this.$el.addClass('draggable-over');
+    },
+
+    dragLeave: function (e) {
+        this.$el.removeClass('draggable-over');
+    },
+
+    drop: function (e) {
+        if ($(e.target).hasClass('descriptor-type')) {
+            alert("descriptor-type");
+        }
+        alert("drop here todo remove the element if class name is descriptor-type or descriptor-model-type changes its position");
+    }
 });
 
 module.exports = View;

@@ -11,6 +11,7 @@
 var Marionette = require('backbone.marionette');
 var DescriptorGroupModel = require('../models/descriptorgroup');
 var DescriptorGroupAltView = require('../views/descriptorgroupalt');
+
 var ScrollView = require('../../main/views/scroll');
 
 var View = ScrollView.extend({

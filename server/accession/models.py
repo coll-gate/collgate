@@ -778,7 +778,7 @@ class DescriptorPanel(Entity):
         self.label = json.dumps(data)
 
 
-class DescriptorModelType(models.Model):
+class DescriptorModelType(Entity):
     """
     This is a basic entity of the model of descriptor. It makes the relation between a panel and
     its descriptors. And it makes the relation between him and the model of descriptor.
