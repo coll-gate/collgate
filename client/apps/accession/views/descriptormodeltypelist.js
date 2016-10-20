@@ -40,10 +40,10 @@ var View = ScrollView.extend({
 
         View.__super__.initialize.apply(this);
 
-        //$("div.left-content").on("dragenter", this.dragEnterContent);
+       // $("div.left-content").on("dragenter", this.dragEnterContent);
        // $("div.left-content").on("dragleave", this.dragLeaveContent);
-        //$("div.left-content").on("dragover", this.dragOver);
-        //$("div.left-content").on("drop", this.dropContent);
+       // $("div.left-content").on("dragover", this.dragOver);
+      //  $("div.left-content").on("drop", this.dropContent);
     },
 
     dragOver: function (e) {
@@ -56,11 +56,16 @@ var View = ScrollView.extend({
     },
 
     dragEnter: function (e) {
-        $(e.target).addClass('draggable-over');
+        if (e.target == this.el) {
+            alert("this");
+        }
+  //          $(e.target).parent().css('background', '#ddd');
+        //$(e.target).addClass('draggable-over');
     },
 
     dragLeave: function (e) {
-        $(e.target).removeClass('draggable-over');
+//        $(e.target).parent().css('background', 'initial');
+        //$(e.target).removeClass('draggable-over');
     },
 
     dragEnterContent: function (e) {
@@ -74,14 +79,18 @@ var View = ScrollView.extend({
     },
 
     dropContent: function (e) {
+        if (!application.dndElement) {
+            return;
+        }
+
         if (application.dndElement.$el.hasClass('descriptor-type')) {
-            alert("descriptor-type ", application.dndElement.model.get('code'));
+            alert("2 - descriptor-type ", application.dndElement.model.get('code'));
             this.collection.create({
                 descriptor_type_code: application.dndElement.model.get('code'),
                 label: 'test1',
             });
         } else if (application.dndElement.$el.hasClass('descriptor-model-type')) {
-            alert("descriptor-model-type");
+            //alert("3 - descriptor-model-type");
         }
 
         $("div.left-content").css('background', 'initial');

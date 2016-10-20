@@ -16,6 +16,16 @@ var View = Marionette.ItemView.extend({
     className: 'element object descriptor-model-type',
     template: require('../templates/descriptormodeltype.html'),
 
+    attributes: {
+        draggable: true,
+    },
+
+    ui: {
+        'label': 'td[name="label"]',
+        'mandatory': 'td[name="mandatory"]',
+        'set_once': 'td[name="set_once"]',
+    },
+
     events: {
         'dragstart': 'dragStart',
         'dragend': 'dragEnd',
@@ -23,6 +33,9 @@ var View = Marionette.ItemView.extend({
         'dragenter': 'dragEnter',
         'dragleave': 'dragLeave',
         'drop': 'drop',
+        'click @ui.label': 'editLabel',
+        'click @ui.mandatory': 'toggleMandatory',
+        'click @ui.set_once': 'toggleSetOnce',
     },
 /*
     events: {
@@ -43,10 +56,12 @@ var View = Marionette.ItemView.extend({
 */
     dragStart: function(e) {
         this.$el.css('opacity', '0.4');
+        application.dndElement = this;
     },
 
     dragEnd: function(e) {
         this.$el.css('opacity', '1.0');
+        application.dndElement = null;
     },
 
     dragOver: function (e) {
@@ -59,19 +74,54 @@ var View = Marionette.ItemView.extend({
     },
 
     dragEnter: function (e) {
-        this.$el.addClass('draggable-over');
+        this.$el.css('background', '#ddd');
     },
 
     dragLeave: function (e) {
-        this.$el.removeClass('draggable-over');
+        this.$el.css('background', 'initial');
     },
 
     drop: function (e) {
-        if ($(e.target).hasClass('descriptor-type')) {
-            alert("descriptor-type");
+        var elt = application.dndElement;
+
+        if (elt.$el.hasClass('descriptor-type')) {
+            alert("5 - descriptor-type");
         }
-        alert("drop here todo remove the element if class name is descriptor-type or descriptor-model-type changes its position");
-    }
+        else if (elt.$el.hasClass('descriptor-model-type')) {
+            var newPosition = this.model.get('position');
+            var modelId = this.model.collection.model_id;
+            var collection = this.model.collection;
+
+            $.ajax({
+                type: "PUT",
+                url: application.baseUrl + 'accession/descriptor/model/' + modelId + '/order/',
+                dataType: 'json',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({
+                    descriptor_model_type_id: elt.model.get('id'),
+                    position: newPosition
+                })
+            }).done(function() {
+                collection.fetch({update: true, remove: true, reset: true});
+            }).fail(function () {
+                $.alert.error(gt.gettext('Unable to reorder the types of models of descriptors'));
+            })
+        }
+    },
+
+    editLabel: function() {
+        alert("todo edit label");
+    },
+
+    toggleMandatory: function() {
+        // @todo cannot change from mandatory to optional once there is
+        // some objects
+        alert("todo edit mandatory");
+    },
+
+    toggleSetOnce: function() {
+        alert("todo edit set_once");
+    },
 });
 
 module.exports = View;

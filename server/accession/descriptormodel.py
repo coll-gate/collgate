@@ -36,6 +36,11 @@ class RestDescriptorModelId(RestDescriptorModel):
     suffix = 'id'
 
 
+class RestDescriptorModelIdTypeOrder(RestDescriptorModelId):
+    regex = r'order/$'
+    suffix = 'order'
+
+
 class RestDescriptorModelIdType(RestDescriptorModelId):
     regex = r'^type/$'
     suffix = 'type'
@@ -253,7 +258,7 @@ def list_descriptor_model_types_for_model(request, id):
 
     if cursor:
         cursor_position, cursor_id = cursor.split('/')
-        qs = dm.descriptors_model_types.filter(Q(name__gt=cursor_position)).prefetch_related('descriptor_type__code')
+        qs = dm.descriptors_model_types.filter(Q(position__gt=cursor_position)).prefetch_related('descriptor_type__code')
     else:
         qs = dm.descriptors_model_types.all()
 
@@ -325,9 +330,15 @@ def create_descriptor_type_for_model(request, id):
     dm = get_object_or_404(DescriptorModel, id=dm_id)
     dt = get_object_or_404(DescriptorType, code=dt_code)
 
+    dmt = dm.descriptors_model_types.all().order_by('-name')[:1]
+    if dmt.exists():
+        name = "%i:%i" % (dm_id, int(dmt[0].name.split(':')[1])+1)
+    else:
+        name = "%i:%i" % (dm_id, 1)
+
     dmt = DescriptorModelType()
 
-    dmt.name = "%s:%i:%i" % (dt_code, dm_id, position)
+    dmt.name = name
     dmt.descriptor_model = dm
     dmt.set_label(lang, request.data['label'])
     dmt.mandatory = mandatory
@@ -336,6 +347,9 @@ def create_descriptor_type_for_model(request, id):
     dmt.descriptor_type = dt
 
     dmt.save()
+
+    # reindex if necessary others types of models of descriptors
+    # TODO
 
     result = {
         'id': dmt.id,
@@ -349,3 +363,71 @@ def create_descriptor_type_for_model(request, id):
     }
 
     return HttpResponseRest(request, result)
+
+
+@RestDescriptorModelIdTypeOrder.def_auth_request(Method.PUT, Format.JSON, content={
+        "type": "object",
+        "properties": {
+            "descriptor_model_type_id": {"type": "number"},
+            "position": {"type": "number"},
+        },
+    },
+    # perms={
+    #     'accession.change_descriptormodel': _('You are not allowed to modify a model of descriptor'),
+    #     'accession.change_descriptormodeltype': _('You are not allowed to modify a type of model of descriptor'),
+    # },
+    staff=True)
+def reorder_descriptor_types_for_model(request, id):
+    """
+    Reorder the types of models of descriptors according to the new position
+    of one of the elements.
+    :param request:
+    :param id:
+    :return:
+    """
+    dm_id = int(id)
+
+    dmt_id = int(request.data['descriptor_model_type_id'])
+    position = int(request.data['position'])
+
+    dm = get_object_or_404(DescriptorModel, id=dm_id)
+    dmt_ref = get_object_or_404(DescriptorModelType, id=dmt_id, descriptor_model__id=dm_id)
+
+    dmt_list = []
+
+    if position < dmt_ref.position:
+        for dmt in dm.descriptors_model_types.filter(position__gte=position).order_by('position'):
+            if dmt.id != dmt_id:
+                dmt_list.append(dmt)
+
+        dmt_ref.position = position
+        dmt_ref.save()
+
+        dm.descriptors_model_types = []
+
+        next_position = position + 1
+
+        for dmt in dmt_list:
+            dmt.position = next_position
+            dmt.save()
+
+            next_position += 1
+    else:
+        for dmt in dm.descriptors_model_types.filter(position__lte=position).order_by('position'):
+            if dmt.id != dmt_id:
+                dmt_list.append(dmt)
+
+        dmt_ref.position = position
+        dmt_ref.save()
+
+        dm.descriptors_model_types = []
+
+        next_position = 0
+
+        for dmt in dmt_list:
+            dmt.position = next_position
+            dmt.save()
+
+            next_position += 1
+
+    return HttpResponseRest(request, {})

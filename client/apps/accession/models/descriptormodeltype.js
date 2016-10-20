@@ -37,7 +37,6 @@ var Model = Backbone.Model.extend({
 
         options || (options = {});
         this.model_id = options.model_id;
-        this.collection = options.collection;
 
         if (options.collection) {
             this.model_id = options.collection.model_id;
