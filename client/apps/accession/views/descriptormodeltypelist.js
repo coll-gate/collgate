@@ -24,12 +24,12 @@ var View = ScrollView.extend({
     },
 
     events: {
-        'dragenter @ui.table_body': 'dragEnter',
-        'dragleave @ui.table_body': 'dragLeave',
+        //'dragenter @ui.table_body': 'dragEnter',
+        //'dragleave @ui.table_body': 'dragLeave',
         'dragenter': 'dragEnter',
         'dragleave': 'dragLeave',
         'dragover': 'dragOver',
-        'drop': 'dropContent',
+        'drop': 'drop',
     },
 
     initialize: function() {
@@ -47,11 +47,11 @@ var View = ScrollView.extend({
     },
 
     dragOver: function (e) {
-        if (e.preventDefault) {
-            e.preventDefault();
+        if (e.originalEvent.preventDefault) {
+            e.originalEvent.preventDefault();
         }
 
-        //e.dataTransfer.dropEffect = 'move';
+        //e.originalEvent.dataTransfer.dropEffect = 'move';
         return false;
     },
 
@@ -59,6 +59,7 @@ var View = ScrollView.extend({
         if (e.target == this.el) {
             alert("this");
         }
+
   //          $(e.target).parent().css('background', '#ddd');
         //$(e.target).addClass('draggable-over');
     },
@@ -78,23 +79,20 @@ var View = ScrollView.extend({
         $("div.left-content").css('border', 'none');
     },
 
-    dropContent: function (e) {
+    drop: function (e) {
         if (!application.dndElement) {
             return;
         }
 
         if (application.dndElement.$el.hasClass('descriptor-type')) {
-            alert("2 - descriptor-type ", application.dndElement.model.get('code'));
-            this.collection.create({
+            alert("tolist - drop new descriptor-type ", application.dndElement.model.get('code'));
+            /*this.collection.create({
                 descriptor_type_code: application.dndElement.model.get('code'),
                 label: 'test1',
-            });
+            });*/
         } else if (application.dndElement.$el.hasClass('descriptor-model-type')) {
-            //alert("3 - descriptor-model-type");
+            alert("3 - descriptor-model-type");
         }
-
-        $("div.left-content").css('background', 'initial');
-        $("div.left-content").css('border', 'none');
     }
 });
 

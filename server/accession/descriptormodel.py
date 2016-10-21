@@ -47,7 +47,7 @@ class RestDescriptorModelIdType(RestDescriptorModelId):
 
 
 class RestDescriptorModelIdTypeId(RestDescriptorModelIdType):
-    regex = r'^type/^(?P<tid>[0-9]+)/$'
+    regex = r'^(?P<tid>[0-9]+)/$'
     suffix = 'id'
 
 
@@ -258,7 +258,7 @@ def list_descriptor_model_types_for_model(request, id):
 
     if cursor:
         cursor_position, cursor_id = cursor.split('/')
-        qs = dm.descriptors_model_types.filter(Q(position__gt=cursor_position)).prefetch_related('descriptor_type__code')
+        qs = dm.descriptors_model_types.filter(Q(position__gt=cursor_position))
     else:
         qs = dm.descriptors_model_types.all()
 
@@ -273,6 +273,7 @@ def list_descriptor_model_types_for_model(request, id):
             'position': dmt.position,
             'label': dmt.get_label(),
             'descriptor_type': dmt.descriptor_type.id,
+            'descriptor_type_name': dmt.descriptor_type.name,
             'descriptor_type_code': dmt.descriptor_type.code,
             'mandatory': dmt.mandatory,
             'set_once': dmt.set_once
@@ -429,5 +430,45 @@ def reorder_descriptor_types_for_model(request, id):
             dmt.save()
 
             next_position += 1
+
+    return HttpResponseRest(request, {})
+
+
+@RestDescriptorModelIdTypeId.def_auth_request(Method.PATCH, Format.JSON, content={
+        "type": "object",
+        "properties": {
+            "mandatory": {"type": "boolean", "required": False},
+            "set_once": {"type": "boolean", "required": False},
+            "label": {"type": "string", 'maxLength': 64, "required": False},
+        },
+    },
+    # perms={
+    #     'accession.change_descriptormodel': _('You are not allowed to modify a model of descriptor'),
+    #     'accession.change_descriptormodeltype': _('You are not allowed to modify a type of model of descriptor'),
+    # },
+    staff=True)
+def patch_descriptor_type_for_model(request, id, tid):
+    """
+    Change the label of a type of model of descriptor.
+    """
+    dm_id = int(id)
+    dmt_id = int(tid)
+
+    mandatory = bool(request.data.get('mandatory'))
+    set_once = bool(request.data.get('set_once'))
+    label = request.data.get('label')
+
+    dmt = get_object_or_404(DescriptorModelType, id=dmt_id, descriptor_model__id=dm_id)
+
+    lang = translation.get_language()
+
+    if mandatory is not None:
+        dmt.mandatory = mandatory
+    if set_once is not None:
+        dmt.set_once = set_once
+    if label is not None:
+        dmt.set_label(lang, label)
+
+    dmt.save()
 
     return HttpResponseRest(request, {})

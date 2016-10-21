@@ -9,7 +9,9 @@
  */
 
 var Marionette = require('backbone.marionette');
+var Dialog = require('../../main/views/dialog');
 var DescriptorModelTypeModel = require('../models/descriptormodeltype');
+
 
 var View = Marionette.ItemView.extend({
     tagName: 'tr',
@@ -21,6 +23,7 @@ var View = Marionette.ItemView.extend({
     },
 
     ui: {
+        'delete_descriptor_model_type': 'span.delete-descriptor-model-type',
         'label': 'td[name="label"]',
         'mandatory': 'td[name="mandatory"]',
         'set_once': 'td[name="set_once"]',
@@ -33,27 +36,22 @@ var View = Marionette.ItemView.extend({
         'dragenter': 'dragEnter',
         'dragleave': 'dragLeave',
         'drop': 'drop',
+        'click @ui.delete_descriptor_model_type': 'deleteDescriptorModelType',
         'click @ui.label': 'editLabel',
         'click @ui.mandatory': 'toggleMandatory',
         'click @ui.set_once': 'toggleSetOnce',
     },
-/*
-    events: {
-        'click @ui.delete_descriptor_type': 'deleteDescriptorType',
-        'click @ui.view_descriptor_type': 'viewDescriptorType',
-        'click @ui.view_descriptor_value': 'viewDescriptorValue'
-    },
-*/
+
     initialize: function() {
         this.listenTo(this.model, 'reset', this.render, this);
     },
-/*
+
     onRender: function() {
-        if (!this.model.get('can_delete') || !session.user.isSuperUser) {
-            $(this.ui.delete_descriptor_type).hide();
+        if (!session.user.isStaff && !session.user.isSuperUser) {
+            $(this.ui.delete_descriptor_model_type).hide();
         }
     },
-*/
+
     dragStart: function(e) {
         this.$el.css('opacity', '0.4');
         application.dndElement = this;
@@ -65,29 +63,68 @@ var View = Marionette.ItemView.extend({
     },
 
     dragOver: function (e) {
-        if (e.preventDefault) {
-            e.preventDefault();
+        if (e.originalEvent.preventDefault) {
+            e.originalEvent.preventDefault();
         }
 
-        //e.dataTransfer.dropEffect = 'move';
+        //e.originalEvent.dataTransfer.dropEffect = 'move';
         return false;
     },
 
     dragEnter: function (e) {
-        this.$el.css('background', '#ddd');
+        if (application.dndElement.$el.hasClass('descriptor-model-type')) {
+            if (this.model.get('position') < application.dndElement.model.get('position')) {
+                this.$el.css('border-top', '5px dashed #ddd');
+            } else if (this.model.get('position') > application.dndElement.model.get('position')) {
+                this.$el.css('border-bottom', '5px dashed #ddd');
+            }
+        } else if (application.dndElement.$el.hasClass('descriptor-type')) {
+             this.$el.css('border-top', '5px dashed #ddd');
+        }
     },
 
     dragLeave: function (e) {
-        this.$el.css('background', 'initial');
+        if (application.dndElement.$el.hasClass('descriptor-model-type')) {
+            if (this.model.get('position') < application.dndElement.model.get('position')) {
+                this.$el.css('border-top', 'initial');
+            } else if (this.model.get('position') > application.dndElement.model.get('position')) {
+                this.$el.css('border-bottom', 'initial');
+            }
+        } else if (application.dndElement.$el.hasClass('descriptor-type')) {
+             this.$el.css('border-top', 'initial');
+        }
     },
 
     drop: function (e) {
         var elt = application.dndElement;
 
         if (elt.$el.hasClass('descriptor-type')) {
-            alert("5 - descriptor-type");
+            // reset borders
+            this.$el.css('border-top', 'initial');
+            this.$el.css('border-bottom', 'initial');
+
+            // ajax call
+            var newPosition = this.model.get('position');
+            var modelId = this.model.collection.model_id;
+            var collection = this.model.collection;
+
+            this.model.collection.create({
+                descriptor_type_code: application.dndElement.model.get('code'),
+                label: 'test1',
+                position: newPosition
+            });
         }
         else if (elt.$el.hasClass('descriptor-model-type')) {
+            // useless drop on himself
+            if (this == application.dndElement) {
+                return;
+            }
+
+            // reset borders
+            this.$el.css('border-top', 'initial');
+            this.$el.css('border-bottom', 'initial');
+
+            // ajax call
             var newPosition = this.model.get('position');
             var modelId = this.model.collection.model_id;
             var collection = this.model.collection;
@@ -102,7 +139,7 @@ var View = Marionette.ItemView.extend({
                     position: newPosition
                 })
             }).done(function() {
-                collection.fetch({update: true, remove: true, reset: true});
+                collection.fetch({update: true, remove: true});
             }).fail(function () {
                 $.alert.error(gt.gettext('Unable to reorder the types of models of descriptors'));
             })
@@ -110,18 +147,85 @@ var View = Marionette.ItemView.extend({
     },
 
     editLabel: function() {
-        alert("todo edit label");
+        var ChangeLabel = Dialog.extend({
+            template: require('../templates/descriptormodeltypechangelabel.html'),
+
+            attributes: {
+                id: "dlg_change_label",
+            },
+
+            ui: {
+                label: "#label",
+            },
+
+            events: {
+                'input @ui.label': 'onLabelInput',
+            },
+
+            initialize: function (options) {
+                ChangeLabel.__super__.initialize.apply(this);
+            },
+
+            onLabelInput: function () {
+                this.validateLabel();
+            },
+
+            validateLabel: function() {
+                var v = this.ui.label.val();
+
+                if (v.length < 3) {
+                    $(this.ui.label).validateField('failed', gt.gettext('3 characters min'));
+                    return false;
+                }
+
+                return true;
+            },
+
+            onApply: function() {
+                var view = this;
+                var model = this.getOption('model');
+                var modelId = this.getOption('modelId');
+                var typeId = this.getOption('typeId');
+
+                if (this.validateLabel()) {
+                    model.save({label: this.ui.label.val()}, {
+                        patch: true,
+                        wait: true,
+                        success: function() {
+                            view.remove();
+                            $.alert.success(gt.gettext("Successfully labeled !"));
+                        },
+                        error: function() {
+                            $.alert.error(gt.gettext("Unable to change label !"));
+                        }
+                    });
+                }
+            },
+        });
+
+        var changeLabel = new ChangeLabel({
+            model: this.model,
+            modelId: this.model.collection.model_id,
+            typeId: this.model.get('id')
+        });
+
+        changeLabel.render();
+        changeLabel.ui.label.val(this.model.get('label'));
     },
 
     toggleMandatory: function() {
-        // @todo cannot change from mandatory to optional once there is
-        // some objects
-        alert("todo edit mandatory");
+        // @todo cannot change from mandatory to optional once there is some objects
+        this.model.save({mandatory: !this.model.get('mandatory')}, {patch: true, wait: true});
     },
 
     toggleSetOnce: function() {
-        alert("todo edit set_once");
+        this.model.save({set_once: !this.model.get('set_once')}, {patch: true, wait: true});
     },
+
+    deleteDescriptorModelType: function() {
+        // @todo cannot delete if there is some data
+        alert("todo edit delete");
+    }
 });
 
 module.exports = View;

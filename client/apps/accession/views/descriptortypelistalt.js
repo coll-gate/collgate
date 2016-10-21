@@ -24,10 +24,6 @@ var View = ScrollView.extend({
     },
 
     events: {
-        'dragenter': 'dragEnter',
-        'dragleave': 'dragLeave',
-        'dragover': 'dragOver',
-        'drop': 'dropContent',
     },
 
     initialize: function() {
@@ -38,51 +34,6 @@ var View = ScrollView.extend({
 
         View.__super__.initialize.apply(this);
     },
-
-    dragEnter: function (e) {
-        if (application.dndElement.$el.hasClass('descriptor-model-type')) {
-            var count =  this.dragCount || 0;
-            if (count == 0) {
-                $(this.childViewContainer).css('border', '1px dashed #ddd');
-            }
-            ++count;
-            this.dragCount = count;
-        }
-    },
-
-    dragLeave: function (e) {
-        if (application.dndElement.$el.hasClass('descriptor-model-type')) {
-            var count =  this.dragCount || 1;
-            --count;
-            if (count == 0) {
-                $(this.childViewContainer).css('border', 'none');
-            }
-             this.dragCount = count;
-        }
-    },
-
-    dragOver: function (e) {
-        if (e.preventDefault) {
-            e.preventDefault();
-        }
-
-        //e.dataTransfer.dropEffect = 'move';
-        return false;
-    },
-
-    dropContent: function (e) {
-        if (!application.dndElement) {
-            return;
-        }
-
-        if (application.dndElement.$el.hasClass('descriptor-model-type')) {
-            // @todo call remove on application.dndElement.remove()
-            $.alert.success(gt.gettext("Successfully removed"));
-
-            $(this.childViewContainer).css('border', 'none');
-            this.dragCount = 0;
-        }
-    }
 });
 
 module.exports = View;

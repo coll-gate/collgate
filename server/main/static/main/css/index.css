@@ -238,3 +238,21 @@ tr.element:hover {
     border: 2px dashed #000;
     border-radius: 5px;
 }
+
+tbody.header-line::before {
+    line-height: 2px;
+    content:"\200C";
+    display:table-row;
+}
+
+/*tbody.header-line::after {*/
+    /*line-height: 2px;*/
+    /*content:"\200C";*/
+    /*display:table-row;*/
+/*}*/
+
+/*tr.descriptor-model-type:last-child::after {*/
+    /*line-height: 200px;*/
+    /*content:"\200C";*/
+    /*display:table-row;*/
+/*}*/

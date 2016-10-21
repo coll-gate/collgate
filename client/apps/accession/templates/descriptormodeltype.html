@@ -8,16 +8,16 @@
  - @details
 -->
 
-<th><span class="delete-descriptor-type-model action glyphicon glyphicon-minus-sign"></span></th>
+<th><span class="delete-descriptor-model-type action glyphicon glyphicon-minus-sign"></span></th>
 <td name="descriptor_type_code"><%= descriptor_type_code %></td>
-<td name="label"><%= label %></td>
+<td name="label" class="action"><%= label %></td>
 <% if (mandatory) { %>
-    <td name="mandatory"><span class="glyphicon glyphicon-ok left-margin"></span></td>
+    <td name="mandatory"><span class="action glyphicon glyphicon-ok left-margin"></span></td>
 <% } else { %>
-    <td name="mandatory"><span class="glyphicon glyphicon-remove left-margin"></span></td>
+    <td name="mandatory"><span class="action glyphicon glyphicon-remove left-margin"></span></td>
 <% } %>
 <% if (set_once) { %>
-    <td name="set_once"><span class="glyphicon glyphicon-ok left-margin"></span></td>
+    <td name="set_once"><span class="action glyphicon glyphicon-ok left-margin"></span></td>
 <% } else { %>
-    <td name="set_once"><span class="glyphicon glyphicon-remove left-margin"></span></td>
+    <td name="set_once"><span class="action glyphicon glyphicon-remove left-margin"></span></td>
 <% } %>
