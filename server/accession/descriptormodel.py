@@ -331,6 +331,12 @@ def create_descriptor_type_for_model(request, id):
     dm = get_object_or_404(DescriptorModel, id=dm_id)
     dt = get_object_or_404(DescriptorType, code=dt_code)
 
+    # r-shift of 1 others descriptors_model_types
+    for dmt in dm.descriptors_model_types.filter(position__gte=position).order_by('position'):
+        new_position = dmt.position + 1
+        dmt.position = new_position
+        dmt.save()
+
     dmt = dm.descriptors_model_types.all().order_by('-name')[:1]
     if dmt.exists():
         name = "%i:%i" % (dm_id, int(dmt[0].name.split(':')[1])+1)
@@ -348,9 +354,6 @@ def create_descriptor_type_for_model(request, id):
     dmt.descriptor_type = dt
 
     dmt.save()
-
-    # reindex if necessary others types of models of descriptors
-    # TODO
 
     result = {
         'id': dmt.id,
@@ -449,13 +452,14 @@ def reorder_descriptor_types_for_model(request, id):
     staff=True)
 def patch_descriptor_type_for_model(request, id, tid):
     """
-    Change the label of a type of model of descriptor.
+    Change the 'label', 'mandatory' or 'set_once' of a type of model of descriptor.
+    To changes the position uses the order method of the collection.
     """
     dm_id = int(id)
     dmt_id = int(tid)
 
-    mandatory = bool(request.data.get('mandatory'))
-    set_once = bool(request.data.get('set_once'))
+    mandatory = request.data.get('mandatory')
+    set_once = request.data.get('set_once')
     label = request.data.get('label')
 
     dmt = get_object_or_404(DescriptorModelType, id=dmt_id, descriptor_model__id=dm_id)
@@ -463,9 +467,9 @@ def patch_descriptor_type_for_model(request, id, tid):
     lang = translation.get_language()
 
     if mandatory is not None:
-        dmt.mandatory = mandatory
+        dmt.mandatory = bool(mandatory)
     if set_once is not None:
-        dmt.set_once = set_once
+        dmt.set_once = bool(set_once)
     if label is not None:
         dmt.set_label(lang, label)
 

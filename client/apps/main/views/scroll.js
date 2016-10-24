@@ -48,7 +48,7 @@ var View = Marionette.CompositeView.extend({
             more = this.capacity();
         }
 
-        if (this.collection.next != null) {
+        if ((this.collection != null) && (this.collection.next != null)) {
             this.collection.fetch({update: true, remove: false, data: {
                 cursor: this.collection.next,
                 sort_by: this.collection.sort_by,

@@ -87,7 +87,7 @@ var View = Marionette.ItemView.extend({
         this.$el.empty().off();
         this.stopListening();
 
-        return this;
+        return View.__super__.remove.apply(this);
     }
 });
 

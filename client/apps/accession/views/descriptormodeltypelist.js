@@ -10,6 +10,7 @@
 
 var Marionette = require('backbone.marionette');
 var ScrollView = require('../../main/views/scroll');
+var Dialog = require('../../main/views/dialog');
 
 var DescriptorModelTypeModel = require('../models/descriptormodeltype');
 var DescriptorModelTypeView = require('../views/descriptormodeltype');
@@ -19,19 +20,6 @@ var View = ScrollView.extend({
     childView: DescriptorModelTypeView,
     childViewContainer: 'tbody.descriptor-model-type-list',
 
-    ui: {
-        'table_body': 'tbody.descriptor-model-type-list',
-    },
-
-    events: {
-        //'dragenter @ui.table_body': 'dragEnter',
-        //'dragleave @ui.table_body': 'dragLeave',
-        'dragenter': 'dragEnter',
-        'dragleave': 'dragLeave',
-        'dragover': 'dragOver',
-        'drop': 'drop',
-    },
-
     initialize: function() {
         this.listenTo(this.collection, 'reset', this.render, this);
         this.listenTo(this.collection, 'change', this.render, this);
@@ -40,60 +28,185 @@ var View = ScrollView.extend({
 
         View.__super__.initialize.apply(this);
 
-       // $("div.left-content").on("dragenter", this.dragEnterContent);
-       // $("div.left-content").on("dragleave", this.dragLeaveContent);
-       // $("div.left-content").on("dragover", this.dragOver);
-      //  $("div.left-content").on("drop", this.dropContent);
-    },
-
-    dragOver: function (e) {
-        if (e.originalEvent.preventDefault) {
-            e.originalEvent.preventDefault();
-        }
-
-        //e.originalEvent.dataTransfer.dropEffect = 'move';
-        return false;
-    },
-
-    dragEnter: function (e) {
-        if (e.target == this.el) {
-            alert("this");
-        }
-
-  //          $(e.target).parent().css('background', '#ddd');
-        //$(e.target).addClass('draggable-over');
-    },
-
-    dragLeave: function (e) {
-//        $(e.target).parent().css('background', 'initial');
-        //$(e.target).removeClass('draggable-over');
+        $("div.left-content").on("dragenter", $.proxy(this.dragEnterContent, this));
+        $("div.left-content").on("dragleave", $.proxy(this.dragLeaveContent, this));
+        $("div.left-content").on("dragover", $.proxy(this.dragOverContent, this));
+        $("div.left-content").on("drop", $.proxy(this.dropContent, this));
     },
 
     dragEnterContent: function (e) {
-        $("div.left-content").css('background', '#ddd');
-        $("div.left-content").css('border', '2 px dashed');
+        if (e.preventDefault) {
+            e.preventDefault();
+        }
+
+        this.$el.find("tr").last().css('border-bottom', '5px dashed #ddd');
+
+        return false;
     },
 
     dragLeaveContent: function (e) {
-        $("div.left-content").css('background', 'initial');
-        $("div.left-content").css('border', 'none');
+        if (e.preventDefault) {
+            e.preventDefault();
+        }
+
+        this.$el.find("tr").last().css('border-bottom', 'initial');
+
+        return false;
     },
 
-    drop: function (e) {
-        if (!application.dndElement) {
+    dragOverContent: function (e) {
+        if (e.preventDefault) {
+            e.preventDefault();
+        }
+
+        this.$el.find("tr").last().css('border-bottom', '5px dashed #ddd');
+
+        //e.dataTransfer.dropEffect = 'move';
+        return false;
+    },
+
+    dropContent: function (e) {
+        if (e.preventDefault) {
+            e.preventDefault();
+        }
+
+        var elt = application.dndElement;
+        if (!elt) {
             return;
         }
 
-        if (application.dndElement.$el.hasClass('descriptor-type')) {
-            alert("tolist - drop new descriptor-type ", application.dndElement.model.get('code'));
-            /*this.collection.create({
-                descriptor_type_code: application.dndElement.model.get('code'),
-                label: 'test1',
-            });*/
-        } else if (application.dndElement.$el.hasClass('descriptor-model-type')) {
-            alert("3 - descriptor-model-type");
+        this.$el.find("tr").last().css('border-bottom', 'initial');
+
+        if (elt.$el.hasClass('descriptor-type')) {
+            var code = elt.model.get('code');
+
+            var DefinesLabel = Dialog.extend({
+                template: require('../templates/descriptormodeltypechangelabel.html'),
+
+                attributes: {
+                    id: "dlg_defines_label",
+                },
+
+                ui: {
+                    label: "#label",
+                },
+
+                events: {
+                    'input @ui.label': 'onLabelInput',
+                },
+
+                initialize: function (options) {
+                    DefinesLabel.__super__.initialize.apply(this);
+                },
+
+                onLabelInput: function () {
+                    this.validateLabel();
+                },
+
+                validateLabel: function() {
+                    var v = this.ui.label.val();
+
+                    if (v.length < 3) {
+                        $(this.ui.label).validateField('failed', gt.gettext('3 characters min'));
+                        return false;
+                    }
+
+                    $(this.ui.label).validateField('ok');
+
+                    return true;
+                },
+
+                onApply: function() {
+                    var view = this;
+                    var collection = this.getOption('collection');
+                    var position = this.getOption('position');
+                    var code = this.getOption('code');
+
+                    if (this.validateLabel()) {
+                        var to_rshift = [];
+
+                        // server will r-shift position of any model upward this new
+                        // do it locally to be consistent
+                        for (var model in collection.models) {
+                            var dmt = collection.models[model];
+                            var p = dmt.get('position');
+                            if (p >= position) {
+                                dmt.set('position', p+1);
+                                to_rshift.push(dmt);
+                            }
+                        }
+
+                        collection.create({
+                            descriptor_type_code: code,
+                            label: this.ui.label.val(),
+                            position: position
+                        }, {
+                            wait: true,
+                            success: function () {
+                                view.remove();
+                            },
+                            error: function () {
+                                $.alert.error(gt.gettext("Unable to create the type of model of descriptor !"));
+
+                                // left shift (undo) for consistency with server
+                                for (var i = 0; i < to_rshift.length; ++i) {
+                                    to_rshift[i].set('position', to_rshift[i].get('position')-1);
+                                }
+                            }
+                        });
+                    }
+                },
+            });
+
+            var collection = this.collection;
+
+            // find last position + 1
+            var newPosition = collection.at(collection.models.length-1).get('position') + 1;
+
+            var definesLabel = new DefinesLabel({
+                collection: collection,
+                position: newPosition,
+                code: elt.model.get('code')
+            });
+
+            definesLabel.render();
+        } else if (elt.$el.hasClass('descriptor-model-type')) {
+            var collection = this.collection;
+            var modelId = collection.model_id;
+
+            // find last position + 1
+            var newPosition = collection.at(collection.models.length-1).get('position') + 1;
+
+            $.ajax({
+                type: "PUT",
+                url: application.baseUrl + 'accession/descriptor/model/' + modelId + '/order/',
+                dataType: 'json',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({
+                    descriptor_model_type_id: elt.model.get('id'),
+                    position: newPosition
+                })
+            }).done(function() {
+                elt.model.set('position', newPosition);
+
+                // lshift any others element
+                for (var model in collection.models) {
+                    var dmt = collection.models[model];
+                    if (dmt.get('id') != elt.model.get('id')) {
+                        var p = dmt.get('position');
+                        dmt.set('position', p - 1);
+                    }
+                }
+
+                // need to sort
+                collection.sort();
+            }).fail(function() {
+                $.alert.error(gt.gettext('Unable to reorder the types of models of descriptors'));
+            });
         }
-    }
+
+        return false;
+    },
 });
 
 module.exports = View;

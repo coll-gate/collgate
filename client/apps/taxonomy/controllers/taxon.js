@@ -14,6 +14,7 @@ var TaxonCollection = require('../collections/taxon');
 var TaxonListView = require('../views/taxonlist');
 var DefaultLayout = require('../../main/views/defaultlayout');
 var TitleView = require('../../main/views/titleview');
+var Dialog = require('../../main/views/dialog');
 
 /* If using marionnete 3 and no longer Controller class or inherit from Marionette.Object
 Controller = function(options) {
@@ -50,17 +51,13 @@ _.extend(Controller.prototype, Backbone.Events, {
 var TaxonController =  Marionette.Controller/*Object*/.extend({
 
     create: function() {
-        var CreateTaxonView = Marionette.ItemView.extend({
-            tagName: "div",
+        var CreateTaxonView = Dialog.extend({
             attributes: {
                 'id': 'dlg_create_taxon',
-                'class': 'modal',
-                'tabindex': -1
             },
             template: require('../templates/taxoncreate.html'),
 
             ui: {
-                cancel: "button.cancel",
                 create: "button.create",
                 name: "#taxon_name",
                 rank: "#taxon_rank",
@@ -69,14 +66,9 @@ var TaxonController =  Marionette.Controller/*Object*/.extend({
             },
 
             events: {
-                'click @ui.cancel': 'onCancel',
                 'click @ui.create': 'onCreate',
-                'keydown': 'keyAction',
                 'input @ui.name': 'onNameInput',
                 'change @ui.rank': 'onChangeRank',
-            },
-
-            initialize: function () {
             },
 
             onRender: function () {
@@ -202,10 +194,6 @@ var TaxonController =  Marionette.Controller/*Object*/.extend({
                         tp.validateField('ok');
                     }
                 });*/
-            },
-
-            onCancel: function () {
-                this.remove();
             },
 
             onChangeRank: function () {
@@ -339,20 +327,6 @@ var TaxonController =  Marionette.Controller/*Object*/.extend({
                         }
                     });*/
                 }
-            },
-
-            keyAction: function(e) {
-                var code = e.keyCode || e.which;
-                if (code == 27) {
-                    this.remove();
-                }
-            },
-
-            remove: function() {
-                $(this.el).modal('hide').data('bs.modal', null);
-                this.$el.empty().off();  // unbind the events
-                this.stopListening();
-                return this;
             }
         });
 

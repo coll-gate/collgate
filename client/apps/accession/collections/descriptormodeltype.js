@@ -29,6 +29,8 @@ var Collection = Backbone.Collection.extend({
 
         return data.items;
     },
+
+    comparator: 'position'
 });
 
 module.exports = Collection;
