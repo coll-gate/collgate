@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-09-28 16:59+0200\n"
+"POT-Creation-Date: 2016-10-25 14:25+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,28 +17,32 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: apps.py:38
+#: apps.py:40
 msgid "Accession"
 msgstr ""
 
-#: apps.py:40
+#: apps.py:42
 msgid "Create accession"
 msgstr ""
 
-#: apps.py:43
+#: apps.py:45
 msgid "Create batch"
 msgstr ""
 
-#: apps.py:47
+#: apps.py:49
 msgid "List accessions"
 msgstr ""
 
-#: apps.py:50
+#: apps.py:54
 msgid "List groups of descriptors"
 msgstr ""
 
-#: apps.py:53
+#: apps.py:57
 msgid "List models of descriptors"
+msgstr ""
+
+#: apps.py:60
+msgid "List meta-models of descriptors"
 msgstr ""
 
 #: base.py:47
@@ -57,54 +61,122 @@ msgstr ""
 msgid "Only an empty of values type of descriptors can be deleted"
 msgstr ""
 
-#: descriptormodel.py:134
+#: descriptormetamodel.py:158
+msgid ""
+"It is not possible to remove a meta-model of descriptor that contains models "
+"of descriptors"
+msgstr ""
+
+#: descriptormetamodel.py:162
+msgid ""
+"It is not possible to remove a meta-model of descriptor that is used by "
+"accessions"
+msgstr ""
+
+#: descriptormetamodel.py:166
+msgid ""
+"It is not possible to remove a meta-model of descriptor that is used by "
+"samples"
+msgstr ""
+
+#: descriptormetamodel.py:170
+msgid ""
+"It is not possible to remove a meta-model of descriptor that is used by "
+"batches"
+msgstr ""
+
+#: descriptormetamodel.py:289 descriptormetamodel.py:356
+#, python-format
+msgid ""
+"The position %i for the panel is already used into this meta-model of "
+"descriptor"
+msgstr ""
+
+#: descriptormodel.py:130
+msgid "You are not allowed to create a model of descriptor"
+msgstr ""
+
+#: descriptormodel.py:135
 msgid "A model of descriptor with a similar name already exists"
 msgstr ""
 
-#: descriptormodel.py:199
+#: descriptormodel.py:169 descriptormodel.py:316 descriptormodel.py:380
+#: descriptormodel.py:449 descriptormodel.py:483
+msgid "You are not allowed to modify a model of descriptor"
+msgstr ""
+
+#: descriptormodel.py:192
+msgid "You are not allowed to remove a model of descriptor"
+msgstr ""
+
+#: descriptormodel.py:200
 msgid "Only empty models of descriptors can be removed"
 msgstr ""
 
-#: models.py:33
+#: descriptormodel.py:203
+msgid "Only unused models of descriptors can be removed"
+msgstr ""
+
+#: descriptormodel.py:317
+msgid "You are not allowed to create a type of model of descriptor"
+msgstr ""
+
+#: descriptormodel.py:381 descriptormodel.py:450
+msgid "You are not allowed to modify a type of model of descriptor"
+msgstr ""
+
+#: descriptormodel.py:484
+msgid "You are not allowed to remove a type of model of descriptor"
+msgstr ""
+
+#: descriptormodel.py:498
+msgid "There is some data using the model of descriptor"
+msgstr ""
+
+#: models.py:62
 msgid "descriptor group"
 msgstr ""
 
-#: models.py:97
+#: models.py:124
 msgid "descriptor type"
 msgstr ""
 
-#: models.py:451
+#: models.py:706
 msgid "descriptor value"
 msgstr ""
 
-#: models.py:480
+#: models.py:732
 msgid "accession synonym"
 msgstr ""
 
-#: models.py:502
+#: models.py:758
 msgid "descriptor panel"
 msgstr ""
 
-#: models.py:554
+#: models.py:807
 msgid "descriptor model type"
 msgstr ""
 
-#: models.py:591
+#: models.py:844
 msgid "descriptor model"
 msgstr ""
 
-#: models.py:602
+#: models.py:879
+msgid "descriptor meta model"
+msgstr ""
+
+#: models.py:910
 msgid "panel"
 msgstr ""
 
-#: models.py:619
+#: models.py:930
 msgid "accession"
 msgstr ""
 
-#: models.py:632
+#: models.py:947
 msgid "batch"
 msgstr ""
 
-#: models.py:646
+#: models.py:965
 msgid "sample"
 msgstr ""

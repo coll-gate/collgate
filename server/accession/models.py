@@ -843,6 +843,16 @@ class DescriptorModel(Entity):
     class Meta:
         verbose_name = _("descriptor model")
 
+    def in_usage(self):
+        """Check if some entities use of this model"""
+        if self.panels.exists():
+            for panel in self.panels.all():
+                for meta in panel.descriptor_meta_model.all():
+                    if meta.accession.exists() or meta.batches.exists() or meta.samples.exists():
+                        return True
+
+        return False
+
 
 class DescriptorMetaModel(Entity):
     """

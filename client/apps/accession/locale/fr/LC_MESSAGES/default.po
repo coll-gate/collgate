@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-09-28 14:12+0200\n"
+"POT-Creation-Date: 2016-10-24 18:08+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,14 +19,19 @@ msgstr ""
 #: ../../../views/descriptorgroupadd.js:45
 #: ../../../views/descriptorgrouptypeadd.js:51
 #: ../../../views/descriptormodeladd.js:45
-#: ../../../views/descriptortypedetail.js:211
+#: ../../../views/descriptormodeldetail.js:43
+#: ../../../views/descriptortypedetail.js:204
 msgid "Invalid characters (alphanumeric, _ and - only)"
 msgstr "Caractères invalides (alphanumérique, _ et - seulement)"
 
 #: ../../../views/descriptorgroupadd.js:48
 #: ../../../views/descriptorgrouptypeadd.js:54
 #: ../../../views/descriptormodeladd.js:48
-#: ../../../views/descriptortypedetail.js:213
+#: ../../../views/descriptormodeldetail.js:45
+#: ../../../views/descriptormodeltype.js:149
+#: ../../../views/descriptormodeltype.js:317
+#: ../../../views/descriptormodeltypelist.js:110
+#: ../../../views/descriptortypedetail.js:206
 msgid "3 characters min"
 msgstr "3 caractères minimum"
 
@@ -42,7 +47,30 @@ msgstr "Nom de type de descriptor déjà utilisé"
 msgid "Name for model of descriptor already in usage"
 msgstr "Ce nom de modèle de descripteur est déjà utilisé"
 
-#: ../../../views/descriptortypedetail.js:200
+#: ../../../views/descriptormodeldetail.js:63
+#: ../../../views/descriptortypedetail.js:251
+msgid "Done"
+msgstr "Fait"
+
+#: ../../../views/descriptormodeltype.js:188
+#: ../../../views/descriptormodeltypelist.js:149
+msgid "Unable to create the type of model of descriptor !"
+msgstr "Impossible de créer le type de modèle de descripteur !"
+
+#: ../../../views/descriptormodeltype.js:282
+#: ../../../views/descriptormodeltypelist.js:204
+msgid "Unable to reorder the types of models of descriptors"
+msgstr "Impossible de réordonner les types de modèles de descripteurs"
+
+#: ../../../views/descriptormodeltype.js:338
+msgid "Successfully labeled !"
+msgstr "Label définit avec succès !"
+
+#: ../../../views/descriptormodeltype.js:341
+msgid "Unable to change label !"
+msgstr "Impossible de définir le label !"
+
+#: ../../../views/descriptortypedetail.js:193
 msgid "1 character min"
 msgstr "1 caractère minimum"
 
@@ -50,21 +78,29 @@ msgstr "1 caractère minimum"
 msgid "List of groups of descriptors"
 msgstr "Liste de groupes de descripteurs"
 
-#: ../../../routers/descriptor.js:70
+#: ../../../routers/descriptor.js:72
 msgid "Types of descriptors for the group"
 msgstr "Types de descripteurs pour le groupe"
 
-#: ../../../routers/descriptor.js:90
+#: ../../../routers/descriptor.js:95
 msgid "Details for the type of descriptor"
 msgstr "Détails pour le type de descripteur"
 
-#: ../../../routers/descriptor.js:103
+#: ../../../routers/descriptor.js:108
 msgid "Values for the type of descriptor"
 msgstr "Valeurs pour le type de descripteur"
 
-#: ../../../routers/descriptormodel.js:36
+#: ../../../routers/descriptormodel.js:47
 msgid "List of models of descriptors"
 msgstr "Liste des models de descripteurs"
+
+#: ../../../routers/descriptormodel.js:68
+msgid "Details for the model of descriptor"
+msgstr "Détails pour le modèle de descripteur"
+
+#: ../../../routers/descriptormodel.js:79
+msgid "List of types of models of descriptors"
+msgstr "Liste des types de modèles de descripteurs"
 
 #: ../../../templates/descriptorgrouplist.html:16
 #: ../../../templates/descriptormodellist.html:16
@@ -73,13 +109,69 @@ msgid "Name"
 msgstr "Nom"
 
 #: ../../../templates/descriptorgrouplist.html:17
+#: ../../../templates/descriptorgrouplistalt.html:16
 #: ../../../templates/descriptormodellist.html:18
 msgid "Number of types of descriptors"
 msgstr "Nombre de types de descripteurs"
 
+#: ../../../templates/descriptorgrouplistalt.html:15
+msgid "Group of descriptor"
+msgstr "Group de descripteur"
+
+#: ../../../templates/descriptormodeldetail.html:13
+msgid "Descriptor model name"
+msgstr "Nom de modèle de descripteur"
+
+#: ../../../templates/descriptormodeldetail.html:17
 #: ../../../templates/descriptormodellist.html:17
 msgid "Verbose name"
 msgstr "Nom complet"
+
+#: ../../../templates/descriptormodeldetail.html:21
+#: ../../../templates/descriptormodellist.html:19
+msgid "Description"
+msgstr "Description"
+
+#: ../../../templates/descriptormodeldetail.html:25
+#: ../../../templates/descriptortypedetail.html:187
+msgid "Update"
+msgstr "Mettre à jour"
+
+#: ../../../templates/descriptormodeltypechangelabel.html:5
+msgid "Change the label for a type of model of descriptor"
+msgstr "Changer le label pour un type de modèle de descripteur"
+
+#: ../../../templates/descriptormodeltypechangelabel.html:10
+msgid "Label for the current language"
+msgstr "Label pour le langage courant"
+
+#: ../../../templates/descriptormodeltypechangelabel.html:16
+msgid "Cancel"
+msgstr "Annuler"
+
+#: ../../../templates/descriptormodeltypechangelabel.html:17
+msgid "Apply"
+msgstr "Appliquer"
+
+#: ../../../templates/descriptormodeltypelist.html:16
+#: ../../../templates/descriptortypelist.html:17
+#: ../../../templates/descriptortypelistalt.html:16
+#: ../../../templates/descriptorvaluelist.html:16
+#: ../../../templates/descriptorvaluepairlist.html:16
+msgid "Code"
+msgstr "Code"
+
+#: ../../../templates/descriptormodeltypelist.html:17
+msgid "Label"
+msgstr "Label"
+
+#: ../../../templates/descriptormodeltypelist.html:18
+msgid "Mandatory"
+msgstr "Mandataire"
+
+#: ../../../templates/descriptormodeltypelist.html:19
+msgid "Set Once"
+msgstr "Définit une fois"
 
 #: ../../../templates/descriptortypedetail.html:20
 msgid "Descriptor type name"
@@ -169,23 +261,18 @@ msgstr "Valeur maximale"
 msgid "Regular expression"
 msgstr "Expression régulière"
 
-#: ../../../templates/descriptortypedetail.html:187
-msgid "Update"
-msgstr "Mettre à jour"
-
-#: ../../../templates/descriptortypelist.html:17
-msgid "Code"
-msgstr "Code"
-
 #: ../../../templates/descriptortypelist.html:18
+#: ../../../templates/descriptortypelistalt.html:17
 msgid "Number of values"
 msgstr "Nombre de valeurs"
 
-#: ../../../templates/descriptorvaluelist.html:16
-#: ../../../templates/descriptorvaluepairlist.html:16
-msgid "Id"
-msgstr "Id"
+#: ../../../templates/descriptortypelistalt.html:15
+msgid "Type of descriptor"
+msgstr "Type de descripteur"
 
 #: ../../../templates/descriptorvaluelist.html:17
 msgid "Value"
 msgstr "Valeur"
+
+#~ msgid "Id"
+#~ msgstr "Id"

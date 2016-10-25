@@ -208,7 +208,7 @@ var View = Marionette.ItemView.extend({
         else if (elt.$el.hasClass('descriptor-model-type')) {
             // useless drop on himself
             if (this == elt) {
-                return;
+                return false;
             }
 
             // reset borders
@@ -356,7 +356,6 @@ var View = Marionette.ItemView.extend({
     },
 
     toggleMandatory: function() {
-        // @todo cannot change from mandatory to optional once there is some objects
         this.model.save({mandatory: !this.model.get('mandatory')}, {patch: true, wait: true});
     },
 
@@ -365,8 +364,21 @@ var View = Marionette.ItemView.extend({
     },
 
     deleteDescriptorModelType: function() {
-        // @todo cannot delete if there is some data
-        alert("todo edit delete");
+        var collection = this.model.collection;
+        var position = this.model.get('position');
+
+        this.model.destroy({
+            wait: true,
+            success: function () {
+                for (var model in collection.models) {
+                    var dmt = collection.models[model];
+                    if (dmt.get('position') > position) {
+                        var new_position = dmt.get('position') - 1;
+                        dmt.set('position', new_position);
+                    }
+                }
+            }
+        });
     }
 });
 

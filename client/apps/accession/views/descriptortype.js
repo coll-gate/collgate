@@ -33,6 +33,7 @@ var View = Marionette.ItemView.extend({
     },
 
     onRender: function() {
+        // @todo check user permissions
         if (!this.model.get('can_delete') || !session.user.isSuperUser) {
             $(this.ui.delete_descriptor_type).hide();
         }
@@ -49,6 +50,8 @@ var View = Marionette.ItemView.extend({
     deleteDescriptorType: function () {
         if (this.model.get('num_descriptors_values') == 0) {
             this.model.destroy({wait: true});
+        } else {
+            $.alert.warning(gt.gettext("Some values exists for this type of descriptor"));
         }
     }
 });

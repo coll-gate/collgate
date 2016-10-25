@@ -31,7 +31,7 @@ var View = Marionette.ItemView.extend({
     },
 
     onRender: function() {
-        // TODO check with user permission
+        // @todo check with user permission
         if (!this.model.get('can_delete') || !session.user.isSuperUser) {
             $(this.ui.delete_descriptor_group).hide();
         }
@@ -44,6 +44,8 @@ var View = Marionette.ItemView.extend({
     deleteDescriptorGroup: function() {
         if (this.model.get('num_descriptors_types') == 0) {
             this.model.destroy({wait: true});
+        } else {
+            $.alert.warning(gt.gettext("Some type of descriptors exists for this group"));
         }
     }
 });

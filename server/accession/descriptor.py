@@ -143,7 +143,7 @@ def create_descriptor_group(request):
 @RestDescriptorGroupId.def_auth_request(
     Method.DELETE, Format.JSON,
     perms={
-        #  'accession.delete_descriptorgroup': _("You are not allowed to delete a group of descriptor"),
+        'accession.delete_descriptorgroup': _("You are not allowed to delete a group of descriptor"),
     },
     staff=True
 )
@@ -159,9 +159,7 @@ def delete_descriptor_group(request, id):
     return HttpResponseRest(request, {})
 
 
-@RestDescriptorGroupSearch.def_auth_request(
-    Method.GET, Format.JSON, ('filters',),
-    staff=True)
+@RestDescriptorGroupSearch.def_auth_request(Method.GET, Format.JSON, ('filters',), staff=True)
 def search_descriptor_groups(request):
     """
     Filters the groups of descriptors by name.
@@ -269,9 +267,7 @@ def get_descriptor_types_for_group(request, id):
     return HttpResponseRest(request, results)
 
 
-@RestDescriptorGroupIdTypeSearch.def_auth_request(
-    Method.GET, Format.JSON, ('filters',),
-    staff=True)
+@RestDescriptorGroupIdTypeSearch.def_auth_request(Method.GET, Format.JSON, ('filters',), staff=True)
 def search_descriptor_types_for_group(request, id):
     """
     Filters the type of descriptors by name for a specific group.
@@ -347,7 +343,10 @@ def get_descriptor_type_for_group(request, id, tid):
             "name": {"type": "string", 'minLength': 3, 'maxLength': 32}
         },
     },
-    # perms={'accession.add_descriptortype': _('You are not allowed to create a type of descriptor')},
+    perms={
+        'accession.change_descriptorgroup': _('You are not allowed to modify a group of types of descriptors'),
+        'accession.add_descriptortype': _('You are not allowed to create a type of descriptor')
+    },
     staff=True
 )
 def create_descriptor_type(request, id):
@@ -388,7 +387,8 @@ def create_descriptor_type(request, id):
 @RestDescriptorGroupIdTypeId.def_auth_request(
     Method.DELETE, Format.JSON,
     perms={
-        #  'accession.delete_descriptortype': _("You are not allowed to delete a type of descriptor"),
+        'accession.change_descriptorgroup': _('You are not allowed to modify a group of types of descriptors'),
+        'accession.delete_descriptortype': _("You are not allowed to delete a type of descriptor"),
     },
     staff=True
 )
@@ -420,7 +420,10 @@ def delete_descriptor_group(request, id, tid):
             },
         },
     },
-    # perms={'accession.change_descriptortype': _('You are not allowed to modify a type of descriptor')},
+    perms={
+        'accession.change_descriptorgroup': _('You are not allowed to modify a group of types of descriptors'),
+        'accession.change_descriptortype': _('You are not allowed to modify a type of descriptor')
+    },
     staff=True
 )
 def update_descriptor_type(request, id, tid):

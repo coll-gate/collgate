@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-09-28 16:59+0200\n"
+"POT-Creation-Date: 2016-10-25 14:25+0200\n"
 "PO-Revision-Date: 2016-02-01 11:53+0100\n"
 "Last-Translator: Frederic SCHERMA <frederic.scherma@clermont.inra.fr>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -50,31 +50,31 @@ msgstr "Vous n'êtes pas identifié."
 msgid "Please, you must enable your cookies."
 msgstr "Merci d'activer la gestion des cookies."
 
-#: models.py:55
+#: models.py:54
 msgid "English"
 msgstr "Anglais"
 
-#: models.py:56
+#: models.py:55
 msgid "French"
 msgstr "Français"
 
-#: models.py:85
+#: models.py:84
 msgid "Pending"
 msgstr "Attente"
 
-#: models.py:86
+#: models.py:85
 msgid "Valid"
 msgstr "Valide"
 
-#: models.py:87
+#: models.py:86
 msgid "Hidden"
 msgstr "Cahé"
 
-#: models.py:88
+#: models.py:87
 msgid "Removed"
 msgstr "Supprimé"
 
-#: models.py:121
+#: models.py:120
 msgid ""
 "Name must contains only alphanumerics characters or _ or - and be at least 3 "
 "characters length"

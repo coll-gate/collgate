@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-09-28 14:12+0200\n"
+"POT-Creation-Date: 2016-10-24 18:08+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,14 +20,19 @@ msgstr ""
 #: ../../../views/descriptorgroupadd.js:45
 #: ../../../views/descriptorgrouptypeadd.js:51
 #: ../../../views/descriptormodeladd.js:45
-#: ../../../views/descriptortypedetail.js:211
+#: ../../../views/descriptormodeldetail.js:43
+#: ../../../views/descriptortypedetail.js:204
 msgid "Invalid characters (alphanumeric, _ and - only)"
 msgstr ""
 
 #: ../../../views/descriptorgroupadd.js:48
 #: ../../../views/descriptorgrouptypeadd.js:54
 #: ../../../views/descriptormodeladd.js:48
-#: ../../../views/descriptortypedetail.js:213
+#: ../../../views/descriptormodeldetail.js:45
+#: ../../../views/descriptormodeltype.js:149
+#: ../../../views/descriptormodeltype.js:317
+#: ../../../views/descriptormodeltypelist.js:110
+#: ../../../views/descriptortypedetail.js:206
 msgid "3 characters min"
 msgstr ""
 
@@ -43,7 +48,30 @@ msgstr ""
 msgid "Name for model of descriptor already in usage"
 msgstr ""
 
-#: ../../../views/descriptortypedetail.js:200
+#: ../../../views/descriptormodeldetail.js:63
+#: ../../../views/descriptortypedetail.js:251
+msgid "Done"
+msgstr ""
+
+#: ../../../views/descriptormodeltype.js:188
+#: ../../../views/descriptormodeltypelist.js:149
+msgid "Unable to create the type of model of descriptor !"
+msgstr ""
+
+#: ../../../views/descriptormodeltype.js:282
+#: ../../../views/descriptormodeltypelist.js:204
+msgid "Unable to reorder the types of models of descriptors"
+msgstr ""
+
+#: ../../../views/descriptormodeltype.js:338
+msgid "Successfully labeled !"
+msgstr ""
+
+#: ../../../views/descriptormodeltype.js:341
+msgid "Unable to change label !"
+msgstr ""
+
+#: ../../../views/descriptortypedetail.js:193
 msgid "1 character min"
 msgstr ""
 
@@ -51,20 +79,28 @@ msgstr ""
 msgid "List of groups of descriptors"
 msgstr ""
 
-#: ../../../routers/descriptor.js:70
+#: ../../../routers/descriptor.js:72
 msgid "Types of descriptors for the group"
 msgstr ""
 
-#: ../../../routers/descriptor.js:90
+#: ../../../routers/descriptor.js:95
 msgid "Details for the type of descriptor"
 msgstr ""
 
-#: ../../../routers/descriptor.js:103
+#: ../../../routers/descriptor.js:108
 msgid "Values for the type of descriptor"
 msgstr ""
 
-#: ../../../routers/descriptormodel.js:36
+#: ../../../routers/descriptormodel.js:47
 msgid "List of models of descriptors"
+msgstr ""
+
+#: ../../../routers/descriptormodel.js:68
+msgid "Details for the model of descriptor"
+msgstr ""
+
+#: ../../../routers/descriptormodel.js:79
+msgid "List of types of models of descriptors"
 msgstr ""
 
 #: ../../../templates/descriptorgrouplist.html:16
@@ -74,12 +110,68 @@ msgid "Name"
 msgstr ""
 
 #: ../../../templates/descriptorgrouplist.html:17
+#: ../../../templates/descriptorgrouplistalt.html:16
 #: ../../../templates/descriptormodellist.html:18
 msgid "Number of types of descriptors"
 msgstr ""
 
+#: ../../../templates/descriptorgrouplistalt.html:15
+msgid "Group of descriptor"
+msgstr ""
+
+#: ../../../templates/descriptormodeldetail.html:13
+msgid "Descriptor model name"
+msgstr ""
+
+#: ../../../templates/descriptormodeldetail.html:17
 #: ../../../templates/descriptormodellist.html:17
 msgid "Verbose name"
+msgstr ""
+
+#: ../../../templates/descriptormodeldetail.html:21
+#: ../../../templates/descriptormodellist.html:19
+msgid "Description"
+msgstr ""
+
+#: ../../../templates/descriptormodeldetail.html:25
+#: ../../../templates/descriptortypedetail.html:187
+msgid "Update"
+msgstr ""
+
+#: ../../../templates/descriptormodeltypechangelabel.html:5
+msgid "Change the label for a type of model of descriptor"
+msgstr ""
+
+#: ../../../templates/descriptormodeltypechangelabel.html:10
+msgid "Label for the current language"
+msgstr ""
+
+#: ../../../templates/descriptormodeltypechangelabel.html:16
+msgid "Cancel"
+msgstr ""
+
+#: ../../../templates/descriptormodeltypechangelabel.html:17
+msgid "Apply"
+msgstr ""
+
+#: ../../../templates/descriptormodeltypelist.html:16
+#: ../../../templates/descriptortypelist.html:17
+#: ../../../templates/descriptortypelistalt.html:16
+#: ../../../templates/descriptorvaluelist.html:16
+#: ../../../templates/descriptorvaluepairlist.html:16
+msgid "Code"
+msgstr ""
+
+#: ../../../templates/descriptormodeltypelist.html:17
+msgid "Label"
+msgstr ""
+
+#: ../../../templates/descriptormodeltypelist.html:18
+msgid "Mandatory"
+msgstr ""
+
+#: ../../../templates/descriptormodeltypelist.html:19
+msgid "Set Once"
 msgstr ""
 
 #: ../../../templates/descriptortypedetail.html:20
@@ -170,21 +262,13 @@ msgstr ""
 msgid "Regular expression"
 msgstr ""
 
-#: ../../../templates/descriptortypedetail.html:187
-msgid "Update"
-msgstr ""
-
-#: ../../../templates/descriptortypelist.html:17
-msgid "Code"
-msgstr ""
-
 #: ../../../templates/descriptortypelist.html:18
+#: ../../../templates/descriptortypelistalt.html:17
 msgid "Number of values"
 msgstr ""
 
-#: ../../../templates/descriptorvaluelist.html:16
-#: ../../../templates/descriptorvaluepairlist.html:16
-msgid "Id"
+#: ../../../templates/descriptortypelistalt.html:15
+msgid "Type of descriptor"
 msgstr ""
 
 #: ../../../templates/descriptorvaluelist.html:17

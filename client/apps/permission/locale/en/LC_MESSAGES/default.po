@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-20 15:14+0200\n"
+"POT-Creation-Date: 2016-10-24 18:08+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -33,23 +33,23 @@ msgstr ""
 msgid "Select a username"
 msgstr ""
 
-#: ../../../routers/permission.js:41
+#: ../../../routers/permission.js:42
 msgid "List of users"
 msgstr ""
 
-#: ../../../routers/permission.js:54
+#: ../../../routers/permission.js:58
 msgid "List of permissions for user"
 msgstr ""
 
-#: ../../../routers/permission.js:71
+#: ../../../routers/permission.js:78
 msgid "List of groups"
 msgstr ""
 
-#: ../../../routers/permission.js:88
+#: ../../../routers/permission.js:98
 msgid "List of permissions for group"
 msgstr ""
 
-#: ../../../routers/permission.js:105
+#: ../../../routers/permission.js:118
 msgid "List of users for group"
 msgstr ""
 

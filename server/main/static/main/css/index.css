@@ -239,6 +239,7 @@ tr.element:hover {
     border-radius: 5px;
 }
 
+/** add a little space before the first row in tbody, in way to see its top border */
 tbody.header-line::before {
     line-height: 2px;
     content:"\200C";

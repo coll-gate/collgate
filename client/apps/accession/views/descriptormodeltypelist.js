@@ -39,7 +39,17 @@ var View = ScrollView.extend({
             e.preventDefault();
         }
 
-        this.$el.find("tr").last().css('border-bottom', '5px dashed #ddd');
+        this.dragEnterCount || (this.dragEnterCount = 0);
+        ++this.dragEnterCount;
+
+        if (this.dragEnterCount == 1) {
+            if (this.$el.find("tbody tr").length == 0) {
+                var dummyRow = $("<tr><td></td><td></td><td></td><td></td><td></td></tr>").addClass("dummy-row");
+                this.$el.find("tbody").append(dummyRow);
+            }
+
+            this.$el.find("tbody tr").last().css('border-bottom', '5px dashed #ddd');
+        }
 
         return false;
     },
@@ -49,7 +59,13 @@ var View = ScrollView.extend({
             e.preventDefault();
         }
 
-        this.$el.find("tr").last().css('border-bottom', 'initial');
+        this.dragEnterCount || (this.dragEnterCount = 1);
+        --this.dragEnterCount;
+
+        if (this.dragEnterCount == 0) {
+            this.$el.find("tbody tr").last().css('border-bottom', 'initial');
+            this.$el.find("tbody tr.dummy-row").remove();
+        }
 
         return false;
     },
@@ -58,8 +74,6 @@ var View = ScrollView.extend({
         if (e.preventDefault) {
             e.preventDefault();
         }
-
-        this.$el.find("tr").last().css('border-bottom', '5px dashed #ddd');
 
         //e.dataTransfer.dropEffect = 'move';
         return false;
@@ -70,12 +84,15 @@ var View = ScrollView.extend({
             e.preventDefault();
         }
 
+        this.dragEnterCount = 0;
+
+        this.$el.find("tbody tr").last().css('border-bottom', 'initial');
+        this.$el.find("tbody tr.dummy-row").remove();
+
         var elt = application.dndElement;
         if (!elt) {
-            return;
+            return false;
         }
-
-        this.$el.find("tr").last().css('border-bottom', 'initial');
 
         if (elt.$el.hasClass('descriptor-type')) {
             var code = elt.model.get('code');
@@ -161,7 +178,11 @@ var View = ScrollView.extend({
             var collection = this.collection;
 
             // find last position + 1
-            var newPosition = collection.at(collection.models.length-1).get('position') + 1;
+            var newPosition = 0;
+
+            if (collection.models.length > 0) {
+                newPosition = collection.at(collection.models.length-1).get('position') + 1;
+            }
 
             var definesLabel = new DefinesLabel({
                 collection: collection,

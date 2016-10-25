@@ -127,7 +127,7 @@ def get_descriptor_model(request, id):
             "description": {"type": "string", 'maxLength': 1024, "required": False, "blank": True},
         },
     },
-    # perms={'accession.add_descriptormodel': _('You are not allowed to create a model of descriptor')},
+    perms={'accession.add_descriptormodel': _('You are not allowed to create a model of descriptor')},
     staff=True)
 def create_descriptor_model(request):
     # check name uniqueness
@@ -166,7 +166,7 @@ def create_descriptor_model(request):
             "description": {"type": "string", 'maxLength': 1024, "required": False, "blank": True},
         },
     },
-    # perms={'accession.change_descriptormodel': _('You are not allowed to modify a model of descriptor')},
+    perms={'accession.change_descriptormodel': _('You are not allowed to modify a model of descriptor')},
     staff=True)
 def update_descriptor_model(request, id):
     dm_id = int(id)
@@ -189,7 +189,9 @@ def update_descriptor_model(request, id):
 
 @RestDescriptorModelId.def_auth_request(
     Method.DELETE, Format.JSON,
-    # perms={'accession.remove_descriptormodel': _('You are not allowed to remove a model of descriptor')},
+    perms={
+        'accession.delete_descriptormodel': _('You are not allowed to remove a model of descriptor')
+    },
     staff=True)
 def remove_descriptor_model(request, id):
     dm_id = int(id)
@@ -206,9 +208,7 @@ def remove_descriptor_model(request, id):
     return HttpResponseRest(request, {})
 
 
-@RestDescriptorModelSearch.def_auth_request(
-    Method.GET, Format.JSON, ('filters',),
-    staff=True)
+@RestDescriptorModelSearch.def_auth_request(Method.GET, Format.JSON, ('filters',), staff=True)
 def search_descriptor_models(request):
     """
     Filters the models of descriptors by name.
@@ -312,10 +312,10 @@ def list_descriptor_model_types_for_model(request, id):
             "descriptor_type_code": {"type": "string", 'minLength': 3, 'maxLength': 64},
         },
     },
-    # perms={
-    #     'accession.change_descriptormodel': _('You are not allowed to modify a model of descriptor'),
-    #     'accession.add_descriptormodeltype': _('You are not allowed to create a type of model of descriptor'),
-    # },
+    perms={
+        'accession.change_descriptormodel': _('You are not allowed to modify a model of descriptor'),
+        'accession.add_descriptormodeltype': _('You are not allowed to create a type of model of descriptor'),
+    },
     staff=True)
 def create_descriptor_type_for_model(request, id):
     dm_id = int(id)
@@ -376,10 +376,10 @@ def create_descriptor_type_for_model(request, id):
             "position": {"type": "number"},
         },
     },
-    # perms={
-    #     'accession.change_descriptormodel': _('You are not allowed to modify a model of descriptor'),
-    #     'accession.change_descriptormodeltype': _('You are not allowed to modify a type of model of descriptor'),
-    # },
+    perms={
+        'accession.change_descriptormodel': _('You are not allowed to modify a model of descriptor'),
+        'accession.change_descriptormodeltype': _('You are not allowed to modify a type of model of descriptor'),
+    },
     staff=True)
 def reorder_descriptor_types_for_model(request, id):
     """
@@ -445,12 +445,12 @@ def reorder_descriptor_types_for_model(request, id):
             "label": {"type": "string", 'maxLength': 64, "required": False},
         },
     },
-    # perms={
-    #     'accession.change_descriptormodel': _('You are not allowed to modify a model of descriptor'),
-    #     'accession.change_descriptormodeltype': _('You are not allowed to modify a type of model of descriptor'),
-    # },
+    perms={
+         'accession.change_descriptormodel': _('You are not allowed to modify a model of descriptor'),
+         'accession.change_descriptormodeltype': _('You are not allowed to modify a type of model of descriptor'),
+    },
     staff=True)
-def patch_descriptor_type_for_model(request, id, tid):
+def patch_descriptor_model_type_for_model(request, id, tid):
     """
     Change the 'label', 'mandatory' or 'set_once' of a type of model of descriptor.
     To changes the position uses the order method of the collection.
@@ -474,5 +474,38 @@ def patch_descriptor_type_for_model(request, id, tid):
         dmt.set_label(lang, label)
 
     dmt.save()
+
+    return HttpResponseRest(request, {})
+
+
+@RestDescriptorModelIdTypeId.def_auth_request(Method.DELETE, Format.JSON,
+    perms={
+         'accession.change_descriptormodel': _('You are not allowed to modify a model of descriptor'),
+         'accession.delete_descriptormodeltype': _('You are not allowed to remove a type of model of descriptor'),
+    },
+    staff=True)
+def delete_descriptor_model_type_for_model(request, id, tid):
+    """
+    If possible delete a descriptor model type from de descriptor model.
+    It is not possible if there is data using the model of descriptor or the status is valid.
+    """
+    dm_id = int(id)
+    dmt_id = int(tid)
+
+    dm = get_object_or_404(DescriptorModel, id=dm_id)
+
+    if dm.in_usage():
+        raise SuspiciousOperation(_("There is some data using the model of descriptor"))
+
+    dmt = get_object_or_404(DescriptorModelType, id=dmt_id, descriptor_model__id=dm_id)
+
+    position = dmt.position
+    dmt.delete()
+
+    # reorder following dmts
+    for dmt in dm.descriptors_model_types.filter(position__gt=position).order_by('position'):
+        new_position = dmt.position - 1
+        dmt.position = new_position
+        dmt.save()
 
     return HttpResponseRest(request, {})
