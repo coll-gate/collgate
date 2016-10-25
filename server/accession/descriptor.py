@@ -392,7 +392,7 @@ def create_descriptor_type(request, id):
     },
     staff=True
 )
-def delete_descriptor_group(request, id, tid):
+def delete_descriptor_type_for_group(request, id, tid):
     group_id = int_arg(id)
     group = get_object_or_404(DescriptorGroup, id=group_id)
 
@@ -401,6 +401,9 @@ def delete_descriptor_group(request, id, tid):
 
     if descr_type.has_values():
         raise SuspiciousOperation(_("Only an empty of values type of descriptors can be deleted"))
+
+    if descr_type.is_used():
+        raise SuspiciousOperation(_("Only unused type of descriptors can be deleted"))
 
     descr_type.delete()
 

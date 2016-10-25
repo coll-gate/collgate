@@ -112,7 +112,7 @@ def get_descriptor_model(request, id):
         'name': dm.name,
         'verbose_name': dm.verbose_name,
         'description': dm.description,
-        'num_descriptors_types': dm.descriptors_model_types.all().count()
+        'num_descriptors_model_types': dm.descriptors_model_types.all().count()
     }
 
     return HttpResponseRest(request, result)
@@ -151,7 +151,7 @@ def create_descriptor_model(request):
         'name': dm.name,
         'verbose_name': dm.verbose_name,
         'description': dm.description,
-        'num_descriptors_types': 0
+        'num_descriptors_model_types': 0
     }
 
     return HttpResponseRest(request, result)

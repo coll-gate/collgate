@@ -137,6 +137,12 @@ class DescriptorType(Entity):
         else:
             return self.values_set.all().exists()
 
+    def is_used(self):
+        """
+        Check if the type of descriptor is used by some type of models of descriptors
+        """
+        return self.descriptors_model_types.all().exists()
+
     # @property
     # def _format_cache(self):
     #     """
@@ -792,7 +798,7 @@ class DescriptorModelType(Entity):
     descriptor_model = models.ForeignKey('DescriptorModel', related_name='descriptors_model_types')
 
     # Related type of descriptor (relate on a specific one's)
-    descriptor_type = models.ForeignKey(DescriptorType)
+    descriptor_type = models.ForeignKey(DescriptorType, related_name='descriptors_model_types')
 
     # True if this type of descriptor is mandatory for an accession (model)
     mandatory = models.BooleanField(default=False)

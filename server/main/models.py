@@ -34,7 +34,7 @@ class Profile(models.Model):
         (4, STATE_CLOSED)
     )
 
-    user = models.ForeignKey(User, null=False, blank=False)
+    user = models.OneToOneField(User)
     state = models.IntegerField(default=STATE_CREATED, choices=PROFILE_STATES)
     company = models.CharField(max_length=127)
     admin_status = models.CharField(max_length=512)

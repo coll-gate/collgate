@@ -75,13 +75,24 @@ var View = ScrollView.extend({
             e.preventDefault();
         }
 
+        this.dragEnterCount || (this.dragEnterCount = 1);
+
+        if (this.dragEnterCount == 1) {
+            if (this.$el.find("tbody tr").length == 0) {
+                var dummyRow = $("<tr><td></td><td></td><td></td><td></td><td></td></tr>").addClass("dummy-row");
+                this.$el.find("tbody").append(dummyRow);
+            }
+
+            this.$el.find("tbody tr").last().css('border-bottom', '5px dashed #ddd');
+        }
+
         //e.dataTransfer.dropEffect = 'move';
         return false;
     },
 
     dropContent: function (e) {
-        if (e.preventDefault) {
-            e.preventDefault();
+        if (e.stopPropagation) {
+            e.stopPropagation();
         }
 
         this.dragEnterCount = 0;

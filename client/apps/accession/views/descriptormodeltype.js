@@ -108,8 +108,8 @@ var View = Marionette.ItemView.extend({
     },
 
     drop: function (e) {
-        if (e.originalEvent.preventDefault) {
-            e.originalEvent.preventDefault();
+        if (e.originalEvent.stopPropagation) {
+            e.originalEvent.stopPropagation();
         }
 
         var elt = application.dndElement;
