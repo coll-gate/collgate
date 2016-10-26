@@ -11,8 +11,6 @@
 var Marionette = require('backbone.marionette');
 var DescriptorGroupModel = require('../models/descriptorgroup');
 var DescriptorTypeModel = require('../models/descriptortype');
-var DescriptorValueModel = require('../models/descriptorvalue');
-var DescriptorGroupCollection = require('../collections/descriptorgroup');
 var DescriptorTypeCollection = require('../collections/descriptortype');
 var DescriptorValueCollection = require('../collections/descriptorvalue');
 var DescriptorGroupListView = require('../views/descriptorgrouplist');
@@ -21,9 +19,7 @@ var DescriptorTypeListView = require('../views/descriptortypelist');
 var DescriptorValueListView = require('../views/descriptorvaluelist');
 var DescriptorValuePairListView = require('../views/descriptorvaluepairlist');
 
-var DescriptorTypeItemView = require('../views/descriptortype');
 var DescriptorTypeDetailView = require('../views/descriptortypedetail');
-var DescriptorValueItemView = require('../views/descriptorvalue');
 var DefaultLayout = require('../../main/views/defaultlayout');
 var TitleView = require('../../main/views/titleview');
 var ScrollingMoreView = require('../../main/views/scrollingmore');
@@ -34,7 +30,6 @@ var DescriptorGroupTypeAddView = require('../views/descriptorgrouptypeadd');
 var Router = Marionette.AppRouter.extend({
     routes : {
         "app/accession/descriptor/group/": "getDescriptorGroupList",
-        // "app/accession/descriptor/group/:id/": "getDescriptorGroup",  // only POST
         "app/accession/descriptor/group/:id/type/": "getDescriptorTypeListForGroup",
         "app/accession/descriptor/group/:id/type/:id/": "getDescriptorTypeForGroup",
         "app/accession/descriptor/group/:id/type/:id/value/": "getDescriptorValueListForType",
@@ -55,7 +50,7 @@ var Router = Marionette.AppRouter.extend({
             defaultLayout.getRegion('content_bottom').show(new ScrollingMoreView({targetView: descriptorGroupListView}));
         });
 
-        // TODO lookup for permission
+        // @todo lookup for permission
         if (session.user.isAuth && (session.user.isSuperUser || session.user.isStaff)) {
             defaultLayout.getRegion('bottom').show(new DescriptorGroupAddView({collection: collection}));
         }
@@ -71,7 +66,7 @@ var Router = Marionette.AppRouter.extend({
         model.fetch().then(function () {
             defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Types of descriptors for the group"), object: model.get('name')}));
 
-            // TODO lookup for permission
+            // @todo lookup for permission
             if (session.user.isAuth && (session.user.isSuperUser || session.user.isStaff) && model.get('can_modify')) {
                 defaultLayout.getRegion('bottom').show(new DescriptorGroupTypeAddView({collection: collection}));
             }
@@ -111,22 +106,21 @@ var Router = Marionette.AppRouter.extend({
                 var valueListView = null;
 
                 if (model.get('format').type === "enum_single") {
-                    // TODO edit value
+                    // @todo edit value
                     valueListView = new DescriptorValueListView({
                         read_only: true,
                         collection: collection,
                         model: model
                     });
                 } else if (model.get('format').type === "enum_pair") {
-                    // TODO edit values
+                    // @todo edit values
                     valueListView = new DescriptorValuePairListView({
                         read_only: true,
                         collection: collection,
                         model: model
                     });
                 } else if (model.get('format').type === "enum_ordinal") {
-                    // TODO specific view in way to only edit the label
-                    // and to not add/remove some value
+                    // @todo specific view in way to only edit the label and to not add/remove some value
                     valueListView = new DescriptorValuePairListView({
                         read_only: true,
                         collection: collection,

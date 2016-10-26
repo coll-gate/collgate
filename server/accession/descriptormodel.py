@@ -331,12 +331,6 @@ def create_descriptor_type_for_model(request, id):
     dm = get_object_or_404(DescriptorModel, id=dm_id)
     dt = get_object_or_404(DescriptorType, code=dt_code)
 
-    # r-shift of 1 others descriptors_model_types
-    for dmt in dm.descriptors_model_types.filter(position__gte=position).order_by('position'):
-        new_position = dmt.position + 1
-        dmt.position = new_position
-        dmt.save()
-
     dmt = dm.descriptors_model_types.all().order_by('-name')[:1]
     if dmt.exists():
         name = "%i:%i" % (dm_id, int(dmt[0].name.split(':')[1])+1)
@@ -354,6 +348,13 @@ def create_descriptor_type_for_model(request, id):
     dmt.descriptor_type = dt
 
     dmt.save()
+
+    # rshift of 1 others descriptors_model_types
+    for ldmt in dm.descriptors_model_types.filter(position__gte=position).order_by('position'):
+        if ldmt.id != dmt.id:
+            new_position = ldmt.position + 1
+            ldmt.position = new_position
+            ldmt.save()
 
     result = {
         'id': dmt.id,
@@ -383,11 +384,7 @@ def create_descriptor_type_for_model(request, id):
     staff=True)
 def reorder_descriptor_types_for_model(request, id):
     """
-    Reorder the types of models of descriptors according to the new position
-    of one of the elements.
-    :param request:
-    :param id:
-    :return:
+    Reorder the types of models of descriptors according to the new position of one of the elements.
     """
     dm_id = int(id)
 
@@ -407,8 +404,6 @@ def reorder_descriptor_types_for_model(request, id):
         dmt_ref.position = position
         dmt_ref.save()
 
-        dm.descriptors_model_types = []
-
         next_position = position + 1
 
         for dmt in dmt_list:
@@ -423,8 +418,6 @@ def reorder_descriptor_types_for_model(request, id):
 
         dmt_ref.position = position
         dmt_ref.save()
-
-        dm.descriptors_model_types = []
 
         next_position = 0
 
@@ -464,13 +457,12 @@ def patch_descriptor_model_type_for_model(request, id, tid):
 
     dmt = get_object_or_404(DescriptorModelType, id=dmt_id, descriptor_model__id=dm_id)
 
-    lang = translation.get_language()
-
     if mandatory is not None:
         dmt.mandatory = bool(mandatory)
     if set_once is not None:
         dmt.set_once = bool(set_once)
     if label is not None:
+        lang = translation.get_language()
         dmt.set_label(lang, label)
 
     dmt.save()

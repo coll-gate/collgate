@@ -72,6 +72,7 @@ some translations before every catalogs are loaded, and normally the server sent
                     <button class="btn btn-sm btn-success" id="nav_back"><span class="glyphicon glyphicon-backward"></span></button>
                     <button class="btn btn-sm btn-success" id="nav_fwd"><span class="glyphicon glyphicon-forward"></span></button>
                     <button class="btn btn-sm btn-success" id="nav_refresh"><span class="glyphicon glyphicon-refresh"></span></button>
+                    <button class="btn btn-sm btn-default" id="toggle_display"><span class="glyphicon glyphicon-expand"></span></button>
                 </div>
             </ul>
             <div>
@@ -285,6 +286,23 @@ session.user.isStaff = {{ user.is_staff|yesno:"true,false" }};
 
                     return false;
                 });
+            }
+        });
+
+        $("#toggle_display").on("click", function(e) {
+            if (!$(this).attr("display-mode")) {
+                $(this).attr("display-mode", "2-8-2");
+            }
+
+            if ($(this).attr("display-mode") == "2-8-2") {
+                application.setDisplay("2-10-0");
+                $(this).attr("display-mode", "2-10-0");
+            } else if ($(this).attr("display-mode") == "2-10-0") {
+                application.setDisplay("0-12-0");
+                $(this).attr("display-mode", "0-12-0");
+            } else if ($(this).attr("display-mode") == "0-12-0") {
+                application.setDisplay("2-8-2");
+                $(this).attr("display-mode", "2-8-2");
             }
         });
     });

@@ -39,13 +39,18 @@ var View = ScrollView.extend({
             e.preventDefault();
         }
 
+        if (!$(e.target).hasClass("left-content")) {
+            return false;
+        }
+
         this.dragEnterCount || (this.dragEnterCount = 0);
         ++this.dragEnterCount;
 
         if (this.dragEnterCount == 1) {
             if (this.$el.find("tbody tr").length == 0) {
-                var dummyRow = $("<tr><td></td><td></td><td></td><td></td><td></td></tr>").addClass("dummy-row");
-                this.$el.find("tbody").append(dummyRow);
+                //var dummyRow = $("<tr><td></td><td></td><td></td><td></td><td></td></tr>").addClass("dummy-row");
+                //this.$el.find("tbody").append(dummyRow);
+                this.$el.find("thead tr th").css('border-bottom', '5px dashed #ddd');
             }
 
             this.$el.find("tbody tr").last().css('border-bottom', '5px dashed #ddd');
@@ -59,12 +64,18 @@ var View = ScrollView.extend({
             e.preventDefault();
         }
 
+        if (!$(e.target).hasClass("left-content")) {
+            return false;
+        }
+
         this.dragEnterCount || (this.dragEnterCount = 1);
         --this.dragEnterCount;
 
         if (this.dragEnterCount == 0) {
             this.$el.find("tbody tr").last().css('border-bottom', 'initial');
-            this.$el.find("tbody tr.dummy-row").remove();
+            //this.$el.find("tbody tr.dummy-row").remove();
+            this.$el.find("thead tr th").css('border-bottom', '2px solid #ddd');
+
         }
 
         return false;
@@ -75,12 +86,17 @@ var View = ScrollView.extend({
             e.preventDefault();
         }
 
+        if (!$(e.target).hasClass("left-content")) {
+            return false;
+        }
+
         this.dragEnterCount || (this.dragEnterCount = 1);
 
         if (this.dragEnterCount == 1) {
             if (this.$el.find("tbody tr").length == 0) {
-                var dummyRow = $("<tr><td></td><td></td><td></td><td></td><td></td></tr>").addClass("dummy-row");
-                this.$el.find("tbody").append(dummyRow);
+                //var dummyRow = $("<tr><td></td><td></td><td></td><td></td><td></td></tr>").addClass("dummy-row");
+                //this.$el.find("tbody").append(dummyRow);
+                this.$el.find("thead tr th").css('border-bottom', '5px dashed #ddd');
             }
 
             this.$el.find("tbody tr").last().css('border-bottom', '5px dashed #ddd');
@@ -95,10 +111,15 @@ var View = ScrollView.extend({
             e.stopPropagation();
         }
 
+        if (!$(e.target).hasClass("left-content")) {
+            return false;
+        }
+
         this.dragEnterCount = 0;
 
         this.$el.find("tbody tr").last().css('border-bottom', 'initial');
-        this.$el.find("tbody tr.dummy-row").remove();
+        //this.$el.find("tbody tr.dummy-row").remove();
+        this.$el.find("thead tr th").css('border-bottom', '2px solid #ddd');
 
         var elt = application.dndElement;
         if (!elt) {

@@ -1,8 +1,8 @@
 /**
- * @file descriptormodel.js
- * @brief Descriptor model router
+ * @file descriptormetamodel.js
+ * @brief Descriptor meta-model router
  * @author Frederic SCHERMA
- * @date 2016-09-19
+ * @date 2016-10-26
  * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
  * @license @todo
  * @details
@@ -10,51 +10,49 @@
 
 var Marionette = require('backbone.marionette');
 
-var DescriptorModelModel = require('../models/descriptormodel');
-var DescriptorModelCollection = require('../collections/descriptormodel');
-var DescriptorGroupCollection = require('../collections/descriptorgroup');
-var DescriptorModelTypeCollection = require('../collections/descriptormodeltype');
+var DescriptorMetaModelModel = require('../models/descriptormetamodel');
+var DescriptorMetaModelCollection = require('../collections/descriptormetamodel');
+var DescriptorPanelCollection = require('../collections/descriptorpanel');
 
-var DescriptorModelAddView = require('../views/descriptormodeladd');
-var DescriptorModelDetailView = require('../views/descriptormodeldetail');
-var DescriptorModelListView = require('../views/descriptormodellist');
-var DescriptorModelTypeListView = require('../views/descriptormodeltypelist');
+var DescriptorMetaModelAddView = require('../views/descriptormetamodeladd');
+var DescriptorMetaModelDetailView = require('../views/descriptormetamodeldetail');
+var DescriptorMetaModelListView = require('../views/descriptormetamodellist');
+var DescriptorPanelListView = require('../views/descriptorpanellist');
 
-var DescriptorGroupListAltView = require('../views/descriptorgrouplistalt');
-var DescriptorTypeListAltView = require('../views/descriptortypelistalt');
+var DescriptorModelListAltView = require('../views/descriptormodellistalt');
 
 var DefaultLayout = require('../../main/views/defaultlayout');
-var LeftOneRightTwoLayout = require('../../main/views/leftonerighttwolayout');
+var TwoColumnsLayout = require('../../main/views/twocolumnslayout');
 var TitleView = require('../../main/views/titleview');
 var ScrollingMoreView = require('../../main/views/scrollingmore');
 
 var Router = Marionette.AppRouter.extend({
     routes : {
-        "app/accession/descriptor/model/": "getDescriptorModelList",
-        "app/accession/descriptor/model/:id/": "getDescriptorModel",
-        "app/accession/descriptor/model/:id/type/": "getDescriptorModelTypeListForModel",
+        "app/accession/descriptor/meta-model/": "getDescriptorMetaModelList",
+        "app/accession/descriptor/meta-model/:id/": "getDescriptorMetaModel",
+        "app/accession/descriptor/meta-model/:id/panel/": "getDescriptorPanelListForModel",
     },
 
-    getDescriptorModelList: function () {
-        var collection = new DescriptorModelCollection();
+    getDescriptorMetaModelList: function () {
+        var collection = new DescriptorMetaModelCollection();
 
         var defaultLayout = new DefaultLayout({});
         application.getRegion('mainRegion').show(defaultLayout);
 
-        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of models of descriptors")}));
+        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of meta-models of descriptors")}));
 
         collection.fetch().then(function () {
-            var descriptorModelList = new DescriptorModelListView({collection : collection});
-            defaultLayout.getRegion('content').show(descriptorModelList);
-            defaultLayout.getRegion('content_bottom').show(new ScrollingMoreView({targetView: descriptorModelList}));
+            var descriptorMetaModelList = new DescriptorMetaModelListView({collection : collection});
+            defaultLayout.getRegion('content').show(descriptorMetaModelList);
+            defaultLayout.getRegion('content_bottom').show(new ScrollingMoreView({targetView: descriptorMetaModelList}));
         });
 
         // @todo lookup for permission
         if (session.user.isAuth && (session.user.isSuperUser || session.user.isStaff)) {
-            defaultLayout.getRegion('bottom').show(new DescriptorModelAddView({collection: collection}));
+            defaultLayout.getRegion('bottom').show(new DescriptorMetaModelAddView({collection: collection}));
         }
     },
-
+/*
     getDescriptorModel: function (id) {
         var defaultLayout = new DefaultLayout();
         application.getRegion('mainRegion').show(defaultLayout);
@@ -98,7 +96,7 @@ var Router = Marionette.AppRouter.extend({
         var descriptorTypeList = new DescriptorTypeListAltView({});
         leftOneRightTwoLayout.getRegion('right-down-content').show(descriptorTypeList);
         leftOneRightTwoLayout.getRegion('right-down-bottom').show(new ScrollingMoreView({targetView: descriptorTypeList}));
-    },
+    },*/
 });
 
 module.exports = Router;

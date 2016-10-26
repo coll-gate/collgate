@@ -34,7 +34,7 @@ var DefaultLayout = Marionette.LayoutView.extend({
 
     onBeforeDestroy: function () {
         // reset to default global display mode
-        application.setDisplay("2-8-2");
+        //application.setDisplay("2-8-2");
     },
 });
 

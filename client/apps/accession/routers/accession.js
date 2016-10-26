@@ -9,14 +9,18 @@
  */
 
 var Marionette = require('backbone.marionette');
+
 // var AccessionModel = require('../models/accession');
 // var BatchModel = require('../models/batch');
+
 // var AccessionCollection = require('../collections/accession');
 // var BatchCollection = require('../collections/batch');
+
 // var AccessionListView = require('../views/accessionlist');
 // var BatchListView = require('../views/batchlist');
 // var AccessionItemView = require('../views/accessionitem');
 // var BatchItemView = require('../views/batchitem');
+
 var DefaultLayout = require('../../main/views/defaultlayout');
 var TitleView = require('../../main/views/titleview');
 
@@ -25,7 +29,9 @@ var Router = Marionette.AppRouter.extend({
         "app/accession/accession/": "getAccessionList",
         "app/accession/accession/:id/": "getAccession",
         "app/accession/accession/:id/batch/": "getBatchList",
-        "app/accession/accession/:id/batch/:id": "getBatch",
+        "app/accession/accession/:id/batch/:bid": "getBatch",
+        "app/accession/accession/:id/batch/:bid/sample/": "getSampleList",
+        "app/accession/accession/:id/batch/:bid/sample/:sid/": "getSample",
     },
 
     getAccessionList : function() {
@@ -51,6 +57,14 @@ var Router = Marionette.AppRouter.extend({
     },
 
     getBatch : function(id) {
+        alert("Not yet implemented");
+    },
+
+    getSampleList : function(id) {
+        alert("Not yet implemented");
+    },
+
+    getSample : function(id) {
         alert("Not yet implemented");
     },
 });

@@ -740,15 +740,18 @@ class AccessionSynonym(Entity):
 
 class DescriptorPanel(Entity):
     """
-    A panel is a displayable entity that is an association of values of descriptors.
-    It is only defined for a specific model of descriptor (one to many relation).
-    There is many panels per meta-model of descriptor.
-    Panels are created and modified by staff people.
+    A panel is a displayable entity that is an association of values of descriptors
+    from a model of descriptor.
+    It is only defined for a specific model of descriptor (m2m through model).
+    A meta-model of descriptor can have many panels.
     The textual resources of a panel are i18nable because they are displayed for users.
     """
 
     # To which meta-models this panel is attached.
     descriptor_meta_model = models.ForeignKey('DescriptorMetaModel', related_name='panels')
+
+    # Related model of descriptor
+    descriptor_model = models.ForeignKey('DescriptorModel', related_name='panels')
 
     # Label of the panel (can be used for a tab, or any dialog title).
     # It is i18nized used JSON dict with language code as key and label as value (string:string).
@@ -756,9 +759,6 @@ class DescriptorPanel(Entity):
 
     # Position priority into the display. Lesser is before. Negative value are possibles.
     position = models.IntegerField(default=0)
-
-    # Related model of descriptor
-    descriptor_model = models.ForeignKey('DescriptorModel', related_name='panels')
 
     class Meta:
         verbose_name = _("descriptor panel")
@@ -877,9 +877,11 @@ class DescriptorMetaModel(Entity):
     # Textual description of the model of descriptor. There is no translation. It is for staff usage.
     description = models.TextField(blank=True, default="")
 
-    # List of model of descriptor attached to this meta model.
-    # The model of descriptors can be shared between meta models.
-    descriptor_models = models.ManyToManyField(DescriptorPanel, related_name='descriptor_meta_models')
+    # List of model of descriptor attached to this meta model through panel of descriptor for label and position.
+    descriptor_models = models.ManyToManyField(
+        DescriptorModel,
+        related_name='descriptor_meta_models',
+        through=DescriptorPanel)
 
     class Meta:
         verbose_name = _("descriptor meta model")
