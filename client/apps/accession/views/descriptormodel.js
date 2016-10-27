@@ -19,13 +19,13 @@ var View = Marionette.ItemView.extend({
     ui: {
         delete_descriptor_model: 'span.delete-descriptor-model',
         view_descriptor_model: 'td.view-descriptor-model',
-        view_descriptors_model_types: 'td.view-descriptors-model-types'
+        view_descriptor_model_types: 'td.view-descriptor-model-types'
     },
 
     events: {
         'click @ui.delete_descriptor_model': 'deleteDescriptorModel',
         'click @ui.view_descriptor_model': 'viewDescriptorModelDetails',
-        'click @ui.view_descriptors_model_types': 'viewDescriptorsModelTypes'
+        'click @ui.view_descriptor_model_types': 'viewDescriptorModelTypes'
     },
 
     initialize: function() {
@@ -43,12 +43,12 @@ var View = Marionette.ItemView.extend({
         Backbone.history.navigate("app/accession/descriptor/model/" + this.model.id + "/", {trigger: true});
     },
 
-    viewDescriptorsModelTypes: function() {
+    viewDescriptorModelTypes: function() {
         Backbone.history.navigate("app/accession/descriptor/model/" + this.model.id + "/type/", {trigger: true});
     },
 
     deleteDescriptorModel: function() {
-        if (this.model.get('num_descriptors_types') == 0) {
+        if (this.model.get('num_descriptor_types') == 0) {
             this.model.destroy({wait: true});
         }
     }

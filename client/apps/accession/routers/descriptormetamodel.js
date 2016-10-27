@@ -39,7 +39,7 @@ var Router = Marionette.AppRouter.extend({
         var defaultLayout = new DefaultLayout({});
         application.getRegion('mainRegion').show(defaultLayout);
 
-        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of meta-models of descriptors")}));
+        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of meta-models of descriptor")}));
 
         collection.fetch().then(function () {
             var descriptorMetaModelList = new DescriptorMetaModelListView({collection : collection});
@@ -71,7 +71,7 @@ var Router = Marionette.AppRouter.extend({
         var defaultLayout = new DefaultLayout({});
         application.getRegion('mainRegion').show(defaultLayout);
 
-        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of types of models of descriptors")}));
+        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of types of models of descriptor")}));
 
         var leftOneRightTwoLayout = new LeftOneRightTwoLayout({});
         defaultLayout.getRegion('content').show(leftOneRightTwoLayout);

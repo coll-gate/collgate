@@ -78,7 +78,7 @@ def list_descriptor_meta_models(request):
             'label': dmm.get_label(),
             'description': dmm.description,
             'target': '.'.join(dmm.target.natural_key()),
-            'num_descriptors_models': dmm.descriptor_models.all().count()
+            'num_descriptor_models': dmm.descriptor_models.all().count()
         })
 
     if len(dmms_list) > 0:
@@ -134,7 +134,7 @@ def create_descriptor_meta_model(request):
         'name': dmm.name,
         'description': '',
         'target': '.'.join(content_type.natural_key()),
-        'num_descriptors_models': 0
+        'num_descriptor_models': 0
     }
 
     return HttpResponseRest(request, result)
@@ -151,7 +151,7 @@ def get_descriptor_meta_model(request, id):
         'name': dmm.name,
         'description': dmm.description,
         'target': '.'.join(dmm.target.natural_key()),
-        'num_descriptors_models': dmm.descriptor_models.all().count()
+        'num_descriptor_models': dmm.descriptor_models.all().count()
     }
 
     return HttpResponseRest(request, result)
@@ -166,9 +166,9 @@ def remove_descriptor_meta_model(request, id):
 
     dmm = get_object_or_404(DescriptorMetaModel, id=dmm_id)
 
-    if dmm.descriptors_models.all().count() > 0:
+    if dmm.descriptor_models.all().count() > 0:
         raise SuspiciousOperation(
-            _('It is not possible to remove a meta-model of descriptor that contains models of descriptors'))
+            _('It is not possible to remove a meta-model of descriptor that contains models of descriptor'))
 
     if dmm.accessions.all().count() > 0:
         raise SuspiciousOperation(
@@ -213,7 +213,7 @@ def modify_descriptor_meta_model(request, id):
         'name': dmm.name,
         'description': dmm.description,
         'target': '.'.join(dmm.target.natural_key()),
-        'num_descriptors_models': dmm.descriptor_models.all().count()
+        'num_descriptor_models': dmm.descriptor_models.all().count()
     }
 
     return HttpResponseRest(request, result)
@@ -246,7 +246,7 @@ def patch_descriptor_meta_model(request, id):
         'name': dmm.name,
         'description': dmm.description,
         'target': '.'.join(dmm.target.natural_key()),
-        'num_descriptors_models': dmm.descriptor_models.all().count()
+        'num_descriptor_models': dmm.descriptor_models.all().count()
     }
 
     return HttpResponseRest(request, result)
@@ -276,7 +276,7 @@ def search_descriptor_meta_models(request):
                 "id": meta_model.id,
                 "name": meta_model.name,
                 "label": meta_model.label,
-                'num_descriptors_models': meta_model.descriptors_models.all().count(),
+                'num_descriptor_models': meta_model.descriptor_models.all().count(),
             })
 
     response = {
@@ -375,8 +375,8 @@ def create_descriptor_panel_for_meta_model(request, id):
     dp.full_clean()
     dp.save()
 
-    # rshift of 1 others descriptors_model_types
-    for ldp in dmm.descriptors_models.filter(position__gte=position).order_by('position'):
+    # rshift of 1 others descriptor_model
+    for ldp in dmm.descriptor_models.filter(position__gte=position).order_by('position'):
         if ldp.id != dp.id:
             new_position = ldp.position + 1
             ldp.position = new_position
@@ -440,7 +440,7 @@ def reorder_descriptor_types_for_model(request, id):
     dp_list = []
 
     if position < dp_ref.position:
-        for dp in dmm.descriptors_models.filter(position__gte=position).order_by('position'):
+        for dp in dmm.descriptor_models.filter(position__gte=position).order_by('position'):
             if dp.id != dp_id:
                 dp_list.append(dp)
 
@@ -455,7 +455,7 @@ def reorder_descriptor_types_for_model(request, id):
 
             next_position += 1
     else:
-        for dp in dmm.descriptors_models.filter(position__lte=position).order_by('position'):
+        for dp in dmm.descriptor_models.filter(position__lte=position).order_by('position'):
             if dp.id != dp_id:
                 dp_list.append(dp)
 
@@ -526,7 +526,7 @@ def remove_descriptor_panel_of_meta_model(request, id, pid):
     panel.delete()
 
     # reorder following panels
-    for panel in dmm.descriptors_models.filter(position__gt=position).order_by('position'):
+    for panel in dmm.descriptor_models.filter(position__gt=position).order_by('position'):
         new_position = panel.position - 1
         panel.position = new_position
         panel.save()

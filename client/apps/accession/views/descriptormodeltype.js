@@ -279,7 +279,7 @@ var View = Marionette.ItemView.extend({
                 // need to sort
                 collection.sort();
             }).fail(function () {
-                $.alert.error(gt.gettext('Unable to reorder the types of models of descriptors'));
+                $.alert.error(gt.gettext('Unable to reorder the types of model of descriptor'));
             })
         }
 

@@ -42,10 +42,10 @@ var View = Marionette.ItemView.extend({
     },
 
     deleteDescriptorGroup: function() {
-        if (this.model.get('num_descriptors_types') == 0) {
+        if (this.model.get('num_descriptor_types') == 0) {
             this.model.destroy({wait: true});
         } else {
-            $.alert.warning(gt.gettext("Some type of descriptors exists for this group"));
+            $.alert.warning(gt.gettext("Some types of descriptor exists for this group"));
         }
     }
 });

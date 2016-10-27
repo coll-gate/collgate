@@ -52,9 +52,9 @@ class DescriptorGroup(Entity):
     Category of a type of descriptor for an accession.
     """
 
-    # Is this group of descriptor can be deleted when it is empty
+    # Is this group of descriptors can be deleted when it is empty
     can_delete = models.BooleanField(default=True)
-    # Is this group of descriptor can be modified (rename, add/remove descriptors)
+    # Is this group of descriptors can be modified (rename, add/remove descriptors)
     # by an authorized staff people
     can_modify = models.BooleanField(default=True)
 
@@ -141,7 +141,7 @@ class DescriptorType(Entity):
         """
         Check if the type of descriptor is used by some type of models of descriptors
         """
-        return self.descriptors_model_types.all().exists()
+        return self.descriptor_model_types.all().exists()
 
     # @property
     # def _format_cache(self):
@@ -795,10 +795,10 @@ class DescriptorModelType(Entity):
     label = models.TextField(default="{}")
 
     # Relate the descriptor model (one descriptor model can have many descriptor model types)
-    descriptor_model = models.ForeignKey('DescriptorModel', related_name='descriptors_model_types')
+    descriptor_model = models.ForeignKey('DescriptorModel', related_name='descriptor_model_types')
 
     # Related type of descriptor (relate on a specific one's)
-    descriptor_type = models.ForeignKey(DescriptorType, related_name='descriptors_model_types')
+    descriptor_type = models.ForeignKey(DescriptorType, related_name='descriptor_model_types')
 
     # True if this type of descriptor is mandatory for an accession (model)
     mandatory = models.BooleanField(default=False)
@@ -868,7 +868,7 @@ class DescriptorMetaModel(Entity):
     """
 
     # Target entity type (generally accession, batch or sample).
-    target = models.ForeignKey(ContentType, editable=False, related_name='descriptors_meta_model')
+    target = models.ForeignKey(ContentType, editable=False, related_name='descriptor_meta_models')
 
     # Label of the meta model of descriptor.
     # It is i18nized used JSON dict with language code as key and label as value (string:string).

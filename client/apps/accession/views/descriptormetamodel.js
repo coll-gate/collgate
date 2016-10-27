@@ -55,7 +55,7 @@ var View = Marionette.ItemView.extend({
     },
 
     deleteDescriptorMetaModel: function() {
-        if (this.model.get('num_descriptors_models') == 0) {
+        if (this.model.get('num_descriptor_models') == 0) {
             this.model.destroy({wait: true});
         }
     },

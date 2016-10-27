@@ -1,6 +1,6 @@
 /**
  * @file descriptorgroupadd.js
- * @brief Add a group of descriptor
+ * @brief Add a group of descriptors
  * @author Frederic SCHERMA
  * @date 2016-08-05
  * @copyright Copyright (c) 2016 INRA UMR1095 GDEC

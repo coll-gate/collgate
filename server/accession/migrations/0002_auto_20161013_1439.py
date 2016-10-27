@@ -46,7 +46,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='descriptormodeltype',
             name='descriptor_model',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='descriptors_model_types', to='accession.DescriptorModel'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='descriptor_model_types', to='accession.DescriptorModel'),
         ),
         migrations.AlterField(
             model_name='descriptormodeltype',

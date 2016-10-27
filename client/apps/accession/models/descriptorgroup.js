@@ -1,6 +1,6 @@
 /**
  * @file descriptorgroup.js
- * @brief Group of descriptor model
+ * @brief Group of descriptors model
  * @author Frederic SCHERMA
  * @date 2016-07-20
  * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
@@ -21,7 +21,7 @@ var Model = Backbone.Model.extend({
     defaults: {
         id: null,
         name: '',
-        num_descriptors_types: 0,
+        num_descriptor_types: 0,
         can_delete: false,
         can_modify: false
     },

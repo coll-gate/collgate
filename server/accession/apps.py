@@ -54,10 +54,10 @@ class CollGateAccession(ApplicationMain):
             MenuEntry('list-descriptor-group', _('List groups of descriptors'), "#accession/descriptor/group/",
                       icon=Glyph.TH_LIST, order=201, auth=AUTH_STAFF))
         menu_accession.add_entry(
-            MenuEntry('list-descriptor-model', _('List models of descriptors'), "#accession/descriptor/model/",
+            MenuEntry('list-descriptor-model', _('List models of descriptor'), "#accession/descriptor/model/",
                       icon=Glyph.TH, order=202, auth=AUTH_STAFF))
         menu_accession.add_entry(
-            MenuEntry('list-descriptor-meta-model', _('List meta-models of descriptors'), "#accession/descriptor/meta-model/",
+            MenuEntry('list-descriptor-meta-model', _('List meta-models of descriptor'), "#accession/descriptor/meta-model/",
                       icon=Glyph.TH_LARGE, order=203, auth=AUTH_STAFF))
         accession_module.add_menu(menu_accession)
 

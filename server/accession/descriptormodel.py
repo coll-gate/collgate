@@ -52,9 +52,9 @@ class RestDescriptorModelIdTypeId(RestDescriptorModelIdType):
 
 
 @RestDescriptorModel.def_auth_request(Method.GET, Format.JSON)
-def get_descriptors_models(request):
+def get_descriptor_models(request):
     """
-    Returns a list of models of descriptors ordered by name.
+    Returns a list of models of descriptor ordered by name.
     """
     results_per_page = int_arg(request.GET.get('more', 30))
     cursor = request.GET.get('cursor')
@@ -76,7 +76,7 @@ def get_descriptors_models(request):
             'name': dm.name,
             'verbose_name': dm.verbose_name,
             'description': dm.description,
-            'num_descriptors_model_types': dm.descriptors_model_types.all().count()
+            'num_descriptor_model_types': dm.descriptor_model_types.all().count()
         })
 
     if len(dm_list) > 0:
@@ -112,7 +112,7 @@ def get_descriptor_model(request, id):
         'name': dm.name,
         'verbose_name': dm.verbose_name,
         'description': dm.description,
-        'num_descriptors_model_types': dm.descriptors_model_types.all().count()
+        'num_descriptor_model_types': dm.descriptor_model_types.all().count()
     }
 
     return HttpResponseRest(request, result)
@@ -151,7 +151,7 @@ def create_descriptor_model(request):
         'name': dm.name,
         'verbose_name': dm.verbose_name,
         'description': dm.description,
-        'num_descriptors_model_types': 0
+        'num_descriptor_model_types': 0
     }
 
     return HttpResponseRest(request, result)
@@ -199,10 +199,10 @@ def remove_descriptor_model(request, id):
     model = get_object_or_404(DescriptorModel, id=dm_id)
 
     if model.descriptors_model_types.all().exists():
-        raise SuspiciousOperation(_("Only empty models of descriptors can be removed"))
+        raise SuspiciousOperation(_("Only empty models of descriptor can be removed"))
 
     if model.panels.all().exists():
-        raise SuspiciousOperation(_("Only unused models of descriptors can be removed"))
+        raise SuspiciousOperation(_("Only unused models of descriptor can be removed"))
 
     model.delete()
     return HttpResponseRest(request, {})
@@ -231,7 +231,6 @@ def search_descriptor_models(request):
             models_list.append({
                 "id": model.id,
                 "name": model.name,
-                'num_descriptors_types': model.descriptors_model_types.all().count(),
             })
 
     response = {
@@ -256,9 +255,9 @@ def list_descriptor_model_types_for_model(request, id):
 
     if cursor:
         cursor_position, cursor_id = cursor.split('/')
-        qs = dm.descriptors_model_types.filter(Q(position__gt=cursor_position))
+        qs = dm.descriptor_model_types.filter(Q(position__gt=cursor_position))
     else:
-        qs = dm.descriptors_model_types.all()
+        qs = dm.descriptor_model_types.all()
 
     dmts = qs.order_by('position')[:limit]
 
@@ -329,7 +328,7 @@ def create_descriptor_type_for_model(request, id):
     dm = get_object_or_404(DescriptorModel, id=dm_id)
     dt = get_object_or_404(DescriptorType, code=dt_code)
 
-    dmt = dm.descriptors_model_types.all().order_by('-name')[:1]
+    dmt = dm.descriptor_model_types.all().order_by('-name')[:1]
     if dmt.exists():
         name = "%i:%i" % (dm_id, int(dmt[0].name.split(':')[1])+1)
     else:
@@ -347,8 +346,8 @@ def create_descriptor_type_for_model(request, id):
 
     dmt.save()
 
-    # rshift of 1 others descriptors_model_types
-    for ldmt in dm.descriptors_model_types.filter(position__gte=position).order_by('position'):
+    # rshift of 1 others descriptor_model_types
+    for ldmt in dm.descriptor_model_types.filter(position__gte=position).order_by('position'):
         if ldmt.id != dmt.id:
             new_position = ldmt.position + 1
             ldmt.position = new_position
@@ -395,7 +394,7 @@ def reorder_descriptor_types_for_model(request, id):
     dmt_list = []
 
     if position < dmt_ref.position:
-        for dmt in dm.descriptors_model_types.filter(position__gte=position).order_by('position'):
+        for dmt in dm.descriptor_model_types.filter(position__gte=position).order_by('position'):
             if dmt.id != dmt_id:
                 dmt_list.append(dmt)
 
@@ -410,7 +409,7 @@ def reorder_descriptor_types_for_model(request, id):
 
             next_position += 1
     else:
-        for dmt in dm.descriptors_model_types.filter(position__lte=position).order_by('position'):
+        for dmt in dm.descriptor_model_types.filter(position__lte=position).order_by('position'):
             if dmt.id != dmt_id:
                 dmt_list.append(dmt)
 
@@ -493,7 +492,7 @@ def delete_descriptor_model_type_for_model(request, id, tid):
     dmt.delete()
 
     # reorder following dmts
-    for dmt in dm.descriptors_model_types.filter(position__gt=position).order_by('position'):
+    for dmt in dm.descriptor_model_types.filter(position__gt=position).order_by('position'):
         new_position = dmt.position - 1
         dmt.position = new_position
         dmt.save()

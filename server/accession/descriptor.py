@@ -83,7 +83,7 @@ def get_descriptor_groups(request):
         group_list.append({
             'id': group.pk,
             'name': group.name,
-            'num_descriptors_types': group.types_set.all().count(),
+            'num_descriptor_types': group.types_set.all().count(),
             'can_delete': group.can_delete,
             'can_modify': group.can_modify
         })
@@ -118,7 +118,7 @@ def get_descriptor_groups(request):
             "name": {"type": "string", 'minLength': 3, 'maxLength': 32}
         },
     },
-    # perms={'accession.add_descriptorgroup': _('You are not allowed to create a group of descriptor')},
+    # perms={'accession.add_descriptorgroup': _('You are not allowed to create a group of descriptors')},
     staff=True
 )
 def create_descriptor_group(request):
@@ -132,7 +132,7 @@ def create_descriptor_group(request):
     response = {
         'id': group.id,
         'name': group.name,
-        'num_descriptors_types': 0,
+        'num_descriptor_types': 0,
         'can_delete': group.can_delete,
         'can_modify': group.can_modify
     }
@@ -143,7 +143,7 @@ def create_descriptor_group(request):
 @RestDescriptorGroupId.def_auth_request(
     Method.DELETE, Format.JSON,
     perms={
-        'accession.delete_descriptorgroup': _("You are not allowed to delete a group of descriptor"),
+        'accession.delete_descriptorgroup': _("You are not allowed to delete a group of descriptors"),
     },
     staff=True
 )
@@ -182,7 +182,7 @@ def search_descriptor_groups(request):
             groups_list.append({
                 "id": group.id,
                 "name": group.name,
-                'num_descriptors_types': group.types_set.all().count(),
+                'num_descriptor_types': group.types_set.all().count(),
                 'can_delete': group.can_delete,
                 'can_modify': group.can_modify
             })
@@ -205,7 +205,7 @@ def get_descriptor_groups(request, id):
         'name': group.name,
         'can_delete': group.can_delete,
         'can_modify': group.can_modify,
-        'num_descriptors_types': group.types_set.all().count()
+        'num_descriptor_types': group.types_set.all().count()
     }
 
     return HttpResponseRest(request, response)
@@ -238,7 +238,7 @@ def get_descriptor_types_for_group(request, id):
             'name': descr_type.name,
             'code': descr_type.code,
             'description': descr_type.description,
-            'num_descriptors_values': count,
+            'num_descriptor_values': count,
             'can_delete': descr_type.can_delete,
             'can_modify': descr_type.can_modify,
             'format': json.loads(descr_type.format)
@@ -298,7 +298,7 @@ def search_descriptor_types_for_group(request, id):
                 'code': descr_type.code,
                 'description': descr_type.description,
                 'group': group.id,
-                'num_descriptors_values': count,
+                'num_descriptor_values': count,
                 'format': json.loads(descr_type.format),
                 'can_delete': descr_type.can_delete,
                 'can_modify': descr_type.can_modify
@@ -327,7 +327,7 @@ def get_descriptor_type_for_group(request, id, tid):
         'code': descr_type.code,
         'description': descr_type.description,
         'group': group.id,
-        'num_descriptors_values': count,
+        'num_descriptor_values': count,
         'format': json.loads(descr_type.format),
         'can_delete': descr_type.can_delete,
         'can_modify': descr_type.can_modify
@@ -376,7 +376,7 @@ def create_descriptor_type(request, id):
         'name': descr_type.name,
         'code': descr_type.code,
         'group': group.id,
-        'num_descriptors_values': 0,
+        'num_descriptor_values': 0,
         'can_delete': descr_type.can_delete,
         'can_modify': descr_type.can_modify
     }
@@ -400,10 +400,10 @@ def delete_descriptor_type_for_group(request, id, tid):
     descr_type = get_object_or_404(DescriptorType, id=descr_type_id, group=group)
 
     if descr_type.has_values():
-        raise SuspiciousOperation(_("Only an empty of values type of descriptors can be deleted"))
+        raise SuspiciousOperation(_("Only an empty of values type of descriptor can be deleted"))
 
     if descr_type.is_used():
-        raise SuspiciousOperation(_("Only unused type of descriptors can be deleted"))
+        raise SuspiciousOperation(_("Only unused types of descriptor can be deleted"))
 
     descr_type.delete()
 
@@ -452,7 +452,7 @@ def update_descriptor_type(request, id, tid):
         'code': descr_type.code,
         'format': json.loads(descr_type.format),
         'group': group.id,
-        'num_descriptors_values': count,
+        'num_descriptor_values': count,
         'can_delete': descr_type.can_delete,
         'can_modify': descr_type.can_modify
     }

@@ -24,7 +24,7 @@ var Model = Backbone.Model.extend({
         label: '',
         description: '',
         target: '',
-        num_descriptors_models: 0,
+        num_descriptor_models: 0,
     },
 
     parse: function(data) {

@@ -19,12 +19,12 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='descriptormetamodel',
-            name='descriptor_models_panels',
+            name='descriptor_model_panels',
             field=models.ManyToManyField(related_name='descriptor_meta_models', through='accession.DescriptorPanel', to='accession.DescriptorModel'),
         ),
         migrations.AlterField(
             model_name='descriptormodeltype',
             name='descriptor_type',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='descriptors_model_types', to='accession.DescriptorType'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='descriptor_model_types', to='accession.DescriptorType'),
         ),
     ]

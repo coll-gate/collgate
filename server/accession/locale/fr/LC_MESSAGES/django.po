@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-10-25 14:25+0200\n"
+"POT-Creation-Date: 2016-10-27 16:43+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -39,12 +39,12 @@ msgid "List groups of descriptors"
 msgstr "Liste des groupes de descripteurs"
 
 #: apps.py:57
-msgid "List models of descriptors"
-msgstr "Liste des models de descripteurs"
+msgid "List models of descriptor"
+msgstr "Liste des modèles de descripteur"
 
 #: apps.py:60
-msgid "List meta-models of descriptors"
-msgstr "Liste des méta-models de descripteurs"
+msgid "List meta-models of descriptor"
+msgstr "Liste des méta-modèles de descripteur"
 
 #: base.py:47
 msgid "You are not allowed to create an accession"
@@ -54,24 +54,58 @@ msgstr "Vous n'êtes pas autorisé à créer une accession"
 msgid "You are not allowed to list the accessions"
 msgstr "Vous n'êtes pas autorisé à lister les accessions"
 
+#: descriptor.py:146
+msgid "You are not allowed to delete a group of descriptors"
+msgstr "Vous n'êtes pas autorisé à supprimer un groupe de descripteurs"
+
 #: descriptor.py:155
 msgid "Only an empty group of descriptors can be deleted"
-msgstr "Seul les groupes de descripteurs vides peuvent être supprimés"
+msgstr "Seul les groupes de descripteur vides peuvent être supprimés"
+
+#: descriptor.py:347 descriptor.py:390 descriptor.py:427
+msgid "You are not allowed to modify a group of types of descriptors"
+msgstr "Vous n'êtes pas autorisé à modifier un groupe de types de descripteurs"
+
+#: descriptor.py:348
+msgid "You are not allowed to create a type of descriptor"
+msgstr "Vous n'êtes pas autorisé à créer un type de descripteur"
+
+#: descriptor.py:391
+msgid "You are not allowed to delete a type of descriptor"
+msgstr "Vous n'êtes pas autorisé à supprimer un type de descripteur"
 
 #: descriptor.py:403
-msgid "Only an empty of values type of descriptors can be deleted"
+#, fuzzy
+#| msgid "Only an empty of values type of descriptors can be deleted"
+msgid "Only an empty of values type of descriptor can be deleted"
 msgstr ""
-"Seul les type de descripteurs n'ayant aucun valeurs peuvent être supprimés"
+"Seul les types de descripteur n'ayant aucunes valeurs peuvent être supprimés"
 
-#: descriptormetamodel.py:158
-msgid ""
-"It is not possible to remove a meta-model of descriptor that contains models "
-"of descriptors"
-msgstr ""
-"Il n'est pas possible de retirer un méta-modèle de descripteur contanant des "
-"modèles de descripteurs"
+#: descriptor.py:406
+msgid "Only unused types of descriptor can be deleted"
+msgstr "Seul les types de descripteur unitilisés peuvent être supprimés"
+
+#: descriptor.py:428
+msgid "You are not allowed to modify a type of descriptor"
+msgstr "Vous n'êtes pas autorisé à modifier un type de descripteur"
+
+#: descriptormetamodel.py:116
+msgid "You are not allowed to create a meta-model of descriptor"
+msgstr "Vous n'êtes pas autorisé à créer un méta-modèle de descripteur"
 
 #: descriptormetamodel.py:162
+msgid "You are not allowed to remove a meta-model of descriptor"
+msgstr "Vous n'êtes pas autorisé à supprimer un méta-modèle de descripteur"
+
+#: descriptormetamodel.py:171
+msgid ""
+"It is not possible to remove a meta-model of descriptor that contains models "
+"of descriptor"
+msgstr ""
+"Il n'est pas possible de retirer un méta-modèle de descripteur contanant des "
+"modèles de descripteur"
+
+#: descriptormetamodel.py:175
 msgid ""
 "It is not possible to remove a meta-model of descriptor that is used by "
 "accessions"
@@ -79,7 +113,7 @@ msgstr ""
 "Il n'est pas possible de reiter un méta-model de descripteur utilisé par une "
 "accession"
 
-#: descriptormetamodel.py:166
+#: descriptormetamodel.py:179
 msgid ""
 "It is not possible to remove a meta-model of descriptor that is used by "
 "samples"
@@ -87,7 +121,7 @@ msgstr ""
 "Il n'est pas possible de retirer un méta-modèle de descripteur utilisé par "
 "un échantillon"
 
-#: descriptormetamodel.py:170
+#: descriptormetamodel.py:183
 msgid ""
 "It is not possible to remove a meta-model of descriptor that is used by "
 "batches"
@@ -95,69 +129,64 @@ msgstr ""
 "Il n'est pas possible de retirer un méta-modèle de descripteur utilisé par "
 "un lot"
 
-#: descriptormetamodel.py:289 descriptormetamodel.py:356
-#, python-format
-msgid ""
-"The position %i for the panel is already used into this meta-model of "
-"descriptor"
-msgstr ""
-"La position %i pour le panel est déjà utilisé dans ce méta-modèle de "
-"descripteur"
+#: descriptormetamodel.py:199 descriptormetamodel.py:229
+#: descriptormetamodel.py:355 descriptormetamodel.py:424
+#: descriptormetamodel.py:485 descriptormetamodel.py:513
+msgid "You are not allowed to modify a meta-model of descriptor"
+msgstr "Vous n'êtes pas autorisé à modifier un méta-modèle de descripteur"
+
+#: descriptormetamodel.py:356
+msgid "You are not allowed to create a panel of descriptor"
+msgstr "Vous n'êtes pas autorisé à créer un panel de descripteur"
+
+#: descriptormetamodel.py:425 descriptormetamodel.py:486
+msgid "You are not allowed to modify a panel of descriptor"
+msgstr "Vous n'êtes pas autorisé à modifier un panel de descripteur"
+
+#: descriptormetamodel.py:514
+msgid "You are not allowed to remove a panel of descriptor"
+msgstr "Vous n'êtes pas autorisé à supprimer un panl de descripteur"
 
 #: descriptormodel.py:130
-#, fuzzy
-#| msgid "You are not allowed to create an accession"
 msgid "You are not allowed to create a model of descriptor"
-msgstr "Vous n'êtes pas autorisé à créer une accession"
+msgstr "Vous n'êtes pas autorisé à créer un modèle de descripteur"
 
 #: descriptormodel.py:135
 msgid "A model of descriptor with a similar name already exists"
 msgstr "A model de descripteur avec un nom similaire existe déjà"
 
-#: descriptormodel.py:169 descriptormodel.py:316 descriptormodel.py:380
-#: descriptormodel.py:449 descriptormodel.py:483
-#, fuzzy
-#| msgid "You are not allowed to create an accession"
+#: descriptormodel.py:169 descriptormodel.py:313 descriptormodel.py:378
+#: descriptormodel.py:439 descriptormodel.py:472
 msgid "You are not allowed to modify a model of descriptor"
-msgstr "Vous n'êtes pas autorisé à créer une accession"
+msgstr "Vous n'êtes pas autorisé à créer un modèle de descripteur"
 
-#: descriptormodel.py:192
-#, fuzzy
-#| msgid "You are not allowed to create an accession"
+#: descriptormodel.py:193
 msgid "You are not allowed to remove a model of descriptor"
-msgstr "Vous n'êtes pas autorisé à créer une accession"
+msgstr "Vous n'êtes pas autorisé à supprimer un modèle de descripteur"
 
-#: descriptormodel.py:200
-msgid "Only empty models of descriptors can be removed"
+#: descriptormodel.py:202
+msgid "Only empty models of descriptor can be removed"
 msgstr "Seul les modèles de descripteur vides peuvent être retirés"
 
-#: descriptormodel.py:203
-msgid "Only unused models of descriptors can be removed"
-msgstr "Seul les modèles de descripteurs inutilisés peuvent être supprimés"
+#: descriptormodel.py:205
+msgid "Only unused models of descriptor can be removed"
+msgstr "Seul les modèles de descripteur inutilisés peuvent être supprimés"
 
-#: descriptormodel.py:317
-#, fuzzy
-#| msgid "You are not allowed to create an accession"
+#: descriptormodel.py:314
 msgid "You are not allowed to create a type of model of descriptor"
-msgstr "Vous n'êtes pas autorisé à créer une accession"
+msgstr "Vous n'êtes pas autorisé à créer un type de modèle de descripteur"
 
-#: descriptormodel.py:381 descriptormodel.py:450
-#, fuzzy
-#| msgid "You are not allowed to create an accession"
+#: descriptormodel.py:379 descriptormodel.py:440
 msgid "You are not allowed to modify a type of model of descriptor"
-msgstr "Vous n'êtes pas autorisé à créer une accession"
+msgstr "Vous n'êtes pas autorisé à modifier un type de modèle de descripteur"
 
-#: descriptormodel.py:484
-#, fuzzy
-#| msgid "You are not allowed to create an accession"
+#: descriptormodel.py:473
 msgid "You are not allowed to remove a type of model of descriptor"
-msgstr "Vous n'êtes pas autorisé à créer une accession"
+msgstr "Vous n'êtes pas autorisé à supprimer un type de modèle de descripteur"
 
-#: descriptormodel.py:498
-#, fuzzy
-#| msgid "List meta-models of descriptors"
+#: descriptormodel.py:487
 msgid "There is some data using the model of descriptor"
-msgstr "Liste des méta-models de descripteurs"
+msgstr "Il existe de données utilisant ce modèle de descripteur"
 
 #: models.py:62
 msgid "descriptor group"
@@ -167,45 +196,52 @@ msgstr "groupe de descripteur"
 msgid "descriptor type"
 msgstr "type de descripteur"
 
-#: models.py:706
+#: models.py:712
 msgid "descriptor value"
 msgstr "valeur de descripteur"
 
-#: models.py:732
+#: models.py:738
 msgid "accession synonym"
 msgstr "synonyme d'accession"
 
-#: models.py:758
+#: models.py:764
 msgid "descriptor panel"
 msgstr "panel de descripteur"
 
-#: models.py:807
+#: models.py:813
 msgid "descriptor model type"
 msgstr "type de modèle de descripteur"
 
-#: models.py:844
+#: models.py:850
 msgid "descriptor model"
 msgstr "modèle de descripteur"
 
-#: models.py:879
+#: models.py:887
 msgid "descriptor meta model"
 msgstr "méta-modèle de descripteur"
 
-#: models.py:910
+#: models.py:918
 msgid "panel"
 msgstr "collection"
 
-#: models.py:930
+#: models.py:938
 msgid "accession"
 msgstr "accession"
 
-#: models.py:947
+#: models.py:955
 msgid "batch"
 msgstr "lot"
 
-#: models.py:965
+#: models.py:973
 msgid "sample"
 msgstr "échantillon"
+
+#~ msgid ""
+#~ "The position %i for the panel is already used into this meta-model of "
+#~ "descriptor"
+#~ msgstr ""
+#~ "La position %i pour le panel est déjà utilisé dans ce méta-modèle de "
+#~ "descripteur"
 
 #~ msgid "Primary"
 #~ msgstr "Primaire"

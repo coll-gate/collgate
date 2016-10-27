@@ -23,7 +23,7 @@ var Model = Backbone.Model.extend({
         name: '',
         verbose_name: '',
         description: '',
-        num_descriptors_types: 0,
+        num_descriptor_types: 0,
     },
 
     parse: function(data) {

@@ -41,7 +41,7 @@ var Router = Marionette.AppRouter.extend({
         var defaultLayout = new DefaultLayout({});
         application.getRegion('mainRegion').show(defaultLayout);
 
-        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of models of descriptors")}));
+        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of models of descriptor")}));
 
         collection.fetch().then(function () {
             var descriptorModelList = new DescriptorModelListView({collection : collection});
@@ -73,7 +73,7 @@ var Router = Marionette.AppRouter.extend({
         var defaultLayout = new DefaultLayout({});
         application.getRegion('mainRegion').show(defaultLayout);
 
-        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of types of models of descriptors")}));
+        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of types of models of descriptor")}));
 
         var leftOneRightTwoLayout = new LeftOneRightTwoLayout({});
         defaultLayout.getRegion('content').show(leftOneRightTwoLayout);

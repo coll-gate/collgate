@@ -12,7 +12,7 @@
 <td class="action view-descriptor-type" name="name" value="<%= name %>"><%= name %></td>
 <td name="code"><%= code %></td>
 <% if (format.type === "enum_single" || format.type === "enum_pair" || format.type === "enum_ordinal") { %>
-<td class="action view-descriptor-value" name="num_descriptors_values"><abbr class="badge" style="cursor: pointer;" title="<%= gt.gettext('Manage values of the descriptor') %>"><%= num_descriptors_values %></abbr></td>
+<td class="action view-descriptor-value" name="num_descriptor_values"><abbr class="badge" style="cursor: pointer;" title="<%= gt.gettext('Manage values of the descriptor') %>"><%= num_descriptor_values %></abbr></td>
 <% } else { %>
-<td class="" name="num_descriptors_values"><abbr class="badge" title="<%= gt.gettext('No values for this descriptor') %>">N/A</abbr></td>
+<td class="" name="num_descriptor_values"><abbr class="badge" title="<%= gt.gettext('No values for this descriptor') %>">N/A</abbr></td>
 <% } %>
