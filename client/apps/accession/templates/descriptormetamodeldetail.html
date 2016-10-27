@@ -1,0 +1,23 @@
+<!--
+ - @file descriptormetamodeldetail.html
+ - @brief Template for the detailed view of a meta-model of descriptor (model)
+ - @author Frederic SCHERMA
+ - @date 2016-10-27
+ - @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+ - @license @todo
+ - @details
+-->
+
+<div class="descriptor-meta-model-detail">
+    <div class="descriptor-mata-model-name form-group" style="width: 50%;">
+        <label for="descriptor_meta_model_name"><%- gt.gettext('Descriptor meta-model name') %></label>
+        <input id="descriptor_meta_model_name" class="form-control" type="text" maxlength="255" value="<%= name %>">
+    </div>
+    <div class="descriptor-meta-model-description form-group" style="width: 50%;">
+        <label for="descriptor_meta_model_description"><%- gt.gettext('Description') %></label>
+        <textarea id="descriptor_meta_model_description" class="form-control" maxlength="1024"><%= description %></textarea>
+    </div>
+    <div class="descriptor-model-update form-group" style="width: 100px; margin-left: 20%; margin-top: 25px;">
+        <button id="save" class="form-control btn btn-primary"><%- gt.gettext('Update') %></button>
+    </div>
+</div>

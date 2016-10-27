@@ -10,6 +10,8 @@
 
 var Marionette = require('backbone.marionette');
 
+var Dialog = require('../../main/views/dialog');
+
 var View = Marionette.ItemView.extend({
     tagName: 'div',
     className: 'descriptor-meta-model-add',
@@ -31,9 +33,60 @@ var View = Marionette.ItemView.extend({
     },
 
     addDescriptorMetaModel: function () {
-        if (!this.ui.name.hasClass('invalid')) {
-            this.collection.create({name: this.ui.name.val()}, {wait: true});
+        var DescriptorModelCreate = Dialog.extend({
+           template: require('../templates/descriptormodelcreate.html'),
+
+            attributes: {
+                id: "dlg_create_descriptor_model",
+            },
+
+            ui: {
+                descriptor_meta_model_target: "#descriptor_meta_model_target",
+                description: "#description",
+            },
+
+            initialize: function(options) {
+                DescriptorModelCreate.__super__.initialize.apply(this);
+
+                $(this.ui.descriptor_meta_model_target).select2({
+                    dropdownParent: $(this.el),
+                });
+            },
+
+            onApply: function() {
+                var view = this;
+                var collection = this.getOption('collection');
+                var name = this.getOption('name');
+                var target = this.ui.descriptor_meta_model_target.val();
+                var description = this.ui.description.val();
+
+                if (target != null) {
+                    collection.create({
+                        name: name,
+                        label: '',
+                        target: target,
+                        description: description
+                    }, {
+                        wait: true,
+                        success: function () {
+                            view.remove();
+                        },
+                        error: function () {
+                            $.alert.error(gt.gettext("Unable to create the meta-model of descriptor !"));
+                        }
+                    });
+                }
+            },
+        });
+
+        if (this.validateName()) {
+            var descriptorModelCreate = new DescriptorModelCreate({
+                collection: this.collection,
+                name: this.ui.name.val()
+            });
+
             $(this.ui.name).cleanField();
+            descriptorModelCreate.render();
         }
     },
 

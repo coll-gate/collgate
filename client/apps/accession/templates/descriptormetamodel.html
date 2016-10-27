@@ -1,0 +1,16 @@
+<!--
+ - @file descriptormetamodel.html
+ - @brief Template for a meta-model of descriptor (model)
+ - @author Frederic SCHERMA
+ - @date 2016-10-27
+ - @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+ - @license @todo
+ - @details
+-->
+
+<th><span class="delete-descriptor-meta-model action glyphicon glyphicon-minus-sign"></span></th>
+<td class="action view-descriptor-meta-model" name="name"><%= name %></td>
+<td class="action change-descriptor-meta-model-label" name="label"><%= label %></td>
+<td><abbr class="content-type target-content-type" title="<%- target %>" value="<%- target %>"></abbr></td>
+<td class="action view-descriptors-panels" name="num_descriptors_models"><abbr class="badge" style="cursor: pointer;" title="<%= gt.gettext('Manage panels of descriptors') %>"><%= num_descriptors_models %></abbr></td>
+<td name="description"><abbr class="label label-default glyphicon glyphicon-option-horizontal" title="<%= description %>"><span></span></abbr></td>

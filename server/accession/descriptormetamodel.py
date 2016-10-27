@@ -23,8 +23,13 @@ from .models import DescriptorModel, DescriptorModelType, DescriptorPanel, Descr
 
 
 class RestDescriptorMetaModel(RestAccession):
-    regex = r'^meta-model/'
-    suffix = 'meta-model'
+    regex = r'^descriptor/meta-model/$'
+    suffix = 'descriptor-meta-model'
+
+
+class RestDescriptorMetaModelSearch(RestDescriptorMetaModel):
+    regex = r'^search/$'
+    suffix = 'search'
 
 
 class RestDescriptorMetaModelId(RestDescriptorMetaModel):
@@ -33,12 +38,12 @@ class RestDescriptorMetaModelId(RestDescriptorMetaModel):
 
 
 class RestDescriptorMetaModelIdPanel(RestDescriptorMetaModelId):
-    regex = r'^panel/'
+    regex = r'^panel/$'
     suffix = 'panel'
 
 
 class RestDescriptorMetaModelIdPanelOrder(RestDescriptorMetaModelIdPanel):
-    regex = r'^order/'
+    regex = r'^order/$'
     suffix = 'order'
 
 
@@ -48,7 +53,7 @@ class RestDescriptorMetaModelIdPanelId(RestDescriptorMetaModelIdPanel):
 
 
 @RestDescriptorMetaModel.def_auth_request(Method.GET, Format.JSON)
-def list_descriptor_metal_models(request):
+def list_descriptor_meta_models(request):
     """
     Returns a list of metal-models of descriptors ordered by name.
     """
@@ -73,7 +78,7 @@ def list_descriptor_metal_models(request):
             'label': dmm.get_label(),
             'description': dmm.description,
             'target': '.'.join(dmm.target.natural_key()),
-            'num_descriptors_models': dmm.descriptors_models.all().count()
+            'num_descriptors_models': dmm.descriptor_models.all().count()
         })
 
     if len(dmms_list) > 0:
@@ -104,22 +109,24 @@ def list_descriptor_metal_models(request):
         "type": "object",
         "properties": {
             "name": {"type": "string", 'minLength': 3, 'maxLength': 32},
-            "target": {"type": "string", 'minLength': 1, 'maxLength': 128}
+            "target": {"type": "string", 'minLength': 1, 'maxLength': 128},
+            "description": {"type": "string", 'minLength': 0, 'maxLength': 1024}
         },
     },
-    # perms={'accession.add_descriptormetamodel': _('You are not allowed to create a meta-model of descriptor')},
+    perms={'accession.add_descriptormetamodel': _('You are not allowed to create a meta-model of descriptor')},
     staff=True)
 def create_descriptor_meta_model(request):
-    app_label, model = request.content['target'].split('.')
+    app_label, model = request.data['target'].split('.')
 
     content_type = get_object_or_404(ContentType, app_label=app_label, model=model)
 
     dmm = DescriptorMetaModel()
 
     dmm.name = request.data['name']
-    dmm.description = ''
+    dmm.description = request.data['description']
     dmm.target = content_type
 
+    dmm.full_clean()
     dmm.save()
 
     result = {
@@ -144,7 +151,7 @@ def get_descriptor_meta_model(request, id):
         'name': dmm.name,
         'description': dmm.description,
         'target': '.'.join(dmm.target.natural_key()),
-        'num_descriptors_models': dmm.descriptors_models.all().count()
+        'num_descriptors_models': dmm.descriptor_models.all().count()
     }
 
     return HttpResponseRest(request, result)
@@ -152,7 +159,7 @@ def get_descriptor_meta_model(request, id):
 
 @RestDescriptorMetaModelId.def_auth_request(
     Method.DELETE, Format.JSON,
-    # perms={'accession.remove_descriptormetamodel': _('You are not allowed to remove a meta-model of descriptor')},
+    perms={'accession.remove_descriptormetamodel': _('You are not allowed to remove a meta-model of descriptor')},
     staff=True)
 def remove_descriptor_meta_model(request, id):
     dmm_id = int(id)
@@ -186,11 +193,10 @@ def remove_descriptor_meta_model(request, id):
         "type": "object",
         "properties": {
             "name": {"type": "string", 'minLength': 3, 'maxLength': 32},
-            "label": {"type": "string", 'minLength': 3, 'maxLength': 32},
             "description": {"type": "string", 'minLength': 0, 'maxLength': 1024},
         },
     },
-    # perms={'accession.change_descriptormeta   model': _('You are not allowed to modify a meta-model of descriptor')},
+    perms={'accession.change_descriptormetamodel': _('You are not allowed to modify a meta-model of descriptor')},
     staff=True)
 def modify_descriptor_meta_model(request, id):
     dmm_id = int(id)
@@ -198,7 +204,6 @@ def modify_descriptor_meta_model(request, id):
     dmm = get_object_or_404(DescriptorMetaModel, id=dmm_id)
 
     dmm.name = request.data['name']
-    dmm.set_label(request.data['label'])
     dmm.description = request.data['description']
 
     dmm.save()
@@ -208,10 +213,78 @@ def modify_descriptor_meta_model(request, id):
         'name': dmm.name,
         'description': dmm.description,
         'target': '.'.join(dmm.target.natural_key()),
-        'num_descriptors_models': dmm.descriptors_models.all().count()
+        'num_descriptors_models': dmm.descriptor_models.all().count()
     }
 
     return HttpResponseRest(request, result)
+
+
+@RestDescriptorMetaModelId.def_auth_request(
+    Method.PATCH, Format.JSON, content={
+        "type": "object",
+        "properties": {
+            "label": {"type": "string", 'minLength': 3, 'maxLength': 32, 'required': False},
+        },
+    },
+    perms={'accession.change_descriptormetamodel': _('You are not allowed to modify a meta-model of descriptor')},
+    staff=True)
+def patch_descriptor_meta_model(request, id):
+    dmm_id = int(id)
+
+    dmm = get_object_or_404(DescriptorMetaModel, id=dmm_id)
+
+    label = request.data.get('label')
+
+    if label is not None:
+        lang = translation.get_language()
+        dmm.set_label(lang, label)
+
+    dmm.save()
+
+    result = {
+        'id': dmm.id,
+        'name': dmm.name,
+        'description': dmm.description,
+        'target': '.'.join(dmm.target.natural_key()),
+        'num_descriptors_models': dmm.descriptor_models.all().count()
+    }
+
+    return HttpResponseRest(request, result)
+
+
+@RestDescriptorMetaModelSearch.def_auth_request(Method.GET, Format.JSON, ('filters',), staff=True)
+def search_descriptor_meta_models(request):
+    """
+    Filters the meta-models of descriptors by name.
+    @todo could needs pagination
+    """
+    filters = json.loads(request.GET['filters'])
+    page = int_arg(request.GET.get('page', 1))
+
+    meta_models = None
+
+    if filters['method'] == 'ieq' and 'name' in filters['fields']:
+        meta_models = DescriptorMetaModel.objects.filter(name__iexact=filters['name'])
+    elif filters['method'] == 'icontains' and 'name' in filters['fields']:
+        meta_models = DescriptorMetaModel.objects.filter(name__icontains=filters['name'])
+
+    meta_models_list = []
+
+    if meta_models:
+        for meta_model in meta_models:
+            meta_models_list.append({
+                "id": meta_model.id,
+                "name": meta_model.name,
+                "label": meta_model.label,
+                'num_descriptors_models': meta_model.descriptors_models.all().count(),
+            })
+
+    response = {
+        'items': meta_models_list,
+        'page': page
+    }
+
+    return HttpResponseRest(request, response)
 
 
 @RestDescriptorMetaModelIdPanel.def_auth_request(Method.GET, Format.JSON)

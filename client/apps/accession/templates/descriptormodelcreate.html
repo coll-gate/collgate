@@ -1,0 +1,28 @@
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title"><%= gt.gettext("Create a meta-model of descriptor") %></h4>
+        </div>
+        <div class="modal-body">
+            <form>
+                <div class="form-group">
+                    <label class="control-label" for="descriptor_meta_model_target"><%= gt.gettext("Target entity") %></label>
+                    <select id="descriptor_meta_model_target" class="form-control" name="descriptor-meta-model-target">
+                        <option value="accession.accession"><%= gt.gettext("Accession") %></option>
+                        <option value="accession.batch"><%= gt.gettext("Batch") %></option>
+                        <option value="accession.sample"><%= gt.gettext("Sample") %></option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for="description"><%= gt.gettext("Description") %></label>
+                    <textarea class="form-control" id="description" name="description" maxlength="1024" autofocus="" style="width:100%;"></textarea>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= gt.gettext("Cancel") %></button>
+            <button type="button" class="btn btn-primary apply"><%= gt.gettext("Apply") %></button>
+        </div>
+    </div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->

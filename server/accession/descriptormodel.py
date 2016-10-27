@@ -232,8 +232,6 @@ def search_descriptor_models(request):
                 "id": model.id,
                 "name": model.name,
                 'num_descriptors_types': model.descriptors_model_types.all().count(),
-                # 'can_delete': model.can_delete,
-                # 'can_modify': model.can_modify
             })
 
     response = {

@@ -12,14 +12,14 @@ var Marionette = require('backbone.marionette');
 
 var DescriptorMetaModelModel = require('../models/descriptormetamodel');
 var DescriptorMetaModelCollection = require('../collections/descriptormetamodel');
-var DescriptorPanelCollection = require('../collections/descriptorpanel');
+//var DescriptorPanelCollection = require('../collections/descriptorpanel');
 
 var DescriptorMetaModelAddView = require('../views/descriptormetamodeladd');
 var DescriptorMetaModelDetailView = require('../views/descriptormetamodeldetail');
 var DescriptorMetaModelListView = require('../views/descriptormetamodellist');
-var DescriptorPanelListView = require('../views/descriptorpanellist');
+//var DescriptorPanelListView = require('../views/descriptorpanellist');
 
-var DescriptorModelListAltView = require('../views/descriptormodellistalt');
+//var DescriptorModelListAltView = require('../views/descriptormodellistalt');
 
 var DefaultLayout = require('../../main/views/defaultlayout');
 var TwoColumnsLayout = require('../../main/views/twocolumnslayout');
@@ -52,19 +52,19 @@ var Router = Marionette.AppRouter.extend({
             defaultLayout.getRegion('bottom').show(new DescriptorMetaModelAddView({collection: collection}));
         }
     },
-/*
-    getDescriptorModel: function (id) {
+
+    getDescriptorMetaModel: function (id) {
         var defaultLayout = new DefaultLayout();
         application.getRegion('mainRegion').show(defaultLayout);
 
-        var model = new DescriptorModelModel({id: id});
+        var model = new DescriptorMetaModelModel({id: id});
 
         model.fetch().then(function () {
-            defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Details for the model of descriptor"), object: model.get('name')}));
-            defaultLayout.getRegion('content').show(new DescriptorModelDetailView({model : model}));
+            defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Details for the meta-model of descriptor"), object: model.get('name')}));
+            defaultLayout.getRegion('content').show(new DescriptorMetaModelDetailView({model : model}));
         });
     },
-
+/*
     getDescriptorModelTypeListForModel: function(id) {
         var modelTypeCollection = new DescriptorModelTypeCollection([], {model_id: id});
 
