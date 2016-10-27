@@ -12,14 +12,14 @@ var Marionette = require('backbone.marionette');
 
 var DescriptorMetaModelModel = require('../models/descriptormetamodel');
 var DescriptorMetaModelCollection = require('../collections/descriptormetamodel');
-//var DescriptorPanelCollection = require('../collections/descriptorpanel');
+var DescriptorPanelCollection = require('../collections/descriptorpanel');
 
 var DescriptorMetaModelAddView = require('../views/descriptormetamodeladd');
 var DescriptorMetaModelDetailView = require('../views/descriptormetamodeldetail');
 var DescriptorMetaModelListView = require('../views/descriptormetamodellist');
-//var DescriptorPanelListView = require('../views/descriptorpanellist');
+var DescriptorPanelListView = require('../views/descriptorpanellist');
 
-//var DescriptorModelListAltView = require('../views/descriptormodellistalt');
+var DescriptorModelListAltView = require('../views/descriptormodellistalt');
 
 var DefaultLayout = require('../../main/views/defaultlayout');
 var TwoColumnsLayout = require('../../main/views/twocolumnslayout');
@@ -64,39 +64,35 @@ var Router = Marionette.AppRouter.extend({
             defaultLayout.getRegion('content').show(new DescriptorMetaModelDetailView({model : model}));
         });
     },
-/*
-    getDescriptorModelTypeListForModel: function(id) {
-        var modelTypeCollection = new DescriptorModelTypeCollection([], {model_id: id});
+
+    getDescriptorPanelListForModel: function(id) {
+        var panelCollection = new DescriptorPanelCollection([], {model_id: id});
 
         var defaultLayout = new DefaultLayout({});
         application.getRegion('mainRegion').show(defaultLayout);
 
-        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of types of models of descriptor")}));
+        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of panels of descriptor")}));
 
-        var leftOneRightTwoLayout = new LeftOneRightTwoLayout({});
-        defaultLayout.getRegion('content').show(leftOneRightTwoLayout);
+        var twoColumnsLayout = new TwoColumnsLayout({});
+        defaultLayout.getRegion('content').show(twoColumnsLayout);
 
-        modelTypeCollection.fetch().then(function () {
-            var descriptorTypeModelList = new DescriptorModelTypeListView({collection : modelTypeCollection});
-            leftOneRightTwoLayout.getRegion('left-content').show(descriptorTypeModelList);
-            leftOneRightTwoLayout.getRegion('left-bottom').show(new ScrollingMoreView({targetView: descriptorTypeModelList}));
+        panelCollection.fetch().then(function () {
+            var descriptorPanelList = new DescriptorPanelListView({collection : panelCollection});
+            twoColumnsLayout.getRegion('left-content').show(descriptorPanelList);
+            twoColumnsLayout.getRegion('left-bottom').show(new ScrollingMoreView({targetView: descriptorPanelList}));
         });
 
-        var groupCollection = new DescriptorGroupCollection();
-        groupCollection.fetch().then(function () {
-            var descriptorGroupList = new DescriptorGroupListAltView({
-                collection: groupCollection,
-                layout: leftOneRightTwoLayout
+        var modelCollection = new DescriptorModelCollection();
+        modelCollection.fetch().then(function () {
+            var descriptorModelList = new DescriptorModelListAltView({
+                collection: modelCollection,
+                layout: twoColumnsLayout
             });
 
-            leftOneRightTwoLayout.getRegion('right-up-content').show(descriptorGroupList);
-            leftOneRightTwoLayout.getRegion('right-up-bottom').show(new ScrollingMoreView({targetView: descriptorGroupList}));
+            twoColumnsLayout.getRegion('right-content').show(descriptorModelList);
+            twoColumnsLayout.getRegion('right-bottom').show(new ScrollingMoreView({targetView: descriptorModelList}));
         });
-
-        var descriptorTypeList = new DescriptorTypeListAltView({});
-        leftOneRightTwoLayout.getRegion('right-down-content').show(descriptorTypeList);
-        leftOneRightTwoLayout.getRegion('right-down-bottom').show(new ScrollingMoreView({targetView: descriptorTypeList}));
-    },*/
+    },
 });
 
 module.exports = Router;

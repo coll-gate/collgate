@@ -25,9 +25,8 @@ var Model = Backbone.Model.extend({
         num_permissions: 0,
     },
 
-    init: function(options) {
+    initialize: function(attributes, options) {
         options || (options = {});
-        this.name = options.name;
     },
 
     parse: function(data) {

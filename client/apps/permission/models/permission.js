@@ -17,10 +17,8 @@ var Permission = Backbone.Model.extend({
         permissions: []  // { id: '', name: '', app_label: ''}
     },
 
-    init: function(options) {
+    initialize: function(attributes, options) {
         options || (options = {});
-        this.is_group = options.is_group || false;
-        this.name = options.name;
     },
 
     parse: function(data) {

@@ -26,9 +26,8 @@ var Model = Backbone.Model.extend({
         email: '',
     },
 
-    init: function(options) {
+    initialize: function(attributes, options) {
         options || (options = {});
-        this.name = options.name;
     },
 
     parse: function(data) {

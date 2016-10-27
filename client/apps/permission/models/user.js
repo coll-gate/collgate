@@ -26,9 +26,8 @@ var Model = Backbone.Model.extend({
 
     isNew : function () { return typeof(this.get('username')) != 'string'; },
 
-    init: function(options) {
+    initialize: function(attributes, options) {
         options || (options = {});
-        this.name = options.name;
 
         // this.on('change:is_active', this.partialUpdate, this);
         // this.on('change:is_staff', this.partialUpdate, this);

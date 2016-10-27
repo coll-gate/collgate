@@ -31,7 +31,7 @@ var Model = Backbone.Model.extend({
         can_modify: false
     },
 
-    initialize: function(options) {
+    initialize: function(attributes, options) {
         Model.__super__.initialize.apply(this, arguments);
 
         options || (options = {});

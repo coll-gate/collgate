@@ -118,7 +118,7 @@ def get_descriptor_groups(request):
             "name": {"type": "string", 'minLength': 3, 'maxLength': 32}
         },
     },
-    # perms={'accession.add_descriptorgroup': _('You are not allowed to create a group of descriptors')},
+    perms={'accession.add_descriptorgroup': _('You are not allowed to create a group of descriptors')},
     staff=True
 )
 def create_descriptor_group(request):

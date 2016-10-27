@@ -23,7 +23,7 @@ var Model = Backbone.Model.extend({
         fields: {}
     },
 
-    init: function(options) {
+    init: function(attributes, options) {
         options || (options = {});
     },
 

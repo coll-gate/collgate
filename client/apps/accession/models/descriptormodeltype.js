@@ -32,11 +32,10 @@ var Model = Backbone.Model.extend({
         descriptor_type_code: null,
     },
 
-    initialize: function(options) {
+    initialize: function(attributes, options) {
         Model.__super__.initialize.apply(this, arguments);
 
         options || (options = {});
-        this.model_id = options.model_id;
 
         if (options.collection) {
             this.model_id = options.collection.model_id;
