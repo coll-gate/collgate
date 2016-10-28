@@ -18,6 +18,7 @@ var DescriptorTypeListView = require('../views/descriptortypelist');
 
 var DescriptorValueListView = require('../views/descriptorvaluelist');
 var DescriptorValuePairListView = require('../views/descriptorvaluepairlist');
+var DescriptorValueOrdinalListView = require('../views/descriptorvalueordinallist');
 
 var DescriptorTypeDetailView = require('../views/descriptortypedetail');
 var DefaultLayout = require('../../main/views/defaultlayout');
@@ -84,7 +85,7 @@ var Router = Marionette.AppRouter.extend({
         var defaultLayout = new DefaultLayout();
         application.getRegion('mainRegion').show(defaultLayout);
 
-        var model = new DescriptorTypeModel({group_id: gid, id: tid});
+        var model = new DescriptorTypeModel({id: tid}, {group_id: gid});
 
         model.fetch().then(function () {
             defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Details for the type of descriptor"), object: model.get('name')}));
@@ -98,7 +99,7 @@ var Router = Marionette.AppRouter.extend({
         var defaultLayout = new DefaultLayout();
         application.getRegion('mainRegion').show(defaultLayout);
 
-        var model = new DescriptorTypeModel({group_id: gid, id: tid});
+        var model = new DescriptorTypeModel({id: tid}, {group_id: gid});
         model.fetch().then(function () {
             defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Values for the type of descriptor"), object: model.get('name')}));
 
@@ -120,8 +121,8 @@ var Router = Marionette.AppRouter.extend({
                         model: model
                     });
                 } else if (model.get('format').type === "enum_ordinal") {
-                    // @todo specific view in way to only edit the label and to not add/remove some value
-                    valueListView = new DescriptorValuePairListView({
+                    // @todo edit values
+                    valueListView = new DescriptorValueOrdinalListView({
                         read_only: true,
                         collection: collection,
                         model: model

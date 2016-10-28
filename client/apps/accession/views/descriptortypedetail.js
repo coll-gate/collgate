@@ -55,9 +55,15 @@ var View = Marionette.ItemView.extend({
         $(this.ui.format_unit).val(format.unit).trigger('change');
         $(this.ui.format_precision).val(format.precision).trigger('change');
 
-        if (format.fields && format.fields.length >= 2) {
-            $(this.ui.field0).val(format.fields[0]);
-            $(this.ui.field1).val(format.fields[1]);
+        if (format.type == "enum_pair") {
+            $(this.ui.fields).show();
+
+            if (format.fields[0]) {
+                $(this.ui.field0).val(format.fields[0]);
+            }
+            if (format.fields[1]) {
+                $(this.ui.field1).val(format.fields[1]);
+            }
         } else {
             $(this.ui.fields).hide(false);
 
@@ -70,10 +76,16 @@ var View = Marionette.ItemView.extend({
             case "enum_ordinal":
                 $(this.ui.format_range_min).numeric({decimal: false, negative: false});
                 $(this.ui.format_range_max).numeric({decimal: false, negative: false});
+
+                $(this.ui.format_range_min).val(format.range[0]);
+                $(this.ui.format_range_max).val(format.range[1]);
                 break;
             case "numeric_range":
                 $(this.ui.format_range_min).numeric({decimal: '.', negative: false});
                 $(this.ui.format_range_max).numeric({decimal: '.', negative: false});
+
+                $(this.ui.format_range_min).val(format.range[0]);
+                $(this.ui.format_range_max).val(format.range[1]);
                 break;
             default:
                 $(this.ui.format_range_min).attr("readonly", "readonly").val("");
@@ -233,7 +245,9 @@ var View = Marionette.ItemView.extend({
             format.custom_unit = this.ui.format_unit_custom.val();
         }
 
-        if (this.ui.format_type.val() =="numeric_range") {
+        if (this.ui.format_type.val() == 'numeric_range' ||
+            this.ui.format_type.val() == 'enum_ordinal' ||
+            this.ui.format_type.val() == 'ordinal') {
             format.range = [
                 this.ui.format_range_min.val(),
                 this.ui.format_range_max.val()

@@ -17,6 +17,7 @@ from igdectk.common.helpers import int_arg
 from igdectk.rest import Format, Method
 from igdectk.rest.response import HttpResponseRest
 
+from main.models import Languages
 from .base import RestAccession
 from .models import DescriptorType, DescriptorGroup
 
@@ -59,6 +60,11 @@ class RestDescriptorGroupIdTypeId(RestDescriptorGroupIdType):
 class RestDescriptorGroupIdTypeIdValue(RestDescriptorGroupIdTypeId):
     regex = r'^value/$'
     suffix = 'value'
+
+
+class RestDescriptorGroupIdTypeIdValueId(RestDescriptorGroupIdTypeIdValue):
+    regex = r'^(?P<vid>[a-zA-Z0-9:_]+)/$'
+    suffix = 'id'
 
 
 @RestDescriptorGroup.def_auth_request(Method.GET, Format.JSON)
@@ -431,6 +437,7 @@ def delete_descriptor_type_for_group(request, id, tid):
 )
 def update_descriptor_type(request, id, tid):
     descr_type_params = request.data
+    format = descr_type_params['format']
 
     group_id = int_arg(id)
     group = get_object_or_404(DescriptorGroup, id=group_id)
@@ -438,9 +445,39 @@ def update_descriptor_type(request, id, tid):
     type_id = int_arg(tid)
 
     descr_type = get_object_or_404(DescriptorType, id=type_id, group=group)
+    org_format = json.loads(descr_type.format)
+
+    # had values -> has no values
+    if not format['type'].startswith('enum_') and org_format['type'].startswith('enum_'):
+        # overwrite values
+        descr_type.values = ""
+        descr_type.values_set.clear()
+
+    if format['type'] == 'enum_single':
+        format['fields'] = ['value', '']
+    elif format['type'] == 'enum_pair':
+        pass
+    elif format['type'] == 'enum_ordinal':
+        # this will regenerate new entries for ordinal
+        format['fields'] = ['label', '']
+        format['trans'] = True
+
+        min, max = [int(x) for x in format['range']]
+        values = {}
+
+        for lang in Languages.choices():
+            lvalues = {}
+
+            for ordinal in range(min, max+1):
+                code = "%s:%07i" % (descr_type.code, ordinal)
+                lvalues[code] = {'ordinal': ordinal, 'value0': 'Undefined(%i)' % ordinal}
+
+            values[lang[0]] = lvalues
+
+        descr_type.values = json.dumps(values)
 
     descr_type.name = descr_type_params['name']
-    descr_type.format = json.dumps(descr_type_params['format'])
+    descr_type.format = json.dumps(format)
 
     count = descr_type.count_num_values()
 
@@ -503,3 +540,66 @@ def get_descriptor_values_for_type(request, id, tid):
     }
 
     return HttpResponseRest(request, results)
+
+
+@RestDescriptorGroupIdTypeIdValueId.def_auth_request(
+    Method.PATCH, Format.JSON,
+    content={
+        "type": "object",
+        "properties": {
+            "field": {"type": "string", 'minLength': 3, 'maxLength': 32},
+            "value": {"type": "string", 'minLength': 3, 'maxLength': 32},
+        },
+    },
+    perms={
+        'accession.change_descriptortype': _('You are not allowed to modify a type of descriptor'),
+        'accession.change_descriptorvalue': _('You are not allowed to modify a value of type of descriptor'),
+    },
+    staff=True
+)
+def patch_value_for_descriptor_model(request, id, tid, vid):
+    """
+    Patch the value for a specific model of descriptor
+    """
+    group_id = int(id)
+    type_id = int(tid)
+    value_id = vid
+
+    group = get_object_or_404(DescriptorGroup, id=group_id)
+    descr_type = get_object_or_404(DescriptorType, id=type_id, group=group)
+
+    format = json.loads(descr_type.format)
+
+    if not format['type'].startswith("enum_"):
+        raise SuspiciousOperation(_("There is no values for this type of descriptor"))
+
+    field = request.data['field']
+    value = request.data['value']
+
+    fields = format.get('fields', [])
+
+    # TODO check if field exists
+
+    values = json.loads(descr_type.values)
+    if (len(values) > 0):
+        values = json.loads(descr_type.values)
+
+        if format.get('trans', False):
+            lang = translation.get_language()
+            lvalues = values[lang]
+        else:
+            lvalues = values
+
+        lvalues[vid][field] = value
+
+        descr_type.values = json.dumps(values)
+        descr_type.save()
+    else:
+        pass  # TODO
+
+    result = {
+        'code': vid,
+        field: value
+    }
+
+    return HttpResponseRest(request, result)

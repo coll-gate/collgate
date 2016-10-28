@@ -30,12 +30,12 @@ var Model = Backbone.Model.extend({
         Model.__super__.initialize.apply(this, arguments);
 
         options || (options = {});
-        if (typeof (options.group_id) != "undefined") {
-            this.group_id = options.group_id;
-        }
+        this.group_id = options.group_id;
+        this.type_id = options.type_id;
 
-        if (typeof (options.type_id) != "undefined") {
-            this.type_id = options.type_id;
+        if (options.collection) {
+            this.type_id = options.collection.type_id;
+            this.group_id = options.collection.group_id;
         }
     },
 

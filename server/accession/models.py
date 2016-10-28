@@ -324,16 +324,18 @@ class DescriptorType(Entity):
                                 })
 
                 def sort_method(v):
-                    if v['ordinal']:
-                        return v['ordinal']+v['id']
+                    ordinal = v['ordinal']
+
+                    if ordinal:
+                        return (int(ordinal)+1) * int(v['id'].split(':')[1])
                     else:
-                        return v['id']
+                        return int(v['id'].split(':')[1])
 
                 values_list = sorted(values_list, key=sort_method, reverse=reverse)[:limit]
                 extra_size = limit - len(values_list)
 
                 if extra_size > 0:
-                    extra_list = sorted(extra_list, key=lambda v: v['id'])[:extra_size]
+                    extra_list = sorted(extra_list, key=lambda v: int(v['id'].split(':')[1]))[:extra_size]
                     values_list += extra_list
             else:
                 # sort by a field contained in the values as string compare.
