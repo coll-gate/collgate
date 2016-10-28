@@ -275,7 +275,7 @@ def search_descriptor_meta_models(request):
             meta_models_list.append({
                 "id": meta_model.id,
                 "name": meta_model.name,
-                "label": meta_model.label,
+                "label": meta_model.getLabel(),
                 'num_descriptor_models': meta_model.descriptor_models.all().count(),
             })
 
@@ -306,7 +306,10 @@ def list_descriptor_panels_for_meta_model(request, id):
     else:
         qs = DescriptorPanel.objects.filter(Q(descriptor_meta_model=dmm.id))
 
-    descriptor_models = qs.prefetch_related('descriptor_model').order_by('position')[:limit]
+    descriptor_models = qs.prefetch_related(
+        'descriptor_model').order_by(
+        'position').prefetch_related(
+        'descriptor_model')[:limit]
 
     panels_list = []
 
@@ -369,6 +372,10 @@ def create_descriptor_panel_for_meta_model(request, id):
     dm_id = int(request.data['descriptor_model'])
     dm = get_object_or_404(DescriptorModel, id=dm_id)
 
+    if DescriptorPanel.objects.filter(Q(descriptor_meta_model=dmm.id), Q(descriptor_model=dm.id)).exists():
+        raise SuspiciousOperation(
+            _("A panel of descriptor for this model already exists into this meta-model of descriptor"))
+
     dp = DescriptorPanel()
 
     dp.name = "%i_%i" % (dmm.id, dm.id)
@@ -397,7 +404,7 @@ def create_descriptor_panel_for_meta_model(request, id):
         'position': dp.position,
         'descriptor_model': dm.id,
         'descriptor_model_name': dm.name,
-        'descriptor_model_verbose_name': dm.descriptor_model.verbose_name
+        'descriptor_model_verbose_name': dm.verbose_name
     }
 
     return HttpResponseRest(request, result)
@@ -417,7 +424,7 @@ def get_descriptor_panel_for_meta_model(request, id, pid):
         'position': panel.position,
         'descriptor_model': panel.descriptor_model.id,
         'descriptor_model_name': panel.descriptor_model.name,
-        'descriptor_model_verbose_name': dm.descriptor_model.verbose_name
+        'descriptor_model_verbose_name': panel.descriptor_model.verbose_name
     }
 
     return HttpResponseRest(request, result)
@@ -435,7 +442,7 @@ def get_descriptor_panel_for_meta_model(request, id, pid):
         'accession.change_descriptorpanel': _('You are not allowed to modify a panel of descriptor'),
     },
     staff=True)
-def reorder_descriptor_types_for_model(request, id):
+def reorder_descriptor_panels_for_model(request, id):
     """
     Reorder the panels for a meta-model of descriptors according to the new position of one of the elements.
     """
@@ -450,8 +457,7 @@ def reorder_descriptor_types_for_model(request, id):
     dp_list = []
 
     if position < dp_ref.position:
-        dps = DescriptorPanel.objects.filter(Q(descriptor_meta_model=dmm.id), Q(position__gte=position)).order_by(
-            'position')
+        dps = dmm.panels.filter(Q(position__gte=position)).order_by('position')
 
         for dp in dps:
             if dp.id != dp_id:
@@ -468,8 +474,7 @@ def reorder_descriptor_types_for_model(request, id):
 
             next_position += 1
     else:
-        dps = DescriptorPanel.objects.filter(Q(descriptor_meta_model=dmm.id), Q(position__lte=position)).order_by(
-            'position')
+        dps = dmm.panels.filter(Q(position__lte=position)).order_by('position')
 
         for dp in dps:
             if dp.id != dp_id:
@@ -542,8 +547,7 @@ def remove_descriptor_panel_of_meta_model(request, id, pid):
     panel.delete()
 
     # reorder following panels
-    dps = DescriptorPanel.objects.filter(Q(descriptor_meta_model=dmm.id), Q(position__gt=position)).order_by(
-        'position')
+    dps = dmm.panels.filter(position__gt=position).order_by('position')
 
     for panel in dps:
         new_position = panel.position - 1
