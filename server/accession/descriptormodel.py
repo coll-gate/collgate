@@ -330,9 +330,9 @@ def create_descriptor_type_for_model(request, id):
 
     dmt = dm.descriptor_model_types.all().order_by('-name')[:1]
     if dmt.exists():
-        name = "%i:%i" % (dm_id, int(dmt[0].name.split(':')[1])+1)
+        name = "%i_%i" % (dm_id, int(dmt[0].name.split('_')[1])+1)
     else:
-        name = "%i:%i" % (dm_id, 1)
+        name = "%i_%i" % (dm_id, 1)
 
     dmt = DescriptorModelType()
 
@@ -344,6 +344,7 @@ def create_descriptor_type_for_model(request, id):
     dmt.position = position
     dmt.descriptor_type = dt
 
+    dmt.full_clean()
     dmt.save()
 
     # rshift of 1 others descriptor_model_types

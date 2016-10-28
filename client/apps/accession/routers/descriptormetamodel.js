@@ -11,6 +11,8 @@
 var Marionette = require('backbone.marionette');
 
 var DescriptorMetaModelModel = require('../models/descriptormetamodel');
+
+var DescriptorModelCollection = require('../collections/descriptormodel');
 var DescriptorMetaModelCollection = require('../collections/descriptormetamodel');
 var DescriptorPanelCollection = require('../collections/descriptorpanel');
 

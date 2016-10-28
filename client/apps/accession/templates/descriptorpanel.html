@@ -1,0 +1,21 @@
+<!--
+ - @file descriptorpanel.html
+ - @brief Template for a panel of model of descriptor (model)
+ - @author Frederic SCHERMA
+ - @date 2016-10-27
+ - @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+ - @license @todo
+ - @details
+-->
+
+<div style="margin: 10px; height: 40px; border: 2px dashed #ddd; display: none;" class="top-placeholder"></div>
+<div style="margin: 10px; padding: 10px; border: 2px solid #ddd; border-radius: 10px;">
+    <span class="delete-descriptor-panel action glyphicon glyphicon-minus-sign"></span>
+    <span name="label" class="action change-label"><%= label %></span>
+    <span class="action change-label label-placeholder" style="color: #ddd;"><%= gt.gettext("Undefined label") %></span>
+    <hr style="margin-top : 5px; margin-bottom: 5px;">
+    <span class="glyphicon glyphicon-file"></span>&nbsp;<span name="descriptor-model-verbose-name">
+        <abbr title="<%= descriptor_model_name %>"><%= descriptor_model_verbose_name %></abbr>
+    </span>
+</div>
+<div style="margin: 10px; height: 40px; border: 2px dashed #ddd; display: none;" class="bottom-placeholder"></div>

@@ -239,6 +239,14 @@ tr.element:hover {
     border-radius: 5px;
 }
 
+span[name='label']:empty ~ span.label-placeholder {
+    display: inline;
+}
+
+span[name='label']:not(:empty) ~ span.label-placeholder {
+    display: none;
+}
+
 /** add a little space before the first row in tbody, in way to see its top border */
 /*tbody.header-line::before {
     line-height: 2px;

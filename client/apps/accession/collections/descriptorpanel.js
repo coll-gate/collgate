@@ -8,14 +8,14 @@
  * @details
  */
 
-var DescriptorModelTypeModel = require('../models/descriptormodeltype');
+var DescriptorPanelModel = require('../models/descriptorpanel');
 
 var Collection = Backbone.Collection.extend({
     url: function() {
         return application.baseUrl + 'accession/descriptor/meta-model/' + this.model_id + '/panel/';
     },
 
-    model: DescriptorModelTypeModel,
+    model: DescriptorPanelModel,
 
     initialize: function(models, options) {
         options || (options = {});

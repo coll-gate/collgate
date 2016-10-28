@@ -25,7 +25,9 @@ var Model = Backbone.Model.extend({
         id: null,
         name: '',
         label: '',
-        model: null,
+        descriptor_model: null,
+        descriptor_model_name: '',
+        descriptor_model_verbose_name: '',
     },
 
     initialize: function(attributes, options) {

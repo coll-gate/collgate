@@ -19,7 +19,7 @@ from igdectk.rest import Format, Method
 from igdectk.rest.response import HttpResponseRest
 
 from .base import RestAccession
-from .models import DescriptorModel, DescriptorModelType, DescriptorPanel, DescriptorMetaModel
+from .models import DescriptorModel, DescriptorPanel, DescriptorMetaModel
 
 
 class RestDescriptorMetaModel(RestAccession):
@@ -302,11 +302,11 @@ def list_descriptor_panels_for_meta_model(request, id):
 
     if cursor:
         cursor_position, cursor_id = cursor.split('/')
-        qs = dmm.descriptor_models.filter(Q(position__gt=cursor_position))
+        qs = DescriptorPanel.objects.filter(Q(descriptor_meta_model=dmm.id), Q(position__gt=cursor_position))
     else:
-        qs = dmm.descriptor_models.all()
+        qs = DescriptorPanel.objects.filter(Q(descriptor_meta_model=dmm.id))
 
-    descriptor_models = qs.order_by('position')[:limit]
+    descriptor_models = qs.prefetch_related('descriptor_model').order_by('position')[:limit]
 
     panels_list = []
 
@@ -316,7 +316,9 @@ def list_descriptor_panels_for_meta_model(request, id):
             'name': panel.name,
             'label': panel.get_label(),
             'position': panel.position,
-            'descriptor_model': panel.descriptor_model.id
+            'descriptor_model': panel.descriptor_model.id,
+            'descriptor_model_name': panel.descriptor_model.name,
+            'descriptor_model_verbose_name': panel.descriptor_model.verbose_name
         })
 
     if len(panels_list) > 0:
@@ -346,7 +348,7 @@ def list_descriptor_panels_for_meta_model(request, id):
     Method.POST, Format.JSON, content={
         "type": "object",
         "properties": {
-            "name": {"type": "string", 'minLength': 3, 'maxLength': 32},
+            "label": {"type": "string", 'minLength': 3, 'maxLength': 64},
             "position": {"type": "number"},
             "descriptor_model": {"type": "number"},
         },
@@ -360,6 +362,8 @@ def create_descriptor_panel_for_meta_model(request, id):
     dmm_id = int(id)
     position = int(request.data['position'])
 
+    lang = translation.get_language()
+
     dmm = get_object_or_404(DescriptorMetaModel, id=dmm_id)
 
     dm_id = int(request.data['descriptor_model'])
@@ -367,7 +371,8 @@ def create_descriptor_panel_for_meta_model(request, id):
 
     dp = DescriptorPanel()
 
-    dp.name = request.data['name']
+    dp.name = "%i_%i" % (dmm.id, dm.id)
+    dp.set_label(lang, request.data['label'])
     dp.position = position
     dp.descriptor_meta_model = dmm
     dp.descriptor_model = dm
@@ -376,7 +381,10 @@ def create_descriptor_panel_for_meta_model(request, id):
     dp.save()
 
     # rshift of 1 others descriptor_model
-    for ldp in dmm.descriptor_models.filter(position__gte=position).order_by('position'):
+    dps = DescriptorPanel.objects.filter(Q(descriptor_meta_model=dmm.id), Q(position__gte=position)).order_by(
+        'position')
+
+    for ldp in dps:
         if ldp.id != dp.id:
             new_position = ldp.position + 1
             ldp.position = new_position
@@ -385,10 +393,11 @@ def create_descriptor_panel_for_meta_model(request, id):
     result = {
         'id': dp.id,
         'name': dp.name,
-        'label': '',
+        'label': dp.get_label(),
         'position': dp.position,
         'descriptor_model': dm.id,
-        'descriptor_model_name': dm.name
+        'descriptor_model_name': dm.name,
+        'descriptor_model_verbose_name': dm.descriptor_model.verbose_name
     }
 
     return HttpResponseRest(request, result)
@@ -407,7 +416,8 @@ def get_descriptor_panel_for_meta_model(request, id, pid):
         'label': panel.get_label(),
         'position': panel.position,
         'descriptor_model': panel.descriptor_model.id,
-        'descriptor_model_name': panel.descriptor_model.name
+        'descriptor_model_name': panel.descriptor_model.name,
+        'descriptor_model_verbose_name': dm.descriptor_model.verbose_name
     }
 
     return HttpResponseRest(request, result)
@@ -435,12 +445,15 @@ def reorder_descriptor_types_for_model(request, id):
     position = int(request.data['position'])
 
     dmm = get_object_or_404(DescriptorMetaModel, id=dmm_id)
-    dp_ref = get_object_or_404(DescriptorPanel, id=dmm_id, descriptor_panel__id=dp_id)
+    dp_ref = get_object_or_404(DescriptorPanel, descriptor_meta_model_id=dmm_id, id=dp_id)
 
     dp_list = []
 
     if position < dp_ref.position:
-        for dp in dmm.descriptor_models.filter(position__gte=position).order_by('position'):
+        dps = DescriptorPanel.objects.filter(Q(descriptor_meta_model=dmm.id), Q(position__gte=position)).order_by(
+            'position')
+
+        for dp in dps:
             if dp.id != dp_id:
                 dp_list.append(dp)
 
@@ -455,7 +468,10 @@ def reorder_descriptor_types_for_model(request, id):
 
             next_position += 1
     else:
-        for dp in dmm.descriptor_models.filter(position__lte=position).order_by('position'):
+        dps = DescriptorPanel.objects.filter(Q(descriptor_meta_model=dmm.id), Q(position__lte=position)).order_by(
+            'position')
+
+        for dp in dps:
             if dp.id != dp_id:
                 dp_list.append(dp)
 
@@ -526,7 +542,10 @@ def remove_descriptor_panel_of_meta_model(request, id, pid):
     panel.delete()
 
     # reorder following panels
-    for panel in dmm.descriptor_models.filter(position__gt=position).order_by('position'):
+    dps = DescriptorPanel.objects.filter(Q(descriptor_meta_model=dmm.id), Q(position__gt=position)).order_by(
+        'position')
+
+    for panel in dps:
         new_position = panel.position - 1
         panel.position = new_position
         panel.save()

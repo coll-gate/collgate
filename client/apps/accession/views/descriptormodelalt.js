@@ -16,7 +16,13 @@ var View = Marionette.ItemView.extend({
     className: 'element object descriptor-model',
     template: require('../templates/descriptormodelalt.html'),
 
+    attributes: {
+        draggable: true,
+    },
+
     events: {
+        'dragstart': 'dragStart',
+        'dragend': 'dragEnd',
     },
 
     initialize: function() {
@@ -24,6 +30,16 @@ var View = Marionette.ItemView.extend({
     },
 
     onRender: function() {
+    },
+
+    dragStart: function(e) {
+        this.$el.css('opacity', '0.4');
+        application.dndElement = this;
+    },
+
+    dragEnd: function(e) {
+        this.$el.css('opacity', '1.0');
+        application.dndElement = null;
     },
 });
 
