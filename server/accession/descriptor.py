@@ -19,7 +19,7 @@ from igdectk.rest.response import HttpResponseRest
 
 from main.models import Languages
 from .base import RestAccession
-from .models import DescriptorType, DescriptorGroup
+from .models import DescriptorType, DescriptorGroup, DescriptorValue
 
 
 class RestDescriptor(RestAccession):
@@ -513,7 +513,6 @@ def get_descriptor_values_for_type(request, id, tid):
 
     :param id: Descriptor group id
     :param tid: Descriptor type id
-
     """
     results_per_page = int_arg(request.GET.get('more', 30))
     cursor = request.GET.get('cursor')
@@ -549,6 +548,85 @@ def get_descriptor_values_for_type(request, id, tid):
     }
 
     return HttpResponseRest(request, results)
+
+
+@RestDescriptorGroupIdTypeIdValue.def_auth_request(
+    Method.POST, Format.JSON, content={
+        "type": "object",
+        "properties": {
+            "parent": {'type': ['string', 'null'], 'minLength': 6, 'maxLength': 32, "required": False},
+            "ordinal": {'type': ['number', 'null'], "required": False},
+            "value0": {'type': 'string', 'minLength': 1, 'maxLength': 32},
+            "value1": {'type': ['string', 'null'], 'minLength': 1, 'maxLength': 32, "required": False}
+        },
+    },
+    perms={
+        'accession.change_descriptortype': _('You are not allowed to modify a type of descriptor'),
+        'accession.create_descriptorvalue': _('You are not allowed to create a value of descriptor')
+    },
+    staff=True
+)
+def create_descriptor_values_for_type(request, id, tid):
+    """
+    Create and insert at last a new value for a type of descriptor.
+
+    :param id: Descriptor group id
+    :param tid: Descriptor type id
+    """
+    group_id = int(id)
+    type_id = int(tid)
+
+    group = get_object_or_404(DescriptorGroup, id=group_id)
+    descr_type = get_object_or_404(DescriptorType, id=type_id, group=group)
+
+    qs = descr_type.values_set.all().order_by('-code')[:1]
+    if qs.exists():
+        suffix = int(qs[0].code.split(':')[1]) + 1
+    else:
+        suffix = 1
+
+    code = '%s:%07i' % (descr_type.code, suffix)
+
+    format = json.loads(descr_type.format)
+
+    if format.get('trans', False):
+        for lang in Languages.choices():
+            dv = DescriptorValue()
+
+            dv.descriptor = descr_type
+
+            dv.language = lang[0]
+            dv.name = '%s:%s' % (code, lang[0])
+            dv.code = code
+            dv.parent = request.data.get('parent')
+            dv.ordinal = request.data.get('ordinal')
+            dv.value0 = request.data.get('value0')
+            dv.value1 = request.data.get('value1')
+
+            dv.save()
+    else:
+        dv = DescriptorValue()
+
+        dv.descriptor = descr_type
+
+        dv.name = '%s:%s' % (code, 'en')
+        dv.code = code
+        dv.parent = request.data.get('parent')
+        dv.ordinal = request.data.get('ordinal')
+        dv.value0 = request.data.get('value0')
+        dv.value1 = request.data.get('value1')
+
+        dv.save()
+
+    result = {
+        'id': code,
+        'parent': request.data.get('parent'),
+        'ordinal': request.data.get('ordinal'),
+        'value0': request.data.get('value0'),
+        'value1': request.data.get('value1')
+    }
+
+    return HttpResponseRest(request, result)
 
 
 @RestDescriptorGroupIdTypeIdValueId.def_auth_request(

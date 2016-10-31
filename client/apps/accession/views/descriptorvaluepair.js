@@ -40,6 +40,9 @@ var View = Marionette.ItemView.extend({
         }*/
     },
 
+    // @todo add value
+    // @todo edit value
+
     deleteDescriptorValue: function () {
         //this.model.destroy({wait: true});
     }

@@ -29,12 +29,15 @@ var View = Marionette.ItemView.extend({
     },
 
     onRender: function() {
-        // TODO check with user permission
+        // @todo check with user permission
         //if ($.inArray("auth.delete_descriptorvalue", this.model.perms) < 0) {
         if (!this.model.get('can_delete') || !session.user.isSuperUser) {
             $(this.ui.delete_descriptor_value).hide();
         }
     },
+
+    // @todo add value
+    // @todo edit value
 
     deleteDescriptorValue: function () {
         // TODO check with user permission

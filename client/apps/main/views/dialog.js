@@ -99,15 +99,7 @@ var View = Marionette.ItemView.extend({
         this.stopListening();
 
         return View.__super__.remove.apply(this);
-    },
-
-    close: function () {
-        $(this.el).modal('hide').data('bs.modal', null);
-    },
-
-    /*onBeforeDestroy: function() {
-        $(this.el).modal('hide').data('bs.modal', null);
-    }*/
+    }
 });
 
 module.exports = View;

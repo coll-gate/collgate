@@ -76,12 +76,12 @@ var View = Marionette.ItemView.extend({
                             var t = data.items[i];
 
                             if (t.name.toUpperCase() == this.el.val().toUpperCase()) {
-                                $(this.el).validateField('failed', gt.gettext('Descriptor type name already in usage'));
+                                $(this.el.ui.add_type_name).validateField('failed', gt.gettext('Descriptor type name already in usage'));
                                 break;
                             }
                         }
                     } else {
-                        $(this.el).validateField('ok');
+                        $(this.el.ui.add_type_name).validateField('ok');
                     }
                 }
             });

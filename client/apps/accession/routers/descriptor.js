@@ -19,6 +19,7 @@ var DescriptorTypeListView = require('../views/descriptortypelist');
 var DescriptorValueListView = require('../views/descriptorvaluelist');
 var DescriptorValuePairListView = require('../views/descriptorvaluepairlist');
 var DescriptorValueOrdinalListView = require('../views/descriptorvalueordinallist');
+var DescriptorValueAddView = require('../views/descriptorvalueadd');
 
 var DescriptorTypeDetailView = require('../views/descriptortypedetail');
 var DefaultLayout = require('../../main/views/defaultlayout');
@@ -107,23 +108,27 @@ var Router = Marionette.AppRouter.extend({
                 var valueListView = null;
 
                 if (model.get('format').type === "enum_single") {
-                    // @todo edit value
                     valueListView = new DescriptorValueListView({
-                        read_only: true,
                         collection: collection,
                         model: model
                     });
+
+                    // @todo lookup for permission
+                    if (session.user.isAuth && (session.user.isSuperUser || session.user.isStaff) && model.get('can_modify')) {
+                        defaultLayout.getRegion('bottom').show(new DescriptorValueAddView({collection: collection}));
+                    }
                 } else if (model.get('format').type === "enum_pair") {
-                    // @todo edit values
                     valueListView = new DescriptorValuePairListView({
-                        read_only: true,
                         collection: collection,
                         model: model
                     });
+
+                    // @todo lookup for permission
+                    if (session.user.isAuth && (session.user.isSuperUser || session.user.isStaff) && model.get('can_modify')) {
+                        defaultLayout.getRegion('bottom').show(new DescriptorValueAddView({collection: collection}));
+                    }
                 } else if (model.get('format').type === "enum_ordinal") {
-                    // @todo edit values
                     valueListView = new DescriptorValueOrdinalListView({
-                        read_only: true,
                         collection: collection,
                         model: model
                     });
