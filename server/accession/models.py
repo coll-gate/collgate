@@ -855,9 +855,9 @@ class DescriptorModel(Entity):
         """Check if some entities use of this model"""
         if self.panels.exists():
             for panel in self.panels.all():
-                for meta in panel.descriptor_meta_model.all():
-                    if meta.accession.exists() or meta.batches.exists() or meta.samples.exists():
-                        return True
+                meta = panel.descriptor_meta_model
+                if meta.accessions.exists() or meta.batches.exists() or meta.samples.exists():
+                    return True
 
         return False
 

@@ -66,6 +66,7 @@ var View = Marionette.ItemView.extend({
 
     onRender: function () {
         $(this.el).modal();
+        $(this.el).find(':input[autofocus]').focus();
     },
 
     onCancel: function () {
@@ -73,10 +74,20 @@ var View = Marionette.ItemView.extend({
     },
 
     escapeKey: function(e) {
-        // escape key cancel
         var code = e.keyCode || e.which;
+
+        // escape key cancel
         if (code == 27) {
             this.remove();
+        }
+
+        // enter on num-pad enter
+        if (code == 13) {
+            // click apply
+            this.triggerMethod('apply');
+
+            // avoid reload page
+            return false;
         }
     },
 
@@ -88,7 +99,15 @@ var View = Marionette.ItemView.extend({
         this.stopListening();
 
         return View.__super__.remove.apply(this);
-    }
+    },
+
+    close: function () {
+        $(this.el).modal('hide').data('bs.modal', null);
+    },
+
+    /*onBeforeDestroy: function() {
+        $(this.el).modal('hide').data('bs.modal', null);
+    }*/
 });
 
 module.exports = View;

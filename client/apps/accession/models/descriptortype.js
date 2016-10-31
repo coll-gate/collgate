@@ -28,7 +28,8 @@ var Model = Backbone.Model.extend({
         values: null,
         format: {type: 'string'},
         can_delete: false,
-        can_modify: false
+        can_modify: false,
+        description: ''
     },
 
     initialize: function(attributes, options) {

@@ -18,6 +18,7 @@ var View = Marionette.ItemView.extend({
     ui: {
         name: '#descriptor_type_name',
         code: '#descriptor_type_code',
+        description: '#descriptor_type_description',
         format_type: '#format_type',
         fields: 'div.descriptor-type-fields',
         field0: '#type_field0',
@@ -227,6 +228,8 @@ var View = Marionette.ItemView.extend({
 
         var name = this.ui.name.val();
         var code = this.ui.code.val();
+        var description = this.ui.description.val();
+
         var format = {
             type: this.ui.format_type.val(),
             unit: this.ui.format_unit.val(),
@@ -262,6 +265,7 @@ var View = Marionette.ItemView.extend({
             name: name,
             code: code,
             format: format,
+            description: description,
         }, {wait: true}).done(function() { $.alert.success(gt.gettext("Done")); });;
     }
 });

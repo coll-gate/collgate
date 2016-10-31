@@ -11,31 +11,28 @@
 var Marionette = require('backbone.marionette');
 var AuditCollection = require('../collections/audit');
 var AuditListView = require('../views/auditlist');
+
 var DefaultLayout = require('../../main/views/defaultlayout');
+
 var TitleView = require('../../main/views/titleview');
 var ScrollingMoreView = require('../../main/views/scrollingmore');
+var Dialog = require('../../main/views/dialog');
 
 var Controller = Marionette.Controller.extend({
 
     searchByUserName: function () {
-        var ModalView = Marionette.ItemView.extend({
-            tagName: 'div',
+        var ModalView = Dialog.extend({
             attributes: {
                 'id': 'dlg_audit_by_username',
-                'class': 'modal',
-                'tabindex': -1
             },
             template: require('../templates/auditbyusername.html'),
 
             ui: {
-                cancel: "button.cancel",
                 search: "button.search",
                 username: "#username",
             },
 
             events: {
-                'click @ui.cancel': 'onCancel',
-                'keydown': 'keyAction',
                 'input @ui.username': 'onUserNameInput',
             },
 
@@ -44,10 +41,11 @@ var Controller = Marionette.Controller.extend({
             },
 
             initialize: function () {
+                ModalView.__super__.initialize.apply(this);
             },
 
             onRender: function () {
-                $(this.el).modal();
+                ModalView.__super__.onRender.apply(this);
 
                 $(this.ui.username).select2({
                     dropdownParent: $(this.el),
@@ -93,34 +91,8 @@ var Controller = Marionette.Controller.extend({
                     },
                     minimumInputLength: 3,
                     placeholder: gt.gettext("Select a username"),
-                });
-            },
-
-            closeAndDestroy: function() {
-                application.getRegion('modalRegion').reset();
-            },
-
-            onCancel: function () {
-                this.closeAndDestroy();
-            },
-
-            keyAction: function(e) {
-                var code = e.keyCode || e.which;
-                if (code == 27) {
-                    this.closeAndDestroy();
-                }
-            },
-
-            close: function () {
-                $(this.ui.username).select2('destroy');  // destroy completely the dialog
-                $(this.el).modal('hide').data('bs.modal', null);  // and hide the glass-pan
-            },
-
-            onBeforeDestroy: function() {
-                // this.$el.empty().off();  // unbind the events
-                // this.stopListening();
-                this.close();
-            },
+                }).select2('open');
+            }
         });
 
         var modal = new ModalView({controller: this});
@@ -130,7 +102,7 @@ var Controller = Marionette.Controller.extend({
             var username = $(args.view.ui.username).val();
             if (username) {
                 this.getAuditListByUsername(username);
-                args.view.closeAndDestroy();
+                args.view.remove();
 
                 Backbone.history.navigate('app/audit/search/?username=' + username, {silent: true});
             }
@@ -154,25 +126,19 @@ var Controller = Marionette.Controller.extend({
     },
 
     searchByEntity: function (uuid) {
-            var ModalView = Marionette.ItemView.extend({
-            tagName: 'div',
+            var ModalView = Dialog.extend({
             attributes: {
                 'id': 'dlg_audit_by_entity',
-                'class': 'modal',
-                'tabindex': -1
             },
             template: require('../templates/auditbyentity.html'),
 
             ui: {
-                cancel: "button.cancel",
                 search: "button.search",
                 entity: "#entity",
                 content_type: "#content_type"
             },
 
             events: {
-                'click @ui.cancel': 'onCancel',
-                'keydown': 'keyAction',
                 'input @ui.entity': 'onEntityInput',
             },
 
@@ -180,12 +146,10 @@ var Controller = Marionette.Controller.extend({
                 'click @ui.search': 'view:search',
             },
 
-            initialize: function () {
-            },
-
             onRender: function () {
+                ModalView.__super__.onRender.apply(this);
+
                 var view = this;
-                $(this.el).modal();
 
                 application.main.views.contentTypes.drawSelect(this.ui.content_type);
                 //application.main.views.contentTypes.htmlFromValue(this.el);
@@ -248,32 +212,8 @@ var Controller = Marionette.Controller.extend({
                     },
                     minimumInputLength: 3,
                     placeholder: gt.gettext("Select an entity UUID or name"),
-                });
-            },
-
-            closeAndDestroy: function() {
-                application.getRegion('modalRegion').reset();
-            },
-
-            onCancel: function () {
-                this.closeAndDestroy();
-            },
-
-            keyAction: function(e) {
-                var code = e.keyCode || e.which;
-                if (code == 27) {
-                    this.closeAndDestroy();
-                }
-            },
-
-            close: function () {
-                $(this.ui.uuid).select2('destroy');
-                $(this.el).modal('hide').data('bs.modal', null);
-            },
-
-            onBeforeDestroy: function() {
-                this.close();
-            },
+                }).select2('open');
+            }
         });
 
         var modal = new ModalView({controller: this});
@@ -285,7 +225,7 @@ var Controller = Marionette.Controller.extend({
             var ct = $(args.view.ui.content_type).val().split('.');
             if (ct.length == 2 && object_id) {
                 this.getAuditListByEntity(ct[0], ct[1], object_id, object_name);
-                args.view.closeAndDestroy();
+                args.view.remove();
 
                 Backbone.history.navigate('app/audit/search/?app_label=' + ct[0] + '&model=' + ct[1] + '&object_id=' + object_id, {silent: true});
             }

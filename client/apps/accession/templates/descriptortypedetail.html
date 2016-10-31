@@ -183,6 +183,10 @@
         <label for="format_regexp"><%- gt.gettext('Regular expression') %></label>
         <input id="format_regexp" class="form-control" type="text" readonly="readonly" maxlength="255">
     </div>
+    <div class="descriptor-type-description form-group" style="width: 50%;">
+        <label for="descriptor_type_description"><%- gt.gettext('Description') %></label>
+        <textarea id="descriptor_type_description" class="form-control" maxlength="1024"><%= description %></textarea>
+    </div>
     <div class="descriptor-type-update form-group" style="width: 100px; margin-left: 20%; margin-top: 25px;">
         <button id="save" class="form-control btn btn-primary"><%- gt.gettext('Update') %></button>
     </div>

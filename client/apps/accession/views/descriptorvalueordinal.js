@@ -60,6 +60,7 @@ var View = Marionette.ItemView.extend({
 
                 initialize: function (options) {
                     ChangeLabel.__super__.initialize.apply(this);
+
                 },
 
                 onValueInput: function () {

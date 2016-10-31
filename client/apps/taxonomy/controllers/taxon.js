@@ -48,7 +48,7 @@ _.extend(Controller.prototype, Backbone.Events, {
     getOption: Marionette.proxyGetOption
 });*/
 
-var TaxonController =  Marionette.Controller/*Object*/.extend({
+var TaxonController = Marionette.Controller/*Object*/.extend({
 
     create: function() {
         var CreateTaxonView = Dialog.extend({
@@ -72,7 +72,8 @@ var TaxonController =  Marionette.Controller/*Object*/.extend({
             },
 
             onRender: function () {
-                $(this.el).modal();
+                CreateTaxonView.__super__.onRender.apply(this);
+
                 this.ui.parent_group.hide();
 
                 application.taxonomy.views.taxonRanks.drawSelect(this.ui.rank);

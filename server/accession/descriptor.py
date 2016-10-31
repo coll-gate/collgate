@@ -381,6 +381,7 @@ def create_descriptor_type(request, id):
         'id': descr_type.id,
         'name': descr_type.name,
         'code': descr_type.code,
+        'description': descr_type.description,
         'group': group.id,
         'num_descriptor_values': 0,
         'can_delete': descr_type.can_delete,
@@ -422,11 +423,12 @@ def delete_descriptor_type_for_group(request, id, tid):
         "properties": {
             "name": {"type": "string", 'minLength': 3, 'maxLength': 32},
             "code": {"type": "string", 'minLength': 3, 'maxLength': 32},
+            "description": {"type": "string", 'maxLength': 1024, 'blank': True},
             "format": {
                 "type": "object",
                 "properties": {
                 }
-            },
+            }
         },
     },
     perms={
@@ -438,6 +440,7 @@ def delete_descriptor_type_for_group(request, id, tid):
 def update_descriptor_type(request, id, tid):
     descr_type_params = request.data
     format = descr_type_params['format']
+    description = request.data['description']
 
     group_id = int_arg(id)
     group = get_object_or_404(DescriptorGroup, id=group_id)
@@ -456,28 +459,33 @@ def update_descriptor_type(request, id, tid):
     if format['type'] == 'enum_single':
         format['fields'] = ['value', '']
     elif format['type'] == 'enum_pair':
-        pass
+        pass  # TODO
     elif format['type'] == 'enum_ordinal':
-        # this will regenerate new entries for ordinal
-        format['fields'] = ['label', '']
-        format['trans'] = True
-
+        # range as integer in this case
         min, max = [int(x) for x in format['range']]
-        values = {}
 
-        for lang in Languages.choices():
-            lvalues = {}
+        # regenerate values only if difference in type or range
+        if org_format['type'] != 'enum_ordinal' or int(org_format['range'][0]) != min or int(org_format['range'][1]) != max:
+            # this will regenerate new entries for ordinal
+            format['fields'] = ['label', '']
+            format['trans'] = True
 
-            for ordinal in range(min, max+1):
-                code = "%s:%07i" % (descr_type.code, ordinal)
-                lvalues[code] = {'ordinal': ordinal, 'value0': 'Undefined(%i)' % ordinal}
+            values = {}
 
-            values[lang[0]] = lvalues
+            for lang in Languages.choices():
+                lvalues = {}
 
-        descr_type.values = json.dumps(values)
+                for ordinal in range(min, max+1):
+                    code = "%s:%07i" % (descr_type.code, ordinal)
+                    lvalues[code] = {'ordinal': ordinal, 'value0': 'Undefined(%i)' % ordinal}
+
+                values[lang[0]] = lvalues
+
+            descr_type.values = json.dumps(values)
 
     descr_type.name = descr_type_params['name']
     descr_type.format = json.dumps(format)
+    descr_type.description = description
 
     count = descr_type.count_num_values()
 
@@ -487,6 +495,7 @@ def update_descriptor_type(request, id, tid):
         'id': descr_type.id,
         'name': descr_type.name,
         'code': descr_type.code,
+        'description': descr_type.description,
         'format': json.loads(descr_type.format),
         'group': group.id,
         'num_descriptor_values': count,
