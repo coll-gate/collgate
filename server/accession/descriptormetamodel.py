@@ -109,6 +109,7 @@ def list_descriptor_meta_models(request):
         "type": "object",
         "properties": {
             "name": {"type": "string", 'minLength': 3, 'maxLength': 32},
+            "label": {"type": "string", 'minLength': 3, 'maxLength': 64},
             "target": {"type": "string", 'minLength': 1, 'maxLength': 128},
             "description": {"type": "string", 'minLength': 0, 'maxLength': 1024}
         },
@@ -120,9 +121,12 @@ def create_descriptor_meta_model(request):
 
     content_type = get_object_or_404(ContentType, app_label=app_label, model=model)
 
+    lang = translation.get_language()
+
     dmm = DescriptorMetaModel()
 
     dmm.name = request.data['name']
+    dmm.set_label(lang, request.data['label'])
     dmm.description = request.data['description']
     dmm.target = content_type
 
@@ -132,7 +136,8 @@ def create_descriptor_meta_model(request):
     result = {
         'id': dmm.id,
         'name': dmm.name,
-        'description': '',
+        'label': dmm.get_label(),
+        'description': dmm.description,
         'target': '.'.join(content_type.natural_key()),
         'num_descriptor_models': 0
     }

@@ -15,8 +15,9 @@ var TaxonCollection = Backbone.Collection.extend({
     model: TaxonModel,
 
     parse: function(data) {
+        this.prev = data.prev;
         this.page = data.page;
-        this.total_count = data.total_count;
+        this.next = data.next;
 
         return data.items;
     },

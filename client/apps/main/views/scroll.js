@@ -14,12 +14,50 @@ var View = Marionette.CompositeView.extend({
     rowHeight: 1+8+20+8,
     scrollViewInitialized: false,
 
+    attributes: {
+    },
+
     ui: {
         table: 'table.table',
         header: 'table.table thead'
     },
 
-    initialize: function() {
+    events: {
+    },
+
+    constructor: function() {
+        var prototype = this.constructor.prototype;
+
+        this.events = {};
+        this.defaultOptions = {};
+        this.ui = {};
+        this.attributes = {};
+        this.className = "";
+
+        while (prototype) {
+            if (prototype.hasOwnProperty("events")) {
+                _.defaults(this.events, prototype.events);
+            }
+            if (prototype.hasOwnProperty("defaultOptions")) {
+                _.defaults(this.defaultOptions, prototype.defaultOptions);
+            }
+            if (prototype.hasOwnProperty("ui")) {
+                _.defaults(this.ui, prototype.ui);
+            }
+            if (prototype.hasOwnProperty("attributes")) {
+                _.defaults(this.attributes, prototype.attributes);
+            }
+            if (prototype.hasOwnProperty("className")) {
+                this.className += " " + prototype.className;
+            }
+            prototype = prototype.constructor.__super__;
+        }
+
+        Marionette.CompositeView.apply(this, arguments);
+    },
+
+    initialize: function (options) {
+        View.__super__.initialize.apply(this);
     },
 
     onDomRefresh: function() {

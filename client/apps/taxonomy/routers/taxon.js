@@ -13,8 +13,11 @@ var TaxonModel = require('../models/taxon');
 var TaxonCollection = require('../collections/taxon');
 var TaxonListView = require('../views/taxonlist');
 var TaxonItemView = require('../views/taxon');
+var TaxonDetailsView = require('../views/taxondetails');
+
 var DefaultLayout = require('../../main/views/defaultlayout');
 var TitleView = require('../../main/views/titleview');
+var ScrollingMoreView = require('../../main/views/scrollingmore');
 
 var TaxonRouter = Marionette.AppRouter.extend({
     routes : {
@@ -31,7 +34,10 @@ var TaxonRouter = Marionette.AppRouter.extend({
         defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of taxons")}));
 
         collection.fetch().then(function () {
-            defaultLayout.getRegion('content').show(new TaxonListView({read_only: true, collection : collection}));
+            var taxonListView = new TaxonListView({read_only: true, collection : collection});
+
+            defaultLayout.getRegion('content').show(taxonListView);
+            defaultLayout.getRegion('content_bottom').show(new ScrollingMoreView({targetView: taxonListView}));
         });
     },
 
@@ -44,7 +50,7 @@ var TaxonRouter = Marionette.AppRouter.extend({
         defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Taxon details")}));
 
         taxon.fetch().then(function() {
-            defaultLayout.getRegion('content').show(new TaxonItemView({model: taxon}));
+            defaultLayout.getRegion('content').show(new TaxonDetailsView({model: taxon}));
         });
     },
 });

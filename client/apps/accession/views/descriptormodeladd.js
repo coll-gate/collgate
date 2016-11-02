@@ -31,7 +31,7 @@ var View = Marionette.ItemView.extend({
     },
 
     addDescriptorModel: function() {
-        if (this.this.validateGroupName()) {
+        if (this.validateGroupName()) {
             this.collection.create({name: this.ui.add_descriptor_model_name.val()}, {wait: true});
             $(this.ui.add_descriptor_model_name).cleanField();
         }

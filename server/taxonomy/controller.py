@@ -123,11 +123,14 @@ class Taxonomy(object):
         if not synonym:
             raise SuspiciousOperation('Empty synonym')
 
-        if not synonym['name'] or synonym['type'] == TaxonSynonymType.PRIMARY:
-            raise SuspiciousOperation(_('Undefined synonym name or primary synonym'))
+        if not synonym['name']:
+            raise SuspiciousOperation(_('Undefined synonym name'))
 
         if not synonym['language']:
             raise SuspiciousOperation(_('Undefined synonym language'))
+
+        if TaxonSynonym.objects.filter(taxon=taxon, type=TaxonSynonymType.PRIMARY.value, language=synonym['language']).exists():
+            raise SuspiciousOperation(_('A primary name for the taxon with this language already exists'))
 
         if TaxonSynonym.objects.filter(name=synonym['name']).exists():
             raise PermissionDenied(_('Taxon synonym already exists'))

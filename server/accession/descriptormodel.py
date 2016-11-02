@@ -198,7 +198,7 @@ def remove_descriptor_model(request, id):
 
     model = get_object_or_404(DescriptorModel, id=dm_id)
 
-    if model.descriptors_model_types.all().exists():
+    if model.descriptor_model_types.all().exists():
         raise SuspiciousOperation(_("Only empty models of descriptor can be removed"))
 
     if model.panels.all().exists():

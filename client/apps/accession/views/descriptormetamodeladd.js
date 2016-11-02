@@ -34,15 +34,20 @@ var View = Marionette.ItemView.extend({
 
     addDescriptorMetaModel: function () {
         var DescriptorModelCreate = Dialog.extend({
-           template: require('../templates/descriptormodelcreate.html'),
+           template: require('../templates/descriptormetamodelcreate.html'),
 
             attributes: {
                 id: "dlg_create_descriptor_model",
             },
 
             ui: {
+                label: "#label",
                 descriptor_meta_model_target: "#descriptor_meta_model_target",
                 description: "#description",
+            },
+
+            events: {
+                'input @ui.label': 'onLabelInput',
             },
 
             initialize: function(options) {
@@ -54,16 +59,21 @@ var View = Marionette.ItemView.extend({
             },
 
             onApply: function() {
+                if (!this.validateLabel()) {
+                    return;
+                }
+
                 var view = this;
                 var collection = this.getOption('collection');
                 var name = this.getOption('name');
+                var label = this.ui.label.val();
                 var target = this.ui.descriptor_meta_model_target.val();
                 var description = this.ui.description.val();
 
                 if (target != null) {
                     collection.create({
                         name: name,
-                        label: '',
+                        label: label,
                         target: target,
                         description: description
                     }, {
@@ -77,6 +87,23 @@ var View = Marionette.ItemView.extend({
                     });
                 }
             },
+
+            validateLabel: function() {
+                var v = this.ui.label.val();
+
+                if (v.length < 3) {
+                    $(this.ui.label).validateField('failed', gt.gettext('3 characters min'));
+                    return false;
+                }
+
+                return true;
+            },
+
+            onLabelInput: function () {
+                if (this.validateLabel()) {
+                    $(this.ui.label).validateField('ok');
+                }
+            }
         });
 
         if (this.validateName()) {

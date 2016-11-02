@@ -42,17 +42,11 @@ var View = ScrollView.extend({
             e.preventDefault();
         }
 
-        if (!$(e.target).hasClass("left-content")) {
-            return false;
-        }
-
         this.dragEnterCount || (this.dragEnterCount = 0);
         ++this.dragEnterCount;
 
         if (this.dragEnterCount == 1) {
-           /* if (application.dndElement.$el.hasClass('descriptor-panel')) {
-                this.ui.bottom_placeholder.css('display', 'block');
-            } else*/ if (application.dndElement.$el.hasClass('descriptor-model')) {
+            if (application.dndElement.$el.hasClass('descriptor-model')) {
                 this.ui.bottom_placeholder.css('display', 'block');
             }
         }
@@ -65,17 +59,11 @@ var View = ScrollView.extend({
             e.preventDefault();
         }
 
-        if (!$(e.target).hasClass("left-content")) {
-            return false;
-        }
-
         this.dragEnterCount || (this.dragEnterCount = 1);
         --this.dragEnterCount;
 
         if (this.dragEnterCount == 0) {
-           /* if (application.dndElement.$el.hasClass('descriptor-panel')) {
-                this.ui.bottom_placeholder.css('display', 'none');
-            } else */if (application.dndElement.$el.hasClass('descriptor-model')) {
+            if (application.dndElement.$el.hasClass('descriptor-model')) {
                 this.ui.bottom_placeholder.css('display', 'none');
             }
         }
@@ -88,16 +76,10 @@ var View = ScrollView.extend({
             e.preventDefault();
         }
 
-        if (!$(e.target).hasClass("left-content")) {
-            return false;
-        }
-
         this.dragEnterCount || (this.dragEnterCount = 1);
 
         if (this.dragEnterCount == 1) {
-           /* if (application.dndElement.$el.hasClass('descriptor-panel')) {
-                this.ui.bottom_placeholder.css('display', 'block');
-            } else*/ if (application.dndElement.$el.hasClass('descriptor-model')) {
+            if (application.dndElement.$el.hasClass('descriptor-model')) {
                 this.ui.bottom_placeholder.css('display', 'block');
             }
         }
@@ -109,10 +91,6 @@ var View = ScrollView.extend({
     dropContent: function (e) {
         if (e.stopPropagation) {
             e.stopPropagation();
-        }
-
-        if (!$(e.target).hasClass("left-content")) {
-            return false;
         }
 
         this.dragEnterCount = 0;

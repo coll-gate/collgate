@@ -89,15 +89,20 @@ def opt_taxon_list(request):
 
 @RestTaxonomy.def_auth_request(Method.GET, Format.JSON)
 def get_taxon_list(request):
-    results_per_page = 10
-    page = int_arg(request.GET.get('page', 1))
-    offset = (page-1) * results_per_page
-    limit = offset + results_per_page
+    results_per_page = int_arg(request.GET.get('more', 30))
+    cursor = request.GET.get('cursor')
+    limit = results_per_page
 
-    taxons = Taxon.objects.prefetch_related('synonyms').all()[offset:limit]
+    if cursor:
+        cursor_name, cursor_id = cursor.split('/')
+        qs = Taxon.objects.filter(Q(name__gt=cursor_name))
+    else:
+        qs = Taxon.objects.all()
+
+    tqs = qs.prefetch_related('synonyms').order_by('name')[:limit]
 
     taxons_list = []
-    for taxon in taxons:
+    for taxon in tqs:
         t = {
             'id': taxon.pk,
             'name': taxon.name,
@@ -117,13 +122,27 @@ def get_taxon_list(request):
 
         taxons_list.append(t)
 
-    response = {
+    if len(taxons_list) > 0:
+        # prev cursor (asc order)
+        taxon = taxons_list[0]
+        prev_cursor = "%s/%s" % (taxon['name'], taxon['id'])
+
+        # next cursor (asc order)
+        taxon = taxons_list[-1]
+        next_cursor = "%s/%s" % (taxon['name'], taxon['id'])
+    else:
+        prev_cursor = None
+        next_cursor = None
+
+    results = {
+        'perms': [],
         'items': taxons_list,
-        'total_count': Taxon.objects.all().count(),
-        'page': 1,
+        'prev': prev_cursor,
+        'cursor': cursor,
+        'next': next_cursor,
     }
 
-    return HttpResponseRest(request, response)
+    return HttpResponseRest(request, results)
 
 
 @RestTaxonomyId.def_auth_request(Method.OPTIONS, Format.JSON)

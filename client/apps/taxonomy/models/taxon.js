@@ -15,7 +15,7 @@ var Taxon = Backbone.Model.extend({
         if (this.isNew())
             return application.baseUrl + 'taxonomy/';
         else
-            return application.baseUrl + 'taxonomy/' + this.id + '/'; },
+            return application.baseUrl + 'taxonomy/' + this.get('id') + '/'; },
 
     defaults: {
       id: null,
