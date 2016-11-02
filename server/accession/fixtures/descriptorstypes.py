@@ -40,21 +40,6 @@ DESCRIPTORS = {
         },
         'lookup': {}
     },
-    'country2': {
-        'id': None,
-        'name': 'country2',
-        'code': 'EX_001',
-        'group': 'general',
-        'can_delete': False,
-        'can_modify': False,
-        'description': 'List of countries with code',
-        'format': {
-            'type': 'enum_pair',
-            'format': 'category',
-            'fields': ['name', 'iso'],
-            'trans': True
-        }
-    },
     'city': {
         'id': None,
         'name': 'city',

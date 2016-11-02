@@ -26,7 +26,7 @@ var View = Marionette.ItemView.extend({
     },
 
     ui: {
-        edit_label: 'td.edit-descriptor-field0',
+        edit_label: 'td.edit-descriptor-value0',
     },
 
     events: {
@@ -70,8 +70,8 @@ var View = Marionette.ItemView.extend({
                 validateValue: function () {
                     var v = this.ui.value.val();
 
-                    if (v.length < 3) {
-                        $(this.ui.value).validateField('failed', gt.gettext('3 characters min'));
+                    if (v.length < 1) {
+                        $(this.ui.value).validateField('failed', gt.gettext('1 characters min'));
                         return false;
                     }
 
@@ -85,7 +85,7 @@ var View = Marionette.ItemView.extend({
                     var model = this.getOption('model');
 
                     if (this.validateValue()) {
-                        model.save({field: 'value0', value: this.ui.value.val()}, {
+                        model.save({value0: this.ui.value.val()}, {
                             patch: true,
                             wait: true,
                             success: function () {

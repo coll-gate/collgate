@@ -456,16 +456,45 @@ def update_descriptor_type(request, id, tid):
         descr_type.values = ""
         descr_type.values_set.clear()
 
+    # single enumeration
     if format['type'] == 'enum_single':
         format['fields'] = ['value', '']
-    elif format['type'] == 'enum_pair':
-        pass  # TODO
-    elif format['type'] == 'enum_ordinal':
-        # range as integer in this case
-        min, max = [int(x) for x in format['range']]
 
-        # regenerate values only if difference in type or range
-        if org_format['type'] != 'enum_ordinal' or int(org_format['range'][0]) != min or int(org_format['range'][1]) != max:
+        # reset values because it changes of type
+        if org_format['type'] != 'enum_single':
+            descr_type.values = ""
+            descr_type.values_set.all().delete()
+
+    # pair enumeration
+    elif format['type'] == 'enum_pair':
+        if len(format['fields']) != 2:
+            raise SuspiciousOperation(_("Type of descriptor with enumeration of pairs require two fields"))
+
+            # reset values because it changes of type
+        if org_format['type'] != 'enum_pair':
+            descr_type.values = ""
+            descr_type.values_set.all().delete()
+
+    # ordinal enumeration
+    elif format['type'] == 'enum_ordinal':
+        # always translation with enum or ordinal
+        format['trans'] = True
+
+        # range as integer in this case
+        org_min_range, org_max_range = [int(x) for x in org_format.get('range', ['0', '0'])]
+        min_range, max_range = [int(x) for x in format['range']]
+
+        # range validation
+        if min_range < -127 or max_range > 127:
+            raise SuspiciousOperation(_('Range limits are [-127, 127]'))
+
+        # reset values because it changes of type
+        if org_format['type'] != 'enum_ordinal':
+            descr_type.values = ""
+            descr_type.values_set.all().delete()
+
+        # regenerate values only if difference in range
+        if org_min_range != min_range or org_max_range != max_range:
             # this will regenerate new entries for ordinal
             format['fields'] = ['label', '']
             format['trans'] = True
@@ -475,7 +504,7 @@ def update_descriptor_type(request, id, tid):
             for lang in Languages.choices():
                 lvalues = {}
 
-                for ordinal in range(min, max+1):
+                for ordinal in range(min_range, max_range+1):
                     code = "%s:%07i" % (descr_type.code, ordinal)
                     lvalues[code] = {'ordinal': ordinal, 'value0': 'Undefined(%i)' % ordinal}
 
@@ -634,8 +663,9 @@ def create_descriptor_values_for_type(request, id, tid):
     content={
         "type": "object",
         "properties": {
-            "field": {"type": "string", 'minLength': 3, 'maxLength': 32},
-            "value": {"type": "string", 'minLength': 3, 'maxLength': 32},
+            "value0": {"type": "string", 'minLength': 3, 'maxLength': 32, 'required': False},
+            "value1": {"type": "string", 'minLength': 3, 'maxLength': 32, 'required': False},
+            "ordinal": {"type": "number", 'required': False},
         },
     },
     perms={
@@ -646,11 +676,11 @@ def create_descriptor_values_for_type(request, id, tid):
 )
 def patch_value_for_descriptor_model(request, id, tid, vid):
     """
-    Patch the value for a specific model of descriptor
+    Patch the value for a specific model of descriptor.
+    The field can be 'ordinal', 'value0' or 'value1'.
     """
     group_id = int(id)
     type_id = int(tid)
-    value_id = vid
 
     group = get_object_or_404(DescriptorGroup, id=group_id)
     descr_type = get_object_or_404(DescriptorType, id=type_id, group=group)
@@ -660,15 +690,18 @@ def patch_value_for_descriptor_model(request, id, tid, vid):
     if not format['type'].startswith("enum_"):
         raise SuspiciousOperation(_("There is no values for this type of descriptor"))
 
-    field = request.data['field']
-    value = request.data['value']
+    ordinal = request.data.get('ordinal')
+    value0 = request.data.get('value0')
+    value1 = request.data.get('value1')
 
-    fields = format.get('fields', [])
+    if ordinal is not None and format['type'] != 'enum_ordinal':
+        raise SuspiciousOperation(_("Ordinal field is only defined for enumeration with ordinal"))
 
-    # TODO check if field exists
+    if value1 is not None and format['type'] != 'enum_pair':
+        raise SuspiciousOperation(_("Second value field is only defined for enumeration of pairs"))
 
-    values = json.loads(descr_type.values)
-    if (len(values) > 0):
+    # data stored in type of descriptor
+    if descr_type.values != "":
         values = json.loads(descr_type.values)
 
         if format.get('trans', False):
@@ -677,16 +710,80 @@ def patch_value_for_descriptor_model(request, id, tid, vid):
         else:
             lvalues = values
 
-        lvalues[vid][field] = value
+        if ordinal is not None:
+            lvalues[vid]['ordinal'] = ordinal
+        if value0 is not None:
+            lvalues[vid]['value0'] = value0
+        if value1 is not None:
+            lvalues[vid]['value&'] = value1
 
         descr_type.values = json.dumps(values)
         descr_type.save()
     else:
-        pass  # TODO
+        # data stored in table of values
+        if format.get('trans', False):
+            lang = translation.get_language()
+            descr_value = descr_type.values_set.get(code=vid, language=lang)
+        else:
+            descr_value = descr_type.values_set.get(code=vid)
+
+        if ordinal is not None:
+            descr_value.ordinal = ordinal
+        elif value0 is not None:
+            descr_value.value0 = value0
+        elif value1 is not None:
+            descr_value.value1 = value1
+
+        descr_value.save()
 
     result = {
         'code': vid,
-        field: value
     }
 
+    if ordinal is not None:
+        result['ordinal'] = ordinal
+    elif value0 is not None:
+        result['value0'] = value0
+    elif value1 is not None:
+        result['value1'] = value1
+
     return HttpResponseRest(request, result)
+
+
+@RestDescriptorGroupIdTypeIdValueId.def_auth_request(
+    Method.DELETE, Format.JSON,
+    perms={
+        'accession.change_descriptortype': _('You are not allowed to modify a type of descriptor'),
+        'accession.delete_descriptorvalue': _('You are not allowed to remove a value of type of descriptor'),
+    },
+    staff=True
+)
+def delete_value_for_descriptor_type(request, id, tid, vid):
+    """
+    Delete a single value for a type of descriptor.
+    """
+    group_id = int(id)
+    type_id = int(tid)
+
+    group = get_object_or_404(DescriptorGroup, id=group_id)
+    descr_type = get_object_or_404(DescriptorType, id=type_id, group=group)
+
+    format = json.loads(descr_type.format)
+
+    # internally stored values
+    if descr_type.values != "":
+        values = json.loads(descr_type.values)
+
+        if format['trans']:
+            for lvalues in values:
+                del lvalues[vid]
+        else:
+            del values[vid]
+
+        descr_type.values = json.loads(values)
+    else:
+        # table stored values
+        values = descr_type.values_set.filter(code=vid)
+        values.delete()
+
+    return HttpResponseRest(request, {})

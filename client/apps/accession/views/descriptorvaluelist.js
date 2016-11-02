@@ -18,6 +18,19 @@ var View = ScrollView.extend({
     childView: DescriptorValueView,
     childViewContainer: 'tbody.descriptor-value-list',
 
+    templateHelpers: function() {
+        return {
+            format: this.collection.format,
+            items: this.collection.toJSON()
+        };
+    },
+    childViewOptions: function () {
+        return {
+            can_delete: this.model.get('can_delete'),
+            can_modify: this.model.get('can_modify')
+        }
+    },
+
     ui: {
         table: "table.descriptor-table",
         sort_by_id: "th span.action.column-sort-id",

@@ -42,12 +42,8 @@ var View = Marionette.ItemView.extend({
 
     validateValue: function() {
         var v = this.ui.value.val();
-        /*var re = /^[a-zA-Z0-9_\-]+$/i;
 
-        if (v.length > 0 && !re.test(v)) {
-            $(this.ui.value).validateField('failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
-            return false;
-        } else*/ if (v.length < 1) {
+        if (v.length < 1) {
             $(this.ui.value).validateField('failed', gt.gettext('1 character min'));
             return false;
         }
@@ -58,31 +54,6 @@ var View = Marionette.ItemView.extend({
     onValueInput: function () {
         if (this.validateValue()) {
             $(this.ui.value).validateField('ok');
-        /*    $.ajax({
-                type: "GET",
-                url: application.baseUrl + 'accession/descriptor/group/' + this.collection.group_id + '/type/' + this.collection.type_id + '/search/',
-                dataType: 'json',
-                data: {filters: JSON.stringify({
-                    method: 'ieq',
-                    fields: 'name',
-                    name: this.ui.value.val()})
-                },
-                el: this.ui.value,
-                success: function(data) {
-                    if (data.items.length > 0) {
-                        for (var i in data.items) {
-                            var t = data.items[i];
-
-                            if (t.name.toUpperCase() == this.el.val().toUpperCase()) {
-                                $(this.el).validateField('failed', gt.gettext('Descriptor value already in usage'));
-                                break;
-                            }
-                        }
-                    } else {
-                        $(this.el).validateField('ok');
-                    }
-                }
-            });*/
         }
     },
 });

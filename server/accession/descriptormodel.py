@@ -455,13 +455,17 @@ def patch_descriptor_model_type_for_model(request, id, tid):
 
     dmt = get_object_or_404(DescriptorModelType, id=dmt_id, descriptor_model__id=dm_id)
 
+    if dmt.descriptor_model.in_usage() and (mandatory is not None or set_once is not None):
+        raise SuspiciousOperation(_("There is some data using the model of descriptor"))
+
+    if label is not None:
+        lang = translation.get_language()
+        dmt.set_label(lang, label)
+
     if mandatory is not None:
         dmt.mandatory = bool(mandatory)
     if set_once is not None:
         dmt.set_once = bool(set_once)
-    if label is not None:
-        lang = translation.get_language()
-        dmt.set_label(lang, label)
 
     dmt.save()
 

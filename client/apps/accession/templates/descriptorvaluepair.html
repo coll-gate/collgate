@@ -9,10 +9,10 @@
 -->
 
 <% if (can_delete) { %>
-<th><span class="delete-descriptor-value action glyphicon glyphicon-minus-sign"></span></th>
+<th class="action delete-descriptor-value"><span class="glyphicon glyphicon-minus-sign"></span></th>
 <% } else { %>
-<th><span class="delete-descriptor-value action"></span></th>
+<th><span></span></th>
 <% } %>
 <td class="action edit-descriptor-id" name="id"><%= id %></td>
-<td class="action edit-descriptor-field0"><%= value0 %></td>
-<td class="action edit-descriptor-field1"><%= value1 %></td>
+<td class="action edit-descriptor-value0"><%= value0 %></td>
+<td class="action edit-descriptor-value1"><%= value1 %></td>

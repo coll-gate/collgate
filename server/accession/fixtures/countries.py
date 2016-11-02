@@ -28,8 +28,6 @@ def fixture():
 
     # curate data
     for lang, subdata, in data.items():
-        countries = {}
-
         for code, country in subdata.items():
             value = DescriptorValue()
 
@@ -46,3 +44,20 @@ def fixture():
 
             # keep for cities
             descriptor['lookup'][value.value1] = code
+
+    # results = {}
+    #
+    # # curate data
+    # for lang, subdata, in data.items():
+    #     countries = {}
+    #
+    # for code, country in subdata.items():
+    #     countries[code] = {
+    #         'value0': country['name'],
+    #         'value1': country.get('iso_a2')
+    #     }
+    #
+    # results[lang] = countries
+    #
+    # if descriptor is not None and results is not None:
+    #     DescriptorType.objects.filter(name=descriptor['name']).update(values=json.dumps(results))
