@@ -29,6 +29,7 @@
         <span class="set-staff glyphicon glyphicon-remove left-margin"></span>
     <% } %>
 </td>
-<td name="username" class="action view-permissions" value="<%= username %>"><%- username %></td>
+<td name="username" class="action view-user-details" value="<%= username %>"><%- username %></td>
 <td name="first_name"><%- first_name %></td>
 <td name="last_name"><%- last_name %></td>
+<td class="action view-permissions" name="num_permissions"><abbr class="badge" style="cursor: pointer;" title="<%= gt.gettext('Manage permission list') %>"><%= num_permissions %></abbr></td>

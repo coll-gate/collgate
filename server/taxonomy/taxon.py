@@ -76,7 +76,8 @@ def create_taxon(request):
         'id': taxon.id,
         'name': taxon.name,
         'rank': taxon.rank,
-        'parent': taxon.parent,
+        'parent': taxon.parent.id,
+        'parent_list': [int(x) for x in taxon.parent_list.rstrip(',').split(',')] if taxon.parent_list else [],
         'synonyms': [],
     }
 
@@ -141,7 +142,7 @@ def get_taxon_list(request):
             'name': taxon.name,
             'parent': taxon.parent,
             'rank': taxon.rank,
-            'parent_list': taxon.parent_list.split(','),
+            'parent_list': [int(x) for x in taxon.parent_list.rstrip(',').split(',')] if taxon.parent_list else [],
             'synonyms': []
         }
 
@@ -191,10 +192,25 @@ def opt_taxon_list(request, id):
 def get_taxon_details_json(request, id):
     taxon = Taxon.objects.get(id=int_arg(id))
 
+    parents = []
+    next_parent = taxon.parent
+    break_count = 0
+    while break_count < 10 and next_parent is not None:
+        parents.append({
+            'id': next_parent.id,
+            'name': next_parent.name,
+            'rank': next_parent.rank,
+            'parent': next_parent.parent_id
+        })
+        next_parent = next_parent.parent
+
     result = {
         'id': taxon.id,
         'name': taxon.name,
         'rank': taxon.rank,
+        'parent': taxon.parent_id,
+        'parent_list': [int(x) for x in taxon.parent_list.rstrip(',').split(',')] if taxon.parent_list else [],
+        'parent_details': parents,
         'synonyms': [],
     }
 

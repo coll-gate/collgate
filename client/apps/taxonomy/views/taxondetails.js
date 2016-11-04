@@ -19,6 +19,7 @@ var TaxonItemView = Marionette.ItemView.extend({
     template: require('../templates/taxondetails.html'),
 
     ui: {
+        "view_taxon": ".view-taxon",
         "synonym_name": ".synonym-name",
         "synonym_language": ".synonym-languages",
         "taxon_synonym_type": ".taxon-synonym-types",
@@ -31,6 +32,7 @@ var TaxonItemView = Marionette.ItemView.extend({
 
     events: {
         'input @ui.synonym_name': 'onSynonymNameInput',
+        'click @ui.view_taxon': 'onViewTaxon',
         'click @ui.add_synonym': 'onAddSynonym',
         'click @ui.remove_synonym': 'onRemoveSynonym',
         'click @ui.rename_synonym': 'onRenameSynonym',
@@ -226,6 +228,12 @@ var TaxonItemView = Marionette.ItemView.extend({
 
         changeSynonym.render();
         changeSynonym.ui.name.val(e.target.innerHTML);
+    },
+
+    onViewTaxon: function(e) {
+        var taxon_id = $(e.target).data('taxon-id');
+
+        Backbone.history.navigate("app/taxonomy/" + taxon_id + "/", {trigger: true});
     },
 });
 

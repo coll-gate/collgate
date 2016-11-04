@@ -152,6 +152,7 @@ def get_users_list(request):
             'is_active': user.is_active,
             'is_staff': user.is_staff,
             'is_superuser': user.is_superuser,
+            'num_permissions': user.user_permissions.all().count()
         })
 
     # prev/next cursor (desc order)

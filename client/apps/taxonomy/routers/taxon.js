@@ -50,9 +50,8 @@ var TaxonRouter = Marionette.AppRouter.extend({
         var defaultLayout = new DefaultLayout();
         application.getRegion('mainRegion').show(defaultLayout);
 
-        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Taxon details")}));
-
         taxon.fetch().then(function() {
+            defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Taxon details"), object: taxon.get('name')}));
             defaultLayout.getRegion('content').show(new TaxonDetailsView({model: taxon}));
         });
     },

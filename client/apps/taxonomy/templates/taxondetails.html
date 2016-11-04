@@ -10,7 +10,18 @@
 
 <div class="object taxon" object-type="taxon" object-id="<%= id %>" style="width:100%;">
     <span style="font-weight:bold; font-size:18px;">
-        <span class="name taxon" taxonid="<%= id %>" style="cursor: pointer;"><%- name %></span><span class="taxon-rank badge left-margin" value="<%= rank %>"></span><br>
+        <% for (var i = parent_details.length-1; i >= 0; --i) { %>
+            <span>
+                <span class="action view-taxon" data-taxon-id="<%= parent_details[i].id %>"><%= parent_details[i].name %></span>
+                <span class="taxon-rank badge left-margin" value="<%= parent_details[i].rank %>"></span>
+            </span>
+            <span class="glyphicon glyphicon-chevron-right"></span>
+        <% } %>
+        <span>
+            <span class="name taxon" taxonid="<%= id %>"><%- name %></span>
+            <span class="taxon-rank badge left-margin" value="<%= rank %>"></span>
+        </span>
+        <br>
     </span>
     <hr class="hr-default">
     <div class="taxon-synonyms"></div>

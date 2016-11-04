@@ -264,7 +264,7 @@ var TaxonController = Marionette.Controller/*Object*/.extend({
                 var parentId = 0;
 
                 if ($(this.ui.parent).val())
-                    parentId = parseInt($(this.ui.parent).select2('data')[0].id || '0');
+                    parentId = parseInt($(this.ui.parent).val());
 
                 if (rankId == 60 && parentId != 0) {
                     $.alert.error(gt.gettext("Family rank cannot have a parent taxon"));
@@ -290,7 +290,7 @@ var TaxonController = Marionette.Controller/*Object*/.extend({
                     application.taxonomy.collections.taxons.create({
                         name: this.ui.name.val(),
                         rank: parseInt(this.ui.rank.val()),
-                        parent: parseInt(this.ui.parent.attr('parent-id') || '0'),
+                        parent: parseInt($(this.ui.parent).val() || '0'),
                         synonyms: [{name: this.ui.name.val(), type: 0, language: 'fr'}]
                     }, {
                         wait: true,

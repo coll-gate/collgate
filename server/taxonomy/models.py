@@ -5,10 +5,11 @@
 """
 coll-gate taxonomy module models.
 """
-
 from django.db import models
+from django.core.validators import validate_comma_separated_integer_list
 
 from django.utils.translation import ugettext_lazy as _
+
 from igdectk.common.models import ChoiceEnum, IntegerChoice
 
 from main.models import Languages, Entity
@@ -39,7 +40,8 @@ class Taxon(Entity):
     rank = models.IntegerField(null=False, blank=False, choices=TaxonRank.choices())
 
     parent = models.ForeignKey('Taxon', null=True)
-    parent_list = models.CharField(max_length=1024, blank=True, default="")
+    parent_list = models.CharField(
+        max_length=1024, blank=True, default="", validators=[validate_comma_separated_integer_list])
 
     class Meta:
         verbose_name = _("taxon")
