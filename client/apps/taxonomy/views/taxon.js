@@ -16,10 +16,15 @@ var TaxonItemView = Marionette.ItemView.extend({
     template: require('../templates/taxon.html'),
 
     ui: {
+        "taxon": "span.taxon",
         "synonym_name": ".synonym-name",
         "synonym_language": ".synonym-languages",
         "taxon_synonym_type": ".taxon-synonym-types",
         "taxon_rank": ".taxon-ranks",
+    },
+
+    events: {
+        "click @ui.taxon": "onTaxonDetails"
     },
 
     initialize: function() {
@@ -30,9 +35,10 @@ var TaxonItemView = Marionette.ItemView.extend({
         application.main.views.languages.htmlFromValue(this.el);
         application.taxonomy.views.taxonSynonymTypes.htmlFromValue(this.el);
         application.taxonomy.views.taxonRanks.htmlFromValue(this.el);
+    },
 
-        this.ui.taxon_synonym_type.find('option[value="0"]').remove();
-        $(this.ui.taxon_synonym_type).selectpicker('refresh');
+    onTaxonDetails: function() {
+        Backbone.history.navigate("app/taxonomy/" + this.model.get('id') + "/", {trigger: true});
     }
 });
 

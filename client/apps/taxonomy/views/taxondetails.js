@@ -11,6 +11,8 @@
 var Marionette = require('backbone.marionette');
 var TaxonModel = require('../models/taxon');
 
+var Dialog = require('../../main/views/dialog');
+
 var TaxonItemView = Marionette.ItemView.extend({
     tagName: 'div',
     className: 'element object taxon',
@@ -23,17 +25,20 @@ var TaxonItemView = Marionette.ItemView.extend({
         "taxon_rank": ".taxon-ranks",
         "add_synonym": ".add-synonym",
         "remove_synonym": ".remove-synonym",
-        "add_synonym_panel": "tr.add-synonym-panel"
+        "add_synonym_panel": "tr.add-synonym-panel",
+        "rename_synonym": "td.rename-synonym",
     },
 
     events: {
         'input @ui.synonym_name': 'onSynonymNameInput',
         'click @ui.add_synonym': 'onAddSynonym',
         'click @ui.remove_synonym': 'onRemoveSynonym',
+        'click @ui.rename_synonym': 'onRenameSynonym',
     },
 
     initialize: function() {
         this.listenTo(this.model, 'reset', this.render, this);
+        this.listenTo(this.model, 'change', this.render, this);
     },
 
     onRender: function() {
@@ -84,8 +89,8 @@ var TaxonItemView = Marionette.ItemView.extend({
                         for (var i in data.items) {
                             var t = data.items[i];
 
-                            if (t.value.toUpperCase() == this.el.val().toUpperCase()) {
-                                $(this.el).validateField('failed', gt.gettext('Taxon name already in usage'));
+                            if (t.label.toUpperCase() == this.el.val().toUpperCase()) {
+                                $(this.el).validateField('failed', gt.gettext('Synonym of taxon already used'));
                                 break;
                             }
                         }
@@ -98,29 +103,30 @@ var TaxonItemView = Marionette.ItemView.extend({
     },
 
     onAddSynonym: function () {
-        var type = $(this.ui.taxon_synonym_type).val();
-        var name = $(this.ui.synonym_name).val();
-        var language = $(this.ui.synonym_language).val();
+        if (this.validateName() && !this.ui.synonym_name.hasClass('invalid')) {
+            var type = $(this.ui.taxon_synonym_type).val();
+            var name = $(this.ui.synonym_name).val();
+            var language = $(this.ui.synonym_language).val();
 
-        // @todo Is using a backbone plugin in way to manage nested models will be interesting,
-        // to replace this manual ajax query and array in models ?
-        // same for removeSynonym
-        $.ajax({
-            view: this,
-            type: "PUT",
-            url: application.baseUrl + 'taxonomy/' + this.model.id + "/",
-            contentType: "application/json; charset=utf-8",
-            dataType: 'json',
-            data: JSON.stringify({type: type, name: name, language: language}),
-            success: function(data) {
-               this.view.model.addSynonym(type, name, language);
-               this.view.render();
-            }
-        });
+            $.ajax({
+                view: this,
+                type: "POST",
+                url: application.baseUrl + 'taxonomy/' + this.model.id + "/synonym/" ,
+                contentType: "application/json; charset=utf-8",
+                dataType: 'json',
+                data: JSON.stringify({type: type, name: name, language: language}),
+                success: function (data) {
+                    //this.view.model.addSynonym(type, name, language);
+                    //this.view.render();
+                    this.view.model.fetch({reset: true});
+                }
+            });
+        }
     },
 
     onRemoveSynonym: function (e) {
         var synonym = $(e.target.parentNode.parentNode);
+        var synonymId = $(e.target).data('synonym-id');
 
         var type = synonym.find("[name='type']").attr('value');
         var name = synonym.find("[name='name']").text();
@@ -129,15 +135,97 @@ var TaxonItemView = Marionette.ItemView.extend({
         $.ajax({
             view: this,
             type: "DELETE",
-            url: application.baseUrl + 'taxonomy/' + this.model.id + "/",
+            url: application.baseUrl + 'taxonomy/' + this.model.id + "/synonym/" + synonymId + '/',
             contentType: "application/json; charset=utf-8",
-            dataType: 'json',
-            data: JSON.stringify({type: type, name: name, language: language}),
             success: function(data) {
-                this.view.model.removeSynonym(type, name, language);
-                this.view.render();
+                //this.view.model.removeSynonym(type, name, language);
+                //this.view.render();
+                this.view.model.fetch({reset: true});
             }
         });
+    },
+
+    onRenameSynonym: function(e) {
+        var ChangeSynonym = Dialog.extend({
+            template: require('../templates/taxonchangesynonym.html'),
+
+            attributes: {
+                id: "dlg_change_synonym",
+            },
+
+            ui: {
+                name: "#name",
+            },
+
+            events: {
+                'input @ui.name': 'onNameInput',
+            },
+
+            initialize: function (options) {
+                ChangeSynonym.__super__.initialize.apply(this);
+            },
+
+            onNameInput: function () {
+                this.validateName();
+            },
+
+            validateName: function() {
+                var v = this.ui.name.val();
+
+                if (v.length < 3) {
+                    $(this.ui.name).validateField('failed', gt.gettext('3 characters min'));
+                    return false;
+                }
+
+                $(this.ui.name).validateField('ok');
+
+                return true;
+            },
+
+            onApply: function() {
+                var view = this;
+                var model = this.getOption('model');
+                var synonymId = this.getOption('synonymId');
+                var name = this.ui.name.val();
+
+                if (this.validateName()) {
+                    $.ajax({
+                        type: "PUT",
+                        url: application.baseUrl + 'taxonomy/' + this.model.get('id') + "/synonym/" + synonymId + '/',
+                        contentType: "application/json; charset=utf-8",
+                        dataType: 'json',
+                        data: JSON.stringify({name: name}),
+                        success: function (data) {
+                            //view.model.renameSynonym(view.getOption('type'), name, view.getOption('language'), view.getOption('name'));
+                            view.remove();
+
+                            view.getOption('model').fetch({reset: true});
+                        },
+                        error: function() {
+                            $.alert.error(gt.gettext("Unable to rename the synonym !"));
+                        }
+                    });
+                }
+            },
+        });
+
+        var synonym = $(e.target.parentNode.parentNode);
+        var synonymId = $(e.target).data('synonym-id');
+
+        var type = synonym.find("[name='type']").attr('value');
+        var name = synonym.find("[name='name']").text();
+        var language = synonym.find("[name='language']").attr('value');
+
+        var changeSynonym = new ChangeSynonym({
+            model: this.model,
+            synonymId: synonymId,
+            name: e.target.innerHTML,
+            type: type,
+            language: language
+        });
+
+        changeSynonym.render();
+        changeSynonym.ui.name.val(e.target.innerHTML);
     },
 });
 

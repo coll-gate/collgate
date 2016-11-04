@@ -13,13 +13,13 @@ var Backbone = require('backbone');
 var Model = Backbone.Model.extend({
     url: function() {
         if (this.isNew())
-            return application.baseUrl + 'permission/group/' + this.collection.name + '/user/';
+            return application.baseUrl + 'permission/group/' + this.collection.group_id + '/user/';
         else
-            return application.baseUrl + 'permission/group/' + this.collection.name + '/user/' + this.get('username') + '/';
+            return application.baseUrl + 'permission/group/' + this.collection.group_id + '/user/' + this.get('username') + '/';
     },
 
     defaults: {
-        id: undefined,
+        id: null,
         username: '',
         first_name: '',
         last_name: '',

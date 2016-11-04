@@ -64,22 +64,22 @@ class RestPermissionGroupSearch(RestPermissionGroup):
     suffix = 'search'
 
 
-class RestPermissionGroupName(RestPermissionGroup):
-    regex = r'^(?P<name>[a-zA-Z0-9\.\-_]+)/$'
+class RestPermissionGroupId(RestPermissionGroup):
+    regex = r'^(?P<id>[0-9]+)/$'
     suffix = 'name'
 
 
-class RestPermissionGroupNameUser(RestPermissionGroupName):
+class RestPermissionGroupIdUser(RestPermissionGroupId):
     regex = r'^user/$'
     suffix = 'user'
 
 
-class RestPermissionGroupNameUserName(RestPermissionGroupNameUser):
+class RestPermissionGroupIdUserName(RestPermissionGroupIdUser):
     regex = r'^(?P<username>[a-zA-Z0-9\.\-_]+)/$'
     suffix = 'username'
 
 
-class RestPermissionGroupNamePermission(RestPermissionGroupName):
+class RestPermissionGroupNamePermission(RestPermissionGroupId):
     regex = r'^permission/$'
     suffix = 'permission'
 
@@ -239,15 +239,34 @@ def add_group(request):
     response = {
         'id': group.id,
         'name': group_name,
+        'num_users': 0,
+        'num_permissions': 0,
         'perms': get_permissions_for(request.user, "auth", "group"),
     }
 
     return HttpResponseRest(request, response)
 
 
-@RestPermissionGroupName.def_auth_request(Method.DELETE, Format.JSON, staff=True)
-def delete_group(request, name):
-    group = get_object_or_404(Group, name__exact=name)
+@RestPermissionGroupId.def_auth_request(Method.GET, Format.JSON)
+def get_group_details(request, id):
+    group_id = int(id)
+    group = get_object_or_404(Group, id=group_id)
+
+    result = {
+        'id': group.id,
+        'name': group.name,
+        'num_users': group.user_set.all().count(),
+        'num_permissions': group.permissions.all().count(),
+        'perms': get_permissions_for(request.user, "auth", "group", group),
+    }
+
+    return HttpResponseRest(request, result)
+
+
+@RestPermissionGroupId.def_auth_request(Method.DELETE, Format.JSON, staff=True)
+def delete_group(request, id):
+    group_id = int(id)
+    group = get_object_or_404(Group, id=group_id)
 
     if group.user_set.all().count() > 0:
         raise SuspiciousOperation(_("Only empty groups can be deleted"))
@@ -255,6 +274,39 @@ def delete_group(request, name):
     group.delete()
 
     return HttpResponseRest(request, {})
+
+
+@RestPermissionGroupId.def_auth_request(
+    Method.PATCH, Format.JSON, content={
+        "type": "object",
+        "properties": {
+            "name": {"type": "string", "minLength": 3, "maxLength": 64},
+        },
+    },
+    staff=True)
+def patch_group(request, id):
+    group_id = int(id)
+    group = get_object_or_404(Group, id=group_id)
+    group_name = request.data['name']
+
+    if group_name == group.name:
+        return HttpResponseRest(request, {})
+
+    if Group.objects.filter(name__exact=group_name).exists():
+        raise SuspiciousOperation(_("Group name already in usage"))
+
+    group.name = group_name
+
+    group.full_clean()
+    group.save()
+
+    result = {
+        'id': group.id,
+        'name': group.name,
+        'perms': get_permissions_for(request.user, "auth", "group")
+    }
+
+    return HttpResponseRest(request, result)
 
 
 @RestPermissionGroupSearch.def_auth_request(Method.GET, Format.JSON, ('filters',))
@@ -493,8 +545,9 @@ def delete_user_permission(request, username):
 
 
 @RestPermissionGroupNamePermission.def_auth_request(Method.GET, Format.JSON, staff=True)
-def get_group_permissions(request, name):
-    group = get_object_or_404(Group, name=name)
+def get_group_permissions(request, id):
+    group_id = int(id)
+    group = get_object_or_404(Group, id=group_id)
     permissions = []
 
     checkout = Permission.objects.filter(group=group).select_related('content_type')
@@ -540,7 +593,8 @@ def get_group_permissions(request, name):
     permissions.sort()
 
     response = {
-        'name': name,
+        'id': group.id,
+        'name': group.name,
         'permissions': permissions,
         'perms': get_permissions_for(request.user, "auth", "permission"),
     }
@@ -559,7 +613,8 @@ def get_group_permissions(request, name):
     },
     perms={'auth.add_permission': _("You are not allowed to add a permission")},
     staff=True)
-def add_group_permission(request, name):
+def add_group_permission(request, id):
+    group_id = int(id)
     permission = request.data['permission']
     content_type = request.data['content_type']
     object_id = request.data['object'] if 'object' in request.data else None
@@ -567,7 +622,7 @@ def add_group_permission(request, name):
     if content_type == "auth.permission" and not request.user.is_superuser:
         raise PermissionDenied(_("Only a superuser can change an auth.permission"))
 
-    group = get_object_or_404(Group, name=name)
+    group = get_object_or_404(Group, id=group_id)
 
     app_label, model = content_type.split('.')
     content_type = ContentType.objects.get_by_natural_key(app_label, model)
@@ -595,7 +650,8 @@ def add_group_permission(request, name):
     },
     perms={'auth.delete_permission': _("You are not allowed to remove a permission")},
     staff=True)
-def delete_group_permission(request, name):
+def delete_group_permission(request, id):
+    group_id = int(id)
     action = request.data['action']
     permission = request.data['permission']
     content_type = request.data['content_type']
@@ -604,7 +660,7 @@ def delete_group_permission(request, name):
     if content_type == "auth.permission" and not request.user.is_superuser:
         raise PermissionDenied(_("Only a superuser can change an auth.permission"))
 
-    group = get_object_or_404(Group, name=name)
+    group = get_object_or_404(Group, id=group_id)
 
     app_label, model = content_type.split('.')
     content_type = ContentType.objects.get_by_natural_key(app_label, model)
@@ -630,7 +686,7 @@ def delete_group_permission(request, name):
     return HttpResponseRest(request, {})
 
 
-@RestPermissionGroupNameUser.def_auth_request(Method.POST, Format.JSON, content={
+@RestPermissionGroupIdUser.def_auth_request(Method.POST, Format.JSON, content={
         "type": "object",
         "properties": {
             "username": {"type": "string", 'minLength': 3, 'maxLength': 64},
@@ -638,8 +694,9 @@ def delete_group_permission(request, name):
     },
     perms={'auth.change_group': _("You are not allowed to add a user into a group")},
     staff=True)
-def group_add_user(request, name):
-    group = get_object_or_404(Group, name=name)
+def group_add_user(request, id):
+    group_id = int(id)
+    group = get_object_or_404(Group, id=group_id)
     user = get_object_or_404(User, username=request.data['username'])
 
     if user in group.user_set.all():
@@ -660,12 +717,13 @@ def group_add_user(request, name):
     return HttpResponseRest(request, response)
 
 
-@RestPermissionGroupNameUserName.def_auth_request(
+@RestPermissionGroupIdUserName.def_auth_request(
     Method.DELETE, Format.JSON,
     perms={'auth.change_group': _("You are not allowed to remove a user from a group")},
     staff=True)
-def group_delete_user(request, name, username):
-    group = get_object_or_404(Group, name=name)
+def group_delete_user(request, id, username):
+    group_id = int(id)
+    group = get_object_or_404(Group, id=group_id)
     user = get_object_or_404(User, username=username)
 
     if user not in group.user_set.all():
@@ -676,13 +734,15 @@ def group_delete_user(request, name, username):
     return HttpResponseRest(request, {})
 
 
-@RestPermissionGroupNameUser.def_auth_request(Method.GET, Format.JSON, staff=True)
-def get_users_list_for_group(request, name):
+@RestPermissionGroupIdUser.def_auth_request(Method.GET, Format.JSON, staff=True)
+def get_users_list_for_group(request, id):
+    group_id = int(id)
+
     results_per_page = int_arg(request.GET.get('more', 30))
     cursor = request.GET.get('cursor')
     limit = results_per_page
 
-    group = get_object_or_404(Group, name=name)
+    group = get_object_or_404(Group, id=group_id)
     users = group.user_set
 
     if cursor:

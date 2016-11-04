@@ -9,17 +9,22 @@
  */
 
 var Marionette = require('backbone.marionette');
+
 var PermissionCollection = require('../collections/permission');
+var PermissionUserCollection = require('../collections/user');
+var PermissionGroupCollection = require('../collections/group');
+var PermissionGroupUserCollection = require('../collections/groupuser');
+
 var PermissionListView = require('../views/permissionlist');
 var PermissionAddView = require('../views/addpermission');
-var PermissionUserCollection = require('../collections/user');
 var PermissionUserListView = require('../views/userlist');
-var PermissionGroupCollection = require('../collections/group');
 var PermissionGroupListView = require('../views/grouplist');
-var PermissionGroupUserCollection = require('../collections/groupuser');
 var PermissionGroupUserListView = require('../views/groupuserlist');
 var PermissionGroupAddUserView = require('../views/addusergroup');
 var PermissionAddGroupView = require('../views/addgroup');
+
+var GroupModel = require('../models/group');
+
 var DefaultLayout = require('../../main/views/defaultlayout');
 var TitleView = require('../../main/views/titleview');
 var ScrollingMoreView = require('../../main/views/scrollingmore');
@@ -29,8 +34,8 @@ var PermissionRouter = Marionette.AppRouter.extend({
         "app/permission/user/": "getUsers",
         "app/permission/user/:username/permission/": "getPermissionsForUser",
         "app/permission/group/": "getGroups",
-        "app/permission/group/:groupname/permission/": "getPermissionsForGroup",
-        "app/permission/group/:groupname/user/": "getUsersForGroup",
+        "app/permission/group/:group_id/permission/": "getPermissionsForGroup",
+        "app/permission/group/:group_id/user/": "getUsersForGroup",
     },
 
     getUsers: function () {
@@ -50,7 +55,7 @@ var PermissionRouter = Marionette.AppRouter.extend({
     },
 
     getPermissionsForUser: function(username) {
-        var permissionsCollection = new PermissionCollection([], {name: username})
+        var permissionsCollection = new PermissionCollection([], {username: username})
 
         var defaultLayout = new DefaultLayout({});
         application.getRegion('mainRegion').show(defaultLayout);
@@ -89,13 +94,19 @@ var PermissionRouter = Marionette.AppRouter.extend({
         });
     },
 
-    getPermissionsForGroup: function(name) {
-        var permissionsCollection = new PermissionCollection([], {name: name, is_group: true})
+    getPermissionsForGroup: function(id) {
+        var permissionsCollection = new PermissionCollection([], {group_id: id, is_group: true})
 
         var defaultLayout = new DefaultLayout({});
         application.getRegion('mainRegion').show(defaultLayout);
 
-        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of permissions for group"), object: name}));
+        var group = new GroupModel({id: id});
+        group.fetch().then(function() {
+            defaultLayout.getRegion('title').show(new TitleView({
+                title: gt.gettext("List of permissions for group"),
+                object: group.get('name')
+            }));
+        });
 
         permissionsCollection.fetch().then(function () {
             var permissionList = new PermissionListView({collection : permissionsCollection})
@@ -109,13 +120,19 @@ var PermissionRouter = Marionette.AppRouter.extend({
         });
     },
 
-    getUsersForGroup: function(name) {
-        var userCollection = new PermissionGroupUserCollection([], {name: name});
+    getUsersForGroup: function(id) {
+        var userCollection = new PermissionGroupUserCollection([], {group_id: id});
 
         var defaultLayout = new DefaultLayout({});
         application.getRegion('mainRegion').show(defaultLayout);
 
-        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of users for group"), object: name}));
+        var group = new GroupModel({id: id});
+        group.fetch().then(function() {
+            defaultLayout.getRegion('title').show(new TitleView({
+                title: gt.gettext("List of users for group"),
+                object: group.get('name')
+            }));
+        });
 
         userCollection.fetch().then(function () {
             var permissionGroupUserList = new PermissionGroupUserListView({collection : userCollection});

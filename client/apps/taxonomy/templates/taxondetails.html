@@ -28,16 +28,16 @@
                 <% _.each(synonyms, function(synonym) { %>
                 <tr>
                     <th scope="row">
-                        <% if (synonym.type != 0) { %><span class="action remove-synonym glyphicon glyphicon-minus-sign"></span><% } %>
+                        <% if (synonym.type != 0) { %><span data-synonym-id="<%= synonym.id %>" class="action remove-synonym glyphicon glyphicon-minus-sign"></span><% } %>
                     </th>
                     <td name="type" class="taxon-synonym-type" value="<%- synonym.type %>"></td>
-                    <td name="name"><%- synonym.name %></td>
+                    <td name="name" class="action rename-synonym" data-synonym-id="<%= synonym.id %>"><%- synonym.name %></td>
                     <td name="language" class="language" value="<%- synonym.language %>"></td>
                 </tr>
                 <% }) %>
                 <tr class="add-synonym-panel">
                     <form>
-                        <th scope="row"><span class="add-synonym action glyphicon glyphicon-plus-sign" style="margin-top: 15px;"></span></th>
+                        <th scope="row"><span class="add-synonym action glyphicon glyphicon-plus-sign" style="margin-top: 9px;"></span></th>
                         <td><select class="taxon-synonym-types" name="taxon-synonym-type"></select></td>
                         <td><div class="form-group"><input class="form-control synonym-name" type="text" name="synonym-name" /></div></td>
                         <td><select class="synonym-languages" name="synonym-language"></select></td>

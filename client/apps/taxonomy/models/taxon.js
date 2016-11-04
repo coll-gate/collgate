@@ -64,6 +64,16 @@ var Taxon = Backbone.Model.extend({
             }
         }
     },
+
+    renameSynonym: function(type, name, language, oldName) {
+        var synonyms = this.get('synonyms');
+        for (var i = 0; i < synonyms.length; ++i) {
+            if (synonyms[i].type == type && synonyms[i].name == oldName && synonyms[i].language == language) {
+                synonyms[i].name = name;
+                return;
+            }
+        }
+    }
 });
 
 /*sample for collection into model

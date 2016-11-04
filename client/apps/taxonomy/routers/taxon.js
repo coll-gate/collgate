@@ -14,6 +14,7 @@ var TaxonCollection = require('../collections/taxon');
 var TaxonListView = require('../views/taxonlist');
 var TaxonItemView = require('../views/taxon');
 var TaxonDetailsView = require('../views/taxondetails');
+var TaxonListFilterView = require('../views/taxonlistfilter');
 
 var DefaultLayout = require('../../main/views/defaultlayout');
 var TitleView = require('../../main/views/titleview');
@@ -39,6 +40,8 @@ var TaxonRouter = Marionette.AppRouter.extend({
             defaultLayout.getRegion('content').show(taxonListView);
             defaultLayout.getRegion('content_bottom').show(new ScrollingMoreView({targetView: taxonListView}));
         });
+
+        defaultLayout.getRegion('bottom').show(new TaxonListFilterView({collection: collection}));
     },
 
     getTaxon : function(id) {

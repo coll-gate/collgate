@@ -13,16 +13,17 @@ var PermissionModel = require('../models/permission');
 var PermissionCollection = Backbone.Collection.extend({
     url: function() {
         if (this.is_group)
-            return application.baseUrl + 'permission/group/' + this.name + '/permission/';
+            return application.baseUrl + 'permission/group/' + this.group_id + '/permission/';
         else
-            return application.baseUrl + 'permission/user/' + this.name + '/permission/';
+            return application.baseUrl + 'permission/user/' + this.username + '/permission/';
     },
 
     model: PermissionModel,
 
     initialize: function(models, options) {
         this.is_group = options.is_group || false;
-        this.name = options.name;
+        this.username = options.username;
+        this.group_id = options.group_id;
     },
 
     parse: function(data) {

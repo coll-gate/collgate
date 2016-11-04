@@ -165,6 +165,42 @@ def delete_descriptor_group(request, id):
     return HttpResponseRest(request, {})
 
 
+@RestDescriptorGroupId.def_auth_request(
+    Method.PATCH, Format.JSON, content={
+        "type": "object",
+        "properties": {
+            "name": {"type": "string", 'minLength': 3, 'maxLength': 32}
+        },
+    },
+    perms={
+        'accession.change_descriptorgroup': _("You are not allowed to modify a group of descriptors"),
+    },
+    staff=True
+)
+def patch_descriptor_group(request, id):
+    group_id = int(id)
+    group = get_object_or_404(DescriptorGroup, id=group_id)
+    group_name = request.data['name']
+
+    if group_name == group.name:
+        return HttpResponseRest(request, {})
+
+    if DescriptorGroup.objects.filter(name__exact=group_name).exists():
+        raise SuspiciousOperation(_("Name of group of descriptor already in usage"))
+
+    group.name = group_name
+
+    group.full_clean()
+    group.save()
+
+    result = {
+        'id': group.id,
+        'name': group.name
+    }
+
+    return HttpResponseRest(request, result)
+
+
 @RestDescriptorGroupSearch.def_auth_request(Method.GET, Format.JSON, ('filters',), staff=True)
 def search_descriptor_groups(request):
     """

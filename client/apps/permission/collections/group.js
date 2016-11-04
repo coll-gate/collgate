@@ -14,6 +14,8 @@ var Collection = Backbone.Collection.extend({
     url: function() { return application.baseUrl + 'permission/group/'; },
     model: PermissionGroupModel,
 
+    comparator: 'name',
+
     parse: function(data) {
         this.perms = data.perms;
         this.cursor = data.cursor;

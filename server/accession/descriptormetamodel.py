@@ -280,7 +280,7 @@ def search_descriptor_meta_models(request):
             meta_models_list.append({
                 "id": meta_model.id,
                 "name": meta_model.name,
-                "label": meta_model.getLabel(),
+                "label": meta_model.get_label(),
                 'num_descriptor_models': meta_model.descriptor_models.all().count(),
             })
 

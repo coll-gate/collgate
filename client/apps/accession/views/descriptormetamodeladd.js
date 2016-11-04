@@ -106,7 +106,7 @@ var View = Marionette.ItemView.extend({
             }
         });
 
-        if (this.validateName()) {
+        if (!this.ui.name.hasClass('invalid') && this.validateName()) {
             var descriptorModelCreate = new DescriptorModelCreate({
                 collection: this.collection,
                 name: this.ui.name.val()

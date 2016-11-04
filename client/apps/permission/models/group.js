@@ -15,12 +15,12 @@ var Model = Backbone.Model.extend({
         if (this.isNew())
             return application.baseUrl + 'permission/group/';
         else
-            return application.baseUrl + 'permission/group/' + this.get('name') + '/';
+            return application.baseUrl + 'permission/group/' + this.get('id') + '/';
     },
 
     defaults: {
-        id: undefined,
-        name: undefined,
+        id: null,
+        name: '',
         num_users: 0,
         num_permissions: 0,
     },

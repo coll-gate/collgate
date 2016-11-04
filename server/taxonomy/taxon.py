@@ -5,7 +5,8 @@
 """
 coll-gate taxonomy taxon rest handlers
 """
-from django.db.models import Q, Prefetch
+from django.core.exceptions import SuspiciousOperation
+from django.db.models import Q
 from django.shortcuts import get_object_or_404
 
 from permission.utils import get_permissions_for
@@ -14,7 +15,7 @@ from .base import RestTaxonomy
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
 from .controller import Taxonomy
-from .models import Taxon, TaxonRank, TaxonSynonym
+from .models import Taxon, TaxonRank, TaxonSynonym, TaxonSynonymType
 
 from django.utils.translation import ugettext_lazy as _
 
@@ -26,6 +27,16 @@ class RestTaxonomySearch(RestTaxonomy):
 
 class RestTaxonomyId(RestTaxonomy):
     regex = r'^(?P<id>[0-9]+)/$'
+    suffix = 'id'
+
+
+class RestTaxonomyIdSynonym(RestTaxonomyId):
+    regex = r'^synonym/$'
+    suffix = 'synonym'
+
+
+class RestTaxonomyIdSynonymId(RestTaxonomyIdSynonym):
+    regex = r'^(?P<sid>[0-9]+)/$'
     suffix = 'id'
 
 
@@ -93,13 +104,35 @@ def get_taxon_list(request):
     cursor = request.GET.get('cursor')
     limit = results_per_page
 
-    if cursor:
-        cursor_name, cursor_id = cursor.split('/')
-        qs = Taxon.objects.filter(Q(name__gt=cursor_name))
-    else:
-        qs = Taxon.objects.all()
+    if request.GET.get('filters'):
+        filters = json.loads(request.GET['filters'])
 
-    tqs = qs.prefetch_related('synonyms').order_by('name')[:limit]
+        if cursor:
+            cursor_name, cursor_id = cursor.split('/')
+            qs = Taxon.objects.filter(Q(name__gt=cursor_name))
+        else:
+            qs = Taxon.objects
+
+        name = filters.get('name', '')
+        rank = filters.get('rank')
+
+        if filters.get('method', 'icontains') == 'icontains':
+            qs = qs.filter(Q(synonyms__name__icontains=name))
+        else:
+            qs = qs.filter(Q(name__iexact=name)).filter(Q(synonyms__name__iexact=name))
+
+        if rank:
+            qs = qs.filter(Q(rank=rank))
+
+        tqs = qs.prefetch_related('synonyms').order_by('name')[:limit]
+    else:
+        if cursor:
+            cursor_name, cursor_id = cursor.split('/')
+            qs = Taxon.objects.filter(Q(name__gt=cursor_name))
+        else:
+            qs = Taxon.objects.all()
+
+        tqs = qs.prefetch_related('synonyms').order_by('name')[:limit]
 
     taxons_list = []
     for taxon in tqs:
@@ -112,7 +145,7 @@ def get_taxon_list(request):
             'synonyms': []
         }
 
-        for synonym in taxon.synonyms.all():
+        for synonym in taxon.synonyms.all().order_by('type', 'language'):
             t['synonyms'].append({
                 'id': synonym.id,
                 'name': synonym.name,
@@ -165,8 +198,9 @@ def get_taxon_details_json(request, id):
         'synonyms': [],
     }
 
-    for s in taxon.synonyms.all():
+    for s in taxon.synonyms.all().order_by('type', 'language'):
         result['synonyms'].append({
+            'id': s.id,
             'name': s.name,
             'type': s.type,
             'language': s.language,
@@ -185,36 +219,60 @@ def opt_search_taxon(request):
 
 @RestTaxonomySearch.def_auth_request(Method.GET, Format.JSON, ('filters',))
 def search_taxon(request):
+    """
+    Quick search for a taxon with a exact or partial name and a rank.
+    """
     filters = json.loads(request.GET['filters'])
     page = int_arg(request.GET.get('page', 1))
 
-    taxons = None
-    synonyms = None
+    qs = None
 
-    # TODO for rank search with taxon but into synonym too, then select_related... join...
+    name_method = filters.get('method', 'ieq')
+
     if 'rank' in filters['fields']:
         rank = int_arg(filters['rank'])
-        # taxons = Taxon.objects.filter(Q(name__icontains=filters['name']), Q(rank__lt=rank))
-        if filters['method'] == 'ieq':
-            synonyms = TaxonSynonym.objects.filter(Q(name=filters['name']), Q(taxon__rank__lt=rank))
-        elif filters['method'] == 'icontains':
-            synonyms = TaxonSynonym.objects.filter(Q(name__icontains=filters['name']), Q(taxon__rank__lt=rank))
-    elif filters['method'] == 'ieq' and 'name' in filters['fields']:
-        # taxons = Taxon.objects.filter(name__iexact=filters['name'])
-        synonyms = TaxonSynonym.objects.filter(name__iexact=filters['name'])
-        print(synonyms.count())
-    elif filters['method'] == 'icontains' and 'name' in filters['fields']:
-        synonyms = TaxonSynonym.objects.filter(name__icontains=filters['name'])
+        rank_method = filters.get('rank_method', 'lt')
 
-    taxons_list = []
+        if name_method == 'ieq':
+            qs = TaxonSynonym.objects.filter(Q(name__iexact=filters['name']))
+        elif name_method == 'icontains':
+            qs = TaxonSynonym.objects.filter(Q(name__icontains=filters['name']))
 
-    if synonyms:
-        for s in synonyms:
-            taxons_list.append({"id": str(s.taxon_id), "label": s.name, "value": s.name})
+        if rank_method == 'eq':
+            qs = qs.filter(Q(taxon__rank=rank))
+        elif rank_method == 'lt':
+            qs = qs.filter(Q(taxon__rank__lt=rank))
+        elif rank_method == 'lte':
+            qs = qs.filter(Q(taxon__rank__lte=rank))
+        elif rank_method == 'gt':
+            qs = qs.filter(Q(taxon__rank__gt=rank))
+        elif rank_method == 'gte':
+            qs = qs.filter(Q(taxon__rank__gte=rank))
 
-    if taxons:
-        for t in taxons:
-            taxons_list.append({"id": str(t.id), "label": t.name, "value": t.name})
+    elif 'name' in filters['fields']:
+        if name_method == 'ieq':
+            qs = TaxonSynonym.objects.filter(name__iexact=filters['name'])
+        elif name_method == 'icontains':
+            qs = TaxonSynonym.objects.filter(name__icontains=filters['name'])
+
+    qs = qs.select_related('taxon')
+
+    # taxons_list = []
+    # if qs:
+    #     for s in qs:
+    #         taxons_list.append({"id": str(s.taxon_id), "label": s.name, "value": s.name})
+
+    # group by synonyms on labels
+    taxons = {}
+
+    for s in qs:
+        taxon = taxons.get(s.taxon_id)
+        if taxon:
+            taxon['label'] += ', ' + s.name
+        else:
+            taxons[s.taxon_id] = {'id': str(s.taxon_id), 'label': s.name, 'value': s.taxon.name}
+
+    taxons_list = list(taxons.values())
 
     response = {
         'items': taxons_list,
@@ -224,8 +282,16 @@ def search_taxon(request):
     return HttpResponseRest(request, response)
 
 
-@RestTaxonomyId.def_auth_request(
-    Method.PUT, Format.JSON, content=('type', 'name', 'language'), perms={
+@RestTaxonomyIdSynonym.def_auth_request(
+    Method.POST, Format.JSON, content={
+        "type": "object",
+        "properties": {
+            "type": {"type:": "number"},
+            "language": {"type:": "string", 'minLength': 2, 'maxLength': 5},
+            "name": {"type": "string", 'minLength': 3, 'maxLength': 32}
+        },
+    },
+    perms={
         'taxonomy.change_taxon': _("You are not allowed to modify a taxon"),
         'taxonomy.add_taxonsynonym': _("You are not allowed to add a synonym to a taxon"),
     }
@@ -245,24 +311,56 @@ def taxon_add_synonym(request, id):
     return HttpResponseRest(request, {})
 
 
-@RestTaxonomyId.def_auth_request(
-    Method.DELETE, Format.JSON, content=('type', 'name', 'language'),
+@RestTaxonomyIdSynonymId.def_auth_request(
+    Method.PUT, Format.JSON, content={
+        "type": "object",
+        "properties": {
+            "name": {"type": "string", 'minLength': 3, 'maxLength': 32}
+        },
+    },
+    perms={
+        'taxonomy.change_taxon': _("You are not allowed to modify a taxon"),
+        'taxonomy.change_taxonsynonym': _("You are not allowed to modify a synonym to a taxon"),
+    }
+)
+def taxon_change_synonym(request, id, sid):
+    tid = int(id)
+    sid = int(sid)
+
+    synonym = get_object_or_404(TaxonSynonym, Q(id=sid), Q(taxon=tid))
+
+    name = request.data['name']
+
+    synonym.name = name
+
+    synonym.full_clean()
+    synonym.save()
+
+    result = {
+        'id': synonym.id,
+        'name': synonym.name
+    }
+
+    return HttpResponseRest(request, result)
+
+
+@RestTaxonomyIdSynonymId.def_auth_request(
+    Method.DELETE, Format.JSON,
     perms={
         'taxonomy.change_taxon': _("You are not allowed to modify a taxon"),
         'taxonomy.delete_taxonsynonym': _("You are not allowed to delete a synonym from a taxon"),
     }
 )
-def taxon_remove_synonym(request, id):
-    taxon_id = int_arg(id)
-    taxon = get_object_or_404(Taxon, id=taxon_id)
+def taxon_remove_synonym(request, id, sid):
+    tid = int(id)
+    sid = int(sid)
 
-    synonym = {
-        'type': int(request.data['type']),
-        'name': str(request.data['name']),
-        'language': str(request.data['language']),
-    }
+    synonym = get_object_or_404(TaxonSynonym, Q(id=sid), Q(taxon=tid))
 
-    Taxonomy.remove_synonym(taxon, synonym)
+    if synonym.type == TaxonSynonymType.PRIMARY.value:
+        raise SuspiciousOperation(_("It is not possible to removed a primary synonym"))
+
+    synonym.delete()
 
     return HttpResponseRest(request, {})
 

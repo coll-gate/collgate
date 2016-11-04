@@ -22,35 +22,13 @@ var View = ScrollView.extend({
     className: "taxon-list",
     //childViewContainer: 'div.panel-body',
     childView: TaxonView,
-    childViewOptions: function(model, index) {
-        return {
-            read_only: this.options.read_only
-        }
-    },
-
-    ui: {
-        add_synonym_panel: 'tr.add-synonym-panel',
-        taxon: 'span.taxon',
-    },
-
-    events: {
-        'click @ui.taxon': 'clickTaxon',
-    },
 
     initialize: function(options) {
         options || (options = {});
         this.listenTo(this.collection, 'reset', this.render, this);
-        //this.listenTo(this.collection, 'add', this.render, this);
-        //this.listenTo(this.collection, 'remove', this.render, this);
-        //this.listenTo(this.collection, 'change', this.render, this);
 
         View.__super__.initialize.apply(this);
-    },
-
-    clickTaxon: function (e) {
-        var id = e.target.getAttribute("taxonid");
-        Backbone.history.navigate("app/taxonomy/" + id + "/", {trigger: true});
-    },
+    }
 });
 
 module.exports = View;

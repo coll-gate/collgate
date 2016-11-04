@@ -6,6 +6,7 @@
 coll-gate taxonomy module controller
 """
 from django.core.exceptions import SuspiciousOperation, PermissionDenied
+from django.utils import translation
 
 from main.models import Languages
 from .models import Taxon, TaxonSynonym, TaxonSynonymType
@@ -18,7 +19,7 @@ class Taxonomy(object):
     @classmethod
     def update_parents(cls, taxon, parent=None):
         """
-        Internaly defines the list of parent for a given taxon
+        Internally defines the list of parent for a given taxon
         and parent (does not save the taxon).
         :param taxon: Valid Taxon instance.
         :param parent: None or valid Taxon instance.
@@ -65,8 +66,10 @@ class Taxonomy(object):
 
         taxon.save()
 
+        lang = translation.get_language()
+
         # first name a primary synonym
-        primary = TaxonSynonym(taxon_id=taxon.id, name=name, type=int(TaxonSynonymType.PRIMARY), language=Languages.FR.value)
+        primary = TaxonSynonym(taxon_id=taxon.id, name=name, type=int(TaxonSynonymType.PRIMARY), language=lang)
         primary.save()
 
         return taxon
@@ -92,7 +95,7 @@ class Taxonomy(object):
         :param name: Partial or complete taxon name.
         :return: QuerySet of Taxon
         """
-        return Taxon.objects.filter(name__contains=name_part)
+        return Taxon.objects.filter(name__icontains=name_part)
 
     @classmethod
     def list_taxons_by_parent(cls, parent):
@@ -129,8 +132,9 @@ class Taxonomy(object):
         if not synonym['language']:
             raise SuspiciousOperation(_('Undefined synonym language'))
 
-        if TaxonSynonym.objects.filter(taxon=taxon, type=TaxonSynonymType.PRIMARY.value, language=synonym['language']).exists():
-            raise SuspiciousOperation(_('A primary name for the taxon with this language already exists'))
+        if synonym['type'] == TaxonSynonymType.PRIMARY.value:
+            if TaxonSynonym.objects.filter(taxon=taxon, type=TaxonSynonymType.PRIMARY.value, language=synonym['language']).exists():
+                raise SuspiciousOperation(_('A primary name for the taxon with this language already exists'))
 
         if TaxonSynonym.objects.filter(name=synonym['name']).exists():
             raise PermissionDenied(_('Taxon synonym already exists'))
