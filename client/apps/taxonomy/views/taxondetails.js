@@ -28,6 +28,7 @@ var TaxonItemView = Marionette.ItemView.extend({
         "remove_synonym": ".remove-synonym",
         "add_synonym_panel": "tr.add-synonym-panel",
         "rename_synonym": "td.rename-synonym",
+        "change_parent": "span.change-parent",
     },
 
     events: {
@@ -36,6 +37,7 @@ var TaxonItemView = Marionette.ItemView.extend({
         'click @ui.add_synonym': 'onAddSynonym',
         'click @ui.remove_synonym': 'onRemoveSynonym',
         'click @ui.rename_synonym': 'onRenameSynonym',
+        'click @ui.change_parent': 'onChangeParent',
     },
 
     initialize: function() {
@@ -235,6 +237,95 @@ var TaxonItemView = Marionette.ItemView.extend({
 
         Backbone.history.navigate("app/taxonomy/" + taxon_id + "/", {trigger: true});
     },
+
+    onChangeParent: function () {
+        var ChangeParent = Dialog.extend({
+            template: require('../templates/taxonchangeparent.html'),
+
+            attributes: {
+                id: "dlg_change_parent",
+            },
+
+            ui: {
+                parent: "#taxon_parent",
+            },
+
+            initialize: function (options) {
+                ChangeParent.__super__.initialize.apply(this);
+            },
+
+            onRender: function () {
+                ChangeParent.__super__.onRender.apply(this);
+
+                var rank = this.model.get('rank');
+
+                $(this.ui.parent).select2({
+                    dropdownParent: $(this.el),
+                    ajax: {
+                        url: application.baseUrl + "taxonomy/search/",
+                        dataType: 'json',
+                        delay: 250,
+                        data: function (params) {
+                            params.term || (params.term = '');
+
+                            var filters = {
+                                method: 'icontains',
+                                fields: ['name', 'rank'],
+                                'name': params.term,
+                                'rank': rank
+                            };
+
+                            return {
+                                page: params.page,
+                                filters: JSON.stringify(filters),
+                            };
+                        },
+                        processResults: function (data, params) {
+                            // no pagination
+                            params.page = params.page || 1;
+
+                            var results = [];
+
+                            for (var i = 0; i < data.items.length; ++i) {
+                                results.push({
+                                    id: data.items[i].id,
+                                    text: data.items[i].label
+                                });
+                            }
+
+                            return {
+                                results: results,
+                                pagination: {
+                                    more: (params.page * 30) < data.total_count
+                                }
+                            };
+                        },
+                        cache: true
+                    },
+                    minimumInputLength: 3,
+                    placeholder: gt.gettext("Enter a taxon name. 3 characters at least for auto-completion"),
+                });
+            },
+
+            onApply: function() {
+                var model = this.getOption('model');
+                var parent = null;
+
+                if ($(this.ui.parent).val()) {
+                    parent = parseInt($(this.ui.parent).val());
+                }
+
+                model.save({parent: parent}, {patch: true, wait: true});
+                this.remove();
+            },
+        });
+
+        var changeParent = new ChangeParent({
+            model: this.model
+        });
+
+        changeParent.render();
+    }
 });
 
 module.exports = TaxonItemView;

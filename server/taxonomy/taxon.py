@@ -298,6 +298,66 @@ def search_taxon(request):
     return HttpResponseRest(request, response)
 
 
+@RestTaxonomyId.def_auth_request(
+    Method.PATCH, Format.JSON, content={
+        "type": "object",
+        "properties": {
+            "parent": {"type": ["number", "null"], 'required': False}
+        },
+    },
+    perms={
+        'taxonomy.change_taxon': _("You are not allowed to modify a taxon"),
+    }
+)
+def patch_taxon(request, id):
+    tid = int(id)
+
+    taxon = get_object_or_404(Taxon, id=tid)
+
+    result = {}
+
+    if 'parent' in request.data:
+        if request.data['parent'] is None:
+            taxon.parent = None
+            taxon.parent_list = ""
+
+            result['parent'] = None
+            result['parent_list'] = []
+            result['parent_details'] = []
+        else:
+            ptid = int(request.data['parent'])
+
+            parent = get_object_or_404(Taxon, id=ptid)
+
+            taxon.parent = parent
+
+            if parent.rank >= taxon.rank:
+                raise SuspiciousOperation(_("The rank of the parent must be lowest than the taxon itself"))
+
+            # make parent list
+            Taxonomy.update_parents(taxon, parent)
+
+            parents = []
+            next_parent = taxon.parent
+            break_count = 0
+            while break_count < 10 and next_parent is not None:
+                parents.append({
+                    'id': next_parent.id,
+                    'name': next_parent.name,
+                    'rank': next_parent.rank,
+                    'parent': next_parent.parent_id
+                })
+                next_parent = next_parent.parent
+
+            result['parent'] = parent.id
+            result['parent_list'] = parents
+            result['parent_details'] = parents
+
+    taxon.save()
+
+    return HttpResponseRest(request, result)
+
+
 @RestTaxonomyIdSynonym.def_auth_request(
     Method.POST, Format.JSON, content={
         "type": "object",
