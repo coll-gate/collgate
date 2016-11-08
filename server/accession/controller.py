@@ -5,9 +5,11 @@
 """
 coll-gate accession module controller
 """
+from django.core.exceptions import SuspiciousOperation
+from django.utils.translation import ugettext_lazy as _
 
 from main.models import Languages
-from .models import Accession, AccessionSynonym, AccessionSynonymType
+from .models import Accession, AccessionSynonym
 
 
 class Accession(object):
@@ -28,7 +30,7 @@ class Accession(object):
         accession.save()
 
         # first name a primary synonym
-        primary = AccessionSynonym(accession_id=accession.id, name=name, type=int(AccessionSynonymType.PRIMARY), language=Languages.FR.value)
+        primary = AccessionSynonym(accession_id=accession.id, name=name, type='IN_001:0000001', language=Languages.FR.value)
         primary.save()
 
         return accession
@@ -62,13 +64,13 @@ class Accession(object):
         Add one synonym to the given accession.
         """
         if not synonym:
-            raise Exception('Empty synonym')
+            raise SuspiciousOperation(_('Empty synonym data'))
 
-        if not synonym['name'] or synonym['type'] == AccessionSynonymType.PRIMARY:
-            raise Exception('Undefined synonym name or primary synonym')
+        if not synonym['name'] or synonym['type'] == 'ID001:0000001':
+            raise SuspiciousOperation(_('Undefined synonym name or primary synonym'))
 
         if not synonym['language']:
-            raise Exception('Undefined synonym langauge')
+            raise SuspiciousOperation(_('Undefined synonym language'))
 
         synonym = AccessionSynonym(taxon_id=accession_id,
                                    name=synonym['name'],
@@ -85,7 +87,7 @@ class Accession(object):
             return
 
         # cannot remove the primary synonym
-        if not synonym['name'] or synonym['type'] == AccessionSynonymType.PRIMARY:
+        if not synonym['name'] or synonym['type'] == 'ID001:0000001':
             return
 
         AccessionSynonym.objects.filter(accession_id=accession_id, name=synonym['name']).delete()

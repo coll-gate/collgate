@@ -939,6 +939,19 @@ class Accession(Entity):
     class Meta:
         verbose_name = _("accession")
 
+    def audit_create(self, user):
+        return {
+            'descriptors': self.descriptors
+        }
+
+    def audit_update(self, user):
+        return {
+            'descriptors': self.descriptors
+        }
+
+    def audit_delete(self, user):
+        return {}
+
 
 class Batch(Entity):
     """
@@ -955,6 +968,19 @@ class Batch(Entity):
 
     class Meta:
         verbose_name = _("batch")
+
+    def audit_create(self, user):
+        return {
+            'descriptors': self.descriptors
+        }
+
+    def audit_update(self, user):
+        return {
+            'descriptors': self.descriptors
+        }
+
+    def audit_delete(self, user):
+        return {}
 
 
 class Sample(models.Model):
@@ -973,3 +999,16 @@ class Sample(models.Model):
 
     class Meta:
         verbose_name = _("sample")
+
+    def audit_create(self, user):
+        return {
+            'descriptors': self.descriptors
+        }
+
+    def audit_update(self, user):
+        return {
+            'descriptors': self.descriptors
+        }
+
+    def audit_delete(self, user):
+        return {}

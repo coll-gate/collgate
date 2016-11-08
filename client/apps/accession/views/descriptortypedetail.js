@@ -50,6 +50,11 @@ var View = Marionette.ItemView.extend({
     },
 
     onRender: function() {
+        // @todo check user permissions
+        if (!this.model.get('can_modify')) {
+            $(this.ui.save).hide();
+        }
+
         var format = this.model.get('format');
 
         $(this.ui.format_type).val(format.type).trigger('change');

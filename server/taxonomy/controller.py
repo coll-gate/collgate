@@ -24,6 +24,8 @@ class Taxonomy(object):
         :param taxon: Valid Taxon instance.
         :param parent: None or valid Taxon instance.
         """
+        taxon.parent_list = ""
+
         if not parent:
             return
 
@@ -124,7 +126,7 @@ class Taxonomy(object):
         Add one synonym to the given taxon.
         """
         if not synonym:
-            raise SuspiciousOperation('Empty synonym')
+            raise SuspiciousOperation(_('Empty synonym data'))
 
         if not synonym['name']:
             raise SuspiciousOperation(_('Undefined synonym name'))

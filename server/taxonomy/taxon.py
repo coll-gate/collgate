@@ -358,6 +358,20 @@ def patch_taxon(request, id):
     return HttpResponseRest(request, result)
 
 
+@RestTaxonomyId.def_auth_request(Method.DELETE, Format.JSON, perms={
+    'taxonomy.delete_taxon': _("You are not allowed to remove a taxon"),
+})
+def remove_taxon(request, id):
+    tid = int(id)
+    taxon = get_object_or_404(Taxon, id=tid)
+
+    # TODO check if some accessions use it before remove
+
+    taxon.remove_entity()
+
+    return HttpResponseRest(request, {})
+
+
 @RestTaxonomyIdSynonym.def_auth_request(
     Method.POST, Format.JSON, content={
         "type": "object",

@@ -46,6 +46,32 @@ class Taxon(Entity):
     class Meta:
         verbose_name = _("taxon")
 
+    def audit_create(self, user):
+        return {
+            'rank': self.rank,
+            'parent': self.parent_id,
+            'parent_list': self.parent_list
+        }
+
+    def audit_update(self, user):
+        if hasattr(self, 'updated_fields'):
+            result = {'updated_fields': self.updated_fields}
+
+            if 'rank' in self.updated_fields:
+                result['rank'] = self.rank
+            if 'parent' in self.updated_fields or 'parent_list' in self.updated_fields:
+                result['parent'] = self.parent
+                result['parent_list'] = self.parent_list
+        else:
+            return {
+                'rank': self.rank,
+                'parent': self.parent_id,
+                'parent_list': self.parent_list
+            }
+
+    def audit_delete(self, user):
+        return {}
+
 
 class TaxonSynonym(Entity):
 
@@ -54,11 +80,29 @@ class TaxonSynonym(Entity):
 
     taxon = models.ForeignKey(Taxon, null=False, related_name='synonyms')
 
-    def audit_create(self, user):
-        return {'name': self.name, 'taxon_id': self.taxon.pk}
-
-    def audit_delete(self, user):
-        return {'name': self.name, 'taxon_id': self.taxon.pk}
-
     class Meta:
         verbose_name = _("taxon synonym")
+
+    def audit_create(self, user):
+        return {
+            'language': self.language,
+            'type': self.type,
+            'taxon': self.taxon_id
+        }
+
+    def audit_update(self, user):
+        if hasattr(self, 'updated_fields'):
+            result = {'updated_fields': self.updated_fields}
+
+            if 'language' in self.updated_fields:
+                result['language'] = self.language
+            if 'type' in self.updated_fields:
+                result['type'] = self.type
+        else:
+            return {
+                'language': self.language,
+                'type': self.type
+            }
+
+    def audit_delete(self, user):
+        return {}

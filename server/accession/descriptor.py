@@ -489,6 +489,9 @@ def update_descriptor_type(request, id, tid):
     descr_type = get_object_or_404(DescriptorType, id=type_id, group=group)
     org_format = json.loads(descr_type.format)
 
+    if not descr_type.can_modify:
+        raise SuspiciousOperation(_("It is not permit to modify this type of descriptor"))
+
     # had values -> has no values
     if not format['type'].startswith('enum_') and org_format['type'].startswith('enum_'):
         # overwrite values

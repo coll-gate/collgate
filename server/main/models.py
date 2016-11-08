@@ -139,6 +139,12 @@ class Entity(models.Model):
     def cast(self):
         return self.content_type.get_object_for_this_type(pk=self.pk)
 
+    def update_field(self, field_name):
+        if not hasattr(self, 'updated_fields'):
+            self.updated_fields = []
+
+        self.updated_fields.append(field_name)
+
     @classmethod
     def is_name_valid(cls, name):
         """

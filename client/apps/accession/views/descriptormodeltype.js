@@ -287,66 +287,79 @@ var View = Marionette.ItemView.extend({
     },
 
     editLabel: function() {
-        var ChangeLabel = Dialog.extend({
-            template: require('../templates/descriptormodeltypechangelabel.html'),
+        $.ajax({
+            type: "GET",
+            url: this.model.url() + 'label/',
+            dataType: 'json',
+        }).done(function (data) {
+            var labels = data;
 
-            attributes: {
-                id: "dlg_change_label",
-            },
+            var ChangeLabel = Dialog.extend({
+                template: require('../templates/descriptormodeltypechangelabel.html'),
+                templateHelpers: function () {
+                    return {
+                        labels: labels,
+                    };
+                },
 
-            ui: {
-                label: "#label",
-            },
+                attributes: {
+                    id: "dlg_change_label",
+                },
 
-            events: {
-                'input @ui.label': 'onLabelInput',
-            },
+                ui: {
+                    label: "#label",
+                },
 
-            initialize: function (options) {
-                ChangeLabel.__super__.initialize.apply(this);
-            },
+                events: {
+                    'input @ui.label': 'onLabelInput',
+                },
 
-            onLabelInput: function () {
-                this.validateLabel();
-            },
+                initialize: function (options) {
+                    ChangeLabel.__super__.initialize.apply(this);
+                },
 
-            validateLabel: function() {
-                var v = this.ui.label.val();
+                onLabelInput: function () {
+                    this.validateLabel();
+                },
 
-                if (v.length < 3) {
-                    $(this.ui.label).validateField('failed', gt.gettext('3 characters min'));
-                    return false;
-                }
+                validateLabel: function () {
+                    var v = this.ui.label.val();
 
-                $(this.ui.label).validateField('ok');
+                    if (v.length < 3) {
+                        $(this.ui.label).validateField('failed', gt.gettext('3 characters min'));
+                        return false;
+                    }
 
-                return true;
-            },
+                    $(this.ui.label).validateField('ok');
 
-            onApply: function() {
-                var view = this;
-                var model = this.getOption('model');
+                    return true;
+                },
 
-                if (this.validateLabel()) {
-                    model.save({label: this.ui.label.val()}, {
-                        patch: true,
-                        wait: true,
-                        success: function() {
-                            view.remove();
-                            $.alert.success(gt.gettext("Successfully labeled !"));
-                        },
-                        error: function() {
-                            $.alert.error(gt.gettext("Unable to change label !"));
-                        }
-                    });
-                }
-            },
+                onApply: function () {
+                    var view = this;
+                    var model = this.getOption('model');
+
+                    if (this.validateLabel()) {
+                        model.save({label: this.ui.label.val()}, {
+                            patch: true,
+                            wait: true,
+                            success: function () {
+                                view.remove();
+                                $.alert.success(gt.gettext("Successfully labeled !"));
+                            },
+                            error: function () {
+                                $.alert.error(gt.gettext("Unable to change label !"));
+                            }
+                        });
+                    }
+                },
+            });
+
+            var changeLabel = new ChangeLabel({model: this.model});
+
+            changeLabel.render();
+            //changeLabel.ui.label.val(this.model.get('label'));
         });
-
-        var changeLabel = new ChangeLabel({model: this.model});
-
-        changeLabel.render();
-        changeLabel.ui.label.val(this.model.get('label'));
     },
 
     toggleMandatory: function() {

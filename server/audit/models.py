@@ -204,28 +204,33 @@ def entity_post_save(sender, instance, created, **kwargs):
 
         if hasattr(sender, 'audit_create'):
             fields = instance.audit_create(user)
-        elif hasattr(instance, 'descriptors'):
-            fields = {'name': instance.name, 'descriptors': instance.descriptors}
-        else:  # generic
-            fields = {'name': instance.name}
+        else:
+            fields = {}
+
+        # add the uuid of the instance
+        if hasattr(instance, 'uuid'):
+            fields['uuid'] = str(instance.uuid)
     elif instance.entity_status == EntityStatus.REMOVED:
         a_type = AuditType.REMOVE
 
         if hasattr(sender, 'audit_update'):
             fields = instance.audit_update(user)
-        elif hasattr(instance, 'descriptors'):
-            fields = {'name': instance.name, 'descriptors': instance.descriptors}
-        else:  # generic
-            fields = {'name': instance.name}
+        else:
+            fields = {}
     else:
         a_type = AuditType.UPDATE
 
         if hasattr(sender, 'audit_update'):
             fields = instance.audit_update(user)
-        elif hasattr(instance, 'descriptors'):
-            fields = {'name': instance.name, 'descriptors': instance.descriptors}
-        else:  # generic
-            fields = {'name': instance.name}
+        else:
+            fields = {}
+
+    # always add the status of the entity
+    if hasattr(instance, 'entity_status'):
+        fields['entity_status'] = instance.entity_status
+
+    # always add the name of the instance
+    fields['name'] = instance.name
 
     content_type = ContentType.objects.get_for_model(sender)
     Audit.objects.create_audit(user, content_type, instance.pk, a_type, fields)
@@ -237,10 +242,11 @@ def entity_post_delete(sender, instance, **kwargs):
 
     if hasattr(sender, 'audit_delete'):
         fields = instance.audit_delete(user)
-    elif hasattr(instance, 'descriptors'):
-        fields = {'name': instance.name, 'descriptors': instance.descriptors}
-    else:  # generic
-        fields = {'name': instance.name}
+    else:
+        fields = {}
+
+    # always add the name of the instance
+    fields['name'] = instance.name
 
     content_type = ContentType.objects.get_for_model(sender)
     Audit.objects.create_audit(user, content_type, instance.pk, AuditType.DELETE, fields)
@@ -252,10 +258,8 @@ def entity_m2m_changed(sender, instance, action, reverse, model, **kwargs):
 
     if hasattr(sender, 'audit_m2m'):
         fields = instance.audit_m2m(user)
-    elif hasattr(instance, 'descriptors'):
-        fields = {'name': instance.name, 'descriptors': instance.descriptors}
-    else:  # generic
-        fields = {'name': instance.name}
+    else:
+        fields = {}
 
     content_type = ContentType.objects.get_for_model(sender)
     Audit.objects.create_audit(user, content_type, instance.pk, AuditType.M2M_CHANGE, fields)

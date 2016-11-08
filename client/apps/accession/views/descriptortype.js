@@ -34,7 +34,7 @@ var View = Marionette.ItemView.extend({
 
     onRender: function() {
         // @todo check user permissions
-        if (!this.model.get('can_delete') || !session.user.isSuperUser) {
+        if (!this.model.get('can_delete') || !session.user.isSuperUser || !session.user.isStaff) {
             $(this.ui.delete_descriptor_type).hide();
         }
     },
