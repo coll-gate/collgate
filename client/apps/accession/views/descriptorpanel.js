@@ -143,10 +143,10 @@ var View = Marionette.ItemView.extend({
             this.ui.bottom_placeholder.css('display', 'none');
 
             var DefinesLabel = Dialog.extend({
-                template: require('../templates/descriptorpanelchangelabel.html'),
+                template: require('../templates/descriptorpanelcreate.html'),
 
                 attributes: {
-                    id: "dlg_defines_label",
+                    id: "dlg_create_panel",
                 },
 
                 ui: {
@@ -310,6 +310,102 @@ var View = Marionette.ItemView.extend({
     },
 
     editLabel: function() {
+        var model = this.model;
+
+        $.ajax({
+            type: "GET",
+            url: this.model.url() + 'label/',
+            dataType: 'json',
+        }).done(function (data) {
+            var labels = data;
+
+            var ChangeLabel = Dialog.extend({
+                template: require('../templates/descriptorpanelchangelabel.html'),
+                templateHelpers: function () {
+                    return {
+                        labels: labels,
+                    };
+                },
+
+                attributes: {
+                    id: "dlg_change_labels",
+                },
+
+                ui: {
+                    label: "#descriptor_panel_labels input",
+                },
+
+                events: {
+                    'input @ui.label': 'onLabelInput',
+                },
+
+                initialize: function (options) {
+                    ChangeLabel.__super__.initialize.apply(this);
+                },
+
+                onLabelInput: function (e) {
+                    this.validateLabel(e);
+                },
+
+                validateLabel: function (e) {
+                    var v = $(e.target).val();
+
+                    if (v.length > 64) {
+                        $(this.ui.label).validateField('failed', gt.gettext('64 characters max'));
+                        return false;
+                    }
+
+                    $(this.ui.label).validateField('ok');
+
+                    return true;
+                },
+
+                validateLabels: function () {
+                    $.each($(this.ui.label), function (i, label) {
+                        var v = $(this).val();
+
+                        if (v.length > 64) {
+                            $(this).validateField('failed', gt.gettext('64 characters max'));
+                            return false;
+                        }
+                    });
+
+                    return true;
+                },
+
+                onApply: function () {
+                    var view = this;
+                    var model = this.getOption('model');
+
+                    var labels = {};
+
+                    $.each($(this.ui.label), function (i, label) {
+                        var v = $(this).val();
+                        labels[$(label).attr("language")] = v;
+                    });
+
+                    if (this.validateLabels()) {
+                        $.ajax({
+                            type: "PUT",
+                            url: model.url() + "label/",
+                            dataType: 'json',
+                            contentType: "application/json; charset=utf-8",
+                            data: JSON.stringify(labels)
+                        }).done(function () {
+                            // manually update the current context label
+                            model.set('label', labels[session.language]);
+                            $.alert.success(gt.gettext("Successfully labeled !"));
+                        }).always(function () {
+                            view.remove();
+                        });
+                    }
+                },
+            });
+
+            var changeLabel = new ChangeLabel({model: model});
+            changeLabel.render();
+        });
+        /*
         var ChangeLabel = Dialog.extend({
             template: require('../templates/descriptorpanelchangelabel.html'),
 
@@ -369,7 +465,7 @@ var View = Marionette.ItemView.extend({
         var changeLabel = new ChangeLabel({model: this.model});
 
         changeLabel.render();
-        changeLabel.ui.label.val(this.model.get('label'));
+        changeLabel.ui.label.val(this.model.get('label'));*/
     },
 
     deleteDescriptorPanel: function() {

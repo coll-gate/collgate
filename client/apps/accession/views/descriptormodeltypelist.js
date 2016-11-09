@@ -23,8 +23,6 @@ var View = ScrollView.extend({
     initialize: function() {
         this.listenTo(this.collection, 'reset', this.render, this);
         this.listenTo(this.collection, 'change', this.render, this);
-        //this.listenTo(this.collection, 'add', this.render, this);
-        //this.listenTo(this.collection, 'remove', this.render, this);
 
         View.__super__.initialize.apply(this);
 
@@ -48,8 +46,6 @@ var View = ScrollView.extend({
 
         if (this.dragEnterCount == 1) {
             if (this.$el.find("tbody tr").length == 0) {
-                //var dummyRow = $("<tr><td></td><td></td><td></td><td></td><td></td></tr>").addClass("dummy-row");
-                //this.$el.find("tbody").append(dummyRow);
                 this.$el.find("thead tr th").css('border-bottom', '5px dashed #ddd');
             }
 
@@ -73,7 +69,6 @@ var View = ScrollView.extend({
 
         if (this.dragEnterCount == 0) {
             this.$el.find("tbody tr").last().css('border-bottom', 'initial');
-            //this.$el.find("tbody tr.dummy-row").remove();
             this.$el.find("thead tr th").css('border-bottom', '2px solid #ddd');
 
         }
@@ -94,8 +89,6 @@ var View = ScrollView.extend({
 
         if (this.dragEnterCount == 1) {
             if (this.$el.find("tbody tr").length == 0) {
-                //var dummyRow = $("<tr><td></td><td></td><td></td><td></td><td></td></tr>").addClass("dummy-row");
-                //this.$el.find("tbody").append(dummyRow);
                 this.$el.find("thead tr th").css('border-bottom', '5px dashed #ddd');
             }
 
@@ -118,7 +111,6 @@ var View = ScrollView.extend({
         this.dragEnterCount = 0;
 
         this.$el.find("tbody tr").last().css('border-bottom', 'initial');
-        //this.$el.find("tbody tr.dummy-row").remove();
         this.$el.find("thead tr th").css('border-bottom', '2px solid #ddd');
 
         var elt = application.dndElement;
@@ -130,10 +122,10 @@ var View = ScrollView.extend({
             var code = elt.model.get('code');
 
             var DefinesLabel = Dialog.extend({
-                template: require('../templates/descriptormodeltypechangelabel.html'),
+                template: require('../templates/descriptormodeltypecreate.html'),
 
                 attributes: {
-                    id: "dlg_defines_label",
+                    id: "dlg_define_label",
                 },
 
                 ui: {

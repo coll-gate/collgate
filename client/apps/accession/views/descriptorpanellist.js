@@ -105,10 +105,10 @@ var View = ScrollView.extend({
 
         if (elt.$el.hasClass('descriptor-model')) {
             var DefinesLabel = Dialog.extend({
-                template: require('../templates/descriptorpanelchangelabel.html'),
+                template: require('../templates/descriptorpanelcreate.html'),
 
                 attributes: {
-                    id: "dlg_defines_label",
+                    id: "dlg_create_panel",
                 },
 
                 ui: {

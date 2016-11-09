@@ -61,72 +61,101 @@ var View = Marionette.ItemView.extend({
     },
 
     editLabel: function() {
-        var ChangeLabel = Dialog.extend({
-            template: require('../templates/descriptormetamodelchangelabel.html'),
+        var model = this.model;
 
-            attributes: {
-                id: "dlg_change_label",
-            },
+        $.ajax({
+            type: "GET",
+            url: this.model.url() + 'label/',
+            dataType: 'json',
+        }).done(function (data) {
+            var labels = data;
 
-            ui: {
-                label: "#label",
-            },
+            var ChangeLabel = Dialog.extend({
+                template: require('../templates/descriptormetamodelchangelabel.html'),
+                templateHelpers: function () {
+                    return {
+                        labels: labels,
+                    };
+                },
 
-            events: {
-                'input @ui.label': 'onLabelInput',
-            },
+                attributes: {
+                    id: "dlg_change_labels",
+                },
 
-            initialize: function (options) {
-                ChangeLabel.__super__.initialize.apply(this);
-            },
+                ui: {
+                    label: "#descriptor_meta_model_labels input",
+                },
 
-            onLabelInput: function () {
-                this.validateLabel();
-            },
+                events: {
+                    'input @ui.label': 'onLabelInput',
+                },
 
-            validateLabel: function() {
-                var v = this.ui.label.val();
+                initialize: function (options) {
+                    ChangeLabel.__super__.initialize.apply(this);
+                },
 
-                if (v.length < 3) {
-                    $(this.ui.label).validateField('failed', gt.gettext('3 characters min'));
-                    return false;
-                }
+                onLabelInput: function (e) {
+                    this.validateLabel(e);
+                },
 
-                $(this.ui.label).validateField('ok');
+                validateLabel: function (e) {
+                    var v = $(e.target).val();
 
-                return true;
-            },
+                    if (v.length > 64) {
+                        $(this.ui.label).validateField('failed', gt.gettext('64 characters max'));
+                        return false;
+                    }
 
-            onApply: function() {
-                var view = this;
-                var model = this.getOption('model');
-                var modelId = this.getOption('modelId');
-                var typeId = this.getOption('typeId');
+                    $(this.ui.label).validateField('ok');
 
-                if (this.validateLabel()) {
-                    model.save({label: this.ui.label.val()}, {
-                        patch: true,
-                        wait: true,
-                        success: function() {
-                            view.remove();
-                            $.alert.success(gt.gettext("Successfully labeled !"));
-                        },
-                        error: function() {
-                            $.alert.error(gt.gettext("Unable to change label !"));
+                    return true;
+                },
+
+                validateLabels: function() {
+                    $.each($(this.ui.label), function(i, label) {
+                        var v = $(this).val();
+
+                        if (v.length > 64) {
+                            $(this).validateField('failed', gt.gettext('64 characters max'));
+                            return false;
                         }
                     });
-                }
-            },
-        });
 
-        var changeLabel = new ChangeLabel({
-            model: this.model,
-            modelId: this.model.collection.model_id,
-            typeId: this.model.get('id')
-        });
+                    return true;
+                },
 
-        changeLabel.render();
-        changeLabel.ui.label.val(this.model.get('label'));
+                onApply: function () {
+                    var view = this;
+                    var model = this.getOption('model');
+
+                    var labels = {};
+
+                    $.each($(this.ui.label), function(i, label) {
+                        var v = $(this).val();
+                        labels[$(label).attr("language")] = v;
+                    });
+
+                    if (this.validateLabels()) {
+                        $.ajax({
+                            type: "PUT",
+                            url: model.url() + "label/",
+                            dataType: 'json',
+                            contentType: "application/json; charset=utf-8",
+                            data: JSON.stringify(labels)
+                        }).done(function() {
+                            // manually update the current context label
+                            model.set('label', labels[session.language]);
+                            $.alert.success(gt.gettext("Successfully labeled !"));
+                        }).always(function() {
+                            view.remove();
+                        });
+                    }
+                },
+            });
+
+            var changeLabel = new ChangeLabel({model: model});
+            changeLabel.render();
+        });
     },
 });
 

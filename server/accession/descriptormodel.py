@@ -537,11 +537,8 @@ def get_all_labels_of_descriptor_model_type(request, id, tid):
     Method.PUT, Format.JSON, content={
         "type": "object",
         "additionalProperties": {
-            "type": "object",
-            "properties": {
-                "type": "string",
-                "maxLength": 64
-            }
+            "type": "string",
+            "maxLength": 64
         }
     },
     perms={
@@ -552,6 +549,7 @@ def get_all_labels_of_descriptor_model_type(request, id, tid):
 def change_all_labels_of_descriptor_model_type(request, id, tid):
     """
     Changes all the label, for each language related to the user interface.
+    Returns only the local label.
     """
     dm_id = int(id)
     dmt_id = int(tid)

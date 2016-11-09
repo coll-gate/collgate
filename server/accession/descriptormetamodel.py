@@ -18,6 +18,7 @@ from igdectk.common.helpers import int_arg
 from igdectk.rest import Format, Method
 from igdectk.rest.response import HttpResponseRest
 
+from main.models import Languages
 from .base import RestAccession
 from .models import DescriptorModel, DescriptorPanel, DescriptorMetaModel
 
@@ -37,6 +38,11 @@ class RestDescriptorMetaModelId(RestDescriptorMetaModel):
     suffix = 'id'
 
 
+class RestDescriptorMetaModelIdLabel(RestDescriptorMetaModelId):
+    regex = r'^label/$'
+    suffix = 'label'
+
+
 class RestDescriptorMetaModelIdPanel(RestDescriptorMetaModelId):
     regex = r'^panel/$'
     suffix = 'panel'
@@ -50,6 +56,11 @@ class RestDescriptorMetaModelIdPanelOrder(RestDescriptorMetaModelIdPanel):
 class RestDescriptorMetaModelIdPanelId(RestDescriptorMetaModelIdPanel):
     regex = r'^(?P<pid>[0-9]+)/$'
     suffix = 'id'
+
+
+class RestDescriptorMetaModelIdPanelIdLabel(RestDescriptorMetaModelIdPanelId):
+    regex = r'^label/$'
+    suffix = 'label'
 
 
 @RestDescriptorMetaModel.def_auth_request(Method.GET, Format.JSON)
@@ -561,3 +572,129 @@ def remove_descriptor_panel_of_meta_model(request, id, pid):
 
     return HttpResponseRest(request, {})
 
+
+@RestDescriptorMetaModelIdLabel.def_auth_request(Method.GET, Format.JSON)
+def get_all_labels_of_descriptor_meta_model(request, id):
+    """
+    Returns labels for each language related to the user interface.
+    """
+    dmm_id = int(id)
+
+    dmm = get_object_or_404(DescriptorMetaModel, id=dmm_id)
+
+    label_dict = json.loads(dmm.label)
+
+    # complete with missing languages
+    for lang, lang_label in Languages.choices():
+        if lang not in label_dict:
+            label_dict[lang] = ""
+
+    results = label_dict
+
+    return HttpResponseRest(request, results)
+
+
+@RestDescriptorMetaModelIdLabel.def_auth_request(
+    Method.PUT, Format.JSON, content={
+        "type": "object",
+        "additionalProperties": {
+            "type": "string",
+            "maxLength": 64
+        }
+    },
+    perms={
+        'accession.change_descriptormetamodel': _('You are not allowed to modify a meta-model of descriptor'),
+    },
+    staff=True)
+def change_all_labels_of_descriptor_meta_model(request, id):
+    """
+    Changes all the label, for each language related to the user interface.
+    Returns only the local label.
+    """
+    dmm_id = int(id)
+
+    dmm = get_object_or_404(DescriptorMetaModel, id=dmm_id)
+
+    labels = request.data
+
+    languages_values = [lang[0] for lang in Languages.choices()]
+
+    for lang, label in labels.items():
+        if lang not in languages_values:
+            raise SuspiciousOperation(_("Unsupported language identifier"))
+
+    dmm.label = json.dumps(labels)
+
+    dmm.update_field('label')
+    dmm.save()
+
+    result = {
+        'label': dmm.get_label()
+    }
+
+    return HttpResponseRest(request, result)
+
+
+@RestDescriptorMetaModelIdPanelIdLabel.def_auth_request(Method.GET, Format.JSON)
+def get_all_labels_of_descriptor_meta_model(request, id, pid):
+    """
+    Returns labels for each language related to the user interface.
+    """
+    dmm_id = int(id)
+    dp_id = int(pid)
+
+    dp = get_object_or_404(DescriptorPanel, id=dp_id, descriptor_meta_model=dmm_id)
+
+    label_dict = json.loads(dp.label)
+
+    # complete with missing languages
+    for lang, lang_label in Languages.choices():
+        if lang not in label_dict:
+            label_dict[lang] = ""
+
+    results = label_dict
+
+    return HttpResponseRest(request, results)
+
+
+@RestDescriptorMetaModelIdPanelIdLabel.def_auth_request(
+    Method.PUT, Format.JSON, content={
+        "type": "object",
+        "additionalProperties": {
+            "type": "string",
+            "maxLength": 64
+        }
+    },
+    perms={
+        'accession.change_descriptormetamodel': _('You are not allowed to modify a meta-model of descriptor'),
+        'accession.change_descriptorpanel': _('You are not allowed to modify a panel of descriptor'),
+    },
+    staff=True)
+def change_all_labels_of_descriptor_panel(request, id, pid):
+    """
+    Changes all the label, for each language related to the user interface.
+    Returns only the local label.
+    """
+    dmm_id = int(id)
+    dp_id = int(pid)
+
+    dp = get_object_or_404(DescriptorPanel, id=dp_id, descriptor_meta_model=dmm_id)
+
+    labels = request.data
+
+    languages_values = [lang[0] for lang in Languages.choices()]
+
+    for lang, label in labels.items():
+        if lang not in languages_values:
+            raise SuspiciousOperation(_("Unsupported language identifier"))
+
+    dp.label = json.dumps(labels)
+
+    dp.update_field('label')
+    dp.save()
+
+    result = {
+        'label': dp.get_label()
+    }
+
+    return HttpResponseRest(request, result)

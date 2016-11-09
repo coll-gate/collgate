@@ -2,10 +2,10 @@
     <div class="modal-content">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h4 class="modal-title"><%= gt.gettext("Change the label for a type of model of descriptor") %></h4>
+            <h4 class="modal-title"><%= gt.gettext("Change the label for the type of model of descriptor") %></h4>
         </div>
-        <div class="modal-body">
-            <form><%
+        <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
+            <form id="descriptor_model_type_labels"><%
                 for (var i = 0; i < application.main.collections.languages.models.length; ++i) {
                     var lang_id = application.main.collections.languages.at(i).get('id');
                     var lang_label = application.main.collections.languages.at(i).get('label');
@@ -13,8 +13,8 @@
                     var autofocus = (i == 0) ? 'autofocus=""' : "";
                 %>
                     <div class="form-group">
-                        <label class="control-label" for="label"><%= gt.gettext(lang_label) %></label>
-                        <input class="form-control" id="label_<%= lang_id %>" type="text" name="label_<%= lang_id %>" value="<%= labels[lang_id] %>" maxlength="128"<%= autofocus %> autocomplete="off" style="width:100%;">
+                        <label class="control-label"><%= gt.gettext(lang_label) %></label>
+                        <input class="form-control" type="text" language="<%= lang_id %>" value="<%= labels[lang_id] %>" maxlength="64"<%= autofocus %> autocomplete="off" style="width:100%;">
                     </div>
                 <% } %>
             </form>
