@@ -60,6 +60,10 @@ class RestTaxonomyRank(RestTaxonomy):
 }, perms={'taxonomy.add_taxon': _('You are not allowed to create a taxon')}
 )
 def create_taxon(request):
+    """
+    Create a new taxon with a primary synonym in the current language.
+    The name of the taxon is generated.
+    """
     taxon_params = request.data
 
     parent_id = int_arg(taxon_params['parent'])
@@ -67,9 +71,11 @@ def create_taxon(request):
     if parent_id > 0:
         parent = get_object_or_404(Taxon, id=parent_id)
 
+    rank_id = int(taxon_params['rank'])
+
     taxon = Taxonomy.create_taxon(
         taxon_params['name'],
-        int_arg(taxon_params['rank']),
+        rank_id,
         parent)
 
     response = {

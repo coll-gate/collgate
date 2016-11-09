@@ -39,7 +39,7 @@ msgstr "Récupérer les entrées d'audits pour une entité"
 
 #: ../../../templates/auditbyentity.html:10
 msgid "Entity content type"
-msgstr "Type entité"
+msgstr "Type d'entité"
 
 #: ../../../templates/auditbyentity.html:14
 msgid "Entity UUID or name"

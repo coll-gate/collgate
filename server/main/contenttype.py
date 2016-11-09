@@ -62,4 +62,6 @@ def get_content_types(request):
         if add:
             types.append({'id': content_type.id, 'value': value, 'label': label})
 
+    types = sorted(types, key=lambda x: x['value'].split('.')[0] + '.' + x['label'])
+
     return HttpResponseRest(request, types)

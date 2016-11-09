@@ -4,7 +4,7 @@
     "Select an entity UUID or name": "Sélectionnez une entité par son UUID ou son nom",
     "List of audit entries related to entity": "Liste des entrées d'audits pour l'entité",
     "Get audits entries for an entity": "Récupérer les entrées d'audits pour une entité",
-    "Entity content type": "Type entité",
+    "Entity content type": "Type d'entité",
     "Entity UUID or name": "UUID ou nom de l'entité",
     "Cancel": "Annuler",
     "Search": "Chercher",

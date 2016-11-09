@@ -9,7 +9,7 @@ from django.core.exceptions import SuspiciousOperation, PermissionDenied
 from django.utils import translation
 
 from main.models import Languages
-from .models import Taxon, TaxonSynonym, TaxonSynonymType
+from .models import Taxon, TaxonSynonym, TaxonSynonymType, TaxonRank
 
 from django.utils.translation import ugettext_lazy as _
 
@@ -39,7 +39,7 @@ class Taxonomy(object):
                 break
 
     @classmethod
-    def create_taxon(cls, name, rank, parent=None):
+    def create_taxon(cls, name, rank_id, parent=None):
         """
         Create a new taxon with a unique name. The level must be
         greater than its parent level.
@@ -49,14 +49,16 @@ class Taxonomy(object):
         :return: None or new Taxon instance.
         """
         if Taxon.objects.filter(name=name).exists():
-            return None
+            raise SuspiciousOperation(_("A taxon with this name already exists"))
+
+        rank = TaxonRank(rank_id)
 
         if parent and rank <= parent.rank:
-            return None
+            raise SuspiciousOperation(_("The rank of the parent must be lesser than the new taxon"))
 
         taxon = Taxon()
         taxon.name = name
-        taxon.rank = rank
+        taxon.rank = rank_id
         taxon.parent = parent
         taxon.parent_list = ""
 
@@ -71,7 +73,7 @@ class Taxonomy(object):
         lang = translation.get_language()
 
         # first name a primary synonym
-        primary = TaxonSynonym(taxon_id=taxon.id, name=name, type=int(TaxonSynonymType.PRIMARY), language=lang)
+        primary = TaxonSynonym(taxon_id=taxon.id, name=name, type=TaxonSynonymType.PRIMAR.value, language=lang)
         primary.save()
 
         return taxon

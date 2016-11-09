@@ -31,8 +31,11 @@ class TaxonRank(ChoiceEnum):
     SUB_FAMILY = IntegerChoice(61, _("Sub-family"))
     GENUS = IntegerChoice(70, _("Genus"))
     SUB_GENUS = IntegerChoice(71, _("Sub-genus"))
+    SECTION = IntegerChoice(72, _("Section"))
+    SUB_SECTION = IntegerChoice(73, _("Sub-section"))
     SPECIE = IntegerChoice(80, _("Specie"))
     SUB_SPECIE = IntegerChoice(81, _("Sub-specie"))
+    VARIETY = IntegerChoice(82, _("Variety"))
 
 
 class Taxon(Entity):
@@ -75,8 +78,8 @@ class Taxon(Entity):
 
 class TaxonSynonym(Entity):
 
-    language = models.CharField(null=False, blank=False, max_length=2, choices=Languages.choices())
-    type = models.IntegerField(null=False, blank=False, choices=TaxonSynonymType.choices())
+    language = models.CharField(max_length=2, choices=Languages.choices())
+    type = models.IntegerField(choices=TaxonSynonymType.choices())
 
     taxon = models.ForeignKey(Taxon, null=False, related_name='synonyms')
 
