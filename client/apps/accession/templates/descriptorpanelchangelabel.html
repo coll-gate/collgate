@@ -6,9 +6,11 @@
         </div>
         <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
             <form id="descriptor_panel_labels"><%
-                for (var i = 0; i < application.main.collections.languages.models.length; ++i) {
-                    var lang_id = application.main.collections.languages.at(i).get('id');
-                    var lang_label = application.main.collections.languages.at(i).get('label');
+                var languages = application.main.collections.uilanguages;
+
+                for (var i = 0; i < languages.models.length; ++i) {
+                    var lang_id = languages.at(i).get('id');
+                    var lang_label = languages.at(i).get('label');
                     var label = labels[lang_label];
                     var autofocus = (i == 0) ? 'autofocus=""' : "";
                 %>

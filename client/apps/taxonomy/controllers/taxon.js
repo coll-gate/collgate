@@ -59,6 +59,7 @@ var TaxonController = Marionette.Controller/*Object*/.extend({
 
             ui: {
                 create: "button.create",
+                language: "#taxon_language",
                 name: "#taxon_name",
                 rank: "#taxon_rank",
                 parent: "#taxon_parent",
@@ -76,6 +77,7 @@ var TaxonController = Marionette.Controller/*Object*/.extend({
 
                 this.ui.parent_group.hide();
 
+                application.main.views.languages.drawSelect(this.ui.language);
                 application.taxonomy.views.taxonRanks.drawSelect(this.ui.rank);
 
                 $(this.ui.parent).select2({
@@ -200,8 +202,6 @@ var TaxonController = Marionette.Controller/*Object*/.extend({
             onChangeRank: function () {
                 // reset parent
                 $(this.ui.parent).val('').trigger('change');
-                //this.ui.parent.attr('parent-id', 0);
-                //$(this.ui.parent).cleanField();
 
                 if (this.ui.rank.val() == 60)
                     this.ui.parent_group.hide();
@@ -243,10 +243,9 @@ var TaxonController = Marionette.Controller/*Object*/.extend({
 
             validateName: function() {
                 var v = this.ui.name.val();
-                var re = /^[a-zA-Z0-9_\-]+$/i;
 
-                if (v.length > 0 && !re.test(v)) {
-                    $(this.ui.name).validateField('failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
+                if (v.length > 64) {
+                    $(this.ui.name).validateField('failed', gt.gettext("64 characters max"));
                     return false;
                 } else if (v.length < 3) {
                     $(this.ui.name).validateField('failed', gt.gettext('3 characters min'));
@@ -291,7 +290,11 @@ var TaxonController = Marionette.Controller/*Object*/.extend({
                         name: this.ui.name.val(),
                         rank: parseInt(this.ui.rank.val()),
                         parent: parseInt($(this.ui.parent).val() || '0'),
-                        synonyms: [{name: this.ui.name.val(), type: 0, language: 'fr'}]
+                        synonyms: [{
+                            name: this.ui.name.val(),
+                            type: 0,  // primary
+                            language: $(this.ui.language).val()
+                        }]
                     }, {
                         wait: true,
                         success: function (model, resp, options) {

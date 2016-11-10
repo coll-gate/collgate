@@ -39,13 +39,14 @@ class Taxonomy(object):
                 break
 
     @classmethod
-    def create_taxon(cls, name, rank_id, parent=None):
+    def create_taxon(cls, name, rank_id, parent, language):
         """
         Create a new taxon with a unique name. The level must be
         greater than its parent level.
         :param name: Unique taxon name.
         :param rank: Taxon rank greater than parent rank.
         :param parent: None or valid Taxon instance.
+        :param language: Language code of the primary synonym created with name
         :return: None or new Taxon instance.
         """
         if Taxon.objects.filter(name=name).exists():
@@ -53,7 +54,7 @@ class Taxonomy(object):
 
         rank = TaxonRank(rank_id)
 
-        if parent and rank <= parent.rank:
+        if parent and rank.value <= parent.rank:
             raise SuspiciousOperation(_("The rank of the parent must be lesser than the new taxon"))
 
         taxon = Taxon()
@@ -70,10 +71,8 @@ class Taxonomy(object):
 
         taxon.save()
 
-        lang = translation.get_language()
-
         # first name a primary synonym
-        primary = TaxonSynonym(taxon_id=taxon.id, name=name, type=TaxonSynonymType.PRIMAR.value, language=lang)
+        primary = TaxonSynonym(taxon_id=taxon.id, name=name, type=TaxonSynonymType.PRIMARY.value, language=language)
         primary.save()
 
         return taxon

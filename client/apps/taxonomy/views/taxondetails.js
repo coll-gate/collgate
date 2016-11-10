@@ -60,10 +60,9 @@ var TaxonItemView = Marionette.ItemView.extend({
 
     validateName: function() {
         var v = this.ui.synonym_name.val();
-        var re = /^[a-zA-Z0-9_\-]+$/i;
 
-        if (v.length > 0 && !re.test(v)) {
-            $(this.ui.synonym_name).validateField('failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
+        if (v.length > 64) {
+            $(this.ui.synonym_name).validateField('failed', gt.gettext("64 characters max"));
             return false;
         } else if (v.length < 3) {
             $(this.ui.synonym_name).validateField('failed', gt.gettext('3 characters min'));
@@ -178,6 +177,9 @@ var TaxonItemView = Marionette.ItemView.extend({
 
                 if (v.length < 3) {
                     $(this.ui.name).validateField('failed', gt.gettext('3 characters min'));
+                    return false;
+                } else if (v.length > 64) {
+                    $(this.ui.name).validateField('failed', gt.gettext('64 characters max'));
                     return false;
                 }
 

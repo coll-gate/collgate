@@ -19,6 +19,9 @@ from igdectk.common.models import ChoiceEnum, IntegerChoice, StringChoice
 
 
 class Profile(models.Model):
+    """
+    Additional information about a user.
+    """
 
     STATE_CREATED = 0
     STATE_INITIALISED = 1
@@ -34,19 +37,38 @@ class Profile(models.Model):
         (4, STATE_CLOSED)
     )
 
+    # related user
     user = models.OneToOneField(User)
+
+    # state of the account (to be checked during authentication)
     state = models.IntegerField(default=STATE_CREATED, choices=PROFILE_STATES)
+
+    # information about the company where the user is located
     company = models.CharField(max_length=127)
+
     admin_status = models.CharField(max_length=512)
 
 
 class Settings(models.Model):
+    """
+    IgdecTk application setting table.
+    """
 
     param_name = models.CharField(max_length=127)
     value = models.CharField(max_length=127)
 
 
 class Languages(ChoiceEnum):
+    """
+    Static for purposes.
+    """
+
+    EN = StringChoice('en', _('English'))
+    FR = StringChoice('fr', _('French'))
+    LA = StringChoice('la', _('Latin'))
+
+
+class InterfaceLanguages(ChoiceEnum):
     """
     Static for purposes.
     """
@@ -113,14 +135,7 @@ class Entity(models.Model):
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now=True)
 
-    name = models.CharField(
-        unique=True, null=False, blank=False, max_length=255, db_index=True, validators=[
-            RegexValidator(
-                regex=NAME_RE,
-                message=_("Name must contains only alphanumerics characters or _ or - and be at least 3 characters length"),
-                code='invalid_name')
-        ])
-
+    name = models.CharField(unique=True, max_length=255, db_index=True)
     uuid = models.UUIDField(db_index=True, default=uuid.uuid4, editable=False, unique=True)
 
     objects = EntityManager()
@@ -148,7 +163,7 @@ class Entity(models.Model):
     @classmethod
     def is_name_valid(cls, name):
         """
-        Check wether or not the name respect the convention.
+        Check whether or not the name respect a certain convention [a-zA-Z0-9_-]{3,}.
         """
         return Entity.NAME_RE.match(name) is not None
 

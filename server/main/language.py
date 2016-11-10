@@ -10,7 +10,7 @@ from django.views.decorators.cache import cache_page
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
 
-from .models import Languages
+from .models import Languages, InterfaceLanguages
 from .main import RestMain
 
 
@@ -19,15 +19,43 @@ class RestLanguage(RestMain):
     suffix = 'language'
 
 
+class RestUI(RestMain):
+    regex = r'^ui/$'
+    suffix = 'ui'
+
+
+class RestUILanguage(RestUI):
+    regex = r'^language/$'
+    suffix = 'language'
+
+
 @cache_page(60*60*24)
 @RestLanguage.def_request(Method.GET, Format.JSON)
-def language(request):
+def get_languages(request):
     """
-    Get the list of languages in JSON
+    Get the list of languages for the entities in JSON
     """
     languages = []
 
     for language in Languages:
+        languages.append({
+            'id': language.value,
+            'value': language.value,
+            'label': str(language.label)
+        })
+
+    return HttpResponseRest(request, languages)
+
+
+@cache_page(60*60*24)
+@RestUILanguage.def_request(Method.GET, Format.JSON)
+def get_ui_languages(request):
+    """
+    Get the list of languages for the UI in JSON
+    """
+    languages = []
+
+    for language in InterfaceLanguages:
         languages.append({
             'id': language.value,
             'value': language.value,

@@ -52,6 +52,14 @@ var MainModule = Marionette.Module.extend({
             collection: this.collections.languages,
         });
 
+        var InterfaceLanguageCollection = require('./collections/uilanguage');
+        this.collections.uilanguages = new InterfaceLanguageCollection();
+
+        this.views.uilanguages = new SelectOptionItemView({
+            className: 'ui-language',
+            collection: this.collections.uilanguages,
+        });
+
         var ContentTypeCollection = require('./collections/contenttype');
         this.collections.contentType = new ContentTypeCollection();
 

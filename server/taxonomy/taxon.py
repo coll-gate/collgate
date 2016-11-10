@@ -53,9 +53,22 @@ class RestTaxonomyRank(RestTaxonomy):
 @RestTaxonomy.def_auth_request(Method.POST, Format.JSON, content={
     "type": "object",
     "properties": {
-        "name": {"type": "string", 'minLength': 3, 'maxLength': 32},
+        "name": {"type": "string", 'minLength': 3, 'maxLength': 64},
         "rank": {"type": "number", 'minimum': 0, 'maximum': 100},
         "parent": {"type": "number", 'minimum': 0},
+        "synonyms": {
+            "type": "array",
+            "items": [
+                {
+                    "type": "object",
+                    "properties": {
+                        "name": {"type": "string", 'minLength': 3, 'maxLength': 64},
+                        "language": {"type": "string", 'minLength': 2, 'maxLength': 2},
+                        "type": {"type": "number"},
+                    }
+                }
+            ]
+        }
     },
 }, perms={'taxonomy.add_taxon': _('You are not allowed to create a taxon')}
 )
@@ -72,11 +85,13 @@ def create_taxon(request):
         parent = get_object_or_404(Taxon, id=parent_id)
 
     rank_id = int(taxon_params['rank'])
+    language = taxon_params['synonyms'][0]['language']
 
     taxon = Taxonomy.create_taxon(
         taxon_params['name'],
         rank_id,
-        parent)
+        parent,
+        language)
 
     response = {
         'id': taxon.id,
@@ -94,14 +109,6 @@ def create_taxon(request):
             'language': s.language,
         })
 
-    return HttpResponseRest(request, response)
-
-
-@RestTaxonomy.def_auth_request(Method.OPTIONS, Format.JSON)
-def opt_taxon_list(request):
-    response = {
-        'perms': get_permissions_for(request.user, "taxonomy", "taxon")
-    }
     return HttpResponseRest(request, response)
 
 
@@ -185,15 +192,6 @@ def get_taxon_list(request):
     return HttpResponseRest(request, results)
 
 
-@RestTaxonomyId.def_auth_request(Method.OPTIONS, Format.JSON)
-def opt_taxon_list(request, id):
-    taxon = get_object_or_404(Taxon, id=int_arg(id))
-    response = {
-        'perms': get_permissions_for(request.user, "taxonomy", "taxon", taxon)
-    }
-    return HttpResponseRest(request, response)
-
-
 @RestTaxonomyId.def_auth_request(Method.GET, Format.JSON)
 def get_taxon_details_json(request, id):
     taxon = Taxon.objects.get(id=int_arg(id))
@@ -229,14 +227,6 @@ def get_taxon_details_json(request, id):
         })
 
     return HttpResponseRest(request, result)
-
-
-@RestTaxonomySearch.def_auth_request(Method.OPTIONS, Format.JSON)
-def opt_search_taxon(request):
-    response = {
-        'perms': get_permissions_for(request.user, "taxonomy", "taxon")
-    }
-    return HttpResponseRest(request, response)
 
 
 @RestTaxonomySearch.def_auth_request(Method.GET, Format.JSON, ('filters',))

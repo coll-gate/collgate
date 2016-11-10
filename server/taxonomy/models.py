@@ -40,7 +40,7 @@ class TaxonRank(ChoiceEnum):
 
 class Taxon(Entity):
 
-    rank = models.IntegerField(null=False, blank=False, choices=TaxonRank.choices())
+    rank = models.IntegerField(choices=TaxonRank.choices())
 
     parent = models.ForeignKey('Taxon', null=True)
     parent_list = models.CharField(
@@ -81,7 +81,7 @@ class TaxonSynonym(Entity):
     language = models.CharField(max_length=2, choices=Languages.choices())
     type = models.IntegerField(choices=TaxonSynonymType.choices())
 
-    taxon = models.ForeignKey(Taxon, null=False, related_name='synonyms')
+    taxon = models.ForeignKey(Taxon, related_name='synonyms')
 
     class Meta:
         verbose_name = _("taxon synonym")
