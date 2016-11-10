@@ -20,27 +20,32 @@ from .models import Taxon, TaxonRank, TaxonSynonym, TaxonSynonymType
 from django.utils.translation import ugettext_lazy as _
 
 
-class RestTaxonomySearch(RestTaxonomy):
+class RestTaxon(RestTaxonomy):
+    regex = r'^taxon/$'
+    suffix = 'taxon'
+
+
+class RestTaxonSearch(RestTaxon):
     regex = r'^search/$'
     suffix = 'search'
 
 
-class RestTaxonomyId(RestTaxonomy):
+class RestTaxonId(RestTaxon):
     regex = r'^(?P<id>[0-9]+)/$'
     suffix = 'id'
 
 
-class RestTaxonomyIdSynonym(RestTaxonomyId):
+class RestTaxonIdSynonym(RestTaxonId):
     regex = r'^synonym/$'
     suffix = 'synonym'
 
 
-class RestTaxonomyIdSynonymId(RestTaxonomyIdSynonym):
+class RestTaxonIdSynonymId(RestTaxonIdSynonym):
     regex = r'^(?P<sid>[0-9]+)/$'
     suffix = 'id'
 
 
-class RestTaxonomySynonym(RestTaxonomy):
+class RestTaxonSynonym(RestTaxon):
     regex = r'^synonym/$'
     suffix = 'synonym'
 
@@ -50,7 +55,12 @@ class RestTaxonomyRank(RestTaxonomy):
     suffix = 'rank'
 
 
-@RestTaxonomy.def_auth_request(Method.POST, Format.JSON, content={
+class RestTaxonIdChildren(RestTaxonId):
+    regex = r'^children/$'
+    suffix = 'children'
+
+
+@RestTaxon.def_auth_request(Method.POST, Format.JSON, content={
     "type": "object",
     "properties": {
         "name": {"type": "string", 'minLength': 3, 'maxLength': 64},
@@ -112,7 +122,7 @@ def create_taxon(request):
     return HttpResponseRest(request, response)
 
 
-@RestTaxonomy.def_auth_request(Method.GET, Format.JSON)
+@RestTaxon.def_auth_request(Method.GET, Format.JSON)
 def get_taxon_list(request):
     results_per_page = int_arg(request.GET.get('more', 30))
     cursor = request.GET.get('cursor')
@@ -192,7 +202,7 @@ def get_taxon_list(request):
     return HttpResponseRest(request, results)
 
 
-@RestTaxonomyId.def_auth_request(Method.GET, Format.JSON)
+@RestTaxonId.def_auth_request(Method.GET, Format.JSON)
 def get_taxon_details_json(request, id):
     taxon = Taxon.objects.get(id=int_arg(id))
 
@@ -229,7 +239,7 @@ def get_taxon_details_json(request, id):
     return HttpResponseRest(request, result)
 
 
-@RestTaxonomySearch.def_auth_request(Method.GET, Format.JSON, ('filters',))
+@RestTaxonSearch.def_auth_request(Method.GET, Format.JSON, ('filters',))
 def search_taxon(request):
     """
     Quick search for a taxon with a exact or partial name and a rank.
@@ -294,7 +304,7 @@ def search_taxon(request):
     return HttpResponseRest(request, response)
 
 
-@RestTaxonomyId.def_auth_request(
+@RestTaxonId.def_auth_request(
     Method.PATCH, Format.JSON, content={
         "type": "object",
         "properties": {
@@ -354,7 +364,7 @@ def patch_taxon(request, id):
     return HttpResponseRest(request, result)
 
 
-@RestTaxonomyId.def_auth_request(Method.DELETE, Format.JSON, perms={
+@RestTaxonId.def_auth_request(Method.DELETE, Format.JSON, perms={
     'taxonomy.delete_taxon': _("You are not allowed to remove a taxon"),
 })
 def remove_taxon(request, id):
@@ -368,7 +378,7 @@ def remove_taxon(request, id):
     return HttpResponseRest(request, {})
 
 
-@RestTaxonomyIdSynonym.def_auth_request(
+@RestTaxonIdSynonym.def_auth_request(
     Method.POST, Format.JSON, content={
         "type": "object",
         "properties": {
@@ -397,7 +407,7 @@ def taxon_add_synonym(request, id):
     return HttpResponseRest(request, {})
 
 
-@RestTaxonomyIdSynonymId.def_auth_request(
+@RestTaxonIdSynonymId.def_auth_request(
     Method.PUT, Format.JSON, content={
         "type": "object",
         "properties": {
@@ -417,9 +427,12 @@ def taxon_change_synonym(request, id, sid):
 
     name = request.data['name']
 
-    synonym.name = name
+    # rename the taxon if the synonym name is the taxon name
+    if synonym.taxon.name == synonym.name:
+        synonym.taxon.name = name
+        synonym.taxon.save()
 
-    synonym.full_clean()
+    synonym.name = name
     synonym.save()
 
     result = {
@@ -430,7 +443,7 @@ def taxon_change_synonym(request, id, sid):
     return HttpResponseRest(request, result)
 
 
-@RestTaxonomyIdSynonymId.def_auth_request(
+@RestTaxonIdSynonymId.def_auth_request(
     Method.DELETE, Format.JSON,
     perms={
         'taxonomy.change_taxon': _("You are not allowed to modify a taxon"),

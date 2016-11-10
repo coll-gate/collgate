@@ -10,20 +10,25 @@
 
 var Marionette = require('backbone.marionette');
 var TaxonModel = require('../models/taxon');
+
 var TaxonCollection = require('../collections/taxon');
+var TaxonChildrenCollection = require('../collections/taxonchildren');
+
 var TaxonListView = require('../views/taxonlist');
 var TaxonItemView = require('../views/taxon');
 var TaxonDetailsView = require('../views/taxondetails');
 var TaxonListFilterView = require('../views/taxonlistfilter');
+var TaxonChildrenView = require('../views/taxonchildren');
 
 var DefaultLayout = require('../../main/views/defaultlayout');
 var TitleView = require('../../main/views/titleview');
 var ScrollingMoreView = require('../../main/views/scrollingmore');
+var TwoRowsLayout = require('../../main/views/tworowslayout');
 
 var TaxonRouter = Marionette.AppRouter.extend({
     routes : {
-        "app/taxonomy/": "getTaxonList",
-        "app/taxonomy/:id/": "getTaxon",
+        "app/taxonomy/taxon/": "getTaxonList",
+        "app/taxonomy/taxon/:id/": "getTaxon",
     },
 
     getTaxonList : function() {
@@ -35,10 +40,10 @@ var TaxonRouter = Marionette.AppRouter.extend({
         defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of taxons")}));
 
         collection.fetch().then(function () {
-            var taxonListView = new TaxonListView({read_only: true, collection : collection});
+            var taxonListView = new TaxonListView({collection : collection});
 
             defaultLayout.getRegion('content').show(taxonListView);
-            defaultLayout.getRegion('content_bottom').show(new ScrollingMoreView({targetView: taxonListView}));
+            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: taxonListView}));
         });
 
         defaultLayout.getRegion('bottom').show(new TaxonListFilterView({collection: collection}));
@@ -50,9 +55,21 @@ var TaxonRouter = Marionette.AppRouter.extend({
         var defaultLayout = new DefaultLayout();
         application.getRegion('mainRegion').show(defaultLayout);
 
+        var twoRowsLayout = new TwoRowsLayout();
+        defaultLayout.getRegion('content').show(twoRowsLayout);
+
         taxon.fetch().then(function() {
-            defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Taxon details"), object: taxon.get('name')}));
-            defaultLayout.getRegion('content').show(new TaxonDetailsView({model: taxon}));
+            defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Taxon details"), model: taxon}));
+            twoRowsLayout.getRegion('top-content').show(new TaxonDetailsView({model: taxon}));
+        });
+
+        var taxonChildren = new TaxonChildrenCollection([], {model_id: id});
+
+        taxonChildren.fetch().then(function() {
+            var taxonChildrenView = new TaxonChildrenView({collection: taxonChildren, model: taxon});
+
+            twoRowsLayout.getRegion('bottom-content').show(new TaxonChildrenView({collection: taxonChildren, model: taxon}));
+            twoRowsLayout.getRegion('bottom-bottom').show(new ScrollingMoreView({targetView: taxonChildrenView}));
         });
     },
 });

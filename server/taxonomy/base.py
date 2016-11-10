@@ -11,4 +11,4 @@ from igdectk.rest.handler import *
 
 class RestTaxonomy(RestHandler):
     regex = r'^taxonomy/$'
-    name = 'taxon'
+    name = 'taxonomy'

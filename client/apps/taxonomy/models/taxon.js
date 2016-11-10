@@ -13,9 +13,9 @@ var Backbone = require('backbone');
 var Taxon = Backbone.Model.extend({ 
     url: function() {
         if (this.isNew())
-            return application.baseUrl + 'taxonomy/';
+            return application.baseUrl + 'taxonomy/taxon/';
         else
-            return application.baseUrl + 'taxonomy/' + this.get('id') + '/'; },
+            return application.baseUrl + 'taxonomy/taxon/' + this.get('id') + '/'; },
 
     defaults: {
       id: null,

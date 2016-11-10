@@ -65,7 +65,7 @@
 /******/ 	}
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "5d711a5b530150fa2b54"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "29e4bb6a8f8128dc512e"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -777,10 +777,10 @@
 	
 	    // each modules
 	    this.main = __webpack_require__(32);
-	    this.permission = __webpack_require__(54);
-	    this.audit = __webpack_require__(91);
-	    this.taxonomy = __webpack_require__(103);
-	    this.accession = __webpack_require__(117);
+	    this.permission = __webpack_require__(56);
+	    this.audit = __webpack_require__(95);
+	    this.taxonomy = __webpack_require__(107);
+	    this.accession = __webpack_require__(128);
 	});
 	
 	application.start({initialData: ''});
@@ -17863,7 +17863,15 @@
 	            collection: this.collections.languages,
 	        });
 	
-	        var ContentTypeCollection = __webpack_require__(40);
+	        var InterfaceLanguageCollection = __webpack_require__(40);
+	        this.collections.uilanguages = new InterfaceLanguageCollection();
+	
+	        this.views.uilanguages = new SelectOptionItemView({
+	            className: 'ui-language',
+	            collection: this.collections.uilanguages,
+	        });
+	
+	        var ContentTypeCollection = __webpack_require__(42);
 	        this.collections.contentType = new ContentTypeCollection();
 	
 	        this.views.contentTypes = new SelectOptionItemView({
@@ -17873,7 +17881,7 @@
 	
 	        this.views.Home = Marionette.CompositeView.extend({
 	            el: '#main_content',
-	            template: __webpack_require__(42),
+	            template: __webpack_require__(44),
 	        });
 	
 	        Logger.timeEnd("Init main module");
@@ -17882,10 +17890,10 @@
 	    onStart: function(options) {
 	        Logger.time("Start main module");
 	
-	        var MainRouter = __webpack_require__(43);
+	        var MainRouter = __webpack_require__(45);
 	        this.routers.main = new MainRouter();
 	
-	        var ProfileRouter = __webpack_require__(50);
+	        var ProfileRouter = __webpack_require__(52);
 	        this.routers.profile = new ProfileRouter();
 	
 	        Logger.timeEnd("Start main module");
@@ -17946,6 +17954,7 @@
 /***/ function(module, exports) {
 
 	module.exports = {
+		"Done": "",
 		"About...": "A propos...",
 		"Help...": "Aide..",
 		"Edit my profile informations": "Mettre à jour mon profil",
@@ -18018,13 +18027,21 @@
 	        }
 	    },
 	
-	    drawSelect: function(sel, widget) {
+	    drawSelect: function(sel, widget, emptyValue) {
+	        emptyValue || (emptyValue = false);
+	
 	        var view = this;
 	        typeof widget !== 'undefined' || (widget = true);
 	
 	        if (this.collection.size() > 0) {
 	            var s = $(sel);
-	            s.html(view.el.innerHTML);
+	            if (emptyValue) {
+	                var emptyOption = "<option value=''></option>"
+	                s.html(emptyOption + view.el.innerHTML);
+	            } else {
+	                s.html(view.el.innerHTML);
+	            }
+	
 	            if (widget) {
 	                s.selectpicker({
 	                    style: 'btn-default',
@@ -18034,7 +18051,13 @@
 	        } else {
 	            this.collection.on("sync", function () {
 	                var s = $(sel);
-	                s.html(view.el.innerHTML);
+	                if (emptyValue) {
+	                    var emptyOption = "<option value=''></option>"
+	                    s.html(emptyOption + view.el.innerHTML);
+	                } else {
+	                    s.html(view.el.innerHTML);
+	                }
+	
 	                if (widget) {
 	                    s.selectpicker({
 	                        style: 'btn-default',
@@ -18165,6 +18188,70 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
+	 * @file uilanguage.js
+	 * @brief Interface language collection
+	 * @author Frederic SCHERMA
+	 * @date 2016-11-10
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var InterfaceLanguageModel = __webpack_require__(41);
+	
+	var Collection = Backbone.Collection.extend({
+	    url: application.baseUrl + 'main/ui/language',
+	    model: InterfaceLanguageModel,
+	
+	    parse: function(data) {
+	        return data;
+	    },
+	
+	    default: [
+	        {id: 'en', value: 'en', label: gt.gettext("English")},
+	        {id: 'fr', value: 'fr', label: gt.gettext("French")},
+	    ],
+	
+	    findLabel: function(value) {
+	        var res = this.findWhere({value: value});
+	        return res ? res.get('label') : '';
+	    },
+	});
+	
+	module.exports = Collection;
+
+
+/***/ },
+/* 41 */
+/***/ function(module, exports) {
+
+	/**
+	 * @file uilanguage.js
+	 * @brief Interface language model
+	 * @author Frederic SCHERMA
+	 * @date 2016-11-10
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	module.exports = Backbone.Model.extend({
+	    defaults: function() {
+	        return {
+	            id: 0,
+	            value: '',
+	            label: ''
+	        }
+	    },
+	    url: application.baseUrl + 'main/ui/language/:id'
+	});
+
+
+/***/ },
+/* 42 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
 	 * @file contenttype.js
 	 * @brief Content type collection
 	 * @author Frederic SCHERMA
@@ -18174,7 +18261,7 @@
 	 * @details
 	 */
 	
-	var ContentTypeModel = __webpack_require__(41);
+	var ContentTypeModel = __webpack_require__(43);
 	
 	var Collection = Backbone.Collection.extend({
 	    url: application.baseUrl + 'main/content-type',
@@ -18223,7 +18310,7 @@
 
 
 /***/ },
-/* 41 */
+/* 43 */
 /***/ function(module, exports) {
 
 	/**
@@ -18251,7 +18338,7 @@
 
 
 /***/ },
-/* 42 */
+/* 44 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -18272,7 +18359,7 @@
 
 
 /***/ },
-/* 43 */
+/* 45 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -18286,10 +18373,10 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var AboutView = __webpack_require__(44);
-	var HelpIndexView = __webpack_require__(46);
-	var DefaultLayout = __webpack_require__(48);
-	var TitleView = __webpack_require__(49);
+	var AboutView = __webpack_require__(46);
+	var HelpIndexView = __webpack_require__(48);
+	var DefaultLayout = __webpack_require__(50);
+	var TitleView = __webpack_require__(51);
 	
 	var Router = Marionette.AppRouter.extend({
 	    routes : {
@@ -18329,7 +18416,7 @@
 
 
 /***/ },
-/* 44 */
+/* 46 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -18347,60 +18434,6 @@
 	var View = Marionette.ItemView.extend({
 	    tagName: 'div',
 	    className: 'about',
-	    template: __webpack_require__(45),
-	
-	    ui: {
-	    },
-	
-	    events: {
-	    },
-	
-	    initialize: function() {
-	    },
-	
-	    onRender: function() {
-	    },
-	});
-	
-	module.exports = View;
-
-
-/***/ },
-/* 45 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var _ = __webpack_require__(1);
-	
-	module.exports = function (obj) {
-	obj || (obj = {});
-	var __t, __p = '';
-	with (obj) {
-	__p += '<p>Coll-Gate IS Copyright &copy; 2016 INRA and OpenSource project under XXX.</p><div class="help-about-authors"><span>List of authors :</span><ul class="author-list"><li><span style="font-weight: bold">Frédéric SCHERMA</span> at INRA UMR1095 GDEC</li><li><span style="font-weight: bold">Nicolas GUILHOT</span> at INRA UMR1095 GDEC</li></ul></div>';
-	
-	}
-	return __p
-	};
-
-
-/***/ },
-/* 46 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file index.js
-	 * @brief Help index view
-	 * @author Frederic SCHERMA
-	 * @date 2016-06-14
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var Marionette = __webpack_require__(4);
-	
-	var View = Marionette.ItemView.extend({
-	    tagName: 'div',
-	    className: 'help-index',
 	    template: __webpack_require__(47),
 	
 	    ui: {
@@ -18429,7 +18462,7 @@
 	obj || (obj = {});
 	var __t, __p = '';
 	with (obj) {
-	__p += '<span>TODO</span>';
+	__p += '<p>Coll-Gate IS Copyright &copy; 2016 INRA and OpenSource project under XXX.</p><div class="help-about-authors"><span>List of authors :</span><ul class="author-list"><li><span style="font-weight: bold">Frédéric SCHERMA</span> at INRA UMR1095 GDEC</li><li><span style="font-weight: bold">Nicolas GUILHOT</span> at INRA UMR1095 GDEC</li></ul></div>';
 	
 	}
 	return __p
@@ -18438,6 +18471,60 @@
 
 /***/ },
 /* 48 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file index.js
+	 * @brief Help index view
+	 * @author Frederic SCHERMA
+	 * @date 2016-06-14
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	
+	var View = Marionette.ItemView.extend({
+	    tagName: 'div',
+	    className: 'help-index',
+	    template: __webpack_require__(49),
+	
+	    ui: {
+	    },
+	
+	    events: {
+	    },
+	
+	    initialize: function() {
+	    },
+	
+	    onRender: function() {
+	    },
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 49 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<span>TODO</span>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 50 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -18459,10 +18546,10 @@
 	    },
 	
 	    regions: {
-	        title: ".panel-title",
-	        content: ".panel-body",
-	        content_bottom: ".panel-body-bottom",
-	        bottom: ".panel-bottom",
+	        'title': ".panel-title",
+	        'content': ".panel-body",
+	        'content-bottom': ".panel-body-bottom",
+	        'bottom': ".panel-bottom",
 	    },
 	
 	    initialize: function() {
@@ -18476,7 +18563,7 @@
 	
 	    onBeforeDestroy: function () {
 	        // reset to default global display mode
-	        application.setDisplay("2-8-2");
+	        //application.setDisplay("2-8-2");
 	    },
 	});
 	
@@ -18484,10 +18571,10 @@
 
 
 /***/ },
-/* 49 */
+/* 51 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/**
+	/* WEBPACK VAR INJECTION */(function(_) {/**
 	 * @file titleview.js
 	 * @brief Default layout title view for 'defaultlayout'
 	 * @author Frederic SCHERMA
@@ -18499,34 +18586,48 @@
 	
 	var Marionette = __webpack_require__(4);
 	
-	var TitleView = Marionette.View.extend({
+	var TitleView = Marionette.ItemView.extend({
 	    tagName: "span",
-	    title: "Untitled",
+	    template: _.template('<span name="title"></span><span class="heading" name="object"></span>'),
+	
+	    ui: {
+	        title: 'span[name="title"]',
+	        object: 'span[name="object"]',
+	    },
 	
 	    initialize: function(options) {
-	        this.options = options;
+	        options || (options = {title: "", object: null});
 	
-	        var title = $("<span></span>");
-	        title.html(Marionette.getOption(this, "title"));
+	        this.listenTo(this.model, 'change', this.render, this);
 	
-	        $(this.el).empty();
-	        $(this.el).append(title);
+	        TitleView.__super__.initialize.apply(this);
+	    },
 	
-	        if (typeof(options.object) != "undefined") {
-	            var object = $("<span></span>");
-	            object.addClass("heading")
-	            object.html(options.object);
+	    onRender: function() {
+	        this.ui.title.html(this.getOption('title'));
 	
-	            $(this.el).append(object);
-	        };
-	    }
+	        if (this.model && this.model.has('name')) {
+	            if (!this.ui.object.is(":visible")) {
+	                this.ui.object.show();
+	            }
+	            this.ui.object.html(this.model.get('name'));
+	        } else if (this.getOption('object')) {
+	            if (!this.ui.object.is(":visible")) {
+	                this.ui.object.show();
+	            }
+	            this.ui.object.html(this.getOption('object'));
+	        } else {
+	            this.ui.object.hide();
+	        }
+	    },
 	});
 	
 	module.exports = TitleView;
-
+	
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 50 */
+/* 52 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -18540,10 +18641,10 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var EditProfileView = __webpack_require__(51);
-	var DefaultLayout = __webpack_require__(48);
-	var TitleView = __webpack_require__(49);
-	var ProfileModel = __webpack_require__(53);
+	var EditProfileView = __webpack_require__(53);
+	var DefaultLayout = __webpack_require__(50);
+	var TitleView = __webpack_require__(51);
+	var ProfileModel = __webpack_require__(55);
 	
 	var ProfileRouter = Marionette.AppRouter.extend({
 	    routes : {
@@ -18581,7 +18682,7 @@
 
 
 /***/ },
-/* 51 */
+/* 53 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -18599,7 +18700,7 @@
 	var View = Marionette.ItemView.extend({
 	    tagName: 'div',
 	    className: 'profile-edit',
-	    template: __webpack_require__(52),
+	    template: __webpack_require__(54),
 	
 	    ui: {
 	        username: '#username',
@@ -18630,7 +18731,7 @@
 
 
 /***/ },
-/* 52 */
+/* 54 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -18655,7 +18756,7 @@
 
 
 /***/ },
-/* 53 */
+/* 55 */
 /***/ function(module, exports) {
 
 	/**
@@ -18686,7 +18787,7 @@
 
 
 /***/ },
-/* 54 */
+/* 56 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -18714,14 +18815,14 @@
 	
 	        // i18n
 	        if (session.language === "fr") {
-	            i18next.addResources('fr', 'default', __webpack_require__(55));
+	            i18next.addResources('fr', 'default', __webpack_require__(57));
 	        } else {  // default to english
 	            //i18next.addResources('en', 'default', require('./locale/en/LC_MESSAGES/default.json'));
 	        }
 	
 	        var SelectOptionItemView = __webpack_require__(36);
 	
-	        var PermissionTypeCollection = __webpack_require__(56);
+	        var PermissionTypeCollection = __webpack_require__(58);
 	        this.collections.permissionType = new PermissionTypeCollection();
 	
 	        this.views.permissionType = new SelectOptionItemView({
@@ -18735,7 +18836,7 @@
 	    onStart: function(options) {
 	        Logger.time("Start permission module");
 	
-	        var PermissionRouter = __webpack_require__(58);
+	        var PermissionRouter = __webpack_require__(60);
 	        this.routers.permission = new PermissionRouter();
 	
 	        Logger.timeEnd("Start permission module");
@@ -18752,7 +18853,7 @@
 
 
 /***/ },
-/* 55 */
+/* 57 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -18780,7 +18881,7 @@
 	};
 
 /***/ },
-/* 56 */
+/* 58 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -18793,7 +18894,7 @@
 	 * @details
 	 */
 	
-	var PermissionTypeModel = __webpack_require__(57);
+	var PermissionTypeModel = __webpack_require__(59);
 	
 	var Collection = Backbone.Collection.extend({
 	    url: application.baseUrl + 'permission/type/',
@@ -18851,7 +18952,7 @@
 
 
 /***/ },
-/* 57 */
+/* 59 */
 /***/ function(module, exports) {
 
 	/**
@@ -18878,7 +18979,7 @@
 
 
 /***/ },
-/* 58 */
+/* 60 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -18892,28 +18993,33 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var PermissionCollection = __webpack_require__(59);
-	var PermissionListView = __webpack_require__(61);
-	var PermissionAddView = __webpack_require__(65);
-	var PermissionUserCollection = __webpack_require__(67);
-	var PermissionUserListView = __webpack_require__(69);
-	var PermissionGroupCollection = __webpack_require__(74);
-	var PermissionGroupListView = __webpack_require__(76);
-	var PermissionGroupUserCollection = __webpack_require__(80);
-	var PermissionGroupUserListView = __webpack_require__(82);
-	var PermissionGroupAddUserView = __webpack_require__(86);
-	var PermissionAddGroupView = __webpack_require__(88);
-	var DefaultLayout = __webpack_require__(48);
-	var TitleView = __webpack_require__(49);
-	var ScrollingMoreView = __webpack_require__(90);
+	
+	var PermissionCollection = __webpack_require__(61);
+	var PermissionUserCollection = __webpack_require__(63);
+	var PermissionGroupCollection = __webpack_require__(65);
+	var PermissionGroupUserCollection = __webpack_require__(67);
+	
+	var PermissionListView = __webpack_require__(69);
+	var PermissionAddView = __webpack_require__(73);
+	var PermissionUserListView = __webpack_require__(75);
+	var PermissionGroupListView = __webpack_require__(80);
+	var PermissionGroupUserListView = __webpack_require__(86);
+	var PermissionGroupAddUserView = __webpack_require__(90);
+	var PermissionAddGroupView = __webpack_require__(92);
+	
+	var GroupModel = __webpack_require__(66);
+	
+	var DefaultLayout = __webpack_require__(50);
+	var TitleView = __webpack_require__(51);
+	var ScrollingMoreView = __webpack_require__(94);
 	
 	var PermissionRouter = Marionette.AppRouter.extend({
 	    routes : {
 	        "app/permission/user/": "getUsers",
 	        "app/permission/user/:username/permission/": "getPermissionsForUser",
 	        "app/permission/group/": "getGroups",
-	        "app/permission/group/:groupname/permission/": "getPermissionsForGroup",
-	        "app/permission/group/:groupname/user/": "getUsersForGroup",
+	        "app/permission/group/:group_id/permission/": "getPermissionsForGroup",
+	        "app/permission/group/:group_id/user/": "getUsersForGroup",
 	    },
 	
 	    getUsers: function () {
@@ -18928,12 +19034,12 @@
 	            var permissionUserList = new PermissionUserListView({collection : userCollection});
 	
 	            defaultLayout.getRegion('content').show(permissionUserList);
-	            defaultLayout.getRegion('content_bottom').show(new ScrollingMoreView({targetView: permissionUserList}));
+	            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: permissionUserList}));
 	        });
 	    },
 	
 	    getPermissionsForUser: function(username) {
-	        var permissionsCollection = new PermissionCollection([], {name: username})
+	        var permissionsCollection = new PermissionCollection([], {username: username})
 	
 	        var defaultLayout = new DefaultLayout({});
 	        application.getRegion('mainRegion').show(defaultLayout);
@@ -18944,7 +19050,7 @@
 	            var permissionListView = new PermissionListView({collection : permissionsCollection});
 	
 	            defaultLayout.getRegion('content').show(permissionListView);
-	            defaultLayout.getRegion('content_bottom').show(new ScrollingMoreView({targetView: permissionListView}));
+	            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: permissionListView}));
 	
 	            if ($.inArray("auth.add_permission", permissionsCollection.perms) >= 0) {
 	                defaultLayout.getRegion('bottom').show(new PermissionAddView({collection : permissionsCollection}));
@@ -18964,7 +19070,7 @@
 	            var permissionGroupList = new PermissionGroupListView({collection : groupCollection});
 	
 	            defaultLayout.getRegion('content').show(permissionGroupList);
-	            defaultLayout.getRegion('content_bottom').show(new ScrollingMoreView({targetView: permissionGroupList}));
+	            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: permissionGroupList}));
 	
 	            if ($.inArray("auth.add_group", groupCollection.perms) >= 0) {
 	                defaultLayout.getRegion('bottom').show(new PermissionAddGroupView({collection : groupCollection}));
@@ -18972,19 +19078,25 @@
 	        });
 	    },
 	
-	    getPermissionsForGroup: function(name) {
-	        var permissionsCollection = new PermissionCollection([], {name: name, is_group: true})
+	    getPermissionsForGroup: function(id) {
+	        var permissionsCollection = new PermissionCollection([], {group_id: id, is_group: true})
 	
 	        var defaultLayout = new DefaultLayout({});
 	        application.getRegion('mainRegion').show(defaultLayout);
 	
-	        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of permissions for group"), object: name}));
+	        var group = new GroupModel({id: id});
+	        group.fetch().then(function() {
+	            defaultLayout.getRegion('title').show(new TitleView({
+	                title: gt.gettext("List of permissions for group"),
+	                object: group.get('name')
+	            }));
+	        });
 	
 	        permissionsCollection.fetch().then(function () {
 	            var permissionList = new PermissionListView({collection : permissionsCollection})
 	
 	            defaultLayout.getRegion('content').show(permissionList);
-	            defaultLayout.getRegion('content_bottom').show(new ScrollingMoreView({targetView: permissionList}));
+	            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: permissionList}));
 	
 	            if ($.inArray("auth.add_permission", permissionsCollection.perms) >= 0) {
 	                defaultLayout.getRegion('bottom').show(new PermissionAddView({collection : permissionsCollection}));
@@ -18992,19 +19104,25 @@
 	        });
 	    },
 	
-	    getUsersForGroup: function(name) {
-	        var userCollection = new PermissionGroupUserCollection([], {name: name});
+	    getUsersForGroup: function(id) {
+	        var userCollection = new PermissionGroupUserCollection([], {group_id: id});
 	
 	        var defaultLayout = new DefaultLayout({});
 	        application.getRegion('mainRegion').show(defaultLayout);
 	
-	        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of users for group"), object: name}));
+	        var group = new GroupModel({id: id});
+	        group.fetch().then(function() {
+	            defaultLayout.getRegion('title').show(new TitleView({
+	                title: gt.gettext("List of users for group"),
+	                object: group.get('name')
+	            }));
+	        });
 	
 	        userCollection.fetch().then(function () {
 	            var permissionGroupUserList = new PermissionGroupUserListView({collection : userCollection});
 	
 	            defaultLayout.getRegion('content').show(permissionGroupUserList);
-	            defaultLayout.getRegion('content_bottom').show(new ScrollingMoreView({targetView: permissionGroupUserList}));
+	            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: permissionGroupUserList}));
 	
 	            if ($.inArray("auth.change_group", userCollection.perms) >= 0) {
 	                defaultLayout.getRegion('bottom').show(new PermissionGroupAddUserView({collection : userCollection}));
@@ -19017,7 +19135,7 @@
 
 
 /***/ },
-/* 59 */
+/* 61 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -19030,21 +19148,22 @@
 	 * @details
 	 */
 	
-	var PermissionModel = __webpack_require__(60);
+	var PermissionModel = __webpack_require__(62);
 	
 	var PermissionCollection = Backbone.Collection.extend({
 	    url: function() {
 	        if (this.is_group)
-	            return application.baseUrl + 'permission/group/' + this.name + '/permission/';
+	            return application.baseUrl + 'permission/group/' + this.group_id + '/permission/';
 	        else
-	            return application.baseUrl + 'permission/user/' + this.name + '/permission/';
+	            return application.baseUrl + 'permission/user/' + this.username + '/permission/';
 	    },
 	
 	    model: PermissionModel,
 	
 	    initialize: function(models, options) {
 	        this.is_group = options.is_group || false;
-	        this.name = options.name;
+	        this.username = options.username;
+	        this.group_id = options.group_id;
 	    },
 	
 	    parse: function(data) {
@@ -19057,7 +19176,7 @@
 
 
 /***/ },
-/* 60 */
+/* 62 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -19079,10 +19198,8 @@
 	        permissions: []  // { id: '', name: '', app_label: ''}
 	    },
 	
-	    init: function(options) {
+	    initialize: function(attributes, options) {
 	        options || (options = {});
-	        this.is_group = options.is_group || false;
-	        this.name = options.name;
 	    },
 	
 	    parse: function(data) {
@@ -19114,7 +19231,296 @@
 
 
 /***/ },
-/* 61 */
+/* 63 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file user.js
+	 * @brief Permission user collection
+	 * @author Frederic SCHERMA
+	 * @date 2016-05-30
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var PermissionUserModel = __webpack_require__(64);
+	
+	var Collection = Backbone.Collection.extend({
+	    url: function() {
+	        if (this.is_group)
+	            return application.baseUrl + 'permission/group/' + this.name + '/user/';
+	        else
+	            return application.baseUrl + 'permission/user/';
+	    },
+	
+	    model: PermissionUserModel,
+	
+	    initialize: function(models, options) {
+	        options || (options = {});
+	        this.is_group = options.is_group || false;
+	
+	        if (options.name)
+	            this.name = options.name;
+	    },
+	
+	    parse: function(data) {
+	        this.perms = data.perms;
+	        this.cursor = data.cursor;
+	        this.prev = data.prev;
+	        this.next = data.next;
+	
+	        return data.users;
+	    },
+	});
+	
+	module.exports = Collection;
+
+
+/***/ },
+/* 64 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file user.js
+	 * @brief User model
+	 * @author Frederic SCHERMA
+	 * @date 2016-05-30
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Backbone = __webpack_require__(2);
+	
+	var Model = Backbone.Model.extend({
+	    url: function() { return application.baseUrl + 'permission/user/' + this.get('username') + '/'; },
+	
+	    defaults: {
+	        id: undefined,
+	        username: '',
+	        first_name: '',
+	        last_name: '',
+	        email: '',
+	        is_active: false,
+	        is_staff: false,
+	        is_superuser: false
+	    },
+	
+	    isNew : function () { return typeof(this.get('username')) != 'string'; },
+	
+	    initialize: function(attributes, options) {
+	        options || (options = {});
+	
+	        // this.on('change:is_active', this.partialUpdate, this);
+	        // this.on('change:is_staff', this.partialUpdate, this);
+	        // this.on('change:is_superuser', this.partialUpdate, this);
+	    },
+	
+	    parse: function(data) {
+	        return data;
+	    },
+	
+	    validate: function(attrs) {
+	        var errors = {};
+	        var hasError = false;
+	
+	        if (hasError) {
+	          return errors;
+	        }
+	    },
+	
+	    // partialUpdate: function () {
+	    //     // why not working ???
+	    //     console.log("user::partialUpdate");
+	    //     this.save(this.model.changedAttributes(), {patch: true});
+	    // },
+	});
+	
+	module.exports = Model;
+
+
+/***/ },
+/* 65 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file group.js
+	 * @brief Permission group collection
+	 * @author Frederic SCHERMA
+	 * @date 2016-05-30
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var PermissionGroupModel = __webpack_require__(66);
+	
+	var Collection = Backbone.Collection.extend({
+	    url: function() { return application.baseUrl + 'permission/group/'; },
+	    model: PermissionGroupModel,
+	
+	    comparator: 'name',
+	
+	    parse: function(data) {
+	        this.perms = data.perms;
+	        this.cursor = data.cursor;
+	        this.prev = data.prev;
+	        this.next = data.next;
+	
+	        return data.groups;
+	    },
+	});
+	
+	module.exports = Collection;
+
+
+/***/ },
+/* 66 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file group.js
+	 * @brief Group model
+	 * @author Frederic SCHERMA
+	 * @date 2016-05-30
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Backbone = __webpack_require__(2);
+	
+	var Model = Backbone.Model.extend({
+	    url: function() {
+	        if (this.isNew())
+	            return application.baseUrl + 'permission/group/';
+	        else
+	            return application.baseUrl + 'permission/group/' + this.get('id') + '/';
+	    },
+	
+	    defaults: {
+	        id: null,
+	        name: '',
+	        num_users: 0,
+	        num_permissions: 0,
+	    },
+	
+	    initialize: function(attributes, options) {
+	        options || (options = {});
+	    },
+	
+	    parse: function(data) {
+	        this.perms = data.perms;
+	        return data;
+	    },
+	
+	    validate: function(attrs) {
+	        var errors = {};
+	        var hasError = false;
+	
+	        if (hasError) {
+	          return errors;
+	        }
+	    },
+	});
+	
+	module.exports = Model;
+
+
+/***/ },
+/* 67 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file groupuser.js
+	 * @brief Permission user collection from a group
+	 * @author Frederic SCHERMA
+	 * @date 2016-06-09
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var PermissionGroupUserModel = __webpack_require__(68);
+	
+	var Collection = Backbone.Collection.extend({
+	    url: function() { return application.baseUrl + 'permission/group/' + this.group_id + '/user/'; },
+	    model: PermissionGroupUserModel,
+	
+	    initialize: function(models, options) {
+	        options || (options = {});
+	        this.group_id = options.group_id;
+	    },
+	
+	    parse: function(data) {
+	        this.perms = data.perms;
+	        this.cursor = data.cursor;
+	        this.prev = data.prev;
+	        this.next = data.next;
+	
+	        return data.users;
+	    },
+	});
+	
+	module.exports = Collection;
+
+
+/***/ },
+/* 68 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file groupuser.js
+	 * @brief User model from a group
+	 * @author Frederic SCHERMA
+	 * @date 2016-06-09
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Backbone = __webpack_require__(2);
+	
+	var Model = Backbone.Model.extend({
+	    url: function() {
+	        if (this.isNew())
+	            return application.baseUrl + 'permission/group/' + this.collection.group_id + '/user/';
+	        else
+	            return application.baseUrl + 'permission/group/' + this.collection.group_id + '/user/' + this.get('username') + '/';
+	    },
+	
+	    defaults: {
+	        id: null,
+	        username: '',
+	        first_name: '',
+	        last_name: '',
+	        email: '',
+	    },
+	
+	    initialize: function(attributes, options) {
+	        options || (options = {});
+	    },
+	
+	    parse: function(data) {
+	        return data;
+	    },
+	
+	    validate: function(attrs) {
+	        var errors = {};
+	        var hasError = false;
+	
+	        if (hasError) {
+	          return errors;
+	        }
+	    },
+	});
+	
+	module.exports = Model;
+
+
+/***/ },
+/* 69 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -19128,11 +19534,11 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var PermissionModel = __webpack_require__(60);
-	var PermissionView = __webpack_require__(62);
+	var PermissionModel = __webpack_require__(62);
+	var PermissionView = __webpack_require__(70);
 	
 	var PermissionListView = Marionette.CompositeView.extend({
-	    template: __webpack_require__(64),
+	    template: __webpack_require__(72),
 	    childViewContainer: ".permission-list",
 	    childView: PermissionView,
 	
@@ -19187,7 +19593,7 @@
 
 
 /***/ },
-/* 62 */
+/* 70 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -19201,11 +19607,11 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var PermissionModel = __webpack_require__(60);
+	var PermissionModel = __webpack_require__(62);
 	
 	var View = Marionette.ItemView.extend({
 	    tagName: 'div',
-	    template: __webpack_require__(63),
+	    template: __webpack_require__(71),
 	
 	    ui: {
 	        "remove_permission": ".remove-permission",
@@ -19227,7 +19633,7 @@
 
 
 /***/ },
-/* 63 */
+/* 71 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -19283,7 +19689,7 @@
 
 
 /***/ },
-/* 64 */
+/* 72 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -19300,7 +19706,7 @@
 
 
 /***/ },
-/* 65 */
+/* 73 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -19318,7 +19724,7 @@
 	var View = Marionette.ItemView.extend({
 	    tagName: 'div',
 	    className: 'permission-add',
-	    template: __webpack_require__(66),
+	    template: __webpack_require__(74),
 	
 	    ui: {
 	        add_permission: ".add-permission",
@@ -19382,7 +19788,7 @@
 
 
 /***/ },
-/* 66 */
+/* 74 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -19399,118 +19805,7 @@
 
 
 /***/ },
-/* 67 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file user.js
-	 * @brief Permission user collection
-	 * @author Frederic SCHERMA
-	 * @date 2016-05-30
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var PermissionUserModel = __webpack_require__(68);
-	
-	var Collection = Backbone.Collection.extend({
-	    url: function() {
-	        if (this.is_group)
-	            return application.baseUrl + 'permission/group/' + this.name + '/user/';
-	        else
-	            return application.baseUrl + 'permission/user/';
-	    },
-	
-	    model: PermissionUserModel,
-	
-	    initialize: function(models, options) {
-	        options || (options = {});
-	        this.is_group = options.is_group || false;
-	
-	        if (options.name)
-	            this.name = options.name;
-	    },
-	
-	    parse: function(data) {
-	        this.perms = data.perms;
-	        this.cursor = data.cursor;
-	        this.prev = data.prev;
-	        this.next = data.next;
-	
-	        return data.users;
-	    },
-	});
-	
-	module.exports = Collection;
-
-
-/***/ },
-/* 68 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file user.js
-	 * @brief User model
-	 * @author Frederic SCHERMA
-	 * @date 2016-05-30
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var Backbone = __webpack_require__(2);
-	
-	var Model = Backbone.Model.extend({
-	    url: function() { return application.baseUrl + 'permission/user/' + this.get('username') + '/'; },
-	
-	    defaults: {
-	        id: undefined,
-	        username: '',
-	        first_name: '',
-	        last_name: '',
-	        email: '',
-	        is_active: false,
-	        is_staff: false,
-	        is_superuser: false
-	    },
-	
-	    isNew : function () { return typeof(this.get('username')) != 'string'; },
-	
-	    init: function(options) {
-	        options || (options = {});
-	        this.name = options.name;
-	
-	        // this.on('change:is_active', this.partialUpdate, this);
-	        // this.on('change:is_staff', this.partialUpdate, this);
-	        // this.on('change:is_superuser', this.partialUpdate, this);
-	    },
-	
-	    parse: function(data) {
-	        return data;
-	    },
-	
-	    validate: function(attrs) {
-	        var errors = {};
-	        var hasError = false;
-	
-	        if (hasError) {
-	          return errors;
-	        }
-	    },
-	
-	    // partialUpdate: function () {
-	    //     // why not working ???
-	    //     console.log("user::partialUpdate");
-	    //     this.save(this.model.changedAttributes(), {patch: true});
-	    // },
-	});
-	
-	module.exports = Model;
-
-
-/***/ },
-/* 69 */
+/* 75 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -19524,20 +19819,18 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var PermissionUserModel = __webpack_require__(68);
-	var PermissionUserView = __webpack_require__(70);
-	var ScrollView = __webpack_require__(72);
+	var PermissionUserModel = __webpack_require__(64);
+	var PermissionUserView = __webpack_require__(76);
+	var ScrollView = __webpack_require__(78);
 	
 	var View = ScrollView.extend({
-	    template: __webpack_require__(73),
+	    template: __webpack_require__(79),
 	    childView: PermissionUserView,
 	    childViewContainer: 'tbody.permission-user-list',
 	
 	    initialize: function() {
 	        this.listenTo(this.collection, 'reset', this.render, this);
 	        this.listenTo(this.collection, 'change', this.render, this);
-	        //this.listenTo(this.collection, 'add', this.render, this);
-	        //this.listenTo(this.collection, 'remove', this.render, this);
 	
 	        View.__super__.initialize.apply(this);
 	    },
@@ -19547,7 +19840,7 @@
 
 
 /***/ },
-/* 70 */
+/* 76 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -19561,12 +19854,12 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var PermissionUserModel = __webpack_require__(68);
+	var PermissionUserModel = __webpack_require__(64);
 	
 	var View = Marionette.ItemView.extend({
 	    tagName: 'tr',
 	    className: 'element object user',
-	    template: __webpack_require__(71),
+	    template: __webpack_require__(77),
 	
 	    ui: {
 	        enable_user: 'span.enable-user',
@@ -19654,7 +19947,7 @@
 
 
 /***/ },
-/* 71 */
+/* 77 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -19682,7 +19975,7 @@
 	 } else { ;
 	__p += ' <span class="set-staff glyphicon glyphicon-remove left-margin"></span> ';
 	 } ;
-	__p += ' </td><td name="username" class="action view-permissions" value="' +
+	__p += ' </td><td name="username" class="action view-user-details" value="' +
 	((__t = ( username )) == null ? '' : __t) +
 	'">' +
 	__e( username ) +
@@ -19690,7 +19983,11 @@
 	__e( first_name ) +
 	'</td><td name="last_name">' +
 	__e( last_name ) +
-	'</td>';
+	'</td><td class="action view-permissions" name="num_permissions"><abbr class="badge" style="cursor: pointer" title="' +
+	((__t = ( gt.gettext('Manage permission list') )) == null ? '' : __t) +
+	'">' +
+	((__t = ( num_permissions )) == null ? '' : __t) +
+	'</abbr></td>';
 	
 	}
 	return __p
@@ -19698,10 +19995,10 @@
 
 
 /***/ },
-/* 72 */
+/* 78 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/**
+	/* WEBPACK VAR INJECTION */(function(_) {/**
 	 * @file scrollview.js
 	 * @brief Base view for scrollable view with a cursor collection
 	 * @author Frederic SCHERMA
@@ -19715,14 +20012,64 @@
 	
 	var View = Marionette.CompositeView.extend({
 	    rowHeight: 1+8+20+8,
+	    scrollViewInitialized: false,
 	
-	    ui: {
-	        table: 'table.table'
+	    attributes: {
 	    },
 	
-	    initialize: function() {
-	        // pagination on scrolling
-	        $("div.panel-body").scroll($.proxy(function(e) { this.scroll(e); }, this));
+	    ui: {
+	        table: 'table.table',
+	        header: 'table.table thead'
+	    },
+	
+	    events: {
+	    },
+	
+	    constructor: function() {
+	        var prototype = this.constructor.prototype;
+	
+	        this.events = {};
+	        this.defaultOptions = {};
+	        this.ui = {};
+	        this.attributes = {};
+	        this.className = "";
+	
+	        while (prototype) {
+	            if (prototype.hasOwnProperty("events")) {
+	                _.defaults(this.events, prototype.events);
+	            }
+	            if (prototype.hasOwnProperty("defaultOptions")) {
+	                _.defaults(this.defaultOptions, prototype.defaultOptions);
+	            }
+	            if (prototype.hasOwnProperty("ui")) {
+	                _.defaults(this.ui, prototype.ui);
+	            }
+	            if (prototype.hasOwnProperty("attributes")) {
+	                _.defaults(this.attributes, prototype.attributes);
+	            }
+	            if (prototype.hasOwnProperty("className")) {
+	                this.className += " " + prototype.className;
+	            }
+	            prototype = prototype.constructor.__super__;
+	        }
+	
+	        Marionette.CompositeView.apply(this, arguments);
+	    },
+	
+	    initialize: function (options) {
+	        View.__super__.initialize.apply(this);
+	    },
+	
+	    onDomRefresh: function() {
+	        // we can only init here because we need to known the parent container
+	        if (!this.scrollViewInitialized) {
+	            // pagination on scrolling using the direct parent as scroll container
+	            $(this.$el.parent()).scroll($.proxy(function (e) { this.scroll(e); }, this));
+	            // and sticky header on table
+	            $(this.ui.table).stickyTableHeaders({scrollableArea: this.$el.parent()});
+	
+	            this.scrollViewInitialized = true;
+	        }
 	    },
 	
 	    capacity: function() {
@@ -19739,7 +20086,7 @@
 	            more = this.capacity();
 	        }
 	
-	        if (this.collection.next != null) {
+	        if ((this.collection != null) && (this.collection.next != null)) {
 	            this.collection.fetch({update: true, remove: false, data: {
 	                cursor: this.collection.next,
 	                sort_by: this.collection.sort_by,
@@ -19760,6 +20107,12 @@
 	    },
 	
 	    scroll: function(e) {
+	        if (e.target.scrollTop > 1) {
+	            $(this.ui.table).children('thead').addClass("sticky");
+	        } else{
+	            $(this.ui.table).children('thead').removeClass("sticky");
+	        }
+	
 	        if (e.target.scrollHeight-e.target.clientHeight == e.target.scrollTop) {
 	            this.moreResults();
 	        }
@@ -19767,10 +20120,11 @@
 	});
 	
 	module.exports = View;
-
+	
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 73 */
+/* 79 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -19791,6 +20145,8 @@
 	((__t = ( gt.gettext("First name") )) == null ? '' : __t) +
 	'</th><th>' +
 	((__t = ( gt.gettext("Last name") )) == null ? '' : __t) +
+	'</th><th>' +
+	((__t = ( gt.gettext("Number of permissions") )) == null ? '' : __t) +
 	'</th></tr></thead><tbody class="permission-user-list"></tbody></table></div>';
 	
 	}
@@ -19799,94 +20155,7 @@
 
 
 /***/ },
-/* 74 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file group.js
-	 * @brief Permission group collection
-	 * @author Frederic SCHERMA
-	 * @date 2016-05-30
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var PermissionGroupModel = __webpack_require__(75);
-	
-	var Collection = Backbone.Collection.extend({
-	    url: function() { return application.baseUrl + 'permission/group/'; },
-	    model: PermissionGroupModel,
-	
-	    parse: function(data) {
-	        this.perms = data.perms;
-	        this.cursor = data.cursor;
-	        this.prev = data.prev;
-	        this.next = data.next;
-	
-	        return data.groups;
-	    },
-	});
-	
-	module.exports = Collection;
-
-
-/***/ },
-/* 75 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file group.js
-	 * @brief Group model
-	 * @author Frederic SCHERMA
-	 * @date 2016-05-30
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var Backbone = __webpack_require__(2);
-	
-	var Model = Backbone.Model.extend({
-	    url: function() {
-	        if (this.isNew())
-	            return application.baseUrl + 'permission/group/';
-	        else
-	            return application.baseUrl + 'permission/group/' + this.get('name') + '/';
-	    },
-	
-	    defaults: {
-	        id: undefined,
-	        name: undefined,
-	        num_users: 0,
-	        num_permissions: 0,
-	    },
-	
-	    init: function(options) {
-	        options || (options = {});
-	        this.name = options.name;
-	    },
-	
-	    parse: function(data) {
-	        this.perms = data.perms;
-	        return data;
-	    },
-	
-	    validate: function(attrs) {
-	        var errors = {};
-	        var hasError = false;
-	
-	        if (hasError) {
-	          return errors;
-	        }
-	    },
-	});
-	
-	module.exports = Model;
-
-
-/***/ },
-/* 76 */
+/* 80 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -19900,20 +20169,18 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var PermissionGroupModel = __webpack_require__(75);
-	var PermissionGroupView = __webpack_require__(77);
-	var ScrollView = __webpack_require__(72);
+	var PermissionGroupModel = __webpack_require__(66);
+	var PermissionGroupView = __webpack_require__(81);
+	var ScrollView = __webpack_require__(78);
 	
 	var View = ScrollView.extend({
-	    template: __webpack_require__(79),
+	    template: __webpack_require__(85),
 	    childView: PermissionGroupView,
 	    childViewContainer: 'tbody.permission-group-list',
 	
 	    initialize: function() {
 	        this.listenTo(this.collection, 'reset', this.render, this);
 	        this.listenTo(this.collection, 'change', this.render, this);
-	        //this.listenTo(this.collection, 'add', this.render, this);
-	        //this.listenTo(this.collection, 'remove', this.render, this);
 	
 	        View.__super__.initialize.apply(this);
 	    },
@@ -19923,7 +20190,7 @@
 
 
 /***/ },
-/* 77 */
+/* 81 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -19937,21 +20204,25 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var PermissionGroupModel = __webpack_require__(75);
+	var PermissionGroupModel = __webpack_require__(66);
+	
+	var Dialog = __webpack_require__(82);
 	
 	var View = Marionette.ItemView.extend({
 	    tagName: 'tr',
 	    className: 'element object group',
-	    template: __webpack_require__(78),
+	    template: __webpack_require__(83),
 	
 	    ui: {
 	        delete_group: 'span.delete-group',
+	        change_name: 'td.change-name',
 	        view_permissions: 'td.view-permissions',
 	        view_users: 'td.view-users',
 	    },
 	
 	    events: {
 	        'click @ui.delete_group': 'deleteGroup',
+	        'click @ui.change_name': 'onRenameGroup',
 	        'click @ui.view_permissions': 'viewPermissions',
 	        'click @ui.view_users': 'viewUsers',
 	    },
@@ -19967,23 +20238,195 @@
 	    },
 	
 	    viewPermissions: function () {
-	        Backbone.history.navigate("app/permission/group/" + this.model.get('name') + "/permission/", {trigger: true});
+	        Backbone.history.navigate("app/permission/group/" + this.model.get('id') + "/permission/", {trigger: true});
 	    },
 	
 	    viewUsers: function () {
-	        Backbone.history.navigate("app/permission/group/" + this.model.get('name') + "/user/", {trigger: true});
+	        Backbone.history.navigate("app/permission/group/" + this.model.get('id') + "/user/", {trigger: true});
 	    },
 	
 	    deleteGroup: function () {
 	        this.model.destroy({wait: true});
-	    }
+	    },
+	
+	    onRenameGroup: function(e) {
+	        var ChangeName = Dialog.extend({
+	            template: __webpack_require__(84),
+	
+	            attributes: {
+	                id: "dlg_change_name",
+	            },
+	
+	            ui: {
+	                name: "#name",
+	            },
+	
+	            events: {
+	                'input @ui.name': 'onNameInput',
+	            },
+	
+	            initialize: function (options) {
+	                ChangeName.__super__.initialize.apply(this);
+	            },
+	
+	            onNameInput: function () {
+	                this.validateName();
+	            },
+	
+	            validateName: function() {
+	                var v = this.ui.name.val();
+	                var re = /^[a-zA-Z0-9_\-]+$/i;
+	
+	                if (v.length > 0 && !re.test(v)) {
+	                    $(this.ui.name).validateField('failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
+	                    return false;
+	                } else if (v.length < 3) {
+	                    $(this.ui.name).validateField('failed', gt.gettext('3 characters min'));
+	                    return false;
+	                }
+	
+	                $(this.ui.name).validateField('ok');
+	
+	                return true;
+	            },
+	
+	            onApply: function() {
+	                var name = this.ui.name.val();
+	                var model = this.getOption('model');
+	
+	                if (this.validateName()) {
+	                    model.save({name: name}, {patch: true, wait:true});
+	                    this.remove();
+	                }
+	            },
+	        });
+	
+	        var changeName = new ChangeName({
+	            model: this.model,
+	        });
+	
+	        changeName.render();
+	        changeName.ui.name.val(this.model.get('name'));
+	    },
 	});
 	
 	module.exports = View;
 
 
 /***/ },
-/* 78 */
+/* 82 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(_) {/**
+	 * @file dialog.js
+	 * @brief Dialog helper view.
+	 * @author Frederic SCHERMA
+	 * @date 2016-10-21
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	
+	var View = Marionette.ItemView.extend({
+	    tagName: "div",
+	    attributes: {
+	        'id': 'dlg_default',
+	        'class': 'modal',
+	        'tabindex': -1
+	    },
+	
+	    ui: {
+	        cancel: "button.cancel",
+	        apply: "button.apply"
+	    },
+	
+	    events: {
+	        'click @ui.cancel': 'onCancel',
+	        'click @ui.apply': 'onApply',
+	        'keydown': 'escapeKey',
+	    },
+	
+	    constructor: function() {
+	        var prototype = this.constructor.prototype;
+	
+	        this.events = {};
+	        this.defaultOptions = {};
+	        this.ui = {};
+	        this.attributes = {};
+	        this.className = "";
+	
+	        while (prototype) {
+	            if (prototype.hasOwnProperty("events")) {
+	                _.defaults(this.events, prototype.events);
+	            }
+	            if (prototype.hasOwnProperty("defaultOptions")) {
+	                _.defaults(this.defaultOptions, prototype.defaultOptions);
+	            }
+	            if (prototype.hasOwnProperty("ui")) {
+	                _.defaults(this.ui, prototype.ui);
+	            }
+	            if (prototype.hasOwnProperty("attributes")) {
+	                _.defaults(this.attributes, prototype.attributes);
+	            }
+	            if (prototype.hasOwnProperty("className")) {
+	                this.className += " " + prototype.className;
+	            }
+	            prototype = prototype.constructor.__super__;
+	        }
+	
+	        Marionette.View.apply(this, arguments);
+	    },
+	
+	    initialize: function (options) {
+	        View.__super__.initialize.apply(this);
+	    },
+	
+	    onRender: function () {
+	        $(this.el).modal();
+	        $(this.el).find(':input[autofocus]').focus();
+	    },
+	
+	    onCancel: function () {
+	        this.remove();
+	    },
+	
+	    escapeKey: function(e) {
+	        var code = e.keyCode || e.which;
+	
+	        // escape key cancel
+	        if (code == 27) {
+	            this.remove();
+	        }
+	
+	        // enter on num-pad enter
+	        if (code == 13) {
+	            // click apply
+	            this.triggerMethod('apply');
+	
+	            // avoid reload page
+	            return false;
+	        }
+	    },
+	
+	    remove: function() {
+	        $(this.el).modal('hide').data('bs.modal', null);
+	
+	        // unbind the events
+	        this.$el.empty().off();
+	        this.stopListening();
+	
+	        return View.__super__.remove.apply(this);
+	    }
+	});
+	
+	module.exports = View;
+	
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 83 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -19992,7 +20435,7 @@
 	obj || (obj = {});
 	var __t, __p = '';
 	with (obj) {
-	__p += '<th><span class="delete-group action glyphicon glyphicon-minus-sign"></span></th><td class="action view-permissions" name="name" value="' +
+	__p += '<th><span class="delete-group action glyphicon glyphicon-minus-sign"></span></th><td class="action change-name" name="name" value="' +
 	((__t = ( name )) == null ? '' : __t) +
 	'">' +
 	((__t = ( name )) == null ? '' : __t) +
@@ -20012,7 +20455,32 @@
 
 
 /***/ },
-/* 79 */
+/* 84 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title">' +
+	((__t = ( gt.gettext("Change the name of the group of users") )) == null ? '' : __t) +
+	'</h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="label">' +
+	((__t = ( gt.gettext("Name") )) == null ? '' : __t) +
+	'</label><input class="form-control" id="name" type="text" name="name" value="" maxlength="32" autofocus="" autocomplete="off" style="width:100%"></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal">' +
+	((__t = ( gt.gettext("Cancel") )) == null ? '' : __t) +
+	'</button> <button type="button" class="btn btn-primary apply">' +
+	((__t = ( gt.gettext("Apply") )) == null ? '' : __t) +
+	'</button></div></div></div>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 85 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -20035,99 +20503,7 @@
 
 
 /***/ },
-/* 80 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file groupuser.js
-	 * @brief Permission user collection from a group
-	 * @author Frederic SCHERMA
-	 * @date 2016-06-09
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var PermissionGroupUserModel = __webpack_require__(81);
-	
-	var Collection = Backbone.Collection.extend({
-	    url: function() { return application.baseUrl + 'permission/group/' + this.name + '/user/'; },
-	    model: PermissionGroupUserModel,
-	
-	    initialize: function(models, options) {
-	        options || (options = {});
-	        this.name = options.name;
-	    },
-	
-	    parse: function(data) {
-	        this.perms = data.perms;
-	        this.cursor = data.cursor;
-	        this.prev = data.prev;
-	        this.next = data.next;
-	
-	        return data.users;
-	    },
-	});
-	
-	module.exports = Collection;
-
-
-/***/ },
-/* 81 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file groupuser.js
-	 * @brief User model from a group
-	 * @author Frederic SCHERMA
-	 * @date 2016-06-09
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var Backbone = __webpack_require__(2);
-	
-	var Model = Backbone.Model.extend({
-	    url: function() {
-	        if (this.isNew())
-	            return application.baseUrl + 'permission/group/' + this.collection.name + '/user/';
-	        else
-	            return application.baseUrl + 'permission/group/' + this.collection.name + '/user/' + this.get('username') + '/';
-	    },
-	
-	    defaults: {
-	        id: undefined,
-	        username: '',
-	        first_name: '',
-	        last_name: '',
-	        email: '',
-	    },
-	
-	    init: function(options) {
-	        options || (options = {});
-	        this.name = options.name;
-	    },
-	
-	    parse: function(data) {
-	        return data;
-	    },
-	
-	    validate: function(attrs) {
-	        var errors = {};
-	        var hasError = false;
-	
-	        if (hasError) {
-	          return errors;
-	        }
-	    },
-	});
-	
-	module.exports = Model;
-
-
-/***/ },
-/* 82 */
+/* 86 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -20141,20 +20517,18 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var PermissionGroupUserModel = __webpack_require__(81);
-	var PermissionGroupUserView = __webpack_require__(83);
-	var ScrollView = __webpack_require__(72);
+	var PermissionGroupUserModel = __webpack_require__(68);
+	var PermissionGroupUserView = __webpack_require__(87);
+	var ScrollView = __webpack_require__(78);
 	
 	var View = ScrollView.extend({
-	    template: __webpack_require__(85),
+	    template: __webpack_require__(89),
 	    childView: PermissionGroupUserView,
 	    childViewContainer: 'tbody.group-user-list',
 	
 	    initialize: function() {
 	        this.listenTo(this.collection, 'reset', this.render, this);
 	        this.listenTo(this.collection, 'change', this.render, this);
-	        //this.listenTo(this.collection, 'add', this.render, this);
-	        //this.listenTo(this.collection, 'remove', this.render, this);
 	
 	        View.__super__.initialize.apply(this);
 	    },
@@ -20164,7 +20538,7 @@
 
 
 /***/ },
-/* 83 */
+/* 87 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -20178,12 +20552,12 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var PermissionGroupUserModel = __webpack_require__(81);
+	var PermissionGroupUserModel = __webpack_require__(68);
 	
 	var View = Marionette.ItemView.extend({
 	    tagName: 'tr',
 	    className: 'element object user',
-	    template: __webpack_require__(84),
+	    template: __webpack_require__(88),
 	
 	    ui: {
 	        remove_user: 'span.remove-user',
@@ -20219,7 +20593,7 @@
 
 
 /***/ },
-/* 84 */
+/* 88 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -20244,7 +20618,7 @@
 
 
 /***/ },
-/* 85 */
+/* 89 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -20267,7 +20641,7 @@
 
 
 /***/ },
-/* 86 */
+/* 90 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -20285,7 +20659,7 @@
 	var View = Marionette.ItemView.extend({
 	    tagName: 'div',
 	    className: 'user-add',
-	    template: __webpack_require__(87),
+	    template: __webpack_require__(91),
 	
 	    ui: {
 	        add_user: ".add-user",
@@ -20369,7 +20743,7 @@
 
 
 /***/ },
-/* 87 */
+/* 91 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -20386,7 +20760,7 @@
 
 
 /***/ },
-/* 88 */
+/* 92 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -20404,7 +20778,7 @@
 	var View = Marionette.ItemView.extend({
 	    tagName: 'div',
 	    className: 'group-add',
-	    template: __webpack_require__(89),
+	    template: __webpack_require__(93),
 	
 	    ui: {
 	        add_group_btn: 'span.add-group',
@@ -20478,7 +20852,7 @@
 
 
 /***/ },
-/* 89 */
+/* 93 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -20495,7 +20869,7 @@
 
 
 /***/ },
-/* 90 */
+/* 94 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(_) {/**
@@ -20515,7 +20889,7 @@
 	    tagName: 'div',
 	    className: 'scrolling-more',
 	    attributes: {
-	        style: "width: 100%; margin: 5px; margin-left: 48%; margin-right: 52%;"
+	        style: "margin: 5px; margin-left: 48%; margin-right: 52%;"
 	    },
 	
 	    ui: {
@@ -20555,7 +20929,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 91 */
+/* 95 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -20583,7 +20957,7 @@
 	
 	        // i18n
 	        if (session.language === "fr") {
-	            i18next.addResources('fr', 'default', __webpack_require__(92));
+	            i18next.addResources('fr', 'default', __webpack_require__(96));
 	        } else {  // default to english
 	            //i18next.addResources('en', 'default', require('./locale/en/LC_MESSAGES/default.json'));
 	        }
@@ -20594,10 +20968,10 @@
 	    onStart: function(options) {
 	        Logger.time("Start audit module");
 	        
-	        var AuditController = __webpack_require__(93);
+	        var AuditController = __webpack_require__(97);
 	        this.controllers.audit = new AuditController();
 	
-	        var AuditRouter = __webpack_require__(102);
+	        var AuditRouter = __webpack_require__(106);
 	        this.routers.audit = new AuditRouter();
 	
 	        Logger.timeEnd("Start audit module");
@@ -20615,7 +20989,7 @@
 
 
 /***/ },
-/* 92 */
+/* 96 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -20624,7 +20998,7 @@
 		"Select an entity UUID or name": "Sélectionnez une entité par son UUID ou son nom",
 		"List of audit entries related to entity": "Liste des entrées d'audits pour l'entité",
 		"Get audits entries for an entity": "Récupérer les entrées d'audits pour une entité",
-		"Entity content type": "Type entité",
+		"Entity content type": "Type d'entité",
 		"Entity UUID or name": "UUID ou nom de l'entité",
 		"Cancel": "Annuler",
 		"Search": "Chercher",
@@ -20639,7 +21013,7 @@
 	};
 
 /***/ },
-/* 93 */
+/* 97 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -20653,33 +21027,30 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var AuditCollection = __webpack_require__(94);
-	var AuditListView = __webpack_require__(96);
-	var DefaultLayout = __webpack_require__(48);
-	var TitleView = __webpack_require__(49);
-	var ScrollingMoreView = __webpack_require__(90);
+	var AuditCollection = __webpack_require__(98);
+	var AuditListView = __webpack_require__(100);
+	
+	var DefaultLayout = __webpack_require__(50);
+	
+	var TitleView = __webpack_require__(51);
+	var ScrollingMoreView = __webpack_require__(94);
+	var Dialog = __webpack_require__(82);
 	
 	var Controller = Marionette.Controller.extend({
 	
 	    searchByUserName: function () {
-	        var ModalView = Marionette.ItemView.extend({
-	            tagName: 'div',
+	        var ModalView = Dialog.extend({
 	            attributes: {
 	                'id': 'dlg_audit_by_username',
-	                'class': 'modal',
-	                'tabindex': -1
 	            },
-	            template: __webpack_require__(100),
+	            template: __webpack_require__(104),
 	
 	            ui: {
-	                cancel: "button.cancel",
 	                search: "button.search",
 	                username: "#username",
 	            },
 	
 	            events: {
-	                'click @ui.cancel': 'onCancel',
-	                'keydown': 'keyAction',
 	                'input @ui.username': 'onUserNameInput',
 	            },
 	
@@ -20688,10 +21059,11 @@
 	            },
 	
 	            initialize: function () {
+	                ModalView.__super__.initialize.apply(this);
 	            },
 	
 	            onRender: function () {
-	                $(this.el).modal();
+	                ModalView.__super__.onRender.apply(this);
 	
 	                $(this.ui.username).select2({
 	                    dropdownParent: $(this.el),
@@ -20737,34 +21109,8 @@
 	                    },
 	                    minimumInputLength: 3,
 	                    placeholder: gt.gettext("Select a username"),
-	                });
-	            },
-	
-	            closeAndDestroy: function() {
-	                application.getRegion('modalRegion').reset();
-	            },
-	
-	            onCancel: function () {
-	                this.closeAndDestroy();
-	            },
-	
-	            keyAction: function(e) {
-	                var code = e.keyCode || e.which;
-	                if (code == 27) {
-	                    this.closeAndDestroy();
-	                }
-	            },
-	
-	            close: function () {
-	                $(this.ui.username).select2('destroy');  // destroy completely the dialog
-	                $(this.el).modal('hide').data('bs.modal', null);  // and hide the glass-pan
-	            },
-	
-	            onBeforeDestroy: function() {
-	                // this.$el.empty().off();  // unbind the events
-	                // this.stopListening();
-	                this.close();
-	            },
+	                }).select2('open');
+	            }
 	        });
 	
 	        var modal = new ModalView({controller: this});
@@ -20774,7 +21120,7 @@
 	            var username = $(args.view.ui.username).val();
 	            if (username) {
 	                this.getAuditListByUsername(username);
-	                args.view.closeAndDestroy();
+	                args.view.remove();
 	
 	                Backbone.history.navigate('app/audit/search/?username=' + username, {silent: true});
 	            }
@@ -20793,30 +21139,24 @@
 	            var auditListView = new AuditListView({collection: auditCollection});
 	
 	            defaultLayout.getRegion('content').show(auditListView);
-	            defaultLayout.getRegion('content_bottom').show(new ScrollingMoreView({targetView: auditListView}));
+	            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: auditListView}));
 	        });
 	    },
 	
 	    searchByEntity: function (uuid) {
-	            var ModalView = Marionette.ItemView.extend({
-	            tagName: 'div',
+	            var ModalView = Dialog.extend({
 	            attributes: {
 	                'id': 'dlg_audit_by_entity',
-	                'class': 'modal',
-	                'tabindex': -1
 	            },
-	            template: __webpack_require__(101),
+	            template: __webpack_require__(105),
 	
 	            ui: {
-	                cancel: "button.cancel",
 	                search: "button.search",
 	                entity: "#entity",
 	                content_type: "#content_type"
 	            },
 	
 	            events: {
-	                'click @ui.cancel': 'onCancel',
-	                'keydown': 'keyAction',
 	                'input @ui.entity': 'onEntityInput',
 	            },
 	
@@ -20824,12 +21164,10 @@
 	                'click @ui.search': 'view:search',
 	            },
 	
-	            initialize: function () {
-	            },
-	
 	            onRender: function () {
+	                ModalView.__super__.onRender.apply(this);
+	
 	                var view = this;
-	                $(this.el).modal();
 	
 	                application.main.views.contentTypes.drawSelect(this.ui.content_type);
 	                //application.main.views.contentTypes.htmlFromValue(this.el);
@@ -20892,32 +21230,8 @@
 	                    },
 	                    minimumInputLength: 3,
 	                    placeholder: gt.gettext("Select an entity UUID or name"),
-	                });
-	            },
-	
-	            closeAndDestroy: function() {
-	                application.getRegion('modalRegion').reset();
-	            },
-	
-	            onCancel: function () {
-	                this.closeAndDestroy();
-	            },
-	
-	            keyAction: function(e) {
-	                var code = e.keyCode || e.which;
-	                if (code == 27) {
-	                    this.closeAndDestroy();
-	                }
-	            },
-	
-	            close: function () {
-	                $(this.ui.uuid).select2('destroy');
-	                $(this.el).modal('hide').data('bs.modal', null);
-	            },
-	
-	            onBeforeDestroy: function() {
-	                this.close();
-	            },
+	                }).select2('open');
+	            }
 	        });
 	
 	        var modal = new ModalView({controller: this});
@@ -20929,7 +21243,7 @@
 	            var ct = $(args.view.ui.content_type).val().split('.');
 	            if (ct.length == 2 && object_id) {
 	                this.getAuditListByEntity(ct[0], ct[1], object_id, object_name);
-	                args.view.closeAndDestroy();
+	                args.view.remove();
 	
 	                Backbone.history.navigate('app/audit/search/?app_label=' + ct[0] + '&model=' + ct[1] + '&object_id=' + object_id, {silent: true});
 	            }
@@ -20970,7 +21284,7 @@
 	            var auditListView = new AuditListView({collection: auditCollection});
 	
 	            defaultLayout.getRegion('content').show(auditListView);
-	            defaultLayout.getRegion('content_bottom').show(new ScrollingMoreView({targetView: auditListView}));
+	            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: auditListView}));
 	        });
 	    }
 	});
@@ -20979,7 +21293,7 @@
 
 
 /***/ },
-/* 94 */
+/* 98 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -20992,7 +21306,7 @@
 	 * @details
 	 */
 	
-	var AuditModel = __webpack_require__(95);
+	var AuditModel = __webpack_require__(99);
 	
 	var Collection = Backbone.Collection.extend({
 	    url: function() {
@@ -21045,7 +21359,7 @@
 
 
 /***/ },
-/* 95 */
+/* 99 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -21073,7 +21387,7 @@
 	        fields: {}
 	    },
 	
-	    init: function(options) {
+	    init: function(attributes, options) {
 	        options || (options = {});
 	    },
 	
@@ -21096,7 +21410,7 @@
 
 
 /***/ },
-/* 96 */
+/* 100 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -21110,11 +21424,11 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var AuditView = __webpack_require__(97);
-	var ScrollView = __webpack_require__(72);
+	var AuditView = __webpack_require__(101);
+	var ScrollView = __webpack_require__(78);
 	
 	var View = ScrollView.extend({
-	    template: __webpack_require__(99),
+	    template: __webpack_require__(103),
 	    childView: AuditView,
 	    childViewContainer: 'tbody.audit-list',
 	
@@ -21130,7 +21444,7 @@
 
 
 /***/ },
-/* 97 */
+/* 101 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -21144,7 +21458,7 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var AuditModel = __webpack_require__(95);
+	var AuditModel = __webpack_require__(99);
 	
 	var View = Marionette.ItemView.extend({
 	    tagName: 'tr',
@@ -21152,7 +21466,7 @@
 	    attributes: {
 	        'scope': 'row',
 	    },
-	    template: __webpack_require__(98),
+	    template: __webpack_require__(102),
 	
 	    ui: {
 	        show: 'span.show-entity',
@@ -21183,7 +21497,7 @@
 
 
 /***/ },
-/* 98 */
+/* 102 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -21259,7 +21573,7 @@
 
 
 /***/ },
-/* 99 */
+/* 103 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -21288,7 +21602,7 @@
 
 
 /***/ },
-/* 100 */
+/* 104 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -21313,7 +21627,7 @@
 
 
 /***/ },
-/* 101 */
+/* 105 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -21340,7 +21654,7 @@
 
 
 /***/ },
-/* 102 */
+/* 106 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -21354,11 +21668,11 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var AuditCollection = __webpack_require__(94);
-	var AuditListView = __webpack_require__(96);
-	var DefaultLayout = __webpack_require__(48);
-	var TitleView = __webpack_require__(49);
-	var ScrollingMoreView = __webpack_require__(90);
+	var AuditCollection = __webpack_require__(98);
+	var AuditListView = __webpack_require__(100);
+	var DefaultLayout = __webpack_require__(50);
+	var TitleView = __webpack_require__(51);
+	var ScrollingMoreView = __webpack_require__(94);
 	
 	var Router = Marionette.AppRouter.extend({
 	    controller: application.audit.controllers.audit,
@@ -21382,7 +21696,7 @@
 
 
 /***/ },
-/* 103 */
+/* 107 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -21410,14 +21724,14 @@
 	
 	        // i18n
 	        if (session.language === "fr") {
-	            i18next.addResources('fr', 'default', __webpack_require__(104));
+	            i18next.addResources('fr', 'default', __webpack_require__(108));
 	        } else {  // default to english
 	            //i18next.addResources('en', 'default', require('./locale/en/LC_MESSAGES/default.json'));
 	        }
 	
 	        var SelectOptionItemView = __webpack_require__(36);
 	
-	        var TaxonRankCollection = __webpack_require__(105);
+	        var TaxonRankCollection = __webpack_require__(109);
 	        this.collections.taxonRanks = new TaxonRankCollection();
 	
 	        this.views.taxonRanks = new SelectOptionItemView({
@@ -21433,7 +21747,7 @@
 	            ]);*/
 	        });
 	
-	        var TaxonSynonymTypeCollection = __webpack_require__(107);
+	        var TaxonSynonymTypeCollection = __webpack_require__(111);
 	        this.collections.taxonSynonymTypes = new TaxonSynonymTypeCollection();
 	
 	        this.views.taxonSynonymTypes = new SelectOptionItemView({
@@ -21441,7 +21755,7 @@
 	            collection: this.collections.taxonSynonymTypes,
 	        });
 	        
-	        var TaxonController = __webpack_require__(109);
+	        var TaxonController = __webpack_require__(113);
 	        this.controllers.taxon = new TaxonController();
 	
 	        Logger.timeEnd("Init taxonomy module");
@@ -21450,10 +21764,10 @@
 	    onStart: function(options) {
 	        Logger.time("Start taxonomy module");
 	
-	        var TaxonRouter = __webpack_require__(116);
+	        var TaxonRouter = __webpack_require__(120);
 	        this.routers.taxon = new TaxonRouter();
 	
-	        var TaxonCollection = __webpack_require__(111);
+	        var TaxonCollection = __webpack_require__(115);
 	        this.collections.taxons = new TaxonCollection();
 	
 	        Logger.timeEnd("Start taxonomy module");
@@ -21471,7 +21785,7 @@
 
 
 /***/ },
-/* 104 */
+/* 108 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -21497,7 +21811,7 @@
 	};
 
 /***/ },
-/* 105 */
+/* 109 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -21510,7 +21824,7 @@
 	 * @details
 	 */
 	
-	var TaxonRankModel = __webpack_require__(106);
+	var TaxonRankModel = __webpack_require__(110);
 	
 	var TaxonRankCollection = Backbone.Collection.extend({
 	    url: application.baseUrl + 'taxonomy/rank/',
@@ -21537,7 +21851,7 @@
 
 
 /***/ },
-/* 106 */
+/* 110 */
 /***/ function(module, exports) {
 
 	/**
@@ -21564,7 +21878,7 @@
 
 
 /***/ },
-/* 107 */
+/* 111 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -21577,7 +21891,7 @@
 	 * @details
 	 */
 	
-	var TaxonSynonymTypeModel = __webpack_require__(108);
+	var TaxonSynonymTypeModel = __webpack_require__(112);
 	
 	var Collection = Backbone.Collection.extend({
 	    url: application.baseUrl + 'taxonomy/taxon-synonym-type/',
@@ -21604,7 +21918,7 @@
 
 
 /***/ },
-/* 108 */
+/* 112 */
 /***/ function(module, exports) {
 
 	/**
@@ -21631,7 +21945,7 @@
 
 
 /***/ },
-/* 109 */
+/* 113 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -21645,11 +21959,12 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var TaxonModel = __webpack_require__(110);
-	var TaxonCollection = __webpack_require__(111);
-	var TaxonListView = __webpack_require__(112);
-	var DefaultLayout = __webpack_require__(48);
-	var TitleView = __webpack_require__(49);
+	var TaxonModel = __webpack_require__(114);
+	var TaxonCollection = __webpack_require__(115);
+	var TaxonListView = __webpack_require__(116);
+	var DefaultLayout = __webpack_require__(50);
+	var TitleView = __webpack_require__(51);
+	var Dialog = __webpack_require__(82);
 	
 	/* If using marionnete 3 and no longer Controller class or inherit from Marionette.Object
 	Controller = function(options) {
@@ -21683,21 +21998,18 @@
 	    getOption: Marionette.proxyGetOption
 	});*/
 	
-	var TaxonController =  Marionette.Controller/*Object*/.extend({
+	var TaxonController = Marionette.Controller/*Object*/.extend({
 	
 	    create: function() {
-	        var CreateTaxonView = Marionette.ItemView.extend({
-	            tagName: "div",
+	        var CreateTaxonView = Dialog.extend({
 	            attributes: {
 	                'id': 'dlg_create_taxon',
-	                'class': 'modal',
-	                'tabindex': -1
 	            },
-	            template: __webpack_require__(115),
+	            template: __webpack_require__(119),
 	
 	            ui: {
-	                cancel: "button.cancel",
 	                create: "button.create",
+	                language: "#taxon_language",
 	                name: "#taxon_name",
 	                rank: "#taxon_rank",
 	                parent: "#taxon_parent",
@@ -21705,20 +22017,17 @@
 	            },
 	
 	            events: {
-	                'click @ui.cancel': 'onCancel',
 	                'click @ui.create': 'onCreate',
-	                'keydown': 'keyAction',
 	                'input @ui.name': 'onNameInput',
 	                'change @ui.rank': 'onChangeRank',
 	            },
 	
-	            initialize: function () {
-	            },
-	
 	            onRender: function () {
-	                $(this.el).modal();
+	                CreateTaxonView.__super__.onRender.apply(this);
+	
 	                this.ui.parent_group.hide();
 	
+	                application.main.views.languages.drawSelect(this.ui.language);
 	                application.taxonomy.views.taxonRanks.drawSelect(this.ui.rank);
 	
 	                $(this.ui.parent).select2({
@@ -21840,15 +22149,9 @@
 	                });*/
 	            },
 	
-	            onCancel: function () {
-	                this.remove();
-	            },
-	
 	            onChangeRank: function () {
 	                // reset parent
 	                $(this.ui.parent).val('').trigger('change');
-	                //this.ui.parent.attr('parent-id', 0);
-	                //$(this.ui.parent).cleanField();
 	
 	                if (this.ui.rank.val() == 60)
 	                    this.ui.parent_group.hide();
@@ -21890,10 +22193,9 @@
 	
 	            validateName: function() {
 	                var v = this.ui.name.val();
-	                var re = /^[a-zA-Z0-9_\-]+$/i;
 	
-	                if (v.length > 0 && !re.test(v)) {
-	                    $(this.ui.name).validateField('failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
+	                if (v.length > 64) {
+	                    $(this.ui.name).validateField('failed', gt.gettext("64 characters max"));
 	                    return false;
 	                } else if (v.length < 3) {
 	                    $(this.ui.name).validateField('failed', gt.gettext('3 characters min'));
@@ -21911,7 +22213,7 @@
 	                var parentId = 0;
 	
 	                if ($(this.ui.parent).val())
-	                    parentId = parseInt($(this.ui.parent).select2('data')[0].id || '0');
+	                    parentId = parseInt($(this.ui.parent).val());
 	
 	                if (rankId == 60 && parentId != 0) {
 	                    $.alert.error(gt.gettext("Family rank cannot have a parent taxon"));
@@ -21937,8 +22239,12 @@
 	                    application.taxonomy.collections.taxons.create({
 	                        name: this.ui.name.val(),
 	                        rank: parseInt(this.ui.rank.val()),
-	                        parent: parseInt(this.ui.parent.attr('parent-id') || '0'),
-	                        synonyms: [{name: this.ui.name.val(), type: 0, language: 'fr'}]
+	                        parent: parseInt($(this.ui.parent).val() || '0'),
+	                        synonyms: [{
+	                            name: this.ui.name.val(),
+	                            type: 0,  // primary
+	                            language: $(this.ui.language).val()
+	                        }]
 	                    }, {
 	                        wait: true,
 	                        success: function (model, resp, options) {
@@ -21975,20 +22281,6 @@
 	                        }
 	                    });*/
 	                }
-	            },
-	
-	            keyAction: function(e) {
-	                var code = e.keyCode || e.which;
-	                if (code == 27) {
-	                    this.remove();
-	                }
-	            },
-	
-	            remove: function() {
-	                $(this.el).modal('hide').data('bs.modal', null);
-	                this.$el.empty().off();  // unbind the events
-	                this.stopListening();
-	                return this;
 	            }
 	        });
 	
@@ -22001,7 +22293,7 @@
 
 
 /***/ },
-/* 110 */
+/* 114 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -22021,7 +22313,7 @@
 	        if (this.isNew())
 	            return application.baseUrl + 'taxonomy/';
 	        else
-	            return application.baseUrl + 'taxonomy/' + this.id + '/'; },
+	            return application.baseUrl + 'taxonomy/' + this.get('id') + '/'; },
 	
 	    defaults: {
 	      id: null,
@@ -22070,6 +22362,16 @@
 	            }
 	        }
 	    },
+	
+	    renameSynonym: function(type, name, language, oldName) {
+	        var synonyms = this.get('synonyms');
+	        for (var i = 0; i < synonyms.length; ++i) {
+	            if (synonyms[i].type == type && synonyms[i].name == oldName && synonyms[i].language == language) {
+	                synonyms[i].name = name;
+	                return;
+	            }
+	        }
+	    }
 	});
 	
 	/*sample for collection into model
@@ -22113,7 +22415,7 @@
 
 
 /***/ },
-/* 111 */
+/* 115 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -22126,25 +22428,44 @@
 	 * @details
 	 */
 	
-	var TaxonModel = __webpack_require__(110);
+	var TaxonModel = __webpack_require__(114);
 	
 	var TaxonCollection = Backbone.Collection.extend({
 	    url: application.baseUrl + 'taxonomy/',
 	    model: TaxonModel,
 	
+	    comparator: 'name',
+	
 	    parse: function(data) {
+	        this.prev = data.prev;
 	        this.page = data.page;
-	        this.total_count = data.total_count;
+	        this.next = data.next;
 	
 	        return data.items;
 	    },
+	
+	    fetch: function(options) {
+	        options || (options = {});
+	        var data = (options.data || {});
+	
+	        options.data = data;
+	
+	        this.cursor = options.data.cursor;
+	        this.sort_by = options.data.sort_by;
+	
+	        if (this.filters) {
+	            options.data.filters = JSON.stringify(this.filters)
+	        }
+	
+	        return Backbone.Collection.prototype.fetch.call(this, options);
+	    }
 	});
 	
 	module.exports = TaxonCollection;
 
 
 /***/ },
-/* 112 */
+/* 116 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -22158,72 +22479,33 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var TaxonModel = __webpack_require__(110);
-	var TaxonView = __webpack_require__(113);
+	var TaxonModel = __webpack_require__(114);
+	var TaxonView = __webpack_require__(117);
 	
-	var TaxonListView = Marionette.CollectionView.extend({
+	var ScrollView = __webpack_require__(78);
+	
+	
+	var View = ScrollView.extend({
 	    //el: '#main_content',
 	    //template: require('../templates/taxonlist.html'),
 	    template: "<div></div>",
 	    className: "taxon-list",
 	    //childViewContainer: 'div.panel-body',
 	    childView: TaxonView,
-	    childViewOptions: function(model, index) {
-	        return {
-	            read_only: this.options.read_only
-	        }
-	    },
-	
-	    ui: {
-	        add_synonym_panel: 'tr.add-synonym-panel',
-	        taxon: 'span.taxon',
-	    },
-	
-	    events: {
-	        'click @ui.taxon': 'clickTaxon',
-	    },
 	
 	    initialize: function(options) {
 	        options || (options = {});
 	        this.listenTo(this.collection, 'reset', this.render, this);
-	        //this.listenTo(this.collection, 'add', this.render, this);
-	        //this.listenTo(this.collection, 'remove', this.render, this);
-	        //this.listenTo(this.collection, 'change', this.render, this);
 	
-	        this.page = 1;
-	
-	        // pagination on scrolling
-	        $("div.panel-body").scroll($.proxy(function(e) { this.scroll(e); }, this));
-	    },
-	
-	    onRender: function() {
-	    },
-	
-	    clickTaxon: function (e) {
-	        var id = e.target.getAttribute("taxonid");
-	        Backbone.history.navigate("app/taxonomy/" + id + "/", {trigger: true});
-	    },
-	
-	    scroll: function(e) {
-	        if (e.target.scrollHeight-e.target.clientHeight == e.target.scrollTop) {
-	            if (this.collection.size() < this.collection.total_count) {
-	                Logger.debug("fetch page " + (this.page+1) + " for " + this.collection.total_count + " items");
-	                this.collection.fetch({update: true, remove: false, data: {page: ++this.page}});
-	            }
-	        }
-	    },
-	
-	    onDomRefresh: function () {
-	    //    if (this.options.read_only)
-	    //        $(this.ui.add_synonym_panel).remove();
-	    },
+	        View.__super__.initialize.apply(this);
+	    }
 	});
 	
-	module.exports = TaxonListView;
+	module.exports = View;
 
 
 /***/ },
-/* 113 */
+/* 117 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -22237,58 +22519,263 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var TaxonModel = __webpack_require__(110);
+	var TaxonModel = __webpack_require__(114);
 	
 	var TaxonItemView = Marionette.ItemView.extend({
 	    tagName: 'div',
-	    template: __webpack_require__(114),
+	    template: __webpack_require__(118),
 	
 	    ui: {
+	        "taxon": "span.taxon",
 	        "synonym_name": ".synonym-name",
 	        "synonym_language": ".synonym-languages",
 	        "taxon_synonym_type": ".taxon-synonym-types",
 	        "taxon_rank": ".taxon-ranks",
-	        "edit_mode": ".edit-mode",
+	    },
+	
+	    events: {
+	        "click @ui.taxon": "onTaxonDetails"
+	    },
+	
+	    initialize: function() {
+	        this.listenTo(this.model, 'reset', this.render, this);
+	    },
+	
+	    onRender: function() {
+	        application.main.views.languages.htmlFromValue(this.el);
+	        application.taxonomy.views.taxonSynonymTypes.htmlFromValue(this.el);
+	        application.taxonomy.views.taxonRanks.htmlFromValue(this.el);
+	    },
+	
+	    onTaxonDetails: function() {
+	        Backbone.history.navigate("app/taxonomy/" + this.model.get('id') + "/", {trigger: true});
+	    }
+	});
+	
+	module.exports = TaxonItemView;
+
+
+/***/ },
+/* 118 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+	function print() { __p += __j.call(arguments, '') }
+	with (obj) {
+	__p += '<div class="object taxon" object-type="taxon" object-id="' +
+	((__t = ( id )) == null ? '' : __t) +
+	'" style="width:100%"><span style="font-weight:bold; font-size:18px"><span class="name taxon" taxonid="' +
+	((__t = ( id )) == null ? '' : __t) +
+	'" style="cursor: pointer">' +
+	__e( name ) +
+	'</span><span class="taxon-rank badge left-margin" value="' +
+	((__t = ( rank )) == null ? '' : __t) +
+	'"></span><br></span><hr class="hr-default"><div class="taxon-synonyms"></div><h4>' +
+	((__t = ( gt.gettext("Synonyms") )) == null ? '' : __t) +
+	'</h4><table class="table table-striped"><thead><tr><th>' +
+	((__t = ( gt.gettext("Type") )) == null ? '' : __t) +
+	'</th><th>' +
+	((__t = ( gt.gettext("Name") )) == null ? '' : __t) +
+	'</th><th>' +
+	((__t = ( gt.gettext("Language") )) == null ? '' : __t) +
+	'</th></tr></thead><tbody> ';
+	 _.each(synonyms, function(synonym) { ;
+	__p += ' <tr><td name="type" class="taxon-synonym-type" value="' +
+	__e( synonym.type ) +
+	'"></td><td name="name">' +
+	__e( synonym.name ) +
+	'</td><td name="language" class="language" value="' +
+	__e( synonym.language ) +
+	'"></td></tr> ';
+	 }) ;
+	__p += ' </tbody></table></div>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 119 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title">' +
+	((__t = ( gt.gettext("Create a taxon") )) == null ? '' : __t) +
+	'</h4></div><div class="modal-body"><form><div class="row"><div class="col-xs-8"><div class="form-group"><label class="control-label" for="taxon_name">' +
+	((__t = ( gt.gettext("Principal name of the taxon (must be unique)") )) == null ? '' : __t) +
+	'</label><input class="form-control name" id="taxon_name" type="text" name="taxon" value="" maxlength="64" autofocus="" autocomplete="off" style="width:100%"></div></div><div class="col-xs-4"><div class="form-group"><label class="control-label" for="taxon_rank">' +
+	((__t = ( gt.gettext("Language") )) == null ? '' : __t) +
+	'</label><select class="form-control language" id="taxon_language" name="language"></select></div></div></div><div class="form-group"><label class="control-label" for="taxon_rank">' +
+	((__t = ( gt.gettext("Taxon rank") )) == null ? '' : __t) +
+	'</label><select class="form-control taxon-ranks" id="taxon_rank" name="taxonrank"></select></div><div class="form-group taxon-parent-group"><label class="control-label" for="taxon_parent">' +
+	((__t = ( gt.gettext("Direct parent") )) == null ? '' : __t) +
+	'</label><select id="taxon_parent" style="width:100%" class="form-control"></select></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal">' +
+	((__t = ( gt.gettext("Cancel") )) == null ? '' : __t) +
+	'</button> <button type="button" class="btn btn-primary create">' +
+	((__t = ( gt.gettext("Create") )) == null ? '' : __t) +
+	'</button></div></div></div>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 120 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file taxon.js
+	 * @brief Taxon router
+	 * @author Frederic SCHERMA
+	 * @date 2016-04-13
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	var TaxonModel = __webpack_require__(114);
+	var TaxonCollection = __webpack_require__(115);
+	var TaxonListView = __webpack_require__(116);
+	var TaxonItemView = __webpack_require__(117);
+	var TaxonDetailsView = __webpack_require__(121);
+	var TaxonListFilterView = __webpack_require__(125);
+	
+	var DefaultLayout = __webpack_require__(50);
+	var TitleView = __webpack_require__(51);
+	var ScrollingMoreView = __webpack_require__(94);
+	var TwoRowsLayout = __webpack_require__(127);
+	
+	var TaxonRouter = Marionette.AppRouter.extend({
+	    routes : {
+	        "app/taxonomy/": "getTaxonList",
+	        "app/taxonomy/:id/": "getTaxon",
+	    },
+	
+	    getTaxonList : function() {
+	        var collection = application.taxonomy.collections.taxons;
+	
+	        var defaultLayout = new DefaultLayout({});
+	        application.getRegion('mainRegion').show(defaultLayout);
+	
+	        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of taxons")}));
+	
+	        collection.fetch().then(function () {
+	            var taxonListView = new TaxonListView({collection : collection});
+	
+	            defaultLayout.getRegion('content').show(taxonListView);
+	            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: taxonListView}));
+	        });
+	
+	        defaultLayout.getRegion('bottom').show(new TaxonListFilterView({collection: collection}));
+	    },
+	
+	    getTaxon : function(id) {
+	        var taxon = new TaxonModel({id: id});
+	
+	        var defaultLayout = new DefaultLayout();
+	        application.getRegion('mainRegion').show(defaultLayout);
+	
+	        var twoRowsLayout = new TwoRowsLayout();
+	        defaultLayout.getRegion('content').show(twoRowsLayout);
+	
+	        taxon.fetch().then(function() {
+	            defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Taxon details"), model: taxon}));
+	            twoRowsLayout.getRegion('top-content').show(new TaxonDetailsView({model: taxon}));
+	        });
+	
+	        var taxonChildren = new TaxonChildren({taxon_id: id});
+	
+	        taxonChildren.fetch().then(function() {
+	            twoRowsLayout.getRegion('bottom-content').show(new TaxonChildrenView({collection: taxonChildren, model: taxon}));
+	            twoRowsLayout.getRegion('bottom-bottom').show(new ScrollingMoreView({targetView: taxonListView}));
+	        });
+	    },
+	});
+	
+	module.exports = TaxonRouter;
+
+
+/***/ },
+/* 121 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file taxondetails.js
+	 * @brief Taxon details item view
+	 * @author Frederic SCHERMA
+	 * @date 2016-04-20
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	var TaxonModel = __webpack_require__(114);
+	
+	var Dialog = __webpack_require__(82);
+	
+	var TaxonItemView = Marionette.ItemView.extend({
+	    tagName: 'div',
+	    className: 'element object taxon',
+	    template: __webpack_require__(122),
+	
+	    ui: {
+	        "view_taxon": ".view-taxon",
+	        "synonym_name": ".synonym-name",
+	        "synonym_language": ".synonym-languages",
+	        "taxon_synonym_type": ".taxon-synonym-types",
+	        "taxon_rank": ".taxon-ranks",
 	        "add_synonym": ".add-synonym",
 	        "remove_synonym": ".remove-synonym",
-	        "add_synonyom_panel": "tr.add-synonym-panel"
+	        "add_synonym_panel": "tr.add-synonym-panel",
+	        "rename_synonym": "td.rename-synonym",
+	        "change_parent": "span.change-parent",
 	    },
 	
 	    events: {
 	        'input @ui.synonym_name': 'onSynonymNameInput',
+	        'click @ui.view_taxon': 'onViewTaxon',
 	        'click @ui.add_synonym': 'onAddSynonym',
 	        'click @ui.remove_synonym': 'onRemoveSynonym',
+	        'click @ui.rename_synonym': 'onRenameSynonym',
+	        'click @ui.change_parent': 'onChangeParent',
 	    },
 	
-	    initialize: function(options) {
+	    initialize: function() {
 	        this.listenTo(this.model, 'reset', this.render, this);
-	        this.options.read_only = this.options.read_only || false;
+	        this.listenTo(this.model, 'change', this.render, this);
 	    },
 	
 	    onRender: function() {
 	        application.main.views.languages.drawSelect(this.ui.synonym_language);
 	        application.taxonomy.views.taxonSynonymTypes.drawSelect(this.ui.taxon_synonym_type);
 	        application.taxonomy.views.taxonRanks.drawSelect(this.ui.taxon_rank);
-	        
+	
 	        application.main.views.languages.htmlFromValue(this.el);
 	        application.taxonomy.views.taxonSynonymTypes.htmlFromValue(this.el);
 	        application.taxonomy.views.taxonRanks.htmlFromValue(this.el);
 	
-	        this.ui.taxon_synonym_type.find('option[value="0"]').remove();
-	        $(this.ui.taxon_synonym_type).selectpicker('refresh');
-	    },
-	
-	    onDomRefresh: function () {
-	        if (this.options.read_only)
-	            this.ui.add_synonyom_panel.remove();
+	        //this.ui.taxon_synonym_type.find('option[value="0"]').remove();
+	        //$(this.ui.taxon_synonym_type).selectpicker('refresh');
 	    },
 	
 	    validateName: function() {
 	        var v = this.ui.synonym_name.val();
-	        var re = /^[a-zA-Z0-9_\-]+$/i;
 	
-	        if (v.length > 0 && !re.test(v)) {
-	            $(this.ui.synonym_name).validateField('failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
+	        if (v.length > 64) {
+	            $(this.ui.synonym_name).validateField('failed', gt.gettext("64 characters max"));
 	            return false;
 	        } else if (v.length < 3) {
 	            $(this.ui.synonym_name).validateField('failed', gt.gettext('3 characters min'));
@@ -22311,14 +22798,15 @@
 	                url: application.baseUrl + 'taxonomy/search/',
 	                dataType: 'json',
 	                data: {filters: JSON.stringify(filters)},
+	                cache: false,
 	                el: this.ui.synonym_name,
 	                success: function(data) {
 	                    if (data.items.length > 0) {
 	                        for (var i in data.items) {
 	                            var t = data.items[i];
 	
-	                            if (t.value.toUpperCase() == this.el.val().toUpperCase()) {
-	                                $(this.el).validateField('failed', gt.gettext('Taxon name already in usage'));
+	                            if (t.label.toUpperCase() == this.el.val().toUpperCase()) {
+	                                $(this.el).validateField('failed', gt.gettext('Synonym of taxon already used'));
 	                                break;
 	                            }
 	                        }
@@ -22331,29 +22819,30 @@
 	    },
 	
 	    onAddSynonym: function () {
-	        var type = $(this.ui.taxon_synonym_type).val();
-	        var name = $(this.ui.synonym_name).val();
-	        var language = $(this.ui.synonym_language).val();
+	        if (this.validateName() && !this.ui.synonym_name.hasClass('invalid')) {
+	            var type = $(this.ui.taxon_synonym_type).val();
+	            var name = $(this.ui.synonym_name).val();
+	            var language = $(this.ui.synonym_language).val();
 	
-	        // TODO Is using a backbone plugin in way to manage nested models will be interesting,
-	        // to replace this manual ajax query and array in models ?
-	        // same for removeSynonym
-	        $.ajax({
-	            view: this,
-	            type: "PUT",
-	            url: application.baseUrl + 'taxonomy/' + this.model.id + "/",
-	            contentType: "application/json; charset=utf-8",
-	            dataType: 'json',
-	            data: JSON.stringify({type: type, name: name, language: language}),
-	            success: function(data) {
-	               this.view.model.addSynonym(type, name, language);
-	               this.view.render();
-	            }
-	        });
+	            $.ajax({
+	                view: this,
+	                type: "POST",
+	                url: application.baseUrl + 'taxonomy/' + this.model.id + "/synonym/" ,
+	                contentType: "application/json; charset=utf-8",
+	                dataType: 'json',
+	                data: JSON.stringify({type: type, name: name, language: language}),
+	                success: function (data) {
+	                    //this.view.model.addSynonym(type, name, language);
+	                    //this.view.render();
+	                    this.view.model.fetch({reset: true});
+	                }
+	            });
+	        }
 	    },
 	
 	    onRemoveSynonym: function (e) {
 	        var synonym = $(e.target.parentNode.parentNode);
+	        var synonymId = $(e.target).data('synonym-id');
 	
 	        var type = synonym.find("[name='type']").attr('value');
 	        var name = synonym.find("[name='name']").text();
@@ -22362,23 +22851,208 @@
 	        $.ajax({
 	            view: this,
 	            type: "DELETE",
-	            url: application.baseUrl + 'taxonomy/' + this.model.id + "/",
+	            url: application.baseUrl + 'taxonomy/' + this.model.id + "/synonym/" + synonymId + '/',
 	            contentType: "application/json; charset=utf-8",
-	            dataType: 'json',
-	            data: JSON.stringify({type: type, name: name, language: language}),
 	            success: function(data) {
-	                this.view.model.removeSynonym(type, name, language);
-	                this.view.render();
+	                //this.view.model.removeSynonym(type, name, language);
+	                //this.view.render();
+	                this.view.model.fetch({reset: true});
 	            }
 	        });
 	    },
+	
+	    onRenameSynonym: function(e) {
+	        var ChangeSynonym = Dialog.extend({
+	            template: __webpack_require__(123),
+	
+	            attributes: {
+	                id: "dlg_change_synonym",
+	            },
+	
+	            ui: {
+	                name: "#name",
+	            },
+	
+	            events: {
+	                'input @ui.name': 'onNameInput',
+	            },
+	
+	            initialize: function (options) {
+	                ChangeSynonym.__super__.initialize.apply(this);
+	            },
+	
+	            onNameInput: function () {
+	                this.validateName();
+	            },
+	
+	            validateName: function() {
+	                var v = this.ui.name.val();
+	
+	                if (v.length < 3) {
+	                    $(this.ui.name).validateField('failed', gt.gettext('3 characters min'));
+	                    return false;
+	                } else if (v.length > 64) {
+	                    $(this.ui.name).validateField('failed', gt.gettext('64 characters max'));
+	                    return false;
+	                }
+	
+	                $(this.ui.name).validateField('ok');
+	
+	                return true;
+	            },
+	
+	            onApply: function() {
+	                var view = this;
+	                var model = this.getOption('model');
+	                var synonymId = this.getOption('synonymId');
+	                var name = this.ui.name.val();
+	
+	                if (this.validateName()) {
+	                    $.ajax({
+	                        type: "PUT",
+	                        url: application.baseUrl + 'taxonomy/' + this.model.get('id') + "/synonym/" + synonymId + '/',
+	                        contentType: "application/json; charset=utf-8",
+	                        dataType: 'json',
+	                        data: JSON.stringify({name: name}),
+	                        success: function (data) {
+	                            //view.model.renameSynonym(view.getOption('type'), name, view.getOption('language'), view.getOption('name'));
+	                            view.remove();
+	
+	                            model.fetch({reset: true}).then(function() {
+	                                //var TitleView = require('../../main/views/titleview');
+	
+	                                //application.getRegion('mainRegion').currentView.getRegion('title').show(
+	                                    //new TitleView({title: gt.gettext("Taxon details"), object: model.get('name')}));
+	                            });
+	                        },
+	                        error: function() {
+	                            $.alert.error(gt.gettext("Unable to rename the synonym !"));
+	                        }
+	                    });
+	                }
+	            },
+	        });
+	
+	        var synonym = $(e.target.parentNode.parentNode);
+	        var synonymId = $(e.target).data('synonym-id');
+	
+	        var type = synonym.find("[name='type']").attr('value');
+	        var name = synonym.find("[name='name']").text();
+	        var language = synonym.find("[name='language']").attr('value');
+	
+	        var changeSynonym = new ChangeSynonym({
+	            model: this.model,
+	            synonymId: synonymId,
+	            name: e.target.innerHTML,
+	            type: type,
+	            language: language
+	        });
+	
+	        changeSynonym.render();
+	        changeSynonym.ui.name.val(e.target.innerHTML);
+	    },
+	
+	    onViewTaxon: function(e) {
+	        var taxon_id = $(e.target).data('taxon-id');
+	
+	        Backbone.history.navigate("app/taxonomy/" + taxon_id + "/", {trigger: true});
+	    },
+	
+	    onChangeParent: function () {
+	        var ChangeParent = Dialog.extend({
+	            template: __webpack_require__(124),
+	
+	            attributes: {
+	                id: "dlg_change_parent",
+	            },
+	
+	            ui: {
+	                parent: "#taxon_parent",
+	            },
+	
+	            initialize: function (options) {
+	                ChangeParent.__super__.initialize.apply(this);
+	            },
+	
+	            onRender: function () {
+	                ChangeParent.__super__.onRender.apply(this);
+	
+	                var rank = this.model.get('rank');
+	
+	                $(this.ui.parent).select2({
+	                    dropdownParent: $(this.el),
+	                    ajax: {
+	                        url: application.baseUrl + "taxonomy/search/",
+	                        dataType: 'json',
+	                        delay: 250,
+	                        data: function (params) {
+	                            params.term || (params.term = '');
+	
+	                            var filters = {
+	                                method: 'icontains',
+	                                fields: ['name', 'rank'],
+	                                'name': params.term,
+	                                'rank': rank
+	                            };
+	
+	                            return {
+	                                page: params.page,
+	                                filters: JSON.stringify(filters),
+	                            };
+	                        },
+	                        processResults: function (data, params) {
+	                            // no pagination
+	                            params.page = params.page || 1;
+	
+	                            var results = [];
+	
+	                            for (var i = 0; i < data.items.length; ++i) {
+	                                results.push({
+	                                    id: data.items[i].id,
+	                                    text: data.items[i].label
+	                                });
+	                            }
+	
+	                            return {
+	                                results: results,
+	                                pagination: {
+	                                    more: (params.page * 30) < data.total_count
+	                                }
+	                            };
+	                        },
+	                        cache: true
+	                    },
+	                    minimumInputLength: 3,
+	                    placeholder: gt.gettext("Enter a taxon name. 3 characters at least for auto-completion"),
+	                });
+	            },
+	
+	            onApply: function() {
+	                var model = this.getOption('model');
+	                var parent = null;
+	
+	                if ($(this.ui.parent).val()) {
+	                    parent = parseInt($(this.ui.parent).val());
+	                }
+	
+	                model.save({parent: parent}, {patch: true, wait: true});
+	                this.remove();
+	            },
+	        });
+	
+	        var changeParent = new ChangeParent({
+	            model: this.model
+	        });
+	
+	        changeParent.render();
+	    }
 	});
 	
 	module.exports = TaxonItemView;
 
 
 /***/ },
-/* 114 */
+/* 122 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -22390,13 +23064,23 @@
 	with (obj) {
 	__p += '<div class="object taxon" object-type="taxon" object-id="' +
 	((__t = ( id )) == null ? '' : __t) +
-	'" style="width:100%"><span style="font-weight:bold; font-size:18px"><span class="name taxon" taxonid="' +
+	'" style="width:100%"><span style="font-weight:bold; font-size:18px"> ';
+	 for (var i = parent_details.length-1; i >= 0; --i) { ;
+	__p += ' <span><span class="action view-taxon" data-taxon-id="' +
+	((__t = ( parent_details[i].id )) == null ? '' : __t) +
+	'">' +
+	((__t = ( parent_details[i].name )) == null ? '' : __t) +
+	'</span><span class="taxon-rank badge left-margin" value="' +
+	((__t = ( parent_details[i].rank )) == null ? '' : __t) +
+	'"></span> </span><span class="glyphicon glyphicon-chevron-right"></span> ';
+	 } ;
+	__p += ' <span><span class="name taxon" taxonid="' +
 	((__t = ( id )) == null ? '' : __t) +
-	'" style="cursor: pointer">' +
+	'">' +
 	__e( name ) +
 	'</span><span class="taxon-rank badge left-margin" value="' +
 	((__t = ( rank )) == null ? '' : __t) +
-	'"></span><br></span><hr class="hr-default"><div class="taxon-synonyms"></div><h4>' +
+	'"></span> </span><span class="glyphicon glyphicon-edit action change-parent"></span><br></span><hr class="hr-default"><div class="taxon-synonyms"></div><h4>' +
 	((__t = ( gt.gettext("Synonyms") )) == null ? '' : __t) +
 	'</h4><table class="table table-striped"><thead><tr><th><span class="glyphicon glyphicon-asterisk"></span></th><th>' +
 	((__t = ( gt.gettext("Type") )) == null ? '' : __t) +
@@ -22408,17 +23092,21 @@
 	 _.each(synonyms, function(synonym) { ;
 	__p += ' <tr><th scope="row"> ';
 	 if (synonym.type != 0) { ;
-	__p += '<span class="action remove-synonym glyphicon glyphicon-minus-sign edit-mode"></span>';
+	__p += '<span data-synonym-id="' +
+	((__t = ( synonym.id )) == null ? '' : __t) +
+	'" class="action remove-synonym glyphicon glyphicon-minus-sign"></span>';
 	 } ;
 	__p += ' </th><td name="type" class="taxon-synonym-type" value="' +
 	__e( synonym.type ) +
-	'"></td><td name="name">' +
+	'"></td><td name="name" class="action rename-synonym" data-synonym-id="' +
+	((__t = ( synonym.id )) == null ? '' : __t) +
+	'">' +
 	__e( synonym.name ) +
 	'</td><td name="language" class="language" value="' +
 	__e( synonym.language ) +
 	'"></td></tr> ';
 	 }) ;
-	__p += ' <tr class="edit-mode add-synonym-panel"><form><th scope="row"><span class="add-synonym action glyphicon glyphicon-plus-sign" style="margin-top: 15px"></span></th><td><select class="taxon-synonym-types" name="taxon-synonym-type"></select></td><td><div class="form-group"><input class="form-control synonym-name" type="text" name="synonym-name"></div></td><td><select class="synonym-languages" name="synonym-language"></select></td></form></tr></tbody></table></div>';
+	__p += ' <tr class="add-synonym-panel"><form><th scope="row"><span class="add-synonym action glyphicon glyphicon-plus-sign" style="margin-top: 9px"></span></th><td><select class="taxon-synonym-types" name="taxon-synonym-type"></select></td><td><div class="form-group"><input class="form-control synonym-name" type="text" maxlength="64" autocomplete="off" name="synonym-name"></div></td><td><select class="synonym-languages" name="synonym-language"></select></td></form></tr></tbody></table></div>';
 	
 	}
 	return __p
@@ -22426,7 +23114,7 @@
 
 
 /***/ },
-/* 115 */
+/* 123 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -22436,17 +23124,13 @@
 	var __t, __p = '';
 	with (obj) {
 	__p += '<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title">' +
-	((__t = ( gt.gettext("Create a taxon") )) == null ? '' : __t) +
-	'</h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="taxon_name">' +
-	((__t = ( gt.gettext("Principal name of the taxon (must be unique)") )) == null ? '' : __t) +
-	'</label><input class="form-control name" id="taxon_name" type="text" name="taxon" value="" maxlength="128" autofocus="" autocomplete="off" style="width:100%"></div><div class="form-group"><label class="control-label" for="taxon_rank">' +
-	((__t = ( gt.gettext("Taxon rank") )) == null ? '' : __t) +
-	'</label><select class="form-control taxon-ranks" id="taxon_rank" name="taxonrank"></select></div><div class="form-group taxon-parent-group"><label class="control-label" for="taxon_parent">' +
-	((__t = ( gt.gettext("Direct parent") )) == null ? '' : __t) +
-	'</label><select id="taxon_parent" style="width:100%" class="form-control"></select></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal">' +
+	((__t = ( gt.gettext("Change the name for a synonym of taxon") )) == null ? '' : __t) +
+	'</h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="label">' +
+	((__t = ( gt.gettext("Name") )) == null ? '' : __t) +
+	'</label><input class="form-control" id="name" type="text" name="name" value="" maxlength="128" autofocus="" autocomplete="off" style="width:100%"></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal">' +
 	((__t = ( gt.gettext("Cancel") )) == null ? '' : __t) +
-	'</button> <button type="button" class="btn btn-primary create">' +
-	((__t = ( gt.gettext("Create") )) == null ? '' : __t) +
+	'</button> <button type="button" class="btn btn-primary apply">' +
+	((__t = ( gt.gettext("Apply") )) == null ? '' : __t) +
 	'</button></div></div></div>';
 	
 	}
@@ -22455,65 +23139,168 @@
 
 
 /***/ },
-/* 116 */
+/* 124 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title">' +
+	((__t = ( gt.gettext("Change the direct parent of taxon") )) == null ? '' : __t) +
+	'</h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="taxon_parent">' +
+	((__t = ( gt.gettext("Direct parent") )) == null ? '' : __t) +
+	'</label><select id="taxon_parent" style="width:100%" class="form-control"></select></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal">' +
+	((__t = ( gt.gettext("Cancel") )) == null ? '' : __t) +
+	'</button> <button type="button" class="btn btn-primary apply">' +
+	((__t = ( gt.gettext("Apply") )) == null ? '' : __t) +
+	'</button></div></div></div>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 125 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
-	 * @file taxon.js
-	 * @brief Taxon router
+	 * @file taxonfilterlist.js
+	 * @brief Filter the list of taxon
 	 * @author Frederic SCHERMA
-	 * @date 2016-04-13
+	 * @date 2016-10-03
 	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
 	 * @license @todo
 	 * @details
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var TaxonModel = __webpack_require__(110);
-	var TaxonCollection = __webpack_require__(111);
-	var TaxonListView = __webpack_require__(112);
-	var TaxonItemView = __webpack_require__(113);
-	var DefaultLayout = __webpack_require__(48);
-	var TitleView = __webpack_require__(49);
 	
-	var TaxonRouter = Marionette.AppRouter.extend({
-	    routes : {
-	        "app/taxonomy/": "getTaxonList",
-	        "app/taxonomy/:id/": "getTaxon",
+	var View = Marionette.ItemView.extend({
+	    tagName: 'div',
+	    className: 'taxon-filter',
+	    template: __webpack_require__(126),
+	
+	    ui: {
+	        filter_btn: 'button.taxon-filter',
+	        taxon_rank: 'select.taxon-rank',
+	        taxon_name: 'input.taxon-name',
 	    },
 	
-	    getTaxonList : function() {
-	        var collection = application.taxonomy.collections.taxons;
-	
-	        var defaultLayout = new DefaultLayout({});
-	        application.getRegion('mainRegion').show(defaultLayout);
-	
-	        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of taxons")}));
-	
-	        collection.fetch().then(function () {
-	            defaultLayout.getRegion('content').show(new TaxonListView({read_only: true, collection : collection}));
-	        });
+	    events: {
+	        'click @ui.filter_btn': 'onFilter',
+	        'input @ui.taxon_name': 'onTaxonNameInput',
 	    },
 	
-	    getTaxon : function(id) {
-	        var taxon = new TaxonModel({id: id});
+	    initialize: function(options) {
+	        options || (options = {});
+	        this.collection = options.collection;
+	    },
 	
-	        var defaultLayout = new DefaultLayout();
-	        application.getRegion('mainRegion').show(defaultLayout);
+	    onRender: function() {
+	        application.taxonomy.views.taxonRanks.drawSelect(this.ui.taxon_rank, true, true);
+	    },
 	
-	        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Taxon details")}));
+	    onFilter: function () {
+	        if (this.validateTaxonName()) {
+	            this.collection.filters = {
+	                name: this.ui.taxon_name.val(),
+	                rank: $(this.ui.taxon_rank).val(),
+	                method: "icontains"
+	            }
 	
-	        taxon.fetch().then(function() {
-	            defaultLayout.getRegion('content').show(new TaxonItemView({model: taxon}));
-	        });
+	            this.collection.fetch({reset: true});
+	        }
+	    },
+	
+	    validateTaxonName: function() {
+	        var v = this.ui.taxon_name.val();
+	        var re = /^[a-zA-Z0-9_\-]+$/i;
+	
+	        if (v.length > 0 && !re.test(v)) {
+	            $(this.ui.taxon_name).validateField('failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
+	            return false;
+	        } else if (v.length > 0 && v.length < 3) {
+	            $(this.ui.taxon_name).validateField('failed', gt.gettext('3 characters min'));
+	            return false;
+	        } else if (v.length == 0) {
+	            $(this.ui.taxon_name).cleanField();
+	            return true;
+	        } else {
+	            $(this.ui.taxon_name).validateField('ok');
+	            return true;
+	        }
+	    },
+	
+	    onTaxonNameInput: function () {
+	        this.validateTaxonName();
 	    },
 	});
 	
-	module.exports = TaxonRouter;
+	module.exports = View;
 
 
 /***/ },
-/* 117 */
+/* 126 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<table class="table table-striped" style="margin-bottom: 0px"><tbody><tr><th><button type="button" class="taxon-filter btn btn-default"><span class="glyphicon glyphicon-search"></span>&nbsp;Filter</button></th><td style="width: 30%"><div class="form-group"><select class="taxon-rank form-control" name="taxon-rank"></select></div></td><td style="width: 70%"><div class="form-group"><input type="text" class="taxon-name form-control" name="taxon-name"></div></td></tr></tbody></table>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 127 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file tworowslayout.js
+	 * @brief Two rows layout
+	 * @author Frederic SCHERMA
+	 * @date 2016-12-10
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	
+	var TwoRowsLayout = Marionette.LayoutView.extend({
+	    template: "#two_rows_layout_view",
+	    attributes: {
+	        // style: "height: 95%;"
+	    },
+	
+	    regions: {
+	        'top-content': ".top-content",
+	        'top-bottom': ".top-bottom",
+	        'bottom-content': ".bottom-content",
+	        'bottom-bottom': ".bottom-bottom",
+	    },
+	
+	    onBeforeShow: function() {
+	    },
+	
+	    onBeforeDestroy: function () {
+	    },
+	});
+	
+	module.exports = TwoRowsLayout;
+
+
+/***/ },
+/* 128 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -22541,7 +23328,7 @@
 	
 	        // i18n
 	        if (session.language === "fr") {
-	            i18next.addResources('fr', 'default', __webpack_require__(118));
+	            i18next.addResources('fr', 'default', __webpack_require__(129));
 	        } else {  // default to english
 	            //i18next.addResources('en', 'default', require('./locale/en/LC_MESSAGES/default.json'));
 	        }
@@ -22552,16 +23339,19 @@
 	    onStart: function(options) {
 	        Logger.time("Start accession module");
 	
-	        var AccessionRouter = __webpack_require__(119);
+	        var AccessionRouter = __webpack_require__(130);
 	        this.routers.accession = new AccessionRouter();
 	
-	        var DescriptorRouter = __webpack_require__(120);
+	        var DescriptorRouter = __webpack_require__(131);
 	        this.routers.descriptor = new DescriptorRouter();
 	
-	        var DescriptorModelRouter = __webpack_require__(149);
+	        var DescriptorModelRouter = __webpack_require__(167);
 	        this.routers.descriptorModel = new DescriptorModelRouter();
 	
-	        var DescriptorGroupCollection = __webpack_require__(124);
+	        var DescriptorMetaModelRouter = __webpack_require__(196);
+	        this.routers.descriptorMetaModel = new DescriptorMetaModelRouter();
+	
+	        var DescriptorGroupCollection = __webpack_require__(170);
 	        this.collections.descriptorGroup = new DescriptorGroupCollection();
 	
 	        Logger.timeEnd("Start accession module");
@@ -22579,24 +23369,58 @@
 
 
 /***/ },
-/* 118 */
+/* 129 */
 /***/ function(module, exports) {
 
 	module.exports = {
+		"Some types of descriptor exists for this group": "Des types de descripteur existent pour ce groupe",
 		"Invalid characters (alphanumeric, _ and - only)": "Caractères invalides (alphanumérique, _ et - seulement)",
 		"3 characters min": "3 caractères minimum",
 		"Group name already in usage": "Nom de groupe déjà utilisé",
 		"Descriptor type name already in usage": "Nom de type de descriptor déjà utilisé",
+		"Successfully labeled !": "Label définit avec succès !",
+		"Unable to change label !": "Impossible de définir le label !",
+		"Unable to create the meta-model of descriptor !": "Impossible de créer le méta-modèle de descripteur !",
+		"Descriptor meta-model name already in usage": "Nom de méta-modèle de descripteur déjà utilisé",
+		"Done": "Fait",
 		"Name for model of descriptor already in usage": "Ce nom de modèle de descripteur est déjà utilisé",
+		"Unable to create the type of model of descriptor !": "Impossible de créer le type de modèle de descripteur !",
+		"Unable to reorder the types of model of descriptor": "Impossible de réordonner les types de modèle de descripteur",
+		"Some values exists for this type of descriptor": "Des valeurs existent pour ce type de descripteur",
 		"1 character min": "1 caractère minimum",
 		"List of groups of descriptors": "Liste de groupes de descripteurs",
 		"Types of descriptors for the group": "Types de descripteurs pour le groupe",
 		"Details for the type of descriptor": "Détails pour le type de descripteur",
 		"Values for the type of descriptor": "Valeurs pour le type de descripteur",
-		"List of models of descriptors": "Liste des models de descripteurs",
+		"List of meta-models of descriptor": "Liste des méta-modèles de descripteur",
+		"Details for the meta-model of descriptor": "Détails pour le méta-modèle de descripteur",
+		"List of models of descriptor": "Liste des models de descripteur",
+		"Details for the model of descriptor": "Détails pour le modèle de descripteur",
+		"List of types of models of descriptor": "Liste des types de modèles de descripteur",
 		"Name": "Nom",
-		"Number of types of descriptors": "Nombre de types de descripteurs",
+		"Number of types of descriptor": "Nombre de types de descripteur",
+		"Group of descriptors": "Groupe de descripteurs",
+		"Change the label for a meta-model of descriptor": "Changer le label pour un méta-modèle de descripteur",
+		"Label for the current language": "Label pour le langage courant",
+		"Cancel": "Annuler",
+		"Apply": "Appliquer",
+		"Descriptor meta-model name": "Nom de méta-modèle de descripteur",
+		"Description": "Description",
+		"Update": "Mettre à jour",
+		"Label": "Label",
+		"Target": "Cible",
+		"Number of panels of descriptor": "Nombre de panels de descripteur",
+		"Create a meta-model of descriptor": "Créer un méta-modèle de descripteur",
+		"Target entity": "Entité cible",
+		"Accession": "Accession",
+		"Batch": "Lot",
+		"Sample": "Echantillon",
+		"Descriptor model name": "Nom de modèle de descripteur",
 		"Verbose name": "Nom complet",
+		"Change the label for a type of model of descriptor": "Changer le label pour un type de modèle de descripteur",
+		"Code": "Code",
+		"Mandatory": "Mandataire",
+		"Set Once": "Définit une fois",
 		"Descriptor type name": "Nom du type de descripteur",
 		"Descriptor type code": "Code du type de descripteur",
 		"Type of format": "Type de format",
@@ -22619,15 +23443,13 @@
 		"Minimal range value": "Valeur minimale",
 		"Maximal range value": "Valeur maximale",
 		"Regular expression": "Expression régulière",
-		"Update": "Mettre à jour",
-		"Code": "Code",
 		"Number of values": "Nombre de valeurs",
-		"Id": "Id",
+		"Type of descriptor": "Type de descripteur",
 		"Value": "Valeur"
 	};
 
 /***/ },
-/* 119 */
+/* 130 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -22641,23 +23463,29 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
+	
 	// var AccessionModel = require('../models/accession');
 	// var BatchModel = require('../models/batch');
+	
 	// var AccessionCollection = require('../collections/accession');
 	// var BatchCollection = require('../collections/batch');
+	
 	// var AccessionListView = require('../views/accessionlist');
 	// var BatchListView = require('../views/batchlist');
 	// var AccessionItemView = require('../views/accessionitem');
 	// var BatchItemView = require('../views/batchitem');
-	var DefaultLayout = __webpack_require__(48);
-	var TitleView = __webpack_require__(49);
+	
+	var DefaultLayout = __webpack_require__(50);
+	var TitleView = __webpack_require__(51);
 	
 	var Router = Marionette.AppRouter.extend({
 	    routes : {
 	        "app/accession/accession/": "getAccessionList",
 	        "app/accession/accession/:id/": "getAccession",
 	        "app/accession/accession/:id/batch/": "getBatchList",
-	        "app/accession/accession/:id/batch/:id": "getBatch",
+	        "app/accession/accession/:id/batch/:bid": "getBatch",
+	        "app/accession/accession/:id/batch/:bid/sample/": "getSampleList",
+	        "app/accession/accession/:id/batch/:bid/sample/:sid/": "getSample",
 	    },
 	
 	    getAccessionList : function() {
@@ -22685,13 +23513,21 @@
 	    getBatch : function(id) {
 	        alert("Not yet implemented");
 	    },
+	
+	    getSampleList : function(id) {
+	        alert("Not yet implemented");
+	    },
+	
+	    getSample : function(id) {
+	        alert("Not yet implemented");
+	    },
 	});
 	
 	module.exports = Router;
 
 
 /***/ },
-/* 120 */
+/* 131 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -22705,32 +23541,29 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var DescriptorGroupModel = __webpack_require__(121);
-	var DescriptorTypeModel = __webpack_require__(122);
-	var DescriptorValueModel = __webpack_require__(123);
-	var DescriptorGroupCollection = __webpack_require__(124);
-	var DescriptorTypeCollection = __webpack_require__(125);
-	var DescriptorValueCollection = __webpack_require__(126);
-	var DescriptorGroupListView = __webpack_require__(127);
-	var DescriptorTypeListView = __webpack_require__(131);
+	var DescriptorGroupModel = __webpack_require__(132);
+	var DescriptorTypeModel = __webpack_require__(133);
+	var DescriptorTypeCollection = __webpack_require__(134);
+	var DescriptorValueCollection = __webpack_require__(135);
+	var DescriptorGroupListView = __webpack_require__(137);
+	var DescriptorTypeListView = __webpack_require__(142);
 	
-	var DescriptorValueListView = __webpack_require__(135);
-	var DescriptorValuePairListView = __webpack_require__(139);
+	var DescriptorValueListView = __webpack_require__(146);
+	var DescriptorValuePairListView = __webpack_require__(151);
+	var DescriptorValueOrdinalListView = __webpack_require__(155);
+	var DescriptorValueAddView = __webpack_require__(159);
 	
-	var DescriptorTypeItemView = __webpack_require__(132);
-	var DescriptorTypeDetailView = __webpack_require__(143);
-	var DescriptorValueItemView = __webpack_require__(136);
-	var DefaultLayout = __webpack_require__(48);
-	var TitleView = __webpack_require__(49);
-	var ScrollingMoreView = __webpack_require__(90);
+	var DescriptorTypeDetailView = __webpack_require__(161);
+	var DefaultLayout = __webpack_require__(50);
+	var TitleView = __webpack_require__(51);
+	var ScrollingMoreView = __webpack_require__(94);
 	
-	var DescriptorGroupAddView = __webpack_require__(145);
-	var DescriptorGroupTypeAddView = __webpack_require__(147);
+	var DescriptorGroupAddView = __webpack_require__(163);
+	var DescriptorGroupTypeAddView = __webpack_require__(165);
 	
 	var Router = Marionette.AppRouter.extend({
 	    routes : {
 	        "app/accession/descriptor/group/": "getDescriptorGroupList",
-	        // "app/accession/descriptor/group/:id/": "getDescriptorGroup",  // only POST
 	        "app/accession/descriptor/group/:id/type/": "getDescriptorTypeListForGroup",
 	        "app/accession/descriptor/group/:id/type/:id/": "getDescriptorTypeForGroup",
 	        "app/accession/descriptor/group/:id/type/:id/value/": "getDescriptorValueListForType",
@@ -22746,12 +23579,12 @@
 	        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of groups of descriptors")}));
 	
 	        collection.fetch().then(function () {
-	            var descriptorGroupListView = new DescriptorGroupListView({read_only: true, collection : collection});
+	            var descriptorGroupListView = new DescriptorGroupListView({read_only: true, collection: collection});
 	            defaultLayout.getRegion('content').show(descriptorGroupListView);
-	            defaultLayout.getRegion('content_bottom').show(new ScrollingMoreView({targetView: descriptorGroupListView}));
+	            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: descriptorGroupListView}));
 	        });
 	
-	        // TODO lookup for permission
+	        // @todo lookup for permission
 	        if (session.user.isAuth && (session.user.isSuperUser || session.user.isStaff)) {
 	            defaultLayout.getRegion('bottom').show(new DescriptorGroupAddView({collection: collection}));
 	        }
@@ -22767,7 +23600,7 @@
 	        model.fetch().then(function () {
 	            defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Types of descriptors for the group"), object: model.get('name')}));
 	
-	            // TODO lookup for permission
+	            // @todo lookup for permission
 	            if (session.user.isAuth && (session.user.isSuperUser || session.user.isStaff) && model.get('can_modify')) {
 	                defaultLayout.getRegion('bottom').show(new DescriptorGroupTypeAddView({collection: collection}));
 	            }
@@ -22777,7 +23610,7 @@
 	            var descriptorTypeListView = new DescriptorTypeListView({read_only: true, collection : collection});
 	
 	            defaultLayout.getRegion('content').show(descriptorTypeListView);
-	            defaultLayout.getRegion('content_bottom').show(new ScrollingMoreView({targetView: descriptorTypeListView}));
+	            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: descriptorTypeListView}));
 	        });
 	    },
 	
@@ -22785,7 +23618,7 @@
 	        var defaultLayout = new DefaultLayout();
 	        application.getRegion('mainRegion').show(defaultLayout);
 	
-	        var model = new DescriptorTypeModel({group_id: gid, id: tid});
+	        var model = new DescriptorTypeModel({id: tid}, {group_id: gid});
 	
 	        model.fetch().then(function () {
 	            defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Details for the type of descriptor"), object: model.get('name')}));
@@ -22799,7 +23632,7 @@
 	        var defaultLayout = new DefaultLayout();
 	        application.getRegion('mainRegion').show(defaultLayout);
 	
-	        var model = new DescriptorTypeModel({group_id: gid, id: tid});
+	        var model = new DescriptorTypeModel({id: tid}, {group_id: gid});
 	        model.fetch().then(function () {
 	            defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Values for the type of descriptor"), object: model.get('name')}));
 	
@@ -22807,24 +23640,27 @@
 	                var valueListView = null;
 	
 	                if (model.get('format').type === "enum_single") {
-	                    // TODO edit value
 	                    valueListView = new DescriptorValueListView({
-	                        read_only: true,
 	                        collection: collection,
 	                        model: model
 	                    });
+	
+	                    // @todo lookup for permission
+	                    if (session.user.isAuth && (session.user.isSuperUser || session.user.isStaff) && model.get('can_modify')) {
+	                        defaultLayout.getRegion('bottom').show(new DescriptorValueAddView({collection: collection}));
+	                    }
 	                } else if (model.get('format').type === "enum_pair") {
-	                    // TODO edit values
 	                    valueListView = new DescriptorValuePairListView({
-	                        read_only: true,
 	                        collection: collection,
 	                        model: model
 	                    });
+	
+	                    // @todo lookup for permission
+	                    if (session.user.isAuth && (session.user.isSuperUser || session.user.isStaff) && model.get('can_modify')) {
+	                        defaultLayout.getRegion('bottom').show(new DescriptorValueAddView({collection: collection}));
+	                    }
 	                } else if (model.get('format').type === "enum_ordinal") {
-	                    // TODO specific view in way to only edit the label
-	                    // and to not add/remove some value
-	                    valueListView = new DescriptorValuePairListView({
-	                        read_only: true,
+	                    valueListView = new DescriptorValueOrdinalListView({
 	                        collection: collection,
 	                        model: model
 	                    });
@@ -22832,7 +23668,7 @@
 	
 	                if (valueListView != null) {
 	                    defaultLayout.getRegion('content').show(valueListView);
-	                    defaultLayout.getRegion('content_bottom').show(new ScrollingMoreView({targetView: valueListView, more: -1}));
+	                    defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: valueListView, more: -1}));
 	                }
 	            });
 	        });
@@ -22843,12 +23679,12 @@
 
 
 /***/ },
-/* 121 */
+/* 132 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
 	 * @file descriptorgroup.js
-	 * @brief Group of descriptor model
+	 * @brief Group of descriptors model
 	 * @author Frederic SCHERMA
 	 * @date 2016-07-20
 	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
@@ -22869,7 +23705,7 @@
 	    defaults: {
 	        id: null,
 	        name: '',
-	        num_descriptors_types: 0,
+	        num_descriptor_types: 0,
 	        can_delete: false,
 	        can_modify: false
 	    },
@@ -22893,10 +23729,10 @@
 
 
 /***/ },
-/* 122 */
+/* 133 */
 /***/ function(module, exports, __webpack_require__) {
 
-	a/**
+	/**
 	 * @file descriptortype.js
 	 * @brief Type of descriptor model
 	 * @author Frederic SCHERMA
@@ -22926,10 +23762,11 @@
 	        values: null,
 	        format: {type: 'string'},
 	        can_delete: false,
-	        can_modify: false
+	        can_modify: false,
+	        description: ''
 	    },
 	
-	    initialize: function(options) {
+	    initialize: function(attributes, options) {
 	        Model.__super__.initialize.apply(this, arguments);
 	
 	        options || (options = {});
@@ -22961,102 +23798,7 @@
 
 
 /***/ },
-/* 123 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file descriptorvalue.js
-	 * @brief Value for a type of descriptor model
-	 * @author Frederic SCHERMA
-	 * @date 2016-07-21
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var Backbone = __webpack_require__(2);
-	
-	var Model = Backbone.Model.extend({
-	    url: function() {
-	        if (this.isNew())
-	            return application.baseUrl + 'accession/descriptor/group/' + this.group_id + '/type/' + this.type_id + '/value/';
-	        else
-	            return application.baseUrl + 'accession/descriptor/group/' + this.group_id + '/type/' + this.type_id + '/value/' + this.id + '/';
-	    },
-	
-	    defaults: {
-	        id: null,
-	        parent: null,
-	        ordinal: null,
-	        value0: null,
-	        value1: null,
-	    },
-	
-	    initialize: function(options) {
-	        Model.__super__.initialize.apply(this, arguments);
-	
-	        options || (options = {});
-	        if (typeof (options.group_id) != "undefined") {
-	            this.group_id = options.group_id;
-	        }
-	
-	        if (typeof (options.type_id) != "undefined") {
-	            this.type_id = options.type_id;
-	        }
-	    },
-	
-	    parse: function(data) {
-	        //this.perms = data.perms;
-	        return data;
-	    },
-	
-	    validate: function(attrs) {
-	        var errors = {};
-	        var hasError = false;
-	
-	        if (hasError) {
-	          return errors;
-	        }
-	    },
-	});
-	
-	module.exports = Model;
-
-
-/***/ },
-/* 124 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file descriptorgroup.js
-	 * @brief Groups of descriptors collection
-	 * @author Frederic SCHERMA
-	 * @date 2016-07-19
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var DescriptorGroupModel = __webpack_require__(121);
-	
-	var Collection = Backbone.Collection.extend({
-	    url: application.baseUrl + 'accession/descriptor/group/',
-	    model: DescriptorGroupModel,
-	
-	    parse: function(data) {
-	        this.prev = data.prev;
-	        this.cursor = data.cursor;
-	        this.next = data.next;
-	
-	        return data.items;
-	    },
-	});
-	
-	module.exports = Collection;
-
-
-/***/ },
-/* 125 */
+/* 134 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -23069,7 +23811,7 @@
 	 * @details
 	 */
 	
-	var DescriptorTypeModel = __webpack_require__(122);
+	var DescriptorTypeModel = __webpack_require__(133);
 	
 	var Collection = Backbone.Collection.extend({
 	    url: function() {
@@ -23096,7 +23838,7 @@
 
 
 /***/ },
-/* 126 */
+/* 135 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -23109,7 +23851,7 @@
 	 * @details
 	 */
 	
-	var DescriptorTypeModel = __webpack_require__(123);
+	var DescriptorTypeModel = __webpack_require__(136);
 	
 	var Collection = Backbone.Collection.extend({
 	    url: function() {
@@ -23156,7 +23898,70 @@
 
 
 /***/ },
-/* 127 */
+/* 136 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptorvalue.js
+	 * @brief Value for a type of descriptor model
+	 * @author Frederic SCHERMA
+	 * @date 2016-07-21
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Backbone = __webpack_require__(2);
+	
+	var Model = Backbone.Model.extend({
+	    url: function() {
+	        if (this.isNew())
+	            return application.baseUrl + 'accession/descriptor/group/' + this.group_id + '/type/' + this.type_id + '/value/';
+	        else
+	            return application.baseUrl + 'accession/descriptor/group/' + this.group_id + '/type/' + this.type_id + '/value/' + this.id + '/';
+	    },
+	
+	    defaults: {
+	        id: null,
+	        parent: null,
+	        ordinal: null,
+	        value0: null,
+	        value1: null,
+	    },
+	
+	    initialize: function(attributes, options) {
+	        Model.__super__.initialize.apply(this, arguments);
+	
+	        options || (options = {});
+	        this.group_id = options.group_id;
+	        this.type_id = options.type_id;
+	
+	        if (options.collection) {
+	            this.type_id = options.collection.type_id;
+	            this.group_id = options.collection.group_id;
+	        }
+	    },
+	
+	    parse: function(data) {
+	        //this.perms = data.perms;
+	        return data;
+	    },
+	
+	    validate: function(attrs) {
+	        var errors = {};
+	        var hasError = false;
+	
+	        if (hasError) {
+	          return errors;
+	        }
+	    },
+	});
+	
+	module.exports = Model;
+
+
+/***/ },
+/* 137 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -23170,12 +23975,12 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var DescriptorGroupModel = __webpack_require__(121);
-	var DescriptorGroupView = __webpack_require__(128);
-	var ScrollView = __webpack_require__(72);
+	var DescriptorGroupModel = __webpack_require__(132);
+	var DescriptorGroupView = __webpack_require__(138);
+	var ScrollView = __webpack_require__(78);
 	
 	var View = ScrollView.extend({
-	    template: __webpack_require__(130),
+	    template: __webpack_require__(141),
 	    childView: DescriptorGroupView,
 	    childViewContainer: 'tbody.descriptor-group-list',
 	
@@ -23193,7 +23998,7 @@
 
 
 /***/ },
-/* 128 */
+/* 138 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -23207,20 +24012,24 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var DescriptorGroupModel = __webpack_require__(121);
+	var DescriptorGroupModel = __webpack_require__(132);
+	
+	var Dialog = __webpack_require__(82);
 	
 	var View = Marionette.ItemView.extend({
 	    tagName: 'tr',
 	    className: 'element object descriptor-group',
-	    template: __webpack_require__(129),
+	    template: __webpack_require__(139),
 	
 	    ui: {
 	        delete_descriptor_group: 'span.delete-descriptor-group',
+	        change_name: 'td.change-name',
 	        view_descriptor_type: 'td.view-descriptor-type'
 	    },
 	
 	    events: {
 	        'click @ui.delete_descriptor_group': 'deleteDescriptorGroup',
+	        'click @ui.change_name': 'onRenameGroup',
 	        'click @ui.view_descriptor_type': 'viewDescriptorType'
 	    },
 	
@@ -23229,8 +24038,8 @@
 	    },
 	
 	    onRender: function() {
-	        // TODO check with user permission
-	        if (!this.model.get('can_delete') || !session.user.isSuperUser) {
+	        // @todo check with user permission
+	        if (!this.model.get('can_delete') || !session.user.isSuperUser || !session.user.isStaff) {
 	            $(this.ui.delete_descriptor_group).hide();
 	        }
 	    },
@@ -23240,17 +24049,83 @@
 	    },
 	
 	    deleteDescriptorGroup: function() {
-	        if (this.model.get('num_descriptors_types') == 0) {
+	        if (this.model.get('num_descriptor_types') == 0) {
 	            this.model.destroy({wait: true});
+	        } else {
+	            $.alert.warning(gt.gettext("Some types of descriptor exists for this group"));
 	        }
-	    }
+	    },
+	
+	    onRenameGroup: function(e) {
+	        if (!this.model.get('can_modify') || !session.user.isSuperUser || !session.user.isStaff) {
+	            return;
+	        }
+	
+	        var ChangeName = Dialog.extend({
+	            template: __webpack_require__(140),
+	
+	            attributes: {
+	                id: "dlg_change_name",
+	            },
+	
+	            ui: {
+	                name: "#name",
+	            },
+	
+	            events: {
+	                'input @ui.name': 'onNameInput',
+	            },
+	
+	            initialize: function (options) {
+	                ChangeName.__super__.initialize.apply(this);
+	            },
+	
+	            onNameInput: function () {
+	                this.validateName();
+	            },
+	
+	            validateName: function() {
+	                var v = this.ui.name.val();
+	                var re = /^[a-zA-Z0-9_\-]+$/i;
+	
+	                if (v.length > 0 && !re.test(v)) {
+	                    $(this.ui.name).validateField('failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
+	                    return false;
+	                } else if (v.length < 3) {
+	                    $(this.ui.name).validateField('failed', gt.gettext('3 characters min'));
+	                    return false;
+	                }
+	
+	                $(this.ui.name).validateField('ok');
+	
+	                return true;
+	            },
+	
+	            onApply: function() {
+	                var name = this.ui.name.val();
+	                var model = this.getOption('model');
+	
+	                if (this.validateName()) {
+	                    model.save({name: name}, {patch: true, wait:true});
+	                    this.remove();
+	                }
+	            },
+	        });
+	
+	        var changeName = new ChangeName({
+	            model: this.model,
+	        });
+	
+	        changeName.render();
+	        changeName.ui.name.val(this.model.get('name'));
+	    },
 	});
 	
 	module.exports = View;
 
 
 /***/ },
-/* 129 */
+/* 139 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -23259,14 +24134,14 @@
 	obj || (obj = {});
 	var __t, __p = '';
 	with (obj) {
-	__p += '<th><span class="delete-descriptor-group action glyphicon glyphicon-minus-sign"></span></th><td class="action view-descriptor-group" name="name" value="' +
+	__p += '<th><span class="delete-descriptor-group action glyphicon glyphicon-minus-sign"></span></th><td class="action change-name" name="name" value="' +
 	((__t = ( name )) == null ? '' : __t) +
 	'">' +
 	((__t = ( name )) == null ? '' : __t) +
-	'</td><td class="action view-descriptor-type" name="num_descriptors_types"><abbr class="badge" style="cursor: pointer" title="' +
-	((__t = ( gt.gettext('Manage types of descriptors') )) == null ? '' : __t) +
+	'</td><td class="action view-descriptor-type" name="num_descriptor_types"><abbr class="badge" style="cursor: pointer" title="' +
+	((__t = ( gt.gettext('Manage types of descriptor') )) == null ? '' : __t) +
 	'">' +
-	((__t = ( num_descriptors_types )) == null ? '' : __t) +
+	((__t = ( num_descriptor_types )) == null ? '' : __t) +
 	'</abbr></td>';
 	
 	}
@@ -23275,7 +24150,7 @@
 
 
 /***/ },
-/* 130 */
+/* 140 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -23284,10 +24159,35 @@
 	obj || (obj = {});
 	var __t, __p = '';
 	with (obj) {
-	__p += '<div class="element object descriptor-group-list" object-type="descriptor-group-list" style="width:100%"><table class="table table-striped"><thead><tr><th><span class="glyphicon glyphicon-asterisk"></span></th><th>' +
+	__p += '<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title">' +
+	((__t = ( gt.gettext("Change the name of the group of descriptors") )) == null ? '' : __t) +
+	'</h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="label">' +
+	((__t = ( gt.gettext("Name") )) == null ? '' : __t) +
+	'</label><input class="form-control" id="name" type="text" name="name" value="" maxlength="32" autofocus="" autocomplete="off" style="width:100%"></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal">' +
+	((__t = ( gt.gettext("Cancel") )) == null ? '' : __t) +
+	'</button> <button type="button" class="btn btn-primary apply">' +
+	((__t = ( gt.gettext("Apply") )) == null ? '' : __t) +
+	'</button></div></div></div>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 141 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<div class="object descriptor-group-list" object-type="descriptor-group-list" style="width:100%"><table class="table table-striped"><thead class="sticky-header"><tr><th><span class="glyphicon glyphicon-asterisk"></span></th><th>' +
 	((__t = ( gt.gettext("Name") )) == null ? '' : __t) +
 	'</th><th>' +
-	((__t = ( gt.gettext("Number of types of descriptors") )) == null ? '' : __t) +
+	((__t = ( gt.gettext("Number of types of descriptor") )) == null ? '' : __t) +
 	'</th></tr></thead><tbody class="descriptor-group-list"></tbody></table></div>';
 	
 	}
@@ -23296,7 +24196,7 @@
 
 
 /***/ },
-/* 131 */
+/* 142 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -23310,12 +24210,13 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var DescriptorTypeModel = __webpack_require__(122);
-	var DescriptorTypeView = __webpack_require__(132);
-	var ScrollView = __webpack_require__(72);
+	var ScrollView = __webpack_require__(78);
+	
+	var DescriptorTypeModel = __webpack_require__(133);
+	var DescriptorTypeView = __webpack_require__(143);
 	
 	var View = ScrollView.extend({
-	    template: __webpack_require__(134),
+	    template: __webpack_require__(145),
 	    childView: DescriptorTypeView,
 	    childViewContainer: 'tbody.descriptor-type-list',
 	
@@ -23333,7 +24234,7 @@
 
 
 /***/ },
-/* 132 */
+/* 143 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -23347,12 +24248,12 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var DescriptorTypeModel = __webpack_require__(122);
+	var DescriptorTypeModel = __webpack_require__(133);
 	
 	var View = Marionette.ItemView.extend({
 	    tagName: 'tr',
 	    className: 'element object descriptor-type',
-	    template: __webpack_require__(133),
+	    template: __webpack_require__(144),
 	
 	    ui: {
 	        delete_descriptor_type: 'span.delete-descriptor-type',
@@ -23371,7 +24272,8 @@
 	    },
 	
 	    onRender: function() {
-	        if (!this.model.get('can_delete') || !session.user.isSuperUser) {
+	        // @todo check user permissions
+	        if (!this.model.get('can_delete') || !session.user.isSuperUser || !session.user.isStaff) {
 	            $(this.ui.delete_descriptor_type).hide();
 	        }
 	    },
@@ -23387,6 +24289,8 @@
 	    deleteDescriptorType: function () {
 	        if (this.model.get('num_descriptors_values') == 0) {
 	            this.model.destroy({wait: true});
+	        } else {
+	            $.alert.warning(gt.gettext("Some values exists for this type of descriptor"));
 	        }
 	    }
 	});
@@ -23395,7 +24299,7 @@
 
 
 /***/ },
-/* 133 */
+/* 144 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -23413,17 +24317,19 @@
 	((__t = ( code )) == null ? '' : __t) +
 	'</td> ';
 	 if (format.type === "enum_single" || format.type === "enum_pair" || format.type === "enum_ordinal") { ;
-	__p += ' <td class="action view-descriptor-value" name="num_descriptors_values"><abbr class="badge" style="cursor: pointer" title="' +
+	__p += ' <td class="action view-descriptor-value" name="num_descriptor_values"><abbr class="badge" style="cursor: pointer" title="' +
 	((__t = ( gt.gettext('Manage values of the descriptor') )) == null ? '' : __t) +
 	'">' +
-	((__t = ( num_descriptors_values )) == null ? '' : __t) +
+	((__t = ( num_descriptor_values )) == null ? '' : __t) +
 	'</abbr></td> ';
 	 } else { ;
-	__p += ' <td class="" name="num_descriptors_values"><abbr class="badge" title="' +
+	__p += ' <td class="" name="num_descriptor_values"><abbr class="badge" title="' +
 	((__t = ( gt.gettext('No values for this descriptor') )) == null ? '' : __t) +
 	'">N/A</abbr></td> ';
 	 } ;
-	
+	__p += ' <td name="description"><abbr class="label label-default glyphicon glyphicon-option-horizontal" title="' +
+	((__t = ( description )) == null ? '' : __t) +
+	'"><span></span></abbr></td>';
 	
 	}
 	return __p
@@ -23431,7 +24337,7 @@
 
 
 /***/ },
-/* 134 */
+/* 145 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -23440,12 +24346,14 @@
 	obj || (obj = {});
 	var __t, __p = '';
 	with (obj) {
-	__p += '<div class="element object descriptor-type-list" object-type="descriptor-type-list" style="width:100%"><table class="table table-striped"><thead><tr><th><span class="glyphicon glyphicon-asterisk"></span></th><th>' +
+	__p += '<div class="object descriptor-type-list" object-type="descriptor-type-list" style="width:100%"><table class="table table-striped"><thead class="sticky-header"><tr><th><span class="glyphicon glyphicon-asterisk"></span></th><th>' +
 	((__t = ( gt.gettext("Name") )) == null ? '' : __t) +
 	'</th><th>' +
 	((__t = ( gt.gettext("Code") )) == null ? '' : __t) +
 	'</th><th>' +
 	((__t = ( gt.gettext("Number of values") )) == null ? '' : __t) +
+	'</th><th>' +
+	((__t = ( gt.gettext("Description") )) == null ? '' : __t) +
 	'</th></tr></thead><tbody class="descriptor-type-list"></tbody></table></div>';
 	
 	}
@@ -23454,7 +24362,7 @@
 
 
 /***/ },
-/* 135 */
+/* 146 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -23468,14 +24376,27 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var DescriptorValueModel = __webpack_require__(123);
-	var DescriptorValueView = __webpack_require__(136);
-	var ScrollView = __webpack_require__(72);
+	var DescriptorValueModel = __webpack_require__(136);
+	var DescriptorValueView = __webpack_require__(147);
+	var ScrollView = __webpack_require__(78);
 	
 	var View = ScrollView.extend({
-	    template: __webpack_require__(138),
+	    template: __webpack_require__(150),
 	    childView: DescriptorValueView,
 	    childViewContainer: 'tbody.descriptor-value-list',
+	
+	    templateHelpers: function() {
+	        return {
+	            format: this.collection.format,
+	            items: this.collection.toJSON()
+	        };
+	    },
+	    childViewOptions: function () {
+	        return {
+	            can_delete: this.model.get('can_delete'),
+	            can_modify: this.model.get('can_modify')
+	        }
+	    },
 	
 	    ui: {
 	        table: "table.descriptor-table",
@@ -23540,7 +24461,7 @@
 
 
 /***/ },
-/* 136 */
+/* 147 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -23554,19 +24475,32 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var DescriptorValueModel = __webpack_require__(123);
+	var DescriptorValueModel = __webpack_require__(136);
+	
+	var Dialog = __webpack_require__(82);
 	
 	var View = Marionette.ItemView.extend({
 	    tagName: 'tr',
 	    className: 'element object descriptor-value',
-	    template: __webpack_require__(137),
+	    template: __webpack_require__(148),
+	    templateHelpers: function() {
+	        var ctx = this.model;
+	        ctx.format = this.model.collection.format;
+	
+	        // @todo check with user permission
+	        ctx.can_delete = this.getOption('can_delete');
+	        ctx.can_modify = this.getOption('can_modify');
+	        return ctx;
+	    },
 	
 	    ui: {
-	        delete_descriptor_value: 'span.delete-descriptor-value',
+	        delete_descriptor_value: 'th.delete-descriptor-value',
+	        edit_value0: 'td.edit-descriptor-value0',
 	    },
 	
 	    events: {
 	        'click @ui.delete_descriptor_value': 'deleteDescriptorValue',
+	        'click @ui.edit_value0': 'onEditValue0',
 	    },
 	
 	    initialize: function() {
@@ -23574,36 +24508,105 @@
 	    },
 	
 	    onRender: function() {
-	        // TODO check with user permission
-	        //if ($.inArray("auth.delete_descriptorvalue", this.model.perms) < 0) {
-	        if (!this.model.get('can_delete') || !session.user.isSuperUser) {
-	            $(this.ui.delete_descriptor_value).hide();
-	        }
 	    },
 	
 	    deleteDescriptorValue: function () {
-	        // TODO check with user permission
+	        // @todo check with user permission
 	        //if ($.inArray("auth.delete_descriptorvalue", this.model.perms) < 0) {
-	        if (!this.model.get('can_delete') || !session.user.isSuperUser) {
-	            //this.model.destroy({wait: true});
-	            alert("not yet implemented");
+	        if (!this.model.get('can_delete') || !session.user.isSuperUser || session.user.isStaff) {
+	            this.model.destroy({wait: true});
 	        }
-	    }
+	    },
+	
+	    onEditValue0: function() {
+	        if (this.getOption('can_modify')) {
+	            var ChangeLabel = Dialog.extend({
+	                template: __webpack_require__(149),
+	
+	                attributes: {
+	                    id: "dlg_change_value",
+	                },
+	
+	                ui: {
+	                    value: "#value",
+	                },
+	
+	                events: {
+	                    'input @ui.value': 'onValueInput',
+	                },
+	
+	                initialize: function (options) {
+	                    ChangeLabel.__super__.initialize.apply(this);
+	
+	                },
+	
+	                onValueInput: function () {
+	                    this.validateValue();
+	                },
+	
+	                validateValue: function () {
+	                    var v = this.ui.value.val();
+	
+	                    if (v.length < 1) {
+	                        $(this.ui.value).validateField('failed', gt.gettext('1 characters min'));
+	                        return false;
+	                    }
+	
+	                    $(this.ui.value).validateField('ok');
+	
+	                    return true;
+	                },
+	
+	                onApply: function () {
+	                    var view = this;
+	                    var model = this.getOption('model');
+	
+	                    if (this.validateValue()) {
+	                        model.save({value0: this.ui.value.val()}, {
+	                            patch: true,
+	                            wait: true,
+	                            success: function () {
+	                                view.remove();
+	                                $.alert.success(gt.gettext("Successfully changed !"));
+	                            },
+	                            error: function () {
+	                                $.alert.error(gt.gettext("Unable to change the value !"));
+	                            }
+	                        });
+	                    }
+	                },
+	            });
+	
+	            var changeLabel = new ChangeLabel({
+	                model: this.model,
+	            });
+	
+	            changeLabel.render();
+	            changeLabel.ui.value.val(this.model.get('value0'));
+	        }
+	    },
 	});
 	
 	module.exports = View;
 
 /***/ },
-/* 137 */
+/* 148 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
 	
 	module.exports = function (obj) {
 	obj || (obj = {});
-	var __t, __p = '';
+	var __t, __p = '', __j = Array.prototype.join;
+	function print() { __p += __j.call(arguments, '') }
 	with (obj) {
-	__p += '<th><span class="delete-descriptor-value action glyphicon glyphicon-minus-sign"></span></th><td class="action edit-descriptor-id" name="id">' +
+	
+	 if (can_delete) { ;
+	__p += ' <th class="action delete-descriptor-value"><span class="glyphicon glyphicon-minus-sign"></span></th> ';
+	 } else { ;
+	__p += ' <th><span></span></th> ';
+	 } ;
+	__p += ' <td class="action edit-descriptor-id" name="id">' +
 	((__t = ( id )) == null ? '' : __t) +
 	'</td><td class="action edit-descriptor-value0" name="value0">' +
 	((__t = ( value0 )) == null ? '' : __t) +
@@ -23615,7 +24618,7 @@
 
 
 /***/ },
-/* 138 */
+/* 149 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -23624,7 +24627,32 @@
 	obj || (obj = {});
 	var __t, __p = '';
 	with (obj) {
-	__p += '<div class="element object descriptor-value-list" object-type="descriptor-value-list" style="width:100%"><table class="table table-striped descriptor-table"><thead><tr class="sticky-header"><th class="unselectable"><span class="glyphicon glyphicon-asterisk"></span></th><th class="unselectable">' +
+	__p += '<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title">' +
+	((__t = ( gt.gettext("Change the value of a field for a type of descriptor") )) == null ? '' : __t) +
+	'</h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="value">' +
+	((__t = ( gt.gettext("Value for the current language") )) == null ? '' : __t) +
+	'</label><input class="form-control" id="value" type="text" name="value" value="" maxlength="128" autofocus="" autocomplete="off" style="width:100%"></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal">' +
+	((__t = ( gt.gettext("Cancel") )) == null ? '' : __t) +
+	'</button> <button type="button" class="btn btn-primary apply">' +
+	((__t = ( gt.gettext("Apply") )) == null ? '' : __t) +
+	'</button></div></div></div>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 150 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<div class="object descriptor-value-list" object-type="descriptor-value-list" style="width:100%"><table class="table table-striped descriptor-table"><thead><tr class="sticky-header"><th class="unselectable"><span class="glyphicon glyphicon-asterisk"></span></th><th class="unselectable">' +
 	((__t = ( gt.gettext("Code") )) == null ? '' : __t) +
 	'&nbsp;<span class="action column-sort-id glyphicon glyphicon-sort" column-name="id" column-type="alpha"></span></th><th class="unselectable">' +
 	((__t = ( gt.gettext("Value") )) == null ? '' : __t) +
@@ -23636,7 +24664,7 @@
 
 
 /***/ },
-/* 139 */
+/* 151 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -23650,12 +24678,12 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var DescriptorValueModel = __webpack_require__(123);
-	var DescriptorValuePairView = __webpack_require__(140);
-	var ScrollView = __webpack_require__(72);
+	var DescriptorValueModel = __webpack_require__(136);
+	var DescriptorValuePairView = __webpack_require__(152);
+	var ScrollView = __webpack_require__(78);
 	
 	var View = ScrollView.extend({
-	    template: __webpack_require__(142),
+	    template: __webpack_require__(154),
 	    childView: DescriptorValuePairView,
 	    childViewContainer: 'tbody.descriptor-value-list',
 	
@@ -23688,8 +24716,6 @@
 	    initialize: function() {
 	        this.listenTo(this.collection, 'reset', this.render, this);
 	        this.listenTo(this.collection, 'change', this.render, this);
-	        //this.listenTo(this.collection, 'add', this.render, this);
-	        //this.listenTo(this.collection, 'remove', this.render, this);
 	
 	        View.__super__.initialize.apply(this);
 	    },
@@ -23741,7 +24767,7 @@
 
 
 /***/ },
-/* 140 */
+/* 152 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -23755,25 +24781,33 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var DescriptorValueModel = __webpack_require__(123);
+	var DescriptorValueModel = __webpack_require__(136);
+	
+	var Dialog = __webpack_require__(82);
 	
 	var View = Marionette.ItemView.extend({
 	    tagName: 'tr',
 	    className: 'element object descriptor-value',
-	    template: __webpack_require__(141),
+	    template: __webpack_require__(153),
 	    templateHelpers: function() {
 	        var ctx = this.model;
 	        ctx.format = this.model.collection.format;
+	
+	        // @todo check with user permission
 	        ctx.can_delete = this.getOption('can_delete');
 	        ctx.can_modify = this.getOption('can_modify');
 	        return ctx;
 	    },
 	    ui: {
-	        delete_descriptor_value: 'span.delete-descriptor-value',
+	        delete_descriptor_value: 'th.delete-descriptor-value',
+	        edit_value0: 'td.edit-descriptor-value0',
+	        edit_value1: 'td.edit-descriptor-value1',
 	    },
 	
 	    events: {
 	        'click @ui.delete_descriptor_value': 'deleteDescriptorValue',
+	        'click @ui.edit_value0': 'onEditValue0',
+	        'click @ui.edit_value1': 'onEditValue1',
 	    },
 	
 	    initialize: function() {
@@ -23781,20 +24815,155 @@
 	    },
 	
 	    onRender: function() {
-	        /*if ($.inArray("auth.delete_descriptorvalue", this.model.perms) < 0) {
-	            $(this.ui.delete_descriptor_value).remove();
-	        }*/
 	    },
 	
 	    deleteDescriptorValue: function () {
-	        //this.model.destroy({wait: true});
-	    }
+	        if (!this.model.get('can_delete') || !session.user.isSuperUser || session.user.isStaff) {
+	            this.model.destroy({wait: true});
+	        }
+	    },
+	
+	    onEditValue0: function() {
+	        if (this.getOption('can_modify')) {
+	            var ChangeLabel = Dialog.extend({
+	                template: __webpack_require__(149),
+	
+	                attributes: {
+	                    id: "dlg_change_value",
+	                },
+	
+	                ui: {
+	                    value: "#value",
+	                },
+	
+	                events: {
+	                    'input @ui.value': 'onValueInput',
+	                },
+	
+	                initialize: function (options) {
+	                    ChangeLabel.__super__.initialize.apply(this);
+	
+	                },
+	
+	                onValueInput: function () {
+	                    this.validateValue();
+	                },
+	
+	                validateValue: function () {
+	                    var v = this.ui.value.val();
+	
+	                    if (v.length < 1) {
+	                        $(this.ui.value).validateField('failed', gt.gettext('1 characters min'));
+	                        return false;
+	                    }
+	
+	                    $(this.ui.value).validateField('ok');
+	
+	                    return true;
+	                },
+	
+	                onApply: function () {
+	                    var view = this;
+	                    var model = this.getOption('model');
+	
+	                    if (this.validateValue()) {
+	                        model.save({value0: this.ui.value.val()}, {
+	                            patch: true,
+	                            wait: true,
+	                            success: function () {
+	                                view.remove();
+	                                $.alert.success(gt.gettext("Successfully changed !"));
+	                            },
+	                            error: function () {
+	                                $.alert.error(gt.gettext("Unable to change the value !"));
+	                            }
+	                        });
+	                    }
+	                },
+	            });
+	
+	            var changeLabel = new ChangeLabel({
+	                model: this.model,
+	            });
+	
+	            changeLabel.render();
+	            changeLabel.ui.value.val(this.model.get('value0'));
+	        }
+	    },
+	
+	    onEditValue1: function() {
+	        if (this.getOption('can_modify')) {
+	            var ChangeLabel = Dialog.extend({
+	                template: __webpack_require__(149),
+	
+	                attributes: {
+	                    id: "dlg_change_value",
+	                },
+	
+	                ui: {
+	                    value: "#value",
+	                },
+	
+	                events: {
+	                    'input @ui.value': 'onValueInput',
+	                },
+	
+	                initialize: function (options) {
+	                    ChangeLabel.__super__.initialize.apply(this);
+	
+	                },
+	
+	                onValueInput: function () {
+	                    this.validateValue();
+	                },
+	
+	                validateValue: function () {
+	                    var v = this.ui.value.val();
+	
+	                    if (v.length < 1) {
+	                        $(this.ui.value).validateField('failed', gt.gettext('1 characters min'));
+	                        return false;
+	                    }
+	
+	                    $(this.ui.value).validateField('ok');
+	
+	                    return true;
+	                },
+	
+	                onApply: function () {
+	                    var view = this;
+	                    var model = this.getOption('model');
+	
+	                    if (this.validateValue()) {
+	                        model.save({value1: this.ui.value.val()}, {
+	                            patch: true,
+	                            wait: true,
+	                            success: function () {
+	                                view.remove();
+	                                $.alert.success(gt.gettext("Successfully changed !"));
+	                            },
+	                            error: function () {
+	                                $.alert.error(gt.gettext("Unable to change the value !"));
+	                            }
+	                        });
+	                    }
+	                },
+	            });
+	
+	            var changeLabel = new ChangeLabel({
+	                model: this.model,
+	            });
+	
+	            changeLabel.render();
+	            changeLabel.ui.value.val(this.model.get('value1'));
+	        }
+	    },
 	});
 	
 	module.exports = View;
 
 /***/ },
-/* 141 */
+/* 153 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -23806,15 +24975,15 @@
 	with (obj) {
 	
 	 if (can_delete) { ;
-	__p += ' <th><span class="delete-descriptor-value action glyphicon glyphicon-minus-sign"></span></th> ';
+	__p += ' <th class="action delete-descriptor-value"><span class="glyphicon glyphicon-minus-sign"></span></th> ';
 	 } else { ;
-	__p += ' <th><span class="delete-descriptor-value action"></span></th> ';
+	__p += ' <th><span></span></th> ';
 	 } ;
 	__p += ' <td class="action edit-descriptor-id" name="id">' +
 	((__t = ( id )) == null ? '' : __t) +
-	'</td><td class="action edit-descriptor-field0">' +
+	'</td><td class="action edit-descriptor-value0">' +
 	((__t = ( value0 )) == null ? '' : __t) +
-	'</td><td class="action edit-descriptor-field1">' +
+	'</td><td class="action edit-descriptor-value1">' +
 	((__t = ( value1 )) == null ? '' : __t) +
 	'</td>';
 	
@@ -23824,7 +24993,7 @@
 
 
 /***/ },
-/* 142 */
+/* 154 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -23833,7 +25002,7 @@
 	obj || (obj = {});
 	var __t, __p = '';
 	with (obj) {
-	__p += '<div class="element object descriptor-value-list" object-type="descriptor-value-list" style="width:100%"><table class="table table-striped descriptor-table"><thead><tr class="sticky-header"><th><span class="glyphicon glyphicon-asterisk"></span></th><th class="unselectable">' +
+	__p += '<div class="object descriptor-value-list" object-type="descriptor-value-list" style="width:100%"><table class="table table-striped descriptor-table"><thead class="sticky-header"><tr><th><span class="glyphicon glyphicon-asterisk"></span></th><th class="unselectable">' +
 	((__t = ( gt.gettext("Code") )) == null ? '' : __t) +
 	'&nbsp;<span class="action column-sort-id glyphicon glyphicon-sort" column-name="id" column-type="alpha"></span></th><th class="unselectable">' +
 	((__t = ( gt.gettext(format.fields[0]) )) == null ? '' : __t) +
@@ -23847,7 +25016,359 @@
 
 
 /***/ },
-/* 143 */
+/* 155 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptorvalueordinallist.js
+	 * @brief List of ordinam values for a type of descriptor item view
+	 * @author Frederic SCHERMA
+	 * @date 2016-10-28
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	var DescriptorValueModel = __webpack_require__(136);
+	var DescriptorValueOrdinalView = __webpack_require__(156);
+	var ScrollView = __webpack_require__(78);
+	
+	var View = ScrollView.extend({
+	    template: __webpack_require__(158),
+	    childView: DescriptorValueOrdinalView,
+	    childViewContainer: 'tbody.descriptor-value-list',
+	
+	    templateHelpers: function() {
+	        return {
+	            format: this.collection.format,
+	            items: this.collection.toJSON()
+	        };
+	    },
+	    childViewOptions: function () {
+	        return {
+	            can_delete: this.model.get('can_delete'),
+	            can_modify: this.model.get('can_modify')
+	        }
+	    },
+	
+	    ui: {
+	        table: "table.descriptor-table",
+	        sort_by_id: "th span.action.column-sort-id",
+	        sort_by_ordinal: "th span.action.column-sort-ordinal",
+	        sort_by_value0: "th span.action.column-sort-value0",
+	    },
+	
+	    events: {
+	        'click @ui.sort_by_id': 'sortColumn',
+	        'click @ui.sort_by_ordinal': 'sortColumn',
+	        'click @ui.sort_by_value0': 'sortColumn',
+	    },
+	
+	    initialize: function() {
+	        this.listenTo(this.collection, 'reset', this.render, this);
+	        this.listenTo(this.collection, 'change', this.render, this);
+	
+	        View.__super__.initialize.apply(this);
+	    },
+	
+	    onRender: function() {
+	        var sort_by = /([+\-]{0,1})([a-z0-9]+)/.exec(this.collection.sort_by);
+	        var sort_el = this.$el.find('span[column-name="' + sort_by[2] + '"]');
+	
+	        if (sort_by[1] === '-') {
+	            if ((sort_el.attr('column-type') || "alpha") === "numeric") {
+	                sort_el.addClass('glyphicon-sort-by-order-alt');
+	            } else {
+	                sort_el.addClass('glyphicon-sort-by-alphabet-alt');
+	            }
+	            sort_el.data('sort', 'desc');
+	        } else {
+	            if ((sort_el.attr('column-type') || "alpha") === "numeric") {
+	                sort_el.addClass('glyphicon-sort-by-order');
+	            } else {
+	                sort_el.addClass('glyphicon-sort-by-alphabet');
+	            }
+	            sort_el.data('sort', 'asc');
+	        }
+	
+	        // reset scrolling
+	        this.$el.parent().scrollTop(0);
+	    },
+	
+	    sortColumn: function (e) {
+	        var column = $(e.target).attr('column-name') || "id";
+	        var order = $(e.target).data('sort') || "none";
+	
+	        if (order === "asc") {
+	            sort_by = "-" + column;
+	        } else {
+	            sort_by = "+" + column;
+	        }
+	
+	        this.collection.next = null;
+	        this.collection.fetch({reset: true, update: false, remove: true, data: {
+	            more: this.capacity(),
+	            cursor: null,
+	            sort_by: sort_by
+	        }});
+	    }
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 156 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptorvalueordinal.js
+	 * @brief Value for a type of descriptor view
+	 * @author Frederic SCHERMA
+	 * @date 2016-10-28
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	var DescriptorValueModel = __webpack_require__(136);
+	
+	var Dialog = __webpack_require__(82);
+	
+	var View = Marionette.ItemView.extend({
+	    tagName: 'tr',
+	    className: 'element object descriptor-value',
+	    template: __webpack_require__(157),
+	    templateHelpers: function() {
+	        var ctx = this.model;
+	        ctx.format = this.model.collection.format;
+	        ctx.can_delete = this.getOption('can_delete');
+	        ctx.can_modify = this.getOption('can_modify');
+	        return ctx;
+	    },
+	
+	    ui: {
+	        edit_label: 'td.edit-descriptor-value0',
+	    },
+	
+	    events: {
+	        'click @ui.edit_label': 'onEditLabel',
+	    },
+	
+	    initialize: function() {
+	        this.listenTo(this.model, 'reset', this.render, this);
+	    },
+	
+	    onRender: function() {
+	  
+	    },
+	
+	    onEditLabel: function() {
+	        if (this.getOption('can_modify')) {
+	            var ChangeLabel = Dialog.extend({
+	                template: __webpack_require__(149),
+	
+	                attributes: {
+	                    id: "dlg_change_value",
+	                },
+	
+	                ui: {
+	                    value: "#value",
+	                },
+	
+	                events: {
+	                    'input @ui.value': 'onValueInput',
+	                },
+	
+	                initialize: function (options) {
+	                    ChangeLabel.__super__.initialize.apply(this);
+	
+	                },
+	
+	                onValueInput: function () {
+	                    this.validateValue();
+	                },
+	
+	                validateValue: function () {
+	                    var v = this.ui.value.val();
+	
+	                    if (v.length < 1) {
+	                        $(this.ui.value).validateField('failed', gt.gettext('1 characters min'));
+	                        return false;
+	                    }
+	
+	                    $(this.ui.value).validateField('ok');
+	
+	                    return true;
+	                },
+	
+	                onApply: function () {
+	                    var view = this;
+	                    var model = this.getOption('model');
+	
+	                    if (this.validateValue()) {
+	                        model.save({value0: this.ui.value.val()}, {
+	                            patch: true,
+	                            wait: true,
+	                            success: function () {
+	                                view.remove();
+	                                $.alert.success(gt.gettext("Successfully changed !"));
+	                            },
+	                            error: function () {
+	                                $.alert.error(gt.gettext("Unable to change the value !"));
+	                            }
+	                        });
+	                    }
+	                },
+	            });
+	
+	            var changeLabel = new ChangeLabel({
+	                model: this.model,
+	            });
+	
+	            changeLabel.render();
+	            changeLabel.ui.value.val(this.model.get('value0'));
+	        }
+	    },
+	});
+	
+	module.exports = View;
+
+/***/ },
+/* 157 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<th></th><td name="id">' +
+	((__t = ( id )) == null ? '' : __t) +
+	'</td><td name="ordinal">' +
+	((__t = ( ordinal )) == null ? '' : __t) +
+	'</td><td class="action edit-descriptor-value0" name="value0">' +
+	((__t = ( value0 )) == null ? '' : __t) +
+	'</td>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 158 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<div class="object descriptor-value-list" object-type="descriptor-value-list" style="width:100%"><table class="table table-striped descriptor-table"><thead class="sticky-header"><tr><th><span class="glyphicon glyphicon-asterisk"></span></th><th class="unselectable">' +
+	((__t = ( gt.gettext("Code") )) == null ? '' : __t) +
+	'&nbsp;<span class="action column-sort-id glyphicon glyphicon-sort" column-name="id" column-type="alpha"></span></th><th class="unselectable">' +
+	((__t = ( gt.gettext("Ordinal") )) == null ? '' : __t) +
+	'&nbsp;<span class="action column-sort-ordinal glyphicon glyphicon-sort" column-name="ordinal" column-type="numeric"></span></th><th class="unselectable">' +
+	((__t = ( gt.gettext(format.fields[0]) )) == null ? '' : __t) +
+	'&nbsp;<span class="action column-sort-value0 glyphicon glyphicon-sort" column-name="value0" column-type="alpha"></span></th></tr></thead><tbody class="descriptor-value-list"></tbody></table></div>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 159 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptorvalueadd.js
+	 * @brief Add a value for a descriptor
+	 * @author Frederic SCHERMA
+	 * @date 2016-10-31
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	
+	var View = Marionette.ItemView.extend({
+	    tagName: 'div',
+	    className: 'type-add',
+	    template: __webpack_require__(160),
+	
+	    ui: {
+	        add_value_btn: 'span.add-descriptor-value',
+	        value: 'input.descriptor-value',
+	    },
+	
+	    events: {
+	        'click @ui.add_value_btn': 'addValue',
+	        'input @ui.value': 'onValueInput',
+	    },
+	
+	    initialize: function(options) {
+	        options || (options = {});
+	        this.collection = options.collection;
+	    },
+	
+	    addValue: function () {
+	        if (!this.ui.value.hasClass('invalid')) {
+	            this.collection.create({
+	                value0: this.ui.value.val(),
+	            }, {wait: true});
+	
+	            $(this.ui.value).cleanField();
+	        }
+	    },
+	
+	    validateValue: function() {
+	        var v = this.ui.value.val();
+	
+	        if (v.length < 1) {
+	            $(this.ui.value).validateField('failed', gt.gettext('1 character min'));
+	            return false;
+	        }
+	
+	        return true;
+	    },
+	
+	    onValueInput: function () {
+	        if (this.validateValue()) {
+	            $(this.ui.value).validateField('ok');
+	        }
+	    },
+	});
+	
+	module.exports = View;
+	
+
+
+/***/ },
+/* 160 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<table class="table table-striped" style="margin-bottom: 0px"><tbody><tr class="edit-mode" style="height: 95px"><th><span class="add-descriptor-value action glyphicon glyphicon-plus-sign" style="margin-top: 9px; margin-left: 10px"></span></th><td style="width: 100%"><div class="form-group"><input type="text" class="descriptor-value form-control" name="type"></div></td></tr></tbody></table>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 161 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -23861,15 +25382,16 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var DescriptorTypeModel = __webpack_require__(122);
+	var DescriptorTypeModel = __webpack_require__(133);
 	
 	var View = Marionette.ItemView.extend({
 	    className: 'element object descriptor-type-detail',
-	    template: __webpack_require__(144),
+	    template: __webpack_require__(162),
 	
 	    ui: {
 	        name: '#descriptor_type_name',
 	        code: '#descriptor_type_code',
+	        description: '#descriptor_type_description',
 	        format_type: '#format_type',
 	        fields: 'div.descriptor-type-fields',
 	        field0: '#type_field0',
@@ -23901,15 +25423,26 @@
 	    },
 	
 	    onRender: function() {
+	        // @todo check user permissions
+	        if (!this.model.get('can_modify')) {
+	            $(this.ui.save).hide();
+	        }
+	
 	        var format = this.model.get('format');
 	
 	        $(this.ui.format_type).val(format.type).trigger('change');
 	        $(this.ui.format_unit).val(format.unit).trigger('change');
 	        $(this.ui.format_precision).val(format.precision).trigger('change');
 	
-	        if (format.fields && format.fields.length >= 2) {
-	            $(this.ui.field0).val(format.fields[0]);
-	            $(this.ui.field1).val(format.fields[1]);
+	        if (format.type == "enum_pair") {
+	            $(this.ui.fields).show();
+	
+	            if (format.fields[0]) {
+	                $(this.ui.field0).val(format.fields[0]);
+	            }
+	            if (format.fields[1]) {
+	                $(this.ui.field1).val(format.fields[1]);
+	            }
 	        } else {
 	            $(this.ui.fields).hide(false);
 	
@@ -23922,10 +25455,16 @@
 	            case "enum_ordinal":
 	                $(this.ui.format_range_min).numeric({decimal: false, negative: false});
 	                $(this.ui.format_range_max).numeric({decimal: false, negative: false});
+	
+	                $(this.ui.format_range_min).val(format.range[0]);
+	                $(this.ui.format_range_max).val(format.range[1]);
 	                break;
 	            case "numeric_range":
 	                $(this.ui.format_range_min).numeric({decimal: '.', negative: false});
 	                $(this.ui.format_range_max).numeric({decimal: '.', negative: false});
+	
+	                $(this.ui.format_range_min).val(format.range[0]);
+	                $(this.ui.format_range_max).val(format.range[1]);
 	                break;
 	            default:
 	                $(this.ui.format_range_min).attr("readonly", "readonly").val("");
@@ -24067,6 +25606,8 @@
 	
 	        var name = this.ui.name.val();
 	        var code = this.ui.code.val();
+	        var description = this.ui.description.val();
+	
 	        var format = {
 	            type: this.ui.format_type.val(),
 	            unit: this.ui.format_unit.val(),
@@ -24085,7 +25626,9 @@
 	            format.custom_unit = this.ui.format_unit_custom.val();
 	        }
 	
-	        if (this.ui.format_type.val() =="numeric_range") {
+	        if (this.ui.format_type.val() == 'numeric_range' ||
+	            this.ui.format_type.val() == 'enum_ordinal' ||
+	            this.ui.format_type.val() == 'ordinal') {
 	            format.range = [
 	                this.ui.format_range_min.val(),
 	                this.ui.format_range_max.val()
@@ -24100,6 +25643,7 @@
 	            name: name,
 	            code: code,
 	            format: format,
+	            description: description,
 	        }, {wait: true}).done(function() { $.alert.success(gt.gettext("Done")); });;
 	    }
 	});
@@ -24108,7 +25652,7 @@
 
 
 /***/ },
-/* 144 */
+/* 162 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -24165,7 +25709,11 @@
 	__e( gt.gettext('Maximal range value') ) +
 	'</label><input id="format_range_max" class="form-control" type="text" readonly="readonly" maxlength="32" value="1"></div></div></div><div class="descriptor-type-regexp form-group" style="width: 50%"><label for="format_regexp">' +
 	__e( gt.gettext('Regular expression') ) +
-	'</label><input id="format_regexp" class="form-control" type="text" readonly="readonly" maxlength="255"></div><div class="descriptor-type-update form-group" style="width: 100px; margin-left: 20%; margin-top: 25px"><button id="save" class="form-control btn btn-primary">' +
+	'</label><input id="format_regexp" class="form-control" type="text" readonly="readonly" maxlength="255"></div><div class="descriptor-type-description form-group" style="width: 50%"><label for="descriptor_type_description">' +
+	__e( gt.gettext('Description') ) +
+	'</label><textarea id="descriptor_type_description" class="form-control" maxlength="1024">' +
+	((__t = ( description )) == null ? '' : __t) +
+	'</textarea></div><div class="descriptor-type-update form-group" style="width: 100px; margin-left: 20%; margin-top: 25px"><button id="save" class="form-control btn btn-primary">' +
 	__e( gt.gettext('Update') ) +
 	'</button></div></div>';
 	
@@ -24175,12 +25723,12 @@
 
 
 /***/ },
-/* 145 */
+/* 163 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
 	 * @file descriptorgroupadd.js
-	 * @brief Add a group of descriptor
+	 * @brief Add a group of descriptors
 	 * @author Frederic SCHERMA
 	 * @date 2016-08-05
 	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
@@ -24193,7 +25741,7 @@
 	var View = Marionette.ItemView.extend({
 	    tagName: 'div',
 	    className: 'group-add',
-	    template: __webpack_require__(146),
+	    template: __webpack_require__(164),
 	
 	    ui: {
 	        add_group_btn: 'span.add-group',
@@ -24267,7 +25815,7 @@
 
 
 /***/ },
-/* 146 */
+/* 164 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -24284,12 +25832,12 @@
 
 
 /***/ },
-/* 147 */
+/* 165 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
 	 * @file descriptorgrouptypeadd.js
-	 * @brief Add a descriptor type into a group of descriptor
+	 * @brief Add a descriptor type into a group of descriptors
 	 * @author Frederic SCHERMA
 	 * @date 2016-08-05
 	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
@@ -24302,7 +25850,7 @@
 	var View = Marionette.ItemView.extend({
 	    tagName: 'div',
 	    className: 'type-add',
-	    template: __webpack_require__(148),
+	    template: __webpack_require__(166),
 	
 	    ui: {
 	        add_type_btn: 'span.add-type',
@@ -24365,12 +25913,12 @@
 	                            var t = data.items[i];
 	
 	                            if (t.name.toUpperCase() == this.el.val().toUpperCase()) {
-	                                $(this.el).validateField('failed', gt.gettext('Descriptor type name already in usage'));
+	                                $(this.el.ui.add_type_name).validateField('failed', gt.gettext('Descriptor type name already in usage'));
 	                                break;
 	                            }
 	                        }
 	                    } else {
-	                        $(this.el).validateField('ok');
+	                        $(this.el.ui.add_type_name).validateField('ok');
 	                    }
 	                }
 	            });
@@ -24382,7 +25930,7 @@
 
 
 /***/ },
-/* 148 */
+/* 166 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -24399,7 +25947,7 @@
 
 
 /***/ },
-/* 149 */
+/* 167 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -24414,25 +25962,29 @@
 	
 	var Marionette = __webpack_require__(4);
 	
-	var DescriptorModelModel = __webpack_require__(150);
-	var DescriptorModelCollection = __webpack_require__(151);
-	var DescriptorModelTypeCollection = __webpack_require__(152);
+	var DescriptorModelModel = __webpack_require__(168);
+	var DescriptorModelCollection = __webpack_require__(169);
+	var DescriptorGroupCollection = __webpack_require__(170);
+	var DescriptorModelTypeCollection = __webpack_require__(171);
 	
-	var DescriptorModelAddView = __webpack_require__(154);
-	var DescriptorModelDetailView = __webpack_require__(156);
-	var DescriptorModelListView = __webpack_require__(158);
-	var DescriptorTypeModelListView = __webpack_require__(162);
+	var DescriptorModelAddView = __webpack_require__(173);
+	var DescriptorModelDetailView = __webpack_require__(175);
+	var DescriptorModelListView = __webpack_require__(177);
+	var DescriptorModelTypeListView = __webpack_require__(181);
 	
-	var DefaultLayout = __webpack_require__(48);
-	var TitleView = __webpack_require__(49);
-	var ScrollingMoreView = __webpack_require__(90);
+	var DescriptorGroupListAltView = __webpack_require__(187);
+	var DescriptorTypeListAltView = __webpack_require__(189);
+	
+	var DefaultLayout = __webpack_require__(50);
+	var LeftOneRightTwoLayout = __webpack_require__(195);
+	var TitleView = __webpack_require__(51);
+	var ScrollingMoreView = __webpack_require__(94);
 	
 	var Router = Marionette.AppRouter.extend({
 	    routes : {
 	        "app/accession/descriptor/model/": "getDescriptorModelList",
 	        "app/accession/descriptor/model/:id/": "getDescriptorModel",
 	        "app/accession/descriptor/model/:id/type/": "getDescriptorModelTypeListForModel",
-	        "app/accession/descriptor/model/:id/type/:type_id/": "getDescriptorModelTypeForModel",
 	    },
 	
 	    getDescriptorModelList: function () {
@@ -24441,15 +25993,15 @@
 	        var defaultLayout = new DefaultLayout({});
 	        application.getRegion('mainRegion').show(defaultLayout);
 	
-	        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of models of descriptors")}));
+	        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of models of descriptor")}));
 	
 	        collection.fetch().then(function () {
 	            var descriptorModelList = new DescriptorModelListView({collection : collection});
 	            defaultLayout.getRegion('content').show(descriptorModelList);
-	            defaultLayout.getRegion('content_bottom').show(new ScrollingMoreView({targetView: descriptorModelList}));
+	            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: descriptorModelList}));
 	        });
 	
-	        // TODO lookup for permission
+	        // @todo lookup for permission
 	        if (session.user.isAuth && (session.user.isSuperUser || session.user.isStaff)) {
 	            defaultLayout.getRegion('bottom').show(new DescriptorModelAddView({collection: collection}));
 	        }
@@ -24468,35 +26020,44 @@
 	    },
 	
 	    getDescriptorModelTypeListForModel: function(id) {
-	        var collection = new DescriptorModelTypeCollection([], {model_id: id});
+	        var modelTypeCollection = new DescriptorModelTypeCollection([], {model_id: id});
 	
 	        var defaultLayout = new DefaultLayout({});
 	        application.getRegion('mainRegion').show(defaultLayout);
 	
-	        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of types of models of descriptors")}));
+	        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of types of models of descriptor")}));
 	
-	        collection.fetch().then(function () {
-	            var descriptorTypeModelList = new DescriptorTypeModelListView({collection : collection});
-	            defaultLayout.getRegion('content').show(descriptorTypeModelList);
-	            defaultLayout.getRegion('content_bottom').show(new ScrollingMoreView({targetView: descriptorTypeModelList}));
+	        var leftOneRightTwoLayout = new LeftOneRightTwoLayout({});
+	        defaultLayout.getRegion('content').show(leftOneRightTwoLayout);
+	
+	        modelTypeCollection.fetch().then(function () {
+	            var descriptorTypeModelList = new DescriptorModelTypeListView({collection : modelTypeCollection});
+	            leftOneRightTwoLayout.getRegion('left-content').show(descriptorTypeModelList);
+	            leftOneRightTwoLayout.getRegion('left-bottom').show(new ScrollingMoreView({targetView: descriptorTypeModelList}));
 	        });
 	
-	        // TODO lookup for permission
-	        if (session.user.isAuth && (session.user.isSuperUser || session.user.isStaff)) {
-	            defaultLayout.getRegion('bottom').show(new DescriptorTypeModelAddView({collection: collection}));
-	        }
-	    },
+	        var groupCollection = new DescriptorGroupCollection();
+	        groupCollection.fetch().then(function () {
+	            var descriptorGroupList = new DescriptorGroupListAltView({
+	                collection: groupCollection,
+	                layout: leftOneRightTwoLayout
+	            });
 	
-	    getDescriptorModelTypeForModel: function (id, typeId) {
-	        alert(id, typeId);
-	    }
+	            leftOneRightTwoLayout.getRegion('right-up-content').show(descriptorGroupList);
+	            leftOneRightTwoLayout.getRegion('right-up-bottom').show(new ScrollingMoreView({targetView: descriptorGroupList}));
+	        });
+	
+	        var descriptorTypeList = new DescriptorTypeListAltView({});
+	        leftOneRightTwoLayout.getRegion('right-down-content').show(descriptorTypeList);
+	        leftOneRightTwoLayout.getRegion('right-down-bottom').show(new ScrollingMoreView({targetView: descriptorTypeList}));
+	    },
 	});
 	
 	module.exports = Router;
 
 
 /***/ },
-/* 150 */
+/* 168 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -24524,7 +26085,7 @@
 	        name: '',
 	        verbose_name: '',
 	        description: '',
-	        num_descriptors_types: 0,
+	        num_descriptor_types: 0,
 	    },
 	
 	    parse: function(data) {
@@ -24546,7 +26107,7 @@
 
 
 /***/ },
-/* 151 */
+/* 169 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -24559,7 +26120,7 @@
 	 * @details
 	 */
 	
-	var DescriptorModelModel = __webpack_require__(150);
+	var DescriptorModelModel = __webpack_require__(168);
 	
 	var Collection = Backbone.Collection.extend({
 	    url: application.baseUrl + 'accession/descriptor/model/',
@@ -24580,7 +26141,39 @@
 
 
 /***/ },
-/* 152 */
+/* 170 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptorgroup.js
+	 * @brief Groups of descriptors collection
+	 * @author Frederic SCHERMA
+	 * @date 2016-07-19
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var DescriptorGroupModel = __webpack_require__(132);
+	
+	var Collection = Backbone.Collection.extend({
+	    url: application.baseUrl + 'accession/descriptor/group/',
+	    model: DescriptorGroupModel,
+	
+	    parse: function(data) {
+	        this.prev = data.prev;
+	        this.cursor = data.cursor;
+	        this.next = data.next;
+	
+	        return data.items;
+	    },
+	});
+	
+	module.exports = Collection;
+
+
+/***/ },
+/* 171 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -24593,7 +26186,7 @@
 	 * @details
 	 */
 	
-	var DescriptorModelTypeModel = __webpack_require__(153);
+	var DescriptorModelTypeModel = __webpack_require__(172);
 	
 	var Collection = Backbone.Collection.extend({
 	    url: function() {
@@ -24614,16 +26207,18 @@
 	
 	        return data.items;
 	    },
+	
+	    comparator: 'position'
 	});
 	
 	module.exports = Collection;
 
 
 /***/ },
-/* 153 */
+/* 172 */
 /***/ function(module, exports, __webpack_require__) {
 
-	a/**
+	/**
 	 * @file descriptormodeltype.js
 	 * @brief Type of model of descriptor model
 	 * @author Frederic SCHERMA
@@ -24648,15 +26243,19 @@
 	
 	    defaults: {
 	        id: null,
+	        name: '',
 	        model: null,
+	        label: '',
+	        mandatory: false,
+	        set_once: false,
+	        position: 0,
+	        descriptor_type_code: null,
 	    },
 	
-	    initialize: function(options) {
+	    initialize: function(attributes, options) {
 	        Model.__super__.initialize.apply(this, arguments);
 	
 	        options || (options = {});
-	        this.model_id = options.model_id;
-	        this.collection = options.collection;
 	
 	        if (options.collection) {
 	            this.model_id = options.collection.model_id;
@@ -24683,12 +26282,12 @@
 
 
 /***/ },
-/* 154 */
+/* 173 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
 	 * @file descriptorgroupadd.js
-	 * @brief Add a group of descriptor
+	 * @brief Add a group of descriptors
 	 * @author Frederic SCHERMA
 	 * @date 2016-08-05
 	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
@@ -24701,7 +26300,7 @@
 	var View = Marionette.ItemView.extend({
 	    tagName: 'div',
 	    className: 'descriptor-model-add',
-	    template: __webpack_require__(155),
+	    template: __webpack_require__(174),
 	
 	    ui: {
 	        add_descriptor_model_btn: 'span.add-descriptor-model',
@@ -24719,7 +26318,7 @@
 	    },
 	
 	    addDescriptorModel: function() {
-	        if (!this.ui.add_descriptor_model_name.hasClass('invalid')) {
+	        if (this.validateGroupName()) {
 	            this.collection.create({name: this.ui.add_descriptor_model_name.val()}, {wait: true});
 	            $(this.ui.add_descriptor_model_name).cleanField();
 	        }
@@ -24775,7 +26374,7 @@
 
 
 /***/ },
-/* 155 */
+/* 174 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -24792,7 +26391,7 @@
 
 
 /***/ },
-/* 156 */
+/* 175 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -24806,11 +26405,11 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var DescriptorModelModel = __webpack_require__(150);
+	var DescriptorModelModel = __webpack_require__(168);
 	
 	var View = Marionette.ItemView.extend({
 	    className: 'element object descriptor-model-detail',
-	    template: __webpack_require__(157),
+	    template: __webpack_require__(176),
 	
 	    ui: {
 	        name: '#descriptor_model_name',
@@ -24865,7 +26464,7 @@
 
 
 /***/ },
-/* 157 */
+/* 176 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -24896,7 +26495,7 @@
 
 
 /***/ },
-/* 158 */
+/* 177 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -24910,34 +26509,21 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var DescriptorModelModel = __webpack_require__(150);
-	var DescriptorModelView = __webpack_require__(159);
+	var DescriptorModelModel = __webpack_require__(168);
+	var DescriptorModelView = __webpack_require__(178);
 	
-	var View = Marionette.CompositeView.extend({
-	    template: __webpack_require__(161),
+	var ScrollView = __webpack_require__(78);
+	
+	var View = ScrollView.extend({
+	    template: __webpack_require__(180),
 	    childView: DescriptorModelView,
 	    childViewContainer: 'tbody.descriptor-model-list',
 	
 	    initialize: function() {
 	        this.listenTo(this.collection, 'reset', this.render, this);
-	        //this.listenTo(this.collection, 'add', this.render, this);
-	        //this.listenTo(this.collection, 'remove', this.render, this);
 	        this.listenTo(this.collection, 'change', this.render, this);
 	
-	        // pagination on scrolling
-	        $("div.panel-body").scroll($.proxy(function(e) { this.scroll(e); }, this));
-	    },
-	
-	    onRender: function() {
-	    },
-	
-	    scroll: function(e) {
-	        if (e.target.scrollHeight-e.target.clientHeight == e.target.scrollTop) {
-	            if (this.collection.next != null) {
-	                Logger.debug("descriptorModel::fetch next with cursor=" + (this.collection.next));
-	                this.collection.fetch({update: true, remove: false, data: {cursor: this.collection.next}});
-	            }
-	        }
+	        View.__super__.initialize.apply(this);
 	    },
 	});
 	
@@ -24945,7 +26531,7 @@
 
 
 /***/ },
-/* 159 */
+/* 178 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -24959,25 +26545,23 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var DescriptorModelModel = __webpack_require__(150);
+	var DescriptorModelModel = __webpack_require__(168);
 	
 	var View = Marionette.ItemView.extend({
 	    tagName: 'tr',
 	    className: 'element object descriptor-model',
-	    template: __webpack_require__(160),
+	    template: __webpack_require__(179),
 	
 	    ui: {
 	        delete_descriptor_model: 'span.delete-descriptor-model',
 	        view_descriptor_model: 'td.view-descriptor-model',
-	        view_descriptor_panels: 'td.view-descriptor-panels',
-	        view_descriptor_types: 'td.view-descriptor-types'
+	        view_descriptor_model_types: 'td.view-descriptor-model-types'
 	    },
 	
 	    events: {
 	        'click @ui.delete_descriptor_model': 'deleteDescriptorModel',
 	        'click @ui.view_descriptor_model': 'viewDescriptorModelDetails',
-	        'click @ui.view_descriptor_panels': 'viewDescriptorPanels',
-	        'click @ui.view_descriptor_types': 'viewDescriptorTypes'
+	        'click @ui.view_descriptor_model_types': 'viewDescriptorModelTypes'
 	    },
 	
 	    initialize: function() {
@@ -24995,16 +26579,12 @@
 	        Backbone.history.navigate("app/accession/descriptor/model/" + this.model.id + "/", {trigger: true});
 	    },
 	
-	    viewDescriptorTypes: function() {
+	    viewDescriptorModelTypes: function() {
 	        Backbone.history.navigate("app/accession/descriptor/model/" + this.model.id + "/type/", {trigger: true});
 	    },
 	
-	    viewDescriptorPanels: function() {
-	        Backbone.history.navigate("app/accession/descriptor/model/" + this.model.id + "/panel/", {trigger: true});
-	    },
-	
 	    deleteDescriptorModel: function() {
-	        if (this.model.get('num_descriptors_types') == 0) {
+	        if (this.model.get('num_descriptor_types') == 0) {
 	            this.model.destroy({wait: true});
 	        }
 	    }
@@ -25014,7 +26594,7 @@
 
 
 /***/ },
-/* 160 */
+/* 179 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -25027,10 +26607,10 @@
 	((__t = ( name )) == null ? '' : __t) +
 	'</td><td class="action view-descriptor-model" name="verbose_name">' +
 	((__t = ( verbose_name )) == null ? '' : __t) +
-	'</td><td class="action view-descriptor-types" name="num_descriptors_types"><abbr class="badge" style="cursor: pointer" title="' +
-	((__t = ( gt.gettext('Manage types of descriptors') )) == null ? '' : __t) +
+	'</td><td class="action view-descriptor-model-types" name="num_descriptor_model_types"><abbr class="badge" style="cursor: pointer" title="' +
+	((__t = ( gt.gettext('Manage models of type of descriptor') )) == null ? '' : __t) +
 	'">' +
-	((__t = ( num_descriptors_types )) == null ? '' : __t) +
+	((__t = ( num_descriptor_model_types )) == null ? '' : __t) +
 	'</abbr></td><td name="description"><abbr class="label label-default glyphicon glyphicon-option-horizontal" title="' +
 	((__t = ( description )) == null ? '' : __t) +
 	'"><span></span></abbr></td>';
@@ -25041,7 +26621,7 @@
 
 
 /***/ },
-/* 161 */
+/* 180 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -25050,12 +26630,12 @@
 	obj || (obj = {});
 	var __t, __p = '';
 	with (obj) {
-	__p += '<div class="element object descriptor-model-list" object-type="descriptor-model-list" style="width:100%"><table class="table table-striped"><thead><tr><th><span class="glyphicon glyphicon-asterisk"></span></th><th>' +
+	__p += '<div class="object descriptor-model-list" object-type="descriptor-model-list" style="width:100%"><table class="table table-striped"><thead><tr><th><span class="glyphicon glyphicon-asterisk"></span></th><th>' +
 	((__t = ( gt.gettext("Name") )) == null ? '' : __t) +
 	'</th><th>' +
 	((__t = ( gt.gettext("Verbose name") )) == null ? '' : __t) +
 	'</th><th>' +
-	((__t = ( gt.gettext("Number of types of descriptors") )) == null ? '' : __t) +
+	((__t = ( gt.gettext("Number of types of descriptor") )) == null ? '' : __t) +
 	'</th><th>' +
 	((__t = ( gt.gettext("Description") )) == null ? '' : __t) +
 	'</th></tr></thead><tbody class="descriptor-model-list"></tbody></table></div>';
@@ -25066,7 +26646,7 @@
 
 
 /***/ },
-/* 162 */
+/* 181 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -25080,15 +26660,929 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var ScrollView = __webpack_require__(72);
+	var ScrollView = __webpack_require__(78);
+	var Dialog = __webpack_require__(82);
 	
-	var DescriptorModelTypeModel = __webpack_require__(153);
-	var DescriptorModelTypeView = __webpack_require__(163);
+	var DescriptorModelTypeModel = __webpack_require__(172);
+	var DescriptorModelTypeView = __webpack_require__(182);
 	
 	var View = ScrollView.extend({
-	    template: __webpack_require__(165),
+	    template: __webpack_require__(186),
 	    childView: DescriptorModelTypeView,
 	    childViewContainer: 'tbody.descriptor-model-type-list',
+	
+	    initialize: function() {
+	        this.listenTo(this.collection, 'reset', this.render, this);
+	        this.listenTo(this.collection, 'change', this.render, this);
+	
+	        View.__super__.initialize.apply(this);
+	
+	        $("div.left-content").on("dragenter", $.proxy(this.dragEnterContent, this));
+	        $("div.left-content").on("dragleave", $.proxy(this.dragLeaveContent, this));
+	        $("div.left-content").on("dragover", $.proxy(this.dragOverContent, this));
+	        $("div.left-content").on("drop", $.proxy(this.dropContent, this));
+	    },
+	
+	    dragEnterContent: function (e) {
+	        if (e.preventDefault) {
+	            e.preventDefault();
+	        }
+	
+	        if (!$(e.target).hasClass("left-content")) {
+	            return false;
+	        }
+	
+	        this.dragEnterCount || (this.dragEnterCount = 0);
+	        ++this.dragEnterCount;
+	
+	        if (this.dragEnterCount == 1) {
+	            if (this.$el.find("tbody tr").length == 0) {
+	                this.$el.find("thead tr th").css('border-bottom', '5px dashed #ddd');
+	            }
+	
+	            this.$el.find("tbody tr").last().css('border-bottom', '5px dashed #ddd');
+	        }
+	
+	        return false;
+	    },
+	
+	    dragLeaveContent: function (e) {
+	        if (e.preventDefault) {
+	            e.preventDefault();
+	        }
+	
+	        if (!$(e.target).hasClass("left-content")) {
+	            return false;
+	        }
+	
+	        this.dragEnterCount || (this.dragEnterCount = 1);
+	        --this.dragEnterCount;
+	
+	        if (this.dragEnterCount == 0) {
+	            this.$el.find("tbody tr").last().css('border-bottom', 'initial');
+	            this.$el.find("thead tr th").css('border-bottom', '2px solid #ddd');
+	
+	        }
+	
+	        return false;
+	    },
+	
+	    dragOverContent: function (e) {
+	        if (e.preventDefault) {
+	            e.preventDefault();
+	        }
+	
+	        if (!$(e.target).hasClass("left-content")) {
+	            return false;
+	        }
+	
+	        this.dragEnterCount || (this.dragEnterCount = 1);
+	
+	        if (this.dragEnterCount == 1) {
+	            if (this.$el.find("tbody tr").length == 0) {
+	                this.$el.find("thead tr th").css('border-bottom', '5px dashed #ddd');
+	            }
+	
+	            this.$el.find("tbody tr").last().css('border-bottom', '5px dashed #ddd');
+	        }
+	
+	        //e.dataTransfer.dropEffect = 'move';
+	        return false;
+	    },
+	
+	    dropContent: function (e) {
+	        if (e.stopPropagation) {
+	            e.stopPropagation();
+	        }
+	
+	        if (!$(e.target).hasClass("left-content")) {
+	            return false;
+	        }
+	
+	        this.dragEnterCount = 0;
+	
+	        this.$el.find("tbody tr").last().css('border-bottom', 'initial');
+	        this.$el.find("thead tr th").css('border-bottom', '2px solid #ddd');
+	
+	        var elt = application.dndElement;
+	        if (!elt) {
+	            return false;
+	        }
+	
+	        if (elt.$el.hasClass('descriptor-type')) {
+	            var code = elt.model.get('code');
+	
+	            var DefinesLabel = Dialog.extend({
+	                template: __webpack_require__(184),
+	
+	                attributes: {
+	                    id: "dlg_define_label",
+	                },
+	
+	                ui: {
+	                    label: "#label",
+	                },
+	
+	                events: {
+	                    'input @ui.label': 'onLabelInput',
+	                },
+	
+	                initialize: function (options) {
+	                    DefinesLabel.__super__.initialize.apply(this);
+	                },
+	
+	                onLabelInput: function () {
+	                    this.validateLabel();
+	                },
+	
+	                validateLabel: function() {
+	                    var v = this.ui.label.val();
+	
+	                    if (v.length < 3) {
+	                        $(this.ui.label).validateField('failed', gt.gettext('3 characters min'));
+	                        return false;
+	                    }
+	
+	                    $(this.ui.label).validateField('ok');
+	
+	                    return true;
+	                },
+	
+	                onApply: function() {
+	                    var view = this;
+	                    var collection = this.getOption('collection');
+	                    var position = this.getOption('position');
+	                    var code = this.getOption('code');
+	
+	                    if (this.validateLabel()) {
+	                        var to_rshift = [];
+	
+	                        // server will r-shift position of any model upward this new
+	                        // do it locally to be consistent
+	                        for (var model in collection.models) {
+	                            var dmt = collection.models[model];
+	                            var p = dmt.get('position');
+	                            if (p >= position) {
+	                                dmt.set('position', p+1);
+	                                to_rshift.push(dmt);
+	                            }
+	                        }
+	
+	                        collection.create({
+	                            descriptor_type_code: code,
+	                            label: this.ui.label.val(),
+	                            position: position
+	                        }, {
+	                            wait: true,
+	                            success: function () {
+	                                view.remove();
+	                            },
+	                            error: function () {
+	                                $.alert.error(gt.gettext("Unable to create the type of model of descriptor !"));
+	
+	                                // left shift (undo) for consistency with server
+	                                for (var i = 0; i < to_rshift.length; ++i) {
+	                                    to_rshift[i].set('position', to_rshift[i].get('position')-1);
+	                                }
+	                            }
+	                        });
+	                    }
+	                },
+	            });
+	
+	            var collection = this.collection;
+	
+	            // find last position + 1
+	            var newPosition = 0;
+	
+	            if (collection.models.length > 0) {
+	                newPosition = collection.at(collection.models.length-1).get('position') + 1;
+	            }
+	
+	            var definesLabel = new DefinesLabel({
+	                collection: collection,
+	                position: newPosition,
+	                code: elt.model.get('code')
+	            });
+	
+	            definesLabel.render();
+	        } else if (elt.$el.hasClass('descriptor-model-type')) {
+	            var collection = this.collection;
+	            var modelId = collection.model_id;
+	
+	            // find last position + 1
+	            var newPosition = collection.at(collection.models.length-1).get('position') + 1;
+	
+	            $.ajax({
+	                type: "PUT",
+	                url: application.baseUrl + 'accession/descriptor/model/' + modelId + '/order/',
+	                dataType: 'json',
+	                contentType: "application/json; charset=utf-8",
+	                data: JSON.stringify({
+	                    descriptor_model_type_id: elt.model.get('id'),
+	                    position: newPosition
+	                })
+	            }).done(function() {
+	                elt.model.set('position', newPosition);
+	
+	                // lshift any others element
+	                for (var model in collection.models) {
+	                    var dmt = collection.models[model];
+	                    if (dmt.get('id') != elt.model.get('id')) {
+	                        var p = dmt.get('position');
+	                        dmt.set('position', p - 1);
+	                    }
+	                }
+	
+	                // need to sort
+	                collection.sort();
+	            }).fail(function() {
+	                $.alert.error(gt.gettext('Unable to reorder the types of model of descriptor'));
+	            });
+	        }
+	
+	        return false;
+	    },
+	});
+	
+	module.exports = View;
+
+/***/ },
+/* 182 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptortype.js
+	 * @brief Type of descriptor item view
+	 * @author Frederic SCHERMA
+	 * @date 2016-07-21
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	var Dialog = __webpack_require__(82);
+	var DescriptorModelTypeModel = __webpack_require__(172);
+	
+	
+	var View = Marionette.ItemView.extend({
+	    tagName: 'tr',
+	    className: 'element object descriptor-model-type',
+	    template: __webpack_require__(183),
+	
+	    attributes: {
+	        draggable: true,
+	    },
+	
+	    ui: {
+	        'delete_descriptor_model_type': 'span.delete-descriptor-model-type',
+	        'label': 'td[name="label"]',
+	        'mandatory': 'td[name="mandatory"]',
+	        'set_once': 'td[name="set_once"]',
+	    },
+	
+	    events: {
+	        'dragstart': 'dragStart',
+	        'dragend': 'dragEnd',
+	        'dragover': 'dragOver',
+	        'dragenter': 'dragEnter',
+	        'dragleave': 'dragLeave',
+	        'drop': 'drop',
+	        'click @ui.delete_descriptor_model_type': 'deleteDescriptorModelType',
+	        'click @ui.label': 'editLabel',
+	        'click @ui.mandatory': 'toggleMandatory',
+	        'click @ui.set_once': 'toggleSetOnce',
+	    },
+	
+	    initialize: function() {
+	        this.listenTo(this.model, 'reset', this.render, this);
+	    },
+	
+	    onRender: function() {
+	        if (!session.user.isStaff && !session.user.isSuperUser) {
+	            $(this.ui.delete_descriptor_model_type).hide();
+	        }
+	    },
+	
+	    dragStart: function(e) {
+	        this.$el.css('opacity', '0.4');
+	        application.dndElement = this;
+	    },
+	
+	    dragEnd: function(e) {
+	        this.$el.css('opacity', '1.0');
+	        application.dndElement = null;
+	    },
+	
+	    dragOver: function (e) {
+	        if (e.originalEvent.preventDefault) {
+	            e.originalEvent.preventDefault();
+	        }
+	
+	        //e.originalEvent.dataTransfer.dropEffect = 'move';
+	        return false;
+	    },
+	
+	    dragEnter: function (e) {
+	        if (e.originalEvent.preventDefault) {
+	            e.originalEvent.preventDefault();
+	        }
+	
+	        if (application.dndElement.$el.hasClass('descriptor-model-type')) {
+	            if (this.model.get('position') < application.dndElement.model.get('position')) {
+	                this.$el.css('border-top', '5px dashed #ddd');
+	            } else if (this.model.get('position') > application.dndElement.model.get('position')) {
+	                this.$el.css('border-bottom', '5px dashed #ddd');
+	            }
+	        } else if (application.dndElement.$el.hasClass('descriptor-type')) {
+	             this.$el.css('border-top', '5px dashed #ddd');
+	        }
+	
+	        return false;
+	    },
+	
+	    dragLeave: function (e) {
+	        if (e.originalEvent.preventDefault) {
+	            e.originalEvent.preventDefault();
+	        }
+	
+	        if (application.dndElement.$el.hasClass('descriptor-model-type')) {
+	            if (this.model.get('position') < application.dndElement.model.get('position')) {
+	                this.$el.css('border-top', 'initial');
+	            } else if (this.model.get('position') > application.dndElement.model.get('position')) {
+	                this.$el.css('border-bottom', 'initial');
+	            }
+	        } else if (application.dndElement.$el.hasClass('descriptor-type')) {
+	             this.$el.css('border-top', 'initial');
+	        }
+	
+	        return false;
+	    },
+	
+	    drop: function (e) {
+	        if (e.originalEvent.stopPropagation) {
+	            e.originalEvent.stopPropagation();
+	        }
+	
+	        var elt = application.dndElement;
+	
+	        if (elt.$el.hasClass('descriptor-type')) {
+	            // reset borders
+	            this.$el.css('border-top', 'initial');
+	            this.$el.css('border-bottom', 'initial');
+	
+	            var DefinesLabel = Dialog.extend({
+	                template: __webpack_require__(184),
+	
+	                attributes: {
+	                    id: "dlg_define_label",
+	                },
+	
+	                ui: {
+	                    label: "#label",
+	                },
+	
+	                events: {
+	                    'input @ui.label': 'onLabelInput',
+	                },
+	
+	                initialize: function (options) {
+	                    DefinesLabel.__super__.initialize.apply(this);
+	                },
+	
+	                onLabelInput: function () {
+	                    this.validateLabel();
+	                },
+	
+	                validateLabel: function() {
+	                    var v = this.ui.label.val();
+	
+	                    if (v.length < 3) {
+	                        $(this.ui.label).validateField('failed', gt.gettext('3 characters min'));
+	                        return false;
+	                    }
+	
+	                    $(this.ui.label).validateField('ok');
+	
+	                    return true;
+	                },
+	
+	                onApply: function() {
+	                    var view = this;
+	                    var collection = this.getOption('collection');
+	                    var position = this.getOption('position');
+	                    var code = this.getOption('code');
+	
+	                    if (this.validateLabel()) {
+	                        var to_rshift = [];
+	
+	                        // server will r-shift position of any model upward this new
+	                        // do it locally to be consistent
+	                        for (var model in collection.models) {
+	                            var dmt = collection.models[model];
+	                            var p = dmt.get('position');
+	                            if (p >= position) {
+	                                dmt.set('position', p+1);
+	                                to_rshift.push(dmt);
+	                            }
+	                        }
+	
+	                        collection.create({
+	                            descriptor_type_code: code,
+	                            label: this.ui.label.val(),
+	                            position: position
+	                        }, {
+	                            wait: true,
+	                            success: function () {
+	                                view.remove();
+	                            },
+	                            error: function () {
+	                                $.alert.error(gt.gettext("Unable to create the type of model of descriptor !"));
+	
+	                                // left shift (undo) for consistency with server
+	                                for (var i = 0; i < to_rshift.length; ++i) {
+	                                    to_rshift[i].set('position', to_rshift[i].get('position')-1);
+	                                }
+	                            }
+	                        });
+	                    }
+	                },
+	            });
+	
+	            var definesLabel = new DefinesLabel({
+	                collection: this.model.collection,
+	                position: this.model.get('position'),
+	                code: elt.model.get('code')
+	            });
+	
+	            definesLabel.render();
+	        }
+	        else if (elt.$el.hasClass('descriptor-model-type')) {
+	            // useless drop on himself
+	            if (this == elt) {
+	                return false;
+	            }
+	
+	            // reset borders
+	            this.$el.css('border-top', 'initial');
+	            this.$el.css('border-bottom', 'initial');
+	
+	            // ajax call
+	            var position = elt.model.get('position');
+	            var newPosition = this.model.get('position');
+	            var modelId = this.model.collection.model_id;
+	            var collection = this.model.collection;
+	
+	            $.ajax({
+	                type: "PUT",
+	                url: application.baseUrl + 'accession/descriptor/model/' + modelId + '/order/',
+	                dataType: 'json',
+	                contentType: "application/json; charset=utf-8",
+	                data: JSON.stringify({
+	                    descriptor_model_type_id: elt.model.get('id'),
+	                    position: newPosition
+	                })
+	            }).done(function() {
+	                // server will shift position of any model upward/downward this model
+	                // do it locally to be consistent
+	                // so that we don't need to collection.fetch({update: true, remove: true});
+	                if (newPosition < position) {
+	                    var to_rshift = [];
+	
+	                    for (var model in collection.models) {
+	                        var dmt = collection.models[model];
+	                        if (dmt.get('id') != elt.model.get('id')) {
+	                            if (dmt.get('position') >= newPosition) {
+	                                to_rshift.push(dmt);
+	                            }
+	                        }
+	                    }
+	
+	                    elt.model.set('position', newPosition);
+	
+	                    var nextPosition = newPosition + 1;
+	
+	                    for (var i = 0; i < to_rshift.length; ++i) {
+	                        to_rshift[i].set('position', nextPosition);
+	                        ++nextPosition;
+	                    }
+	                } else {
+	                    var to_lshift = [];
+	
+	                    for (var model in collection.models) {
+	                        var dmt = collection.models[model];
+	                        if (dmt.get('id') != elt.model.get('id')) {
+	                            if (dmt.get('position') <= newPosition) {
+	                                to_lshift.push(dmt);
+	                            }
+	                        }
+	                    }
+	
+	                    elt.model.set('position', newPosition);
+	
+	                    var nextPosition = 0;
+	
+	                    for (var i = 0; i < to_lshift.length; ++i) {
+	                        to_lshift[i].set('position', nextPosition);
+	                        ++nextPosition;
+	                    }
+	                }
+	
+	                // need to sort
+	                collection.sort();
+	            }).fail(function () {
+	                $.alert.error(gt.gettext('Unable to reorder the types of model of descriptor'));
+	            })
+	        }
+	
+	        return false;
+	    },
+	
+	    editLabel: function() {
+	        var model = this.model;
+	
+	        $.ajax({
+	            type: "GET",
+	            url: this.model.url() + 'label/',
+	            dataType: 'json',
+	        }).done(function (data) {
+	            var labels = data;
+	
+	            var ChangeLabel = Dialog.extend({
+	                template: __webpack_require__(185),
+	                templateHelpers: function () {
+	                    return {
+	                        labels: labels,
+	                    };
+	                },
+	
+	                attributes: {
+	                    id: "dlg_change_labels",
+	                },
+	
+	                ui: {
+	                    label: "#descriptor_model_type_labels input",
+	                },
+	
+	                events: {
+	                    'input @ui.label': 'onLabelInput',
+	                },
+	
+	                initialize: function (options) {
+	                    ChangeLabel.__super__.initialize.apply(this);
+	                },
+	
+	                onLabelInput: function (e) {
+	                    this.validateLabel(e);
+	                },
+	
+	                validateLabel: function (e) {
+	                    var v = $(e.target).val();
+	
+	                    if (v.length > 64) {
+	                        $(this.ui.label).validateField('failed', gt.gettext('64 characters max'));
+	                        return false;
+	                    }
+	
+	                    $(this.ui.label).validateField('ok');
+	
+	                    return true;
+	                },
+	
+	                validateLabels: function() {
+	                    $.each($(this.ui.label), function(i, label) {
+	                        var v = $(this).val();
+	
+	                        if (v.length > 64) {
+	                            $(this).validateField('failed', gt.gettext('64 characters max'));
+	                            return false;
+	                        }
+	                    });
+	
+	                    return true;
+	                },
+	
+	                onApply: function () {
+	                    var view = this;
+	                    var model = this.getOption('model');
+	
+	                    var labels = {};
+	
+	                    $.each($(this.ui.label), function(i, label) {
+	                        var v = $(this).val();
+	                        labels[$(label).attr("language")] = v;
+	                    });
+	
+	                    if (this.validateLabels()) {
+	                        $.ajax({
+	                            type: "PUT",
+	                            url: model.url() + "label/",
+	                            dataType: 'json',
+	                            contentType: "application/json; charset=utf-8",
+	                            data: JSON.stringify(labels)
+	                        }).done(function() {
+	                            // manually update the current context label
+	                            model.set('label', labels[session.language]);
+	                            $.alert.success(gt.gettext("Successfully labeled !"));
+	                        }).always(function() {
+	                            view.remove();
+	                        });
+	                    }
+	                },
+	            });
+	
+	            var changeLabel = new ChangeLabel({model: model});
+	            changeLabel.render();
+	        });
+	    },
+	
+	    toggleMandatory: function() {
+	        this.model.save({mandatory: !this.model.get('mandatory')}, {patch: true, wait: true});
+	    },
+	
+	    toggleSetOnce: function() {
+	        this.model.save({set_once: !this.model.get('set_once')}, {patch: true, wait: true});
+	    },
+	
+	    deleteDescriptorModelType: function() {
+	        var collection = this.model.collection;
+	        var position = this.model.get('position');
+	
+	        this.model.destroy({
+	            wait: true,
+	            success: function () {
+	                for (var model in collection.models) {
+	                    var dmt = collection.models[model];
+	                    if (dmt.get('position') > position) {
+	                        var new_position = dmt.get('position') - 1;
+	                        dmt.set('position', new_position);
+	                    }
+	                }
+	            }
+	        });
+	    }
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 183 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '', __j = Array.prototype.join;
+	function print() { __p += __j.call(arguments, '') }
+	with (obj) {
+	__p += '<th><span class="delete-descriptor-model-type action glyphicon glyphicon-minus-sign"></span></th><td name="descriptor_type_code">' +
+	((__t = ( descriptor_type_code )) == null ? '' : __t) +
+	'</td><td name="label" class="action">' +
+	((__t = ( label )) == null ? '' : __t) +
+	'</td> ';
+	 if (mandatory) { ;
+	__p += ' <td name="mandatory"><span class="action glyphicon glyphicon-ok left-margin"></span></td> ';
+	 } else { ;
+	__p += ' <td name="mandatory"><span class="action glyphicon glyphicon-remove left-margin"></span></td> ';
+	 } ;
+	__p += ' ';
+	 if (set_once) { ;
+	__p += ' <td name="set_once"><span class="action glyphicon glyphicon-ok left-margin"></span></td> ';
+	 } else { ;
+	__p += ' <td name="set_once"><span class="action glyphicon glyphicon-remove left-margin"></span></td> ';
+	 } ;
+	
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 184 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title">' +
+	((__t = ( gt.gettext("Create a model of descriptor") )) == null ? '' : __t) +
+	'</h4></div><div class="modal-body" style="max-height: 400px; overflow-y: auto"><form><div class="form-group"><label class="control-label" for="label">' +
+	((__t = ( gt.gettext("Label for the current language") )) == null ? '' : __t) +
+	'</label><input class="form-control" type="text" id="label" maxlength="64" autofocus="" autocomplete="off" style="width:100%"></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal">' +
+	((__t = ( gt.gettext("Cancel") )) == null ? '' : __t) +
+	'</button> <button type="button" class="btn btn-primary apply">' +
+	((__t = ( gt.gettext("Apply") )) == null ? '' : __t) +
+	'</button></div></div></div>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 185 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '', __j = Array.prototype.join;
+	function print() { __p += __j.call(arguments, '') }
+	with (obj) {
+	__p += '<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title">' +
+	((__t = ( gt.gettext("Change the label for the type of model of descriptor") )) == null ? '' : __t) +
+	'</h4></div><div class="modal-body" style="max-height: 400px; overflow-y: auto"><form id="descriptor_model_type_labels">';
+	
+	                var languages = application.main.collections.uilanguages;
+	
+	                for (var i = 0; i < languages.models.length; ++i) {
+	                    var lang_id = languages.at(i).get('id');
+	                    var lang_label = languages.at(i).get('label');
+	                    var label = labels[lang_label];
+	                    var autofocus = (i == 0) ? 'autofocus=""' : "";
+	                ;
+	__p += ' <div class="form-group"><label class="control-label">' +
+	((__t = ( gt.gettext(lang_label) )) == null ? '' : __t) +
+	'</label><input class="form-control" type="text" language="' +
+	((__t = ( lang_id )) == null ? '' : __t) +
+	'" value="' +
+	((__t = ( labels[lang_id] )) == null ? '' : __t) +
+	'" maxlength="64" ' +
+	((__t = ( autofocus )) == null ? '' : __t) +
+	' autocomplete="off" style="width:100%"></div> ';
+	 } ;
+	__p += ' </form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal">' +
+	((__t = ( gt.gettext("Cancel") )) == null ? '' : __t) +
+	'</button> <button type="button" class="btn btn-primary apply">' +
+	((__t = ( gt.gettext("Apply") )) == null ? '' : __t) +
+	'</button></div></div></div>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 186 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<div class="object descriptor-model-type-list" object-type="descriptor-model-type-list"><table class="table table-striped"><thead class="sticky-header"><tr><th><span class="glyphicon glyphicon-asterisk"></span></th><th>' +
+	((__t = ( gt.gettext("Code") )) == null ? '' : __t) +
+	'</th><th>' +
+	((__t = ( gt.gettext("Label") )) == null ? '' : __t) +
+	'</th><th>' +
+	((__t = ( gt.gettext("Mandatory") )) == null ? '' : __t) +
+	'</th><th>' +
+	((__t = ( gt.gettext("Set Once") )) == null ? '' : __t) +
+	'</th></tr></thead><tbody class="descriptor-model-type-list header-line"></tbody></table></div>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 187 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptorgrouplistalt.js
+	 * @brief Alternative view of list of groups of types of descriptors
+	 * @author Frederic SCHERMA
+	 * @date 2016-10-14
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	var DescriptorGroupModel = __webpack_require__(132);
+	var DescriptorGroupAltView = __webpack_require__(188);
+	
+	var ScrollView = __webpack_require__(78);
+	
+	var View = ScrollView.extend({
+	    template: __webpack_require__(194),
+	    childView: DescriptorGroupAltView,
+	    childViewContainer: 'tbody.descriptor-group-list',
+	
+	    childViewOptions: function () {
+	        return {
+	            layout: this.getOption('layout'),
+	        }
+	    },
+	
+	    initialize: function(options) {
+	        this.listenTo(this.collection, 'reset', this.render, this);
+	        this.listenTo(this.collection, 'change', this.render, this);
+	        //this.listenTo(this.collection, 'add', this.render, this);
+	        //this.listenTo(this.collection, 'remove', this.render, this);
+	
+	        View.__super__.initialize.apply(this);
+	    }
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 188 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptorgroupalt.js
+	 * @brief Alternative view for group of type of descriptor item
+	 * @author Frederic SCHERMA
+	 * @date 2016-10-14
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	var DescriptorGroupModel = __webpack_require__(132);
+	
+	var DescriptorTypeCollection = __webpack_require__(134);
+	var DescriptorTypeListAltView = __webpack_require__(189);
+	var ScrollingMoreView = __webpack_require__(94);
+	
+	var View = Marionette.ItemView.extend({
+	    tagName: 'tr',
+	    className: 'element object descriptor-group-alt',
+	    template: __webpack_require__(193),
+	
+	    events: {
+	        'click': 'viewDescriptorTypes'
+	    },
+	
+	    initialize: function(options) {
+	        this.listenTo(this.model, 'reset', this.render, this);
+	    },
+	
+	    onRender: function() {
+	    },
+	
+	    viewDescriptorTypes: function() {
+	        var layout = this.getOption('layout');
+	        var collection = new DescriptorTypeCollection([], {group_id: this.model.id});
+	
+	        collection.fetch().then(function () {
+	            var descriptorTypeListView = new DescriptorTypeListAltView({collection : collection});
+	
+	            layout.getRegion('right-down-content').show(descriptorTypeListView);
+	            layout.getRegion('right-down-bottom').show(new ScrollingMoreView({targetView: descriptorTypeListView}));
+	        });
+	    },
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 189 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptortypelistalt.js
+	 * @brief Alternative list of types of descriptors for a group view
+	 * @author Frederic SCHERMA
+	 * @date 2016-10-14
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	var ScrollView = __webpack_require__(78);
+	
+	var DescriptorTypeModel = __webpack_require__(133);
+	var DescriptorTypeAltView = __webpack_require__(190);
+	
+	var View = ScrollView.extend({
+	    template: __webpack_require__(192),
+	    childView: DescriptorTypeAltView,
+	    childViewContainer: 'tbody.descriptor-type-list',
+	
+	    ui: {
+	        'table': 'table.table',
+	    },
+	
+	    events: {
+	    },
 	
 	    initialize: function() {
 	        this.listenTo(this.collection, 'reset', this.render, this);
@@ -25104,78 +27598,84 @@
 
 
 /***/ },
-/* 163 */
+/* 190 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
-	 * @file descriptortype.js
-	 * @brief Type of descriptor item view
+	 * @file descriptortypealt.js
+	 * @brief Alternative type of descriptor item view
 	 * @author Frederic SCHERMA
-	 * @date 2016-07-21
+	 * @date 2016-10-14
 	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
 	 * @license @todo
 	 * @details
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var DescriptorModelTypeModel = __webpack_require__(153);
+	var DescriptorTypeModel = __webpack_require__(133);
 	
 	var View = Marionette.ItemView.extend({
 	    tagName: 'tr',
-	    className: 'element object descriptor-model-type',
-	    template: __webpack_require__(164),
-	/*
-	    ui: {
-	        delete_descriptor_type: 'span.delete-descriptor-type',
-	        view_descriptor_type: 'td.view-descriptor-type',
-	        view_descriptor_value: 'td.view-descriptor-value'
+	    className: 'element object descriptor-type',
+	    template: __webpack_require__(191),
+	
+	    attributes: {
+	        draggable: true,
 	    },
 	
 	    events: {
-	        'click @ui.delete_descriptor_type': 'deleteDescriptorType',
-	        'click @ui.view_descriptor_type': 'viewDescriptorType',
-	        'click @ui.view_descriptor_value': 'viewDescriptorValue'
+	        'dragstart': 'dragStart',
+	        'dragend': 'dragEnd',
 	    },
-	*/
+	
 	    initialize: function() {
 	        this.listenTo(this.model, 'reset', this.render, this);
 	    },
-	/*
-	    onRender: function() {
-	        if (!this.model.get('can_delete') || !session.user.isSuperUser) {
-	            $(this.ui.delete_descriptor_type).hide();
-	        }
+	
+	    dragStart: function(e) {
+	        this.$el.css('opacity', '0.4');
+	        application.dndElement = this;
 	    },
 	
-	    viewDescriptorType: function() {
-	        Backbone.history.navigate("app/accession/descriptor/group/" + this.model.get('group') + "/type/" + this.model.id + '/', {trigger: true});
+	    dragEnd: function(e) {
+	        this.$el.css('opacity', '1.0');
+	        application.dndElement = null;
 	    },
-	
-	    viewDescriptorValue: function () {
-	        Backbone.history.navigate("app/accession/descriptor/group/" + this.model.get('group') + "/type/" + this.model.id + '/value/', {trigger: true});
-	    },
-	
-	    deleteDescriptorType: function () {
-	        if (this.model.get('num_descriptors_values') == 0) {
-	            this.model.destroy({wait: true});
-	        }
-	    }*/
 	});
 	
 	module.exports = View;
 
 
 /***/ },
-/* 164 */
+/* 191 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
 	
 	module.exports = function (obj) {
 	obj || (obj = {});
-	var __t, __p = '';
+	var __t, __p = '', __j = Array.prototype.join;
+	function print() { __p += __j.call(arguments, '') }
 	with (obj) {
-	__p += '<div></div>';
+	__p += '<td name="name" value="' +
+	((__t = ( name )) == null ? '' : __t) +
+	'">' +
+	((__t = ( name )) == null ? '' : __t) +
+	'</td><td name="code">' +
+	((__t = ( code )) == null ? '' : __t) +
+	'</td> ';
+	 if (format.type === "enum_single" || format.type === "enum_pair" || format.type === "enum_ordinal") { ;
+	__p += ' <td name="num_descriptor_values"><span class="badge">' +
+	((__t = ( num_descriptor_values )) == null ? '' : __t) +
+	'</span></td> ';
+	 } else { ;
+	__p += ' <td name="num_descriptor_values"><abbr class="badge" title="' +
+	((__t = ( gt.gettext('No values for this descriptor') )) == null ? '' : __t) +
+	'">N/A</abbr></td> ';
+	 } ;
+	__p += ' <td name="description"><abbr class="label label-default glyphicon glyphicon-option-horizontal" title="' +
+	((__t = ( description )) == null ? '' : __t) +
+	'"><span></span></abbr></td>';
 	
 	}
 	return __p
@@ -25183,7 +27683,7 @@
 
 
 /***/ },
-/* 165 */
+/* 192 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -25192,25 +27692,2059 @@
 	obj || (obj = {});
 	var __t, __p = '';
 	with (obj) {
-	__p += '<div class="col-4 element object descriptor-model-type-list" object-type="descriptor-model-type-list" style="width:50%"><table class="table table-striped"><thead><tr><th><span class="glyphicon glyphicon-asterisk"></span></th><th>' +
-	((__t = ( gt.gettext("Name") )) == null ? '' : __t) +
+	__p += '<div class="object descriptor-type-list" object-type="descriptor-type-list" style="width:100%"><table class="table table-striped"><thead class="sticky-header"><tr><th>' +
+	((__t = ( gt.gettext("Type of descriptor") )) == null ? '' : __t) +
 	'</th><th>' +
 	((__t = ( gt.gettext("Code") )) == null ? '' : __t) +
 	'</th><th>' +
-	((__t = ( gt.gettext("Label") )) == null ? '' : __t) +
+	((__t = ( gt.gettext("Number of values") )) == null ? '' : __t) +
 	'</th><th>' +
-	((__t = ( gt.gettext("Mandatory") )) == null ? '' : __t) +
-	'</th><th>' +
-	((__t = ( gt.gettext("Set Once") )) == null ? '' : __t) +
-	'</th></tr></thead><tbody class="descriptor-model-type-list"></tbody></table></div><div class="col-4 element object descriptor-type-list" object-type="descriptor-type-list" style="width:50%"><table class="table table-striped"><thead><tr><th><span class="glyphicon glyphicon-asterisk"></span></th><th>' +
-	((__t = ( gt.gettext("Name") )) == null ? '' : __t) +
-	'</th><th>' +
-	((__t = ( gt.gettext("Code") )) == null ? '' : __t) +
+	((__t = ( gt.gettext("Description") )) == null ? '' : __t) +
 	'</th></tr></thead><tbody class="descriptor-type-list"></tbody></table></div>';
 	
 	}
 	return __p
 	};
+
+
+/***/ },
+/* 193 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<td class="action view-descriptor-group" name="name" value="' +
+	((__t = ( name )) == null ? '' : __t) +
+	'">' +
+	((__t = ( name )) == null ? '' : __t) +
+	'</td><td class="action view-descriptor-type" name="num_descriptor_types"><abbr class="badge" style="cursor: pointer" title="' +
+	((__t = ( gt.gettext('Manage types of descriptor') )) == null ? '' : __t) +
+	'">' +
+	((__t = ( num_descriptor_types )) == null ? '' : __t) +
+	'</abbr></td>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 194 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<div class="object descriptor-group-list" object-type="descriptor-group-list" style="width:100%"><table class="table table-striped"><thead class="sticky-header"><tr><th>' +
+	((__t = ( gt.gettext("Group of descriptors") )) == null ? '' : __t) +
+	'</th><th>' +
+	((__t = ( gt.gettext("Number of types of descriptor") )) == null ? '' : __t) +
+	'</th></tr></thead><tbody class="descriptor-group-list"></tbody></table></div>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 195 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file leftonerighttwolayout.js
+	 * @brief Two columns, one row at left, two rows at right layout
+	 * @author Frederic SCHERMA
+	 * @date 2016-10-14
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	
+	var TwoColumnsLayout = Marionette.LayoutView.extend({
+	    template: "#left_one_right_two_layout_view",
+	    attributes: {
+	        style: "height: 95%;"
+	    },
+	
+	    regions: {
+	        'left-content': ".left-content",
+	        'left-bottom': ".left-bottom",
+	        'right-up-content': ".right-up-content",
+	        'right-up-bottom': ".right-up-bottom",
+	        'right-down-content': ".right-down-content",
+	        'right-down-bottom': ".right-down-bottom",
+	    },
+	
+	    onBeforeShow: function() {
+	    },
+	
+	    onBeforeDestroy: function () {
+	    },
+	});
+	
+	module.exports = TwoColumnsLayout;
+
+
+/***/ },
+/* 196 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptormetamodel.js
+	 * @brief Descriptor meta-model router
+	 * @author Frederic SCHERMA
+	 * @date 2016-10-26
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	
+	var DescriptorMetaModelModel = __webpack_require__(197);
+	
+	var DescriptorModelCollection = __webpack_require__(169);
+	var DescriptorMetaModelCollection = __webpack_require__(198);
+	var DescriptorPanelCollection = __webpack_require__(199);
+	
+	var DescriptorMetaModelAddView = __webpack_require__(201);
+	var DescriptorMetaModelDetailView = __webpack_require__(204);
+	var DescriptorMetaModelListView = __webpack_require__(206);
+	var DescriptorPanelListView = __webpack_require__(211);
+	
+	var DescriptorModelListAltView = __webpack_require__(217);
+	
+	var DefaultLayout = __webpack_require__(50);
+	var TwoColumnsLayout = __webpack_require__(221);
+	var TitleView = __webpack_require__(51);
+	var ScrollingMoreView = __webpack_require__(94);
+	
+	var Router = Marionette.AppRouter.extend({
+	    routes : {
+	        "app/accession/descriptor/meta-model/": "getDescriptorMetaModelList",
+	        "app/accession/descriptor/meta-model/:id/": "getDescriptorMetaModel",
+	        "app/accession/descriptor/meta-model/:id/panel/": "getDescriptorPanelListForModel",
+	    },
+	
+	    getDescriptorMetaModelList: function () {
+	        var collection = new DescriptorMetaModelCollection();
+	
+	        var defaultLayout = new DefaultLayout({});
+	        application.getRegion('mainRegion').show(defaultLayout);
+	
+	        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of meta-models of descriptor")}));
+	
+	        collection.fetch().then(function () {
+	            var descriptorMetaModelList = new DescriptorMetaModelListView({collection : collection});
+	            defaultLayout.getRegion('content').show(descriptorMetaModelList);
+	            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: descriptorMetaModelList}));
+	        });
+	
+	        // @todo lookup for permission
+	        if (session.user.isAuth && (session.user.isSuperUser || session.user.isStaff)) {
+	            defaultLayout.getRegion('bottom').show(new DescriptorMetaModelAddView({collection: collection}));
+	        }
+	    },
+	
+	    getDescriptorMetaModel: function (id) {
+	        var defaultLayout = new DefaultLayout();
+	        application.getRegion('mainRegion').show(defaultLayout);
+	
+	        var model = new DescriptorMetaModelModel({id: id});
+	
+	        model.fetch().then(function () {
+	            defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Details for the meta-model of descriptor"), object: model.get('name')}));
+	            defaultLayout.getRegion('content').show(new DescriptorMetaModelDetailView({model : model}));
+	        });
+	    },
+	
+	    getDescriptorPanelListForModel: function(id) {
+	        var panelCollection = new DescriptorPanelCollection([], {model_id: id});
+	
+	        var defaultLayout = new DefaultLayout({});
+	        application.getRegion('mainRegion').show(defaultLayout);
+	
+	        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of panels of descriptor")}));
+	
+	        var twoColumnsLayout = new TwoColumnsLayout({});
+	        defaultLayout.getRegion('content').show(twoColumnsLayout);
+	
+	        panelCollection.fetch().then(function () {
+	            var descriptorPanelList = new DescriptorPanelListView({collection : panelCollection});
+	            twoColumnsLayout.getRegion('left-content').show(descriptorPanelList);
+	            twoColumnsLayout.getRegion('left-bottom').show(new ScrollingMoreView({targetView: descriptorPanelList}));
+	        });
+	
+	        var modelCollection = new DescriptorModelCollection();
+	        modelCollection.fetch().then(function () {
+	            var descriptorModelList = new DescriptorModelListAltView({
+	                collection: modelCollection,
+	                layout: twoColumnsLayout
+	            });
+	
+	            twoColumnsLayout.getRegion('right-content').show(descriptorModelList);
+	            twoColumnsLayout.getRegion('right-bottom').show(new ScrollingMoreView({targetView: descriptorModelList}));
+	        });
+	    },
+	});
+	
+	module.exports = Router;
+
+
+/***/ },
+/* 197 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptormetamodel.js
+	 * @brief Meta-model of descriptor
+	 * @author Frederic SCHERMA
+	 * @date 2016-10-27
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Backbone = __webpack_require__(2);
+	
+	var Model = Backbone.Model.extend({
+	    url: function() {
+	        if (this.isNew())
+	            return application.baseUrl + 'accession/descriptor/meta-model/';
+	        else
+	            return application.baseUrl + 'accession/descriptor/meta-model/' + this.get('id') + '/';
+	    },
+	
+	    defaults: {
+	        id: null,
+	        name: '',
+	        label: '',
+	        description: '',
+	        target: '',
+	        num_descriptor_models: 0,
+	    },
+	
+	    parse: function(data) {
+	        //this.perms = data.perms;
+	        return data;
+	    },
+	
+	    validate: function(attrs) {
+	        var errors = {};
+	        var hasError = false;
+	
+	        if (hasError) {
+	          return errors;
+	        }
+	    },
+	});
+	
+	module.exports = Model;
+
+
+/***/ },
+/* 198 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptormetamodel.js
+	 * @brief Meta-model of descriptors collection
+	 * @author Frederic SCHERMA
+	 * @date 2016-10-27
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var DescriptorMetaModelModel = __webpack_require__(197);
+	
+	var Collection = Backbone.Collection.extend({
+	    url: application.baseUrl + 'accession/descriptor/meta-model/',
+	    model: DescriptorMetaModelModel,
+	
+	    parse: function(data) {
+	        this.prev = data.prev;
+	        this.cursor = data.cursor;
+	        this.next = data.next;
+	
+	        this.perms = data.perms;
+	
+	        return data.items;
+	    },
+	});
+	
+	module.exports = Collection;
+
+
+/***/ },
+/* 199 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptorpaneltype.js
+	 * @brief Panel of descriptors collection
+	 * @author Frederic SCHERMA
+	 * @date 2016-10-27
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var DescriptorPanelModel = __webpack_require__(200);
+	
+	var Collection = Backbone.Collection.extend({
+	    url: function() {
+	        return application.baseUrl + 'accession/descriptor/meta-model/' + this.model_id + '/panel/';
+	    },
+	
+	    model: DescriptorPanelModel,
+	
+	    initialize: function(models, options) {
+	        options || (options = {});
+	        this.model_id = options.model_id;
+	    },
+	
+	    parse: function(data) {
+	        this.prev = data.prev;
+	        this.cursor = data.cursor;
+	        this.next = data.next;
+	
+	        return data.items;
+	    },
+	
+	    comparator: 'position'
+	});
+	
+	module.exports = Collection;
+
+
+/***/ },
+/* 200 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptorpanel.js
+	 * @brief Model of panel of descriptor
+	 * @author Frederic SCHERMA
+	 * @date 2016-10-27
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Backbone = __webpack_require__(2);
+	
+	var Model = Backbone.Model.extend({
+	    url: function() {
+	        var model_id = this.model_id || this.get('model') || this.collection.model_id;
+	
+	        if (this.isNew()) {
+	            return application.baseUrl + 'accession/descriptor/meta-model/' + model_id + '/panel/';
+	        }
+	        else
+	            return application.baseUrl + 'accession/descriptor/meta-model/' + model_id + '/panel/' + this.get('id') + '/';
+	    },
+	
+	    defaults: {
+	        id: null,
+	        name: '',
+	        label: '',
+	        descriptor_model: null,
+	        descriptor_model_name: '',
+	        descriptor_model_verbose_name: '',
+	    },
+	
+	    initialize: function(attributes, options) {
+	        Model.__super__.initialize.apply(this, arguments);
+	
+	        options || (options = {});
+	
+	        if (options.collection) {
+	            this.model_id = options.collection.model_id;
+	        }
+	    },
+	
+	    parse: function(data) {
+	        //this.perms = data.perms;
+	        return data;
+	    },
+	
+	    validate: function(attrs) {
+	        var errors = {};
+	        var hasError = false;
+	
+	        if (hasError) {
+	          return errors;
+	        }
+	    },
+	});
+	
+	module.exports = Model;
+
+
+/***/ },
+/* 201 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptormetamodeladd.js
+	 * @brief Add a meta-model of descriptor
+	 * @author Frederic SCHERMA
+	 * @date 2016-10-26
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	
+	var Dialog = __webpack_require__(82);
+	
+	var View = Marionette.ItemView.extend({
+	    tagName: 'div',
+	    className: 'descriptor-meta-model-add',
+	    template: __webpack_require__(202),
+	
+	    ui: {
+	        add: 'span.add-descriptor-meta-model',
+	        name: 'input.descriptor-meta-model-name',
+	    },
+	
+	    events: {
+	        'click @ui.add': 'addDescriptorMetaModel',
+	        'input @ui.name': 'onNameInput',
+	    },
+	
+	    initialize: function(options) {
+	        options || (options = {});
+	        this.collection = options.collection;
+	    },
+	
+	    addDescriptorMetaModel: function () {
+	        var DescriptorModelCreate = Dialog.extend({
+	           template: __webpack_require__(203),
+	
+	            attributes: {
+	                id: "dlg_create_descriptor_model",
+	            },
+	
+	            ui: {
+	                label: "#label",
+	                descriptor_meta_model_target: "#descriptor_meta_model_target",
+	                description: "#description",
+	            },
+	
+	            events: {
+	                'input @ui.label': 'onLabelInput',
+	            },
+	
+	            initialize: function(options) {
+	                DescriptorModelCreate.__super__.initialize.apply(this);
+	
+	                $(this.ui.descriptor_meta_model_target).select2({
+	                    dropdownParent: $(this.el),
+	                });
+	            },
+	
+	            onApply: function() {
+	                if (!this.validateLabel()) {
+	                    return;
+	                }
+	
+	                var view = this;
+	                var collection = this.getOption('collection');
+	                var name = this.getOption('name');
+	                var label = this.ui.label.val();
+	                var target = this.ui.descriptor_meta_model_target.val();
+	                var description = this.ui.description.val();
+	
+	                if (target != null) {
+	                    collection.create({
+	                        name: name,
+	                        label: label,
+	                        target: target,
+	                        description: description
+	                    }, {
+	                        wait: true,
+	                        success: function () {
+	                            view.remove();
+	                        },
+	                        error: function () {
+	                            $.alert.error(gt.gettext("Unable to create the meta-model of descriptor !"));
+	                        }
+	                    });
+	                }
+	            },
+	
+	            validateLabel: function() {
+	                var v = this.ui.label.val();
+	
+	                if (v.length < 3) {
+	                    $(this.ui.label).validateField('failed', gt.gettext('3 characters min'));
+	                    return false;
+	                }
+	
+	                return true;
+	            },
+	
+	            onLabelInput: function () {
+	                if (this.validateLabel()) {
+	                    $(this.ui.label).validateField('ok');
+	                }
+	            }
+	        });
+	
+	        if (!this.ui.name.hasClass('invalid') && this.validateName()) {
+	            var descriptorModelCreate = new DescriptorModelCreate({
+	                collection: this.collection,
+	                name: this.ui.name.val()
+	            });
+	
+	            $(this.ui.name).cleanField();
+	            descriptorModelCreate.render();
+	        }
+	    },
+	
+	    validateName: function() {
+	        var v = this.ui.name.val();
+	        var re = /^[a-zA-Z0-9_\-]+$/i;
+	
+	        if (v.length > 0 && !re.test(v)) {
+	            $(this.ui.name).validateField('failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
+	            return false;
+	        } else if (v.length < 3) {
+	            $(this.ui.name).validateField('failed', gt.gettext('3 characters min'));
+	            return false;
+	        }
+	
+	        return true;
+	    },
+	
+	    onNameInput: function () {
+	        if (this.validateName()) {
+	            $.ajax({
+	                type: "GET",
+	                url: application.baseUrl + 'accession/descriptor/meta-model/search/',
+	                dataType: 'json',
+	                data: {filters: JSON.stringify({
+	                    method: 'ieq',
+	                    fields: 'name',
+	                    name: this.ui.name.val()})
+	                },
+	                el: this.ui.name,
+	                success: function(data) {
+	                    if (data.items.length > 0) {
+	                        for (var i in data.items) {
+	                            var t = data.items[i];
+	
+	                            if (t.name.toUpperCase() == this.el.val().toUpperCase()) {
+	                                $(this.el).validateField('failed', gt.gettext('Descriptor meta-model name already in usage'));
+	                                break;
+	                            }
+	                        }
+	                    } else {
+	                        $(this.el).validateField('ok');
+	                    }
+	                }
+	            });
+	        }
+	    },
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 202 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<table class="table table-striped" style="margin-bottom: 0px"><tbody><tr class="edit-mode" style="height: 95px"><th><span class="add-descriptor-meta-model action glyphicon glyphicon-plus-sign" style="margin-top: 9px; margin-left: 10px"></span></th><td style="width: 100%"><div class="form-group"><input type="text" class="descriptor-meta-model-name form-control" name="descriptor-meta-model"></div></td></tr></tbody></table>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 203 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title">' +
+	((__t = ( gt.gettext("Create a meta-model of descriptor") )) == null ? '' : __t) +
+	'</h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="descriptor_meta_model_target">' +
+	((__t = ( gt.gettext("Target entity") )) == null ? '' : __t) +
+	'</label><select id="descriptor_meta_model_target" class="form-control" name="descriptor-meta-model-target"><option value="accession.accession">' +
+	((__t = ( gt.gettext("Accession") )) == null ? '' : __t) +
+	'</option><option value="accession.batch">' +
+	((__t = ( gt.gettext("Batch") )) == null ? '' : __t) +
+	'</option><option value="accession.sample">' +
+	((__t = ( gt.gettext("Sample") )) == null ? '' : __t) +
+	'</option></select></div><div class="form-group"><label class="control-label" for="label">' +
+	((__t = ( gt.gettext("Label for the current language") )) == null ? '' : __t) +
+	'</label><input class="form-control" id="label" name="label" maxlength="64" autofocus="" style="width:100%"></div><div class="form-group"><label class="control-label" for="description">' +
+	((__t = ( gt.gettext("Description") )) == null ? '' : __t) +
+	'</label><textarea class="form-control" id="description" name="description" maxlength="1024" style="width:100%"></textarea></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal">' +
+	((__t = ( gt.gettext("Cancel") )) == null ? '' : __t) +
+	'</button> <button type="button" class="btn btn-primary apply">' +
+	((__t = ( gt.gettext("Apply") )) == null ? '' : __t) +
+	'</button></div></div></div>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 204 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptormetamodeldetail.js
+	 * @brief Detail for a meta-model of descriptor view
+	 * @author Frederic SCHERMA
+	 * @date 2016-10-27
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	var DescriptorMetaModelModel = __webpack_require__(197);
+	
+	var View = Marionette.ItemView.extend({
+	    className: 'element object descriptor-meta-model-detail',
+	    template: __webpack_require__(205),
+	
+	    ui: {
+	        name: '#descriptor_meta_model_name',
+	        description: '#descriptor_meta_model_description',
+	        save: '#save'
+	    },
+	
+	    events: {
+	        'click @ui.save': 'saveDescriptorMetaModel',
+	        'input @ui.name': 'inputName',
+	    },
+	
+	    initialize: function() {
+	        this.listenTo(this.model, 'reset', this.render, this);
+	    },
+	
+	    onRender: function() {
+	    },
+	
+	    inputName: function () {
+	        var v = this.ui.name.val();
+	        var re = /^[a-zA-Z0-9_-]+$/i;
+	
+	        if (v.length > 0 && !re.test(v)) {
+	            $(this.ui.name).validateField('failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
+	        } else if (v.length < 3) {
+	            $(this.ui.name).validateField('failed', gt.gettext('3 characters min'));
+	        } else {
+	            $(this.ui.name).validateField('ok');
+	        }
+	    },
+	
+	    saveDescriptorMetaModel: function () {
+	        if (!$(this.ui.name.isValidField()))
+	            return;
+	
+	        var name = this.ui.name.val();
+	        var description = this.ui.description.val();
+	
+	        this.model.save({
+	            name: name,
+	            description: description,
+	        }, {wait: true}).done(function() { $.alert.success(gt.gettext("Done")); });
+	    }
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 205 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '', __e = _.escape;
+	with (obj) {
+	__p += '<div class="descriptor-meta-model-detail"><div class="descriptor-mata-model-name form-group" style="width: 50%"><label for="descriptor_meta_model_name">' +
+	__e( gt.gettext('Descriptor meta-model name') ) +
+	'</label><input id="descriptor_meta_model_name" class="form-control" type="text" maxlength="255" value="' +
+	((__t = ( name )) == null ? '' : __t) +
+	'"></div><div class="descriptor-meta-model-description form-group" style="width: 50%"><label for="descriptor_meta_model_description">' +
+	__e( gt.gettext('Description') ) +
+	'</label><textarea id="descriptor_meta_model_description" class="form-control" maxlength="1024">' +
+	((__t = ( description )) == null ? '' : __t) +
+	'</textarea></div><div class="descriptor-model-update form-group" style="width: 100px; margin-left: 20%; margin-top: 25px"><button id="save" class="form-control btn btn-primary">' +
+	__e( gt.gettext('Update') ) +
+	'</button></div></div>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 206 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptormetamodellist.js
+	 * @brief List of meta-model of descriptors view
+	 * @author Frederic SCHERMA
+	 * @date 2016-10-27
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	var DescriptorMetaModelModel = __webpack_require__(197);
+	var DescriptorMetaModelView = __webpack_require__(207);
+	
+	var ScrollView = __webpack_require__(78);
+	
+	var View = ScrollView.extend({
+	    template: __webpack_require__(210),
+	    childView: DescriptorMetaModelView,
+	    childViewContainer: 'tbody.descriptor-meta-model-list',
+	
+	    initialize: function() {
+	        this.listenTo(this.collection, 'reset', this.render, this);
+	        this.listenTo(this.collection, 'change', this.render, this);
+	
+	        View.__super__.initialize.apply(this);
+	    },
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 207 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptormetamodel.js
+	 * @brief Meta-model of descriptor item view
+	 * @author Frederic SCHERMA
+	 * @date 2016-10-27
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	
+	var Dialog = __webpack_require__(82);
+	var DescriptorMetaModelModel = __webpack_require__(197);
+	
+	var View = Marionette.ItemView.extend({
+	    tagName: 'tr',
+	    className: 'element object descriptor-meta-model',
+	    template: __webpack_require__(208),
+	
+	    ui: {
+	        delete_descriptor_meta_model: 'span.delete-descriptor-meta-model',
+	        change_descriptor_meta_model_label: 'td.change-descriptor-meta-model-label',
+	        view_descriptor_meta_model: 'td.view-descriptor-meta-model',
+	        view_descriptor_panels: 'td.view-descriptor-panels',
+	    },
+	
+	    events: {
+	        'click @ui.delete_descriptor_meta_model': 'deleteDescriptorMetaModel',
+	        'click @ui.change_descriptor_meta_model_label': 'editLabel',
+	        'click @ui.view_descriptor_meta_model': 'viewDescriptorMetaModelDetails',
+	        'click @ui.view_descriptor_panels': 'viewDescriptorPanels',
+	    },
+	
+	    initialize: function() {
+	        this.listenTo(this.model, 'reset', this.render, this);
+	    },
+	
+	    onRender: function() {
+	        // localize content-type
+	        application.main.views.contentTypes.htmlFromValue(this.el);
+	
+	        // TODO check with user permission
+	        /*if (!this.model.get('can_delete') || !session.user.isSuperUser) {
+	            $(this.ui.delete_descriptor_model).hide();
+	        }*/
+	    },
+	
+	    viewDescriptorMetaModelDetails: function() {
+	        Backbone.history.navigate("app/accession/descriptor/meta-model/" + this.model.id + "/", {trigger: true});
+	    },
+	
+	    viewDescriptorPanels: function() {
+	        Backbone.history.navigate("app/accession/descriptor/meta-model/" + this.model.id + "/panel/", {trigger: true});
+	    },
+	
+	    deleteDescriptorMetaModel: function() {
+	        if (this.model.get('num_descriptor_models') == 0) {
+	            this.model.destroy({wait: true});
+	        }
+	    },
+	
+	    editLabel: function() {
+	        var model = this.model;
+	
+	        $.ajax({
+	            type: "GET",
+	            url: this.model.url() + 'label/',
+	            dataType: 'json',
+	        }).done(function (data) {
+	            var labels = data;
+	
+	            var ChangeLabel = Dialog.extend({
+	                template: __webpack_require__(209),
+	                templateHelpers: function () {
+	                    return {
+	                        labels: labels,
+	                    };
+	                },
+	
+	                attributes: {
+	                    id: "dlg_change_labels",
+	                },
+	
+	                ui: {
+	                    label: "#descriptor_meta_model_labels input",
+	                },
+	
+	                events: {
+	                    'input @ui.label': 'onLabelInput',
+	                },
+	
+	                initialize: function (options) {
+	                    ChangeLabel.__super__.initialize.apply(this);
+	                },
+	
+	                onLabelInput: function (e) {
+	                    this.validateLabel(e);
+	                },
+	
+	                validateLabel: function (e) {
+	                    var v = $(e.target).val();
+	
+	                    if (v.length > 64) {
+	                        $(this.ui.label).validateField('failed', gt.gettext('64 characters max'));
+	                        return false;
+	                    }
+	
+	                    $(this.ui.label).validateField('ok');
+	
+	                    return true;
+	                },
+	
+	                validateLabels: function() {
+	                    $.each($(this.ui.label), function(i, label) {
+	                        var v = $(this).val();
+	
+	                        if (v.length > 64) {
+	                            $(this).validateField('failed', gt.gettext('64 characters max'));
+	                            return false;
+	                        }
+	                    });
+	
+	                    return true;
+	                },
+	
+	                onApply: function () {
+	                    var view = this;
+	                    var model = this.getOption('model');
+	
+	                    var labels = {};
+	
+	                    $.each($(this.ui.label), function(i, label) {
+	                        var v = $(this).val();
+	                        labels[$(label).attr("language")] = v;
+	                    });
+	
+	                    if (this.validateLabels()) {
+	                        $.ajax({
+	                            type: "PUT",
+	                            url: model.url() + "label/",
+	                            dataType: 'json',
+	                            contentType: "application/json; charset=utf-8",
+	                            data: JSON.stringify(labels)
+	                        }).done(function() {
+	                            // manually update the current context label
+	                            model.set('label', labels[session.language]);
+	                            $.alert.success(gt.gettext("Successfully labeled !"));
+	                        }).always(function() {
+	                            view.remove();
+	                        });
+	                    }
+	                },
+	            });
+	
+	            var changeLabel = new ChangeLabel({model: model});
+	            changeLabel.render();
+	        });
+	    },
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 208 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '', __e = _.escape;
+	with (obj) {
+	__p += '<th><span class="delete-descriptor-meta-model action glyphicon glyphicon-minus-sign"></span></th><td class="action view-descriptor-meta-model" name="name">' +
+	((__t = ( name )) == null ? '' : __t) +
+	'</td><td class="action change-descriptor-meta-model-label" name="label">' +
+	((__t = ( label )) == null ? '' : __t) +
+	'</td><td><abbr class="content-type target-content-type" title="' +
+	__e( target ) +
+	'" value="' +
+	__e( target ) +
+	'"></abbr></td><td class="action view-descriptor-panels" name="num_descriptor_models"><abbr class="badge" style="cursor: pointer" title="' +
+	((__t = ( gt.gettext('Manage panels of descriptor') )) == null ? '' : __t) +
+	'">' +
+	((__t = ( num_descriptor_models )) == null ? '' : __t) +
+	'</abbr></td><td name="description"><abbr class="label label-default glyphicon glyphicon-option-horizontal" title="' +
+	((__t = ( description )) == null ? '' : __t) +
+	'"><span></span></abbr></td>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 209 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '', __j = Array.prototype.join;
+	function print() { __p += __j.call(arguments, '') }
+	with (obj) {
+	__p += '<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title">' +
+	((__t = ( gt.gettext("Change the label for the meta-model of descriptor") )) == null ? '' : __t) +
+	'</h4></div><div class="modal-body" style="max-height: 400px; overflow-y: auto"><form id="descriptor_meta_model_labels">';
+	
+	                var languages = application.main.collections.uilanguages;
+	
+	                for (var i = 0; i < languages.models.length; ++i) {
+	                    var lang_id = languages.at(i).get('id');
+	                    var lang_label = languages.at(i).get('label');
+	                    var label = labels[lang_label];
+	                    var autofocus = (i == 0) ? 'autofocus=""' : "";
+	                ;
+	__p += ' <div class="form-group"><label class="control-label">' +
+	((__t = ( gt.gettext(lang_label) )) == null ? '' : __t) +
+	'</label><input class="form-control" type="text" language="' +
+	((__t = ( lang_id )) == null ? '' : __t) +
+	'" value="' +
+	((__t = ( labels[lang_id] )) == null ? '' : __t) +
+	'" maxlength="64" ' +
+	((__t = ( autofocus )) == null ? '' : __t) +
+	' autocomplete="off" style="width:100%"></div> ';
+	 } ;
+	__p += ' </form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal">' +
+	((__t = ( gt.gettext("Cancel") )) == null ? '' : __t) +
+	'</button> <button type="button" class="btn btn-primary apply">' +
+	((__t = ( gt.gettext("Apply") )) == null ? '' : __t) +
+	'</button></div></div></div>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 210 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<div class="object descriptor-meta-model-list" object-type="descriptor-meta-model-list" style="width:100%"><table class="table table-striped"><thead><tr><th><span class="glyphicon glyphicon-asterisk"></span></th><th>' +
+	((__t = ( gt.gettext("Name") )) == null ? '' : __t) +
+	'</th><th>' +
+	((__t = ( gt.gettext("Label") )) == null ? '' : __t) +
+	'</th><th>' +
+	((__t = ( gt.gettext("Target") )) == null ? '' : __t) +
+	'</th><th>' +
+	((__t = ( gt.gettext("Number of panels of descriptor") )) == null ? '' : __t) +
+	'</th><th>' +
+	((__t = ( gt.gettext("Description") )) == null ? '' : __t) +
+	'</th></tr></thead><tbody class="descriptor-meta-model-list"></tbody></table></div>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 211 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptorpanellist.js
+	 * @brief List of panel of model of descriptors for a meta-model of descriptor view
+	 * @author Frederic SCHERMA
+	 * @date 2016-10-27
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	var ScrollView = __webpack_require__(78);
+	var Dialog = __webpack_require__(82);
+	
+	var DescriptorPanelModel = __webpack_require__(200);
+	var DescriptorPanelView = __webpack_require__(212);
+	
+	var View = ScrollView.extend({
+	    template: __webpack_require__(216),
+	    childView: DescriptorPanelView,
+	    childViewContainer: 'div.descriptor-panel-list',
+	
+	    ui: {
+	        'top_placeholder': 'div.top-placeholder',
+	        'bottom_placeholder': 'div.bottom-placeholder',
+	    },
+	
+	    initialize: function() {
+	        this.listenTo(this.collection, 'reset', this.render, this);
+	        this.listenTo(this.collection, 'change', this.render, this);
+	
+	        View.__super__.initialize.apply(this);
+	
+	        $("div.left-content").on("dragenter", $.proxy(this.dragEnterContent, this));
+	        $("div.left-content").on("dragleave", $.proxy(this.dragLeaveContent, this));
+	        $("div.left-content").on("dragover", $.proxy(this.dragOverContent, this));
+	        $("div.left-content").on("drop", $.proxy(this.dropContent, this));
+	    },
+	
+	    dragEnterContent: function (e) {
+	        if (e.preventDefault) {
+	            e.preventDefault();
+	        }
+	
+	        this.dragEnterCount || (this.dragEnterCount = 0);
+	        ++this.dragEnterCount;
+	
+	        if (this.dragEnterCount == 1) {
+	            if (application.dndElement.$el.hasClass('descriptor-model')) {
+	                this.ui.bottom_placeholder.css('display', 'block');
+	            }
+	        }
+	
+	        return false;
+	    },
+	
+	    dragLeaveContent: function (e) {
+	        if (e.preventDefault) {
+	            e.preventDefault();
+	        }
+	
+	        this.dragEnterCount || (this.dragEnterCount = 1);
+	        --this.dragEnterCount;
+	
+	        if (this.dragEnterCount == 0) {
+	            if (application.dndElement.$el.hasClass('descriptor-model')) {
+	                this.ui.bottom_placeholder.css('display', 'none');
+	            }
+	        }
+	
+	        return false;
+	    },
+	
+	    dragOverContent: function (e) {
+	        if (e.preventDefault) {
+	            e.preventDefault();
+	        }
+	
+	        this.dragEnterCount || (this.dragEnterCount = 1);
+	
+	        if (this.dragEnterCount == 1) {
+	            if (application.dndElement.$el.hasClass('descriptor-model')) {
+	                this.ui.bottom_placeholder.css('display', 'block');
+	            }
+	        }
+	
+	        //e.dataTransfer.dropEffect = 'move';
+	        return false;
+	    },
+	
+	    dropContent: function (e) {
+	        if (e.stopPropagation) {
+	            e.stopPropagation();
+	        }
+	
+	        this.dragEnterCount = 0;
+	
+	        this.ui.top_placeholder.css('display', 'none');
+	        this.ui.bottom_placeholder.css('display', 'none');
+	
+	        var elt = application.dndElement;
+	        if (!elt) {
+	            return false;
+	        }
+	
+	        if (elt.$el.hasClass('descriptor-model')) {
+	            var DefinesLabel = Dialog.extend({
+	                template: __webpack_require__(214),
+	
+	                attributes: {
+	                    id: "dlg_create_panel",
+	                },
+	
+	                ui: {
+	                    label: "#label",
+	                },
+	
+	                events: {
+	                    'input @ui.label': 'onLabelInput',
+	                },
+	
+	                initialize: function (options) {
+	                    DefinesLabel.__super__.initialize.apply(this);
+	                },
+	
+	                onLabelInput: function () {
+	                    this.validateLabel();
+	                },
+	
+	                validateLabel: function() {
+	                    var v = this.ui.label.val();
+	
+	                    if (v.length < 3) {
+	                        $(this.ui.label).validateField('failed', gt.gettext('3 characters min'));
+	                        return false;
+	                    }
+	
+	                    $(this.ui.label).validateField('ok');
+	
+	                    return true;
+	                },
+	
+	                onApply: function() {
+	                    var view = this;
+	                    var collection = this.getOption('collection');
+	                    var position = this.getOption('position');
+	                    var modelId = this.getOption('descriptor_model');
+	
+	                    if (this.validateLabel()) {
+	                        var to_rshift = [];
+	
+	                        // server will r-shift position of any model upward this new
+	                        // do it locally to be consistent
+	                        for (var model in collection.models) {
+	                            var dmt = collection.models[model];
+	                            var p = dmt.get('position');
+	                            if (p >= position) {
+	                                dmt.set('position', p+1);
+	                                to_rshift.push(dmt);
+	                            }
+	                        }
+	
+	                        collection.create({
+	                            descriptor_model: modelId,
+	                            label: this.ui.label.val(),
+	                            position: position
+	                        }, {
+	                            wait: true,
+	                            success: function () {
+	                                view.remove();
+	                            },
+	                            error: function () {
+	                                view.remove();
+	
+	                                // left shift (undo) for consistency with server
+	                                for (var i = 0; i < to_rshift.length; ++i) {
+	                                    to_rshift[i].set('position', to_rshift[i].get('position')-1);
+	                                }
+	                            }
+	                        });
+	                    }
+	                },
+	            });
+	
+	            var collection = this.collection;
+	
+	            // find last position + 1
+	            var newPosition = 0;
+	
+	            if (collection.models.length > 0) {
+	                newPosition = collection.at(collection.models.length-1).get('position') + 1;
+	            }
+	
+	            var definesLabel = new DefinesLabel({
+	                collection: collection,
+	                position: newPosition,
+	                descriptor_model: elt.model.get('id')
+	            });
+	
+	            definesLabel.render();
+	        } else if (elt.$el.hasClass('descriptor-panel')) {
+	            var collection = this.collection;
+	            var metaModelId = collection.model_id;
+	
+	            // find last position + 1
+	            var newPosition = collection.at(collection.models.length-1).get('position') + 1;
+	
+	            $.ajax({
+	                type: "PUT",
+	                url: application.baseUrl + 'accession/descriptor/meta-model/' + metaModelId + '/panel/order/',
+	                dataType: 'json',
+	                contentType: "application/json; charset=utf-8",
+	                data: JSON.stringify({
+	                    descriptor_panel_id: elt.model.get('id'),
+	                    position: newPosition
+	                })
+	            }).done(function() {
+	                elt.model.set('position', newPosition);
+	
+	                // lshift any others element
+	                for (var model in collection.models) {
+	                    var dmt = collection.models[model];
+	                    if (dmt.get('id') != elt.model.get('id')) {
+	                        var p = dmt.get('position');
+	                        dmt.set('position', p - 1);
+	                    }
+	                }
+	
+	                // need to sort
+	                collection.sort();
+	            }).fail(function() {
+	                $.alert.error(gt.gettext('Unable to reorder the panels of descriptor'));
+	            });
+	        }
+	
+	        return false;
+	    },
+	});
+	
+	module.exports = View;
+
+/***/ },
+/* 212 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptorpanel.js
+	 * @brief Panel of model of descriptor item view
+	 * @author Frederic SCHERMA
+	 * @date 2016-10-27
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	var Dialog = __webpack_require__(82);
+	var DescriptorPanelModel = __webpack_require__(200);
+	
+	
+	var View = Marionette.ItemView.extend({
+	    tagName: 'div',
+	    className: 'element object descriptor-panel',
+	    template: __webpack_require__(213),
+	
+	    attributes: {
+	        draggable: true,
+	    },
+	
+	    ui: {
+	        'delete_descriptor_panel': 'span.delete-descriptor-panel',
+	        'label': 'span.change-label',
+	        'top_placeholder': 'div.top-placeholder',
+	        'bottom_placeholder': 'div.bottom-placeholder',
+	    },
+	
+	    events: {
+	        'dragstart': 'dragStart',
+	        'dragend': 'dragEnd',
+	        'dragover': 'dragOver',
+	        'dragenter': 'dragEnter',
+	        'dragleave': 'dragLeave',
+	        'drop': 'drop',
+	        'click @ui.delete_descriptor_panel': 'deleteDescriptorPanel',
+	        'click @ui.label': 'editLabel',
+	    },
+	
+	    initialize: function() {
+	        this.listenTo(this.model, 'reset', this.render, this);
+	    },
+	
+	    onRender: function() {
+	        if (!session.user.isStaff && !session.user.isSuperUser) {
+	            $(this.ui.delete_descriptor_panel).hide();
+	        }
+	    },
+	
+	    dragStart: function(e) {
+	        this.$el.css('opacity', '0.4');
+	        application.dndElement = this;
+	    },
+	
+	    dragEnd: function(e) {
+	        this.$el.css('opacity', '1.0');
+	        application.dndElement = null;
+	    },
+	
+	    dragEnter: function (e) {
+	        if (e.originalEvent.preventDefault) {
+	            e.originalEvent.preventDefault();
+	        }
+	
+	        this.dragEnterCount || (this.dragEnterCount = 0);
+	        ++this.dragEnterCount;
+	
+	        if (this.dragEnterCount == 1) {
+	            if (application.dndElement.$el.hasClass('descriptor-panel')) {
+	                if (this.model.get('position') < application.dndElement.model.get('position')) {
+	                    this.ui.top_placeholder.css('display', 'block');
+	                } else if (this.model.get('position') > application.dndElement.model.get('position')) {
+	                    this.ui.bottom_placeholder.css('display', 'block');
+	                }
+	            } else if (application.dndElement.$el.hasClass('descriptor-model')) {
+	                this.ui.top_placeholder.css('display', 'block');
+	            }
+	        }
+	
+	        return false;
+	    },
+	
+	    dragLeave: function (e) {
+	        if (e.originalEvent.preventDefault) {
+	            e.originalEvent.preventDefault();
+	        }
+	
+	        this.dragEnterCount || (this.dragEnterCount = 1);
+	        --this.dragEnterCount;
+	
+	        if (this.dragEnterCount == 0) {
+	            if (application.dndElement.$el.hasClass('descriptor-panel')) {
+	                if (this.model.get('position') < application.dndElement.model.get('position')) {
+	                    this.ui.top_placeholder.css('display', 'none');
+	                } else if (this.model.get('position') > application.dndElement.model.get('position')) {
+	                    this.ui.bottom_placeholder.css('display', 'none');
+	                }
+	            } else if (application.dndElement.$el.hasClass('descriptor-model')) {
+	                this.ui.top_placeholder.css('display', 'none');
+	            }
+	        }
+	
+	        return false;
+	    },
+	
+	    dragOver: function (e) {
+	        if (e.originalEvent.preventDefault) {
+	            e.originalEvent.preventDefault();
+	        }
+	
+	        this.dragEnterCount || (this.dragEnterCount = 1);
+	
+	        if (this.dragEnterCount == 1) {
+	            if (application.dndElement.$el.hasClass('descriptor-panel')) {
+	                if (this.model.get('position') < application.dndElement.model.get('position')) {
+	                    this.ui.top_placeholder.css('display', 'block');
+	                } else if (this.model.get('position') > application.dndElement.model.get('position')) {
+	                    this.ui.bottom_placeholder.css('display', 'block');
+	                }
+	            } else if (application.dndElement.$el.hasClass('descriptor-model')) {
+	                this.ui.top_placeholder.css('display', 'block');
+	            }
+	        }
+	
+	        //e.originalEvent.dataTransfer.dropEffect = 'move';
+	        return false;
+	    },
+	
+	    drop: function (e) {
+	        if (e.originalEvent.stopPropagation) {
+	            e.originalEvent.stopPropagation();
+	        }
+	
+	        var elt = application.dndElement;
+	        this.dragEnterCount = 0;
+	
+	        if (elt.$el.hasClass('descriptor-model')) {
+	            // reset placeholders
+	            this.ui.top_placeholder.css('display', 'none');
+	            this.ui.bottom_placeholder.css('display', 'none');
+	
+	            var DefinesLabel = Dialog.extend({
+	                template: __webpack_require__(214),
+	
+	                attributes: {
+	                    id: "dlg_create_panel",
+	                },
+	
+	                ui: {
+	                    label: "#label",
+	                },
+	
+	                events: {
+	                    'input @ui.label': 'onLabelInput',
+	                },
+	
+	                initialize: function (options) {
+	                    DefinesLabel.__super__.initialize.apply(this);
+	                },
+	
+	                onLabelInput: function () {
+	                    this.validateLabel();
+	                },
+	
+	                validateLabel: function() {
+	                    var v = this.ui.label.val();
+	
+	                    if (v.length < 3) {
+	                        $(this.ui.label).validateField('failed', gt.gettext('3 characters min'));
+	                        return false;
+	                    }
+	
+	                    $(this.ui.label).validateField('ok');
+	
+	                    return true;
+	                },
+	
+	                onApply: function() {
+	                    var view = this;
+	                    var collection = this.getOption('collection');
+	                    var position = this.getOption('position');
+	                    var descriptor_model = this.getOption('descriptor_model');
+	
+	                    if (this.validateLabel()) {
+	                        var to_rshift = [];
+	
+	                        // server will r-shift position of any model upward this new
+	                        // do it locally to be consistent
+	                        for (var model in collection.models) {
+	                            var dmt = collection.models[model];
+	                            var p = dmt.get('position');
+	                            if (p >= position) {
+	                                dmt.set('position', p+1);
+	                                to_rshift.push(dmt);
+	                            }
+	                        }
+	
+	                        collection.create({
+	                            descriptor_model: descriptor_model,
+	                            label: this.ui.label.val(),
+	                            position: position
+	                        }, {
+	                            wait: true,
+	                            success: function () {
+	                                view.remove();
+	                            },
+	                            error: function () {
+	                                view.remove();
+	
+	                                // left shift (undo) for consistency with server
+	                                for (var i = 0; i < to_rshift.length; ++i) {
+	                                    to_rshift[i].set('position', to_rshift[i].get('position')-1);
+	                                }
+	                            }
+	                        });
+	                    }
+	                },
+	            });
+	
+	            var definesLabel = new DefinesLabel({
+	                collection: this.model.collection,
+	                position: this.model.get('position'),
+	                descriptor_model: elt.model.get('id')
+	            });
+	
+	            definesLabel.render();
+	        }
+	        else if (elt.$el.hasClass('descriptor-panel')) {
+	            // useless drop on himself
+	            if (this == elt) {
+	                return false;
+	            }
+	
+	            // reset placeholder
+	            this.ui.top_placeholder.css('display', 'none');
+	            this.ui.bottom_placeholder.css('display', 'none');
+	
+	            // ajax call
+	            var position = elt.model.get('position');
+	            var newPosition = this.model.get('position');
+	            var modelId = this.model.collection.model_id;
+	            var collection = this.model.collection;
+	
+	            $.ajax({
+	                type: "PUT",
+	                url: application.baseUrl + 'accession/descriptor/meta-model/' + modelId + '/panel/order/',
+	                dataType: 'json',
+	                contentType: "application/json; charset=utf-8",
+	                data: JSON.stringify({
+	                    descriptor_panel_id: elt.model.get('id'),
+	                    position: newPosition
+	                })
+	            }).done(function() {
+	                // server will shift position of any model upward/downward this model
+	                // do it locally to be consistent
+	                // so that we don't need to collection.fetch({update: true, remove: true});
+	                if (newPosition < position) {
+	                    var to_rshift = [];
+	
+	                    for (var model in collection.models) {
+	                        var dmt = collection.models[model];
+	                        if (dmt.get('id') != elt.model.get('id')) {
+	                            if (dmt.get('position') >= newPosition) {
+	                                to_rshift.push(dmt);
+	                            }
+	                        }
+	                    }
+	
+	                    elt.model.set('position', newPosition);
+	
+	                    var nextPosition = newPosition + 1;
+	
+	                    for (var i = 0; i < to_rshift.length; ++i) {
+	                        to_rshift[i].set('position', nextPosition);
+	                        ++nextPosition;
+	                    }
+	                } else {
+	                    var to_lshift = [];
+	
+	                    for (var model in collection.models) {
+	                        var dmt = collection.models[model];
+	                        if (dmt.get('id') != elt.model.get('id')) {
+	                            if (dmt.get('position') <= newPosition) {
+	                                to_lshift.push(dmt);
+	                            }
+	                        }
+	                    }
+	
+	                    elt.model.set('position', newPosition);
+	
+	                    var nextPosition = 0;
+	
+	                    for (var i = 0; i < to_lshift.length; ++i) {
+	                        to_lshift[i].set('position', nextPosition);
+	                        ++nextPosition;
+	                    }
+	                }
+	
+	                // need to sort
+	                collection.sort();
+	            }).fail(function () {
+	                $.alert.error(gt.gettext('Unable to reorder the panels of descriptor'));
+	            })
+	        }
+	
+	        return false;
+	    },
+	
+	    editLabel: function() {
+	        var model = this.model;
+	
+	        $.ajax({
+	            type: "GET",
+	            url: this.model.url() + 'label/',
+	            dataType: 'json',
+	        }).done(function (data) {
+	            var labels = data;
+	
+	            var ChangeLabel = Dialog.extend({
+	                template: __webpack_require__(215),
+	                templateHelpers: function () {
+	                    return {
+	                        labels: labels,
+	                    };
+	                },
+	
+	                attributes: {
+	                    id: "dlg_change_labels",
+	                },
+	
+	                ui: {
+	                    label: "#descriptor_panel_labels input",
+	                },
+	
+	                events: {
+	                    'input @ui.label': 'onLabelInput',
+	                },
+	
+	                initialize: function (options) {
+	                    ChangeLabel.__super__.initialize.apply(this);
+	                },
+	
+	                onLabelInput: function (e) {
+	                    this.validateLabel(e);
+	                },
+	
+	                validateLabel: function (e) {
+	                    var v = $(e.target).val();
+	
+	                    if (v.length > 64) {
+	                        $(this.ui.label).validateField('failed', gt.gettext('64 characters max'));
+	                        return false;
+	                    }
+	
+	                    $(this.ui.label).validateField('ok');
+	
+	                    return true;
+	                },
+	
+	                validateLabels: function () {
+	                    $.each($(this.ui.label), function (i, label) {
+	                        var v = $(this).val();
+	
+	                        if (v.length > 64) {
+	                            $(this).validateField('failed', gt.gettext('64 characters max'));
+	                            return false;
+	                        }
+	                    });
+	
+	                    return true;
+	                },
+	
+	                onApply: function () {
+	                    var view = this;
+	                    var model = this.getOption('model');
+	
+	                    var labels = {};
+	
+	                    $.each($(this.ui.label), function (i, label) {
+	                        var v = $(this).val();
+	                        labels[$(label).attr("language")] = v;
+	                    });
+	
+	                    if (this.validateLabels()) {
+	                        $.ajax({
+	                            type: "PUT",
+	                            url: model.url() + "label/",
+	                            dataType: 'json',
+	                            contentType: "application/json; charset=utf-8",
+	                            data: JSON.stringify(labels)
+	                        }).done(function () {
+	                            // manually update the current context label
+	                            model.set('label', labels[session.language]);
+	                            $.alert.success(gt.gettext("Successfully labeled !"));
+	                        }).always(function () {
+	                            view.remove();
+	                        });
+	                    }
+	                },
+	            });
+	
+	            var changeLabel = new ChangeLabel({model: model});
+	            changeLabel.render();
+	        });
+	        /*
+	        var ChangeLabel = Dialog.extend({
+	            template: require('../templates/descriptorpanelchangelabel.html'),
+	
+	            attributes: {
+	                id: "dlg_change_label",
+	            },
+	
+	            ui: {
+	                label: "#label",
+	            },
+	
+	            events: {
+	                'input @ui.label': 'onLabelInput',
+	            },
+	
+	            initialize: function (options) {
+	                ChangeLabel.__super__.initialize.apply(this);
+	            },
+	
+	            onLabelInput: function () {
+	                this.validateLabel();
+	            },
+	
+	            validateLabel: function() {
+	                var v = this.ui.label.val();
+	
+	                if (v.length < 3) {
+	                    $(this.ui.label).validateField('failed', gt.gettext('3 characters min'));
+	                    return false;
+	                }
+	
+	                $(this.ui.label).validateField('ok');
+	
+	                return true;
+	            },
+	
+	            onApply: function() {
+	                var view = this;
+	                var model = this.getOption('model');
+	
+	                if (this.validateLabel()) {
+	                    model.save({label: this.ui.label.val()}, {
+	                        patch: true,
+	                        wait: true,
+	                        success: function() {
+	                            view.remove();
+	                            $.alert.success(gt.gettext("Successfully labeled !"));
+	                        },
+	                        error: function() {
+	                            $.alert.error(gt.gettext("Unable to change label !"));
+	                        }
+	                    });
+	                }
+	            },
+	        });
+	
+	        var changeLabel = new ChangeLabel({model: this.model});
+	
+	        changeLabel.render();
+	        changeLabel.ui.label.val(this.model.get('label'));*/
+	    },
+	
+	    deleteDescriptorPanel: function() {
+	        var collection = this.model.collection;
+	        var position = this.model.get('position');
+	
+	        this.model.destroy({
+	            wait: true,
+	            success: function () {
+	                for (var model in collection.models) {
+	                    var dmt = collection.models[model];
+	                    if (dmt.get('position') > position) {
+	                        var new_position = dmt.get('position') - 1;
+	                        dmt.set('position', new_position);
+	                    }
+	                }
+	            }
+	        });
+	    }
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 213 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<div style="margin: 10px; height: 40px; border: 2px dashed #ddd; display: none" class="top-placeholder"></div><div style="margin: 10px; padding: 10px; border: 2px solid #ddd; border-radius: 10px"><span class="delete-descriptor-panel action glyphicon glyphicon-minus-sign"></span> <span name="label" class="action change-label">' +
+	((__t = ( label )) == null ? '' : __t) +
+	'</span><span class="action change-label label-placeholder" style="color: #ddd">' +
+	((__t = ( gt.gettext("Undefined label") )) == null ? '' : __t) +
+	'</span><hr style="margin-top : 5px; margin-bottom: 5px"><span class="glyphicon glyphicon-file"></span>&nbsp;<span name="descriptor-model-verbose-name"> <abbr title="' +
+	((__t = ( descriptor_model_name )) == null ? '' : __t) +
+	'">' +
+	((__t = ( descriptor_model_verbose_name )) == null ? '' : __t) +
+	'</abbr></span></div><div style="margin: 10px; height: 40px; border: 2px dashed #ddd; display: none" class="bottom-placeholder"></div>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 214 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title">' +
+	((__t = ( gt.gettext("Create a panel of descriptor") )) == null ? '' : __t) +
+	'</h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="label">' +
+	((__t = ( gt.gettext("Label for the current language") )) == null ? '' : __t) +
+	'</label><input class="form-control" id="label" type="text" name="label" value="" maxlength="128" autofocus="" autocomplete="off" style="width:100%"></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal">' +
+	((__t = ( gt.gettext("Cancel") )) == null ? '' : __t) +
+	'</button> <button type="button" class="btn btn-primary apply">' +
+	((__t = ( gt.gettext("Apply") )) == null ? '' : __t) +
+	'</button></div></div></div>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 215 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '', __j = Array.prototype.join;
+	function print() { __p += __j.call(arguments, '') }
+	with (obj) {
+	__p += '<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title">' +
+	((__t = ( gt.gettext("Change the label for the panel of descriptor") )) == null ? '' : __t) +
+	'</h4></div><div class="modal-body" style="max-height: 400px; overflow-y: auto"><form id="descriptor_panel_labels">';
+	
+	                var languages = application.main.collections.uilanguages;
+	
+	                for (var i = 0; i < languages.models.length; ++i) {
+	                    var lang_id = languages.at(i).get('id');
+	                    var lang_label = languages.at(i).get('label');
+	                    var label = labels[lang_label];
+	                    var autofocus = (i == 0) ? 'autofocus=""' : "";
+	                ;
+	__p += ' <div class="form-group"><label class="control-label">' +
+	((__t = ( gt.gettext(lang_label) )) == null ? '' : __t) +
+	'</label><input class="form-control" type="text" language="' +
+	((__t = ( lang_id )) == null ? '' : __t) +
+	'" value="' +
+	((__t = ( labels[lang_id] )) == null ? '' : __t) +
+	'" maxlength="64" ' +
+	((__t = ( autofocus )) == null ? '' : __t) +
+	' autocomplete="off" style="width:100%"></div> ';
+	 } ;
+	__p += ' </form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal">' +
+	((__t = ( gt.gettext("Cancel") )) == null ? '' : __t) +
+	'</button> <button type="button" class="btn btn-primary apply">' +
+	((__t = ( gt.gettext("Apply") )) == null ? '' : __t) +
+	'</button></div></div></div>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 216 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<div style="border-bottom: 2px solid #ddd; padding: 8px"><span style="font-weight: bold">' +
+	((__t = ( gt.gettext("Panels of descriptor") )) == null ? '' : __t) +
+	'</span></div><div style="margin: 10px; height: 40px; border: 2px dashed #ddd; display: none" class="top-placeholder"></div><div class="object descriptor-panel-list" object-type="descriptor-panel-list"></div><div style="margin: 10px; height: 40px; border: 2px dashed #ddd; display: none" class="bottom-placeholder"></div>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 217 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptormodellistalt.js
+	 * @brief Alternative list of model of descriptors view
+	 * @author Frederic SCHERMA
+	 * @date 2016-10-26
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	var DescriptorModelView = __webpack_require__(218);
+	
+	var ScrollView = __webpack_require__(78);
+	
+	var View = ScrollView.extend({
+	    template: __webpack_require__(220),
+	    childView: DescriptorModelView,
+	    childViewContainer: 'tbody.descriptor-model-list',
+	
+	    initialize: function() {
+	        this.listenTo(this.collection, 'reset', this.render, this);
+	        this.listenTo(this.collection, 'change', this.render, this);
+	
+	        View.__super__.initialize.apply(this);
+	    },
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 218 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptormodelalt.js
+	 * @brief Alternative model of descriptor item view
+	 * @author Frederic SCHERMA
+	 * @date 2016-10-26
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	var DescriptorModelModel = __webpack_require__(168);
+	
+	var View = Marionette.ItemView.extend({
+	    tagName: 'tr',
+	    className: 'element object descriptor-model',
+	    template: __webpack_require__(219),
+	
+	    attributes: {
+	        draggable: true,
+	    },
+	
+	    events: {
+	        'dragstart': 'dragStart',
+	        'dragend': 'dragEnd',
+	    },
+	
+	    initialize: function() {
+	        this.listenTo(this.model, 'reset', this.render, this);
+	    },
+	
+	    onRender: function() {
+	    },
+	
+	    dragStart: function(e) {
+	        this.$el.css('opacity', '0.4');
+	        application.dndElement = this;
+	    },
+	
+	    dragEnd: function(e) {
+	        this.$el.css('opacity', '1.0');
+	        application.dndElement = null;
+	    },
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 219 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<td name="name">' +
+	((__t = ( name )) == null ? '' : __t) +
+	'</td><td name="verbose_name">' +
+	((__t = ( verbose_name )) == null ? '' : __t) +
+	'</td><td name="num_descriptor_model_types"><span class="badge">' +
+	((__t = ( num_descriptor_model_types )) == null ? '' : __t) +
+	'</span></td><td name="description"><abbr class="label label-default glyphicon glyphicon-option-horizontal" title="' +
+	((__t = ( description )) == null ? '' : __t) +
+	'"><span></span></abbr></td>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 220 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<div class="object descriptor-model-list" object-type="descriptor-model-list" style="width:100%"><table class="table table-striped"><thead><tr><th>' +
+	((__t = ( gt.gettext("Name") )) == null ? '' : __t) +
+	'</th><th>' +
+	((__t = ( gt.gettext("Verbose name") )) == null ? '' : __t) +
+	'</th><th>' +
+	((__t = ( gt.gettext("Number of types of descriptor") )) == null ? '' : __t) +
+	'</th><th>' +
+	((__t = ( gt.gettext("Description") )) == null ? '' : __t) +
+	'</th></tr></thead><tbody class="descriptor-model-list"></tbody></table></div>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 221 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file twocolumnslayout.js
+	 * @brief Two columns layout
+	 * @author Frederic SCHERMA
+	 * @date 2016-10-14
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	
+	var TwoColumnsLayout = Marionette.LayoutView.extend({
+	    template: "#two_columns_layout_view",
+	    attributes: {
+	        style: "height: 95%;"
+	    },
+	
+	    regions: {
+	        'left-content': ".left-content",
+	        'left-bottom': ".left-bottom",
+	        'right-content': ".right-content",
+	        'right-bottom': ".right-bottom",
+	    },
+	
+	    onBeforeShow: function() {
+	    },
+	
+	    onBeforeDestroy: function () {
+	    },
+	});
+	
+	module.exports = TwoColumnsLayout;
 
 
 /***/ }

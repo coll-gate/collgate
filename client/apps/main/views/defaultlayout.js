@@ -17,10 +17,10 @@ var DefaultLayout = Marionette.LayoutView.extend({
     },
 
     regions: {
-        title: ".panel-title",
-        content: ".panel-body",
-        content_bottom: ".panel-body-bottom",
-        bottom: ".panel-bottom",
+        'title': ".panel-title",
+        'content': ".panel-body",
+        'content-bottom': ".panel-body-bottom",
+        'bottom': ".panel-bottom",
     },
 
     initialize: function() {

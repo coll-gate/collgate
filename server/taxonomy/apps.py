@@ -40,7 +40,7 @@ class CollGateTaxonomy(ApplicationMain):
             MenuEntry('create-taxon', _('Create taxon'), "~taxonomy/taxon/create", icon=Glyph.PLUS_SIGN, order=1))
         menu_taxonomy.add_entry(MenuSeparator(100))
         menu_taxonomy.add_entry(
-            MenuEntry('list-taxon', _('List taxons'), "#taxonomy/", icon=Glyph.LIST, order=101))
+            MenuEntry('list-taxon', _('List taxons'), "#taxonomy/taxon/", icon=Glyph.LIST, order=101))
         taxonomy_module.add_menu(menu_taxonomy)
 
         module_manager.register_menu(taxonomy_module)

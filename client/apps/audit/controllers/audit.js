@@ -121,7 +121,7 @@ var Controller = Marionette.Controller.extend({
             var auditListView = new AuditListView({collection: auditCollection});
 
             defaultLayout.getRegion('content').show(auditListView);
-            defaultLayout.getRegion('content_bottom').show(new ScrollingMoreView({targetView: auditListView}));
+            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: auditListView}));
         });
     },
 
@@ -266,7 +266,7 @@ var Controller = Marionette.Controller.extend({
             var auditListView = new AuditListView({collection: auditCollection});
 
             defaultLayout.getRegion('content').show(auditListView);
-            defaultLayout.getRegion('content_bottom').show(new ScrollingMoreView({targetView: auditListView}));
+            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: auditListView}));
         });
     }
 });

@@ -46,7 +46,7 @@ var Router = Marionette.AppRouter.extend({
         collection.fetch().then(function () {
             var descriptorModelList = new DescriptorModelListView({collection : collection});
             defaultLayout.getRegion('content').show(descriptorModelList);
-            defaultLayout.getRegion('content_bottom').show(new ScrollingMoreView({targetView: descriptorModelList}));
+            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: descriptorModelList}));
         });
 
         // @todo lookup for permission

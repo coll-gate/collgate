@@ -82,7 +82,7 @@ var TaxonItemView = Marionette.ItemView.extend({
 
             $.ajax({
                 type: "GET",
-                url: application.baseUrl + 'taxonomy/search/',
+                url: application.baseUrl + 'taxonomy/taxon/search/',
                 dataType: 'json',
                 data: {filters: JSON.stringify(filters)},
                 cache: false,
@@ -114,7 +114,7 @@ var TaxonItemView = Marionette.ItemView.extend({
             $.ajax({
                 view: this,
                 type: "POST",
-                url: application.baseUrl + 'taxonomy/' + this.model.id + "/synonym/" ,
+                url: this.model.url() + 'synonym/',
                 contentType: "application/json; charset=utf-8",
                 dataType: 'json',
                 data: JSON.stringify({type: type, name: name, language: language}),
@@ -138,7 +138,7 @@ var TaxonItemView = Marionette.ItemView.extend({
         $.ajax({
             view: this,
             type: "DELETE",
-            url: application.baseUrl + 'taxonomy/' + this.model.id + "/synonym/" + synonymId + '/',
+            url: this.model.url() + 'synonym/' + synonymId + '/',
             contentType: "application/json; charset=utf-8",
             success: function(data) {
                 //this.view.model.removeSynonym(type, name, language);
@@ -197,7 +197,7 @@ var TaxonItemView = Marionette.ItemView.extend({
                 if (this.validateName()) {
                     $.ajax({
                         type: "PUT",
-                        url: application.baseUrl + 'taxonomy/' + this.model.get('id') + "/synonym/" + synonymId + '/',
+                        url: this.model.url() + 'synonym/' + synonymId + '/',
                         contentType: "application/json; charset=utf-8",
                         dataType: 'json',
                         data: JSON.stringify({name: name}),
@@ -205,7 +205,12 @@ var TaxonItemView = Marionette.ItemView.extend({
                             //view.model.renameSynonym(view.getOption('type'), name, view.getOption('language'), view.getOption('name'));
                             view.remove();
 
-                            view.getOption('model').fetch({reset: true});
+                            model.fetch({reset: true}).then(function() {
+                                //var TitleView = require('../../main/views/titleview');
+
+                                //application.getRegion('mainRegion').currentView.getRegion('title').show(
+                                    //new TitleView({title: gt.gettext("Taxon details"), object: model.get('name')}));
+                            });
                         },
                         error: function() {
                             $.alert.error(gt.gettext("Unable to rename the synonym !"));
@@ -237,7 +242,7 @@ var TaxonItemView = Marionette.ItemView.extend({
     onViewTaxon: function(e) {
         var taxon_id = $(e.target).data('taxon-id');
 
-        Backbone.history.navigate("app/taxonomy/" + taxon_id + "/", {trigger: true});
+        Backbone.history.navigate("app/taxonomy/taxon/" + taxon_id + "/", {trigger: true});
     },
 
     onChangeParent: function () {
@@ -264,7 +269,7 @@ var TaxonItemView = Marionette.ItemView.extend({
                 $(this.ui.parent).select2({
                     dropdownParent: $(this.el),
                     ajax: {
-                        url: application.baseUrl + "taxonomy/search/",
+                        url: application.baseUrl + "taxonomy/taxon/search/",
                         dataType: 'json',
                         delay: 250,
                         data: function (params) {

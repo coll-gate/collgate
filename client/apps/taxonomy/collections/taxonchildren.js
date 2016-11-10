@@ -1,8 +1,8 @@
 /**
- * @file taxon.js
- * @brief Taxon collection
+ * @file taxonchildren.js
+ * @brief Taxon children collection
  * @author Frederic SCHERMA
- * @date 2016-04-13
+ * @date 2016-11-10
  * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
  * @license @todo
  * @details
@@ -10,11 +10,18 @@
 
 var TaxonModel = require('../models/taxon');
 
-var TaxonCollection = Backbone.Collection.extend({
-    url: application.baseUrl + 'taxonomy/taxon/',
+var Collection = Backbone.Collection.extend({
+    url: function() {
+        return application.baseUrl + 'taxonomy/taxon/' + this.model_id + '/children/';
+    },
     model: TaxonModel,
 
     comparator: 'name',
+
+    initialize: function(models, options) {
+        options || (options = {});
+        this.model_id = options.model_id;
+    },
 
     parse: function(data) {
         this.prev = data.prev;
@@ -41,4 +48,4 @@ var TaxonCollection = Backbone.Collection.extend({
     }
 });
 
-module.exports = TaxonCollection;
+module.exports = Collection;

@@ -50,7 +50,7 @@ var PermissionRouter = Marionette.AppRouter.extend({
             var permissionUserList = new PermissionUserListView({collection : userCollection});
 
             defaultLayout.getRegion('content').show(permissionUserList);
-            defaultLayout.getRegion('content_bottom').show(new ScrollingMoreView({targetView: permissionUserList}));
+            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: permissionUserList}));
         });
     },
 
@@ -66,7 +66,7 @@ var PermissionRouter = Marionette.AppRouter.extend({
             var permissionListView = new PermissionListView({collection : permissionsCollection});
 
             defaultLayout.getRegion('content').show(permissionListView);
-            defaultLayout.getRegion('content_bottom').show(new ScrollingMoreView({targetView: permissionListView}));
+            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: permissionListView}));
 
             if ($.inArray("auth.add_permission", permissionsCollection.perms) >= 0) {
                 defaultLayout.getRegion('bottom').show(new PermissionAddView({collection : permissionsCollection}));
@@ -86,7 +86,7 @@ var PermissionRouter = Marionette.AppRouter.extend({
             var permissionGroupList = new PermissionGroupListView({collection : groupCollection});
 
             defaultLayout.getRegion('content').show(permissionGroupList);
-            defaultLayout.getRegion('content_bottom').show(new ScrollingMoreView({targetView: permissionGroupList}));
+            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: permissionGroupList}));
 
             if ($.inArray("auth.add_group", groupCollection.perms) >= 0) {
                 defaultLayout.getRegion('bottom').show(new PermissionAddGroupView({collection : groupCollection}));
@@ -112,7 +112,7 @@ var PermissionRouter = Marionette.AppRouter.extend({
             var permissionList = new PermissionListView({collection : permissionsCollection})
 
             defaultLayout.getRegion('content').show(permissionList);
-            defaultLayout.getRegion('content_bottom').show(new ScrollingMoreView({targetView: permissionList}));
+            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: permissionList}));
 
             if ($.inArray("auth.add_permission", permissionsCollection.perms) >= 0) {
                 defaultLayout.getRegion('bottom').show(new PermissionAddView({collection : permissionsCollection}));
@@ -138,7 +138,7 @@ var PermissionRouter = Marionette.AppRouter.extend({
             var permissionGroupUserList = new PermissionGroupUserListView({collection : userCollection});
 
             defaultLayout.getRegion('content').show(permissionGroupUserList);
-            defaultLayout.getRegion('content_bottom').show(new ScrollingMoreView({targetView: permissionGroupUserList}));
+            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: permissionGroupUserList}));
 
             if ($.inArray("auth.change_group", userCollection.perms) >= 0) {
                 defaultLayout.getRegion('bottom').show(new PermissionGroupAddUserView({collection : userCollection}));

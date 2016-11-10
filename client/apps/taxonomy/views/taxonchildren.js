@@ -1,8 +1,8 @@
 /**
- * @file taxon.js
- * @brief Taxon item view
+ * @file taxonchildren.js
+ * @brief Taxon children item view
  * @author Frederic SCHERMA
- * @date 2016-04-20
+ * @date 2016-11-10
  * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
  * @license @todo
  * @details
@@ -11,7 +11,7 @@
 var Marionette = require('backbone.marionette');
 var TaxonModel = require('../models/taxon');
 
-var TaxonItemView = Marionette.ItemView.extend({
+var View = Marionette.ItemView.extend({
     tagName: 'div',
     template: require('../templates/taxon.html'),
 
@@ -42,4 +42,4 @@ var TaxonItemView = Marionette.ItemView.extend({
     }
 });
 
-module.exports = TaxonItemView;
+module.exports = View;

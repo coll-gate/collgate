@@ -10,27 +10,40 @@
 
 var Marionette = require('backbone.marionette');
 
-var TitleView = Marionette.View.extend({
+var TitleView = Marionette.ItemView.extend({
     tagName: "span",
-    title: "Untitled",
+    template: _.template('<span name="title"></span><span class="heading" name="object"></span>'),
+
+    ui: {
+        title: 'span[name="title"]',
+        object: 'span[name="object"]',
+    },
 
     initialize: function(options) {
-        this.options = options;
+        options || (options = {title: "", object: null});
 
-        var title = $("<span></span>");
-        title.html(Marionette.getOption(this, "title"));
+        this.listenTo(this.model, 'change', this.render, this);
 
-        $(this.el).empty();
-        $(this.el).append(title);
+        TitleView.__super__.initialize.apply(this);
+    },
 
-        if (typeof(options.object) != "undefined") {
-            var object = $("<span></span>");
-            object.addClass("heading")
-            object.html(options.object);
+    onRender: function() {
+        this.ui.title.html(this.getOption('title'));
 
-            $(this.el).append(object);
-        };
-    }
+        if (this.model && this.model.has('name')) {
+            if (!this.ui.object.is(":visible")) {
+                this.ui.object.show();
+            }
+            this.ui.object.html(this.model.get('name'));
+        } else if (this.getOption('object')) {
+            if (!this.ui.object.is(":visible")) {
+                this.ui.object.show();
+            }
+            this.ui.object.html(this.getOption('object'));
+        } else {
+            this.ui.object.hide();
+        }
+    },
 });
 
 module.exports = TitleView;

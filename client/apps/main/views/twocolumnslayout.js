@@ -1,5 +1,5 @@
 /**
- * @file twocolumnlayout.js
+ * @file twocolumnslayout.js
  * @brief Two columns layout
  * @author Frederic SCHERMA
  * @date 2016-10-14

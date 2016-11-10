@@ -49,7 +49,7 @@ var Router = Marionette.AppRouter.extend({
         collection.fetch().then(function () {
             var descriptorGroupListView = new DescriptorGroupListView({read_only: true, collection: collection});
             defaultLayout.getRegion('content').show(descriptorGroupListView);
-            defaultLayout.getRegion('content_bottom').show(new ScrollingMoreView({targetView: descriptorGroupListView}));
+            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: descriptorGroupListView}));
         });
 
         // @todo lookup for permission
@@ -78,7 +78,7 @@ var Router = Marionette.AppRouter.extend({
             var descriptorTypeListView = new DescriptorTypeListView({read_only: true, collection : collection});
 
             defaultLayout.getRegion('content').show(descriptorTypeListView);
-            defaultLayout.getRegion('content_bottom').show(new ScrollingMoreView({targetView: descriptorTypeListView}));
+            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: descriptorTypeListView}));
         });
     },
 
@@ -136,7 +136,7 @@ var Router = Marionette.AppRouter.extend({
 
                 if (valueListView != null) {
                     defaultLayout.getRegion('content').show(valueListView);
-                    defaultLayout.getRegion('content_bottom').show(new ScrollingMoreView({targetView: valueListView, more: -1}));
+                    defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: valueListView, more: -1}));
                 }
             });
         });
