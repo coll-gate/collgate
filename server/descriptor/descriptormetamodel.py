@@ -18,7 +18,7 @@ from igdectk.common.helpers import int_arg
 from igdectk.rest import Format, Method
 from igdectk.rest.response import HttpResponseRest
 
-from main.models import Languages
+from main.models import InterfaceLanguages
 from .descriptor import RestDescriptor
 from .models import DescriptorModel, DescriptorPanel, DescriptorMetaModel
 
@@ -585,7 +585,7 @@ def get_all_labels_of_descriptor_meta_model(request, id):
     label_dict = json.loads(dmm.label)
 
     # complete with missing languages
-    for lang, lang_label in Languages.choices():
+    for lang, lang_label in InterfaceLanguages.choices():
         if lang not in label_dict:
             label_dict[lang] = ""
 
@@ -617,7 +617,7 @@ def change_all_labels_of_descriptor_meta_model(request, id):
 
     labels = request.data
 
-    languages_values = [lang[0] for lang in Languages.choices()]
+    languages_values = [lang[0] for lang in InterfaceLanguages.choices()]
 
     for lang, label in labels.items():
         if lang not in languages_values:
@@ -648,7 +648,7 @@ def get_all_labels_of_descriptor_meta_model(request, id, pid):
     label_dict = json.loads(dp.label)
 
     # complete with missing languages
-    for lang, lang_label in Languages.choices():
+    for lang, lang_label in InterfaceLanguages.choices():
         if lang not in label_dict:
             label_dict[lang] = ""
 
@@ -682,7 +682,7 @@ def change_all_labels_of_descriptor_panel(request, id, pid):
 
     labels = request.data
 
-    languages_values = [lang[0] for lang in Languages.choices()]
+    languages_values = [lang[0] for lang in InterfaceLanguages.choices()]
 
     for lang, label in labels.items():
         if lang not in languages_values:

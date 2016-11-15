@@ -18,7 +18,7 @@ from igdectk.rest import Format, Method
 from igdectk.rest.response import HttpResponseRest
 from igdectk.rest.handler import RestHandler
 
-from main.models import Languages
+from main.models import InterfaceLanguages
 from .models import DescriptorType, DescriptorGroup, DescriptorValue
 
 
@@ -68,7 +68,7 @@ class RestDescriptorGroupIdTypeIdValueId(RestDescriptorGroupIdTypeIdValue):
 
 
 class RestDescriptorGroupIdTypeIdValueIdField(RestDescriptorGroupIdTypeIdValueId):
-    regex = r'^field/$'
+    regex = r'^(?P<field>value0|value1)/$'
     suffix = 'field'
 
 
@@ -548,12 +548,14 @@ def update_descriptor_type(request, id, tid):
 
             values = {}
 
-            for lang in Languages.choices():
+            for lang in InterfaceLanguages.choices():
                 lvalues = {}
 
+                i = 1  # begin to 1
                 for ordinal in range(min_range, max_range+1):
-                    code = "%s:%07i" % (descr_type.code, ordinal)
+                    code = "%s:%07i" % (descr_type.code, i)
                     lvalues[code] = {'ordinal': ordinal, 'value0': 'Undefined(%i)' % ordinal}
+                    i += 1
 
                 values[lang[0]] = lvalues
 
@@ -666,7 +668,7 @@ def create_descriptor_values_for_type(request, id, tid):
     format = json.loads(descr_type.format)
 
     if format.get('trans', False):
-        for lang in Languages.choices():
+        for lang in InterfaceLanguages.choices():
             dv = DescriptorValue()
 
             dv.descriptor = descr_type
@@ -837,53 +839,47 @@ def delete_value_for_descriptor_type(request, id, tid, vid):
 
 
 @RestDescriptorGroupIdTypeIdValueIdField.def_auth_request(
-    Method.GET, Format.JSON, parameters=('field',))
-def get_values_for_descriptor_type(request, id, tid, vid):
+    Method.GET, Format.JSON)
+def get_values_for_descriptor_type(request, id, tid, vid, field):
     """
     Get all translation for a specific field of a value of descriptor.
     """
     group_id = int(id)
     type_id = int(tid)
 
+    if field not in ('value0', 'value1'):
+        raise SuspiciousOperation(_('Field name must be value0 or value1'))
+
     group = get_object_or_404(DescriptorGroup, id=group_id)
     descr_type = get_object_or_404(DescriptorType, id=type_id, group=group)
 
     format = json.loads(descr_type.format)
 
-    values = []
-
-    field = request.GET['field']
-
-    if field not in ('value0', 'value1'):
-        raise SuspiciousOperation(_('Field name must be value0 or value1'))
+    results = {}
 
     # internally stored values
     if descr_type.values != "":
         values = json.loads(descr_type.values)
 
         if format['trans']:
-            for lang, lvalues in values:
-                values.append({lang: lvalues[vid][field]})
+            for lang, lvalues in values.items():
+                results[lang] = lvalues[vid][field]
         else:
-            values.append({'en': values[vid][field]})
-
-        descr_type.values = json.loads(values)
+            results['en'] = values[vid][field]
     else:
         # data stored in table of values
         descr_values = descr_type.values_set.filter(code=vid)
 
         for v in descr_values:
             if field == 'value0':
-                values.append({v.language: v.value0})
+                results[v.language] = v.value0
             elif field == 'value1':
-                values.append({v.language: v.value1})
+                results[v.language] = v.value1
 
     # complete with missing languages
-    for lang, lang_label in Languages.choices():
+    for lang, lang_label in InterfaceLanguages.choices():
         if lang not in values:
             values[lang] = ""
-
-    results = values
 
     return HttpResponseRest(request, results)
 
@@ -895,16 +891,28 @@ def get_values_for_descriptor_type(request, id, tid, vid):
     perms={
         'descriptor.change_descriptortype': _('You are not allowed to modify a type of descriptor'),
         'descriptor.change_descriptorvalue': _('You are not allowed to modify a value of type of descriptor'),
-    })
-def set_values_for_descriptor_type(request, id, tid, vid):
+    },
+    staff=True)
+def set_values_for_descriptor_type(request, id, tid, vid, field):
     """
     Set many translations for a specific field of a value of descriptor.
     """
     group_id = int(id)
     type_id = int(tid)
 
+    if field not in ('value0', 'value1'):
+        raise SuspiciousOperation(_('Field name must be value0 or value1'))
+
     group = get_object_or_404(DescriptorGroup, id=group_id)
     descr_type = get_object_or_404(DescriptorType, id=type_id, group=group)
+
+    new_values = request.data
+
+    languages_values = [lang[0] for lang in InterfaceLanguages.choices()]
+
+    for lang, label in new_values.items():
+        if lang not in languages_values:
+            raise SuspiciousOperation(_("Unsupported language identifier"))
 
     format = json.loads(descr_type.format)
 
@@ -913,20 +921,33 @@ def set_values_for_descriptor_type(request, id, tid, vid):
         values = json.loads(descr_type.values)
 
         if format['trans']:
-            for lvalues in values:
-                del lvalues[vid]
+            for lang, lvalues in values.items():
+                lvalues[vid][field] = new_values[lang]
         else:
-            del values[vid]
+            values[vid] = new_values['en']
 
-        descr_type.values = json.loads(values)
+        descr_type.values = json.dumps(values)
+
+        descr_type.update_field('values')
+        descr_type.save()
     else:
-        # table stored values
-        pass
+        # data stored in table of values
+        descr_values = descr_type.values_set.filter(code=vid)
+
+        for v in descr_values:
+            if field == 'value0':
+                descr_type.update_field('value0')
+                v.value0 = new_values[v.language]
+            elif field == 'value1':
+                descr_type.update_field('value1')
+                v.value1 = new_values[v.language]
+
+        descr_values.save()
+
+    lang = translation.get_language()
 
     results = {
-
+        'value': new_values[lang]
     }
 
     return HttpResponseRest(request, results)
-
-

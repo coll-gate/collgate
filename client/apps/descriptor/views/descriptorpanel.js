@@ -350,12 +350,15 @@ var View = Marionette.ItemView.extend({
                 validateLabel: function (e) {
                     var v = $(e.target).val();
 
-                    if (v.length > 64) {
-                        $(this.ui.label).validateField('failed', gt.gettext('64 characters max'));
+                    if (v.length < 3) {
+                        $(e.target).validateField('failed', gt.gettext('3 characters min'));
+                        return false;
+                    } else if (v.length > 64) {
+                        $(e.target).validateField('failed', gt.gettext('64 characters max'));
                         return false;
                     }
 
-                    $(this.ui.label).validateField('ok');
+                    $(e.target).validateField('ok');
 
                     return true;
                 },
@@ -364,7 +367,10 @@ var View = Marionette.ItemView.extend({
                     $.each($(this.ui.label), function (i, label) {
                         var v = $(this).val();
 
-                        if (v.length > 64) {
+                        if (v.length < 3) {
+                            $(this).validateField('failed', gt.gettext('3 characters min'));
+                            return false;
+                        } else if (v.length > 64) {
                             $(this).validateField('failed', gt.gettext('64 characters max'));
                             return false;
                         }

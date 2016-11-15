@@ -17,7 +17,7 @@ from igdectk.common.helpers import int_arg
 from igdectk.rest import Format, Method
 from igdectk.rest.response import HttpResponseRest
 
-from main.models import Languages
+from main.models import InterfaceLanguages
 from .descriptor import RestDescriptor
 from .models import DescriptorModel, DescriptorModelType, DescriptorType
 
@@ -524,7 +524,7 @@ def get_all_labels_of_descriptor_model_type(request, id, tid):
     label_dict = json.loads(dmt.label)
 
     # complete with missing languages
-    for lang, lang_label in Languages.choices():
+    for lang, lang_label in InterfaceLanguages.choices():
         if lang not in label_dict:
             label_dict[lang] = ""
 
@@ -558,7 +558,7 @@ def change_all_labels_of_descriptor_model_type(request, id, tid):
 
     labels = request.data
 
-    languages_values = [lang[0] for lang in Languages.choices()]
+    languages_values = [lang[0] for lang in InterfaceLanguages.choices()]
 
     for lang, label in labels.items():
         if lang not in languages_values:
