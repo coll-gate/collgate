@@ -196,6 +196,7 @@ INSTALLED_APPS = (
     'main',
     'permission',
     'audit',
+    'descriptor',
     'taxonomy',
     'accession',
 )

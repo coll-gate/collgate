@@ -18,7 +18,7 @@ var TaxonCollection = Backbone.Collection.extend({
 
     parse: function(data) {
         this.prev = data.prev;
-        this.page = data.page;
+        this.cursor = data.cursor;
         this.next = data.next;
 
         return data.items;

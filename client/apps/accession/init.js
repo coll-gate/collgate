@@ -37,18 +37,6 @@ var AccessionModule = Marionette.Module.extend({
         var AccessionRouter = require('./routers/accession');
         this.routers.accession = new AccessionRouter();
 
-        var DescriptorRouter = require('./routers/descriptor');
-        this.routers.descriptor = new DescriptorRouter();
-
-        var DescriptorModelRouter = require('./routers/descriptormodel');
-        this.routers.descriptorModel = new DescriptorModelRouter();
-
-        var DescriptorMetaModelRouter = require('./routers/descriptormetamodel');
-        this.routers.descriptorMetaModel = new DescriptorMetaModelRouter();
-
-        var DescriptorGroupCollection = require('./collections/descriptorgroup');
-        this.collections.descriptorGroup = new DescriptorGroupCollection();
-
         Logger.timeEnd("Start accession module");
     },
 

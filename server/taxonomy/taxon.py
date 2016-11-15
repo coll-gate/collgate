@@ -479,3 +479,68 @@ def rank(request):
         })
 
     return HttpResponseRest(request, taxon_ranks)
+
+
+@RestTaxonIdChildren.def_auth_request(Method.GET, Format.JSON)
+def get_taxon_children(request, id):
+    """
+    Return the list of direct children for the given taxon.
+    """
+    results_per_page = int_arg(request.GET.get('more', 30))
+    cursor = request.GET.get('cursor')
+    limit = results_per_page
+
+    tid = int(id)
+    taxon = get_object_or_404(Taxon, id=tid)
+
+    if cursor:
+        cursor_name, cursor_id = cursor.split('/')
+        qs = taxon.taxon_set.filter(Q(name__gt=cursor_name))
+    else:
+        qs = taxon.taxon_set.all()
+
+    qs = qs.prefetch_related('synonyms').order_by('name')[:limit]
+
+    children = []
+
+    for child in qs:
+        t = {
+            'id': child.id,
+            'name': child.name,
+            'parent': child.parent_id,
+            'rank': child.rank,
+            'parent_list': [int(x) for x in child.parent_list.rstrip(',').split(',')] if child.parent_list else [],
+            'synonyms': [],
+        }
+
+        for synonym in child.synonyms.all().order_by('type', 'language'):
+            t['synonyms'].append({
+                'id': synonym.id,
+                'name': synonym.name,
+                'type': synonym.type,
+                'language': synonym.language
+            })
+
+        children.append(t)
+
+    if len(children) > 0:
+        # prev cursor (asc order)
+        taxon = children[0]
+        prev_cursor = "%s/%s" % (taxon['name'], taxon['id'])
+
+        # next cursor (asc order)
+        taxon = children[-1]
+        next_cursor = "%s/%s" % (taxon['name'], taxon['id'])
+    else:
+        prev_cursor = None
+        next_cursor = None
+
+    results = {
+        'perms': [],
+        'items': children,
+        'prev': prev_cursor,
+        'cursor': cursor,
+        'next': next_cursor,
+    }
+
+    return HttpResponseRest(request, results)

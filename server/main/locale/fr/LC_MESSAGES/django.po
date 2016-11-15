@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-10-27 16:43+0200\n"
+"POT-Creation-Date: 2016-11-15 14:20+0100\n"
 "PO-Revision-Date: 2016-02-01 11:53+0100\n"
 "Last-Translator: Frederic SCHERMA <frederic.scherma@clermont.inra.fr>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -50,37 +50,33 @@ msgstr "Vous n'êtes pas identifié."
 msgid "Please, you must enable your cookies."
 msgstr "Merci d'activer la gestion des cookies."
 
-#: models.py:54
+#: models.py:66 models.py:76
 msgid "English"
 msgstr "Anglais"
 
-#: models.py:55
+#: models.py:67 models.py:77
 msgid "French"
 msgstr "Français"
 
-#: models.py:84
+#: models.py:68
+msgid "Latin"
+msgstr ""
+
+#: models.py:106
 msgid "Pending"
 msgstr "Attente"
 
-#: models.py:85
+#: models.py:107
 msgid "Valid"
 msgstr "Valide"
 
-#: models.py:86
+#: models.py:108
 msgid "Hidden"
 msgstr "Cahé"
 
-#: models.py:87
+#: models.py:109
 msgid "Removed"
 msgstr "Supprimé"
-
-#: models.py:120
-msgid ""
-"Name must contains only alphanumerics characters or _ or - and be at least 3 "
-"characters length"
-msgstr ""
-"Le nom doit contenir seulement des caractères alphanumériques ou _ ou - et "
-"faire au moins 3 caractères de long"
 
 #: profile.py:56
 msgid "Successfully logged"
@@ -113,3 +109,10 @@ msgstr "Mot de passe"
 #: templates/main/index.html:88
 msgid "Sign in"
 msgstr "Se connecter"
+
+#~ msgid ""
+#~ "Name must contains only alphanumerics characters or _ or - and be at "
+#~ "least 3 characters length"
+#~ msgstr ""
+#~ "Le nom doit contenir seulement des caractères alphanumériques ou _ ou - "
+#~ "et faire au moins 3 caractères de long"

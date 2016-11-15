@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-10-24 18:08+0200\n"
+"POT-Creation-Date: 2016-11-15 14:20+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,29 +17,43 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../../views/taxon.js:63 ../../../controllers/taxon.js:248
-msgid "Invalid characters (alphanumeric, _ and - only)"
-msgstr "Caractères invalides (alphanumérique, _ et - seulement)"
+#: ../../../views/taxondetails.js:65 ../../../views/taxondetails.js:182
+#: ../../../controllers/taxon.js:248
+msgid "64 characters max"
+msgstr ""
 
-#: ../../../views/taxon.js:66 ../../../controllers/taxon.js:251
+#: ../../../views/taxondetails.js:68 ../../../views/taxondetails.js:179
+#: ../../../views/taxonlistfilter.js:58 ../../../controllers/taxon.js:251
 msgid "3 characters min"
 msgstr "3 caractères au minimum"
 
-#: ../../../views/taxon.js:93 ../../../controllers/taxon.js:231
-msgid "Taxon name already in usage"
-msgstr "Ce nom de taxon est déjà utilisé"
+#: ../../../views/taxondetails.js:96
+msgid "Synonym of taxon already used"
+msgstr ""
 
-#: ../../../routers/taxon.js:31
+#: ../../../views/taxondetails.js:211
+msgid "Unable to rename the synonym !"
+msgstr ""
+
+#: ../../../views/taxondetails.js:308 ../../../controllers/taxon.js:127
+msgid "Enter a taxon name. 3 characters at least for auto-completion"
+msgstr "Saisissez un nom de taxon. 3 caractères minimum pour l'auto-complétion"
+
+#: ../../../views/taxonlistfilter.js:55
+msgid "Invalid characters (alphanumeric, _ and - only)"
+msgstr "Caractères invalides (alphanumérique, _ et - seulement)"
+
+#: ../../../routers/taxon.js:40
 msgid "List of taxons"
 msgstr "Liste des taxons"
 
-#: ../../../routers/taxon.js:44
+#: ../../../routers/taxon.js:62
 msgid "Taxon details"
 msgstr "Détails du taxon"
 
-#: ../../../controllers/taxon.js:124
-msgid "Enter a taxon name. 3 characters at least for auto-completion"
-msgstr "Saisissez un nom de taxon. 3 caractères minimum pour l'auto-complétion"
+#: ../../../controllers/taxon.js:232
+msgid "Taxon name already in usage"
+msgstr "Ce nom de taxon est déjà utilisé"
 
 #: ../../../controllers/taxon.js:269
 msgid "Family rank cannot have a parent taxon"
@@ -49,46 +63,65 @@ msgstr "Le rang taxinomique famille ne peut pas avoir de parent"
 msgid "This rank must have a parent taxon"
 msgstr "Ce rang taxinomique doit avoir un parent"
 
-#: ../../../controllers/taxon.js:298
+#: ../../../controllers/taxon.js:302
 msgid "Taxon successfully created !"
 msgstr "Taxon créé avec succès !"
 
-#: ../../../templates/taxon.html:17
+#: ../../../templates/taxon.html:17 ../../../templates/taxondetails.html:29
 msgid "Synonyms"
 msgstr "Synonymes"
 
-#: ../../../templates/taxon.html:22
+#: ../../../templates/taxon.html:21 ../../../templates/taxondetails.html:34
 msgid "Type"
 msgstr "Type"
 
-#: ../../../templates/taxon.html:23
+#: ../../../templates/taxon.html:22
+#: ../../../templates/taxonchangesynonym.html:10
+#: ../../../templates/taxondetails.html:35
 msgid "Name"
 msgstr "Nom"
 
-#: ../../../templates/taxon.html:24
+#: ../../../templates/taxon.html:23 ../../../templates/taxoncreate.html:18
+#: ../../../templates/taxondetails.html:36
 msgid "Language"
 msgstr "Language"
+
+#: ../../../templates/taxonchangeparent.html:5
+msgid "Change the direct parent of taxon"
+msgstr ""
+
+#: ../../../templates/taxonchangeparent.html:10
+#: ../../../templates/taxoncreate.html:28
+msgid "Direct parent"
+msgstr "Parent direct"
+
+#: ../../../templates/taxonchangeparent.html:16
+#: ../../../templates/taxonchangesynonym.html:16
+#: ../../../templates/taxoncreate.html:35
+msgid "Cancel"
+msgstr "Annuler"
+
+#: ../../../templates/taxonchangeparent.html:17
+#: ../../../templates/taxonchangesynonym.html:17
+msgid "Apply"
+msgstr ""
+
+#: ../../../templates/taxonchangesynonym.html:5
+msgid "Change the name for a synonym of taxon"
+msgstr ""
 
 #: ../../../templates/taxoncreate.html:5
 msgid "Create a taxon"
 msgstr "Créer un taxon"
 
-#: ../../../templates/taxoncreate.html:10
+#: ../../../templates/taxoncreate.html:12
 msgid "Principal name of the taxon (must be unique)"
 msgstr "Nom principal du taxon (doit être unique)"
 
-#: ../../../templates/taxoncreate.html:14
+#: ../../../templates/taxoncreate.html:24
 msgid "Taxon rank"
 msgstr "Rank taxinomique"
 
-#: ../../../templates/taxoncreate.html:18
-msgid "Direct parent"
-msgstr "Parent direct"
-
-#: ../../../templates/taxoncreate.html:25
-msgid "Cancel"
-msgstr "Annuler"
-
-#: ../../../templates/taxoncreate.html:26
+#: ../../../templates/taxoncreate.html:36
 msgid "Create"
 msgstr "Créer"

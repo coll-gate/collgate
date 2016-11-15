@@ -29,10 +29,6 @@ class CollGateAccession(ApplicationMain):
         accession_module = Module('accession', base_url='coll-gate')
         accession_module.include_urls((
             'base',
-            'descriptor',
-            'descriptormodel',
-            'descriptormetamodel',
-            'descriptorpanel',
             )
         )
 
@@ -48,17 +44,6 @@ class CollGateAccession(ApplicationMain):
         menu_accession.add_entry(
             MenuEntry('list-accession', _('List accessions'), "#accession/accession/", icon=Glyph.LIST, order=101))
 
-        # descriptor related menus
-        menu_accession.add_entry(MenuSeparator(200, auth=AUTH_STAFF))
-        menu_accession.add_entry(
-            MenuEntry('list-descriptor-group', _('List groups of descriptors'), "#accession/descriptor/group/",
-                      icon=Glyph.TH_LIST, order=201, auth=AUTH_STAFF))
-        menu_accession.add_entry(
-            MenuEntry('list-descriptor-model', _('List models of descriptor'), "#accession/descriptor/model/",
-                      icon=Glyph.TH, order=202, auth=AUTH_STAFF))
-        menu_accession.add_entry(
-            MenuEntry('list-descriptor-meta-model', _('List meta-models of descriptor'), "#accession/descriptor/meta-model/",
-                      icon=Glyph.TH_LARGE, order=203, auth=AUTH_STAFF))
         accession_module.add_menu(menu_accession)
 
         module_manager.register_menu(accession_module)

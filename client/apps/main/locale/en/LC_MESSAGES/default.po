@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-10-24 18:08+0200\n"
+"POT-Creation-Date: 2016-11-15 14:20+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -33,11 +33,11 @@ msgstr ""
 msgid "Edit my profile informations"
 msgstr ""
 
-#: ../../../collections/language.js:22
+#: ../../../collections/language.js:22 ../../../collections/uilanguage.js:22
 msgid "English"
 msgstr ""
 
-#: ../../../collections/language.js:23
+#: ../../../collections/language.js:23 ../../../collections/uilanguage.js:23
 msgid "French"
 msgstr ""
 

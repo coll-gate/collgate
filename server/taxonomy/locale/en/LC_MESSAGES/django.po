@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-10-27 16:43+0200\n"
+"POT-Creation-Date: 2016-11-15 14:20+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,74 +29,118 @@ msgstr ""
 msgid "List taxons"
 msgstr ""
 
-#: controller.py:127
-msgid "Undefined synonym name or primary synonym"
+#: controller.py:53
+msgid "A taxon with this name already exists"
+msgstr ""
+
+#: controller.py:58
+msgid "The rank of the parent must be lesser than the new taxon"
 msgstr ""
 
 #: controller.py:130
-msgid "Undefined synonym language"
+msgid "Empty synonym data"
 msgstr ""
 
 #: controller.py:133
+msgid "Undefined synonym name"
+msgstr ""
+
+#: controller.py:136
+msgid "Undefined synonym language"
+msgstr ""
+
+#: controller.py:140
+msgid "A primary name for the taxon with this language already exists"
+msgstr ""
+
+#: controller.py:143
 msgid "Taxon synonym already exists"
 msgstr ""
 
-#: models.py:22
+#: models.py:23
 msgid "Primary"
 msgstr ""
 
-#: models.py:23
+#: models.py:24
 msgid "Synonym"
 msgstr ""
 
-#: models.py:24
+#: models.py:25
 msgid "Code"
 msgstr ""
 
-#: models.py:29
+#: models.py:30
 msgid "Family"
 msgstr ""
 
-#: models.py:30
+#: models.py:31
 msgid "Sub-family"
 msgstr ""
 
-#: models.py:31
+#: models.py:32
 msgid "Genus"
 msgstr ""
 
-#: models.py:32
+#: models.py:33
 msgid "Sub-genus"
 msgstr ""
 
-#: models.py:33
+#: models.py:34
+msgid "Section"
+msgstr ""
+
+#: models.py:35
+msgid "Sub-section"
+msgstr ""
+
+#: models.py:36
 msgid "Specie"
 msgstr ""
 
-#: models.py:34
+#: models.py:37
 msgid "Sub-specie"
 msgstr ""
 
-#: models.py:45
+#: models.py:38
+msgid "Variety"
+msgstr ""
+
+#: models.py:50
 msgid "taxon"
 msgstr ""
 
-#: models.py:62
+#: models.py:87
 msgid "taxon synonym"
 msgstr ""
 
-#: taxon.py:49
+#: taxon.py:83
 msgid "You are not allowed to create a taxon"
 msgstr ""
 
-#: taxon.py:210 taxon.py:232
+#: taxon.py:315 taxon.py:391 taxon.py:418 taxon.py:449
 msgid "You are not allowed to modify a taxon"
 msgstr ""
 
-#: taxon.py:211
+#: taxon.py:341
+msgid "The rank of the parent must be lowest than the taxon itself"
+msgstr ""
+
+#: taxon.py:368
+msgid "You are not allowed to remove a taxon"
+msgstr ""
+
+#: taxon.py:392
 msgid "You are not allowed to add a synonym to a taxon"
 msgstr ""
 
-#: taxon.py:233
+#: taxon.py:419
+msgid "You are not allowed to modify a synonym to a taxon"
+msgstr ""
+
+#: taxon.py:450
 msgid "You are not allowed to delete a synonym from a taxon"
+msgstr ""
+
+#: taxon.py:460
+msgid "It is not possible to removed a primary synonym"
 msgstr ""

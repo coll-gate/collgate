@@ -1,8 +1,8 @@
 /**
  * @file taxonchildren.js
- * @brief Taxon children item view
+ * @brief Taxon list view
  * @author Frederic SCHERMA
- * @date 2016-11-10
+ * @date 2016-04-20
  * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
  * @license @todo
  * @details
@@ -10,35 +10,21 @@
 
 var Marionette = require('backbone.marionette');
 var TaxonModel = require('../models/taxon');
+var TaxonView = require('../views/taxon');
 
-var View = Marionette.ItemView.extend({
-    tagName: 'div',
-    template: require('../templates/taxon.html'),
+var ScrollView = require('../../main/views/scroll');
 
-    ui: {
-        "taxon": "span.taxon",
-        "synonym_name": ".synonym-name",
-        "synonym_language": ".synonym-languages",
-        "taxon_synonym_type": ".taxon-synonym-types",
-        "taxon_rank": ".taxon-ranks",
-    },
 
-    events: {
-        "click @ui.taxon": "onTaxonDetails"
-    },
+var View = ScrollView.extend({
+    template: "<div></div>",
+    className: "taxon-list",
+    childView: TaxonView,
 
-    initialize: function() {
-        this.listenTo(this.model, 'reset', this.render, this);
-    },
+    initialize: function(options) {
+        options || (options = {});
+        this.listenTo(this.collection, 'reset', this.render, this);
 
-    onRender: function() {
-        application.main.views.languages.htmlFromValue(this.el);
-        application.taxonomy.views.taxonSynonymTypes.htmlFromValue(this.el);
-        application.taxonomy.views.taxonRanks.htmlFromValue(this.el);
-    },
-
-    onTaxonDetails: function() {
-        Backbone.history.navigate("app/taxonomy/taxon/" + this.model.get('id') + "/", {trigger: true});
+        View.__super__.initialize.apply(this);
     }
 });
 

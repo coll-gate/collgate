@@ -205,12 +205,7 @@ var TaxonItemView = Marionette.ItemView.extend({
                             //view.model.renameSynonym(view.getOption('type'), name, view.getOption('language'), view.getOption('name'));
                             view.remove();
 
-                            model.fetch({reset: true}).then(function() {
-                                //var TitleView = require('../../main/views/titleview');
-
-                                //application.getRegion('mainRegion').currentView.getRegion('title').show(
-                                    //new TitleView({title: gt.gettext("Taxon details"), object: model.get('name')}));
-                            });
+                            model.fetch({reset: true});
                         },
                         error: function() {
                             $.alert.error(gt.gettext("Unable to rename the synonym !"));

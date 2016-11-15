@@ -68,7 +68,7 @@ var TaxonRouter = Marionette.AppRouter.extend({
         taxonChildren.fetch().then(function() {
             var taxonChildrenView = new TaxonChildrenView({collection: taxonChildren, model: taxon});
 
-            twoRowsLayout.getRegion('bottom-content').show(new TaxonChildrenView({collection: taxonChildren, model: taxon}));
+            twoRowsLayout.getRegion('bottom-content').show(taxonChildrenView);
             twoRowsLayout.getRegion('bottom-bottom').show(new ScrollingMoreView({targetView: taxonChildrenView}));
         });
     },

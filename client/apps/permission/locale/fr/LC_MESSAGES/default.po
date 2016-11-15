@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-10-24 18:08+0200\n"
+"POT-Creation-Date: 2016-11-15 14:20+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,11 +17,11 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../../views/addgroup.js:45
+#: ../../../views/addgroup.js:45 ../../../views/group.js:86
 msgid "Invalid characters (alphanumeric, _ and - only)"
 msgstr "Caractères invalides (alphanumerique, _ et - seulement)"
 
-#: ../../../views/addgroup.js:48
+#: ../../../views/addgroup.js:48 ../../../views/group.js:89
 msgid "3 characters min"
 msgstr "3 caractères minimum"
 
@@ -33,35 +33,48 @@ msgstr "Nom de groupe déjà utilisé"
 msgid "Select a username"
 msgstr "Saisissez un nom d'utilisateur"
 
-#: ../../../routers/permission.js:42
+#: ../../../routers/permission.js:47
 msgid "List of users"
 msgstr "Liste des utilisateurs"
 
-#: ../../../routers/permission.js:58
+#: ../../../routers/permission.js:63
 msgid "List of permissions for user"
 msgstr "Liste des permissions pour l'utilisateur"
 
-#: ../../../routers/permission.js:78
+#: ../../../routers/permission.js:83
 msgid "List of groups"
 msgstr "Liste des groupes"
 
-#: ../../../routers/permission.js:98
+#: ../../../routers/permission.js:106
 msgid "List of permissions for group"
 msgstr "Liste des permissions pour le groupe"
 
-#: ../../../routers/permission.js:118
+#: ../../../routers/permission.js:132
 msgid "List of users for group"
 msgstr "Liste des utilisateurs pour le groupe"
 
+#: ../../../templates/groupchangename.html:5
+msgid "Change the name of the group of users"
+msgstr ""
+
+#: ../../../templates/groupchangename.html:10
 #: ../../../templates/grouplist.html:16 ../../../templates/permission.html:24
 msgid "Name"
 msgstr "Nom"
+
+#: ../../../templates/groupchangename.html:16
+msgid "Cancel"
+msgstr ""
+
+#: ../../../templates/groupchangename.html:17
+msgid "Apply"
+msgstr ""
 
 #: ../../../templates/grouplist.html:17
 msgid "Number of users"
 msgstr "Nombre d'utilisateurs"
 
-#: ../../../templates/grouplist.html:18
+#: ../../../templates/grouplist.html:18 ../../../templates/userlist.html:21
 msgid "Number of permissions"
 msgstr "Nombre de permissions"
 

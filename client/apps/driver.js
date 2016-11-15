@@ -194,6 +194,7 @@ application.on("before:start", function(options) {
     this.main = require('./main/init');
     this.permission = require('./permission/init');
     this.audit = require('./audit/init');
+    this.descriptor = require('./descriptor/init');
     this.taxonomy = require('./taxonomy/init');
     this.accession = require('./accession/init');
 });

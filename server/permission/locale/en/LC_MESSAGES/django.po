@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-10-27 16:43+0200\n"
+"POT-Creation-Date: 2016-11-15 14:20+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,38 +29,38 @@ msgstr ""
 msgid "Manage groups"
 msgstr ""
 
-#: base.py:234
+#: base.py:235 base.py:297
 msgid "Group name already in usage"
 msgstr ""
 
-#: base.py:253
+#: base.py:273
 msgid "Only empty groups can be deleted"
 msgstr ""
 
-#: base.py:421 base.py:560
+#: base.py:474 base.py:615
 msgid "You are not allowed to add a permission"
 msgstr ""
 
-#: base.py:429 base.py:467 base.py:568 base.py:605
+#: base.py:482 base.py:520 base.py:624 base.py:662
 msgid "Only a superuser can change an auth.permission"
 msgstr ""
 
-#: base.py:458 base.py:596
+#: base.py:511 base.py:652
 msgid "You are not allowed to remove a permission"
 msgstr ""
 
-#: base.py:639
+#: base.py:696
 msgid "You are not allowed to add a user into a group"
 msgstr ""
 
-#: base.py:646
+#: base.py:704
 msgid "User already exists into the group"
 msgstr ""
 
-#: base.py:665
+#: base.py:723
 msgid "You are not allowed to remove a user from a group"
 msgstr ""
 
-#: base.py:672
+#: base.py:731
 msgid "User does not exists into the group"
 msgstr ""
