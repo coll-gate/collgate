@@ -20,6 +20,7 @@ var View = Marionette.ItemView.extend({
         code: '#descriptor_type_code',
         description: '#descriptor_type_description',
         format_type: '#format_type',
+        trans: "#trans",
         fields: 'div.descriptor-type-fields',
         field0: '#type_field0',
         field1: '#type_field1',
@@ -60,6 +61,23 @@ var View = Marionette.ItemView.extend({
         $(this.ui.format_type).val(format.type).trigger('change');
         $(this.ui.format_unit).val(format.unit).trigger('change');
         $(this.ui.format_precision).val(format.precision).trigger('change');
+
+        if (format.trans) {
+            $(this.ui.trans).val("true");
+        } else {
+            $(this.ui.trans).val("false");
+        }
+
+        switch (format.type) {
+            case "enum_single":
+            case "enum_pair":
+            case "enum_ordinal":
+                $(this.ui.trans).removeAttr("disabled");
+                break;
+            default:
+                $(this.ui.trans).attr("disabled", "");
+                break;
+        }
 
         if (format.type == "enum_pair") {
             $(this.ui.fields).show();
@@ -141,6 +159,17 @@ var View = Marionette.ItemView.extend({
                 }
                 break;
             default:
+                break;
+        }
+
+        switch (type) {
+            case "enum_single":
+            case "enum_pair":
+            case "enum_ordinal":
+                $(this.ui.trans).removeAttr("disabled");
+                break;
+            default:
+                $(this.ui.trans).attr("disabled", "");
                 break;
         }
 
@@ -234,12 +263,14 @@ var View = Marionette.ItemView.extend({
         var name = this.ui.name.val();
         var code = this.ui.code.val();
         var description = this.ui.description.val();
+        var trans = this.ui.trans.val() == "true" ? true : false;
 
         var format = {
             type: this.ui.format_type.val(),
             unit: this.ui.format_unit.val(),
             precision: this.ui.format_precision.val(),
             fields: [],
+            trans: trans
         };
 
         var field0 = this.ui.field0.val();

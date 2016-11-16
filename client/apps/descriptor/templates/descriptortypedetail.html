@@ -24,23 +24,38 @@
         <label for="descriptor_type_code"><%- gt.gettext('Descriptor type code') %></label>
         <input id="descriptor_type_code" class="form-control" type="text" readonly="readonly" maxlength="255" value="<%= code %>">
     </div>
-    <div class="descriptor-type-format form-group" style="width: 50%;">
-        <label for="format_type"><%- gt.gettext('Type of format') %></label>
-        <select id="format_type" class="form-control">
-            <optgroup label="<%- gt.gettext('Single value') %>"><!-- <%- gt.gettext('Single value') %> -->
-                <option value="boolean"><%- gt.gettext('Boolean') %></option>
-                <option value="numeric"><%- gt.gettext('Numeric') %></option>
-                <option value="numeric_range"><%- gt.gettext('Numeric range') %></option>
-                <option value="ordinal"><%- gt.gettext('Ordinal') %></option>
-                <option value="gps"><%- gt.gettext('GPS coordinate') %></option>
-                <option value="string"><%- gt.gettext('Text') %></option>
-            </optgroup>
-            <optgroup label="<%- gt.gettext('List of values') %>"><!-- <%- gt.gettext('List of values') %> -->
-                <option value="enum_single"><%- gt.gettext('Single enumeration') %></option>
-                <option value="enum_pair"><%- gt.gettext('Pair enumeration') %></option>
-                <option value="enum_ordinal"><%- gt.gettext('Ordinal with text') %></option>
-            </optgroup>
-        </select>
+    <div style="width: 50%;">
+        <div class="row">
+            <div class="col-xs-6">
+                <div class="descriptor-type-format form-group">
+                    <label for="format_type"><%- gt.gettext('Type of format') %></label>
+                    <select id="format_type" class="form-control">
+                        <optgroup label="<%- gt.gettext('Single value') %>"><!-- <%- gt.gettext('Single value') %> -->
+                            <option value="boolean"><%- gt.gettext('Boolean') %></option>
+                            <option value="numeric"><%- gt.gettext('Numeric') %></option>
+                            <option value="numeric_range"><%- gt.gettext('Numeric range') %></option>
+                            <option value="ordinal"><%- gt.gettext('Ordinal') %></option>
+                            <option value="gps"><%- gt.gettext('GPS coordinate') %></option>
+                            <option value="string"><%- gt.gettext('Text') %></option>
+                        </optgroup>
+                        <optgroup label="<%- gt.gettext('List of values') %>"><!-- <%- gt.gettext('List of values') %> -->
+                            <option value="enum_single"><%- gt.gettext('Single enumeration') %></option>
+                            <option value="enum_pair"><%- gt.gettext('Pair enumeration') %></option>
+                            <option value="enum_ordinal"><%- gt.gettext('Ordinal with text') %></option>
+                        </optgroup>
+                    </select>
+                </div>
+            </div>
+            <div class="col-xs-6">
+                <div class="descriptor-format-trans form-group">
+                    <label for="trans"><%- gt.gettext('Translation') %></label>
+                    <select id="trans" class="form-control">
+                        <option value="true"><%- gt.gettext('Yes') %></option>
+                        <option value="false"><%- gt.gettext('No') %></option>
+                    </select>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="descriptor-type-fields form-group" style="width: 50%;">
         <div class="row">

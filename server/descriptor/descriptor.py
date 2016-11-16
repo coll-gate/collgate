@@ -471,6 +471,12 @@ def delete_descriptor_type_for_group(request, id, tid):
             "format": {
                 "type": "object",
                 "properties": {
+                    "type": {"type": "string", 'minLength': 1, 'maxLength': 32},  # @todo with enum
+                    "unit": {"type": "string", 'minLength': 0, 'maxLength': 32},
+                    "fields": {"type": "array", 'minLength': 0, 'maxLength': 2},
+                    "precision": {"type": "string", 'required': False},
+                    "range": {"type": "array", 'minLength': 2, 'maxLength': 2, 'required': False},
+                    "trans": {"type": "boolean", 'required': False},
                 }
             }
         },
@@ -494,6 +500,8 @@ def update_descriptor_type(request, id, tid):
     descr_type = get_object_or_404(DescriptorType, id=type_id, group=group)
     org_format = json.loads(descr_type.format)
 
+    trans = format.get('trans', False)
+
     if not descr_type.can_modify:
         raise SuspiciousOperation(_("It is not permit to modify this type of descriptor"))
 
@@ -505,10 +513,12 @@ def update_descriptor_type(request, id, tid):
 
     # single enumeration
     if format['type'] == 'enum_single':
-        format['fields'] = ['value', '']
+        # reset if type or translation differs
+        if org_format['type'] != 'enum_single' or trans != org_format.get('trans', False):
+            format['trans'] = trans
+            format['fields'] = ['value', '']
 
-        # reset values because it changes of type
-        if org_format['type'] != 'enum_single':
+            # rest values
             descr_type.values = ""
             descr_type.values_set.all().delete()
 
@@ -517,15 +527,18 @@ def update_descriptor_type(request, id, tid):
         if len(format['fields']) != 2:
             raise SuspiciousOperation(_("Type of descriptor with enumeration of pairs require two fields"))
 
-            # reset values because it changes of type
-        if org_format['type'] != 'enum_pair':
+        # reset if type or translation differs
+        if org_format['type'] != 'enum_pair' or trans != org_format.get('trans', False):
+            format['trans'] = trans
+
+            # reset values
             descr_type.values = ""
             descr_type.values_set.all().delete()
 
     # ordinal enumeration
     elif format['type'] == 'enum_ordinal':
-        # always translation with enum or ordinal
-        format['trans'] = True
+        # translation with enum_ordinal
+        format['trans'] = trans
 
         # range as integer in this case
         org_min_range, org_max_range = [int(x) for x in org_format.get('range', ['0', '0'])]
@@ -540,24 +553,31 @@ def update_descriptor_type(request, id, tid):
             descr_type.values = ""
             descr_type.values_set.all().delete()
 
-        # regenerate values only if difference in range
-        if org_min_range != min_range or org_max_range != max_range:
+        # regenerate values only if difference in range or translation
+        if org_min_range != min_range or org_max_range != max_range or trans != org_format.get('trans', False):
             # this will regenerate new entries for ordinal
             format['fields'] = ['label', '']
-            format['trans'] = True
 
             values = {}
 
-            for lang in InterfaceLanguages.choices():
-                lvalues = {}
+            i = 1  # begin to 1
 
-                i = 1  # begin to 1
-                for ordinal in range(min_range, max_range+1):
+            # translation mean a dict of dict
+            if trans:
+                for lang in InterfaceLanguages.choices():
+                    lvalues = {}
+
+                    for ordinal in range(min_range, max_range+1):
+                        code = "%s:%07i" % (descr_type.code, i)
+                        lvalues[code] = {'ordinal': ordinal, 'value0': 'Undefined(%i)' % ordinal}
+                        i += 1
+
+                    values[lang[0]] = lvalues
+            else:
+                for ordinal in range(min_range, max_range + 1):
                     code = "%s:%07i" % (descr_type.code, i)
-                    lvalues[code] = {'ordinal': ordinal, 'value0': 'Undefined(%i)' % ordinal}
+                    values[code] = {'ordinal': ordinal, 'value0': 'Undefined(%i)' % ordinal}
                     i += 1
-
-                values[lang[0]] = lvalues
 
             descr_type.values = json.dumps(values)
 
@@ -878,8 +898,8 @@ def get_values_for_descriptor_type(request, id, tid, vid, field):
 
     # complete with missing languages
     for lang, lang_label in InterfaceLanguages.choices():
-        if lang not in values:
-            values[lang] = ""
+        if lang not in results:
+            results[lang] = ""
 
     return HttpResponseRest(request, results)
 
@@ -942,7 +962,7 @@ def set_values_for_descriptor_type(request, id, tid, vid, field):
                 descr_type.update_field('value1')
                 v.value1 = new_values[v.language]
 
-        descr_values.save()
+            v.save()
 
     lang = translation.get_language()
 

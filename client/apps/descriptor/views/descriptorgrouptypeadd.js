@@ -59,6 +59,8 @@ var View = Marionette.ItemView.extend({
     },
 
     onTypeNameInput: function () {
+        var view = this;
+
         if (this.validateTypeName()) {
             $.ajax({
                 type: "GET",
@@ -69,19 +71,18 @@ var View = Marionette.ItemView.extend({
                     fields: 'name',
                     name: this.ui.add_type_name.val()})
                 },
-                el: this.ui.add_type_name,
                 success: function(data) {
                     if (data.items.length > 0) {
                         for (var i in data.items) {
                             var t = data.items[i];
 
-                            if (t.name.toUpperCase() == this.el.val().toUpperCase()) {
-                                $(this.el.ui.add_type_name).validateField('failed', gt.gettext('Descriptor type name already in usage'));
+                            if (t.name.toUpperCase() == view.ui.add_type_name.val().toUpperCase()) {
+                                $(view.ui.add_type_name).validateField('failed', gt.gettext('Descriptor type name already in usage'));
                                 break;
                             }
                         }
                     } else {
-                        $(this.el.ui.add_type_name).validateField('ok');
+                        $(view.ui.add_type_name).validateField('ok');
                     }
                 }
             });
