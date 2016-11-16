@@ -26,11 +26,11 @@ var View = Marionette.ItemView.extend({
     },
 
     ui: {
-        edit_label: 'td.edit-descriptor-value0',
+        edit_value0: 'td.edit-descriptor-value0',
     },
 
     events: {
-        'click @ui.edit_label': 'onEditLabel',
+        'click @ui.edit_value0': 'onEditValue0',
     },
 
     initialize: function() {
@@ -41,7 +41,7 @@ var View = Marionette.ItemView.extend({
   
     },
 
-    onEditLabel: function() {
+    onEditValue0: function() {
         if (this.getOption('can_modify')) {
             var model = this.model;
 

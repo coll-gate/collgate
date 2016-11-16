@@ -5,18 +5,12 @@
 """
 coll-gate accession module models.
 """
-import json
 
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.postgres.fields import HStoreField
-from django.db.models import Q
-from django.shortcuts import get_object_or_404
-from django.utils import translation
 from django.utils.translation import ugettext_lazy as _
-from django.db import connections, models
+from django.db import models
 
 from main.models import Languages, Entity
-from descriptor.models import DescriptorMetaModel
+from descriptor.models import DescribableEntity
 
 
 class AccessionSynonym(Entity):
@@ -44,21 +38,13 @@ class Asset(Entity):
         verbose_name = _("panel")
 
 
-class Accession(Entity):
+class Accession(DescribableEntity):
     """
     Accession entity defines a physical or virtual accession.
     """
 
-    # HStore contains the list of descriptors code as key, and descriptor value or value code as
-    # value of the dict.
-    descriptors = HStoreField()
-
     # Can have many synonyms, and some synonyms can sometimes be shared by multiples accessions.
     synonyms = models.ManyToManyField(AccessionSynonym, related_name='accessions')
-
-    # It refers to a model of type of descriptors related by a specific accession.
-    # An accession refers to a single meta model.
-    descriptor_meta_model = models.ForeignKey(DescriptorMetaModel, related_name='accessions')
 
     class Meta:
         verbose_name = _("accession")
@@ -77,18 +63,12 @@ class Accession(Entity):
         return {}
 
 
-class Batch(Entity):
+class Batch(DescribableEntity):
     """
     Lot for an accession.
     """
 
     accession = models.ForeignKey('Accession', related_name='bundles')
-
-    descriptors = HStoreField()
-
-    # It refers to a model of type of descriptors related by a specific batch.
-    # A batch refers to a single meta model.
-    descriptor_meta_model = models.ForeignKey(DescriptorMetaModel, related_name='batches')
 
     class Meta:
         verbose_name = _("batch")
@@ -107,19 +87,13 @@ class Batch(Entity):
         return {}
 
 
-class Sample(models.Model):
+class Sample(DescribableEntity):
     """
     Sample during lot processing.
     """
 
     name = models.CharField(unique=True, max_length=255, db_index=True)
     batch = models.ForeignKey('Batch', related_name='samples')
-
-    descriptors = HStoreField()
-
-    # It refers to a model of type of descriptors related by a specific sample.
-    # A sample refers to a single meta model.
-    descriptor_meta_model = models.ForeignKey(DescriptorMetaModel, related_name='samples')
 
     class Meta:
         verbose_name = _("sample")

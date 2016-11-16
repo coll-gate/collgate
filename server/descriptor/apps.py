@@ -35,8 +35,11 @@ class CollGateDescriptor(ApplicationMain):
             )
         )
 
+        # defines the list of entities models that uses of a meta-model of descriptor
+        self.describable_entities = []
+
         # descriptor menu
-        menu_descriptor = ModuleMenu('descriptor', _('Descriptor'), order=100, auth=AUTH_USER)
+        menu_descriptor = ModuleMenu('descriptor', _('Descriptor'), order=100, auth=AUTH_STAFF)
 
         # descriptor related menus
         menu_descriptor.add_entry(

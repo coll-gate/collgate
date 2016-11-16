@@ -8,6 +8,7 @@ coll-gate descriptor module models.
 import json
 
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.postgres.fields import HStoreField
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.utils import translation
@@ -75,7 +76,7 @@ class DescriptorType(Entity):
     group = models.ForeignKey(DescriptorGroup, related_name='types_set')
 
     # informative description.
-    description = models.TextField()
+    description = models.TextField(blank=True, default="")
 
     # JSON encoded values (mostly a dict or empty). Value are classified by language at the first
     # level of JSON dict.
@@ -837,12 +838,22 @@ class DescriptorModel(Entity):
 
     def in_usage(self):
         """Check if some entities use of this model"""
-        # @todo how to be module dependencies detached
         if self.panels.exists():
+            from django.apps import apps
+            describable_entities = apps.get_app_config('descriptor').describable_entities
+
+            # @todo could be optimized ?
             for panel in self.panels.all():
-                meta = panel.descriptor_meta_model
-                if meta.accessions.exists() or meta.batches.exists() or meta.samples.exists():
-                    return True
+                meta_model = panel.descriptor_meta_model
+
+                for de in describable_entities:
+                    field_name = de._meta.model_name + '_set'
+
+                    attr = getattr(meta_model, field_name)
+                    if attr and attr.exists():
+                        return True
+
+            return False
 
         return False
 
@@ -892,3 +903,36 @@ class DescriptorMetaModel(Entity):
         data = json.loads(self.label)
         data[lang] = label
         self.label = json.dumps(data)
+
+    def in_usage(self):
+        """Check if some entities use of this meta-model"""
+        from django.apps import apps
+        describable_entities = apps.get_app_config('descriptor').describable_entities
+
+        # @todo could be optimized ?
+        for de in describable_entities:
+            field_name = de._meta.model_name + '_set'
+
+            attr = getattr(self, field_name)
+            if attr and attr.exists():
+                return True
+
+            return False
+
+        return False
+
+
+class DescribableEntity(Entity):
+    """
+    Base entity than have descriptor values and uses of a meta-model of descriptor.
+    """
+
+    # HStore contains the list of descriptors code as key, and descriptor value or value code as
+    # value of the dict.
+    descriptors = HStoreField()
+
+    # It refers to a set of models of type of descriptors through a meta-model of descriptor.
+    descriptor_meta_model = models.ForeignKey(DescriptorMetaModel)
+
+    class Meta:
+        abstract = True

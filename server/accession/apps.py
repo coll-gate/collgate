@@ -32,6 +32,19 @@ class CollGateAccession(ApplicationMain):
             )
         )
 
+        # add the describable entities models
+        from .models import Accession, Batch, Sample
+
+        #descriptor_module = module_manager.get_module('descriptor')
+        # descriptor_module
+        from django.apps import apps
+        descriptor_app = apps.get_app_config('descriptor')
+        descriptor_app.describable_entities += [
+            Accession,
+            Batch,
+            Sample
+        ]
+
         # accession menu
         menu_accession = ModuleMenu('accession', _('Accession'), auth=AUTH_USER)
         menu_accession.add_entry(

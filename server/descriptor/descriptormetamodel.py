@@ -186,17 +186,8 @@ def remove_descriptor_meta_model(request, id):
         raise SuspiciousOperation(
             _('It is not possible to remove a meta-model of descriptor that contains models of descriptor'))
 
-    if dmm.accessions.all().count() > 0:
-        raise SuspiciousOperation(
-            _('It is not possible to remove a meta-model of descriptor that is used by accessions'))
-
-    if dmm.samples.all().count() > 0:
-        raise SuspiciousOperation(
-            _('It is not possible to remove a meta-model of descriptor that is used by samples'))
-
-    if dmm.batches.all().count() > 0:
-        raise SuspiciousOperation(
-            _('It is not possible to remove a meta-model of descriptor that is used by batches'))
+    if dmm.in_usage():
+        raise SuspiciousOperation(_("There is some data using the meta-model of descriptor"))
 
     dmm.delete()
     # dmm.remove_entity()
