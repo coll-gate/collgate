@@ -453,7 +453,7 @@ def delete_descriptor_type_for_group(request, id, tid):
     if descr_type.has_values():
         raise SuspiciousOperation(_("Only an empty of values type of descriptor can be deleted"))
 
-    if descr_type.is_used():
+    if descr_type.in_usage():
         raise SuspiciousOperation(_("Only unused types of descriptor can be deleted"))
 
     descr_type.delete()

@@ -46,6 +46,16 @@ var DescriptorModule = Marionette.Module.extend({
         var DescriptorGroupCollection = require('./collections/descriptorgroup');
         this.collections.descriptorGroup = new DescriptorGroupCollection();
 
+        var SelectOptionItemView = require('../main/views/selectoptionitemview');
+
+        var DescribableCollection = require('./collections/describable');
+        this.collections.describables = new DescribableCollection();
+
+        this.views.describables = new SelectOptionItemView({
+            className: 'describable',
+            collection: this.collections.describables,
+        });
+
         Logger.timeEnd("Start descriptor module");
     },
 

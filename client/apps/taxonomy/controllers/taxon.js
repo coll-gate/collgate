@@ -199,6 +199,12 @@ var TaxonController = Marionette.Controller/*Object*/.extend({
                 });*/
             },
 
+            onBeforeDestroy: function() {
+                CreateTaxonView.__super__.onBeforeDestroy.apply(this);
+                $(this.ui.language).selectpicker('destroy');
+                $(this.ui.rank).selectpicker('destroy');
+            },
+
             onChangeRank: function () {
                 // reset parent
                 $(this.ui.parent).val('').trigger('change');

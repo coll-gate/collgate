@@ -52,10 +52,16 @@ var View = Marionette.ItemView.extend({
 
             initialize: function(options) {
                 DescriptorModelCreate.__super__.initialize.apply(this);
+            },
 
-                $(this.ui.descriptor_meta_model_target).select2({
-                    dropdownParent: $(this.el),
-                });
+            onRender: function() {
+                DescriptorModelCreate.__super__.onRender.apply(this);
+                application.descriptor.views.describables.drawSelect(this.ui.descriptor_meta_model_target);
+            },
+
+            onBeforeDestroy: function() {
+                DescriptorModelCreate.__super__.onBeforeDestroy.apply(this);
+                $(this.ui.descriptor_meta_model_target).selectpicker('destroy');
             },
 
             onApply: function() {
@@ -79,7 +85,7 @@ var View = Marionette.ItemView.extend({
                     }, {
                         wait: true,
                         success: function () {
-                            view.remove();
+                            view.destroy();
                         },
                         error: function () {
                             $.alert.error(gt.gettext("Unable to create the meta-model of descriptor !"));

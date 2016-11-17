@@ -28,6 +28,7 @@ class CollGateDescriptor(ApplicationMain):
         # create a module accession
         descriptor_module = Module('descriptor', base_url='coll-gate')
         descriptor_module.include_urls((
+            'describable',
             'descriptor',
             'descriptormodel',
             'descriptormetamodel',

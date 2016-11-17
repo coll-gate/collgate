@@ -57,6 +57,8 @@ var View = Marionette.ItemView.extend({
     deleteDescriptorMetaModel: function() {
         if (this.model.get('num_descriptor_models') == 0) {
             this.model.destroy({wait: true});
+        } else {
+            $.alert.error(gt.gettext("It is not permitted to delete a meta-model of descriptor that contains some panels"));
         }
     },
 

@@ -122,7 +122,7 @@ def list_descriptor_meta_models(request):
             "name": {"type": "string", 'minLength': 3, 'maxLength': 32},
             "label": {"type": "string", 'minLength': 3, 'maxLength': 64},
             "target": {"type": "string", 'minLength': 1, 'maxLength': 128},
-            "description": {"type": "string", 'minLength': 0, 'maxLength': 1024}
+            "description": {"type": "string", 'minLength': 0, 'maxLength': 1024, 'blank': True}
         },
     },
     perms={'descriptor.add_descriptormetamodel': _('You are not allowed to create a meta-model of descriptor')},
@@ -177,7 +177,7 @@ def get_descriptor_meta_model(request, id):
     Method.DELETE, Format.JSON,
     perms={'descriptor.remove_descriptormetamodel': _('You are not allowed to remove a meta-model of descriptor')},
     staff=True)
-def remove_descriptor_meta_model(request, id):
+def delete_descriptor_meta_model(request, id):
     dmm_id = int(id)
 
     dmm = get_object_or_404(DescriptorMetaModel, id=dmm_id)
@@ -190,7 +190,6 @@ def remove_descriptor_meta_model(request, id):
         raise SuspiciousOperation(_("There is some data using the meta-model of descriptor"))
 
     dmm.delete()
-    # dmm.remove_entity()
 
     return HttpResponseRest(request, {})
 
@@ -200,7 +199,7 @@ def remove_descriptor_meta_model(request, id):
         "type": "object",
         "properties": {
             "name": {"type": "string", 'minLength': 3, 'maxLength': 32},
-            "description": {"type": "string", 'minLength': 0, 'maxLength': 1024},
+            "description": {"type": "string", 'minLength': 0, 'maxLength': 1024, 'blank': True},
         },
     },
     perms={'descriptor.change_descriptormetamodel': _('You are not allowed to modify a meta-model of descriptor')},

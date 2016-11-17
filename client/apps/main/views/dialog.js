@@ -65,12 +65,19 @@ var View = Marionette.ItemView.extend({
     },
 
     onRender: function () {
+        // display the bootstrap modal
         $(this.el).modal();
+        // interest on this even when the user click on the backdrop
+        $(this.el).on('hidden.bs.modal', $.proxy(function() { this.destroy(); }, this));
+        // autofocus is processed now on the first input having the autofocus attribute
         $(this.el).find(':input[autofocus]').focus();
     },
 
+    onBeforeDestroy: function() {
+    },
+
     onCancel: function () {
-        this.remove();
+        this.destroy();
     },
 
     escapeKey: function(e) {
@@ -78,7 +85,7 @@ var View = Marionette.ItemView.extend({
 
         // escape key cancel
         if (code == 27) {
-            this.remove();
+            this.destroy();
         }
 
         // enter on num-pad enter
@@ -91,6 +98,7 @@ var View = Marionette.ItemView.extend({
         }
     },
 
+    // the backbones remove method is overriden in way to clean-up the bootstrap modal and its backdrop
     remove: function() {
         $(this.el).modal('hide').data('bs.modal', null);
 

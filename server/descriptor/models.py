@@ -136,7 +136,7 @@ class DescriptorType(Entity):
         else:
             return self.values_set.all().exists()
 
-    def is_used(self):
+    def in_usage(self):
         """
         Check if the type of descriptor is used by some type of models of descriptors
         """

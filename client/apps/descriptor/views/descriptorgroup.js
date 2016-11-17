@@ -49,7 +49,7 @@ var View = Marionette.ItemView.extend({
         if (this.model.get('num_descriptor_types') == 0) {
             this.model.destroy({wait: true});
         } else {
-            $.alert.warning(gt.gettext("Some types of descriptor exists for this group"));
+            $.alert.error(gt.gettext("Some types of descriptor exists for this group"));
         }
     },
 
