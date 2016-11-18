@@ -28,7 +28,7 @@ class RestDescribable(RestDescriptor):
 
 
 @cache_page(60*60*24)
-@RestDescribable.def_auth_request(Method.GET, Format.JSON)
+@RestDescribable.def_request(Method.GET, Format.JSON)
 def get_describable_list(request):
     """
     Return the list of describable entities.

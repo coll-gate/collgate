@@ -254,3 +254,15 @@ span[name='label']:not(:empty) ~ span.label-placeholder {
     display:table-row;
 }
 */
+
+/*.helper {
+    top: -8px;
+    left: 2px;
+    height: 16px;
+    padding: 0px 1px;
+    border: 0px;
+}*/
+
+.help {
+    display: none;
+}

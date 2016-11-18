@@ -66,7 +66,7 @@ var Router = Marionette.AppRouter.extend({
 
         var model = new DescriptorGroupModel({id: id});
         model.fetch().then(function () {
-            defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Types of descriptors for the group"), object: model.get('name')}));
+            defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Types of descriptors for the group"), model: model}));
 
             // @todo lookup for permission
             if (session.user.isAuth && (session.user.isSuperUser || session.user.isStaff) && model.get('can_modify')) {
@@ -75,7 +75,7 @@ var Router = Marionette.AppRouter.extend({
         });
 
         collection.fetch().then(function () {
-            var descriptorTypeListView = new DescriptorTypeListView({read_only: true, collection : collection});
+            var descriptorTypeListView = new DescriptorTypeListView({collection : collection});
 
             defaultLayout.getRegion('content').show(descriptorTypeListView);
             defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: descriptorTypeListView}));
@@ -89,7 +89,7 @@ var Router = Marionette.AppRouter.extend({
         var model = new DescriptorTypeModel({id: tid}, {group_id: gid});
 
         model.fetch().then(function () {
-            defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Details for the type of descriptor"), object: model.get('name')}));
+            defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Details for the type of descriptor"), model: model}));
             defaultLayout.getRegion('content').show(new DescriptorTypeDetailView({model : model}));
         });
     },
@@ -102,7 +102,7 @@ var Router = Marionette.AppRouter.extend({
 
         var model = new DescriptorTypeModel({id: tid}, {group_id: gid});
         model.fetch().then(function () {
-            defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Values for the type of descriptor"), object: model.get('name')}));
+            defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Values for the type of descriptor"), model: model}));
 
             collection.fetch().then(function () {
                 var valueListView = null;

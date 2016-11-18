@@ -15,6 +15,10 @@
     }
 </style>
 
+<div id="helper_display_fields_text" class="help">
+    <p><%= gt.gettext("Controls how is displayed the field. Hierarchy mode is a special usage for pseudo hierarchy, for which values are roughly shifted to give an illusion of parent/children. The shift depend of the level declared in the value0 while value1 contains the label. The first value contains something like 1 or 2 or 1.1, 1.2, 1.1.1...") %></p>
+</div>
+
 <div class="descriptor-detail">
     <div class="descriptor-type-name form-group" style="width: 50%;">
         <label for="descriptor_type_name"><%- gt.gettext('Descriptor type name') %></label>
@@ -37,6 +41,10 @@
                             <option value="ordinal"><%- gt.gettext('Ordinal') %></option>
                             <option value="gps"><%- gt.gettext('GPS coordinate') %></option>
                             <option value="string"><%- gt.gettext('Text') %></option>
+                            <option value="date"><%- gt.gettext('Date') %></option>
+                            <option value="time"><%- gt.gettext('Time') %></option>
+                            <option value="datetime"><%- gt.gettext('Date+time') %></option>
+                            <option value="entity"><%- gt.gettext('Entity') %></option>
                         </optgroup>
                         <optgroup label="<%- gt.gettext('List of values') %>"><!-- <%- gt.gettext('List of values') %> -->
                             <option value="enum_single"><%- gt.gettext('Single enumeration') %></option>
@@ -48,8 +56,8 @@
             </div>
             <div class="col-xs-6">
                 <div class="descriptor-format-trans form-group">
-                    <label for="trans"><%- gt.gettext('Translation') %></label>
-                    <select id="trans" class="form-control">
+                    <label for="format_trans"><%- gt.gettext('Translation') %></label>
+                    <select id="format_trans" class="form-control">
                         <option value="true"><%- gt.gettext('Yes') %></option>
                         <option value="false"><%- gt.gettext('No') %></option>
                     </select>
@@ -66,6 +74,49 @@
             <div class="col-xs-6">
                 <label for="type_field1"><%- gt.gettext('Second field') %></label>
                 <input id="type_field1" class="form-control" type="text" maxlength="32" value="">
+            </div>
+        </div>
+    </div>
+    <div class="descriptor-type-fields-info form-group" style="width: 50%;">
+        <div class="row">
+            <div class="col-xs-6">
+                <label for="sortby_field"><%- gt.gettext('Sort by field') %></label>
+                <select id="sortby_field" class="form-control">
+                    <option value="code"><%- gt.gettext('Code') %></option>
+                    <option value="value0"><%- gt.gettext('Value0') %></option>
+                    <option value="value1"><%- gt.gettext('Value1') %></option>
+                </select>
+            </div>
+            <div class="col-xs-6">
+                <label for="display_fields"><%- gt.gettext('Displayed fields') %>
+                    <span id="helper_display_fields" class="btn glyphicon glyphicon-question-sign" helper-id="helper_display_fields_text"></span>
+                </label>
+                <select id="display_fields" class="form-control">
+                    <option value="value0"><%- gt.gettext('Value0') %></option>
+                    <option value="value1"><%- gt.gettext('Value1') %></option>
+                    <option value="value0-value1"><%- gt.gettext('Value0 - Value1') %></option>
+                    <option value="ordinal-value0"><%- gt.gettext('Ordinal - Value0') %></option>
+                    <option value="hier1-value0"><%- gt.gettext('Hierarchy of Value0') %></option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="descriptor-type-fields-list form-group" style="width: 50%;">
+        <div class="row">
+            <div class="col-xs-6">
+                <label for="list_type"><%- gt.gettext('Display the list as') %></label>
+                <select id="list_type" class="form-control">
+                    <option value="automatic"><%- gt.gettext('Automatic') %></option>
+                    <option value="dropdown"><%- gt.gettext('Dropdown (limit of 256 values)') %></option>
+                    <option value="autocomplete"><%- gt.gettext('Autocomplete (big lists)') %></option>
+                </select>
+            </div>
+            <div class="col-xs-6">
+                <label for="search_field"><%- gt.gettext('Autocomplete search field') %></label>
+                <select id="search_field" class="form-control">
+                    <option value="value0"><%- gt.gettext('Value0') %></option>
+                    <option value="value1"><%- gt.gettext('Value1') %></option>
+                </select>
             </div>
         </div>
     </div>
@@ -181,6 +232,10 @@
             <option value="8.0">8.0</option>
             <option value="9.0">9.0</option>
         </select>
+    </div>
+    <div class="descriptor-type-model form-group" style="width: 50%;">
+        <label for="format_model"><%- gt.gettext('Model of the entity') %></label>
+        <select id="format_model" class="form-control"></select>
     </div>
     <div class="descriptor-type-range form-group" style="width: 50%;">
         <div class="row">

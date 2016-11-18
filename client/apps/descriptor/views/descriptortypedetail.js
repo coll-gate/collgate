@@ -20,13 +20,19 @@ var View = Marionette.ItemView.extend({
         code: '#descriptor_type_code',
         description: '#descriptor_type_description',
         format_type: '#format_type',
-        trans: "#trans",
+        format_trans: "#format_trans",
         fields: 'div.descriptor-type-fields',
         field0: '#type_field0',
         field1: '#type_field1',
         format_unit: '#format_unit',
         format_unit_custom: '#format_unit_custom',
         format_precision: '#format_precision',
+        format_model: '#format_model',
+        sortby_field: '#sortby_field',
+        display_fields: '#display_fields',
+        helper_display_fields: '#helper_display_fields',
+        list_type: '#list_type',
+        search_field: '#search_field',
         range: 'div.descriptor-type-range',
         format_range_min: '#format_range_min',
         format_range_max: '#format_range_max',
@@ -39,18 +45,27 @@ var View = Marionette.ItemView.extend({
         'input @ui.name': 'inputName',
         'change @ui.format_type': 'changeFormatType',
         'change @ui.format_unit': 'changeFormatUnit',
+        'change @ui.list_type': 'changeListType',
         'input @ui.format_unit_custom': 'inputFormatUnitCustom',
     },
 
     initialize: function() {
         this.listenTo(this.model, 'reset', this.render, this);
-
-        $(this.ui.format_type).select2({
-            dropdownParent: $(this.el),
-        });
     },
 
     onRender: function() {
+        application.descriptor.views.describables.drawSelect(this.ui.format_model);
+
+        $(this.ui.format_trans).selectpicker({style: 'btn-default', container: 'body'});
+        $(this.ui.format_type).selectpicker({style: 'btn-default', container: 'body'});
+        $(this.ui.format_unit).selectpicker({style: 'btn-default', container: 'body'});
+        $(this.ui.format_precision).selectpicker({style: 'btn-default', container: 'body'});
+
+        $(this.ui.sortby_field).selectpicker({style: 'btn-default'});
+        $(this.ui.display_fields).selectpicker({style: 'btn-default'});
+        $(this.ui.list_type).selectpicker({style: 'btn-default'});
+        $(this.ui.search_field).selectpicker({style: 'btn-default'});
+
         // @todo check user permissions
         if (!this.model.get('can_modify')) {
             $(this.ui.save).hide();
@@ -63,19 +78,19 @@ var View = Marionette.ItemView.extend({
         $(this.ui.format_precision).val(format.precision).trigger('change');
 
         if (format.trans) {
-            $(this.ui.trans).val("true");
+            $(this.ui.format_trans).val("true");
         } else {
-            $(this.ui.trans).val("false");
+            $(this.ui.format_trans).val("false");
         }
 
         switch (format.type) {
             case "enum_single":
             case "enum_pair":
             case "enum_ordinal":
-                $(this.ui.trans).removeAttr("disabled");
+                $(this.ui.format_trans).removeAttr("disabled");
                 break;
             default:
-                $(this.ui.trans).attr("disabled", "");
+                $(this.ui.format_trans).attr("disabled", "");
                 break;
         }
 
@@ -121,17 +136,44 @@ var View = Marionette.ItemView.extend({
                 break;
         }
 
+        switch (format.type) {
+            case "boolean":
+            case "gps":
+            case "date":
+            case "time":
+            case "datetime":
+            case "ordinal":
+            case "entity":
+                $(this.ui.format_unit_custom).attr("disabled", "disabled").val("");
+                if ($(this.ui.format_unit).closest("div.form-group").css('display') != 'none') {
+                    $(this.ui.format_unit).closest("div.form-group").hide(false);
+                }
+                break;
+            default:
+                break;
+        }
+
+        if (format.type != "entity") {
+            if ($(this.ui.format_model).closest("div.form-group").css('display') != 'none') {
+                $(this.ui.format_model).closest("div.form-group").hide(false);
+            }
+        }
+
         if (format.type != "numeric" && format.type != "numeric_range") {
-            if ($(this.ui.format_precision).parent().css('display') != 'none') {
-                $(this.ui.format_precision).parent().hide(false);
+            if ($(this.ui.format_precision).closest("div.form-group").css('display') != 'none') {
+                $(this.ui.format_precision).closest("div.form-group").hide(false);
             }
         }
 
         if (format.type != "string") {
-            if ($(this.ui.format_regexp).parent().css('display') != 'none') {
-                $(this.ui.format_regexp).parent().hide(false);
+            if ($(this.ui.format_regexp).closest("div.form-group").css('display') != 'none') {
+                $(this.ui.format_regexp).closest("div.form-group").hide(false);
             }
         }
+    },
+
+    onShow: function() {
+        $(this.ui.helper_display_fields).makePopover();
     },
 
     changeFormatType: function () {
@@ -142,20 +184,21 @@ var View = Marionette.ItemView.extend({
             case "boolean":
             case "gps":
             case "string":
+            case "ordinal":
+            case "entity:":
             case "enum_single":
             case "enum_pair":
             case "enum_ordinal":
-            case "ordinal":
                 $(this.ui.format_precision).attr("disabled", "disabled").val("0.0");
-                if ($(this.ui.format_precision).parent().css('display') != 'none') {
-                    $(this.ui.format_precision).parent().hide(true);
+                if ($(this.ui.format_precision).closest("div.form-group").css('display') != 'none') {
+                    $(this.ui.format_precision).closest("div.form-group").hide(true);
                 }
                 break;
             case "numeric":
             case "numeric_range":
                 $(this.ui.format_precision).attr("disabled", null).val("1.0");
-                if ($(this.ui.format_precision).parent().css('display') == 'none') {
-                    $(this.ui.format_precision).parent().show(true);
+                if ($(this.ui.format_precision).closest("div.form-group").css('display') == 'none') {
+                    $(this.ui.format_precision).closest("div.form-group").show(true);
                 }
                 break;
             default:
@@ -163,27 +206,48 @@ var View = Marionette.ItemView.extend({
         }
 
         switch (type) {
+            case "boolean":
+            case "gps":
+            case "date":
+            case "time":
+            case "datetime":
+            case "ordinal":
+            case "entity":
+                $(this.ui.format_unit_custom).attr("disabled", "disabled").val("");
+                if ($(this.ui.format_unit).closest("div.form-group").css('display') != 'none') {
+                    $(this.ui.format_unit).closest("div.form-group").hide(true);
+                }
+                break;
+            default:
+                $(this.ui.format_unit_custom).removeAttr("disabled").val("");
+                if ($(this.ui.format_unit).closest("div.form-group").css('display') == 'none') {
+                    $(this.ui.format_unit).closest("div.form-group").show(true);
+                }
+                break;
+        }
+
+        switch (type) {
             case "enum_single":
             case "enum_pair":
             case "enum_ordinal":
-                $(this.ui.trans).removeAttr("disabled");
+                $(this.ui.format_trans).removeAttr("disabled");
                 break;
             default:
-                $(this.ui.trans).attr("disabled", "");
+                $(this.ui.format_trans).attr("disabled", "");
                 break;
         }
 
         if (type == "string") {
             $(this.ui.format_regexp).attr("readonly", null).val("");
 
-            if ($(this.ui.format_regexp).parent().css('display') == 'none') {
-                $(this.ui.format_regexp).parent().show(true);
+            if ($(this.ui.format_regexp).closest("div.form-group").css('display') == 'none') {
+                $(this.ui.format_regexp).closest("div.form-group").show(true);
             }
         } else {
             $(this.ui.format_regexp).attr("readonly", "readonly").val("");
 
-            if ($(this.ui.format_regexp).parent().css('display') != 'none') {
-                $(this.ui.format_regexp).parent().hide(true);
+            if ($(this.ui.format_regexp).closest("div.form-group").css('display') != 'none') {
+                $(this.ui.format_regexp).closest("div.form-group").hide(true);
             }
         }
 
@@ -215,6 +279,16 @@ var View = Marionette.ItemView.extend({
         } else {
             $(this.ui.fields).hide(true);
         }
+
+        if (type == "entity") {
+            if ($(this.ui.format_model).closest("div.form-group").css('display') == 'none') {
+                $(this.ui.format_model).closest("div.form-group").show(true);
+            }
+        } else {
+            if ($(this.ui.format_model).closest("div.form-group").css('display') != 'none') {
+                $(this.ui.format_model).closest("div.form-group").hide(true);
+            }
+        }
     },
     
     changeFormatUnit: function () {
@@ -226,6 +300,21 @@ var View = Marionette.ItemView.extend({
                 break;
             default:
                 $(this.ui.format_unit_custom).attr("readonly", "readonly").val("");
+                break;
+        }
+    },
+
+    changeListType: function () {
+        var listType = $(this.ui.list_type).val();
+
+        switch (listType) {
+            case "dropdown":
+                $(this.ui.search_field).parent().find('.dropdown-toggle').prop('disabled', true);
+                $(this.ui.search_field).parent().find("div.dropdown-menu ul li:first-child a").trigger("click");
+                //$(this.ui.search_field).attr("disabled", "disabled").val("value0");
+                break;
+            default:
+                $(this.ui.search_field).parent().find('.dropdown-toggle').prop('disabled', false);
                 break;
         }
     },
@@ -263,7 +352,7 @@ var View = Marionette.ItemView.extend({
         var name = this.ui.name.val();
         var code = this.ui.code.val();
         var description = this.ui.description.val();
-        var trans = this.ui.trans.val() == "true" ? true : false;
+        var trans = this.ui.format_trans.val() == "true";
 
         var format = {
             type: this.ui.format_type.val(),
@@ -280,21 +369,44 @@ var View = Marionette.ItemView.extend({
             format.fields = [field0, field1];
         }
 
-        if (this.ui.format_unit.val() == 'custom') {
+        if (format.unit == 'custom') {
             format.custom_unit = this.ui.format_unit_custom.val();
         }
 
-        if (this.ui.format_type.val() == 'numeric_range' ||
-            this.ui.format_type.val() == 'enum_ordinal' ||
-            this.ui.format_type.val() == 'ordinal') {
+        if (format.type == 'entity') {
+            format.model = this.ui.format_model.val();
+            format.custom_unit = "";
+        }
+
+        if (format.type == 'numeric_range' ||
+            format.type == 'enum_ordinal' ||
+            format.type == 'ordinal') {
+
             format.range = [
                 this.ui.format_range_min.val(),
                 this.ui.format_range_max.val()
             ];
         }
 
-        if (this.ui.format_type.val() == 'string') {
+        if (format.type == 'string') {
             format.regexp = this.ui.format_regexp.val();
+        }
+
+        if (format.type == 'enum_pair') {
+            format.sortby_field = this.ui.sortby_field.val();
+            format.display_fields = this.ui.display_fields.val();
+            format.list_type = this.ui.list_type.val();
+            format.search_field = this.ui.search_field.val();
+        } else if (format.type == 'enum_single') {
+            format.sortby_field = 'value0';
+            format.display_fields = 'value0';
+            format.list_type = this.ui.list_type.val();
+            format.search_field = 'value0';
+        } else if (format.type == 'enum_ordinal') {
+            format.sortby_field = 'ordinal';
+            format.display_fields = this.ui.display_fields.val();
+            format.list_type = 'dropdown';
+            format.search_field = 'value0';
         }
 
         this.model.save({

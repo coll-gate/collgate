@@ -12,6 +12,8 @@ from django.db import models
 from main.models import Languages, Entity
 from descriptor.models import DescribableEntity
 
+from taxonomy.models import Taxon
+
 
 class AccessionSynonym(Entity):
     """
@@ -42,6 +44,9 @@ class Accession(DescribableEntity):
     """
     Accession entity defines a physical or virtual accession.
     """
+
+    # inherit of a taxon rank
+    taxon = models.ForeignKey(Taxon)
 
     # Can have many synonyms, and some synonyms can sometimes be shared by multiples accessions.
     synonyms = models.ManyToManyField(AccessionSynonym, related_name='accessions')

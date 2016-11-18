@@ -224,6 +224,7 @@ APPLICATIONS = {
             "bootstrap": {"default_version": "3.3.6"},
             "igdectk": {
                 ".alert": {"default_version": "2.0.0"},
+                ".helper": {"default_version": "2.0.0"},
             }
         },
     },
