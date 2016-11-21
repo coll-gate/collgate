@@ -547,6 +547,9 @@ def remove_descriptor_panel_of_meta_model(request, id, pid):
 
     dmm = get_object_or_404(DescriptorMetaModel, id= dmm_id)
 
+    if dmm.in_usage():
+        raise SuspiciousOperation(_('There is some entities attached to this panel'))
+
     panel = get_object_or_404(DescriptorPanel, id=panel_id, descriptor_meta_model=dmm_id)
 
     position = panel.position

@@ -477,6 +477,10 @@ def delete_descriptor_type_for_group(request, id, tid):
                     "precision": {"type": "string", 'required': False},
                     "range": {"type": "array", 'minLength': 2, 'maxLength': 2, 'required': False},
                     "trans": {"type": "boolean", 'required': False},
+                    "sortby_field": {"type": "string", "enum": ['code', 'ordinal', 'value0', 'value1'], 'required': False},
+                    "display_fields": {"type": "string", "enum": ['value0', 'value1', 'value0-value1', 'ordinal-value0', 'hier1-value0'], 'required': False},
+                    "list_type": {"type": "string", "enum": ['automatic', 'dropdown', 'autocomplete'], 'required': False},
+                    "search_field": {"type": "string", "enum": ['value0', 'value1'], 'required': False},
                 }
             }
         },
@@ -513,6 +517,15 @@ def update_descriptor_type(request, id, tid):
 
     # single enumeration
     if format['type'] == 'enum_single':
+        if format["sortby_field"] == 'value1':
+            raise SuspiciousOperation(_("Single enumeration list cannot be sorted by value1"))
+
+        if format["display_fields"] != 'value0':
+            raise SuspiciousOperation(_("Single enumeration list can only display the value0 field"))
+
+        if format["search_field"] != 'value0':
+            raise SuspiciousOperation(_("Single enumeration list can only search on value0"))
+
         # reset if type or translation differs
         if org_format['type'] != 'enum_single' or trans != org_format.get('trans', False):
             format['trans'] = trans
@@ -524,6 +537,12 @@ def update_descriptor_type(request, id, tid):
 
     # pair enumeration
     elif format['type'] == 'enum_pair':
+        if format["sortby_field"] == 'ordinal':
+            raise SuspiciousOperation(_("Pair enumeration list cannot be sorted by ordinal"))
+
+        if format["display_fields"] == 'ordinal-value0':
+            raise SuspiciousOperation(_("Pair enumeration list cannot display ordinal field"))
+
         if len(format['fields']) != 2:
             raise SuspiciousOperation(_("Type of descriptor with enumeration of pairs require two fields"))
 
@@ -537,6 +556,15 @@ def update_descriptor_type(request, id, tid):
 
     # ordinal enumeration
     elif format['type'] == 'enum_ordinal':
+        if format["sortby_field"] != 'ordinal':
+            raise SuspiciousOperation(_("Ordinal enumeration list can only be sorted by ordinal"))
+
+        if format["display_fields"] not in ('value0', 'ordinal-value0'):
+            raise SuspiciousOperation(_("Ordinal enumeration list can only display value0 and ordinal fields"))
+
+        if format["search_field"] != 'value0':
+            raise SuspiciousOperation(_("Ordinal enumeration list can only search on value0"))
+
         # translation with enum_ordinal
         format['trans'] = trans
 

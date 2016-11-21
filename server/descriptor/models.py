@@ -837,7 +837,9 @@ class DescriptorModel(Entity):
         verbose_name = _("descriptor model")
 
     def in_usage(self):
-        """Check if some entities use of this model"""
+        """
+        Check if some entities uses of this model
+        """
         if self.panels.exists():
             from django.apps import apps
             describable_entities = apps.get_app_config('descriptor').describable_entities
@@ -850,7 +852,7 @@ class DescriptorModel(Entity):
                     field_name = de._meta.model_name + '_set'
 
                     attr = getattr(meta_model, field_name)
-                    if attr and attr.exists():
+                    if attr and attr.filter(descriptor_meta_model=meta_model).exists():
                         return True
 
             return False
@@ -914,7 +916,7 @@ class DescriptorMetaModel(Entity):
             field_name = de._meta.model_name + '_set'
 
             attr = getattr(self, field_name)
-            if attr and attr.exists():
+            if attr and attr.filter(descriptor_meta_model=self).exists():
                 return True
 
             return False

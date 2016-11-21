@@ -28,8 +28,10 @@ var View = Marionette.ItemView.extend({
         format_unit_custom: '#format_unit_custom',
         format_precision: '#format_precision',
         format_model: '#format_model',
+        type_fields_info: 'div.descriptor-type-fields-info',
         sortby_field: '#sortby_field',
         display_fields: '#display_fields',
+        type_fields_list: 'div.descriptor-type-fields-list',
         helper_display_fields: '#helper_display_fields',
         list_type: '#list_type',
         search_field: '#search_field',
@@ -87,10 +89,15 @@ var View = Marionette.ItemView.extend({
             case "enum_single":
             case "enum_pair":
             case "enum_ordinal":
-                $(this.ui.format_trans).removeAttr("disabled");
+                this.ui.sortby_field.val(format.sortby_field).trigger('change');
+                this.ui.display_fields.val(format.display_fields).trigger('change');
+                this.ui.list_type.val(format.list_type).trigger('change');
+                this.ui.search_field.val(format.search_field).trigger('change');
                 break;
             default:
-                $(this.ui.format_trans).attr("disabled", "");
+                this.ui.format_trans.parent().parent().hide(false);
+                this.ui.type_fields_info.hide(false);
+                this.ui.type_fields_list.hide(false);
                 break;
         }
 
@@ -186,6 +193,9 @@ var View = Marionette.ItemView.extend({
             case "string":
             case "ordinal":
             case "entity:":
+            case "date":
+            case "time":
+            case "datetime":
             case "enum_single":
             case "enum_pair":
             case "enum_ordinal":
@@ -230,10 +240,24 @@ var View = Marionette.ItemView.extend({
             case "enum_single":
             case "enum_pair":
             case "enum_ordinal":
-                $(this.ui.format_trans).removeAttr("disabled");
+                if (this.ui.format_trans.parent().parent().css('display') == 'none') {
+                    $(this.ui.format_trans).parent().parent().show(true);
+                }
+
+                if (this.ui.type_fields_list.css('display') == 'none') {
+                    this.ui.type_fields_info.show(true);
+                    this.ui.type_fields_list.show(true);
+                }
                 break;
             default:
-                $(this.ui.format_trans).attr("disabled", "");
+                if (this.ui.format_trans.parent().parent().css('display') != 'none') {
+                    $(this.ui.format_trans).parent().parent().hide(true);
+                }
+
+                if (this.ui.type_fields_list.css('display') != 'none') {
+                    this.ui.type_fields_info.hide(true);
+                    this.ui.type_fields_list.hide(true);
+                }
                 break;
         }
 
@@ -414,7 +438,9 @@ var View = Marionette.ItemView.extend({
             code: code,
             format: format,
             description: description,
-        }, {wait: true}).done(function() { $.alert.success(gt.gettext("Done")); });;
+        }, {wait: true}).done(function() {
+            $.alert.success(gt.gettext("Done"));
+        });
     }
 });
 
