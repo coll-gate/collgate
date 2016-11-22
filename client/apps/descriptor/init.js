@@ -56,6 +56,14 @@ var DescriptorModule = Marionette.Module.extend({
             collection: this.collections.describables,
         });
 
+        var ConditionCollection = require('./collections/condition');
+        this.collections.conditions = new ConditionCollection();
+
+        this.views.conditions = new SelectOptionItemView({
+            className: 'condition',
+            collection: this.collections.conditions,
+        });
+        
         Logger.timeEnd("Start descriptor module");
     },
 

@@ -19,6 +19,8 @@ from main.models import Languages, Entity
 from django.db import connections, models
 from django.db.models.sql.compiler import SQLCompiler
 
+from igdectk.common.models import ChoiceEnum, IntegerChoice
+
 
 class NullsLastSQLCompiler(SQLCompiler):
     def get_order_by(self):
@@ -922,6 +924,37 @@ class DescriptorMetaModel(Entity):
             return False
 
         return False
+
+
+class DescriptorCondition(ChoiceEnum):
+    """
+    Type of condition for the descriptor model type condition.
+    """
+
+    UNDEFINED = IntegerChoice(0, _('Undefined'))
+    DEFINED = IntegerChoice(1, _('Defined'))
+    EQUAL = IntegerChoice(2, _('Equal to'))
+    NOT_EQUAL = IntegerChoice(3, _('Different from'))
+
+
+class DescriptorModelTypeCondition(Entity):
+    """
+    Condition for a type of model of descriptor.
+    """
+
+    # related descriptor model type
+    descriptor_model_type = models.ForeignKey(DescriptorModelType, related_name='conditions')
+
+    # type of the condition
+    condition = models.IntegerField(default=DescriptorCondition.UNDEFINED.value, choices=DescriptorCondition.choices())
+
+    # target descriptor model type (of the same descriptor model)
+    target = models.ForeignKey(DescriptorModelType, related_name='conditions_as_target')
+
+    # values of the conditions (JSON formatted field). It can be empty,
+    # or a single value, or an array of values. The value can be true or false
+    # if the target is boolean, or can be a value code if the target is an enum
+    values = models.TextField(default="")
 
 
 class DescribableEntity(Entity):

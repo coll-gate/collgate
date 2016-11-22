@@ -12,6 +12,7 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.utils import translation
 from django.utils.translation import ugettext_lazy as _
+from django.db.models.functions import Length
 
 from igdectk.common.helpers import int_arg
 from igdectk.rest import Format, Method
@@ -55,6 +56,11 @@ class RestDescriptorModelIdTypeId(RestDescriptorModelIdType):
 class RestDescriptorModelIdTypeIdLabel(RestDescriptorModelIdTypeId):
     regex = r'^label/$'
     suffix = 'label'
+
+
+class RestDescriptorModelIdTypeIdCondition(RestDescriptorModelIdTypeId):
+    regex = r'^condition/$'
+    suffix = 'condition'
 
 
 @RestDescriptorModel.def_auth_request(Method.GET, Format.JSON)
@@ -275,6 +281,7 @@ def list_descriptor_model_types_for_model(request, id):
             'name': dmt.name,
             'position': dmt.position,
             'label': dmt.get_label(),
+            'descriptor_type_group': dmt.descriptor_type.group.id,
             'descriptor_type': dmt.descriptor_type.id,
             'descriptor_type_name': dmt.descriptor_type.name,
             'descriptor_type_code': dmt.descriptor_type.code,
@@ -334,7 +341,7 @@ def create_descriptor_type_for_model(request, id):
     dm = get_object_or_404(DescriptorModel, id=dm_id)
     dt = get_object_or_404(DescriptorType, code=dt_code)
 
-    dmt = dm.descriptor_model_types.all().order_by('-name')[:1]
+    dmt = dm.descriptor_model_types.all().order_by(Length('name').desc(), '-name')[:1]
     if dmt.exists():
         name = "%i_%i" % (dm_id, int(dmt[0].name.split('_')[1])+1)
     else:
@@ -461,7 +468,8 @@ def patch_descriptor_model_type_for_model(request, id, tid):
 
     dmt = get_object_or_404(DescriptorModelType, id=dmt_id, descriptor_model__id=dm_id)
 
-    if dmt.descriptor_model.in_usage() and (mandatory is not None or set_once is not None):
+    # cannot change the mandatory field once there is some data
+    if dmt.descriptor_model.in_usage() and (mandatory is not None):
         raise SuspiciousOperation(_("There is some data using the model of descriptor"))
 
     if label is not None:
@@ -571,6 +579,88 @@ def change_all_labels_of_descriptor_model_type(request, id, tid):
 
     result = {
         'label': dmt.get_label()
+    }
+
+    return HttpResponseRest(request, result)
+
+
+@RestDescriptorModelIdTypeIdCondition.def_auth_request(Method.GET, Format.JSON)
+def get_condition_for_descriptor_model_type(request, id, tid):
+    """
+    Get if it exists, the condition related to the display of a descriptor model type.
+    """
+    dm_id = int(id)
+    dmt_id = int(tid)
+
+    dmt = get_object_or_404(DescriptorModelType, id=dmt_id, descriptor_model__id=dm_id)
+
+    result = {
+        'defined': True,
+        'condition': 0,
+        'target': 0,
+        'values': None
+    }
+
+    return HttpResponseRest(request, result)
+
+
+@RestDescriptorModelIdTypeIdCondition.def_auth_request(
+    Method.POST, Format.JSON, content={
+        "type": "object",
+        "properties": {
+
+        }
+    },
+    perms={
+        'descriptor.change_descriptormodel': _('You are not allowed to modify a model of descriptor'),
+        'descriptor.change_descriptormodeltype': _('You are not allowed to modify a type of model of descriptor'),
+    },
+    staff=True)
+def create_condition_for_descriptor_model_type(request, id, tid):
+    """
+    Create the unique condition (for now) of the descriptor model type.
+    """
+    dm_id = int(id)
+    dmt_id = int(tid)
+
+    dmt = get_object_or_404(DescriptorModelType, id=dmt_id, descriptor_model__id=dm_id)
+
+    result = {
+        'defined': True,
+        'condition': 0,
+        'target': 0,
+        'values': None
+    }
+
+    return HttpResponseRest(request, result)
+
+
+@RestDescriptorModelIdTypeIdCondition.def_auth_request(
+    Method.PUT, Format.JSON, content={
+        "type": "object",
+        "properties": {
+
+        }
+    },
+    perms={
+        'descriptor.change_descriptormodel': _('You are not allowed to modify a model of descriptor'),
+        'descriptor.change_descriptormodeltype': _('You are not allowed to modify a type of model of descriptor'),
+    },
+    staff=True)
+def modify_condition_for_descriptor_model_type(request, id, tid):
+    """
+    Update the unique condition (for now) of the descriptor model type.
+    """
+    dm_id = int(id)
+    dmt_id = int(tid)
+
+    dmt = get_object_or_404(DescriptorModelType, id=dmt_id, descriptor_model__id=dm_id)
+
+    result = {
+        'defined': True,
+        'condition': 0,
+        'target': 0,
+        'values': None
     }
 
     return HttpResponseRest(request, result)

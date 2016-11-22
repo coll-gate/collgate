@@ -10,6 +10,8 @@
 
 var Marionette = require('backbone.marionette');
 var Dialog = require('../../main/views/dialog');
+
+var DescriptorTypeModel = require('../models/descriptortype');
 var DescriptorModelTypeModel = require('../models/descriptormodeltype');
 
 
@@ -27,6 +29,7 @@ var View = Marionette.ItemView.extend({
         'label': 'td[name="label"]',
         'mandatory': 'td[name="mandatory"]',
         'set_once': 'td[name="set_once"]',
+        'condition': 'td[name="condition"]'
     },
 
     events: {
@@ -40,6 +43,7 @@ var View = Marionette.ItemView.extend({
         'click @ui.label': 'editLabel',
         'click @ui.mandatory': 'toggleMandatory',
         'click @ui.set_once': 'toggleSetOnce',
+        'click @ui.condition': 'editCondition',
     },
 
     initialize: function() {
@@ -407,6 +411,157 @@ var View = Marionette.ItemView.extend({
                     }
                 }
             }
+        });
+    },
+
+    editCondition: function() {
+        var model = this.model;
+
+        $.ajax({
+            type: "GET",
+            url: this.model.url() + 'condition/',
+            dataType: 'json',
+        }).done(function (data) {
+            var condition = data;
+
+            var ChangeCondition = Dialog.extend({
+                template: require('../templates/descriptormodeltypecondition.html'),
+                templateHelpers: function () {
+                    return {
+                        targets: model.collection.models,
+                        condition: condition,
+                    };
+                },
+
+                attributes: {
+                    id: "dlg_change_condition",
+                },
+
+                ui: {
+                    condition: "#condition",
+                    target: "#target",
+                    simple_value: "#simple_value",
+                    autocomplete_value: "#autocomplete_value",
+                    select_value: "#select_value",
+                    value_group: "div.value-group",
+                    simple_value_group: "#simple_value_group",
+                    autocomplete_value_group: "#autocomplete_value_group",
+                    select_value_group: "#select_value_group",
+                },
+
+                events: {
+                    'change @ui.condition': 'onSelectCondition',
+                    'change @ui.target': 'onSelectTarget',
+                },
+
+                initialize: function (options) {
+                    ChangeCondition.__super__.initialize.apply(this);
+                },
+
+                onRender: function() {
+                    ChangeCondition.__super__.onRender.apply(this);
+                    application.descriptor.views.conditions.drawSelect(this.ui.condition);
+
+                    $(this.ui.target).selectpicker({container: 'body', style: 'btn-default'});
+
+                    this.onSelectCondition();
+                    this.onSelectTarget();
+                },
+
+                toggleCondition: function (condition) {
+                    if (condition == 0 || condition == 1) {
+                        this.ui.value_group.hide(false);
+                    } else {
+                        if (this.descriptorTypeFormat.type.startsWith('enum_')) {
+                            this.ui.simple_value_group.hide(false);
+
+                            if (this.descriptorTypeFormat.list_type == "dropdown") {
+                                this.ui.select_value_group.show(false);
+                                this.ui.autocomplete_value_group.hide(false);
+                            } else {
+                                this.ui.select_value_group.hide(false);
+                                this.ui.autocomplete_value_group.show(false);
+                            }
+                        } else {
+                            this.ui.simple_value_group.show(false);
+                            this.ui.select_value_group.hide(false);
+                            this.ui.autocomplete_value_group.hide(false);
+                        }
+                    }
+                },
+
+                onSelectCondition: function () {
+                    var val = this.ui.condition.val();
+                    this.toggleCondition(val);
+                },
+
+                onSelectTarget: function () {
+                    var view = this;
+                    var targetId = this.ui.target.val();
+
+                    var model = this.getOption('model').collection.findWhere({id: parseInt(targetId)});
+                    if (model) {
+                        var descriptorType = new DescriptorTypeModel(
+                            {id: model.get('descriptor_type')},
+                            {group_id: model.get('descriptor_type_group')}
+                        );
+
+                        descriptorType.fetch().then(function() {
+                            view.descriptorTypeFormat = descriptorType.get('format');
+
+                            var condition = view.ui.condition.val();
+                            view.toggleCondition(condition);
+
+                            if (descriptorType.get('format').type.startsWith('enum_')) {
+                                if (descriptorType.get('format').list_type != "dropdown") {
+                                    // make an autocomplete widget on simple_value
+                                    // @todo
+                                    // @todo what about automatic mode ?
+                                } else {
+                                    // refresh values
+                                    // @todo ajax
+                                    view.ui.enum_value.find('option').remove();
+                                    view.ui.enum_value.selectpicker('refresh');
+                                }
+
+                            }
+                        });
+                    }
+                },
+
+                onApply: function () {
+                    var view = this;
+                    var model = this.getOption('model');
+
+                    var labels = {};
+
+                    $.each($(this.ui.label), function (i, label) {
+                        var v = $(this).val();
+                        labels[$(label).attr("language")] = v;
+                    });
+
+                    if (this.validateLabels()) {
+                        // @todo if (condition.defined PUT else POST)
+                        /*
+                         $.ajax({
+                         type: "PUT",
+                         url: model.url() + "condition/",
+                         dataType: 'json',
+                         contentType: "application/json; charset=utf-8",
+                         data: JSON.stringify(labels)
+                         }).done(function() {
+                         // manually update the current context label
+                         model.set('label', labels[session.language]);
+                         $.alert.success(gt.gettext("Successfully labeled !"));
+                         }).always(function() {
+                         view.remove();
+                         });*/
+                    }
+                },
+            });
+
+            var changeCondition = new ChangeCondition({model: model});
+            changeCondition.render();
         });
     }
 });

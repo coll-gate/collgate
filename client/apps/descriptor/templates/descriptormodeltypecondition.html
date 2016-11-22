@@ -1,0 +1,42 @@
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title"><%= gt.gettext("Condition of the type of model of descriptor") %></h4>
+        </div>
+        <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
+            <form>
+                <div class="form-group">
+                    <label class="control-label"><%= gt.gettext("Target") %></label>
+                    <select class="form-control" id="target">
+                        <% _.each(targets, function(target) { %>
+                            <option value="<%= target.get('id') %>"><%= target.get('label') %></option>
+                        <% }) %>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="condition" class="control-label"><%= gt.gettext("Condition") %></label>
+                    <select id="condition" class="form-control">
+                    </select>
+                </div>
+                <div class="form-group value-group" id="simple_value_group">
+                    <label class="control-label"><%= gt.gettext("Value") %></label>
+                    <input class="form-control" id="simple_value" type="text" value="" maxlength="64" style="width:100%;">
+                </div>
+                <div class="form-group value-group" id="autocomplete_value_group">
+                    <label class="control-label"><%= gt.gettext("Value") %></label>
+                    <input class="form-control" id="autocomplete_value" type="text" value="" maxlength="64" style="width:100%;">
+                </div>
+                <div class="form-group value-group" id="select_value_group">
+                    <label for="select_value" class="control-label"><%= gt.gettext("Value from list") %></label>
+                    <select id="select_value" class="form-control">
+                    </select>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= gt.gettext("Cancel") %></button>
+            <button type="button" class="btn btn-primary apply"><%= gt.gettext("Apply") %></button>
+        </div>
+    </div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->

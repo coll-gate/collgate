@@ -5,22 +5,15 @@
 """
 coll-gate descriptor module, descriptor
 """
-import json
 
 from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import SuspiciousOperation
-from django.db.models import Q
 from django.shortcuts import get_object_or_404
-from django.utils import translation
-from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.cache import cache_page
-
-from igdectk.common.helpers import int_arg
 from igdectk.rest import Format, Method
 from igdectk.rest.response import HttpResponseRest
-from igdectk.rest.handler import RestHandler
 
 from .descriptor import RestDescriptor
+
 
 class RestDescribable(RestDescriptor):
     regex = r'^describable/$'
