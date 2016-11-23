@@ -468,6 +468,12 @@ var View = Marionette.ItemView.extend({
                     this.onSelectTarget();
                 },
 
+                onBeforeDestroy: function() {
+                    ChangeCondition.__super__.onBeforeDestroy.apply(this);
+                    this.ui.condition.selectpicker('destroy');
+                    this.ui.target.selectpicker('destroy');
+                },
+
                 toggleCondition: function (condition) {
                     if (condition == 0 || condition == 1) {
                         this.ui.value_group.hide(false);
@@ -513,17 +519,45 @@ var View = Marionette.ItemView.extend({
                             view.toggleCondition(condition);
 
                             if (descriptorType.get('format').type.startsWith('enum_')) {
+                                view.ui.select_value.find('option').remove();
+
                                 if (descriptorType.get('format').list_type != "dropdown") {
                                     // make an autocomplete widget on simple_value
                                     // @todo
-                                    // @todo what about automatic mode ?
                                 } else {
                                     // refresh values
-                                    // @todo ajax
-                                    view.ui.enum_value.find('option').remove();
-                                    view.ui.enum_value.selectpicker('refresh');
-                                }
+                                    $.ajax({
+                                        url: application.baseUrl + 'descriptor/group/' + descriptorType.group_id + '/type/' + descriptorType.get('id') + '/value/display/',
+                                        dataType: 'json',
+                                    }).done(function (data) {
+                                        for (var i = 0; i < data.length; ++i) {
+                                            var option = $("<option></option>");
 
+                                            option.attr("value", data[i].value);
+                                            option.attr("title", data[i].label);
+
+                                            // for LTR languages add prefix
+                                            if (data[i].offset) {
+                                                var offset = "";
+                                                for (var j = 0; j < data[i].offset; ++j) {
+                                                    offset += "&#160;&#160;&#160;&#160;";
+                                                }
+
+                                                if (session.languageDirection == "ltr") {
+                                                    option.html(offset + data[i].label);
+                                                } else {
+                                                    option.html(data[i].label + offset);
+                                                }
+                                            } else {
+                                                option.html(data[i].label);
+                                            }
+
+                                            view.ui.select_value.append(option);
+                                        }
+
+                                        view.ui.select_value.selectpicker('refresh');
+                                    });
+                                }
                             }
                         });
                     }

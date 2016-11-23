@@ -65,7 +65,7 @@
 /******/ 	}
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "29e4bb6a8f8128dc512e"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "51abfd6fca9555641554"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -779,8 +779,9 @@
 	    this.main = __webpack_require__(32);
 	    this.permission = __webpack_require__(56);
 	    this.audit = __webpack_require__(95);
-	    this.taxonomy = __webpack_require__(107);
-	    this.accession = __webpack_require__(128);
+	    this.descriptor = __webpack_require__(107);
+	    this.taxonomy = __webpack_require__(206);
+	    this.accession = __webpack_require__(229);
 	});
 	
 	application.start({initialData: ''});
@@ -20384,12 +20385,19 @@
 	    },
 	
 	    onRender: function () {
+	        // display the bootstrap modal
 	        $(this.el).modal();
+	        // interest on this even when the user click on the backdrop
+	        $(this.el).on('hidden.bs.modal', $.proxy(function() { this.destroy(); }, this));
+	        // autofocus is processed now on the first input having the autofocus attribute
 	        $(this.el).find(':input[autofocus]').focus();
 	    },
 	
+	    onBeforeDestroy: function() {
+	    },
+	
 	    onCancel: function () {
-	        this.remove();
+	        this.destroy();
 	    },
 	
 	    escapeKey: function(e) {
@@ -20397,7 +20405,7 @@
 	
 	        // escape key cancel
 	        if (code == 27) {
-	            this.remove();
+	            this.destroy();
 	        }
 	
 	        // enter on num-pad enter
@@ -20410,6 +20418,7 @@
 	        }
 	    },
 	
+	    // the backbones remove method is overriden in way to clean-up the bootstrap modal and its backdrop
 	    remove: function() {
 	        $(this.el).modal('hide').data('bs.modal', null);
 	
@@ -21701,6 +21710,7413 @@
 
 	/**
 	 * @file init.js
+	 * @brief Descriptor module init entry point
+	 * @author Frederic SCHERMA
+	 * @date 2016-05-26
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	
+	var DescriptorModule = Marionette.Module.extend({
+	
+	    initialize: function(moduleName, app, options) {
+	        Logger.time("Init descriptor module");
+	
+	        this.models = {};
+	        this.collections = {};
+	        this.views = {};
+	        this.routers = {};
+	        this.controllers = {};
+	
+	        // i18n
+	        if (session.language === "fr") {
+	            i18next.addResources('fr', 'default', __webpack_require__(108));
+	        } else {  // default to english
+	            //i18next.addResources('en', 'default', require('./locale/en/LC_MESSAGES/default.json'));
+	        }
+	
+	        Logger.timeEnd("Init descriptor module");
+	    },
+	
+	    onStart: function(options) {
+	        Logger.time("Start descriptor module");
+	
+	        var DescriptorRouter = __webpack_require__(109);
+	        this.routers.descriptor = new DescriptorRouter();
+	
+	        var DescriptorModelRouter = __webpack_require__(146);
+	        this.routers.descriptorModel = new DescriptorModelRouter();
+	
+	        var DescriptorMetaModelRouter = __webpack_require__(176);
+	        this.routers.descriptorMetaModel = new DescriptorMetaModelRouter();
+	
+	        var DescriptorGroupCollection = __webpack_require__(149);
+	        this.collections.descriptorGroup = new DescriptorGroupCollection();
+	
+	        var SelectOptionItemView = __webpack_require__(36);
+	
+	        var DescribableCollection = __webpack_require__(202);
+	        this.collections.describables = new DescribableCollection();
+	
+	        this.views.describables = new SelectOptionItemView({
+	            className: 'describable',
+	            collection: this.collections.describables,
+	        });
+	
+	        var ConditionCollection = __webpack_require__(204);
+	        this.collections.conditions = new ConditionCollection();
+	
+	        this.views.conditions = new SelectOptionItemView({
+	            className: 'condition',
+	            collection: this.collections.conditions,
+	        });
+	        
+	        Logger.timeEnd("Start descriptor module");
+	    },
+	
+	    onStop: function(options) {
+	
+	    },
+	});
+	
+	// descriptor module
+	var descriptor = application.module("descriptor", DescriptorModule);
+	
+	module.exports = descriptor;
+
+
+/***/ },
+/* 108 */
+/***/ function(module, exports) {
+
+	module.exports = {
+		"Some types of descriptor exists for this group": "Des types de descripteur existent pour ce groupe",
+		"Invalid characters (alphanumeric, _ and - only)": "Caractères invalides (alphanumérique, _ et - seulement)",
+		"3 characters min": "3 caractères minimum",
+		"Group name already in usage": "Nom de groupe déjà utilisé",
+		"Descriptor type name already in usage": "Nom de type de descriptor déjà utilisé",
+		"Successfully labeled !": "Label définit avec succès !",
+		"Unable to change label !": "Impossible de définir le label !",
+		"Unable to create the meta-model of descriptor !": "Impossible de créer le méta-modèle de descripteur !",
+		"Descriptor meta-model name already in usage": "Nom de méta-modèle de descripteur déjà utilisé",
+		"Done": "Fait",
+		"Name for model of descriptor already in usage": "Ce nom de modèle de descripteur est déjà utilisé",
+		"Unable to create the type of model of descriptor !": "Impossible de créer le type de modèle de descripteur !",
+		"Unable to reorder the types of model of descriptor": "Impossible de réordonner les types de modèle de descripteur",
+		"Some values exists for this type of descriptor": "Des valeurs existent pour ce type de descripteur",
+		"1 character min": "1 caractère minimum",
+		"List of groups of descriptors": "Liste de groupes de descripteurs",
+		"Types of descriptors for the group": "Types de descripteurs pour le groupe",
+		"Details for the type of descriptor": "Détails pour le type de descripteur",
+		"Values for the type of descriptor": "Valeurs pour le type de descripteur",
+		"List of meta-models of descriptor": "Liste des méta-modèles de descripteur",
+		"Details for the meta-model of descriptor": "Détails pour le méta-modèle de descripteur",
+		"List of models of descriptor": "Liste des models de descripteur",
+		"Details for the model of descriptor": "Détails pour le modèle de descripteur",
+		"List of types of models of descriptor": "Liste des types de modèles de descripteur",
+		"Name": "Nom",
+		"Number of types of descriptor": "Nombre de types de descripteur",
+		"Group of descriptors": "Groupe de descripteurs",
+		"Change the label for a meta-model of descriptor": "Changer le label pour un méta-modèle de descripteur",
+		"Label for the current language": "Label pour le langage courant",
+		"Cancel": "Annuler",
+		"Apply": "Appliquer",
+		"Descriptor meta-model name": "Nom de méta-modèle de descripteur",
+		"Description": "Description",
+		"Update": "Mettre à jour",
+		"Label": "Label",
+		"Target": "Cible",
+		"Number of panels of descriptor": "Nombre de panels de descripteur",
+		"Create a meta-model of descriptor": "Créer un méta-modèle de descripteur",
+		"Target entity": "Entité cible",
+		"Accession": "Accession",
+		"Batch": "Lot",
+		"Sample": "Echantillon",
+		"Descriptor model name": "Nom de modèle de descripteur",
+		"Verbose name": "Nom complet",
+		"Change the label for a type of model of descriptor": "Changer le label pour un type de modèle de descripteur",
+		"Code": "Code",
+		"Mandatory": "Mandataire",
+		"Set Once": "Définit une fois",
+		"Descriptor type name": "Nom du type de descripteur",
+		"Descriptor type code": "Code du type de descripteur",
+		"Type of format": "Type de format",
+		"Single value": "Valeur simple",
+		"Boolean": "Booléen",
+		"Numeric": "Numérique",
+		"Numeric range": "Plage numérique",
+		"Ordinal": "Ordinal",
+		"GPS coordinate": "Coordonnée GPS",
+		"Text": "Texte",
+		"List of values": "Liste de valeurs",
+		"Single enumeration": "Simple énumération",
+		"Pair enumeration": "Enumération de paires",
+		"Ordinal with text": "Ordinal avec texte",
+		"First field": "Premier champs",
+		"Second field": "Second champs",
+		"Unit of the format": "Unité du format",
+		"Custom unit name": "Nom d'unité personnalisée",
+		"Precision of the decimal": "Précision de la décimale",
+		"Minimal range value": "Valeur minimale",
+		"Maximal range value": "Valeur maximale",
+		"Regular expression": "Expression régulière",
+		"Number of values": "Nombre de valeurs",
+		"Type of descriptor": "Type de descripteur",
+		"Value": "Valeur"
+	};
+
+/***/ },
+/* 109 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptor.js
+	 * @brief Descriptor router
+	 * @author Frederic SCHERMA
+	 * @date 2016-07-19
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	var DescriptorGroupModel = __webpack_require__(110);
+	var DescriptorTypeModel = __webpack_require__(111);
+	var DescriptorTypeCollection = __webpack_require__(112);
+	var DescriptorValueCollection = __webpack_require__(113);
+	var DescriptorGroupListView = __webpack_require__(115);
+	var DescriptorTypeListView = __webpack_require__(120);
+	
+	var DescriptorValueListView = __webpack_require__(124);
+	var DescriptorValuePairListView = __webpack_require__(130);
+	var DescriptorValueOrdinalListView = __webpack_require__(134);
+	var DescriptorValueAddView = __webpack_require__(138);
+	
+	var DescriptorTypeDetailView = __webpack_require__(140);
+	var DefaultLayout = __webpack_require__(50);
+	var TitleView = __webpack_require__(51);
+	var ScrollingMoreView = __webpack_require__(94);
+	
+	var DescriptorGroupAddView = __webpack_require__(142);
+	var DescriptorGroupTypeAddView = __webpack_require__(144);
+	
+	var Router = Marionette.AppRouter.extend({
+	    routes : {
+	        "app/descriptor/group/": "getDescriptorGroupList",
+	        "app/descriptor/group/:id/type/": "getDescriptorTypeListForGroup",
+	        "app/descriptor/group/:id/type/:id/": "getDescriptorTypeForGroup",
+	        "app/descriptor/group/:id/type/:id/value/": "getDescriptorValueListForType",
+	        "app/descriptor/group/:id/type/:id/value/:id": "getDescriptorValueForType"
+	    },
+	
+	    getDescriptorGroupList : function() {
+	        var collection = application.descriptor.collections.descriptorGroup;
+	
+	        var defaultLayout = new DefaultLayout({});
+	        application.getRegion('mainRegion').show(defaultLayout);
+	
+	        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of groups of descriptors")}));
+	
+	        collection.fetch().then(function () {
+	            var descriptorGroupListView = new DescriptorGroupListView({read_only: true, collection: collection});
+	            defaultLayout.getRegion('content').show(descriptorGroupListView);
+	            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: descriptorGroupListView}));
+	        });
+	
+	        // @todo lookup for permission
+	        if (session.user.isAuth && (session.user.isSuperUser || session.user.isStaff)) {
+	            defaultLayout.getRegion('bottom').show(new DescriptorGroupAddView({collection: collection}));
+	        }
+	    },
+	
+	    getDescriptorTypeListForGroup : function(id) {
+	        var collection = new DescriptorTypeCollection([], {group_id: id});
+	
+	        var defaultLayout = new DefaultLayout();
+	        application.getRegion('mainRegion').show(defaultLayout);
+	
+	        var model = new DescriptorGroupModel({id: id});
+	        model.fetch().then(function () {
+	            defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Types of descriptors for the group"), model: model}));
+	
+	            // @todo lookup for permission
+	            if (session.user.isAuth && (session.user.isSuperUser || session.user.isStaff) && model.get('can_modify')) {
+	                defaultLayout.getRegion('bottom').show(new DescriptorGroupTypeAddView({collection: collection}));
+	            }
+	        });
+	
+	        collection.fetch().then(function () {
+	            var descriptorTypeListView = new DescriptorTypeListView({collection : collection});
+	
+	            defaultLayout.getRegion('content').show(descriptorTypeListView);
+	            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: descriptorTypeListView}));
+	        });
+	    },
+	
+	    getDescriptorTypeForGroup : function(gid, tid) {
+	        var defaultLayout = new DefaultLayout();
+	        application.getRegion('mainRegion').show(defaultLayout);
+	
+	        var model = new DescriptorTypeModel({id: tid}, {group_id: gid});
+	
+	        model.fetch().then(function () {
+	            defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Details for the type of descriptor"), model: model}));
+	            defaultLayout.getRegion('content').show(new DescriptorTypeDetailView({model : model}));
+	        });
+	    },
+	
+	    getDescriptorValueListForType : function(gid, tid) {
+	        var collection = new DescriptorValueCollection([], {group_id: gid, type_id: tid});
+	
+	        var defaultLayout = new DefaultLayout();
+	        application.getRegion('mainRegion').show(defaultLayout);
+	
+	        var model = new DescriptorTypeModel({id: tid}, {group_id: gid});
+	        model.fetch().then(function () {
+	            defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Values for the type of descriptor"), model: model}));
+	
+	            collection.fetch().then(function () {
+	                var valueListView = null;
+	
+	                if (model.get('format').type === "enum_single") {
+	                    valueListView = new DescriptorValueListView({
+	                        collection: collection,
+	                        model: model
+	                    });
+	
+	                    // @todo lookup for permission
+	                    if (session.user.isAuth && (session.user.isSuperUser || session.user.isStaff) && model.get('can_modify')) {
+	                        defaultLayout.getRegion('bottom').show(new DescriptorValueAddView({collection: collection}));
+	                    }
+	                } else if (model.get('format').type === "enum_pair") {
+	                    valueListView = new DescriptorValuePairListView({
+	                        collection: collection,
+	                        model: model
+	                    });
+	
+	                    // @todo lookup for permission
+	                    if (session.user.isAuth && (session.user.isSuperUser || session.user.isStaff) && model.get('can_modify')) {
+	                        defaultLayout.getRegion('bottom').show(new DescriptorValueAddView({collection: collection}));
+	                    }
+	                } else if (model.get('format').type === "enum_ordinal") {
+	                    valueListView = new DescriptorValueOrdinalListView({
+	                        collection: collection,
+	                        model: model
+	                    });
+	                }
+	
+	                if (valueListView != null) {
+	                    defaultLayout.getRegion('content').show(valueListView);
+	                    defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: valueListView, more: -1}));
+	                }
+	            });
+	        });
+	    },
+	});
+	
+	module.exports = Router;
+
+
+/***/ },
+/* 110 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptorgroup.js
+	 * @brief Group of descriptors model
+	 * @author Frederic SCHERMA
+	 * @date 2016-07-20
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Backbone = __webpack_require__(2);
+	
+	var Model = Backbone.Model.extend({
+	    url: function() {
+	        if (this.isNew())
+	            return application.baseUrl + 'descriptor/group/';
+	        else
+	            return application.baseUrl + 'descriptor/group/' + this.get('id') + '/';
+	    },
+	
+	    defaults: {
+	        id: null,
+	        name: '',
+	        num_descriptor_types: 0,
+	        can_delete: false,
+	        can_modify: false
+	    },
+	
+	    parse: function(data) {
+	        //this.perms = data.perms;
+	        return data;
+	    },
+	
+	    validate: function(attrs) {
+	        var errors = {};
+	        var hasError = false;
+	
+	        if (hasError) {
+	          return errors;
+	        }
+	    },
+	});
+	
+	module.exports = Model;
+
+
+/***/ },
+/* 111 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptortype.js
+	 * @brief Type of descriptor model
+	 * @author Frederic SCHERMA
+	 * @date 2016-07-21
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Backbone = __webpack_require__(2);
+	
+	var Model = Backbone.Model.extend({
+	    url: function() {
+	        var group_id = this.group_id || this.get('group') || this.collection.group_id;
+	
+	        if (this.isNew()) {
+	            return application.baseUrl + 'descriptor/group/' + group_id + '/type/';
+	        }
+	        else
+	            return application.baseUrl + 'descriptor/group/' + group_id + '/type/' + this.get('id') + '/';
+	    },
+	
+	    defaults: {
+	        id: null,
+	        group: null,
+	        name: '',
+	        values: null,
+	        format: {type: 'string'},
+	        can_delete: false,
+	        can_modify: false,
+	        description: ''
+	    },
+	
+	    initialize: function(attributes, options) {
+	        Model.__super__.initialize.apply(this, arguments);
+	
+	        options || (options = {});
+	        this.group_id = options.group_id;
+	        this.collection = options.collection;
+	
+	        if (options.collection) {
+	            this.group_id = options.collection.group_id;
+	        }
+	    },
+	
+	    parse: function(data) {
+	        //this.perms = data.perms;
+	        this.group = data.group;
+	        return data;
+	    },
+	
+	    validate: function(attrs) {
+	        var errors = {};
+	        var hasError = false;
+	
+	        if (hasError) {
+	          return errors;
+	        }
+	    },
+	});
+	
+	module.exports = Model;
+
+
+/***/ },
+/* 112 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptortype.js
+	 * @brief Types of descriptors collection
+	 * @author Frederic SCHERMA
+	 * @date 2016-07-19
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var DescriptorTypeModel = __webpack_require__(111);
+	
+	var Collection = Backbone.Collection.extend({
+	    url: function() {
+	        return application.baseUrl + 'descriptor/group/' + this.group_id + '/type/';
+	    },
+	
+	    model: DescriptorTypeModel,
+	
+	    initialize: function(models, options) {
+	        options || (options = {});
+	        this.group_id = options.group_id;
+	    },
+	
+	    parse: function(data) {
+	        this.prev = data.prev;
+	        this.cursor = data.cursor;
+	        this.next = data.next;
+	
+	        return data.items;
+	    },
+	});
+	
+	module.exports = Collection;
+
+
+/***/ },
+/* 113 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptorvalue.js
+	 * @brief List of value for a type of descriptor (collection)
+	 * @author Frederic SCHERMA
+	 * @date 2016-07-21
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var DescriptorTypeModel = __webpack_require__(114);
+	
+	var Collection = Backbone.Collection.extend({
+	    url: function() {
+	        return application.baseUrl + 'descriptor/group/' + this.group_id + '/type/' + this.type_id + '/value/';
+	    },
+	
+	    model: DescriptorTypeModel,
+	
+	    initialize: function(models, options) {
+	        options || (options = {});
+	        this.sort_by = "id";
+	        this.group_id = options.group_id;
+	        this.type_id = options.type_id;
+	        this.format = options.format || {type: "string", fields: []};
+	    },
+	
+	    parse: function(data) {
+	        if (data.format) {
+	            this.format = data.format;
+	        }
+	
+	        this.prev = data.prev;
+	        this.cursor = data.cursor;
+	        this.next = data.next;
+	        this.sort_by = data.sort_by;
+	
+	        return data.items;
+	    },
+	
+	    fetch: function(options) {
+	        options || (options = {});
+	        var data = (options.data || {});
+	
+	        options.data = data;
+	
+	        this.cursor = options.data.cursor;
+	        this.sort_by = options.data.sort_by;
+	
+	        return Backbone.Collection.prototype.fetch.call(this, options);
+	    }
+	});
+	
+	module.exports = Collection;
+
+
+/***/ },
+/* 114 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptorvalue.js
+	 * @brief Value for a type of descriptor model
+	 * @author Frederic SCHERMA
+	 * @date 2016-07-21
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Backbone = __webpack_require__(2);
+	
+	var Model = Backbone.Model.extend({
+	    url: function() {
+	        if (this.isNew())
+	            return application.baseUrl + 'descriptor/group/' + this.group_id + '/type/' + this.type_id + '/value/';
+	        else
+	            return application.baseUrl + 'descriptor/group/' + this.group_id + '/type/' + this.type_id + '/value/' + this.id + '/';
+	    },
+	
+	    defaults: {
+	        id: null,
+	        parent: null,
+	        ordinal: null,
+	        value0: null,
+	        value1: null,
+	    },
+	
+	    initialize: function(attributes, options) {
+	        Model.__super__.initialize.apply(this, arguments);
+	
+	        options || (options = {});
+	        this.group_id = options.group_id;
+	        this.type_id = options.type_id;
+	
+	        if (options.collection) {
+	            this.type_id = options.collection.type_id;
+	            this.group_id = options.collection.group_id;
+	        }
+	    },
+	
+	    parse: function(data) {
+	        //this.perms = data.perms;
+	        return data;
+	    },
+	
+	    validate: function(attrs) {
+	        var errors = {};
+	        var hasError = false;
+	
+	        if (hasError) {
+	          return errors;
+	        }
+	    },
+	});
+	
+	module.exports = Model;
+
+
+/***/ },
+/* 115 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptorgrouplist.js
+	 * @brief List of groups of types of descriptors view
+	 * @author Frederic SCHERMA
+	 * @date 2016-07-20
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	var DescriptorGroupModel = __webpack_require__(110);
+	var DescriptorGroupView = __webpack_require__(116);
+	var ScrollView = __webpack_require__(78);
+	
+	var View = ScrollView.extend({
+	    template: __webpack_require__(119),
+	    childView: DescriptorGroupView,
+	    childViewContainer: 'tbody.descriptor-group-list',
+	
+	    initialize: function() {
+	        this.listenTo(this.collection, 'reset', this.render, this);
+	        this.listenTo(this.collection, 'change', this.render, this);
+	        //this.listenTo(this.collection, 'add', this.render, this);
+	        //this.listenTo(this.collection, 'remove', this.render, this);
+	
+	        View.__super__.initialize.apply(this);
+	    }
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 116 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptorgroup.js
+	 * @brief Group of type of descriptor item view
+	 * @author Frederic SCHERMA
+	 * @date 2016-07-20
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	var DescriptorGroupModel = __webpack_require__(110);
+	
+	var Dialog = __webpack_require__(82);
+	
+	var View = Marionette.ItemView.extend({
+	    tagName: 'tr',
+	    className: 'element object descriptor-group',
+	    template: __webpack_require__(117),
+	
+	    ui: {
+	        delete_descriptor_group: 'span.delete-descriptor-group',
+	        change_name: 'td.change-name',
+	        view_descriptor_type: 'td.view-descriptor-type'
+	    },
+	
+	    events: {
+	        'click @ui.delete_descriptor_group': 'deleteDescriptorGroup',
+	        'click @ui.change_name': 'onRenameGroup',
+	        'click @ui.view_descriptor_type': 'viewDescriptorType'
+	    },
+	
+	    initialize: function() {
+	        this.listenTo(this.model, 'reset', this.render, this);
+	    },
+	
+	    onRender: function() {
+	        // @todo check with user permission
+	        if (!this.model.get('can_delete') || !session.user.isSuperUser || !session.user.isStaff) {
+	            $(this.ui.delete_descriptor_group).hide();
+	        }
+	    },
+	
+	    viewDescriptorType: function() {
+	        Backbone.history.navigate("app/descriptor/group/" + this.model.id + "/type/", {trigger: true});
+	    },
+	
+	    deleteDescriptorGroup: function() {
+	        if (this.model.get('num_descriptor_types') == 0) {
+	            this.model.destroy({wait: true});
+	        } else {
+	            $.alert.error(gt.gettext("Some types of descriptor exists for this group"));
+	        }
+	    },
+	
+	    onRenameGroup: function(e) {
+	        if (!this.model.get('can_modify') || !session.user.isSuperUser || !session.user.isStaff) {
+	            return;
+	        }
+	
+	        var ChangeName = Dialog.extend({
+	            template: __webpack_require__(118),
+	
+	            attributes: {
+	                id: "dlg_change_name",
+	            },
+	
+	            ui: {
+	                name: "#name",
+	            },
+	
+	            events: {
+	                'input @ui.name': 'onNameInput',
+	            },
+	
+	            initialize: function (options) {
+	                ChangeName.__super__.initialize.apply(this);
+	            },
+	
+	            onNameInput: function () {
+	                this.validateName();
+	            },
+	
+	            validateName: function() {
+	                var v = this.ui.name.val();
+	                var re = /^[a-zA-Z0-9_\-]+$/i;
+	
+	                if (v.length > 0 && !re.test(v)) {
+	                    $(this.ui.name).validateField('failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
+	                    return false;
+	                } else if (v.length < 3) {
+	                    $(this.ui.name).validateField('failed', gt.gettext('3 characters min'));
+	                    return false;
+	                }
+	
+	                $(this.ui.name).validateField('ok');
+	
+	                return true;
+	            },
+	
+	            onApply: function() {
+	                var name = this.ui.name.val();
+	                var model = this.getOption('model');
+	
+	                if (this.validateName()) {
+	                    model.save({name: name}, {patch: true, wait:true});
+	                    this.remove();
+	                }
+	            },
+	        });
+	
+	        var changeName = new ChangeName({
+	            model: this.model,
+	        });
+	
+	        changeName.render();
+	        changeName.ui.name.val(this.model.get('name'));
+	    },
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 117 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<th><span class="delete-descriptor-group action glyphicon glyphicon-minus-sign"></span></th><td class="action change-name" name="name" value="' +
+	((__t = ( name )) == null ? '' : __t) +
+	'">' +
+	((__t = ( name )) == null ? '' : __t) +
+	'</td><td class="action view-descriptor-type" name="num_descriptor_types"><abbr class="badge" style="cursor: pointer" title="' +
+	((__t = ( gt.gettext('Manage types of descriptor') )) == null ? '' : __t) +
+	'">' +
+	((__t = ( num_descriptor_types )) == null ? '' : __t) +
+	'</abbr></td>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 118 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title">' +
+	((__t = ( gt.gettext("Change the name of the group of descriptors") )) == null ? '' : __t) +
+	'</h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="label">' +
+	((__t = ( gt.gettext("Name") )) == null ? '' : __t) +
+	'</label><input class="form-control" id="name" type="text" name="name" value="" maxlength="32" autofocus="" autocomplete="off" style="width:100%"></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal">' +
+	((__t = ( gt.gettext("Cancel") )) == null ? '' : __t) +
+	'</button> <button type="button" class="btn btn-primary apply">' +
+	((__t = ( gt.gettext("Apply") )) == null ? '' : __t) +
+	'</button></div></div></div>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 119 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<div class="object descriptor-group-list" object-type="descriptor-group-list" style="width:100%"><table class="table table-striped"><thead class="sticky-header"><tr><th><span class="glyphicon glyphicon-asterisk"></span></th><th>' +
+	((__t = ( gt.gettext("Name") )) == null ? '' : __t) +
+	'</th><th>' +
+	((__t = ( gt.gettext("Number of types of descriptor") )) == null ? '' : __t) +
+	'</th></tr></thead><tbody class="descriptor-group-list"></tbody></table></div>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 120 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptortypelist.js
+	 * @brief List of types of descriptors for a group view
+	 * @author Frederic SCHERMA
+	 * @date 2016-07-21
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	var ScrollView = __webpack_require__(78);
+	
+	var DescriptorTypeModel = __webpack_require__(111);
+	var DescriptorTypeView = __webpack_require__(121);
+	
+	var View = ScrollView.extend({
+	    template: __webpack_require__(123),
+	    childView: DescriptorTypeView,
+	    childViewContainer: 'tbody.descriptor-type-list',
+	
+	    initialize: function() {
+	        this.listenTo(this.collection, 'reset', this.render, this);
+	        this.listenTo(this.collection, 'change', this.render, this);
+	        //this.listenTo(this.collection, 'add', this.render, this);
+	        //this.listenTo(this.collection, 'remove', this.render, this);
+	
+	        View.__super__.initialize.apply(this);
+	    }
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 121 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptortype.js
+	 * @brief Type of descriptor item view
+	 * @author Frederic SCHERMA
+	 * @date 2016-07-21
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	var DescriptorTypeModel = __webpack_require__(111);
+	
+	var View = Marionette.ItemView.extend({
+	    tagName: 'tr',
+	    className: 'element object descriptor-type',
+	    template: __webpack_require__(122),
+	
+	    ui: {
+	        delete_descriptor_type: 'span.delete-descriptor-type',
+	        view_descriptor_type: 'td.view-descriptor-type',
+	        view_descriptor_value: 'td.view-descriptor-value'
+	    },
+	
+	    events: {
+	        'click @ui.delete_descriptor_type': 'deleteDescriptorType',
+	        'click @ui.view_descriptor_type': 'viewDescriptorType',
+	        'click @ui.view_descriptor_value': 'viewDescriptorValue'
+	    },
+	
+	    initialize: function() {
+	        this.listenTo(this.model, 'reset', this.render, this);
+	    },
+	
+	    onRender: function() {
+	        // @todo check user permissions
+	        if (!this.model.get('can_delete') || !session.user.isSuperUser || !session.user.isStaff) {
+	            $(this.ui.delete_descriptor_type).hide();
+	        }
+	    },
+	
+	    viewDescriptorType: function() {
+	        Backbone.history.navigate("app/descriptor/group/" + this.model.get('group') + "/type/" + this.model.id + '/', {trigger: true});
+	    },
+	
+	    viewDescriptorValue: function () {
+	        Backbone.history.navigate("app/descriptor/group/" + this.model.get('group') + "/type/" + this.model.id + '/value/', {trigger: true});
+	    },
+	
+	    deleteDescriptorType: function () {
+	        if (this.model.get('num_descriptors_values') == 0) {
+	            this.model.destroy({wait: true});
+	        } else {
+	            $.alert.error(gt.gettext("Some values exists for this type of descriptor"));
+	        }
+	    }
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 122 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '', __j = Array.prototype.join;
+	function print() { __p += __j.call(arguments, '') }
+	with (obj) {
+	__p += '<th><span class="delete-descriptor-type action glyphicon glyphicon-minus-sign"></span></th><td class="action view-descriptor-type" name="name" value="' +
+	((__t = ( name )) == null ? '' : __t) +
+	'">' +
+	((__t = ( name )) == null ? '' : __t) +
+	'</td><td name="code">' +
+	((__t = ( code )) == null ? '' : __t) +
+	'</td> ';
+	 if (format.type === "enum_single" || format.type === "enum_pair" || format.type === "enum_ordinal") { ;
+	__p += ' <td class="action view-descriptor-value" name="num_descriptor_values"><abbr class="badge" style="cursor: pointer" title="' +
+	((__t = ( gt.gettext('Manage values of the descriptor') )) == null ? '' : __t) +
+	'">' +
+	((__t = ( num_descriptor_values )) == null ? '' : __t) +
+	'</abbr></td> ';
+	 } else { ;
+	__p += ' <td class="" name="num_descriptor_values"><abbr class="badge" title="' +
+	((__t = ( gt.gettext('No values for this descriptor') )) == null ? '' : __t) +
+	'">N/A</abbr></td> ';
+	 } ;
+	__p += ' <td name="description"><abbr class="label label-default glyphicon glyphicon-option-horizontal" title="' +
+	((__t = ( description )) == null ? '' : __t) +
+	'"><span></span></abbr></td>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 123 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<div class="object descriptor-type-list" object-type="descriptor-type-list" style="width:100%"><table class="table table-striped"><thead class="sticky-header"><tr><th><span class="glyphicon glyphicon-asterisk"></span></th><th>' +
+	((__t = ( gt.gettext("Name") )) == null ? '' : __t) +
+	'</th><th>' +
+	((__t = ( gt.gettext("Code") )) == null ? '' : __t) +
+	'</th><th>' +
+	((__t = ( gt.gettext("Number of values") )) == null ? '' : __t) +
+	'</th><th>' +
+	((__t = ( gt.gettext("Description") )) == null ? '' : __t) +
+	'</th></tr></thead><tbody class="descriptor-type-list"></tbody></table></div>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 124 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptorvaluelist.js
+	 * @brief List of values for a type of descriptor item view
+	 * @author Frederic SCHERMA
+	 * @date 2016-07-21
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	var DescriptorValueModel = __webpack_require__(114);
+	var DescriptorValueView = __webpack_require__(125);
+	var ScrollView = __webpack_require__(78);
+	
+	var View = ScrollView.extend({
+	    template: __webpack_require__(129),
+	    childView: DescriptorValueView,
+	    childViewContainer: 'tbody.descriptor-value-list',
+	
+	    templateHelpers: function() {
+	        return {
+	            format: this.collection.format,
+	            items: this.collection.toJSON()
+	        };
+	    },
+	    childViewOptions: function () {
+	        return {
+	            can_delete: this.model.get('can_delete'),
+	            can_modify: this.model.get('can_modify')
+	        }
+	    },
+	
+	    ui: {
+	        table: "table.descriptor-table",
+	        sort_by_id: "th span.action.column-sort-id",
+	        sort_by_value0: "th span.action.column-sort-value0"
+	    },
+	
+	    events: {
+	        'click @ui.sort_by_id': 'sortColumn',
+	        'click @ui.sort_by_value0': 'sortColumn',
+	    },
+	
+	    initialize: function() {
+	        this.listenTo(this.collection, 'reset', this.render, this);
+	        this.listenTo(this.collection, 'change', this.render, this);
+	        //this.listenTo(this.collection, 'add', this.render, this);
+	        //this.listenTo(this.collection, 'remove', this.render, this);
+	
+	        View.__super__.initialize.apply(this);
+	    },
+	
+	    onRender: function() {
+	        var sort_by = /([+\-]{0,1})([a-z0-9]+)/.exec(this.collection.sort_by);
+	        var sort_el = this.$el.find('span[column-name="' + sort_by[2] + '"]');
+	
+	        if (sort_by[1] === '-') {
+	            if ((sort_el.attr('column-type') || "alpha") === "numeric") {
+	                sort_el.addClass('glyphicon-sort-by-order-alt');
+	            } else {
+	                sort_el.addClass('glyphicon-sort-by-alphabet-alt');
+	            }
+	            sort_el.data('sort', 'desc');
+	        } else {
+	            if ((sort_el.attr('column-type') || "alpha") === "numeric") {
+	                sort_el.addClass('glyphicon-sort-by-order');
+	            } else {
+	                sort_el.addClass('glyphicon-sort-by-alphabet');
+	            }
+	            sort_el.data('sort', 'asc');
+	        }
+	
+	        // reset scrolling
+	        this.$el.parent().scrollTop(0);
+	    },
+	
+	    sortColumn: function (e) {
+	        var column = $(e.target).attr('column-name') || "id";
+	        var order = $(e.target).data('sort') || "none";
+	
+	        if (order === "asc") {
+	            sort_by = "-" + column;
+	        } else {
+	            sort_by = "+" + column;
+	        }
+	
+	        this.collection.next = null;
+	        this.collection.fetch({reset: true, update: false, remove: true, data: {cursor: null, sort_by: sort_by}});
+	    }
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 125 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptorvalue.js
+	 * @brief Value for a type of descriptor view
+	 * @author Frederic SCHERMA
+	 * @date 2016-07-21
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	var DescriptorValueModel = __webpack_require__(114);
+	
+	var Dialog = __webpack_require__(82);
+	
+	var View = Marionette.ItemView.extend({
+	    tagName: 'tr',
+	    className: 'element object descriptor-value',
+	    template: __webpack_require__(126),
+	    templateHelpers: function() {
+	        var ctx = this.model;
+	        ctx.format = this.model.collection.format;
+	
+	        // @todo check with user permission
+	        ctx.can_delete = this.getOption('can_delete');
+	        ctx.can_modify = this.getOption('can_modify');
+	        return ctx;
+	    },
+	
+	    ui: {
+	        delete_descriptor_value: 'th.delete-descriptor-value',
+	        edit_value0: 'td.edit-descriptor-value0',
+	    },
+	
+	    events: {
+	        'click @ui.delete_descriptor_value': 'deleteDescriptorValue',
+	        'click @ui.edit_value0': 'onEditValue0',
+	    },
+	
+	    initialize: function() {
+	        this.listenTo(this.model, 'reset', this.render, this);
+	    },
+	
+	    onRender: function() {
+	    },
+	
+	    deleteDescriptorValue: function () {
+	        // @todo check with user permission
+	        //if ($.inArray("auth.delete_descriptorvalue", this.model.perms) < 0) {
+	        if (!this.model.get('can_delete') || !session.user.isSuperUser || session.user.isStaff) {
+	            this.model.destroy({wait: true});
+	        }
+	    },
+	
+	    onEditValue0: function() {
+	        if (this.getOption('can_modify')) {
+	            var model = this.model;
+	
+	            if (model.collection.format['trans']) {
+	                $.ajax({
+	                    type: "GET",
+	                    url: this.model.url() + 'value0/',
+	                    dataType: 'json',
+	                }).done(function (data) {
+	                    var values = data;
+	
+	                    var ChangeValues = Dialog.extend({
+	                        template: __webpack_require__(127),
+	                        templateHelpers: function () {
+	                            return {
+	                                values: values,
+	                            };
+	                        },
+	
+	                        attributes: {
+	                            id: "dlg_change_values",
+	                        },
+	
+	                        ui: {
+	                            value: "#descriptor_value_values input",
+	                        },
+	
+	                        events: {
+	                            'input @ui.value': 'onValueInput',
+	                        },
+	
+	                        initialize: function (options) {
+	                            ChangeValues.__super__.initialize.apply(this);
+	                        },
+	
+	                        onValueInput: function (e) {
+	                            this.validateValue(e);
+	                        },
+	
+	                        validateValue: function (e) {
+	                            var v = $(e.target).val();
+	
+	                            if (v.length < 1) {
+	                                $(e.target).validateField('failed', gt.gettext('1 characters min'));
+	                                return false;
+	                            } else if (v.length > 64) {
+	                                $(e.target).validateField('failed', gt.gettext('64 characters max'));
+	                                return false;
+	                            }
+	
+	                            $(e.target).validateField('ok');
+	
+	                            return true;
+	                        },
+	
+	                        validateValues: function () {
+	                            $.each($(this.ui.value), function (i, value) {
+	                                var v = $(this).val();
+	
+	                                if (v.length < 3) {
+	                                    $(this).validateField('failed', gt.gettext('3 characters min'));
+	                                    return false;
+	                                } else if (v.length > 64) {
+	                                    $(this).validateField('failed', gt.gettext('64 characters max'));
+	                                    return false;
+	                                }
+	                            });
+	
+	                            return true;
+	                        },
+	
+	                        onApply: function () {
+	                            var view = this;
+	                            var model = this.getOption('model');
+	
+	                            var values = {};
+	
+	                            $.each($(this.ui.value), function (i, value) {
+	                                var v = $(this).val();
+	                                values[$(value).attr("language")] = v;
+	                            });
+	
+	                            if (this.validateValues()) {
+	                                $.ajax({
+	                                    type: "PUT",
+	                                    url: model.url() + "value0/",
+	                                    dataType: 'json',
+	                                    contentType: "application/json; charset=utf-8",
+	                                    data: JSON.stringify(values)
+	                                }).done(function () {
+	                                    // manually update the current context value
+	                                    model.set('value0', values[session.language]);
+	                                    $.alert.success(gt.gettext("Successfully valued !"));
+	                                }).always(function () {
+	                                    view.remove();
+	                                });
+	                            }
+	                        },
+	                    });
+	
+	                    var changeValues = new ChangeValues({model: model});
+	                    changeValues.render();
+	                });
+	            } else {
+	                var ChangeLabel = Dialog.extend({
+	                    template: __webpack_require__(128),
+	
+	                    attributes: {
+	                        id: "dlg_change_value",
+	                    },
+	
+	                    ui: {
+	                        value: "#value",
+	                    },
+	
+	                    events: {
+	                        'input @ui.value': 'onValueInput',
+	                    },
+	
+	                    initialize: function (options) {
+	                        ChangeLabel.__super__.initialize.apply(this);
+	
+	                    },
+	
+	                    onValueInput: function () {
+	                        this.validateValue();
+	                    },
+	
+	                    validateValue: function () {
+	                        var v = this.ui.value.val();
+	
+	                        if (v.length < 1) {
+	                            $(this.ui.value).validateField('failed', gt.gettext('1 characters min'));
+	                            return false;
+	                        }
+	
+	                        $(this.ui.value).validateField('ok');
+	
+	                        return true;
+	                    },
+	
+	                    onApply: function () {
+	                        var view = this;
+	                        var model = this.getOption('model');
+	
+	                        if (this.validateValue()) {
+	                            model.save({value0: this.ui.value.val()}, {
+	                                patch: true,
+	                                wait: true,
+	                                success: function () {
+	                                    view.remove();
+	                                    $.alert.success(gt.gettext("Successfully changed !"));
+	                                },
+	                                error: function () {
+	                                    $.alert.error(gt.gettext("Unable to change the value !"));
+	                                }
+	                            });
+	                        }
+	                    },
+	                });
+	
+	                var changeLabel = new ChangeLabel({
+	                    model: this.model,
+	                });
+	
+	                changeLabel.render();
+	                changeLabel.ui.value.val(this.model.get('value0'));
+	            }
+	        }
+	    },
+	});
+	
+	module.exports = View;
+
+/***/ },
+/* 126 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '', __j = Array.prototype.join;
+	function print() { __p += __j.call(arguments, '') }
+	with (obj) {
+	
+	 if (can_delete) { ;
+	__p += ' <th class="action delete-descriptor-value"><span class="glyphicon glyphicon-minus-sign"></span></th> ';
+	 } else { ;
+	__p += ' <th><span></span></th> ';
+	 } ;
+	__p += ' <td class="action edit-descriptor-id" name="id">' +
+	((__t = ( id )) == null ? '' : __t) +
+	'</td><td class="action edit-descriptor-value0" name="value0">' +
+	((__t = ( value0 )) == null ? '' : __t) +
+	'</td>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 127 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '', __j = Array.prototype.join;
+	function print() { __p += __j.call(arguments, '') }
+	with (obj) {
+	__p += '<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title">' +
+	((__t = ( gt.gettext("Change the value of a field for a type of descriptor") )) == null ? '' : __t) +
+	'</h4></div><div class="modal-body"><form id="descriptor_value_values">';
+	
+	                var languages = application.main.collections.uilanguages;
+	
+	                for (var i = 0; i < languages.models.length; ++i) {
+	                    var lang_id = languages.at(i).get('id');
+	                    var lang_label = languages.at(i).get('label');
+	                    var autofocus = (i == 0) ? 'autofocus=""' : "";
+	                ;
+	__p += ' <div class="form-group"><label class="control-label">' +
+	((__t = ( gt.gettext(lang_label) )) == null ? '' : __t) +
+	'</label><input class="form-control" type="text" language="' +
+	((__t = ( lang_id )) == null ? '' : __t) +
+	'" value="' +
+	((__t = ( values[lang_id] )) == null ? '' : __t) +
+	'" maxlength="64" ' +
+	((__t = ( autofocus )) == null ? '' : __t) +
+	' autocomplete="off" style="width:100%"></div> ';
+	 } ;
+	__p += ' </form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal">' +
+	((__t = ( gt.gettext("Cancel") )) == null ? '' : __t) +
+	'</button> <button type="button" class="btn btn-primary apply">' +
+	((__t = ( gt.gettext("Apply") )) == null ? '' : __t) +
+	'</button></div></div></div>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 128 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title">' +
+	((__t = ( gt.gettext("Change the value of a field for a type of descriptor") )) == null ? '' : __t) +
+	'</h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="value">' +
+	((__t = ( gt.gettext("Value for any languages") )) == null ? '' : __t) +
+	'</label><input class="form-control" id="value" type="text" name="value" value="" maxlength="128" autofocus="" autocomplete="off" style="width:100%"></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal">' +
+	((__t = ( gt.gettext("Cancel") )) == null ? '' : __t) +
+	'</button> <button type="button" class="btn btn-primary apply">' +
+	((__t = ( gt.gettext("Apply") )) == null ? '' : __t) +
+	'</button></div></div></div>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 129 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<div class="object descriptor-value-list" object-type="descriptor-value-list" style="width:100%"><table class="table table-striped descriptor-table"><thead><tr class="sticky-header"><th class="unselectable"><span class="glyphicon glyphicon-asterisk"></span></th><th class="unselectable">' +
+	((__t = ( gt.gettext("Code") )) == null ? '' : __t) +
+	'&nbsp;<span class="action column-sort-id glyphicon glyphicon-sort" column-name="id" column-type="alpha"></span></th><th class="unselectable">' +
+	((__t = ( gt.gettext("Value") )) == null ? '' : __t) +
+	'&nbsp;<span class="action column-sort-value0 glyphicon glyphicon-sort" column-name="value0" column-type="alpha"></span></th></tr></thead><tbody class="descriptor-value-list"></tbody></table></div>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 130 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptorvaluepairlist.js
+	 * @brief List of pair values for a type of descriptor item view
+	 * @author Frederic SCHERMA
+	 * @date 2016-08-01
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	var DescriptorValueModel = __webpack_require__(114);
+	var DescriptorValuePairView = __webpack_require__(131);
+	var ScrollView = __webpack_require__(78);
+	
+	var View = ScrollView.extend({
+	    template: __webpack_require__(133),
+	    childView: DescriptorValuePairView,
+	    childViewContainer: 'tbody.descriptor-value-list',
+	
+	    templateHelpers: function() {
+	        return {
+	            format: this.collection.format,
+	            items: this.collection.toJSON()
+	        };
+	    },
+	    childViewOptions: function () {
+	        return {
+	            can_delete: this.model.get('can_delete'),
+	            can_modify: this.model.get('can_modify')
+	        }
+	    },
+	
+	    ui: {
+	        table: "table.descriptor-table",
+	        sort_by_id: "th span.action.column-sort-id",
+	        sort_by_value0: "th span.action.column-sort-value0",
+	        sort_by_value1: "th span.action.column-sort-value1"
+	    },
+	
+	    events: {
+	        'click @ui.sort_by_id': 'sortColumn',
+	        'click @ui.sort_by_value0': 'sortColumn',
+	        'click @ui.sort_by_value1': 'sortColumn',
+	    },
+	
+	    initialize: function() {
+	        this.listenTo(this.collection, 'reset', this.render, this);
+	        this.listenTo(this.collection, 'change', this.render, this);
+	
+	        View.__super__.initialize.apply(this);
+	    },
+	
+	    onRender: function() {
+	        var sort_by = /([+\-]{0,1})([a-z0-9]+)/.exec(this.collection.sort_by);
+	        var sort_el = this.$el.find('span[column-name="' + sort_by[2] + '"]');
+	
+	        if (sort_by[1] === '-') {
+	            if ((sort_el.attr('column-type') || "alpha") === "numeric") {
+	                sort_el.addClass('glyphicon-sort-by-order-alt');
+	            } else {
+	                sort_el.addClass('glyphicon-sort-by-alphabet-alt');
+	            }
+	            sort_el.data('sort', 'desc');
+	        } else {
+	            if ((sort_el.attr('column-type') || "alpha") === "numeric") {
+	                sort_el.addClass('glyphicon-sort-by-order');
+	            } else {
+	                sort_el.addClass('glyphicon-sort-by-alphabet');
+	            }
+	            sort_el.data('sort', 'asc');
+	        }
+	
+	        // reset scrolling
+	        this.$el.parent().scrollTop(0);
+	    },
+	
+	    sortColumn: function (e) {
+	        var column = $(e.target).attr('column-name') || "id";
+	        var order = $(e.target).data('sort') || "none";
+	
+	        if (order === "asc") {
+	            sort_by = "-" + column;
+	        } else {
+	            sort_by = "+" + column;
+	        }
+	
+	        this.collection.next = null;
+	        this.collection.fetch({reset: true, update: false, remove: true, data: {
+	            more: this.capacity(),
+	            cursor: null,
+	            sort_by: sort_by
+	        }});
+	    }
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 131 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptorvaluepair.js
+	 * @brief Value for a type of descriptor view
+	 * @author Frederic SCHERMA
+	 * @date 2016-08-01
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	var DescriptorValueModel = __webpack_require__(114);
+	
+	var Dialog = __webpack_require__(82);
+	
+	var View = Marionette.ItemView.extend({
+	    tagName: 'tr',
+	    className: 'element object descriptor-value',
+	    template: __webpack_require__(132),
+	    templateHelpers: function() {
+	        var ctx = this.model;
+	        ctx.format = this.model.collection.format;
+	
+	        // @todo check with user permission
+	        ctx.can_delete = this.getOption('can_delete');
+	        ctx.can_modify = this.getOption('can_modify');
+	        return ctx;
+	    },
+	    ui: {
+	        delete_descriptor_value: 'th.delete-descriptor-value',
+	        edit_value0: 'td.edit-descriptor-value0',
+	        edit_value1: 'td.edit-descriptor-value1',
+	    },
+	
+	    events: {
+	        'click @ui.delete_descriptor_value': 'deleteDescriptorValue',
+	        'click @ui.edit_value0': 'onEditValue0',
+	        'click @ui.edit_value1': 'onEditValue1',
+	    },
+	
+	    initialize: function() {
+	        this.listenTo(this.model, 'reset', this.render, this);
+	    },
+	
+	    onRender: function() {
+	    },
+	
+	    deleteDescriptorValue: function () {
+	        if (!this.model.get('can_delete') || !session.user.isSuperUser || session.user.isStaff) {
+	            this.model.destroy({wait: true});
+	        }
+	    },
+	
+	    onEditValue0: function() {
+	        if (this.getOption('can_modify')) {
+	            var model = this.model;
+	
+	            if (model.collection.format['trans']) {
+	                $.ajax({
+	                    type: "GET",
+	                    url: this.model.url() + 'value0/',
+	                    dataType: 'json',
+	                }).done(function (data) {
+	                    var values = data;
+	
+	                    var ChangeValues = Dialog.extend({
+	                        template: __webpack_require__(127),
+	                        templateHelpers: function () {
+	                            return {
+	                                values: values,
+	                            };
+	                        },
+	
+	                        attributes: {
+	                            id: "dlg_change_values",
+	                        },
+	
+	                        ui: {
+	                            value: "#descriptor_value_values input",
+	                        },
+	
+	                        events: {
+	                            'input @ui.value': 'onValueInput',
+	                        },
+	
+	                        initialize: function (options) {
+	                            ChangeValues.__super__.initialize.apply(this);
+	                        },
+	
+	                        onValueInput: function (e) {
+	                            this.validateValue(e);
+	                        },
+	
+	                        validateValue: function (e) {
+	                            var v = $(e.target).val();
+	
+	                            if (v.length < 1) {
+	                                $(e.target).validateField('failed', gt.gettext('1 characters min'));
+	                                return false;
+	                            } else if (v.length > 64) {
+	                                $(e.target).validateField('failed', gt.gettext('64 characters max'));
+	                                return false;
+	                            }
+	
+	                            $(e.target).validateField('ok');
+	
+	                            return true;
+	                        },
+	
+	                        validateValues: function () {
+	                            $.each($(this.ui.value), function (i, value) {
+	                                var v = $(this).val();
+	
+	                                if (v.length < 3) {
+	                                    $(this).validateField('failed', gt.gettext('3 characters min'));
+	                                    return false;
+	                                } else if (v.length > 64) {
+	                                    $(this).validateField('failed', gt.gettext('64 characters max'));
+	                                    return false;
+	                                }
+	                            });
+	
+	                            return true;
+	                        },
+	
+	                        onApply: function () {
+	                            var view = this;
+	                            var model = this.getOption('model');
+	
+	                            var values = {};
+	
+	                            $.each($(this.ui.value), function (i, value) {
+	                                var v = $(this).val();
+	                                values[$(value).attr("language")] = v;
+	                            });
+	
+	                            if (this.validateValues()) {
+	                                $.ajax({
+	                                    type: "PUT",
+	                                    url: model.url() + "value0/",
+	                                    dataType: 'json',
+	                                    contentType: "application/json; charset=utf-8",
+	                                    data: JSON.stringify(values)
+	                                }).done(function () {
+	                                    // manually update the current context value
+	                                    model.set('value0', values[session.language]);
+	                                    $.alert.success(gt.gettext("Successfully valued !"));
+	                                }).always(function () {
+	                                    view.remove();
+	                                });
+	                            }
+	                        },
+	                    });
+	
+	                    var changeValues = new ChangeValues({model: model});
+	                    changeValues.render();
+	                });
+	            } else {
+	                var ChangeLabel = Dialog.extend({
+	                    template: __webpack_require__(128),
+	
+	                    attributes: {
+	                        id: "dlg_change_value",
+	                    },
+	
+	                    ui: {
+	                        value: "#value",
+	                    },
+	
+	                    events: {
+	                        'input @ui.value': 'onValueInput',
+	                    },
+	
+	                    initialize: function (options) {
+	                        ChangeLabel.__super__.initialize.apply(this);
+	
+	                    },
+	
+	                    onValueInput: function () {
+	                        this.validateValue();
+	                    },
+	
+	                    validateValue: function () {
+	                        var v = this.ui.value.val();
+	
+	                        if (v.length < 1) {
+	                            $(this.ui.value).validateField('failed', gt.gettext('1 characters min'));
+	                            return false;
+	                        }
+	
+	                        $(this.ui.value).validateField('ok');
+	
+	                        return true;
+	                    },
+	
+	                    onApply: function () {
+	                        var view = this;
+	                        var model = this.getOption('model');
+	
+	                        if (this.validateValue()) {
+	                            model.save({value0: this.ui.value.val()}, {
+	                                patch: true,
+	                                wait: true,
+	                                success: function () {
+	                                    view.remove();
+	                                    $.alert.success(gt.gettext("Successfully changed !"));
+	                                },
+	                                error: function () {
+	                                    $.alert.error(gt.gettext("Unable to change the value !"));
+	                                }
+	                            });
+	                        }
+	                    },
+	                });
+	
+	                var changeLabel = new ChangeLabel({
+	                    model: this.model,
+	                });
+	
+	                changeLabel.render();
+	                changeLabel.ui.value.val(this.model.get('value0'));
+	            }
+	        }
+	    },
+	
+	    onEditValue1: function() {
+	        if (this.getOption('can_modify')) {
+	            var model = this.model;
+	
+	            if (model.collection.format['trans']) {
+	                $.ajax({
+	                    type: "GET",
+	                    url: this.model.url() + 'value1/',
+	                    dataType: 'json',
+	                }).done(function (data) {
+	                    var values = data;
+	
+	                    var ChangeValues = Dialog.extend({
+	                        template: __webpack_require__(127),
+	                        templateHelpers: function () {
+	                            return {
+	                                values: values,
+	                            };
+	                        },
+	
+	                        attributes: {
+	                            id: "dlg_change_values",
+	                        },
+	
+	                        ui: {
+	                            value: "#descriptor_value_values input",
+	                        },
+	
+	                        events: {
+	                            'input @ui.value': 'onValueInput',
+	                        },
+	
+	                        initialize: function (options) {
+	                            ChangeValues.__super__.initialize.apply(this);
+	                        },
+	
+	                        onValueInput: function (e) {
+	                            this.validateValue(e);
+	                        },
+	
+	                        validateValue: function (e) {
+	                            var v = $(e.target).val();
+	
+	                            if (v.length < 1) {
+	                                $(e.target).validateField('failed', gt.gettext('1 characters min'));
+	                                return false;
+	                            } else if (v.length > 64) {
+	                                $(e.target).validateField('failed', gt.gettext('64 characters max'));
+	                                return false;
+	                            }
+	
+	                            $(e.target).validateField('ok');
+	
+	                            return true;
+	                        },
+	
+	                        validateValues: function () {
+	                            $.each($(this.ui.value), function (i, value) {
+	                                var v = $(this).val();
+	
+	                                if (v.length < 3) {
+	                                    $(this).validateField('failed', gt.gettext('3 characters min'));
+	                                    return false;
+	                                } else if (v.length > 64) {
+	                                    $(this).validateField('failed', gt.gettext('64 characters max'));
+	                                    return false;
+	                                }
+	                            });
+	
+	                            return true;
+	                        },
+	
+	                        onApply: function () {
+	                            var view = this;
+	                            var model = this.getOption('model');
+	
+	                            var values = {};
+	
+	                            $.each($(this.ui.value), function (i, value) {
+	                                var v = $(this).val();
+	                                values[$(value).attr("language")] = v;
+	                            });
+	
+	                            if (this.validateValues()) {
+	                                $.ajax({
+	                                    type: "PUT",
+	                                    url: model.url() + "value1/",
+	                                    dataType: 'json',
+	                                    contentType: "application/json; charset=utf-8",
+	                                    data: JSON.stringify(values)
+	                                }).done(function () {
+	                                    // manually update the current context value
+	                                    model.set('value1', values[session.language]);
+	                                    $.alert.success(gt.gettext("Successfully valued !"));
+	                                }).always(function () {
+	                                    view.remove();
+	                                });
+	                            }
+	                        },
+	                    });
+	
+	                    var changeValues = new ChangeValues({model: model});
+	                    changeValues.render();
+	                });
+	            } else {
+	                var ChangeLabel = Dialog.extend({
+	                    template: __webpack_require__(128),
+	
+	                    attributes: {
+	                        id: "dlg_change_value",
+	                    },
+	
+	                    ui: {
+	                        value: "#value",
+	                    },
+	
+	                    events: {
+	                        'input @ui.value': 'onValueInput',
+	                    },
+	
+	                    initialize: function (options) {
+	                        ChangeLabel.__super__.initialize.apply(this);
+	
+	                    },
+	
+	                    onValueInput: function () {
+	                        this.validateValue();
+	                    },
+	
+	                    validateValue: function () {
+	                        var v = this.ui.value.val();
+	
+	                        if (v.length < 1) {
+	                            $(this.ui.value).validateField('failed', gt.gettext('1 characters min'));
+	                            return false;
+	                        }
+	
+	                        $(this.ui.value).validateField('ok');
+	
+	                        return true;
+	                    },
+	
+	                    onApply: function () {
+	                        var view = this;
+	                        var model = this.getOption('model');
+	
+	                        if (this.validateValue()) {
+	                            model.save({value1: this.ui.value.val()}, {
+	                                patch: true,
+	                                wait: true,
+	                                success: function () {
+	                                    view.remove();
+	                                    $.alert.success(gt.gettext("Successfully changed !"));
+	                                },
+	                                error: function () {
+	                                    $.alert.error(gt.gettext("Unable to change the value !"));
+	                                }
+	                            });
+	                        }
+	                    },
+	                });
+	
+	                var changeLabel = new ChangeLabel({
+	                    model: this.model,
+	                });
+	
+	                changeLabel.render();
+	                changeLabel.ui.value.val(this.model.get('value1'));
+	            }
+	        }
+	    },
+	});
+	
+	module.exports = View;
+
+/***/ },
+/* 132 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '', __j = Array.prototype.join;
+	function print() { __p += __j.call(arguments, '') }
+	with (obj) {
+	
+	 if (can_delete) { ;
+	__p += ' <th class="action delete-descriptor-value"><span class="glyphicon glyphicon-minus-sign"></span></th> ';
+	 } else { ;
+	__p += ' <th><span></span></th> ';
+	 } ;
+	__p += ' <td class="action edit-descriptor-id" name="id">' +
+	((__t = ( id )) == null ? '' : __t) +
+	'</td><td class="action edit-descriptor-value0">' +
+	((__t = ( value0 )) == null ? '' : __t) +
+	'</td><td class="action edit-descriptor-value1">' +
+	((__t = ( value1 )) == null ? '' : __t) +
+	'</td>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 133 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<div class="object descriptor-value-list" object-type="descriptor-value-list" style="width:100%"><table class="table table-striped descriptor-table"><thead class="sticky-header"><tr><th><span class="glyphicon glyphicon-asterisk"></span></th><th class="unselectable">' +
+	((__t = ( gt.gettext("Code") )) == null ? '' : __t) +
+	'&nbsp;<span class="action column-sort-id glyphicon glyphicon-sort" column-name="id" column-type="alpha"></span></th><th class="unselectable">' +
+	((__t = ( gt.gettext(format.fields[0]) )) == null ? '' : __t) +
+	'&nbsp;<span class="action column-sort-value0 glyphicon glyphicon-sort" column-name="value0" column-type="alpha"></span></th><th class="unselectable">' +
+	((__t = ( gt.gettext(format.fields[1]) )) == null ? '' : __t) +
+	'&nbsp;<span class="action column-sort-value1 glyphicon glyphicon-sort" column-name="value1" column-type="alpha"></span></th></tr></thead><tbody class="descriptor-value-list"></tbody></table></div>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 134 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptorvalueordinallist.js
+	 * @brief List of ordinam values for a type of descriptor item view
+	 * @author Frederic SCHERMA
+	 * @date 2016-10-28
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	var DescriptorValueModel = __webpack_require__(114);
+	var DescriptorValueOrdinalView = __webpack_require__(135);
+	var ScrollView = __webpack_require__(78);
+	
+	var View = ScrollView.extend({
+	    template: __webpack_require__(137),
+	    childView: DescriptorValueOrdinalView,
+	    childViewContainer: 'tbody.descriptor-value-list',
+	
+	    templateHelpers: function() {
+	        return {
+	            format: this.collection.format,
+	            items: this.collection.toJSON()
+	        };
+	    },
+	    childViewOptions: function () {
+	        return {
+	            can_delete: this.model.get('can_delete'),
+	            can_modify: this.model.get('can_modify')
+	        }
+	    },
+	
+	    ui: {
+	        table: "table.descriptor-table",
+	        sort_by_id: "th span.action.column-sort-id",
+	        sort_by_ordinal: "th span.action.column-sort-ordinal",
+	        sort_by_value0: "th span.action.column-sort-value0",
+	    },
+	
+	    events: {
+	        'click @ui.sort_by_id': 'sortColumn',
+	        'click @ui.sort_by_ordinal': 'sortColumn',
+	        'click @ui.sort_by_value0': 'sortColumn',
+	    },
+	
+	    initialize: function() {
+	        this.listenTo(this.collection, 'reset', this.render, this);
+	        this.listenTo(this.collection, 'change', this.render, this);
+	
+	        View.__super__.initialize.apply(this);
+	    },
+	
+	    onRender: function() {
+	        var sort_by = /([+\-]{0,1})([a-z0-9]+)/.exec(this.collection.sort_by);
+	        var sort_el = this.$el.find('span[column-name="' + sort_by[2] + '"]');
+	
+	        if (sort_by[1] === '-') {
+	            if ((sort_el.attr('column-type') || "alpha") === "numeric") {
+	                sort_el.addClass('glyphicon-sort-by-order-alt');
+	            } else {
+	                sort_el.addClass('glyphicon-sort-by-alphabet-alt');
+	            }
+	            sort_el.data('sort', 'desc');
+	        } else {
+	            if ((sort_el.attr('column-type') || "alpha") === "numeric") {
+	                sort_el.addClass('glyphicon-sort-by-order');
+	            } else {
+	                sort_el.addClass('glyphicon-sort-by-alphabet');
+	            }
+	            sort_el.data('sort', 'asc');
+	        }
+	
+	        // reset scrolling
+	        this.$el.parent().scrollTop(0);
+	    },
+	
+	    sortColumn: function (e) {
+	        var column = $(e.target).attr('column-name') || "id";
+	        var order = $(e.target).data('sort') || "none";
+	
+	        if (order === "asc") {
+	            sort_by = "-" + column;
+	        } else {
+	            sort_by = "+" + column;
+	        }
+	
+	        this.collection.next = null;
+	        this.collection.fetch({reset: true, update: false, remove: true, data: {
+	            more: this.capacity(),
+	            cursor: null,
+	            sort_by: sort_by
+	        }});
+	    }
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 135 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptorvalueordinal.js
+	 * @brief Value for a type of descriptor view
+	 * @author Frederic SCHERMA
+	 * @date 2016-10-28
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	var DescriptorValueModel = __webpack_require__(114);
+	
+	var Dialog = __webpack_require__(82);
+	
+	var View = Marionette.ItemView.extend({
+	    tagName: 'tr',
+	    className: 'element object descriptor-value',
+	    template: __webpack_require__(136),
+	    templateHelpers: function() {
+	        var ctx = this.model;
+	        ctx.format = this.model.collection.format;
+	        ctx.can_delete = this.getOption('can_delete');
+	        ctx.can_modify = this.getOption('can_modify');
+	        return ctx;
+	    },
+	
+	    ui: {
+	        edit_value0: 'td.edit-descriptor-value0',
+	    },
+	
+	    events: {
+	        'click @ui.edit_value0': 'onEditValue0',
+	    },
+	
+	    initialize: function() {
+	        this.listenTo(this.model, 'reset', this.render, this);
+	    },
+	
+	    onRender: function() {
+	  
+	    },
+	
+	    onEditValue0: function() {
+	        if (this.getOption('can_modify')) {
+	            var model = this.model;
+	
+	            if (model.collection.format['trans']) {
+	                $.ajax({
+	                    type: "GET",
+	                    url: this.model.url() + 'value0/',
+	                    dataType: 'json',
+	                }).done(function (data) {
+	                    var values = data;
+	
+	                    var ChangeValues = Dialog.extend({
+	                        template: __webpack_require__(127),
+	                        templateHelpers: function () {
+	                            return {
+	                                values: values,
+	                            };
+	                        },
+	
+	                        attributes: {
+	                            id: "dlg_change_values",
+	                        },
+	
+	                        ui: {
+	                            value: "#descriptor_value_values input",
+	                        },
+	
+	                        events: {
+	                            'input @ui.value': 'onValueInput',
+	                        },
+	
+	                        initialize: function (options) {
+	                            ChangeValues.__super__.initialize.apply(this);
+	                        },
+	
+	                        onValueInput: function (e) {
+	                            this.validateValue(e);
+	                        },
+	
+	                        validateValue: function (e) {
+	                            var v = $(e.target).val();
+	
+	                            if (v.length < 1) {
+	                                $(e.target).validateField('failed', gt.gettext('1 characters min'));
+	                                return false;
+	                            } else if (v.length > 64) {
+	                                $(e.target).validateField('failed', gt.gettext('64 characters max'));
+	                                return false;
+	                            }
+	
+	                            $(e.target).validateField('ok');
+	
+	                            return true;
+	                        },
+	
+	                        validateValues: function () {
+	                            $.each($(this.ui.value), function (i, value) {
+	                                var v = $(this).val();
+	
+	                                if (v.length < 3) {
+	                                    $(this).validateField('failed', gt.gettext('3 characters min'));
+	                                    return false;
+	                                } else if (v.length > 64) {
+	                                    $(this).validateField('failed', gt.gettext('64 characters max'));
+	                                    return false;
+	                                }
+	                            });
+	
+	                            return true;
+	                        },
+	
+	                        onApply: function () {
+	                            var view = this;
+	                            var model = this.getOption('model');
+	
+	                            var values = {};
+	
+	                            $.each($(this.ui.value), function (i, value) {
+	                                var v = $(this).val();
+	                                values[$(value).attr("language")] = v;
+	                            });
+	
+	                            if (this.validateValues()) {
+	                                $.ajax({
+	                                    type: "PUT",
+	                                    url: model.url() + "value0/",
+	                                    dataType: 'json',
+	                                    contentType: "application/json; charset=utf-8",
+	                                    data: JSON.stringify(values)
+	                                }).done(function () {
+	                                    // manually update the current context value
+	                                    model.set('value0', values[session.language]);
+	                                    $.alert.success(gt.gettext("Successfully valued !"));
+	                                }).always(function () {
+	                                    view.remove();
+	                                });
+	                            }
+	                        },
+	                    });
+	
+	                    var changeValues = new ChangeValues({model: model});
+	                    changeValues.render();
+	                });
+	            } else {
+	                var ChangeLabel = Dialog.extend({
+	                    template: __webpack_require__(128),
+	
+	                    attributes: {
+	                        id: "dlg_change_value",
+	                    },
+	
+	                    ui: {
+	                        value: "#value",
+	                    },
+	
+	                    events: {
+	                        'input @ui.value': 'onValueInput',
+	                    },
+	
+	                    initialize: function (options) {
+	                        ChangeLabel.__super__.initialize.apply(this);
+	
+	                    },
+	
+	                    onValueInput: function () {
+	                        this.validateValue();
+	                    },
+	
+	                    validateValue: function () {
+	                        var v = this.ui.value.val();
+	
+	                        if (v.length < 1) {
+	                            $(this.ui.value).validateField('failed', gt.gettext('1 characters min'));
+	                            return false;
+	                        }
+	
+	                        $(this.ui.value).validateField('ok');
+	
+	                        return true;
+	                    },
+	
+	                    onApply: function () {
+	                        var view = this;
+	                        var model = this.getOption('model');
+	
+	                        if (this.validateValue()) {
+	                            model.save({value0: this.ui.value.val()}, {
+	                                patch: true,
+	                                wait: true,
+	                                success: function () {
+	                                    view.remove();
+	                                    $.alert.success(gt.gettext("Successfully changed !"));
+	                                },
+	                                error: function () {
+	                                    $.alert.error(gt.gettext("Unable to change the value !"));
+	                                }
+	                            });
+	                        }
+	                    },
+	                });
+	
+	                var changeLabel = new ChangeLabel({
+	                    model: this.model,
+	                });
+	
+	                changeLabel.render();
+	                changeLabel.ui.value.val(this.model.get('value0'));
+	            }
+	        }
+	    },
+	});
+	
+	module.exports = View;
+
+/***/ },
+/* 136 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<th></th><td name="id">' +
+	((__t = ( id )) == null ? '' : __t) +
+	'</td><td name="ordinal">' +
+	((__t = ( ordinal )) == null ? '' : __t) +
+	'</td><td class="action edit-descriptor-value0" name="value0">' +
+	((__t = ( value0 )) == null ? '' : __t) +
+	'</td>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 137 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<div class="object descriptor-value-list" object-type="descriptor-value-list" style="width:100%"><table class="table table-striped descriptor-table"><thead class="sticky-header"><tr><th><span class="glyphicon glyphicon-asterisk"></span></th><th class="unselectable">' +
+	((__t = ( gt.gettext("Code") )) == null ? '' : __t) +
+	'&nbsp;<span class="action column-sort-id glyphicon glyphicon-sort" column-name="id" column-type="alpha"></span></th><th class="unselectable">' +
+	((__t = ( gt.gettext("Ordinal") )) == null ? '' : __t) +
+	'&nbsp;<span class="action column-sort-ordinal glyphicon glyphicon-sort" column-name="ordinal" column-type="numeric"></span></th><th class="unselectable">' +
+	((__t = ( gt.gettext(format.fields[0]) )) == null ? '' : __t) +
+	'&nbsp;<span class="action column-sort-value0 glyphicon glyphicon-sort" column-name="value0" column-type="alpha"></span></th></tr></thead><tbody class="descriptor-value-list"></tbody></table></div>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 138 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptorvalueadd.js
+	 * @brief Add a value for a descriptor
+	 * @author Frederic SCHERMA
+	 * @date 2016-10-31
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	
+	var View = Marionette.ItemView.extend({
+	    tagName: 'div',
+	    className: 'type-add',
+	    template: __webpack_require__(139),
+	
+	    ui: {
+	        add_value_btn: 'span.add-descriptor-value',
+	        value: 'input.descriptor-value',
+	    },
+	
+	    events: {
+	        'click @ui.add_value_btn': 'addValue',
+	        'input @ui.value': 'onValueInput',
+	    },
+	
+	    initialize: function(options) {
+	        options || (options = {});
+	        this.collection = options.collection;
+	    },
+	
+	    addValue: function () {
+	        if (!this.ui.value.hasClass('invalid')) {
+	            this.collection.create({
+	                value0: this.ui.value.val(),
+	            }, {wait: true});
+	
+	            $(this.ui.value).cleanField();
+	        }
+	    },
+	
+	    validateValue: function() {
+	        var v = this.ui.value.val();
+	
+	        if (v.length < 1) {
+	            $(this.ui.value).validateField('failed', gt.gettext('1 character min'));
+	            return false;
+	        }
+	
+	        return true;
+	    },
+	
+	    onValueInput: function () {
+	        if (this.validateValue()) {
+	            $(this.ui.value).validateField('ok');
+	        }
+	    },
+	});
+	
+	module.exports = View;
+	
+
+
+/***/ },
+/* 139 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<table class="table table-striped" style="margin-bottom: 0px"><tbody><tr class="edit-mode" style="height: 95px"><th><span class="add-descriptor-value action glyphicon glyphicon-plus-sign" style="margin-top: 9px; margin-left: 10px"></span></th><td style="width: 100%"><div class="form-group"><input type="text" class="descriptor-value form-control" name="type"></div></td></tr></tbody></table>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 140 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptortypedetail.js
+	 * @brief Detail for a type of descriptor view
+	 * @author Frederic SCHERMA
+	 * @date 2016-07-29
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	var DescriptorTypeModel = __webpack_require__(111);
+	
+	var View = Marionette.ItemView.extend({
+	    className: 'element object descriptor-type-detail',
+	    template: __webpack_require__(141),
+	
+	    ui: {
+	        name: '#descriptor_type_name',
+	        code: '#descriptor_type_code',
+	        description: '#descriptor_type_description',
+	        format_type: '#format_type',
+	        format_trans: "#format_trans",
+	        fields: 'div.descriptor-type-fields',
+	        field0: '#type_field0',
+	        field1: '#type_field1',
+	        format_unit: '#format_unit',
+	        format_unit_custom: '#format_unit_custom',
+	        format_precision: '#format_precision',
+	        format_model: '#format_model',
+	        type_fields_info: 'div.descriptor-type-fields-info',
+	        sortby_field: '#sortby_field',
+	        display_fields: '#display_fields',
+	        type_fields_list: 'div.descriptor-type-fields-list',
+	        helper_display_fields: '#helper_display_fields',
+	        list_type: '#list_type',
+	        search_field: '#search_field',
+	        range: 'div.descriptor-type-range',
+	        format_range_min: '#format_range_min',
+	        format_range_max: '#format_range_max',
+	        format_regexp: '#format_regexp',
+	        save: '#save'
+	    },
+	
+	    events: {
+	        'click @ui.save': 'saveDescriptorType',
+	        'input @ui.name': 'inputName',
+	        'change @ui.format_type': 'changeFormatType',
+	        'change @ui.format_unit': 'changeFormatUnit',
+	        'change @ui.list_type': 'changeListType',
+	        'input @ui.format_unit_custom': 'inputFormatUnitCustom',
+	    },
+	
+	    initialize: function() {
+	        this.listenTo(this.model, 'reset', this.render, this);
+	    },
+	
+	    onRender: function() {
+	        application.descriptor.views.describables.drawSelect(this.ui.format_model);
+	
+	        $(this.ui.format_trans).selectpicker({style: 'btn-default', container: 'body'});
+	        $(this.ui.format_type).selectpicker({style: 'btn-default', container: 'body'});
+	        $(this.ui.format_unit).selectpicker({style: 'btn-default', container: 'body'});
+	        $(this.ui.format_precision).selectpicker({style: 'btn-default', container: 'body'});
+	
+	        $(this.ui.sortby_field).selectpicker({style: 'btn-default'});
+	        $(this.ui.display_fields).selectpicker({style: 'btn-default'});
+	        $(this.ui.list_type).selectpicker({style: 'btn-default'});
+	        $(this.ui.search_field).selectpicker({style: 'btn-default'});
+	
+	        // @todo check user permissions
+	        if (!this.model.get('can_modify')) {
+	            $(this.ui.save).hide();
+	        }
+	
+	        var format = this.model.get('format');
+	
+	        $(this.ui.format_type).val(format.type).trigger('change');
+	        $(this.ui.format_unit).val(format.unit).trigger('change');
+	        $(this.ui.format_precision).val(format.precision).trigger('change');
+	
+	        if (format.trans) {
+	            $(this.ui.format_trans).val("true");
+	        } else {
+	            $(this.ui.format_trans).val("false");
+	        }
+	
+	        switch (format.type) {
+	            case "enum_single":
+	            case "enum_pair":
+	            case "enum_ordinal":
+	                this.ui.sortby_field.val(format.sortby_field).trigger('change');
+	                this.ui.display_fields.val(format.display_fields).trigger('change');
+	                this.ui.list_type.val(format.list_type).trigger('change');
+	                this.ui.search_field.val(format.search_field).trigger('change');
+	                break;
+	            default:
+	                this.ui.format_trans.parent().parent().hide(false);
+	                this.ui.type_fields_info.hide(false);
+	                this.ui.type_fields_list.hide(false);
+	                break;
+	        }
+	
+	        if (format.type == "enum_pair") {
+	            $(this.ui.fields).show();
+	
+	            if (format.fields[0]) {
+	                $(this.ui.field0).val(format.fields[0]);
+	            }
+	            if (format.fields[1]) {
+	                $(this.ui.field1).val(format.fields[1]);
+	            }
+	        } else {
+	            $(this.ui.fields).hide(false);
+	
+	            $(this.ui.field0).val("");
+	            $(this.ui.field1).val("");
+	        }
+	
+	        switch (format.type) {
+	            case "ordinal":
+	            case "enum_ordinal":
+	                $(this.ui.format_range_min).numeric({decimal: false, negative: false});
+	                $(this.ui.format_range_max).numeric({decimal: false, negative: false});
+	
+	                $(this.ui.format_range_min).val(format.range[0]);
+	                $(this.ui.format_range_max).val(format.range[1]);
+	                break;
+	            case "numeric_range":
+	                $(this.ui.format_range_min).numeric({decimal: '.', negative: false});
+	                $(this.ui.format_range_max).numeric({decimal: '.', negative: false});
+	
+	                $(this.ui.format_range_min).val(format.range[0]);
+	                $(this.ui.format_range_max).val(format.range[1]);
+	                break;
+	            default:
+	                $(this.ui.format_range_min).attr("readonly", "readonly").val("");
+	                $(this.ui.format_range_max).attr("readonly", "readonly").val("");
+	
+	                if ($(this.ui.range).css('display') != 'none') {
+	                    $(this.ui.range).hide(false);
+	                }
+	                break;
+	        }
+	
+	        switch (format.type) {
+	            case "boolean":
+	            case "gps":
+	            case "date":
+	            case "time":
+	            case "datetime":
+	            case "ordinal":
+	            case "entity":
+	                $(this.ui.format_unit_custom).attr("disabled", "disabled").val("");
+	                if ($(this.ui.format_unit).closest("div.form-group").css('display') != 'none') {
+	                    $(this.ui.format_unit).closest("div.form-group").hide(false);
+	                }
+	                break;
+	            default:
+	                break;
+	        }
+	
+	        if (format.type != "entity") {
+	            if ($(this.ui.format_model).closest("div.form-group").css('display') != 'none') {
+	                $(this.ui.format_model).closest("div.form-group").hide(false);
+	            }
+	        }
+	
+	        if (format.type != "numeric" && format.type != "numeric_range") {
+	            if ($(this.ui.format_precision).closest("div.form-group").css('display') != 'none') {
+	                $(this.ui.format_precision).closest("div.form-group").hide(false);
+	            }
+	        }
+	
+	        if (format.type != "string") {
+	            if ($(this.ui.format_regexp).closest("div.form-group").css('display') != 'none') {
+	                $(this.ui.format_regexp).closest("div.form-group").hide(false);
+	            }
+	        }
+	    },
+	
+	    onShow: function() {
+	        $(this.ui.helper_display_fields).makePopover();
+	    },
+	
+	    changeFormatType: function () {
+	        var type = $(this.ui.format_type).val();
+	
+	        // related fields
+	        switch (type) {
+	            case "boolean":
+	            case "gps":
+	            case "string":
+	            case "ordinal":
+	            case "entity:":
+	            case "date":
+	            case "time":
+	            case "datetime":
+	            case "enum_single":
+	            case "enum_pair":
+	            case "enum_ordinal":
+	                $(this.ui.format_precision).attr("disabled", "disabled").val("0.0");
+	                if ($(this.ui.format_precision).closest("div.form-group").css('display') != 'none') {
+	                    $(this.ui.format_precision).closest("div.form-group").hide(true);
+	                }
+	                break;
+	            case "numeric":
+	            case "numeric_range":
+	                $(this.ui.format_precision).attr("disabled", null).val("1.0");
+	                if ($(this.ui.format_precision).closest("div.form-group").css('display') == 'none') {
+	                    $(this.ui.format_precision).closest("div.form-group").show(true);
+	                }
+	                break;
+	            default:
+	                break;
+	        }
+	
+	        switch (type) {
+	            case "boolean":
+	            case "gps":
+	            case "date":
+	            case "time":
+	            case "datetime":
+	            case "ordinal":
+	            case "entity":
+	                $(this.ui.format_unit_custom).attr("disabled", "disabled").val("");
+	                if ($(this.ui.format_unit).closest("div.form-group").css('display') != 'none') {
+	                    $(this.ui.format_unit).closest("div.form-group").hide(true);
+	                }
+	                break;
+	            default:
+	                $(this.ui.format_unit_custom).removeAttr("disabled").val("");
+	                if ($(this.ui.format_unit).closest("div.form-group").css('display') == 'none') {
+	                    $(this.ui.format_unit).closest("div.form-group").show(true);
+	                }
+	                break;
+	        }
+	
+	        switch (type) {
+	            case "enum_single":
+	            case "enum_pair":
+	            case "enum_ordinal":
+	                if (this.ui.format_trans.parent().parent().css('display') == 'none') {
+	                    $(this.ui.format_trans).parent().parent().show(true);
+	                }
+	
+	                if (this.ui.type_fields_list.css('display') == 'none') {
+	                    this.ui.type_fields_info.show(true);
+	                    this.ui.type_fields_list.show(true);
+	                }
+	                break;
+	            default:
+	                if (this.ui.format_trans.parent().parent().css('display') != 'none') {
+	                    $(this.ui.format_trans).parent().parent().hide(true);
+	                }
+	
+	                if (this.ui.type_fields_list.css('display') != 'none') {
+	                    this.ui.type_fields_info.hide(true);
+	                    this.ui.type_fields_list.hide(true);
+	                }
+	                break;
+	        }
+	
+	        if (type == "string") {
+	            $(this.ui.format_regexp).attr("readonly", null).val("");
+	
+	            if ($(this.ui.format_regexp).closest("div.form-group").css('display') == 'none') {
+	                $(this.ui.format_regexp).closest("div.form-group").show(true);
+	            }
+	        } else {
+	            $(this.ui.format_regexp).attr("readonly", "readonly").val("");
+	
+	            if ($(this.ui.format_regexp).closest("div.form-group").css('display') != 'none') {
+	                $(this.ui.format_regexp).closest("div.form-group").hide(true);
+	            }
+	        }
+	
+	        if (type == "numeric_range") {
+	            $(this.ui.format_range_min).attr("readonly", null).val("0.0").numeric({decimal : '.', negative : false});
+	            $(this.ui.format_range_max).attr("readonly", null).val("100.0").numeric({decimal : '.', negative : false});
+	
+	            if ($(this.ui.range).css('display') == 'none') {
+	                $(this.ui.range).show(true);
+	            }
+	        } else if (type == "enum_ordinal" || type == "ordinal") {
+	            $(this.ui.format_range_min).attr("readonly", null).val("0").numeric({decimal : false, negative : false});
+	            $(this.ui.format_range_max).attr("readonly", null).val("10").numeric({decimal : false, negative : false});
+	
+	            if ($(this.ui.range).css('display') == 'none') {
+	                $(this.ui.range).show(true);
+	            }
+	        } else {
+	            $(this.ui.format_range_min).attr("readonly", "readonly").val("");
+	            $(this.ui.format_range_max).attr("readonly", "readonly").val("");
+	
+	            if ($(this.ui.range).css('display') != 'none') {
+	                $(this.ui.range).hide(true);
+	            }
+	        }
+	
+	        if (type == "enum_pair" && ($(this.ui.fields).css('display') == 'none')) {
+	            $(this.ui.fields).show(true);
+	        } else {
+	            $(this.ui.fields).hide(true);
+	        }
+	
+	        if (type == "entity") {
+	            if ($(this.ui.format_model).closest("div.form-group").css('display') == 'none') {
+	                $(this.ui.format_model).closest("div.form-group").show(true);
+	            }
+	        } else {
+	            if ($(this.ui.format_model).closest("div.form-group").css('display') != 'none') {
+	                $(this.ui.format_model).closest("div.form-group").hide(true);
+	            }
+	        }
+	    },
+	    
+	    changeFormatUnit: function () {
+	        var unit = $(this.ui.format_unit).val();
+	
+	        switch (unit) {
+	            case "custom":
+	                $(this.ui.format_unit_custom).attr("readonly", null).val("");
+	                break;
+	            default:
+	                $(this.ui.format_unit_custom).attr("readonly", "readonly").val("");
+	                break;
+	        }
+	    },
+	
+	    changeListType: function () {
+	        var listType = $(this.ui.list_type).val();
+	
+	        switch (listType) {
+	            case "dropdown":
+	                $(this.ui.search_field).parent().find('.dropdown-toggle').prop('disabled', true);
+	                $(this.ui.search_field).parent().find("div.dropdown-menu ul li:first-child a").trigger("click");
+	                //$(this.ui.search_field).attr("disabled", "disabled").val("value0");
+	                break;
+	            default:
+	                $(this.ui.search_field).parent().find('.dropdown-toggle').prop('disabled', false);
+	                break;
+	        }
+	    },
+	    
+	    inputFormatUnitCustom: function () {
+	        var v = this.ui.format_unit_custom.val();
+	        var re = /^[a-zA-Z0-9_\-%°⁼⁺⁻⁰¹²³⁴⁵⁶⁷⁸⁹/µ]+$/i;
+	
+	        if (v.length > 0 && !re.test(v)) {
+	            $(this.ui.format_unit_custom).validateField('failed', gt.gettext("Invalid characters (alphanumeric, _-°%°⁼⁺⁻⁰¹²³⁴⁵⁶⁷⁸⁹/µ allowed)"));
+	        } else if (v.length < 1) {
+	            $(this.ui.format_unit_custom).validateField('failed', gt.gettext('1 character min'));
+	        } else {
+	            $(this.ui.format_unit_custom).validateField('ok');
+	        }
+	    },
+	
+	    inputName: function () {
+	        var v = this.ui.name.val();
+	        var re = /^[a-zA-Z0-9_-]+$/i;
+	
+	        if (v.length > 0 && !re.test(v)) {
+	            $(this.ui.name).validateField('failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
+	        } else if (v.length < 3) {
+	            $(this.ui.name).validateField('failed', gt.gettext('3 characters min'));
+	        } else {
+	            $(this.ui.name).validateField('ok');
+	        }
+	    },
+	
+	    saveDescriptorType: function () {
+	        if (!$(this.ui.name.isValidField()))
+	            return;
+	
+	        var name = this.ui.name.val();
+	        var code = this.ui.code.val();
+	        var description = this.ui.description.val();
+	        var trans = this.ui.format_trans.val() == "true";
+	
+	        var format = {
+	            type: this.ui.format_type.val(),
+	            unit: this.ui.format_unit.val(),
+	            precision: this.ui.format_precision.val(),
+	            fields: [],
+	            trans: trans
+	        };
+	
+	        var field0 = this.ui.field0.val();
+	        var field1 = this.ui.field1.val();
+	
+	        if (field0 && field1) {
+	            format.fields = [field0, field1];
+	        }
+	
+	        if (format.unit == 'custom') {
+	            format.custom_unit = this.ui.format_unit_custom.val();
+	        }
+	
+	        if (format.type == 'entity') {
+	            format.model = this.ui.format_model.val();
+	            format.custom_unit = "";
+	        }
+	
+	        if (format.type == 'numeric_range' ||
+	            format.type == 'enum_ordinal' ||
+	            format.type == 'ordinal') {
+	
+	            format.range = [
+	                this.ui.format_range_min.val(),
+	                this.ui.format_range_max.val()
+	            ];
+	        }
+	
+	        if (format.type == 'string') {
+	            format.regexp = this.ui.format_regexp.val();
+	        }
+	
+	        if (format.type == 'enum_pair') {
+	            format.sortby_field = this.ui.sortby_field.val();
+	            format.display_fields = this.ui.display_fields.val();
+	            format.list_type = this.ui.list_type.val();
+	            format.search_field = this.ui.search_field.val();
+	        } else if (format.type == 'enum_single') {
+	            format.sortby_field = 'value0';
+	            format.display_fields = 'value0';
+	            format.list_type = this.ui.list_type.val();
+	            format.search_field = 'value0';
+	        } else if (format.type == 'enum_ordinal') {
+	            format.sortby_field = 'ordinal';
+	            format.display_fields = this.ui.display_fields.val();
+	            format.list_type = 'dropdown';
+	            format.search_field = 'value0';
+	        }
+	
+	        this.model.save({
+	            name: name,
+	            code: code,
+	            format: format,
+	            description: description,
+	        }, {wait: true}).done(function() {
+	            $.alert.success(gt.gettext("Done"));
+	        });
+	    }
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 141 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '', __e = _.escape;
+	with (obj) {
+	__p += '<style>/* adjust the form validation glyph position */\n    #format_unit_custom ~ span.form-control-feedback {\n        right: 15px;\n    }</style><div id="helper_display_fields_text" class="help"><p>' +
+	((__t = ( gt.gettext("Controls how is displayed the field. Hierarchy mode is a special usage for pseudo hierarchy, for which values are roughly shifted to give an illusion of parent/children. The shift depend of the level declared in the value0 while value1 contains the label. The first value contains something like 1 or 2 or 1.1, 1.2, 1.1.1...") )) == null ? '' : __t) +
+	'</p></div><div class="descriptor-detail"><div class="descriptor-type-name form-group" style="width: 50%"><label for="descriptor_type_name">' +
+	__e( gt.gettext('Descriptor type name') ) +
+	'</label><input id="descriptor_type_name" class="form-control" type="text" maxlength="255" value="' +
+	((__t = ( name )) == null ? '' : __t) +
+	'"></div><div class="descriptor-type-code form-group" style="width: 50%"><label for="descriptor_type_code">' +
+	__e( gt.gettext('Descriptor type code') ) +
+	'</label><input id="descriptor_type_code" class="form-control" type="text" readonly="readonly" maxlength="255" value="' +
+	((__t = ( code )) == null ? '' : __t) +
+	'"></div><div style="width: 50%"><div class="row"><div class="col-xs-6"><div class="descriptor-type-format form-group"><label for="format_type">' +
+	__e( gt.gettext('Type of format') ) +
+	'</label><select id="format_type" class="form-control"><optgroup label="' +
+	__e( gt.gettext('Single value') ) +
+	'"><option value="boolean">' +
+	__e( gt.gettext('Boolean') ) +
+	'</option><option value="numeric">' +
+	__e( gt.gettext('Numeric') ) +
+	'</option><option value="numeric_range">' +
+	__e( gt.gettext('Numeric range') ) +
+	'</option><option value="ordinal">' +
+	__e( gt.gettext('Ordinal') ) +
+	'</option><option value="gps">' +
+	__e( gt.gettext('GPS coordinate') ) +
+	'</option><option value="string">' +
+	__e( gt.gettext('Text') ) +
+	'</option><option value="date">' +
+	__e( gt.gettext('Date') ) +
+	'</option><option value="time">' +
+	__e( gt.gettext('Time') ) +
+	'</option><option value="datetime">' +
+	__e( gt.gettext('Date+time') ) +
+	'</option><option value="entity">' +
+	__e( gt.gettext('Entity') ) +
+	'</option></optgroup><optgroup label="' +
+	__e( gt.gettext('List of values') ) +
+	'"><option value="enum_single">' +
+	__e( gt.gettext('Single enumeration') ) +
+	'</option><option value="enum_pair">' +
+	__e( gt.gettext('Pair enumeration') ) +
+	'</option><option value="enum_ordinal">' +
+	__e( gt.gettext('Ordinal with text') ) +
+	'</option></optgroup></select></div></div><div class="col-xs-6"><div class="descriptor-format-trans form-group"><label for="format_trans">' +
+	__e( gt.gettext('Translation') ) +
+	'</label><select id="format_trans" class="form-control"><option value="true">' +
+	__e( gt.gettext('Yes') ) +
+	'</option><option value="false">' +
+	__e( gt.gettext('No') ) +
+	'</option></select></div></div></div></div><div class="descriptor-type-fields form-group" style="width: 50%"><div class="row"><div class="col-xs-6"><label for="type_field0">' +
+	__e( gt.gettext('First field') ) +
+	'</label><input id="type_field0" class="form-control" type="text" maxlength="32" value=""></div><div class="col-xs-6"><label for="type_field1">' +
+	__e( gt.gettext('Second field') ) +
+	'</label><input id="type_field1" class="form-control" type="text" maxlength="32" value=""></div></div></div><div class="descriptor-type-fields-info form-group" style="width: 50%"><div class="row"><div class="col-xs-6"><label for="sortby_field">' +
+	__e( gt.gettext('Sort by field') ) +
+	'</label><select id="sortby_field" class="form-control"><option value="code">' +
+	__e( gt.gettext('Code') ) +
+	'</option><option value="ordinal">' +
+	__e( gt.gettext('Ordinal') ) +
+	'</option><option value="value0">' +
+	__e( gt.gettext('Value0') ) +
+	'</option><option value="value1">' +
+	__e( gt.gettext('Value1') ) +
+	'</option></select></div><div class="col-xs-6"><label for="display_fields">' +
+	__e( gt.gettext('Displayed fields') ) +
+	' <span id="helper_display_fields" class="btn glyphicon glyphicon-question-sign" helper-id="helper_display_fields_text"></span></label><select id="display_fields" class="form-control"><option value="value0">' +
+	__e( gt.gettext('Value0') ) +
+	'</option><option value="value1">' +
+	__e( gt.gettext('Value1') ) +
+	'</option><option value="value0-value1">' +
+	__e( gt.gettext('Value0 - Value1') ) +
+	'</option><option value="ordinal-value0">' +
+	__e( gt.gettext('Ordinal - Value0') ) +
+	'</option><option value="hier1-value0">' +
+	__e( gt.gettext('Hierarchy of Value0') ) +
+	'</option></select></div></div></div><div class="descriptor-type-fields-list form-group" style="width: 50%"><div class="row"><div class="col-xs-6"><label for="list_type">' +
+	__e( gt.gettext('Display the list as') ) +
+	'</label><select id="list_type" class="form-control"><option value="automatic">' +
+	__e( gt.gettext('Automatic') ) +
+	'</option><option value="dropdown">' +
+	__e( gt.gettext('Dropdown (limit of 256 values)') ) +
+	'</option><option value="autocomplete">' +
+	__e( gt.gettext('Autocomplete (big lists)') ) +
+	'</option></select></div><div class="col-xs-6"><label for="search_field">' +
+	__e( gt.gettext('Autocomplete search field') ) +
+	'</label><select id="search_field" class="form-control"><option value="value0">' +
+	__e( gt.gettext('Value0') ) +
+	'</option><option value="value1">' +
+	__e( gt.gettext('Value1') ) +
+	'</option></select></div></div></div><div class="descriptor-type-unit form-group" style="width: 50%"><div class="row"><div class="col-xs-6"><label for="format_unit">' +
+	__e( gt.gettext('Unit of the format') ) +
+	'</label><select id="format_unit" class="form-control"><optgroup label="Chroma"><option value="chroma_L_value">L value</option><option value="chroma_a_value">a value</option><option value="chroma_b_value">b value</option></optgroup><optgroup label="Common"><option value="degree_celsius">°C (celcius degree)</option><option value="category">Category</option><option value="custom" style="font-style: italic">Custom</option><option value="joule">J (joule)</option><option value="norm1">Norm 1</option><option value="note">Note</option><option value="percent">% (percent)</option><option value="regexp">Regular expression</option><option value="scale">Scale</option></optgroup><optgroup label="Grain"><option value="gram_per_100_grain">g/100 grain</option><option value="gram_per_200_grain">g/200 grain</option><option value="gram_per_1000_grain">g/1000 grain</option><option value="grain_per_meter2">grain/m²</option><option value="grain_per_spike">grain/spike</option><option value="grain_per_spikelet">grain/spikelet</option></optgroup><optgroup label="Meter"><option value="micrometer">um</option><option value="millimeter">mm</option><option value="centimeter">cm</option><option value="centimeter">dm</option><option value="meter">m</option><option value="kilometer">km</option></optgroup><optgroup label="Plant and plot"><option value="plant_per_meter">plant/m</option><option value="plant_per_meter2">plant/m²</option><option value="plant_per_hectare">plant/ha</option><option value="plant_per_plot">plant/plot</option><option value="gram_per_plant">g/plant</option><option value="gram_per_plot">g/plot</option><option value="kilogram_per_plot">kg/plot</option><option value="stoma_per_millimeter2">stoma/mm²</option><option value="node">node</option><option value="spikelet">spikelet</option><option value="spike_per_meter2">spike/m²</option><option value="tiller_per_meter">tiller/m</option><option value="tiller_per_meter2">tiller/m²</option></optgroup><optgroup label="Quantity and volume"><option value="milliliter">ml</option><option value="milliliter_per_percent">ml/%</option><option value="ppm">ppm</option><option value="milligram_per_kilogram">mg/kg</option><option value="gram_per_kilogram">g/kg</option><option value="gram_per_meter2">g/m²</option><option value="kilogram_per_hectare">kg/ha</option><option value="tonne_per_hectare">t/ha</option><option value="gram_per_liter">g/l</option><option value="kilogram_per_hectolitre">kg/hl</option><option value="millimol_per_meter2_per_second">mmol/m²/s</option><option value="gram_per_meter2_per_day">g/m²/day</option><option value="cci">CCI (chlore)</option><option value="delta_13c">delta 13C (carbon)</option></optgroup><optgroup label="Surface"><option value="millimeter2">mm²</option><option value="centimeter2">cm²</option><option value="meter2">m²</option><option value="hectare">ha</option><option value="kilometer2">km²</option></optgroup><optgroup label="Time"><option value="millisecond">ms</option><option value="second">s</option><option value="minute">min</option><option value="hour">hour</option><option value="day">day</option><option value="month">month</option><option value="year">year</option><option value="date">date (yyyy/mm/dd)</option><option value="time">time (hh:mm:ss.ms)</option><option value="datetime">date+time</option><option value="percent_per_minute">%/min</option><option value="percent_per_hour">%/hour</option><option value="percent_per_day">%/day</option></optgroup></select></div><div class="col-xs-6"><label for="format_unit_custom">' +
+	__e( gt.gettext('Custom unit name') ) +
+	'</label><input id="format_unit_custom" class="form-control" type="text" readonly="readonly" maxlength="32" value=""></div></div></div><div class="descriptor-type-precision form-group" style="width: 50%"><label for="format_precision">' +
+	__e( gt.gettext('Precision of the decimal') ) +
+	'</label><select id="format_precision" class="form-control"><option value="0.0">0.0</option><option value="1.0">1.0</option><option value="2.0">2.0</option><option value="3.0">3.0</option><option value="4.0">4.0</option><option value="5.0">5.0</option><option value="6.0">6.0</option><option value="7.0">7.0</option><option value="8.0">8.0</option><option value="9.0">9.0</option></select></div><div class="descriptor-type-model form-group" style="width: 50%"><label for="format_model">' +
+	__e( gt.gettext('Model of the entity') ) +
+	'</label><select id="format_model" class="form-control"></select></div><div class="descriptor-type-range form-group" style="width: 50%"><div class="row"><div class="col-xs-6"><label for="format_range_min">' +
+	__e( gt.gettext('Minimal range value') ) +
+	'</label><input id="format_range_min" class="form-control" type="text" readonly="readonly" maxlength="32" value="0"></div><div class="col-xs-6"><label for="format_range_max">' +
+	__e( gt.gettext('Maximal range value') ) +
+	'</label><input id="format_range_max" class="form-control" type="text" readonly="readonly" maxlength="32" value="1"></div></div></div><div class="descriptor-type-regexp form-group" style="width: 50%"><label for="format_regexp">' +
+	__e( gt.gettext('Regular expression') ) +
+	'</label><input id="format_regexp" class="form-control" type="text" readonly="readonly" maxlength="255"></div><div class="descriptor-type-description form-group" style="width: 50%"><label for="descriptor_type_description">' +
+	__e( gt.gettext('Description') ) +
+	'</label><textarea id="descriptor_type_description" class="form-control" maxlength="1024">' +
+	((__t = ( description )) == null ? '' : __t) +
+	'</textarea></div><div class="descriptor-type-update form-group" style="width: 100px; margin-left: 20%; margin-top: 25px"><button id="save" class="form-control btn btn-primary">' +
+	__e( gt.gettext('Update') ) +
+	'</button></div></div>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 142 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptorgroupadd.js
+	 * @brief Add a group of descriptors
+	 * @author Frederic SCHERMA
+	 * @date 2016-08-05
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	
+	var View = Marionette.ItemView.extend({
+	    tagName: 'div',
+	    className: 'group-add',
+	    template: __webpack_require__(143),
+	
+	    ui: {
+	        add_group_btn: 'span.add-group',
+	        add_group_name: 'input.group-name',
+	    },
+	
+	    events: {
+	        'click @ui.add_group_btn': 'addGroup',
+	        'input @ui.add_group_name': 'onGroupNameInput',
+	    },
+	
+	    initialize: function(options) {
+	        options || (options = {});
+	        this.collection = options.collection;
+	    },
+	
+	    addGroup: function () {
+	        if (!this.ui.add_group_name.hasClass('invalid')) {
+	            this.collection.create({name: this.ui.add_group_name.val()}, {wait: true});
+	            $(this.ui.add_group_name).cleanField();
+	        }
+	    },
+	
+	    validateGroupName: function() {
+	        var v = this.ui.add_group_name.val();
+	        var re = /^[a-zA-Z0-9_\-]+$/i;
+	
+	        if (v.length > 0 && !re.test(v)) {
+	            $(this.ui.add_group_name).validateField('failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
+	            return false;
+	        } else if (v.length < 3) {
+	            $(this.ui.add_group_name).validateField('failed', gt.gettext('3 characters min'));
+	            return false;
+	        }
+	
+	        return true;
+	    },
+	
+	    onGroupNameInput: function () {
+	        if (this.validateGroupName()) {
+	            $.ajax({
+	                type: "GET",
+	                url: application.baseUrl + 'descriptor/group/search/',
+	                dataType: 'json',
+	                data: {filters: JSON.stringify({
+	                    method: 'ieq',
+	                    fields: 'name',
+	                    name: this.ui.add_group_name.val()})
+	                },
+	                el: this.ui.add_group_name,
+	                success: function(data) {
+	                    if (data.items.length > 0) {
+	                        for (var i in data.items) {
+	                            var t = data.items[i];
+	
+	                            if (t.name.toUpperCase() == this.el.val().toUpperCase()) {
+	                                $(this.el).validateField('failed', gt.gettext('Group name already in usage'));
+	                                break;
+	                            }
+	                        }
+	                    } else {
+	                        $(this.el).validateField('ok');
+	                    }
+	                }
+	            });
+	        }
+	    },
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 143 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<table class="table table-striped" style="margin-bottom: 0px"><tbody><tr class="edit-mode" style="height: 95px"><th><span class="add-group action glyphicon glyphicon-plus-sign" style="margin-top: 9px; margin-left: 10px"></span></th><td style="width: 100%"><div class="form-group"><input type="text" class="group-name form-control" name="group"></div></td></tr></tbody></table>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 144 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptorgrouptypeadd.js
+	 * @brief Add a descriptor type into a group of descriptors
+	 * @author Frederic SCHERMA
+	 * @date 2016-08-05
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	
+	var View = Marionette.ItemView.extend({
+	    tagName: 'div',
+	    className: 'type-add',
+	    template: __webpack_require__(145),
+	
+	    ui: {
+	        add_type_btn: 'span.add-type',
+	        add_type_name: 'input.type-name',
+	    },
+	
+	    events: {
+	        'click @ui.add_type_btn': 'addType',
+	        'input @ui.add_type_name': 'onTypeNameInput',
+	    },
+	
+	    initialize: function(options) {
+	        options || (options = {});
+	        this.collection = options.collection;
+	    },
+	
+	    addType: function () {
+	        if (!this.ui.add_type_name.hasClass('invalid')) {
+	            this.collection.create({
+	                name: this.ui.add_type_name.val(),
+	                group_id: this.collection.group_id,  // set according from the URI path
+	                //can_delete: true,  // default is true
+	                //can_modify: true,  // default is true
+	            }, {wait: true});
+	
+	            $(this.ui.add_type_name).cleanField();
+	        }
+	    },
+	
+	    validateTypeName: function() {
+	        var v = this.ui.add_type_name.val();
+	        var re = /^[a-zA-Z0-9_\-]+$/i;
+	
+	        if (v.length > 0 && !re.test(v)) {
+	            $(this.ui.add_type_name).validateField('failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
+	            return false;
+	        } else if (v.length < 3) {
+	            $(this.ui.add_type_name).validateField('failed', gt.gettext('3 characters min'));
+	            return false;
+	        }
+	
+	        return true;
+	    },
+	
+	    onTypeNameInput: function () {
+	        var view = this;
+	
+	        if (this.validateTypeName()) {
+	            $.ajax({
+	                type: "GET",
+	                url: application.baseUrl + 'descriptor/group/' + this.collection.group_id + '/type/search/',
+	                dataType: 'json',
+	                data: {filters: JSON.stringify({
+	                    method: 'ieq',
+	                    fields: 'name',
+	                    name: this.ui.add_type_name.val()})
+	                },
+	                success: function(data) {
+	                    if (data.items.length > 0) {
+	                        for (var i in data.items) {
+	                            var t = data.items[i];
+	
+	                            if (t.name.toUpperCase() == view.ui.add_type_name.val().toUpperCase()) {
+	                                $(view.ui.add_type_name).validateField('failed', gt.gettext('Descriptor type name already in usage'));
+	                                break;
+	                            }
+	                        }
+	                    } else {
+	                        $(view.ui.add_type_name).validateField('ok');
+	                    }
+	                }
+	            });
+	        }
+	    },
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 145 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<table class="table table-striped" style="margin-bottom: 0px"><tbody><tr class="edit-mode" style="height: 95px"><th><span class="add-type action glyphicon glyphicon-plus-sign" style="margin-top: 9px; margin-left: 10px"></span></th><td style="width: 100%"><div class="form-group"><input type="text" class="type-name form-control" name="type"></div></td></tr></tbody></table>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 146 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptormodel.js
+	 * @brief Descriptor model router
+	 * @author Frederic SCHERMA
+	 * @date 2016-09-19
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	
+	var DescriptorModelModel = __webpack_require__(147);
+	var DescriptorModelCollection = __webpack_require__(148);
+	var DescriptorGroupCollection = __webpack_require__(149);
+	var DescriptorModelTypeCollection = __webpack_require__(150);
+	
+	var DescriptorModelAddView = __webpack_require__(152);
+	var DescriptorModelDetailView = __webpack_require__(154);
+	var DescriptorModelListView = __webpack_require__(156);
+	var DescriptorModelTypeListView = __webpack_require__(160);
+	
+	var DescriptorGroupListAltView = __webpack_require__(167);
+	var DescriptorTypeListAltView = __webpack_require__(169);
+	
+	var DefaultLayout = __webpack_require__(50);
+	var LeftOneRightTwoLayout = __webpack_require__(175);
+	var TitleView = __webpack_require__(51);
+	var ScrollingMoreView = __webpack_require__(94);
+	
+	var Router = Marionette.AppRouter.extend({
+	    routes : {
+	        "app/descriptor/model/": "getDescriptorModelList",
+	        "app/descriptor/model/:id/": "getDescriptorModel",
+	        "app/descriptor/model/:id/type/": "getDescriptorModelTypeListForModel",
+	    },
+	
+	    getDescriptorModelList: function () {
+	        var collection = new DescriptorModelCollection();
+	
+	        var defaultLayout = new DefaultLayout({});
+	        application.getRegion('mainRegion').show(defaultLayout);
+	
+	        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of models of descriptor")}));
+	
+	        collection.fetch().then(function () {
+	            var descriptorModelList = new DescriptorModelListView({collection : collection});
+	            defaultLayout.getRegion('content').show(descriptorModelList);
+	            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: descriptorModelList}));
+	        });
+	
+	        // @todo lookup for permission
+	        if (session.user.isAuth && (session.user.isSuperUser || session.user.isStaff)) {
+	            defaultLayout.getRegion('bottom').show(new DescriptorModelAddView({collection: collection}));
+	        }
+	    },
+	
+	    getDescriptorModel: function (id) {
+	        var defaultLayout = new DefaultLayout();
+	        application.getRegion('mainRegion').show(defaultLayout);
+	
+	        var model = new DescriptorModelModel({id: id});
+	
+	        model.fetch().then(function () {
+	            defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Details for the model of descriptor"), object: model.get('name')}));
+	            defaultLayout.getRegion('content').show(new DescriptorModelDetailView({model : model}));
+	        });
+	    },
+	
+	    getDescriptorModelTypeListForModel: function(id) {
+	        var modelTypeCollection = new DescriptorModelTypeCollection([], {model_id: id});
+	
+	        var defaultLayout = new DefaultLayout({});
+	        application.getRegion('mainRegion').show(defaultLayout);
+	
+	        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of types of models of descriptor")}));
+	
+	        var leftOneRightTwoLayout = new LeftOneRightTwoLayout({});
+	        defaultLayout.getRegion('content').show(leftOneRightTwoLayout);
+	
+	        modelTypeCollection.fetch().then(function () {
+	            var descriptorTypeModelList = new DescriptorModelTypeListView({collection : modelTypeCollection});
+	            leftOneRightTwoLayout.getRegion('left-content').show(descriptorTypeModelList);
+	            leftOneRightTwoLayout.getRegion('left-bottom').show(new ScrollingMoreView({targetView: descriptorTypeModelList}));
+	        });
+	
+	        var groupCollection = new DescriptorGroupCollection();
+	        groupCollection.fetch().then(function () {
+	            var descriptorGroupList = new DescriptorGroupListAltView({
+	                collection: groupCollection,
+	                layout: leftOneRightTwoLayout
+	            });
+	
+	            leftOneRightTwoLayout.getRegion('right-up-content').show(descriptorGroupList);
+	            leftOneRightTwoLayout.getRegion('right-up-bottom').show(new ScrollingMoreView({targetView: descriptorGroupList}));
+	        });
+	
+	        var descriptorTypeList = new DescriptorTypeListAltView({});
+	        leftOneRightTwoLayout.getRegion('right-down-content').show(descriptorTypeList);
+	        leftOneRightTwoLayout.getRegion('right-down-bottom').show(new ScrollingMoreView({targetView: descriptorTypeList}));
+	    },
+	});
+	
+	module.exports = Router;
+
+
+/***/ },
+/* 147 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptormodel.js
+	 * @brief Model of descriptor
+	 * @author Frederic SCHERMA
+	 * @date 2016-09-19
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Backbone = __webpack_require__(2);
+	
+	var Model = Backbone.Model.extend({
+	    url: function() {
+	        if (this.isNew())
+	            return application.baseUrl + 'descriptor/model/';
+	        else
+	            return application.baseUrl + 'descriptor/model/' + this.get('id') + '/';
+	    },
+	
+	    defaults: {
+	        id: null,
+	        name: '',
+	        verbose_name: '',
+	        description: '',
+	        num_descriptor_types: 0,
+	    },
+	
+	    parse: function(data) {
+	        //this.perms = data.perms;
+	        return data;
+	    },
+	
+	    validate: function(attrs) {
+	        var errors = {};
+	        var hasError = false;
+	
+	        if (hasError) {
+	          return errors;
+	        }
+	    },
+	});
+	
+	module.exports = Model;
+
+
+/***/ },
+/* 148 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptormodel.js
+	 * @brief Model of descriptors collection
+	 * @author Frederic SCHERMA
+	 * @date 2016-09-19
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var DescriptorModelModel = __webpack_require__(147);
+	
+	var Collection = Backbone.Collection.extend({
+	    url: application.baseUrl + 'descriptor/model/',
+	    model: DescriptorModelModel,
+	
+	    parse: function(data) {
+	        this.prev = data.prev;
+	        this.cursor = data.cursor;
+	        this.next = data.next;
+	
+	        this.perms = data.perms;
+	
+	        return data.items;
+	    },
+	});
+	
+	module.exports = Collection;
+
+
+/***/ },
+/* 149 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptorgroup.js
+	 * @brief Groups of descriptors collection
+	 * @author Frederic SCHERMA
+	 * @date 2016-07-19
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var DescriptorGroupModel = __webpack_require__(110);
+	
+	var Collection = Backbone.Collection.extend({
+	    url: application.baseUrl + 'descriptor/group/',
+	    model: DescriptorGroupModel,
+	
+	    parse: function(data) {
+	        this.prev = data.prev;
+	        this.cursor = data.cursor;
+	        this.next = data.next;
+	
+	        return data.items;
+	    },
+	});
+	
+	module.exports = Collection;
+
+
+/***/ },
+/* 150 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptormodeltype.js
+	 * @brief Types of models of descriptors collection
+	 * @author Frederic SCHERMA
+	 * @date 2016-10-13
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var DescriptorModelTypeModel = __webpack_require__(151);
+	
+	var Collection = Backbone.Collection.extend({
+	    url: function() {
+	        return application.baseUrl + 'descriptor/model/' + this.model_id + '/type/';
+	    },
+	
+	    model: DescriptorModelTypeModel,
+	
+	    initialize: function(models, options) {
+	        options || (options = {});
+	        this.model_id = options.model_id;
+	    },
+	
+	    parse: function(data) {
+	        this.prev = data.prev;
+	        this.cursor = data.cursor;
+	        this.next = data.next;
+	
+	        return data.items;
+	    },
+	
+	    comparator: 'position'
+	});
+	
+	module.exports = Collection;
+
+
+/***/ },
+/* 151 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptormodeltype.js
+	 * @brief Type of model of descriptor model
+	 * @author Frederic SCHERMA
+	 * @date 2016-10-13
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Backbone = __webpack_require__(2);
+	
+	var Model = Backbone.Model.extend({
+	    url: function() {
+	        var model_id = this.model_id || this.get('model') || this.collection.model_id;
+	
+	        if (this.isNew()) {
+	            return application.baseUrl + 'descriptor/model/' + model_id + '/type/';
+	        }
+	        else
+	            return application.baseUrl + 'descriptor/model/' + model_id + '/type/' + this.get('id') + '/';
+	    },
+	
+	    defaults: {
+	        id: null,
+	        name: '',
+	        model: null,
+	        label: '',
+	        position: 0,
+	        descriptor_type_group: 0,
+	        descriptor_type: 0,
+	        descriptor_type_name: '',
+	        descriptor_type_code: '',
+	        mandatory: false,
+	        set_once: false,
+	    },
+	
+	    initialize: function(attributes, options) {
+	        Model.__super__.initialize.apply(this, arguments);
+	
+	        options || (options = {});
+	
+	        if (options.collection) {
+	            this.model_id = options.collection.model_id;
+	        }
+	    },
+	
+	    parse: function(data) {
+	        //this.perms = data.perms;
+	        this.model = data.model;
+	        return data;
+	    },
+	
+	    validate: function(attrs) {
+	        var errors = {};
+	        var hasError = false;
+	
+	        if (hasError) {
+	          return errors;
+	        }
+	    },
+	});
+	
+	module.exports = Model;
+
+
+/***/ },
+/* 152 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptorgroupadd.js
+	 * @brief Add a group of descriptors
+	 * @author Frederic SCHERMA
+	 * @date 2016-08-05
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	
+	var View = Marionette.ItemView.extend({
+	    tagName: 'div',
+	    className: 'descriptor-model-add',
+	    template: __webpack_require__(153),
+	
+	    ui: {
+	        add_descriptor_model_btn: 'span.add-descriptor-model',
+	        add_descriptor_model_name: 'input.descriptor-model-name',
+	    },
+	
+	    events: {
+	        'click @ui.add_descriptor_model_btn': 'addDescriptorModel',
+	        'input @ui.add_descriptor_model_name': 'onDescriptorModelNameInput',
+	    },
+	
+	    initialize: function(options) {
+	        options || (options = {});
+	        this.collection = options.collection;
+	    },
+	
+	    addDescriptorModel: function() {
+	        if (this.validateGroupName()) {
+	            this.collection.create({name: this.ui.add_descriptor_model_name.val()}, {wait: true});
+	            $(this.ui.add_descriptor_model_name).cleanField();
+	        }
+	    },
+	
+	    validateGroupName: function() {
+	        var v = this.ui.add_descriptor_model_name.val();
+	        var re = /^[a-zA-Z0-9_\-]+$/i;
+	
+	        if (v.length > 0 && !re.test(v)) {
+	            $(this.ui.add_descriptor_model_name).validateField('failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
+	            return false;
+	        } else if (v.length < 3) {
+	            $(this.ui.add_descriptor_model_name).validateField('failed', gt.gettext('3 characters min'));
+	            return false;
+	        }
+	
+	        return true;
+	    },
+	
+	    onDescriptorModelNameInput: function() {
+	        if (this.validateGroupName()) {
+	            $.ajax({
+	                type: "GET",
+	                url: application.baseUrl + 'descriptor/model/search/',
+	                dataType: 'json',
+	                data: {filters: JSON.stringify({
+	                    method: 'ieq',
+	                    fields: 'name',
+	                    name: this.ui.add_descriptor_model_name.val()})
+	                },
+	                el: this.ui.add_descriptor_model_name,
+	                success: function(data) {
+	                    if (data.items.length > 0) {
+	                        for (var i in data.items) {
+	                            var t = data.items[i];
+	
+	                            if (t.name.toUpperCase() == this.el.val().toUpperCase()) {
+	                                $(this.el).validateField('failed', gt.gettext('Name for model of descriptor already in usage'));
+	                                break;
+	                            }
+	                        }
+	                    } else {
+	                        $(this.el).validateField('ok');
+	                    }
+	                }
+	            });
+	        }
+	    }
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 153 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<table class="table table-striped" style="margin-bottom: 0px"><tbody><tr class="edit-mode" style="height: 95px"><th><span class="add-descriptor-model action glyphicon glyphicon-plus-sign" style="margin-top: 9px; margin-left: 10px"></span></th><td style="width: 100%"><div class="form-group"><input type="text" class="descriptor-model-name form-control" name="descriptor-model"></div></td></tr></tbody></table>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 154 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptormodeldetail.js
+	 * @brief Detail for a model of descriptor view
+	 * @author Frederic SCHERMA
+	 * @date 2016-09-28
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	var DescriptorModelModel = __webpack_require__(147);
+	
+	var View = Marionette.ItemView.extend({
+	    className: 'element object descriptor-model-detail',
+	    template: __webpack_require__(155),
+	
+	    ui: {
+	        name: '#descriptor_model_name',
+	        verbose_name: '#descriptor_model_verbose_name',
+	        description: '#descriptor_model_description',
+	        save: '#save'
+	    },
+	
+	    events: {
+	        'click @ui.save': 'saveDescriptorModel',
+	        'input @ui.name': 'inputName',
+	        'input @ui.verbose_name': 'inputVerboseName',
+	    },
+	
+	    initialize: function() {
+	        this.listenTo(this.model, 'reset', this.render, this);
+	    },
+	
+	    onRender: function() {
+	    },
+	
+	    inputName: function () {
+	        var v = this.ui.name.val();
+	        var re = /^[a-zA-Z0-9_-]+$/i;
+	
+	        if (v.length > 0 && !re.test(v)) {
+	            $(this.ui.name).validateField('failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
+	        } else if (v.length < 3) {
+	            $(this.ui.name).validateField('failed', gt.gettext('3 characters min'));
+	        } else {
+	            $(this.ui.name).validateField('ok');
+	        }
+	    },
+	
+	    saveDescriptorModel: function () {
+	        if (!$(this.ui.name.isValidField()))
+	            return;
+	
+	        var name = this.ui.name.val();
+	        var verbose_name = this.ui.verbose_name.val();
+	        var description = this.ui.description.val();
+	
+	        this.model.save({
+	            name: name,
+	            verbose_name: verbose_name,
+	            description: description,
+	        }, {wait: true}).done(function() { $.alert.success(gt.gettext("Done")); });
+	    }
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 155 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '', __e = _.escape;
+	with (obj) {
+	__p += '<div class="descriptor-model-detail"><div class="descriptor-model-name form-group" style="width: 50%"><label for="descriptor_model_name">' +
+	__e( gt.gettext('Descriptor model name') ) +
+	'</label><input id="descriptor_model_name" class="form-control" type="text" maxlength="255" value="' +
+	((__t = ( name )) == null ? '' : __t) +
+	'"></div><div class="descriptor-model-verbose-name form-group" style="width: 50%"><label for="descriptor_model_verbose_name">' +
+	__e( gt.gettext('Verbose name') ) +
+	'</label><input id="descriptor_model_verbose_name" class="form-control" type="text" maxlength="255" value="' +
+	((__t = ( verbose_name )) == null ? '' : __t) +
+	'"></div><div class="descriptor-model-description form-group" style="width: 50%"><label for="descriptor_model_description">' +
+	__e( gt.gettext('Description') ) +
+	'</label><textarea id="descriptor_model_description" class="form-control" maxlength="1024">' +
+	((__t = ( description )) == null ? '' : __t) +
+	'</textarea></div><div class="descriptor-model-update form-group" style="width: 100px; margin-left: 20%; margin-top: 25px"><button id="save" class="form-control btn btn-primary">' +
+	__e( gt.gettext('Update') ) +
+	'</button></div></div>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 156 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptormodellist.js
+	 * @brief List of model of descriptors view
+	 * @author Frederic SCHERMA
+	 * @date 2016-09-27
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	var DescriptorModelModel = __webpack_require__(147);
+	var DescriptorModelView = __webpack_require__(157);
+	
+	var ScrollView = __webpack_require__(78);
+	
+	var View = ScrollView.extend({
+	    template: __webpack_require__(159),
+	    childView: DescriptorModelView,
+	    childViewContainer: 'tbody.descriptor-model-list',
+	
+	    initialize: function() {
+	        this.listenTo(this.collection, 'reset', this.render, this);
+	        this.listenTo(this.collection, 'change', this.render, this);
+	
+	        View.__super__.initialize.apply(this);
+	    },
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 157 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptormodel.js
+	 * @brief Model of descriptor item view
+	 * @author Frederic SCHERMA
+	 * @date 2016-07-20
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	var DescriptorModelModel = __webpack_require__(147);
+	
+	var View = Marionette.ItemView.extend({
+	    tagName: 'tr',
+	    className: 'element object descriptor-model',
+	    template: __webpack_require__(158),
+	
+	    ui: {
+	        delete_descriptor_model: 'span.delete-descriptor-model',
+	        view_descriptor_model: 'td.view-descriptor-model',
+	        view_descriptor_model_types: 'td.view-descriptor-model-types'
+	    },
+	
+	    events: {
+	        'click @ui.delete_descriptor_model': 'deleteDescriptorModel',
+	        'click @ui.view_descriptor_model': 'viewDescriptorModelDetails',
+	        'click @ui.view_descriptor_model_types': 'viewDescriptorModelTypes'
+	    },
+	
+	    initialize: function() {
+	        this.listenTo(this.model, 'reset', this.render, this);
+	    },
+	
+	    onRender: function() {
+	        // TODO check with user permission
+	        /*if (!this.model.get('can_delete') || !session.user.isSuperUser) {
+	            $(this.ui.delete_descriptor_model).hide();
+	        }*/
+	    },
+	
+	    viewDescriptorModelDetails: function() {
+	        Backbone.history.navigate("app/descriptor/model/" + this.model.id + "/", {trigger: true});
+	    },
+	
+	    viewDescriptorModelTypes: function() {
+	        Backbone.history.navigate("app/descriptor/model/" + this.model.id + "/type/", {trigger: true});
+	    },
+	
+	    deleteDescriptorModel: function() {
+	        if (this.model.get('num_descriptor_types') == 0) {
+	            this.model.destroy({wait: true});
+	        }
+	    }
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 158 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<th><span class="delete-descriptor-model action glyphicon glyphicon-minus-sign"></span></th><td class="action view-descriptor-model" name="name">' +
+	((__t = ( name )) == null ? '' : __t) +
+	'</td><td class="action view-descriptor-model" name="verbose_name">' +
+	((__t = ( verbose_name )) == null ? '' : __t) +
+	'</td><td class="action view-descriptor-model-types" name="num_descriptor_model_types"><abbr class="badge" style="cursor: pointer" title="' +
+	((__t = ( gt.gettext('Manage models of type of descriptor') )) == null ? '' : __t) +
+	'">' +
+	((__t = ( num_descriptor_model_types )) == null ? '' : __t) +
+	'</abbr></td><td name="description"><abbr class="label label-default glyphicon glyphicon-option-horizontal" title="' +
+	((__t = ( description )) == null ? '' : __t) +
+	'"><span></span></abbr></td>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 159 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<div class="object descriptor-model-list" object-type="descriptor-model-list" style="width:100%"><table class="table table-striped"><thead><tr><th><span class="glyphicon glyphicon-asterisk"></span></th><th>' +
+	((__t = ( gt.gettext("Name") )) == null ? '' : __t) +
+	'</th><th>' +
+	((__t = ( gt.gettext("Verbose name") )) == null ? '' : __t) +
+	'</th><th>' +
+	((__t = ( gt.gettext("Number of types of descriptor") )) == null ? '' : __t) +
+	'</th><th>' +
+	((__t = ( gt.gettext("Description") )) == null ? '' : __t) +
+	'</th></tr></thead><tbody class="descriptor-model-list"></tbody></table></div>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 160 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptormodeltypelist.js
+	 * @brief List of type of model of descriptors for a model model of descriptor view
+	 * @author Frederic SCHERMA
+	 * @date 2016-09-28
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	var ScrollView = __webpack_require__(78);
+	var Dialog = __webpack_require__(82);
+	
+	var DescriptorModelTypeModel = __webpack_require__(151);
+	var DescriptorModelTypeView = __webpack_require__(161);
+	
+	var View = ScrollView.extend({
+	    template: __webpack_require__(166),
+	    childView: DescriptorModelTypeView,
+	    childViewContainer: 'tbody.descriptor-model-type-list',
+	
+	    initialize: function() {
+	        this.listenTo(this.collection, 'reset', this.render, this);
+	        this.listenTo(this.collection, 'change', this.render, this);
+	
+	        View.__super__.initialize.apply(this);
+	
+	        $("div.left-content").on("dragenter", $.proxy(this.dragEnterContent, this));
+	        $("div.left-content").on("dragleave", $.proxy(this.dragLeaveContent, this));
+	        $("div.left-content").on("dragover", $.proxy(this.dragOverContent, this));
+	        $("div.left-content").on("drop", $.proxy(this.dropContent, this));
+	    },
+	
+	    dragEnterContent: function (e) {
+	        if (e.preventDefault) {
+	            e.preventDefault();
+	        }
+	
+	        if (!$(e.target).hasClass("left-content")) {
+	            return false;
+	        }
+	
+	        this.dragEnterCount || (this.dragEnterCount = 0);
+	        ++this.dragEnterCount;
+	
+	        if (this.dragEnterCount == 1) {
+	            if (this.$el.find("tbody tr").length == 0) {
+	                this.$el.find("thead tr th").css('border-bottom', '5px dashed #ddd');
+	            }
+	
+	            this.$el.find("tbody tr").last().css('border-bottom', '5px dashed #ddd');
+	        }
+	
+	        return false;
+	    },
+	
+	    dragLeaveContent: function (e) {
+	        if (e.preventDefault) {
+	            e.preventDefault();
+	        }
+	
+	        if (!$(e.target).hasClass("left-content")) {
+	            return false;
+	        }
+	
+	        this.dragEnterCount || (this.dragEnterCount = 1);
+	        --this.dragEnterCount;
+	
+	        if (this.dragEnterCount == 0) {
+	            this.$el.find("tbody tr").last().css('border-bottom', 'initial');
+	            this.$el.find("thead tr th").css('border-bottom', '2px solid #ddd');
+	
+	        }
+	
+	        return false;
+	    },
+	
+	    dragOverContent: function (e) {
+	        if (e.preventDefault) {
+	            e.preventDefault();
+	        }
+	
+	        if (!$(e.target).hasClass("left-content")) {
+	            return false;
+	        }
+	
+	        this.dragEnterCount || (this.dragEnterCount = 1);
+	
+	        if (this.dragEnterCount == 1) {
+	            if (this.$el.find("tbody tr").length == 0) {
+	                this.$el.find("thead tr th").css('border-bottom', '5px dashed #ddd');
+	            }
+	
+	            this.$el.find("tbody tr").last().css('border-bottom', '5px dashed #ddd');
+	        }
+	
+	        //e.dataTransfer.dropEffect = 'move';
+	        return false;
+	    },
+	
+	    dropContent: function (e) {
+	        if (e.stopPropagation) {
+	            e.stopPropagation();
+	        }
+	
+	        if (!$(e.target).hasClass("left-content")) {
+	            return false;
+	        }
+	
+	        this.dragEnterCount = 0;
+	
+	        this.$el.find("tbody tr").last().css('border-bottom', 'initial');
+	        this.$el.find("thead tr th").css('border-bottom', '2px solid #ddd');
+	
+	        var elt = application.dndElement;
+	        if (!elt) {
+	            return false;
+	        }
+	
+	        if (elt.$el.hasClass('descriptor-type')) {
+	            var code = elt.model.get('code');
+	
+	            var DefinesLabel = Dialog.extend({
+	                template: __webpack_require__(163),
+	
+	                attributes: {
+	                    id: "dlg_define_label",
+	                },
+	
+	                ui: {
+	                    label: "#label",
+	                },
+	
+	                events: {
+	                    'input @ui.label': 'onLabelInput',
+	                },
+	
+	                initialize: function (options) {
+	                    DefinesLabel.__super__.initialize.apply(this);
+	                },
+	
+	                onLabelInput: function () {
+	                    this.validateLabel();
+	                },
+	
+	                validateLabel: function() {
+	                    var v = this.ui.label.val();
+	
+	                    if (v.length < 3) {
+	                        $(this.ui.label).validateField('failed', gt.gettext('3 characters min'));
+	                        return false;
+	                    }
+	
+	                    $(this.ui.label).validateField('ok');
+	
+	                    return true;
+	                },
+	
+	                onApply: function() {
+	                    var view = this;
+	                    var collection = this.getOption('collection');
+	                    var position = this.getOption('position');
+	                    var code = this.getOption('code');
+	
+	                    if (this.validateLabel()) {
+	                        var to_rshift = [];
+	
+	                        // server will r-shift position of any model upward this new
+	                        // do it locally to be consistent
+	                        for (var model in collection.models) {
+	                            var dmt = collection.models[model];
+	                            var p = dmt.get('position');
+	                            if (p >= position) {
+	                                dmt.set('position', p+1);
+	                                to_rshift.push(dmt);
+	                            }
+	                        }
+	
+	                        collection.create({
+	                            descriptor_type_code: code,
+	                            label: this.ui.label.val(),
+	                            position: position
+	                        }, {
+	                            wait: true,
+	                            success: function () {
+	                                view.remove();
+	                            },
+	                            error: function () {
+	                                $.alert.error(gt.gettext("Unable to create the type of model of descriptor !"));
+	
+	                                // left shift (undo) for consistency with server
+	                                for (var i = 0; i < to_rshift.length; ++i) {
+	                                    to_rshift[i].set('position', to_rshift[i].get('position')-1);
+	                                }
+	                            }
+	                        });
+	                    }
+	                },
+	            });
+	
+	            var collection = this.collection;
+	
+	            // find last position + 1
+	            var newPosition = 0;
+	
+	            if (collection.models.length > 0) {
+	                newPosition = collection.at(collection.models.length-1).get('position') + 1;
+	            }
+	
+	            var definesLabel = new DefinesLabel({
+	                collection: collection,
+	                position: newPosition,
+	                code: elt.model.get('code')
+	            });
+	
+	            definesLabel.render();
+	        } else if (elt.$el.hasClass('descriptor-model-type')) {
+	            var collection = this.collection;
+	            var modelId = collection.model_id;
+	
+	            // find last position + 1
+	            var newPosition = collection.at(collection.models.length-1).get('position') + 1;
+	
+	            $.ajax({
+	                type: "PUT",
+	                url: application.baseUrl + 'descriptor/model/' + modelId + '/order/',
+	                dataType: 'json',
+	                contentType: "application/json; charset=utf-8",
+	                data: JSON.stringify({
+	                    descriptor_model_type_id: elt.model.get('id'),
+	                    position: newPosition
+	                })
+	            }).done(function() {
+	                elt.model.set('position', newPosition);
+	
+	                // lshift any others element
+	                for (var model in collection.models) {
+	                    var dmt = collection.models[model];
+	                    if (dmt.get('id') != elt.model.get('id')) {
+	                        var p = dmt.get('position');
+	                        dmt.set('position', p - 1);
+	                    }
+	                }
+	
+	                // need to sort
+	                collection.sort();
+	            }).fail(function() {
+	                $.alert.error(gt.gettext('Unable to reorder the types of model of descriptor'));
+	            });
+	        }
+	
+	        return false;
+	    },
+	});
+	
+	module.exports = View;
+
+/***/ },
+/* 161 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptortype.js
+	 * @brief Type of descriptor item view
+	 * @author Frederic SCHERMA
+	 * @date 2016-07-21
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	var Dialog = __webpack_require__(82);
+	
+	var DescriptorTypeModel = __webpack_require__(111);
+	var DescriptorModelTypeModel = __webpack_require__(151);
+	
+	
+	var View = Marionette.ItemView.extend({
+	    tagName: 'tr',
+	    className: 'element object descriptor-model-type',
+	    template: __webpack_require__(162),
+	
+	    attributes: {
+	        draggable: true,
+	    },
+	
+	    ui: {
+	        'delete_descriptor_model_type': 'span.delete-descriptor-model-type',
+	        'label': 'td[name="label"]',
+	        'mandatory': 'td[name="mandatory"]',
+	        'set_once': 'td[name="set_once"]',
+	        'condition': 'td[name="condition"]'
+	    },
+	
+	    events: {
+	        'dragstart': 'dragStart',
+	        'dragend': 'dragEnd',
+	        'dragover': 'dragOver',
+	        'dragenter': 'dragEnter',
+	        'dragleave': 'dragLeave',
+	        'drop': 'drop',
+	        'click @ui.delete_descriptor_model_type': 'deleteDescriptorModelType',
+	        'click @ui.label': 'editLabel',
+	        'click @ui.mandatory': 'toggleMandatory',
+	        'click @ui.set_once': 'toggleSetOnce',
+	        'click @ui.condition': 'editCondition',
+	    },
+	
+	    initialize: function() {
+	        this.listenTo(this.model, 'reset', this.render, this);
+	    },
+	
+	    onRender: function() {
+	        if (!session.user.isStaff && !session.user.isSuperUser) {
+	            $(this.ui.delete_descriptor_model_type).hide();
+	        }
+	    },
+	
+	    dragStart: function(e) {
+	        this.$el.css('opacity', '0.4');
+	        application.dndElement = this;
+	    },
+	
+	    dragEnd: function(e) {
+	        this.$el.css('opacity', '1.0');
+	        application.dndElement = null;
+	    },
+	
+	    dragOver: function (e) {
+	        if (e.originalEvent.preventDefault) {
+	            e.originalEvent.preventDefault();
+	        }
+	
+	        //e.originalEvent.dataTransfer.dropEffect = 'move';
+	        return false;
+	    },
+	
+	    dragEnter: function (e) {
+	        if (e.originalEvent.preventDefault) {
+	            e.originalEvent.preventDefault();
+	        }
+	
+	        if (application.dndElement.$el.hasClass('descriptor-model-type')) {
+	            if (this.model.get('position') < application.dndElement.model.get('position')) {
+	                this.$el.css('border-top', '5px dashed #ddd');
+	            } else if (this.model.get('position') > application.dndElement.model.get('position')) {
+	                this.$el.css('border-bottom', '5px dashed #ddd');
+	            }
+	        } else if (application.dndElement.$el.hasClass('descriptor-type')) {
+	             this.$el.css('border-top', '5px dashed #ddd');
+	        }
+	
+	        return false;
+	    },
+	
+	    dragLeave: function (e) {
+	        if (e.originalEvent.preventDefault) {
+	            e.originalEvent.preventDefault();
+	        }
+	
+	        if (application.dndElement.$el.hasClass('descriptor-model-type')) {
+	            if (this.model.get('position') < application.dndElement.model.get('position')) {
+	                this.$el.css('border-top', 'initial');
+	            } else if (this.model.get('position') > application.dndElement.model.get('position')) {
+	                this.$el.css('border-bottom', 'initial');
+	            }
+	        } else if (application.dndElement.$el.hasClass('descriptor-type')) {
+	             this.$el.css('border-top', 'initial');
+	        }
+	
+	        return false;
+	    },
+	
+	    drop: function (e) {
+	        if (e.originalEvent.stopPropagation) {
+	            e.originalEvent.stopPropagation();
+	        }
+	
+	        var elt = application.dndElement;
+	
+	        if (elt.$el.hasClass('descriptor-type')) {
+	            // reset borders
+	            this.$el.css('border-top', 'initial');
+	            this.$el.css('border-bottom', 'initial');
+	
+	            var DefinesLabel = Dialog.extend({
+	                template: __webpack_require__(163),
+	
+	                attributes: {
+	                    id: "dlg_define_label",
+	                },
+	
+	                ui: {
+	                    label: "#label",
+	                },
+	
+	                events: {
+	                    'input @ui.label': 'onLabelInput',
+	                },
+	
+	                initialize: function (options) {
+	                    DefinesLabel.__super__.initialize.apply(this);
+	                },
+	
+	                onLabelInput: function () {
+	                    this.validateLabel();
+	                },
+	
+	                validateLabel: function() {
+	                    var v = this.ui.label.val();
+	
+	                    if (v.length < 3) {
+	                        $(this.ui.label).validateField('failed', gt.gettext('3 characters min'));
+	                        return false;
+	                    }
+	
+	                    $(this.ui.label).validateField('ok');
+	
+	                    return true;
+	                },
+	
+	                onApply: function() {
+	                    var view = this;
+	                    var collection = this.getOption('collection');
+	                    var position = this.getOption('position');
+	                    var code = this.getOption('code');
+	
+	                    if (this.validateLabel()) {
+	                        var to_rshift = [];
+	
+	                        // server will r-shift position of any model upward this new
+	                        // do it locally to be consistent
+	                        for (var model in collection.models) {
+	                            var dmt = collection.models[model];
+	                            var p = dmt.get('position');
+	                            if (p >= position) {
+	                                dmt.set('position', p+1);
+	                                to_rshift.push(dmt);
+	                            }
+	                        }
+	
+	                        collection.create({
+	                            descriptor_type_code: code,
+	                            label: this.ui.label.val(),
+	                            position: position
+	                        }, {
+	                            wait: true,
+	                            success: function () {
+	                                view.remove();
+	                            },
+	                            error: function () {
+	                                $.alert.error(gt.gettext("Unable to create the type of model of descriptor !"));
+	
+	                                // left shift (undo) for consistency with server
+	                                for (var i = 0; i < to_rshift.length; ++i) {
+	                                    to_rshift[i].set('position', to_rshift[i].get('position')-1);
+	                                }
+	                            }
+	                        });
+	                    }
+	                },
+	            });
+	
+	            var definesLabel = new DefinesLabel({
+	                collection: this.model.collection,
+	                position: this.model.get('position'),
+	                code: elt.model.get('code')
+	            });
+	
+	            definesLabel.render();
+	        }
+	        else if (elt.$el.hasClass('descriptor-model-type')) {
+	            // useless drop on himself
+	            if (this == elt) {
+	                return false;
+	            }
+	
+	            // reset borders
+	            this.$el.css('border-top', 'initial');
+	            this.$el.css('border-bottom', 'initial');
+	
+	            // ajax call
+	            var position = elt.model.get('position');
+	            var newPosition = this.model.get('position');
+	            var modelId = this.model.collection.model_id;
+	            var collection = this.model.collection;
+	
+	            $.ajax({
+	                type: "PUT",
+	                url: application.baseUrl + 'descriptor/model/' + modelId + '/order/',
+	                dataType: 'json',
+	                contentType: "application/json; charset=utf-8",
+	                data: JSON.stringify({
+	                    descriptor_model_type_id: elt.model.get('id'),
+	                    position: newPosition
+	                })
+	            }).done(function() {
+	                // server will shift position of any model upward/downward this model
+	                // do it locally to be consistent
+	                // so that we don't need to collection.fetch({update: true, remove: true});
+	                if (newPosition < position) {
+	                    var to_rshift = [];
+	
+	                    for (var model in collection.models) {
+	                        var dmt = collection.models[model];
+	                        if (dmt.get('id') != elt.model.get('id')) {
+	                            if (dmt.get('position') >= newPosition) {
+	                                to_rshift.push(dmt);
+	                            }
+	                        }
+	                    }
+	
+	                    elt.model.set('position', newPosition);
+	
+	                    var nextPosition = newPosition + 1;
+	
+	                    for (var i = 0; i < to_rshift.length; ++i) {
+	                        to_rshift[i].set('position', nextPosition);
+	                        ++nextPosition;
+	                    }
+	                } else {
+	                    var to_lshift = [];
+	
+	                    for (var model in collection.models) {
+	                        var dmt = collection.models[model];
+	                        if (dmt.get('id') != elt.model.get('id')) {
+	                            if (dmt.get('position') <= newPosition) {
+	                                to_lshift.push(dmt);
+	                            }
+	                        }
+	                    }
+	
+	                    elt.model.set('position', newPosition);
+	
+	                    var nextPosition = 0;
+	
+	                    for (var i = 0; i < to_lshift.length; ++i) {
+	                        to_lshift[i].set('position', nextPosition);
+	                        ++nextPosition;
+	                    }
+	                }
+	
+	                // need to sort
+	                collection.sort();
+	            }).fail(function () {
+	                $.alert.error(gt.gettext('Unable to reorder the types of model of descriptor'));
+	            })
+	        }
+	
+	        return false;
+	    },
+	
+	    editLabel: function() {
+	        var model = this.model;
+	
+	        $.ajax({
+	            type: "GET",
+	            url: this.model.url() + 'label/',
+	            dataType: 'json',
+	        }).done(function (data) {
+	            var labels = data;
+	
+	            var ChangeLabel = Dialog.extend({
+	                template: __webpack_require__(164),
+	                templateHelpers: function () {
+	                    return {
+	                        labels: labels,
+	                    };
+	                },
+	
+	                attributes: {
+	                    id: "dlg_change_labels",
+	                },
+	
+	                ui: {
+	                    label: "#descriptor_model_type_labels input",
+	                },
+	
+	                events: {
+	                    'input @ui.label': 'onLabelInput',
+	                },
+	
+	                initialize: function (options) {
+	                    ChangeLabel.__super__.initialize.apply(this);
+	                },
+	
+	                onLabelInput: function (e) {
+	                    this.validateLabel(e);
+	                },
+	
+	                validateLabel: function (e) {
+	                    var v = $(e.target).val();
+	
+	                    if (v.length > 64) {
+	                        $(this.ui.label).validateField('failed', gt.gettext('64 characters max'));
+	                        return false;
+	                    }
+	
+	                    $(this.ui.label).validateField('ok');
+	
+	                    return true;
+	                },
+	
+	                validateLabels: function() {
+	                    $.each($(this.ui.label), function(i, label) {
+	                        var v = $(this).val();
+	
+	                        if (v.length > 64) {
+	                            $(this).validateField('failed', gt.gettext('64 characters max'));
+	                            return false;
+	                        }
+	                    });
+	
+	                    return true;
+	                },
+	
+	                onApply: function () {
+	                    var view = this;
+	                    var model = this.getOption('model');
+	
+	                    var labels = {};
+	
+	                    $.each($(this.ui.label), function(i, label) {
+	                        var v = $(this).val();
+	                        labels[$(label).attr("language")] = v;
+	                    });
+	
+	                    if (this.validateLabels()) {
+	                        $.ajax({
+	                            type: "PUT",
+	                            url: model.url() + "label/",
+	                            dataType: 'json',
+	                            contentType: "application/json; charset=utf-8",
+	                            data: JSON.stringify(labels)
+	                        }).done(function() {
+	                            // manually update the current context label
+	                            model.set('label', labels[session.language]);
+	                            $.alert.success(gt.gettext("Successfully labeled !"));
+	                        }).always(function() {
+	                            view.remove();
+	                        });
+	                    }
+	                },
+	            });
+	
+	            var changeLabel = new ChangeLabel({model: model});
+	            changeLabel.render();
+	        });
+	    },
+	
+	    toggleMandatory: function() {
+	        this.model.save({mandatory: !this.model.get('mandatory')}, {patch: true, wait: true});
+	    },
+	
+	    toggleSetOnce: function() {
+	        this.model.save({set_once: !this.model.get('set_once')}, {patch: true, wait: true});
+	    },
+	
+	    deleteDescriptorModelType: function() {
+	        var collection = this.model.collection;
+	        var position = this.model.get('position');
+	
+	        this.model.destroy({
+	            wait: true,
+	            success: function () {
+	                for (var model in collection.models) {
+	                    var dmt = collection.models[model];
+	                    if (dmt.get('position') > position) {
+	                        var new_position = dmt.get('position') - 1;
+	                        dmt.set('position', new_position);
+	                    }
+	                }
+	            }
+	        });
+	    },
+	
+	    editCondition: function() {
+	        var model = this.model;
+	
+	        $.ajax({
+	            type: "GET",
+	            url: this.model.url() + 'condition/',
+	            dataType: 'json',
+	        }).done(function (data) {
+	            var condition = data;
+	
+	            var ChangeCondition = Dialog.extend({
+	                template: __webpack_require__(165),
+	                templateHelpers: function () {
+	                    return {
+	                        targets: model.collection.models,
+	                        condition: condition,
+	                    };
+	                },
+	
+	                attributes: {
+	                    id: "dlg_change_condition",
+	                },
+	
+	                ui: {
+	                    condition: "#condition",
+	                    target: "#target",
+	                    simple_value: "#simple_value",
+	                    autocomplete_value: "#autocomplete_value",
+	                    select_value: "#select_value",
+	                    value_group: "div.value-group",
+	                    simple_value_group: "#simple_value_group",
+	                    autocomplete_value_group: "#autocomplete_value_group",
+	                    select_value_group: "#select_value_group",
+	                },
+	
+	                events: {
+	                    'change @ui.condition': 'onSelectCondition',
+	                    'change @ui.target': 'onSelectTarget',
+	                },
+	
+	                initialize: function (options) {
+	                    ChangeCondition.__super__.initialize.apply(this);
+	                },
+	
+	                onRender: function() {
+	                    ChangeCondition.__super__.onRender.apply(this);
+	                    application.descriptor.views.conditions.drawSelect(this.ui.condition);
+	
+	                    $(this.ui.target).selectpicker({container: 'body', style: 'btn-default'});
+	
+	                    this.onSelectCondition();
+	                    this.onSelectTarget();
+	                },
+	
+	                onBeforeDestroy: function() {
+	                    ChangeCondition.__super__.onBeforeDestroy.apply(this);
+	                    this.ui.condition.selectpicker('destroy');
+	                    this.ui.target.selectpicker('destroy');
+	                },
+	
+	                toggleCondition: function (condition) {
+	                    if (condition == 0 || condition == 1) {
+	                        this.ui.value_group.hide(false);
+	                    } else {
+	                        if (this.descriptorTypeFormat.type.startsWith('enum_')) {
+	                            this.ui.simple_value_group.hide(false);
+	
+	                            if (this.descriptorTypeFormat.list_type == "dropdown") {
+	                                this.ui.select_value_group.show(false);
+	                                this.ui.autocomplete_value_group.hide(false);
+	                            } else {
+	                                this.ui.select_value_group.hide(false);
+	                                this.ui.autocomplete_value_group.show(false);
+	                            }
+	                        } else {
+	                            this.ui.simple_value_group.show(false);
+	                            this.ui.select_value_group.hide(false);
+	                            this.ui.autocomplete_value_group.hide(false);
+	                        }
+	                    }
+	                },
+	
+	                onSelectCondition: function () {
+	                    var val = this.ui.condition.val();
+	                    this.toggleCondition(val);
+	                },
+	
+	                onSelectTarget: function () {
+	                    var view = this;
+	                    var targetId = this.ui.target.val();
+	
+	                    var model = this.getOption('model').collection.findWhere({id: parseInt(targetId)});
+	                    if (model) {
+	                        var descriptorType = new DescriptorTypeModel(
+	                            {id: model.get('descriptor_type')},
+	                            {group_id: model.get('descriptor_type_group')}
+	                        );
+	
+	                        descriptorType.fetch().then(function() {
+	                            view.descriptorTypeFormat = descriptorType.get('format');
+	
+	                            var condition = view.ui.condition.val();
+	                            view.toggleCondition(condition);
+	
+	                            if (descriptorType.get('format').type.startsWith('enum_')) {
+	                                if (descriptorType.get('format').list_type != "dropdown") {
+	                                    // make an autocomplete widget on simple_value
+	                                    // @todo
+	                                    // @todo what about automatic mode ?
+	                                } else {
+	                                    // refresh values
+	                                    // @todo ajax
+	                                    view.ui.enum_value.find('option').remove();
+	                                    view.ui.enum_value.selectpicker('refresh');
+	                                }
+	
+	                            }
+	                        });
+	                    }
+	                },
+	
+	                onApply: function () {
+	                    var view = this;
+	                    var model = this.getOption('model');
+	
+	                    var labels = {};
+	
+	                    $.each($(this.ui.label), function (i, label) {
+	                        var v = $(this).val();
+	                        labels[$(label).attr("language")] = v;
+	                    });
+	
+	                    if (this.validateLabels()) {
+	                        // @todo if (condition.defined PUT else POST)
+	                        /*
+	                         $.ajax({
+	                         type: "PUT",
+	                         url: model.url() + "condition/",
+	                         dataType: 'json',
+	                         contentType: "application/json; charset=utf-8",
+	                         data: JSON.stringify(labels)
+	                         }).done(function() {
+	                         // manually update the current context label
+	                         model.set('label', labels[session.language]);
+	                         $.alert.success(gt.gettext("Successfully labeled !"));
+	                         }).always(function() {
+	                         view.remove();
+	                         });*/
+	                    }
+	                },
+	            });
+	
+	            var changeCondition = new ChangeCondition({model: model});
+	            changeCondition.render();
+	        });
+	    }
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 162 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '', __j = Array.prototype.join;
+	function print() { __p += __j.call(arguments, '') }
+	with (obj) {
+	__p += '<th><span class="delete-descriptor-model-type action glyphicon glyphicon-minus-sign"></span></th><td name="descriptor_type_code">' +
+	((__t = ( descriptor_type_code )) == null ? '' : __t) +
+	'</td><td name="label" class="action">' +
+	((__t = ( label )) == null ? '' : __t) +
+	'</td> ';
+	 if (mandatory) { ;
+	__p += ' <td name="mandatory"><span class="action glyphicon glyphicon-ok left-margin"></span></td> ';
+	 } else { ;
+	__p += ' <td name="mandatory"><span class="action glyphicon glyphicon-remove left-margin"></span></td> ';
+	 } ;
+	__p += ' ';
+	 if (set_once) { ;
+	__p += ' <td name="set_once"><span class="action glyphicon glyphicon-ok left-margin"></span></td> ';
+	 } else { ;
+	__p += ' <td name="set_once"><span class="action glyphicon glyphicon-remove left-margin"></span></td> ';
+	 } ;
+	__p += ' <td name="condition"><span class="action glyphicon glyphicon-wrench left-margin"></span></td>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 163 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title">' +
+	((__t = ( gt.gettext("Create a model of descriptor") )) == null ? '' : __t) +
+	'</h4></div><div class="modal-body" style="max-height: 400px; overflow-y: auto"><form><div class="form-group"><label class="control-label" for="label">' +
+	((__t = ( gt.gettext("Label for the current language") )) == null ? '' : __t) +
+	'</label><input class="form-control" type="text" id="label" maxlength="64" autofocus="" autocomplete="off" style="width:100%"></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal">' +
+	((__t = ( gt.gettext("Cancel") )) == null ? '' : __t) +
+	'</button> <button type="button" class="btn btn-primary apply">' +
+	((__t = ( gt.gettext("Apply") )) == null ? '' : __t) +
+	'</button></div></div></div>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 164 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '', __j = Array.prototype.join;
+	function print() { __p += __j.call(arguments, '') }
+	with (obj) {
+	__p += '<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title">' +
+	((__t = ( gt.gettext("Change the label for the type of model of descriptor") )) == null ? '' : __t) +
+	'</h4></div><div class="modal-body" style="max-height: 400px; overflow-y: auto"><form id="descriptor_model_type_labels">';
+	
+	                var languages = application.main.collections.uilanguages;
+	
+	                for (var i = 0; i < languages.models.length; ++i) {
+	                    var lang_id = languages.at(i).get('id');
+	                    var lang_label = languages.at(i).get('label');
+	                    var label = labels[lang_label];
+	                    var autofocus = (i == 0) ? 'autofocus=""' : "";
+	                ;
+	__p += ' <div class="form-group"><label class="control-label">' +
+	((__t = ( gt.gettext(lang_label) )) == null ? '' : __t) +
+	'</label><input class="form-control" type="text" language="' +
+	((__t = ( lang_id )) == null ? '' : __t) +
+	'" value="' +
+	((__t = ( labels[lang_id] )) == null ? '' : __t) +
+	'" maxlength="64" ' +
+	((__t = ( autofocus )) == null ? '' : __t) +
+	' autocomplete="off" style="width:100%"></div> ';
+	 } ;
+	__p += ' </form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal">' +
+	((__t = ( gt.gettext("Cancel") )) == null ? '' : __t) +
+	'</button> <button type="button" class="btn btn-primary apply">' +
+	((__t = ( gt.gettext("Apply") )) == null ? '' : __t) +
+	'</button></div></div></div>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 165 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '', __j = Array.prototype.join;
+	function print() { __p += __j.call(arguments, '') }
+	with (obj) {
+	__p += '<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title">' +
+	((__t = ( gt.gettext("Condition of the type of model of descriptor") )) == null ? '' : __t) +
+	'</h4></div><div class="modal-body" style="max-height: 400px; overflow-y: auto"><form><div class="form-group"><label class="control-label">' +
+	((__t = ( gt.gettext("Target") )) == null ? '' : __t) +
+	'</label><select class="form-control" id="target"> ';
+	 _.each(targets, function(target) { ;
+	__p += ' <option value="' +
+	((__t = ( target.get('id') )) == null ? '' : __t) +
+	'">' +
+	((__t = ( target.get('label') )) == null ? '' : __t) +
+	'</option> ';
+	 }) ;
+	__p += ' </select></div><div class="form-group"><label for="condition" class="control-label">' +
+	((__t = ( gt.gettext("Condition") )) == null ? '' : __t) +
+	'</label><select id="condition" class="form-control"></select></div><div class="form-group value-group" id="simple_value_group"><label class="control-label">' +
+	((__t = ( gt.gettext("Value") )) == null ? '' : __t) +
+	'</label><input class="form-control" id="simple_value" type="text" value="" maxlength="64" style="width:100%"></div><div class="form-group value-group" id="autocomplete_value_group"><label class="control-label">' +
+	((__t = ( gt.gettext("Value") )) == null ? '' : __t) +
+	'</label><input class="form-control" id="autocomplete_value" type="text" value="" maxlength="64" style="width:100%"></div><div class="form-group value-group" id="select_value_group"><label for="select_value" class="control-label">' +
+	((__t = ( gt.gettext("Value from list") )) == null ? '' : __t) +
+	'</label><select id="select_value" class="form-control"></select></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal">' +
+	((__t = ( gt.gettext("Cancel") )) == null ? '' : __t) +
+	'</button> <button type="button" class="btn btn-primary apply">' +
+	((__t = ( gt.gettext("Apply") )) == null ? '' : __t) +
+	'</button></div></div></div>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 166 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<div class="object descriptor-model-type-list" object-type="descriptor-model-type-list"><table class="table table-striped"><thead class="sticky-header"><tr><th><span class="glyphicon glyphicon-asterisk"></span></th><th>' +
+	((__t = ( gt.gettext("Code") )) == null ? '' : __t) +
+	'</th><th>' +
+	((__t = ( gt.gettext("Label") )) == null ? '' : __t) +
+	'</th><th>' +
+	((__t = ( gt.gettext("Mandatory") )) == null ? '' : __t) +
+	'</th><th>' +
+	((__t = ( gt.gettext("Set Once") )) == null ? '' : __t) +
+	'</th><th>' +
+	((__t = ( gt.gettext("Condition") )) == null ? '' : __t) +
+	'</th></tr></thead><tbody class="descriptor-model-type-list header-line"></tbody></table></div>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 167 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptorgrouplistalt.js
+	 * @brief Alternative view of list of groups of types of descriptors
+	 * @author Frederic SCHERMA
+	 * @date 2016-10-14
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	var DescriptorGroupModel = __webpack_require__(110);
+	var DescriptorGroupAltView = __webpack_require__(168);
+	
+	var ScrollView = __webpack_require__(78);
+	
+	var View = ScrollView.extend({
+	    template: __webpack_require__(174),
+	    childView: DescriptorGroupAltView,
+	    childViewContainer: 'tbody.descriptor-group-list',
+	
+	    childViewOptions: function () {
+	        return {
+	            layout: this.getOption('layout'),
+	        }
+	    },
+	
+	    initialize: function(options) {
+	        this.listenTo(this.collection, 'reset', this.render, this);
+	        this.listenTo(this.collection, 'change', this.render, this);
+	        //this.listenTo(this.collection, 'add', this.render, this);
+	        //this.listenTo(this.collection, 'remove', this.render, this);
+	
+	        View.__super__.initialize.apply(this);
+	    }
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 168 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptorgroupalt.js
+	 * @brief Alternative view for group of type of descriptor item
+	 * @author Frederic SCHERMA
+	 * @date 2016-10-14
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	var DescriptorGroupModel = __webpack_require__(110);
+	
+	var DescriptorTypeCollection = __webpack_require__(112);
+	var DescriptorTypeListAltView = __webpack_require__(169);
+	var ScrollingMoreView = __webpack_require__(94);
+	
+	var View = Marionette.ItemView.extend({
+	    tagName: 'tr',
+	    className: 'element object descriptor-group-alt',
+	    template: __webpack_require__(173),
+	
+	    events: {
+	        'click': 'viewDescriptorTypes'
+	    },
+	
+	    initialize: function(options) {
+	        this.listenTo(this.model, 'reset', this.render, this);
+	    },
+	
+	    onRender: function() {
+	    },
+	
+	    viewDescriptorTypes: function() {
+	        var layout = this.getOption('layout');
+	        var collection = new DescriptorTypeCollection([], {group_id: this.model.id});
+	
+	        collection.fetch().then(function () {
+	            var descriptorTypeListView = new DescriptorTypeListAltView({collection : collection});
+	
+	            layout.getRegion('right-down-content').show(descriptorTypeListView);
+	            layout.getRegion('right-down-bottom').show(new ScrollingMoreView({targetView: descriptorTypeListView}));
+	        });
+	    },
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 169 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptortypelistalt.js
+	 * @brief Alternative list of types of descriptors for a group view
+	 * @author Frederic SCHERMA
+	 * @date 2016-10-14
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	var ScrollView = __webpack_require__(78);
+	
+	var DescriptorTypeModel = __webpack_require__(111);
+	var DescriptorTypeAltView = __webpack_require__(170);
+	
+	var View = ScrollView.extend({
+	    template: __webpack_require__(172),
+	    childView: DescriptorTypeAltView,
+	    childViewContainer: 'tbody.descriptor-type-list',
+	
+	    ui: {
+	        'table': 'table.table',
+	    },
+	
+	    events: {
+	    },
+	
+	    initialize: function() {
+	        this.listenTo(this.collection, 'reset', this.render, this);
+	        this.listenTo(this.collection, 'change', this.render, this);
+	        //this.listenTo(this.collection, 'add', this.render, this);
+	        //this.listenTo(this.collection, 'remove', this.render, this);
+	
+	        View.__super__.initialize.apply(this);
+	    },
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 170 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptortypealt.js
+	 * @brief Alternative type of descriptor item view
+	 * @author Frederic SCHERMA
+	 * @date 2016-10-14
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	var DescriptorTypeModel = __webpack_require__(111);
+	
+	var View = Marionette.ItemView.extend({
+	    tagName: 'tr',
+	    className: 'element object descriptor-type',
+	    template: __webpack_require__(171),
+	
+	    attributes: {
+	        draggable: true,
+	    },
+	
+	    events: {
+	        'dragstart': 'dragStart',
+	        'dragend': 'dragEnd',
+	    },
+	
+	    initialize: function() {
+	        this.listenTo(this.model, 'reset', this.render, this);
+	    },
+	
+	    dragStart: function(e) {
+	        this.$el.css('opacity', '0.4');
+	        application.dndElement = this;
+	    },
+	
+	    dragEnd: function(e) {
+	        this.$el.css('opacity', '1.0');
+	        application.dndElement = null;
+	    },
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 171 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '', __j = Array.prototype.join;
+	function print() { __p += __j.call(arguments, '') }
+	with (obj) {
+	__p += '<td name="name" value="' +
+	((__t = ( name )) == null ? '' : __t) +
+	'">' +
+	((__t = ( name )) == null ? '' : __t) +
+	'</td><td name="code">' +
+	((__t = ( code )) == null ? '' : __t) +
+	'</td> ';
+	 if (format.type === "enum_single" || format.type === "enum_pair" || format.type === "enum_ordinal") { ;
+	__p += ' <td name="num_descriptor_values"><span class="badge">' +
+	((__t = ( num_descriptor_values )) == null ? '' : __t) +
+	'</span></td> ';
+	 } else { ;
+	__p += ' <td name="num_descriptor_values"><abbr class="badge" title="' +
+	((__t = ( gt.gettext('No values for this descriptor') )) == null ? '' : __t) +
+	'">N/A</abbr></td> ';
+	 } ;
+	__p += ' <td name="description"><abbr class="label label-default glyphicon glyphicon-option-horizontal" title="' +
+	((__t = ( description )) == null ? '' : __t) +
+	'"><span></span></abbr></td>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 172 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<div class="object descriptor-type-list" object-type="descriptor-type-list" style="width:100%"><table class="table table-striped"><thead class="sticky-header"><tr><th>' +
+	((__t = ( gt.gettext("Type of descriptor") )) == null ? '' : __t) +
+	'</th><th>' +
+	((__t = ( gt.gettext("Code") )) == null ? '' : __t) +
+	'</th><th>' +
+	((__t = ( gt.gettext("Number of values") )) == null ? '' : __t) +
+	'</th><th>' +
+	((__t = ( gt.gettext("Description") )) == null ? '' : __t) +
+	'</th></tr></thead><tbody class="descriptor-type-list"></tbody></table></div>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 173 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<td class="action view-descriptor-group" name="name" value="' +
+	((__t = ( name )) == null ? '' : __t) +
+	'">' +
+	((__t = ( name )) == null ? '' : __t) +
+	'</td><td class="action view-descriptor-type" name="num_descriptor_types"><abbr class="badge" style="cursor: pointer" title="' +
+	((__t = ( gt.gettext('Manage types of descriptor') )) == null ? '' : __t) +
+	'">' +
+	((__t = ( num_descriptor_types )) == null ? '' : __t) +
+	'</abbr></td>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 174 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<div class="object descriptor-group-list" object-type="descriptor-group-list" style="width:100%"><table class="table table-striped"><thead class="sticky-header"><tr><th>' +
+	((__t = ( gt.gettext("Group of descriptors") )) == null ? '' : __t) +
+	'</th><th>' +
+	((__t = ( gt.gettext("Number of types of descriptor") )) == null ? '' : __t) +
+	'</th></tr></thead><tbody class="descriptor-group-list"></tbody></table></div>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 175 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file leftonerighttwolayout.js
+	 * @brief Two columns, one row at left, two rows at right layout
+	 * @author Frederic SCHERMA
+	 * @date 2016-10-14
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	
+	var TwoColumnsLayout = Marionette.LayoutView.extend({
+	    template: "#left_one_right_two_layout_view",
+	    attributes: {
+	        style: "height: 95%;"
+	    },
+	
+	    regions: {
+	        'left-content': ".left-content",
+	        'left-bottom': ".left-bottom",
+	        'right-up-content': ".right-up-content",
+	        'right-up-bottom': ".right-up-bottom",
+	        'right-down-content': ".right-down-content",
+	        'right-down-bottom': ".right-down-bottom",
+	    },
+	
+	    onBeforeShow: function() {
+	    },
+	
+	    onBeforeDestroy: function () {
+	    },
+	});
+	
+	module.exports = TwoColumnsLayout;
+
+
+/***/ },
+/* 176 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptormetamodel.js
+	 * @brief Descriptor meta-model router
+	 * @author Frederic SCHERMA
+	 * @date 2016-10-26
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	
+	var DescriptorMetaModelModel = __webpack_require__(177);
+	
+	var DescriptorModelCollection = __webpack_require__(148);
+	var DescriptorMetaModelCollection = __webpack_require__(178);
+	var DescriptorPanelCollection = __webpack_require__(179);
+	
+	var DescriptorMetaModelAddView = __webpack_require__(181);
+	var DescriptorMetaModelDetailView = __webpack_require__(184);
+	var DescriptorMetaModelListView = __webpack_require__(186);
+	var DescriptorPanelListView = __webpack_require__(191);
+	
+	var DescriptorModelListAltView = __webpack_require__(197);
+	
+	var DefaultLayout = __webpack_require__(50);
+	var TwoColumnsLayout = __webpack_require__(201);
+	var TitleView = __webpack_require__(51);
+	var ScrollingMoreView = __webpack_require__(94);
+	
+	var Router = Marionette.AppRouter.extend({
+	    routes : {
+	        "app/descriptor/meta-model/": "getDescriptorMetaModelList",
+	        "app/descriptor/meta-model/:id/": "getDescriptorMetaModel",
+	        "app/descriptor/meta-model/:id/panel/": "getDescriptorPanelListForModel",
+	    },
+	
+	    getDescriptorMetaModelList: function () {
+	        var collection = new DescriptorMetaModelCollection();
+	
+	        var defaultLayout = new DefaultLayout({});
+	        application.getRegion('mainRegion').show(defaultLayout);
+	
+	        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of meta-models of descriptor")}));
+	
+	        collection.fetch().then(function () {
+	            var descriptorMetaModelList = new DescriptorMetaModelListView({collection : collection});
+	            defaultLayout.getRegion('content').show(descriptorMetaModelList);
+	            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: descriptorMetaModelList}));
+	        });
+	
+	        // @todo lookup for permission
+	        if (session.user.isAuth && (session.user.isSuperUser || session.user.isStaff)) {
+	            defaultLayout.getRegion('bottom').show(new DescriptorMetaModelAddView({collection: collection}));
+	        }
+	    },
+	
+	    getDescriptorMetaModel: function (id) {
+	        var defaultLayout = new DefaultLayout();
+	        application.getRegion('mainRegion').show(defaultLayout);
+	
+	        var model = new DescriptorMetaModelModel({id: id});
+	
+	        model.fetch().then(function () {
+	            defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Details for the meta-model of descriptor"), object: model.get('name')}));
+	            defaultLayout.getRegion('content').show(new DescriptorMetaModelDetailView({model : model}));
+	        });
+	    },
+	
+	    getDescriptorPanelListForModel: function(id) {
+	        var panelCollection = new DescriptorPanelCollection([], {model_id: id});
+	
+	        var defaultLayout = new DefaultLayout({});
+	        application.getRegion('mainRegion').show(defaultLayout);
+	
+	        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of panels of descriptor")}));
+	
+	        var twoColumnsLayout = new TwoColumnsLayout({});
+	        defaultLayout.getRegion('content').show(twoColumnsLayout);
+	
+	        panelCollection.fetch().then(function () {
+	            var descriptorPanelList = new DescriptorPanelListView({collection : panelCollection});
+	            twoColumnsLayout.getRegion('left-content').show(descriptorPanelList);
+	            twoColumnsLayout.getRegion('left-bottom').show(new ScrollingMoreView({targetView: descriptorPanelList}));
+	        });
+	
+	        var modelCollection = new DescriptorModelCollection();
+	        modelCollection.fetch().then(function () {
+	            var descriptorModelList = new DescriptorModelListAltView({
+	                collection: modelCollection,
+	                layout: twoColumnsLayout
+	            });
+	
+	            twoColumnsLayout.getRegion('right-content').show(descriptorModelList);
+	            twoColumnsLayout.getRegion('right-bottom').show(new ScrollingMoreView({targetView: descriptorModelList}));
+	        });
+	    },
+	});
+	
+	module.exports = Router;
+
+
+/***/ },
+/* 177 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptormetamodel.js
+	 * @brief Meta-model of descriptor
+	 * @author Frederic SCHERMA
+	 * @date 2016-10-27
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Backbone = __webpack_require__(2);
+	
+	var Model = Backbone.Model.extend({
+	    url: function() {
+	        if (this.isNew())
+	            return application.baseUrl + 'descriptor/meta-model/';
+	        else
+	            return application.baseUrl + 'descriptor/meta-model/' + this.get('id') + '/';
+	    },
+	
+	    defaults: {
+	        id: null,
+	        name: '',
+	        label: '',
+	        description: '',
+	        target: '',
+	        num_descriptor_models: 0,
+	    },
+	
+	    parse: function(data) {
+	        //this.perms = data.perms;
+	        return data;
+	    },
+	
+	    validate: function(attrs) {
+	        var errors = {};
+	        var hasError = false;
+	
+	        if (hasError) {
+	          return errors;
+	        }
+	    },
+	});
+	
+	module.exports = Model;
+
+
+/***/ },
+/* 178 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptormetamodel.js
+	 * @brief Meta-model of descriptors collection
+	 * @author Frederic SCHERMA
+	 * @date 2016-10-27
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var DescriptorMetaModelModel = __webpack_require__(177);
+	
+	var Collection = Backbone.Collection.extend({
+	    url: application.baseUrl + 'descriptor/meta-model/',
+	    model: DescriptorMetaModelModel,
+	
+	    parse: function(data) {
+	        this.prev = data.prev;
+	        this.cursor = data.cursor;
+	        this.next = data.next;
+	
+	        this.perms = data.perms;
+	
+	        return data.items;
+	    },
+	});
+	
+	module.exports = Collection;
+
+
+/***/ },
+/* 179 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptorpaneltype.js
+	 * @brief Panel of descriptors collection
+	 * @author Frederic SCHERMA
+	 * @date 2016-10-27
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var DescriptorPanelModel = __webpack_require__(180);
+	
+	var Collection = Backbone.Collection.extend({
+	    url: function() {
+	        return application.baseUrl + 'descriptor/meta-model/' + this.model_id + '/panel/';
+	    },
+	
+	    model: DescriptorPanelModel,
+	
+	    initialize: function(models, options) {
+	        options || (options = {});
+	        this.model_id = options.model_id;
+	    },
+	
+	    parse: function(data) {
+	        this.prev = data.prev;
+	        this.cursor = data.cursor;
+	        this.next = data.next;
+	
+	        return data.items;
+	    },
+	
+	    comparator: 'position'
+	});
+	
+	module.exports = Collection;
+
+
+/***/ },
+/* 180 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptorpanel.js
+	 * @brief Model of panel of descriptor
+	 * @author Frederic SCHERMA
+	 * @date 2016-10-27
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Backbone = __webpack_require__(2);
+	
+	var Model = Backbone.Model.extend({
+	    url: function() {
+	        var model_id = this.model_id || this.get('model') || this.collection.model_id;
+	
+	        if (this.isNew()) {
+	            return application.baseUrl + 'descriptor/meta-model/' + model_id + '/panel/';
+	        }
+	        else
+	            return application.baseUrl + 'descriptor/meta-model/' + model_id + '/panel/' + this.get('id') + '/';
+	    },
+	
+	    defaults: {
+	        id: null,
+	        name: '',
+	        label: '',
+	        descriptor_model: null,
+	        descriptor_model_name: '',
+	        descriptor_model_verbose_name: '',
+	    },
+	
+	    initialize: function(attributes, options) {
+	        Model.__super__.initialize.apply(this, arguments);
+	
+	        options || (options = {});
+	
+	        if (options.collection) {
+	            this.model_id = options.collection.model_id;
+	        }
+	    },
+	
+	    parse: function(data) {
+	        //this.perms = data.perms;
+	        return data;
+	    },
+	
+	    validate: function(attrs) {
+	        var errors = {};
+	        var hasError = false;
+	
+	        if (hasError) {
+	          return errors;
+	        }
+	    },
+	});
+	
+	module.exports = Model;
+
+
+/***/ },
+/* 181 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptormetamodeladd.js
+	 * @brief Add a meta-model of descriptor
+	 * @author Frederic SCHERMA
+	 * @date 2016-10-26
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	
+	var Dialog = __webpack_require__(82);
+	
+	var View = Marionette.ItemView.extend({
+	    tagName: 'div',
+	    className: 'descriptor-meta-model-add',
+	    template: __webpack_require__(182),
+	
+	    ui: {
+	        add: 'span.add-descriptor-meta-model',
+	        name: 'input.descriptor-meta-model-name',
+	    },
+	
+	    events: {
+	        'click @ui.add': 'addDescriptorMetaModel',
+	        'input @ui.name': 'onNameInput',
+	    },
+	
+	    initialize: function(options) {
+	        options || (options = {});
+	        this.collection = options.collection;
+	    },
+	
+	    addDescriptorMetaModel: function () {
+	        var DescriptorModelCreate = Dialog.extend({
+	           template: __webpack_require__(183),
+	
+	            attributes: {
+	                id: "dlg_create_descriptor_model",
+	            },
+	
+	            ui: {
+	                label: "#label",
+	                descriptor_meta_model_target: "#descriptor_meta_model_target",
+	                description: "#description",
+	            },
+	
+	            events: {
+	                'input @ui.label': 'onLabelInput',
+	            },
+	
+	            initialize: function(options) {
+	                DescriptorModelCreate.__super__.initialize.apply(this);
+	            },
+	
+	            onRender: function() {
+	                DescriptorModelCreate.__super__.onRender.apply(this);
+	                application.descriptor.views.describables.drawSelect(this.ui.descriptor_meta_model_target);
+	            },
+	
+	            onBeforeDestroy: function() {
+	                DescriptorModelCreate.__super__.onBeforeDestroy.apply(this);
+	                $(this.ui.descriptor_meta_model_target).selectpicker('destroy');
+	            },
+	
+	            onApply: function() {
+	                if (!this.validateLabel()) {
+	                    return;
+	                }
+	
+	                var view = this;
+	                var collection = this.getOption('collection');
+	                var name = this.getOption('name');
+	                var label = this.ui.label.val();
+	                var target = this.ui.descriptor_meta_model_target.val();
+	                var description = this.ui.description.val();
+	
+	                if (target != null) {
+	                    collection.create({
+	                        name: name,
+	                        label: label,
+	                        target: target,
+	                        description: description
+	                    }, {
+	                        wait: true,
+	                        success: function () {
+	                            view.destroy();
+	                        },
+	                        error: function () {
+	                            $.alert.error(gt.gettext("Unable to create the meta-model of descriptor !"));
+	                        }
+	                    });
+	                }
+	            },
+	
+	            validateLabel: function() {
+	                var v = this.ui.label.val();
+	
+	                if (v.length < 3) {
+	                    $(this.ui.label).validateField('failed', gt.gettext('3 characters min'));
+	                    return false;
+	                }
+	
+	                return true;
+	            },
+	
+	            onLabelInput: function () {
+	                if (this.validateLabel()) {
+	                    $(this.ui.label).validateField('ok');
+	                }
+	            }
+	        });
+	
+	        if (!this.ui.name.hasClass('invalid') && this.validateName()) {
+	            var descriptorModelCreate = new DescriptorModelCreate({
+	                collection: this.collection,
+	                name: this.ui.name.val()
+	            });
+	
+	            $(this.ui.name).cleanField();
+	            descriptorModelCreate.render();
+	        }
+	    },
+	
+	    validateName: function() {
+	        var v = this.ui.name.val();
+	        var re = /^[a-zA-Z0-9_\-]+$/i;
+	
+	        if (v.length > 0 && !re.test(v)) {
+	            $(this.ui.name).validateField('failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
+	            return false;
+	        } else if (v.length < 3) {
+	            $(this.ui.name).validateField('failed', gt.gettext('3 characters min'));
+	            return false;
+	        }
+	
+	        return true;
+	    },
+	
+	    onNameInput: function () {
+	        if (this.validateName()) {
+	            $.ajax({
+	                type: "GET",
+	                url: application.baseUrl + 'descriptor/meta-model/search/',
+	                dataType: 'json',
+	                data: {filters: JSON.stringify({
+	                    method: 'ieq',
+	                    fields: 'name',
+	                    name: this.ui.name.val()})
+	                },
+	                el: this.ui.name,
+	                success: function(data) {
+	                    if (data.items.length > 0) {
+	                        for (var i in data.items) {
+	                            var t = data.items[i];
+	
+	                            if (t.name.toUpperCase() == this.el.val().toUpperCase()) {
+	                                $(this.el).validateField('failed', gt.gettext('Descriptor meta-model name already in usage'));
+	                                break;
+	                            }
+	                        }
+	                    } else {
+	                        $(this.el).validateField('ok');
+	                    }
+	                }
+	            });
+	        }
+	    },
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 182 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<table class="table table-striped" style="margin-bottom: 0px"><tbody><tr class="edit-mode" style="height: 95px"><th><span class="add-descriptor-meta-model action glyphicon glyphicon-plus-sign" style="margin-top: 9px; margin-left: 10px"></span></th><td style="width: 100%"><div class="form-group"><input type="text" class="descriptor-meta-model-name form-control" name="descriptor-meta-model"></div></td></tr></tbody></table>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 183 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title">' +
+	((__t = ( gt.gettext("Create a meta-model of descriptor") )) == null ? '' : __t) +
+	'</h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="descriptor_meta_model_target">' +
+	((__t = ( gt.gettext("Target entity") )) == null ? '' : __t) +
+	'</label><select id="descriptor_meta_model_target" class="form-control" name="descriptor-meta-model-target"></select></div><div class="form-group"><label class="control-label" for="label">' +
+	((__t = ( gt.gettext("Label for the current language") )) == null ? '' : __t) +
+	'</label><input class="form-control" id="label" name="label" maxlength="64" autofocus="" style="width:100%"></div><div class="form-group"><label class="control-label" for="description">' +
+	((__t = ( gt.gettext("Description") )) == null ? '' : __t) +
+	'</label><textarea class="form-control" id="description" name="description" maxlength="1024" style="width:100%"></textarea></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal">' +
+	((__t = ( gt.gettext("Cancel") )) == null ? '' : __t) +
+	'</button> <button type="button" class="btn btn-primary apply">' +
+	((__t = ( gt.gettext("Apply") )) == null ? '' : __t) +
+	'</button></div></div></div>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 184 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptormetamodeldetail.js
+	 * @brief Detail for a meta-model of descriptor view
+	 * @author Frederic SCHERMA
+	 * @date 2016-10-27
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	var DescriptorMetaModelModel = __webpack_require__(177);
+	
+	var View = Marionette.ItemView.extend({
+	    className: 'element object descriptor-meta-model-detail',
+	    template: __webpack_require__(185),
+	
+	    ui: {
+	        name: '#descriptor_meta_model_name',
+	        description: '#descriptor_meta_model_description',
+	        save: '#save'
+	    },
+	
+	    events: {
+	        'click @ui.save': 'saveDescriptorMetaModel',
+	        'input @ui.name': 'inputName',
+	    },
+	
+	    initialize: function() {
+	        this.listenTo(this.model, 'reset', this.render, this);
+	    },
+	
+	    onRender: function() {
+	    },
+	
+	    inputName: function () {
+	        var v = this.ui.name.val();
+	        var re = /^[a-zA-Z0-9_-]+$/i;
+	
+	        if (v.length > 0 && !re.test(v)) {
+	            $(this.ui.name).validateField('failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
+	        } else if (v.length < 3) {
+	            $(this.ui.name).validateField('failed', gt.gettext('3 characters min'));
+	        } else {
+	            $(this.ui.name).validateField('ok');
+	        }
+	    },
+	
+	    saveDescriptorMetaModel: function () {
+	        if (!$(this.ui.name.isValidField()))
+	            return;
+	
+	        var name = this.ui.name.val();
+	        var description = this.ui.description.val();
+	
+	        this.model.save({
+	            name: name,
+	            description: description,
+	        }, {wait: true}).done(function() { $.alert.success(gt.gettext("Done")); });
+	    }
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 185 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '', __e = _.escape;
+	with (obj) {
+	__p += '<div class="descriptor-meta-model-detail"><div class="descriptor-mata-model-name form-group" style="width: 50%"><label for="descriptor_meta_model_name">' +
+	__e( gt.gettext('Descriptor meta-model name') ) +
+	'</label><input id="descriptor_meta_model_name" class="form-control" type="text" maxlength="255" value="' +
+	((__t = ( name )) == null ? '' : __t) +
+	'"></div><div class="descriptor-meta-model-description form-group" style="width: 50%"><label for="descriptor_meta_model_description">' +
+	__e( gt.gettext('Description') ) +
+	'</label><textarea id="descriptor_meta_model_description" class="form-control" maxlength="1024">' +
+	((__t = ( description )) == null ? '' : __t) +
+	'</textarea></div><div class="descriptor-model-update form-group" style="width: 100px; margin-left: 20%; margin-top: 25px"><button id="save" class="form-control btn btn-primary">' +
+	__e( gt.gettext('Update') ) +
+	'</button></div></div>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 186 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptormetamodellist.js
+	 * @brief List of meta-model of descriptors view
+	 * @author Frederic SCHERMA
+	 * @date 2016-10-27
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	var DescriptorMetaModelModel = __webpack_require__(177);
+	var DescriptorMetaModelView = __webpack_require__(187);
+	
+	var ScrollView = __webpack_require__(78);
+	
+	var View = ScrollView.extend({
+	    template: __webpack_require__(190),
+	    childView: DescriptorMetaModelView,
+	    childViewContainer: 'tbody.descriptor-meta-model-list',
+	
+	    initialize: function() {
+	        this.listenTo(this.collection, 'reset', this.render, this);
+	        this.listenTo(this.collection, 'change', this.render, this);
+	
+	        View.__super__.initialize.apply(this);
+	    },
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 187 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptormetamodel.js
+	 * @brief Meta-model of descriptor item view
+	 * @author Frederic SCHERMA
+	 * @date 2016-10-27
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	
+	var Dialog = __webpack_require__(82);
+	var DescriptorMetaModelModel = __webpack_require__(177);
+	
+	var View = Marionette.ItemView.extend({
+	    tagName: 'tr',
+	    className: 'element object descriptor-meta-model',
+	    template: __webpack_require__(188),
+	
+	    ui: {
+	        delete_descriptor_meta_model: 'span.delete-descriptor-meta-model',
+	        change_descriptor_meta_model_label: 'td.change-descriptor-meta-model-label',
+	        view_descriptor_meta_model: 'td.view-descriptor-meta-model',
+	        view_descriptor_panels: 'td.view-descriptor-panels',
+	    },
+	
+	    events: {
+	        'click @ui.delete_descriptor_meta_model': 'deleteDescriptorMetaModel',
+	        'click @ui.change_descriptor_meta_model_label': 'editLabel',
+	        'click @ui.view_descriptor_meta_model': 'viewDescriptorMetaModelDetails',
+	        'click @ui.view_descriptor_panels': 'viewDescriptorPanels',
+	    },
+	
+	    initialize: function() {
+	        this.listenTo(this.model, 'reset', this.render, this);
+	    },
+	
+	    onRender: function() {
+	        // localize content-type
+	        application.main.views.contentTypes.htmlFromValue(this.el);
+	
+	        // TODO check with user permission
+	        /*if (!this.model.get('can_delete') || !session.user.isSuperUser) {
+	            $(this.ui.delete_descriptor_model).hide();
+	        }*/
+	    },
+	
+	    viewDescriptorMetaModelDetails: function() {
+	        Backbone.history.navigate("app/descriptor/meta-model/" + this.model.id + "/", {trigger: true});
+	    },
+	
+	    viewDescriptorPanels: function() {
+	        Backbone.history.navigate("app/descriptor/meta-model/" + this.model.id + "/panel/", {trigger: true});
+	    },
+	
+	    deleteDescriptorMetaModel: function() {
+	        if (this.model.get('num_descriptor_models') == 0) {
+	            this.model.destroy({wait: true});
+	        } else {
+	            $.alert.error(gt.gettext("It is not permitted to delete a meta-model of descriptor that contains some panels"));
+	        }
+	    },
+	
+	    editLabel: function() {
+	        var model = this.model;
+	
+	        $.ajax({
+	            type: "GET",
+	            url: this.model.url() + 'label/',
+	            dataType: 'json',
+	        }).done(function (data) {
+	            var labels = data;
+	
+	            var ChangeLabel = Dialog.extend({
+	                template: __webpack_require__(189),
+	                templateHelpers: function () {
+	                    return {
+	                        labels: labels,
+	                    };
+	                },
+	
+	                attributes: {
+	                    id: "dlg_change_labels",
+	                },
+	
+	                ui: {
+	                    label: "#descriptor_meta_model_labels input",
+	                },
+	
+	                events: {
+	                    'input @ui.label': 'onLabelInput',
+	                },
+	
+	                initialize: function (options) {
+	                    ChangeLabel.__super__.initialize.apply(this);
+	                },
+	
+	                onLabelInput: function (e) {
+	                    this.validateLabel(e);
+	                },
+	
+	                validateLabel: function (e) {
+	                    var v = $(e.target).val();
+	
+	                    if (v.length > 64) {
+	                        $(this.ui.label).validateField('failed', gt.gettext('64 characters max'));
+	                        return false;
+	                    }
+	
+	                    $(this.ui.label).validateField('ok');
+	
+	                    return true;
+	                },
+	
+	                validateLabels: function() {
+	                    $.each($(this.ui.label), function(i, label) {
+	                        var v = $(this).val();
+	
+	                        if (v.length > 64) {
+	                            $(this).validateField('failed', gt.gettext('64 characters max'));
+	                            return false;
+	                        }
+	                    });
+	
+	                    return true;
+	                },
+	
+	                onApply: function () {
+	                    var view = this;
+	                    var model = this.getOption('model');
+	
+	                    var labels = {};
+	
+	                    $.each($(this.ui.label), function(i, label) {
+	                        var v = $(this).val();
+	                        labels[$(label).attr("language")] = v;
+	                    });
+	
+	                    if (this.validateLabels()) {
+	                        $.ajax({
+	                            type: "PUT",
+	                            url: model.url() + "label/",
+	                            dataType: 'json',
+	                            contentType: "application/json; charset=utf-8",
+	                            data: JSON.stringify(labels)
+	                        }).done(function() {
+	                            // manually update the current context label
+	                            model.set('label', labels[session.language]);
+	                            $.alert.success(gt.gettext("Successfully labeled !"));
+	                        }).always(function() {
+	                            view.remove();
+	                        });
+	                    }
+	                },
+	            });
+	
+	            var changeLabel = new ChangeLabel({model: model});
+	            changeLabel.render();
+	        });
+	    },
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 188 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '', __e = _.escape;
+	with (obj) {
+	__p += '<th><span class="delete-descriptor-meta-model action glyphicon glyphicon-minus-sign"></span></th><td class="action view-descriptor-meta-model" name="name">' +
+	((__t = ( name )) == null ? '' : __t) +
+	'</td><td class="action change-descriptor-meta-model-label" name="label">' +
+	((__t = ( label )) == null ? '' : __t) +
+	'</td><td><abbr class="content-type target-content-type" title="' +
+	__e( target ) +
+	'" value="' +
+	__e( target ) +
+	'"></abbr></td><td class="action view-descriptor-panels" name="num_descriptor_models"><abbr class="badge" style="cursor: pointer" title="' +
+	((__t = ( gt.gettext('Manage panels of descriptor') )) == null ? '' : __t) +
+	'">' +
+	((__t = ( num_descriptor_models )) == null ? '' : __t) +
+	'</abbr></td><td name="description"><abbr class="label label-default glyphicon glyphicon-option-horizontal" title="' +
+	((__t = ( description )) == null ? '' : __t) +
+	'"><span></span></abbr></td>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 189 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '', __j = Array.prototype.join;
+	function print() { __p += __j.call(arguments, '') }
+	with (obj) {
+	__p += '<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title">' +
+	((__t = ( gt.gettext("Change the label for the meta-model of descriptor") )) == null ? '' : __t) +
+	'</h4></div><div class="modal-body" style="max-height: 400px; overflow-y: auto"><form id="descriptor_meta_model_labels">';
+	
+	                var languages = application.main.collections.uilanguages;
+	
+	                for (var i = 0; i < languages.models.length; ++i) {
+	                    var lang_id = languages.at(i).get('id');
+	                    var lang_label = languages.at(i).get('label');
+	                    var label = labels[lang_label];
+	                    var autofocus = (i == 0) ? 'autofocus=""' : "";
+	                ;
+	__p += ' <div class="form-group"><label class="control-label">' +
+	((__t = ( gt.gettext(lang_label) )) == null ? '' : __t) +
+	'</label><input class="form-control" type="text" language="' +
+	((__t = ( lang_id )) == null ? '' : __t) +
+	'" value="' +
+	((__t = ( labels[lang_id] )) == null ? '' : __t) +
+	'" maxlength="64" ' +
+	((__t = ( autofocus )) == null ? '' : __t) +
+	' autocomplete="off" style="width:100%"></div> ';
+	 } ;
+	__p += ' </form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal">' +
+	((__t = ( gt.gettext("Cancel") )) == null ? '' : __t) +
+	'</button> <button type="button" class="btn btn-primary apply">' +
+	((__t = ( gt.gettext("Apply") )) == null ? '' : __t) +
+	'</button></div></div></div>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 190 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<div class="object descriptor-meta-model-list" object-type="descriptor-meta-model-list" style="width:100%"><table class="table table-striped"><thead><tr><th><span class="glyphicon glyphicon-asterisk"></span></th><th>' +
+	((__t = ( gt.gettext("Name") )) == null ? '' : __t) +
+	'</th><th>' +
+	((__t = ( gt.gettext("Label") )) == null ? '' : __t) +
+	'</th><th>' +
+	((__t = ( gt.gettext("Target") )) == null ? '' : __t) +
+	'</th><th>' +
+	((__t = ( gt.gettext("Number of panels of descriptor") )) == null ? '' : __t) +
+	'</th><th>' +
+	((__t = ( gt.gettext("Description") )) == null ? '' : __t) +
+	'</th></tr></thead><tbody class="descriptor-meta-model-list"></tbody></table></div>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 191 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptorpanellist.js
+	 * @brief List of panel of model of descriptors for a meta-model of descriptor view
+	 * @author Frederic SCHERMA
+	 * @date 2016-10-27
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	var ScrollView = __webpack_require__(78);
+	var Dialog = __webpack_require__(82);
+	
+	var DescriptorPanelModel = __webpack_require__(180);
+	var DescriptorPanelView = __webpack_require__(192);
+	
+	var View = ScrollView.extend({
+	    template: __webpack_require__(196),
+	    childView: DescriptorPanelView,
+	    childViewContainer: 'div.descriptor-panel-list',
+	
+	    ui: {
+	        'top_placeholder': 'div.top-placeholder',
+	        'bottom_placeholder': 'div.bottom-placeholder',
+	    },
+	
+	    initialize: function() {
+	        this.listenTo(this.collection, 'reset', this.render, this);
+	        this.listenTo(this.collection, 'change', this.render, this);
+	
+	        View.__super__.initialize.apply(this);
+	
+	        $("div.left-content").on("dragenter", $.proxy(this.dragEnterContent, this));
+	        $("div.left-content").on("dragleave", $.proxy(this.dragLeaveContent, this));
+	        $("div.left-content").on("dragover", $.proxy(this.dragOverContent, this));
+	        $("div.left-content").on("drop", $.proxy(this.dropContent, this));
+	    },
+	
+	    dragEnterContent: function (e) {
+	        if (e.preventDefault) {
+	            e.preventDefault();
+	        }
+	
+	        this.dragEnterCount || (this.dragEnterCount = 0);
+	        ++this.dragEnterCount;
+	
+	        if (this.dragEnterCount == 1) {
+	            if (application.dndElement.$el.hasClass('descriptor-model')) {
+	                this.ui.bottom_placeholder.css('display', 'block');
+	            }
+	        }
+	
+	        return false;
+	    },
+	
+	    dragLeaveContent: function (e) {
+	        if (e.preventDefault) {
+	            e.preventDefault();
+	        }
+	
+	        this.dragEnterCount || (this.dragEnterCount = 1);
+	        --this.dragEnterCount;
+	
+	        if (this.dragEnterCount == 0) {
+	            if (application.dndElement.$el.hasClass('descriptor-model')) {
+	                this.ui.bottom_placeholder.css('display', 'none');
+	            }
+	        }
+	
+	        return false;
+	    },
+	
+	    dragOverContent: function (e) {
+	        if (e.preventDefault) {
+	            e.preventDefault();
+	        }
+	
+	        this.dragEnterCount || (this.dragEnterCount = 1);
+	
+	        if (this.dragEnterCount == 1) {
+	            if (application.dndElement.$el.hasClass('descriptor-model')) {
+	                this.ui.bottom_placeholder.css('display', 'block');
+	            }
+	        }
+	
+	        //e.dataTransfer.dropEffect = 'move';
+	        return false;
+	    },
+	
+	    dropContent: function (e) {
+	        if (e.stopPropagation) {
+	            e.stopPropagation();
+	        }
+	
+	        this.dragEnterCount = 0;
+	
+	        this.ui.top_placeholder.css('display', 'none');
+	        this.ui.bottom_placeholder.css('display', 'none');
+	
+	        var elt = application.dndElement;
+	        if (!elt) {
+	            return false;
+	        }
+	
+	        if (elt.$el.hasClass('descriptor-model')) {
+	            var DefinesLabel = Dialog.extend({
+	                template: __webpack_require__(194),
+	
+	                attributes: {
+	                    id: "dlg_create_panel",
+	                },
+	
+	                ui: {
+	                    label: "#label",
+	                },
+	
+	                events: {
+	                    'input @ui.label': 'onLabelInput',
+	                },
+	
+	                initialize: function (options) {
+	                    DefinesLabel.__super__.initialize.apply(this);
+	                },
+	
+	                onLabelInput: function () {
+	                    this.validateLabel();
+	                },
+	
+	                validateLabel: function() {
+	                    var v = this.ui.label.val();
+	
+	                    if (v.length < 3) {
+	                        $(this.ui.label).validateField('failed', gt.gettext('3 characters min'));
+	                        return false;
+	                    }
+	
+	                    $(this.ui.label).validateField('ok');
+	
+	                    return true;
+	                },
+	
+	                onApply: function() {
+	                    var view = this;
+	                    var collection = this.getOption('collection');
+	                    var position = this.getOption('position');
+	                    var modelId = this.getOption('descriptor_model');
+	
+	                    if (this.validateLabel()) {
+	                        var to_rshift = [];
+	
+	                        // server will r-shift position of any model upward this new
+	                        // do it locally to be consistent
+	                        for (var model in collection.models) {
+	                            var dmt = collection.models[model];
+	                            var p = dmt.get('position');
+	                            if (p >= position) {
+	                                dmt.set('position', p+1);
+	                                to_rshift.push(dmt);
+	                            }
+	                        }
+	
+	                        collection.create({
+	                            descriptor_model: modelId,
+	                            label: this.ui.label.val(),
+	                            position: position
+	                        }, {
+	                            wait: true,
+	                            success: function () {
+	                                view.remove();
+	                            },
+	                            error: function () {
+	                                view.remove();
+	
+	                                // left shift (undo) for consistency with server
+	                                for (var i = 0; i < to_rshift.length; ++i) {
+	                                    to_rshift[i].set('position', to_rshift[i].get('position')-1);
+	                                }
+	                            }
+	                        });
+	                    }
+	                },
+	            });
+	
+	            var collection = this.collection;
+	
+	            // find last position + 1
+	            var newPosition = 0;
+	
+	            if (collection.models.length > 0) {
+	                newPosition = collection.at(collection.models.length-1).get('position') + 1;
+	            }
+	
+	            var definesLabel = new DefinesLabel({
+	                collection: collection,
+	                position: newPosition,
+	                descriptor_model: elt.model.get('id')
+	            });
+	
+	            definesLabel.render();
+	        } else if (elt.$el.hasClass('descriptor-panel')) {
+	            var collection = this.collection;
+	            var metaModelId = collection.model_id;
+	
+	            // find last position + 1
+	            var newPosition = collection.at(collection.models.length-1).get('position') + 1;
+	
+	            $.ajax({
+	                type: "PUT",
+	                url: application.baseUrl + 'descriptor/meta-model/' + metaModelId + '/panel/order/',
+	                dataType: 'json',
+	                contentType: "application/json; charset=utf-8",
+	                data: JSON.stringify({
+	                    descriptor_panel_id: elt.model.get('id'),
+	                    position: newPosition
+	                })
+	            }).done(function() {
+	                elt.model.set('position', newPosition);
+	
+	                // lshift any others element
+	                for (var model in collection.models) {
+	                    var dmt = collection.models[model];
+	                    if (dmt.get('id') != elt.model.get('id')) {
+	                        var p = dmt.get('position');
+	                        dmt.set('position', p - 1);
+	                    }
+	                }
+	
+	                // need to sort
+	                collection.sort();
+	            }).fail(function() {
+	                $.alert.error(gt.gettext('Unable to reorder the panels of descriptor'));
+	            });
+	        }
+	
+	        return false;
+	    },
+	});
+	
+	module.exports = View;
+
+/***/ },
+/* 192 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptorpanel.js
+	 * @brief Panel of model of descriptor item view
+	 * @author Frederic SCHERMA
+	 * @date 2016-10-27
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	var Dialog = __webpack_require__(82);
+	var DescriptorPanelModel = __webpack_require__(180);
+	
+	
+	var View = Marionette.ItemView.extend({
+	    tagName: 'div',
+	    className: 'element object descriptor-panel',
+	    template: __webpack_require__(193),
+	
+	    attributes: {
+	        draggable: true,
+	    },
+	
+	    ui: {
+	        'delete_descriptor_panel': 'span.delete-descriptor-panel',
+	        'label': 'span.change-label',
+	        'top_placeholder': 'div.top-placeholder',
+	        'bottom_placeholder': 'div.bottom-placeholder',
+	    },
+	
+	    events: {
+	        'dragstart': 'dragStart',
+	        'dragend': 'dragEnd',
+	        'dragover': 'dragOver',
+	        'dragenter': 'dragEnter',
+	        'dragleave': 'dragLeave',
+	        'drop': 'drop',
+	        'click @ui.delete_descriptor_panel': 'deleteDescriptorPanel',
+	        'click @ui.label': 'editLabel',
+	    },
+	
+	    initialize: function() {
+	        this.listenTo(this.model, 'reset', this.render, this);
+	    },
+	
+	    onRender: function() {
+	        if (!session.user.isStaff && !session.user.isSuperUser) {
+	            $(this.ui.delete_descriptor_panel).hide();
+	        }
+	    },
+	
+	    dragStart: function(e) {
+	        this.$el.css('opacity', '0.4');
+	        application.dndElement = this;
+	    },
+	
+	    dragEnd: function(e) {
+	        this.$el.css('opacity', '1.0');
+	        application.dndElement = null;
+	    },
+	
+	    dragEnter: function (e) {
+	        if (e.originalEvent.preventDefault) {
+	            e.originalEvent.preventDefault();
+	        }
+	
+	        this.dragEnterCount || (this.dragEnterCount = 0);
+	        ++this.dragEnterCount;
+	
+	        if (this.dragEnterCount == 1) {
+	            if (application.dndElement.$el.hasClass('descriptor-panel')) {
+	                if (this.model.get('position') < application.dndElement.model.get('position')) {
+	                    this.ui.top_placeholder.css('display', 'block');
+	                } else if (this.model.get('position') > application.dndElement.model.get('position')) {
+	                    this.ui.bottom_placeholder.css('display', 'block');
+	                }
+	            } else if (application.dndElement.$el.hasClass('descriptor-model')) {
+	                this.ui.top_placeholder.css('display', 'block');
+	            }
+	        }
+	
+	        return false;
+	    },
+	
+	    dragLeave: function (e) {
+	        if (e.originalEvent.preventDefault) {
+	            e.originalEvent.preventDefault();
+	        }
+	
+	        this.dragEnterCount || (this.dragEnterCount = 1);
+	        --this.dragEnterCount;
+	
+	        if (this.dragEnterCount == 0) {
+	            if (application.dndElement.$el.hasClass('descriptor-panel')) {
+	                if (this.model.get('position') < application.dndElement.model.get('position')) {
+	                    this.ui.top_placeholder.css('display', 'none');
+	                } else if (this.model.get('position') > application.dndElement.model.get('position')) {
+	                    this.ui.bottom_placeholder.css('display', 'none');
+	                }
+	            } else if (application.dndElement.$el.hasClass('descriptor-model')) {
+	                this.ui.top_placeholder.css('display', 'none');
+	            }
+	        }
+	
+	        return false;
+	    },
+	
+	    dragOver: function (e) {
+	        if (e.originalEvent.preventDefault) {
+	            e.originalEvent.preventDefault();
+	        }
+	
+	        this.dragEnterCount || (this.dragEnterCount = 1);
+	
+	        if (this.dragEnterCount == 1) {
+	            if (application.dndElement.$el.hasClass('descriptor-panel')) {
+	                if (this.model.get('position') < application.dndElement.model.get('position')) {
+	                    this.ui.top_placeholder.css('display', 'block');
+	                } else if (this.model.get('position') > application.dndElement.model.get('position')) {
+	                    this.ui.bottom_placeholder.css('display', 'block');
+	                }
+	            } else if (application.dndElement.$el.hasClass('descriptor-model')) {
+	                this.ui.top_placeholder.css('display', 'block');
+	            }
+	        }
+	
+	        //e.originalEvent.dataTransfer.dropEffect = 'move';
+	        return false;
+	    },
+	
+	    drop: function (e) {
+	        if (e.originalEvent.stopPropagation) {
+	            e.originalEvent.stopPropagation();
+	        }
+	
+	        var elt = application.dndElement;
+	        this.dragEnterCount = 0;
+	
+	        if (elt.$el.hasClass('descriptor-model')) {
+	            // reset placeholders
+	            this.ui.top_placeholder.css('display', 'none');
+	            this.ui.bottom_placeholder.css('display', 'none');
+	
+	            var DefinesLabel = Dialog.extend({
+	                template: __webpack_require__(194),
+	
+	                attributes: {
+	                    id: "dlg_create_panel",
+	                },
+	
+	                ui: {
+	                    label: "#label",
+	                },
+	
+	                events: {
+	                    'input @ui.label': 'onLabelInput',
+	                },
+	
+	                initialize: function (options) {
+	                    DefinesLabel.__super__.initialize.apply(this);
+	                },
+	
+	                onLabelInput: function () {
+	                    this.validateLabel();
+	                },
+	
+	                validateLabel: function() {
+	                    var v = this.ui.label.val();
+	
+	                    if (v.length < 3) {
+	                        $(this.ui.label).validateField('failed', gt.gettext('3 characters min'));
+	                        return false;
+	                    }
+	
+	                    $(this.ui.label).validateField('ok');
+	
+	                    return true;
+	                },
+	
+	                onApply: function() {
+	                    var view = this;
+	                    var collection = this.getOption('collection');
+	                    var position = this.getOption('position');
+	                    var descriptor_model = this.getOption('descriptor_model');
+	
+	                    if (this.validateLabel()) {
+	                        var to_rshift = [];
+	
+	                        // server will r-shift position of any model upward this new
+	                        // do it locally to be consistent
+	                        for (var model in collection.models) {
+	                            var dmt = collection.models[model];
+	                            var p = dmt.get('position');
+	                            if (p >= position) {
+	                                dmt.set('position', p+1);
+	                                to_rshift.push(dmt);
+	                            }
+	                        }
+	
+	                        collection.create({
+	                            descriptor_model: descriptor_model,
+	                            label: this.ui.label.val(),
+	                            position: position
+	                        }, {
+	                            wait: true,
+	                            success: function () {
+	                                view.remove();
+	                            },
+	                            error: function () {
+	                                view.remove();
+	
+	                                // left shift (undo) for consistency with server
+	                                for (var i = 0; i < to_rshift.length; ++i) {
+	                                    to_rshift[i].set('position', to_rshift[i].get('position')-1);
+	                                }
+	                            }
+	                        });
+	                    }
+	                },
+	            });
+	
+	            var definesLabel = new DefinesLabel({
+	                collection: this.model.collection,
+	                position: this.model.get('position'),
+	                descriptor_model: elt.model.get('id')
+	            });
+	
+	            definesLabel.render();
+	        }
+	        else if (elt.$el.hasClass('descriptor-panel')) {
+	            // useless drop on himself
+	            if (this == elt) {
+	                return false;
+	            }
+	
+	            // reset placeholder
+	            this.ui.top_placeholder.css('display', 'none');
+	            this.ui.bottom_placeholder.css('display', 'none');
+	
+	            // ajax call
+	            var position = elt.model.get('position');
+	            var newPosition = this.model.get('position');
+	            var modelId = this.model.collection.model_id;
+	            var collection = this.model.collection;
+	
+	            $.ajax({
+	                type: "PUT",
+	                url: application.baseUrl + 'descriptor/meta-model/' + modelId + '/panel/order/',
+	                dataType: 'json',
+	                contentType: "application/json; charset=utf-8",
+	                data: JSON.stringify({
+	                    descriptor_panel_id: elt.model.get('id'),
+	                    position: newPosition
+	                })
+	            }).done(function() {
+	                // server will shift position of any model upward/downward this model
+	                // do it locally to be consistent
+	                // so that we don't need to collection.fetch({update: true, remove: true});
+	                if (newPosition < position) {
+	                    var to_rshift = [];
+	
+	                    for (var model in collection.models) {
+	                        var dmt = collection.models[model];
+	                        if (dmt.get('id') != elt.model.get('id')) {
+	                            if (dmt.get('position') >= newPosition) {
+	                                to_rshift.push(dmt);
+	                            }
+	                        }
+	                    }
+	
+	                    elt.model.set('position', newPosition);
+	
+	                    var nextPosition = newPosition + 1;
+	
+	                    for (var i = 0; i < to_rshift.length; ++i) {
+	                        to_rshift[i].set('position', nextPosition);
+	                        ++nextPosition;
+	                    }
+	                } else {
+	                    var to_lshift = [];
+	
+	                    for (var model in collection.models) {
+	                        var dmt = collection.models[model];
+	                        if (dmt.get('id') != elt.model.get('id')) {
+	                            if (dmt.get('position') <= newPosition) {
+	                                to_lshift.push(dmt);
+	                            }
+	                        }
+	                    }
+	
+	                    elt.model.set('position', newPosition);
+	
+	                    var nextPosition = 0;
+	
+	                    for (var i = 0; i < to_lshift.length; ++i) {
+	                        to_lshift[i].set('position', nextPosition);
+	                        ++nextPosition;
+	                    }
+	                }
+	
+	                // need to sort
+	                collection.sort();
+	            }).fail(function () {
+	                $.alert.error(gt.gettext('Unable to reorder the panels of descriptor'));
+	            })
+	        }
+	
+	        return false;
+	    },
+	
+	    editLabel: function() {
+	        var model = this.model;
+	
+	        $.ajax({
+	            type: "GET",
+	            url: this.model.url() + 'label/',
+	            dataType: 'json',
+	        }).done(function (data) {
+	            var labels = data;
+	
+	            var ChangeLabel = Dialog.extend({
+	                template: __webpack_require__(195),
+	                templateHelpers: function () {
+	                    return {
+	                        labels: labels,
+	                    };
+	                },
+	
+	                attributes: {
+	                    id: "dlg_change_labels",
+	                },
+	
+	                ui: {
+	                    label: "#descriptor_panel_labels input",
+	                },
+	
+	                events: {
+	                    'input @ui.label': 'onLabelInput',
+	                },
+	
+	                initialize: function (options) {
+	                    ChangeLabel.__super__.initialize.apply(this);
+	                },
+	
+	                onLabelInput: function (e) {
+	                    this.validateLabel(e);
+	                },
+	
+	                validateLabel: function (e) {
+	                    var v = $(e.target).val();
+	
+	                    if (v.length < 3) {
+	                        $(e.target).validateField('failed', gt.gettext('3 characters min'));
+	                        return false;
+	                    } else if (v.length > 64) {
+	                        $(e.target).validateField('failed', gt.gettext('64 characters max'));
+	                        return false;
+	                    }
+	
+	                    $(e.target).validateField('ok');
+	
+	                    return true;
+	                },
+	
+	                validateLabels: function () {
+	                    $.each($(this.ui.label), function (i, label) {
+	                        var v = $(this).val();
+	
+	                        if (v.length < 3) {
+	                            $(this).validateField('failed', gt.gettext('3 characters min'));
+	                            return false;
+	                        } else if (v.length > 64) {
+	                            $(this).validateField('failed', gt.gettext('64 characters max'));
+	                            return false;
+	                        }
+	                    });
+	
+	                    return true;
+	                },
+	
+	                onApply: function () {
+	                    var view = this;
+	                    var model = this.getOption('model');
+	
+	                    var labels = {};
+	
+	                    $.each($(this.ui.label), function (i, label) {
+	                        var v = $(this).val();
+	                        labels[$(label).attr("language")] = v;
+	                    });
+	
+	                    if (this.validateLabels()) {
+	                        $.ajax({
+	                            type: "PUT",
+	                            url: model.url() + "label/",
+	                            dataType: 'json',
+	                            contentType: "application/json; charset=utf-8",
+	                            data: JSON.stringify(labels)
+	                        }).done(function () {
+	                            // manually update the current context label
+	                            model.set('label', labels[session.language]);
+	                            $.alert.success(gt.gettext("Successfully labeled !"));
+	                        }).always(function () {
+	                            view.remove();
+	                        });
+	                    }
+	                },
+	            });
+	
+	            var changeLabel = new ChangeLabel({model: model});
+	            changeLabel.render();
+	        });
+	        /*
+	        var ChangeLabel = Dialog.extend({
+	            template: require('../templates/descriptorpanelchangelabel.html'),
+	
+	            attributes: {
+	                id: "dlg_change_label",
+	            },
+	
+	            ui: {
+	                label: "#label",
+	            },
+	
+	            events: {
+	                'input @ui.label': 'onLabelInput',
+	            },
+	
+	            initialize: function (options) {
+	                ChangeLabel.__super__.initialize.apply(this);
+	            },
+	
+	            onLabelInput: function () {
+	                this.validateLabel();
+	            },
+	
+	            validateLabel: function() {
+	                var v = this.ui.label.val();
+	
+	                if (v.length < 3) {
+	                    $(this.ui.label).validateField('failed', gt.gettext('3 characters min'));
+	                    return false;
+	                }
+	
+	                $(this.ui.label).validateField('ok');
+	
+	                return true;
+	            },
+	
+	            onApply: function() {
+	                var view = this;
+	                var model = this.getOption('model');
+	
+	                if (this.validateLabel()) {
+	                    model.save({label: this.ui.label.val()}, {
+	                        patch: true,
+	                        wait: true,
+	                        success: function() {
+	                            view.remove();
+	                            $.alert.success(gt.gettext("Successfully labeled !"));
+	                        },
+	                        error: function() {
+	                            $.alert.error(gt.gettext("Unable to change label !"));
+	                        }
+	                    });
+	                }
+	            },
+	        });
+	
+	        var changeLabel = new ChangeLabel({model: this.model});
+	
+	        changeLabel.render();
+	        changeLabel.ui.label.val(this.model.get('label'));*/
+	    },
+	
+	    deleteDescriptorPanel: function() {
+	        var collection = this.model.collection;
+	        var position = this.model.get('position');
+	
+	        this.model.destroy({
+	            wait: true,
+	            success: function () {
+	                for (var model in collection.models) {
+	                    var dmt = collection.models[model];
+	                    if (dmt.get('position') > position) {
+	                        var new_position = dmt.get('position') - 1;
+	                        dmt.set('position', new_position);
+	                    }
+	                }
+	            }
+	        });
+	    }
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 193 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<div style="margin: 10px; height: 40px; border: 2px dashed #ddd; display: none" class="top-placeholder"></div><div style="margin: 10px; padding: 10px; border: 2px solid #ddd; border-radius: 10px"><span class="delete-descriptor-panel action glyphicon glyphicon-minus-sign"></span> <span name="label" class="action change-label">' +
+	((__t = ( label )) == null ? '' : __t) +
+	'</span><span class="action change-label label-placeholder" style="color: #ddd">' +
+	((__t = ( gt.gettext("Undefined label") )) == null ? '' : __t) +
+	'</span><hr style="margin-top : 5px; margin-bottom: 5px"><span class="glyphicon glyphicon-file"></span>&nbsp;<span name="descriptor-model-verbose-name"> <abbr title="' +
+	((__t = ( descriptor_model_name )) == null ? '' : __t) +
+	'">' +
+	((__t = ( descriptor_model_verbose_name )) == null ? '' : __t) +
+	'</abbr></span></div><div style="margin: 10px; height: 40px; border: 2px dashed #ddd; display: none" class="bottom-placeholder"></div>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 194 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title">' +
+	((__t = ( gt.gettext("Create a panel of descriptor") )) == null ? '' : __t) +
+	'</h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="label">' +
+	((__t = ( gt.gettext("Label for the current language") )) == null ? '' : __t) +
+	'</label><input class="form-control" id="label" type="text" name="label" value="" maxlength="128" autofocus="" autocomplete="off" style="width:100%"></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal">' +
+	((__t = ( gt.gettext("Cancel") )) == null ? '' : __t) +
+	'</button> <button type="button" class="btn btn-primary apply">' +
+	((__t = ( gt.gettext("Apply") )) == null ? '' : __t) +
+	'</button></div></div></div>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 195 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '', __j = Array.prototype.join;
+	function print() { __p += __j.call(arguments, '') }
+	with (obj) {
+	__p += '<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title">' +
+	((__t = ( gt.gettext("Change the label for the panel of descriptor") )) == null ? '' : __t) +
+	'</h4></div><div class="modal-body" style="max-height: 400px; overflow-y: auto"><form id="descriptor_panel_labels">';
+	
+	                var languages = application.main.collections.uilanguages;
+	
+	                for (var i = 0; i < languages.models.length; ++i) {
+	                    var lang_id = languages.at(i).get('id');
+	                    var lang_label = languages.at(i).get('label');
+	                    var autofocus = (i == 0) ? 'autofocus=""' : "";
+	                ;
+	__p += ' <div class="form-group"><label class="control-label">' +
+	((__t = ( gt.gettext(lang_label) )) == null ? '' : __t) +
+	'</label><input class="form-control" type="text" language="' +
+	((__t = ( lang_id )) == null ? '' : __t) +
+	'" value="' +
+	((__t = ( labels[lang_id] )) == null ? '' : __t) +
+	'" maxlength="64" ' +
+	((__t = ( autofocus )) == null ? '' : __t) +
+	' autocomplete="off" style="width:100%"></div> ';
+	 } ;
+	__p += ' </form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal">' +
+	((__t = ( gt.gettext("Cancel") )) == null ? '' : __t) +
+	'</button> <button type="button" class="btn btn-primary apply">' +
+	((__t = ( gt.gettext("Apply") )) == null ? '' : __t) +
+	'</button></div></div></div>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 196 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<div style="border-bottom: 2px solid #ddd; padding: 8px"><span style="font-weight: bold">' +
+	((__t = ( gt.gettext("Panels of descriptor") )) == null ? '' : __t) +
+	'</span></div><div style="margin: 10px; height: 40px; border: 2px dashed #ddd; display: none" class="top-placeholder"></div><div class="object descriptor-panel-list" object-type="descriptor-panel-list"></div><div style="margin: 10px; height: 40px; border: 2px dashed #ddd; display: none" class="bottom-placeholder"></div>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 197 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptormodellistalt.js
+	 * @brief Alternative list of model of descriptors view
+	 * @author Frederic SCHERMA
+	 * @date 2016-10-26
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	var DescriptorModelView = __webpack_require__(198);
+	
+	var ScrollView = __webpack_require__(78);
+	
+	var View = ScrollView.extend({
+	    template: __webpack_require__(200),
+	    childView: DescriptorModelView,
+	    childViewContainer: 'tbody.descriptor-model-list',
+	
+	    initialize: function() {
+	        this.listenTo(this.collection, 'reset', this.render, this);
+	        this.listenTo(this.collection, 'change', this.render, this);
+	
+	        View.__super__.initialize.apply(this);
+	    },
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 198 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptormodelalt.js
+	 * @brief Alternative model of descriptor item view
+	 * @author Frederic SCHERMA
+	 * @date 2016-10-26
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	var DescriptorModelModel = __webpack_require__(147);
+	
+	var View = Marionette.ItemView.extend({
+	    tagName: 'tr',
+	    className: 'element object descriptor-model',
+	    template: __webpack_require__(199),
+	
+	    attributes: {
+	        draggable: true,
+	    },
+	
+	    events: {
+	        'dragstart': 'dragStart',
+	        'dragend': 'dragEnd',
+	    },
+	
+	    initialize: function() {
+	        this.listenTo(this.model, 'reset', this.render, this);
+	    },
+	
+	    onRender: function() {
+	    },
+	
+	    dragStart: function(e) {
+	        this.$el.css('opacity', '0.4');
+	        application.dndElement = this;
+	    },
+	
+	    dragEnd: function(e) {
+	        this.$el.css('opacity', '1.0');
+	        application.dndElement = null;
+	    },
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 199 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<td name="name">' +
+	((__t = ( name )) == null ? '' : __t) +
+	'</td><td name="verbose_name">' +
+	((__t = ( verbose_name )) == null ? '' : __t) +
+	'</td><td name="num_descriptor_model_types"><span class="badge">' +
+	((__t = ( num_descriptor_model_types )) == null ? '' : __t) +
+	'</span></td><td name="description"><abbr class="label label-default glyphicon glyphicon-option-horizontal" title="' +
+	((__t = ( description )) == null ? '' : __t) +
+	'"><span></span></abbr></td>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 200 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<div class="object descriptor-model-list" object-type="descriptor-model-list" style="width:100%"><table class="table table-striped"><thead><tr><th>' +
+	((__t = ( gt.gettext("Name") )) == null ? '' : __t) +
+	'</th><th>' +
+	((__t = ( gt.gettext("Verbose name") )) == null ? '' : __t) +
+	'</th><th>' +
+	((__t = ( gt.gettext("Number of types of descriptor") )) == null ? '' : __t) +
+	'</th><th>' +
+	((__t = ( gt.gettext("Description") )) == null ? '' : __t) +
+	'</th></tr></thead><tbody class="descriptor-model-list"></tbody></table></div>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 201 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file twocolumnslayout.js
+	 * @brief Two columns layout
+	 * @author Frederic SCHERMA
+	 * @date 2016-10-14
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	
+	var TwoColumnsLayout = Marionette.LayoutView.extend({
+	    template: "#two_columns_layout_view",
+	    attributes: {
+	        style: "height: 95%;"
+	    },
+	
+	    regions: {
+	        'left-content': ".left-content",
+	        'left-bottom': ".left-bottom",
+	        'right-content': ".right-content",
+	        'right-bottom': ".right-bottom",
+	    },
+	
+	    onBeforeShow: function() {
+	    },
+	
+	    onBeforeDestroy: function () {
+	    },
+	});
+	
+	module.exports = TwoColumnsLayout;
+
+
+/***/ },
+/* 202 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file describable.js
+	 * @brief Describable entities collection
+	 * @author Frederic SCHERMA
+	 * @date 2016-11-17
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var DescribableModel = __webpack_require__(203);
+	
+	var Collection = Backbone.Collection.extend({
+	    url: application.baseUrl + 'descriptor/describable',
+	    model: DescribableModel,
+	
+	    parse: function(data) {
+	        return data;
+	    },
+	
+	    default: [
+	    ],
+	
+	    findLabel: function(value) {
+	        var res = this.findWhere({value: value});
+	        return res ? res.get('label') : '';
+	    },
+	});
+	
+	module.exports = Collection;
+
+
+/***/ },
+/* 203 */
+/***/ function(module, exports) {
+
+	/**
+	 * @file describable.js
+	 * @brief Describable entity model
+	 * @author Frederic SCHERMA
+	 * @date 2016-11-17
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	module.exports = Backbone.Model.extend({
+	    defaults: function() {
+	        return {
+	            id: '',
+	            value: '',
+	            label: ''
+	        }
+	    },
+	    url: application.baseUrl + 'descriptor/describable/:id'
+	});
+
+
+/***/ },
+/* 204 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file condition.js
+	 * @brief Condition collection
+	 * @author Frederic SCHERMA
+	 * @date 2016-11-22
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var ConditionModel = __webpack_require__(205);
+	
+	var Collection = Backbone.Collection.extend({
+	    url: application.baseUrl + 'descriptor/condition',
+	    model: ConditionModel,
+	
+	    parse: function(data) {
+	        return data;
+	    },
+	
+	    default: [
+	    ],
+	
+	    findLabel: function(value) {
+	        var res = this.findWhere({value: value});
+	        return res ? res.get('label') : '';
+	    },
+	});
+	
+	module.exports = Collection;
+
+
+/***/ },
+/* 205 */
+/***/ function(module, exports) {
+
+	/**
+	 * @file condition.js
+	 * @brief Condition entity model
+	 * @author Frederic SCHERMA
+	 * @date 2016-11-22
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	module.exports = Backbone.Model.extend({
+	    defaults: function() {
+	        return {
+	            id: '',
+	            value: '',
+	            label: ''
+	        }
+	    },
+	    url: application.baseUrl + 'descriptor/condition/:id'
+	});
+
+
+/***/ },
+/* 206 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file init.js
 	 * @brief Taxonomy module init entry point
 	 * @author Frederic SCHERMA
 	 * @date 2016-04-12
@@ -21724,14 +29140,14 @@
 	
 	        // i18n
 	        if (session.language === "fr") {
-	            i18next.addResources('fr', 'default', __webpack_require__(108));
+	            i18next.addResources('fr', 'default', __webpack_require__(207));
 	        } else {  // default to english
 	            //i18next.addResources('en', 'default', require('./locale/en/LC_MESSAGES/default.json'));
 	        }
 	
 	        var SelectOptionItemView = __webpack_require__(36);
 	
-	        var TaxonRankCollection = __webpack_require__(109);
+	        var TaxonRankCollection = __webpack_require__(208);
 	        this.collections.taxonRanks = new TaxonRankCollection();
 	
 	        this.views.taxonRanks = new SelectOptionItemView({
@@ -21747,7 +29163,7 @@
 	            ]);*/
 	        });
 	
-	        var TaxonSynonymTypeCollection = __webpack_require__(111);
+	        var TaxonSynonymTypeCollection = __webpack_require__(210);
 	        this.collections.taxonSynonymTypes = new TaxonSynonymTypeCollection();
 	
 	        this.views.taxonSynonymTypes = new SelectOptionItemView({
@@ -21755,7 +29171,7 @@
 	            collection: this.collections.taxonSynonymTypes,
 	        });
 	        
-	        var TaxonController = __webpack_require__(113);
+	        var TaxonController = __webpack_require__(212);
 	        this.controllers.taxon = new TaxonController();
 	
 	        Logger.timeEnd("Init taxonomy module");
@@ -21764,10 +29180,10 @@
 	    onStart: function(options) {
 	        Logger.time("Start taxonomy module");
 	
-	        var TaxonRouter = __webpack_require__(120);
+	        var TaxonRouter = __webpack_require__(219);
 	        this.routers.taxon = new TaxonRouter();
 	
-	        var TaxonCollection = __webpack_require__(115);
+	        var TaxonCollection = __webpack_require__(214);
 	        this.collections.taxons = new TaxonCollection();
 	
 	        Logger.timeEnd("Start taxonomy module");
@@ -21785,7 +29201,7 @@
 
 
 /***/ },
-/* 108 */
+/* 207 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -21811,7 +29227,7 @@
 	};
 
 /***/ },
-/* 109 */
+/* 208 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -21824,7 +29240,7 @@
 	 * @details
 	 */
 	
-	var TaxonRankModel = __webpack_require__(110);
+	var TaxonRankModel = __webpack_require__(209);
 	
 	var TaxonRankCollection = Backbone.Collection.extend({
 	    url: application.baseUrl + 'taxonomy/rank/',
@@ -21851,7 +29267,7 @@
 
 
 /***/ },
-/* 110 */
+/* 209 */
 /***/ function(module, exports) {
 
 	/**
@@ -21878,7 +29294,7 @@
 
 
 /***/ },
-/* 111 */
+/* 210 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -21891,7 +29307,7 @@
 	 * @details
 	 */
 	
-	var TaxonSynonymTypeModel = __webpack_require__(112);
+	var TaxonSynonymTypeModel = __webpack_require__(211);
 	
 	var Collection = Backbone.Collection.extend({
 	    url: application.baseUrl + 'taxonomy/taxon-synonym-type/',
@@ -21918,7 +29334,7 @@
 
 
 /***/ },
-/* 112 */
+/* 211 */
 /***/ function(module, exports) {
 
 	/**
@@ -21945,7 +29361,7 @@
 
 
 /***/ },
-/* 113 */
+/* 212 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -21959,9 +29375,9 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var TaxonModel = __webpack_require__(114);
-	var TaxonCollection = __webpack_require__(115);
-	var TaxonListView = __webpack_require__(116);
+	var TaxonModel = __webpack_require__(213);
+	var TaxonCollection = __webpack_require__(214);
+	var TaxonListView = __webpack_require__(215);
 	var DefaultLayout = __webpack_require__(50);
 	var TitleView = __webpack_require__(51);
 	var Dialog = __webpack_require__(82);
@@ -22005,7 +29421,7 @@
 	            attributes: {
 	                'id': 'dlg_create_taxon',
 	            },
-	            template: __webpack_require__(119),
+	            template: __webpack_require__(218),
 	
 	            ui: {
 	                create: "button.create",
@@ -22147,6 +29563,12 @@
 	                        tp.validateField('ok');
 	                    }
 	                });*/
+	            },
+	
+	            onBeforeDestroy: function() {
+	                CreateTaxonView.__super__.onBeforeDestroy.apply(this);
+	                $(this.ui.language).selectpicker('destroy');
+	                $(this.ui.rank).selectpicker('destroy');
 	            },
 	
 	            onChangeRank: function () {
@@ -22293,7 +29715,7 @@
 
 
 /***/ },
-/* 114 */
+/* 213 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -22311,9 +29733,9 @@
 	var Taxon = Backbone.Model.extend({ 
 	    url: function() {
 	        if (this.isNew())
-	            return application.baseUrl + 'taxonomy/';
+	            return application.baseUrl + 'taxonomy/taxon/';
 	        else
-	            return application.baseUrl + 'taxonomy/' + this.get('id') + '/'; },
+	            return application.baseUrl + 'taxonomy/taxon/' + this.get('id') + '/'; },
 	
 	    defaults: {
 	      id: null,
@@ -22415,7 +29837,7 @@
 
 
 /***/ },
-/* 115 */
+/* 214 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -22428,17 +29850,17 @@
 	 * @details
 	 */
 	
-	var TaxonModel = __webpack_require__(114);
+	var TaxonModel = __webpack_require__(213);
 	
 	var TaxonCollection = Backbone.Collection.extend({
-	    url: application.baseUrl + 'taxonomy/',
+	    url: application.baseUrl + 'taxonomy/taxon/',
 	    model: TaxonModel,
 	
 	    comparator: 'name',
 	
 	    parse: function(data) {
 	        this.prev = data.prev;
-	        this.page = data.page;
+	        this.cursor = data.cursor;
 	        this.next = data.next;
 	
 	        return data.items;
@@ -22465,7 +29887,7 @@
 
 
 /***/ },
-/* 116 */
+/* 215 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -22479,8 +29901,8 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var TaxonModel = __webpack_require__(114);
-	var TaxonView = __webpack_require__(117);
+	var TaxonModel = __webpack_require__(213);
+	var TaxonView = __webpack_require__(216);
 	
 	var ScrollView = __webpack_require__(78);
 	
@@ -22505,7 +29927,7 @@
 
 
 /***/ },
-/* 117 */
+/* 216 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -22519,11 +29941,11 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var TaxonModel = __webpack_require__(114);
+	var TaxonModel = __webpack_require__(213);
 	
 	var TaxonItemView = Marionette.ItemView.extend({
 	    tagName: 'div',
-	    template: __webpack_require__(118),
+	    template: __webpack_require__(217),
 	
 	    ui: {
 	        "taxon": "span.taxon",
@@ -22548,7 +29970,7 @@
 	    },
 	
 	    onTaxonDetails: function() {
-	        Backbone.history.navigate("app/taxonomy/" + this.model.get('id') + "/", {trigger: true});
+	        Backbone.history.navigate("app/taxonomy/taxon/" + this.model.get('id') + "/", {trigger: true});
 	    }
 	});
 	
@@ -22556,7 +29978,7 @@
 
 
 /***/ },
-/* 118 */
+/* 217 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -22600,7 +30022,7 @@
 
 
 /***/ },
-/* 119 */
+/* 218 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -22631,7 +30053,7 @@
 
 
 /***/ },
-/* 120 */
+/* 219 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -22645,22 +30067,26 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var TaxonModel = __webpack_require__(114);
-	var TaxonCollection = __webpack_require__(115);
-	var TaxonListView = __webpack_require__(116);
-	var TaxonItemView = __webpack_require__(117);
-	var TaxonDetailsView = __webpack_require__(121);
-	var TaxonListFilterView = __webpack_require__(125);
+	var TaxonModel = __webpack_require__(213);
+	
+	var TaxonCollection = __webpack_require__(214);
+	var TaxonChildrenCollection = __webpack_require__(220);
+	
+	var TaxonListView = __webpack_require__(215);
+	var TaxonItemView = __webpack_require__(216);
+	var TaxonDetailsView = __webpack_require__(221);
+	var TaxonListFilterView = __webpack_require__(225);
+	var TaxonChildrenView = __webpack_require__(227);
 	
 	var DefaultLayout = __webpack_require__(50);
 	var TitleView = __webpack_require__(51);
 	var ScrollingMoreView = __webpack_require__(94);
-	var TwoRowsLayout = __webpack_require__(127);
+	var TwoRowsLayout = __webpack_require__(228);
 	
 	var TaxonRouter = Marionette.AppRouter.extend({
 	    routes : {
-	        "app/taxonomy/": "getTaxonList",
-	        "app/taxonomy/:id/": "getTaxon",
+	        "app/taxonomy/taxon/": "getTaxonList",
+	        "app/taxonomy/taxon/:id/": "getTaxon",
 	    },
 	
 	    getTaxonList : function() {
@@ -22695,11 +30121,13 @@
 	            twoRowsLayout.getRegion('top-content').show(new TaxonDetailsView({model: taxon}));
 	        });
 	
-	        var taxonChildren = new TaxonChildren({taxon_id: id});
+	        var taxonChildren = new TaxonChildrenCollection([], {model_id: id});
 	
 	        taxonChildren.fetch().then(function() {
-	            twoRowsLayout.getRegion('bottom-content').show(new TaxonChildrenView({collection: taxonChildren, model: taxon}));
-	            twoRowsLayout.getRegion('bottom-bottom').show(new ScrollingMoreView({targetView: taxonListView}));
+	            var taxonChildrenView = new TaxonChildrenView({collection: taxonChildren, model: taxon});
+	
+	            twoRowsLayout.getRegion('bottom-content').show(taxonChildrenView);
+	            twoRowsLayout.getRegion('bottom-bottom').show(new ScrollingMoreView({targetView: taxonChildrenView}));
 	        });
 	    },
 	});
@@ -22708,7 +30136,64 @@
 
 
 /***/ },
-/* 121 */
+/* 220 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file taxonchildren.js
+	 * @brief Taxon children collection
+	 * @author Frederic SCHERMA
+	 * @date 2016-11-10
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var TaxonModel = __webpack_require__(213);
+	
+	var Collection = Backbone.Collection.extend({
+	    url: function() {
+	        return application.baseUrl + 'taxonomy/taxon/' + this.model_id + '/children/';
+	    },
+	    model: TaxonModel,
+	
+	    comparator: 'name',
+	
+	    initialize: function(models, options) {
+	        options || (options = {});
+	        this.model_id = options.model_id;
+	    },
+	
+	    parse: function(data) {
+	        this.prev = data.prev;
+	        this.cursor = data.cursor;
+	        this.next = data.next;
+	
+	        return data.items;
+	    },
+	
+	    fetch: function(options) {
+	        options || (options = {});
+	        var data = (options.data || {});
+	
+	        options.data = data;
+	
+	        this.cursor = options.data.cursor;
+	        this.sort_by = options.data.sort_by;
+	
+	        if (this.filters) {
+	            options.data.filters = JSON.stringify(this.filters)
+	        }
+	
+	        return Backbone.Collection.prototype.fetch.call(this, options);
+	    }
+	});
+	
+	module.exports = Collection;
+
+
+/***/ },
+/* 221 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -22722,14 +30207,14 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var TaxonModel = __webpack_require__(114);
+	var TaxonModel = __webpack_require__(213);
 	
 	var Dialog = __webpack_require__(82);
 	
 	var TaxonItemView = Marionette.ItemView.extend({
 	    tagName: 'div',
 	    className: 'element object taxon',
-	    template: __webpack_require__(122),
+	    template: __webpack_require__(222),
 	
 	    ui: {
 	        "view_taxon": ".view-taxon",
@@ -22795,7 +30280,7 @@
 	
 	            $.ajax({
 	                type: "GET",
-	                url: application.baseUrl + 'taxonomy/search/',
+	                url: application.baseUrl + 'taxonomy/taxon/search/',
 	                dataType: 'json',
 	                data: {filters: JSON.stringify(filters)},
 	                cache: false,
@@ -22827,7 +30312,7 @@
 	            $.ajax({
 	                view: this,
 	                type: "POST",
-	                url: application.baseUrl + 'taxonomy/' + this.model.id + "/synonym/" ,
+	                url: this.model.url() + 'synonym/',
 	                contentType: "application/json; charset=utf-8",
 	                dataType: 'json',
 	                data: JSON.stringify({type: type, name: name, language: language}),
@@ -22851,7 +30336,7 @@
 	        $.ajax({
 	            view: this,
 	            type: "DELETE",
-	            url: application.baseUrl + 'taxonomy/' + this.model.id + "/synonym/" + synonymId + '/',
+	            url: this.model.url() + 'synonym/' + synonymId + '/',
 	            contentType: "application/json; charset=utf-8",
 	            success: function(data) {
 	                //this.view.model.removeSynonym(type, name, language);
@@ -22863,7 +30348,7 @@
 	
 	    onRenameSynonym: function(e) {
 	        var ChangeSynonym = Dialog.extend({
-	            template: __webpack_require__(123),
+	            template: __webpack_require__(223),
 	
 	            attributes: {
 	                id: "dlg_change_synonym",
@@ -22910,7 +30395,7 @@
 	                if (this.validateName()) {
 	                    $.ajax({
 	                        type: "PUT",
-	                        url: application.baseUrl + 'taxonomy/' + this.model.get('id') + "/synonym/" + synonymId + '/',
+	                        url: this.model.url() + 'synonym/' + synonymId + '/',
 	                        contentType: "application/json; charset=utf-8",
 	                        dataType: 'json',
 	                        data: JSON.stringify({name: name}),
@@ -22918,12 +30403,7 @@
 	                            //view.model.renameSynonym(view.getOption('type'), name, view.getOption('language'), view.getOption('name'));
 	                            view.remove();
 	
-	                            model.fetch({reset: true}).then(function() {
-	                                //var TitleView = require('../../main/views/titleview');
-	
-	                                //application.getRegion('mainRegion').currentView.getRegion('title').show(
-	                                    //new TitleView({title: gt.gettext("Taxon details"), object: model.get('name')}));
-	                            });
+	                            model.fetch({reset: true});
 	                        },
 	                        error: function() {
 	                            $.alert.error(gt.gettext("Unable to rename the synonym !"));
@@ -22955,12 +30435,12 @@
 	    onViewTaxon: function(e) {
 	        var taxon_id = $(e.target).data('taxon-id');
 	
-	        Backbone.history.navigate("app/taxonomy/" + taxon_id + "/", {trigger: true});
+	        Backbone.history.navigate("app/taxonomy/taxon/" + taxon_id + "/", {trigger: true});
 	    },
 	
 	    onChangeParent: function () {
 	        var ChangeParent = Dialog.extend({
-	            template: __webpack_require__(124),
+	            template: __webpack_require__(224),
 	
 	            attributes: {
 	                id: "dlg_change_parent",
@@ -22982,7 +30462,7 @@
 	                $(this.ui.parent).select2({
 	                    dropdownParent: $(this.el),
 	                    ajax: {
-	                        url: application.baseUrl + "taxonomy/search/",
+	                        url: application.baseUrl + "taxonomy/taxon/search/",
 	                        dataType: 'json',
 	                        delay: 250,
 	                        data: function (params) {
@@ -23052,7 +30532,7 @@
 
 
 /***/ },
-/* 122 */
+/* 222 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -23114,7 +30594,7 @@
 
 
 /***/ },
-/* 123 */
+/* 223 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -23139,7 +30619,7 @@
 
 
 /***/ },
-/* 124 */
+/* 224 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -23164,7 +30644,7 @@
 
 
 /***/ },
-/* 125 */
+/* 225 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -23182,7 +30662,7 @@
 	var View = Marionette.ItemView.extend({
 	    tagName: 'div',
 	    className: 'taxon-filter',
-	    template: __webpack_require__(126),
+	    template: __webpack_require__(226),
 	
 	    ui: {
 	        filter_btn: 'button.taxon-filter',
@@ -23244,7 +30724,7 @@
 
 
 /***/ },
-/* 126 */
+/* 226 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -23261,7 +30741,44 @@
 
 
 /***/ },
-/* 127 */
+/* 227 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file taxonchildren.js
+	 * @brief Taxon list view
+	 * @author Frederic SCHERMA
+	 * @date 2016-04-20
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	var TaxonModel = __webpack_require__(213);
+	var TaxonView = __webpack_require__(216);
+	
+	var ScrollView = __webpack_require__(78);
+	
+	
+	var View = ScrollView.extend({
+	    template: "<div></div>",
+	    className: "taxon-list",
+	    childView: TaxonView,
+	
+	    initialize: function(options) {
+	        options || (options = {});
+	        this.listenTo(this.collection, 'reset', this.render, this);
+	
+	        View.__super__.initialize.apply(this);
+	    }
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 228 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -23300,7 +30817,7 @@
 
 
 /***/ },
-/* 128 */
+/* 229 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -23328,7 +30845,7 @@
 	
 	        // i18n
 	        if (session.language === "fr") {
-	            i18next.addResources('fr', 'default', __webpack_require__(129));
+	            i18next.addResources('fr', 'default', __webpack_require__(230));
 	        } else {  // default to english
 	            //i18next.addResources('en', 'default', require('./locale/en/LC_MESSAGES/default.json'));
 	        }
@@ -23339,20 +30856,8 @@
 	    onStart: function(options) {
 	        Logger.time("Start accession module");
 	
-	        var AccessionRouter = __webpack_require__(130);
+	        var AccessionRouter = __webpack_require__(231);
 	        this.routers.accession = new AccessionRouter();
-	
-	        var DescriptorRouter = __webpack_require__(131);
-	        this.routers.descriptor = new DescriptorRouter();
-	
-	        var DescriptorModelRouter = __webpack_require__(167);
-	        this.routers.descriptorModel = new DescriptorModelRouter();
-	
-	        var DescriptorMetaModelRouter = __webpack_require__(196);
-	        this.routers.descriptorMetaModel = new DescriptorMetaModelRouter();
-	
-	        var DescriptorGroupCollection = __webpack_require__(170);
-	        this.collections.descriptorGroup = new DescriptorGroupCollection();
 	
 	        Logger.timeEnd("Start accession module");
 	    },
@@ -23369,87 +30874,13 @@
 
 
 /***/ },
-/* 129 */
+/* 230 */
 /***/ function(module, exports) {
 
-	module.exports = {
-		"Some types of descriptor exists for this group": "Des types de descripteur existent pour ce groupe",
-		"Invalid characters (alphanumeric, _ and - only)": "Caractères invalides (alphanumérique, _ et - seulement)",
-		"3 characters min": "3 caractères minimum",
-		"Group name already in usage": "Nom de groupe déjà utilisé",
-		"Descriptor type name already in usage": "Nom de type de descriptor déjà utilisé",
-		"Successfully labeled !": "Label définit avec succès !",
-		"Unable to change label !": "Impossible de définir le label !",
-		"Unable to create the meta-model of descriptor !": "Impossible de créer le méta-modèle de descripteur !",
-		"Descriptor meta-model name already in usage": "Nom de méta-modèle de descripteur déjà utilisé",
-		"Done": "Fait",
-		"Name for model of descriptor already in usage": "Ce nom de modèle de descripteur est déjà utilisé",
-		"Unable to create the type of model of descriptor !": "Impossible de créer le type de modèle de descripteur !",
-		"Unable to reorder the types of model of descriptor": "Impossible de réordonner les types de modèle de descripteur",
-		"Some values exists for this type of descriptor": "Des valeurs existent pour ce type de descripteur",
-		"1 character min": "1 caractère minimum",
-		"List of groups of descriptors": "Liste de groupes de descripteurs",
-		"Types of descriptors for the group": "Types de descripteurs pour le groupe",
-		"Details for the type of descriptor": "Détails pour le type de descripteur",
-		"Values for the type of descriptor": "Valeurs pour le type de descripteur",
-		"List of meta-models of descriptor": "Liste des méta-modèles de descripteur",
-		"Details for the meta-model of descriptor": "Détails pour le méta-modèle de descripteur",
-		"List of models of descriptor": "Liste des models de descripteur",
-		"Details for the model of descriptor": "Détails pour le modèle de descripteur",
-		"List of types of models of descriptor": "Liste des types de modèles de descripteur",
-		"Name": "Nom",
-		"Number of types of descriptor": "Nombre de types de descripteur",
-		"Group of descriptors": "Groupe de descripteurs",
-		"Change the label for a meta-model of descriptor": "Changer le label pour un méta-modèle de descripteur",
-		"Label for the current language": "Label pour le langage courant",
-		"Cancel": "Annuler",
-		"Apply": "Appliquer",
-		"Descriptor meta-model name": "Nom de méta-modèle de descripteur",
-		"Description": "Description",
-		"Update": "Mettre à jour",
-		"Label": "Label",
-		"Target": "Cible",
-		"Number of panels of descriptor": "Nombre de panels de descripteur",
-		"Create a meta-model of descriptor": "Créer un méta-modèle de descripteur",
-		"Target entity": "Entité cible",
-		"Accession": "Accession",
-		"Batch": "Lot",
-		"Sample": "Echantillon",
-		"Descriptor model name": "Nom de modèle de descripteur",
-		"Verbose name": "Nom complet",
-		"Change the label for a type of model of descriptor": "Changer le label pour un type de modèle de descripteur",
-		"Code": "Code",
-		"Mandatory": "Mandataire",
-		"Set Once": "Définit une fois",
-		"Descriptor type name": "Nom du type de descripteur",
-		"Descriptor type code": "Code du type de descripteur",
-		"Type of format": "Type de format",
-		"Single value": "Valeur simple",
-		"Boolean": "Booléen",
-		"Numeric": "Numérique",
-		"Numeric range": "Plage numérique",
-		"Ordinal": "Ordinal",
-		"GPS coordinate": "Coordonnée GPS",
-		"Text": "Texte",
-		"List of values": "Liste de valeurs",
-		"Single enumeration": "Simple énumération",
-		"Pair enumeration": "Enumération de paires",
-		"Ordinal with text": "Ordinal avec texte",
-		"First field": "Premier champs",
-		"Second field": "Second champs",
-		"Unit of the format": "Unité du format",
-		"Custom unit name": "Nom d'unité personnalisée",
-		"Precision of the decimal": "Précision de la décimale",
-		"Minimal range value": "Valeur minimale",
-		"Maximal range value": "Valeur maximale",
-		"Regular expression": "Expression régulière",
-		"Number of values": "Nombre de valeurs",
-		"Type of descriptor": "Type de descripteur",
-		"Value": "Valeur"
-	};
+	module.exports = {};
 
 /***/ },
-/* 130 */
+/* 231 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -23524,6227 +30955,6 @@
 	});
 	
 	module.exports = Router;
-
-
-/***/ },
-/* 131 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file descriptor.js
-	 * @brief Descriptor router
-	 * @author Frederic SCHERMA
-	 * @date 2016-07-19
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var Marionette = __webpack_require__(4);
-	var DescriptorGroupModel = __webpack_require__(132);
-	var DescriptorTypeModel = __webpack_require__(133);
-	var DescriptorTypeCollection = __webpack_require__(134);
-	var DescriptorValueCollection = __webpack_require__(135);
-	var DescriptorGroupListView = __webpack_require__(137);
-	var DescriptorTypeListView = __webpack_require__(142);
-	
-	var DescriptorValueListView = __webpack_require__(146);
-	var DescriptorValuePairListView = __webpack_require__(151);
-	var DescriptorValueOrdinalListView = __webpack_require__(155);
-	var DescriptorValueAddView = __webpack_require__(159);
-	
-	var DescriptorTypeDetailView = __webpack_require__(161);
-	var DefaultLayout = __webpack_require__(50);
-	var TitleView = __webpack_require__(51);
-	var ScrollingMoreView = __webpack_require__(94);
-	
-	var DescriptorGroupAddView = __webpack_require__(163);
-	var DescriptorGroupTypeAddView = __webpack_require__(165);
-	
-	var Router = Marionette.AppRouter.extend({
-	    routes : {
-	        "app/accession/descriptor/group/": "getDescriptorGroupList",
-	        "app/accession/descriptor/group/:id/type/": "getDescriptorTypeListForGroup",
-	        "app/accession/descriptor/group/:id/type/:id/": "getDescriptorTypeForGroup",
-	        "app/accession/descriptor/group/:id/type/:id/value/": "getDescriptorValueListForType",
-	        "app/accession/descriptor/group/:id/type/:id/value/:id": "getDescriptorValueForType"
-	    },
-	
-	    getDescriptorGroupList : function() {
-	        var collection = application.accession.collections.descriptorGroup;
-	
-	        var defaultLayout = new DefaultLayout({});
-	        application.getRegion('mainRegion').show(defaultLayout);
-	
-	        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of groups of descriptors")}));
-	
-	        collection.fetch().then(function () {
-	            var descriptorGroupListView = new DescriptorGroupListView({read_only: true, collection: collection});
-	            defaultLayout.getRegion('content').show(descriptorGroupListView);
-	            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: descriptorGroupListView}));
-	        });
-	
-	        // @todo lookup for permission
-	        if (session.user.isAuth && (session.user.isSuperUser || session.user.isStaff)) {
-	            defaultLayout.getRegion('bottom').show(new DescriptorGroupAddView({collection: collection}));
-	        }
-	    },
-	
-	    getDescriptorTypeListForGroup : function(id) {
-	        var collection = new DescriptorTypeCollection([], {group_id: id});
-	
-	        var defaultLayout = new DefaultLayout();
-	        application.getRegion('mainRegion').show(defaultLayout);
-	
-	        var model = new DescriptorGroupModel({id: id});
-	        model.fetch().then(function () {
-	            defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Types of descriptors for the group"), object: model.get('name')}));
-	
-	            // @todo lookup for permission
-	            if (session.user.isAuth && (session.user.isSuperUser || session.user.isStaff) && model.get('can_modify')) {
-	                defaultLayout.getRegion('bottom').show(new DescriptorGroupTypeAddView({collection: collection}));
-	            }
-	        });
-	
-	        collection.fetch().then(function () {
-	            var descriptorTypeListView = new DescriptorTypeListView({read_only: true, collection : collection});
-	
-	            defaultLayout.getRegion('content').show(descriptorTypeListView);
-	            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: descriptorTypeListView}));
-	        });
-	    },
-	
-	    getDescriptorTypeForGroup : function(gid, tid) {
-	        var defaultLayout = new DefaultLayout();
-	        application.getRegion('mainRegion').show(defaultLayout);
-	
-	        var model = new DescriptorTypeModel({id: tid}, {group_id: gid});
-	
-	        model.fetch().then(function () {
-	            defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Details for the type of descriptor"), object: model.get('name')}));
-	            defaultLayout.getRegion('content').show(new DescriptorTypeDetailView({model : model}));
-	        });
-	    },
-	
-	    getDescriptorValueListForType : function(gid, tid) {
-	        var collection = new DescriptorValueCollection([], {group_id: gid, type_id: tid});
-	
-	        var defaultLayout = new DefaultLayout();
-	        application.getRegion('mainRegion').show(defaultLayout);
-	
-	        var model = new DescriptorTypeModel({id: tid}, {group_id: gid});
-	        model.fetch().then(function () {
-	            defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Values for the type of descriptor"), object: model.get('name')}));
-	
-	            collection.fetch().then(function () {
-	                var valueListView = null;
-	
-	                if (model.get('format').type === "enum_single") {
-	                    valueListView = new DescriptorValueListView({
-	                        collection: collection,
-	                        model: model
-	                    });
-	
-	                    // @todo lookup for permission
-	                    if (session.user.isAuth && (session.user.isSuperUser || session.user.isStaff) && model.get('can_modify')) {
-	                        defaultLayout.getRegion('bottom').show(new DescriptorValueAddView({collection: collection}));
-	                    }
-	                } else if (model.get('format').type === "enum_pair") {
-	                    valueListView = new DescriptorValuePairListView({
-	                        collection: collection,
-	                        model: model
-	                    });
-	
-	                    // @todo lookup for permission
-	                    if (session.user.isAuth && (session.user.isSuperUser || session.user.isStaff) && model.get('can_modify')) {
-	                        defaultLayout.getRegion('bottom').show(new DescriptorValueAddView({collection: collection}));
-	                    }
-	                } else if (model.get('format').type === "enum_ordinal") {
-	                    valueListView = new DescriptorValueOrdinalListView({
-	                        collection: collection,
-	                        model: model
-	                    });
-	                }
-	
-	                if (valueListView != null) {
-	                    defaultLayout.getRegion('content').show(valueListView);
-	                    defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: valueListView, more: -1}));
-	                }
-	            });
-	        });
-	    },
-	});
-	
-	module.exports = Router;
-
-
-/***/ },
-/* 132 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file descriptorgroup.js
-	 * @brief Group of descriptors model
-	 * @author Frederic SCHERMA
-	 * @date 2016-07-20
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var Backbone = __webpack_require__(2);
-	
-	var Model = Backbone.Model.extend({
-	    url: function() {
-	        if (this.isNew())
-	            return application.baseUrl + 'accession/descriptor/group/';
-	        else
-	            return application.baseUrl + 'accession/descriptor/group/' + this.get('id') + '/';
-	    },
-	
-	    defaults: {
-	        id: null,
-	        name: '',
-	        num_descriptor_types: 0,
-	        can_delete: false,
-	        can_modify: false
-	    },
-	
-	    parse: function(data) {
-	        //this.perms = data.perms;
-	        return data;
-	    },
-	
-	    validate: function(attrs) {
-	        var errors = {};
-	        var hasError = false;
-	
-	        if (hasError) {
-	          return errors;
-	        }
-	    },
-	});
-	
-	module.exports = Model;
-
-
-/***/ },
-/* 133 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file descriptortype.js
-	 * @brief Type of descriptor model
-	 * @author Frederic SCHERMA
-	 * @date 2016-07-21
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var Backbone = __webpack_require__(2);
-	
-	var Model = Backbone.Model.extend({
-	    url: function() {
-	        var group_id = this.group_id || this.get('group') || this.collection.group_id;
-	
-	        if (this.isNew()) {
-	            return application.baseUrl + 'accession/descriptor/group/' + group_id + '/type/';
-	        }
-	        else
-	            return application.baseUrl + 'accession/descriptor/group/' + group_id + '/type/' + this.get('id') + '/';
-	    },
-	
-	    defaults: {
-	        id: null,
-	        group: null,
-	        name: '',
-	        values: null,
-	        format: {type: 'string'},
-	        can_delete: false,
-	        can_modify: false,
-	        description: ''
-	    },
-	
-	    initialize: function(attributes, options) {
-	        Model.__super__.initialize.apply(this, arguments);
-	
-	        options || (options = {});
-	        this.group_id = options.group_id;
-	        this.collection = options.collection;
-	
-	        if (options.collection) {
-	            this.group_id = options.collection.group_id;
-	        }
-	    },
-	
-	    parse: function(data) {
-	        //this.perms = data.perms;
-	        this.group = data.group;
-	        return data;
-	    },
-	
-	    validate: function(attrs) {
-	        var errors = {};
-	        var hasError = false;
-	
-	        if (hasError) {
-	          return errors;
-	        }
-	    },
-	});
-	
-	module.exports = Model;
-
-
-/***/ },
-/* 134 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file descriptortype.js
-	 * @brief Types of descriptors collection
-	 * @author Frederic SCHERMA
-	 * @date 2016-07-19
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var DescriptorTypeModel = __webpack_require__(133);
-	
-	var Collection = Backbone.Collection.extend({
-	    url: function() {
-	        return application.baseUrl + 'accession/descriptor/group/' + this.group_id + '/type/';
-	    },
-	
-	    model: DescriptorTypeModel,
-	
-	    initialize: function(models, options) {
-	        options || (options = {});
-	        this.group_id = options.group_id;
-	    },
-	
-	    parse: function(data) {
-	        this.prev = data.prev;
-	        this.cursor = data.cursor;
-	        this.next = data.next;
-	
-	        return data.items;
-	    },
-	});
-	
-	module.exports = Collection;
-
-
-/***/ },
-/* 135 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file descriptorvalue.js
-	 * @brief List of value for a type of descriptor (collection)
-	 * @author Frederic SCHERMA
-	 * @date 2016-07-21
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var DescriptorTypeModel = __webpack_require__(136);
-	
-	var Collection = Backbone.Collection.extend({
-	    url: function() {
-	        return application.baseUrl + 'accession/descriptor/group/' + this.group_id + '/type/' + this.type_id + '/value/';
-	    },
-	
-	    model: DescriptorTypeModel,
-	
-	    initialize: function(models, options) {
-	        options || (options = {});
-	        this.sort_by = "id";
-	        this.group_id = options.group_id;
-	        this.type_id = options.type_id;
-	        this.format = options.format || {type: "string", fields: []};
-	    },
-	
-	    parse: function(data) {
-	        if (data.format) {
-	            this.format = data.format;
-	        }
-	
-	        this.prev = data.prev;
-	        this.cursor = data.cursor;
-	        this.next = data.next;
-	        this.sort_by = data.sort_by;
-	
-	        return data.items;
-	    },
-	
-	    fetch: function(options) {
-	        options || (options = {});
-	        var data = (options.data || {});
-	
-	        options.data = data;
-	
-	        this.cursor = options.data.cursor;
-	        this.sort_by = options.data.sort_by;
-	
-	        return Backbone.Collection.prototype.fetch.call(this, options);
-	    }
-	});
-	
-	module.exports = Collection;
-
-
-/***/ },
-/* 136 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file descriptorvalue.js
-	 * @brief Value for a type of descriptor model
-	 * @author Frederic SCHERMA
-	 * @date 2016-07-21
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var Backbone = __webpack_require__(2);
-	
-	var Model = Backbone.Model.extend({
-	    url: function() {
-	        if (this.isNew())
-	            return application.baseUrl + 'accession/descriptor/group/' + this.group_id + '/type/' + this.type_id + '/value/';
-	        else
-	            return application.baseUrl + 'accession/descriptor/group/' + this.group_id + '/type/' + this.type_id + '/value/' + this.id + '/';
-	    },
-	
-	    defaults: {
-	        id: null,
-	        parent: null,
-	        ordinal: null,
-	        value0: null,
-	        value1: null,
-	    },
-	
-	    initialize: function(attributes, options) {
-	        Model.__super__.initialize.apply(this, arguments);
-	
-	        options || (options = {});
-	        this.group_id = options.group_id;
-	        this.type_id = options.type_id;
-	
-	        if (options.collection) {
-	            this.type_id = options.collection.type_id;
-	            this.group_id = options.collection.group_id;
-	        }
-	    },
-	
-	    parse: function(data) {
-	        //this.perms = data.perms;
-	        return data;
-	    },
-	
-	    validate: function(attrs) {
-	        var errors = {};
-	        var hasError = false;
-	
-	        if (hasError) {
-	          return errors;
-	        }
-	    },
-	});
-	
-	module.exports = Model;
-
-
-/***/ },
-/* 137 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file descriptorgrouplist.js
-	 * @brief List of groups of types of descriptors view
-	 * @author Frederic SCHERMA
-	 * @date 2016-07-20
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var Marionette = __webpack_require__(4);
-	var DescriptorGroupModel = __webpack_require__(132);
-	var DescriptorGroupView = __webpack_require__(138);
-	var ScrollView = __webpack_require__(78);
-	
-	var View = ScrollView.extend({
-	    template: __webpack_require__(141),
-	    childView: DescriptorGroupView,
-	    childViewContainer: 'tbody.descriptor-group-list',
-	
-	    initialize: function() {
-	        this.listenTo(this.collection, 'reset', this.render, this);
-	        this.listenTo(this.collection, 'change', this.render, this);
-	        //this.listenTo(this.collection, 'add', this.render, this);
-	        //this.listenTo(this.collection, 'remove', this.render, this);
-	
-	        View.__super__.initialize.apply(this);
-	    }
-	});
-	
-	module.exports = View;
-
-
-/***/ },
-/* 138 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file descriptorgroup.js
-	 * @brief Group of type of descriptor item view
-	 * @author Frederic SCHERMA
-	 * @date 2016-07-20
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var Marionette = __webpack_require__(4);
-	var DescriptorGroupModel = __webpack_require__(132);
-	
-	var Dialog = __webpack_require__(82);
-	
-	var View = Marionette.ItemView.extend({
-	    tagName: 'tr',
-	    className: 'element object descriptor-group',
-	    template: __webpack_require__(139),
-	
-	    ui: {
-	        delete_descriptor_group: 'span.delete-descriptor-group',
-	        change_name: 'td.change-name',
-	        view_descriptor_type: 'td.view-descriptor-type'
-	    },
-	
-	    events: {
-	        'click @ui.delete_descriptor_group': 'deleteDescriptorGroup',
-	        'click @ui.change_name': 'onRenameGroup',
-	        'click @ui.view_descriptor_type': 'viewDescriptorType'
-	    },
-	
-	    initialize: function() {
-	        this.listenTo(this.model, 'reset', this.render, this);
-	    },
-	
-	    onRender: function() {
-	        // @todo check with user permission
-	        if (!this.model.get('can_delete') || !session.user.isSuperUser || !session.user.isStaff) {
-	            $(this.ui.delete_descriptor_group).hide();
-	        }
-	    },
-	
-	    viewDescriptorType: function() {
-	        Backbone.history.navigate("app/accession/descriptor/group/" + this.model.id + "/type/", {trigger: true});
-	    },
-	
-	    deleteDescriptorGroup: function() {
-	        if (this.model.get('num_descriptor_types') == 0) {
-	            this.model.destroy({wait: true});
-	        } else {
-	            $.alert.warning(gt.gettext("Some types of descriptor exists for this group"));
-	        }
-	    },
-	
-	    onRenameGroup: function(e) {
-	        if (!this.model.get('can_modify') || !session.user.isSuperUser || !session.user.isStaff) {
-	            return;
-	        }
-	
-	        var ChangeName = Dialog.extend({
-	            template: __webpack_require__(140),
-	
-	            attributes: {
-	                id: "dlg_change_name",
-	            },
-	
-	            ui: {
-	                name: "#name",
-	            },
-	
-	            events: {
-	                'input @ui.name': 'onNameInput',
-	            },
-	
-	            initialize: function (options) {
-	                ChangeName.__super__.initialize.apply(this);
-	            },
-	
-	            onNameInput: function () {
-	                this.validateName();
-	            },
-	
-	            validateName: function() {
-	                var v = this.ui.name.val();
-	                var re = /^[a-zA-Z0-9_\-]+$/i;
-	
-	                if (v.length > 0 && !re.test(v)) {
-	                    $(this.ui.name).validateField('failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
-	                    return false;
-	                } else if (v.length < 3) {
-	                    $(this.ui.name).validateField('failed', gt.gettext('3 characters min'));
-	                    return false;
-	                }
-	
-	                $(this.ui.name).validateField('ok');
-	
-	                return true;
-	            },
-	
-	            onApply: function() {
-	                var name = this.ui.name.val();
-	                var model = this.getOption('model');
-	
-	                if (this.validateName()) {
-	                    model.save({name: name}, {patch: true, wait:true});
-	                    this.remove();
-	                }
-	            },
-	        });
-	
-	        var changeName = new ChangeName({
-	            model: this.model,
-	        });
-	
-	        changeName.render();
-	        changeName.ui.name.val(this.model.get('name'));
-	    },
-	});
-	
-	module.exports = View;
-
-
-/***/ },
-/* 139 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var _ = __webpack_require__(1);
-	
-	module.exports = function (obj) {
-	obj || (obj = {});
-	var __t, __p = '';
-	with (obj) {
-	__p += '<th><span class="delete-descriptor-group action glyphicon glyphicon-minus-sign"></span></th><td class="action change-name" name="name" value="' +
-	((__t = ( name )) == null ? '' : __t) +
-	'">' +
-	((__t = ( name )) == null ? '' : __t) +
-	'</td><td class="action view-descriptor-type" name="num_descriptor_types"><abbr class="badge" style="cursor: pointer" title="' +
-	((__t = ( gt.gettext('Manage types of descriptor') )) == null ? '' : __t) +
-	'">' +
-	((__t = ( num_descriptor_types )) == null ? '' : __t) +
-	'</abbr></td>';
-	
-	}
-	return __p
-	};
-
-
-/***/ },
-/* 140 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var _ = __webpack_require__(1);
-	
-	module.exports = function (obj) {
-	obj || (obj = {});
-	var __t, __p = '';
-	with (obj) {
-	__p += '<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title">' +
-	((__t = ( gt.gettext("Change the name of the group of descriptors") )) == null ? '' : __t) +
-	'</h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="label">' +
-	((__t = ( gt.gettext("Name") )) == null ? '' : __t) +
-	'</label><input class="form-control" id="name" type="text" name="name" value="" maxlength="32" autofocus="" autocomplete="off" style="width:100%"></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal">' +
-	((__t = ( gt.gettext("Cancel") )) == null ? '' : __t) +
-	'</button> <button type="button" class="btn btn-primary apply">' +
-	((__t = ( gt.gettext("Apply") )) == null ? '' : __t) +
-	'</button></div></div></div>';
-	
-	}
-	return __p
-	};
-
-
-/***/ },
-/* 141 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var _ = __webpack_require__(1);
-	
-	module.exports = function (obj) {
-	obj || (obj = {});
-	var __t, __p = '';
-	with (obj) {
-	__p += '<div class="object descriptor-group-list" object-type="descriptor-group-list" style="width:100%"><table class="table table-striped"><thead class="sticky-header"><tr><th><span class="glyphicon glyphicon-asterisk"></span></th><th>' +
-	((__t = ( gt.gettext("Name") )) == null ? '' : __t) +
-	'</th><th>' +
-	((__t = ( gt.gettext("Number of types of descriptor") )) == null ? '' : __t) +
-	'</th></tr></thead><tbody class="descriptor-group-list"></tbody></table></div>';
-	
-	}
-	return __p
-	};
-
-
-/***/ },
-/* 142 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file descriptortypelist.js
-	 * @brief List of types of descriptors for a group view
-	 * @author Frederic SCHERMA
-	 * @date 2016-07-21
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var Marionette = __webpack_require__(4);
-	var ScrollView = __webpack_require__(78);
-	
-	var DescriptorTypeModel = __webpack_require__(133);
-	var DescriptorTypeView = __webpack_require__(143);
-	
-	var View = ScrollView.extend({
-	    template: __webpack_require__(145),
-	    childView: DescriptorTypeView,
-	    childViewContainer: 'tbody.descriptor-type-list',
-	
-	    initialize: function() {
-	        this.listenTo(this.collection, 'reset', this.render, this);
-	        this.listenTo(this.collection, 'change', this.render, this);
-	        //this.listenTo(this.collection, 'add', this.render, this);
-	        //this.listenTo(this.collection, 'remove', this.render, this);
-	
-	        View.__super__.initialize.apply(this);
-	    }
-	});
-	
-	module.exports = View;
-
-
-/***/ },
-/* 143 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file descriptortype.js
-	 * @brief Type of descriptor item view
-	 * @author Frederic SCHERMA
-	 * @date 2016-07-21
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var Marionette = __webpack_require__(4);
-	var DescriptorTypeModel = __webpack_require__(133);
-	
-	var View = Marionette.ItemView.extend({
-	    tagName: 'tr',
-	    className: 'element object descriptor-type',
-	    template: __webpack_require__(144),
-	
-	    ui: {
-	        delete_descriptor_type: 'span.delete-descriptor-type',
-	        view_descriptor_type: 'td.view-descriptor-type',
-	        view_descriptor_value: 'td.view-descriptor-value'
-	    },
-	
-	    events: {
-	        'click @ui.delete_descriptor_type': 'deleteDescriptorType',
-	        'click @ui.view_descriptor_type': 'viewDescriptorType',
-	        'click @ui.view_descriptor_value': 'viewDescriptorValue'
-	    },
-	
-	    initialize: function() {
-	        this.listenTo(this.model, 'reset', this.render, this);
-	    },
-	
-	    onRender: function() {
-	        // @todo check user permissions
-	        if (!this.model.get('can_delete') || !session.user.isSuperUser || !session.user.isStaff) {
-	            $(this.ui.delete_descriptor_type).hide();
-	        }
-	    },
-	
-	    viewDescriptorType: function() {
-	        Backbone.history.navigate("app/accession/descriptor/group/" + this.model.get('group') + "/type/" + this.model.id + '/', {trigger: true});
-	    },
-	
-	    viewDescriptorValue: function () {
-	        Backbone.history.navigate("app/accession/descriptor/group/" + this.model.get('group') + "/type/" + this.model.id + '/value/', {trigger: true});
-	    },
-	
-	    deleteDescriptorType: function () {
-	        if (this.model.get('num_descriptors_values') == 0) {
-	            this.model.destroy({wait: true});
-	        } else {
-	            $.alert.warning(gt.gettext("Some values exists for this type of descriptor"));
-	        }
-	    }
-	});
-	
-	module.exports = View;
-
-
-/***/ },
-/* 144 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var _ = __webpack_require__(1);
-	
-	module.exports = function (obj) {
-	obj || (obj = {});
-	var __t, __p = '', __j = Array.prototype.join;
-	function print() { __p += __j.call(arguments, '') }
-	with (obj) {
-	__p += '<th><span class="delete-descriptor-type action glyphicon glyphicon-minus-sign"></span></th><td class="action view-descriptor-type" name="name" value="' +
-	((__t = ( name )) == null ? '' : __t) +
-	'">' +
-	((__t = ( name )) == null ? '' : __t) +
-	'</td><td name="code">' +
-	((__t = ( code )) == null ? '' : __t) +
-	'</td> ';
-	 if (format.type === "enum_single" || format.type === "enum_pair" || format.type === "enum_ordinal") { ;
-	__p += ' <td class="action view-descriptor-value" name="num_descriptor_values"><abbr class="badge" style="cursor: pointer" title="' +
-	((__t = ( gt.gettext('Manage values of the descriptor') )) == null ? '' : __t) +
-	'">' +
-	((__t = ( num_descriptor_values )) == null ? '' : __t) +
-	'</abbr></td> ';
-	 } else { ;
-	__p += ' <td class="" name="num_descriptor_values"><abbr class="badge" title="' +
-	((__t = ( gt.gettext('No values for this descriptor') )) == null ? '' : __t) +
-	'">N/A</abbr></td> ';
-	 } ;
-	__p += ' <td name="description"><abbr class="label label-default glyphicon glyphicon-option-horizontal" title="' +
-	((__t = ( description )) == null ? '' : __t) +
-	'"><span></span></abbr></td>';
-	
-	}
-	return __p
-	};
-
-
-/***/ },
-/* 145 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var _ = __webpack_require__(1);
-	
-	module.exports = function (obj) {
-	obj || (obj = {});
-	var __t, __p = '';
-	with (obj) {
-	__p += '<div class="object descriptor-type-list" object-type="descriptor-type-list" style="width:100%"><table class="table table-striped"><thead class="sticky-header"><tr><th><span class="glyphicon glyphicon-asterisk"></span></th><th>' +
-	((__t = ( gt.gettext("Name") )) == null ? '' : __t) +
-	'</th><th>' +
-	((__t = ( gt.gettext("Code") )) == null ? '' : __t) +
-	'</th><th>' +
-	((__t = ( gt.gettext("Number of values") )) == null ? '' : __t) +
-	'</th><th>' +
-	((__t = ( gt.gettext("Description") )) == null ? '' : __t) +
-	'</th></tr></thead><tbody class="descriptor-type-list"></tbody></table></div>';
-	
-	}
-	return __p
-	};
-
-
-/***/ },
-/* 146 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file descriptorvaluelist.js
-	 * @brief List of values for a type of descriptor item view
-	 * @author Frederic SCHERMA
-	 * @date 2016-07-21
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var Marionette = __webpack_require__(4);
-	var DescriptorValueModel = __webpack_require__(136);
-	var DescriptorValueView = __webpack_require__(147);
-	var ScrollView = __webpack_require__(78);
-	
-	var View = ScrollView.extend({
-	    template: __webpack_require__(150),
-	    childView: DescriptorValueView,
-	    childViewContainer: 'tbody.descriptor-value-list',
-	
-	    templateHelpers: function() {
-	        return {
-	            format: this.collection.format,
-	            items: this.collection.toJSON()
-	        };
-	    },
-	    childViewOptions: function () {
-	        return {
-	            can_delete: this.model.get('can_delete'),
-	            can_modify: this.model.get('can_modify')
-	        }
-	    },
-	
-	    ui: {
-	        table: "table.descriptor-table",
-	        sort_by_id: "th span.action.column-sort-id",
-	        sort_by_value0: "th span.action.column-sort-value0"
-	    },
-	
-	    events: {
-	        'click @ui.sort_by_id': 'sortColumn',
-	        'click @ui.sort_by_value0': 'sortColumn',
-	    },
-	
-	    initialize: function() {
-	        this.listenTo(this.collection, 'reset', this.render, this);
-	        this.listenTo(this.collection, 'change', this.render, this);
-	        //this.listenTo(this.collection, 'add', this.render, this);
-	        //this.listenTo(this.collection, 'remove', this.render, this);
-	
-	        View.__super__.initialize.apply(this);
-	    },
-	
-	    onRender: function() {
-	        var sort_by = /([+\-]{0,1})([a-z0-9]+)/.exec(this.collection.sort_by);
-	        var sort_el = this.$el.find('span[column-name="' + sort_by[2] + '"]');
-	
-	        if (sort_by[1] === '-') {
-	            if ((sort_el.attr('column-type') || "alpha") === "numeric") {
-	                sort_el.addClass('glyphicon-sort-by-order-alt');
-	            } else {
-	                sort_el.addClass('glyphicon-sort-by-alphabet-alt');
-	            }
-	            sort_el.data('sort', 'desc');
-	        } else {
-	            if ((sort_el.attr('column-type') || "alpha") === "numeric") {
-	                sort_el.addClass('glyphicon-sort-by-order');
-	            } else {
-	                sort_el.addClass('glyphicon-sort-by-alphabet');
-	            }
-	            sort_el.data('sort', 'asc');
-	        }
-	
-	        // reset scrolling
-	        this.$el.parent().scrollTop(0);
-	    },
-	
-	    sortColumn: function (e) {
-	        var column = $(e.target).attr('column-name') || "id";
-	        var order = $(e.target).data('sort') || "none";
-	
-	        if (order === "asc") {
-	            sort_by = "-" + column;
-	        } else {
-	            sort_by = "+" + column;
-	        }
-	
-	        this.collection.next = null;
-	        this.collection.fetch({reset: true, update: false, remove: true, data: {cursor: null, sort_by: sort_by}});
-	    }
-	});
-	
-	module.exports = View;
-
-
-/***/ },
-/* 147 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file descriptorvalue.js
-	 * @brief Value for a type of descriptor view
-	 * @author Frederic SCHERMA
-	 * @date 2016-07-21
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var Marionette = __webpack_require__(4);
-	var DescriptorValueModel = __webpack_require__(136);
-	
-	var Dialog = __webpack_require__(82);
-	
-	var View = Marionette.ItemView.extend({
-	    tagName: 'tr',
-	    className: 'element object descriptor-value',
-	    template: __webpack_require__(148),
-	    templateHelpers: function() {
-	        var ctx = this.model;
-	        ctx.format = this.model.collection.format;
-	
-	        // @todo check with user permission
-	        ctx.can_delete = this.getOption('can_delete');
-	        ctx.can_modify = this.getOption('can_modify');
-	        return ctx;
-	    },
-	
-	    ui: {
-	        delete_descriptor_value: 'th.delete-descriptor-value',
-	        edit_value0: 'td.edit-descriptor-value0',
-	    },
-	
-	    events: {
-	        'click @ui.delete_descriptor_value': 'deleteDescriptorValue',
-	        'click @ui.edit_value0': 'onEditValue0',
-	    },
-	
-	    initialize: function() {
-	        this.listenTo(this.model, 'reset', this.render, this);
-	    },
-	
-	    onRender: function() {
-	    },
-	
-	    deleteDescriptorValue: function () {
-	        // @todo check with user permission
-	        //if ($.inArray("auth.delete_descriptorvalue", this.model.perms) < 0) {
-	        if (!this.model.get('can_delete') || !session.user.isSuperUser || session.user.isStaff) {
-	            this.model.destroy({wait: true});
-	        }
-	    },
-	
-	    onEditValue0: function() {
-	        if (this.getOption('can_modify')) {
-	            var ChangeLabel = Dialog.extend({
-	                template: __webpack_require__(149),
-	
-	                attributes: {
-	                    id: "dlg_change_value",
-	                },
-	
-	                ui: {
-	                    value: "#value",
-	                },
-	
-	                events: {
-	                    'input @ui.value': 'onValueInput',
-	                },
-	
-	                initialize: function (options) {
-	                    ChangeLabel.__super__.initialize.apply(this);
-	
-	                },
-	
-	                onValueInput: function () {
-	                    this.validateValue();
-	                },
-	
-	                validateValue: function () {
-	                    var v = this.ui.value.val();
-	
-	                    if (v.length < 1) {
-	                        $(this.ui.value).validateField('failed', gt.gettext('1 characters min'));
-	                        return false;
-	                    }
-	
-	                    $(this.ui.value).validateField('ok');
-	
-	                    return true;
-	                },
-	
-	                onApply: function () {
-	                    var view = this;
-	                    var model = this.getOption('model');
-	
-	                    if (this.validateValue()) {
-	                        model.save({value0: this.ui.value.val()}, {
-	                            patch: true,
-	                            wait: true,
-	                            success: function () {
-	                                view.remove();
-	                                $.alert.success(gt.gettext("Successfully changed !"));
-	                            },
-	                            error: function () {
-	                                $.alert.error(gt.gettext("Unable to change the value !"));
-	                            }
-	                        });
-	                    }
-	                },
-	            });
-	
-	            var changeLabel = new ChangeLabel({
-	                model: this.model,
-	            });
-	
-	            changeLabel.render();
-	            changeLabel.ui.value.val(this.model.get('value0'));
-	        }
-	    },
-	});
-	
-	module.exports = View;
-
-/***/ },
-/* 148 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var _ = __webpack_require__(1);
-	
-	module.exports = function (obj) {
-	obj || (obj = {});
-	var __t, __p = '', __j = Array.prototype.join;
-	function print() { __p += __j.call(arguments, '') }
-	with (obj) {
-	
-	 if (can_delete) { ;
-	__p += ' <th class="action delete-descriptor-value"><span class="glyphicon glyphicon-minus-sign"></span></th> ';
-	 } else { ;
-	__p += ' <th><span></span></th> ';
-	 } ;
-	__p += ' <td class="action edit-descriptor-id" name="id">' +
-	((__t = ( id )) == null ? '' : __t) +
-	'</td><td class="action edit-descriptor-value0" name="value0">' +
-	((__t = ( value0 )) == null ? '' : __t) +
-	'</td>';
-	
-	}
-	return __p
-	};
-
-
-/***/ },
-/* 149 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var _ = __webpack_require__(1);
-	
-	module.exports = function (obj) {
-	obj || (obj = {});
-	var __t, __p = '';
-	with (obj) {
-	__p += '<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title">' +
-	((__t = ( gt.gettext("Change the value of a field for a type of descriptor") )) == null ? '' : __t) +
-	'</h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="value">' +
-	((__t = ( gt.gettext("Value for the current language") )) == null ? '' : __t) +
-	'</label><input class="form-control" id="value" type="text" name="value" value="" maxlength="128" autofocus="" autocomplete="off" style="width:100%"></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal">' +
-	((__t = ( gt.gettext("Cancel") )) == null ? '' : __t) +
-	'</button> <button type="button" class="btn btn-primary apply">' +
-	((__t = ( gt.gettext("Apply") )) == null ? '' : __t) +
-	'</button></div></div></div>';
-	
-	}
-	return __p
-	};
-
-
-/***/ },
-/* 150 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var _ = __webpack_require__(1);
-	
-	module.exports = function (obj) {
-	obj || (obj = {});
-	var __t, __p = '';
-	with (obj) {
-	__p += '<div class="object descriptor-value-list" object-type="descriptor-value-list" style="width:100%"><table class="table table-striped descriptor-table"><thead><tr class="sticky-header"><th class="unselectable"><span class="glyphicon glyphicon-asterisk"></span></th><th class="unselectable">' +
-	((__t = ( gt.gettext("Code") )) == null ? '' : __t) +
-	'&nbsp;<span class="action column-sort-id glyphicon glyphicon-sort" column-name="id" column-type="alpha"></span></th><th class="unselectable">' +
-	((__t = ( gt.gettext("Value") )) == null ? '' : __t) +
-	'&nbsp;<span class="action column-sort-value0 glyphicon glyphicon-sort" column-name="value0" column-type="alpha"></span></th></tr></thead><tbody class="descriptor-value-list"></tbody></table></div>';
-	
-	}
-	return __p
-	};
-
-
-/***/ },
-/* 151 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file descriptorvaluepairlist.js
-	 * @brief List of pair values for a type of descriptor item view
-	 * @author Frederic SCHERMA
-	 * @date 2016-08-01
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var Marionette = __webpack_require__(4);
-	var DescriptorValueModel = __webpack_require__(136);
-	var DescriptorValuePairView = __webpack_require__(152);
-	var ScrollView = __webpack_require__(78);
-	
-	var View = ScrollView.extend({
-	    template: __webpack_require__(154),
-	    childView: DescriptorValuePairView,
-	    childViewContainer: 'tbody.descriptor-value-list',
-	
-	    templateHelpers: function() {
-	        return {
-	            format: this.collection.format,
-	            items: this.collection.toJSON()
-	        };
-	    },
-	    childViewOptions: function () {
-	        return {
-	            can_delete: this.model.get('can_delete'),
-	            can_modify: this.model.get('can_modify')
-	        }
-	    },
-	
-	    ui: {
-	        table: "table.descriptor-table",
-	        sort_by_id: "th span.action.column-sort-id",
-	        sort_by_value0: "th span.action.column-sort-value0",
-	        sort_by_value1: "th span.action.column-sort-value1"
-	    },
-	
-	    events: {
-	        'click @ui.sort_by_id': 'sortColumn',
-	        'click @ui.sort_by_value0': 'sortColumn',
-	        'click @ui.sort_by_value1': 'sortColumn',
-	    },
-	
-	    initialize: function() {
-	        this.listenTo(this.collection, 'reset', this.render, this);
-	        this.listenTo(this.collection, 'change', this.render, this);
-	
-	        View.__super__.initialize.apply(this);
-	    },
-	
-	    onRender: function() {
-	        var sort_by = /([+\-]{0,1})([a-z0-9]+)/.exec(this.collection.sort_by);
-	        var sort_el = this.$el.find('span[column-name="' + sort_by[2] + '"]');
-	
-	        if (sort_by[1] === '-') {
-	            if ((sort_el.attr('column-type') || "alpha") === "numeric") {
-	                sort_el.addClass('glyphicon-sort-by-order-alt');
-	            } else {
-	                sort_el.addClass('glyphicon-sort-by-alphabet-alt');
-	            }
-	            sort_el.data('sort', 'desc');
-	        } else {
-	            if ((sort_el.attr('column-type') || "alpha") === "numeric") {
-	                sort_el.addClass('glyphicon-sort-by-order');
-	            } else {
-	                sort_el.addClass('glyphicon-sort-by-alphabet');
-	            }
-	            sort_el.data('sort', 'asc');
-	        }
-	
-	        // reset scrolling
-	        this.$el.parent().scrollTop(0);
-	    },
-	
-	    sortColumn: function (e) {
-	        var column = $(e.target).attr('column-name') || "id";
-	        var order = $(e.target).data('sort') || "none";
-	
-	        if (order === "asc") {
-	            sort_by = "-" + column;
-	        } else {
-	            sort_by = "+" + column;
-	        }
-	
-	        this.collection.next = null;
-	        this.collection.fetch({reset: true, update: false, remove: true, data: {
-	            more: this.capacity(),
-	            cursor: null,
-	            sort_by: sort_by
-	        }});
-	    }
-	});
-	
-	module.exports = View;
-
-
-/***/ },
-/* 152 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file descriptorvaluepair.js
-	 * @brief Value for a type of descriptor view
-	 * @author Frederic SCHERMA
-	 * @date 2016-08-01
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var Marionette = __webpack_require__(4);
-	var DescriptorValueModel = __webpack_require__(136);
-	
-	var Dialog = __webpack_require__(82);
-	
-	var View = Marionette.ItemView.extend({
-	    tagName: 'tr',
-	    className: 'element object descriptor-value',
-	    template: __webpack_require__(153),
-	    templateHelpers: function() {
-	        var ctx = this.model;
-	        ctx.format = this.model.collection.format;
-	
-	        // @todo check with user permission
-	        ctx.can_delete = this.getOption('can_delete');
-	        ctx.can_modify = this.getOption('can_modify');
-	        return ctx;
-	    },
-	    ui: {
-	        delete_descriptor_value: 'th.delete-descriptor-value',
-	        edit_value0: 'td.edit-descriptor-value0',
-	        edit_value1: 'td.edit-descriptor-value1',
-	    },
-	
-	    events: {
-	        'click @ui.delete_descriptor_value': 'deleteDescriptorValue',
-	        'click @ui.edit_value0': 'onEditValue0',
-	        'click @ui.edit_value1': 'onEditValue1',
-	    },
-	
-	    initialize: function() {
-	        this.listenTo(this.model, 'reset', this.render, this);
-	    },
-	
-	    onRender: function() {
-	    },
-	
-	    deleteDescriptorValue: function () {
-	        if (!this.model.get('can_delete') || !session.user.isSuperUser || session.user.isStaff) {
-	            this.model.destroy({wait: true});
-	        }
-	    },
-	
-	    onEditValue0: function() {
-	        if (this.getOption('can_modify')) {
-	            var ChangeLabel = Dialog.extend({
-	                template: __webpack_require__(149),
-	
-	                attributes: {
-	                    id: "dlg_change_value",
-	                },
-	
-	                ui: {
-	                    value: "#value",
-	                },
-	
-	                events: {
-	                    'input @ui.value': 'onValueInput',
-	                },
-	
-	                initialize: function (options) {
-	                    ChangeLabel.__super__.initialize.apply(this);
-	
-	                },
-	
-	                onValueInput: function () {
-	                    this.validateValue();
-	                },
-	
-	                validateValue: function () {
-	                    var v = this.ui.value.val();
-	
-	                    if (v.length < 1) {
-	                        $(this.ui.value).validateField('failed', gt.gettext('1 characters min'));
-	                        return false;
-	                    }
-	
-	                    $(this.ui.value).validateField('ok');
-	
-	                    return true;
-	                },
-	
-	                onApply: function () {
-	                    var view = this;
-	                    var model = this.getOption('model');
-	
-	                    if (this.validateValue()) {
-	                        model.save({value0: this.ui.value.val()}, {
-	                            patch: true,
-	                            wait: true,
-	                            success: function () {
-	                                view.remove();
-	                                $.alert.success(gt.gettext("Successfully changed !"));
-	                            },
-	                            error: function () {
-	                                $.alert.error(gt.gettext("Unable to change the value !"));
-	                            }
-	                        });
-	                    }
-	                },
-	            });
-	
-	            var changeLabel = new ChangeLabel({
-	                model: this.model,
-	            });
-	
-	            changeLabel.render();
-	            changeLabel.ui.value.val(this.model.get('value0'));
-	        }
-	    },
-	
-	    onEditValue1: function() {
-	        if (this.getOption('can_modify')) {
-	            var ChangeLabel = Dialog.extend({
-	                template: __webpack_require__(149),
-	
-	                attributes: {
-	                    id: "dlg_change_value",
-	                },
-	
-	                ui: {
-	                    value: "#value",
-	                },
-	
-	                events: {
-	                    'input @ui.value': 'onValueInput',
-	                },
-	
-	                initialize: function (options) {
-	                    ChangeLabel.__super__.initialize.apply(this);
-	
-	                },
-	
-	                onValueInput: function () {
-	                    this.validateValue();
-	                },
-	
-	                validateValue: function () {
-	                    var v = this.ui.value.val();
-	
-	                    if (v.length < 1) {
-	                        $(this.ui.value).validateField('failed', gt.gettext('1 characters min'));
-	                        return false;
-	                    }
-	
-	                    $(this.ui.value).validateField('ok');
-	
-	                    return true;
-	                },
-	
-	                onApply: function () {
-	                    var view = this;
-	                    var model = this.getOption('model');
-	
-	                    if (this.validateValue()) {
-	                        model.save({value1: this.ui.value.val()}, {
-	                            patch: true,
-	                            wait: true,
-	                            success: function () {
-	                                view.remove();
-	                                $.alert.success(gt.gettext("Successfully changed !"));
-	                            },
-	                            error: function () {
-	                                $.alert.error(gt.gettext("Unable to change the value !"));
-	                            }
-	                        });
-	                    }
-	                },
-	            });
-	
-	            var changeLabel = new ChangeLabel({
-	                model: this.model,
-	            });
-	
-	            changeLabel.render();
-	            changeLabel.ui.value.val(this.model.get('value1'));
-	        }
-	    },
-	});
-	
-	module.exports = View;
-
-/***/ },
-/* 153 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var _ = __webpack_require__(1);
-	
-	module.exports = function (obj) {
-	obj || (obj = {});
-	var __t, __p = '', __j = Array.prototype.join;
-	function print() { __p += __j.call(arguments, '') }
-	with (obj) {
-	
-	 if (can_delete) { ;
-	__p += ' <th class="action delete-descriptor-value"><span class="glyphicon glyphicon-minus-sign"></span></th> ';
-	 } else { ;
-	__p += ' <th><span></span></th> ';
-	 } ;
-	__p += ' <td class="action edit-descriptor-id" name="id">' +
-	((__t = ( id )) == null ? '' : __t) +
-	'</td><td class="action edit-descriptor-value0">' +
-	((__t = ( value0 )) == null ? '' : __t) +
-	'</td><td class="action edit-descriptor-value1">' +
-	((__t = ( value1 )) == null ? '' : __t) +
-	'</td>';
-	
-	}
-	return __p
-	};
-
-
-/***/ },
-/* 154 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var _ = __webpack_require__(1);
-	
-	module.exports = function (obj) {
-	obj || (obj = {});
-	var __t, __p = '';
-	with (obj) {
-	__p += '<div class="object descriptor-value-list" object-type="descriptor-value-list" style="width:100%"><table class="table table-striped descriptor-table"><thead class="sticky-header"><tr><th><span class="glyphicon glyphicon-asterisk"></span></th><th class="unselectable">' +
-	((__t = ( gt.gettext("Code") )) == null ? '' : __t) +
-	'&nbsp;<span class="action column-sort-id glyphicon glyphicon-sort" column-name="id" column-type="alpha"></span></th><th class="unselectable">' +
-	((__t = ( gt.gettext(format.fields[0]) )) == null ? '' : __t) +
-	'&nbsp;<span class="action column-sort-value0 glyphicon glyphicon-sort" column-name="value0" column-type="alpha"></span></th><th class="unselectable">' +
-	((__t = ( gt.gettext(format.fields[1]) )) == null ? '' : __t) +
-	'&nbsp;<span class="action column-sort-value1 glyphicon glyphicon-sort" column-name="value1" column-type="alpha"></span></th></tr></thead><tbody class="descriptor-value-list"></tbody></table></div>';
-	
-	}
-	return __p
-	};
-
-
-/***/ },
-/* 155 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file descriptorvalueordinallist.js
-	 * @brief List of ordinam values for a type of descriptor item view
-	 * @author Frederic SCHERMA
-	 * @date 2016-10-28
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var Marionette = __webpack_require__(4);
-	var DescriptorValueModel = __webpack_require__(136);
-	var DescriptorValueOrdinalView = __webpack_require__(156);
-	var ScrollView = __webpack_require__(78);
-	
-	var View = ScrollView.extend({
-	    template: __webpack_require__(158),
-	    childView: DescriptorValueOrdinalView,
-	    childViewContainer: 'tbody.descriptor-value-list',
-	
-	    templateHelpers: function() {
-	        return {
-	            format: this.collection.format,
-	            items: this.collection.toJSON()
-	        };
-	    },
-	    childViewOptions: function () {
-	        return {
-	            can_delete: this.model.get('can_delete'),
-	            can_modify: this.model.get('can_modify')
-	        }
-	    },
-	
-	    ui: {
-	        table: "table.descriptor-table",
-	        sort_by_id: "th span.action.column-sort-id",
-	        sort_by_ordinal: "th span.action.column-sort-ordinal",
-	        sort_by_value0: "th span.action.column-sort-value0",
-	    },
-	
-	    events: {
-	        'click @ui.sort_by_id': 'sortColumn',
-	        'click @ui.sort_by_ordinal': 'sortColumn',
-	        'click @ui.sort_by_value0': 'sortColumn',
-	    },
-	
-	    initialize: function() {
-	        this.listenTo(this.collection, 'reset', this.render, this);
-	        this.listenTo(this.collection, 'change', this.render, this);
-	
-	        View.__super__.initialize.apply(this);
-	    },
-	
-	    onRender: function() {
-	        var sort_by = /([+\-]{0,1})([a-z0-9]+)/.exec(this.collection.sort_by);
-	        var sort_el = this.$el.find('span[column-name="' + sort_by[2] + '"]');
-	
-	        if (sort_by[1] === '-') {
-	            if ((sort_el.attr('column-type') || "alpha") === "numeric") {
-	                sort_el.addClass('glyphicon-sort-by-order-alt');
-	            } else {
-	                sort_el.addClass('glyphicon-sort-by-alphabet-alt');
-	            }
-	            sort_el.data('sort', 'desc');
-	        } else {
-	            if ((sort_el.attr('column-type') || "alpha") === "numeric") {
-	                sort_el.addClass('glyphicon-sort-by-order');
-	            } else {
-	                sort_el.addClass('glyphicon-sort-by-alphabet');
-	            }
-	            sort_el.data('sort', 'asc');
-	        }
-	
-	        // reset scrolling
-	        this.$el.parent().scrollTop(0);
-	    },
-	
-	    sortColumn: function (e) {
-	        var column = $(e.target).attr('column-name') || "id";
-	        var order = $(e.target).data('sort') || "none";
-	
-	        if (order === "asc") {
-	            sort_by = "-" + column;
-	        } else {
-	            sort_by = "+" + column;
-	        }
-	
-	        this.collection.next = null;
-	        this.collection.fetch({reset: true, update: false, remove: true, data: {
-	            more: this.capacity(),
-	            cursor: null,
-	            sort_by: sort_by
-	        }});
-	    }
-	});
-	
-	module.exports = View;
-
-
-/***/ },
-/* 156 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file descriptorvalueordinal.js
-	 * @brief Value for a type of descriptor view
-	 * @author Frederic SCHERMA
-	 * @date 2016-10-28
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var Marionette = __webpack_require__(4);
-	var DescriptorValueModel = __webpack_require__(136);
-	
-	var Dialog = __webpack_require__(82);
-	
-	var View = Marionette.ItemView.extend({
-	    tagName: 'tr',
-	    className: 'element object descriptor-value',
-	    template: __webpack_require__(157),
-	    templateHelpers: function() {
-	        var ctx = this.model;
-	        ctx.format = this.model.collection.format;
-	        ctx.can_delete = this.getOption('can_delete');
-	        ctx.can_modify = this.getOption('can_modify');
-	        return ctx;
-	    },
-	
-	    ui: {
-	        edit_label: 'td.edit-descriptor-value0',
-	    },
-	
-	    events: {
-	        'click @ui.edit_label': 'onEditLabel',
-	    },
-	
-	    initialize: function() {
-	        this.listenTo(this.model, 'reset', this.render, this);
-	    },
-	
-	    onRender: function() {
-	  
-	    },
-	
-	    onEditLabel: function() {
-	        if (this.getOption('can_modify')) {
-	            var ChangeLabel = Dialog.extend({
-	                template: __webpack_require__(149),
-	
-	                attributes: {
-	                    id: "dlg_change_value",
-	                },
-	
-	                ui: {
-	                    value: "#value",
-	                },
-	
-	                events: {
-	                    'input @ui.value': 'onValueInput',
-	                },
-	
-	                initialize: function (options) {
-	                    ChangeLabel.__super__.initialize.apply(this);
-	
-	                },
-	
-	                onValueInput: function () {
-	                    this.validateValue();
-	                },
-	
-	                validateValue: function () {
-	                    var v = this.ui.value.val();
-	
-	                    if (v.length < 1) {
-	                        $(this.ui.value).validateField('failed', gt.gettext('1 characters min'));
-	                        return false;
-	                    }
-	
-	                    $(this.ui.value).validateField('ok');
-	
-	                    return true;
-	                },
-	
-	                onApply: function () {
-	                    var view = this;
-	                    var model = this.getOption('model');
-	
-	                    if (this.validateValue()) {
-	                        model.save({value0: this.ui.value.val()}, {
-	                            patch: true,
-	                            wait: true,
-	                            success: function () {
-	                                view.remove();
-	                                $.alert.success(gt.gettext("Successfully changed !"));
-	                            },
-	                            error: function () {
-	                                $.alert.error(gt.gettext("Unable to change the value !"));
-	                            }
-	                        });
-	                    }
-	                },
-	            });
-	
-	            var changeLabel = new ChangeLabel({
-	                model: this.model,
-	            });
-	
-	            changeLabel.render();
-	            changeLabel.ui.value.val(this.model.get('value0'));
-	        }
-	    },
-	});
-	
-	module.exports = View;
-
-/***/ },
-/* 157 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var _ = __webpack_require__(1);
-	
-	module.exports = function (obj) {
-	obj || (obj = {});
-	var __t, __p = '';
-	with (obj) {
-	__p += '<th></th><td name="id">' +
-	((__t = ( id )) == null ? '' : __t) +
-	'</td><td name="ordinal">' +
-	((__t = ( ordinal )) == null ? '' : __t) +
-	'</td><td class="action edit-descriptor-value0" name="value0">' +
-	((__t = ( value0 )) == null ? '' : __t) +
-	'</td>';
-	
-	}
-	return __p
-	};
-
-
-/***/ },
-/* 158 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var _ = __webpack_require__(1);
-	
-	module.exports = function (obj) {
-	obj || (obj = {});
-	var __t, __p = '';
-	with (obj) {
-	__p += '<div class="object descriptor-value-list" object-type="descriptor-value-list" style="width:100%"><table class="table table-striped descriptor-table"><thead class="sticky-header"><tr><th><span class="glyphicon glyphicon-asterisk"></span></th><th class="unselectable">' +
-	((__t = ( gt.gettext("Code") )) == null ? '' : __t) +
-	'&nbsp;<span class="action column-sort-id glyphicon glyphicon-sort" column-name="id" column-type="alpha"></span></th><th class="unselectable">' +
-	((__t = ( gt.gettext("Ordinal") )) == null ? '' : __t) +
-	'&nbsp;<span class="action column-sort-ordinal glyphicon glyphicon-sort" column-name="ordinal" column-type="numeric"></span></th><th class="unselectable">' +
-	((__t = ( gt.gettext(format.fields[0]) )) == null ? '' : __t) +
-	'&nbsp;<span class="action column-sort-value0 glyphicon glyphicon-sort" column-name="value0" column-type="alpha"></span></th></tr></thead><tbody class="descriptor-value-list"></tbody></table></div>';
-	
-	}
-	return __p
-	};
-
-
-/***/ },
-/* 159 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file descriptorvalueadd.js
-	 * @brief Add a value for a descriptor
-	 * @author Frederic SCHERMA
-	 * @date 2016-10-31
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var Marionette = __webpack_require__(4);
-	
-	var View = Marionette.ItemView.extend({
-	    tagName: 'div',
-	    className: 'type-add',
-	    template: __webpack_require__(160),
-	
-	    ui: {
-	        add_value_btn: 'span.add-descriptor-value',
-	        value: 'input.descriptor-value',
-	    },
-	
-	    events: {
-	        'click @ui.add_value_btn': 'addValue',
-	        'input @ui.value': 'onValueInput',
-	    },
-	
-	    initialize: function(options) {
-	        options || (options = {});
-	        this.collection = options.collection;
-	    },
-	
-	    addValue: function () {
-	        if (!this.ui.value.hasClass('invalid')) {
-	            this.collection.create({
-	                value0: this.ui.value.val(),
-	            }, {wait: true});
-	
-	            $(this.ui.value).cleanField();
-	        }
-	    },
-	
-	    validateValue: function() {
-	        var v = this.ui.value.val();
-	
-	        if (v.length < 1) {
-	            $(this.ui.value).validateField('failed', gt.gettext('1 character min'));
-	            return false;
-	        }
-	
-	        return true;
-	    },
-	
-	    onValueInput: function () {
-	        if (this.validateValue()) {
-	            $(this.ui.value).validateField('ok');
-	        }
-	    },
-	});
-	
-	module.exports = View;
-	
-
-
-/***/ },
-/* 160 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var _ = __webpack_require__(1);
-	
-	module.exports = function (obj) {
-	obj || (obj = {});
-	var __t, __p = '';
-	with (obj) {
-	__p += '<table class="table table-striped" style="margin-bottom: 0px"><tbody><tr class="edit-mode" style="height: 95px"><th><span class="add-descriptor-value action glyphicon glyphicon-plus-sign" style="margin-top: 9px; margin-left: 10px"></span></th><td style="width: 100%"><div class="form-group"><input type="text" class="descriptor-value form-control" name="type"></div></td></tr></tbody></table>';
-	
-	}
-	return __p
-	};
-
-
-/***/ },
-/* 161 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file descriptortypedetail.js
-	 * @brief Detail for a type of descriptor view
-	 * @author Frederic SCHERMA
-	 * @date 2016-07-29
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var Marionette = __webpack_require__(4);
-	var DescriptorTypeModel = __webpack_require__(133);
-	
-	var View = Marionette.ItemView.extend({
-	    className: 'element object descriptor-type-detail',
-	    template: __webpack_require__(162),
-	
-	    ui: {
-	        name: '#descriptor_type_name',
-	        code: '#descriptor_type_code',
-	        description: '#descriptor_type_description',
-	        format_type: '#format_type',
-	        fields: 'div.descriptor-type-fields',
-	        field0: '#type_field0',
-	        field1: '#type_field1',
-	        format_unit: '#format_unit',
-	        format_unit_custom: '#format_unit_custom',
-	        format_precision: '#format_precision',
-	        range: 'div.descriptor-type-range',
-	        format_range_min: '#format_range_min',
-	        format_range_max: '#format_range_max',
-	        format_regexp: '#format_regexp',
-	        save: '#save'
-	    },
-	
-	    events: {
-	        'click @ui.save': 'saveDescriptorType',
-	        'input @ui.name': 'inputName',
-	        'change @ui.format_type': 'changeFormatType',
-	        'change @ui.format_unit': 'changeFormatUnit',
-	        'input @ui.format_unit_custom': 'inputFormatUnitCustom',
-	    },
-	
-	    initialize: function() {
-	        this.listenTo(this.model, 'reset', this.render, this);
-	
-	        $(this.ui.format_type).select2({
-	            dropdownParent: $(this.el),
-	        });
-	    },
-	
-	    onRender: function() {
-	        // @todo check user permissions
-	        if (!this.model.get('can_modify')) {
-	            $(this.ui.save).hide();
-	        }
-	
-	        var format = this.model.get('format');
-	
-	        $(this.ui.format_type).val(format.type).trigger('change');
-	        $(this.ui.format_unit).val(format.unit).trigger('change');
-	        $(this.ui.format_precision).val(format.precision).trigger('change');
-	
-	        if (format.type == "enum_pair") {
-	            $(this.ui.fields).show();
-	
-	            if (format.fields[0]) {
-	                $(this.ui.field0).val(format.fields[0]);
-	            }
-	            if (format.fields[1]) {
-	                $(this.ui.field1).val(format.fields[1]);
-	            }
-	        } else {
-	            $(this.ui.fields).hide(false);
-	
-	            $(this.ui.field0).val("");
-	            $(this.ui.field1).val("");
-	        }
-	
-	        switch (format.type) {
-	            case "ordinal":
-	            case "enum_ordinal":
-	                $(this.ui.format_range_min).numeric({decimal: false, negative: false});
-	                $(this.ui.format_range_max).numeric({decimal: false, negative: false});
-	
-	                $(this.ui.format_range_min).val(format.range[0]);
-	                $(this.ui.format_range_max).val(format.range[1]);
-	                break;
-	            case "numeric_range":
-	                $(this.ui.format_range_min).numeric({decimal: '.', negative: false});
-	                $(this.ui.format_range_max).numeric({decimal: '.', negative: false});
-	
-	                $(this.ui.format_range_min).val(format.range[0]);
-	                $(this.ui.format_range_max).val(format.range[1]);
-	                break;
-	            default:
-	                $(this.ui.format_range_min).attr("readonly", "readonly").val("");
-	                $(this.ui.format_range_max).attr("readonly", "readonly").val("");
-	
-	                if ($(this.ui.range).css('display') != 'none') {
-	                    $(this.ui.range).hide(false);
-	                }
-	                break;
-	        }
-	
-	        if (format.type != "numeric" && format.type != "numeric_range") {
-	            if ($(this.ui.format_precision).parent().css('display') != 'none') {
-	                $(this.ui.format_precision).parent().hide(false);
-	            }
-	        }
-	
-	        if (format.type != "string") {
-	            if ($(this.ui.format_regexp).parent().css('display') != 'none') {
-	                $(this.ui.format_regexp).parent().hide(false);
-	            }
-	        }
-	    },
-	
-	    changeFormatType: function () {
-	        var type = $(this.ui.format_type).val();
-	
-	        // related fields
-	        switch (type) {
-	            case "boolean":
-	            case "gps":
-	            case "string":
-	            case "enum_single":
-	            case "enum_pair":
-	            case "enum_ordinal":
-	            case "ordinal":
-	                $(this.ui.format_precision).attr("disabled", "disabled").val("0.0");
-	                if ($(this.ui.format_precision).parent().css('display') != 'none') {
-	                    $(this.ui.format_precision).parent().hide(true);
-	                }
-	                break;
-	            case "numeric":
-	            case "numeric_range":
-	                $(this.ui.format_precision).attr("disabled", null).val("1.0");
-	                if ($(this.ui.format_precision).parent().css('display') == 'none') {
-	                    $(this.ui.format_precision).parent().show(true);
-	                }
-	                break;
-	            default:
-	                break;
-	        }
-	
-	        if (type == "string") {
-	            $(this.ui.format_regexp).attr("readonly", null).val("");
-	
-	            if ($(this.ui.format_regexp).parent().css('display') == 'none') {
-	                $(this.ui.format_regexp).parent().show(true);
-	            }
-	        } else {
-	            $(this.ui.format_regexp).attr("readonly", "readonly").val("");
-	
-	            if ($(this.ui.format_regexp).parent().css('display') != 'none') {
-	                $(this.ui.format_regexp).parent().hide(true);
-	            }
-	        }
-	
-	        if (type == "numeric_range") {
-	            $(this.ui.format_range_min).attr("readonly", null).val("0.0").numeric({decimal : '.', negative : false});
-	            $(this.ui.format_range_max).attr("readonly", null).val("100.0").numeric({decimal : '.', negative : false});
-	
-	            if ($(this.ui.range).css('display') == 'none') {
-	                $(this.ui.range).show(true);
-	            }
-	        } else if (type == "enum_ordinal" || type == "ordinal") {
-	            $(this.ui.format_range_min).attr("readonly", null).val("0").numeric({decimal : false, negative : false});
-	            $(this.ui.format_range_max).attr("readonly", null).val("10").numeric({decimal : false, negative : false});
-	
-	            if ($(this.ui.range).css('display') == 'none') {
-	                $(this.ui.range).show(true);
-	            }
-	        } else {
-	            $(this.ui.format_range_min).attr("readonly", "readonly").val("");
-	            $(this.ui.format_range_max).attr("readonly", "readonly").val("");
-	
-	            if ($(this.ui.range).css('display') != 'none') {
-	                $(this.ui.range).hide(true);
-	            }
-	        }
-	
-	        if (type == "enum_pair" && ($(this.ui.fields).css('display') == 'none')) {
-	            $(this.ui.fields).show(true);
-	        } else {
-	            $(this.ui.fields).hide(true);
-	        }
-	    },
-	    
-	    changeFormatUnit: function () {
-	        var unit = $(this.ui.format_unit).val();
-	
-	        switch (unit) {
-	            case "custom":
-	                $(this.ui.format_unit_custom).attr("readonly", null).val("");
-	                break;
-	            default:
-	                $(this.ui.format_unit_custom).attr("readonly", "readonly").val("");
-	                break;
-	        }
-	    },
-	    
-	    inputFormatUnitCustom: function () {
-	        var v = this.ui.format_unit_custom.val();
-	        var re = /^[a-zA-Z0-9_\-%°⁼⁺⁻⁰¹²³⁴⁵⁶⁷⁸⁹/µ]+$/i;
-	
-	        if (v.length > 0 && !re.test(v)) {
-	            $(this.ui.format_unit_custom).validateField('failed', gt.gettext("Invalid characters (alphanumeric, _-°%°⁼⁺⁻⁰¹²³⁴⁵⁶⁷⁸⁹/µ allowed)"));
-	        } else if (v.length < 1) {
-	            $(this.ui.format_unit_custom).validateField('failed', gt.gettext('1 character min'));
-	        } else {
-	            $(this.ui.format_unit_custom).validateField('ok');
-	        }
-	    },
-	
-	    inputName: function () {
-	        var v = this.ui.name.val();
-	        var re = /^[a-zA-Z0-9_-]+$/i;
-	
-	        if (v.length > 0 && !re.test(v)) {
-	            $(this.ui.name).validateField('failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
-	        } else if (v.length < 3) {
-	            $(this.ui.name).validateField('failed', gt.gettext('3 characters min'));
-	        } else {
-	            $(this.ui.name).validateField('ok');
-	        }
-	    },
-	
-	    saveDescriptorType: function () {
-	        if (!$(this.ui.name.isValidField()))
-	            return;
-	
-	        var name = this.ui.name.val();
-	        var code = this.ui.code.val();
-	        var description = this.ui.description.val();
-	
-	        var format = {
-	            type: this.ui.format_type.val(),
-	            unit: this.ui.format_unit.val(),
-	            precision: this.ui.format_precision.val(),
-	            fields: [],
-	        };
-	
-	        var field0 = this.ui.field0.val();
-	        var field1 = this.ui.field1.val();
-	
-	        if (field0 && field1) {
-	            format.fields = [field0, field1];
-	        }
-	
-	        if (this.ui.format_unit.val() == 'custom') {
-	            format.custom_unit = this.ui.format_unit_custom.val();
-	        }
-	
-	        if (this.ui.format_type.val() == 'numeric_range' ||
-	            this.ui.format_type.val() == 'enum_ordinal' ||
-	            this.ui.format_type.val() == 'ordinal') {
-	            format.range = [
-	                this.ui.format_range_min.val(),
-	                this.ui.format_range_max.val()
-	            ];
-	        }
-	
-	        if (this.ui.format_type.val() == 'string') {
-	            format.regexp = this.ui.format_regexp.val();
-	        }
-	
-	        this.model.save({
-	            name: name,
-	            code: code,
-	            format: format,
-	            description: description,
-	        }, {wait: true}).done(function() { $.alert.success(gt.gettext("Done")); });;
-	    }
-	});
-	
-	module.exports = View;
-
-
-/***/ },
-/* 162 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var _ = __webpack_require__(1);
-	
-	module.exports = function (obj) {
-	obj || (obj = {});
-	var __t, __p = '', __e = _.escape;
-	with (obj) {
-	__p += '<style>/* adjust the form validation glyph position */\n    #format_unit_custom ~ span.form-control-feedback {\n        right: 15px;\n    }</style><div class="descriptor-detail"><div class="descriptor-type-name form-group" style="width: 50%"><label for="descriptor_type_name">' +
-	__e( gt.gettext('Descriptor type name') ) +
-	'</label><input id="descriptor_type_name" class="form-control" type="text" maxlength="255" value="' +
-	((__t = ( name )) == null ? '' : __t) +
-	'"></div><div class="descriptor-type-code form-group" style="width: 50%"><label for="descriptor_type_code">' +
-	__e( gt.gettext('Descriptor type code') ) +
-	'</label><input id="descriptor_type_code" class="form-control" type="text" readonly="readonly" maxlength="255" value="' +
-	((__t = ( code )) == null ? '' : __t) +
-	'"></div><div class="descriptor-type-format form-group" style="width: 50%"><label for="format_type">' +
-	__e( gt.gettext('Type of format') ) +
-	'</label><select id="format_type" class="form-control"><optgroup label="' +
-	__e( gt.gettext('Single value') ) +
-	'"><option value="boolean">' +
-	__e( gt.gettext('Boolean') ) +
-	'</option><option value="numeric">' +
-	__e( gt.gettext('Numeric') ) +
-	'</option><option value="numeric_range">' +
-	__e( gt.gettext('Numeric range') ) +
-	'</option><option value="ordinal">' +
-	__e( gt.gettext('Ordinal') ) +
-	'</option><option value="gps">' +
-	__e( gt.gettext('GPS coordinate') ) +
-	'</option><option value="string">' +
-	__e( gt.gettext('Text') ) +
-	'</option></optgroup><optgroup label="' +
-	__e( gt.gettext('List of values') ) +
-	'"><option value="enum_single">' +
-	__e( gt.gettext('Single enumeration') ) +
-	'</option><option value="enum_pair">' +
-	__e( gt.gettext('Pair enumeration') ) +
-	'</option><option value="enum_ordinal">' +
-	__e( gt.gettext('Ordinal with text') ) +
-	'</option></optgroup></select></div><div class="descriptor-type-fields form-group" style="width: 50%"><div class="row"><div class="col-xs-6"><label for="type_field0">' +
-	__e( gt.gettext('First field') ) +
-	'</label><input id="type_field0" class="form-control" type="text" maxlength="32" value=""></div><div class="col-xs-6"><label for="type_field1">' +
-	__e( gt.gettext('Second field') ) +
-	'</label><input id="type_field1" class="form-control" type="text" maxlength="32" value=""></div></div></div><div class="descriptor-type-unit form-group" style="width: 50%"><div class="row"><div class="col-xs-6"><label for="format_unit">' +
-	__e( gt.gettext('Unit of the format') ) +
-	'</label><select id="format_unit" class="form-control"><optgroup label="Chroma"><option value="chroma_L_value">L value</option><option value="chroma_a_value">a value</option><option value="chroma_b_value">b value</option></optgroup><optgroup label="Common"><option value="degree_celsius">°C (celcius degree)</option><option value="category">Category</option><option value="custom" style="font-style: italic">Custom</option><option value="joule">J (joule)</option><option value="norm1">Norm 1</option><option value="note">Note</option><option value="percent">% (percent)</option><option value="regexp">Regular expression</option><option value="scale">Scale</option></optgroup><optgroup label="Grain"><option value="gram_per_100_grain">g/100 grain</option><option value="gram_per_200_grain">g/200 grain</option><option value="gram_per_1000_grain">g/1000 grain</option><option value="grain_per_meter2">grain/m²</option><option value="grain_per_spike">grain/spike</option><option value="grain_per_spikelet">grain/spikelet</option></optgroup><optgroup label="Meter"><option value="micrometer">um</option><option value="millimeter">mm</option><option value="centimeter">cm</option><option value="centimeter">dm</option><option value="meter">m</option><option value="kilometer">km</option></optgroup><optgroup label="Plant and plot"><option value="plant_per_meter">plant/m</option><option value="plant_per_meter2">plant/m²</option><option value="plant_per_hectare">plant/ha</option><option value="plant_per_plot">plant/plot</option><option value="gram_per_plant">g/plant</option><option value="gram_per_plot">g/plot</option><option value="kilogram_per_plot">kg/plot</option><option value="stoma_per_millimeter2">stoma/mm²</option><option value="node">node</option><option value="spikelet">spikelet</option><option value="spike_per_meter2">spike/m²</option><option value="tiller_per_meter">tiller/m</option><option value="tiller_per_meter2">tiller/m²</option></optgroup><optgroup label="Quantity and volume"><option value="milliliter">ml</option><option value="milliliter_per_percent">ml/%</option><option value="ppm">ppm</option><option value="milligram_per_kilogram">mg/kg</option><option value="gram_per_kilogram">g/kg</option><option value="gram_per_meter2">g/m²</option><option value="kilogram_per_hectare">kg/ha</option><option value="tonne_per_hectare">t/ha</option><option value="gram_per_liter">g/l</option><option value="kilogram_per_hectolitre">kg/hl</option><option value="millimol_per_meter2_per_second">mmol/m²/s</option><option value="gram_per_meter2_per_day">g/m²/day</option><option value="cci">CCI (chlore)</option><option value="delta_13c">delta 13C (carbon)</option></optgroup><optgroup label="Surface"><option value="millimeter2">mm²</option><option value="centimeter2">cm²</option><option value="meter2">m²</option><option value="hectare">ha</option><option value="kilometer2">km²</option></optgroup><optgroup label="Time"><option value="millisecond">ms</option><option value="second">s</option><option value="minute">min</option><option value="hour">hour</option><option value="day">day</option><option value="month">month</option><option value="year">year</option><option value="date">date (yyyy/mm/dd)</option><option value="time">time (hh:mm:ss.ms)</option><option value="datetime">date+time</option><option value="percent_per_minute">%/min</option><option value="percent_per_hour">%/hour</option><option value="percent_per_day">%/day</option></optgroup></select></div><div class="col-xs-6"><label for="format_unit_custom">' +
-	__e( gt.gettext('Custom unit name') ) +
-	'</label><input id="format_unit_custom" class="form-control" type="text" readonly="readonly" maxlength="32" value=""></div></div></div><div class="descriptor-type-precision form-group" style="width: 50%"><label for="format_precision">' +
-	__e( gt.gettext('Precision of the decimal') ) +
-	'</label><select id="format_precision" class="form-control"><option value="0.0">0.0</option><option value="1.0">1.0</option><option value="2.0">2.0</option><option value="3.0">3.0</option><option value="4.0">4.0</option><option value="5.0">5.0</option><option value="6.0">6.0</option><option value="7.0">7.0</option><option value="8.0">8.0</option><option value="9.0">9.0</option></select></div><div class="descriptor-type-range form-group" style="width: 50%"><div class="row"><div class="col-xs-6"><label for="format_range_min">' +
-	__e( gt.gettext('Minimal range value') ) +
-	'</label><input id="format_range_min" class="form-control" type="text" readonly="readonly" maxlength="32" value="0"></div><div class="col-xs-6"><label for="format_range_max">' +
-	__e( gt.gettext('Maximal range value') ) +
-	'</label><input id="format_range_max" class="form-control" type="text" readonly="readonly" maxlength="32" value="1"></div></div></div><div class="descriptor-type-regexp form-group" style="width: 50%"><label for="format_regexp">' +
-	__e( gt.gettext('Regular expression') ) +
-	'</label><input id="format_regexp" class="form-control" type="text" readonly="readonly" maxlength="255"></div><div class="descriptor-type-description form-group" style="width: 50%"><label for="descriptor_type_description">' +
-	__e( gt.gettext('Description') ) +
-	'</label><textarea id="descriptor_type_description" class="form-control" maxlength="1024">' +
-	((__t = ( description )) == null ? '' : __t) +
-	'</textarea></div><div class="descriptor-type-update form-group" style="width: 100px; margin-left: 20%; margin-top: 25px"><button id="save" class="form-control btn btn-primary">' +
-	__e( gt.gettext('Update') ) +
-	'</button></div></div>';
-	
-	}
-	return __p
-	};
-
-
-/***/ },
-/* 163 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file descriptorgroupadd.js
-	 * @brief Add a group of descriptors
-	 * @author Frederic SCHERMA
-	 * @date 2016-08-05
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var Marionette = __webpack_require__(4);
-	
-	var View = Marionette.ItemView.extend({
-	    tagName: 'div',
-	    className: 'group-add',
-	    template: __webpack_require__(164),
-	
-	    ui: {
-	        add_group_btn: 'span.add-group',
-	        add_group_name: 'input.group-name',
-	    },
-	
-	    events: {
-	        'click @ui.add_group_btn': 'addGroup',
-	        'input @ui.add_group_name': 'onGroupNameInput',
-	    },
-	
-	    initialize: function(options) {
-	        options || (options = {});
-	        this.collection = options.collection;
-	    },
-	
-	    addGroup: function () {
-	        if (!this.ui.add_group_name.hasClass('invalid')) {
-	            this.collection.create({name: this.ui.add_group_name.val()}, {wait: true});
-	            $(this.ui.add_group_name).cleanField();
-	        }
-	    },
-	
-	    validateGroupName: function() {
-	        var v = this.ui.add_group_name.val();
-	        var re = /^[a-zA-Z0-9_\-]+$/i;
-	
-	        if (v.length > 0 && !re.test(v)) {
-	            $(this.ui.add_group_name).validateField('failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
-	            return false;
-	        } else if (v.length < 3) {
-	            $(this.ui.add_group_name).validateField('failed', gt.gettext('3 characters min'));
-	            return false;
-	        }
-	
-	        return true;
-	    },
-	
-	    onGroupNameInput: function () {
-	        if (this.validateGroupName()) {
-	            $.ajax({
-	                type: "GET",
-	                url: application.baseUrl + 'accession/descriptor/group/search/',
-	                dataType: 'json',
-	                data: {filters: JSON.stringify({
-	                    method: 'ieq',
-	                    fields: 'name',
-	                    name: this.ui.add_group_name.val()})
-	                },
-	                el: this.ui.add_group_name,
-	                success: function(data) {
-	                    if (data.items.length > 0) {
-	                        for (var i in data.items) {
-	                            var t = data.items[i];
-	
-	                            if (t.name.toUpperCase() == this.el.val().toUpperCase()) {
-	                                $(this.el).validateField('failed', gt.gettext('Group name already in usage'));
-	                                break;
-	                            }
-	                        }
-	                    } else {
-	                        $(this.el).validateField('ok');
-	                    }
-	                }
-	            });
-	        }
-	    },
-	});
-	
-	module.exports = View;
-
-
-/***/ },
-/* 164 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var _ = __webpack_require__(1);
-	
-	module.exports = function (obj) {
-	obj || (obj = {});
-	var __t, __p = '';
-	with (obj) {
-	__p += '<table class="table table-striped" style="margin-bottom: 0px"><tbody><tr class="edit-mode" style="height: 95px"><th><span class="add-group action glyphicon glyphicon-plus-sign" style="margin-top: 9px; margin-left: 10px"></span></th><td style="width: 100%"><div class="form-group"><input type="text" class="group-name form-control" name="group"></div></td></tr></tbody></table>';
-	
-	}
-	return __p
-	};
-
-
-/***/ },
-/* 165 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file descriptorgrouptypeadd.js
-	 * @brief Add a descriptor type into a group of descriptors
-	 * @author Frederic SCHERMA
-	 * @date 2016-08-05
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var Marionette = __webpack_require__(4);
-	
-	var View = Marionette.ItemView.extend({
-	    tagName: 'div',
-	    className: 'type-add',
-	    template: __webpack_require__(166),
-	
-	    ui: {
-	        add_type_btn: 'span.add-type',
-	        add_type_name: 'input.type-name',
-	    },
-	
-	    events: {
-	        'click @ui.add_type_btn': 'addType',
-	        'input @ui.add_type_name': 'onTypeNameInput',
-	    },
-	
-	    initialize: function(options) {
-	        options || (options = {});
-	        this.collection = options.collection;
-	    },
-	
-	    addType: function () {
-	        if (!this.ui.add_type_name.hasClass('invalid')) {
-	            this.collection.create({
-	                name: this.ui.add_type_name.val(),
-	                group_id: this.collection.group_id,  // set according from the URI path
-	                //can_delete: true,  // default is true
-	                //can_modify: true,  // default is true
-	            }, {wait: true});
-	
-	            $(this.ui.add_type_name).cleanField();
-	        }
-	    },
-	
-	    validateTypeName: function() {
-	        var v = this.ui.add_type_name.val();
-	        var re = /^[a-zA-Z0-9_\-]+$/i;
-	
-	        if (v.length > 0 && !re.test(v)) {
-	            $(this.ui.add_type_name).validateField('failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
-	            return false;
-	        } else if (v.length < 3) {
-	            $(this.ui.add_type_name).validateField('failed', gt.gettext('3 characters min'));
-	            return false;
-	        }
-	
-	        return true;
-	    },
-	
-	    onTypeNameInput: function () {
-	        if (this.validateTypeName()) {
-	            $.ajax({
-	                type: "GET",
-	                url: application.baseUrl + 'accession/descriptor/group/' + this.collection.group_id + '/type/search/',
-	                dataType: 'json',
-	                data: {filters: JSON.stringify({
-	                    method: 'ieq',
-	                    fields: 'name',
-	                    name: this.ui.add_type_name.val()})
-	                },
-	                el: this.ui.add_type_name,
-	                success: function(data) {
-	                    if (data.items.length > 0) {
-	                        for (var i in data.items) {
-	                            var t = data.items[i];
-	
-	                            if (t.name.toUpperCase() == this.el.val().toUpperCase()) {
-	                                $(this.el.ui.add_type_name).validateField('failed', gt.gettext('Descriptor type name already in usage'));
-	                                break;
-	                            }
-	                        }
-	                    } else {
-	                        $(this.el.ui.add_type_name).validateField('ok');
-	                    }
-	                }
-	            });
-	        }
-	    },
-	});
-	
-	module.exports = View;
-
-
-/***/ },
-/* 166 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var _ = __webpack_require__(1);
-	
-	module.exports = function (obj) {
-	obj || (obj = {});
-	var __t, __p = '';
-	with (obj) {
-	__p += '<table class="table table-striped" style="margin-bottom: 0px"><tbody><tr class="edit-mode" style="height: 95px"><th><span class="add-type action glyphicon glyphicon-plus-sign" style="margin-top: 9px; margin-left: 10px"></span></th><td style="width: 100%"><div class="form-group"><input type="text" class="type-name form-control" name="type"></div></td></tr></tbody></table>';
-	
-	}
-	return __p
-	};
-
-
-/***/ },
-/* 167 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file descriptormodel.js
-	 * @brief Descriptor model router
-	 * @author Frederic SCHERMA
-	 * @date 2016-09-19
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var Marionette = __webpack_require__(4);
-	
-	var DescriptorModelModel = __webpack_require__(168);
-	var DescriptorModelCollection = __webpack_require__(169);
-	var DescriptorGroupCollection = __webpack_require__(170);
-	var DescriptorModelTypeCollection = __webpack_require__(171);
-	
-	var DescriptorModelAddView = __webpack_require__(173);
-	var DescriptorModelDetailView = __webpack_require__(175);
-	var DescriptorModelListView = __webpack_require__(177);
-	var DescriptorModelTypeListView = __webpack_require__(181);
-	
-	var DescriptorGroupListAltView = __webpack_require__(187);
-	var DescriptorTypeListAltView = __webpack_require__(189);
-	
-	var DefaultLayout = __webpack_require__(50);
-	var LeftOneRightTwoLayout = __webpack_require__(195);
-	var TitleView = __webpack_require__(51);
-	var ScrollingMoreView = __webpack_require__(94);
-	
-	var Router = Marionette.AppRouter.extend({
-	    routes : {
-	        "app/accession/descriptor/model/": "getDescriptorModelList",
-	        "app/accession/descriptor/model/:id/": "getDescriptorModel",
-	        "app/accession/descriptor/model/:id/type/": "getDescriptorModelTypeListForModel",
-	    },
-	
-	    getDescriptorModelList: function () {
-	        var collection = new DescriptorModelCollection();
-	
-	        var defaultLayout = new DefaultLayout({});
-	        application.getRegion('mainRegion').show(defaultLayout);
-	
-	        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of models of descriptor")}));
-	
-	        collection.fetch().then(function () {
-	            var descriptorModelList = new DescriptorModelListView({collection : collection});
-	            defaultLayout.getRegion('content').show(descriptorModelList);
-	            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: descriptorModelList}));
-	        });
-	
-	        // @todo lookup for permission
-	        if (session.user.isAuth && (session.user.isSuperUser || session.user.isStaff)) {
-	            defaultLayout.getRegion('bottom').show(new DescriptorModelAddView({collection: collection}));
-	        }
-	    },
-	
-	    getDescriptorModel: function (id) {
-	        var defaultLayout = new DefaultLayout();
-	        application.getRegion('mainRegion').show(defaultLayout);
-	
-	        var model = new DescriptorModelModel({id: id});
-	
-	        model.fetch().then(function () {
-	            defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Details for the model of descriptor"), object: model.get('name')}));
-	            defaultLayout.getRegion('content').show(new DescriptorModelDetailView({model : model}));
-	        });
-	    },
-	
-	    getDescriptorModelTypeListForModel: function(id) {
-	        var modelTypeCollection = new DescriptorModelTypeCollection([], {model_id: id});
-	
-	        var defaultLayout = new DefaultLayout({});
-	        application.getRegion('mainRegion').show(defaultLayout);
-	
-	        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of types of models of descriptor")}));
-	
-	        var leftOneRightTwoLayout = new LeftOneRightTwoLayout({});
-	        defaultLayout.getRegion('content').show(leftOneRightTwoLayout);
-	
-	        modelTypeCollection.fetch().then(function () {
-	            var descriptorTypeModelList = new DescriptorModelTypeListView({collection : modelTypeCollection});
-	            leftOneRightTwoLayout.getRegion('left-content').show(descriptorTypeModelList);
-	            leftOneRightTwoLayout.getRegion('left-bottom').show(new ScrollingMoreView({targetView: descriptorTypeModelList}));
-	        });
-	
-	        var groupCollection = new DescriptorGroupCollection();
-	        groupCollection.fetch().then(function () {
-	            var descriptorGroupList = new DescriptorGroupListAltView({
-	                collection: groupCollection,
-	                layout: leftOneRightTwoLayout
-	            });
-	
-	            leftOneRightTwoLayout.getRegion('right-up-content').show(descriptorGroupList);
-	            leftOneRightTwoLayout.getRegion('right-up-bottom').show(new ScrollingMoreView({targetView: descriptorGroupList}));
-	        });
-	
-	        var descriptorTypeList = new DescriptorTypeListAltView({});
-	        leftOneRightTwoLayout.getRegion('right-down-content').show(descriptorTypeList);
-	        leftOneRightTwoLayout.getRegion('right-down-bottom').show(new ScrollingMoreView({targetView: descriptorTypeList}));
-	    },
-	});
-	
-	module.exports = Router;
-
-
-/***/ },
-/* 168 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file descriptormodel.js
-	 * @brief Model of descriptor
-	 * @author Frederic SCHERMA
-	 * @date 2016-09-19
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var Backbone = __webpack_require__(2);
-	
-	var Model = Backbone.Model.extend({
-	    url: function() {
-	        if (this.isNew())
-	            return application.baseUrl + 'accession/descriptor/model/';
-	        else
-	            return application.baseUrl + 'accession/descriptor/model/' + this.get('id') + '/';
-	    },
-	
-	    defaults: {
-	        id: null,
-	        name: '',
-	        verbose_name: '',
-	        description: '',
-	        num_descriptor_types: 0,
-	    },
-	
-	    parse: function(data) {
-	        //this.perms = data.perms;
-	        return data;
-	    },
-	
-	    validate: function(attrs) {
-	        var errors = {};
-	        var hasError = false;
-	
-	        if (hasError) {
-	          return errors;
-	        }
-	    },
-	});
-	
-	module.exports = Model;
-
-
-/***/ },
-/* 169 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file descriptormodel.js
-	 * @brief Model of descriptors collection
-	 * @author Frederic SCHERMA
-	 * @date 2016-09-19
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var DescriptorModelModel = __webpack_require__(168);
-	
-	var Collection = Backbone.Collection.extend({
-	    url: application.baseUrl + 'accession/descriptor/model/',
-	    model: DescriptorModelModel,
-	
-	    parse: function(data) {
-	        this.prev = data.prev;
-	        this.cursor = data.cursor;
-	        this.next = data.next;
-	
-	        this.perms = data.perms;
-	
-	        return data.items;
-	    },
-	});
-	
-	module.exports = Collection;
-
-
-/***/ },
-/* 170 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file descriptorgroup.js
-	 * @brief Groups of descriptors collection
-	 * @author Frederic SCHERMA
-	 * @date 2016-07-19
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var DescriptorGroupModel = __webpack_require__(132);
-	
-	var Collection = Backbone.Collection.extend({
-	    url: application.baseUrl + 'accession/descriptor/group/',
-	    model: DescriptorGroupModel,
-	
-	    parse: function(data) {
-	        this.prev = data.prev;
-	        this.cursor = data.cursor;
-	        this.next = data.next;
-	
-	        return data.items;
-	    },
-	});
-	
-	module.exports = Collection;
-
-
-/***/ },
-/* 171 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file descriptormodeltype.js
-	 * @brief Types of models of descriptors collection
-	 * @author Frederic SCHERMA
-	 * @date 2016-10-13
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var DescriptorModelTypeModel = __webpack_require__(172);
-	
-	var Collection = Backbone.Collection.extend({
-	    url: function() {
-	        return application.baseUrl + 'accession/descriptor/model/' + this.model_id + '/type/';
-	    },
-	
-	    model: DescriptorModelTypeModel,
-	
-	    initialize: function(models, options) {
-	        options || (options = {});
-	        this.model_id = options.model_id;
-	    },
-	
-	    parse: function(data) {
-	        this.prev = data.prev;
-	        this.cursor = data.cursor;
-	        this.next = data.next;
-	
-	        return data.items;
-	    },
-	
-	    comparator: 'position'
-	});
-	
-	module.exports = Collection;
-
-
-/***/ },
-/* 172 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file descriptormodeltype.js
-	 * @brief Type of model of descriptor model
-	 * @author Frederic SCHERMA
-	 * @date 2016-10-13
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var Backbone = __webpack_require__(2);
-	
-	var Model = Backbone.Model.extend({
-	    url: function() {
-	        var model_id = this.model_id || this.get('model') || this.collection.model_id;
-	
-	        if (this.isNew()) {
-	            return application.baseUrl + 'accession/descriptor/model/' + model_id + '/type/';
-	        }
-	        else
-	            return application.baseUrl + 'accession/descriptor/model/' + model_id + '/type/' + this.get('id') + '/';
-	    },
-	
-	    defaults: {
-	        id: null,
-	        name: '',
-	        model: null,
-	        label: '',
-	        mandatory: false,
-	        set_once: false,
-	        position: 0,
-	        descriptor_type_code: null,
-	    },
-	
-	    initialize: function(attributes, options) {
-	        Model.__super__.initialize.apply(this, arguments);
-	
-	        options || (options = {});
-	
-	        if (options.collection) {
-	            this.model_id = options.collection.model_id;
-	        }
-	    },
-	
-	    parse: function(data) {
-	        //this.perms = data.perms;
-	        this.model = data.model;
-	        return data;
-	    },
-	
-	    validate: function(attrs) {
-	        var errors = {};
-	        var hasError = false;
-	
-	        if (hasError) {
-	          return errors;
-	        }
-	    },
-	});
-	
-	module.exports = Model;
-
-
-/***/ },
-/* 173 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file descriptorgroupadd.js
-	 * @brief Add a group of descriptors
-	 * @author Frederic SCHERMA
-	 * @date 2016-08-05
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var Marionette = __webpack_require__(4);
-	
-	var View = Marionette.ItemView.extend({
-	    tagName: 'div',
-	    className: 'descriptor-model-add',
-	    template: __webpack_require__(174),
-	
-	    ui: {
-	        add_descriptor_model_btn: 'span.add-descriptor-model',
-	        add_descriptor_model_name: 'input.descriptor-model-name',
-	    },
-	
-	    events: {
-	        'click @ui.add_descriptor_model_btn': 'addDescriptorModel',
-	        'input @ui.add_descriptor_model_name': 'onDescriptorModelNameInput',
-	    },
-	
-	    initialize: function(options) {
-	        options || (options = {});
-	        this.collection = options.collection;
-	    },
-	
-	    addDescriptorModel: function() {
-	        if (this.validateGroupName()) {
-	            this.collection.create({name: this.ui.add_descriptor_model_name.val()}, {wait: true});
-	            $(this.ui.add_descriptor_model_name).cleanField();
-	        }
-	    },
-	
-	    validateGroupName: function() {
-	        var v = this.ui.add_descriptor_model_name.val();
-	        var re = /^[a-zA-Z0-9_\-]+$/i;
-	
-	        if (v.length > 0 && !re.test(v)) {
-	            $(this.ui.add_descriptor_model_name).validateField('failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
-	            return false;
-	        } else if (v.length < 3) {
-	            $(this.ui.add_descriptor_model_name).validateField('failed', gt.gettext('3 characters min'));
-	            return false;
-	        }
-	
-	        return true;
-	    },
-	
-	    onDescriptorModelNameInput: function() {
-	        if (this.validateGroupName()) {
-	            $.ajax({
-	                type: "GET",
-	                url: application.baseUrl + 'accession/descriptor/model/search/',
-	                dataType: 'json',
-	                data: {filters: JSON.stringify({
-	                    method: 'ieq',
-	                    fields: 'name',
-	                    name: this.ui.add_descriptor_model_name.val()})
-	                },
-	                el: this.ui.add_descriptor_model_name,
-	                success: function(data) {
-	                    if (data.items.length > 0) {
-	                        for (var i in data.items) {
-	                            var t = data.items[i];
-	
-	                            if (t.name.toUpperCase() == this.el.val().toUpperCase()) {
-	                                $(this.el).validateField('failed', gt.gettext('Name for model of descriptor already in usage'));
-	                                break;
-	                            }
-	                        }
-	                    } else {
-	                        $(this.el).validateField('ok');
-	                    }
-	                }
-	            });
-	        }
-	    }
-	});
-	
-	module.exports = View;
-
-
-/***/ },
-/* 174 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var _ = __webpack_require__(1);
-	
-	module.exports = function (obj) {
-	obj || (obj = {});
-	var __t, __p = '';
-	with (obj) {
-	__p += '<table class="table table-striped" style="margin-bottom: 0px"><tbody><tr class="edit-mode" style="height: 95px"><th><span class="add-descriptor-model action glyphicon glyphicon-plus-sign" style="margin-top: 9px; margin-left: 10px"></span></th><td style="width: 100%"><div class="form-group"><input type="text" class="descriptor-model-name form-control" name="descriptor-model"></div></td></tr></tbody></table>';
-	
-	}
-	return __p
-	};
-
-
-/***/ },
-/* 175 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file descriptormodeldetail.js
-	 * @brief Detail for a model of descriptor view
-	 * @author Frederic SCHERMA
-	 * @date 2016-09-28
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var Marionette = __webpack_require__(4);
-	var DescriptorModelModel = __webpack_require__(168);
-	
-	var View = Marionette.ItemView.extend({
-	    className: 'element object descriptor-model-detail',
-	    template: __webpack_require__(176),
-	
-	    ui: {
-	        name: '#descriptor_model_name',
-	        verbose_name: '#descriptor_model_verbose_name',
-	        description: '#descriptor_model_description',
-	        save: '#save'
-	    },
-	
-	    events: {
-	        'click @ui.save': 'saveDescriptorModel',
-	        'input @ui.name': 'inputName',
-	        'input @ui.verbose_name': 'inputVerboseName',
-	    },
-	
-	    initialize: function() {
-	        this.listenTo(this.model, 'reset', this.render, this);
-	    },
-	
-	    onRender: function() {
-	    },
-	
-	    inputName: function () {
-	        var v = this.ui.name.val();
-	        var re = /^[a-zA-Z0-9_-]+$/i;
-	
-	        if (v.length > 0 && !re.test(v)) {
-	            $(this.ui.name).validateField('failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
-	        } else if (v.length < 3) {
-	            $(this.ui.name).validateField('failed', gt.gettext('3 characters min'));
-	        } else {
-	            $(this.ui.name).validateField('ok');
-	        }
-	    },
-	
-	    saveDescriptorModel: function () {
-	        if (!$(this.ui.name.isValidField()))
-	            return;
-	
-	        var name = this.ui.name.val();
-	        var verbose_name = this.ui.verbose_name.val();
-	        var description = this.ui.description.val();
-	
-	        this.model.save({
-	            name: name,
-	            verbose_name: verbose_name,
-	            description: description,
-	        }, {wait: true}).done(function() { $.alert.success(gt.gettext("Done")); });
-	    }
-	});
-	
-	module.exports = View;
-
-
-/***/ },
-/* 176 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var _ = __webpack_require__(1);
-	
-	module.exports = function (obj) {
-	obj || (obj = {});
-	var __t, __p = '', __e = _.escape;
-	with (obj) {
-	__p += '<div class="descriptor-model-detail"><div class="descriptor-model-name form-group" style="width: 50%"><label for="descriptor_model_name">' +
-	__e( gt.gettext('Descriptor model name') ) +
-	'</label><input id="descriptor_model_name" class="form-control" type="text" maxlength="255" value="' +
-	((__t = ( name )) == null ? '' : __t) +
-	'"></div><div class="descriptor-model-verbose-name form-group" style="width: 50%"><label for="descriptor_model_verbose_name">' +
-	__e( gt.gettext('Verbose name') ) +
-	'</label><input id="descriptor_model_verbose_name" class="form-control" type="text" maxlength="255" value="' +
-	((__t = ( verbose_name )) == null ? '' : __t) +
-	'"></div><div class="descriptor-model-description form-group" style="width: 50%"><label for="descriptor_model_description">' +
-	__e( gt.gettext('Description') ) +
-	'</label><textarea id="descriptor_model_description" class="form-control" maxlength="1024">' +
-	((__t = ( description )) == null ? '' : __t) +
-	'</textarea></div><div class="descriptor-model-update form-group" style="width: 100px; margin-left: 20%; margin-top: 25px"><button id="save" class="form-control btn btn-primary">' +
-	__e( gt.gettext('Update') ) +
-	'</button></div></div>';
-	
-	}
-	return __p
-	};
-
-
-/***/ },
-/* 177 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file descriptormodellist.js
-	 * @brief List of model of descriptors view
-	 * @author Frederic SCHERMA
-	 * @date 2016-09-27
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var Marionette = __webpack_require__(4);
-	var DescriptorModelModel = __webpack_require__(168);
-	var DescriptorModelView = __webpack_require__(178);
-	
-	var ScrollView = __webpack_require__(78);
-	
-	var View = ScrollView.extend({
-	    template: __webpack_require__(180),
-	    childView: DescriptorModelView,
-	    childViewContainer: 'tbody.descriptor-model-list',
-	
-	    initialize: function() {
-	        this.listenTo(this.collection, 'reset', this.render, this);
-	        this.listenTo(this.collection, 'change', this.render, this);
-	
-	        View.__super__.initialize.apply(this);
-	    },
-	});
-	
-	module.exports = View;
-
-
-/***/ },
-/* 178 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file descriptormodel.js
-	 * @brief Model of descriptor item view
-	 * @author Frederic SCHERMA
-	 * @date 2016-07-20
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var Marionette = __webpack_require__(4);
-	var DescriptorModelModel = __webpack_require__(168);
-	
-	var View = Marionette.ItemView.extend({
-	    tagName: 'tr',
-	    className: 'element object descriptor-model',
-	    template: __webpack_require__(179),
-	
-	    ui: {
-	        delete_descriptor_model: 'span.delete-descriptor-model',
-	        view_descriptor_model: 'td.view-descriptor-model',
-	        view_descriptor_model_types: 'td.view-descriptor-model-types'
-	    },
-	
-	    events: {
-	        'click @ui.delete_descriptor_model': 'deleteDescriptorModel',
-	        'click @ui.view_descriptor_model': 'viewDescriptorModelDetails',
-	        'click @ui.view_descriptor_model_types': 'viewDescriptorModelTypes'
-	    },
-	
-	    initialize: function() {
-	        this.listenTo(this.model, 'reset', this.render, this);
-	    },
-	
-	    onRender: function() {
-	        // TODO check with user permission
-	        /*if (!this.model.get('can_delete') || !session.user.isSuperUser) {
-	            $(this.ui.delete_descriptor_model).hide();
-	        }*/
-	    },
-	
-	    viewDescriptorModelDetails: function() {
-	        Backbone.history.navigate("app/accession/descriptor/model/" + this.model.id + "/", {trigger: true});
-	    },
-	
-	    viewDescriptorModelTypes: function() {
-	        Backbone.history.navigate("app/accession/descriptor/model/" + this.model.id + "/type/", {trigger: true});
-	    },
-	
-	    deleteDescriptorModel: function() {
-	        if (this.model.get('num_descriptor_types') == 0) {
-	            this.model.destroy({wait: true});
-	        }
-	    }
-	});
-	
-	module.exports = View;
-
-
-/***/ },
-/* 179 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var _ = __webpack_require__(1);
-	
-	module.exports = function (obj) {
-	obj || (obj = {});
-	var __t, __p = '';
-	with (obj) {
-	__p += '<th><span class="delete-descriptor-model action glyphicon glyphicon-minus-sign"></span></th><td class="action view-descriptor-model" name="name">' +
-	((__t = ( name )) == null ? '' : __t) +
-	'</td><td class="action view-descriptor-model" name="verbose_name">' +
-	((__t = ( verbose_name )) == null ? '' : __t) +
-	'</td><td class="action view-descriptor-model-types" name="num_descriptor_model_types"><abbr class="badge" style="cursor: pointer" title="' +
-	((__t = ( gt.gettext('Manage models of type of descriptor') )) == null ? '' : __t) +
-	'">' +
-	((__t = ( num_descriptor_model_types )) == null ? '' : __t) +
-	'</abbr></td><td name="description"><abbr class="label label-default glyphicon glyphicon-option-horizontal" title="' +
-	((__t = ( description )) == null ? '' : __t) +
-	'"><span></span></abbr></td>';
-	
-	}
-	return __p
-	};
-
-
-/***/ },
-/* 180 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var _ = __webpack_require__(1);
-	
-	module.exports = function (obj) {
-	obj || (obj = {});
-	var __t, __p = '';
-	with (obj) {
-	__p += '<div class="object descriptor-model-list" object-type="descriptor-model-list" style="width:100%"><table class="table table-striped"><thead><tr><th><span class="glyphicon glyphicon-asterisk"></span></th><th>' +
-	((__t = ( gt.gettext("Name") )) == null ? '' : __t) +
-	'</th><th>' +
-	((__t = ( gt.gettext("Verbose name") )) == null ? '' : __t) +
-	'</th><th>' +
-	((__t = ( gt.gettext("Number of types of descriptor") )) == null ? '' : __t) +
-	'</th><th>' +
-	((__t = ( gt.gettext("Description") )) == null ? '' : __t) +
-	'</th></tr></thead><tbody class="descriptor-model-list"></tbody></table></div>';
-	
-	}
-	return __p
-	};
-
-
-/***/ },
-/* 181 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file descriptormodeltypelist.js
-	 * @brief List of type of model of descriptors for a model model of descriptor view
-	 * @author Frederic SCHERMA
-	 * @date 2016-09-28
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var Marionette = __webpack_require__(4);
-	var ScrollView = __webpack_require__(78);
-	var Dialog = __webpack_require__(82);
-	
-	var DescriptorModelTypeModel = __webpack_require__(172);
-	var DescriptorModelTypeView = __webpack_require__(182);
-	
-	var View = ScrollView.extend({
-	    template: __webpack_require__(186),
-	    childView: DescriptorModelTypeView,
-	    childViewContainer: 'tbody.descriptor-model-type-list',
-	
-	    initialize: function() {
-	        this.listenTo(this.collection, 'reset', this.render, this);
-	        this.listenTo(this.collection, 'change', this.render, this);
-	
-	        View.__super__.initialize.apply(this);
-	
-	        $("div.left-content").on("dragenter", $.proxy(this.dragEnterContent, this));
-	        $("div.left-content").on("dragleave", $.proxy(this.dragLeaveContent, this));
-	        $("div.left-content").on("dragover", $.proxy(this.dragOverContent, this));
-	        $("div.left-content").on("drop", $.proxy(this.dropContent, this));
-	    },
-	
-	    dragEnterContent: function (e) {
-	        if (e.preventDefault) {
-	            e.preventDefault();
-	        }
-	
-	        if (!$(e.target).hasClass("left-content")) {
-	            return false;
-	        }
-	
-	        this.dragEnterCount || (this.dragEnterCount = 0);
-	        ++this.dragEnterCount;
-	
-	        if (this.dragEnterCount == 1) {
-	            if (this.$el.find("tbody tr").length == 0) {
-	                this.$el.find("thead tr th").css('border-bottom', '5px dashed #ddd');
-	            }
-	
-	            this.$el.find("tbody tr").last().css('border-bottom', '5px dashed #ddd');
-	        }
-	
-	        return false;
-	    },
-	
-	    dragLeaveContent: function (e) {
-	        if (e.preventDefault) {
-	            e.preventDefault();
-	        }
-	
-	        if (!$(e.target).hasClass("left-content")) {
-	            return false;
-	        }
-	
-	        this.dragEnterCount || (this.dragEnterCount = 1);
-	        --this.dragEnterCount;
-	
-	        if (this.dragEnterCount == 0) {
-	            this.$el.find("tbody tr").last().css('border-bottom', 'initial');
-	            this.$el.find("thead tr th").css('border-bottom', '2px solid #ddd');
-	
-	        }
-	
-	        return false;
-	    },
-	
-	    dragOverContent: function (e) {
-	        if (e.preventDefault) {
-	            e.preventDefault();
-	        }
-	
-	        if (!$(e.target).hasClass("left-content")) {
-	            return false;
-	        }
-	
-	        this.dragEnterCount || (this.dragEnterCount = 1);
-	
-	        if (this.dragEnterCount == 1) {
-	            if (this.$el.find("tbody tr").length == 0) {
-	                this.$el.find("thead tr th").css('border-bottom', '5px dashed #ddd');
-	            }
-	
-	            this.$el.find("tbody tr").last().css('border-bottom', '5px dashed #ddd');
-	        }
-	
-	        //e.dataTransfer.dropEffect = 'move';
-	        return false;
-	    },
-	
-	    dropContent: function (e) {
-	        if (e.stopPropagation) {
-	            e.stopPropagation();
-	        }
-	
-	        if (!$(e.target).hasClass("left-content")) {
-	            return false;
-	        }
-	
-	        this.dragEnterCount = 0;
-	
-	        this.$el.find("tbody tr").last().css('border-bottom', 'initial');
-	        this.$el.find("thead tr th").css('border-bottom', '2px solid #ddd');
-	
-	        var elt = application.dndElement;
-	        if (!elt) {
-	            return false;
-	        }
-	
-	        if (elt.$el.hasClass('descriptor-type')) {
-	            var code = elt.model.get('code');
-	
-	            var DefinesLabel = Dialog.extend({
-	                template: __webpack_require__(184),
-	
-	                attributes: {
-	                    id: "dlg_define_label",
-	                },
-	
-	                ui: {
-	                    label: "#label",
-	                },
-	
-	                events: {
-	                    'input @ui.label': 'onLabelInput',
-	                },
-	
-	                initialize: function (options) {
-	                    DefinesLabel.__super__.initialize.apply(this);
-	                },
-	
-	                onLabelInput: function () {
-	                    this.validateLabel();
-	                },
-	
-	                validateLabel: function() {
-	                    var v = this.ui.label.val();
-	
-	                    if (v.length < 3) {
-	                        $(this.ui.label).validateField('failed', gt.gettext('3 characters min'));
-	                        return false;
-	                    }
-	
-	                    $(this.ui.label).validateField('ok');
-	
-	                    return true;
-	                },
-	
-	                onApply: function() {
-	                    var view = this;
-	                    var collection = this.getOption('collection');
-	                    var position = this.getOption('position');
-	                    var code = this.getOption('code');
-	
-	                    if (this.validateLabel()) {
-	                        var to_rshift = [];
-	
-	                        // server will r-shift position of any model upward this new
-	                        // do it locally to be consistent
-	                        for (var model in collection.models) {
-	                            var dmt = collection.models[model];
-	                            var p = dmt.get('position');
-	                            if (p >= position) {
-	                                dmt.set('position', p+1);
-	                                to_rshift.push(dmt);
-	                            }
-	                        }
-	
-	                        collection.create({
-	                            descriptor_type_code: code,
-	                            label: this.ui.label.val(),
-	                            position: position
-	                        }, {
-	                            wait: true,
-	                            success: function () {
-	                                view.remove();
-	                            },
-	                            error: function () {
-	                                $.alert.error(gt.gettext("Unable to create the type of model of descriptor !"));
-	
-	                                // left shift (undo) for consistency with server
-	                                for (var i = 0; i < to_rshift.length; ++i) {
-	                                    to_rshift[i].set('position', to_rshift[i].get('position')-1);
-	                                }
-	                            }
-	                        });
-	                    }
-	                },
-	            });
-	
-	            var collection = this.collection;
-	
-	            // find last position + 1
-	            var newPosition = 0;
-	
-	            if (collection.models.length > 0) {
-	                newPosition = collection.at(collection.models.length-1).get('position') + 1;
-	            }
-	
-	            var definesLabel = new DefinesLabel({
-	                collection: collection,
-	                position: newPosition,
-	                code: elt.model.get('code')
-	            });
-	
-	            definesLabel.render();
-	        } else if (elt.$el.hasClass('descriptor-model-type')) {
-	            var collection = this.collection;
-	            var modelId = collection.model_id;
-	
-	            // find last position + 1
-	            var newPosition = collection.at(collection.models.length-1).get('position') + 1;
-	
-	            $.ajax({
-	                type: "PUT",
-	                url: application.baseUrl + 'accession/descriptor/model/' + modelId + '/order/',
-	                dataType: 'json',
-	                contentType: "application/json; charset=utf-8",
-	                data: JSON.stringify({
-	                    descriptor_model_type_id: elt.model.get('id'),
-	                    position: newPosition
-	                })
-	            }).done(function() {
-	                elt.model.set('position', newPosition);
-	
-	                // lshift any others element
-	                for (var model in collection.models) {
-	                    var dmt = collection.models[model];
-	                    if (dmt.get('id') != elt.model.get('id')) {
-	                        var p = dmt.get('position');
-	                        dmt.set('position', p - 1);
-	                    }
-	                }
-	
-	                // need to sort
-	                collection.sort();
-	            }).fail(function() {
-	                $.alert.error(gt.gettext('Unable to reorder the types of model of descriptor'));
-	            });
-	        }
-	
-	        return false;
-	    },
-	});
-	
-	module.exports = View;
-
-/***/ },
-/* 182 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file descriptortype.js
-	 * @brief Type of descriptor item view
-	 * @author Frederic SCHERMA
-	 * @date 2016-07-21
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var Marionette = __webpack_require__(4);
-	var Dialog = __webpack_require__(82);
-	var DescriptorModelTypeModel = __webpack_require__(172);
-	
-	
-	var View = Marionette.ItemView.extend({
-	    tagName: 'tr',
-	    className: 'element object descriptor-model-type',
-	    template: __webpack_require__(183),
-	
-	    attributes: {
-	        draggable: true,
-	    },
-	
-	    ui: {
-	        'delete_descriptor_model_type': 'span.delete-descriptor-model-type',
-	        'label': 'td[name="label"]',
-	        'mandatory': 'td[name="mandatory"]',
-	        'set_once': 'td[name="set_once"]',
-	    },
-	
-	    events: {
-	        'dragstart': 'dragStart',
-	        'dragend': 'dragEnd',
-	        'dragover': 'dragOver',
-	        'dragenter': 'dragEnter',
-	        'dragleave': 'dragLeave',
-	        'drop': 'drop',
-	        'click @ui.delete_descriptor_model_type': 'deleteDescriptorModelType',
-	        'click @ui.label': 'editLabel',
-	        'click @ui.mandatory': 'toggleMandatory',
-	        'click @ui.set_once': 'toggleSetOnce',
-	    },
-	
-	    initialize: function() {
-	        this.listenTo(this.model, 'reset', this.render, this);
-	    },
-	
-	    onRender: function() {
-	        if (!session.user.isStaff && !session.user.isSuperUser) {
-	            $(this.ui.delete_descriptor_model_type).hide();
-	        }
-	    },
-	
-	    dragStart: function(e) {
-	        this.$el.css('opacity', '0.4');
-	        application.dndElement = this;
-	    },
-	
-	    dragEnd: function(e) {
-	        this.$el.css('opacity', '1.0');
-	        application.dndElement = null;
-	    },
-	
-	    dragOver: function (e) {
-	        if (e.originalEvent.preventDefault) {
-	            e.originalEvent.preventDefault();
-	        }
-	
-	        //e.originalEvent.dataTransfer.dropEffect = 'move';
-	        return false;
-	    },
-	
-	    dragEnter: function (e) {
-	        if (e.originalEvent.preventDefault) {
-	            e.originalEvent.preventDefault();
-	        }
-	
-	        if (application.dndElement.$el.hasClass('descriptor-model-type')) {
-	            if (this.model.get('position') < application.dndElement.model.get('position')) {
-	                this.$el.css('border-top', '5px dashed #ddd');
-	            } else if (this.model.get('position') > application.dndElement.model.get('position')) {
-	                this.$el.css('border-bottom', '5px dashed #ddd');
-	            }
-	        } else if (application.dndElement.$el.hasClass('descriptor-type')) {
-	             this.$el.css('border-top', '5px dashed #ddd');
-	        }
-	
-	        return false;
-	    },
-	
-	    dragLeave: function (e) {
-	        if (e.originalEvent.preventDefault) {
-	            e.originalEvent.preventDefault();
-	        }
-	
-	        if (application.dndElement.$el.hasClass('descriptor-model-type')) {
-	            if (this.model.get('position') < application.dndElement.model.get('position')) {
-	                this.$el.css('border-top', 'initial');
-	            } else if (this.model.get('position') > application.dndElement.model.get('position')) {
-	                this.$el.css('border-bottom', 'initial');
-	            }
-	        } else if (application.dndElement.$el.hasClass('descriptor-type')) {
-	             this.$el.css('border-top', 'initial');
-	        }
-	
-	        return false;
-	    },
-	
-	    drop: function (e) {
-	        if (e.originalEvent.stopPropagation) {
-	            e.originalEvent.stopPropagation();
-	        }
-	
-	        var elt = application.dndElement;
-	
-	        if (elt.$el.hasClass('descriptor-type')) {
-	            // reset borders
-	            this.$el.css('border-top', 'initial');
-	            this.$el.css('border-bottom', 'initial');
-	
-	            var DefinesLabel = Dialog.extend({
-	                template: __webpack_require__(184),
-	
-	                attributes: {
-	                    id: "dlg_define_label",
-	                },
-	
-	                ui: {
-	                    label: "#label",
-	                },
-	
-	                events: {
-	                    'input @ui.label': 'onLabelInput',
-	                },
-	
-	                initialize: function (options) {
-	                    DefinesLabel.__super__.initialize.apply(this);
-	                },
-	
-	                onLabelInput: function () {
-	                    this.validateLabel();
-	                },
-	
-	                validateLabel: function() {
-	                    var v = this.ui.label.val();
-	
-	                    if (v.length < 3) {
-	                        $(this.ui.label).validateField('failed', gt.gettext('3 characters min'));
-	                        return false;
-	                    }
-	
-	                    $(this.ui.label).validateField('ok');
-	
-	                    return true;
-	                },
-	
-	                onApply: function() {
-	                    var view = this;
-	                    var collection = this.getOption('collection');
-	                    var position = this.getOption('position');
-	                    var code = this.getOption('code');
-	
-	                    if (this.validateLabel()) {
-	                        var to_rshift = [];
-	
-	                        // server will r-shift position of any model upward this new
-	                        // do it locally to be consistent
-	                        for (var model in collection.models) {
-	                            var dmt = collection.models[model];
-	                            var p = dmt.get('position');
-	                            if (p >= position) {
-	                                dmt.set('position', p+1);
-	                                to_rshift.push(dmt);
-	                            }
-	                        }
-	
-	                        collection.create({
-	                            descriptor_type_code: code,
-	                            label: this.ui.label.val(),
-	                            position: position
-	                        }, {
-	                            wait: true,
-	                            success: function () {
-	                                view.remove();
-	                            },
-	                            error: function () {
-	                                $.alert.error(gt.gettext("Unable to create the type of model of descriptor !"));
-	
-	                                // left shift (undo) for consistency with server
-	                                for (var i = 0; i < to_rshift.length; ++i) {
-	                                    to_rshift[i].set('position', to_rshift[i].get('position')-1);
-	                                }
-	                            }
-	                        });
-	                    }
-	                },
-	            });
-	
-	            var definesLabel = new DefinesLabel({
-	                collection: this.model.collection,
-	                position: this.model.get('position'),
-	                code: elt.model.get('code')
-	            });
-	
-	            definesLabel.render();
-	        }
-	        else if (elt.$el.hasClass('descriptor-model-type')) {
-	            // useless drop on himself
-	            if (this == elt) {
-	                return false;
-	            }
-	
-	            // reset borders
-	            this.$el.css('border-top', 'initial');
-	            this.$el.css('border-bottom', 'initial');
-	
-	            // ajax call
-	            var position = elt.model.get('position');
-	            var newPosition = this.model.get('position');
-	            var modelId = this.model.collection.model_id;
-	            var collection = this.model.collection;
-	
-	            $.ajax({
-	                type: "PUT",
-	                url: application.baseUrl + 'accession/descriptor/model/' + modelId + '/order/',
-	                dataType: 'json',
-	                contentType: "application/json; charset=utf-8",
-	                data: JSON.stringify({
-	                    descriptor_model_type_id: elt.model.get('id'),
-	                    position: newPosition
-	                })
-	            }).done(function() {
-	                // server will shift position of any model upward/downward this model
-	                // do it locally to be consistent
-	                // so that we don't need to collection.fetch({update: true, remove: true});
-	                if (newPosition < position) {
-	                    var to_rshift = [];
-	
-	                    for (var model in collection.models) {
-	                        var dmt = collection.models[model];
-	                        if (dmt.get('id') != elt.model.get('id')) {
-	                            if (dmt.get('position') >= newPosition) {
-	                                to_rshift.push(dmt);
-	                            }
-	                        }
-	                    }
-	
-	                    elt.model.set('position', newPosition);
-	
-	                    var nextPosition = newPosition + 1;
-	
-	                    for (var i = 0; i < to_rshift.length; ++i) {
-	                        to_rshift[i].set('position', nextPosition);
-	                        ++nextPosition;
-	                    }
-	                } else {
-	                    var to_lshift = [];
-	
-	                    for (var model in collection.models) {
-	                        var dmt = collection.models[model];
-	                        if (dmt.get('id') != elt.model.get('id')) {
-	                            if (dmt.get('position') <= newPosition) {
-	                                to_lshift.push(dmt);
-	                            }
-	                        }
-	                    }
-	
-	                    elt.model.set('position', newPosition);
-	
-	                    var nextPosition = 0;
-	
-	                    for (var i = 0; i < to_lshift.length; ++i) {
-	                        to_lshift[i].set('position', nextPosition);
-	                        ++nextPosition;
-	                    }
-	                }
-	
-	                // need to sort
-	                collection.sort();
-	            }).fail(function () {
-	                $.alert.error(gt.gettext('Unable to reorder the types of model of descriptor'));
-	            })
-	        }
-	
-	        return false;
-	    },
-	
-	    editLabel: function() {
-	        var model = this.model;
-	
-	        $.ajax({
-	            type: "GET",
-	            url: this.model.url() + 'label/',
-	            dataType: 'json',
-	        }).done(function (data) {
-	            var labels = data;
-	
-	            var ChangeLabel = Dialog.extend({
-	                template: __webpack_require__(185),
-	                templateHelpers: function () {
-	                    return {
-	                        labels: labels,
-	                    };
-	                },
-	
-	                attributes: {
-	                    id: "dlg_change_labels",
-	                },
-	
-	                ui: {
-	                    label: "#descriptor_model_type_labels input",
-	                },
-	
-	                events: {
-	                    'input @ui.label': 'onLabelInput',
-	                },
-	
-	                initialize: function (options) {
-	                    ChangeLabel.__super__.initialize.apply(this);
-	                },
-	
-	                onLabelInput: function (e) {
-	                    this.validateLabel(e);
-	                },
-	
-	                validateLabel: function (e) {
-	                    var v = $(e.target).val();
-	
-	                    if (v.length > 64) {
-	                        $(this.ui.label).validateField('failed', gt.gettext('64 characters max'));
-	                        return false;
-	                    }
-	
-	                    $(this.ui.label).validateField('ok');
-	
-	                    return true;
-	                },
-	
-	                validateLabels: function() {
-	                    $.each($(this.ui.label), function(i, label) {
-	                        var v = $(this).val();
-	
-	                        if (v.length > 64) {
-	                            $(this).validateField('failed', gt.gettext('64 characters max'));
-	                            return false;
-	                        }
-	                    });
-	
-	                    return true;
-	                },
-	
-	                onApply: function () {
-	                    var view = this;
-	                    var model = this.getOption('model');
-	
-	                    var labels = {};
-	
-	                    $.each($(this.ui.label), function(i, label) {
-	                        var v = $(this).val();
-	                        labels[$(label).attr("language")] = v;
-	                    });
-	
-	                    if (this.validateLabels()) {
-	                        $.ajax({
-	                            type: "PUT",
-	                            url: model.url() + "label/",
-	                            dataType: 'json',
-	                            contentType: "application/json; charset=utf-8",
-	                            data: JSON.stringify(labels)
-	                        }).done(function() {
-	                            // manually update the current context label
-	                            model.set('label', labels[session.language]);
-	                            $.alert.success(gt.gettext("Successfully labeled !"));
-	                        }).always(function() {
-	                            view.remove();
-	                        });
-	                    }
-	                },
-	            });
-	
-	            var changeLabel = new ChangeLabel({model: model});
-	            changeLabel.render();
-	        });
-	    },
-	
-	    toggleMandatory: function() {
-	        this.model.save({mandatory: !this.model.get('mandatory')}, {patch: true, wait: true});
-	    },
-	
-	    toggleSetOnce: function() {
-	        this.model.save({set_once: !this.model.get('set_once')}, {patch: true, wait: true});
-	    },
-	
-	    deleteDescriptorModelType: function() {
-	        var collection = this.model.collection;
-	        var position = this.model.get('position');
-	
-	        this.model.destroy({
-	            wait: true,
-	            success: function () {
-	                for (var model in collection.models) {
-	                    var dmt = collection.models[model];
-	                    if (dmt.get('position') > position) {
-	                        var new_position = dmt.get('position') - 1;
-	                        dmt.set('position', new_position);
-	                    }
-	                }
-	            }
-	        });
-	    }
-	});
-	
-	module.exports = View;
-
-
-/***/ },
-/* 183 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var _ = __webpack_require__(1);
-	
-	module.exports = function (obj) {
-	obj || (obj = {});
-	var __t, __p = '', __j = Array.prototype.join;
-	function print() { __p += __j.call(arguments, '') }
-	with (obj) {
-	__p += '<th><span class="delete-descriptor-model-type action glyphicon glyphicon-minus-sign"></span></th><td name="descriptor_type_code">' +
-	((__t = ( descriptor_type_code )) == null ? '' : __t) +
-	'</td><td name="label" class="action">' +
-	((__t = ( label )) == null ? '' : __t) +
-	'</td> ';
-	 if (mandatory) { ;
-	__p += ' <td name="mandatory"><span class="action glyphicon glyphicon-ok left-margin"></span></td> ';
-	 } else { ;
-	__p += ' <td name="mandatory"><span class="action glyphicon glyphicon-remove left-margin"></span></td> ';
-	 } ;
-	__p += ' ';
-	 if (set_once) { ;
-	__p += ' <td name="set_once"><span class="action glyphicon glyphicon-ok left-margin"></span></td> ';
-	 } else { ;
-	__p += ' <td name="set_once"><span class="action glyphicon glyphicon-remove left-margin"></span></td> ';
-	 } ;
-	
-	
-	}
-	return __p
-	};
-
-
-/***/ },
-/* 184 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var _ = __webpack_require__(1);
-	
-	module.exports = function (obj) {
-	obj || (obj = {});
-	var __t, __p = '';
-	with (obj) {
-	__p += '<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title">' +
-	((__t = ( gt.gettext("Create a model of descriptor") )) == null ? '' : __t) +
-	'</h4></div><div class="modal-body" style="max-height: 400px; overflow-y: auto"><form><div class="form-group"><label class="control-label" for="label">' +
-	((__t = ( gt.gettext("Label for the current language") )) == null ? '' : __t) +
-	'</label><input class="form-control" type="text" id="label" maxlength="64" autofocus="" autocomplete="off" style="width:100%"></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal">' +
-	((__t = ( gt.gettext("Cancel") )) == null ? '' : __t) +
-	'</button> <button type="button" class="btn btn-primary apply">' +
-	((__t = ( gt.gettext("Apply") )) == null ? '' : __t) +
-	'</button></div></div></div>';
-	
-	}
-	return __p
-	};
-
-
-/***/ },
-/* 185 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var _ = __webpack_require__(1);
-	
-	module.exports = function (obj) {
-	obj || (obj = {});
-	var __t, __p = '', __j = Array.prototype.join;
-	function print() { __p += __j.call(arguments, '') }
-	with (obj) {
-	__p += '<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title">' +
-	((__t = ( gt.gettext("Change the label for the type of model of descriptor") )) == null ? '' : __t) +
-	'</h4></div><div class="modal-body" style="max-height: 400px; overflow-y: auto"><form id="descriptor_model_type_labels">';
-	
-	                var languages = application.main.collections.uilanguages;
-	
-	                for (var i = 0; i < languages.models.length; ++i) {
-	                    var lang_id = languages.at(i).get('id');
-	                    var lang_label = languages.at(i).get('label');
-	                    var label = labels[lang_label];
-	                    var autofocus = (i == 0) ? 'autofocus=""' : "";
-	                ;
-	__p += ' <div class="form-group"><label class="control-label">' +
-	((__t = ( gt.gettext(lang_label) )) == null ? '' : __t) +
-	'</label><input class="form-control" type="text" language="' +
-	((__t = ( lang_id )) == null ? '' : __t) +
-	'" value="' +
-	((__t = ( labels[lang_id] )) == null ? '' : __t) +
-	'" maxlength="64" ' +
-	((__t = ( autofocus )) == null ? '' : __t) +
-	' autocomplete="off" style="width:100%"></div> ';
-	 } ;
-	__p += ' </form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal">' +
-	((__t = ( gt.gettext("Cancel") )) == null ? '' : __t) +
-	'</button> <button type="button" class="btn btn-primary apply">' +
-	((__t = ( gt.gettext("Apply") )) == null ? '' : __t) +
-	'</button></div></div></div>';
-	
-	}
-	return __p
-	};
-
-
-/***/ },
-/* 186 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var _ = __webpack_require__(1);
-	
-	module.exports = function (obj) {
-	obj || (obj = {});
-	var __t, __p = '';
-	with (obj) {
-	__p += '<div class="object descriptor-model-type-list" object-type="descriptor-model-type-list"><table class="table table-striped"><thead class="sticky-header"><tr><th><span class="glyphicon glyphicon-asterisk"></span></th><th>' +
-	((__t = ( gt.gettext("Code") )) == null ? '' : __t) +
-	'</th><th>' +
-	((__t = ( gt.gettext("Label") )) == null ? '' : __t) +
-	'</th><th>' +
-	((__t = ( gt.gettext("Mandatory") )) == null ? '' : __t) +
-	'</th><th>' +
-	((__t = ( gt.gettext("Set Once") )) == null ? '' : __t) +
-	'</th></tr></thead><tbody class="descriptor-model-type-list header-line"></tbody></table></div>';
-	
-	}
-	return __p
-	};
-
-
-/***/ },
-/* 187 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file descriptorgrouplistalt.js
-	 * @brief Alternative view of list of groups of types of descriptors
-	 * @author Frederic SCHERMA
-	 * @date 2016-10-14
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var Marionette = __webpack_require__(4);
-	var DescriptorGroupModel = __webpack_require__(132);
-	var DescriptorGroupAltView = __webpack_require__(188);
-	
-	var ScrollView = __webpack_require__(78);
-	
-	var View = ScrollView.extend({
-	    template: __webpack_require__(194),
-	    childView: DescriptorGroupAltView,
-	    childViewContainer: 'tbody.descriptor-group-list',
-	
-	    childViewOptions: function () {
-	        return {
-	            layout: this.getOption('layout'),
-	        }
-	    },
-	
-	    initialize: function(options) {
-	        this.listenTo(this.collection, 'reset', this.render, this);
-	        this.listenTo(this.collection, 'change', this.render, this);
-	        //this.listenTo(this.collection, 'add', this.render, this);
-	        //this.listenTo(this.collection, 'remove', this.render, this);
-	
-	        View.__super__.initialize.apply(this);
-	    }
-	});
-	
-	module.exports = View;
-
-
-/***/ },
-/* 188 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file descriptorgroupalt.js
-	 * @brief Alternative view for group of type of descriptor item
-	 * @author Frederic SCHERMA
-	 * @date 2016-10-14
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var Marionette = __webpack_require__(4);
-	var DescriptorGroupModel = __webpack_require__(132);
-	
-	var DescriptorTypeCollection = __webpack_require__(134);
-	var DescriptorTypeListAltView = __webpack_require__(189);
-	var ScrollingMoreView = __webpack_require__(94);
-	
-	var View = Marionette.ItemView.extend({
-	    tagName: 'tr',
-	    className: 'element object descriptor-group-alt',
-	    template: __webpack_require__(193),
-	
-	    events: {
-	        'click': 'viewDescriptorTypes'
-	    },
-	
-	    initialize: function(options) {
-	        this.listenTo(this.model, 'reset', this.render, this);
-	    },
-	
-	    onRender: function() {
-	    },
-	
-	    viewDescriptorTypes: function() {
-	        var layout = this.getOption('layout');
-	        var collection = new DescriptorTypeCollection([], {group_id: this.model.id});
-	
-	        collection.fetch().then(function () {
-	            var descriptorTypeListView = new DescriptorTypeListAltView({collection : collection});
-	
-	            layout.getRegion('right-down-content').show(descriptorTypeListView);
-	            layout.getRegion('right-down-bottom').show(new ScrollingMoreView({targetView: descriptorTypeListView}));
-	        });
-	    },
-	});
-	
-	module.exports = View;
-
-
-/***/ },
-/* 189 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file descriptortypelistalt.js
-	 * @brief Alternative list of types of descriptors for a group view
-	 * @author Frederic SCHERMA
-	 * @date 2016-10-14
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var Marionette = __webpack_require__(4);
-	var ScrollView = __webpack_require__(78);
-	
-	var DescriptorTypeModel = __webpack_require__(133);
-	var DescriptorTypeAltView = __webpack_require__(190);
-	
-	var View = ScrollView.extend({
-	    template: __webpack_require__(192),
-	    childView: DescriptorTypeAltView,
-	    childViewContainer: 'tbody.descriptor-type-list',
-	
-	    ui: {
-	        'table': 'table.table',
-	    },
-	
-	    events: {
-	    },
-	
-	    initialize: function() {
-	        this.listenTo(this.collection, 'reset', this.render, this);
-	        this.listenTo(this.collection, 'change', this.render, this);
-	        //this.listenTo(this.collection, 'add', this.render, this);
-	        //this.listenTo(this.collection, 'remove', this.render, this);
-	
-	        View.__super__.initialize.apply(this);
-	    },
-	});
-	
-	module.exports = View;
-
-
-/***/ },
-/* 190 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file descriptortypealt.js
-	 * @brief Alternative type of descriptor item view
-	 * @author Frederic SCHERMA
-	 * @date 2016-10-14
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var Marionette = __webpack_require__(4);
-	var DescriptorTypeModel = __webpack_require__(133);
-	
-	var View = Marionette.ItemView.extend({
-	    tagName: 'tr',
-	    className: 'element object descriptor-type',
-	    template: __webpack_require__(191),
-	
-	    attributes: {
-	        draggable: true,
-	    },
-	
-	    events: {
-	        'dragstart': 'dragStart',
-	        'dragend': 'dragEnd',
-	    },
-	
-	    initialize: function() {
-	        this.listenTo(this.model, 'reset', this.render, this);
-	    },
-	
-	    dragStart: function(e) {
-	        this.$el.css('opacity', '0.4');
-	        application.dndElement = this;
-	    },
-	
-	    dragEnd: function(e) {
-	        this.$el.css('opacity', '1.0');
-	        application.dndElement = null;
-	    },
-	});
-	
-	module.exports = View;
-
-
-/***/ },
-/* 191 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var _ = __webpack_require__(1);
-	
-	module.exports = function (obj) {
-	obj || (obj = {});
-	var __t, __p = '', __j = Array.prototype.join;
-	function print() { __p += __j.call(arguments, '') }
-	with (obj) {
-	__p += '<td name="name" value="' +
-	((__t = ( name )) == null ? '' : __t) +
-	'">' +
-	((__t = ( name )) == null ? '' : __t) +
-	'</td><td name="code">' +
-	((__t = ( code )) == null ? '' : __t) +
-	'</td> ';
-	 if (format.type === "enum_single" || format.type === "enum_pair" || format.type === "enum_ordinal") { ;
-	__p += ' <td name="num_descriptor_values"><span class="badge">' +
-	((__t = ( num_descriptor_values )) == null ? '' : __t) +
-	'</span></td> ';
-	 } else { ;
-	__p += ' <td name="num_descriptor_values"><abbr class="badge" title="' +
-	((__t = ( gt.gettext('No values for this descriptor') )) == null ? '' : __t) +
-	'">N/A</abbr></td> ';
-	 } ;
-	__p += ' <td name="description"><abbr class="label label-default glyphicon glyphicon-option-horizontal" title="' +
-	((__t = ( description )) == null ? '' : __t) +
-	'"><span></span></abbr></td>';
-	
-	}
-	return __p
-	};
-
-
-/***/ },
-/* 192 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var _ = __webpack_require__(1);
-	
-	module.exports = function (obj) {
-	obj || (obj = {});
-	var __t, __p = '';
-	with (obj) {
-	__p += '<div class="object descriptor-type-list" object-type="descriptor-type-list" style="width:100%"><table class="table table-striped"><thead class="sticky-header"><tr><th>' +
-	((__t = ( gt.gettext("Type of descriptor") )) == null ? '' : __t) +
-	'</th><th>' +
-	((__t = ( gt.gettext("Code") )) == null ? '' : __t) +
-	'</th><th>' +
-	((__t = ( gt.gettext("Number of values") )) == null ? '' : __t) +
-	'</th><th>' +
-	((__t = ( gt.gettext("Description") )) == null ? '' : __t) +
-	'</th></tr></thead><tbody class="descriptor-type-list"></tbody></table></div>';
-	
-	}
-	return __p
-	};
-
-
-/***/ },
-/* 193 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var _ = __webpack_require__(1);
-	
-	module.exports = function (obj) {
-	obj || (obj = {});
-	var __t, __p = '';
-	with (obj) {
-	__p += '<td class="action view-descriptor-group" name="name" value="' +
-	((__t = ( name )) == null ? '' : __t) +
-	'">' +
-	((__t = ( name )) == null ? '' : __t) +
-	'</td><td class="action view-descriptor-type" name="num_descriptor_types"><abbr class="badge" style="cursor: pointer" title="' +
-	((__t = ( gt.gettext('Manage types of descriptor') )) == null ? '' : __t) +
-	'">' +
-	((__t = ( num_descriptor_types )) == null ? '' : __t) +
-	'</abbr></td>';
-	
-	}
-	return __p
-	};
-
-
-/***/ },
-/* 194 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var _ = __webpack_require__(1);
-	
-	module.exports = function (obj) {
-	obj || (obj = {});
-	var __t, __p = '';
-	with (obj) {
-	__p += '<div class="object descriptor-group-list" object-type="descriptor-group-list" style="width:100%"><table class="table table-striped"><thead class="sticky-header"><tr><th>' +
-	((__t = ( gt.gettext("Group of descriptors") )) == null ? '' : __t) +
-	'</th><th>' +
-	((__t = ( gt.gettext("Number of types of descriptor") )) == null ? '' : __t) +
-	'</th></tr></thead><tbody class="descriptor-group-list"></tbody></table></div>';
-	
-	}
-	return __p
-	};
-
-
-/***/ },
-/* 195 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file leftonerighttwolayout.js
-	 * @brief Two columns, one row at left, two rows at right layout
-	 * @author Frederic SCHERMA
-	 * @date 2016-10-14
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var Marionette = __webpack_require__(4);
-	
-	var TwoColumnsLayout = Marionette.LayoutView.extend({
-	    template: "#left_one_right_two_layout_view",
-	    attributes: {
-	        style: "height: 95%;"
-	    },
-	
-	    regions: {
-	        'left-content': ".left-content",
-	        'left-bottom': ".left-bottom",
-	        'right-up-content': ".right-up-content",
-	        'right-up-bottom': ".right-up-bottom",
-	        'right-down-content': ".right-down-content",
-	        'right-down-bottom': ".right-down-bottom",
-	    },
-	
-	    onBeforeShow: function() {
-	    },
-	
-	    onBeforeDestroy: function () {
-	    },
-	});
-	
-	module.exports = TwoColumnsLayout;
-
-
-/***/ },
-/* 196 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file descriptormetamodel.js
-	 * @brief Descriptor meta-model router
-	 * @author Frederic SCHERMA
-	 * @date 2016-10-26
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var Marionette = __webpack_require__(4);
-	
-	var DescriptorMetaModelModel = __webpack_require__(197);
-	
-	var DescriptorModelCollection = __webpack_require__(169);
-	var DescriptorMetaModelCollection = __webpack_require__(198);
-	var DescriptorPanelCollection = __webpack_require__(199);
-	
-	var DescriptorMetaModelAddView = __webpack_require__(201);
-	var DescriptorMetaModelDetailView = __webpack_require__(204);
-	var DescriptorMetaModelListView = __webpack_require__(206);
-	var DescriptorPanelListView = __webpack_require__(211);
-	
-	var DescriptorModelListAltView = __webpack_require__(217);
-	
-	var DefaultLayout = __webpack_require__(50);
-	var TwoColumnsLayout = __webpack_require__(221);
-	var TitleView = __webpack_require__(51);
-	var ScrollingMoreView = __webpack_require__(94);
-	
-	var Router = Marionette.AppRouter.extend({
-	    routes : {
-	        "app/accession/descriptor/meta-model/": "getDescriptorMetaModelList",
-	        "app/accession/descriptor/meta-model/:id/": "getDescriptorMetaModel",
-	        "app/accession/descriptor/meta-model/:id/panel/": "getDescriptorPanelListForModel",
-	    },
-	
-	    getDescriptorMetaModelList: function () {
-	        var collection = new DescriptorMetaModelCollection();
-	
-	        var defaultLayout = new DefaultLayout({});
-	        application.getRegion('mainRegion').show(defaultLayout);
-	
-	        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of meta-models of descriptor")}));
-	
-	        collection.fetch().then(function () {
-	            var descriptorMetaModelList = new DescriptorMetaModelListView({collection : collection});
-	            defaultLayout.getRegion('content').show(descriptorMetaModelList);
-	            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: descriptorMetaModelList}));
-	        });
-	
-	        // @todo lookup for permission
-	        if (session.user.isAuth && (session.user.isSuperUser || session.user.isStaff)) {
-	            defaultLayout.getRegion('bottom').show(new DescriptorMetaModelAddView({collection: collection}));
-	        }
-	    },
-	
-	    getDescriptorMetaModel: function (id) {
-	        var defaultLayout = new DefaultLayout();
-	        application.getRegion('mainRegion').show(defaultLayout);
-	
-	        var model = new DescriptorMetaModelModel({id: id});
-	
-	        model.fetch().then(function () {
-	            defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Details for the meta-model of descriptor"), object: model.get('name')}));
-	            defaultLayout.getRegion('content').show(new DescriptorMetaModelDetailView({model : model}));
-	        });
-	    },
-	
-	    getDescriptorPanelListForModel: function(id) {
-	        var panelCollection = new DescriptorPanelCollection([], {model_id: id});
-	
-	        var defaultLayout = new DefaultLayout({});
-	        application.getRegion('mainRegion').show(defaultLayout);
-	
-	        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of panels of descriptor")}));
-	
-	        var twoColumnsLayout = new TwoColumnsLayout({});
-	        defaultLayout.getRegion('content').show(twoColumnsLayout);
-	
-	        panelCollection.fetch().then(function () {
-	            var descriptorPanelList = new DescriptorPanelListView({collection : panelCollection});
-	            twoColumnsLayout.getRegion('left-content').show(descriptorPanelList);
-	            twoColumnsLayout.getRegion('left-bottom').show(new ScrollingMoreView({targetView: descriptorPanelList}));
-	        });
-	
-	        var modelCollection = new DescriptorModelCollection();
-	        modelCollection.fetch().then(function () {
-	            var descriptorModelList = new DescriptorModelListAltView({
-	                collection: modelCollection,
-	                layout: twoColumnsLayout
-	            });
-	
-	            twoColumnsLayout.getRegion('right-content').show(descriptorModelList);
-	            twoColumnsLayout.getRegion('right-bottom').show(new ScrollingMoreView({targetView: descriptorModelList}));
-	        });
-	    },
-	});
-	
-	module.exports = Router;
-
-
-/***/ },
-/* 197 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file descriptormetamodel.js
-	 * @brief Meta-model of descriptor
-	 * @author Frederic SCHERMA
-	 * @date 2016-10-27
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var Backbone = __webpack_require__(2);
-	
-	var Model = Backbone.Model.extend({
-	    url: function() {
-	        if (this.isNew())
-	            return application.baseUrl + 'accession/descriptor/meta-model/';
-	        else
-	            return application.baseUrl + 'accession/descriptor/meta-model/' + this.get('id') + '/';
-	    },
-	
-	    defaults: {
-	        id: null,
-	        name: '',
-	        label: '',
-	        description: '',
-	        target: '',
-	        num_descriptor_models: 0,
-	    },
-	
-	    parse: function(data) {
-	        //this.perms = data.perms;
-	        return data;
-	    },
-	
-	    validate: function(attrs) {
-	        var errors = {};
-	        var hasError = false;
-	
-	        if (hasError) {
-	          return errors;
-	        }
-	    },
-	});
-	
-	module.exports = Model;
-
-
-/***/ },
-/* 198 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file descriptormetamodel.js
-	 * @brief Meta-model of descriptors collection
-	 * @author Frederic SCHERMA
-	 * @date 2016-10-27
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var DescriptorMetaModelModel = __webpack_require__(197);
-	
-	var Collection = Backbone.Collection.extend({
-	    url: application.baseUrl + 'accession/descriptor/meta-model/',
-	    model: DescriptorMetaModelModel,
-	
-	    parse: function(data) {
-	        this.prev = data.prev;
-	        this.cursor = data.cursor;
-	        this.next = data.next;
-	
-	        this.perms = data.perms;
-	
-	        return data.items;
-	    },
-	});
-	
-	module.exports = Collection;
-
-
-/***/ },
-/* 199 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file descriptorpaneltype.js
-	 * @brief Panel of descriptors collection
-	 * @author Frederic SCHERMA
-	 * @date 2016-10-27
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var DescriptorPanelModel = __webpack_require__(200);
-	
-	var Collection = Backbone.Collection.extend({
-	    url: function() {
-	        return application.baseUrl + 'accession/descriptor/meta-model/' + this.model_id + '/panel/';
-	    },
-	
-	    model: DescriptorPanelModel,
-	
-	    initialize: function(models, options) {
-	        options || (options = {});
-	        this.model_id = options.model_id;
-	    },
-	
-	    parse: function(data) {
-	        this.prev = data.prev;
-	        this.cursor = data.cursor;
-	        this.next = data.next;
-	
-	        return data.items;
-	    },
-	
-	    comparator: 'position'
-	});
-	
-	module.exports = Collection;
-
-
-/***/ },
-/* 200 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file descriptorpanel.js
-	 * @brief Model of panel of descriptor
-	 * @author Frederic SCHERMA
-	 * @date 2016-10-27
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var Backbone = __webpack_require__(2);
-	
-	var Model = Backbone.Model.extend({
-	    url: function() {
-	        var model_id = this.model_id || this.get('model') || this.collection.model_id;
-	
-	        if (this.isNew()) {
-	            return application.baseUrl + 'accession/descriptor/meta-model/' + model_id + '/panel/';
-	        }
-	        else
-	            return application.baseUrl + 'accession/descriptor/meta-model/' + model_id + '/panel/' + this.get('id') + '/';
-	    },
-	
-	    defaults: {
-	        id: null,
-	        name: '',
-	        label: '',
-	        descriptor_model: null,
-	        descriptor_model_name: '',
-	        descriptor_model_verbose_name: '',
-	    },
-	
-	    initialize: function(attributes, options) {
-	        Model.__super__.initialize.apply(this, arguments);
-	
-	        options || (options = {});
-	
-	        if (options.collection) {
-	            this.model_id = options.collection.model_id;
-	        }
-	    },
-	
-	    parse: function(data) {
-	        //this.perms = data.perms;
-	        return data;
-	    },
-	
-	    validate: function(attrs) {
-	        var errors = {};
-	        var hasError = false;
-	
-	        if (hasError) {
-	          return errors;
-	        }
-	    },
-	});
-	
-	module.exports = Model;
-
-
-/***/ },
-/* 201 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file descriptormetamodeladd.js
-	 * @brief Add a meta-model of descriptor
-	 * @author Frederic SCHERMA
-	 * @date 2016-10-26
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var Marionette = __webpack_require__(4);
-	
-	var Dialog = __webpack_require__(82);
-	
-	var View = Marionette.ItemView.extend({
-	    tagName: 'div',
-	    className: 'descriptor-meta-model-add',
-	    template: __webpack_require__(202),
-	
-	    ui: {
-	        add: 'span.add-descriptor-meta-model',
-	        name: 'input.descriptor-meta-model-name',
-	    },
-	
-	    events: {
-	        'click @ui.add': 'addDescriptorMetaModel',
-	        'input @ui.name': 'onNameInput',
-	    },
-	
-	    initialize: function(options) {
-	        options || (options = {});
-	        this.collection = options.collection;
-	    },
-	
-	    addDescriptorMetaModel: function () {
-	        var DescriptorModelCreate = Dialog.extend({
-	           template: __webpack_require__(203),
-	
-	            attributes: {
-	                id: "dlg_create_descriptor_model",
-	            },
-	
-	            ui: {
-	                label: "#label",
-	                descriptor_meta_model_target: "#descriptor_meta_model_target",
-	                description: "#description",
-	            },
-	
-	            events: {
-	                'input @ui.label': 'onLabelInput',
-	            },
-	
-	            initialize: function(options) {
-	                DescriptorModelCreate.__super__.initialize.apply(this);
-	
-	                $(this.ui.descriptor_meta_model_target).select2({
-	                    dropdownParent: $(this.el),
-	                });
-	            },
-	
-	            onApply: function() {
-	                if (!this.validateLabel()) {
-	                    return;
-	                }
-	
-	                var view = this;
-	                var collection = this.getOption('collection');
-	                var name = this.getOption('name');
-	                var label = this.ui.label.val();
-	                var target = this.ui.descriptor_meta_model_target.val();
-	                var description = this.ui.description.val();
-	
-	                if (target != null) {
-	                    collection.create({
-	                        name: name,
-	                        label: label,
-	                        target: target,
-	                        description: description
-	                    }, {
-	                        wait: true,
-	                        success: function () {
-	                            view.remove();
-	                        },
-	                        error: function () {
-	                            $.alert.error(gt.gettext("Unable to create the meta-model of descriptor !"));
-	                        }
-	                    });
-	                }
-	            },
-	
-	            validateLabel: function() {
-	                var v = this.ui.label.val();
-	
-	                if (v.length < 3) {
-	                    $(this.ui.label).validateField('failed', gt.gettext('3 characters min'));
-	                    return false;
-	                }
-	
-	                return true;
-	            },
-	
-	            onLabelInput: function () {
-	                if (this.validateLabel()) {
-	                    $(this.ui.label).validateField('ok');
-	                }
-	            }
-	        });
-	
-	        if (!this.ui.name.hasClass('invalid') && this.validateName()) {
-	            var descriptorModelCreate = new DescriptorModelCreate({
-	                collection: this.collection,
-	                name: this.ui.name.val()
-	            });
-	
-	            $(this.ui.name).cleanField();
-	            descriptorModelCreate.render();
-	        }
-	    },
-	
-	    validateName: function() {
-	        var v = this.ui.name.val();
-	        var re = /^[a-zA-Z0-9_\-]+$/i;
-	
-	        if (v.length > 0 && !re.test(v)) {
-	            $(this.ui.name).validateField('failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
-	            return false;
-	        } else if (v.length < 3) {
-	            $(this.ui.name).validateField('failed', gt.gettext('3 characters min'));
-	            return false;
-	        }
-	
-	        return true;
-	    },
-	
-	    onNameInput: function () {
-	        if (this.validateName()) {
-	            $.ajax({
-	                type: "GET",
-	                url: application.baseUrl + 'accession/descriptor/meta-model/search/',
-	                dataType: 'json',
-	                data: {filters: JSON.stringify({
-	                    method: 'ieq',
-	                    fields: 'name',
-	                    name: this.ui.name.val()})
-	                },
-	                el: this.ui.name,
-	                success: function(data) {
-	                    if (data.items.length > 0) {
-	                        for (var i in data.items) {
-	                            var t = data.items[i];
-	
-	                            if (t.name.toUpperCase() == this.el.val().toUpperCase()) {
-	                                $(this.el).validateField('failed', gt.gettext('Descriptor meta-model name already in usage'));
-	                                break;
-	                            }
-	                        }
-	                    } else {
-	                        $(this.el).validateField('ok');
-	                    }
-	                }
-	            });
-	        }
-	    },
-	});
-	
-	module.exports = View;
-
-
-/***/ },
-/* 202 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var _ = __webpack_require__(1);
-	
-	module.exports = function (obj) {
-	obj || (obj = {});
-	var __t, __p = '';
-	with (obj) {
-	__p += '<table class="table table-striped" style="margin-bottom: 0px"><tbody><tr class="edit-mode" style="height: 95px"><th><span class="add-descriptor-meta-model action glyphicon glyphicon-plus-sign" style="margin-top: 9px; margin-left: 10px"></span></th><td style="width: 100%"><div class="form-group"><input type="text" class="descriptor-meta-model-name form-control" name="descriptor-meta-model"></div></td></tr></tbody></table>';
-	
-	}
-	return __p
-	};
-
-
-/***/ },
-/* 203 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var _ = __webpack_require__(1);
-	
-	module.exports = function (obj) {
-	obj || (obj = {});
-	var __t, __p = '';
-	with (obj) {
-	__p += '<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title">' +
-	((__t = ( gt.gettext("Create a meta-model of descriptor") )) == null ? '' : __t) +
-	'</h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="descriptor_meta_model_target">' +
-	((__t = ( gt.gettext("Target entity") )) == null ? '' : __t) +
-	'</label><select id="descriptor_meta_model_target" class="form-control" name="descriptor-meta-model-target"><option value="accession.accession">' +
-	((__t = ( gt.gettext("Accession") )) == null ? '' : __t) +
-	'</option><option value="accession.batch">' +
-	((__t = ( gt.gettext("Batch") )) == null ? '' : __t) +
-	'</option><option value="accession.sample">' +
-	((__t = ( gt.gettext("Sample") )) == null ? '' : __t) +
-	'</option></select></div><div class="form-group"><label class="control-label" for="label">' +
-	((__t = ( gt.gettext("Label for the current language") )) == null ? '' : __t) +
-	'</label><input class="form-control" id="label" name="label" maxlength="64" autofocus="" style="width:100%"></div><div class="form-group"><label class="control-label" for="description">' +
-	((__t = ( gt.gettext("Description") )) == null ? '' : __t) +
-	'</label><textarea class="form-control" id="description" name="description" maxlength="1024" style="width:100%"></textarea></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal">' +
-	((__t = ( gt.gettext("Cancel") )) == null ? '' : __t) +
-	'</button> <button type="button" class="btn btn-primary apply">' +
-	((__t = ( gt.gettext("Apply") )) == null ? '' : __t) +
-	'</button></div></div></div>';
-	
-	}
-	return __p
-	};
-
-
-/***/ },
-/* 204 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file descriptormetamodeldetail.js
-	 * @brief Detail for a meta-model of descriptor view
-	 * @author Frederic SCHERMA
-	 * @date 2016-10-27
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var Marionette = __webpack_require__(4);
-	var DescriptorMetaModelModel = __webpack_require__(197);
-	
-	var View = Marionette.ItemView.extend({
-	    className: 'element object descriptor-meta-model-detail',
-	    template: __webpack_require__(205),
-	
-	    ui: {
-	        name: '#descriptor_meta_model_name',
-	        description: '#descriptor_meta_model_description',
-	        save: '#save'
-	    },
-	
-	    events: {
-	        'click @ui.save': 'saveDescriptorMetaModel',
-	        'input @ui.name': 'inputName',
-	    },
-	
-	    initialize: function() {
-	        this.listenTo(this.model, 'reset', this.render, this);
-	    },
-	
-	    onRender: function() {
-	    },
-	
-	    inputName: function () {
-	        var v = this.ui.name.val();
-	        var re = /^[a-zA-Z0-9_-]+$/i;
-	
-	        if (v.length > 0 && !re.test(v)) {
-	            $(this.ui.name).validateField('failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
-	        } else if (v.length < 3) {
-	            $(this.ui.name).validateField('failed', gt.gettext('3 characters min'));
-	        } else {
-	            $(this.ui.name).validateField('ok');
-	        }
-	    },
-	
-	    saveDescriptorMetaModel: function () {
-	        if (!$(this.ui.name.isValidField()))
-	            return;
-	
-	        var name = this.ui.name.val();
-	        var description = this.ui.description.val();
-	
-	        this.model.save({
-	            name: name,
-	            description: description,
-	        }, {wait: true}).done(function() { $.alert.success(gt.gettext("Done")); });
-	    }
-	});
-	
-	module.exports = View;
-
-
-/***/ },
-/* 205 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var _ = __webpack_require__(1);
-	
-	module.exports = function (obj) {
-	obj || (obj = {});
-	var __t, __p = '', __e = _.escape;
-	with (obj) {
-	__p += '<div class="descriptor-meta-model-detail"><div class="descriptor-mata-model-name form-group" style="width: 50%"><label for="descriptor_meta_model_name">' +
-	__e( gt.gettext('Descriptor meta-model name') ) +
-	'</label><input id="descriptor_meta_model_name" class="form-control" type="text" maxlength="255" value="' +
-	((__t = ( name )) == null ? '' : __t) +
-	'"></div><div class="descriptor-meta-model-description form-group" style="width: 50%"><label for="descriptor_meta_model_description">' +
-	__e( gt.gettext('Description') ) +
-	'</label><textarea id="descriptor_meta_model_description" class="form-control" maxlength="1024">' +
-	((__t = ( description )) == null ? '' : __t) +
-	'</textarea></div><div class="descriptor-model-update form-group" style="width: 100px; margin-left: 20%; margin-top: 25px"><button id="save" class="form-control btn btn-primary">' +
-	__e( gt.gettext('Update') ) +
-	'</button></div></div>';
-	
-	}
-	return __p
-	};
-
-
-/***/ },
-/* 206 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file descriptormetamodellist.js
-	 * @brief List of meta-model of descriptors view
-	 * @author Frederic SCHERMA
-	 * @date 2016-10-27
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var Marionette = __webpack_require__(4);
-	var DescriptorMetaModelModel = __webpack_require__(197);
-	var DescriptorMetaModelView = __webpack_require__(207);
-	
-	var ScrollView = __webpack_require__(78);
-	
-	var View = ScrollView.extend({
-	    template: __webpack_require__(210),
-	    childView: DescriptorMetaModelView,
-	    childViewContainer: 'tbody.descriptor-meta-model-list',
-	
-	    initialize: function() {
-	        this.listenTo(this.collection, 'reset', this.render, this);
-	        this.listenTo(this.collection, 'change', this.render, this);
-	
-	        View.__super__.initialize.apply(this);
-	    },
-	});
-	
-	module.exports = View;
-
-
-/***/ },
-/* 207 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file descriptormetamodel.js
-	 * @brief Meta-model of descriptor item view
-	 * @author Frederic SCHERMA
-	 * @date 2016-10-27
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var Marionette = __webpack_require__(4);
-	
-	var Dialog = __webpack_require__(82);
-	var DescriptorMetaModelModel = __webpack_require__(197);
-	
-	var View = Marionette.ItemView.extend({
-	    tagName: 'tr',
-	    className: 'element object descriptor-meta-model',
-	    template: __webpack_require__(208),
-	
-	    ui: {
-	        delete_descriptor_meta_model: 'span.delete-descriptor-meta-model',
-	        change_descriptor_meta_model_label: 'td.change-descriptor-meta-model-label',
-	        view_descriptor_meta_model: 'td.view-descriptor-meta-model',
-	        view_descriptor_panels: 'td.view-descriptor-panels',
-	    },
-	
-	    events: {
-	        'click @ui.delete_descriptor_meta_model': 'deleteDescriptorMetaModel',
-	        'click @ui.change_descriptor_meta_model_label': 'editLabel',
-	        'click @ui.view_descriptor_meta_model': 'viewDescriptorMetaModelDetails',
-	        'click @ui.view_descriptor_panels': 'viewDescriptorPanels',
-	    },
-	
-	    initialize: function() {
-	        this.listenTo(this.model, 'reset', this.render, this);
-	    },
-	
-	    onRender: function() {
-	        // localize content-type
-	        application.main.views.contentTypes.htmlFromValue(this.el);
-	
-	        // TODO check with user permission
-	        /*if (!this.model.get('can_delete') || !session.user.isSuperUser) {
-	            $(this.ui.delete_descriptor_model).hide();
-	        }*/
-	    },
-	
-	    viewDescriptorMetaModelDetails: function() {
-	        Backbone.history.navigate("app/accession/descriptor/meta-model/" + this.model.id + "/", {trigger: true});
-	    },
-	
-	    viewDescriptorPanels: function() {
-	        Backbone.history.navigate("app/accession/descriptor/meta-model/" + this.model.id + "/panel/", {trigger: true});
-	    },
-	
-	    deleteDescriptorMetaModel: function() {
-	        if (this.model.get('num_descriptor_models') == 0) {
-	            this.model.destroy({wait: true});
-	        }
-	    },
-	
-	    editLabel: function() {
-	        var model = this.model;
-	
-	        $.ajax({
-	            type: "GET",
-	            url: this.model.url() + 'label/',
-	            dataType: 'json',
-	        }).done(function (data) {
-	            var labels = data;
-	
-	            var ChangeLabel = Dialog.extend({
-	                template: __webpack_require__(209),
-	                templateHelpers: function () {
-	                    return {
-	                        labels: labels,
-	                    };
-	                },
-	
-	                attributes: {
-	                    id: "dlg_change_labels",
-	                },
-	
-	                ui: {
-	                    label: "#descriptor_meta_model_labels input",
-	                },
-	
-	                events: {
-	                    'input @ui.label': 'onLabelInput',
-	                },
-	
-	                initialize: function (options) {
-	                    ChangeLabel.__super__.initialize.apply(this);
-	                },
-	
-	                onLabelInput: function (e) {
-	                    this.validateLabel(e);
-	                },
-	
-	                validateLabel: function (e) {
-	                    var v = $(e.target).val();
-	
-	                    if (v.length > 64) {
-	                        $(this.ui.label).validateField('failed', gt.gettext('64 characters max'));
-	                        return false;
-	                    }
-	
-	                    $(this.ui.label).validateField('ok');
-	
-	                    return true;
-	                },
-	
-	                validateLabels: function() {
-	                    $.each($(this.ui.label), function(i, label) {
-	                        var v = $(this).val();
-	
-	                        if (v.length > 64) {
-	                            $(this).validateField('failed', gt.gettext('64 characters max'));
-	                            return false;
-	                        }
-	                    });
-	
-	                    return true;
-	                },
-	
-	                onApply: function () {
-	                    var view = this;
-	                    var model = this.getOption('model');
-	
-	                    var labels = {};
-	
-	                    $.each($(this.ui.label), function(i, label) {
-	                        var v = $(this).val();
-	                        labels[$(label).attr("language")] = v;
-	                    });
-	
-	                    if (this.validateLabels()) {
-	                        $.ajax({
-	                            type: "PUT",
-	                            url: model.url() + "label/",
-	                            dataType: 'json',
-	                            contentType: "application/json; charset=utf-8",
-	                            data: JSON.stringify(labels)
-	                        }).done(function() {
-	                            // manually update the current context label
-	                            model.set('label', labels[session.language]);
-	                            $.alert.success(gt.gettext("Successfully labeled !"));
-	                        }).always(function() {
-	                            view.remove();
-	                        });
-	                    }
-	                },
-	            });
-	
-	            var changeLabel = new ChangeLabel({model: model});
-	            changeLabel.render();
-	        });
-	    },
-	});
-	
-	module.exports = View;
-
-
-/***/ },
-/* 208 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var _ = __webpack_require__(1);
-	
-	module.exports = function (obj) {
-	obj || (obj = {});
-	var __t, __p = '', __e = _.escape;
-	with (obj) {
-	__p += '<th><span class="delete-descriptor-meta-model action glyphicon glyphicon-minus-sign"></span></th><td class="action view-descriptor-meta-model" name="name">' +
-	((__t = ( name )) == null ? '' : __t) +
-	'</td><td class="action change-descriptor-meta-model-label" name="label">' +
-	((__t = ( label )) == null ? '' : __t) +
-	'</td><td><abbr class="content-type target-content-type" title="' +
-	__e( target ) +
-	'" value="' +
-	__e( target ) +
-	'"></abbr></td><td class="action view-descriptor-panels" name="num_descriptor_models"><abbr class="badge" style="cursor: pointer" title="' +
-	((__t = ( gt.gettext('Manage panels of descriptor') )) == null ? '' : __t) +
-	'">' +
-	((__t = ( num_descriptor_models )) == null ? '' : __t) +
-	'</abbr></td><td name="description"><abbr class="label label-default glyphicon glyphicon-option-horizontal" title="' +
-	((__t = ( description )) == null ? '' : __t) +
-	'"><span></span></abbr></td>';
-	
-	}
-	return __p
-	};
-
-
-/***/ },
-/* 209 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var _ = __webpack_require__(1);
-	
-	module.exports = function (obj) {
-	obj || (obj = {});
-	var __t, __p = '', __j = Array.prototype.join;
-	function print() { __p += __j.call(arguments, '') }
-	with (obj) {
-	__p += '<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title">' +
-	((__t = ( gt.gettext("Change the label for the meta-model of descriptor") )) == null ? '' : __t) +
-	'</h4></div><div class="modal-body" style="max-height: 400px; overflow-y: auto"><form id="descriptor_meta_model_labels">';
-	
-	                var languages = application.main.collections.uilanguages;
-	
-	                for (var i = 0; i < languages.models.length; ++i) {
-	                    var lang_id = languages.at(i).get('id');
-	                    var lang_label = languages.at(i).get('label');
-	                    var label = labels[lang_label];
-	                    var autofocus = (i == 0) ? 'autofocus=""' : "";
-	                ;
-	__p += ' <div class="form-group"><label class="control-label">' +
-	((__t = ( gt.gettext(lang_label) )) == null ? '' : __t) +
-	'</label><input class="form-control" type="text" language="' +
-	((__t = ( lang_id )) == null ? '' : __t) +
-	'" value="' +
-	((__t = ( labels[lang_id] )) == null ? '' : __t) +
-	'" maxlength="64" ' +
-	((__t = ( autofocus )) == null ? '' : __t) +
-	' autocomplete="off" style="width:100%"></div> ';
-	 } ;
-	__p += ' </form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal">' +
-	((__t = ( gt.gettext("Cancel") )) == null ? '' : __t) +
-	'</button> <button type="button" class="btn btn-primary apply">' +
-	((__t = ( gt.gettext("Apply") )) == null ? '' : __t) +
-	'</button></div></div></div>';
-	
-	}
-	return __p
-	};
-
-
-/***/ },
-/* 210 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var _ = __webpack_require__(1);
-	
-	module.exports = function (obj) {
-	obj || (obj = {});
-	var __t, __p = '';
-	with (obj) {
-	__p += '<div class="object descriptor-meta-model-list" object-type="descriptor-meta-model-list" style="width:100%"><table class="table table-striped"><thead><tr><th><span class="glyphicon glyphicon-asterisk"></span></th><th>' +
-	((__t = ( gt.gettext("Name") )) == null ? '' : __t) +
-	'</th><th>' +
-	((__t = ( gt.gettext("Label") )) == null ? '' : __t) +
-	'</th><th>' +
-	((__t = ( gt.gettext("Target") )) == null ? '' : __t) +
-	'</th><th>' +
-	((__t = ( gt.gettext("Number of panels of descriptor") )) == null ? '' : __t) +
-	'</th><th>' +
-	((__t = ( gt.gettext("Description") )) == null ? '' : __t) +
-	'</th></tr></thead><tbody class="descriptor-meta-model-list"></tbody></table></div>';
-	
-	}
-	return __p
-	};
-
-
-/***/ },
-/* 211 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file descriptorpanellist.js
-	 * @brief List of panel of model of descriptors for a meta-model of descriptor view
-	 * @author Frederic SCHERMA
-	 * @date 2016-10-27
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var Marionette = __webpack_require__(4);
-	var ScrollView = __webpack_require__(78);
-	var Dialog = __webpack_require__(82);
-	
-	var DescriptorPanelModel = __webpack_require__(200);
-	var DescriptorPanelView = __webpack_require__(212);
-	
-	var View = ScrollView.extend({
-	    template: __webpack_require__(216),
-	    childView: DescriptorPanelView,
-	    childViewContainer: 'div.descriptor-panel-list',
-	
-	    ui: {
-	        'top_placeholder': 'div.top-placeholder',
-	        'bottom_placeholder': 'div.bottom-placeholder',
-	    },
-	
-	    initialize: function() {
-	        this.listenTo(this.collection, 'reset', this.render, this);
-	        this.listenTo(this.collection, 'change', this.render, this);
-	
-	        View.__super__.initialize.apply(this);
-	
-	        $("div.left-content").on("dragenter", $.proxy(this.dragEnterContent, this));
-	        $("div.left-content").on("dragleave", $.proxy(this.dragLeaveContent, this));
-	        $("div.left-content").on("dragover", $.proxy(this.dragOverContent, this));
-	        $("div.left-content").on("drop", $.proxy(this.dropContent, this));
-	    },
-	
-	    dragEnterContent: function (e) {
-	        if (e.preventDefault) {
-	            e.preventDefault();
-	        }
-	
-	        this.dragEnterCount || (this.dragEnterCount = 0);
-	        ++this.dragEnterCount;
-	
-	        if (this.dragEnterCount == 1) {
-	            if (application.dndElement.$el.hasClass('descriptor-model')) {
-	                this.ui.bottom_placeholder.css('display', 'block');
-	            }
-	        }
-	
-	        return false;
-	    },
-	
-	    dragLeaveContent: function (e) {
-	        if (e.preventDefault) {
-	            e.preventDefault();
-	        }
-	
-	        this.dragEnterCount || (this.dragEnterCount = 1);
-	        --this.dragEnterCount;
-	
-	        if (this.dragEnterCount == 0) {
-	            if (application.dndElement.$el.hasClass('descriptor-model')) {
-	                this.ui.bottom_placeholder.css('display', 'none');
-	            }
-	        }
-	
-	        return false;
-	    },
-	
-	    dragOverContent: function (e) {
-	        if (e.preventDefault) {
-	            e.preventDefault();
-	        }
-	
-	        this.dragEnterCount || (this.dragEnterCount = 1);
-	
-	        if (this.dragEnterCount == 1) {
-	            if (application.dndElement.$el.hasClass('descriptor-model')) {
-	                this.ui.bottom_placeholder.css('display', 'block');
-	            }
-	        }
-	
-	        //e.dataTransfer.dropEffect = 'move';
-	        return false;
-	    },
-	
-	    dropContent: function (e) {
-	        if (e.stopPropagation) {
-	            e.stopPropagation();
-	        }
-	
-	        this.dragEnterCount = 0;
-	
-	        this.ui.top_placeholder.css('display', 'none');
-	        this.ui.bottom_placeholder.css('display', 'none');
-	
-	        var elt = application.dndElement;
-	        if (!elt) {
-	            return false;
-	        }
-	
-	        if (elt.$el.hasClass('descriptor-model')) {
-	            var DefinesLabel = Dialog.extend({
-	                template: __webpack_require__(214),
-	
-	                attributes: {
-	                    id: "dlg_create_panel",
-	                },
-	
-	                ui: {
-	                    label: "#label",
-	                },
-	
-	                events: {
-	                    'input @ui.label': 'onLabelInput',
-	                },
-	
-	                initialize: function (options) {
-	                    DefinesLabel.__super__.initialize.apply(this);
-	                },
-	
-	                onLabelInput: function () {
-	                    this.validateLabel();
-	                },
-	
-	                validateLabel: function() {
-	                    var v = this.ui.label.val();
-	
-	                    if (v.length < 3) {
-	                        $(this.ui.label).validateField('failed', gt.gettext('3 characters min'));
-	                        return false;
-	                    }
-	
-	                    $(this.ui.label).validateField('ok');
-	
-	                    return true;
-	                },
-	
-	                onApply: function() {
-	                    var view = this;
-	                    var collection = this.getOption('collection');
-	                    var position = this.getOption('position');
-	                    var modelId = this.getOption('descriptor_model');
-	
-	                    if (this.validateLabel()) {
-	                        var to_rshift = [];
-	
-	                        // server will r-shift position of any model upward this new
-	                        // do it locally to be consistent
-	                        for (var model in collection.models) {
-	                            var dmt = collection.models[model];
-	                            var p = dmt.get('position');
-	                            if (p >= position) {
-	                                dmt.set('position', p+1);
-	                                to_rshift.push(dmt);
-	                            }
-	                        }
-	
-	                        collection.create({
-	                            descriptor_model: modelId,
-	                            label: this.ui.label.val(),
-	                            position: position
-	                        }, {
-	                            wait: true,
-	                            success: function () {
-	                                view.remove();
-	                            },
-	                            error: function () {
-	                                view.remove();
-	
-	                                // left shift (undo) for consistency with server
-	                                for (var i = 0; i < to_rshift.length; ++i) {
-	                                    to_rshift[i].set('position', to_rshift[i].get('position')-1);
-	                                }
-	                            }
-	                        });
-	                    }
-	                },
-	            });
-	
-	            var collection = this.collection;
-	
-	            // find last position + 1
-	            var newPosition = 0;
-	
-	            if (collection.models.length > 0) {
-	                newPosition = collection.at(collection.models.length-1).get('position') + 1;
-	            }
-	
-	            var definesLabel = new DefinesLabel({
-	                collection: collection,
-	                position: newPosition,
-	                descriptor_model: elt.model.get('id')
-	            });
-	
-	            definesLabel.render();
-	        } else if (elt.$el.hasClass('descriptor-panel')) {
-	            var collection = this.collection;
-	            var metaModelId = collection.model_id;
-	
-	            // find last position + 1
-	            var newPosition = collection.at(collection.models.length-1).get('position') + 1;
-	
-	            $.ajax({
-	                type: "PUT",
-	                url: application.baseUrl + 'accession/descriptor/meta-model/' + metaModelId + '/panel/order/',
-	                dataType: 'json',
-	                contentType: "application/json; charset=utf-8",
-	                data: JSON.stringify({
-	                    descriptor_panel_id: elt.model.get('id'),
-	                    position: newPosition
-	                })
-	            }).done(function() {
-	                elt.model.set('position', newPosition);
-	
-	                // lshift any others element
-	                for (var model in collection.models) {
-	                    var dmt = collection.models[model];
-	                    if (dmt.get('id') != elt.model.get('id')) {
-	                        var p = dmt.get('position');
-	                        dmt.set('position', p - 1);
-	                    }
-	                }
-	
-	                // need to sort
-	                collection.sort();
-	            }).fail(function() {
-	                $.alert.error(gt.gettext('Unable to reorder the panels of descriptor'));
-	            });
-	        }
-	
-	        return false;
-	    },
-	});
-	
-	module.exports = View;
-
-/***/ },
-/* 212 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file descriptorpanel.js
-	 * @brief Panel of model of descriptor item view
-	 * @author Frederic SCHERMA
-	 * @date 2016-10-27
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var Marionette = __webpack_require__(4);
-	var Dialog = __webpack_require__(82);
-	var DescriptorPanelModel = __webpack_require__(200);
-	
-	
-	var View = Marionette.ItemView.extend({
-	    tagName: 'div',
-	    className: 'element object descriptor-panel',
-	    template: __webpack_require__(213),
-	
-	    attributes: {
-	        draggable: true,
-	    },
-	
-	    ui: {
-	        'delete_descriptor_panel': 'span.delete-descriptor-panel',
-	        'label': 'span.change-label',
-	        'top_placeholder': 'div.top-placeholder',
-	        'bottom_placeholder': 'div.bottom-placeholder',
-	    },
-	
-	    events: {
-	        'dragstart': 'dragStart',
-	        'dragend': 'dragEnd',
-	        'dragover': 'dragOver',
-	        'dragenter': 'dragEnter',
-	        'dragleave': 'dragLeave',
-	        'drop': 'drop',
-	        'click @ui.delete_descriptor_panel': 'deleteDescriptorPanel',
-	        'click @ui.label': 'editLabel',
-	    },
-	
-	    initialize: function() {
-	        this.listenTo(this.model, 'reset', this.render, this);
-	    },
-	
-	    onRender: function() {
-	        if (!session.user.isStaff && !session.user.isSuperUser) {
-	            $(this.ui.delete_descriptor_panel).hide();
-	        }
-	    },
-	
-	    dragStart: function(e) {
-	        this.$el.css('opacity', '0.4');
-	        application.dndElement = this;
-	    },
-	
-	    dragEnd: function(e) {
-	        this.$el.css('opacity', '1.0');
-	        application.dndElement = null;
-	    },
-	
-	    dragEnter: function (e) {
-	        if (e.originalEvent.preventDefault) {
-	            e.originalEvent.preventDefault();
-	        }
-	
-	        this.dragEnterCount || (this.dragEnterCount = 0);
-	        ++this.dragEnterCount;
-	
-	        if (this.dragEnterCount == 1) {
-	            if (application.dndElement.$el.hasClass('descriptor-panel')) {
-	                if (this.model.get('position') < application.dndElement.model.get('position')) {
-	                    this.ui.top_placeholder.css('display', 'block');
-	                } else if (this.model.get('position') > application.dndElement.model.get('position')) {
-	                    this.ui.bottom_placeholder.css('display', 'block');
-	                }
-	            } else if (application.dndElement.$el.hasClass('descriptor-model')) {
-	                this.ui.top_placeholder.css('display', 'block');
-	            }
-	        }
-	
-	        return false;
-	    },
-	
-	    dragLeave: function (e) {
-	        if (e.originalEvent.preventDefault) {
-	            e.originalEvent.preventDefault();
-	        }
-	
-	        this.dragEnterCount || (this.dragEnterCount = 1);
-	        --this.dragEnterCount;
-	
-	        if (this.dragEnterCount == 0) {
-	            if (application.dndElement.$el.hasClass('descriptor-panel')) {
-	                if (this.model.get('position') < application.dndElement.model.get('position')) {
-	                    this.ui.top_placeholder.css('display', 'none');
-	                } else if (this.model.get('position') > application.dndElement.model.get('position')) {
-	                    this.ui.bottom_placeholder.css('display', 'none');
-	                }
-	            } else if (application.dndElement.$el.hasClass('descriptor-model')) {
-	                this.ui.top_placeholder.css('display', 'none');
-	            }
-	        }
-	
-	        return false;
-	    },
-	
-	    dragOver: function (e) {
-	        if (e.originalEvent.preventDefault) {
-	            e.originalEvent.preventDefault();
-	        }
-	
-	        this.dragEnterCount || (this.dragEnterCount = 1);
-	
-	        if (this.dragEnterCount == 1) {
-	            if (application.dndElement.$el.hasClass('descriptor-panel')) {
-	                if (this.model.get('position') < application.dndElement.model.get('position')) {
-	                    this.ui.top_placeholder.css('display', 'block');
-	                } else if (this.model.get('position') > application.dndElement.model.get('position')) {
-	                    this.ui.bottom_placeholder.css('display', 'block');
-	                }
-	            } else if (application.dndElement.$el.hasClass('descriptor-model')) {
-	                this.ui.top_placeholder.css('display', 'block');
-	            }
-	        }
-	
-	        //e.originalEvent.dataTransfer.dropEffect = 'move';
-	        return false;
-	    },
-	
-	    drop: function (e) {
-	        if (e.originalEvent.stopPropagation) {
-	            e.originalEvent.stopPropagation();
-	        }
-	
-	        var elt = application.dndElement;
-	        this.dragEnterCount = 0;
-	
-	        if (elt.$el.hasClass('descriptor-model')) {
-	            // reset placeholders
-	            this.ui.top_placeholder.css('display', 'none');
-	            this.ui.bottom_placeholder.css('display', 'none');
-	
-	            var DefinesLabel = Dialog.extend({
-	                template: __webpack_require__(214),
-	
-	                attributes: {
-	                    id: "dlg_create_panel",
-	                },
-	
-	                ui: {
-	                    label: "#label",
-	                },
-	
-	                events: {
-	                    'input @ui.label': 'onLabelInput',
-	                },
-	
-	                initialize: function (options) {
-	                    DefinesLabel.__super__.initialize.apply(this);
-	                },
-	
-	                onLabelInput: function () {
-	                    this.validateLabel();
-	                },
-	
-	                validateLabel: function() {
-	                    var v = this.ui.label.val();
-	
-	                    if (v.length < 3) {
-	                        $(this.ui.label).validateField('failed', gt.gettext('3 characters min'));
-	                        return false;
-	                    }
-	
-	                    $(this.ui.label).validateField('ok');
-	
-	                    return true;
-	                },
-	
-	                onApply: function() {
-	                    var view = this;
-	                    var collection = this.getOption('collection');
-	                    var position = this.getOption('position');
-	                    var descriptor_model = this.getOption('descriptor_model');
-	
-	                    if (this.validateLabel()) {
-	                        var to_rshift = [];
-	
-	                        // server will r-shift position of any model upward this new
-	                        // do it locally to be consistent
-	                        for (var model in collection.models) {
-	                            var dmt = collection.models[model];
-	                            var p = dmt.get('position');
-	                            if (p >= position) {
-	                                dmt.set('position', p+1);
-	                                to_rshift.push(dmt);
-	                            }
-	                        }
-	
-	                        collection.create({
-	                            descriptor_model: descriptor_model,
-	                            label: this.ui.label.val(),
-	                            position: position
-	                        }, {
-	                            wait: true,
-	                            success: function () {
-	                                view.remove();
-	                            },
-	                            error: function () {
-	                                view.remove();
-	
-	                                // left shift (undo) for consistency with server
-	                                for (var i = 0; i < to_rshift.length; ++i) {
-	                                    to_rshift[i].set('position', to_rshift[i].get('position')-1);
-	                                }
-	                            }
-	                        });
-	                    }
-	                },
-	            });
-	
-	            var definesLabel = new DefinesLabel({
-	                collection: this.model.collection,
-	                position: this.model.get('position'),
-	                descriptor_model: elt.model.get('id')
-	            });
-	
-	            definesLabel.render();
-	        }
-	        else if (elt.$el.hasClass('descriptor-panel')) {
-	            // useless drop on himself
-	            if (this == elt) {
-	                return false;
-	            }
-	
-	            // reset placeholder
-	            this.ui.top_placeholder.css('display', 'none');
-	            this.ui.bottom_placeholder.css('display', 'none');
-	
-	            // ajax call
-	            var position = elt.model.get('position');
-	            var newPosition = this.model.get('position');
-	            var modelId = this.model.collection.model_id;
-	            var collection = this.model.collection;
-	
-	            $.ajax({
-	                type: "PUT",
-	                url: application.baseUrl + 'accession/descriptor/meta-model/' + modelId + '/panel/order/',
-	                dataType: 'json',
-	                contentType: "application/json; charset=utf-8",
-	                data: JSON.stringify({
-	                    descriptor_panel_id: elt.model.get('id'),
-	                    position: newPosition
-	                })
-	            }).done(function() {
-	                // server will shift position of any model upward/downward this model
-	                // do it locally to be consistent
-	                // so that we don't need to collection.fetch({update: true, remove: true});
-	                if (newPosition < position) {
-	                    var to_rshift = [];
-	
-	                    for (var model in collection.models) {
-	                        var dmt = collection.models[model];
-	                        if (dmt.get('id') != elt.model.get('id')) {
-	                            if (dmt.get('position') >= newPosition) {
-	                                to_rshift.push(dmt);
-	                            }
-	                        }
-	                    }
-	
-	                    elt.model.set('position', newPosition);
-	
-	                    var nextPosition = newPosition + 1;
-	
-	                    for (var i = 0; i < to_rshift.length; ++i) {
-	                        to_rshift[i].set('position', nextPosition);
-	                        ++nextPosition;
-	                    }
-	                } else {
-	                    var to_lshift = [];
-	
-	                    for (var model in collection.models) {
-	                        var dmt = collection.models[model];
-	                        if (dmt.get('id') != elt.model.get('id')) {
-	                            if (dmt.get('position') <= newPosition) {
-	                                to_lshift.push(dmt);
-	                            }
-	                        }
-	                    }
-	
-	                    elt.model.set('position', newPosition);
-	
-	                    var nextPosition = 0;
-	
-	                    for (var i = 0; i < to_lshift.length; ++i) {
-	                        to_lshift[i].set('position', nextPosition);
-	                        ++nextPosition;
-	                    }
-	                }
-	
-	                // need to sort
-	                collection.sort();
-	            }).fail(function () {
-	                $.alert.error(gt.gettext('Unable to reorder the panels of descriptor'));
-	            })
-	        }
-	
-	        return false;
-	    },
-	
-	    editLabel: function() {
-	        var model = this.model;
-	
-	        $.ajax({
-	            type: "GET",
-	            url: this.model.url() + 'label/',
-	            dataType: 'json',
-	        }).done(function (data) {
-	            var labels = data;
-	
-	            var ChangeLabel = Dialog.extend({
-	                template: __webpack_require__(215),
-	                templateHelpers: function () {
-	                    return {
-	                        labels: labels,
-	                    };
-	                },
-	
-	                attributes: {
-	                    id: "dlg_change_labels",
-	                },
-	
-	                ui: {
-	                    label: "#descriptor_panel_labels input",
-	                },
-	
-	                events: {
-	                    'input @ui.label': 'onLabelInput',
-	                },
-	
-	                initialize: function (options) {
-	                    ChangeLabel.__super__.initialize.apply(this);
-	                },
-	
-	                onLabelInput: function (e) {
-	                    this.validateLabel(e);
-	                },
-	
-	                validateLabel: function (e) {
-	                    var v = $(e.target).val();
-	
-	                    if (v.length > 64) {
-	                        $(this.ui.label).validateField('failed', gt.gettext('64 characters max'));
-	                        return false;
-	                    }
-	
-	                    $(this.ui.label).validateField('ok');
-	
-	                    return true;
-	                },
-	
-	                validateLabels: function () {
-	                    $.each($(this.ui.label), function (i, label) {
-	                        var v = $(this).val();
-	
-	                        if (v.length > 64) {
-	                            $(this).validateField('failed', gt.gettext('64 characters max'));
-	                            return false;
-	                        }
-	                    });
-	
-	                    return true;
-	                },
-	
-	                onApply: function () {
-	                    var view = this;
-	                    var model = this.getOption('model');
-	
-	                    var labels = {};
-	
-	                    $.each($(this.ui.label), function (i, label) {
-	                        var v = $(this).val();
-	                        labels[$(label).attr("language")] = v;
-	                    });
-	
-	                    if (this.validateLabels()) {
-	                        $.ajax({
-	                            type: "PUT",
-	                            url: model.url() + "label/",
-	                            dataType: 'json',
-	                            contentType: "application/json; charset=utf-8",
-	                            data: JSON.stringify(labels)
-	                        }).done(function () {
-	                            // manually update the current context label
-	                            model.set('label', labels[session.language]);
-	                            $.alert.success(gt.gettext("Successfully labeled !"));
-	                        }).always(function () {
-	                            view.remove();
-	                        });
-	                    }
-	                },
-	            });
-	
-	            var changeLabel = new ChangeLabel({model: model});
-	            changeLabel.render();
-	        });
-	        /*
-	        var ChangeLabel = Dialog.extend({
-	            template: require('../templates/descriptorpanelchangelabel.html'),
-	
-	            attributes: {
-	                id: "dlg_change_label",
-	            },
-	
-	            ui: {
-	                label: "#label",
-	            },
-	
-	            events: {
-	                'input @ui.label': 'onLabelInput',
-	            },
-	
-	            initialize: function (options) {
-	                ChangeLabel.__super__.initialize.apply(this);
-	            },
-	
-	            onLabelInput: function () {
-	                this.validateLabel();
-	            },
-	
-	            validateLabel: function() {
-	                var v = this.ui.label.val();
-	
-	                if (v.length < 3) {
-	                    $(this.ui.label).validateField('failed', gt.gettext('3 characters min'));
-	                    return false;
-	                }
-	
-	                $(this.ui.label).validateField('ok');
-	
-	                return true;
-	            },
-	
-	            onApply: function() {
-	                var view = this;
-	                var model = this.getOption('model');
-	
-	                if (this.validateLabel()) {
-	                    model.save({label: this.ui.label.val()}, {
-	                        patch: true,
-	                        wait: true,
-	                        success: function() {
-	                            view.remove();
-	                            $.alert.success(gt.gettext("Successfully labeled !"));
-	                        },
-	                        error: function() {
-	                            $.alert.error(gt.gettext("Unable to change label !"));
-	                        }
-	                    });
-	                }
-	            },
-	        });
-	
-	        var changeLabel = new ChangeLabel({model: this.model});
-	
-	        changeLabel.render();
-	        changeLabel.ui.label.val(this.model.get('label'));*/
-	    },
-	
-	    deleteDescriptorPanel: function() {
-	        var collection = this.model.collection;
-	        var position = this.model.get('position');
-	
-	        this.model.destroy({
-	            wait: true,
-	            success: function () {
-	                for (var model in collection.models) {
-	                    var dmt = collection.models[model];
-	                    if (dmt.get('position') > position) {
-	                        var new_position = dmt.get('position') - 1;
-	                        dmt.set('position', new_position);
-	                    }
-	                }
-	            }
-	        });
-	    }
-	});
-	
-	module.exports = View;
-
-
-/***/ },
-/* 213 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var _ = __webpack_require__(1);
-	
-	module.exports = function (obj) {
-	obj || (obj = {});
-	var __t, __p = '';
-	with (obj) {
-	__p += '<div style="margin: 10px; height: 40px; border: 2px dashed #ddd; display: none" class="top-placeholder"></div><div style="margin: 10px; padding: 10px; border: 2px solid #ddd; border-radius: 10px"><span class="delete-descriptor-panel action glyphicon glyphicon-minus-sign"></span> <span name="label" class="action change-label">' +
-	((__t = ( label )) == null ? '' : __t) +
-	'</span><span class="action change-label label-placeholder" style="color: #ddd">' +
-	((__t = ( gt.gettext("Undefined label") )) == null ? '' : __t) +
-	'</span><hr style="margin-top : 5px; margin-bottom: 5px"><span class="glyphicon glyphicon-file"></span>&nbsp;<span name="descriptor-model-verbose-name"> <abbr title="' +
-	((__t = ( descriptor_model_name )) == null ? '' : __t) +
-	'">' +
-	((__t = ( descriptor_model_verbose_name )) == null ? '' : __t) +
-	'</abbr></span></div><div style="margin: 10px; height: 40px; border: 2px dashed #ddd; display: none" class="bottom-placeholder"></div>';
-	
-	}
-	return __p
-	};
-
-
-/***/ },
-/* 214 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var _ = __webpack_require__(1);
-	
-	module.exports = function (obj) {
-	obj || (obj = {});
-	var __t, __p = '';
-	with (obj) {
-	__p += '<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title">' +
-	((__t = ( gt.gettext("Create a panel of descriptor") )) == null ? '' : __t) +
-	'</h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="label">' +
-	((__t = ( gt.gettext("Label for the current language") )) == null ? '' : __t) +
-	'</label><input class="form-control" id="label" type="text" name="label" value="" maxlength="128" autofocus="" autocomplete="off" style="width:100%"></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal">' +
-	((__t = ( gt.gettext("Cancel") )) == null ? '' : __t) +
-	'</button> <button type="button" class="btn btn-primary apply">' +
-	((__t = ( gt.gettext("Apply") )) == null ? '' : __t) +
-	'</button></div></div></div>';
-	
-	}
-	return __p
-	};
-
-
-/***/ },
-/* 215 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var _ = __webpack_require__(1);
-	
-	module.exports = function (obj) {
-	obj || (obj = {});
-	var __t, __p = '', __j = Array.prototype.join;
-	function print() { __p += __j.call(arguments, '') }
-	with (obj) {
-	__p += '<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title">' +
-	((__t = ( gt.gettext("Change the label for the panel of descriptor") )) == null ? '' : __t) +
-	'</h4></div><div class="modal-body" style="max-height: 400px; overflow-y: auto"><form id="descriptor_panel_labels">';
-	
-	                var languages = application.main.collections.uilanguages;
-	
-	                for (var i = 0; i < languages.models.length; ++i) {
-	                    var lang_id = languages.at(i).get('id');
-	                    var lang_label = languages.at(i).get('label');
-	                    var label = labels[lang_label];
-	                    var autofocus = (i == 0) ? 'autofocus=""' : "";
-	                ;
-	__p += ' <div class="form-group"><label class="control-label">' +
-	((__t = ( gt.gettext(lang_label) )) == null ? '' : __t) +
-	'</label><input class="form-control" type="text" language="' +
-	((__t = ( lang_id )) == null ? '' : __t) +
-	'" value="' +
-	((__t = ( labels[lang_id] )) == null ? '' : __t) +
-	'" maxlength="64" ' +
-	((__t = ( autofocus )) == null ? '' : __t) +
-	' autocomplete="off" style="width:100%"></div> ';
-	 } ;
-	__p += ' </form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal">' +
-	((__t = ( gt.gettext("Cancel") )) == null ? '' : __t) +
-	'</button> <button type="button" class="btn btn-primary apply">' +
-	((__t = ( gt.gettext("Apply") )) == null ? '' : __t) +
-	'</button></div></div></div>';
-	
-	}
-	return __p
-	};
-
-
-/***/ },
-/* 216 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var _ = __webpack_require__(1);
-	
-	module.exports = function (obj) {
-	obj || (obj = {});
-	var __t, __p = '';
-	with (obj) {
-	__p += '<div style="border-bottom: 2px solid #ddd; padding: 8px"><span style="font-weight: bold">' +
-	((__t = ( gt.gettext("Panels of descriptor") )) == null ? '' : __t) +
-	'</span></div><div style="margin: 10px; height: 40px; border: 2px dashed #ddd; display: none" class="top-placeholder"></div><div class="object descriptor-panel-list" object-type="descriptor-panel-list"></div><div style="margin: 10px; height: 40px; border: 2px dashed #ddd; display: none" class="bottom-placeholder"></div>';
-	
-	}
-	return __p
-	};
-
-
-/***/ },
-/* 217 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file descriptormodellistalt.js
-	 * @brief Alternative list of model of descriptors view
-	 * @author Frederic SCHERMA
-	 * @date 2016-10-26
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var Marionette = __webpack_require__(4);
-	var DescriptorModelView = __webpack_require__(218);
-	
-	var ScrollView = __webpack_require__(78);
-	
-	var View = ScrollView.extend({
-	    template: __webpack_require__(220),
-	    childView: DescriptorModelView,
-	    childViewContainer: 'tbody.descriptor-model-list',
-	
-	    initialize: function() {
-	        this.listenTo(this.collection, 'reset', this.render, this);
-	        this.listenTo(this.collection, 'change', this.render, this);
-	
-	        View.__super__.initialize.apply(this);
-	    },
-	});
-	
-	module.exports = View;
-
-
-/***/ },
-/* 218 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file descriptormodelalt.js
-	 * @brief Alternative model of descriptor item view
-	 * @author Frederic SCHERMA
-	 * @date 2016-10-26
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var Marionette = __webpack_require__(4);
-	var DescriptorModelModel = __webpack_require__(168);
-	
-	var View = Marionette.ItemView.extend({
-	    tagName: 'tr',
-	    className: 'element object descriptor-model',
-	    template: __webpack_require__(219),
-	
-	    attributes: {
-	        draggable: true,
-	    },
-	
-	    events: {
-	        'dragstart': 'dragStart',
-	        'dragend': 'dragEnd',
-	    },
-	
-	    initialize: function() {
-	        this.listenTo(this.model, 'reset', this.render, this);
-	    },
-	
-	    onRender: function() {
-	    },
-	
-	    dragStart: function(e) {
-	        this.$el.css('opacity', '0.4');
-	        application.dndElement = this;
-	    },
-	
-	    dragEnd: function(e) {
-	        this.$el.css('opacity', '1.0');
-	        application.dndElement = null;
-	    },
-	});
-	
-	module.exports = View;
-
-
-/***/ },
-/* 219 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var _ = __webpack_require__(1);
-	
-	module.exports = function (obj) {
-	obj || (obj = {});
-	var __t, __p = '';
-	with (obj) {
-	__p += '<td name="name">' +
-	((__t = ( name )) == null ? '' : __t) +
-	'</td><td name="verbose_name">' +
-	((__t = ( verbose_name )) == null ? '' : __t) +
-	'</td><td name="num_descriptor_model_types"><span class="badge">' +
-	((__t = ( num_descriptor_model_types )) == null ? '' : __t) +
-	'</span></td><td name="description"><abbr class="label label-default glyphicon glyphicon-option-horizontal" title="' +
-	((__t = ( description )) == null ? '' : __t) +
-	'"><span></span></abbr></td>';
-	
-	}
-	return __p
-	};
-
-
-/***/ },
-/* 220 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var _ = __webpack_require__(1);
-	
-	module.exports = function (obj) {
-	obj || (obj = {});
-	var __t, __p = '';
-	with (obj) {
-	__p += '<div class="object descriptor-model-list" object-type="descriptor-model-list" style="width:100%"><table class="table table-striped"><thead><tr><th>' +
-	((__t = ( gt.gettext("Name") )) == null ? '' : __t) +
-	'</th><th>' +
-	((__t = ( gt.gettext("Verbose name") )) == null ? '' : __t) +
-	'</th><th>' +
-	((__t = ( gt.gettext("Number of types of descriptor") )) == null ? '' : __t) +
-	'</th><th>' +
-	((__t = ( gt.gettext("Description") )) == null ? '' : __t) +
-	'</th></tr></thead><tbody class="descriptor-model-list"></tbody></table></div>';
-	
-	}
-	return __p
-	};
-
-
-/***/ },
-/* 221 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file twocolumnslayout.js
-	 * @brief Two columns layout
-	 * @author Frederic SCHERMA
-	 * @date 2016-10-14
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var Marionette = __webpack_require__(4);
-	
-	var TwoColumnsLayout = Marionette.LayoutView.extend({
-	    template: "#two_columns_layout_view",
-	    attributes: {
-	        style: "height: 95%;"
-	    },
-	
-	    regions: {
-	        'left-content': ".left-content",
-	        'left-bottom': ".left-bottom",
-	        'right-content': ".right-content",
-	        'right-bottom': ".right-bottom",
-	    },
-	
-	    onBeforeShow: function() {
-	    },
-	
-	    onBeforeDestroy: function () {
-	    },
-	});
-	
-	module.exports = TwoColumnsLayout;
 
 
 /***/ }

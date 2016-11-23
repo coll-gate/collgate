@@ -178,6 +178,10 @@ class DescriptorType(Entity):
             elif sort_by == fields[1]:
                 sort_by = "value1"
 
+        # id is code
+        if sort_by == "code":
+            sort_by == "id"
+
         # internally stored values
         if self.values:
             if trans:

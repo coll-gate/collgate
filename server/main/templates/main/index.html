@@ -158,6 +158,7 @@ session = function() {
 
 session.debug = {{ debug|yesno:"true,false" }};
 session.language = "{{ LANGUAGE_CODE }}";
+session.languageDirection = "ltr";
 
 session.user = {
     username: "{{ user.username }}",
@@ -173,6 +174,21 @@ session.user.isAuth = true;
 session.user.isSuperUser = {{ user.is_superuser|yesno:"true,false" }};
 session.user.isStaff = {{ user.is_staff|yesno:"true,false" }};
 {% endif %}
+
+// LTR or RTL language
+var elem = document.getElementById('languages');
+if (window.getComputedStyle) { // all browsers
+    session.languageDirection = window.getComputedStyle(elem, null).getPropertyValue('direction');
+} else { // IE5-8
+    session.languageDirection = elem.currentStyle.direction;
+}
+
+if (session.languageDirection == "rtl") {
+    // this should fix RTL support for bootstrap select but it doesn't works when injected by JS why ?
+    var sheet = window.document.styleSheets[0];
+    //sheet.insertRule(".bootstrap-select.btn-group .btn .filter-option { display: inline-block; overflow: hidden; width: 100%; text-align: right; }", sheet.cssRules.length);
+    //sheet.insertRule(".bootstrap-select.btn-group .btn .caret { position: absolute; top: 50%; left: 12px; margin-top: -2px; vertical-align: middle; }", sheet.cssRules.length);
+}
 
 </script>
 
@@ -221,7 +237,7 @@ session.user.isStaff = {{ user.is_staff|yesno:"true,false" }};
             });
         });
 
-        $('#languages').val(session.language).trigger("change");;
+        $('#languages').val(session.language).trigger("change");
 
         //
         // history navigation
@@ -387,7 +403,9 @@ session.user.isStaff = {{ user.is_staff|yesno:"true,false" }};
 {% jquery igdectk.csrf_js %}
 
 <!-- include application core -->
-{% if debug %}
+{% collgate "development" as development %}
+
+{% if debug and development %}
 <script src='{% collgate "webpack_host" %}{% collgate "webpack_entry" %}'></script>
 {% else %}
 <script src="{% static 'main/js/app.min.js' %}"></script>

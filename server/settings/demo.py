@@ -10,7 +10,7 @@ import os
 
 from .base import *
 
-DEBUG = False
+DEBUG = True
 
 ADMINS = (
     ('admin_fscherma', 'frederic.scherma@clermont.inra.fr'),
@@ -31,7 +31,8 @@ DATABASES = {
     }
 }
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '147.99.146.242', '147.99.144.145']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '147.99.146.242']
+INTERNAL_IPS = ['localhost', '127.0.0.1']
 
 # session cookie path
 SESSION_COOKIE_PATH = "/coll-gate/"
@@ -45,9 +46,7 @@ MEDIA_URL = 'media/'
 
 STATIC_ROOT = 'static/'
 
-STATIC_URL = '/coll-gate/static/'
-
-TEMPLATES[0]['OPTIONS']['debug'] = False
+STATIC_URL = '/static/'
 
 MIDDLEWARE = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -72,7 +71,10 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.admin',
+    # 'debug_toolbar',
+    # 'debug_panel',
     'guardian',
+    # 'django.contrib.admindocs',
     'igdectk.common',
     'igdectk.jquery',
     'igdectk.bootstrap',
@@ -118,7 +120,7 @@ LOGGING = {
         'file': {
             'level': 'INFO',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs', 'collgate.log'),
+            'filename': os.path.join(BASE_DIR, '..', 'logs', 'collgate.log'),
             'formatter': 'standard',
             'maxBytes': 1024*1024*16,  # 16MB
             'backupCount': 10,
@@ -127,7 +129,7 @@ LOGGING = {
     'loggers': {
         'django': {
             'handlers': ['console', 'file'],
-            'level': 'WARNING',
+            'level': 'INFO',
             'propagate': True,
         },
         'django.request': {
@@ -150,8 +152,11 @@ LOGGING = {
 
 DEFAULT_FROM_EMAIL = "frederic.scherma@clermont.inra.fr"
 EMAIL_HOST = "smtp.clermont.inra.fr"
-#EMAIL_USE_TLS = True
-EMAIL_PORT = 25  # 465
-EMAIL_HOST_USER = "fscherma"
-EMAIL_HOST_PASSWORD = ""
-#EMAIL_USE_SSL = True
+EMAIL_PORT = 25
+EMAIL_SUBJECT_PREFIX = "Coll-Gate IS"
+
+# CACHES = {
+#     'default': {
+#         'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+#     }
+# }

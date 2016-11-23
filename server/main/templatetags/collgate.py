@@ -48,6 +48,8 @@ class TemplateAppValue(Node):
         # custom variable 'version'
         if arg_repr == "version":
             ret_val = '.'.join([str(x) for x in appsettings.APP_VERSION])
+        elif arg_repr == "development":
+            ret_val = hasattr(settings, 'WEBPACK')
         elif arg_repr == "webpack_host":
             attr = getattr(settings, 'WEBPACK', {})
             ret_val = attr['host'] if 'host' in attr else 'localhost'
