@@ -320,10 +320,12 @@ var View = Marionette.ItemView.extend({
 
         switch (unit) {
             case "custom":
-                $(this.ui.format_unit_custom).attr("readonly", null).val("");
+                $(this.ui.format_unit_custom).prop("readonly", false).val("");
+                $(this.ui.format_unit_custom).cleanField();
                 break;
             default:
-                $(this.ui.format_unit_custom).attr("readonly", "readonly").val("");
+                $(this.ui.format_unit_custom).prop("readonly", true).val("");
+                $(this.ui.format_unit_custom).cleanField();
                 break;
         }
     },
@@ -349,8 +351,11 @@ var View = Marionette.ItemView.extend({
 
         if (v.length > 0 && !re.test(v)) {
             $(this.ui.format_unit_custom).validateField('failed', gt.gettext("Invalid characters (alphanumeric, _-°%°⁼⁺⁻⁰¹²³⁴⁵⁶⁷⁸⁹/µ allowed)"));
+        } else if (v.length > 32) {
+            $(this.ui.format_unit_custom).validateField('failed', gt.gettext('32 character max'));
         } else if (v.length < 1) {
-            $(this.ui.format_unit_custom).validateField('failed', gt.gettext('1 character min'));
+            //$(this.ui.format_unit_custom).validateField('failed', gt.gettext('1 character min'));
+            $(this.ui.format_unit_custom).cleanField();
         } else {
             $(this.ui.format_unit_custom).validateField('ok');
         }

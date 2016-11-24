@@ -21,7 +21,10 @@ DESCRIPTORS = {
         'format': {
             'type': 'enum_single',
             'format': 'category',
-            'trans': True
+            'trans': True,
+            'list_type': 'dropdown',
+            'display_fields': 'value0',
+            'sortby_field': 'value0'
         }
     },
     'country': {
@@ -36,7 +39,10 @@ DESCRIPTORS = {
             'type': 'enum_pair',
             'format': 'category',
             'fields': ['name', 'iso'],
-            'trans': True
+            'trans': True,
+            'list_type': 'dropdown',
+            'display_fields': 'value0',
+            'sortby_field': 'value0'
         },
         'lookup': {}
     },
@@ -52,7 +58,10 @@ DESCRIPTORS = {
             'type': 'enum_pair',
             'format': 'category',
             'fields': ['name', 'coord'],
-            'trans': True
+            'trans': True,
+            'list_type': 'autocomplete',
+            'display_fields': 'value0',
+            'sortby_field': 'value0'
         }
     },
 }

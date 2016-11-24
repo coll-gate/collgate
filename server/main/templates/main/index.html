@@ -5,6 +5,7 @@
 {% load collgate %}
 {% load jquery %}
 {% load bootstrap %}
+{% load bootstrap3 %}
 
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -20,23 +21,28 @@
     {% else %}
         <link rel="shortcut icon" href="{% static 'main/img/favicon.png' %}" />
     {% endif %}
+
+    {% jquery ui_css %}
+    {% bootstrap bootstrap_css %}
+    {% bootstrap select_css %}
+
+    <style type="text/css">
+        /* autocompletion loading icon */
+        .ui-autocomplete-loading {
+            background: white url("{% jquery ui_img#ui-anim_basic_16x16.gif %}") right center no-repeat;
+        }
+    </style>
+
+    <link rel="stylesheet" href="{% static 'main/css/index.css' %}">
+    {% include 'bootstrap/style.html' %}
 </head>
 
 <body>
 
-{% jquery ui_css %}
 {% jquery jquery_js %}
 
-{% load bootstrap3 %}
-
-{% bootstrap bootstrap_css %}
 {% bootstrap bootstrap_js %}
 {% jquery igdectk.validator_js %}
-{% bootstrap select_css %}
-
-{% include 'bootstrap/style.html' %}
-
-<link rel="stylesheet" href="{% static 'main/css/index.css' %}">
 
 <!-- TODO no longer necessary, and can be loaded dynamically if needed, but need a synchronization for
 some translations before every catalogs are loaded, and normally the server sent translated strings. -->
@@ -46,13 +52,6 @@ some translations before every catalogs are loaded, and normally the server sent
 <script type="text/javascript" src="{% url 'main:javascript-catalog' packages='taxonomy' domain='django' %}"></script>
 <script type="text/javascript" src="{% url 'main:javascript-catalog' packages='permission' domain='django' %}"></script>
 -->
-
-<style type="text/css">
-/* autocompletion loading icon */
-.ui-autocomplete-loading {
-    background: white url("{% jquery ui_img#ui-anim_basic_16x16.gif %}") right center no-repeat;
-}
-</style>
 
 <div class="navbar navbar-inverse navbar-static-top" role="navigation">
     <div class="container">
@@ -183,11 +182,25 @@ if (window.getComputedStyle) { // all browsers
     session.languageDirection = elem.currentStyle.direction;
 }
 
+function addCss(code) {
+    var style = document.createElement('style');
+    style.type = 'text/css';
+
+    document.getElementsByTagName("head")[0].appendChild(style);
+
+    // grab style sheet
+    //var styleSheet = style.sheet;
+    // insert CSS Rule
+    //styleSheet.insertRule(code, styleSheet.cssRules.length);
+
+    // directly insert the css content
+    style.innerHTML = code;
+}
+
 if (session.languageDirection == "rtl") {
-    // this should fix RTL support for bootstrap select but it doesn't works when injected by JS why ?
-    var sheet = window.document.styleSheets[0];
-    //sheet.insertRule(".bootstrap-select.btn-group .btn .filter-option { display: inline-block; overflow: hidden; width: 100%; text-align: right; }", sheet.cssRules.length);
-    //sheet.insertRule(".bootstrap-select.btn-group .btn .caret { position: absolute; top: 50%; left: 12px; margin-top: -2px; vertical-align: middle; }", sheet.cssRules.length);
+    // this fixs RTL support for bootstrap select
+    addCss(".bootstrap-select.btn-group .btn .caret { position: absolute; top: 50%; left: 12px; margin-top: -2px; vertical-align: middle; }");
+    addCss(".bootstrap-select.btn-group .btn .filter-option { display: inline-block; overflow: hidden; width: 100%; text-align: right; }");
 }
 
 </script>

@@ -12,13 +12,11 @@ var Backbone = require('backbone');
 
 var Model = Backbone.Model.extend({
     url: function() {
-        var model_id = this.model_id || this.get('model') || this.collection.model_id;
-
         if (this.isNew()) {
-            return application.baseUrl + 'descriptor/model/' + model_id + '/type/';
+            return application.baseUrl + 'descriptor/model/' + this.getModelId() + '/type/';
         }
         else
-            return application.baseUrl + 'descriptor/model/' + model_id + '/type/' + this.get('id') + '/';
+            return application.baseUrl + 'descriptor/model/' + this.getModelId() + '/type/' + this.get('id') + '/';
     },
 
     defaults: {
@@ -59,6 +57,16 @@ var Model = Backbone.Model.extend({
           return errors;
         }
     },
+
+    getModelId: function() {
+        if (typeof this.model_id != 'undefined') {
+            return this.model_id;
+        } else if (this.get('model') != null) {
+            return this.model;
+        } else if (typeof this.collection != 'undefined') {
+            return this.collection.model_id;
+        }
+    }
 });
 
 module.exports = Model;

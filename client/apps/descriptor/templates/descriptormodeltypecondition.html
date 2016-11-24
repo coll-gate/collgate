@@ -10,7 +10,9 @@
                     <label class="control-label"><%= gt.gettext("Target") %></label>
                     <select class="form-control" id="target">
                         <% _.each(targets, function(target) { %>
-                            <option value="<%= target.get('id') %>"><%= target.get('label') %></option>
+                            <% if (target.get('id') != id) { %>
+                                <option value="<%= target.get('id') %>"><%= target.get('label') %></option>
+                            <% } %>
                         <% }) %>
                     </select>
                 </div>
@@ -20,8 +22,8 @@
                     </select>
                 </div>
                 <div class="form-group value-group" id="simple_value_group">
-                    <label class="control-label"><%= gt.gettext("Value") %></label>
-                    <input class="form-control" id="simple_value" type="text" value="" maxlength="64" style="width:100%;">
+                    <label class="control-label"><%= gt.gettext("Value") %>&nbsp;(<span id="unit"></span>)</label>
+                    <input class="form-control" id="simple_value" type="text" value="" maxlength="64" autocomplete="off">
                 </div>
                 <div class="form-group value-group" id="autocomplete_value_group">
                     <label class="control-label"><%= gt.gettext("Value") %></label>

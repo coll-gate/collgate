@@ -374,7 +374,9 @@ def create_descriptor_type_for_model(request, id):
         'mandatory': dmt.mandatory,
         'set_once': dmt.set_once,
         'position': dmt.position,
+        'descriptor_type_group': dt.group.id,
         'descriptor_type': dt.id,
+        'descriptor_type_name': dt.name,
         'descriptor_type_code': dt.code
     }
 

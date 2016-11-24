@@ -8,13 +8,6 @@
  - @details
 -->
 
-<style>
-    /* adjust the form validation glyph position */
-    #format_unit_custom ~ span.form-control-feedback {
-        right: 15px;
-    }
-</style>
-
 <div id="helper_display_fields_text" class="help">
     <p><%= gt.gettext("Controls how is displayed the field. Hierarchy mode is a special usage for pseudo hierarchy, for which values are roughly shifted to give an illusion of parent/children. The shift depend of the level declared in the value0 while value1 contains the label. The first value contains something like 1 or 2 or 1.1, 1.2, 1.1.1...") %></p>
 </div>
@@ -213,8 +206,10 @@
                 </select>
             </div>
             <div class="col-xs-6">
-                <label for="format_unit_custom"><%- gt.gettext('Custom unit name') %></label>
-                <input id="format_unit_custom" class="form-control" type="text" readonly="readonly" maxlength="32" value="">
+                <div class="form-group">
+                    <label for="format_unit_custom"><%- gt.gettext('Custom unit name') %></label>
+                    <input id="format_unit_custom" class="form-control" type="text" readonly="readonly" maxlength="32" value="">
+                </div>
             </div>
         </div>
     </div>

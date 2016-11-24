@@ -1020,11 +1020,14 @@ def get_all_display_values_for_descriptor_type(request, id, tid):
     limit = 30
 
     format = json.loads(dt.format)
+    list_type = format.get('list_type', '')
 
     # safe limitation
-    if format['list_type'] == 'dropdown':
+    if not list_type:
+        raise SuspiciousOperation(_("This type of descriptor does not contains a list"))
+    elif list_type == 'dropdown':
         limit = 512
-    elif format['list_type'] == 'autocomplete':
+    elif list_type == 'autocomplete':
         raise SuspiciousOperation(_("List of values are not available for drop-down"))
 
     sort_by = format['sortby_field']

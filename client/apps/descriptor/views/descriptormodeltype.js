@@ -447,6 +447,7 @@ var View = Marionette.ItemView.extend({
                     simple_value_group: "#simple_value_group",
                     autocomplete_value_group: "#autocomplete_value_group",
                     select_value_group: "#select_value_group",
+                    unit: "#unit"
                 },
 
                 events: {
@@ -478,22 +479,43 @@ var View = Marionette.ItemView.extend({
                     if (condition == 0 || condition == 1) {
                         this.ui.value_group.hide(false);
                     } else {
-                        if (this.descriptorTypeFormat.type.startsWith('enum_')) {
-                            this.ui.simple_value_group.hide(false);
+                        // sync with descriptorType
+                        var view = this;
 
-                            if (this.descriptorTypeFormat.list_type == "dropdown") {
-                                this.ui.select_value_group.show(false);
-                                this.ui.autocomplete_value_group.hide(false);
+                        this.descriptorTypePromise.then(function() {
+                            var format = view.descriptorType.get('format');
+
+                            if (format.type.startsWith('enum_')) {
+                                view.ui.simple_value_group.hide(false);
+
+                                if (format.list_type == "dropdown") {
+                                    view.ui.select_value_group.show(false);
+                                    view.ui.autocomplete_value_group.hide(false);
+                                } else {
+                                    view.ui.select_value_group.hide(false);
+                                    view.ui.autocomplete_value_group.show(false);
+                                }
+                            } else if (format.type == "boolean") {
+                                view.ui.simple_value_group.hide(false);
+                                view.ui.select_value_group.show(false);
+                                view.ui.autocomplete_value_group.hide(false);
+                            } else if (format.type == "ordinal") {
+                                if ((format.range[1] - format.range[0] + 1) <= 256) {
+                                    view.ui.simple_value_group.hide(false);
+                                    view.ui.select_value_group.show(false);
+                                    view.ui.autocomplete_value_group.hide(false);
+                                } else {
+                                    view.ui.simple_value_group.show(false);
+                                    view.ui.select_value_group.hide(false);
+                                    view.ui.autocomplete_value_group.hide(false);
+                                }
                             } else {
-                                this.ui.select_value_group.hide(false);
-                                this.ui.autocomplete_value_group.show(false);
+                                view.ui.simple_value_group.show(false);
+                                view.ui.select_value_group.hide(false);
+                                view.ui.autocomplete_value_group.hide(false);
                             }
-                        } else {
-                            this.ui.simple_value_group.show(false);
-                            this.ui.select_value_group.hide(false);
-                            this.ui.autocomplete_value_group.hide(false);
-                        }
-                    }
+                        });
+                    };
                 },
 
                 onSelectCondition: function () {
@@ -507,27 +529,33 @@ var View = Marionette.ItemView.extend({
 
                     var model = this.getOption('model').collection.findWhere({id: parseInt(targetId)});
                     if (model) {
-                        var descriptorType = new DescriptorTypeModel(
+                        this.descriptorType = new DescriptorTypeModel(
                             {id: model.get('descriptor_type')},
                             {group_id: model.get('descriptor_type_group')}
                         );
 
-                        descriptorType.fetch().then(function() {
-                            view.descriptorTypeFormat = descriptorType.get('format');
+                        this.descriptorTypePromise = this.descriptorType.fetch().then(function() {
+                            var format = view.descriptorType.get('format');
 
                             var condition = view.ui.condition.val();
                             view.toggleCondition(condition);
 
-                            if (descriptorType.get('format').type.startsWith('enum_')) {
-                                view.ui.select_value.find('option').remove();
+                            view.ui.select_value.find('option').remove();
 
-                                if (descriptorType.get('format').list_type != "dropdown") {
+                            if (format.unit == "custom") {
+                                view.ui.unit.html(format.custom_unit)
+                            } else {
+                                view.ui.unit.html(format.unit)
+                            }
+
+                            if (format.type.startsWith('enum_')) {
+                                if (format.list_type == "autocomplete") {
                                     // make an autocomplete widget on simple_value
                                     // @todo
                                 } else {
                                     // refresh values
                                     $.ajax({
-                                        url: application.baseUrl + 'descriptor/group/' + descriptorType.group_id + '/type/' + descriptorType.get('id') + '/value/display/',
+                                        url: view.descriptorType.url() + 'value/display',
                                         dataType: 'json',
                                     }).done(function (data) {
                                         for (var i = 0; i < data.length; ++i) {
@@ -558,6 +586,39 @@ var View = Marionette.ItemView.extend({
                                         view.ui.select_value.selectpicker('refresh');
                                     });
                                 }
+                            } else if (format.type.startsWith('boolean')) {
+                                // true
+                                var option = $("<option></option>");
+
+                                option.attr("value", true);
+                                option.html(gt.gettext('Yes'));
+
+                                view.ui.select_value.append(option);
+
+                                // false
+                                option = $("<option></option>");
+
+                                option.attr("value", false);
+                                option.html(gt.gettext('No'));
+
+                                view.ui.select_value.append(option);
+
+                                view.ui.select_value.selectpicker('refresh');
+                            } else if (format.type.startsWith('ordinal')) {
+                                var len = format.range[1] - format.range[0] + 1;
+
+                                if (len <= 256) {
+                                    for (var i = format.range[0]; i <= format.range[1]; ++i) {
+                                        var option = $("<option></option>");
+
+                                        option.attr("value", i);
+                                        option.html(i);
+
+                                        view.ui.select_value.append(option);
+                                    }
+
+                                    view.ui.select_value.selectpicker('refresh');
+                                }
                             }
                         });
                     }
@@ -567,30 +628,21 @@ var View = Marionette.ItemView.extend({
                     var view = this;
                     var model = this.getOption('model');
 
-                    var labels = {};
-
-                    $.each($(this.ui.label), function (i, label) {
-                        var v = $(this).val();
-                        labels[$(label).attr("language")] = v;
-                    });
-
-                    if (this.validateLabels()) {
-                        // @todo if (condition.defined PUT else POST)
-                        /*
-                         $.ajax({
-                         type: "PUT",
-                         url: model.url() + "condition/",
-                         dataType: 'json',
-                         contentType: "application/json; charset=utf-8",
-                         data: JSON.stringify(labels)
-                         }).done(function() {
-                         // manually update the current context label
-                         model.set('label', labels[session.language]);
-                         $.alert.success(gt.gettext("Successfully labeled !"));
-                         }).always(function() {
-                         view.remove();
-                         });*/
-                    }
+                    // @todo if (condition.defined PUT else POST)
+                    /*
+                     $.ajax({
+                     type: "PUT",
+                     url: model.url() + "condition/",
+                     dataType: 'json',
+                     contentType: "application/json; charset=utf-8",
+                     data: JSON.stringify(labels)
+                     }).done(function() {
+                     // manually update the current context label
+                     model.set('label', labels[session.language]);
+                     $.alert.success(gt.gettext("Successfully labeled !"));
+                     }).always(function() {
+                     view.remove();
+                     });*/
                 },
             });
 

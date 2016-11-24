@@ -12,13 +12,11 @@ var Backbone = require('backbone');
 
 var Model = Backbone.Model.extend({
     url: function() {
-        var group_id = this.group_id || this.get('group') || this.collection.group_id;
-
         if (this.isNew()) {
-            return application.baseUrl + 'descriptor/group/' + group_id + '/type/';
+            return application.baseUrl + 'descriptor/group/' + this.getGroupId() + '/type/';
         }
         else
-            return application.baseUrl + 'descriptor/group/' + group_id + '/type/' + this.get('id') + '/';
+            return application.baseUrl + 'descriptor/group/' + this.getGroupId() + '/type/' + this.get('id') + '/';
     },
 
     defaults: {
@@ -58,6 +56,16 @@ var Model = Backbone.Model.extend({
           return errors;
         }
     },
+
+    getGroupId: function() {
+        if (typeof this.group_id != 'undefined') {
+            return this.group_id;
+        } else if (this.get('group') != null) {
+            return this.group;
+        } else if (typeof this.collection != 'undefined') {
+            return this.collection.group_id;
+        }
+    }
 });
 
 module.exports = Model;
