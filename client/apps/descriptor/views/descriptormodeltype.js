@@ -551,7 +551,48 @@ var View = Marionette.ItemView.extend({
                             if (format.type.startsWith('enum_')) {
                                 if (format.list_type == "autocomplete") {
                                     // make an autocomplete widget on simple_value
-                                    // @todo
+                                    $(view.ui.autocomplete_value).select2({
+                                        dropdownParent: $(view.el),
+                                        ajax: {
+                                            url: view.descriptorType.url() + 'value/display/search/',
+                                            dataType: 'json',
+                                            delay: 250,
+                                            data: function (params) {
+                                                params.term || (params.term = '');
+
+                                                return {
+                                                    cursor: params.next,
+                                                    value: params.term,
+                                                };
+                                            },
+                                            processResults: function (data, params) {
+                                                params.next = null;
+
+                                                if (data.items.length >= 30) {
+                                                    params.next = data.next || null;
+                                                }
+
+                                                var results = [];
+
+                                                for (var i = 0; i < data.items.length; ++i) {
+                                                    results.push({
+                                                        id: data.items[i].id,
+                                                        text: data.items[i].label
+                                                    });
+                                                }
+
+                                                return {
+                                                    results: results,
+                                                    pagination: {
+                                                        more: params.next != null
+                                                    }
+                                                };
+                                            },
+                                            cache: true
+                                        },
+                                        minimumInputLength: 3,
+                                        placeholder: gt.gettext("Enter a value. 3 characters at least for auto-completion"),
+                                    });
                                 } else {
                                     // refresh values
                                     $.ajax({

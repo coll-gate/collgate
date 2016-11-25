@@ -472,6 +472,8 @@ class DescriptorType(Entity):
             else:
                 qs = self.values_set.all()
 
+            # @todo how to filter if not unique on value0 or value1
+
             if sort_by == 'id':
                 next_code = str(cursor.split('/')[0]) if cursor else None
 
@@ -598,7 +600,7 @@ class DescriptorType(Entity):
 
             return value.parent, value.ordinal, value.value0, value.value1
 
-    def search_values(self, field_value, field_name="code"):
+    def search_values(self, field_value, field_name="code", cursor=None, limit=30):
         """
         Search for values starting by value1, value2 or ordinal according to the
         descriptor code and the current language.
@@ -609,6 +611,8 @@ class DescriptorType(Entity):
         format = json.loads(self.format)
         lang = translation.get_language()
         trans = format.get('trans', False)
+
+        next_value, next_code = cursor.split('/') if cursor else (None, None)
 
         values_list = []
 
@@ -626,7 +630,7 @@ class DescriptorType(Entity):
                 for value in values:
                     if value.ordinal == field_value:
                         values_list.append({
-                            'code': value.code,
+                            'id': value.code,
                             'parent': value.parent,
                             'oridinal': value.ordinal,
                             'value0': value.value0,
@@ -637,7 +641,7 @@ class DescriptorType(Entity):
                 for value in values:
                     if value.value0.startswith(field_value):
                         values_list.append({
-                            'code': value.code,
+                            'id': value.code,
                             'parent': value.parent,
                             'oridinal': value.ordinal,
                             'value0': value.value0,
@@ -649,38 +653,64 @@ class DescriptorType(Entity):
                 for value in values:
                     if value.value1.startswith(field_value):
                         values_list.append({
-                            'code': value.code,
+                            'id': value.code,
                             'parent': value.parent,
                             'oridinal': value.ordinal,
                             'value0': value.value0,
                             'value1': value.value1
                         })
                 values_list = sorted(values_list, key=lambda v: v['value0'])
+
+                # @todo cursor, limit
         else:
             if trans:
-                qs = DescriptorValue.object.filter(language=lang)
+                qs = DescriptorValue.objects.filter(language=lang)
             else:
-                qs = DescriptorValue.object
-
+                qs = DescriptorValue.objects
             if field_name == "ordinal":
+                # single result
                 qs = qs.filter(ordinal=field_value)
             elif field_name == "value0":
                 qs = qs.filter(value0__istartswith=field_value)
-                qs = qs.order_by('value0')
+                if next_value is not None:
+                    qs = qs.filter(value0__gt=next_value)
+                    # @todo how to filter if not unique on value0
+                    # qs = qs.filter(code__gt=next_code)
+                qs = qs.order_by('value0', 'code')
             elif field_name == "value1":
                 qs = qs.filter(value1__istartswith=field_value)
-                qs = qs.order_by('value1')
+                if next_value is not None:
+                    qs = qs.filter(value1__gt=next_value)
+                    # @todo how to filter if not unique on value1
+                    #qs = qs.filter(code__gt=next_code)
+                qs = qs.order_by('value1', 'code')
+
+            qs = qs[:limit]
 
             for value in qs:
                 values_list.append({
-                    'code': value.code,
+                    'id': value.code,
                     'parent': value.parent,
                     'oridinal': value.ordinal,
                     'value0': value.value0,
                     'value1': value.value1
                 })
 
-        return values_list
+        # cursors
+        if len(values_list) > 0:
+            val = values_list[0]
+            if val[field_name]:
+                prev_cursor = "%s/%s" % (val[field_name], val['id'])
+            else:
+                prev_cursor = "/%s" % val['id']
+
+            val = values_list[-1]
+            if val[field_name]:
+                next_cursor = "%s/%s" % (val[field_name], val['id'])
+            else:
+                next_cursor = "/%s" % val['id']
+
+        return prev_cursor, next_cursor, values_list
 
 
 class DescriptorValue(Entity):

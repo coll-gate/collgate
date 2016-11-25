@@ -1016,7 +1016,6 @@ def get_all_display_values_for_descriptor_type(request, id, tid):
 
     dt = get_object_or_404(DescriptorType, id=type_id, group_id=group_id)
 
-    sort_by = 'id'
     limit = 30
 
     format = json.loads(dt.format)
@@ -1030,8 +1029,7 @@ def get_all_display_values_for_descriptor_type(request, id, tid):
     elif list_type == 'autocomplete':
         raise SuspiciousOperation(_("List of values are not available for drop-down"))
 
-    sort_by = format['sortby_field']
-
+    sort_by = format.get('sortby_field', 'id')
     values = []
 
     c, n, values_list = dt.get_values(sort_by, False, None, limit)
@@ -1068,9 +1066,6 @@ def get_all_display_values_for_descriptor_type(request, id, tid):
         for value in values_list:
             shift_size = value['value0'].count('.')
 
-            # @todo for RTL languages
-            # label = '&#160;' * (4*shift_size) + value['value1']
-
             values.append({
                 'id': value['id'],
                 'value': value['id'],
@@ -1081,18 +1076,77 @@ def get_all_display_values_for_descriptor_type(request, id, tid):
     return HttpResponseRest(request, values)
 
 
-@RestDescriptorModelIdTypeIdValueDisplaySearch.def_auth_request(Method.GET, Format.JSON)
+@RestDescriptorModelIdTypeIdValueDisplaySearch.def_auth_request(Method.GET, Format.JSON, parameters=('value',))
 def search_display_value_for_descriptor_type(request, id, tid):
     """
     Search and returns a list of value from the related type of descriptor and formatted as described.
     """
+    results_per_page = int_arg(request.GET.get('more', 30))
+    cursor = request.GET.get('cursor')
+    limit = results_per_page
+
     group_id = int(id)
     type_id = int(tid)
-
     dt = get_object_or_404(DescriptorType, id=type_id, group_id=group_id)
 
-    results = {
+    format = json.loads(dt.format)
+    list_type = format.get('list_type', '')
 
+    if not list_type:
+        raise SuspiciousOperation(_("This type of descriptor does not contains a list"))
+
+    search_field = format.get('search_field', 'value0')
+    value = request.GET['value']
+
+    values = []
+
+    prev_cursor, next_cursor, values_list = dt.search_values(value, search_field, cursor, limit)
+
+    if format['display_fields'] == 'value0':
+        for value in values_list:
+            values.append({
+                'id': value['id'],
+                'value': value['id'],
+                'label': value['value0']
+            })
+    elif format['display_fields'] == 'value1':
+        for value in values_list:
+            values.append({
+                'id': value['id'],
+                'value': value['id'],
+                'label': value['value1']
+            })
+    elif format['display_fields'] == 'value0-value1':
+        for value in values_list:
+            values.append({
+                'id': value['id'],
+                'value': value['id'],
+                'label': "%s - %s" % (value['value0'], value['value1'])
+            })
+    elif format['display_fields'] == 'ordinal-value0':
+        for value in values_list:
+            values.append({
+                'id': value['id'],
+                'value': value['id'],
+                'label': "%i - %s" % (value['ordinal'], value['value0'])
+            })
+    elif format['display_fields'] == 'hier0-value1':
+        for value in values_list:
+            shift_size = value['value0'].count('.')
+
+            values.append({
+                'id': value['id'],
+                'value': value['id'],
+                'label': value['value1'],
+                'offset': shift_size
+            })
+
+    results = {
+        'items': values,
+        'prev': prev_cursor,
+        'cursor': cursor,
+        'next': next_cursor
     }
 
     return HttpResponseRest(request, results)
+

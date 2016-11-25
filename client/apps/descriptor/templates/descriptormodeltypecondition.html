@@ -26,12 +26,14 @@
                     <input class="form-control" id="simple_value" type="text" value="" maxlength="64" autocomplete="off">
                 </div>
                 <div class="form-group value-group" id="autocomplete_value_group">
-                    <label class="control-label"><%= gt.gettext("Value") %></label>
-                    <input class="form-control" id="autocomplete_value" type="text" value="" maxlength="64" style="width:100%;">
+                    <label for="autocomplete_value" class="control-label"><%= gt.gettext("Value") %></label>
+                    <div>
+                        <select id="autocomplete_value" class="form-control" data-container="body" style="width: 100%;"></select>
+                    </div>
                 </div>
                 <div class="form-group value-group" id="select_value_group">
                     <label for="select_value" class="control-label"><%= gt.gettext("Value from list") %></label>
-                    <select id="select_value" class="form-control" data-container="body" style="direction: rtl;">
+                    <select id="select_value" class="form-control" data-container="body">
                     </select>
                 </div>
             </form>
