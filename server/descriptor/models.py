@@ -990,6 +990,9 @@ class DescriptorModelTypeCondition(Entity):
     # if the target is boolean, or can be a value code if the target is an enum
     values = models.TextField(default="")
 
+    class Meta:
+        verbose_name = _("descriptor model type condition")
+
 
 class DescribableEntity(Entity):
     """

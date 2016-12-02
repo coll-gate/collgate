@@ -33,6 +33,9 @@ var View = Marionette.ItemView.extend({
     },
 
     dragStart: function(e) {
+        // fix for firefox...
+        e.originalEvent.dataTransfer.setData('text/plain', null);
+
         this.$el.css('opacity', '0.4');
         application.dndElement = this;
     },

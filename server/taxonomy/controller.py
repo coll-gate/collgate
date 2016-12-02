@@ -136,8 +136,8 @@ class Taxonomy(object):
             raise SuspiciousOperation(_('Undefined synonym language'))
 
         if synonym['type'] == TaxonSynonymType.PRIMARY.value:
-            if TaxonSynonym.objects.filter(taxon=taxon, type=TaxonSynonymType.PRIMARY.value, language=synonym['language']).exists():
-                raise SuspiciousOperation(_('A primary name for the taxon with this language already exists'))
+            if TaxonSynonym.objects.filter(taxon=taxon, type=TaxonSynonymType.PRIMARY.value).exists():
+                raise SuspiciousOperation(_('A primary name for the taxon already exists'))
 
         if TaxonSynonym.objects.filter(name=synonym['name']).exists():
             raise PermissionDenied(_('Taxon synonym already exists'))
@@ -147,17 +147,3 @@ class Taxonomy(object):
                                type=synonym['type'],
                                language=synonym['language'])
         synonym.save()
-
-    @classmethod
-    def remove_synonym(cls, taxon, synonym):
-        """
-        Remove one synonyme from the given taxon.
-        """
-        if not synonym:
-            return
-
-        # cannot remove the primary synonym
-        if not synonym['name'] or synonym['type'] == TaxonSynonymType.PRIMARY:
-            return
-
-        TaxonSynonym.objects.filter(taxon=taxon, name=synonym['name']).delete()

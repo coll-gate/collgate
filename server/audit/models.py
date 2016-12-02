@@ -207,6 +207,10 @@ def entity_post_save(sender, instance, created, **kwargs):
         else:
             fields = {}
 
+        # None means ignore audit
+        if fields is None:
+            return
+
         # add the uuid of the instance
         if hasattr(instance, 'uuid'):
             fields['uuid'] = str(instance.uuid)
@@ -217,6 +221,10 @@ def entity_post_save(sender, instance, created, **kwargs):
             fields = instance.audit_update(user)
         else:
             fields = {}
+
+        # None means ignore audit
+        if fields is None:
+            return
     else:
         a_type = AuditType.UPDATE
 
@@ -224,6 +232,10 @@ def entity_post_save(sender, instance, created, **kwargs):
             fields = instance.audit_update(user)
         else:
             fields = {}
+
+        # None means ignore audit
+        if fields is None:
+            return
 
     # always add the status of the entity
     if hasattr(instance, 'entity_status'):
@@ -245,6 +257,10 @@ def entity_post_delete(sender, instance, **kwargs):
     else:
         fields = {}
 
+    # None means ignore audit
+    if fields is None:
+        return
+
     # always add the name of the instance
     fields['name'] = instance.name
 
@@ -260,6 +276,10 @@ def entity_m2m_changed(sender, instance, action, reverse, model, **kwargs):
         fields = instance.audit_m2m(user)
     else:
         fields = {}
+
+    # None means ignore audit
+    if fields is None:
+        return
 
     content_type = ContentType.objects.get_for_model(sender)
     Audit.objects.create_audit(user, content_type, instance.pk, AuditType.M2M_CHANGE, fields)

@@ -20,7 +20,8 @@ from igdectk.rest.response import HttpResponseRest
 
 from main.models import InterfaceLanguages
 from .descriptor import RestDescriptor
-from .models import DescriptorModel, DescriptorModelType, DescriptorType
+from .models import DescriptorModel, DescriptorModelType, DescriptorType, DescriptorModelTypeCondition, \
+    DescriptorCondition
 
 
 class RestDescriptorModel(RestDescriptor):
@@ -594,14 +595,25 @@ def get_condition_for_descriptor_model_type(request, id, tid):
     dm_id = int(id)
     dmt_id = int(tid)
 
-    dmt = get_object_or_404(DescriptorModelType, id=dmt_id, descriptor_model__id=dm_id)
+    conditions = DescriptorModelTypeCondition.objects.filter(descriptor_model_type_id=dmt_id)
+    condition = None
 
-    result = {
-        'defined': True,
-        'condition': 0,
-        'target': 0,
-        'values': None
-    }
+    if conditions.exists():
+        dmtc = conditions[0]
+
+        result = {
+            'defined': True,
+            'condition': dmtc.condition,
+            'target': dmtc.target.id,
+            'values': json.loads(dmtc.values)
+        }
+    else:
+        result = {
+            'defined': False,
+            'condition': 0,
+            'target': 0,
+            'values': None
+        }
 
     return HttpResponseRest(request, result)
 
@@ -610,7 +622,17 @@ def get_condition_for_descriptor_model_type(request, id, tid):
     Method.POST, Format.JSON, content={
         "type": "object",
         "properties": {
-
+            "target": {"type": "integer"},
+            "condition": {"type": "integer", "minValue": 0, "maxValue": 3},
+            "values": {
+                "type": "array",
+                "minItems": 0,
+                "maxItems": 64,
+                "items": {
+                    "type": ["string", "number"]
+                },
+                "required": False
+            },
         }
     },
     perms={
@@ -624,14 +646,29 @@ def create_condition_for_descriptor_model_type(request, id, tid):
     """
     dm_id = int(id)
     dmt_id = int(tid)
+    target_id = int(request.data['target'])
 
     dmt = get_object_or_404(DescriptorModelType, id=dmt_id, descriptor_model__id=dm_id)
+    target = get_object_or_404(DescriptorModelType, id=target_id, descriptor_model__id=dm_id)
+
+    condition = DescriptorCondition(request.data['condition'])
+    values = request.data['values']
+
+    dmtc = DescriptorModelTypeCondition()
+
+    dmtc.name = "%s_%03i" % (dmt.id, 1)
+    dmtc.descriptor_model_type = dmt
+    dmtc.condition = condition.value
+    dmtc.target = target
+    dmtc.values = json.dumps(values)
+
+    dmtc.save()
 
     result = {
         'defined': True,
-        'condition': 0,
-        'target': 0,
-        'values': None
+        'condition': dmtc.condition,
+        'target': dmtc.target.id,
+        'values': values
     }
 
     return HttpResponseRest(request, result)
@@ -641,12 +678,23 @@ def create_condition_for_descriptor_model_type(request, id, tid):
     Method.PUT, Format.JSON, content={
         "type": "object",
         "properties": {
-
+            "target": {"type": "integer"},
+            "condition": {"type": "integer", "minValue": 0, "maxValue": 3},
+            "values": {
+                "type": "array",
+                "minItems": 0,
+                "maxItems": 64,
+                "items": {
+                    "type": ["string", "number"]
+                },
+                "required": False
+            },
         }
     },
     perms={
         'descriptor.change_descriptormodel': _('You are not allowed to modify a model of descriptor'),
         'descriptor.change_descriptormodeltype': _('You are not allowed to modify a type of model of descriptor'),
+        'descriptor.change_descriptormodeltypecondition': _('You are not allowed to modify a condition of a model of descriptor'),
     },
     staff=True)
 def modify_condition_for_descriptor_model_type(request, id, tid):
@@ -655,14 +703,55 @@ def modify_condition_for_descriptor_model_type(request, id, tid):
     """
     dm_id = int(id)
     dmt_id = int(tid)
+    target_id = int(request.data['target'])
 
-    dmt = get_object_or_404(DescriptorModelType, id=dmt_id, descriptor_model__id=dm_id)
+    target = get_object_or_404(DescriptorModelType, id=target_id, descriptor_model__id=dm_id)
+
+    conditions = DescriptorModelTypeCondition.objects.filter(descriptor_model_type_id=dmt_id)
+    dmtc = None
+
+    if conditions.exists():
+        dmtc = conditions[0]
+
+        condition = DescriptorCondition(request.data['condition'])
+        values = request.data['values']
+
+        dmtc.condition = condition.value
+        dmtc.target = target
+        dmtc.values = json.dumps(values)
+
+        dmtc.save()
+    else:
+        raise DescriptorModelTypeCondition.DoesNotExist()
 
     result = {
         'defined': True,
-        'condition': 0,
-        'target': 0,
-        'values': None
+        'condition': dmtc.condition,
+        'target': dmtc.target.id,
+        'values': values
     }
 
     return HttpResponseRest(request, result)
+
+
+@RestDescriptorModelIdTypeIdCondition.def_auth_request(
+    Method.DELETE, Format.JSON,
+    perms={
+        'descriptor.change_descriptormodel': _('You are not allowed to modify a model of descriptor'),
+        'descriptor.change_descriptormodeltype': _('You are not allowed to modify a type of model of descriptor'),
+        'descriptor.delete_descriptormodeltypecondition': _('You are not allowed to delete a condition of a model of descriptor'),
+    },
+    staff=True)
+def delete_condition_for_descriptor_model_type(request, id, tid):
+    """
+    Delete the unique condition (for now) of the descriptor model type.
+    """
+    dm_id = int(id)
+    dmt_id = int(tid)
+
+    conditions = DescriptorModelTypeCondition.objects.filter(descriptor_model_type_id=dmt_id)
+
+    if conditions.exists():
+        conditions[0].delete()
+
+    return HttpResponseRest(request, {})

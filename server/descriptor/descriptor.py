@@ -83,6 +83,11 @@ class RestDescriptorGroupIdTypeIdValueIdField(RestDescriptorGroupIdTypeIdValueId
     suffix = 'field'
 
 
+class RestDescriptorGroupIdTypeIdValueIdDisplay(RestDescriptorGroupIdTypeIdValueId):
+    regex = r'^display/$'
+    suffix = 'display'
+
+
 @RestDescriptorGroup.def_auth_request(Method.GET, Format.JSON)
 def get_descriptor_groups(request):
     """
@@ -892,11 +897,87 @@ def delete_value_for_descriptor_type(request, id, tid, vid):
     return HttpResponseRest(request, {})
 
 
+@RestDescriptorGroupIdTypeIdValueId.def_auth_request(Method.GET, Format.JSON)
+def get_value_for_descriptor_type(request, id, tid, vid):
+    """
+    Get a single value for a type of descriptor.
+    """
+    group_id = int(id)
+    type_id = int(tid)
+
+    descr_type = get_object_or_404(DescriptorType, id=type_id, group_id=group_id)
+    value = descr_type.get_value(vid)
+
+    result = {
+        'parent': value[0],
+        'ordinal': value[1],
+        'value0': value[2],
+        'value1': value[3]
+    }
+
+    return HttpResponseRest(request, result)
+
+
+@RestDescriptorGroupIdTypeIdValueIdDisplay.def_auth_request(Method.GET, Format.JSON)
+def get_display_value_for_descriptor_type(request, id, tid, vid):
+    """
+    Get a single value for a type of descriptor.
+    """
+    group_id = int(id)
+    type_id = int(tid)
+
+    descr_type = get_object_or_404(DescriptorType, id=type_id, group_id=group_id)
+
+    format = json.loads(descr_type.format)
+    list_type = format.get('list_type', '')
+
+    if not list_type:
+        raise SuspiciousOperation(_("This type of descriptor does not contains a list"))
+
+    value = descr_type.get_value(vid)
+
+    if format['display_fields'] == 'value0':
+        result = {
+            'id': vid,
+            'value': vid,
+            'label': value[2]
+        }
+    elif format['display_fields'] == 'value1':
+        result = {
+            'id': vid,
+            'value': vid,
+            'label': value[3]
+        }
+    elif format['display_fields'] == 'value0-value1':
+        result = {
+            'id': vid,
+            'value': vid,
+            'label': "%s - %s" % (value[2], value[3])
+        }
+    elif format['display_fields'] == 'ordinal-value0':
+        result = {
+            'id': vid,
+            'value': vid,
+            'label': "%i - %s" % (value[1], value[2])
+        }
+    elif format['display_fields'] == 'hier0-value1':
+        shift_size = value[2].count('.')
+
+        result = {
+            'id': vid,
+            'value': vid,
+            'label': value[3],
+            'offset': shift_size
+        }
+
+    return HttpResponseRest(request, result)
+
+
 @RestDescriptorGroupIdTypeIdValueIdField.def_auth_request(
     Method.GET, Format.JSON)
-def get_values_for_descriptor_type(request, id, tid, vid, field):
+def get_labels_for_descriptor_type_field(request, id, tid, vid, field):
     """
-    Get all translation for a specific field of a value of descriptor.
+    Get all translations for a specific field of a value of descriptor.
     """
     group_id = int(id)
     type_id = int(tid)

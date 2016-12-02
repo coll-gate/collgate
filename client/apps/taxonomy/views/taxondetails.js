@@ -54,8 +54,8 @@ var TaxonItemView = Marionette.ItemView.extend({
         application.taxonomy.views.taxonSynonymTypes.htmlFromValue(this.el);
         application.taxonomy.views.taxonRanks.htmlFromValue(this.el);
 
-        //this.ui.taxon_synonym_type.find('option[value="0"]').remove();
-        //$(this.ui.taxon_synonym_type).selectpicker('refresh');
+        this.ui.taxon_synonym_type.find('option[value="0"]').remove();
+        $(this.ui.taxon_synonym_type).selectpicker('refresh');
     },
 
     validateName: function() {

@@ -65,7 +65,7 @@
 /******/ 	}
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "51abfd6fca9555641554"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "8c6b85bbf10af75a9538"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -22088,13 +22088,11 @@
 	
 	var Model = Backbone.Model.extend({
 	    url: function() {
-	        var group_id = this.group_id || this.get('group') || this.collection.group_id;
-	
 	        if (this.isNew()) {
-	            return application.baseUrl + 'descriptor/group/' + group_id + '/type/';
+	            return application.baseUrl + 'descriptor/group/' + this.getGroupId() + '/type/';
 	        }
 	        else
-	            return application.baseUrl + 'descriptor/group/' + group_id + '/type/' + this.get('id') + '/';
+	            return application.baseUrl + 'descriptor/group/' + this.getGroupId() + '/type/' + this.get('id') + '/';
 	    },
 	
 	    defaults: {
@@ -22134,6 +22132,16 @@
 	          return errors;
 	        }
 	    },
+	
+	    getGroupId: function() {
+	        if (typeof this.group_id != 'undefined') {
+	            return this.group_id;
+	        } else if (this.get('group') != null) {
+	            return this.group;
+	        } else if (typeof this.collection != 'undefined') {
+	            return this.collection.group_id;
+	        }
+	    }
 	});
 	
 	module.exports = Model;
@@ -24494,10 +24502,12 @@
 	
 	        switch (unit) {
 	            case "custom":
-	                $(this.ui.format_unit_custom).attr("readonly", null).val("");
+	                $(this.ui.format_unit_custom).prop("readonly", false).val("");
+	                $(this.ui.format_unit_custom).cleanField();
 	                break;
 	            default:
-	                $(this.ui.format_unit_custom).attr("readonly", "readonly").val("");
+	                $(this.ui.format_unit_custom).prop("readonly", true).val("");
+	                $(this.ui.format_unit_custom).cleanField();
 	                break;
 	        }
 	    },
@@ -24523,8 +24533,11 @@
 	
 	        if (v.length > 0 && !re.test(v)) {
 	            $(this.ui.format_unit_custom).validateField('failed', gt.gettext("Invalid characters (alphanumeric, _-°%°⁼⁺⁻⁰¹²³⁴⁵⁶⁷⁸⁹/µ allowed)"));
+	        } else if (v.length > 32) {
+	            $(this.ui.format_unit_custom).validateField('failed', gt.gettext('32 character max'));
 	        } else if (v.length < 1) {
-	            $(this.ui.format_unit_custom).validateField('failed', gt.gettext('1 character min'));
+	            //$(this.ui.format_unit_custom).validateField('failed', gt.gettext('1 character min'));
+	            $(this.ui.format_unit_custom).cleanField();
 	        } else {
 	            $(this.ui.format_unit_custom).validateField('ok');
 	        }
@@ -24631,7 +24644,7 @@
 	obj || (obj = {});
 	var __t, __p = '', __e = _.escape;
 	with (obj) {
-	__p += '<style>/* adjust the form validation glyph position */\n    #format_unit_custom ~ span.form-control-feedback {\n        right: 15px;\n    }</style><div id="helper_display_fields_text" class="help"><p>' +
+	__p += '<div id="helper_display_fields_text" class="help"><p>' +
 	((__t = ( gt.gettext("Controls how is displayed the field. Hierarchy mode is a special usage for pseudo hierarchy, for which values are roughly shifted to give an illusion of parent/children. The shift depend of the level declared in the value0 while value1 contains the label. The first value contains something like 1 or 2 or 1.1, 1.2, 1.1.1...") )) == null ? '' : __t) +
 	'</p></div><div class="descriptor-detail"><div class="descriptor-type-name form-group" style="width: 50%"><label for="descriptor_type_name">' +
 	__e( gt.gettext('Descriptor type name') ) +
@@ -24703,13 +24716,11 @@
 	__e( gt.gettext('Value0 - Value1') ) +
 	'</option><option value="ordinal-value0">' +
 	__e( gt.gettext('Ordinal - Value0') ) +
-	'</option><option value="hier1-value0">' +
-	__e( gt.gettext('Hierarchy of Value0') ) +
+	'</option><option value="hier0-value1">' +
+	__e( gt.gettext('Hierarchy of Value1') ) +
 	'</option></select></div></div></div><div class="descriptor-type-fields-list form-group" style="width: 50%"><div class="row"><div class="col-xs-6"><label for="list_type">' +
 	__e( gt.gettext('Display the list as') ) +
-	'</label><select id="list_type" class="form-control"><option value="automatic">' +
-	__e( gt.gettext('Automatic') ) +
-	'</option><option value="dropdown">' +
+	'</label><select id="list_type" class="form-control"><option value="dropdown">' +
 	__e( gt.gettext('Dropdown (limit of 256 values)') ) +
 	'</option><option value="autocomplete">' +
 	__e( gt.gettext('Autocomplete (big lists)') ) +
@@ -24721,9 +24732,9 @@
 	__e( gt.gettext('Value1') ) +
 	'</option></select></div></div></div><div class="descriptor-type-unit form-group" style="width: 50%"><div class="row"><div class="col-xs-6"><label for="format_unit">' +
 	__e( gt.gettext('Unit of the format') ) +
-	'</label><select id="format_unit" class="form-control"><optgroup label="Chroma"><option value="chroma_L_value">L value</option><option value="chroma_a_value">a value</option><option value="chroma_b_value">b value</option></optgroup><optgroup label="Common"><option value="degree_celsius">°C (celcius degree)</option><option value="category">Category</option><option value="custom" style="font-style: italic">Custom</option><option value="joule">J (joule)</option><option value="norm1">Norm 1</option><option value="note">Note</option><option value="percent">% (percent)</option><option value="regexp">Regular expression</option><option value="scale">Scale</option></optgroup><optgroup label="Grain"><option value="gram_per_100_grain">g/100 grain</option><option value="gram_per_200_grain">g/200 grain</option><option value="gram_per_1000_grain">g/1000 grain</option><option value="grain_per_meter2">grain/m²</option><option value="grain_per_spike">grain/spike</option><option value="grain_per_spikelet">grain/spikelet</option></optgroup><optgroup label="Meter"><option value="micrometer">um</option><option value="millimeter">mm</option><option value="centimeter">cm</option><option value="centimeter">dm</option><option value="meter">m</option><option value="kilometer">km</option></optgroup><optgroup label="Plant and plot"><option value="plant_per_meter">plant/m</option><option value="plant_per_meter2">plant/m²</option><option value="plant_per_hectare">plant/ha</option><option value="plant_per_plot">plant/plot</option><option value="gram_per_plant">g/plant</option><option value="gram_per_plot">g/plot</option><option value="kilogram_per_plot">kg/plot</option><option value="stoma_per_millimeter2">stoma/mm²</option><option value="node">node</option><option value="spikelet">spikelet</option><option value="spike_per_meter2">spike/m²</option><option value="tiller_per_meter">tiller/m</option><option value="tiller_per_meter2">tiller/m²</option></optgroup><optgroup label="Quantity and volume"><option value="milliliter">ml</option><option value="milliliter_per_percent">ml/%</option><option value="ppm">ppm</option><option value="milligram_per_kilogram">mg/kg</option><option value="gram_per_kilogram">g/kg</option><option value="gram_per_meter2">g/m²</option><option value="kilogram_per_hectare">kg/ha</option><option value="tonne_per_hectare">t/ha</option><option value="gram_per_liter">g/l</option><option value="kilogram_per_hectolitre">kg/hl</option><option value="millimol_per_meter2_per_second">mmol/m²/s</option><option value="gram_per_meter2_per_day">g/m²/day</option><option value="cci">CCI (chlore)</option><option value="delta_13c">delta 13C (carbon)</option></optgroup><optgroup label="Surface"><option value="millimeter2">mm²</option><option value="centimeter2">cm²</option><option value="meter2">m²</option><option value="hectare">ha</option><option value="kilometer2">km²</option></optgroup><optgroup label="Time"><option value="millisecond">ms</option><option value="second">s</option><option value="minute">min</option><option value="hour">hour</option><option value="day">day</option><option value="month">month</option><option value="year">year</option><option value="date">date (yyyy/mm/dd)</option><option value="time">time (hh:mm:ss.ms)</option><option value="datetime">date+time</option><option value="percent_per_minute">%/min</option><option value="percent_per_hour">%/hour</option><option value="percent_per_day">%/day</option></optgroup></select></div><div class="col-xs-6"><label for="format_unit_custom">' +
+	'</label><select id="format_unit" class="form-control"><optgroup label="Chroma"><option value="chroma_L_value">L value</option><option value="chroma_a_value">a value</option><option value="chroma_b_value">b value</option></optgroup><optgroup label="Common"><option value="degree_celsius">°C (celcius degree)</option><option value="category">Category</option><option value="custom" style="font-style: italic">Custom</option><option value="joule">J (joule)</option><option value="norm1">Norm 1</option><option value="note">Note</option><option value="percent">% (percent)</option><option value="regexp">Regular expression</option><option value="scale">Scale</option></optgroup><optgroup label="Grain"><option value="gram_per_100_grain">g/100 grain</option><option value="gram_per_200_grain">g/200 grain</option><option value="gram_per_1000_grain">g/1000 grain</option><option value="grain_per_meter2">grain/m²</option><option value="grain_per_spike">grain/spike</option><option value="grain_per_spikelet">grain/spikelet</option></optgroup><optgroup label="Meter"><option value="micrometer">um</option><option value="millimeter">mm</option><option value="centimeter">cm</option><option value="centimeter">dm</option><option value="meter">m</option><option value="kilometer">km</option></optgroup><optgroup label="Plant and plot"><option value="plant_per_meter">plant/m</option><option value="plant_per_meter2">plant/m²</option><option value="plant_per_hectare">plant/ha</option><option value="plant_per_plot">plant/plot</option><option value="gram_per_plant">g/plant</option><option value="gram_per_plot">g/plot</option><option value="kilogram_per_plot">kg/plot</option><option value="stoma_per_millimeter2">stoma/mm²</option><option value="node">node</option><option value="spikelet">spikelet</option><option value="spike_per_meter2">spike/m²</option><option value="tiller_per_meter">tiller/m</option><option value="tiller_per_meter2">tiller/m²</option></optgroup><optgroup label="Quantity and volume"><option value="milliliter">ml</option><option value="milliliter_per_percent">ml/%</option><option value="ppm">ppm</option><option value="milligram_per_kilogram">mg/kg</option><option value="gram_per_kilogram">g/kg</option><option value="gram_per_meter2">g/m²</option><option value="kilogram_per_hectare">kg/ha</option><option value="tonne_per_hectare">t/ha</option><option value="gram_per_liter">g/l</option><option value="kilogram_per_hectolitre">kg/hl</option><option value="millimol_per_meter2_per_second">mmol/m²/s</option><option value="gram_per_meter2_per_day">g/m²/day</option><option value="cci">CCI (chlore)</option><option value="delta_13c">delta 13C (carbon)</option></optgroup><optgroup label="Surface"><option value="millimeter2">mm²</option><option value="centimeter2">cm²</option><option value="meter2">m²</option><option value="hectare">ha</option><option value="kilometer2">km²</option></optgroup><optgroup label="Time"><option value="millisecond">ms</option><option value="second">s</option><option value="minute">min</option><option value="hour">hour</option><option value="day">day</option><option value="month">month</option><option value="year">year</option><option value="date">date (yyyy/mm/dd)</option><option value="time">time (hh:mm:ss.ms)</option><option value="datetime">date+time</option><option value="percent_per_minute">%/min</option><option value="percent_per_hour">%/hour</option><option value="percent_per_day">%/day</option></optgroup></select></div><div class="col-xs-6"><div class="form-group"><label for="format_unit_custom">' +
 	__e( gt.gettext('Custom unit name') ) +
-	'</label><input id="format_unit_custom" class="form-control" type="text" readonly="readonly" maxlength="32" value=""></div></div></div><div class="descriptor-type-precision form-group" style="width: 50%"><label for="format_precision">' +
+	'</label><input id="format_unit_custom" class="form-control" type="text" readonly="readonly" maxlength="32" value=""></div></div></div></div><div class="descriptor-type-precision form-group" style="width: 50%"><label for="format_precision">' +
 	__e( gt.gettext('Precision of the decimal') ) +
 	'</label><select id="format_precision" class="form-control"><option value="0.0">0.0</option><option value="1.0">1.0</option><option value="2.0">2.0</option><option value="3.0">3.0</option><option value="4.0">4.0</option><option value="5.0">5.0</option><option value="6.0">6.0</option><option value="7.0">7.0</option><option value="8.0">8.0</option><option value="9.0">9.0</option></select></div><div class="descriptor-type-model form-group" style="width: 50%"><label for="format_model">' +
 	__e( gt.gettext('Model of the entity') ) +
@@ -25257,13 +25268,11 @@
 	
 	var Model = Backbone.Model.extend({
 	    url: function() {
-	        var model_id = this.model_id || this.get('model') || this.collection.model_id;
-	
 	        if (this.isNew()) {
-	            return application.baseUrl + 'descriptor/model/' + model_id + '/type/';
+	            return application.baseUrl + 'descriptor/model/' + this.getModelId() + '/type/';
 	        }
 	        else
-	            return application.baseUrl + 'descriptor/model/' + model_id + '/type/' + this.get('id') + '/';
+	            return application.baseUrl + 'descriptor/model/' + this.getModelId() + '/type/' + this.get('id') + '/';
 	    },
 	
 	    defaults: {
@@ -25304,6 +25313,16 @@
 	          return errors;
 	        }
 	    },
+	
+	    getModelId: function() {
+	        if (typeof this.model_id != 'undefined') {
+	            return this.model_id;
+	        } else if (this.get('model') != null) {
+	            return this.model;
+	        } else if (typeof this.collection != 'undefined') {
+	            return this.collection.model_id;
+	        }
+	    }
 	});
 	
 	module.exports = Model;
@@ -26388,6 +26407,7 @@
 	                    simple_value_group: "#simple_value_group",
 	                    autocomplete_value_group: "#autocomplete_value_group",
 	                    select_value_group: "#select_value_group",
+	                    unit: "#unit"
 	                },
 	
 	                events: {
@@ -26419,22 +26439,43 @@
 	                    if (condition == 0 || condition == 1) {
 	                        this.ui.value_group.hide(false);
 	                    } else {
-	                        if (this.descriptorTypeFormat.type.startsWith('enum_')) {
-	                            this.ui.simple_value_group.hide(false);
+	                        // sync with descriptorType
+	                        var view = this;
 	
-	                            if (this.descriptorTypeFormat.list_type == "dropdown") {
-	                                this.ui.select_value_group.show(false);
-	                                this.ui.autocomplete_value_group.hide(false);
+	                        this.descriptorTypePromise.then(function() {
+	                            var format = view.descriptorType.get('format');
+	
+	                            if (format.type.startsWith('enum_')) {
+	                                view.ui.simple_value_group.hide(false);
+	
+	                                if (format.list_type == "dropdown") {
+	                                    view.ui.select_value_group.show(false);
+	                                    view.ui.autocomplete_value_group.hide(false);
+	                                } else {
+	                                    view.ui.select_value_group.hide(false);
+	                                    view.ui.autocomplete_value_group.show(false);
+	                                }
+	                            } else if (format.type == "boolean") {
+	                                view.ui.simple_value_group.hide(false);
+	                                view.ui.select_value_group.show(false);
+	                                view.ui.autocomplete_value_group.hide(false);
+	                            } else if (format.type == "ordinal") {
+	                                if ((format.range[1] - format.range[0] + 1) <= 256) {
+	                                    view.ui.simple_value_group.hide(false);
+	                                    view.ui.select_value_group.show(false);
+	                                    view.ui.autocomplete_value_group.hide(false);
+	                                } else {
+	                                    view.ui.simple_value_group.show(false);
+	                                    view.ui.select_value_group.hide(false);
+	                                    view.ui.autocomplete_value_group.hide(false);
+	                                }
 	                            } else {
-	                                this.ui.select_value_group.hide(false);
-	                                this.ui.autocomplete_value_group.show(false);
+	                                view.ui.simple_value_group.show(false);
+	                                view.ui.select_value_group.hide(false);
+	                                view.ui.autocomplete_value_group.hide(false);
 	                            }
-	                        } else {
-	                            this.ui.simple_value_group.show(false);
-	                            this.ui.select_value_group.hide(false);
-	                            this.ui.autocomplete_value_group.hide(false);
-	                        }
-	                    }
+	                        });
+	                    };
 	                },
 	
 	                onSelectCondition: function () {
@@ -26448,29 +26489,137 @@
 	
 	                    var model = this.getOption('model').collection.findWhere({id: parseInt(targetId)});
 	                    if (model) {
-	                        var descriptorType = new DescriptorTypeModel(
+	                        this.descriptorType = new DescriptorTypeModel(
 	                            {id: model.get('descriptor_type')},
 	                            {group_id: model.get('descriptor_type_group')}
 	                        );
 	
-	                        descriptorType.fetch().then(function() {
-	                            view.descriptorTypeFormat = descriptorType.get('format');
+	                        this.descriptorTypePromise = this.descriptorType.fetch().then(function() {
+	                            var format = view.descriptorType.get('format');
 	
 	                            var condition = view.ui.condition.val();
 	                            view.toggleCondition(condition);
 	
-	                            if (descriptorType.get('format').type.startsWith('enum_')) {
-	                                if (descriptorType.get('format').list_type != "dropdown") {
+	                            view.ui.select_value.find('option').remove();
+	
+	                            if (format.unit == "custom") {
+	                                view.ui.unit.html(format.custom_unit)
+	                            } else {
+	                                view.ui.unit.html(format.unit)
+	                            }
+	
+	                            if (format.type.startsWith('enum_')) {
+	                                if (format.list_type == "autocomplete") {
 	                                    // make an autocomplete widget on simple_value
-	                                    // @todo
-	                                    // @todo what about automatic mode ?
+	                                    $(view.ui.autocomplete_value).select2({
+	                                        dropdownParent: $(view.el),
+	                                        ajax: {
+	                                            url: view.descriptorType.url() + 'value/display/search/',
+	                                            dataType: 'json',
+	                                            delay: 250,
+	                                            data: function (params) {
+	                                                params.term || (params.term = '');
+	
+	                                                return {
+	                                                    cursor: params.next,
+	                                                    value: params.term,
+	                                                };
+	                                            },
+	                                            processResults: function (data, params) {
+	                                                params.next = null;
+	
+	                                                if (data.items.length >= 30) {
+	                                                    params.next = data.next || null;
+	                                                }
+	
+	                                                var results = [];
+	
+	                                                for (var i = 0; i < data.items.length; ++i) {
+	                                                    results.push({
+	                                                        id: data.items[i].id,
+	                                                        text: data.items[i].label
+	                                                    });
+	                                                }
+	
+	                                                return {
+	                                                    results: results,
+	                                                    pagination: {
+	                                                        more: params.next != null
+	                                                    }
+	                                                };
+	                                            },
+	                                            cache: true
+	                                        },
+	                                        minimumInputLength: 3,
+	                                        placeholder: gt.gettext("Enter a value. 3 characters at least for auto-completion"),
+	                                    });
 	                                } else {
 	                                    // refresh values
-	                                    // @todo ajax
-	                                    view.ui.enum_value.find('option').remove();
-	                                    view.ui.enum_value.selectpicker('refresh');
-	                                }
+	                                    $.ajax({
+	                                        url: view.descriptorType.url() + 'value/display',
+	                                        dataType: 'json',
+	                                    }).done(function (data) {
+	                                        for (var i = 0; i < data.length; ++i) {
+	                                            var option = $("<option></option>");
 	
+	                                            option.attr("value", data[i].value);
+	                                            option.attr("title", data[i].label);
+	
+	                                            // for LTR languages add prefix
+	                                            if (data[i].offset) {
+	                                                var offset = "";
+	                                                for (var j = 0; j < data[i].offset; ++j) {
+	                                                    offset += "&#160;&#160;&#160;&#160;";
+	                                                }
+	
+	                                                if (session.languageDirection == "ltr") {
+	                                                    option.html(offset + data[i].label);
+	                                                } else {
+	                                                    option.html(data[i].label + offset);
+	                                                }
+	                                            } else {
+	                                                option.html(data[i].label);
+	                                            }
+	
+	                                            view.ui.select_value.append(option);
+	                                        }
+	
+	                                        view.ui.select_value.selectpicker('refresh');
+	                                    });
+	                                }
+	                            } else if (format.type.startsWith('boolean')) {
+	                                // true
+	                                var option = $("<option></option>");
+	
+	                                option.attr("value", true);
+	                                option.html(gt.gettext('Yes'));
+	
+	                                view.ui.select_value.append(option);
+	
+	                                // false
+	                                option = $("<option></option>");
+	
+	                                option.attr("value", false);
+	                                option.html(gt.gettext('No'));
+	
+	                                view.ui.select_value.append(option);
+	
+	                                view.ui.select_value.selectpicker('refresh');
+	                            } else if (format.type.startsWith('ordinal')) {
+	                                var len = format.range[1] - format.range[0] + 1;
+	
+	                                if (len <= 256) {
+	                                    for (var i = format.range[0]; i <= format.range[1]; ++i) {
+	                                        var option = $("<option></option>");
+	
+	                                        option.attr("value", i);
+	                                        option.html(i);
+	
+	                                        view.ui.select_value.append(option);
+	                                    }
+	
+	                                    view.ui.select_value.selectpicker('refresh');
+	                                }
 	                            }
 	                        });
 	                    }
@@ -26480,30 +26629,21 @@
 	                    var view = this;
 	                    var model = this.getOption('model');
 	
-	                    var labels = {};
-	
-	                    $.each($(this.ui.label), function (i, label) {
-	                        var v = $(this).val();
-	                        labels[$(label).attr("language")] = v;
-	                    });
-	
-	                    if (this.validateLabels()) {
-	                        // @todo if (condition.defined PUT else POST)
-	                        /*
-	                         $.ajax({
-	                         type: "PUT",
-	                         url: model.url() + "condition/",
-	                         dataType: 'json',
-	                         contentType: "application/json; charset=utf-8",
-	                         data: JSON.stringify(labels)
-	                         }).done(function() {
-	                         // manually update the current context label
-	                         model.set('label', labels[session.language]);
-	                         $.alert.success(gt.gettext("Successfully labeled !"));
-	                         }).always(function() {
-	                         view.remove();
-	                         });*/
-	                    }
+	                    // @todo if (condition.defined PUT else POST)
+	                    /*
+	                     $.ajax({
+	                     type: "PUT",
+	                     url: model.url() + "condition/",
+	                     dataType: 'json',
+	                     contentType: "application/json; charset=utf-8",
+	                     data: JSON.stringify(labels)
+	                     }).done(function() {
+	                     // manually update the current context label
+	                     model.set('label', labels[session.language]);
+	                     $.alert.success(gt.gettext("Successfully labeled !"));
+	                     }).always(function() {
+	                     view.remove();
+	                     });*/
 	                },
 	            });
 	
@@ -26636,21 +26776,25 @@
 	((__t = ( gt.gettext("Target") )) == null ? '' : __t) +
 	'</label><select class="form-control" id="target"> ';
 	 _.each(targets, function(target) { ;
+	__p += ' ';
+	 if (target.get('id') != id) { ;
 	__p += ' <option value="' +
 	((__t = ( target.get('id') )) == null ? '' : __t) +
 	'">' +
 	((__t = ( target.get('label') )) == null ? '' : __t) +
 	'</option> ';
+	 } ;
+	__p += ' ';
 	 }) ;
 	__p += ' </select></div><div class="form-group"><label for="condition" class="control-label">' +
 	((__t = ( gt.gettext("Condition") )) == null ? '' : __t) +
 	'</label><select id="condition" class="form-control"></select></div><div class="form-group value-group" id="simple_value_group"><label class="control-label">' +
 	((__t = ( gt.gettext("Value") )) == null ? '' : __t) +
-	'</label><input class="form-control" id="simple_value" type="text" value="" maxlength="64" style="width:100%"></div><div class="form-group value-group" id="autocomplete_value_group"><label class="control-label">' +
+	'&nbsp;(<span id="unit"></span>)</label><input class="form-control" id="simple_value" type="text" value="" maxlength="64" autocomplete="off"></div><div class="form-group value-group" id="autocomplete_value_group"><label for="autocomplete_value" class="control-label">' +
 	((__t = ( gt.gettext("Value") )) == null ? '' : __t) +
-	'</label><input class="form-control" id="autocomplete_value" type="text" value="" maxlength="64" style="width:100%"></div><div class="form-group value-group" id="select_value_group"><label for="select_value" class="control-label">' +
+	'</label><div><select id="autocomplete_value" class="form-control" data-container="body" style="width: 100%"></select></div></div><div class="form-group value-group" id="select_value_group"><label for="select_value" class="control-label">' +
 	((__t = ( gt.gettext("Value from list") )) == null ? '' : __t) +
-	'</label><select id="select_value" class="form-control"></select></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal">' +
+	'</label><select id="select_value" class="form-control" data-container="body"></select></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal">' +
 	((__t = ( gt.gettext("Cancel") )) == null ? '' : __t) +
 	'</button> <button type="button" class="btn btn-primary apply">' +
 	((__t = ( gt.gettext("Apply") )) == null ? '' : __t) +
@@ -29449,7 +29593,7 @@
 	                $(this.ui.parent).select2({
 	                    dropdownParent: $(this.el),
 	                    ajax: {
-	                        url: application.baseUrl + "taxonomy/search/",
+	                        url: application.baseUrl + "taxonomy/taxon/search/",
 	                        dataType: 'json',
 	                        delay: 250,
 	                        data: function (params) {

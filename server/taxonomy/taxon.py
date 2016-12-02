@@ -457,7 +457,7 @@ def taxon_remove_synonym(request, id, sid):
     synonym = get_object_or_404(TaxonSynonym, Q(id=sid), Q(taxon=tid))
 
     if synonym.type == TaxonSynonymType.PRIMARY.value:
-        raise SuspiciousOperation(_("It is not possible to removed a primary synonym"))
+        raise SuspiciousOperation(_("It is not possible to remove a primary synonym"))
 
     synonym.delete()
 

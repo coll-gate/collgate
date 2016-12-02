@@ -57,6 +57,9 @@ var View = Marionette.ItemView.extend({
     },
 
     dragStart: function(e) {
+        // fix for firefox...
+        e.originalEvent.dataTransfer.setData('text/plain', null);
+
         this.$el.css('opacity', '0.4');
         application.dndElement = this;
     },
@@ -447,12 +450,14 @@ var View = Marionette.ItemView.extend({
                     simple_value_group: "#simple_value_group",
                     autocomplete_value_group: "#autocomplete_value_group",
                     select_value_group: "#select_value_group",
-                    unit: "#unit"
+                    unit: "#unit",
+                    destroy: "button.destroy"
                 },
 
                 events: {
                     'change @ui.condition': 'onSelectCondition',
                     'change @ui.target': 'onSelectTarget',
+                    'click @ui.destroy': 'onDestroyCondition',
                 },
 
                 initialize: function (options) {
@@ -465,8 +470,18 @@ var View = Marionette.ItemView.extend({
 
                     $(this.ui.target).selectpicker({container: 'body', style: 'btn-default'});
 
-                    this.onSelectCondition();
-                    this.onSelectTarget();
+                    // initial values set after getting them from dropdown or autocomplete initialization
+                    var condition = this.getOption('condition');
+                    if (condition.defined) {
+                        this.definesValues = true;
+                        this.defaultValues = condition.values;
+
+                        this.ui.target.val(condition.target).trigger('change');
+                        this.ui.condition.val(condition.condition).trigger('change');
+                    } else {
+                        this.onSelectCondition();
+                        this.onSelectTarget();
+                    }
                 },
 
                 onBeforeDestroy: function() {
@@ -550,10 +565,12 @@ var View = Marionette.ItemView.extend({
 
                             if (format.type.startsWith('enum_')) {
                                 if (format.list_type == "autocomplete") {
-                                    // make an autocomplete widget on simple_value
-                                    $(view.ui.autocomplete_value).select2({
+                                    var initials = [];
+
+                                    var params = {
                                         dropdownParent: $(view.el),
                                         ajax: {
+                                            data: initials,
                                             url: view.descriptorType.url() + 'value/display/search/',
                                             dataType: 'json',
                                             delay: 250,
@@ -592,7 +609,31 @@ var View = Marionette.ItemView.extend({
                                         },
                                         minimumInputLength: 3,
                                         placeholder: gt.gettext("Enter a value. 3 characters at least for auto-completion"),
-                                    });
+                                    };
+
+                                    // autoselect the initial value
+                                    if (view.definesValues) {
+                                        $.ajax({
+                                            type: "GET",
+                                            url: view.descriptorType.url() + 'value/' + view.defaultValues[0] + '/display/',
+                                            dataType: 'json',
+                                        }).done(function (data) {
+                                            initials.push({id: data.id, text: data.label});
+
+                                            params.data = initials;
+
+                                            $(view.ui.autocomplete_value).select2(params);
+
+                                            if (view.definesValues) {
+                                                view.ui.select_value.val(view.defaultValues).trigger('change');
+                                                view.definesValues = false;
+                                                view.defaultValues = null;
+                                            }
+                                        });
+                                    } else {
+                                        // make an autocomplete widget on simple_value
+                                        $(view.ui.autocomplete_value).select2(params);
+                                    }
                                 } else {
                                     // refresh values
                                     $.ajax({
@@ -625,9 +666,15 @@ var View = Marionette.ItemView.extend({
                                         }
 
                                         view.ui.select_value.selectpicker('refresh');
+
+                                        if (view.definesValues) {
+                                            view.ui.select_value.val(view.defaultValues).trigger('change');
+                                            view.definesValues = false;
+                                            view.defaultValues = null;
+                                        }
                                     });
                                 }
-                            } else if (format.type.startsWith('boolean')) {
+                            } else if (format.type === 'boolean') {
                                 // true
                                 var option = $("<option></option>");
 
@@ -645,7 +692,13 @@ var View = Marionette.ItemView.extend({
                                 view.ui.select_value.append(option);
 
                                 view.ui.select_value.selectpicker('refresh');
-                            } else if (format.type.startsWith('ordinal')) {
+
+                                if (view.definesValues) {
+                                    view.ui.select_value.val(view.defaultValues).trigger('change');
+                                    view.definesValues = false;
+                                    view.defaultValues = null;
+                                }
+                            } else if (format.type === 'ordinal') {
                                 var len = format.range[1] - format.range[0] + 1;
 
                                 if (len <= 256) {
@@ -659,35 +712,92 @@ var View = Marionette.ItemView.extend({
                                     }
 
                                     view.ui.select_value.selectpicker('refresh');
+
+                                    if (view.definesValues) {
+                                        view.ui.select_value.val(view.defaultValues).trigger('change');
+                                        view.definesValues = false;
+                                        view.defaultValues = null;
+                                    }
                                 }
                             }
                         });
                     }
                 },
 
+                onDestroyCondition: function() {
+                    var view = this;
+                    var model = this.getOption('model');
+                    var condition = this.getOption('condition');
+
+                    $.ajax({
+                        type: "DELETE",
+                        url: model.url() + "condition/",
+                        contentType: "application/json; charset=utf-8",
+                    }).done(function() {
+                        $.alert.success(gt.gettext("Successfully removed !"));
+                    }).always(function() {
+                        view.remove();
+                    });
+                },
+
                 onApply: function () {
                     var view = this;
                     var model = this.getOption('model');
+                    var condition = this.getOption('condition');
 
-                    // @todo if (condition.defined PUT else POST)
-                    /*
-                     $.ajax({
-                     type: "PUT",
-                     url: model.url() + "condition/",
-                     dataType: 'json',
-                     contentType: "application/json; charset=utf-8",
-                     data: JSON.stringify(labels)
-                     }).done(function() {
-                     // manually update the current context label
-                     model.set('label', labels[session.language]);
-                     $.alert.success(gt.gettext("Successfully labeled !"));
-                     }).always(function() {
-                     view.remove();
-                     });*/
+                    var data = {
+                        target: parseInt(this.ui.target.val()),
+                        condition: parseInt(this.ui.condition.val()),
+                    };
+
+                    if (!this.descriptorType) {
+                        return this.onDestroyCondition();
+                    }
+
+                    // take value
+                    var format = this.descriptorType.get('format');
+                    if (data.condition == 2 || data.condition == 3) {
+                        if (format.list_type == "autocomplete") {
+                            data.values = [this.ui.autocomplete_value.val()];
+                        } else if (format.list_type == "dropdown" || format.type === 'boolean' || format.type === 'ordinal') {
+                            data.values = [this.ui.select_value.val()];
+                        } else {
+                            data.values = [this.ui.simple_value.val()];
+                        }
+                    } else {
+                        data.values = null;
+                    }
+
+                    // depending if the condition previously existed: post or put.
+                    if (condition.defined) {
+                        $.ajax({
+                            type: "PUT",
+                            url: model.url() + "condition/",
+                            dataType: 'json',
+                            contentType: "application/json; charset=utf-8",
+                            data: JSON.stringify(data)
+                        }).done(function() {
+                            $.alert.success(gt.gettext("Successfully defined !"));
+                        }).always(function() {
+                            view.remove();
+                        });
+                    } else {
+                        $.ajax({
+                            type: "POST",
+                            url: model.url() + "condition/",
+                            dataType: 'json',
+                            contentType: "application/json; charset=utf-8",
+                            data: JSON.stringify(data)
+                        }).done(function () {
+                            $.alert.success(gt.gettext("Successfully defined !"));
+                        }).always(function () {
+                            view.remove();
+                        });
+                    }
                 },
             });
 
-            var changeCondition = new ChangeCondition({model: model});
+            var changeCondition = new ChangeCondition({model: model, condition: condition});
             changeCondition.render();
         });
     }
