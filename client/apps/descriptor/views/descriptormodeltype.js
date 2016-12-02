@@ -14,6 +14,8 @@ var Dialog = require('../../main/views/dialog');
 var DescriptorTypeModel = require('../models/descriptortype');
 var DescriptorModelTypeModel = require('../models/descriptormodeltype');
 
+var DisplayDescriptor = require('../widgets/displaydescriptor');
+
 
 var View = Marionette.ItemView.extend({
     tagName: 'tr',
@@ -565,160 +567,39 @@ var View = Marionette.ItemView.extend({
 
                             if (format.type.startsWith('enum_')) {
                                 if (format.list_type == "autocomplete") {
-                                    var initials = [];
-
-                                    var params = {
-                                        dropdownParent: $(view.el),
-                                        ajax: {
-                                            data: initials,
-                                            url: view.descriptorType.url() + 'value/display/search/',
-                                            dataType: 'json',
-                                            delay: 250,
-                                            data: function (params) {
-                                                params.term || (params.term = '');
-
-                                                return {
-                                                    cursor: params.next,
-                                                    value: params.term,
-                                                };
-                                            },
-                                            processResults: function (data, params) {
-                                                params.next = null;
-
-                                                if (data.items.length >= 30) {
-                                                    params.next = data.next || null;
-                                                }
-
-                                                var results = [];
-
-                                                for (var i = 0; i < data.items.length; ++i) {
-                                                    results.push({
-                                                        id: data.items[i].id,
-                                                        text: data.items[i].label
-                                                    });
-                                                }
-
-                                                return {
-                                                    results: results,
-                                                    pagination: {
-                                                        more: params.next != null
-                                                    }
-                                                };
-                                            },
-                                            cache: true
-                                        },
-                                        minimumInputLength: 3,
-                                        placeholder: gt.gettext("Enter a value. 3 characters at least for auto-completion"),
-                                    };
-
-                                    // autoselect the initial value
-                                    if (view.definesValues) {
-                                        $.ajax({
-                                            type: "GET",
-                                            url: view.descriptorType.url() + 'value/' + view.defaultValues[0] + '/display/',
-                                            dataType: 'json',
-                                        }).done(function (data) {
-                                            initials.push({id: data.id, text: data.label});
-
-                                            params.data = initials;
-
-                                            $(view.ui.autocomplete_value).select2(params);
-
-                                            if (view.definesValues) {
-                                                view.ui.select_value.val(view.defaultValues).trigger('change');
-                                                view.definesValues = false;
-                                                view.defaultValues = null;
-                                            }
-                                        });
-                                    } else {
-                                        // make an autocomplete widget on simple_value
-                                        $(view.ui.autocomplete_value).select2(params);
-                                    }
+                                    DisplayDescriptor.initAutocomplete(
+                                        view.descriptorType,
+                                        view,
+                                        view.ui.autocomplete_value,
+                                        view.definesValues,
+                                        view.defaultValues);
                                 } else {
-                                    // refresh values
-                                    $.ajax({
-                                        url: view.descriptorType.url() + 'value/display',
-                                        dataType: 'json',
-                                    }).done(function (data) {
-                                        for (var i = 0; i < data.length; ++i) {
-                                            var option = $("<option></option>");
-
-                                            option.attr("value", data[i].value);
-                                            option.attr("title", data[i].label);
-
-                                            // for LTR languages add prefix
-                                            if (data[i].offset) {
-                                                var offset = "";
-                                                for (var j = 0; j < data[i].offset; ++j) {
-                                                    offset += "&#160;&#160;&#160;&#160;";
-                                                }
-
-                                                if (session.languageDirection == "ltr") {
-                                                    option.html(offset + data[i].label);
-                                                } else {
-                                                    option.html(data[i].label + offset);
-                                                }
-                                            } else {
-                                                option.html(data[i].label);
-                                            }
-
-                                            view.ui.select_value.append(option);
-                                        }
-
-                                        view.ui.select_value.selectpicker('refresh');
-
-                                        if (view.definesValues) {
-                                            view.ui.select_value.val(view.defaultValues).trigger('change');
-                                            view.definesValues = false;
-                                            view.defaultValues = null;
-                                        }
-                                    });
+                                    DisplayDescriptor.initDropdown(
+                                        view.descriptorType,
+                                        view,
+                                        view.ui.select_value,
+                                        view.definesValues,
+                                        view.defaultValues);
                                 }
                             } else if (format.type === 'boolean') {
-                                // true
-                                var option = $("<option></option>");
-
-                                option.attr("value", true);
-                                option.html(gt.gettext('Yes'));
-
-                                view.ui.select_value.append(option);
-
-                                // false
-                                option = $("<option></option>");
-
-                                option.attr("value", false);
-                                option.html(gt.gettext('No'));
-
-                                view.ui.select_value.append(option);
-
-                                view.ui.select_value.selectpicker('refresh');
-
-                                if (view.definesValues) {
-                                    view.ui.select_value.val(view.defaultValues).trigger('change');
-                                    view.definesValues = false;
-                                    view.defaultValues = null;
-                                }
+                                DisplayDescriptor.initBoolean(
+                                    view.descriptorType,
+                                    view,
+                                    view.ui.select_value,
+                                    view.definesValues,
+                                    view.defaultValues);
                             } else if (format.type === 'ordinal') {
-                                var len = format.range[1] - format.range[0] + 1;
+                                DisplayDescriptor.initOrdinal(
+                                    view.descriptorType,
+                                    view,
+                                    view.ui.select_value,
+                                    view.definesValues,
+                                    view.defaultValues);
+                            }
 
-                                if (len <= 256) {
-                                    for (var i = format.range[0]; i <= format.range[1]; ++i) {
-                                        var option = $("<option></option>");
-
-                                        option.attr("value", i);
-                                        option.html(i);
-
-                                        view.ui.select_value.append(option);
-                                    }
-
-                                    view.ui.select_value.selectpicker('refresh');
-
-                                    if (view.definesValues) {
-                                        view.ui.select_value.val(view.defaultValues).trigger('change');
-                                        view.definesValues = false;
-                                        view.defaultValues = null;
-                                    }
-                                }
+                            if (view.definesValues) {
+                                view.definesValues = false;
+                                view.defaultValues = null;
                             }
                         });
                     }

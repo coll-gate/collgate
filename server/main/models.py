@@ -63,9 +63,9 @@ class Languages(ChoiceEnum):
     Static for purposes.
     """
 
+    LA = StringChoice('la', _('Latin'))
     EN = StringChoice('en', _('English'))
     FR = StringChoice('fr', _('French'))
-    LA = StringChoice('la', _('Latin'))
 
 
 class InterfaceLanguages(ChoiceEnum):
@@ -105,7 +105,7 @@ class EntityStatus(ChoiceEnum):
 
     PENDING = IntegerChoice(0, _('Pending'))
     VALID = IntegerChoice(1, _('Valid'))
-    HIDDEN = IntegerChoice(2, _('Hidden'))
+    ARCHIVED = IntegerChoice(2, _('Archived'))
     REMOVED = IntegerChoice(3, _('Removed'))
 
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-11-15 14:20+0100\n"
+"POT-Creation-Date: 2016-12-02 16:10+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,109 +17,154 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: apps.py:40
-msgid "Accession"
+#: apps.py:44
+msgid "Descriptor"
 msgstr ""
 
-#: apps.py:44
+#: apps.py:48
 msgid "List groups of descriptors"
 msgstr ""
 
-#: apps.py:47
+#: apps.py:51
 msgid "List models of descriptor"
 msgstr ""
 
-#: apps.py:50
+#: apps.py:54
 msgid "List meta-models of descriptor"
 msgstr ""
 
-#: descriptor.py:137
+#: descriptor.py:148
 msgid "You are not allowed to create a group of descriptors"
 msgstr ""
 
-#: descriptor.py:162
+#: descriptor.py:173
 msgid "You are not allowed to delete a group of descriptors"
 msgstr ""
 
-#: descriptor.py:171
+#: descriptor.py:182
 msgid "Only an empty group of descriptors can be deleted"
 msgstr ""
 
-#: descriptor.py:186
+#: descriptor.py:197
 msgid "You are not allowed to modify a group of descriptors"
 msgstr ""
 
-#: descriptor.py:199
+#: descriptor.py:210
 msgid "Name of group of descriptor already in usage"
 msgstr ""
 
-#: descriptor.py:202
+#: descriptor.py:213
 msgid "It is not permit to modify this group of descriptors"
 msgstr ""
 
-#: descriptor.py:402 descriptor.py:446 descriptor.py:484
+#: descriptor.py:414 descriptor.py:458 descriptor.py:505
 msgid "You are not allowed to modify a group of types of descriptors"
 msgstr ""
 
-#: descriptor.py:403
+#: descriptor.py:415
 msgid "You are not allowed to create a type of descriptor"
 msgstr ""
 
-#: descriptor.py:447
+#: descriptor.py:459
 msgid "You are not allowed to delete a type of descriptor"
 msgstr ""
 
-#: descriptor.py:459
+#: descriptor.py:470
 msgid "Only an empty of values type of descriptor can be deleted"
 msgstr ""
 
-#: descriptor.py:462
+#: descriptor.py:473
 msgid "Only unused types of descriptor can be deleted"
 msgstr ""
 
-#: descriptor.py:485 descriptor.py:645 descriptor.py:724 descriptor.py:808
-#: descriptor.py:901
+#: descriptor.py:506 descriptor.py:704 descriptor.py:782 descriptor.py:865
+#: descriptor.py:1026
 msgid "You are not allowed to modify a type of descriptor"
 msgstr ""
 
-#: descriptor.py:503
+#: descriptor.py:525
 msgid "It is not permit to modify this type of descriptor"
 msgstr ""
 
-#: descriptor.py:523
+#: descriptor.py:536
+msgid "Single enumeration list cannot be sorted by value1"
+msgstr ""
+
+#: descriptor.py:539
+msgid "Single enumeration list can only display the value0 field"
+msgstr ""
+
+#: descriptor.py:542
+msgid "Single enumeration list can only search on value0"
+msgstr ""
+
+#: descriptor.py:556
+msgid "Pair enumeration list cannot be sorted by ordinal"
+msgstr ""
+
+#: descriptor.py:559
+msgid "Pair enumeration list cannot display ordinal field"
+msgstr ""
+
+#: descriptor.py:562
 msgid "Type of descriptor with enumeration of pairs require two fields"
 msgstr ""
 
-#: descriptor.py:541
+#: descriptor.py:575
+msgid "Ordinal enumeration list can only be sorted by ordinal"
+msgstr ""
+
+#: descriptor.py:578
+msgid "Ordinal enumeration list can only display value0 and ordinal fields"
+msgstr ""
+
+#: descriptor.py:581
+msgid "Ordinal enumeration list can only search on value0"
+msgstr ""
+
+#: descriptor.py:592
 msgid "Range limits are [-127, 127]"
 msgstr ""
 
-#: descriptor.py:646
+#: descriptor.py:705
 msgid "You are not allowed to create a value of descriptor"
 msgstr ""
 
-#: descriptor.py:725 descriptor.py:902
+#: descriptor.py:783 descriptor.py:1027
 msgid "You are not allowed to modify a value of type of descriptor"
 msgstr ""
 
-#: descriptor.py:743
+#: descriptor.py:800
 msgid "There is no values for this type of descriptor"
 msgstr ""
 
-#: descriptor.py:750
+#: descriptor.py:807
 msgid "Ordinal field is only defined for enumeration with ordinal"
 msgstr ""
 
-#: descriptor.py:753
+#: descriptor.py:810
 msgid "Second value field is only defined for enumeration of pairs"
 msgstr ""
 
-#: descriptor.py:809
+#: descriptor.py:866
 msgid "You are not allowed to remove a value of type of descriptor"
 msgstr ""
 
-#: descriptor.py:863
+#: descriptor.py:935 descriptor.py:1107 descriptor.py:1177
+msgid "This type of descriptor does not contains a list"
+msgstr ""
+
+#: descriptor.py:986 descriptor.py:1038
 msgid "Field name must be value0 or value1"
+msgstr ""
+
+#: descriptor.py:1048 descriptormetamodel.py:617 descriptormetamodel.py:682
+#: descriptormodel.py:576
+msgid "Unsupported language identifier"
+msgstr ""
+
+#: descriptor.py:1111
+msgid "List of values are not available for drop-down"
 msgstr ""
 
 #: descriptormetamodel.py:128
@@ -136,119 +181,135 @@ msgid ""
 "of descriptor"
 msgstr ""
 
-#: descriptormetamodel.py:191
-msgid ""
-"It is not possible to remove a meta-model of descriptor that is used by "
-"accessions"
+#: descriptormetamodel.py:190
+msgid "There is some data using the meta-model of descriptor"
 msgstr ""
 
-#: descriptormetamodel.py:195
-msgid ""
-"It is not possible to remove a meta-model of descriptor that is used by "
-"samples"
-msgstr ""
-
-#: descriptormetamodel.py:199
-msgid ""
-"It is not possible to remove a meta-model of descriptor that is used by "
-"batches"
-msgstr ""
-
-#: descriptormetamodel.py:215 descriptormetamodel.py:245
-#: descriptormetamodel.py:376 descriptormetamodel.py:457
-#: descriptormetamodel.py:522 descriptormetamodel.py:550
-#: descriptormetamodel.py:606 descriptormetamodel.py:669
+#: descriptormetamodel.py:205 descriptormetamodel.py:235
+#: descriptormetamodel.py:366 descriptormetamodel.py:447
+#: descriptormetamodel.py:512 descriptormetamodel.py:540
+#: descriptormetamodel.py:599 descriptormetamodel.py:662
 msgid "You are not allowed to modify a meta-model of descriptor"
 msgstr ""
 
-#: descriptormetamodel.py:377
+#: descriptormetamodel.py:367
 msgid "You are not allowed to create a panel of descriptor"
 msgstr ""
 
-#: descriptormetamodel.py:393
+#: descriptormetamodel.py:383
 msgid ""
 "A panel of descriptor for this model already exists into this meta-model of "
 "descriptor"
 msgstr ""
 
-#: descriptormetamodel.py:458 descriptormetamodel.py:523
-#: descriptormetamodel.py:670
+#: descriptormetamodel.py:448 descriptormetamodel.py:513
+#: descriptormetamodel.py:663
 msgid "You are not allowed to modify a panel of descriptor"
 msgstr ""
 
-#: descriptormetamodel.py:551
+#: descriptormetamodel.py:541
 msgid "You are not allowed to remove a panel of descriptor"
 msgstr ""
 
-#: descriptormetamodel.py:624 descriptormetamodel.py:689 descriptormodel.py:565
-msgid "Unsupported language identifier"
+#: descriptormetamodel.py:551
+msgid "There is some entities attached to this panel"
 msgstr ""
 
-#: descriptormodel.py:136
+#: descriptormodel.py:143
 msgid "You are not allowed to create a model of descriptor"
 msgstr ""
 
-#: descriptormodel.py:141
+#: descriptormodel.py:148
 msgid "A model of descriptor with a similar name already exists"
 msgstr ""
 
-#: descriptormodel.py:175 descriptormodel.py:319 descriptormodel.py:385
-#: descriptormodel.py:446 descriptormodel.py:483 descriptormodel.py:545
+#: descriptormodel.py:182 descriptormodel.py:327 descriptormodel.py:395
+#: descriptormodel.py:456 descriptormodel.py:494 descriptormodel.py:556
+#: descriptormodel.py:639 descriptormodel.py:695 descriptormodel.py:740
 msgid "You are not allowed to modify a model of descriptor"
 msgstr ""
 
-#: descriptormodel.py:199
+#: descriptormodel.py:206
 msgid "You are not allowed to remove a model of descriptor"
 msgstr ""
 
-#: descriptormodel.py:208
+#: descriptormodel.py:215
 msgid "Only empty models of descriptor can be removed"
 msgstr ""
 
-#: descriptormodel.py:211
+#: descriptormodel.py:218
 msgid "Only unused models of descriptor can be removed"
 msgstr ""
 
-#: descriptormodel.py:320
+#: descriptormodel.py:328
 msgid "You are not allowed to create a type of model of descriptor"
 msgstr ""
 
-#: descriptormodel.py:386 descriptormodel.py:447 descriptormodel.py:546
+#: descriptormodel.py:396 descriptormodel.py:457 descriptormodel.py:557
+#: descriptormodel.py:640 descriptormodel.py:696 descriptormodel.py:741
 msgid "You are not allowed to modify a type of model of descriptor"
 msgstr ""
 
-#: descriptormodel.py:465 descriptormodel.py:498
+#: descriptormodel.py:476 descriptormodel.py:509
 msgid "There is some data using the model of descriptor"
 msgstr ""
 
-#: descriptormodel.py:484
+#: descriptormodel.py:495
 msgid "You are not allowed to remove a type of model of descriptor"
 msgstr ""
 
-#: models.py:61
+#: descriptormodel.py:697
+msgid "You are not allowed to modify a condition of a model of descriptor"
+msgstr ""
+
+#: descriptormodel.py:742
+msgid "You are not allowed to delete a condition of a model of descriptor"
+msgstr ""
+
+#: models.py:64
 msgid "descriptor group"
 msgstr ""
 
-#: models.py:123
+#: models.py:125
 msgid "descriptor type"
 msgstr ""
 
-#: models.py:713
+#: models.py:749
 msgid "descriptor value"
 msgstr ""
 
-#: models.py:751
+#: models.py:787
 msgid "descriptor panel"
 msgstr ""
 
-#: models.py:800
+#: models.py:836
 msgid "descriptor model type"
 msgstr ""
 
-#: models.py:837
+#: models.py:873
 msgid "descriptor model"
 msgstr ""
 
-#: models.py:874
+#: models.py:923
 msgid "descriptor meta model"
+msgstr ""
+
+#: models.py:968
+msgid "Undefined"
+msgstr ""
+
+#: models.py:969
+msgid "Defined"
+msgstr ""
+
+#: models.py:970
+msgid "Equal to"
+msgstr ""
+
+#: models.py:971
+msgid "Different from"
+msgstr ""
+
+#: models.py:994
+msgid "descriptor model type condition"
 msgstr ""

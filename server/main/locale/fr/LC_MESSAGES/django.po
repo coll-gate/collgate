@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-11-15 14:20+0100\n"
+"POT-Creation-Date: 2016-12-02 16:10+0100\n"
 "PO-Revision-Date: 2016-02-01 11:53+0100\n"
 "Last-Translator: Frederic SCHERMA <frederic.scherma@clermont.inra.fr>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -60,7 +60,7 @@ msgstr "Français"
 
 #: models.py:68
 msgid "Latin"
-msgstr ""
+msgstr "Latin"
 
 #: models.py:106
 msgid "Pending"
@@ -71,8 +71,8 @@ msgid "Valid"
 msgstr "Valide"
 
 #: models.py:108
-msgid "Hidden"
-msgstr "Cahé"
+msgid "Archived"
+msgstr "Archivé"
 
 #: models.py:109
 msgid "Removed"
@@ -98,15 +98,15 @@ msgstr "Déconnecté"
 msgid "Welcome"
 msgstr "Bienvenue"
 
-#: templates/main/index.html:83
+#: templates/main/index.html:82
 msgid "Username"
 msgstr "Identifiant"
 
-#: templates/main/index.html:86
+#: templates/main/index.html:85
 msgid "Password"
 msgstr "Mot de passe"
 
-#: templates/main/index.html:88
+#: templates/main/index.html:87
 msgid "Sign in"
 msgstr "Se connecter"
 

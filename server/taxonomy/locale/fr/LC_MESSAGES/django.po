@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-11-15 14:20+0100\n"
+"POT-Creation-Date: 2016-12-02 16:10+0100\n"
 "PO-Revision-Date:  2016-02-03 11:38+0100\n"
 "Last-Translator: Frederic SCHERMA <frederic.scherma@clermont.inra.fr>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -55,8 +55,10 @@ msgid "Undefined synonym language"
 msgstr "Langue du synonym indéfinie"
 
 #: controller.py:140
-msgid "A primary name for the taxon with this language already exists"
-msgstr ""
+#, fuzzy
+#| msgid "Taxon synonym already exists"
+msgid "A primary name for the taxon already exists"
+msgstr "Ce synonyme de taxon existe déjà"
 
 #: controller.py:143
 msgid "Taxon synonym already exists"
@@ -153,7 +155,7 @@ msgid "You are not allowed to delete a synonym from a taxon"
 msgstr "Vous n'êtes pas autorisé à créer un taxon"
 
 #: taxon.py:460
-msgid "It is not possible to removed a primary synonym"
+msgid "It is not possible to remove a primary synonym"
 msgstr ""
 
 #~ msgid "Undefined synonym name or primary synonym"

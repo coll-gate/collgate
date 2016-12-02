@@ -17,58 +17,50 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: apps.py:48
-msgid "Accession"
+#: apps.py:41
+msgid "Tracability"
 msgstr ""
 
-#: apps.py:50
-msgid "Create accession"
+#: apps.py:42
+msgid "Tracability for a user"
 msgstr ""
 
-#: apps.py:53
-msgid "Create batch"
+#: apps.py:43
+msgid "Tracability for an entity"
 msgstr ""
 
-#: apps.py:57
-msgid "List accessions"
+#: models.py:51 models.py:72 models.py:98
+msgid "Invalid content type or application name"
 msgstr ""
 
-#: base.py:47
-msgid "You are not allowed to create an accession"
+#: models.py:54 models.py:75 models.py:101
+msgid "Invalid object identifier"
 msgstr ""
 
-#: base.py:64
-msgid "You are not allowed to list the accessions"
+#: models.py:78 models.py:104
+msgid "Invalid user"
 msgstr ""
 
-#: controller.py:67
-msgid "Empty synonym data"
+#: models.py:140
+msgid "Create"
 msgstr ""
 
-#: controller.py:70
-msgid "Undefined synonym name or primary synonym"
+#: models.py:141
+msgid "Update"
 msgstr ""
 
-#: controller.py:73
-msgid "Undefined synonym language"
+#: models.py:142
+msgid "Delete"
 msgstr ""
 
-#: models.py:29
-msgid "accession synonym"
+#: models.py:144
+msgid "Remove"
 msgstr ""
 
-#: models.py:40
-msgid "panel"
+#: models.py:145
+msgid "Action"
 msgstr ""
 
-#: models.py:55
-msgid "accession"
-msgstr ""
-
-#: models.py:79
-msgid "batch"
-msgstr ""
-
-#: models.py:104
-msgid "sample"
+#: models.py:147
+msgid "M2M change"
 msgstr ""
