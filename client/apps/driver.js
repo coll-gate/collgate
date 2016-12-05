@@ -24,6 +24,13 @@ require("select2/dist/css/select2.min.css");
 // make table header fixed position
 /*$.stickyTableHeaders = */require("sticky-table-headers");
 
+// datetime picker
+/*$.datetimepicker = */require("eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min");
+require("eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css");
+
+// moment
+moment = require("moment");
+
 // global application
 application = new Marionette.Application({
     initialize: function(options) {
@@ -183,12 +190,16 @@ application.on("before:start", function(options) {
     window.gt.gettext = i18next.t;
     window.gt._ = i18next.t;
 
+    // select2
     if (session.language === "fr") {
         require('select2/dist/js/i18n/fr');
     } else {  // default to english
     }
 
     $.fn.select2.defaults.set('language', session.language);
+
+    // moment
+    moment.locale(session.language);
 
     // each modules
     this.main = require('./main/init');

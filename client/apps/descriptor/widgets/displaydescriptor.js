@@ -234,15 +234,129 @@ var DisplayDescriptor = {
     },
 
     initDate: function(descriptorType, view, input, definesValues, defaultValues) {
-        // @todo
+        input.datetimepicker({
+            locale: session.language,
+            format: $.datepicker._defaults.dateFormat.toUpperCase(),
+            showTodayButton: true,
+            //widgetParent: view.$el,
+            //widgetPositioning: {
+            //    vertical: 'auto',
+            //    horizontal: 'auto'
+            //}
+        }).on('dp.show', function (e) {
+            // fix position when parent has overflow-y defined
+            // https://github.com/Eonasdan/bootstrap-datetimepicker/issues/790
+            var datetimepicker = $('body').find('.bootstrap-datetimepicker-widget:last'),
+                position = datetimepicker.offset(),
+                parent = datetimepicker.parent(),
+                parentPos = parent.offset(),
+                width = datetimepicker.width(),
+                parentWid = parent.width();
+
+            // move datetimepicker to the exact same place it was but attached to body
+            datetimepicker.appendTo('body');
+            datetimepicker.css({
+                position: 'absolute',
+                top: position.top,
+                bottom: 'auto',
+                left: position.left,
+                right: 'auto',
+                'z-index': 10001
+            });
+
+            // if datetimepicker is wider than the thing it is attached to then move it so the centers line up
+            if (parentPos.left + parentWid < position.left + width) {
+                var newLeft = parentPos.left;
+                newLeft += parentWid / 2;
+                newLeft -= width / 2;
+                datetimepicker.css({left: newLeft});
+            }
+        });
+
+        if (defaultValues) {
+            var date = moment(defaultValues[0])
+            $("#simple_value").val(date.format($.datepicker._defaults.dateFormat.toUpperCase()));
+        }
     },
 
     initTime: function(descriptorType, view, input, definesValues, defaultValues) {
-        // @todo
+        input.datetimepicker({
+            locale: session.language,
+            format: 'HH:mm:ss',  // 24h
+            showTodayButton: true,
+        }).on('dp.show', function (e) {
+            // fix position when parent has overflow-y defined
+            var datetimepicker = $('body').find('.bootstrap-datetimepicker-widget:last'),
+                position = datetimepicker.offset(),
+                parent = datetimepicker.parent(),
+                parentPos = parent.offset(),
+                width = datetimepicker.width(),
+                parentWid = parent.width();
+
+            // move datetimepicker to the exact same place it was but attached to body
+            datetimepicker.appendTo('body');
+            datetimepicker.css({
+                position: 'absolute',
+                top: position.top,
+                bottom: 'auto',
+                left: position.left,
+                right: 'auto',
+                'z-index': 10001
+            });
+
+            // if datetimepicker is wider than the thing it is attached to then move it so the centers line up
+            if (parentPos.left + parentWid < position.left + width) {
+                var newLeft = parentPos.left;
+                newLeft += parentWid / 2;
+                newLeft -= width / 2;
+                datetimepicker.css({left: newLeft});
+            }
+        });
+
+        if (defaultValues) {
+            // HH:mm:ss
+            $("#simple_value").val([defaultValues]);
+        }
     },
 
     initDateTime: function(descriptorType, view, input, definesValues, defaultValues) {
-        // @todo
+        input.datetimepicker({
+            locale: session.language,
+            format: $.datepicker._defaults.dateFormat.toUpperCase() + ' HH:mm',  // 24h
+            showTodayButton: true
+        }).on('dp.show', function (e) {
+            // fix position when parent has overflow-y defined
+            var datetimepicker = $('body').find('.bootstrap-datetimepicker-widget:last'),
+                position = datetimepicker.offset(),
+                parent = datetimepicker.parent(),
+                parentPos = parent.offset(),
+                width = datetimepicker.width(),
+                parentWid = parent.width();
+
+            // move datetimepicker to the exact same place it was but attached to body
+            datetimepicker.appendTo('body');
+            datetimepicker.css({
+                position: 'absolute',
+                top: position.top,
+                bottom: 'auto',
+                left: position.left,
+                right: 'auto',
+                'z-index': 10001
+            });
+
+            // if datetimepicker is wider than the thing it is attached to then move it so the centers line up
+            if (parentPos.left + parentWid < position.left + width) {
+                var newLeft = parentPos.left;
+                newLeft += parentWid / 2;
+                newLeft -= width / 2;
+                datetimepicker.css({left: newLeft});
+            }
+        });
+
+        if (defaultValues) {
+            var date = moment(defaultValues[0])
+            $("#simple_value").val(date.format($.datepicker._defaults.dateFormat.toUpperCase() + ' HH:mm'));
+        }
     },
 
     initGpsCoordinate: function(descriptorType, view, input, definesValues, defaultValues) {

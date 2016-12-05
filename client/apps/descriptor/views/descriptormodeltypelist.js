@@ -21,10 +21,10 @@ var View = ScrollView.extend({
     childViewContainer: 'tbody.descriptor-model-type-list',
 
     initialize: function() {
+        View.__super__.initialize.apply(this);
+
         this.listenTo(this.collection, 'reset', this.render, this);
         this.listenTo(this.collection, 'change', this.render, this);
-
-        View.__super__.initialize.apply(this);
 
         $("div.left-content").on("dragenter", $.proxy(this.dragEnterContent, this));
         $("div.left-content").on("dragleave", $.proxy(this.dragLeaveContent, this));

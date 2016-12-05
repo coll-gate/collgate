@@ -495,7 +495,7 @@ var View = Marionette.ItemView.extend({
                 toggleCondition: function (condition) {
                     if (condition == 0 || condition == 1) {
                         this.ui.value_group.hide(false);
-                    } else {
+                    } else if (this.descriptorTypePromise) {
                         // sync with descriptorType
                         var view = this;
 
@@ -595,6 +595,32 @@ var View = Marionette.ItemView.extend({
                                     view.ui.select_value,
                                     view.definesValues,
                                     view.defaultValues);
+                            } else if (format.type === 'date') {
+                                DisplayDescriptor.initDate(
+                                    view.descriptorType,
+                                    view,
+                                    view.ui.simple_value,
+                                    view.definesValues,
+                                    view.defaultValues);
+                            } else if (format.type === 'time') {
+                                 DisplayDescriptor.initTime(
+                                    view.descriptorType,
+                                    view,
+                                    view.ui.simple_value,
+                                    view.definesValues,
+                                    view.defaultValues);
+                            } else if (format.type === 'datetime') {
+                                DisplayDescriptor.initDateTime(
+                                    view.descriptorType,
+                                    view,
+                                    view.ui.simple_value,
+                                    view.definesValues,
+                                    view.defaultValues);
+                            } else {
+                                if (view.ui.simple_value.data('DateTimePicker')) {
+                                    view.ui.simple_value.data('DateTimePicker').destroy();
+                                }
+                                view.ui.simple_value.val("");
                             }
 
                             if (view.definesValues) {
@@ -642,6 +668,15 @@ var View = Marionette.ItemView.extend({
                             data.values = [this.ui.autocomplete_value.val()];
                         } else if (format.list_type == "dropdown" || format.type === 'boolean' || format.type === 'ordinal') {
                             data.values = [this.ui.select_value.val()];
+                        } else if (format.type === "date" ) {
+                            // format to YYYYMMDD date
+                            data.values = [$("#simple_value").data('DateTimePicker').viewDate().format("YYYYMMDD")];
+                        } else if (format.type === "time" ) {
+                            // format to HH:mm:ss time
+                            data.values = [$("#simple_value").data('DateTimePicker').viewDate().format("HH:mm:ss")]; // .MS
+                        } else if (format.type === "datetime" ) {
+                            // format to iso datetime
+                            data.values = [$("#simple_value").data('DateTimePicker').viewDate().format()];
                         } else {
                             data.values = [this.ui.simple_value.val()];
                         }
