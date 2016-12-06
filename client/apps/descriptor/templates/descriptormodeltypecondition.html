@@ -24,8 +24,12 @@
                 </div>
                 <div class="form-group value-group" id="simple_value_group" style="display: none;">
                     <label class="control-label"><%= gt.gettext("Value") %>&nbsp;(<span id="unit"></span>)</label>
-                    <input class="form-control" id="simple_value" type="text" value="" maxlength="64" autocomplete="off">
-
+                    <div class="input-group">
+                        <input class="form-control" id="simple_value" type="text" value="" maxlength="64" autocomplete="off">
+                        <span class="input-group-addon">
+                            <span id="simple_value_icon" class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                    </div>
                 </div>
                 <div class="form-group value-group" id="autocomplete_value_group" style="display: none;">
                     <label for="autocomplete_value" class="control-label"><%= gt.gettext("Value") %></label>

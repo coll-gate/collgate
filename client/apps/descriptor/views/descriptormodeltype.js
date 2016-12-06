@@ -450,6 +450,7 @@ var View = Marionette.ItemView.extend({
                     select_value: "#select_value",
                     value_group: "div.value-group",
                     simple_value_group: "#simple_value_group",
+                    simple_value_icon: "#simple_value_icon",
                     autocomplete_value_group: "#autocomplete_value_group",
                     select_value_group: "#select_value_group",
                     unit: "#unit",
@@ -559,10 +560,15 @@ var View = Marionette.ItemView.extend({
 
                             view.ui.select_value.find('option').remove();
 
-                            if (format.unit == "custom") {
+                            if (format.unit === "custom") {
                                 view.ui.unit.html(format.custom_unit)
                             } else {
                                 view.ui.unit.html(format.unit)
+                            }
+
+                            // destroy a previous datetimepicker
+                            if (view.ui.simple_value.data('DateTimePicker')) {
+                                view.ui.simple_value.data('DateTimePicker').destroy();
                             }
 
                             if (format.type.startsWith('enum_')) {
@@ -602,6 +608,8 @@ var View = Marionette.ItemView.extend({
                                     view.ui.simple_value,
                                     view.definesValues,
                                     view.defaultValues);
+
+                                view.ui.simple_value_icon.removeClass().addClass("glyphicon glyphicon-calendar");
                             } else if (format.type === 'time') {
                                  DisplayDescriptor.initTime(
                                     view.descriptorType,
@@ -609,6 +617,8 @@ var View = Marionette.ItemView.extend({
                                     view.ui.simple_value,
                                     view.definesValues,
                                     view.defaultValues);
+
+                                 view.ui.simple_value_icon.removeClass().addClass("glyphicon glyphicon-time");
                             } else if (format.type === 'datetime') {
                                 DisplayDescriptor.initDateTime(
                                     view.descriptorType,
@@ -616,11 +626,11 @@ var View = Marionette.ItemView.extend({
                                     view.ui.simple_value,
                                     view.definesValues,
                                     view.defaultValues);
+
+                                view.ui.simple_value_icon.removeClass().addClass("glyphicon glyphicon-calendar");
                             } else {
-                                if (view.ui.simple_value.data('DateTimePicker')) {
-                                    view.ui.simple_value.data('DateTimePicker').destroy();
-                                }
                                 view.ui.simple_value.val("");
+                                view.ui.simple_value_icon.removeClass().addClass("glyphicon glyphicon-cog");
                             }
 
                             if (view.definesValues) {
