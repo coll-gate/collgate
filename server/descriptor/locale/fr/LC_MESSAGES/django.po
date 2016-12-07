@@ -87,7 +87,7 @@ msgstr ""
 
 #: descriptor.py:473
 msgid "Only unused types of descriptor can be deleted"
-msgstr "Seul les types de descripteur unitilisés peuvent être supprimés"
+msgstr "Seul les types de descripteur inutilisés peuvent être supprimés"
 
 #: descriptor.py:506 descriptor.py:704 descriptor.py:782 descriptor.py:865
 #: descriptor.py:1026

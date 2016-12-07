@@ -37,6 +37,9 @@ var AccessionModule = Marionette.Module.extend({
         var AccessionRouter = require('./routers/accession');
         this.routers.accession = new AccessionRouter();
 
+        var AccessionController = require('./controllers/accession');
+        this.controllers.accession = new AccessionController();
+
         Logger.timeEnd("Start accession module");
     },
 

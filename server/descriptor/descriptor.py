@@ -20,7 +20,7 @@ from igdectk.rest.response import HttpResponseRest
 from igdectk.rest.handler import RestHandler
 
 from main.models import InterfaceLanguages
-from .models import DescriptorType, DescriptorGroup, DescriptorValue
+from .models import DescriptorType, DescriptorGroup, DescriptorValue, DescriptorModel
 
 
 class RestDescriptor(RestHandler):
@@ -875,6 +875,11 @@ def delete_value_for_descriptor_type(request, id, tid, vid):
     type_id = int(tid)
 
     descr_type = get_object_or_404(DescriptorType, id=type_id, group_id=group_id)
+    dmts = descr_type.descriptor_model_types.all()
+
+    for dmt in dmts:
+        if dmt.descriptor_model.in_usage():
+            raise SuspiciousOperation(_("There is some data using the type of descriptor"))
 
     format = json.loads(descr_type.format)
 

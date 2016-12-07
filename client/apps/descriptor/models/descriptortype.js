@@ -27,7 +27,8 @@ var Model = Backbone.Model.extend({
         format: {type: 'string'},
         can_delete: false,
         can_modify: false,
-        description: ''
+        description: '',
+        num_descriptor_values: 0
     },
 
     initialize: function(attributes, options) {

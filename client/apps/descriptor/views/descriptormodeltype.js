@@ -567,8 +567,8 @@ var View = Marionette.ItemView.extend({
                             }
 
                             // destroy a previous datetimepicker
-                            if (view.ui.simple_value.data('DateTimePicker')) {
-                                view.ui.simple_value.data('DateTimePicker').destroy();
+                            if (view.ui.simple_value.parent().data('DateTimePicker')) {
+                                view.ui.simple_value.parent().data('DateTimePicker').destroy();
                             }
 
                             if (format.type.startsWith('enum_')) {
@@ -605,32 +605,41 @@ var View = Marionette.ItemView.extend({
                                 DisplayDescriptor.initDate(
                                     view.descriptorType,
                                     view,
-                                    view.ui.simple_value,
+                                    view.ui.simple_value.parent(),
                                     view.definesValues,
                                     view.defaultValues);
 
-                                view.ui.simple_value_icon.removeClass().addClass("glyphicon glyphicon-calendar");
+                                // glyphicon and pointer
+                                view.ui.simple_value_icon.removeClass().addClass("glyphicon glyphicon-calendar")
+                                    .parent().css('cursor', 'pointer');
                             } else if (format.type === 'time') {
                                  DisplayDescriptor.initTime(
                                     view.descriptorType,
                                     view,
-                                    view.ui.simple_value,
+                                    view.ui.simple_value.parent(),
                                     view.definesValues,
                                     view.defaultValues);
 
-                                 view.ui.simple_value_icon.removeClass().addClass("glyphicon glyphicon-time");
+                                 // glyphicon and pointer
+                                 view.ui.simple_value_icon.removeClass().addClass("glyphicon glyphicon-time")
+                                     .parent().css('cursor', 'pointer');
                             } else if (format.type === 'datetime') {
                                 DisplayDescriptor.initDateTime(
                                     view.descriptorType,
                                     view,
-                                    view.ui.simple_value,
+                                    view.ui.simple_value.parent(),
                                     view.definesValues,
                                     view.defaultValues);
 
-                                view.ui.simple_value_icon.removeClass().addClass("glyphicon glyphicon-calendar");
+                                // glyphicon and pointer
+                                view.ui.simple_value_icon.removeClass().addClass("glyphicon glyphicon-calendar")
+                                    .parent().css('cursor', 'pointer');
                             } else {
                                 view.ui.simple_value.val("");
-                                view.ui.simple_value_icon.removeClass().addClass("glyphicon glyphicon-cog");
+
+                                // glyphicon and pointer
+                                view.ui.simple_value_icon.removeClass()
+                                    .addClass("glyphicon glyphicon-cog").parent().css('cursor', 'initial');
                             }
 
                             if (view.definesValues) {
@@ -680,13 +689,13 @@ var View = Marionette.ItemView.extend({
                             data.values = [this.ui.select_value.val()];
                         } else if (format.type === "date" ) {
                             // format to YYYYMMDD date
-                            data.values = [$("#simple_value").data('DateTimePicker').viewDate().format("YYYYMMDD")];
+                            data.values = [$("#simple_value").parent().data('DateTimePicker').viewDate().format("YYYYMMDD")];
                         } else if (format.type === "time" ) {
                             // format to HH:mm:ss time
-                            data.values = [$("#simple_value").data('DateTimePicker').viewDate().format("HH:mm:ss")]; // .MS
+                            data.values = [$("#simple_value").parent().data('DateTimePicker').viewDate().format("HH:mm:ss")]; // .MS
                         } else if (format.type === "datetime" ) {
                             // format to iso datetime
-                            data.values = [$("#simple_value").data('DateTimePicker').viewDate().format()];
+                            data.values = [$("#simple_value").parent().data('DateTimePicker').viewDate().format()];
                         } else {
                             data.values = [this.ui.simple_value.val()];
                         }

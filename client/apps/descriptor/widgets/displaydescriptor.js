@@ -322,7 +322,7 @@ var DisplayDescriptor = {
     initDateTime: function(descriptorType, view, input, definesValues, defaultValues) {
         input.datetimepicker({
             locale: session.language,
-            format: $.datepicker._defaults.dateFormat.toUpperCase() + ' HH:mm',  // 24h
+            format: $.datepicker._defaults.dateFormat.toUpperCase() + ' HH:mm:ss',  // 24h
             showTodayButton: true
         }).on('dp.show', function (e) {
             // fix position when parent has overflow-y defined
@@ -355,7 +355,7 @@ var DisplayDescriptor = {
 
         if (defaultValues) {
             var date = moment(defaultValues[0])
-            $("#simple_value").val(date.format($.datepicker._defaults.dateFormat.toUpperCase() + ' HH:mm'));
+            $("#simple_value").val(date.format($.datepicker._defaults.dateFormat.toUpperCase() + ' HH:mm:ss'));
         }
     },
 

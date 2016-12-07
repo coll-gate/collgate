@@ -126,7 +126,7 @@ msgstr "échantillon"
 #~ "supprimés"
 
 #~ msgid "Only unused types of descriptor can be deleted"
-#~ msgstr "Seul les types de descripteur unitilisés peuvent être supprimés"
+#~ msgstr "Seul les types de descripteur inutilisés peuvent être supprimés"
 
 #~ msgid "You are not allowed to modify a type of descriptor"
 #~ msgstr "Vous n'êtes pas autorisé à modifier un type de descripteur"

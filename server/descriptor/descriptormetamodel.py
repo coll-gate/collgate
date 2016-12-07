@@ -28,6 +28,11 @@ class RestDescriptorMetaModel(RestDescriptor):
     suffix = 'descriptor-meta-model'
 
 
+class RestDescriptorMetaModelForDescribable(RestDescriptorMetaModel):
+    regex = r'^for-describable/(?P<content_type_name>[a-zA-Z\.-]+)/$'
+    suffix = 'for-describable'
+
+
 class RestDescriptorMetaModelSearch(RestDescriptorMetaModel):
     regex = r'^search/$'
     suffix = 'search'
@@ -154,6 +159,25 @@ def create_descriptor_meta_model(request):
     }
 
     return HttpResponseRest(request, result)
+
+
+@RestDescriptorMetaModelForDescribable.def_auth_request(Method.GET, Format.JSON)
+def get_descriptor_meta_model_for_describable(request, content_type_name):
+    app_label, model = content_type_name.split('.')
+    content_type = get_object_or_404(ContentType, app_label=app_label, model=model)
+
+    dmms = DescriptorMetaModel.objects.filter(target=content_type)
+
+    descriptor_meta_models = []
+
+    for dmm in dmms:
+        descriptor_meta_models.append({
+            'id': dmm.id,
+            'name': dmm.name,
+            'label': dmm.get_label()
+        })
+
+    return HttpResponseRest(request, descriptor_meta_models)
 
 
 @RestDescriptorMetaModelId.def_auth_request(Method.GET, Format.JSON)

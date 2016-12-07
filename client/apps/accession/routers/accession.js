@@ -10,7 +10,7 @@
 
 var Marionette = require('backbone.marionette');
 
-// var AccessionModel = require('../models/accession');
+var AccessionModel = require('../models/accession');
 // var BatchModel = require('../models/batch');
 
 // var AccessionCollection = require('../collections/accession');
@@ -27,6 +27,7 @@ var TitleView = require('../../main/views/titleview');
 var Router = Marionette.AppRouter.extend({
     routes : {
         "app/accession/accession/": "getAccessionList",
+        "app/accession/accession/create/:meta_model_id/": "getAccessionCreate",
         "app/accession/accession/:id/": "getAccession",
         "app/accession/accession/:id/batch/": "getBatchList",
         "app/accession/accession/:id/batch/:bid": "getBatch",
@@ -46,6 +47,14 @@ var Router = Marionette.AppRouter.extend({
         // collection.fetch().then(function () {
         //     defaultLayout.getRegion('content').show(new AccessionListView({read_only: true, collection : collection}));
         // });
+    },
+
+    getAccessionCreate: function(meta_model_id) {
+        var model = application.accession.tmpAccession;
+        delete application.accession.tmpAccession;
+
+        //model.save({wait: true});
+        // @todo create view with Create/Cancel buttons
     },
 
     getAccession : function(id) {

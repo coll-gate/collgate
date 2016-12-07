@@ -16,7 +16,7 @@ var DefaultLayout = require('../../main/views/defaultlayout');
 var TitleView = require('../../main/views/titleview');
 var Dialog = require('../../main/views/dialog');
 
-/* If using marionnete 3 and no longer Controller class or inherit from Marionette.Object
+/* If using marionette 3 and no longer Controller class or inherit from Marionette.Object
 Controller = function(options) {
     this.options = options || {};
 
@@ -225,7 +225,7 @@ var TaxonController = Marionette.Controller/*Object*/.extend({
 
                     $.ajax({
                         type: "GET",
-                        url: application.baseUrl + 'taxonomy/search/',
+                        url: application.baseUrl + 'taxonomy/taxon/search/',
                         dataType: 'json',
                         data: {filters: JSON.stringify(filters)},
                         el: this.ui.name,
@@ -308,34 +308,6 @@ var TaxonController = Marionette.Controller/*Object*/.extend({
                             $.alert.success(gt.gettext("Taxon successfully created !"));
                         }
                     });
-                    /*
-                    // send
-                    $.ajax({
-                        type: "POST",
-                        url: application.baseUrl + "taxonomy/",
-                        dataType: 'json',
-                        contentType: "application/json; charset=utf-8",
-                        view: this,
-                        data: JSON.stringify({
-                            taxon: {
-                                name: this.ui.name.val(),
-                                rank: parseInt(this.ui.rank.val()),
-                                parent: parseInt(this.ui.parent.attr('parent-id') || '0'),
-                            }
-                        }),
-                        success: function (data) {
-                            this.view.remove();
-                            success(gettext("Taxon successfully created !"));
-
-                            var collection = application.taxonomy.collections.taxons;
-                            collection.add({
-                                id: data.id,
-                                name: this.view.ui.name.val(),
-                                rank: this.view.ui.rank.val(),
-                                parent: this.view.ui.parent.attr('parent-id'),
-                            });
-                        }
-                    });*/
                 }
             }
         });

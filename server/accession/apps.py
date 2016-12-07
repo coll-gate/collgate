@@ -29,6 +29,8 @@ class CollGateAccession(ApplicationMain):
         accession_module = Module('accession', base_url='coll-gate')
         accession_module.include_urls((
             'base',
+            'accession',
+            'accessioncreate',
             )
         )
 
@@ -47,10 +49,10 @@ class CollGateAccession(ApplicationMain):
         # accession menu
         menu_accession = ModuleMenu('accession', _('Accession'), auth=AUTH_USER)
         menu_accession.add_entry(
-            MenuEntry('create-accession', _('Create accession'), "~accession/Accession/create",
+            MenuEntry('create-accession', _('Create accession'), "~accession/accession/create",
                       icon=Glyph.GRAIN, order=1))
         menu_accession.add_entry(
-            MenuEntry('create-batch', _('Create batch'), "~accession/Batch/create",
+            MenuEntry('create-batch', _('Create batch'), "~accession/batch/create",
                       icon=Glyph.LEAF, order=2))
         menu_accession.add_entry(MenuSeparator(100))
         menu_accession.add_entry(
