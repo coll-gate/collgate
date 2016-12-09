@@ -11,9 +11,7 @@
 var Marionette = require('backbone.marionette');
 
 var DisplayDescriptor = {
-    initAutocomplete: function(descriptorType, view, select, definesValues, defaultValues) {
-        var format = descriptorType.get('format');
-
+    initAutocomplete: function(format, url, view, select, definesValues, defaultValues) {
         if (typeof definesValues === "undefined") {
             definesValues = false;
         }
@@ -30,7 +28,7 @@ var DisplayDescriptor = {
                     dropdownParent: $(view.el),
                     ajax: {
                         data: initials,
-                        url: descriptorType.url() + 'value/display/search/',
+                        url: url + 'value/display/search/',
                         dataType: 'json',
                         delay: 250,
                         data: function (params) {
@@ -74,7 +72,7 @@ var DisplayDescriptor = {
                 if (definesValues) {
                     $.ajax({
                         type: "GET",
-                        url: descriptorType.url() + 'value/' + defaultValues[0] + '/display/',
+                        url: url + 'value/' + defaultValues[0] + '/display/',
                         dataType: 'json',
                     }).done(function (data) {
                         initials.push({id: data.id, text: data.label});
@@ -95,9 +93,7 @@ var DisplayDescriptor = {
         }
     },
 
-    initEntityAutoselect: function(descriptorType, view, select, definesValues, defaultValues) {
-        var format = descriptorType.get('format');
-
+    initEntityAutoselect: function(format, view, select, definesValues, defaultValues) {
         if (typeof definesValues === "undefined") {
             definesValues = false;
         }
@@ -111,9 +107,7 @@ var DisplayDescriptor = {
         }
     },
 
-    initDropdown: function(descriptorType, view, select, definesValues, defaultValues) {
-        var format = descriptorType.get('format');
-
+    initDropdown: function(format, url, view, select, definesValues, defaultValues) {
         if (typeof definesValues === "undefined") {
             definesValues = false;
         }
@@ -126,7 +120,7 @@ var DisplayDescriptor = {
             if (format.list_type == "dropdown") {
                 // refresh values
                 $.ajax({
-                    url: descriptorType.url() + 'value/display',
+                    url: url + 'value/display',
                     dataType: 'json',
                 }).done(function (data) {
                     for (var i = 0; i < data.length; ++i) {
@@ -164,9 +158,7 @@ var DisplayDescriptor = {
         }
     },
 
-    initBoolean: function(descriptorType, view, select, definesValues, defaultValues) {
-        var format = descriptorType.get('format');
-
+    initBoolean: function(format, view, select, definesValues, defaultValues) {
         if (typeof definesValues === "undefined") {
             definesValues = false;
         }
@@ -200,9 +192,7 @@ var DisplayDescriptor = {
         }
     },
 
-    initOrdinal: function(descriptorType, view, select, definesValues, defaultValues) {
-        var format = descriptorType.get('format');
-
+    initOrdinal: function(format, view, select, definesValues, defaultValues) {
         if (typeof definesValues === "undefined") {
             definesValues = false;
         }
@@ -233,7 +223,7 @@ var DisplayDescriptor = {
         }
     },
 
-    initDate: function(descriptorType, view, input, definesValues, defaultValues) {
+    initDate: function(format, view, input, definesValues, defaultValues) {
         input.datetimepicker({
             locale: session.language,
             format: $.datepicker._defaults.dateFormat.toUpperCase(),
@@ -279,7 +269,7 @@ var DisplayDescriptor = {
         }
     },
 
-    initTime: function(descriptorType, view, input, definesValues, defaultValues) {
+    initTime: function(format, view, input, definesValues, defaultValues) {
         input.datetimepicker({
             locale: session.language,
             format: 'HH:mm:ss',  // 24h
@@ -319,7 +309,7 @@ var DisplayDescriptor = {
         }
     },
 
-    initDateTime: function(descriptorType, view, input, definesValues, defaultValues) {
+    initDateTime: function(format, view, input, definesValues, defaultValues) {
         input.datetimepicker({
             locale: session.language,
             format: $.datepicker._defaults.dateFormat.toUpperCase() + ' HH:mm:ss',  // 24h
@@ -359,15 +349,15 @@ var DisplayDescriptor = {
         }
     },
 
-    initGpsCoordinate: function(descriptorType, view, input, definesValues, defaultValues) {
+    initGpsCoordinate: function(format, view, input, definesValues, defaultValues) {
         // @todo
     },
 
-    initNumeric: function (descriptorType, view, input, definesValues, defaultValues) {
+    initNumeric: function (format, view, input, definesValues, defaultValues) {
         // @todo validator (min, max, decimal, precision) on input
     },
 
-    initText: function (descriptorType, view, input, definesValues, defaultValues) {
+    initText: function (format, view, input, definesValues, defaultValues) {
         // @todo validator (regexp, length...) on input
     },
 };

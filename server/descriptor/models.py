@@ -903,7 +903,7 @@ class DescriptorMetaModel(Entity):
     and how they are displayed.
     """
 
-    # Target entity type (generally accession, batch or sample).
+    # Target entity type (generally a describable entity).
     target = models.ForeignKey(ContentType, editable=False, related_name='descriptor_meta_models')
 
     # Label of the meta model of descriptor.

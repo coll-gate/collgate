@@ -574,14 +574,16 @@ var View = Marionette.ItemView.extend({
                             if (format.type.startsWith('enum_')) {
                                 if (format.list_type == "autocomplete") {
                                     DisplayDescriptor.initAutocomplete(
-                                        view.descriptorType,
+                                        view.descriptorType.get('format'),
+                                        view.descriptorType.url(),
                                         view,
                                         view.ui.autocomplete_value,
                                         view.definesValues,
                                         view.defaultValues);
                                 } else {
                                     DisplayDescriptor.initDropdown(
-                                        view.descriptorType,
+                                        view.descriptorType.get('format'),
+                                        view.descriptorType.url(),
                                         view,
                                         view.ui.select_value,
                                         view.definesValues,
@@ -589,21 +591,21 @@ var View = Marionette.ItemView.extend({
                                 }
                             } else if (format.type === 'boolean') {
                                 DisplayDescriptor.initBoolean(
-                                    view.descriptorType,
+                                    view.descriptorType.get('format'),
                                     view,
                                     view.ui.select_value,
                                     view.definesValues,
                                     view.defaultValues);
                             } else if (format.type === 'ordinal') {
                                 DisplayDescriptor.initOrdinal(
-                                    view.descriptorType,
+                                    view.descriptorType.get('format'),
                                     view,
                                     view.ui.select_value,
                                     view.definesValues,
                                     view.defaultValues);
                             } else if (format.type === 'date') {
                                 DisplayDescriptor.initDate(
-                                    view.descriptorType,
+                                    view.descriptorType.get('format'),
                                     view,
                                     view.ui.simple_value.parent(),
                                     view.definesValues,
@@ -614,7 +616,7 @@ var View = Marionette.ItemView.extend({
                                     .parent().css('cursor', 'pointer');
                             } else if (format.type === 'time') {
                                  DisplayDescriptor.initTime(
-                                    view.descriptorType,
+                                    view.descriptorType.get('format'),
                                     view,
                                     view.ui.simple_value.parent(),
                                     view.definesValues,
@@ -625,7 +627,7 @@ var View = Marionette.ItemView.extend({
                                      .parent().css('cursor', 'pointer');
                             } else if (format.type === 'datetime') {
                                 DisplayDescriptor.initDateTime(
-                                    view.descriptorType,
+                                    view.descriptorType.get('format'),
                                     view,
                                     view.ui.simple_value.parent(),
                                     view.definesValues,

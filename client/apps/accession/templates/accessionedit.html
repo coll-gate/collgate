@@ -1,0 +1,52 @@
+<!--
+ - @file accessionedit.html
+ - @brief Template for the edition of an accession (model)
+ - @author Frederic SCHERMA
+ - @date 2016-12-09
+ - @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+ - @license @todo
+ - @details
+-->
+
+<div class="object accession" object-type="accession" object-id="-1" style="width:100%;">
+    <span style="font-weight:bold; font-size:18px;">
+        <span class="name accession"></span><br>
+    </span>
+    <span>@todo taxon hier</span>
+    <div class="accession-panels panel-group">
+        <% var pi = 0; %>
+        <% _.each(panels, function(panel) { %>
+            <div class="accession-panel panel panel-default" name="<%= panel.name %>" panel-id="<%= panel.id %>">
+                <div class="panel-heading"><%= panel.label %></div>
+                <div class="panel-body">
+                    <div class="accession-descriptors">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th><%= gt.gettext("Descriptor") %></th>
+                                    <th><%= gt.gettext("Value") %></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% var i = 0; %>
+                                <% _.each(panel.descriptor_model.descriptor_model_types, function(descriptor_model_type) { %>
+                                    <% var format = descriptor_model_type.descriptor_type.format; %>
+                                    <tr class="accession-descriptor" panel-index="<%= pi %>" index="<%= i %>" name="<%= descriptor_model_type.descriptor_type.code %>">
+                                        <td class="descriptor-name"><%= descriptor_model_type.label %></td>
+                                        <td class="descriptor-value" format-type="<%= format.type %>"></td>
+                                    </tr>
+                                    <% ++i; %>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <% ++pi %>
+        <% }) %>
+    </div>
+    <div class="footer">
+        <button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= gt.gettext("Cancel") %></button>
+        <button type="button" class="btn btn-primary apply"><%= gt.gettext("Apply") %></button>
+    </div>
+</div>

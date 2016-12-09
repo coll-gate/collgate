@@ -13,13 +13,14 @@ var Marionette = require('backbone.marionette');
 var AccessionModel = require('../models/accession');
 // var BatchModel = require('../models/batch');
 
-// var AccessionCollection = require('../collections/accession');
+var AccessionCollection = require('../collections/accession');
 // var BatchCollection = require('../collections/batch');
 
 // var AccessionListView = require('../views/accessionlist');
 // var BatchListView = require('../views/batchlist');
 // var AccessionItemView = require('../views/accessionitem');
 // var BatchItemView = require('../views/batchitem');
+var AccessionEditView = require('../views/accessionedit');
 
 var DefaultLayout = require('../../main/views/defaultlayout');
 var TitleView = require('../../main/views/titleview');
@@ -36,29 +37,52 @@ var Router = Marionette.AppRouter.extend({
     },
 
     getAccessionList : function() {
-        alert("Not yet implemented");
-        // var collection = application.accession.collections.accession;
-        //
-        // var defaultLayout = new DefaultLayout({});
-        // application.getRegion('mainRegion').show(defaultLayout);
-        //
-        // defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of accessions")}));
-        //
-        // collection.fetch().then(function () {
-        //     defaultLayout.getRegion('content').show(new AccessionListView({read_only: true, collection : collection}));
-        // });
+        var collection = new AccessionCollection();
+
+        var defaultLayout = new DefaultLayout({});
+        application.getRegion('mainRegion').show(defaultLayout);
+
+        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of accessions")}));
+
+        collection.fetch().then(function () {
+            alert('@todo');
+            // @todo
+            // defaultLayout.getRegion('content').show(new AccessionListView({read_only: true, collection : collection}));
+        });
     },
 
     getAccessionCreate: function(meta_model_id) {
         var model = application.accession.tmpAccession;
         delete application.accession.tmpAccession;
 
-        //model.save({wait: true});
-        // @todo create view with Create/Cancel buttons
+        var defaultLayout = new DefaultLayout();
+        application.getRegion('mainRegion').show(defaultLayout);
+
+        if (model == null) {
+            return;
+        }
+
+        model.fetch().then(function() {
+            defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Accession"), model: model}));
+
+            var view = new AccessionEditView({model: model});
+            defaultLayout.getRegion('content').show(view);
+
+            // @todo create view with Create/Cancel buttons
+            //model.save({wait: true});
+        });
     },
 
     getAccession : function(id) {
-        alert("Not yet implemented");
+        var defaultLayout = new DefaultLayout();
+        application.getRegion('mainRegion').show(defaultLayout);
+
+        var model = new AccessionModel({id: id});
+        model.fetch().then(function() {
+            defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Accession"), model: model}));
+
+            alert('@todo');
+        });
     },
 
     getBatchList : function(id) {

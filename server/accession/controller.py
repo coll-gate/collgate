@@ -6,6 +6,7 @@
 coll-gate accession module controller
 """
 from django.core.exceptions import SuspiciousOperation
+from django.utils import translation
 from django.utils.translation import ugettext_lazy as _
 
 from main.models import Languages
@@ -22,15 +23,17 @@ class Accession(object):
         :return: None or new Accession instance.
         """
         if Accession.objects.filter(name=name).exists():
-            return None
+            raise SuspiciousOperation(_("The name of the accession is already used"))
 
         accession = Accession()
         accession.name = name
 
         accession.save()
 
+        lang = translation.get_language()
+
         # first name a primary synonym
-        primary = AccessionSynonym(accession_id=accession.id, name=name, type='IN_001:0000001', language=Languages.FR.value)
+        primary = AccessionSynonym(accession_id=accession.id, name=name, type='IN_001:0000001', language=lang)
         primary.save()
 
         return accession
@@ -81,7 +84,7 @@ class Accession(object):
     @classmethod
     def remove_synonym(cls, accession_id, synonym):
         """
-        Remove one synonyme from the given accession.
+        Remove one synonym from the given accession.
         """
         if not synonym:
             return
