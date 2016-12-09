@@ -93,7 +93,7 @@ var DisplayDescriptor = {
         }
     },
 
-    initEntityAutoselect: function(format, view, select, definesValues, defaultValues) {
+    initEntitySelect: function(format, view, select, definesValues, defaultValues) {
         if (typeof definesValues === "undefined") {
             definesValues = false;
         }

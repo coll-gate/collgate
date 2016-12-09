@@ -32,7 +32,7 @@
                                 <% _.each(panel.descriptor_model.descriptor_model_types, function(descriptor_model_type) { %>
                                     <% var format = descriptor_model_type.descriptor_type.format; %>
                                     <tr class="accession-descriptor" panel-index="<%= pi %>" index="<%= i %>" name="<%= descriptor_model_type.descriptor_type.code %>">
-                                        <td class="descriptor-name"><%= descriptor_model_type.label %></td>
+                                        <td class="descriptor-name" style="padding-top: 15px;"><%= descriptor_model_type.label %></td>
                                         <td class="descriptor-value" format-type="<%= format.type %>"></td>
                                     </tr>
                                     <% ++i; %>

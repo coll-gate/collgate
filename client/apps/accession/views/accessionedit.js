@@ -65,6 +65,8 @@ var View = Marionette.ItemView.extend({
                     var select = $('<select data-width="100%"></select>');
                     el.children('td.descriptor-value').append(select);
 
+                    select.selectpicker({container: 'body', style: 'btn-default'});
+
                     DisplayDescriptor.initDropdown(
                         format,
                         url,
@@ -77,6 +79,8 @@ var View = Marionette.ItemView.extend({
                 var select = $('<select data-width="100%"></select>');
                 el.children('td.descriptor-value').append(select);
 
+                select.selectpicker({container: 'body', style: 'btn-default'});
+
                 DisplayDescriptor.initBoolean(
                     format,
                     view,
@@ -86,6 +90,8 @@ var View = Marionette.ItemView.extend({
             } else if (format.type === "ordinal") {
                 var select = $('<select data-width="100%"></select>');
                 el.children('td.descriptor-value').append(select);
+
+                select.selectpicker({container: 'body', style: 'btn-default'});
 
                 DisplayDescriptor.initOrdinal(
                     format,
