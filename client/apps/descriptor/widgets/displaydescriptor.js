@@ -16,10 +16,6 @@ var DisplayDescriptor = {
             definesValues = false;
         }
 
-        if (typeof definesValues === "undefined") {
-            definesValues = null;
-        }
-
         if (format.type.startsWith('enum_')) {
             if (format.list_type == "autocomplete") {
                 var initials = [];
@@ -98,10 +94,6 @@ var DisplayDescriptor = {
             definesValues = false;
         }
 
-        if (typeof definesValues === "undefined") {
-            definesValues = null;
-        }
-
         if (format.type === 'boolean') {
             // @todo
         }
@@ -110,10 +102,6 @@ var DisplayDescriptor = {
     initDropdown: function(format, url, view, select, definesValues, defaultValues) {
         if (typeof definesValues === "undefined") {
             definesValues = false;
-        }
-
-        if (typeof definesValues === "undefined") {
-            definesValues = null;
         }
 
         if (format.type.startsWith('enum_')) {
@@ -163,10 +151,6 @@ var DisplayDescriptor = {
             definesValues = false;
         }
 
-        if (typeof definesValues === "undefined") {
-            definesValues = null;
-        }
-
         if (format.type === 'boolean') {
             // true
             var option = $("<option></option>");
@@ -187,7 +171,7 @@ var DisplayDescriptor = {
             select.selectpicker('refresh');
 
             if (definesValues) {
-                select.val(defaultValues).trigger('change');
+                select.val(defaultValues[0]).trigger('change');
             }
         }
     },
@@ -195,10 +179,6 @@ var DisplayDescriptor = {
     initOrdinal: function(format, view, select, definesValues, defaultValues) {
         if (typeof definesValues === "undefined") {
             definesValues = false;
-        }
-
-        if (typeof definesValues === "undefined") {
-            definesValues = null;
         }
 
         if (format.type === 'ordinal') {
@@ -217,7 +197,7 @@ var DisplayDescriptor = {
                 select.selectpicker('refresh');
 
                 if (definesValues) {
-                    select.val(defaultValues).trigger('change');
+                    select.val(defaultValues[0]).trigger('change');
                 }
             }
         }
@@ -305,7 +285,7 @@ var DisplayDescriptor = {
 
         if (defaultValues) {
             // HH:mm:ss
-            $("#simple_value").val([defaultValues]);
+            $("#simple_value").val(defaultValues[0]);
         }
     },
 

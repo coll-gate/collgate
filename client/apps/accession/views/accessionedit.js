@@ -159,7 +159,102 @@ var View = Marionette.ItemView.extend({
     },
 
     onShow: function() {
-    }
+        var view = this;
+        var model = this.model;
+
+        $.each(this.ui.descriptor, function(index) {
+            var el = $(this);
+
+            var pi = el.attr('panel-index');
+            var i = el.attr('index');
+            var descriptorModelType = model.get('panels')[pi].descriptor_model.descriptor_model_types[i];
+            var condition = descriptorModelType.condition;
+
+            if (condition.defined) {
+                var display = false;
+
+                // search the target descriptor type for the condition
+                var target = view.$el.find("tr.accession-descriptor[descriptor-model-type=" + condition.target + "]");
+                var targetDescriptorModelType = model.get('panels')[target.attr('panel-index')].descriptor_model.descriptor_model_types[target.attr('index')];
+                var format = targetDescriptorModelType.descriptor_type.format;
+
+                if (format.type.startsWith('enum_')) {
+                    if (format.list_type === "autocomplete") {
+                        var select = target.children('td.descriptor-value').children('select');
+                        select.on("select2:select", view.onAutocompleteChangeValue);
+                    } else {
+                        var select = target.children('td.descriptor-value').children('div').children('select');
+                        select.parent('div.bootstrap-select').on('changed.bs.select', view.onSelectChangeValue);
+
+                        switch (condition.condition) {
+                            case 0:
+                                break;
+                            case 1:
+                                break;
+                            case 2:
+                                break;
+                            case 3:
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                } else if (format.type === "boolean") {
+                    var select = target.children('td.descriptor-value').children('div').children('select');
+                    select.parent('div.bootstrap-select').on('changed.bs.select', view.onSelectChangeValue);
+
+                    switch (condition.condition) {
+                        case 0:
+                            display = true;  // a boolean is always defines
+                            break;
+                        case 1:
+                            display = false;  // a boolean is always defines
+                            break;
+                        case 2:
+                            display = select.val() == condition.values[0];
+                            break;
+                        case 3:
+                            display = select.val()!== condition.values[0];
+                            break;
+                        default:
+                            break;
+                    }
+                } else if (format.type === "ordinal") {
+                    var select = target.children('td.descriptor-value').children('div').children('select');
+                    select.parent('div.bootstrap-select').on('changed.bs.select', view.onSelectChangeValue);
+
+                } else if (format.type === "date") {
+                    var input = target.children('td.descriptor-value').children('div.input-group').children('input.form-control');
+                } else if (format.type === "time") {
+                    var input = target.children('td.descriptor-value').children('div.input-group').children('input.form-control');
+                } else if (format.type === "datetime") {
+                    var input = target.children('td.descriptor-value').children('div.input-group').children('input.form-control');
+                } else {
+                    var input = target.children('td.descriptor-value').children('div.input-group').children('input.form-control');
+                }
+
+                if (!display) {
+                    el.hide(false);
+                }
+            }
+        });
+    },
+
+    onAutocompleteChangeValue: function(e) {
+        alert(e);
+    },
+
+    onSelectChangeValue: function(e) {
+        alert(e);
+    },
+
+    onCancel: function () {
+        Backbone.history.navigate('app/home/', {trigger: true, replace: true});
+    },
+
+    onApply: function () {
+        Backbone.history.navigate('app/accession/accession/' + this.model.get('id') + '/', {trigger: true, replace: true});
+    },
 });
 
 module.exports = View;

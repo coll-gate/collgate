@@ -62,7 +62,7 @@ var Router = Marionette.AppRouter.extend({
             return;
         }
 
-        model.fetch().then(function() {
+        model.fetch({data:{name: model.get('name'), parent: model.get('parent')}}).then(function() {
             defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Accession"), model: model}));
 
             var view = new AccessionEditView({model: model});

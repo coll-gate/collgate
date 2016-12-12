@@ -22,6 +22,7 @@ var Model = Backbone.Model.extend({
         id: null,
         name: '',
         parent: undefined,
+        parent_details: [],
         meta_model: undefined,
         descriptors: {}
     },

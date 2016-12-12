@@ -155,7 +155,6 @@ var Controller = Marionette.Controller/*Object*/.extend({
 
                 validate: function() {
                     var valid = this.validateName();
-                    return true; // @todo
 
                     var parentId = 0;
 

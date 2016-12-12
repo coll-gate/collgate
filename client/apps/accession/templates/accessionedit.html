@@ -9,16 +9,29 @@
 -->
 
 <div class="object accession" object-type="accession" object-id="-1" style="width:100%;">
-    <span style="font-weight:bold; font-size:18px;">
-        <span class="name accession"></span><br>
+    <span style="font-weight:bold; font-size:18px; margin-bottom: 15px;">
+            <% for (var i = parent_details.length-1; i >= 0; --i) { %>
+            <span>
+                <span class="action view-taxon" data-taxon-id="<%= parent_details[i].id %>"><%= parent_details[i].name %></span>
+                <span class="taxon-rank badge left-margin" value="<%= parent_details[i].rank %>"></span>
+            </span>
+            <span class="glyphicon glyphicon-chevron-right"></span>
+        <% } %>
+        <span>
+            <span class="name accession"><%- name %></span>
+        </span>&nbsp;
+        <span class="glyphicon glyphicon-edit action change-parent"></span>
     </span>
-    <span>@todo taxon hier</span>
-    <div class="accession-panels panel-group">
+    <div class="accession-panels panel-group" style="margin-top: 10px;">
         <% var pi = 0; %>
         <% _.each(panels, function(panel) { %>
             <div class="accession-panel panel panel-default" name="<%= panel.name %>" panel-id="<%= panel.id %>">
-                <div class="panel-heading"><%= panel.label %></div>
-                <div class="panel-body">
+                <% var collapsed = pi > 0 ? "collapsed" : ""; %>
+                <div class="panel-heading" data-toggle="tooltip" data-placement="left" title="<%= gt.gettext('Collapse/Expand') %>">
+                    <a class="accordion-toggle <%= collapsed %>" data-toggle="collapse" href="#collapse<%= pi %>"><%= panel.label %></a>
+                </div>
+                <% var inout = pi == 0 ? "in" : ""; %>
+                <div id="collapse<%= pi %>" class="panel-collapse collapse <%= inout %>">
                     <div class="accession-descriptors">
                         <table class="table table-striped">
                             <thead>
@@ -31,7 +44,7 @@
                                 <% var i = 0; %>
                                 <% _.each(panel.descriptor_model.descriptor_model_types, function(descriptor_model_type) { %>
                                     <% var format = descriptor_model_type.descriptor_type.format; %>
-                                    <tr class="accession-descriptor" panel-index="<%= pi %>" index="<%= i %>" name="<%= descriptor_model_type.descriptor_type.code %>">
+                                    <tr class="accession-descriptor" panel-index="<%= pi %>" index="<%= i %>" descriptor-model-type="<%= descriptor_model_type.id %>" name="<%= descriptor_model_type.descriptor_type.code %>">
                                         <td class="descriptor-name" style="padding-top: 15px;"><%= descriptor_model_type.label %></td>
                                         <td class="descriptor-value" format-type="<%= format.type %>"></td>
                                     </tr>
@@ -45,7 +58,7 @@
             <% ++pi %>
         <% }) %>
     </div>
-    <div class="footer">
+    <div class="footer" style="float: right;">
         <button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= gt.gettext("Cancel") %></button>
         <button type="button" class="btn btn-primary apply"><%= gt.gettext("Apply") %></button>
     </div>

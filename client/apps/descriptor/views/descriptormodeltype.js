@@ -702,7 +702,7 @@ var View = Marionette.ItemView.extend({
                             data.values = [this.ui.simple_value.val()];
                         }
                     } else {
-                        data.values = null;
+                        data.values = [];
                     }
 
                     // depending if the condition previously existed: post or put.
