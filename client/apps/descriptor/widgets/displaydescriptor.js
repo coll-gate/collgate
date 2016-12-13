@@ -89,13 +89,83 @@ var DisplayDescriptor = {
         }
     },
 
-    initEntitySelect: function(format, view, select, definesValues, defaultValues) {
+    initEntitySelect: function(format, url, view, select, definesValues, defaultValues) {
         if (typeof definesValues === "undefined") {
             definesValues = false;
         }
 
-        if (format.type === 'boolean') {
-            // @todo
+        if (format.type === 'entity') {
+            var initials = [];
+
+            var params = {
+                dropdownParent: $(view.el),
+                ajax: {
+                    data: initials,
+                    url: url + 'search/',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        params.term || (params.term = '');
+
+                        return {
+                            filters: JSON.stringify({
+                                method: 'icontains',
+                                fields: ['name'],
+                                name: params.term
+                            }),
+                            cursor: params.next,
+                        };
+                    },
+                    processResults: function (data, params) {
+                        params.next = null;
+
+                        if (data.items.length >= 30) {
+                            params.next = data.next || null;
+                        }
+
+                        var results = [];
+
+                        for (var i = 0; i < data.items.length; ++i) {
+                            results.push({
+                                id: data.items[i].id,
+                                text: data.items[i].label
+                            });
+                        }
+
+                        return {
+                            results: results,
+                            pagination: {
+                                more: params.next != null
+                            }
+                        };
+                    },
+                    cache: true
+                },
+                minimumInputLength: 3,
+                placeholder: gt.gettext("Enter a value. 3 characters at least for auto-completion"),
+            };
+
+            // autoselect the initial value
+            if (definesValues) {
+                $.ajax({
+                    type: "GET",
+                    url: url + defaultValues[0] + '/',
+                    dataType: 'json',
+                }).done(function (data) {
+                    initials.push({id: data.id, text: data.name});
+
+                    params.data = initials;
+
+                    select.select2(params);
+
+                    if (definesValues) {
+                        select.val(defaultValues).trigger('change');
+                    }
+                });
+            } else {
+                // make an autocomplete widget on simple_value
+                select.select2(params);
+            }
         }
     },
 

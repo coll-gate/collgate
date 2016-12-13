@@ -247,6 +247,7 @@ def search_taxon(request):
     filters = json.loads(request.GET['filters'])
     page = int_arg(request.GET.get('page', 1))
 
+    # @todo cursor (not pagination)
     qs = None
 
     name_method = filters.get('method', 'ieq')

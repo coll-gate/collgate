@@ -513,6 +513,10 @@ var View = Marionette.ItemView.extend({
                                     view.ui.select_value_group.hide(false);
                                     view.ui.autocomplete_value_group.show(false);
                                 }
+                            } else if (format.type == "entity") {
+                                view.ui.simple_value_group.hide(false);
+                                view.ui.select_value_group.hide(false);
+                                view.ui.autocomplete_value_group.show(false);
                             } else if (format.type == "boolean") {
                                 view.ui.simple_value_group.hide(false);
                                 view.ui.select_value_group.show(false);
@@ -589,6 +593,16 @@ var View = Marionette.ItemView.extend({
                                         view.definesValues,
                                         view.defaultValues);
                                 }
+                            } else if (format.type === 'entity') {
+                                var url = application.baseUrl + format.model.replace('.', '/') + '/';
+
+                                DisplayDescriptor.initEntitySelect(
+                                        view.descriptorType.get('format'),
+                                        url,
+                                        view,
+                                        view.ui.autocomplete_value,
+                                        view.definesValues,
+                                        view.defaultValues);
                             } else if (format.type === 'boolean') {
                                 DisplayDescriptor.initBoolean(
                                     view.descriptorType.get('format'),
@@ -685,9 +699,9 @@ var View = Marionette.ItemView.extend({
                     // take value
                     var format = this.descriptorType.get('format');
                     if (data.condition == 2 || data.condition == 3) {
-                        if (format.list_type == "autocomplete") {
+                        if ((format.type.startsWith('enum_') && format.list_type == "autocomplete") || (format.type === "entity")) {
                             data.values = [this.ui.autocomplete_value.val()];
-                        } else if (format.list_type == "dropdown" || format.type === 'boolean' || format.type === 'ordinal') {
+                        } else if (format.list_type === "dropdown" || format.type === 'boolean' || format.type === 'ordinal') {
                             data.values = [this.ui.select_value.val()];
                         } else if (format.type === "date" ) {
                             // format to YYYYMMDD date

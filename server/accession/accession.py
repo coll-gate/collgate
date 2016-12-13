@@ -94,6 +94,7 @@ def search_accession(request):
     filters = json.loads(request.GET['filters'])
     page = int_arg(request.GET.get('page', 1))
 
+    # @todo cursor (not pagination)
     qs = None
 
     name_method = filters.get('method', 'ieq')
@@ -112,17 +113,19 @@ def search_accession(request):
         elif name_method == 'icontains':
             qs = AccessionSynonym.objects.filter(name__icontains=filters['name'])
 
-    #qs = qs.select_related('accession')
+    # qs = qs.select_related('accession_synonyms')
 
     # group by synonyms on labels
     accessions = {}
 
     for s in qs:
-        accession = accessions.get(s.taxon_id)
-        if accession:
-            accession['label'] += ', ' + s.name
-        else:
-            accessions[s.taxon_id] = {'id': str(s.accession_id), 'label': s.name, 'value': s.accession.name}
+        for acc in s.accessions.all():
+            accession = accessions.get(acc.id)
+            if accession:
+                accession['label'] += ', ' + s.name
+            else:
+                accessions[acc.id] = {'id': str(acc.id), 'label': s.name, 'value': acc.name}
+
     accessions_list = list(accessions.values())
 
     response = {

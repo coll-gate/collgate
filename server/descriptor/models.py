@@ -710,7 +710,9 @@ class DescriptorType(Entity):
             else:
                 next_cursor = "/%s" % val['id']
 
-        return prev_cursor, next_cursor, values_list
+            return prev_cursor, next_cursor, values_list
+        else:
+            return "/", "/", []
 
 
 class DescriptorValue(Entity):

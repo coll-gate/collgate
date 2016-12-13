@@ -47,9 +47,9 @@ var View = Marionette.ItemView.extend({
             var definesValues = false;
             var defaultValues = null;
 
-            var url = application.baseUrl + 'descriptor/group/' + descriptorType.group + '/type/' + descriptorType.id + '/';
-
             if (format.type.startsWith('enum_')) {
+                var url = application.baseUrl + 'descriptor/group/' + descriptorType.group + '/type/' + descriptorType.id + '/';
+
                 if (format.list_type == "autocomplete") {
                     var select = $('<select style="width: 100%;"></select>');
                     el.children('td.descriptor-value').append(select);
@@ -75,6 +75,19 @@ var View = Marionette.ItemView.extend({
                         definesValues,
                         defaultValues);
                 }
+            } else if (format.type == "entity") {
+                var url = application.baseUrl + format.model.replace('.', '/') + '/';
+
+                var select = $('<select style="width: 100%;"></select>');
+                el.children('td.descriptor-value').append(select);
+
+                DisplayDescriptor.initEntitySelect(
+                    format,
+                    url,
+                    view,
+                    select,
+                    definesValues,
+                    defaultValues);
             } else if (format.type === "boolean") {
                 var select = $('<select data-width="100%"></select>');
                 el.children('td.descriptor-value').append(select);
@@ -181,19 +194,63 @@ var View = Marionette.ItemView.extend({
                 if (format.type.startsWith('enum_')) {
                     if (format.list_type === "autocomplete") {
                         var select = target.children('td.descriptor-value').children('select');
-                        select.on("select2:select", view.onAutocompleteChangeValue);
-                    } else {
-                        var select = target.children('td.descriptor-value').children('div').children('select');
-                        select.parent('div.bootstrap-select').on('changed.bs.select', view.onSelectChangeValue);
+                        select.on("select2:select", $.proxy(view.onAutocompleteChangeValue, view));
 
+                        // initial condition
                         switch (condition.condition) {
                             case 0:
+                                display = select.val() === "" || select.val() === "undefined";
                                 break;
                             case 1:
+                                display = select.val() !== "";
                                 break;
                             case 2:
+                                display = select.val() === condition.values[0];
                                 break;
                             case 3:
+                                display = select.val() !== condition.values[0];
+                                break;
+                            default:
+                                break;
+                        }
+                    } else if (format.type === "entity") {
+                        var select = target.children('td.descriptor-value').children('select');
+                        select.on("select2:select", $.proxy(view.onAutocompleteChangeValue, view));
+
+                        // initial condition
+                        switch (condition.condition) {
+                            case 0:
+                                display = select.val() === "" || select.val() === "undefined";
+                                break;
+                            case 1:
+                                display = select.val() !== "";
+                                break;
+                            case 2:
+                                display = select.val() === condition.values[0];
+                                break;
+                            case 3:
+                                display = select.val() !== condition.values[0];
+                                break;
+                            default:
+                                break;
+                        }
+                    } else {
+                        var select = target.children('td.descriptor-value').children('div').children('select');
+                        select.parent('div.bootstrap-select').on('changed.bs.select', $.proxy(view.onSelectChangeValue, view));
+
+                        // initial condition
+                        switch (condition.condition) {
+                            case 0:
+                                display = select.val() === "" || select.val() === "undefined";
+                                break;
+                            case 1:
+                                display = select.val() !== "";
+                                break;
+                            case 2:
+                                display = select.val() === condition.values[0];
+                                break;
+                            case 3:
+                                display = select.val() !== condition.values[0];
                                 break;
                             default:
                                 break;
@@ -201,36 +258,131 @@ var View = Marionette.ItemView.extend({
                     }
                 } else if (format.type === "boolean") {
                     var select = target.children('td.descriptor-value').children('div').children('select');
-                    select.parent('div.bootstrap-select').on('changed.bs.select', view.onSelectChangeValue);
+                    select.parent('div.bootstrap-select').on('changed.bs.select', $.proxy(view.onSelectChangeValue, view));
 
+                    // initial condition
                     switch (condition.condition) {
                         case 0:
-                            display = true;  // a boolean is always defines
+                            display = false;  // a boolean is always defined
                             break;
                         case 1:
-                            display = false;  // a boolean is always defines
+                            display = true;  // a boolean is always defined
                             break;
                         case 2:
                             display = select.val() == condition.values[0];
                             break;
                         case 3:
-                            display = select.val()!== condition.values[0];
+                            display = select.val() != condition.values[0];
                             break;
                         default:
                             break;
                     }
                 } else if (format.type === "ordinal") {
                     var select = target.children('td.descriptor-value').children('div').children('select');
-                    select.parent('div.bootstrap-select').on('changed.bs.select', view.onSelectChangeValue);
+                    select.parent('div.bootstrap-select').on('changed.bs.select', $.proxy(view.onSelectChangeValue, view));
 
+                    // initial condition
+                    switch (condition.condition) {
+                        case 0:
+                            display = false;  // an ordinal is always defined
+                            break;
+                        case 1:
+                            display = true;  // an ordinal is always defined
+                            break;
+                        case 2:
+                            display = select.val() == condition.values[0];
+                            break;
+                        case 3:
+                            display = select.val() != condition.values[0];
+                            break;
+                        default:
+                            break;
+                    }
                 } else if (format.type === "date") {
                     var input = target.children('td.descriptor-value').children('div.input-group').children('input.form-control');
+                    input.parent().on('dp.change', $.proxy(view.onDateChange, view));
+
+                    // initial condition
+                    switch (condition.condition) {
+                        case 0:
+                            display = input.val() == "";
+                            break;
+                        case 1:
+                            display = input.val() != "";
+                            break;
+                        case 2:
+                            display = select.val() === condition.values[0];
+                            break;
+                        case 3:
+                            display = select.val() !== condition.values[0];
+                            break;
+                        default:
+                            break;
+                    }
                 } else if (format.type === "time") {
                     var input = target.children('td.descriptor-value').children('div.input-group').children('input.form-control');
+                    //input.on('input', $.proxy(view.onInputChangeValue, view));
+                    input.parent().on('dp.change', $.proxy(view.onDateChange, view));
+
+                    // initial condition
+                    switch (condition.condition) {
+                        case 0:
+                            display = input.val() == "";
+                            break;
+                        case 1:
+                            display = input.val() != "";
+                            break;
+                        case 2:
+                            display = select.val() === condition.values[0];
+                            break;
+                        case 3:
+                            display = select.val() !== condition.values[0];
+                            break;
+                        default:
+                            break;
+                    }
                 } else if (format.type === "datetime") {
                     var input = target.children('td.descriptor-value').children('div.input-group').children('input.form-control');
+                    input.parent().on('dp.change', $.proxy(view.onDateChange, view));
+
+                    // initial condition
+                    switch (condition.condition) {
+                        case 0:
+                            display = input.val() == "";
+                            break;
+                        case 1:
+                            display = input.val() != "";
+                            break;
+                        case 2:
+                            display = select.val() === condition.values[0];
+                            break;
+                        case 3:
+                            display = select.val() !== condition.values[0];
+                            break;
+                        default:
+                            break;
+                    }
                 } else {
                     var input = target.children('td.descriptor-value').children('div.input-group').children('input.form-control');
+                    input.on('input', $.proxy(view.onInputChangeValue, view));
+
+                    // initial condition
+                    switch (condition.condition) {
+                        case 0:
+                            display = input.val() == "";
+                            break;
+                        case 1:
+                            display = input.val() != "";
+                            break;
+                        case 2:
+                            display = select.val() === condition.values[0];
+                            break;
+                        case 3:
+                            display = select.val() !== condition.values[0];
+                            break;
+                        default:
+                            break;
+                    }
                 }
 
                 if (!display) {
@@ -240,12 +392,170 @@ var View = Marionette.ItemView.extend({
         });
     },
 
+    findDescriptorModelTypeForConditionTarget: function(target) {
+        var pi = target.attr('panel-index');
+        var i = target.attr('index');
+        var targetDescriptorModelType = this.model.get('panels')[pi].descriptor_model.descriptor_model_types[i];
+
+        // find el from target
+        var descriptorModelTypes = this.model.get('panels')[pi].descriptor_model.descriptor_model_types;
+        for (var i = 0; i < descriptorModelTypes.length; ++i) {
+            if (descriptorModelTypes[i].condition.target === targetDescriptorModelType.id) {
+                var descriptorModelType = descriptorModelTypes[i];
+
+                return {
+                    descriptorModelType: descriptorModelType,
+                    el: this.$el.find("tr.accession-descriptor[descriptor-model-type=" + descriptorModelType.id + "]")
+                }
+            }
+        }
+
+        return null;
+    },
+
     onAutocompleteChangeValue: function(e) {
-        alert(e);
+        var display = false;
+        var select = $(e.target);
+
+        var target = select.parent().parent();
+        var source = this.findDescriptorModelTypeForConditionTarget(target);
+        var condition = source.descriptorModelType.condition;
+
+        // initial condition
+        switch (condition.condition) {
+            case 0:
+                display = select.val() === "" || select.val() === "undefined";
+                break;
+            case 1:
+                display = select.val() !== "";
+                break;
+            case 2:
+                display = select.val() === condition.values[0];
+                break;
+            case 3:
+                display = select.val() !== condition.values[0];
+                break;
+            default:
+                break;
+        }
+
+        if (display) {
+            source.el.show(true);
+        } else {
+            source.el.hide(true);
+        }
     },
 
     onSelectChangeValue: function(e) {
-        alert(e);
+        var display = false;
+        var select = $(e.target);
+
+        var target = select.parent().parent().parent();
+        var source = this.findDescriptorModelTypeForConditionTarget(target);
+        var condition = source.descriptorModelType.condition;
+
+        // initial condition
+        switch (condition.condition) {
+            case 0:
+                display = select.val() === "" || select.val() === "undefined";
+                break;
+            case 1:
+                display = select.val() !== "";
+                break;
+            case 2:
+                display = select.val() === condition.values[0];
+                break;
+            case 3:
+                display = select.val() !== condition.values[0];
+                break;
+            default:
+                break;
+        }
+
+        if (display) {
+            source.el.show(true);
+        } else {
+            source.el.hide(true);
+        }
+    },
+
+    onDateChange: function (e) {
+        var display = false;
+        var input = $(e.target);
+
+        var target = input.parent().parent();
+        var source = this.findDescriptorModelTypeForConditionTarget(target);
+        var condition = source.descriptorModelType.condition;
+        var date = input.data('DateTimePicker').date();
+
+        var dateFormat = null;
+        if (source.descriptorModelType.descriptor_type.format.type === "date" ) {
+            // format to YYYYMMDD date
+            dateFormat = "YYYYMMDD";
+        } else if (source.descriptorModelType.descriptor_type.format.type === "time" ) {
+            // format to HH:mm:ss time
+            dateFormat = "HH:mm:ss";
+        } else if (source.descriptorModelType.descriptor_type.format.type === "datetime" ) {
+            // format to iso datetime
+            dateFormat = null;
+        }
+
+        // initial condition
+        switch (condition.condition) {
+            case 0:
+                display = date == null;
+                break;
+            case 1:
+                display = date !== null;
+                break;
+            case 2:
+                display = date != null && date.format(dateFormat) === condition.values[0];
+                break;
+            case 3:
+                display = date != null && date.format(dateFormat) !== condition.values[0];
+                break;
+            default:
+                break;
+        }
+
+        if (display) {
+            source.el.show(true);
+        } else {
+            source.el.hide(true);
+        }
+    },
+
+    onInputChangeValue: function(e) {
+        var display = false;
+        var input = $(e.target);
+
+        var target = input.parent().parent().parent();
+        var source = this.findDescriptorModelTypeForConditionTarget(target);
+        var condition = source.descriptorModelType.condition;
+
+        // initial condition
+        switch (condition.condition) {
+            case 0:
+                display = input.val() === "" || input.val() === "undefined";
+                break;
+            case 1:
+                display = input.val() !== "";
+                break;
+            case 2:
+                display = input.val() === condition.values[0];
+                break;
+            case 3:
+                display = input.val() !== condition.values[0];
+                break;
+            default:
+                break;
+        }
+
+        if (display) {
+            source.el.show(true);
+        } else {
+            source.el.hide(true);
+        }
     },
 
     onCancel: function () {
