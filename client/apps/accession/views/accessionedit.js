@@ -164,9 +164,23 @@ var View = Marionette.ItemView.extend({
                 group.append(input);
                 group.append(glyph);
 
+                if (format.type === "numeric" || format.type === "numeric_range" || format.type === "ordinal") {
+                    DisplayDescriptor.initNumeric(
+                        format,
+                        view,
+                        input,
+                        view.definesValues,
+                        view.defaultValues);
+                } else if (format.type === "string") {
+                    DisplayDescriptor.initText(
+                        format,
+                        view,
+                        input,
+                        view.definesValues,
+                        view.defaultValues);
+                }
+
                 el.children('td.descriptor-value').append(group);
-                
-                // @todo validator
             }
         });
     },

@@ -703,13 +703,13 @@ var View = Marionette.ItemView.extend({
                             data.values = [this.ui.autocomplete_value.val()];
                         } else if (format.list_type === "dropdown" || format.type === 'boolean' || format.type === 'ordinal') {
                             data.values = [this.ui.select_value.val()];
-                        } else if (format.type === "date" ) {
+                        } else if (format.type === "date") {
                             // format to YYYYMMDD date
                             data.values = [$("#simple_value").parent().data('DateTimePicker').viewDate().format("YYYYMMDD")];
-                        } else if (format.type === "time" ) {
+                        } else if (format.type === "time") {
                             // format to HH:mm:ss time
                             data.values = [$("#simple_value").parent().data('DateTimePicker').viewDate().format("HH:mm:ss")]; // .MS
-                        } else if (format.type === "datetime" ) {
+                        } else if (format.type === "datetime") {
                             // format to iso datetime
                             data.values = [$("#simple_value").parent().data('DateTimePicker').viewDate().format()];
                         } else {

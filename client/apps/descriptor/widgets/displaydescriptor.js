@@ -60,6 +60,7 @@ var DisplayDescriptor = {
                         },
                         cache: true
                     },
+                    allowClear: true,
                     minimumInputLength: 3,
                     placeholder: gt.gettext("Enter a value. 3 characters at least for auto-completion"),
                 };
@@ -141,6 +142,7 @@ var DisplayDescriptor = {
                     },
                     cache: true
                 },
+                allowClear: true,
                 minimumInputLength: 3,
                 placeholder: gt.gettext("Enter a value. 3 characters at least for auto-completion"),
             };
@@ -274,10 +276,16 @@ var DisplayDescriptor = {
     },
 
     initDate: function(format, view, input, definesValues, defaultValues) {
+        if (typeof definesValues === "undefined") {
+            definesValues = false;
+        }
+
         input.datetimepicker({
             locale: session.language,
             format: $.datepicker._defaults.dateFormat.toUpperCase(),
             showTodayButton: true,
+            showClear: true,
+            allowInputToggle: true
             //widgetParent: view.$el,
             //widgetPositioning: {
             //    vertical: 'auto',
@@ -320,10 +328,16 @@ var DisplayDescriptor = {
     },
 
     initTime: function(format, view, input, definesValues, defaultValues) {
+        if (typeof definesValues === "undefined") {
+            definesValues = false;
+        }
+
         input.datetimepicker({
             locale: session.language,
             format: 'HH:mm:ss',  // 24h
             showTodayButton: true,
+            showClear: true,
+            allowInputToggle: true
         }).on('dp.show', function (e) {
             // fix position when parent has overflow-y defined
             var datetimepicker = $('body').find('.bootstrap-datetimepicker-widget:last'),
@@ -360,10 +374,16 @@ var DisplayDescriptor = {
     },
 
     initDateTime: function(format, view, input, definesValues, defaultValues) {
+        if (typeof definesValues === "undefined") {
+            definesValues = false;
+        }
+
         input.datetimepicker({
             locale: session.language,
             format: $.datepicker._defaults.dateFormat.toUpperCase() + ' HH:mm:ss',  // 24h
-            showTodayButton: true
+            showTodayButton: true,
+            showClear: true,
+            allowInputToggle: true
         }).on('dp.show', function (e) {
             // fix position when parent has overflow-y defined
             var datetimepicker = $('body').find('.bootstrap-datetimepicker-widget:last'),
@@ -400,15 +420,82 @@ var DisplayDescriptor = {
     },
 
     initGpsCoordinate: function(format, view, input, definesValues, defaultValues) {
+        if (typeof definesValues === "undefined") {
+            definesValues = false;
+        }
+
         // @todo
     },
 
     initNumeric: function (format, view, input, definesValues, defaultValues) {
-        // @todo validator (min, max, decimal, precision) on input
+        if (typeof definesValues === "undefined") {
+            definesValues = false;
+        }
+
+        if (format.type === "numeric") {
+            $(input).numeric({
+                allowPlus           : false,
+                allowMinus          : true,
+                allowThouSep        : false,
+                allowDecSep         : true,
+                allowLeadingSpaces  : false,
+                maxDigits           : NaN,
+                maxDecimalPlaces    : format.precision,
+                maxPreDecimalPlaces : NaN,
+                max                 : NaN,
+                min                 : NaN
+            });
+        } else if (format.type === "numeric_range") {
+            // @todo .toFixed(....) for read value ?
+            $(input).numeric({
+                allowPlus           : false,
+                allowMinus          : format.range[0] < 0 ? true : false,
+                allowThouSep        : false,
+                allowDecSep         : true,
+                allowLeadingSpaces  : false,
+                maxDigits           : NaN,
+                maxDecimalPlaces    : format.precision,
+                maxPreDecimalPlaces : NaN,
+                max                 : format.range[1],
+                min                 : format.range[0]
+            });
+        } else if (format.type === "ordinal") {
+            $(input).numeric({
+                allowPlus           : false,
+                allowMinus          : format.range[0] < 0 ? true : false,
+                allowThouSep        : false,
+                allowDecSep         : false,
+                allowLeadingSpaces  : false,
+                maxDigits           : NaN,
+                maxDecimalPlaces    : NaN,
+                maxPreDecimalPlaces : NaN,
+                max                 : format.range[1],
+                min                 : format.range[0]
+            });
+        }
+
+        if (defaultValues) {
+            input.val(defaultValues[0]);
+        }
     },
 
     initText: function (format, view, input, definesValues, defaultValues) {
-        // @todo validator (regexp, length...) on input
+        if (typeof definesValues === "undefined") {
+            definesValues = false;
+        }
+
+        if (format.type === "text") {
+            if (typeof format.regexp !== "undefined") {
+                // @todo regexp on input event plus hard limit to 1024 characters
+            } else {
+                // hard limit to 1024 characters
+                // @todo limit on input event
+            }
+        }
+
+        if (defaultValues) {
+            input.val(defaultValues[0]);
+        }
     },
 };
 

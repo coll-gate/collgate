@@ -18,8 +18,11 @@ Logger = require('js-logger');
 /*$.select2 = */require("select2");
 require("select2/dist/css/select2.min.css");
 
-// numeric validator
-/*$.numeric = */require("./deps/js/jquery.numeric");
+// numeric validator (useless, replaced by alphanum)
+/*$.numeric = *///require("./deps/js/jquery.numeric");
+
+// alphanum validator
+/*$.* = */require("./deps/js/jquery.alphanum");
 
 // make table header fixed position
 /*$.stickyTableHeaders = */require("sticky-table-headers");

@@ -48,7 +48,7 @@ $.fn.numeric = function(config, callback)
 
     if (typeof(config.min) !== "number") {
         if (negative) {
-            min = (config.decimal == false) ? Number.MIN_SAFE_INTEGER : Number.MIN_VALUE;
+            min = (config.decimal == false) ? -2147483648/*Number.MIN_SAFE_INTEGER*/ : -Number.MAX_VALUE;
         }
     } else {
         min = config.min;
@@ -58,7 +58,7 @@ $.fn.numeric = function(config, callback)
     var max = 0;
 
     if (typeof(config.max) !== "number") {
-        max = (config.decimal == false) ? Number.MAX_SAFE_INTEGER : Number.MAX_VALUE;
+        max = (config.decimal == false) ? 2147483647/*Number.MAX_SAFE_INTEGER*/ : Number.MAX_VALUE;
     } else {
         max = config.max;
     }
@@ -98,7 +98,7 @@ $.fn.numeric.keypress = function(e)
     // if a number was not pressed
     if(key < 48 || key > 57)
     {
-      var value = $(this).val();
+        var value = $(this).val();
         /* '-' only allowed at start and if negative numbers allowed */
         if($.inArray('-', value.split('')) !== 0 && negative && key == 45 && (value.length === 0 || parseInt($.fn.getSelectionStart(this), 10) === 0)) { return true; }
         /* only one decimal separator allowed */
