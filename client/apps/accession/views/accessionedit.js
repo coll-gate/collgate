@@ -100,7 +100,8 @@ var View = Marionette.ItemView.extend({
                     select,
                     view.definesValues,
                     view.defaultValues);
-            } else if (format.type === "ordinal") {
+            } else if ((format.type === "ordinal") && ((format.range[1] - format.range[0] + 1) <= 256)) {
+                // ordinal with at max 256 values as a dropdown
                 var select = $('<select data-width="100%"></select>');
                 el.children('td.descriptor-value').append(select);
 
@@ -164,6 +165,7 @@ var View = Marionette.ItemView.extend({
                 group.append(input);
                 group.append(glyph);
 
+                // numeric, numeric range, and ordinal with more than 256 values
                 if (format.type === "numeric" || format.type === "numeric_range" || format.type === "ordinal") {
                     DisplayDescriptor.initNumeric(
                         format,
@@ -171,7 +173,7 @@ var View = Marionette.ItemView.extend({
                         input,
                         view.definesValues,
                         view.defaultValues);
-                } else if (format.type === "string") {
+                } else if (format.type === "string") { // regexp text
                     DisplayDescriptor.initText(
                         format,
                         view,
@@ -291,7 +293,7 @@ var View = Marionette.ItemView.extend({
                         default:
                             break;
                     }
-                } else if (format.type === "ordinal") {
+                } else if ((format.type === "ordinal") && ((format.range[1] - format.range[0] + 1) <= 256)) {
                     var select = target.children('td.descriptor-value').children('div').children('select');
                     select.parent('div.bootstrap-select').on('changed.bs.select', $.proxy(view.onSelectChangeValue, view));
 
@@ -377,6 +379,7 @@ var View = Marionette.ItemView.extend({
                             break;
                     }
                 } else {
+                    // numeric, numeric range, ordinal with more than 256 values, text with regexp
                     var input = target.children('td.descriptor-value').children('div.input-group').children('input.form-control');
                     input.on('input', $.proxy(view.onInputChangeValue, view));
 

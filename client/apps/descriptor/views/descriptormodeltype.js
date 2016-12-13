@@ -611,12 +611,22 @@ var View = Marionette.ItemView.extend({
                                     view.definesValues,
                                     view.defaultValues);
                             } else if (format.type === 'ordinal') {
-                                DisplayDescriptor.initOrdinal(
-                                    view.descriptorType.get('format'),
-                                    view,
-                                    view.ui.select_value,
-                                    view.definesValues,
-                                    view.defaultValues);
+                                // ordinal is displayed as a dropdown when there is at max 256 values
+                                if ((format.range[1] - format.range[0] + 1) <= 256) {
+                                    DisplayDescriptor.initOrdinal(
+                                        view.descriptorType.get('format'),
+                                        view,
+                                        view.ui.select_value,
+                                        view.definesValues,
+                                        view.defaultValues);
+                                } else {
+                                    DisplayDescriptor.initNumeric(
+                                        format,
+                                        view,
+                                        view.ui.simple_value,
+                                        view.definesValues,
+                                        view.defaultValues);
+                                }
                             } else if (format.type === 'date') {
                                 DisplayDescriptor.initDate(
                                     view.descriptorType.get('format'),
@@ -698,11 +708,19 @@ var View = Marionette.ItemView.extend({
 
                     // take value
                     var format = this.descriptorType.get('format');
+
                     if (data.condition == 2 || data.condition == 3) {
                         if ((format.type.startsWith('enum_') && format.list_type == "autocomplete") || (format.type === "entity")) {
                             data.values = [this.ui.autocomplete_value.val()];
-                        } else if (format.list_type === "dropdown" || format.type === 'boolean' || format.type === 'ordinal') {
+                        } else if ((format.list_type === "dropdown") || (format.type === 'boolean')) {
                             data.values = [this.ui.select_value.val()];
+                        } else if (format.type === 'ordinal') {
+                            // max 256 values for a dropdown
+                            if ((format.range[1] - format.range[0] + 1) <= 256) {
+                                data.values = [this.ui.select_value.val()];
+                            } else {
+                                data.values = [this.ui.simple_value.val()];
+                            }
                         } else if (format.type === "date") {
                             // format to YYYYMMDD date
                             data.values = [$("#simple_value").parent().data('DateTimePicker').viewDate().format("YYYYMMDD")];
@@ -713,6 +731,7 @@ var View = Marionette.ItemView.extend({
                             // format to iso datetime
                             data.values = [$("#simple_value").parent().data('DateTimePicker').viewDate().format()];
                         } else {
+                            // numeric, text (already validated)
                             data.values = [this.ui.simple_value.val()];
                         }
                     } else {
