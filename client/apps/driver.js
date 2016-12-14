@@ -115,12 +115,19 @@ application = new Marionette.Application({
             // return the promise to add callbacks if necessary
             return dfd.promise();
         };
+
+        $(document).ajaxError(function(event, jqXHR, settings, thrownError) {
+            if (jqXHR.status === 401) {
+                // fallback to home page to force user to login
+                window.location.assign(application.baseUrl + 'app/home/');
+            }
+        });
     },
     onStart: function(options) {
         // Starts the URL handling framework and automatically route as possible
         Backbone.history.start({pushState: true, silent: false, root: '/coll-gate'});
 
-        $.alert({container: 'div.panel-body'/*'#main_content'*/, className: 'alert'});
+        $.alert({container: '#main_content'/*'div.panel-body'*/, className: 'alert'});
         $.alert.update();
 
         // add alerted initiated by django server side

@@ -190,6 +190,8 @@ var View = Marionette.ItemView.extend({
             if (this.ui.format_regexp.closest("div.form-group").css('display') != 'none') {
                 this.ui.format_regexp.closest("div.form-group").hide(false);
             }
+        } else {
+            this.ui.format_regexp.val(format.regexp);
         }
     },
 

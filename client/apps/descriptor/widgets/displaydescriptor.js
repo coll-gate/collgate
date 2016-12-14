@@ -321,7 +321,7 @@ var DisplayDescriptor = {
             }
         });
 
-        if (defaultValues) {
+        if (definesValues) {
             var date = moment(defaultValues[0])
             $("#simple_value").val(date.format($.datepicker._defaults.dateFormat.toUpperCase()));
         }
@@ -367,7 +367,7 @@ var DisplayDescriptor = {
             }
         });
 
-        if (defaultValues) {
+        if (definesValues) {
             // HH:mm:ss
             $("#simple_value").val(defaultValues[0]);
         }
@@ -413,7 +413,7 @@ var DisplayDescriptor = {
             }
         });
 
-        if (defaultValues) {
+        if (definesValues) {
             var date = moment(defaultValues[0])
             $("#simple_value").val(date.format($.datepicker._defaults.dateFormat.toUpperCase() + ' HH:mm:ss'));
         }
@@ -474,8 +474,36 @@ var DisplayDescriptor = {
             });
         }
 
-        if (defaultValues) {
+        if (definesValues) {
             input.val(defaultValues[0]);
+        }
+    },
+
+    validationHelper: function(input, type, comment) {
+        var el = input.parent().parent();
+
+        if (!el.hasClass('has-feedback')) {
+            el.addClass('has-feedback');
+        }
+
+        var help = input.parent().siblings('span.help-block');
+        if (help.length == 0) {
+            help = $('<span class="help-block"></span>');
+            el.append(help);
+        }
+
+        if (type == -1) {
+            el.addClass('has-error');
+            input.addClass('invalid');
+
+            help.show(false);
+            help.text(comment);
+        } else {
+            el.removeClass('has-error');
+            input.removeClass('invalid');
+
+            help.hide(false);
+            help.text("");
         }
     },
 
@@ -484,16 +512,45 @@ var DisplayDescriptor = {
             definesValues = false;
         }
 
-        if (format.type === "text") {
+        // hard limit to 1024 characters
+        input.attr('maxlength', 1024);
+
+        if (format.type === "string") {
             if (typeof format.regexp !== "undefined") {
-                // @todo regexp on input event plus hard limit to 1024 characters
+                input.on("input", function(e) {
+                    // check regexp and max length of 1024
+                    var val = $(e.target).val();
+                    var re = new RegExp(format.regexp);
+                    var el = $(e.target);
+
+                    if (val.length > 1024) {
+                        DisplayDescriptor.validationHelper(el, -1, gt.gettext("1024 characters max"));
+                    } else if (!re.test(val)) {
+                        DisplayDescriptor.validationHelper(el, -1, gt.gettext("Invalid format"));
+                    } else {
+                        DisplayDescriptor.validationHelper(el, 0, null);
+                    }
+
+                    return true;
+                });
             } else {
-                // hard limit to 1024 characters
-                // @todo limit on input event
+                input.on("input", function(e) {
+                    var val = $(e.target).val();
+                    var el = $(e.target);
+
+                    // hard limit to 1024 characters
+                    if (val.length > 1024) {
+                        DisplayDescriptor.validationHelper(el, -1, gt.gettext("1024 characters max"));
+                    } else {
+                        DisplayDescriptor.validationHelper(el, 0, null);
+                    }
+
+                    return true;
+                });
             }
         }
 
-        if (defaultValues) {
+        if (definesValues) {
             input.val(defaultValues[0]);
         }
     },

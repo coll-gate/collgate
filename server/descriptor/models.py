@@ -197,10 +197,10 @@ class DescriptorType(Entity):
                 # sort by id (code)
                 # name are unique so its a trivial case
                 if reverse:
-                    next_code = str(cursor.split('/')[0]) if cursor else "ZZ_9999:99999999"
+                    cursor_code = str(cursor.split('/')[0]) if cursor else "ZZ_9999:99999999"
 
                     for k, v in values.items():
-                        if k < next_code:
+                        if k < cursor_code:
                             values_list.append({
                                 'id': k,
                                 'parent': v.get('parent', None),
@@ -209,10 +209,10 @@ class DescriptorType(Entity):
                                 'value1': v.get('value1', None),
                             })
                 else:
-                    next_code = str(cursor.split('/')[0]) if cursor else ""
+                    cursor_code = str(cursor.split('/')[0]) if cursor else ""
 
                     for k, v in values.items():
-                        if k > next_code:
+                        if k > cursor_code:
                             values_list.append({
                                 'id': k,
                                 'parent': v.get('parent', None),
@@ -228,24 +228,24 @@ class DescriptorType(Entity):
                 # blank value are not allowed.
                 # null values are supported.
                 # duplicated values are supported by string concatenation of ordinal+code during sorting.
-                next_ordinal, next_code = cursor.split('/') if cursor else (None, None)
+                cursor_ordinal, cursor_code = cursor.split('/') if cursor else (None, None)
 
-                if next_code is None:
-                    next_code = ""
+                if cursor_code is None:
+                    cursor_code = ""
 
                 extra_list = []
 
                 if reverse:
-                    if next_ordinal:
-                        next_ordinal = int(next_ordinal)
+                    if cursor_ordinal:
+                        cursor_ordinal = int(cursor_ordinal)
                     else:
-                        next_ordinal = 999999999
+                        cursor_ordinal = 999999999
 
                     if cursor:
                         for k, v in values.items():
                             ordinal = v.get('ordinal')
 
-                            if ordinal is None and k > next_code:
+                            if ordinal is None and k > cursor_code:
                                 extra_list.append({
                                     'id': k,
                                     'parent': v.get('parent', None),
@@ -253,7 +253,7 @@ class DescriptorType(Entity):
                                     'value0': v.get('value0', None),
                                     'value1': v.get('value1', None),
                                 })
-                            elif next_ordinal and ordinal and ordinal < next_ordinal:
+                            elif cursor_ordinal and ordinal and ordinal < cursor_ordinal:
                                 values_list.append({
                                     'id': k,
                                     'parent': v.get('parent', None),
@@ -282,16 +282,16 @@ class DescriptorType(Entity):
                                     'value1': v.get('value1', None),
                                 })
                 else:
-                    if next_ordinal:
-                        next_ordinal = int(next_ordinal)
+                    if cursor_ordinal:
+                        cursor_ordinal = int(cursor_ordinal)
                     else:
-                        next_ordinal = -1
+                        cursor_ordinal = -1
 
                     if cursor:
                         for k, v in values.items():
                             ordinal = v.get('ordinal')
 
-                            if ordinal is None and k > next_code:
+                            if ordinal is None and k > cursor_code:
                                 extra_list.append({
                                     'id': k,
                                     'parent': v.get('parent', None),
@@ -299,7 +299,7 @@ class DescriptorType(Entity):
                                     'value0': v.get('value0', None),
                                     'value1': v.get('value1', None),
                                 })
-                            elif next_ordinal and ordinal and ordinal > next_ordinal:
+                            elif cursor_ordinal and ordinal and ordinal > cursor_ordinal:
                                 values_list.append({
                                     'id': k,
                                     'parent': v.get('parent', None),
@@ -348,10 +348,10 @@ class DescriptorType(Entity):
                 # blank value are not allowed.
                 # null values are supported.
                 # duplicated values are supported by string concatenation of value+code during sorting.
-                next_value, next_code = cursor.split('/') if cursor else (None, None)
+                cursor_value, cursor_code = cursor.split('/') if cursor else (None, None)
 
-                if next_code is None:
-                    next_code = ""
+                if cursor_code is None:
+                    cursor_code = ""
 
                 extra_list = []
 
@@ -363,8 +363,8 @@ class DescriptorType(Entity):
                             # if value is None:
                             #     raise SuspiciousOperation("Invalid value for field")
 
-                            # if value is "" and k > next_code:
-                            if value is None and k > next_code:
+                            # if value is "" and k > cursor_code:
+                            if value is None and k > cursor_code:
                                 extra_list.append({
                                     'id': k,
                                     'parent': v.get('parent', None),
@@ -372,7 +372,7 @@ class DescriptorType(Entity):
                                     'value0': v.get('value0', None),
                                     'value1': v.get('value1', None),
                                 })
-                            elif next_value and value and value < next_value:
+                            elif cursor_value and value and value < cursor_value:
                                 values_list.append({
                                     'id': k,
                                     'parent': v.get('parent', None),
@@ -412,8 +412,8 @@ class DescriptorType(Entity):
                             # if value is None:
                             #     raise SuspiciousOperation("Invalid value for field")
 
-                            # if value is "" and k > next_code:
-                            if value is None and k > next_code:
+                            # if value is "" and k > cursor_code:
+                            if value is None and k > cursor_code:
                                 extra_list.append({
                                     'id': k,
                                     'parent': v.get('parent', None),
@@ -421,7 +421,7 @@ class DescriptorType(Entity):
                                     'value0': v.get('value0', None),
                                     'value1': v.get('value1', None),
                                 })
-                            elif next_value and value and value > next_value:
+                            elif cursor_value and value and value > cursor_value:
                                 values_list.append({
                                     'id': k,
                                     'parent': v.get('parent', None),
@@ -472,75 +472,69 @@ class DescriptorType(Entity):
             else:
                 qs = self.values_set.all()
 
-            # @todo how to filter if not unique on value0 or value1
-
             if sort_by == 'id':
-                next_code = str(cursor.split('/')[0]) if cursor else None
+                cursor_code = str(cursor.split('/')[0]) if cursor else None
 
+                # code is unique (per language)
                 if reverse:
-                    if next_code:
-                        qs = qs.filter(code__lt=next_code).order_by('-code')
-                    else:
-                        qs = qs.order_by('-code')
+                    if cursor_code:
+                        qs = qs.filter(code__lt=cursor_code)
+
+                    qs = qs.order_by('-code')
                 else:
-                    if next_code:
-                        qs = qs.filter(code__gt=next_code).order_by('code')
-                    else:
-                        qs = qs.order_by('code')
+                    if cursor_code:
+                        qs = qs.filter(code__gt=cursor_code)
+
+                    qs = qs.order_by('code')
             elif sort_by == 'ordinal':
-                next_ordinal, next_code = cursor.split('/') if cursor else (None, None)
+                cursor_ordinal, cursor_code = cursor.split('/') if cursor else (None, None)
 
-                if next_ordinal:
-                    next_ordinal = int(next_ordinal)
+                if cursor_ordinal:
+                    cursor_ordinal = int(cursor_ordinal)
 
+                # ordinal is unique (per language)
                 if reverse:
-                    if next_ordinal:
-                        qs = qs.filter(ordinal__lt=next_ordinal).order_by('-ordinal', 'code')
-                    elif next_code:
-                        qs = qs.filter(code__gt=next_code).order_by('-ordinal', 'code')
-                    else:
-                        qs = qs.order_by('-ordinal', 'code')
+                    if cursor_ordinal:
+                        qs = qs.filter(ordinal__lt=cursor_ordinal)
+
+                    qs = qs.order_by('-ordinal', 'code')
                 else:
-                    if next_ordinal:
-                        qs = qs.filter(ordinal__gt=next_ordinal).order_by('ordinal', 'code')
-                    elif next_code:
-                        qs = qs.filter(code__gt=next_code).order_by('ordinal', 'code')
-                    else:
-                        qs = qs.order_by('ordinal', 'code')
+                    if cursor_ordinal:
+                        qs = qs.filter(ordinal__gt=cursor_ordinal)
+
+                    qs = qs.order_by('ordinal', 'code')
             elif sort_by == 'value0':
-                next_value0, next_code = cursor.split('/') if cursor else (None, None)
+                cursor_value0, cursor_code = cursor.split('/') if cursor else (None, None)
 
+                # value0 can be non unique
                 if reverse:
-                    if next_value0:
-                        qs = qs.filter(value0__lt=next_value0).order_by('-value0', 'code')
-                    elif next_code:
-                        qs = qs.filter(code__gt=next_code).order_by('-value0', 'code')
-                    else:
-                        qs = qs.order_by('-value0', 'code')
+                    if cursor_value0:
+                        qs = qs.filter(Q(value0__lte=cursor_value0) & Q(value0__lt=cursor_value0) | (
+                                       Q(value0=cursor_value0) & Q(code__gt=cursor_code)))
+
+                    qs = qs.order_by('-value0', 'code')
                 else:
-                    if next_value0:
-                        qs = qs.filter(value0__gt=next_value0).order_by('value0', 'code')
-                    elif next_code:
-                        qs = qs.filter(code__gt=next_code).order_by('value0', 'code')
-                    else:
-                        qs = qs.order_by('value0', 'code')
+                    if cursor_value0:
+                        qs = qs.filter(Q(value0__gte=cursor_value0) & Q(value0__gt=cursor_value0) | (
+                                       Q(value0=cursor_value0) & Q(code__gt=cursor_code)))
+
+                    qs = qs.order_by('value0', 'code')
             elif sort_by == 'value1':
-                next_value1, next_code = cursor.split('/') if cursor else (None, None)
+                cursor_value1, cursor_code = cursor.split('/') if cursor else (None, None)
 
+                # value1 can be non unique
                 if reverse:
-                    if next_value1:
-                        qs = qs.filter(value1__lt=next_value1).order_by('-value1', 'code')
-                    elif next_code:
-                        qs = qs.filter(code__gt=next_code).order_by('-value1', 'code')
-                    else:
-                        qs = qs.order_by('-value1', 'code')
+                    if cursor_value1:
+                        qs = qs.filter(Q(value1__lte=cursor_value1) & Q(value1__lt=cursor_value1) | (
+                                       Q(value1=cursor_value1) & Q(code__gt=cursor_code)))
+
+                    qs = qs.order_by('-value1', 'code')
                 else:
-                    if next_value1:
-                        qs = qs.filter(value1__gt=next_value1).order_by('value1', 'code')
-                    elif next_code:
-                        qs = qs.filter(code__gt=next_code).order_by('value1', 'code')
-                    else:
-                        qs = qs.order_by('value1', 'code')
+                    if cursor_value1:
+                        qs = qs.filter(Q(value1__gte=cursor_value1) & Q(value1__gt=cursor_value1) | (
+                            Q(value1=cursor_value1) & Q(code__gt=cursor_code)))
+
+                    qs = qs.order_by('value1', 'code')
 
             qs = qs[:limit]
 
@@ -603,7 +597,7 @@ class DescriptorType(Entity):
     def search_values(self, field_value, field_name="code", cursor=None, limit=30):
         """
         Search for values starting by value1, value2 or ordinal according to the
-        descriptor code and the current language.
+        descriptor code and the current language. Always in ASC order.
 
         :param value:
         :return: The list of values with name starting with field_value on field_name.
@@ -612,7 +606,7 @@ class DescriptorType(Entity):
         lang = translation.get_language()
         trans = format.get('trans', False)
 
-        next_value, next_code = cursor.split('/') if cursor else (None, None)
+        cursor_value, cursor_code = cursor.split('/') if cursor else (None, None)
 
         values_list = []
 
@@ -626,63 +620,99 @@ class DescriptorType(Entity):
             else:
                 values = json.loads(self.values)
 
+            # ordinal means unique result, so no cursor/limit
             if field_name == "ordinal":
-                for value in values:
-                    if value.ordinal == field_value:
+                for k, v in values.items():
+                    ordinal = v.get('ordinal')
+
+                    if ordinal == field_value:
                         values_list.append({
-                            'id': value.code,
-                            'parent': value.parent,
-                            'oridinal': value.ordinal,
-                            'value0': value.value0,
-                            'value1': value.value1
+                            'id': k,
+                            'parent': v.get('parent', None),
+                            'ordinal': v.get('ordinal', None),
+                            'value0': v.get('value0', None),
+                            'value1': v.get('value1', None),
                         })
                         break
-            elif field_name == "value0":
-                for value in values:
-                    if value.value0.startswith(field_value):
-                        values_list.append({
-                            'id': value.code,
-                            'parent': value.parent,
-                            'oridinal': value.ordinal,
-                            'value0': value.value0,
-                            'value1': value.value1
-                        })
-                values_list = sorted(values_list, key=lambda v: v['value0'])
+            elif field_name == "value0" or field_name == "value1":
+                if cursor_code is None:
+                    cursor_code = ""
 
-            elif field_name == "value1":
-                for value in values:
-                    if value.value1.startswith(field_value):
-                        values_list.append({
-                            'id': value.code,
-                            'parent': value.parent,
-                            'oridinal': value.ordinal,
-                            'value0': value.value0,
-                            'value1': value.value1
-                        })
-                values_list = sorted(values_list, key=lambda v: v['value0'])
+                extra_list = []
 
-                # @todo cursor, limit
+                if cursor:
+                    for k, v in values.items():
+                        value = v.get(field_name)
+
+                        # if value is None:
+                        #     raise SuspiciousOperation("Invalid value for field")
+
+                        # if value is "" and k > cursor_code:
+                        if value.startswith(field_value):
+                            if value is None and k > cursor_code:
+                                extra_list.append({
+                                    'id': k,
+                                    'parent': v.get('parent', None),
+                                    'ordinal': v.get('ordinal', None),
+                                    'value0': v.get('value0', None),
+                                    'value1': v.get('value1', None),
+                                })
+                            elif cursor_value and value and value > cursor_value:
+                                values_list.append({
+                                    'id': k,
+                                    'parent': v.get('parent', None),
+                                    'ordinal': v.get('ordinal', None),
+                                    'value0': v.get('value0', None),
+                                    'value1': v.get('value1', None),
+                                })
+                else:
+                    for k, v in values.items():
+                        value = v.get(field_name)
+
+                        if value.startswith(field_value):
+                            values_list.append({
+                                'id': k,
+                                'parent': v.get('parent', None),
+                                'ordinal': v.get('ordinal', None),
+                                'value0': v.get('value0', None),
+                                'value1': v.get('value1', None),
+                            })
+
+                # values_list = sorted(values_list, key=lambda v: v[field_name])
+
+                def sort_method(v):
+                    if v[field_name]:
+                        return v[field_name]+v['id']
+                    else:
+                        return v['id']
+
+                values_list = sorted(values_list, key=sort_method)[:limit]
+                extra_size = limit - len(values_list)
+
+                if extra_size > 0:
+                    extra_list = sorted(extra_list, key=lambda v: v['id'])[:extra_size]
+                    values_list += extra_list
         else:
             if trans:
-                qs = DescriptorValue.objects.filter(language=lang)
+                qs = self.values_set.filter(language=lang)
             else:
-                qs = DescriptorValue.objects
+                qs = self.values_set
             if field_name == "ordinal":
                 # single result
                 qs = qs.filter(ordinal=field_value)
             elif field_name == "value0":
                 qs = qs.filter(value0__istartswith=field_value)
-                if next_value is not None:
-                    qs = qs.filter(value0__gt=next_value)
-                    # @todo how to filter if not unique on value0
-                    # qs = qs.filter(code__gt=next_code)
+                if cursor_value is not None:
+                    qs = qs.filter(Q(value0__gte=cursor_value) & Q(value0__gt=cursor_value) | (
+                                   Q(value0=cursor_value) & Q(code__gt=cursor_code)))
+
                 qs = qs.order_by('value0', 'code')
             elif field_name == "value1":
                 qs = qs.filter(value1__istartswith=field_value)
-                if next_value is not None:
-                    qs = qs.filter(value1__gt=next_value)
-                    # @todo how to filter if not unique on value1
-                    #qs = qs.filter(code__gt=next_code)
+                if cursor_value is not None:
+                    qs = qs.filter(Q(value1__gte=cursor_value) & Q(value1__gt=cursor_value) | (
+                                   Q(value1=cursor_value) & Q(code__gt=cursor_code)))
+
                 qs = qs.order_by('value1', 'code')
 
             qs = qs[:limit]
@@ -691,7 +721,7 @@ class DescriptorType(Entity):
                 values_list.append({
                     'id': value.code,
                     'parent': value.parent,
-                    'oridinal': value.ordinal,
+                    'ordinal': value.ordinal,
                     'value0': value.value0,
                     'value1': value.value1
                 })

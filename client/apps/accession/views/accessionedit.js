@@ -580,7 +580,12 @@ var View = Marionette.ItemView.extend({
     },
 
     onApply: function () {
-        Backbone.history.navigate('app/accession/accession/' + this.model.get('id') + '/', {trigger: true, replace: true});
+        var model = this.model;
+
+        this.model.save(data, {wait: true}).done(function() {
+            // redirect to accession view
+            Backbone.history.navigate('app/accession/accession/' + model.get('id') + '/', {trigger: true, replace: true});
+        });
     },
 });
 
