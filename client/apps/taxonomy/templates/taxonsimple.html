@@ -1,0 +1,13 @@
+<span style="font-weight:bold; font-size:18px; margin-bottom: 15px;">
+        <% for (var i = parent_details.length-1; i >= 0; --i) { %>
+        <span>
+            <span data-taxon-id="<%= parent_details[i].id %>"><%= parent_details[i].name %></span>
+            <span class="taxon-rank badge left-margin" value="<%= parent_details[i].rank %>"></span>
+        </span>
+        <span class="glyphicon glyphicon-chevron-right"></span>
+    <% } %>
+    <span>
+        <span class="name entity"><%- entity_name %></span>
+    </span>&nbsp;
+    <!-- <span class="glyphicon glyphicon-edit action change-parent"></span> -->
+</span>

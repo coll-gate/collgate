@@ -20,7 +20,7 @@ from igdectk.rest.response import HttpResponseRest
 
 from main.models import InterfaceLanguages
 from .descriptor import RestDescriptor
-from .models import DescriptorModel, DescriptorPanel, DescriptorMetaModel
+from .models import DescriptorModel, DescriptorPanel, DescriptorMetaModel, DescriptorModelTypeCondition
 
 
 class RestDescriptorMetaModel(RestDescriptor):
@@ -51,6 +51,11 @@ class RestDescriptorMetaModelIdLabel(RestDescriptorMetaModelId):
 class RestDescriptorMetaModelIdPanel(RestDescriptorMetaModelId):
     regex = r'^panel/$'
     suffix = 'panel'
+
+
+class RestDescriptorMetaModelIdLayout(RestDescriptorMetaModelId):
+    regex = r'^layout/$'
+    suffix = 'layout'
 
 
 class RestDescriptorMetaModelIdPanelOrder(RestDescriptorMetaModelIdPanel):
@@ -280,6 +285,80 @@ def patch_descriptor_meta_model(request, id):
     }
 
     return HttpResponseRest(request, result)
+
+
+@RestDescriptorMetaModelIdLayout.def_auth_request(Method.GET, Format.JSON)
+def get_descriptor_meta_model_layout(request, id):
+    """
+    Return the structure of panels of descriptors with descriptor models, descriptors model types, descriptor type.
+    """
+    dmm_id = int(id)
+
+    dmm = get_object_or_404(DescriptorMetaModel, id=dmm_id)
+
+    dps = DescriptorPanel.objects.filter(descriptor_meta_model=dmm).order_by('position')
+    dps.select_related('descriptor_model')
+
+    panels = []
+
+    for panel in dps:
+        descriptor_model = panel.descriptor_model
+
+        dmts = []
+
+        for dmt in descriptor_model.descriptor_model_types.all().order_by('position').select_related('descriptor_type'):
+            descriptor_type = dmt.descriptor_type
+
+            # values are loaded on demand (displaying the panel or opening the dropdown)
+            format = json.loads(descriptor_type.format)
+
+            conditions = DescriptorModelTypeCondition.objects.filter(descriptor_model_type_id=dmt.id)
+
+            if conditions.exists():
+                dmtc = conditions[0]
+
+                condition = {
+                    'defined': True,
+                    'condition': dmtc.condition,
+                    'target': dmtc.target.id,
+                    'values': json.loads(dmtc.values)
+                }
+            else:
+                condition = {
+                    'defined': False,
+                    'condition': 0,
+                    'target': 0,
+                    'values': None
+                }
+
+            dmts.append({
+                'id': dmt.id,
+                'name': dmt.name,
+                'label': dmt.get_label(),
+                'condition': condition,
+                'mandatory': dmt.mandatory,
+                'set_once': dmt.set_once,
+                'descriptor_type': {
+                    'id': descriptor_type.id,
+                    'group': descriptor_type.group_id,
+                    'code': descriptor_type.code,
+                    'format': format
+                }
+            })
+
+        panels.append({
+            'id': panel.id,
+            'position': panel.position,
+            'name': panel.name,
+            'label': panel.get_label(),
+            'descriptor_model': {
+                'id': descriptor_model.id,
+                'name': descriptor_model.name,
+                'descriptor_model_types': dmts
+            }
+        })
+
+    return HttpResponseRest(request, panels)
 
 
 @RestDescriptorMetaModelSearch.def_auth_request(Method.GET, Format.JSON, ('filters',), staff=True)

@@ -1,0 +1,47 @@
+<!--
+ - @file describableedit.html
+ - @brief Template for the edition of a describable entity
+ - @author Frederic SCHERMA
+ - @date 2016-12-09
+ - @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+ - @license @todo
+ - @details
+-->
+
+<div class="panels panel-group" style="margin-top: 10px;">
+    <% var pi = 0; %>
+    <% _.each(panels, function(panel) { %>
+        <div class="panel panel panel-default" name="<%= panel.name %>" panel-id="<%= panel.id %>">
+            <% var collapsed = pi > 0 ? "collapsed" : ""; %>
+            <div class="panel-heading" data-toggle="tooltip" data-placement="left" title="<%= gt.gettext('Collapse/Expand') %>">
+                <a class="accordion-toggle <%= collapsed %>" data-toggle="collapse" href="#collapse<%= pi %>"><%= panel.label %></a>
+            </div>
+            <% var inout = pi == 0 ? "in" : ""; %>
+            <div id="collapse<%= pi %>" class="panel-collapse collapse <%= inout %>">
+                <div class="descriptors">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th><%= gt.gettext("Descriptor") %></th>
+                                <th><%= gt.gettext("Value") %></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% var i = 0; %>
+                            <% _.each(panel.descriptor_model.descriptor_model_types, function(descriptor_model_type) { %>
+                                <% var format = descriptor_model_type.descriptor_type.format; %>
+                                <% var mandatory = descriptor_model_type.mandatory ? "mandatory-field" : ""; %>
+                                <tr class="descriptor" panel-index="<%= pi %>" index="<%= i %>" descriptor-model-type="<%= descriptor_model_type.id %>" name="<%= descriptor_model_type.descriptor_type.code %>">
+                                    <td class="descriptor-name <%= mandatory %>" style="padding-top: 15px;"><%= descriptor_model_type.label %></td>
+                                    <td class="descriptor-value" format-type="<%= format.type %>"></td>
+                                </tr>
+                                <% ++i; %>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <% ++pi %>
+    <% }) %>
+</div>

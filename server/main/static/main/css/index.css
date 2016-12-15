@@ -278,3 +278,12 @@ span[name='label']:not(:empty) ~ span.label-placeholder {
 .panel-heading .accordion-toggle.collapsed:after {
     content: "\e080";
 }
+
+.mandatory-field {
+    font-weight: bold;
+    font-style: italic;
+}
+
+.mandatory-field:after {
+    content: '*';
+}

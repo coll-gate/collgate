@@ -24,6 +24,7 @@ var AccessionEditView = require('../views/accessionedit');
 
 var DefaultLayout = require('../../main/views/defaultlayout');
 var TitleView = require('../../main/views/titleview');
+var DescribableLayout = require('../../descriptor/views/describablelayout');
 
 var Router = Marionette.AppRouter.extend({
     routes : {
@@ -67,9 +68,6 @@ var Router = Marionette.AppRouter.extend({
 
             var view = new AccessionEditView({model: model});
             defaultLayout.getRegion('content').show(view);
-
-            // @todo create view with Create/Cancel buttons
-            //model.save({wait: true});
         });
     },
 

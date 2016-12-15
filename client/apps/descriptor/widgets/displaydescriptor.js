@@ -8,8 +8,6 @@
  * @details
  */
 
-var Marionette = require('backbone.marionette');
-
 var DisplayDescriptor = {
     initAutocomplete: function(format, url, view, select, definesValues, defaultValues) {
         if (typeof definesValues === "undefined") {
@@ -21,9 +19,9 @@ var DisplayDescriptor = {
                 var initials = [];
 
                 var params = {
+                    data: initials,
                     dropdownParent: $(view.el),
                     ajax: {
-                        data: initials,
                         url: url + 'value/display/search/',
                         dataType: 'json',
                         delay: 250,
@@ -32,7 +30,7 @@ var DisplayDescriptor = {
 
                             return {
                                 cursor: params.next,
-                                value: params.term,
+                                value: params.term
                             };
                         },
                         processResults: function (data, params) {
@@ -62,7 +60,7 @@ var DisplayDescriptor = {
                     },
                     allowClear: true,
                     minimumInputLength: 3,
-                    placeholder: gt.gettext("Enter a value. 3 characters at least for auto-completion"),
+                    placeholder: gt.gettext("Enter a value. 3 characters at least for auto-completion")
                 };
 
                 // autoselect the initial value
@@ -70,7 +68,7 @@ var DisplayDescriptor = {
                     $.ajax({
                         type: "GET",
                         url: url + 'value/' + defaultValues[0] + '/display/',
-                        dataType: 'json',
+                        dataType: 'json'
                     }).done(function (data) {
                         initials.push({id: data.id, text: data.label});
 
@@ -99,9 +97,9 @@ var DisplayDescriptor = {
             var initials = [];
 
             var params = {
+                data: initials,
                 dropdownParent: $(view.el),
                 ajax: {
-                    data: initials,
                     url: url + 'search/',
                     dataType: 'json',
                     delay: 250,
@@ -114,7 +112,7 @@ var DisplayDescriptor = {
                                 fields: ['name'],
                                 name: params.term
                             }),
-                            cursor: params.next,
+                            cursor: params.next
                         };
                     },
                     processResults: function (data, params) {
@@ -144,7 +142,7 @@ var DisplayDescriptor = {
                 },
                 allowClear: true,
                 minimumInputLength: 3,
-                placeholder: gt.gettext("Enter a value. 3 characters at least for auto-completion"),
+                placeholder: gt.gettext("Enter a value. 3 characters at least for auto-completion")
             };
 
             // autoselect the initial value
@@ -152,7 +150,7 @@ var DisplayDescriptor = {
                 $.ajax({
                     type: "GET",
                     url: url + defaultValues[0] + '/',
-                    dataType: 'json',
+                    dataType: 'json'
                 }).done(function (data) {
                     initials.push({id: data.id, text: data.name});
 
@@ -181,7 +179,7 @@ var DisplayDescriptor = {
                 // refresh values
                 $.ajax({
                     url: url + 'value/display',
-                    dataType: 'json',
+                    dataType: 'json'
                 }).done(function (data) {
                     for (var i = 0; i < data.length; ++i) {
                         var option = $("<option></option>");
@@ -294,16 +292,16 @@ var DisplayDescriptor = {
         }).on('dp.show', function (e) {
             // fix position when parent has overflow-y defined
             // https://github.com/Eonasdan/bootstrap-datetimepicker/issues/790
-            var datetimepicker = $('body').find('.bootstrap-datetimepicker-widget:last'),
-                position = datetimepicker.offset(),
-                parent = datetimepicker.parent(),
+            var dateTimePicker = $('body').find('.bootstrap-datetimepicker-widget:last'),
+                position = dateTimePicker.offset(),
+                parent = dateTimePicker.parent(),
                 parentPos = parent.offset(),
-                width = datetimepicker.width(),
+                width = dateTimePicker.width(),
                 parentWid = parent.width();
 
-            // move datetimepicker to the exact same place it was but attached to body
-            datetimepicker.appendTo('body');
-            datetimepicker.css({
+            // move dateTimePicker to the exact same place it was but attached to body
+            dateTimePicker.appendTo('body');
+            dateTimePicker.css({
                 position: 'absolute',
                 top: position.top,
                 bottom: 'auto',
@@ -312,17 +310,17 @@ var DisplayDescriptor = {
                 'z-index': 10001
             });
 
-            // if datetimepicker is wider than the thing it is attached to then move it so the centers line up
+            // if dateTimePicker is wider than the thing it is attached to then move it so the centers line up
             if (parentPos.left + parentWid < position.left + width) {
                 var newLeft = parentPos.left;
                 newLeft += parentWid / 2;
                 newLeft -= width / 2;
-                datetimepicker.css({left: newLeft});
+                dateTimePicker.css({left: newLeft});
             }
         });
 
         if (definesValues) {
-            var date = moment(defaultValues[0])
+            var date = moment(defaultValues[0]);
             $("#simple_value").val(date.format($.datepicker._defaults.dateFormat.toUpperCase()));
         }
     },
@@ -340,16 +338,16 @@ var DisplayDescriptor = {
             allowInputToggle: true
         }).on('dp.show', function (e) {
             // fix position when parent has overflow-y defined
-            var datetimepicker = $('body').find('.bootstrap-datetimepicker-widget:last'),
-                position = datetimepicker.offset(),
-                parent = datetimepicker.parent(),
+            var dateTimePicker = $('body').find('.bootstrap-datetimepicker-widget:last'),
+                position = dateTimePicker.offset(),
+                parent = dateTimePicker.parent(),
                 parentPos = parent.offset(),
-                width = datetimepicker.width(),
+                width = dateTimePicker.width(),
                 parentWid = parent.width();
 
             // move datetimepicker to the exact same place it was but attached to body
-            datetimepicker.appendTo('body');
-            datetimepicker.css({
+            dateTimePicker.appendTo('body');
+            dateTimePicker.css({
                 position: 'absolute',
                 top: position.top,
                 bottom: 'auto',
@@ -358,12 +356,12 @@ var DisplayDescriptor = {
                 'z-index': 10001
             });
 
-            // if datetimepicker is wider than the thing it is attached to then move it so the centers line up
+            // if dateTimePicker is wider than the thing it is attached to then move it so the centers line up
             if (parentPos.left + parentWid < position.left + width) {
                 var newLeft = parentPos.left;
                 newLeft += parentWid / 2;
                 newLeft -= width / 2;
-                datetimepicker.css({left: newLeft});
+                dateTimePicker.css({left: newLeft});
             }
         });
 
@@ -386,16 +384,16 @@ var DisplayDescriptor = {
             allowInputToggle: true
         }).on('dp.show', function (e) {
             // fix position when parent has overflow-y defined
-            var datetimepicker = $('body').find('.bootstrap-datetimepicker-widget:last'),
-                position = datetimepicker.offset(),
-                parent = datetimepicker.parent(),
+            var dateTimePicker = $('body').find('.bootstrap-datetimepicker-widget:last'),
+                position = dateTimePicker.offset(),
+                parent = dateTimePicker.parent(),
                 parentPos = parent.offset(),
-                width = datetimepicker.width(),
+                width = dateTimePicker.width(),
                 parentWid = parent.width();
 
-            // move datetimepicker to the exact same place it was but attached to body
-            datetimepicker.appendTo('body');
-            datetimepicker.css({
+            // move dateTimePicker to the exact same place it was but attached to body
+            dateTimePicker.appendTo('body');
+            dateTimePicker.css({
                 position: 'absolute',
                 top: position.top,
                 bottom: 'auto',
@@ -404,17 +402,17 @@ var DisplayDescriptor = {
                 'z-index': 10001
             });
 
-            // if datetimepicker is wider than the thing it is attached to then move it so the centers line up
+            // if dateTimePicker is wider than the thing it is attached to then move it so the centers line up
             if (parentPos.left + parentWid < position.left + width) {
                 var newLeft = parentPos.left;
                 newLeft += parentWid / 2;
                 newLeft -= width / 2;
-                datetimepicker.css({left: newLeft});
+                dateTimePicker.css({left: newLeft});
             }
         });
 
         if (definesValues) {
-            var date = moment(defaultValues[0])
+            var date = moment(defaultValues[0]);
             $("#simple_value").val(date.format($.datepicker._defaults.dateFormat.toUpperCase() + ' HH:mm:ss'));
         }
     },
@@ -449,7 +447,7 @@ var DisplayDescriptor = {
             // @todo .toFixed(....) for read value ?
             $(input).numeric({
                 allowPlus           : false,
-                allowMinus          : format.range[0] < 0 ? true : false,
+                allowMinus          : format.range[0] < 0,
                 allowThouSep        : false,
                 allowDecSep         : true,
                 allowLeadingSpaces  : false,
@@ -462,7 +460,7 @@ var DisplayDescriptor = {
         } else if (format.type === "ordinal") {
             $(input).numeric({
                 allowPlus           : false,
-                allowMinus          : format.range[0] < 0 ? true : false,
+                allowMinus          : format.range[0] < 0,
                 allowThouSep        : false,
                 allowDecSep         : false,
                 allowLeadingSpaces  : false,
@@ -553,7 +551,7 @@ var DisplayDescriptor = {
         if (definesValues) {
             input.val(defaultValues[0]);
         }
-    },
+    }
 };
 
 module.exports = DisplayDescriptor;

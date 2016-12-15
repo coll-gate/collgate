@@ -1,5 +1,5 @@
 /**
- * @file descriptortype.js
+ * @file descriptormodeltype.js
  * @brief Type of descriptor item view
  * @author Frederic SCHERMA
  * @date 2016-07-21
@@ -12,7 +12,6 @@ var Marionette = require('backbone.marionette');
 var Dialog = require('../../main/views/dialog');
 
 var DescriptorTypeModel = require('../models/descriptortype');
-var DescriptorModelTypeModel = require('../models/descriptormodeltype');
 
 var DisplayDescriptor = require('../widgets/displaydescriptor');
 
@@ -23,7 +22,7 @@ var View = Marionette.ItemView.extend({
     template: require('../templates/descriptormodeltype.html'),
 
     attributes: {
-        draggable: true,
+        draggable: true
     },
 
     ui: {
@@ -45,7 +44,7 @@ var View = Marionette.ItemView.extend({
         'click @ui.label': 'editLabel',
         'click @ui.mandatory': 'toggleMandatory',
         'click @ui.set_once': 'toggleSetOnce',
-        'click @ui.condition': 'editCondition',
+        'click @ui.condition': 'editCondition'
     },
 
     initialize: function() {
@@ -132,15 +131,15 @@ var View = Marionette.ItemView.extend({
                 template: require('../templates/descriptormodeltypecreate.html'),
 
                 attributes: {
-                    id: "dlg_define_label",
+                    id: "dlg_define_label"
                 },
 
                 ui: {
-                    label: "#label",
+                    label: "#label"
                 },
 
                 events: {
-                    'input @ui.label': 'onLabelInput',
+                    'input @ui.label': 'onLabelInput'
                 },
 
                 initialize: function (options) {
@@ -203,7 +202,7 @@ var View = Marionette.ItemView.extend({
                             }
                         });
                     }
-                },
+                }
             });
 
             var definesLabel = new DefinesLabel({
@@ -301,7 +300,7 @@ var View = Marionette.ItemView.extend({
         $.ajax({
             type: "GET",
             url: this.model.url() + 'label/',
-            dataType: 'json',
+            dataType: 'json'
         }).done(function (data) {
             var labels = data;
 
@@ -309,20 +308,20 @@ var View = Marionette.ItemView.extend({
                 template: require('../templates/descriptormodeltypechangelabel.html'),
                 templateHelpers: function () {
                     return {
-                        labels: labels,
+                        labels: labels
                     };
                 },
 
                 attributes: {
-                    id: "dlg_change_labels",
+                    id: "dlg_change_labels"
                 },
 
                 ui: {
-                    label: "#descriptor_model_type_labels input",
+                    label: "#descriptor_model_type_labels input"
                 },
 
                 events: {
-                    'input @ui.label': 'onLabelInput',
+                    'input @ui.label': 'onLabelInput'
                 },
 
                 initialize: function (options) {
@@ -385,7 +384,7 @@ var View = Marionette.ItemView.extend({
                             view.remove();
                         });
                     }
-                },
+                }
             });
 
             var changeLabel = new ChangeLabel({model: model});
@@ -425,7 +424,7 @@ var View = Marionette.ItemView.extend({
         $.ajax({
             type: "GET",
             url: this.model.url() + 'condition/',
-            dataType: 'json',
+            dataType: 'json'
         }).done(function (data) {
             var condition = data;
 
@@ -434,12 +433,12 @@ var View = Marionette.ItemView.extend({
                 templateHelpers: function () {
                     return {
                         targets: model.collection.models,
-                        condition: condition,
+                        condition: condition
                     };
                 },
 
                 attributes: {
-                    id: "dlg_change_condition",
+                    id: "dlg_change_condition"
                 },
 
                 ui: {
@@ -460,7 +459,7 @@ var View = Marionette.ItemView.extend({
                 events: {
                     'change @ui.condition': 'onSelectCondition',
                     'change @ui.target': 'onSelectTarget',
-                    'click @ui.destroy': 'onDestroyCondition',
+                    'click @ui.destroy': 'onDestroyCondition'
                 },
 
                 initialize: function (options) {
@@ -537,7 +536,7 @@ var View = Marionette.ItemView.extend({
                                 view.ui.autocomplete_value_group.hide(false);
                             }
                         });
-                    };
+                    }
                 },
 
                 onSelectCondition: function () {
@@ -684,7 +683,7 @@ var View = Marionette.ItemView.extend({
                     $.ajax({
                         type: "DELETE",
                         url: model.url() + "condition/",
-                        contentType: "application/json; charset=utf-8",
+                        contentType: "application/json; charset=utf-8"
                     }).done(function() {
                         $.alert.success(gt.gettext("Successfully removed !"));
                     }).always(function() {
@@ -699,7 +698,7 @@ var View = Marionette.ItemView.extend({
 
                     var data = {
                         target: parseInt(this.ui.target.val()),
-                        condition: parseInt(this.ui.condition.val()),
+                        condition: parseInt(this.ui.condition.val())
                     };
 
                     if (!this.descriptorType) {
@@ -764,7 +763,7 @@ var View = Marionette.ItemView.extend({
                             view.remove();
                         });
                     }
-                },
+                }
             });
 
             var changeCondition = new ChangeCondition({model: model, condition: condition});

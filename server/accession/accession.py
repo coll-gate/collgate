@@ -43,6 +43,9 @@ class RestAccessionSynonym(RestAccessionAccession):
                 "type": "object",
                 "properties": {
                     "name": {"type": "string", 'minLength': 3, 'maxLength': 32},
+                    "meta_model": {"type": "number"},
+                    "parent": {"type": "number"},
+                    "descriptors": {"type": "object"}
                 },
             },
         },
@@ -57,11 +60,22 @@ def create_accession(request):
         accession['name'],
     )
 
+    # @todo check meta model
+
+    # common properties
     # @todo
+
+    # parent taxon or variety
+    # @todo
+
+    # descriptors
+    # @todo check mandatory, check fields values in describable
+
 
     response = {
         'id': accession.pk,
         'name': accession.name,
+        # @todo meta_model, parent, descriptors, structure of panels ?
     }
 
     return HttpResponseRest(request, response)

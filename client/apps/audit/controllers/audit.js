@@ -248,8 +248,7 @@ var Controller = Marionette.Controller.extend({
                     model: model,
                     object_id: object_id
                 },
-            }).done
-            (function (data) {
+            }).done(function (data) {
                 defaultLayout.getRegion('title').show(new TitleView({
                     title: gt.gettext("List of audit entries related to entity"),
                     object: data.name
