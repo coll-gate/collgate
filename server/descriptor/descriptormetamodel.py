@@ -358,7 +358,15 @@ def get_descriptor_meta_model_layout(request, id):
             }
         })
 
-    return HttpResponseRest(request, panels)
+    results = {
+        'id': dmm.id,
+        'label': dmm.get_label(),
+        'description': dmm.description,
+        'target': ".".join(dmm.target.natural_key()),
+        'panels': panels
+    }
+
+    return HttpResponseRest(request, results)
 
 
 @RestDescriptorMetaModelSearch.def_auth_request(Method.GET, Format.JSON, ('filters',), staff=True)

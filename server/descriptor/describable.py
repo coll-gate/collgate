@@ -48,7 +48,7 @@ def get_describable_list(request):
 def get_describable_panels(descriptor_meta_model_id, app_label, model):
     """
     Return the structure of panels of descriptors with descriptor models, descriptors model types, descriptor type.
-
+    :deprecated
     :param descriptor_meta_model_id: Unique descriptor metal model identifier
     :param app_label: Application label of the describable model
     :param model: Name of the model of the describable entity

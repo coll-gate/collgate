@@ -12,13 +12,8 @@ var Backbone = require('backbone');
 
 var Model = Backbone.Model.extend({
     url: function() {
-        if (this.isNew()) {
-            if (this.get('meta_model') && Object.keys(this.get('descriptors')).length == 0) {
-                return application.baseUrl + 'accession/accession/create/' + this.get('meta_model') + '/';
-            } else {
-                return application.baseUrl + 'accession/accession/';
-            }
-        }
+        if (this.isNew())
+            return application.baseUrl + 'accession/accession/';
         else
             return application.baseUrl + 'accession/accession/' + this.get('id') + '/';
     },
@@ -27,8 +22,7 @@ var Model = Backbone.Model.extend({
         id: null,
         name: '',
         parent: undefined,
-        parent_list: [],
-        meta_model: undefined,
+        descriptor_meta_model: undefined,
         descriptors: {}
     },
 

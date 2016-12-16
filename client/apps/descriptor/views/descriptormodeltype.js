@@ -711,8 +711,10 @@ var View = Marionette.ItemView.extend({
                     if (data.condition == 2 || data.condition == 3) {
                         if ((format.type.startsWith('enum_') && format.list_type == "autocomplete") || (format.type === "entity")) {
                             data.values = [this.ui.autocomplete_value.val()];
-                        } else if ((format.list_type === "dropdown") || (format.type === 'boolean')) {
+                        } else if (format.list_type === "dropdown") {
                             data.values = [this.ui.select_value.val()];
+                        } else if (format.type === 'boolean') {
+                            data.values = [this.ui.select_value.val() === "true"];
                         } else if (format.type === 'ordinal') {
                             // max 256 values for a dropdown
                             if ((format.range[1] - format.range[0] + 1) <= 256) {
@@ -729,8 +731,14 @@ var View = Marionette.ItemView.extend({
                         } else if (format.type === "datetime") {
                             // format to iso datetime
                             data.values = [$("#simple_value").parent().data('DateTimePicker').viewDate().format()];
+                        } else if (format.type === "string") {
+                            // text (already validated)
+                            data.values = [this.ui.simple_value.val()];
+                        } else if (format.type === "numeric") {
+                            // numeric (already validated)
+                            data.values = [this.ui.simple_value.val()];
                         } else {
-                            // numeric, text (already validated)
+                            // ???
                             data.values = [this.ui.simple_value.val()];
                         }
                     } else {

@@ -194,7 +194,7 @@ var Controller = Marionette.Controller/*Object*/.extend({
                         var model = new AccessionModel({
                             name: name,
                             parent: parent,
-                            meta_model: metaModel
+                            descriptor_meta_model: metaModel
                         });
 
                         view.remove();
@@ -217,7 +217,8 @@ var Controller = Marionette.Controller/*Object*/.extend({
                             url: application.baseUrl + 'descriptor/meta-model/' + metaModel + '/layout/',
                             dataType: 'json',
                         }).done(function(data) {
-                            var view = new AccessionEditView({model: model, panels: data});
+
+                            var view = new AccessionEditView({model: model, descriptorMetaModelLayout: data});
                             describableLayout.getRegion('body').show(view);
                         });
                     }

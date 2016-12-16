@@ -5,10 +5,16 @@
 """
 coll-gate accession rest handler
 """
+from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import SuspiciousOperation
 from django.db.models import Q
+from django.shortcuts import get_object_or_404
+from django.utils import translation
 
+from descriptor.models import DescriptorMetaModel
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
+from taxonomy.models import Taxon
 
 from .models import Accession, AccessionSynonym
 from .base import RestAccession
@@ -39,43 +45,57 @@ class RestAccessionSynonym(RestAccessionAccession):
 @RestAccessionAccession.def_auth_request(Method.POST, Format.JSON, content={
         "type": "object",
         "properties": {
-            "accession": {
-                "type": "object",
-                "properties": {
-                    "name": {"type": "string", 'minLength': 3, 'maxLength': 32},
-                    "meta_model": {"type": "number"},
-                    "parent": {"type": "number"},
-                    "descriptors": {"type": "object"}
-                },
-            },
+            "name": {"type": "string", 'minLength': 3, 'maxLength': 32},
+            "descriptor_meta_model": {"type": "number"},
+            "parent": {"type": "number"},
+            "descriptors": {"type": "object"}
         },
     }, perms={
         'accession.add_accession': _("You are not allowed to create an accession")
     }
 )
 def create_accession(request):
-    accession = request.data['accession']
+    name = request.data['name']
+    dmm_id = request.data['descriptor_meta_model']
+    parent_id = request.data['parent']
 
-    accession = Accession.create_accession(
-        accession['name'],
-    )
+    # check uniqueness of the name
+    if AccessionSynonym.objects.filter(name=name).exists():
+        raise SuspiciousOperation(_("The name of the accession is already used in a "))
 
-    # @todo check meta model
+    if Accession.objects.filter(name=name).exists():
+        raise SuspiciousOperation(_("The name of the accession is already used"))
+
+    content_type = get_object_or_404(ContentType, app_label="accession", model="accession")
+    dmm = get_object_or_404(DescriptorMetaModel, id=dmm_id, target=content_type)
 
     # common properties
-    # @todo
+    accession = Accession()
+    accession.name = name
+
+    lang = translation.get_language()
+
+    # first name a primary synonym
+    primary = AccessionSynonym(accession_id=accession.id, name=name, type='IN_001:0000001', language=lang)
 
     # parent taxon or variety
-    # @todo
+    parent = get_object_or_404(Taxon, id=parent_id)
+
+    # accession.taxon = parent
 
     # descriptors
+    descriptors = {}
     # @todo check mandatory, check fields values in describable
 
+    accession.save()
+    primary.save()
 
     response = {
         'id': accession.pk,
         'name': accession.name,
-        # @todo meta_model, parent, descriptors, structure of panels ?
+        'descriptor_meta_model': dmm.id,
+        'parent': parent.id,
+        'descriptors': descriptors
     }
 
     return HttpResponseRest(request, response)

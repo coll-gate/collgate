@@ -15,14 +15,30 @@ var DisplayDescriptor = require('../widgets/displaydescriptor');
 
 var View = ItemView.extend({
     tagName: 'div',
-    // template: require('../templates/*.html'),  // to be defined in inherited view
+    template: require('../templates/describableedit.html'),
+    templateHelpers: function () {
+        return {
+            panels: this.descriptorMetaModelLayout.panels,
+            target: this.descriptorMetaModelLayout.target
+        };
+    },
 
     ui: {
         "descriptor": "tr.descriptor",
+        "cancel": "button.cancel",
+        "apply": "button.apply"
     },
 
-    initialize: function() {
+    events: {
+        "click @ui.cancel": "onCancel",
+        "click @ui.apply": "onApply",
+    },
+
+    initialize: function(options) {
         View.__super__.initialize.apply(this);
+
+        this.descriptorMetaModelLayout = options.descriptorMetaModelLayout;
+
         this.listenTo(this.model, 'reset', this.render, this);
     },
 
@@ -37,7 +53,7 @@ var View = ItemView.extend({
 
             var pi = el.attr('panel-index');
             var i = el.attr('index');
-            var descriptorModelType = view.panels[pi].descriptor_model.descriptor_model_types[i];
+            var descriptorModelType = view.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
             var descriptorType = descriptorModelType.descriptor_type;
             var format = descriptorType.format;
 
@@ -236,7 +252,7 @@ var View = ItemView.extend({
 
             var pi = el.attr('panel-index');
             var i = el.attr('index');
-            var descriptorModelType = view.panels[pi].descriptor_model.descriptor_model_types[i];
+            var descriptorModelType = view.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
             var condition = descriptorModelType.condition;
 
             if (condition.defined) {
@@ -244,7 +260,7 @@ var View = ItemView.extend({
 
                 // search the target descriptor type for the condition
                 var target = view.$el.find("tr.descriptor[descriptor-model-type=" + condition.target + "]");
-                var targetDescriptorModelType = view.panels[target.attr('panel-index')].descriptor_model.descriptor_model_types[target.attr('index')];
+                var targetDescriptorModelType = view.descriptorMetaModelLayout.panels[target.attr('panel-index')].descriptor_model.descriptor_model_types[target.attr('index')];
                 var format = targetDescriptorModelType.descriptor_type.format;
 
                 if (format.type.startsWith('enum_')) {
@@ -452,10 +468,10 @@ var View = ItemView.extend({
     findDescriptorModelTypeForConditionTarget: function(target) {
         var pi = target.attr('panel-index');
         var i = target.attr('index');
-        var targetDescriptorModelType = this.panels[pi].descriptor_model.descriptor_model_types[i];
+        var targetDescriptorModelType = this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
 
         // find el from target
-        var descriptorModelTypes = this.panels[pi].descriptor_model.descriptor_model_types;
+        var descriptorModelTypes = this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types;
         for (var i = 0; i < descriptorModelTypes.length; ++i) {
             if (descriptorModelTypes[i].condition.target === targetDescriptorModelType.id) {
                 var descriptorModelType = descriptorModelTypes[i];
@@ -616,11 +632,65 @@ var View = ItemView.extend({
     },
 
     prepareDescriptors: function () {
+        var view = this;
+
         var descriptors = {};
 
-        // @todo
+        $.each(this.ui.descriptor, function(index) {
+            var el = $(this);
+
+            var pi = el.attr('panel-index');
+            var i = el.attr('index');
+            var descriptorModelType = view.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
+
+            var values = [null];
+    
+            if (el.css('display') !== "none") {
+                // take value
+                var format = descriptorModelType.descriptor_type.format;
+
+                if ((format.type.startsWith('enum_') && format.list_type == "autocomplete") || (format.type === "entity")) {
+                    values = [el.find('select').val()];
+                } else if (format.list_type === "dropdown") {
+                    values = [el.find('select').val()];
+                } else if (format.type === 'boolean') {
+                    values = [el.find('select').val() === "true"];
+                } else if (format.type === 'ordinal') {
+                    // max 256 values for a dropdown
+                    if ((format.range[1] - format.range[0] + 1) <= 256) {
+                        values = parseInt([el.find('select').val()]);
+                    } else {
+                        values = parseInt([el.find('input').val()]);
+                    }
+                } else if (format.type === "date") {
+                    // format to YYYYMMDD date
+                    values = [el.find('input').parent().data('DateTimePicker').viewDate().format("YYYYMMDD")];
+                } else if (format.type === "time") {
+                    // format to HH:mm:ss time
+                    values = [el.find('input').parent().data('DateTimePicker').viewDate().format("HH:mm:ss")]; // .MS
+                } else if (format.type === "datetime") {
+                    // format to iso datetime
+                    values = [el.find('input').parent().data('DateTimePicker').viewDate().format()];
+                } else if (format.type === "string") {
+                    // text (already validated)
+                    values = [el.find('input').val()];
+                } else if (format.type === "numeric") {
+                    // numeric, text (already validated)
+                    values = [el.find('input').val()];
+                } else {
+                    // ???
+                    values = [el.find('input').val()];
+                }
+            }
+
+            descriptors[descriptorModelType.descriptor_type.code] = values[0];
+        });
 
         return descriptors;
+    },
+
+    onCancel: function () {
+        Backbone.history.navigate('app/home/', {trigger: true, replace: true});
     }
 });
 

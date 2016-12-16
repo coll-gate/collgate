@@ -13,30 +13,7 @@ from main.models import Languages
 from .models import Accession, AccessionSynonym
 
 
-class Accession(object):
-
-    @classmethod
-    def create_accession(cls, name):
-        """
-        Create a new accession with a unique name.
-        :param name: Unique accession name.
-        :return: None or new Accession instance.
-        """
-        if Accession.objects.filter(name=name).exists():
-            raise SuspiciousOperation(_("The name of the accession is already used"))
-
-        accession = Accession()
-        accession.name = name
-
-        accession.save()
-
-        lang = translation.get_language()
-
-        # first name a primary synonym
-        primary = AccessionSynonym(accession_id=accession.id, name=name, type='IN_001:0000001', language=lang)
-        primary.save()
-
-        return accession
+class AccessionController(object):
 
     @classmethod
     def get_accession_by_name(cls, name):

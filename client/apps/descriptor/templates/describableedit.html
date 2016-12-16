@@ -8,40 +8,46 @@
  - @details
 -->
 
-<div class="panels panel-group" style="margin-top: 10px;">
-    <% var pi = 0; %>
-    <% _.each(panels, function(panel) { %>
-        <div class="panel panel panel-default" name="<%= panel.name %>" panel-id="<%= panel.id %>">
-            <% var collapsed = pi > 0 ? "collapsed" : ""; %>
-            <div class="panel-heading" data-toggle="tooltip" data-placement="left" title="<%= gt.gettext('Collapse/Expand') %>">
-                <a class="accordion-toggle <%= collapsed %>" data-toggle="collapse" href="#collapse<%= pi %>"><%= panel.label %></a>
-            </div>
-            <% var inout = pi == 0 ? "in" : ""; %>
-            <div id="collapse<%= pi %>" class="panel-collapse collapse <%= inout %>">
-                <div class="descriptors">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th><%= gt.gettext("Descriptor") %></th>
-                                <th><%= gt.gettext("Value") %></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <% var i = 0; %>
-                            <% _.each(panel.descriptor_model.descriptor_model_types, function(descriptor_model_type) { %>
-                                <% var format = descriptor_model_type.descriptor_type.format; %>
-                                <% var mandatory = descriptor_model_type.mandatory ? "mandatory-field" : ""; %>
-                                <tr class="descriptor" panel-index="<%= pi %>" index="<%= i %>" descriptor-model-type="<%= descriptor_model_type.id %>" name="<%= descriptor_model_type.descriptor_type.code %>">
-                                    <td class="descriptor-name <%= mandatory %>" style="padding-top: 15px;"><%= descriptor_model_type.label %></td>
-                                    <td class="descriptor-value" format-type="<%= format.type %>"></td>
+<div class="object <%= target.split('.')[1] %>" object-type="<%= target %>" object-id="-1" style="width:100%;">
+    <div class="panels panel-group" style="margin-top: 10px;">
+        <% var pi = 0; %>
+        <% _.each(panels, function(panel) { %>
+            <div class="panel panel panel-default" name="<%= panel.name %>" panel-id="<%= panel.id %>">
+                <% var collapsed = pi > 0 ? "collapsed" : ""; %>
+                <div class="panel-heading" data-toggle="tooltip" data-placement="left" title="<%= gt.gettext('Collapse/Expand') %>">
+                    <a class="accordion-toggle <%= collapsed %>" data-toggle="collapse" href="#collapse<%= pi %>"><%= panel.label %></a>
+                </div>
+                <% var inout = pi == 0 ? "in" : ""; %>
+                <div id="collapse<%= pi %>" class="panel-collapse collapse <%= inout %>">
+                    <div class="descriptors">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th><%= gt.gettext("Descriptor") %></th>
+                                    <th><%= gt.gettext("Value") %></th>
                                 </tr>
-                                <% ++i; %>
-                            <% }) %>
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                <% var i = 0; %>
+                                <% _.each(panel.descriptor_model.descriptor_model_types, function(descriptor_model_type) { %>
+                                    <% var format = descriptor_model_type.descriptor_type.format; %>
+                                    <% var mandatory = descriptor_model_type.mandatory ? "mandatory-field" : ""; %>
+                                    <tr class="descriptor" panel-index="<%= pi %>" index="<%= i %>" descriptor-model-type="<%= descriptor_model_type.id %>" name="<%= descriptor_model_type.descriptor_type.code %>">
+                                        <td class="descriptor-name <%= mandatory %>" style="padding-top: 15px;"><%= descriptor_model_type.label %></td>
+                                        <td class="descriptor-value" format-type="<%= format.type %>"></td>
+                                    </tr>
+                                    <% ++i; %>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-        </div>
-        <% ++pi %>
-    <% }) %>
+            <% ++pi %>
+        <% }) %>
+    </div>
+    <div class="footer" style="float: right;">
+        <button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= gt.gettext("Cancel") %></button>
+        <button type="button" class="btn btn-primary apply"><%= gt.gettext("Apply") %></button>
+    </div>
 </div>
