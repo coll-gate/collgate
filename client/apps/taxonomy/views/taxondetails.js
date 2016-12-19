@@ -259,7 +259,7 @@ var TaxonItemView = Marionette.ItemView.extend({
             onRender: function () {
                 ChangeParent.__super__.onRender.apply(this);
 
-                var rank = this.model.get('rank');
+                var rank = parseInt(this.model.get('rank'));
 
                 $(this.ui.parent).select2({
                     dropdownParent: $(this.el),

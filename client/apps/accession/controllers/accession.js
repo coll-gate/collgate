@@ -213,7 +213,7 @@ var Controller = Marionette.Controller/*Object*/.extend({
 
                         var taxon = new TaxonModel({id: parent});
                         taxon.fetch().then(function() {
-                            describableLayout.getRegion('header').show(new TaxonSimpleView({model: taxon, entity: model}));
+                            describableLayout.getRegion('header').show(new TaxonSimpleView({model: taxon, entity: model, noLink: true}));
                         });
 
                         $.ajax({

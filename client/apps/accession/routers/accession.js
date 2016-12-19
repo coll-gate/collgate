@@ -10,26 +10,29 @@
 
 var Marionette = require('backbone.marionette');
 
+var TaxonModel = require('../../taxonomy/models/taxon');
 var AccessionModel = require('../models/accession');
 // var BatchModel = require('../models/batch');
 
 var AccessionCollection = require('../collections/accession');
 // var BatchCollection = require('../collections/batch');
 
+var TaxonSimpleView = require('../../taxonomy/views/taxonsimple');
 var AccessionListView = require('../views/accessionlist');
 // var BatchListView = require('../views/batchlist');
 // var AccessionItemView = require('../views/accessionitem');
 // var BatchItemView = require('../views/batchitem');
 var AccessionEditView = require('../views/accessionedit');
+var AccessionDetailsView = require('../views/accessiondetails');
 
 var DefaultLayout = require('../../main/views/defaultlayout');
+var ScrollingMoreView = require('../../main/views/scrollingmore');
 var TitleView = require('../../main/views/titleview');
 var DescribableLayout = require('../../descriptor/views/describablelayout');
 
 var Router = Marionette.AppRouter.extend({
     routes : {
         "app/accession/accession/": "getAccessionList",
-        "app/accession/accession/create/:meta_model_id/": "getAccessionCreate",
         "app/accession/accession/:id/": "getAccession",
         "app/accession/accession/:id/batch/": "getBatchList",
         "app/accession/accession/:id/batch/:bid": "getBatch",
@@ -46,26 +49,10 @@ var Router = Marionette.AppRouter.extend({
         defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of accessions")}));
 
         collection.fetch().then(function () {
-            defaultLayout.getRegion('content').show(new AccessionListView({collection : collection}));
-        });
-    },
+            var accessionListView = new AccessionListView({collection : collection});
 
-    getAccessionCreate: function(meta_model_id) {
-        var model = application.accession.tmpAccession;
-        delete application.accession.tmpAccession;
-
-        var defaultLayout = new DefaultLayout();
-        application.getRegion('mainRegion').show(defaultLayout);
-
-        if (model == null) {
-            return;
-        }
-
-        model.fetch({data:{name: model.get('name'), parent: model.get('parent')}}).then(function() {
-            defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Accession"), model: model}));
-
-            var view = new AccessionEditView({model: model});
-            defaultLayout.getRegion('content').show(view);
+            defaultLayout.getRegion('content').show(accessionListView);
+            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: accessionListView}));
         });
     },
 
@@ -73,11 +60,18 @@ var Router = Marionette.AppRouter.extend({
         var defaultLayout = new DefaultLayout();
         application.getRegion('mainRegion').show(defaultLayout);
 
+        var describableLayout = new DescribableLayout();
+        defaultLayout.getRegion('content').show(describableLayout);
+
         var model = new AccessionModel({id: id});
         model.fetch().then(function() {
-            defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Accession"), model: model}));
+            var taxon = new TaxonModel({id: model.get('parent')['id']});
+            taxon.fetch().then(function() {
+                describableLayout.getRegion('header').show(new TaxonSimpleView({model: taxon, entity: model}));
+            });
 
-            alert('@todo');
+            defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Accession"), model: model}));
+            describableLayout.getRegion('body').show(new AccessionDetailsView({model: model}));
         });
     },
 

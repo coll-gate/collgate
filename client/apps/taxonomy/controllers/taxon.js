@@ -93,7 +93,7 @@ var TaxonController = Marionette.Controller/*Object*/.extend({
                                 method: 'icontains',
                                 fields: ['name', 'rank'],
                                 'name': params.term,
-                                'rank': $("#taxon_rank").val()
+                                'rank': parseInt($("#taxon_rank").val())
                             };
 
                             return {

@@ -14,27 +14,46 @@ var View = Marionette.ItemView.extend({
     tagName: 'div',
     template: require('../templates/taxonsimple.html'),
     templateHelpers: function () {
+        var entity = this.entity;
         return {
-            entity_name: this.entity_name,
+            entity_name: entity ? entity.get('name') : ""
         };
     },
 
+    noLink: false,
+    entity: null,
+
     ui: {
-        //"taxon": "span.taxon",
-        "taxon_rank": ".taxon-ranks"
+        view_taxon: ".view-taxon",
+        taxon_rank: ".taxon-ranks"
+    },
+
+    events: {
+        'click @ui.view_taxon': 'onViewTaxon',
     },
 
     initialize: function(options) {
+        this.mergeOptions(options, ['entity']);
+
         this.listenTo(this.model, 'reset', this.render, this);
-        if (options.entity && options.entity.get('name')) {
-            this.entity_name = options.entity.get('name');
-        } else {
-            this.entity_name = "";
-        }
+        this.listenTo(this.entity, 'change', this.render, this);
     },
 
     onRender: function() {
         application.taxonomy.views.taxonRanks.htmlFromValue(this.el);
+
+        if (this.getOption('noLink')) {
+            this.ui.view_taxon.removeClass('action');
+        }
+    },
+
+    onViewTaxon: function(e) {
+        if (this.getOption('noLink')) {
+            return;
+        }
+
+        var taxon_id = $(e.target).data('taxon-id');
+        Backbone.history.navigate("app/taxonomy/taxon/" + taxon_id + "/", {trigger: true});
     },
 });
 

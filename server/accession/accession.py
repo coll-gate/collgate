@@ -128,7 +128,7 @@ def accession_list(request):
         a = {
             'id': accession.pk,
             'name': accession.name,
-            'parent': {  # @todo
+            'parent': {
                 'id': accession.parent.id,
                 'rank': accession.parent.rank,
                 'name': accession.parent.name
@@ -168,6 +168,33 @@ def accession_list(request):
     }
 
     return HttpResponseRest(request, results)
+
+
+@RestAccessionId.def_auth_request(Method.GET, Format.JSON)
+def get_accession_details_json(request, id):
+    accession = Accession.objects.get(id=int_arg(id))
+
+    result = {
+        'id': accession.id,
+        'name': accession.name,
+        'parent': {
+            'id': accession.parent.id,
+            'rank': accession.parent.rank,
+            'name': accession.parent.name
+        },
+        'synonyms': [],
+        'descriptors': accession.descriptors
+    }
+
+    for s in accession.synonyms.all().order_by('type', 'language'):
+        result['synonyms'].append({
+            'id': s.id,
+            'name': s.name,
+            'type': s.type,
+            'language': s.language,
+        })
+
+    return HttpResponseRest(request, result)
 
 
 @RestAccessionSearch.def_auth_request(Method.GET, Format.JSON, ('filters',))
