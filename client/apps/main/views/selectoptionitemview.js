@@ -57,6 +57,37 @@ var SelectOptionItemView = Marionette.ItemView.extend({
         }
     },
 
+    attributeFromValue: function(parent, attribute, idOrValue) {
+        var view = this;
+        idOrValue || (idOrValue = 'value');
+
+        if (this.collection.size() > 0) {
+            $(parent).find('.' + view.className).each(function (idx, el) {
+                var _el = $(el);
+                var value = _el.attr("value");
+
+                var model = view.collection.find(function(model) {
+                    return model.get(idOrValue) == value;
+                });
+
+                _el.attr(attribute, model ? model.get('label') : "");
+            });
+        } else {
+            this.collection.on("sync", function () {
+                $(parent).find('.' + view.className).each(function (idx, el) {
+                    var _el = $(el);
+                    var value = _el.attr("value");
+
+                    var model = view.collection.find(function(model) {
+                        return model.get(idOrValue) == value;
+                    });
+
+                    _el.attr(attribute, model ? model.get('label') : "");
+                });
+            }, this);
+        }
+    },
+
     drawSelect: function(sel, widget, emptyValue) {
         emptyValue || (emptyValue = false);
 

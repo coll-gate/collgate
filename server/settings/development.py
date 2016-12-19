@@ -64,6 +64,7 @@ MIDDLEWARE = (
 
 INSTALLED_APPS = (
     'bootstrap3',
+    'django.contrib.postgres',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',

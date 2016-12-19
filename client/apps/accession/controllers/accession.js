@@ -48,6 +48,7 @@ var Controller = Marionette.Controller/*Object*/.extend({
                 ui: {
                     validate: "button.continue",
                     name: "#accession_name",
+                    language: "#accession_language",
                     meta_model: "#meta_model",
                     parent: "#accession_parent"
                 },
@@ -60,6 +61,7 @@ var Controller = Marionette.Controller/*Object*/.extend({
                 onRender: function () {
                     CreateAccessionView.__super__.onRender.apply(this);
 
+                    application.main.views.languages.drawSelect(this.ui.language);
                     this.ui.meta_model.selectpicker({});
 
                     $(this.ui.parent).select2({
@@ -112,6 +114,7 @@ var Controller = Marionette.Controller/*Object*/.extend({
                 onBeforeDestroy: function() {
                     CreateAccessionView.__super__.onBeforeDestroy.apply(this);
 
+                    this.ui.language.selectpicker('destroy');
                     this.ui.meta_model.selectpicker('destroy');
                 },
 
@@ -194,7 +197,8 @@ var Controller = Marionette.Controller/*Object*/.extend({
                         var model = new AccessionModel({
                             name: name,
                             parent: parent,
-                            descriptor_meta_model: metaModel
+                            descriptor_meta_model: metaModel,
+                            language: this.ui.language.val(),
                         });
 
                         view.remove();

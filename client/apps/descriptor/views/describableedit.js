@@ -642,9 +642,10 @@ var View = ItemView.extend({
             var pi = el.attr('panel-index');
             var i = el.attr('index');
             var descriptorModelType = view.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
+            var mandatory = descriptorModelType.mandatory;
 
             var values = [null];
-    
+
             if (el.css('display') !== "none") {
                 // take value
                 var format = descriptorModelType.descriptor_type.format;
@@ -658,9 +659,9 @@ var View = ItemView.extend({
                 } else if (format.type === 'ordinal') {
                     // max 256 values for a dropdown
                     if ((format.range[1] - format.range[0] + 1) <= 256) {
-                        values = parseInt([el.find('select').val()]);
+                        values = [parseInt(el.find('select').val())];
                     } else {
-                        values = parseInt([el.find('input').val()]);
+                        values = [parseInt(el.find('input').val())];
                     }
                 } else if (format.type === "date") {
                     // format to YYYYMMDD date
@@ -683,7 +684,12 @@ var View = ItemView.extend({
                 }
             }
 
-            descriptors[descriptorModelType.descriptor_type.code] = values[0];
+            if (mandatory && values[0] === null) {
+                $.alert.error(gt.gettext("Field " + descriptorModelType.label + " is required"));
+                return null;
+            }
+
+            descriptors[descriptorModelType.id] = values[0];
         });
 
         return descriptors;

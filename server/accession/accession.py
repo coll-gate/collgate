@@ -9,11 +9,12 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import SuspiciousOperation
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
-from django.utils import translation
 
+from descriptor.describable import check_and_defines_descriptors
 from descriptor.models import DescriptorMetaModel
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
+from main.models import Languages
 from taxonomy.models import Taxon
 
 from .models import Accession, AccessionSynonym
@@ -48,7 +49,8 @@ class RestAccessionSynonym(RestAccessionAccession):
             "name": {"type": "string", 'minLength': 3, 'maxLength': 32},
             "descriptor_meta_model": {"type": "number"},
             "parent": {"type": "number"},
-            "descriptors": {"type": "object"}
+            "descriptors": {"type": "object"},
+            "language": {"type": "string", 'minLength': 2, 'maxLength': 5},
         },
     }, perms={
         'accession.add_accession': _("You are not allowed to create an accession")
@@ -58,13 +60,18 @@ def create_accession(request):
     name = request.data['name']
     dmm_id = request.data['descriptor_meta_model']
     parent_id = request.data['parent']
+    descriptors = request.data['descriptors']
+    language = request.data['language']
 
     # check uniqueness of the name
-    if AccessionSynonym.objects.filter(name=name).exists():
-        raise SuspiciousOperation(_("The name of the accession is already used in a "))
+    if AccessionSynonym.objects.filter(name=name, type='ID_001:0000001').exists():
+        raise SuspiciousOperation(_("The name of the accession is already used as a primary synonym"))
 
     if Accession.objects.filter(name=name).exists():
         raise SuspiciousOperation(_("The name of the accession is already used"))
+
+    if language not in [lang.value for lang in Languages]:
+        raise SuspiciousOperation(_("The language is not supported"))
 
     content_type = get_object_or_404(ContentType, app_label="accession", model="accession")
     dmm = get_object_or_404(DescriptorMetaModel, id=dmm_id, target=content_type)
@@ -72,23 +79,22 @@ def create_accession(request):
     # common properties
     accession = Accession()
     accession.name = name
-
-    lang = translation.get_language()
-
-    # first name a primary synonym
-    primary = AccessionSynonym(accession_id=accession.id, name=name, type='IN_001:0000001', language=lang)
+    accession.descriptor_meta_model = dmm
 
     # parent taxon or variety
     parent = get_object_or_404(Taxon, id=parent_id)
-
-    # accession.taxon = parent
+    accession.parent = parent
 
     # descriptors
-    descriptors = {}
-    # @todo check mandatory, check fields values in describable
+    accession.descriptors = check_and_defines_descriptors({}, dmm, descriptors)
 
     accession.save()
+
+    # principal synonym
+    primary = AccessionSynonym(name=name, type='ID_001:0000001', language=language)
     primary.save()
+
+    accession.synonyms.add(primary)
 
     response = {
         'id': accession.pk,
@@ -107,17 +113,61 @@ def create_accession(request):
     }
 )
 def accession_list(request):
-    accessions = Accession.objects.all()
-    synonyms = AccessionSynonym.objects.all()
+    results_per_page = int_arg(request.GET.get('more', 30))
+    cursor = request.GET.get('cursor')
+    limit = results_per_page
 
-    # @todo
+    # @todo filters
+    # @todo name search based on synonyms
+    accessions = Accession.objects.select_related('parent').all()[:limit]
+    # synonyms = AccessionSynonym.objects.all()
 
-    response = {
-        'accessions': accessions,
-        'synonyms': synonyms,
+    accession_list = []
+
+    for accession in accessions:
+        a = {
+            'id': accession.pk,
+            'name': accession.name,
+            'parent': {  # @todo
+                'id': accession.parent.id,
+                'rank': accession.parent.rank,
+                'name': accession.parent.name
+            },
+            'descriptors': accession.descriptors,
+            'synonyms': []
+        }
+
+        for synonym in accession.synonyms.all().order_by('type', 'language'):
+            a['synonyms'].append({
+                'id': synonym.id,
+                'name': synonym.name,
+                'type': synonym.type,
+                'language': synonym.language
+            })
+
+        accession_list.append(a)
+
+    if len(accession_list) > 0:
+        # prev cursor (asc order)
+        entity = accession_list[0]
+        prev_cursor = "%s/%s" % (entity['name'], entity['id'])
+
+        # next cursor (asc order)
+        entity = accession_list[-1]
+        next_cursor = "%s/%s" % (entity['name'], entity['id'])
+    else:
+        prev_cursor = None
+        next_cursor = None
+
+    results = {
+        'perms': [],
+        'items': accession_list,
+        'prev': prev_cursor,
+        'cursor': cursor,
+        'next': next_cursor,
     }
 
-    return HttpResponseRest(request, response)
+    return HttpResponseRest(request, results)
 
 
 @RestAccessionSearch.def_auth_request(Method.GET, Format.JSON, ('filters',))

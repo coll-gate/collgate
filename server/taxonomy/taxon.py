@@ -9,6 +9,7 @@ from django.core.exceptions import SuspiciousOperation
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 
+from main.models import Languages
 from permission.utils import get_permissions_for
 from .base import RestTaxonomy
 
@@ -96,6 +97,9 @@ def create_taxon(request):
 
     rank_id = int(taxon_params['rank'])
     language = taxon_params['synonyms'][0]['language']
+
+    if language not in [lang.value for lang in Languages]:
+        raise SuspiciousOperation(_("The language is not supported"))
 
     taxon = Taxonomy.create_taxon(
         taxon_params['name'],

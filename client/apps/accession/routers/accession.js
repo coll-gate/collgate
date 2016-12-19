@@ -16,7 +16,7 @@ var AccessionModel = require('../models/accession');
 var AccessionCollection = require('../collections/accession');
 // var BatchCollection = require('../collections/batch');
 
-// var AccessionListView = require('../views/accessionlist');
+var AccessionListView = require('../views/accessionlist');
 // var BatchListView = require('../views/batchlist');
 // var AccessionItemView = require('../views/accessionitem');
 // var BatchItemView = require('../views/batchitem');
@@ -46,9 +46,7 @@ var Router = Marionette.AppRouter.extend({
         defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of accessions")}));
 
         collection.fetch().then(function () {
-            alert('@todo');
-            // @todo
-            // defaultLayout.getRegion('content').show(new AccessionListView({read_only: true, collection : collection}));
+            defaultLayout.getRegion('content').show(new AccessionListView({collection : collection}));
         });
     },
 

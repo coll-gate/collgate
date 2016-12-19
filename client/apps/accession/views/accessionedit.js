@@ -14,13 +14,14 @@ var DescribableEdit = require('../../descriptor/views/describableedit');
 
 var View = DescribableEdit.extend({
     onApply: function () {
+        var model = this.model;
         var descriptors = this.prepareDescriptors();
-        console.log(descriptors);
-
-        return;
+        if (descriptors === null) {
+            return;
+        }
 
         this.model.save({descriptors: descriptors}, {wait: true}).then(function() {
-            alert("todo");
+            Backbone.history.navigate('app/accession/accession/' + model.get('id') + '/', {trigger: true, replace: true});
         });
     }
 });

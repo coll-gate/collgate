@@ -201,8 +201,8 @@ var TaxonController = Marionette.Controller/*Object*/.extend({
 
             onBeforeDestroy: function() {
                 CreateTaxonView.__super__.onBeforeDestroy.apply(this);
-                $(this.ui.language).selectpicker('destroy');
-                $(this.ui.rank).selectpicker('destroy');
+                this.ui.language.selectpicker('destroy');
+                this.ui.rank.selectpicker('destroy');
             },
 
             onChangeRank: function () {
@@ -299,7 +299,7 @@ var TaxonController = Marionette.Controller/*Object*/.extend({
                         synonyms: [{
                             name: this.ui.name.val(),
                             type: 0,  // primary
-                            language: $(this.ui.language).val()
+                            language: this.ui.language.val()
                         }]
                     }, {
                         wait: true,

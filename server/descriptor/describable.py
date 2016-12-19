@@ -10,6 +10,7 @@ import json
 from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import get_object_or_404
 from django.views.decorators.cache import cache_page
+from django.utils.translation import ugettext_lazy as _
 
 from descriptor.models import DescriptorMetaModel, DescriptorPanel, DescriptorModelTypeCondition
 from igdectk.rest import Format, Method
@@ -120,3 +121,47 @@ def get_describable_panels(descriptor_meta_model_id, app_label, model):
         })
 
     return panels
+
+
+def check_and_defines_descriptors(entity_descriptors, descriptor_meta_model, descriptors):
+    results = {}
+
+    dps = DescriptorPanel.objects.filter(descriptor_meta_model=descriptor_meta_model).order_by('position')
+    dps.select_related('descriptor_model')
+
+    for panel in dps:
+        descriptor_model = panel.descriptor_model
+
+        for dmt in descriptor_model.descriptor_model_types.all().order_by('position').select_related('descriptor_type'):
+            descriptor_type = dmt.descriptor_type
+
+            # values are loaded on demand (displaying the panel or opening the dropdown)
+            format = json.loads(descriptor_type.format)
+
+            conditions = DescriptorModelTypeCondition.objects.filter(descriptor_model_type_id=dmt.id)
+            key = str(dmt.id)
+
+            if conditions.exists():
+                # @todo check condition
+                dmtc = conditions[0]
+
+                # 'condition': dmtc.condition,
+                # 'target': dmtc.target.id,
+                # 'values': json.loads(dmtc.values)
+
+            acc_value = entity_descriptors[str(dmt.id)] if key in entity_descriptors else None
+            src_value = descriptors[str(dmt.id)] if key in descriptors else None
+
+            # mandatory descriptor
+            if dmt.mandatory:
+                if src_value is None and acc_value is None:
+                    raise ValueError(_("Missing mandatory descriptor %s") % (dmt.get_label(),))
+
+            # set once descriptor
+            if dmt.set_once:
+                if src_value is not None and acc_value is not None:
+                    raise ValueError(_("Already defined set once descriptor %s") % (dmt.get_label(),))
+
+            results[dmt.id] = src_value
+
+    return results

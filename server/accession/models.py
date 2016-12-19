@@ -45,8 +45,8 @@ class Accession(DescribableEntity):
     Accession entity defines a physical or virtual accession.
     """
 
-    # inherit of a taxon rank @todo see because it could inherit from variety
-    # taxon = models.ForeignKey(Taxon)
+    # inherit of a taxon rank
+    parent = models.ForeignKey(Taxon)
 
     # Can have many synonyms, and some synonyms can sometimes be shared by multiples accessions.
     synonyms = models.ManyToManyField(AccessionSynonym, related_name='accessions')
