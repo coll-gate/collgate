@@ -8,23 +8,20 @@
  * @details
  */
 
-var Marionette = require('backbone.marionette');
+var DescribableDetails = require('../../descriptor/views/describabledetails');
 
-var View = Marionette.ItemView.extend({
-    className: 'object accession',
-    template: "<div>@todo</div>",  // require('../../descriptor/templates/describabledetails.html'),
+var View = DescribableDetails.extend({
+    onModify: function () {
+        alert('Not yet implemented');
+     /*   var model = this.model;
+        var descriptors = this.prepareDescriptors();
+        if (descriptors === null) {
+            return;
+        }
 
-    ui: {
-    },
-
-    events: {
-    },
-
-    initialize: function() {
-        this.listenTo(this.model, 'reset', this.render, this);
-    },
-
-    onRender: function() {
+        this.model.save({descriptors: descriptors}, {wait: true}).then(function() {
+            Backbone.history.navigate('app/accession/accession/' + model.get('id') + '/', {trigger: true, replace: true});
+        });*/
     }
 });
 

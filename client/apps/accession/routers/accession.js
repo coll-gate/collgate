@@ -71,7 +71,16 @@ var Router = Marionette.AppRouter.extend({
             });
 
             defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Accession"), model: model}));
-            describableLayout.getRegion('body').show(new AccessionDetailsView({model: model}));
+
+            // get the layout before creating the view
+            $.ajax({
+                method: "GET",
+                url: application.baseUrl + 'descriptor/meta-model/' + model.get('descriptor_meta_model') + '/layout/',
+                dataType: 'json',
+            }).done(function(data) {
+                var accessionDetailsView = new AccessionDetailsView({model: model, descriptorMetaModelLayout: data});
+                describableLayout.getRegion('body').show(accessionDetailsView);
+            });
         });
     },
 

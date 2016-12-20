@@ -8,8 +8,6 @@
  * @details
  */
 
-var Marionette = require('backbone.marionette');
-
 var DescribableEdit = require('../../descriptor/views/describableedit');
 
 var View = DescribableEdit.extend({

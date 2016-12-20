@@ -8,6 +8,7 @@ coll-gate application models.
 import re
 import uuid as uuid
 
+from django.core.exceptions import SuspiciousOperation
 from django.core.validators import RegexValidator
 from django.db import models
 from django.contrib.auth.models import User
@@ -187,3 +188,22 @@ class Entity(models.Model):
         """
         self.entity_status = EntityStatus.HIDDEN.value
         self.save()
+
+    def set_status(self, entity_status):
+        """
+        Change the status of the entity in a possible way, otherwise raise an exception
+        :param entity_status: New status of the entity (upgrade, not downgrade)
+        """
+        if entity_status == self.entity_status:
+            return
+
+        if entity_status == EntityStatus.PENDING.value and self.entity_status >= EntityStatus.VALID.value:
+            raise SuspiciousOperation(_("It is not allowed to change the status of an entity from valid to pending"))
+
+        if self.entity_status == EntityStatus.REMOVED.value:
+            raise SuspiciousOperation(_("It is not allowed to change the status of a removed entity"))
+
+        if self.entity_status == EntityStatus.ARCHIVED.value:
+            raise SuspiciousOperation(_("It is not allowed to change the status of an archived entity"))
+
+        self.entity_status = entity_status

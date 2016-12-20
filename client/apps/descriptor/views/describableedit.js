@@ -1,4 +1,4 @@
-/**
+    /**
  * @file describableedit.js
  * @brief Describable entity item edit view
  * @author Frederic SCHERMA
@@ -7,8 +7,6 @@
  * @license @todo
  * @details
  */
-
-var Marionette = require('backbone.marionette');
 
 var ItemView = require('../../main/views/itemview');
 var DisplayDescriptor = require('../widgets/displaydescriptor');
@@ -45,8 +43,7 @@ var View = ItemView.extend({
     onRender: function() {
         var view = this;
         var model = this.model;
-        var exists = model.get('entity') && (typeof model.get('entity').id !== "undefined");
-        var descriptors = exists ? model.get('entity').descriptors : null;
+        var exists = !model.isNew();
 
         $.each(this.ui.descriptor, function(index) {
             var el = $(this);
@@ -62,7 +59,7 @@ var View = ItemView.extend({
 
             // default value or current descriptor value
             if (exists) {
-                defaultValues = [model.get('descriptors')[descriptorType.code]];
+                defaultValues = [model.get('descriptors')[descriptorModelType.id]];
             } else {
                 // @todo default value
             }
@@ -130,8 +127,8 @@ var View = ItemView.extend({
                     format,
                     view,
                     select,
-                    view.definesValues,
-                    view.defaultValues);
+                    definesValues,
+                    defaultValues);
 
                 if (descriptorModelType.set_once && exists) {
                     select.prop("disabled", true).selectpicker('refresh');
@@ -147,8 +144,8 @@ var View = ItemView.extend({
                     format,
                     view,
                     select,
-                    view.definesValues,
-                    view.defaultValues);
+                    definesValues,
+                    defaultValues);
 
                 if (descriptorModelType.set_once && exists) {
                     select.prop("disabled", true).selectpicker('refresh');
@@ -166,8 +163,8 @@ var View = ItemView.extend({
                     format,
                     view,
                     group,
-                    view.definesValues,
-                    view.defaultValues);
+                    definesValues,
+                    defaultValues);
 
                 if (descriptorModelType.set_once && exists) {
                     group.data('DateTimePicker').disable();
@@ -185,8 +182,8 @@ var View = ItemView.extend({
                     format,
                     view,
                     group,
-                    view.definesValues,
-                    view.defaultValues);
+                    definesValues,
+                    defaultValues);
 
                 if (descriptorModelType.set_once && exists) {
                     group.data('DateTimePicker').disable();
@@ -204,8 +201,8 @@ var View = ItemView.extend({
                     format,
                     view,
                     group,
-                    view.definesValues,
-                    view.defaultValues);
+                    definesValues,
+                    defaultValues);
 
                 if (descriptorModelType.set_once && exists) {
                     group.data('DateTimePicker').disable();
@@ -223,15 +220,15 @@ var View = ItemView.extend({
                         format,
                         view,
                         input,
-                        view.definesValues,
-                        view.defaultValues);
+                        definesValues,
+                        defaultValues);
                 } else if (format.type === "string") { // regexp text
                     DisplayDescriptor.initText(
                         format,
                         view,
                         input,
-                        view.definesValues,
-                        view.defaultValues);
+                        definesValues,
+                        defaultValues);
                 }
 
                 el.children('td.descriptor-value').append(group);

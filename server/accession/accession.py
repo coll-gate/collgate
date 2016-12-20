@@ -14,7 +14,7 @@ from descriptor.describable import check_and_defines_descriptors
 from descriptor.models import DescriptorMetaModel
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
-from main.models import Languages
+from main.models import Languages, EntityStatus
 from taxonomy.models import Taxon
 
 from .models import Accession, AccessionSynonym
@@ -133,6 +133,7 @@ def accession_list(request):
                 'rank': accession.parent.rank,
                 'name': accession.parent.name
             },
+            'descriptor_meta_model': accession.descriptor_meta_model.id,
             'descriptors': accession.descriptors,
             'synonyms': []
         }
@@ -183,6 +184,7 @@ def get_accession_details_json(request, id):
             'name': accession.parent.name
         },
         'synonyms': [],
+        'descriptor_meta_model': accession.descriptor_meta_model.id,
         'descriptors': accession.descriptors
     }
 
@@ -224,7 +226,7 @@ def search_accession(request):
         elif name_method == 'icontains':
             qs = AccessionSynonym.objects.filter(name__icontains=filters['name'])
 
-    # qs = qs.select_related('accession_synonyms')
+    # qs = qs.select_related('synonyms')
 
     # group by synonyms on labels
     accessions = {}
@@ -245,3 +247,62 @@ def search_accession(request):
     }
 
     return HttpResponseRest(request, response)
+
+
+@RestAccessionId.def_auth_request(Method.PATCH, Format.JSON, content={
+        "type": "object",
+        "properties": {
+            "name": {"type": "string", "minLength": 3, "maxLength": 64, "required": False},
+            "entity_status": {"type": "integer", "minimum": 0, "maximum": 3, "required": False},
+            "descriptors": {"type": "object", "required": False},
+        },
+    },
+    perms={
+        'accession.change_accession': _("You are not allowed to modify an accession"),
+    })
+def patch_accession(request, id):
+    acc_id = int(id)
+    accession = get_object_or_404(Accession, id=acc_id)
+
+    name = request.data.get("name")
+    entity_status = request.data.get("entity_status")
+    descriptors = request.data.get("descriptors")
+
+    result = {
+        'id': accession.id
+    }
+
+    if name is not None and accession.name != name:
+        if AccessionSynonym.objects.filter(name=name, type='ID_001:0000001').exists():
+            raise SuspiciousOperation(_("The name of the accession is already used as a primary synonym"))
+
+        if Accession.objects.filter(name=name).exists():
+            raise SuspiciousOperation(_("The name of the accession is already used"))
+
+        accession.name = name
+        result['name'] = name
+
+    if entity_status is not None and accession.entity_status != entity_status:
+        accession.set_status(entity_status)
+        result['entity_status'] = entity_status
+
+    if descriptors is not None:
+        # update descriptors
+        # @todo could update only necessary descriptors
+        accession.descriptors = check_and_defines_descriptors({}, accession.descriptor_meta_model, descriptors)
+        result['descriptors'] = accession.descriptors
+
+    return HttpResponseRest(request, result)
+
+
+@RestAccessionId.def_auth_request(Method.DELETE, Format.JSON, perms={
+    'accession.delete_accession': _("You are not allowed to delete an accession"),
+})
+def delete_accession(request, id):
+    acc_id = int(id)
+    accession = get_object_or_404(Accession, id=acc_id)
+
+    accession.synonyms.clear()
+    accession.delete()
+
+    return HttpResponseRest(request, {})
