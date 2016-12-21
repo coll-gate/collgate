@@ -332,85 +332,67 @@ var View = ItemView.extend({
                     // initial condition
                     switch (condition.condition) {
                         case 0:
-                            display = false;  // a boolean is always defined
+                            display = select.val() === "" || select.val() === "undefined";  // false;  // a boolean is always defined
                             break;
                         case 1:
-                            display = true;  // a boolean is always defined
+                            display = select.val() !== "";  // true;  // a boolean is always defined
                             break;
                         case 2:
-                            display = select.val() == condition.values[0];
+                            display = (select.val() === "true") === condition.values[0];
                             break;
                         case 3:
-                            display = select.val() != condition.values[0];
+                            display = (select.val() === "true") !== condition.values[0];
                             break;
                         default:
                             break;
                     }
-                } else if ((format.type === "ordinal") && ((format.range[1] - format.range[0] + 1) <= 256)) {
-                    var select = target.children('td.descriptor-value').children('div').children('select');
-                    select.parent('div.bootstrap-select').on('changed.bs.select', $.proxy(view.onSelectChangeValue, view));
+                } else if (format.type === "ordinal") {
+                    // max of 256 value (select)
+                    if ((format.range[1] - format.range[0] + 1) <= 256) {
+                        var select = target.children('td.descriptor-value').children('div').children('select');
+                        select.parent('div.bootstrap-select').on('changed.bs.select', $.proxy(view.onSelectChangeValue, view));
 
-                    // initial condition
-                    switch (condition.condition) {
-                        case 0:
-                            display = false;  // an ordinal is always defined
-                            break;
-                        case 1:
-                            display = true;  // an ordinal is always defined
-                            break;
-                        case 2:
-                            display = select.val() == condition.values[0];
-                            break;
-                        case 3:
-                            display = select.val() != condition.values[0];
-                            break;
-                        default:
-                            break;
-                    }
-                } else if (format.type === "date") {
-                    var input = target.children('td.descriptor-value').children('div.input-group').children('input.form-control');
-                    input.parent().on('dp.change', $.proxy(view.onDateChange, view));
+                        // initial condition
+                        switch (condition.condition) {
+                            case 0:
+                                display = select.val() === "" || select.val() === "undefined";  // false;  // an ordinal is always defined
+                                break;
+                            case 1:
+                                display = select.val() !== "";  // true;  // an ordinal is always defined
+                                break;
+                            case 2:
+                                display = parseInt(select.val()) === condition.values[0];
+                                break;
+                            case 3:
+                                display = parseInt(select.val()) !== condition.values[0];
+                                break;
+                            default:
+                                break;
+                        }
+                    } else {
+                        // ordinal with more than 256 values => input
+                        var input = target.children('td.descriptor-value').children('div.input-group').children('input.form-control');
+                        input.on('input', $.proxy(view.onInputChangeValue, view));
 
-                    // initial condition
-                    switch (condition.condition) {
-                        case 0:
-                            display = input.val() == "";
-                            break;
-                        case 1:
-                            display = input.val() != "";
-                            break;
-                        case 2:
-                            display = select.val() === condition.values[0];
-                            break;
-                        case 3:
-                            display = select.val() !== condition.values[0];
-                            break;
-                        default:
-                            break;
+                        // initial condition
+                        switch (condition.condition) {
+                            case 0:
+                                display = select.val() === "" || select.val() === "undefined";  // false;  // an ordinal is always defined
+                                break;
+                            case 1:
+                                display = select.val() !== "";  // true;  // an ordinal is always defined
+                                break;
+                            case 2:
+                                display = parseInt(input.val()) === condition.values[0];
+                                break;
+                            case 3:
+                                display = parseInt(select.val()) !== condition.values[0];
+                                break;
+                            default:
+                                break;
+                        }
                     }
-                } else if (format.type === "time") {
-                    var input = target.children('td.descriptor-value').children('div.input-group').children('input.form-control');
-                    //input.on('input', $.proxy(view.onInputChangeValue, view));
-                    input.parent().on('dp.change', $.proxy(view.onDateChange, view));
-
-                    // initial condition
-                    switch (condition.condition) {
-                        case 0:
-                            display = input.val() == "";
-                            break;
-                        case 1:
-                            display = input.val() != "";
-                            break;
-                        case 2:
-                            display = select.val() === condition.values[0];
-                            break;
-                        case 3:
-                            display = select.val() !== condition.values[0];
-                            break;
-                        default:
-                            break;
-                    }
-                } else if (format.type === "datetime") {
+                } else if (format.type === "date" || format.type === "time" || format.type === "datetime") {
                     var input = target.children('td.descriptor-value').children('div.input-group').children('input.form-control');
                     input.parent().on('dp.change', $.proxy(view.onDateChange, view));
 
@@ -432,7 +414,7 @@ var View = ItemView.extend({
                             break;
                     }
                 } else {
-                    // numeric, numeric range, ordinal with more than 256 values, text with regexp
+                    // numeric, numeric range, text with regexp
                     var input = target.children('td.descriptor-value').children('div.input-group').children('input.form-control');
                     input.on('input', $.proxy(view.onInputChangeValue, view));
 
@@ -474,6 +456,7 @@ var View = ItemView.extend({
                 var descriptorModelType = descriptorModelTypes[i];
 
                 return {
+                    targetDescriptorModelType: targetDescriptorModelType,
                     descriptorModelType: descriptorModelType,
                     el: this.$el.find("tr.descriptor[descriptor-model-type=" + descriptorModelType.id + "]")
                 }
@@ -524,6 +507,15 @@ var View = ItemView.extend({
         var source = this.findDescriptorModelTypeForConditionTarget(target);
         var condition = source.descriptorModelType.condition;
 
+        var value = select.val();
+
+        // cast to correct type if necessary
+        if (source.targetDescriptorModelType.descriptor_type.format.type === "boolean") {
+            value = select.val() === "true";  // always defined
+        } else if (source.targetDescriptorModelType.descriptor_type.format.type === "ordinal") {
+            value = parseInt(select.val());  // always defines
+        }
+
         // initial condition
         switch (condition.condition) {
             case 0:
@@ -533,10 +525,10 @@ var View = ItemView.extend({
                 display = select.val() !== "";
                 break;
             case 2:
-                display = select.val() === condition.values[0];
+                display = value === condition.values[0];
                 break;
             case 3:
-                display = select.val() !== condition.values[0];
+                display = value !== condition.values[0];
                 break;
             default:
                 break;
@@ -603,6 +595,13 @@ var View = ItemView.extend({
         var source = this.findDescriptorModelTypeForConditionTarget(target);
         var condition = source.descriptorModelType.condition;
 
+        var value = select.val();
+
+        // cast to correct type if necessary
+        if (source.targetDescriptorModelType.descriptor_type.format.type === "ordinal") {
+            value = parseInt(input.val());  // always defines
+        }
+
         // initial condition
         switch (condition.condition) {
             case 0:
@@ -612,10 +611,10 @@ var View = ItemView.extend({
                 display = input.val() !== "";
                 break;
             case 2:
-                display = input.val() === condition.values[0];
+                display = value === condition.values[0];
                 break;
             case 3:
-                display = input.val() !== condition.values[0];
+                display = value !== condition.values[0];
                 break;
             default:
                 break;

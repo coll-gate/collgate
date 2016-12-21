@@ -10,7 +10,7 @@
 
 var DisplayDescriptor = {
     initAutocomplete: function(format, url, view, select, definesValues, defaultValues) {
-        if (typeof definesValues === "undefined") {
+        if (!definesValues || !defaultValues || !defaultValues[0]) {
             definesValues = false;
         }
 
@@ -75,10 +75,7 @@ var DisplayDescriptor = {
                         params.data = initials;
 
                         select.select2(params);
-
-                        if (definesValues) {
-                            select.val(defaultValues).trigger('change');
-                        }
+                        select.val(defaultValues).trigger('change');
                     });
                 } else {
                     // make an autocomplete widget on simple_value
@@ -89,7 +86,7 @@ var DisplayDescriptor = {
     },
 
     initEntitySelect: function(format, url, view, select, definesValues, defaultValues) {
-        if (typeof definesValues === "undefined") {
+        if (!definesValues || !defaultValues || !defaultValues[0]) {
             definesValues = false;
         }
 
@@ -157,10 +154,7 @@ var DisplayDescriptor = {
                     params.data = initials;
 
                     select.select2(params);
-
-                    if (definesValues) {
-                        select.val(defaultValues).trigger('change');
-                    }
+                    select.val(defaultValues).trigger('change');
                 });
             } else {
                 // make an autocomplete widget on simple_value
@@ -170,7 +164,7 @@ var DisplayDescriptor = {
     },
 
     initDropdown: function(format, url, view, select, definesValues, defaultValues) {
-        if (typeof definesValues === "undefined") {
+        if (!definesValues || !defaultValues || !defaultValues[0]) {
             definesValues = false;
         }
 
@@ -209,7 +203,7 @@ var DisplayDescriptor = {
                     select.selectpicker('refresh');
 
                     if (definesValues) {
-                        select.val(defaultValues).trigger('change');
+                        select.val(defaultValues[0]).trigger('change');
                     }
                 });
             }
@@ -217,7 +211,7 @@ var DisplayDescriptor = {
     },
 
     initBoolean: function(format, view, select, definesValues, defaultValues) {
-        if (typeof definesValues === "undefined") {
+        if (!definesValues || !defaultValues || !defaultValues[0]) {
             definesValues = false;
         }
 
@@ -241,7 +235,7 @@ var DisplayDescriptor = {
             select.selectpicker('refresh');
 
             if (definesValues) {
-                select.val(defaultValues[0]).trigger('change');
+                select.val(defaultValues[0] ? "true": "false").trigger('change');
             }
         }
     },
@@ -267,14 +261,14 @@ var DisplayDescriptor = {
                 select.selectpicker('refresh');
 
                 if (definesValues) {
-                    select.val(defaultValues[0]).trigger('change');
+                    select.val(defaultValues[0].toString()).trigger('change');
                 }
             }
         }
     },
 
     initDate: function(format, view, input, definesValues, defaultValues) {
-        if (typeof definesValues === "undefined") {
+        if (!definesValues || !defaultValues || !defaultValues[0]) {
             definesValues = false;
         }
 
@@ -321,12 +315,13 @@ var DisplayDescriptor = {
 
         if (definesValues) {
             var date = moment(defaultValues[0]);
-            $("#simple_value").val(date.format($.datepicker._defaults.dateFormat.toUpperCase()));
+            var linput = input.is('input') ? input : input.children('input');
+            linput.val(date.format($.datepicker._defaults.dateFormat.toUpperCase()));
         }
     },
 
     initTime: function(format, view, input, definesValues, defaultValues) {
-        if (typeof definesValues === "undefined") {
+        if (!definesValues || !defaultValues || !defaultValues[0]) {
             definesValues = false;
         }
 
@@ -367,12 +362,13 @@ var DisplayDescriptor = {
 
         if (definesValues) {
             // HH:mm:ss
-            $("#simple_value").val(defaultValues[0]);
+            var linput = input.is('input') ? input : input.children('input');
+            linput.val(defaultValues[0]);
         }
     },
 
     initDateTime: function(format, view, input, definesValues, defaultValues) {
-        if (typeof definesValues === "undefined") {
+        if (!definesValues || !defaultValues || !defaultValues[0]) {
             definesValues = false;
         }
 
@@ -413,12 +409,13 @@ var DisplayDescriptor = {
 
         if (definesValues) {
             var date = moment(defaultValues[0]);
-            $("#simple_value").val(date.format($.datepicker._defaults.dateFormat.toUpperCase() + ' HH:mm:ss'));
+            var linput = input.is('input') ? input : input.children('input');
+            linput.val(date.format($.datepicker._defaults.dateFormat.toUpperCase() + ' HH:mm:ss'));
         }
     },
 
     initGpsCoordinate: function(format, view, input, definesValues, defaultValues) {
-        if (typeof definesValues === "undefined") {
+        if (!definesValues || !defaultValues || !defaultValues[0]) {
             definesValues = false;
         }
 
@@ -426,7 +423,7 @@ var DisplayDescriptor = {
     },
 
     initNumeric: function (format, view, input, definesValues, defaultValues) {
-        if (typeof definesValues === "undefined") {
+        if (!definesValues || !defaultValues || !defaultValues[0]) {
             definesValues = false;
         }
 
@@ -473,7 +470,8 @@ var DisplayDescriptor = {
         }
 
         if (definesValues) {
-            input.val(defaultValues[0]);
+            var linput = input.is('input') ? input : input.children('input');
+            linput.val(defaultValues[0]);
         }
     },
 
@@ -506,7 +504,7 @@ var DisplayDescriptor = {
     },
 
     initText: function (format, view, input, definesValues, defaultValues) {
-        if (typeof definesValues === "undefined") {
+        if (!definesValues || !defaultValues || !defaultValues[0]) {
             definesValues = false;
         }
 
@@ -549,7 +547,8 @@ var DisplayDescriptor = {
         }
 
         if (definesValues) {
-            input.val(defaultValues[0]);
+            var linput = input.is('input') ? input : input.children('input');
+            linput.val(defaultValues[0]);
         }
     }
 };

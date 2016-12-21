@@ -34,7 +34,12 @@
                                     <% var mandatory = descriptor_model_type.mandatory ? "mandatory-field" : ""; %>
                                     <tr class="descriptor" panel-index="<%= pi %>" index="<%= i %>" descriptor-model-type="<%= descriptor_model_type.id %>" name="<%= descriptor_model_type.descriptor_type.code %>">
                                         <td class="descriptor-name" style="padding-top: 15px;"><%= descriptor_model_type.label %></td>
-                                        <td class="descriptor-value" format-type="<%= format.type %>"></td>
+                                        <td class="descriptor-value" format-type="<%= format.type %>">
+                                            <div class="input-group">
+                                                <input class="form-control" width="100%" readonly="">
+                                                <span class="input-group-addon"><span class="glyphicon"></span></span>
+                                            </div>
+                                        </td>
                                     </tr>
                                     <% ++i; %>
                                 <% }) %>

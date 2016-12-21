@@ -718,9 +718,9 @@ var View = Marionette.ItemView.extend({
                         } else if (format.type === 'ordinal') {
                             // max 256 values for a dropdown
                             if ((format.range[1] - format.range[0] + 1) <= 256) {
-                                data.values = [this.ui.select_value.val()];
+                                data.values = [parseInt(this.ui.select_value.val())];
                             } else {
-                                data.values = [this.ui.simple_value.val()];
+                                data.values = [parseInt(this.ui.simple_value.val())];
                             }
                         } else if (format.type === "date") {
                             // format to YYYYMMDD date

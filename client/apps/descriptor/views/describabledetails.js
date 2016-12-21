@@ -9,7 +9,7 @@
  */
 
 var ItemView = require('../../main/views/itemview');
-var DisplayDescriptor = require('../widgets/displaydescriptor');
+var DisplayReadDescriptor = require('../widgets/displayreaddescriptor');
 
 var View = ItemView.extend({
     tagName: 'div',
@@ -58,156 +58,229 @@ var View = ItemView.extend({
                 var url = application.baseUrl + 'descriptor/group/' + descriptorType.group + '/type/' + descriptorType.id + '/';
 
                 if (format.list_type == "autocomplete") {
-                    var select = $('<select style="width: 100%;"></select>');
-                    el.children('td.descriptor-value').append(select);
+                    var group = el.children('td.descriptor-value').children('div.input-group');
+                    group.children('span').children('span').addClass('glyphicon-list');
 
-                    DisplayDescriptor.initAutocomplete(
+                    DisplayReadDescriptor.initAutocomplete(
                         format,
                         url,
                         view,
-                        select,
+                        group,
                         true,
                         values);
-
-                    select.prop("disabled", true);
                 } else {
-                    var select = $('<select data-width="100%"></select>');
-                    el.children('td.descriptor-value').append(select);
+                    var group = el.children('td.descriptor-value').children('div.input-group');
+                    group.children('span').children('span').addClass('glyphicon-list');
 
-                    select.selectpicker({container: 'body', style: 'btn-default'});
-
-                    DisplayDescriptor.initDropdown(
+                    DisplayReadDescriptor.initDropdown(
                         format,
                         url,
                         view,
-                        select,
+                        group,
                         true,
                         values);
-
-                    select.prop("disabled", true).selectpicker('refresh');
                 }
             } else if (format.type == "entity") {
                 var url = application.baseUrl + format.model.replace('.', '/') + '/';
 
-                var select = $('<select style="width: 100%;"></select>');
-                el.children('td.descriptor-value').append(select);
+                var group = el.children('td.descriptor-value').children('div.input-group');
+                group.children('span').children('span').addClass('glyphicon-list');
 
-                DisplayDescriptor.initEntitySelect(
+                DisplayReadDescriptor.initEntitySelect(
                     format,
                     url,
                     view,
-                    select,
+                    group,
                     true,
                     values);
-
-                select.prop("disabled", true);
             } else if (format.type === "boolean") {
-                var select = $('<select data-width="100%"></select>');
-                el.children('td.descriptor-value').append(select);
+                var group = el.children('td.descriptor-value').children('div.input-group');
+                group.children('span').children('span').addClass('glyphicon-list');
 
-                select.selectpicker({container: 'body', style: 'btn-default'});
-
-                DisplayDescriptor.initBoolean(
+                DisplayReadDescriptor.initBoolean(
                     format,
                     view,
-                    select,
+                    group,
                     true,
                     values);
-
-                select.prop("disabled", true).selectpicker('refresh');
             } else if ((format.type === "ordinal") && ((format.range[1] - format.range[0] + 1) <= 256)) {
                 // ordinal with at max 256 values as a dropdown
-                var select = $('<select data-width="100%"></select>');
-                el.children('td.descriptor-value').append(select);
+                var group = el.children('td.descriptor-value').children('div.input-group');
+                group.children('span').children('span').addClass('glyphicon-list');
 
-                select.selectpicker({container: 'body', style: 'btn-default'});
-
-                DisplayDescriptor.initOrdinal(
+                DisplayReadDescriptor.initOrdinal(
                     format,
                     view,
-                    select,
+                    group,
                     true,
                     values);
-
-                select.prop("disabled", true).selectpicker('refresh');
             } else if (format.type === "date") {
-                var group = $('<div class="input-group"></div>');
-                var input = $('<input class="form-control" width="100%">');
-                var glyph = $('<span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>').css('cursor', 'pointer');
-                group.append(input);
-                group.append(glyph);
+                var group = el.children('td.descriptor-value').children('div.input-group');
+                group.children('span').children('span').addClass('glyphicon-calendar');
 
-                el.children('td.descriptor-value').append(group);
-
-                DisplayDescriptor.initDate(
+                DisplayReadDescriptor.initDate(
                     format,
                     view,
                     group,
                     true,
                     values);
-
-                group.data('DateTimePicker').disable();
             } else if (format.type === "time") {
-                var group = $('<div class="input-group"></div>');
-                var input = $('<input class="form-control" width="100%">');
-                var glyph = $('<span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span>').css('cursor', 'pointer');
-                group.append(input);
-                group.append(glyph);
+                var group = el.children('td.descriptor-value').children('div.input-group');
+                group.children('span').children('span').addClass('glyphicon-time');
 
-                el.children('td.descriptor-value').append(group);
-
-                DisplayDescriptor.initTime(
+                DisplayReadDescriptor.initTime(
                     format,
                     view,
                     group,
                     true,
                     values);
-
-                group.data('DateTimePicker').disable();
             } else if (format.type === "datetime") {
-                var group = $('<div class="input-group"></div>');
-                var input = $('<input class="form-control" width="100%">');
-                var glyph = $('<span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>').css('cursor', 'pointer');
-                group.append(input);
-                group.append(glyph);
+                var group = el.children('td.descriptor-value').children('div.input-group');
+                group.children('span').children('span').addClass('glyphicon-calendar');
 
-                el.children('td.descriptor-value').append(group);
-
-                DisplayDescriptor.initDateTime(
+                DisplayReadDescriptor.initDateTime(
                     format,
                     view,
                     group,
                     true,
                     values);
-
-                group.data('DateTimePicker').disable();
             } else {
-                var group = $('<div class="input-group"></div>');
-                var input = $('<input class="form-control" width="100%">');
-                var glyph = $('<span class="input-group-addon"><span class="glyphicon glyphicon-cog"></span></span>');
-                group.append(input);
-                group.append(glyph);
+                var group = el.children('td.descriptor-value').children('div.input-group');
+                group.children('span').children('span').addClass('glyphicon-cog');
 
                 // numeric, numeric range, and ordinal with more than 256 values
                 if (format.type === "numeric" || format.type === "numeric_range" || format.type === "ordinal") {
-                    DisplayDescriptor.initNumeric(
+                    DisplayReadDescriptor.initNumeric(
                         format,
                         view,
-                        input,
+                        group,
                         true,
                         values);
                 } else if (format.type === "string") { // regexp text
-                    DisplayDescriptor.initText(
+                    DisplayReadDescriptor.initText(
                         format,
                         view,
-                        input,
+                        group,
                         true,
                         values);
                 }
+            }
+        });
+    },
 
-                el.children('td.descriptor-value').append(group);
+    onShow: function() {
+        var view = this;
+        var model = this.model;
 
-                input.prop('disabled', true);
+        $.each(this.ui.descriptor, function(index) {
+            var el = $(this);
+
+            var pi = el.attr('panel-index');
+            var i = el.attr('index');
+            var descriptorModelType = view.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
+            var condition = descriptorModelType.condition;
+
+            if (condition.defined) {
+                var display = false;
+
+                // search the target descriptor type for the condition
+                var target = view.$el.find("tr.descriptor[descriptor-model-type=" + condition.target + "]");
+                var targetDescriptorModelType = view.descriptorMetaModelLayout.panels[target.attr('panel-index')].descriptor_model.descriptor_model_types[target.attr('index')];
+                var format = targetDescriptorModelType.descriptor_type.format;
+
+                values = [model.get('descriptors')[targetDescriptorModelType.id]];
+
+                if (format.type.startsWith('enum_')) {
+                    switch (condition.condition) {
+                        case 0:
+                            display = values[0] == null || values[0] === "";
+                            break;
+                        case 1:
+                            display = values[0] != null && values[0] !== "";
+                            break;
+                        case 2:
+                            display = values[0] === condition.values[0];
+                            break;
+                        case 3:
+                            display = values[0] !== condition.values[0];
+                            break;
+                        default:
+                            break;
+                    }
+                } else if (format.type === "boolean") {
+                    switch (condition.condition) {
+                        case 0:
+                            display = false;  // a boolean is always defined
+                            break;
+                        case 1:
+                            display = true;  // a boolean is always defined
+                            break;
+                        case 2:
+                            display = values[0] === condition.values[0];
+                            break;
+                        case 3:
+                            display = value[0] !== condition.values[0];
+                            break;
+                        default:
+                            break;
+                    }
+                } else if ((format.type === "ordinal") && ((format.range[1] - format.range[0] + 1) <= 256)) {
+                    switch (condition.condition) {
+                        case 0:
+                            display = false;  // an ordinal is always defined
+                            break;
+                        case 1:
+                            display = true;  // an ordinal is always defined
+                            break;
+                        case 2:
+                            display = values[0] === condition.values[0];
+                            break;
+                        case 3:
+                            display = values[0] !== condition.values[0];
+                            break;
+                        default:
+                            break;
+                    }
+                } else if ((format.type === "date") || (format.type === "time") || (format.type === "datetime")) {
+                    switch (condition.condition) {
+                        case 0:
+                            display = values[0] == null || values[0] === "";
+                            break;
+                        case 1:
+                            display = values[0] != null && values[0] !== "";
+                            break;
+                        case 2:
+                            display = values[0] === condition.values[0];
+                            break;
+                        case 3:
+                            display = values[0] !== condition.values[0];
+                            break;
+                        default:
+                            break;
+                    }
+                } else {
+                    // numeric, numeric range, ordinal with more than 256 values, text with regexp
+                    switch (condition.condition) {
+                        case 0:
+                            display = values[0] == null || values[0] === "";
+                            break;
+                        case 1:
+                            display = values[0] != null && values[0] !== "";
+                            break;
+                        case 2:
+                            display = values[0] === condition.values[0];
+                            break;
+                        case 3:
+                            display = values[0] !== condition.values[0];
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                if (!display) {
+                    el.hide(false);
+                }
             }
         });
     },

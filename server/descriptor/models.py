@@ -8,7 +8,7 @@ coll-gate descriptor module models.
 import json
 
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.postgres.fields import HStoreField
+from django.contrib.postgres.fields import JSONField
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.utils import translation
@@ -590,7 +590,7 @@ class DescriptorType(Entity):
             if trans:
                 value = get_object_or_404(DescriptorValue, Q(language=lang), Q(code=code))
             else:
-                value = get_object_or_404(DescriptorValue, Q(language__is_null=True), Q(code=code))
+                value = get_object_or_404(DescriptorValue, Q(code=code))
 
             return value.parent, value.ordinal, value.value0, value.value1
 
@@ -1031,9 +1031,8 @@ class DescribableEntity(Entity):
     Base entity than have descriptor values and uses of a meta-model of descriptor.
     """
 
-    # HStore contains the list of descriptors code as key, and descriptor value or value code as
-    # value of the dict.
-    descriptors = HStoreField()
+    # JSONB field containing the list of descriptors model type id as key, with a descriptor value or value code.
+    descriptors = JSONField()
 
     # It refers to a set of models of type of descriptors through a meta-model of descriptor.
     descriptor_meta_model = models.ForeignKey(DescriptorMetaModel)

@@ -152,6 +152,9 @@ def check_and_defines_descriptors(entity_descriptors, descriptor_meta_model, des
             acc_value = entity_descriptors[str(dmt.id)] if key in entity_descriptors else None
             src_value = descriptors[str(dmt.id)] if key in descriptors else None
 
+            # validate the source format
+            # @todo string, date, time, datetime, boolean, integer, decimal...
+
             # mandatory descriptor
             if dmt.mandatory:
                 if src_value is None and acc_value is None:
