@@ -84,7 +84,7 @@ var View = ItemView.extend({
                 var url = application.baseUrl + format.model.replace('.', '/') + '/';
 
                 var group = el.children('td.descriptor-value').children('div.input-group');
-                group.children('span').children('span').addClass('glyphicon-list');
+                group.children('span').children('span').addClass('glyphicon-share');
 
                 DisplayReadDescriptor.initEntitySelect(
                     format,
@@ -95,7 +95,12 @@ var View = ItemView.extend({
                     values);
             } else if (format.type === "boolean") {
                 var group = el.children('td.descriptor-value').children('div.input-group');
-                group.children('span').children('span').addClass('glyphicon-list');
+
+                if (values[0]) {
+                    group.children('span').children('span').addClass('glyphicon-check');
+                } else {
+                    group.children('span').children('span').addClass('glyphicon-unchecked');
+                }
 
                 DisplayReadDescriptor.initBoolean(
                     format,
@@ -106,7 +111,7 @@ var View = ItemView.extend({
             } else if ((format.type === "ordinal") && ((format.range[1] - format.range[0] + 1) <= 256)) {
                 // ordinal with at max 256 values as a dropdown
                 var group = el.children('td.descriptor-value').children('div.input-group');
-                group.children('span').children('span').addClass('glyphicon-list');
+                group.children('span').children('span').addClass('glyphicon-option-vertical');
 
                 DisplayReadDescriptor.initOrdinal(
                     format,
@@ -191,6 +196,23 @@ var View = ItemView.extend({
                 values = [model.get('descriptors')[targetDescriptorModelType.id]];
 
                 if (format.type.startsWith('enum_')) {
+                    switch (condition.condition) {
+                        case 0:
+                            display = values[0] == null || values[0] === "";
+                            break;
+                        case 1:
+                            display = values[0] != null && values[0] !== "";
+                            break;
+                        case 2:
+                            display = values[0] === condition.values[0];
+                            break;
+                        case 3:
+                            display = values[0] !== condition.values[0];
+                            break;
+                        default:
+                            break;
+                    }
+                } else if (format.type === "entity") {
                     switch (condition.condition) {
                         case 0:
                             display = values[0] == null || values[0] === "";

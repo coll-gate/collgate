@@ -46,83 +46,6 @@ def get_describable_list(request):
     return HttpResponseRest(request, describables)
 
 
-def get_describable_panels(descriptor_meta_model_id, app_label, model):
-    """
-    Return the structure of panels of descriptors with descriptor models, descriptors model types, descriptor type.
-    :deprecated
-    :param descriptor_meta_model_id: Unique descriptor metal model identifier
-    :param app_label: Application label of the describable model
-    :param model: Name of the model of the describable entity
-    :return: An array of panel containing a structure of types of descriptors
-    """
-    content_type = get_object_or_404(ContentType, app_label=app_label, model=model)
-    dmm = get_object_or_404(DescriptorMetaModel, id=descriptor_meta_model_id, target=content_type)
-
-    dps = DescriptorPanel.objects.filter(descriptor_meta_model=dmm).order_by('position')
-    dps.select_related('descriptor_model')
-
-    panels = []
-
-    for panel in dps:
-        descriptor_model = panel.descriptor_model
-
-        dmts = []
-
-        for dmt in descriptor_model.descriptor_model_types.all().order_by('position').select_related('descriptor_type'):
-            descriptor_type = dmt.descriptor_type
-
-            # values are loaded on demand (displaying the panel or opening the dropdown)
-            format = json.loads(descriptor_type.format)
-
-            conditions = DescriptorModelTypeCondition.objects.filter(descriptor_model_type_id=dmt.id)
-
-            if conditions.exists():
-                dmtc = conditions[0]
-
-                condition = {
-                    'defined': True,
-                    'condition': dmtc.condition,
-                    'target': dmtc.target.id,
-                    'values': json.loads(dmtc.values)
-                }
-            else:
-                condition = {
-                    'defined': False,
-                    'condition': 0,
-                    'target': 0,
-                    'values': None
-                }
-
-            dmts.append({
-                'id': dmt.id,
-                'name': dmt.name,
-                'label': dmt.get_label(),
-                'condition': condition,
-                'mandatory': dmt.mandatory,
-                'set_once': dmt.set_once,
-                'descriptor_type': {
-                    'id': descriptor_type.id,
-                    'group': descriptor_type.group_id,
-                    'code': descriptor_type.code,
-                    'format': format
-                }
-            })
-
-        panels.append({
-            'id': panel.id,
-            'position': panel.position,
-            'name': panel.name,
-            'label': panel.get_label(),
-            'descriptor_model': {
-                'id': descriptor_model.id,
-                'name': descriptor_model.name,
-                'descriptor_model_types': dmts
-            }
-        })
-
-    return panels
-
-
 def check_and_defines_descriptors(entity_descriptors, descriptor_meta_model, descriptors):
     results = {}
 
@@ -141,19 +64,8 @@ def check_and_defines_descriptors(entity_descriptors, descriptor_meta_model, des
             conditions = DescriptorModelTypeCondition.objects.filter(descriptor_model_type_id=dmt.id)
             key = str(dmt.id)
 
-            if conditions.exists():
-                # @todo check condition
-                dmtc = conditions[0]
-
-                # 'condition': dmtc.condition,
-                # 'target': dmtc.target.id,
-                # 'values': json.loads(dmtc.values)
-
             acc_value = entity_descriptors[str(dmt.id)] if key in entity_descriptors else None
             src_value = descriptors[str(dmt.id)] if key in descriptors else None
-
-            # validate the source format
-            # @todo string, date, time, datetime, boolean, integer, decimal...
 
             # mandatory descriptor
             if dmt.mandatory:
@@ -164,6 +76,97 @@ def check_and_defines_descriptors(entity_descriptors, descriptor_meta_model, des
             if dmt.set_once:
                 if src_value is not None and acc_value is not None:
                     raise ValueError(_("Already defined set once descriptor %s") % (dmt.get_label(),))
+
+            if conditions.exists():
+                # check condition
+                dmtc = conditions[0]
+
+                # according to the condition if the current value is defined (src) or was defined (acc)
+                # the condition must be respected otherwise raise an exception if a new value is defined (src)
+                # if dmtc.condition > 0:
+                #     # @todo
+                #     key = dmtc.target.id
+                #
+                #     if key not in entity_descriptors and key not in descriptors:
+                #         raise ValueError(_("A condition require a value for a descriptor and this value is not defined"))
+
+            if src_value:
+                # validate the source value
+                if format.type.startswith("enum_"):
+                    # check if the value is a string and exists into the type of descriptor
+                    if not isinstance(src_value, str):
+                        raise ValueError(_("The descriptor value must be a string") + " (%s)" % dmt.get_label())
+
+                    # check if the value exists
+                    # @todo
+                elif format.type == "entity":
+                    # check if the value is an integer and if the related entity exists
+                    if not isinstance(src_value, str):
+                        raise ValueError(_("The descriptor value must be a string") + " (%s)" % dmt.get_label())
+
+                    # check if the entity exists
+                    # @todo
+                elif format.type == "ordinal":
+                    # check if the value is an integer into the range min/max
+                    if not isinstance(src_value, int):
+                        raise ValueError(_("The descriptor value must be an integer") + " (%s)" % dmt.get_label())
+
+                    # check min/max
+                    # @todo
+                elif format.type == "boolean":
+                    # check if the value is a boolean
+                    if not isinstance(src_value, bool):
+                        raise ValueError(_("The descriptor value must be a boolean") + " (%s)" % dmt.get_label())
+                elif format.type == "date":
+                    # check if the value is a YYYYMMDD date
+                    if not isinstance(src_value, str):
+                        raise ValueError(_("The descriptor value must be a date string (YYYYMMDD)") + " (%s)" % dmt.get_label())
+
+                    # check format
+                    # @todo
+                elif format.type == "time":
+                    # check if the value is a HH:MM:SS time
+                    if not isinstance(src_value, str):
+                        raise ValueError(_("The descriptor value must be a time string (HH:MM:SS)") + " (%s)" % dmt.get_label())
+
+                    # check format
+                    # @todo
+                elif format.type == "datetime":
+                    # check if the value is an ISO and UTC (convert to UTC if necessary)
+                    if not isinstance(src_value, str):
+                        raise ValueError(_("The descriptor value must be a datetime string (ISO)") + " (%s)" % dmt.get_label())
+
+                    # check format
+                    # @todo
+                elif format.type == "numeric":
+                    # check if the value is a decimal (string with digits - and .) with the according precision of
+                    # decimals
+                    if not isinstance(src_value, str):
+                        raise ValueError(_("The descriptor value must be a decimal string") + " (%s)" % dmt.get_label())
+
+                    # check format
+                    # @todo
+                elif format.tpye == "numeric_range":
+                    # check if the value is a decimal (string with digits - and .) with the according precision of
+                    # decimals and into the range min/max
+                    if not isinstance(src_value, str):
+                        raise ValueError(_("The descriptor value must be a decimal string") + " (%s)" % dmt.get_label())
+
+                    # check format
+                    # @todo
+
+                    # check min/max
+                    # @todo
+                elif format.type == "string":
+                    # check if the value is a string matching the regexp and the max length of 1024 characters
+                    if not isinstance(src_value, str):
+                        raise ValueError(_("The descriptor value must be a string") + " (%s)" % dmt.get_label())
+
+                    # test max length
+                    # @todo
+
+                    # test regexp
+                    # @todo
 
             results[dmt.id] = src_value
 

@@ -1,4 +1,4 @@
-/**
+ /**
  * @file displaydescriptor.js
  * @brief Display the correct widget for a type of descriptor and its values with a default.
  * @author Frederic SCHERMA
@@ -9,10 +9,12 @@
  */
 
 var DisplayDescriptor = {
+    isValueDefined: function (definesValues, defaultValues) {
+        return !!definesValues && !!defaultValues && defaultValues[0] != null;
+    },
+
     initAutocomplete: function(format, url, view, select, definesValues, defaultValues) {
-        if (!definesValues || !defaultValues || !defaultValues[0]) {
-            definesValues = false;
-        }
+        definesValues = this.isValueDefined(definesValues, defaultValues);
 
         if (format.type.startsWith('enum_')) {
             if (format.list_type == "autocomplete") {
@@ -86,9 +88,7 @@ var DisplayDescriptor = {
     },
 
     initEntitySelect: function(format, url, view, select, definesValues, defaultValues) {
-        if (!definesValues || !defaultValues || !defaultValues[0]) {
-            definesValues = false;
-        }
+        definesValues = this.isValueDefined(definesValues, defaultValues);
 
         if (format.type === 'entity') {
             var initials = [];
@@ -164,9 +164,7 @@ var DisplayDescriptor = {
     },
 
     initDropdown: function(format, url, view, select, definesValues, defaultValues) {
-        if (!definesValues || !defaultValues || !defaultValues[0]) {
-            definesValues = false;
-        }
+        definesValues = this.isValueDefined(definesValues, defaultValues);
 
         if (format.type.startsWith('enum_')) {
             if (format.list_type == "dropdown") {
@@ -211,9 +209,7 @@ var DisplayDescriptor = {
     },
 
     initBoolean: function(format, view, select, definesValues, defaultValues) {
-        if (!definesValues || !defaultValues || !defaultValues[0]) {
-            definesValues = false;
-        }
+        definesValues = this.isValueDefined(definesValues, defaultValues);
 
         if (format.type === 'boolean') {
             // true
@@ -241,9 +237,7 @@ var DisplayDescriptor = {
     },
 
     initOrdinal: function(format, view, select, definesValues, defaultValues) {
-        if (typeof definesValues === "undefined") {
-            definesValues = false;
-        }
+        definesValues = this.isValueDefined(definesValues, defaultValues);
 
         if (format.type === 'ordinal') {
             var len = format.range[1] - format.range[0] + 1;
@@ -268,9 +262,7 @@ var DisplayDescriptor = {
     },
 
     initDate: function(format, view, input, definesValues, defaultValues) {
-        if (!definesValues || !defaultValues || !defaultValues[0]) {
-            definesValues = false;
-        }
+        definesValues = this.isValueDefined(definesValues, defaultValues);
 
         input.datetimepicker({
             locale: session.language,
@@ -321,9 +313,7 @@ var DisplayDescriptor = {
     },
 
     initTime: function(format, view, input, definesValues, defaultValues) {
-        if (!definesValues || !defaultValues || !defaultValues[0]) {
-            definesValues = false;
-        }
+        definesValues = this.isValueDefined(definesValues, defaultValues);
 
         input.datetimepicker({
             locale: session.language,
@@ -368,9 +358,7 @@ var DisplayDescriptor = {
     },
 
     initDateTime: function(format, view, input, definesValues, defaultValues) {
-        if (!definesValues || !defaultValues || !defaultValues[0]) {
-            definesValues = false;
-        }
+        definesValues = this.isValueDefined(definesValues, defaultValues);
 
         input.datetimepicker({
             locale: session.language,
@@ -415,17 +403,13 @@ var DisplayDescriptor = {
     },
 
     initGpsCoordinate: function(format, view, input, definesValues, defaultValues) {
-        if (!definesValues || !defaultValues || !defaultValues[0]) {
-            definesValues = false;
-        }
+        definesValues = this.isValueDefined(definesValues, defaultValues);
 
         // @todo
     },
 
     initNumeric: function (format, view, input, definesValues, defaultValues) {
-        if (!definesValues || !defaultValues || !defaultValues[0]) {
-            definesValues = false;
-        }
+        definesValues = this.isValueDefined(definesValues, defaultValues);
 
         if (format.type === "numeric") {
             $(input).numeric({
@@ -504,9 +488,7 @@ var DisplayDescriptor = {
     },
 
     initText: function (format, view, input, definesValues, defaultValues) {
-        if (!definesValues || !defaultValues || !defaultValues[0]) {
-            definesValues = false;
-        }
+        definesValues = this.isValueDefined(definesValues, defaultValues);
 
         // hard limit to 1024 characters
         input.attr('maxlength', 1024);

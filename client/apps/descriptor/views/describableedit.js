@@ -474,6 +474,13 @@ var View = ItemView.extend({
         var source = this.findDescriptorModelTypeForConditionTarget(target);
         var condition = source.descriptorModelType.condition;
 
+        var value = select.val();
+
+        // cast to correct type if necessary
+        if (source.targetDescriptorModelType.descriptor_type.format.type === "entity") {
+            value = parseInt(select.val());
+        }
+
         // initial condition
         switch (condition.condition) {
             case 0:
@@ -483,10 +490,10 @@ var View = ItemView.extend({
                 display = select.val() !== "";
                 break;
             case 2:
-                display = select.val() === condition.values[0];
+                display = value === condition.values[0];
                 break;
             case 3:
-                display = select.val() !== condition.values[0];
+                display = value !== condition.values[0];
                 break;
             default:
                 break;
@@ -597,7 +604,7 @@ var View = ItemView.extend({
 
         var value = select.val();
 
-        // cast to correct type if necessary
+        // cast to correct type if necessary (numeric and numeric_range are read as usual string)
         if (source.targetDescriptorModelType.descriptor_type.format.type === "ordinal") {
             value = parseInt(input.val());  // always defines
         }
