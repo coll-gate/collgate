@@ -216,6 +216,13 @@ var View = ItemView.extend({
 
                 // numeric, numeric range, and ordinal with more than 256 values
                 if (format.type === "numeric" || format.type === "numeric_range" || format.type === "ordinal") {
+
+                    // if ordinal default value is undefined set it to its minimal value to have a initial state
+                    if (format.type === "ordinal" && !definesValues) {
+                        definesValues = true;
+                        defaultValues = [format.range[0]];
+                    }
+
                     DisplayDescriptor.initNumeric(
                         format,
                         view,
@@ -282,27 +289,6 @@ var View = ItemView.extend({
                             default:
                                 break;
                         }
-                    } else if (format.type === "entity") {
-                        var select = target.children('td.descriptor-value').children('select');
-                        select.on("select2:select", $.proxy(view.onAutocompleteChangeValue, view));
-
-                        // initial condition
-                        switch (condition.condition) {
-                            case 0:
-                                display = select.val() === "" || select.val() === "undefined";
-                                break;
-                            case 1:
-                                display = select.val() !== "";
-                                break;
-                            case 2:
-                                display = select.val() === condition.values[0];
-                                break;
-                            case 3:
-                                display = select.val() !== condition.values[0];
-                                break;
-                            default:
-                                break;
-                        }
                     } else {
                         var select = target.children('td.descriptor-value').children('div').children('select');
                         select.parent('div.bootstrap-select').on('changed.bs.select', $.proxy(view.onSelectChangeValue, view));
@@ -324,6 +310,27 @@ var View = ItemView.extend({
                             default:
                                 break;
                         }
+                    }
+                } else if (format.type === "entity") {
+                    var select = target.children('td.descriptor-value').children('select');
+                    select.on("select2:select", $.proxy(view.onAutocompleteChangeValue, view));
+
+                    // initial condition
+                    switch (condition.condition) {
+                        case 0:
+                            display = select.val() === "" || select.val() === "undefined";
+                            break;
+                        case 1:
+                            display = select.val() !== "";
+                            break;
+                        case 2:
+                            display = parseInt(select.val()) === condition.values[0];
+                            break;
+                        case 3:
+                            display = parseInt(select.val()) !== condition.values[0];
+                            break;
+                        default:
+                            break;
                     }
                 } else if (format.type === "boolean") {
                     var select = target.children('td.descriptor-value').children('div').children('select');
@@ -653,10 +660,14 @@ var View = ItemView.extend({
                 // take value
                 var format = descriptorModelType.descriptor_type.format;
 
-                if ((format.type.startsWith('enum_') && format.list_type == "autocomplete") || (format.type === "entity")) {
-                    values = [el.find('select').val()];
-                } else if (format.list_type === "dropdown") {
-                    values = [el.find('select').val()];
+                if (format.type.startsWith('enum_')) {
+                    if (format.list_type == "autocomplete") {
+                        values = [el.find('select').val()];
+                    } else if (format.list_type === "dropdown") {
+                        values = [el.find('select').val()];
+                    }
+                } else if (format.type === 'entity') {
+                    values = [parseInt(el.find('select').val())];
                 } else if (format.type === 'boolean') {
                     values = [el.find('select').val() === "true"];
                 } else if (format.type === 'ordinal') {

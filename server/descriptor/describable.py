@@ -6,8 +6,11 @@
 coll-gate descriptor module, descriptor
 """
 import json
+import re
+import decimal
 
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404
 from django.views.decorators.cache import cache_page
 from django.utils.translation import ugettext_lazy as _
@@ -17,6 +20,14 @@ from igdectk.rest import Format, Method
 from igdectk.rest.response import HttpResponseRest
 
 from .descriptor import RestDescriptor
+
+
+# YYYYMMDD date format
+DATE_RE = re.compile(r'^(\d{4})([01]\d)([0-3]\d)$')
+# HH:MM:SS time format
+TIME_RE = re.compile(r'^([0-2]\d):([0-5]\d):([0-5]\d)$')
+# ISO 8601 date time extended format with seconds
+DATETIME_RE = re.compile(r'^\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d([+-][0-2]\d:[0-5]\d|Z)$')
 
 
 class RestDescribable(RestDescriptor):
@@ -44,6 +55,8 @@ def get_describable_list(request):
         })
 
     return HttpResponseRest(request, describables)
+
+
 
 
 def check_and_defines_descriptors(entity_descriptors, descriptor_meta_model, descriptors):
@@ -92,81 +105,118 @@ def check_and_defines_descriptors(entity_descriptors, descriptor_meta_model, des
 
             if src_value:
                 # validate the source value
-                if format.type.startswith("enum_"):
+                if format['type'].startswith("enum_"):
                     # check if the value is a string and exists into the type of descriptor
                     if not isinstance(src_value, str):
                         raise ValueError(_("The descriptor value must be a string") + " (%s)" % dmt.get_label())
 
                     # check if the value exists
-                    # @todo
-                elif format.type == "entity":
+                    try:
+                        dmt.descriptor_type.get_value(src_value)
+                    except ObjectDoesNotExist:
+                        raise ValueError(_("The descriptor value must exists") + " (%s)" % dmt.get_label())
+
+                elif format['type'] == "entity":
                     # check if the value is an integer and if the related entity exists
-                    if not isinstance(src_value, str):
-                        raise ValueError(_("The descriptor value must be a string") + " (%s)" % dmt.get_label())
+                    if not isinstance(src_value, int):
+                        raise ValueError(_("The descriptor value must be an integer") + " (%s)" % dmt.get_label())
 
                     # check if the entity exists
-                    # @todo
-                elif format.type == "ordinal":
+                    try:
+                        app_label, model = format['model'].split('.')
+                        content_type = get_object_or_404(ContentType, app_label=app_label, model=model)
+                        content_type.get_object_for_this_type(id=src_value)
+                    except ObjectDoesNotExist:
+                        raise ValueError(_("The descriptor value must refers to an existing entity") + " (%s)" % dmt.get_label())
+
+                elif format['type'] == "ordinal":
                     # check if the value is an integer into the range min/max
                     if not isinstance(src_value, int):
                         raise ValueError(_("The descriptor value must be an integer") + " (%s)" % dmt.get_label())
 
                     # check min/max
-                    # @todo
-                elif format.type == "boolean":
+                    if src_value < int(format['range'][0]) or src_value > int(format['range'][1]):
+                        raise ValueError(_("The descriptor value must be an integer between ") + " %i and %i (%s)" % (
+                            format['range'][0], format['range'][1], dmt.get_label()))
+
+                elif format['type'] == "boolean":
                     # check if the value is a boolean
                     if not isinstance(src_value, bool):
                         raise ValueError(_("The descriptor value must be a boolean") + " (%s)" % dmt.get_label())
-                elif format.type == "date":
+
+                elif format['type'] == "date":
                     # check if the value is a YYYYMMDD date
-                    if not isinstance(src_value, str):
+                    if not isinstance(src_value, str) or DATE_RE.match(src_value) is None:
                         raise ValueError(_("The descriptor value must be a date string (YYYYMMDD)") + " (%s)" % dmt.get_label())
 
-                    # check format
-                    # @todo
-                elif format.type == "time":
+                elif format['type'] == "time":
                     # check if the value is a HH:MM:SS time
-                    if not isinstance(src_value, str):
+                    if not isinstance(src_value, str) or TIME_RE.match(src_value) is None:
                         raise ValueError(_("The descriptor value must be a time string (HH:MM:SS)") + " (%s)" % dmt.get_label())
 
-                    # check format
-                    # @todo
-                elif format.type == "datetime":
+                elif format['type'] == "datetime":
                     # check if the value is an ISO and UTC (convert to UTC if necessary)
-                    if not isinstance(src_value, str):
-                        raise ValueError(_("The descriptor value must be a datetime string (ISO)") + " (%s)" % dmt.get_label())
+                    if not isinstance(src_value, str) or DATETIME_RE.match(src_value) is None:
+                        raise ValueError(_("The descriptor value must be a datetime string (ISO 8601)") + " (%s)" % dmt.get_label())
 
-                    # check format
-                    # @todo
-                elif format.type == "numeric":
+                elif format['type'] == "numeric":
                     # check if the value is a decimal (string with digits - and .) with the according precision of
                     # decimals
                     if not isinstance(src_value, str):
                         raise ValueError(_("The descriptor value must be a decimal string") + " (%s)" % dmt.get_label())
 
                     # check format
-                    # @todo
-                elif format.tpye == "numeric_range":
+                    try:
+                        dec = decimal.Decimal(src_value)
+                    except decimal.InvalidOperation:
+                        raise ValueError(_("The descriptor value must be a decimal") + " (%s)" % dmt.get_label())
+
+                    # and precision
+                    if dec.as_tuple().exponent != -int(decimal.Decimal(format['precision'])):
+                        raise ValueError(_("The descriptor value must be a decimal with a precision of ") + " %s (%s)" % (
+                            format['precision'], dmt.get_label()))
+
+                elif format['type'] == "numeric_range":
                     # check if the value is a decimal (string with digits - and .) with the according precision of
                     # decimals and into the range min/max
                     if not isinstance(src_value, str):
-                        raise ValueError(_("The descriptor value must be a decimal string") + " (%s)" % dmt.get_label())
+                        raise ValueError(_("The descriptor value must be a decimal") + " (%s)" % dmt.get_label())
 
                     # check format
-                    # @todo
+                    try:
+                        dec = decimal.Decimal(src_value)
+                    except decimal.InvalidOperation:
+                        raise ValueError(_("The descriptor value must be a decimal") + " (%s)" % dmt.get_label())
 
-                    # check min/max
-                    # @todo
-                elif format.type == "string":
+                    # precision
+                    if dec.as_tuple().exponent != -int(decimal.Decimal(format['precision'])):
+                        raise ValueError(
+                            _("The descriptor value must be a decimal with a precision of ") + " %s (%s)" % (
+                                format['precision'], dmt.get_label()))
+
+                    # and min/max
+                    if dec < decimal.Decimal(format['range'][0]) or dec > decimal.Decimal(format['range'][1]):
+                        if not isinstance(src_value, str):
+                            raise ValueError(_("The descriptor value must be a decimal between") + " %i and %i (%s)" % (
+                                format['range'][0], format['range'][1], dmt.get_label()))
+
+                elif format['type'] == "string":
                     # check if the value is a string matching the regexp and the max length of 1024 characters
                     if not isinstance(src_value, str):
                         raise ValueError(_("The descriptor value must be a string") + " (%s)" % dmt.get_label())
 
                     # test max length
-                    # @todo
+                    if len(src_value) > 1024:
+                        raise ValueError(
+                            _("The descriptor value must be a string with a maximum length of 1024 characters") +
+                            " (%s)" % dmt.get_label())
 
                     # test regexp
-                    # @todo
+                    if "regexp" in format and format['regexp']:
+                        str_re = re.compile(format['regexp'])
+                        if str_re.match(src_value) is None:
+                            raise ValueError(_("The descriptor value must be a string matching the defined format") +
+                                             " (%s)" % dmt.get_label())
 
             results[dmt.id] = src_value
 

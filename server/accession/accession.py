@@ -46,7 +46,7 @@ class RestAccessionSynonym(RestAccessionAccession):
 @RestAccessionAccession.def_auth_request(Method.POST, Format.JSON, content={
         "type": "object",
         "properties": {
-            "name": {"type": "string", 'minLength': 3, 'maxLength': 32},
+            "name": {"type": "string", 'minLength': 3, 'maxLength': 64},
             "descriptor_meta_model": {"type": "number"},
             "parent": {"type": "number"},
             "descriptors": {"type": "object"},

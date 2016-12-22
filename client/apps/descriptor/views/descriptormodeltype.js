@@ -709,10 +709,14 @@ var View = Marionette.ItemView.extend({
                     var format = this.descriptorType.get('format');
 
                     if (data.condition == 2 || data.condition == 3) {
-                        if ((format.type.startsWith('enum_') && format.list_type == "autocomplete") || (format.type === "entity")) {
-                            data.values = [this.ui.autocomplete_value.val()];
-                        } else if (format.list_type === "dropdown") {
-                            data.values = [this.ui.select_value.val()];
+                        if (format.type.startsWith('enum_')) {
+                            if (format.list_type == "autocomplete") {
+                                data.values = [this.ui.autocomplete_value.val()];
+                            } else if (format.list_type === "dropdown") {
+                                data.values = [this.ui.select_value.val()];
+                            }
+                        } else if (format.type === 'entity') {
+                            data.values = [parseInt(this.ui.autocomplete_value.val())];
                         } else if (format.type === 'boolean') {
                             data.values = [this.ui.select_value.val() === "true"];
                         } else if (format.type === 'ordinal') {
