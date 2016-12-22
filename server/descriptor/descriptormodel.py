@@ -481,6 +481,11 @@ def patch_descriptor_model_type_for_model(request, id, tid):
         dmt.set_label(lang, label)
 
     if mandatory is not None:
+        # mandatory is incompatible with a condition
+        if dmt.conditions.exists():
+            raise SuspiciousOperation(_("A required type of model of descriptor cannot have a condition. " +
+                                        "You must delete the condition before to set the required state"))
+
         dmt.mandatory = bool(mandatory)
     if set_once is not None:
         dmt.set_once = bool(set_once)
@@ -651,6 +656,13 @@ def create_condition_for_descriptor_model_type(request, id, tid):
 
     dmt = get_object_or_404(DescriptorModelType, id=dmt_id, descriptor_model__id=dm_id)
     target = get_object_or_404(DescriptorModelType, id=target_id, descriptor_model__id=dm_id)
+
+    if dmt.mandatory:
+        raise SuspiciousOperation(_("It is not possible to define a condition on a required type of model of descriptor"))
+
+    # check if there is a cyclic condition
+    if target.conditions.filter(target=dmt).exists():
+        raise SuspiciousOperation(_("Cyclic condition detected. You cannot define this condition or you must remove the condition on the target"))
 
     condition = DescriptorCondition(request.data['condition'])
     values = request.data['values']
