@@ -14,6 +14,7 @@ from django.utils import translation
 from django.utils.translation import ugettext_lazy as _
 from django.db.models.functions import Length
 
+from descriptor.describable import descriptor_value_validate
 from igdectk.common.helpers import int_arg
 from igdectk.rest import Format, Method
 from igdectk.rest.response import HttpResponseRest
@@ -629,7 +630,7 @@ def get_condition_for_descriptor_model_type(request, id, tid):
                 "minItems": 0,
                 "maxItems": 64,
                 "items": {
-                    "type": ["string", "number"]
+                    "type": ["boolean", "string", "number", "null"]
                 },
                 "required": False
             },
@@ -653,6 +654,12 @@ def create_condition_for_descriptor_model_type(request, id, tid):
 
     condition = DescriptorCondition(request.data['condition'])
     values = request.data['values']
+
+    # validate the values[0]
+    format = json.loads(target.descriptor_type.format)
+
+    for value in values:
+        descriptor_value_validate(format, value, target)
 
     dmtc = DescriptorModelTypeCondition()
 
@@ -685,7 +692,7 @@ def create_condition_for_descriptor_model_type(request, id, tid):
                 "minItems": 0,
                 "maxItems": 64,
                 "items": {
-                    "type": ["string", "number"]
+                    "type": ["boolean", "string", "number", "null"]
                 },
                 "required": False
             },
@@ -712,9 +719,15 @@ def modify_condition_for_descriptor_model_type(request, id, tid):
 
     if conditions.exists():
         dmtc = conditions[0]
+        values = request.data['values']
+
+        # validate the values
+        format = json.loads(target.descriptor_type.format)
+
+        for value in values:
+            descriptor_value_validate(format, value, target)
 
         condition = DescriptorCondition(request.data['condition'])
-        values = request.data['values']
 
         dmtc.condition = condition.value
         dmtc.target = target
