@@ -60,8 +60,17 @@ var View = ItemView.extend({
             // default value or current descriptor value
             if (exists) {
                 defaultValues = [model.get('descriptors')[descriptorModelType.id]];
+                definesValues = defaultValues[0] != null && defaultValues[0] != undefined;
             } else {
                 // @todo default value
+                switch (format.type) {
+                    case "boolean":
+                        defaultValues = [false];
+                        definesValues = true;
+                        break;
+                    default:
+                        break;
+                }
             }
 
             if (format.type.startsWith('enum_')) {
@@ -250,6 +259,7 @@ var View = ItemView.extend({
     onShow: function() {
         var view = this;
         var model = this.model;
+        var exists = !model.isNew();
 
         $.each(this.ui.descriptor, function(index) {
             var el = $(this);
@@ -267,24 +277,36 @@ var View = ItemView.extend({
                 var targetDescriptorModelType = view.descriptorMetaModelLayout.panels[target.attr('panel-index')].descriptor_model.descriptor_model_types[target.attr('index')];
                 var format = targetDescriptorModelType.descriptor_type.format;
 
+                var initialValue = [null];
+
+                // default or current descriptor value
+                if (exists) {
+                    initialValue = [model.get('descriptors')[targetDescriptorModelType.id]];
+                } else {
+                    // @todo default value if defined
+                    //  initialValue = ;
+                }
+
                 if (format.type.startsWith('enum_')) {
                     if (format.list_type === "autocomplete") {
                         var select = target.children('td.descriptor-value').children('select');
                         select.on("select2:select", $.proxy(view.onAutocompleteChangeValue, view));
 
+                        var value = initialValue[0];
+
                         // initial condition
                         switch (condition.condition) {
                             case 0:
-                                display = select.val() === "" || select.val() === "undefined";
+                                display = value == null || value === "";
                                 break;
                             case 1:
-                                display = select.val() !== "";
+                                display = value != null && value !== "";
                                 break;
                             case 2:
-                                display = select.val() === condition.values[0];
+                                display = value != null && value === condition.values[0];
                                 break;
                             case 3:
-                                display = select.val() !== condition.values[0];
+                                display = value != null && value !== condition.values[0];
                                 break;
                             default:
                                 break;
@@ -293,19 +315,21 @@ var View = ItemView.extend({
                         var select = target.children('td.descriptor-value').children('div').children('select');
                         select.parent('div.bootstrap-select').on('changed.bs.select', $.proxy(view.onSelectChangeValue, view));
 
+                        var value = initialValue[0];
+
                         // initial condition
                         switch (condition.condition) {
                             case 0:
-                                display = select.val() === "" || select.val() === "undefined";
+                                display = value == null || value === "";
                                 break;
                             case 1:
-                                display = select.val() !== "";
+                                display = value != null && value !== "";
                                 break;
                             case 2:
-                                display = select.val() === condition.values[0];
+                                display = value != null && value === condition.values[0];
                                 break;
                             case 3:
-                                display = select.val() !== condition.values[0];
+                                display = value != null && value !== condition.values[0];
                                 break;
                             default:
                                 break;
@@ -315,19 +339,21 @@ var View = ItemView.extend({
                     var select = target.children('td.descriptor-value').children('select');
                     select.on("select2:select", $.proxy(view.onAutocompleteChangeValue, view));
 
+                    var value = initialValue[0];
+
                     // initial condition
                     switch (condition.condition) {
                         case 0:
-                            display = select.val() === "" || select.val() === "undefined";
+                            display = value == null;
                             break;
                         case 1:
-                            display = select.val() !== "";
+                            display = value != null;
                             break;
                         case 2:
-                            display = parseInt(select.val()) === condition.values[0];
+                            display = value != null && value === condition.values[0];
                             break;
                         case 3:
-                            display = parseInt(select.val()) !== condition.values[0];
+                            display = value != null && value !== condition.values[0];
                             break;
                         default:
                             break;
@@ -336,19 +362,21 @@ var View = ItemView.extend({
                     var select = target.children('td.descriptor-value').children('div').children('select');
                     select.parent('div.bootstrap-select').on('changed.bs.select', $.proxy(view.onSelectChangeValue, view));
 
+                    var value = initialValue[0] || false;
+
                     // initial condition
                     switch (condition.condition) {
                         case 0:
-                            display = select.val() === "" || select.val() === "undefined";  // false;  // a boolean is always defined
+                            display = value == null;  // false;  // a boolean is always defined
                             break;
                         case 1:
-                            display = select.val() !== "";  // true;  // a boolean is always defined
+                            display = value != null;  // true;  // a boolean is always defined
                             break;
                         case 2:
-                            display = (select.val() === "true") === condition.values[0];
+                            display = value != null && value === condition.values[0];
                             break;
                         case 3:
-                            display = (select.val() === "true") !== condition.values[0];
+                            display = value != null && value !== condition.values[0];
                             break;
                         default:
                             break;
@@ -359,19 +387,21 @@ var View = ItemView.extend({
                         var select = target.children('td.descriptor-value').children('div').children('select');
                         select.parent('div.bootstrap-select').on('changed.bs.select', $.proxy(view.onSelectChangeValue, view));
 
+                        var value = initialValue[0];
+
                         // initial condition
                         switch (condition.condition) {
                             case 0:
-                                display = select.val() === "" || select.val() === "undefined";  // false;  // an ordinal is always defined
+                                display = value == null;  // false;  // an ordinal is always defined
                                 break;
                             case 1:
-                                display = select.val() !== "";  // true;  // an ordinal is always defined
+                                display = value != null;  // true;  // an ordinal is always defined
                                 break;
                             case 2:
-                                display = parseInt(select.val()) === condition.values[0];
+                                display = value != null && value === condition.values[0];
                                 break;
                             case 3:
-                                display = parseInt(select.val()) !== condition.values[0];
+                                display = value != null && value !== condition.values[0];
                                 break;
                             default:
                                 break;
@@ -381,19 +411,21 @@ var View = ItemView.extend({
                         var input = target.children('td.descriptor-value').children('div.input-group').children('input.form-control');
                         input.on('input', $.proxy(view.onInputChangeValue, view));
 
+                        var value = initialValue[0];
+
                         // initial condition
                         switch (condition.condition) {
                             case 0:
-                                display = select.val() === "" || select.val() === "undefined";  // false;  // an ordinal is always defined
+                                display = value == null;  // false;  // an ordinal is always defined
                                 break;
                             case 1:
-                                display = select.val() !== "";  // true;  // an ordinal is always defined
+                                display = value != null;  // true;  // an ordinal is always defined
                                 break;
                             case 2:
-                                display = parseInt(input.val()) === condition.values[0];
+                                display = value != null && value === condition.values[0];
                                 break;
                             case 3:
-                                display = parseInt(select.val()) !== condition.values[0];
+                                display = value != null && value !== condition.values[0];
                                 break;
                             default:
                                 break;
@@ -403,19 +435,21 @@ var View = ItemView.extend({
                     var input = target.children('td.descriptor-value').children('div.input-group').children('input.form-control');
                     input.parent().on('dp.change', $.proxy(view.onDateChange, view));
 
+                    var value = initialValue[0];
+
                     // initial condition
                     switch (condition.condition) {
                         case 0:
-                            display = input.val() == "";
+                            display = value == null || value === "";
                             break;
                         case 1:
-                            display = input.val() != "";
+                            display = value != null && value !== "";
                             break;
                         case 2:
-                            display = select.val() === condition.values[0];
+                            display = value != null && value === condition.values[0];
                             break;
                         case 3:
-                            display = select.val() !== condition.values[0];
+                            display = value != null && value !== condition.values[0];
                             break;
                         default:
                             break;
@@ -425,19 +459,21 @@ var View = ItemView.extend({
                     var input = target.children('td.descriptor-value').children('div.input-group').children('input.form-control');
                     input.on('input', $.proxy(view.onInputChangeValue, view));
 
+                    var value = initialValue[0];
+
                     // initial condition
                     switch (condition.condition) {
                         case 0:
-                            display = input.val() == "";
+                            display = value == null || value === "";
                             break;
                         case 1:
-                            display = input.val() != "";
+                            display = value != null && value !== "";
                             break;
                         case 2:
-                            display = select.val() === condition.values[0];
+                            display = value != null && value === condition.values[0];
                             break;
                         case 3:
-                            display = select.val() !== condition.values[0];
+                            display = value != null && value !== condition.values[0];
                             break;
                         default:
                             break;
@@ -491,7 +527,7 @@ var View = ItemView.extend({
         // initial condition
         switch (condition.condition) {
             case 0:
-                display = select.val() === "" || select.val() === "undefined";
+                display = select.val() === "" || select.val() === undefined;
                 break;
             case 1:
                 display = select.val() !== "";
@@ -533,7 +569,7 @@ var View = ItemView.extend({
         // initial condition
         switch (condition.condition) {
             case 0:
-                display = select.val() === "" || select.val() === "undefined";
+                display = select.val() === "" || select.val() === undefined;
                 break;
             case 1:
                 display = select.val() !== "";
@@ -582,7 +618,7 @@ var View = ItemView.extend({
                 display = date == null;
                 break;
             case 1:
-                display = date !== null;
+                display = date != null;
                 break;
             case 2:
                 display = date != null && date.format(dateFormat) === condition.values[0];
@@ -619,7 +655,7 @@ var View = ItemView.extend({
         // initial condition
         switch (condition.condition) {
             case 0:
-                display = input.val() === "" || input.val() === "undefined";
+                display = input.val() === "" || input.val() === undefined;
                 break;
             case 1:
                 display = input.val() !== "";

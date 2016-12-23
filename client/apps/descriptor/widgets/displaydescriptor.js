@@ -198,11 +198,11 @@ var DisplayDescriptor = {
                         select.append(option);
                     }
 
-                    select.selectpicker('refresh');
-
                     if (definesValues) {
                         select.val(defaultValues[0]).trigger('change');
                     }
+
+                    select.selectpicker('refresh');
                 });
             }
         }
@@ -215,7 +215,7 @@ var DisplayDescriptor = {
             // true
             var option = $("<option></option>");
 
-            option.attr("value", true);
+            option.attr("value", "true");
             option.html(gt.gettext('Yes'));
 
             select.append(option);
@@ -223,16 +223,16 @@ var DisplayDescriptor = {
             // false
             option = $("<option></option>");
 
-            option.attr("value", false);
+            option.attr("value", "false");
             option.html(gt.gettext('No'));
 
             select.append(option);
 
-            select.selectpicker('refresh');
-
             if (definesValues) {
                 select.val(defaultValues[0] ? "true": "false").trigger('change');
             }
+
+            select.selectpicker('refresh');
         }
     },
 
@@ -252,11 +252,11 @@ var DisplayDescriptor = {
                     select.append(option);
                 }
 
-                select.selectpicker('refresh');
-
                 if (definesValues) {
                     select.val(defaultValues[0].toString()).trigger('change');
                 }
+
+                select.selectpicker('refresh');
             }
         }
     },

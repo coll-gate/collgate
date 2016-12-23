@@ -226,17 +226,19 @@ def check_and_defines_descriptors(entity_descriptors, descriptor_meta_model, des
 
                 # according to the condition if the current value is defined (src) or was defined (acc)
                 # the condition must be respected otherwise it raises an exception if a new value is defined (src)
-                target_value = descriptors[str(dmtc.target.id)] if dmtc.target.id in descriptors else None
+                target_value = descriptors[str(dmtc.target.id)] if str(dmtc.target.id) in descriptors else None
 
                 if dmtc.condition == 0:
                     # the src_value can be defined if the target_value is not defined
                     if target_value is not None and src_value is not None:
-                        raise ValueError(_("A conditional descriptor is defined but the condition is not true") % (dmt.get_label(),))
+                        raise ValueError(_("A conditional descriptor is defined but the condition is not true") +
+                                         " (%s)" % dmt.get_label())
 
                 elif dmtc.condition == 1:
                     # the src_value can be defined if the target_value is defined
                     if target_value is None and src_value is not None:
-                        raise ValueError(_("A conditional descriptor is defined but the condition is not true") % (dmt.get_label(),))
+                        raise ValueError(_("A conditional descriptor is defined but the condition is not true") +
+                                         " (%s)" % dmt.get_label())
 
                 elif dmtc.condition == 2:
                     # the src_value can defined if the target_value is defined and is equal to the value defined by
@@ -244,13 +246,15 @@ def check_and_defines_descriptors(entity_descriptors, descriptor_meta_model, des
 
                     # first the target_value must be defined
                     if target_value is None and src_value is not None:
-                        raise ValueError(_("A conditional descriptor is defined but the condition is not true") % (dmt.get_label(),))
+                        raise ValueError(_("A conditional descriptor is defined but the condition is not true") +
+                                         " (%s)" % dmt.get_label())
 
                     values = json.loads(dmtc.values)
 
                     # and be equal to
-                    if target_value != values[0]:
-                        raise ValueError(_("A conditional descriptor is defined but the condition is not true") % (dmt.get_label(),))
+                    if src_value is not None and target_value is not None and target_value != values[0]:
+                        raise ValueError(_("A conditional descriptor is defined but the condition is not true") +
+                                         " (%s)" % dmt.get_label())
 
                 elif dmtc.condition == 3:
                     # the src_value can defined if the target_value is defined and is different from the value defined
@@ -259,14 +263,16 @@ def check_and_defines_descriptors(entity_descriptors, descriptor_meta_model, des
                     # first the target_value must be defined
                     if target_value is None and src_value is not None:
                         raise ValueError(
-                            _("A conditional descriptor is defined but the condition is not true") % (dmt.get_label(),))
+                            _("A conditional descriptor is defined but the condition is not true") +
+                            " (%s)" % dmt.get_label())
 
                     values = json.loads(dmtc.values)
 
                     # and be different from
-                    if target_value == values[0]:
+                    if src_value is not None and target_value is not None and target_value == values[0]:
                         raise ValueError(
-                            _("A conditional descriptor is defined but the condition is not true") % (dmt.get_label(),))
+                            _("A conditional descriptor is defined but the condition is not true") +
+                            " (%s)" % dmt.get_label())
 
             if src_value:
                 descriptor_value_validate(format, src_value, dmt)

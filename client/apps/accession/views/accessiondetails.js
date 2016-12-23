@@ -10,18 +10,36 @@
 
 var DescribableDetails = require('../../descriptor/views/describabledetails');
 
+var TaxonModel = require('../../taxonomy/models/taxon');
+
+var DefaultLayout = require('../../main/views/defaultlayout');
+var TitleView = require('../../main/views/titleview');
+var DescribableLayout = require('../../descriptor/views/describablelayout');
+
+var TaxonSimpleView = require('../../taxonomy/views/taxonsimple');
+var AccessionEditView = require('../views/accessionedit');
+
 var View = DescribableDetails.extend({
     onModify: function () {
-        alert('Not yet implemented');
-     /*   var model = this.model;
-        var descriptors = this.prepareDescriptors();
-        if (descriptors === null) {
-            return;
-        }
+        var model = this.model;
+        var name = model.get('name');
+        var parent = model.get('parent').id;
 
-        this.model.save({descriptors: descriptors}, {wait: true}).then(function() {
-            Backbone.history.navigate('app/accession/accession/' + model.get('id') + '/', {trigger: true, replace: true});
-        });*/
+        var defaultLayout = new DefaultLayout();
+        application.getRegion('mainRegion').show(defaultLayout);
+
+        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Accession"), model: model}));
+
+        var describableLayout = new DescribableLayout();
+        defaultLayout.getRegion('content').show(describableLayout);
+
+        var taxon = new TaxonModel({id: parent});
+        taxon.fetch().then(function() {
+            describableLayout.getRegion('header').show(new TaxonSimpleView({model: taxon, entity: model, noLink: true}));
+        });
+
+        var view = new AccessionEditView({model: this.model, descriptorMetaModelLayout: this.descriptorMetaModelLayout});
+        describableLayout.getRegion('body').show(view);
     }
 });
 
