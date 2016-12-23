@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-12-02 16:10+0100\n"
+"POT-Creation-Date: 2016-12-23 12:05+0100\n"
 "PO-Revision-Date: 2016-02-01 11:53+0100\n"
 "Last-Translator: Frederic SCHERMA <frederic.scherma@clermont.inra.fr>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -50,32 +50,45 @@ msgstr ""
 msgid "Please, you must enable your cookies."
 msgstr ""
 
-#: models.py:66 models.py:76
-msgid "English"
-msgstr ""
-
-#: models.py:67 models.py:77
-msgid "French"
-msgstr ""
-
-#: models.py:68
+#: models.py:67
 msgid "Latin"
 msgstr ""
 
-#: models.py:106
-msgid "Pending"
+#: models.py:68 models.py:77
+msgid "English"
+msgstr ""
+
+#: models.py:69 models.py:78
+msgid "French"
 msgstr ""
 
 #: models.py:107
-msgid "Valid"
+msgid "Pending"
 msgstr ""
 
 #: models.py:108
-msgid "Archived"
+msgid "Valid"
 msgstr ""
 
 #: models.py:109
+msgid "Archived"
+msgstr ""
+
+#: models.py:110
 msgid "Removed"
+msgstr ""
+
+#: models.py:201
+msgid ""
+"It is not allowed to change the status of an entity from valid to pending"
+msgstr ""
+
+#: models.py:204
+msgid "It is not allowed to change the status of a removed entity"
+msgstr ""
+
+#: models.py:207
+msgid "It is not allowed to change the status of an archived entity"
 msgstr ""
 
 #: profile.py:56

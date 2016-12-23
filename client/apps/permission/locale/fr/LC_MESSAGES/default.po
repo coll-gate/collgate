@@ -64,11 +64,11 @@ msgstr "Nom"
 
 #: ../../../templates/groupchangename.html:16
 msgid "Cancel"
-msgstr ""
+msgstr "Annuler"
 
 #: ../../../templates/groupchangename.html:17
 msgid "Apply"
-msgstr ""
+msgstr "Appliquer"
 
 #: ../../../templates/grouplist.html:17
 msgid "Number of users"

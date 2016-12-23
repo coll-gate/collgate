@@ -55,6 +55,11 @@ var View = Marionette.ItemView.extend({
         if (!session.user.isStaff && !session.user.isSuperUser) {
             $(this.ui.delete_descriptor_model_type).hide();
         }
+
+        if (this.model.get('mandatory')) {
+            this.ui.condition.prop('disabled', true);
+            this.ui.condition.children('span').css('color', '#ddd');
+        }
     },
 
     dragStart: function(e) {

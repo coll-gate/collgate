@@ -1,1 +1,20 @@
-{}
+{
+    "List of accessions": "Liste des accessions",
+    "Accession": "Accession",
+    "Enter a taxon name. 3 characters at least for auto-completion": "Saisissez un nom de taxon. A moins 3 caractères pour l'auto-complétion",
+    "Taxon name already in usage": "Nom de taxon existant",
+    "64 characters max": "64 caractères maximum",
+    "3 characters min": "3 caractères minimum",
+    "The parent must be defined": "Le parent doit être définit",
+    "Create an accession": "Créer une accession",
+    "Template": "Modèle",
+    "Principal name of the accession (must be unique)": "Nom principal de l'accession (doit être unique)",
+    "Language": "Langue",
+    "Parent": "Parent",
+    "Cancel": "Annuler",
+    "Continue": "Continuer",
+    "Name": "Nom",
+    "Xxx": "Xxx",
+    "Yyy": "Yyy",
+    "Zzz": "Zzz"
+}

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-12-02 16:10+0100\n"
+"POT-Creation-Date: 2016-12-23 12:05+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -113,34 +113,38 @@ msgstr ""
 msgid "taxon synonym"
 msgstr ""
 
-#: taxon.py:83
+#: taxon.py:84
 msgid "You are not allowed to create a taxon"
 msgstr ""
 
-#: taxon.py:315 taxon.py:391 taxon.py:418 taxon.py:449
+#: taxon.py:102
+msgid "The language is not supported"
+msgstr ""
+
+#: taxon.py:320 taxon.py:396 taxon.py:423 taxon.py:454
 msgid "You are not allowed to modify a taxon"
 msgstr ""
 
-#: taxon.py:341
+#: taxon.py:346
 msgid "The rank of the parent must be lowest than the taxon itself"
 msgstr ""
 
-#: taxon.py:368
+#: taxon.py:373
 msgid "You are not allowed to remove a taxon"
 msgstr ""
 
-#: taxon.py:392
+#: taxon.py:397
 msgid "You are not allowed to add a synonym to a taxon"
 msgstr ""
 
-#: taxon.py:419
+#: taxon.py:424
 msgid "You are not allowed to modify a synonym to a taxon"
 msgstr ""
 
-#: taxon.py:450
+#: taxon.py:455
 msgid "You are not allowed to delete a synonym from a taxon"
 msgstr ""
 
-#: taxon.py:460
+#: taxon.py:465
 msgid "It is not possible to remove a primary synonym"
 msgstr ""

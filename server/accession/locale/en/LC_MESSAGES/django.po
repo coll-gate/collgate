@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-12-02 16:10+0100\n"
+"POT-Creation-Date: 2016-12-23 12:05+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,39 +17,59 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: apps.py:48
-msgid "Accession"
-msgstr ""
-
-#: apps.py:50
-msgid "Create accession"
-msgstr ""
-
-#: apps.py:53
-msgid "Create batch"
-msgstr ""
-
-#: apps.py:57
-msgid "List accessions"
-msgstr ""
-
-#: base.py:47
+#: accession.py:56
 msgid "You are not allowed to create an accession"
 msgstr ""
 
-#: base.py:64
+#: accession.py:68 accession.py:277
+msgid "The name of the accession is already used as a primary synonym"
+msgstr ""
+
+#: accession.py:71 accession.py:280
+msgid "The name of the accession is already used"
+msgstr ""
+
+#: accession.py:74
+msgid "The language is not supported"
+msgstr ""
+
+#: accession.py:112
 msgid "You are not allowed to list the accessions"
 msgstr ""
 
-#: controller.py:67
+#: accession.py:261
+msgid "You are not allowed to modify an accession"
+msgstr ""
+
+#: accession.py:299
+msgid "You are not allowed to delete an accession"
+msgstr ""
+
+#: apps.py:50
+msgid "Accession"
+msgstr ""
+
+#: apps.py:52
+msgid "Create accession"
+msgstr ""
+
+#: apps.py:55
+msgid "Create batch"
+msgstr ""
+
+#: apps.py:59
+msgid "List accessions"
+msgstr ""
+
+#: controller.py:47
 msgid "Empty synonym data"
 msgstr ""
 
-#: controller.py:70
+#: controller.py:50
 msgid "Undefined synonym name or primary synonym"
 msgstr ""
 
-#: controller.py:73
+#: controller.py:53
 msgid "Undefined synonym language"
 msgstr ""
 

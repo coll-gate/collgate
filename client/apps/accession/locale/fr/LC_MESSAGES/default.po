@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-10-27 16:37+0200\n"
+"POT-Creation-Date: 2016-12-23 12:05+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,3 +15,76 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#: ../../../routers/accession.js:49
+msgid "List of accessions"
+msgstr "Liste des accessions"
+
+#: ../../../routers/accession.js:73 ../../../controllers/accession.js:209
+msgid "Accession"
+msgstr "Accession"
+
+#: ../../../controllers/accession.js:110
+msgid "Enter a taxon name. 3 characters at least for auto-completion"
+msgstr "Saisissez un nom de taxon. A moins 3 caractère pour l'auto-complétion"
+
+#: ../../../controllers/accession.js:142
+msgid "Taxon name already in usage"
+msgstr "Nom de taxon existant"
+
+#: ../../../controllers/accession.js:158
+msgid "64 characters max"
+msgstr "64 caractères maximum"
+
+#: ../../../controllers/accession.js:161
+msgid "3 characters min"
+msgstr "3 caractères minimum"
+
+#: ../../../controllers/accession.js:177
+msgid "The parent must be defined"
+msgstr "Le parent doit être définit"
+
+#: ../../../templates/accessioncreate.html:5
+msgid "Create an accession"
+msgstr "Créer une accession"
+
+#: ../../../templates/accessioncreate.html:10
+msgid "Template"
+msgstr "Modèle"
+
+#: ../../../templates/accessioncreate.html:20
+msgid "Principal name of the accession (must be unique)"
+msgstr "Nom principal de l'accession (doit être unique)"
+
+#: ../../../templates/accessioncreate.html:26
+msgid "Language"
+msgstr "Langue"
+
+#: ../../../templates/accessioncreate.html:32
+#: ../../../templates/accessionlist.html:6
+msgid "Parent"
+msgstr "Parent"
+
+#: ../../../templates/accessioncreate.html:38
+msgid "Cancel"
+msgstr "Annuler"
+
+#: ../../../templates/accessioncreate.html:39
+msgid "Continue"
+msgstr "Continuer"
+
+#: ../../../templates/accessionlist.html:5
+msgid "Name"
+msgstr "Nom"
+
+#: ../../../templates/accessionlist.html:7
+msgid "Xxx"
+msgstr "Xxx"
+
+#: ../../../templates/accessionlist.html:8
+msgid "Yyy"
+msgstr "Yyy"
+
+#: ../../../templates/accessionlist.html:9
+msgid "Zzz"
+msgstr "Zzz"

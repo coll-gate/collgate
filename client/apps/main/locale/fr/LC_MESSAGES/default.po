@@ -19,7 +19,7 @@ msgstr ""
 
 #: ../../../views/editprofile.js:39
 msgid "Done"
-msgstr ""
+msgstr "Fait"
 
 #: ../../../routers/main.js:38
 msgid "About..."

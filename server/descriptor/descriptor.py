@@ -210,7 +210,7 @@ def patch_descriptor_group(request, id):
         raise SuspiciousOperation(_("Name of group of descriptor already in usage"))
 
     if not group.can_modify:
-        raise SuspiciousOperation(_("It is not permit to modify this group of descriptors"))
+        raise SuspiciousOperation(_("It is not permit to modify this group of type of descriptors"))
 
     group.name = group_name
 

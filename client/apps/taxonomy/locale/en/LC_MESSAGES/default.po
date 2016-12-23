@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-11-15 14:20+0100\n"
+"POT-Creation-Date: 2016-12-23 12:05+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,12 +18,12 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: ../../../views/taxondetails.js:65 ../../../views/taxondetails.js:182
-#: ../../../controllers/taxon.js:248
+#: ../../../controllers/taxon.js:254
 msgid "64 characters max"
 msgstr ""
 
 #: ../../../views/taxondetails.js:68 ../../../views/taxondetails.js:179
-#: ../../../views/taxonlistfilter.js:58 ../../../controllers/taxon.js:251
+#: ../../../views/taxonlistfilter.js:58 ../../../controllers/taxon.js:257
 msgid "3 characters min"
 msgstr ""
 
@@ -51,19 +51,19 @@ msgstr ""
 msgid "Taxon details"
 msgstr ""
 
-#: ../../../controllers/taxon.js:232
+#: ../../../controllers/taxon.js:238
 msgid "Taxon name already in usage"
 msgstr ""
 
-#: ../../../controllers/taxon.js:269
+#: ../../../controllers/taxon.js:275
 msgid "Family rank cannot have a parent taxon"
 msgstr ""
 
-#: ../../../controllers/taxon.js:274
+#: ../../../controllers/taxon.js:280
 msgid "This rank must have a parent taxon"
 msgstr ""
 
-#: ../../../controllers/taxon.js:302
+#: ../../../controllers/taxon.js:308
 msgid "Taxon successfully created !"
 msgstr ""
 

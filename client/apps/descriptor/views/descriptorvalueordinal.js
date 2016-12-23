@@ -85,7 +85,7 @@ var View = Marionette.ItemView.extend({
                             var v = $(e.target).val();
 
                             if (v.length < 1) {
-                                $(e.target).validateField('failed', gt.gettext('1 characters min'));
+                                $(e.target).validateField('failed', gt.gettext('1 character min'));
                                 return false;
                             } else if (v.length > 64) {
                                 $(e.target).validateField('failed', gt.gettext('64 characters max'));
@@ -174,7 +174,7 @@ var View = Marionette.ItemView.extend({
                         var v = this.ui.value.val();
 
                         if (v.length < 1) {
-                            $(this.ui.value).validateField('failed', gt.gettext('1 characters min'));
+                            $(this.ui.value).validateField('failed', gt.gettext('1 character min'));
                             return false;
                         }
 
