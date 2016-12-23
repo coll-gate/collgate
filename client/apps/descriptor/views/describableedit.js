@@ -715,13 +715,22 @@ var View = ItemView.extend({
                     }
                 } else if (format.type === "date") {
                     // format to YYYYMMDD date
-                    values = [el.find('input').parent().data('DateTimePicker').viewDate().format("YYYYMMDD")];
+                    var date = el.find('input').parent().data('DateTimePicker').date();
+                    if (date != null) {
+                        values = [date.format("YYYYMMDD")];
+                    }
                 } else if (format.type === "time") {
-                    // format to HH:mm:ss time
-                    values = [el.find('input').parent().data('DateTimePicker').viewDate().format("HH:mm:ss")]; // .MS
+                    var date = el.find('input').parent().data('DateTimePicker').date();
+                    if (date != null) {
+                        // format to HH:mm:ss time
+                        values = [date.format("HH:mm:ss")]; // .MS
+                    }
                 } else if (format.type === "datetime") {
-                    // format to iso datetime
-                    values = [el.find('input').parent().data('DateTimePicker').viewDate().format()];
+                    var date = el.find('input').parent().data('DateTimePicker').date();
+                    if (date != null) {
+                        // format to iso datetime
+                        values = [date.format()];
+                    }
                 } else if (format.type === "string") {
                     // text (already validated)
                     values = [el.find('input').val()];
@@ -746,7 +755,7 @@ var View = ItemView.extend({
     },
 
     onCancel: function () {
-        Backbone.history.navigate('app/home/', {trigger: true, replace: true});
+        Backbone.history.loadUrl();
     }
 });
 
