@@ -21,6 +21,7 @@ var AccessionEditView = require('../views/accessionedit');
 
 var View = DescribableDetails.extend({
     onModify: function () {
+        // does not reload models, just redo the views
         var model = this.model;
         var name = model.get('name');
 

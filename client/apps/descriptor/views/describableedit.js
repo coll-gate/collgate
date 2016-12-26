@@ -690,6 +690,7 @@ var View = ItemView.extend({
             var descriptorModelType = view.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
             var mandatory = descriptorModelType.mandatory;
 
+            var currValue = view.model.get('descriptors')[descriptorModelType.id];
             var values = [null];
 
             if (el.css('display') !== "none") {
@@ -748,7 +749,16 @@ var View = ItemView.extend({
                 return null;
             }
 
-            if (!descriptorModelType.set_once) {
+            var write = true;
+            if (descriptorModelType.set_once && currValue != undefined) {
+                write = false;
+            }
+
+            if (values[0] == currValue) {
+                write = false;
+            }
+
+            if (write) {
                 descriptors[descriptorModelType.id] = values[0];
             }
         });
@@ -756,8 +766,23 @@ var View = ItemView.extend({
         return descriptors;
     },
 
-    onCancel: function () {
+    onCancel: function() {
+        // non optimized default behavior reload url
         Backbone.history.loadUrl();
+    },
+
+    onApply: function() {
+        // non optimized default behavior, load after save
+        var model = this.model;
+
+        var descriptors = this.prepareDescriptors();
+        if (descriptors === null) {
+            return;
+        }
+
+        this.model.save({descriptors: descriptors}, {wait: true, patch: !model.isNew()}).then(function () {
+            Backbone.history.loadUrl();
+        });
     }
 });
 

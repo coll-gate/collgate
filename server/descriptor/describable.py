@@ -205,10 +205,18 @@ def check_and_defines_descriptors(entity_descriptors, descriptor_meta_model, des
             format = json.loads(descriptor_type.format)
 
             conditions = DescriptorModelTypeCondition.objects.filter(descriptor_model_type_id=dmt.id)
-            key = str(dmt.id)
+            src_id = str(dmt.id)
 
-            acc_value = entity_descriptors[str(dmt.id)] if key in entity_descriptors else None
-            src_value = descriptors[str(dmt.id)] if key in descriptors else None
+            src_defined = src_id in descriptors
+
+            acc_value = entity_descriptors.get(src_id)
+            src_value = descriptors.get(src_id)
+
+            merged_value = src_value if src_defined else acc_value
+
+            # valid the new value
+            if src_defined and src_value is not None:
+                descriptor_value_validate(format, src_value, dmt)
 
             # mandatory descriptor
             if dmt.mandatory:
@@ -223,20 +231,25 @@ def check_and_defines_descriptors(entity_descriptors, descriptor_meta_model, des
             if conditions.exists():
                 # check condition
                 dmtc = conditions[0]
+                target_id = str(dmtc.target.id)
 
                 # according to the condition if the current value is defined (src) or was defined (acc)
                 # the condition must be respected otherwise it raises an exception if a new value is defined (src)
-                target_value = descriptors[str(dmtc.target.id)] if str(dmtc.target.id) in descriptors else None
+                src_target_defined = target_id in descriptors
+
+                acc_target_value = entity_descriptors.get(target_id)
+                src_target_value = descriptors.get(target_id)
+                merged_target_value = src_target_value if src_target_defined else acc_target_value
 
                 if dmtc.condition == 0:
                     # the src_value can be defined if the target_value is not defined
-                    if target_value is not None and src_value is not None:
+                    if merged_target_value is not None and merged_value is not None:
                         raise ValueError(_("A conditional descriptor is defined but the condition is not true") +
                                          " (%s)" % dmt.get_label())
 
                 elif dmtc.condition == 1:
                     # the src_value can be defined if the target_value is defined
-                    if target_value is None and src_value is not None:
+                    if merged_target_value is None and merged_value is not None:
                         raise ValueError(_("A conditional descriptor is defined but the condition is not true") +
                                          " (%s)" % dmt.get_label())
 
@@ -245,14 +258,14 @@ def check_and_defines_descriptors(entity_descriptors, descriptor_meta_model, des
                     # the condition
 
                     # first the target_value must be defined
-                    if target_value is None and src_value is not None:
+                    if merged_target_value is None and merged_value is not None:
                         raise ValueError(_("A conditional descriptor is defined but the condition is not true") +
                                          " (%s)" % dmt.get_label())
 
                     values = json.loads(dmtc.values)
 
                     # and be equal to
-                    if src_value is not None and target_value is not None and target_value != values[0]:
+                    if merged_value is not None and merged_target_value is not None and merged_target_value != values[0]:
                         raise ValueError(_("A conditional descriptor is defined but the condition is not true") +
                                          " (%s)" % dmt.get_label())
 
@@ -261,7 +274,7 @@ def check_and_defines_descriptors(entity_descriptors, descriptor_meta_model, des
                     # by the condition
 
                     # first the target_value must be defined
-                    if target_value is None and src_value is not None:
+                    if merged_target_value is None and merged_value is not None:
                         raise ValueError(
                             _("A conditional descriptor is defined but the condition is not true") +
                             " (%s)" % dmt.get_label())
@@ -269,17 +282,12 @@ def check_and_defines_descriptors(entity_descriptors, descriptor_meta_model, des
                     values = json.loads(dmtc.values)
 
                     # and be different from
-                    if src_value is not None and target_value is not None and target_value == values[0]:
+                    if merged_value is not None and merged_target_value is not None and merged_target_value == values[0]:
                         raise ValueError(
                             _("A conditional descriptor is defined but the condition is not true") +
                             " (%s)" % dmt.get_label())
 
-            if src_value:
-                # valid and use new value
-                descriptor_value_validate(format, src_value, dmt)
-                results[dmt.id] = src_value
-            else:
-                # use current value
-                results[dmt.id] = acc_value
+            # use new value if defined, else reuse current
+            results[dmt.id] = src_value if src_defined else acc_value
 
     return results

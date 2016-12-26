@@ -14,7 +14,28 @@ var TaxonSimpleView = require('../../taxonomy/views/taxonsimple');
 
 
 var View = DescribableEdit.extend({
+    onCancel: function() {
+        // does not reload models, just redo the views
+        var view = this;
+        var model = this.model;
+        var name = model.get('name');
+
+        // update the layout content
+        var describableLayout = application.getRegion('mainRegion').currentView.getRegion('content').currentView;
+
+        var taxon = describableLayout.getRegion('header').currentView.model;
+        describableLayout.getRegion('header').show(new TaxonSimpleView({model: taxon, entity: model}));
+
+        var AccessionDetailsView = require('../views/accessiondetails');
+        var accessionDetailsView = new AccessionDetailsView({
+            model: this.model,
+            descriptorMetaModelLayout: view.descriptorMetaModelLayout});
+
+        describableLayout.getRegion('body').show(accessionDetailsView);
+    },
+
     onApply: function () {
+        // does not reload  models, save and redo the views
         var view = this;
         var model = this.model;
 
