@@ -291,6 +291,7 @@ var View = ItemView.extend({
                     if (format.list_type === "autocomplete") {
                         var select = target.children('td.descriptor-value').children('select');
                         select.on("select2:select", $.proxy(view.onAutocompleteChangeValue, view));
+                        select.on("select2:unselect", $.proxy(view.onAutocompleteUnselectValue, view));
 
                         var value = initialValue[0];
 
@@ -338,6 +339,7 @@ var View = ItemView.extend({
                 } else if (format.type === "entity") {
                     var select = target.children('td.descriptor-value').children('select');
                     select.on("select2:select", $.proxy(view.onAutocompleteChangeValue, view));
+                    select.on("select2:unselect", $.proxy(view.onAutocompleteUnselectValue, view));
 
                     var value = initialValue[0];
 
@@ -537,6 +539,39 @@ var View = ItemView.extend({
                 break;
             case 3:
                 display = value !== condition.values[0];
+                break;
+            default:
+                break;
+        }
+
+        if (display) {
+            source.el.show(true);
+        } else {
+            source.el.hide(true);
+        }
+    },
+
+    onAutocompleteUnselectValue: function(e) {
+        var display = false;
+        var select = $(e.target);
+
+        var target = select.parent().parent();
+        var source = this.findDescriptorModelTypeForConditionTarget(target);
+        var condition = source.descriptorModelType.condition;
+
+        // initial condition
+        switch (condition.condition) {
+            case 0:
+                display = true;
+                break;
+            case 1:
+                display = false;
+                break;
+            case 2:
+                display = false;
+                break;
+            case 3:
+                display = false;
                 break;
             default:
                 break;
