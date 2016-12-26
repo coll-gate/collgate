@@ -23,20 +23,12 @@ var View = DescribableDetails.extend({
     onModify: function () {
         var model = this.model;
         var name = model.get('name');
-        var parent = model.get('parent').id;
 
-        var defaultLayout = new DefaultLayout();
-        application.getRegion('mainRegion').show(defaultLayout);
+        // update the layout content
+        var describableLayout = application.getRegion('mainRegion').currentView.getRegion('content').currentView;
 
-        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Accession"), model: model}));
-
-        var describableLayout = new DescribableLayout();
-        defaultLayout.getRegion('content').show(describableLayout);
-
-        var taxon = new TaxonModel({id: parent});
-        taxon.fetch().then(function() {
-            describableLayout.getRegion('header').show(new TaxonSimpleView({model: taxon, entity: model, noLink: true}));
-        });
+        var taxon = describableLayout.getRegion('header').currentView.model;
+        describableLayout.getRegion('header').show(new TaxonSimpleView({model: taxon, entity: model, noLink: true}));
 
         var view = new AccessionEditView({model: this.model, descriptorMetaModelLayout: this.descriptorMetaModelLayout});
         describableLayout.getRegion('body').show(view);

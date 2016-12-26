@@ -100,7 +100,11 @@ def create_accession(request):
         'id': accession.pk,
         'name': accession.name,
         'descriptor_meta_model': dmm.id,
-        'parent': parent.id,
+        'parent': {
+            'id': parent.id,
+            'rank': parent.rank,
+            'name': parent.name
+        },
         'descriptors': descriptors
     }
 
@@ -289,8 +293,12 @@ def patch_accession(request, id):
     if descriptors is not None:
         # update descriptors
         # @todo could update only necessary descriptors
-        accession.descriptors = check_and_defines_descriptors({}, accession.descriptor_meta_model, descriptors)
+        accession.descriptors = check_and_defines_descriptors(
+            accession.descriptors, accession.descriptor_meta_model, descriptors)
+
         result['descriptors'] = accession.descriptors
+
+    accession.save()
 
     return HttpResponseRest(request, result)
 

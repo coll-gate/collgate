@@ -10,16 +10,33 @@
 
 var DescribableEdit = require('../../descriptor/views/describableedit');
 
+var TaxonSimpleView = require('../../taxonomy/views/taxonsimple');
+
+
 var View = DescribableEdit.extend({
     onApply: function () {
+        var view = this;
         var model = this.model;
+
         var descriptors = this.prepareDescriptors();
         if (descriptors === null) {
             return;
         }
 
-        this.model.save({descriptors: descriptors}, {wait: true}).then(function() {
-            Backbone.history.navigate('app/accession/accession/' + model.get('id') + '/', {trigger: true, replace: true});
+        this.model.save({descriptors: descriptors}, {wait: true, patch: !model.isNew()}).then(function () {
+            //Backbone.history.navigate('app/accession/accession/' + model.get('id') + '/', {trigger: true, replace: true});
+            var describableLayout = application.getRegion('mainRegion').currentView.getRegion('content').currentView;
+
+            // update the layout content
+            var taxon = describableLayout.getRegion('header').currentView.model;
+            describableLayout.getRegion('header').show(new TaxonSimpleView({model: taxon, entity: model}));
+
+            var AccessionDetailsView = require('../views/accessiondetails');
+            var accessionDetailsView = new AccessionDetailsView({
+                model: model,
+                descriptorMetaModelLayout: view.descriptorMetaModelLayout});
+
+            describableLayout.getRegion('body').show(accessionDetailsView);
         });
     }
 });

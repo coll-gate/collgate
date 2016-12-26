@@ -18,11 +18,13 @@ var Taxon = Backbone.Model.extend({
             return application.baseUrl + 'taxonomy/taxon/' + this.get('id') + '/'; },
 
     defaults: {
-      id: null,
-      name: '',
-      rank: -1,
-      parent: undefined,
-      synonyms: [],
+        id: null,
+        name: '',
+        rank: -1,
+        parent: undefined,
+        parent_list: [],
+        parent_details: [],
+        synonyms: [],
     },
 
     parse: function(data) {

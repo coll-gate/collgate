@@ -748,7 +748,9 @@ var View = ItemView.extend({
                 return null;
             }
 
-            descriptors[descriptorModelType.id] = values[0];
+            if (!descriptorModelType.set_once) {
+                descriptors[descriptorModelType.id] = values[0];
+            }
         });
 
         return descriptors;

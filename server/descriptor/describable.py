@@ -275,8 +275,11 @@ def check_and_defines_descriptors(entity_descriptors, descriptor_meta_model, des
                             " (%s)" % dmt.get_label())
 
             if src_value:
+                # valid and use new value
                 descriptor_value_validate(format, src_value, dmt)
-
-            results[dmt.id] = src_value
+                results[dmt.id] = src_value
+            else:
+                # use current value
+                results[dmt.id] = acc_value
 
     return results
