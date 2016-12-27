@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-12-23 12:05+0100\n"
+"POT-Creation-Date: 2016-12-27 11:49+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,6 +16,10 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#: ../../../views/taxon.js:48
+msgid "Successfully removed !"
+msgstr ""
 
 #: ../../../views/taxondetails.js:65 ../../../views/taxondetails.js:182
 #: ../../../controllers/taxon.js:254
@@ -67,25 +71,6 @@ msgstr ""
 msgid "Taxon successfully created !"
 msgstr ""
 
-#: ../../../templates/taxon.html:17 ../../../templates/taxondetails.html:29
-msgid "Synonyms"
-msgstr ""
-
-#: ../../../templates/taxon.html:21 ../../../templates/taxondetails.html:34
-msgid "Type"
-msgstr ""
-
-#: ../../../templates/taxon.html:22
-#: ../../../templates/taxonchangesynonym.html:10
-#: ../../../templates/taxondetails.html:35
-msgid "Name"
-msgstr ""
-
-#: ../../../templates/taxon.html:23 ../../../templates/taxoncreate.html:18
-#: ../../../templates/taxondetails.html:36
-msgid "Language"
-msgstr ""
-
 #: ../../../templates/taxonchangeparent.html:5
 msgid "Change the direct parent of taxon"
 msgstr ""
@@ -110,6 +95,11 @@ msgstr ""
 msgid "Change the name for a synonym of taxon"
 msgstr ""
 
+#: ../../../templates/taxonchangesynonym.html:10
+#: ../../../templates/taxondetails.html:35
+msgid "Name"
+msgstr ""
+
 #: ../../../templates/taxoncreate.html:5
 msgid "Create a taxon"
 msgstr ""
@@ -118,10 +108,23 @@ msgstr ""
 msgid "Principal name of the taxon (must be unique)"
 msgstr ""
 
+#: ../../../templates/taxoncreate.html:18
+#: ../../../templates/taxondetails.html:36
+msgid "Language"
+msgstr ""
+
 #: ../../../templates/taxoncreate.html:24
 msgid "Taxon rank"
 msgstr ""
 
 #: ../../../templates/taxoncreate.html:36
 msgid "Create"
+msgstr ""
+
+#: ../../../templates/taxondetails.html:29
+msgid "Synonyms"
+msgstr ""
+
+#: ../../../templates/taxondetails.html:34
+msgid "Type"
 msgstr ""

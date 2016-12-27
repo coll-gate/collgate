@@ -1,0 +1,37 @@
+<div class="column" style="width: 100%">
+    <div id="taxon_details"></div>
+    <div class="panels panel-group" style="margin-top: 10px;">
+        <div class="panel panel panel-default" name="taxon-descriptors">
+            <div class="panel-heading" data-toggle="tooltip" data-placement="left" title="<%= gt.gettext('Collapse/Expand') %>">
+                <a class="accordion-toggle" data-toggle="collapse" href="#taxon_synonyms"><%= gt.gettext("Synonyms") %></a>
+            </div>
+            <div id="taxon_synonyms" class="panel-collapse collapse in" style="margin: 3px;">
+            </div>
+        </div>
+        <div class="panel panel panel-default" name="taxon-descriptors">
+            <div class="panel-heading" data-toggle="tooltip" data-placement="left" title="<%= gt.gettext('Collapse/Expand') %>">
+                <a class="accordion-toggle collapsed" data-toggle="collapse" href="#taxon_descriptors"><%= gt.gettext("Descriptors") %></a>
+            </div>
+            <div id="taxon_descriptors" class="panel-collapse collapse" style="margin: 3px;">
+            </div>
+        </div>
+        <div class="panel panel panel-default" name="taxon-children">
+            <div class="panel-heading" data-toggle="tooltip" data-placement="left" title="<%= gt.gettext('Collapse/Expand') %>">
+                <a class="accordion-toggle collapsed" data-toggle="collapse" href="#taxon_children"><%= gt.gettext("Direct children") %></a>
+            </div>
+            <div id="taxon_children" class="panel-collapse collapse">
+                <div class="content" style="margin: 3px;"></div>
+                <div class="bottom"></div>
+            </div>
+        </div>
+        <div class="panel panel panel-default" name="taxon-entities">
+            <div class="panel-heading" data-toggle="tooltip" data-placement="left" title="<%= gt.gettext('Collapse/Expand') %>">
+                <a class="accordion-toggle collapsed" data-toggle="collapse" href="#taxon_entities"><%= gt.gettext("Entities") %></a>
+            </div>
+            <div id="taxon_entities" class="panel-collapse collapse">
+                <div class="content" style="margin: 3px;"></div>
+                <div class="bottom"></div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-12-23 13:32+0100\n"
+"POT-Creation-Date: 2016-12-27 11:49+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -43,7 +43,7 @@ msgstr ""
 msgid "Invalid format"
 msgstr ""
 
-#: ../../../views/describableedit.js:702
+#: ../../../views/describableedit.js:783
 msgid "Field "
 msgstr ""
 
@@ -68,7 +68,7 @@ msgstr ""
 #: ../../../views/descriptormetamodeldetail.js:43
 #: ../../../views/descriptormodeladd.js:48
 #: ../../../views/descriptormodeldetail.js:45
-#: ../../../views/descriptormodeltype.js:161
+#: ../../../views/descriptormodeltype.js:162
 #: ../../../views/descriptormodeltypelist.js:151
 #: ../../../views/descriptorpanel.js:175 ../../../views/descriptorpanel.js:357
 #: ../../../views/descriptorpanel.js:374
@@ -97,8 +97,8 @@ msgstr ""
 
 #: ../../../views/descriptormetamodel.js:107
 #: ../../../views/descriptormetamodel.js:121
-#: ../../../views/descriptormodeltype.js:343
-#: ../../../views/descriptormodeltype.js:357
+#: ../../../views/descriptormodeltype.js:344
+#: ../../../views/descriptormodeltype.js:358
 #: ../../../views/descriptorpanel.js:360 ../../../views/descriptorpanel.js:377
 #: ../../../views/descriptorvalue.js:102 ../../../views/descriptorvalue.js:119
 #: ../../../views/descriptorvalueordinal.js:91
@@ -111,7 +111,7 @@ msgid "64 characters max"
 msgstr ""
 
 #: ../../../views/descriptormetamodel.js:150
-#: ../../../views/descriptormodeltype.js:386
+#: ../../../views/descriptormodeltype.js:387
 #: ../../../views/descriptorpanel.js:406
 msgid "Successfully labeled !"
 msgstr ""
@@ -134,22 +134,22 @@ msgstr ""
 msgid "Name for model of descriptor already in usage"
 msgstr ""
 
-#: ../../../views/descriptormodeltype.js:200
+#: ../../../views/descriptormodeltype.js:201
 #: ../../../views/descriptormodeltypelist.js:190
 msgid "Unable to create the type of model of descriptor !"
 msgstr ""
 
-#: ../../../views/descriptormodeltype.js:294
+#: ../../../views/descriptormodeltype.js:295
 #: ../../../views/descriptormodeltypelist.js:249
 msgid "Unable to reorder the types of model of descriptor"
 msgstr ""
 
-#: ../../../views/descriptormodeltype.js:692
+#: ../../../views/descriptormodeltype.js:693
 msgid "Successfully removed !"
 msgstr ""
 
-#: ../../../views/descriptormodeltype.js:765
-#: ../../../views/descriptormodeltype.js:777
+#: ../../../views/descriptormodeltype.js:766
+#: ../../../views/descriptormodeltype.js:778
 msgid "Successfully defined !"
 msgstr ""
 

@@ -372,13 +372,19 @@ def patch_taxon(request, id):
 @RestTaxonId.def_auth_request(Method.DELETE, Format.JSON, perms={
     'taxonomy.delete_taxon': _("You are not allowed to remove a taxon"),
 })
-def remove_taxon(request, id):
+def delete_taxon(request, id):
     tid = int(id)
     taxon = get_object_or_404(Taxon, id=tid)
 
-    # TODO check if some accessions use it before remove
+    # check if some entities uses it before remove
+    if taxon.in_usage():
+        raise SuspiciousOperation(_("This taxon is referred by one or more entities. It cannot be deleted."))
 
-    taxon.remove_entity()
+    # check if some accessions uses it before remove
+    if taxon.children.exists():
+        raise SuspiciousOperation(_("This taxon has children. It cannot be deleted."))
+
+    taxon.delete()
 
     return HttpResponseRest(request, {})
 
@@ -500,9 +506,9 @@ def get_taxon_children(request, id):
 
     if cursor:
         cursor_name, cursor_id = cursor.split('/')
-        qs = taxon.taxon_set.filter(Q(name__gt=cursor_name))
+        qs = taxon.children.filter(Q(name__gt=cursor_name))
     else:
-        qs = taxon.taxon_set.all()
+        qs = taxon.children.all()
 
     qs = qs.prefetch_related('synonyms').order_by('name')[:limit]
 

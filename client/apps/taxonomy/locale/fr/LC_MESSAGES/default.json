@@ -1,4 +1,5 @@
 {
+    "Successfully removed !": "Retiré avec succé !",
     "64 characters max": "64 caractères maximum",
     "3 characters min": "3 caractères minimum",
     "Synonym of taxon already used": "Synonyme de taxon existant",
@@ -11,17 +12,17 @@
     "Family rank cannot have a parent taxon": "Le rang taxinomique famille ne peut pas avoir de parent",
     "This rank must have a parent taxon": "Ce rang taxinomique doit avoir un parent",
     "Taxon successfully created !": "Taxon créé avec succès !",
-    "Synonyms": "Synonymes",
-    "Type": "Type",
-    "Name": "Nom",
-    "Language": "Language",
-    "Change the direct parent of taxon": "",
+    "Change the direct parent of taxon": "Changer le parent immédiat du taxon",
     "Direct parent": "Parent direct",
     "Cancel": "Annuler",
     "Apply": "Appliquer",
     "Change the name for a synonym of taxon": "Changer le nom d'un synonyme de taxon",
+    "Name": "Nom",
     "Create a taxon": "Créer un taxon",
     "Principal name of the taxon (must be unique)": "Nom principal du taxon (doit être unique)",
+    "Language": "Language",
     "Taxon rank": "Rank taxinomique",
-    "Create": "Créer"
+    "Create": "Créer",
+    "Synonyms": "Synonymes",
+    "Type": "Type"
 }

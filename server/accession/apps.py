@@ -46,6 +46,12 @@ class CollGateAccession(ApplicationMain):
             Sample
         ]
 
+        # add the taxon entities models, taxonomy_module
+        taxonomy_app = apps.get_app_config('taxonomy')
+        taxonomy_app.children_entities += [
+            Accession
+        ]
+
         # accession menu
         menu_accession = ModuleMenu('accession', _('Accession'), auth=AUTH_USER)
         menu_accession.add_entry(

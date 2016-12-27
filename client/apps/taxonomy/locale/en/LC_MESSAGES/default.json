@@ -1,4 +1,5 @@
 {
+    "Successfully removed !": "",
     "64 characters max": "",
     "3 characters min": "",
     "Synonym of taxon already used": "",
@@ -11,17 +12,17 @@
     "Family rank cannot have a parent taxon": "",
     "This rank must have a parent taxon": "",
     "Taxon successfully created !": "",
-    "Synonyms": "",
-    "Type": "",
-    "Name": "",
-    "Language": "",
     "Change the direct parent of taxon": "",
     "Direct parent": "",
     "Cancel": "",
     "Apply": "",
     "Change the name for a synonym of taxon": "",
+    "Name": "",
     "Create a taxon": "",
     "Principal name of the taxon (must be unique)": "",
+    "Language": "",
     "Taxon rank": "",
-    "Create": ""
+    "Create": "",
+    "Synonyms": "",
+    "Type": ""
 }

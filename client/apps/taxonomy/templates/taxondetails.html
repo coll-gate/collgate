@@ -8,54 +8,18 @@
  - @details
 -->
 
-<div class="object taxon" object-type="taxon" object-id="<%= id %>" style="width:100%;">
-    <span style="font-weight:bold; font-size:18px;">
-        <% for (var i = parent_details.length-1; i >= 0; --i) { %>
-            <span>
-                <span class="action view-taxon" data-taxon-id="<%= parent_details[i].id %>"><%= parent_details[i].name %></span>
-                <span class="taxon-rank badge left-margin" value="<%= parent_details[i].rank %>"></span>
-            </span>
-            <span class="glyphicon glyphicon-chevron-right"></span>
-        <% } %>
+<span style="font-weight:bold; font-size:18px;">
+    <% for (var i = parent_details.length-1; i >= 0; --i) { %>
         <span>
-            <span class="name taxon" taxonid="<%= id %>"><%- name %></span>
-            <span class="taxon-rank badge left-margin" value="<%= rank %>"></span>
+            <span class="action view-taxon" data-taxon-id="<%= parent_details[i].id %>"><%= parent_details[i].name %></span>
+            <span class="taxon-rank badge left-margin" value="<%= parent_details[i].rank %>"></span>
         </span>
-        <span class="glyphicon glyphicon-edit action change-parent"></span>
-        <br>
+        <span class="glyphicon glyphicon-chevron-right"></span>
+    <% } %>
+    <span>
+        <span class="name taxon" taxonid="<%= id %>"><%- name %></span>
+        <span class="taxon-rank badge left-margin" value="<%= rank %>"></span>
     </span>
-    <hr class="hr-default">
-    <div class="taxon-synonyms"></div>
-        <h4><%= gt.gettext("Synonyms") %></h4>
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th><span class="glyphicon glyphicon-asterisk" /></th>
-                    <th><%= gt.gettext("Type") %></th>
-                    <th><%= gt.gettext("Name") %></th>
-                    <th><%= gt.gettext("Language") %></th>
-                </tr>
-            </thead>
-            <tbody>
-                <% _.each(synonyms, function(synonym) { %>
-                <tr>
-                    <th scope="row">
-                        <% if (synonym.type != 0) { %><span data-synonym-id="<%= synonym.id %>" class="action remove-synonym glyphicon glyphicon-minus-sign"></span><% } %>
-                    </th>
-                    <td name="type" class="taxon-synonym-type" value="<%- synonym.type %>"></td>
-                    <td name="name" class="action rename-synonym" data-synonym-id="<%= synonym.id %>"><%- synonym.name %></td>
-                    <td name="language" class="language" value="<%- synonym.language %>"></td>
-                </tr>
-                <% }) %>
-                <tr class="add-synonym-panel">
-                    <form>
-                        <th scope="row"><span class="add-synonym action glyphicon glyphicon-plus-sign" style="margin-top: 9px;"></span></th>
-                        <td><select class="taxon-synonym-types" name="taxon-synonym-type"></select></td>
-                        <td><div class="form-group"><input class="form-control synonym-name" type="text" maxlength="64" autocomplete="off" name="synonym-name" /></div></td>
-                        <td><select class="synonym-languages" name="synonym-language"></select></td>
-                    </form>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-</div>
+    <span class="glyphicon glyphicon-edit action change-parent"></span>
+    <br>
+</span>

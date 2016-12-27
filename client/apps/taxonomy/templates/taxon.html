@@ -9,26 +9,20 @@
 -->
 
 <div class="object taxon" object-type="taxon" object-id="<%= id %>" style="width:100%;">
-    <span style="font-weight:bold; font-size:18px;">
-        <span class="name taxon" taxonid="<%= id %>" style="cursor: pointer;"><%- name %></span><span class="taxon-rank badge left-margin" value="<%= rank %>"></span><br>
-    </span>
-    <hr class="hr-default">
+    <div style="padding-bottom: 5px;">
+        <span class="remove-taxon action glyphicon glyphicon-minus-sign"></span>
+        <span style="font-weight:bold; font-size:18px;">
+            <span class="name taxon" taxonid="<%= id %>" style="cursor: pointer;"><%- name %></span><span class="taxon-rank badge left-margin" value="<%= rank %>"></span><br>
+        </span>
+    </div>
     <div class="taxon-synonyms"></div>
-        <h4><%= gt.gettext("Synonyms") %></h4>
         <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th><%= gt.gettext("Type") %></th>
-                    <th><%= gt.gettext("Name") %></th>
-                    <th><%= gt.gettext("Language") %></th>
-                </tr>
-            </thead>
             <tbody>
                 <% _.each(synonyms, function(synonym) { %>
                 <tr>
-                    <td name="type" class="taxon-synonym-type" value="<%- synonym.type %>"></td>
-                    <td name="name"><%- synonym.name %></td>
-                    <td name="language" class="language" value="<%- synonym.language %>"></td>
+                    <td style="width: 30%;" name="type" class="taxon-synonym-type" value="<%- synonym.type %>"></td>
+                    <td style="width: 40%;" name="name"><%- synonym.name %></td>
+                    <td style="width: 30%;" name="language" class="language" value="<%- synonym.language %>"></td>
                 </tr>
                 <% }) %>
             </tbody>

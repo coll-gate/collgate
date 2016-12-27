@@ -1032,7 +1032,7 @@ class DescribableEntity(Entity):
     """
 
     # JSONB field containing the list of descriptors model type id as key, with a descriptor value or value code.
-    descriptors = JSONField()
+    descriptors = JSONField(default={})
 
     # It refers to a set of models of type of descriptors through a meta-model of descriptor.
     descriptor_meta_model = models.ForeignKey(DescriptorMetaModel)

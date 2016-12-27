@@ -16,11 +16,8 @@ var ScrollView = require('../../main/views/scroll');
 
 
 var View = ScrollView.extend({
-    //el: '#main_content',
-    //template: require('../templates/taxonlist.html'),
     template: "<div></div>",
     className: "taxon-list",
-    //childViewContainer: 'div.panel-body',
     childView: TaxonView,
 
     initialize: function(options) {

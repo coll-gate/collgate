@@ -34,6 +34,19 @@ class CollGateTaxonomy(ApplicationMain):
             'addtaxon')
         )
 
+        # defines the list of entities models that uses of a taxon as parent
+        self.children_entities = []
+
+        # add the describable entities models
+        from .models import Taxon
+
+        # descriptor_module
+        from django.apps import apps
+        descriptor_app = apps.get_app_config('descriptor')
+        descriptor_app.describable_entities += [
+            Taxon
+        ]
+
         # taxonomy menu
         menu_taxonomy = ModuleMenu('taxonomy', _('Taxonomy'), auth=AUTH_USER)
         menu_taxonomy.add_entry(

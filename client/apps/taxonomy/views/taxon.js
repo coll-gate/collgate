@@ -17,6 +17,7 @@ var TaxonItemView = Marionette.ItemView.extend({
 
     ui: {
         "taxon": "span.taxon",
+        "remove_taxon": ".remove-taxon",
         "synonym_name": ".synonym-name",
         "synonym_language": ".synonym-languages",
         "taxon_synonym_type": ".taxon-synonym-types",
@@ -24,7 +25,8 @@ var TaxonItemView = Marionette.ItemView.extend({
     },
 
     events: {
-        "click @ui.taxon": "onTaxonDetails"
+        "click @ui.taxon": "onTaxonDetails",
+        "click @ui.remove_taxon": "onRemoveTaxon"
     },
 
     initialize: function() {
@@ -39,6 +41,12 @@ var TaxonItemView = Marionette.ItemView.extend({
 
     onTaxonDetails: function() {
         Backbone.history.navigate("app/taxonomy/taxon/" + this.model.get('id') + "/", {trigger: true});
+    },
+
+    onRemoveTaxon: function() {
+        this.model.destroy({wait: true}).then(function() {
+            $.alert.success(gt.gettext("Successfully removed !"));
+        });
     }
 });
 

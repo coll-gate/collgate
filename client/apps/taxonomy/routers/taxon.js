@@ -11,19 +11,19 @@
 var Marionette = require('backbone.marionette');
 var TaxonModel = require('../models/taxon');
 
-var TaxonCollection = require('../collections/taxon');
+// var TaxonCollection = require('../collections/taxon');
 var TaxonChildrenCollection = require('../collections/taxonchildren');
 
 var TaxonListView = require('../views/taxonlist');
-var TaxonItemView = require('../views/taxon');
+var TaxonSynonymsView = require('../views/taxonsynonyms');
 var TaxonDetailsView = require('../views/taxondetails');
 var TaxonListFilterView = require('../views/taxonlistfilter');
 var TaxonChildrenView = require('../views/taxonchildren');
+var TaxonLayout = require('../views/taxonlayout');
 
 var DefaultLayout = require('../../main/views/defaultlayout');
 var TitleView = require('../../main/views/titleview');
 var ScrollingMoreView = require('../../main/views/scrollingmore');
-var TwoRowsLayout = require('../../main/views/tworowslayout');
 
 var TaxonRouter = Marionette.AppRouter.extend({
     routes : {
@@ -55,12 +55,13 @@ var TaxonRouter = Marionette.AppRouter.extend({
         var defaultLayout = new DefaultLayout();
         application.getRegion('mainRegion').show(defaultLayout);
 
-        var twoRowsLayout = new TwoRowsLayout();
-        defaultLayout.getRegion('content').show(twoRowsLayout);
+        var taxonLayout = new TaxonLayout();
+        defaultLayout.getRegion('content').show(taxonLayout);
 
         taxon.fetch().then(function() {
             defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Taxon details"), model: taxon}));
-            twoRowsLayout.getRegion('top-content').show(new TaxonDetailsView({model: taxon}));
+            taxonLayout.getRegion('details').show(new TaxonDetailsView({model: taxon}));
+            taxonLayout.getRegion('synonyms').show(new TaxonSynonymsView({model: taxon}));
         });
 
         var taxonChildren = new TaxonChildrenCollection([], {model_id: id});
@@ -68,8 +69,8 @@ var TaxonRouter = Marionette.AppRouter.extend({
         taxonChildren.fetch().then(function() {
             var taxonChildrenView = new TaxonChildrenView({collection: taxonChildren, model: taxon});
 
-            twoRowsLayout.getRegion('bottom-content').show(taxonChildrenView);
-            twoRowsLayout.getRegion('bottom-bottom').show(new ScrollingMoreView({targetView: taxonChildrenView}));
+            taxonLayout.getRegion('children-content').show(taxonChildrenView);
+            taxonLayout.getRegion('children-bottom').show(new ScrollingMoreView({targetView: taxonChildrenView}));
         });
     },
 });
