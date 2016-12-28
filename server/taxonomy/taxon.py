@@ -61,6 +61,11 @@ class RestTaxonIdChildren(RestTaxonId):
     suffix = 'children'
 
 
+class RestTaxonIdEntities(RestTaxonId):
+    regex = r'^entities/$'
+    suffix = 'entities'
+
+
 @RestTaxon.def_auth_request(Method.POST, Format.JSON, content={
     "type": "object",
     "properties": {
@@ -549,6 +554,90 @@ def get_taxon_children(request, id):
     results = {
         'perms': [],
         'items': children,
+        'prev': prev_cursor,
+        'cursor': cursor,
+        'next': next_cursor,
+    }
+
+    return HttpResponseRest(request, results)
+
+
+@RestTaxonIdEntities.def_auth_request(Method.GET, Format.JSON)
+def get_taxon_entities(request, id):
+    """
+    Return the list of entities relating the given taxon.
+    """
+    results_per_page = int_arg(request.GET.get('more', 30))
+    cursor = request.GET.get('cursor')
+    limit = results_per_page
+
+    tid = int(id)
+    taxon = get_object_or_404(Taxon, id=tid)
+
+    if cursor:
+        cursor_content_type, cursor_name, cursor_id = cursor.split('/')
+    else:
+        cursor_content_type = cursor_name = cursor_id = None
+
+    items = []
+
+    from django.apps import apps
+    children_entities = apps.get_app_config('taxonomy').children_entities
+
+    rest = limit
+
+    # we do a manual union for the different set of content_type
+    for entity in children_entities:
+        field_name = entity._meta.model_name + '_set'
+
+        # check _meta model type with cursor content type (grouped by content_type)
+        if cursor_content_type is not None:
+            if ".".join((entity._meta.app_label, entity._meta.model_name)) == cursor_content_type:
+                cursor_content_type = None
+            else:
+                # continue with next entities set
+                continue
+
+        children = getattr(taxon, field_name)
+        if children and rest > 0:
+            if cursor_name:  # name is unique per type of entity
+                qs = children.filter(name__gt=cursor_name)
+                cursor_name = None
+            else:
+                qs = children.all()
+
+            qs = qs.order_by('name')[:rest]
+
+            # remaining slot for items that can be used for the next type of entity
+            rest -= qs.count()
+
+            for item in qs:
+                t = {
+                    'id': item.id,
+                    'content_type': '.'.join(item.content_type.natural_key()),
+                    'name': item.name
+                }
+
+                items.append(t)
+
+        if rest == 0:
+            break
+
+    if len(items) > 0:
+        # prev cursor (asc order)
+        item = items[0]
+        prev_cursor = "%s/%s/%s" % (item['content_type'], item['name'], item['id'])
+
+        # next cursor (asc order)
+        item = items[-1]
+        next_cursor = "%s/%s/%s" % (item['content_type'], item['name'], item['id'])
+    else:
+        prev_cursor = None
+        next_cursor = None
+
+    results = {
+        'perms': [],
+        'items': items,
         'prev': prev_cursor,
         'cursor': cursor,
         'next': next_cursor,

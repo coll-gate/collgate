@@ -1,37 +1,25 @@
-<div class="column" style="width: 100%">
-    <div id="taxon_details"></div>
-    <div class="panels panel-group" style="margin-top: 10px;">
-        <div class="panel panel panel-default" name="taxon-descriptors">
-            <div class="panel-heading" data-toggle="tooltip" data-placement="left" title="<%= gt.gettext('Collapse/Expand') %>">
-                <a class="accordion-toggle" data-toggle="collapse" href="#taxon_synonyms"><%= gt.gettext("Synonyms") %></a>
-            </div>
-            <div id="taxon_synonyms" class="panel-collapse collapse in" style="margin: 3px;">
-            </div>
+<div id="taxon_details"></div>
+<div class="column" style="margin-top: 10px;">
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active"><a href="#taxon_synonyms" aria-controls="details" role="tab" data-toggle="tab"><%= gt.gettext("Synonyms") %></a></li>
+        <li role="presentation"><a href="#taxon_descriptors" aria-controls="descriptors" role="tab" data-toggle="tab"><%= gt.gettext("Descriptors") %></a></li>
+        <li role="presentation"><a href="#taxon_children" aria-controls="children" role="tab" data-toggle="tab"><%= gt.gettext("Children") %></a></li>
+        <li role="presentation"><a href="#taxon_entities" aria-controls="entities" role="tab" data-toggle="tab"><%= gt.gettext("Entities") %></a></li>
+    </ul>
+    <!-- Tab panes -->
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="taxon_synonyms" style="overflow-y: auto;">
         </div>
-        <div class="panel panel panel-default" name="taxon-descriptors">
-            <div class="panel-heading" data-toggle="tooltip" data-placement="left" title="<%= gt.gettext('Collapse/Expand') %>">
-                <a class="accordion-toggle collapsed" data-toggle="collapse" href="#taxon_descriptors"><%= gt.gettext("Descriptors") %></a>
-            </div>
-            <div id="taxon_descriptors" class="panel-collapse collapse" style="margin: 3px;">
-            </div>
+        <div role="tabpanel" class="tab-pane" id="taxon_descriptors" style="overflow-y: auto;">
         </div>
-        <div class="panel panel panel-default" name="taxon-children">
-            <div class="panel-heading" data-toggle="tooltip" data-placement="left" title="<%= gt.gettext('Collapse/Expand') %>">
-                <a class="accordion-toggle collapsed" data-toggle="collapse" href="#taxon_children"><%= gt.gettext("Direct children") %></a>
-            </div>
-            <div id="taxon_children" class="panel-collapse collapse">
-                <div class="content" style="margin: 3px;"></div>
-                <div class="bottom"></div>
-            </div>
+        <div role="tabpanel" class="tab-pane" id="taxon_children">
+            <div class="children-content" style="overflow-y: auto;"></div>
+            <div class="children-bottom"></div>
         </div>
-        <div class="panel panel panel-default" name="taxon-entities">
-            <div class="panel-heading" data-toggle="tooltip" data-placement="left" title="<%= gt.gettext('Collapse/Expand') %>">
-                <a class="accordion-toggle collapsed" data-toggle="collapse" href="#taxon_entities"><%= gt.gettext("Entities") %></a>
-            </div>
-            <div id="taxon_entities" class="panel-collapse collapse">
-                <div class="content" style="margin: 3px;"></div>
-                <div class="bottom"></div>
-            </div>
+        <div role="tabpanel" class="tab-pane" id="taxon_entities">
+            <div class="entities-content" style="overflow-y: auto;"></div>
+            <div class="entities-bottom"></div>
         </div>
     </div>
 </div>

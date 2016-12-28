@@ -13,12 +13,14 @@ var TaxonModel = require('../models/taxon');
 
 // var TaxonCollection = require('../collections/taxon');
 var TaxonChildrenCollection = require('../collections/taxonchildren');
+var TaxonEntitiesCollection = require('../collections/taxonentities');
 
 var TaxonListView = require('../views/taxonlist');
 var TaxonSynonymsView = require('../views/taxonsynonyms');
 var TaxonDetailsView = require('../views/taxondetails');
 var TaxonListFilterView = require('../views/taxonlistfilter');
 var TaxonChildrenView = require('../views/taxonchildren');
+var TaxonEntitiesView = require('../views/taxonentities');
 var TaxonLayout = require('../views/taxonlayout');
 
 var DefaultLayout = require('../../main/views/defaultlayout');
@@ -71,6 +73,15 @@ var TaxonRouter = Marionette.AppRouter.extend({
 
             taxonLayout.getRegion('children-content').show(taxonChildrenView);
             taxonLayout.getRegion('children-bottom').show(new ScrollingMoreView({targetView: taxonChildrenView}));
+        });
+
+        var taxonEntities = new TaxonEntitiesCollection([], {model_id: id});
+
+        taxonEntities.fetch().then(function() {
+            var taxonEntitiesView = new TaxonEntitiesView({collection: taxonEntities, model: taxon});
+
+            taxonLayout.getRegion('entities-content').show(taxonEntitiesView);
+            taxonLayout.getRegion('entities-bottom').show(new ScrollingMoreView({targetView: taxonEntitiesView}));
         });
     },
 });

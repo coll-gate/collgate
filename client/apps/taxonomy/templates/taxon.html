@@ -9,14 +9,14 @@
 -->
 
 <div class="object taxon" object-type="taxon" object-id="<%= id %>" style="width:100%;">
-    <div style="padding-bottom: 5px;">
+    <div style="margin-left: 5px; padding-bottom: 5px;">
         <span class="remove-taxon action glyphicon glyphicon-minus-sign"></span>
         <span style="font-weight:bold; font-size:18px;">
             <span class="name taxon" taxonid="<%= id %>" style="cursor: pointer;"><%- name %></span><span class="taxon-rank badge left-margin" value="<%= rank %>"></span><br>
         </span>
     </div>
     <div class="taxon-synonyms"></div>
-        <table class="table table-striped">
+        <table class="table table-striped" style="margin-bottom: 0px;">
             <tbody>
                 <% _.each(synonyms, function(synonym) { %>
                 <tr>

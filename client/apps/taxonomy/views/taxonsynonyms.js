@@ -15,6 +15,9 @@ var View = Marionette.ItemView.extend({
     tagName: 'div',
     className: 'taxon-synonyms',
     template: require('../templates/taxonsynonyms.html'),
+    attributes: {
+        //style: "margin: 3px;"
+    },
 
     ui: {
         "synonym_name": ".synonym-name",
@@ -36,6 +39,18 @@ var View = Marionette.ItemView.extend({
     initialize: function() {
         this.listenTo(this.model, 'reset', this.render, this);
         this.listenTo(this.model, 'change', this.render, this);
+
+        $(window).resize($.proxy(this.resize, this));
+        this.resize(null);
+
+        $("div.panel-body").find('a[data-toggle="tab"][href="#taxon_synonyms"]').on('shown.bs.tab', $.proxy(function(e) {
+            this.resize(e);
+        }, this));
+    },
+
+    resize: function(e) {
+        var h = $("div.panel-body").height() - $("#taxon_details").outerHeight(true) - 10 - $("ul.nav-tabs").outerHeight(true);
+        this.$el.height(Math.max(32, h-1));
     },
 
     onRender: function() {

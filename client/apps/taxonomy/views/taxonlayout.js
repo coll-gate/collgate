@@ -13,16 +13,17 @@ var Marionette = require('backbone.marionette');
 var Layout = Marionette.LayoutView.extend({
     template: require("../templates/taxonlayout.html"),
     attributes: {
+        style: "display: flex; flex-direction: column;"
     },
 
     regions: {
         'details': "#taxon_details",
         'synonyms': "#taxon_synonyms",
         'descriptors': "#taxon_descriptors",
-        'children-content': "#taxon_children > div.content",
-        'children-bottom': "#taxon_children > div.bottom",
-        'entities-content': "#taxon_entities > div.content",
-        'entities-bottom': "#taxon_entities > div.bottom"
+        'children-content': "#taxon_children > div.children-content",
+        'children-bottom': "#taxon_children > div.children-bottom",
+        'entities-content': "#taxon_entities > div.entities-content",
+        'entities-bottom': "#taxon_entities > div.entities-bottom"
     }
 });
 
