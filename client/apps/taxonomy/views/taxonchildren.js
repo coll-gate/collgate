@@ -20,7 +20,6 @@ var View = ScrollView.extend({
     className: "taxon-list",
     childView: TaxonView,
     attributes: {
-        //style: "margin: 3px;"
     },
 
     initialize: function(options) {

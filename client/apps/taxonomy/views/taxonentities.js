@@ -17,9 +17,6 @@ var View = ScrollView.extend({
     className: "taxon-entity-list",
     childView: TaxonEntityView,
     childViewContainer: 'tbody.entities-list',
-    attributes: {
-        //style: "margin: 3px; max-height: 480px;"
-    },
 
     initialize: function(options) {
         options || (options = {});

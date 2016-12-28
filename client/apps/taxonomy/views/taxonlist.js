@@ -8,12 +8,8 @@
  * @details
  */
 
-var Marionette = require('backbone.marionette');
-var TaxonModel = require('../models/taxon');
 var TaxonView = require('../views/taxon');
-
 var ScrollView = require('../../main/views/scroll');
-
 
 var View = ScrollView.extend({
     template: "<div></div>",

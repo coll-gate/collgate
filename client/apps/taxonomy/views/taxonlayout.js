@@ -12,9 +12,6 @@ var Marionette = require('backbone.marionette');
 
 var Layout = Marionette.LayoutView.extend({
     template: require("../templates/taxonlayout.html"),
-    attributes: {
-        style: "display: flex; flex-direction: column;"
-    },
 
     regions: {
         'details': "#taxon_details",

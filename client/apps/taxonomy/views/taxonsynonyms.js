@@ -15,9 +15,6 @@ var View = Marionette.ItemView.extend({
     tagName: 'div',
     className: 'taxon-synonyms',
     template: require('../templates/taxonsynonyms.html'),
-    attributes: {
-        //style: "margin: 3px;"
-    },
 
     ui: {
         "synonym_name": ".synonym-name",
