@@ -83,7 +83,8 @@ var View = Marionette.ItemView.extend({
                         var defaultLayout = application.getRegion('mainRegion').currentView;
                         var taxonLayout = defaultLayout.getRegion('content').currentView;
 
-                        // @todo patch the taxon dmm
+                        // patch the taxon descriptor meta model
+                        model.save({descriptor_meta_model: metaModel}, {patch: true, wait: false});
 
                         $.ajax({
                             method: "GET",

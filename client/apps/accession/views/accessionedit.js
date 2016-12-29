@@ -10,21 +10,14 @@
 
 var DescribableEdit = require('../../descriptor/views/describableedit');
 
-var TaxonSimpleView = require('../../taxonomy/views/taxonsimple');
-
-
 var View = DescribableEdit.extend({
     onCancel: function() {
         // does not reload models, just redo the views
         var view = this;
-        var model = this.model;
-        var name = model.get('name');
+        var name = this.model.get('name');
 
         // update the layout content
         var describableLayout = application.getRegion('mainRegion').currentView.getRegion('content').currentView;
-
-        var taxon = describableLayout.getRegion('header').currentView.model;
-        describableLayout.getRegion('header').show(new TaxonSimpleView({model: taxon, entity: model}));
 
         var AccessionDetailsView = require('../views/accessiondetails');
         var accessionDetailsView = new AccessionDetailsView({
@@ -49,9 +42,6 @@ var View = DescribableEdit.extend({
             var describableLayout = application.getRegion('mainRegion').currentView.getRegion('content').currentView;
 
             // update the layout content
-            var taxon = describableLayout.getRegion('header').currentView.model;
-            describableLayout.getRegion('header').show(new TaxonSimpleView({model: taxon, entity: model}));
-
             var AccessionDetailsView = require('../views/accessiondetails');
             var accessionDetailsView = new AccessionDetailsView({
                 model: model,

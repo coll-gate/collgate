@@ -122,6 +122,8 @@ def create_taxon(request):
         'parent': taxon.parent.id,
         'parent_list': [int(x) for x in taxon.parent_list.rstrip(',').split(',')] if taxon.parent_list else [],
         'synonyms': [],
+        'descriptor_meta_model': None,
+        'descriptors': {}
     }
 
     for s in taxon.synonyms.all():
@@ -238,8 +240,8 @@ def get_taxon_details_json(request, id):
         'parent_list': [int(x) for x in taxon.parent_list.rstrip(',').split(',')] if taxon.parent_list else [],
         'parent_details': parents,
         'synonyms': [],
-        'descriptor_meta_model': None,
-        'descriptors': {},
+        'descriptor_meta_model': taxon.descriptor_meta_model.id if taxon.descriptor_meta_model else None,
+        'descriptors': taxon.descriptors,
     }
 
     for s in taxon.synonyms.all().order_by('type', 'language'):
@@ -320,7 +322,7 @@ def search_taxon(request):
         "properties": {
             "parent": {"type": ["number", "null"], 'required': False},
             "descriptor_meta_model": {"type": "integer", 'required': False},
-            "descriptors": {"type": "object"}
+            "descriptors": {"type": "object", 'required': False}
         },
     },
     perms={
@@ -389,7 +391,7 @@ def patch_taxon(request, id):
             if taxon.descriptor_meta_model is None or (
                 taxon.descriptor_meta_model is not None and taxon.descriptor_meta_model.id != dmm_id):
 
-                taxon.descriptor_meta_model = dmm.id
+                taxon.descriptor_meta_model = dmm
                 taxon.descriptors = {}
 
                 result['descriptor_meta_model'] = dmm

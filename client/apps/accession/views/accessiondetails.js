@@ -9,21 +9,15 @@
  */
 
 var DescribableDetails = require('../../descriptor/views/describabledetails');
-
-var TaxonSimpleView = require('../../taxonomy/views/taxonsimple');
 var AccessionEditView = require('../views/accessionedit');
 
 var View = DescribableDetails.extend({
     onModify: function () {
         // does not reload models, just redo the views
-        var model = this.model;
-        var name = model.get('name');
+        var name = this.model.get('name');
 
         // update the layout content
         var describableLayout = application.getRegion('mainRegion').currentView.getRegion('content').currentView;
-
-        var taxon = describableLayout.getRegion('header').currentView.model;
-        describableLayout.getRegion('header').show(new TaxonSimpleView({model: taxon, entity: model, noLink: true}));
 
         var view = new AccessionEditView({model: this.model, descriptorMetaModelLayout: this.descriptorMetaModelLayout});
         describableLayout.getRegion('body').show(view);

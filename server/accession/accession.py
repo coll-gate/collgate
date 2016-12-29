@@ -257,6 +257,7 @@ def search_accession(request):
         "type": "object",
         "properties": {
             "name": {"type": "string", "minLength": 3, "maxLength": 64, "required": False},
+            "parent": {"type": "integer", "required": False},
             "entity_status": {"type": "integer", "minimum": 0, "maximum": 3, "required": False},
             "descriptors": {"type": "object", "required": False},
         },
@@ -285,6 +286,17 @@ def patch_accession(request, id):
 
         accession.name = name
         result['name'] = name
+
+    if 'parent' in request.data:
+        parent = int(request.data['parent'])
+        taxon = get_object_or_404(Taxon, id=parent)
+
+        accession.parent = taxon
+        result['parent'] = {
+            'id': taxon.id,
+            'rank': taxon.rank,
+            'name': taxon.name
+        }
 
     if entity_status is not None and accession.entity_status != entity_status:
         accession.set_status(entity_status)

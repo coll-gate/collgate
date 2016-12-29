@@ -17,7 +17,7 @@ var AccessionModel = require('../models/accession');
 var AccessionCollection = require('../collections/accession');
 // var BatchCollection = require('../collections/batch');
 
-var TaxonSimpleView = require('../../taxonomy/views/taxonsimple');
+var EntityPathView = require('../../taxonomy/views/entitypath');
 var AccessionListView = require('../views/accessionlist');
 // var BatchListView = require('../views/batchlist');
 // var AccessionItemView = require('../views/accessionitem');
@@ -67,7 +67,7 @@ var Router = Marionette.AppRouter.extend({
         model.fetch().then(function() {
             var taxon = new TaxonModel({id: model.get('parent')['id']});
             taxon.fetch().then(function() {
-                describableLayout.getRegion('header').show(new TaxonSimpleView({model: taxon, entity: model}));
+                describableLayout.getRegion('header').show(new EntityPathView({model: model, taxon: taxon}));
             });
 
             defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Accession"), model: model}));

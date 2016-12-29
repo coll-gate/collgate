@@ -22,7 +22,7 @@ var TitleView = require('../../main/views/titleview');
 var Dialog = require('../../main/views/dialog');
 var DescribableLayout = require('../../descriptor/views/describablelayout');
 
-var TaxonSimpleView = require('../../taxonomy/views/taxonsimple');
+var EntityPathView = require('../../taxonomy/views/entitypath');
 var AccessionEditView = require('../views/accessionedit');
 
 
@@ -213,7 +213,7 @@ var Controller = Marionette.Controller/*Object*/.extend({
 
                         var taxon = new TaxonModel({id: parent});
                         taxon.fetch().then(function() {
-                            describableLayout.getRegion('header').show(new TaxonSimpleView({model: taxon, entity: model, noLink: true}));
+                            describableLayout.getRegion('header').show(new EntityPathView({model: model, taxon: taxon, noLink: true}));
                         });
 
                         $.ajax({

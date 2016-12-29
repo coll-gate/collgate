@@ -77,7 +77,6 @@ var TaxonRouter = Marionette.AppRouter.extend({
                         model: taxon,
                         descriptorMetaModelLayout: data
                     });
-                    //describableLayout.getRegion('body').show(accessionDetailsView);
                     taxonLayout.getRegion('descriptors').show(taxonDescriptorView);
                 });
             } else {
