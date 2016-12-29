@@ -11,7 +11,6 @@
 var Marionette = require('backbone.marionette');
 var TaxonModel = require('../models/taxon');
 
-// var TaxonCollection = require('../collections/taxon');
 var TaxonChildrenCollection = require('../collections/taxonchildren');
 var TaxonEntitiesCollection = require('../collections/taxonentities');
 
@@ -21,6 +20,8 @@ var TaxonDetailsView = require('../views/taxondetails');
 var TaxonListFilterView = require('../views/taxonlistfilter');
 var TaxonChildrenView = require('../views/taxonchildren');
 var TaxonEntitiesView = require('../views/taxonentities');
+var TaxonDescriptorView = require('../views/taxondescriptor');
+var TaxonDescriptorCreateView = require('../views/taxondescriptorcreate');
 var TaxonLayout = require('../views/taxonlayout');
 
 var DefaultLayout = require('../../main/views/defaultlayout');
@@ -64,6 +65,25 @@ var TaxonRouter = Marionette.AppRouter.extend({
             defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Taxon details"), model: taxon}));
             taxonLayout.getRegion('details').show(new TaxonDetailsView({model: taxon}));
             taxonLayout.getRegion('synonyms').show(new TaxonSynonymsView({model: taxon}));
+
+            // get the layout before creating the view
+            if (taxon.get('descriptor_meta_model') != null) {
+                $.ajax({
+                    method: "GET",
+                    url: application.baseUrl + 'descriptor/meta-model/' + taxon.get('descriptor_meta_model') + '/layout/',
+                    dataType: 'json',
+                }).done(function (data) {
+                    var taxonDescriptorView = new TaxonDescriptorView({
+                        model: taxon,
+                        descriptorMetaModelLayout: data
+                    });
+                    //describableLayout.getRegion('body').show(accessionDetailsView);
+                    taxonLayout.getRegion('descriptors').show(taxonDescriptorView);
+                });
+            } else {
+                var taxonDescriptorCreateView = new TaxonDescriptorCreateView({model: taxon});
+                taxonLayout.getRegion('descriptors').show(taxonDescriptorCreateView);
+            }
         });
 
         var taxonChildren = new TaxonChildrenCollection([], {model_id: id});

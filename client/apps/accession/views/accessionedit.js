@@ -2,7 +2,7 @@
  * @file accessionedit.js
  * @brief Accession entity item edit view
  * @author Frederic SCHERMA
- * @date 2016-16-15
+ * @date 2016-12-15
  * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
  * @license @todo
  * @details

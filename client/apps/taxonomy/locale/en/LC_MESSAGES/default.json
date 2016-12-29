@@ -1,11 +1,11 @@
 {
     "Successfully removed !": "",
-    "64 characters max": "",
-    "3 characters min": "",
-    "Synonym of taxon already used": "",
-    "Unable to rename the synonym !": "",
     "Enter a taxon name. 3 characters at least for auto-completion": "",
     "Invalid characters (alphanumeric, _ and - only)": "",
+    "3 characters min": "",
+    "64 characters max": "",
+    "Synonym of taxon already used": "",
+    "Unable to rename the synonym !": "",
     "List of taxons": "",
     "Taxon details": "",
     "Taxon name already in usage": "",
@@ -23,6 +23,11 @@
     "Language": "",
     "Taxon rank": "",
     "Create": "",
+    "No descriptor meta-model is defined for this taxon.": "",
+    "Defines": "",
+    "Type": "",
     "Synonyms": "",
-    "Type": ""
+    "Descriptors": "",
+    "Children": "",
+    "Entities": ""
 }

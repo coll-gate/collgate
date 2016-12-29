@@ -5,10 +5,13 @@
 """
 coll-gate taxonomy taxon rest handlers
 """
+from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import SuspiciousOperation
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 
+from descriptor.describable import check_and_defines_descriptors
+from descriptor.models import DescriptorMetaModel
 from main.models import Languages
 from permission.utils import get_permissions_for
 from .base import RestTaxonomy
@@ -235,6 +238,8 @@ def get_taxon_details_json(request, id):
         'parent_list': [int(x) for x in taxon.parent_list.rstrip(',').split(',')] if taxon.parent_list else [],
         'parent_details': parents,
         'synonyms': [],
+        'descriptor_meta_model': None,
+        'descriptors': {},
     }
 
     for s in taxon.synonyms.all().order_by('type', 'language'):
@@ -289,11 +294,6 @@ def search_taxon(request):
 
     qs = qs.select_related('taxon')
 
-    # taxons_list = []
-    # if qs:
-    #     for s in qs:
-    #         taxons_list.append({"id": str(s.taxon_id), "label": s.name, "value": s.name})
-
     # group by synonyms on labels
     taxons = {}
 
@@ -318,7 +318,9 @@ def search_taxon(request):
     Method.PATCH, Format.JSON, content={
         "type": "object",
         "properties": {
-            "parent": {"type": ["number", "null"], 'required': False}
+            "parent": {"type": ["number", "null"], 'required': False},
+            "descriptor_meta_model": {"type": "integer", 'required': False},
+            "descriptors": {"type": "object"}
         },
     },
     perms={
@@ -368,6 +370,43 @@ def patch_taxon(request, id):
             result['parent'] = parent.id
             result['parent_list'] = parents
             result['parent_details'] = parents
+
+    if 'descriptor_meta_model' in request.data:
+        dmm_id = request.data["descriptor_meta_model"]
+
+        # changing of meta model erase all previous descriptors values
+        if dmm_id is None:
+            taxon.descriptor_meta_model = None
+            taxon.descriptors = {}
+
+            result['descriptor_meta_model'] = None
+            result['descriptors'] = {}
+        else:
+            content_type = get_object_or_404(ContentType, app_label="taxonomy", model="taxon")
+            dmm = get_object_or_404(DescriptorMetaModel, id=dmm_id, target=content_type)
+
+            # dmm is different
+            if taxon.descriptor_meta_model is None or (
+                taxon.descriptor_meta_model is not None and taxon.descriptor_meta_model.id != dmm_id):
+
+                taxon.descriptor_meta_model = dmm.id
+                taxon.descriptors = {}
+
+                result['descriptor_meta_model'] = dmm
+                result['descriptors'] = {}
+
+    if 'descriptors' in request.data:
+        descriptors = request.data["descriptors"]
+
+        # reset any values
+        if descriptors is None:
+            taxon.descriptors = {}
+        else:
+            # update descriptors
+            taxon.descriptors = check_and_defines_descriptors(
+                taxon.descriptors, taxon.descriptor_meta_model, descriptors)
+
+        result['descriptors'] = taxon.descriptors
 
     taxon.save()
 

@@ -1,11 +1,11 @@
 {
     "Successfully removed !": "Retiré avec succé !",
-    "64 characters max": "64 caractères maximum",
-    "3 characters min": "3 caractères minimum",
-    "Synonym of taxon already used": "Synonyme de taxon existant",
-    "Unable to rename the synonym !": "Impossible de renommer le synonyme !",
     "Enter a taxon name. 3 characters at least for auto-completion": "Saisissez un nom de taxon. 3 caractères minimum pour l'auto-complétion",
     "Invalid characters (alphanumeric, _ and - only)": "Caractères invalides (alphanumérique, _ et - seulement)",
+    "3 characters min": "3 caractères minimum",
+    "64 characters max": "64 caractères maximum",
+    "Synonym of taxon already used": "Synonyme de taxon existant",
+    "Unable to rename the synonym !": "Impossible de renommer le synonyme !",
     "List of taxons": "Liste des taxons",
     "Taxon details": "Détails du taxon",
     "Taxon name already in usage": "Ce nom de taxon est déjà utilisé",
@@ -23,6 +23,11 @@
     "Language": "Language",
     "Taxon rank": "Rank taxinomique",
     "Create": "Créer",
+    "No descriptor meta-model is defined for this taxon.": "Aucun méta-modèle de descripteur n'est définit pour ce taxon.",
+    "Defines": "Définir",
+    "Type": "Type",
     "Synonyms": "Synonymes",
-    "Type": "Type"
+    "Descriptors": "Descripteurs",
+    "Children": "Enfants",
+    "Entities": "Entités"
 }

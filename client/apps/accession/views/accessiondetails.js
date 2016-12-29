@@ -10,12 +10,6 @@
 
 var DescribableDetails = require('../../descriptor/views/describabledetails');
 
-var TaxonModel = require('../../taxonomy/models/taxon');
-
-var DefaultLayout = require('../../main/views/defaultlayout');
-var TitleView = require('../../main/views/titleview');
-var DescribableLayout = require('../../descriptor/views/describablelayout');
-
 var TaxonSimpleView = require('../../taxonomy/views/taxonsimple');
 var AccessionEditView = require('../views/accessionedit');
 

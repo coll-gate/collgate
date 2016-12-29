@@ -292,7 +292,6 @@ def patch_accession(request, id):
 
     if descriptors is not None:
         # update descriptors
-        # @todo could update only necessary descriptors
         accession.descriptors = check_and_defines_descriptors(
             accession.descriptors, accession.descriptor_meta_model, descriptors)
 
