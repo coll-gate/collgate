@@ -100,11 +100,7 @@ def create_accession(request):
         'id': accession.pk,
         'name': accession.name,
         'descriptor_meta_model': dmm.id,
-        'parent': {
-            'id': parent.id,
-            'rank': parent.rank,
-            'name': parent.name
-        },
+        'parent': parent.id,
         'descriptors': descriptors
     }
 
@@ -132,11 +128,7 @@ def accession_list(request):
         a = {
             'id': accession.pk,
             'name': accession.name,
-            'parent': {
-                'id': accession.parent.id,
-                'rank': accession.parent.rank,
-                'name': accession.parent.name
-            },
+            'parent': accession.parent.id,
             'descriptor_meta_model': accession.descriptor_meta_model.id,
             'descriptors': accession.descriptors,
             'synonyms': []
@@ -182,11 +174,7 @@ def get_accession_details_json(request, id):
     result = {
         'id': accession.id,
         'name': accession.name,
-        'parent': {
-            'id': accession.parent.id,
-            'rank': accession.parent.rank,
-            'name': accession.parent.name
-        },
+        'parent': accession.parent.id,
         'synonyms': [],
         'descriptor_meta_model': accession.descriptor_meta_model.id,
         'descriptors': accession.descriptors
@@ -292,11 +280,7 @@ def patch_accession(request, id):
         taxon = get_object_or_404(Taxon, id=parent)
 
         accession.parent = taxon
-        result['parent'] = {
-            'id': taxon.id,
-            'rank': taxon.rank,
-            'name': taxon.name
-        }
+        result['parent'] = taxon.id
 
     if entity_status is not None and accession.entity_status != entity_status:
         accession.set_status(entity_status)

@@ -65,7 +65,7 @@ var Router = Marionette.AppRouter.extend({
 
         var model = new AccessionModel({id: id});
         model.fetch().then(function() {
-            var taxon = new TaxonModel({id: model.get('parent')['id']});
+            var taxon = new TaxonModel({id: model.get('parent')});
             taxon.fetch().then(function() {
                 describableLayout.getRegion('header').show(new EntityPathView({model: model, taxon: taxon}));
             });

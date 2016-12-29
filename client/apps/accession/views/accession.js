@@ -44,7 +44,7 @@ var View = Marionette.ItemView.extend({
     },
 
     viewParent: function () {
-        Backbone.history.navigate('app/taxonomy/taxon/' + this.model.get('parent')['id'] + '/', {trigger: true});
+        Backbone.history.navigate('app/taxonomy/taxon/' + this.model.get('parent') + '/', {trigger: true});
     }
 });
 

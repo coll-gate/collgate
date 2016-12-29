@@ -48,7 +48,7 @@ var View = Marionette.ItemView.extend({
         var view = this;
 
         // update the taxon
-        this.taxon = new TaxonModel({id: value.id});
+        this.taxon = new TaxonModel({id: value});
         this.taxon.fetch().then(function() {
             view.render();
         });
@@ -149,7 +149,7 @@ var View = Marionette.ItemView.extend({
                 }
 
                 if (model.isNew()) {
-                    model.set('parent', {id: parent, name: '', rank: 0});
+                    model.set('parent', parent);
                 } else {
                     model.save({parent: parent}, {patch: true, wait: true});
                 }
