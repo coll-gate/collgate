@@ -61,11 +61,11 @@ var MainModule = Marionette.Module.extend({
         });
 
         var ContentTypeCollection = require('./collections/contenttype');
-        this.collections.contentType = new ContentTypeCollection();
+        this.collections.contentTypes = new ContentTypeCollection();
 
         this.views.contentTypes = new SelectOptionItemView({
             className: 'content-type',
-            collection: this.collections.contentType,
+            collection: this.collections.contentTypes,
         });
 
         this.views.Home = Marionette.CompositeView.extend({

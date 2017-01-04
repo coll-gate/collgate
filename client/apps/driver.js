@@ -89,7 +89,9 @@ application = new Marionette.Application({
             // failure : resolve or reject the deferred according to your cases
             xhr.fail(function() {
                 if (xhr.statusText && xhr.responseText) {
-                    console.log("ajaxError: " + xhr.statusText + " " + xhr.responseText);
+                    if (xhr.getResponseHeader('Content-Type') === "application/json") {
+                        console.log("ajaxError: " + xhr.statusText + " " + xhr.responseText);
+                    }
                 }
 
                 if (xhr.status === 200 && xhr.responseText === "") {
@@ -103,10 +105,12 @@ application = new Marionette.Application({
                     window.location.assign(application.baseUrl + 'app/home/');
                 } else {
                     if (typeof(xhr.responseText) !== "undefined") {
-                        var data = JSON.parse(xhr.responseText);
-                        //if ((xhr.status >= 400 && xhr.status <= 599) && data && (typeof(data.cause) === "string")) {
-                        //    $.alert.error(gettext(data.cause));
-                        //}
+                        if (xhr.getResponseHeader('Content-Type') === "application/json") {
+                            var data = JSON.parse(xhr.responseText);
+                            //if ((xhr.status >= 400 && xhr.status <= 599) && data && (typeof(data.cause) === "string")) {
+                            //    $.alert.error(gettext(data.cause));
+                            //}
+                        }
                     }
                     dfd.reject.apply(xhr, arguments);
                 }

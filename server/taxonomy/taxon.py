@@ -98,7 +98,7 @@ def create_taxon(request):
     """
     taxon_params = request.data
 
-    parent_id = int_arg(taxon_params['parent'])
+    parent_id = int(taxon_params['parent'])
     parent = None
     if parent_id > 0:
         parent = get_object_or_404(Taxon, id=parent_id)
@@ -240,7 +240,7 @@ def get_taxon_details_json(request, id):
         'parent_list': [int(x) for x in taxon.parent_list.rstrip(',').split(',')] if taxon.parent_list else [],
         'parent_details': parents,
         'synonyms': [],
-        'descriptor_meta_model': taxon.descriptor_meta_model.id if taxon.descriptor_meta_model else None,
+        'descriptor_meta_model': taxon.descriptor_meta_model.id if taxon.descriptor_meta_model is not None else None,
         'descriptors': taxon.descriptors,
     }
 

@@ -118,7 +118,7 @@ var View = Marionette.ItemView.extend({
                 var model = this.getOption('model');
                 var parent = null;
 
-                if ($(this.ui.parent).val()) {
+                if (this.ui.parent.val()) {
                     parent = parseInt($(this.ui.parent).val());
                 }
 

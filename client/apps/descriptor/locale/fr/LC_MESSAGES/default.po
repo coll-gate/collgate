@@ -555,7 +555,7 @@ msgstr "Champs affichés"
 
 #: ../../../templates/descriptortypedetail.html:91
 msgid "Value0 - Value1"
-msgstr "Valeur1 - Valeur1"
+msgstr "Valeur0 - Valeur1"
 
 #: ../../../templates/descriptortypedetail.html:92
 msgid "Ordinal - Value0"

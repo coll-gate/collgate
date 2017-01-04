@@ -63,6 +63,14 @@ var DescriptorModule = Marionette.Module.extend({
             className: 'condition',
             collection: this.collections.conditions,
         });
+
+        var DescriptorTypeUnitCollection = require('./collections/descriptortypeunit');
+        this.collections.descriptorTypeUnits = new DescriptorTypeUnitCollection();
+
+        this.views.descriptorTypeUnits = new SelectOptionItemView({
+            className: 'descriptor-type-unit',
+            collection: this.collections.descriptorTypeUnits,
+        });
         
         Logger.timeEnd("Start descriptor module");
     },

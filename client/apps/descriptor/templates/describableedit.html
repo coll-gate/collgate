@@ -33,7 +33,18 @@
                                     <% var format = descriptor_model_type.descriptor_type.format; %>
                                     <% var mandatory = descriptor_model_type.mandatory ? "mandatory-field" : ""; %>
                                     <tr class="descriptor" panel-index="<%= pi %>" index="<%= i %>" descriptor-model-type="<%= descriptor_model_type.id %>" name="<%= descriptor_model_type.descriptor_type.code %>">
-                                        <td class="descriptor-name <%= mandatory %>" style="padding-top: 15px;"><%= descriptor_model_type.label %></td>
+                                        <td class="descriptor-name <%= mandatory %>" style="padding-top: 15px;">
+                                            <%= descriptor_model_type.label %>
+                                            <span class="descriptor-type-unit">
+                                            <% if (descriptor_model_type.descriptor_type.format.unit === "custom") { %>
+                                                <% if (descriptor_model_type.descriptor_type.format.custom_unit != undefined && descriptor_model_type.descriptor_type.format.custom_unit !== "") { %>
+                                                    (<%= descriptor_model_type.descriptor_type.format.custom_unit %>)
+                                                <% } %>
+                                            <% } else { %>
+                                                (<%= application.descriptor.collections.descriptorTypeUnits.findLabel(descriptor_model_type.descriptor_type.format.unit) %>)
+                                            <% } %>
+                                            </span>
+                                        </td>
                                         <td class="descriptor-value" format-type="<%= format.type %>"></td>
                                     </tr>
                                     <% ++i; %>
