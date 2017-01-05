@@ -19,8 +19,12 @@ var SelectOptionItemView = Marionette.ItemView.extend({
         options || (options = {});
         Marionette.ItemView.prototype.initialize.apply(this, options);
 
-        this.collection.fetch();  // lazy loading
-        this.collection.on("sync", this.render, this);  // render the template once got
+        if (!!options.sync) {
+            this.render();
+        } else {
+            this.collection.fetch();  // lazy loading
+            this.collection.on("sync", this.render, this);  // render the template once got
+        }
     },
 
     onRender: function(e) {

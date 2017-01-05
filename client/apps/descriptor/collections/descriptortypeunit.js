@@ -16,6 +16,7 @@ var Collection = Backbone.Collection.extend({
 
     initialize: function(models, options) {
         Collection.__super__.initialize.apply(this);
+
         this.models = [];
         this.lookup = {};
 
@@ -24,7 +25,7 @@ var Collection = Backbone.Collection.extend({
             this.lookup[model.id] = model.label;
             this.models.push(new DescriptorTypeUnitModel({
                 id: model.id,
-                value: model.value,
+                value: model.id,
                 group: model.group,
                 group_label: model.group_label,
                 label: model.label
@@ -36,8 +37,31 @@ var Collection = Backbone.Collection.extend({
         return data;
     },
 
-    fetch: function(options) {
-        // avoid fetching
+    toJSON: function() {
+        var result = [];
+        var prev = "";
+        var group = {};
+
+        console.log(this.models)
+        for (var i = 0; i < this.models.length; ++i) {
+            var model = this.models[i];
+            var g = model.get('group');
+
+            if (g != prev) {
+                group = {id: -1, value: "", label: model.get('group_label'), options: []};
+                result.push(group);
+            }
+
+            group.options.push({
+                id: model.get('id'),
+                value: model.get('value'),
+                label: model.get('label')
+            });
+
+            prev = g;
+        }
+
+        return result;
     },
 
     defaults: [
@@ -52,7 +76,6 @@ var Collection = Backbone.Collection.extend({
         {id: 'norm1', group: 'common', group_label: 'Common', label: gt.gettext("°Norm 1")},
         {id: 'note', group: 'common', group_label: 'Common', label: gt.gettext("Note")},
         {id: 'percent', group: 'common', group_label: 'Common', label: gt.gettext("% (percent)")},
-        {id: 'regexp', group: 'common', group_label: 'Common', label: gt.gettext("Regular expression")},
         {id: 'scale', group: 'common', group_label: 'Common', label: gt.gettext("Scale")},
 
         {id: 'gram_per_100_grain', group: 'grain', group_label: 'Grain', label: gt.gettext("g/100 grain")},
@@ -110,10 +133,10 @@ var Collection = Backbone.Collection.extend({
         {id: 'hour', group: 'time', group_label: 'Time', label: gt.gettext("hour")},
         {id: 'day', group: 'time', group_label: 'Time', label: gt.gettext("day")},
         {id: 'month', group: 'time', group_label: 'Time', label: gt.gettext("month")},
-        {id: 'year', group_label: 'Time', label: gt.gettext("year")},
-        {id: 'date', group: 'time', group_label: 'Time', label: gt.gettext("date")},
-        {id: 'time', group: 'time', group_label: 'Time', label: gt.gettext("time with seconds")},
-        {id: 'datetime', group: 'time', group_label: 'Time', label: gt.gettext("date+time")},
+        {id: 'year', group: 'time', group_label: 'Time', label: gt.gettext("year")},
+        {id: 'date', group: 'time', group_label: 'Time', label: gt.gettext("Date")},
+        {id: 'time', group: 'time', group_label: 'Time', label: gt.gettext("Time")},
+        {id: 'datetime', group: 'time', group_label: 'Time', label: gt.gettext("Date Time")},
         {id: 'percent_per_minute', group: 'time', group_label: 'Time', label: gt.gettext("%/min")},
         {id: 'percent_per_hour', group: 'time', group_label: 'Time', label: gt.gettext("%/hour")},
         {id: 'percent_per_day', group: 'time', group_label: 'Time', label: gt.gettext("%/day")}

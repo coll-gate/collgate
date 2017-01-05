@@ -57,6 +57,7 @@ var View = Marionette.ItemView.extend({
 
     onRender: function() {
         application.descriptor.views.describables.drawSelect(this.ui.format_model);
+        application.descriptor.views.descriptorTypeUnits.drawSelect(this.ui.format_unit);
 
         // @todo check user permissions
         if (!this.model.get('can_modify')) {
@@ -65,7 +66,7 @@ var View = Marionette.ItemView.extend({
 
         this.ui.format_trans.selectpicker({style: 'btn-default', container: 'body'});
         this.ui.format_type.selectpicker({style: 'btn-default', container: 'body'});
-        this.ui.format_unit.selectpicker({style: 'btn-default', container: 'body'});
+        //this.ui.format_unit.selectpicker({style: 'btn-default', container: 'body'});
         this.ui.format_precision.selectpicker({style: 'btn-default', container: 'body'});
 
         this.ui.sortby_field.selectpicker({style: 'btn-default'});

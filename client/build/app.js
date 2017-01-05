@@ -65,7 +65,7 @@
 /******/ 	}
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "7db17af8cfa232e196ed"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "c495555284548089f31b"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -603,8 +603,11 @@
 	/*$.select2 = */__webpack_require__(24);
 	__webpack_require__(25);
 	
-	// numeric validator
-	/*$.numeric = */__webpack_require__(29);
+	// numeric validator (useless, replaced by alphanum)
+	/*$.numeric = *///require("./deps/js/jquery.numeric");
+	
+	// alphanum validator
+	/*$.* = */__webpack_require__(29);
 	
 	// make table header fixed position
 	/*$.stickyTableHeaders = */__webpack_require__(30);
@@ -643,7 +646,7 @@
 	            dfd = $.Deferred();
 	
 	            // opts.success and opts.error are resolved against the deferred object
-	            // instead of the jqXHR object
+	            // instead of the xhr object
 	            if (opts)
 	                dfd.then(opts.success, opts.error);
 	
@@ -671,7 +674,9 @@
 	            // failure : resolve or reject the deferred according to your cases
 	            xhr.fail(function() {
 	                if (xhr.statusText && xhr.responseText) {
-	                    console.log("ajaxError: " + xhr.statusText + " " + xhr.responseText);
+	                    if (xhr.getResponseHeader('Content-Type') === "application/json") {
+	                        console.log("ajaxError: " + xhr.statusText + " " + xhr.responseText);
+	                    }
 	                }
 	
 	                if (xhr.status === 200 && xhr.responseText === "") {
@@ -685,10 +690,12 @@
 	                    window.location.assign(application.baseUrl + 'app/home/');
 	                } else {
 	                    if (typeof(xhr.responseText) !== "undefined") {
-	                        var data = JSON.parse(xhr.responseText);
-	                        //if ((xhr.status >= 400 && xhr.status <= 599) && data && (typeof(data.cause) === "string")) {
-	                        //    $.alert.error(gettext(data.cause));
-	                        //}
+	                        if (xhr.getResponseHeader('Content-Type') === "application/json") {
+	                            var data = JSON.parse(xhr.responseText);
+	                            //if ((xhr.status >= 400 && xhr.status <= 599) && data && (typeof(data.cause) === "string")) {
+	                            //    $.alert.error(gettext(data.cause));
+	                            //}
+	                        }
 	                    }
 	                    dfd.reject.apply(xhr, arguments);
 	                }
@@ -697,12 +704,19 @@
 	            // return the promise to add callbacks if necessary
 	            return dfd.promise();
 	        };
+	
+	        $(document).ajaxError(function(event, jqXHR, settings, thrownError) {
+	            if (jqXHR.status === 401) {
+	                // fallback to home page to force user to login
+	                window.location.assign(application.baseUrl + 'app/home/');
+	            }
+	        });
 	    },
 	    onStart: function(options) {
 	        // Starts the URL handling framework and automatically route as possible
 	        Backbone.history.start({pushState: true, silent: false, root: '/coll-gate'});
 	
-	        $.alert({container: 'div.panel-body'/*'#main_content'*/, className: 'alert'});
+	        $.alert({container: '#main_content'/*'div.panel-body'*/, className: 'alert'});
 	        $.alert.update();
 	
 	        // add alerted initiated by django server side
@@ -788,11 +802,11 @@
 	
 	    // each modules
 	    this.main = __webpack_require__(146);
-	    this.permission = __webpack_require__(170);
-	    this.audit = __webpack_require__(209);
-	    this.descriptor = __webpack_require__(221);
-	    this.taxonomy = __webpack_require__(321);
-	    this.accession = __webpack_require__(344);
+	    this.permission = __webpack_require__(172);
+	    this.audit = __webpack_require__(213);
+	    this.descriptor = __webpack_require__(227);
+	    this.taxonomy = __webpack_require__(330);
+	    this.accession = __webpack_require__(375);
 	});
 	
 	application.start({initialData: ''});
@@ -17128,364 +17142,798 @@
 /* 29 */
 /***/ function(module, exports) {
 
-	/*
-	 *
-	 * Copyright (c) 2006-2014 Sam Collett (http://www.texotela.co.uk)
-	 * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php)
-	 * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
-	 *
-	 * Version 1.4.1
-	 * Demo: http://www.texotela.co.uk/code/jquery/numeric/
-	 *
-	 * Changes done by Frederic Scherma :
-	 * Add support for min and max values with default when empty
-	 */
-	(function($) {
-	/*
-	 * Allows only valid characters to be entered into input boxes.
-	 * Note: fixes value when pasting via Ctrl+V, but not when using the mouse to paste
-	  *      side-effect: Ctrl+A does not work, though you can still use the mouse to select (or double-click to select all)
-	 *
-	 * @name     numeric
-	 * @param    config      { decimal : "." , negative : true }
-	 * @param    callback     A function that runs if the number is not valid (fires onblur)
-	 * @author   Sam Collett (http://www.texotela.co.uk)
-	 * @example  $(".numeric").numeric();
-	 * @example  $(".numeric").numeric(","); // use , as separator
-	 * @example  $(".numeric").numeric({ decimal : "," }); // use , as separator
-	 * @example  $(".numeric").numeric({ negative : false }); // do not allow negative values
-	 * @example  $(".numeric").numeric(null, callback); // use default values, pass on the 'callback' function
-	 *
-	 */
-	$.fn.numeric = function(config, callback)
-	{
-	    if(typeof config === 'boolean')
-	    {
-	        config = { decimal: config };
-	    }
-	    config = config || {};
-	    // if config.negative undefined, set to true (default is to allow negative numbers)
-	    if(typeof config.negative == "undefined") { config.negative = true; }
-	    // set decimal point
-	    var decimal = (config.decimal === false) ? "" : config.decimal || ".";
-	    // allow negatives
-	    var negative = (config.negative === true) ? true : false;
-	    // callback function
-	    callback = (typeof(callback) == "function" ? callback : function() {});
+	/********************************************************************
+	* Limit the characters that may be entered in a text field
+	* Common options: alphanumeric, alphabetic or numeric
+	* Kevin Sheedy, 2012
+	* http://github.com/KevinSheedy/jquery.alphanum
+	*********************************************************************/
+	(function( $ ){
 	
-	    // min value
-	    var min = 0;
+		// API ///////////////////////////////////////////////////////////////////
+		$.fn.alphanum = function(settings) {
 	
-	    if (typeof(config.min) !== "number") {
-	        if (negative) {
-	            min = (config.decimal == false) ? Number.MIN_SAFE_INTEGER : Number.MIN_VALUE;
-	        }
-	    } else {
-	        min = config.min;
-	    }
+			var combinedSettings = getCombinedSettingsAlphaNum(settings);
 	
-	    // max value
-	    var max = 0;
+			var $collection = this;
 	
-	    if (typeof(config.max) !== "number") {
-	        max = (config.decimal == false) ? Number.MAX_SAFE_INTEGER : Number.MAX_VALUE;
-	    } else {
-	        max = config.max;
-	    }
+			setupEventHandlers($collection, trimAlphaNum, combinedSettings);
 	
-	    // set data and methods
-	    return this.data("numeric.min", min).data("numeric.max", max).data("numeric.decimal", decimal).data("numeric.negative", negative).data("numeric.callback", callback).keypress($.fn.numeric.keypress).keyup($.fn.numeric.keyup).blur($.fn.numeric.blur);
-	};
+			return this;
+		};
 	
-	$.fn.numeric.keypress = function(e)
-	{
-	    // get decimal character and determine if negatives are allowed
-	    var decimal = $.data(this, "numeric.decimal");
-	    var negative = $.data(this, "numeric.negative");
-	    // get the key that was pressed
-	    var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
-	    // allow enter/return key (only when in an input box)
-	    if(key == 13 && this.nodeName.toLowerCase() == "input")
-	    {
-	        return true;
-	    }
-	    else if(key == 13)
-	    {
-	        return false;
-	    }
-	    var allow = false;
-	    // allow Ctrl+A
-	    if((e.ctrlKey && key == 97 /* firefox */) || (e.ctrlKey && key == 65) /* opera */) { return true; }
-	    // allow Ctrl+X (cut)
-	    if((e.ctrlKey && key == 120 /* firefox */) || (e.ctrlKey && key == 88) /* opera */) { return true; }
-	    // allow Ctrl+C (copy)
-	    if((e.ctrlKey && key == 99 /* firefox */) || (e.ctrlKey && key == 67) /* opera */) { return true; }
-	    // allow Ctrl+Z (undo)
-	    if((e.ctrlKey && key == 122 /* firefox */) || (e.ctrlKey && key == 90) /* opera */) { return true; }
-	    // allow or deny Ctrl+V (paste), Shift+Ins
-	    if((e.ctrlKey && key == 118 /* firefox */) || (e.ctrlKey && key == 86) /* opera */ ||
-	      (e.shiftKey && key == 45)) { return true; }
-	    // if a number was not pressed
-	    if(key < 48 || key > 57)
-	    {
-	      var value = $(this).val();
-	        /* '-' only allowed at start and if negative numbers allowed */
-	        if($.inArray('-', value.split('')) !== 0 && negative && key == 45 && (value.length === 0 || parseInt($.fn.getSelectionStart(this), 10) === 0)) { return true; }
-	        /* only one decimal separator allowed */
-	        if(decimal && key == decimal.charCodeAt(0) && $.inArray(decimal, value.split('')) != -1)
-	        {
-	            allow = false;
-	        }
-	        // check for other keys that have special purposes
-	        if(
-	            key != 8 /* backspace */ &&
-	            key != 9 /* tab */ &&
-	            key != 13 /* enter */ &&
-	            key != 35 /* end */ &&
-	            key != 36 /* home */ &&
-	            key != 37 /* left */ &&
-	            key != 39 /* right */ &&
-	            key != 46 /* del */
-	        )
-	        {
-	            allow = false;
-	        }
-	        else
-	        {
-	            // for detecting special keys (listed above)
-	            // IE does not support 'charCode' and ignores them in keypress anyway
-	            if(typeof e.charCode != "undefined")
-	            {
-	                // special keys have 'keyCode' and 'which' the same (e.g. backspace)
-	                if(e.keyCode == e.which && e.which !== 0)
-	                {
-	                    allow = true;
-	                    // . and delete share the same code, don't allow . (will be set to true later if it is the decimal point)
-	                    if(e.which == 46) { allow = false; }
-	                }
-	                // or keyCode != 0 and 'charCode'/'which' = 0
-	                else if(e.keyCode !== 0 && e.charCode === 0 && e.which === 0)
-	                {
-	                    allow = true;
-	                }
-	            }
-	        }
-	        // if key pressed is the decimal and it is not already in the field
-	        if(decimal && key == decimal.charCodeAt(0))
-	        {
-	            if($.inArray(decimal, value.split('')) == -1)
-	            {
-	                allow = true;
-	            }
-	            else
-	            {
-	                allow = false;
-	            }
-	        }
-	    }
-	    else
-	    {
-	        allow = true;
-	    }
-	    return allow;
-	};
+		$.fn.alpha = function(settings) {
 	
-	$.fn.numeric.keyup = function(e)
-	{
-	    var val = $(this).val();
-	    if(val && val.length > 0)
-	    {
-	        // get carat (cursor) position
-	        var carat = $.fn.getSelectionStart(this);
-	        var selectionEnd = $.fn.getSelectionEnd(this);
-	        // get decimal character and determine if negatives are allowed
-	        var decimal = $.data(this, "numeric.decimal");
-	        var negative = $.data(this, "numeric.negative");
-	        var min = $.data(this, "numeric.min");
-	        var max = $.data(this, "numeric.max");
+			var defaultAlphaSettings = getCombinedSettingsAlphaNum("alpha");
+			var combinedSettings = getCombinedSettingsAlphaNum(settings, defaultAlphaSettings);
 	
-	        // prepend a 0 if necessary
-	        if(decimal !== "" && decimal !== null)
-	        {
-	            // find decimal point
-	            var dot = $.inArray(decimal, val.split(''));
-	            // if dot at start, add 0 before
-	            if(dot === 0)
-	            {
-	                this.value = "0" + val;
-	                carat++;
-	                        selectionEnd++;
-	            }
-	            // if dot at position 1, check if there is a - symbol before it
-	            if(dot == 1 && val.charAt(0) == "-")
-	            {
-	                this.value = "-0" + val.substring(1);
-	                carat++;
-	                        selectionEnd++;
-	            }
-	            val = this.value;
-	        }
+			var $collection = this;
 	
-	        // if pasted in, only allow the following characters
-	        var validChars = [0,1,2,3,4,5,6,7,8,9,'-',decimal];
-	        // get length of the value (to loop through)
-	        var length = val.length;
-	        // loop backwards (to prevent going out of bounds)
-	        for(var i = length - 1; i >= 0; i--)
-	        {
-	            var ch = val.charAt(i);
-	            // remove '-' if it is in the wrong place
-	            if(i !== 0 && ch == "-")
-	            {
-	                val = val.substring(0, i) + val.substring(i + 1);
-	            }
-	            // remove character if it is at the start, a '-' and negatives aren't allowed
-	            else if(i === 0 && !negative && ch == "-")
-	            {
-	                val = val.substring(1);
-	            }
-	            var validChar = false;
-	            // loop through validChars
-	            for(var j = 0; j < validChars.length; j++)
-	            {
-	                // if it is valid, break out the loop
-	                if(ch == validChars[j])
-	                {
-	                    validChar = true;
-	                    break;
-	                }
-	            }
-	            // if not a valid character, or a space, remove
-	            if(!validChar || ch == " ")
-	            {
-	                val = val.substring(0, i) + val.substring(i + 1);
-	            }
-	        }
-	        // remove extra decimal characters
-	        var firstDecimal = $.inArray(decimal, val.split(''));
-	        if(firstDecimal > 0)
-	        {
-	            for(var k = length - 1; k > firstDecimal; k--)
-	            {
-	                var chch = val.charAt(k);
-	                // remove decimal character
-	                if(chch == decimal)
-	                {
-	                    val = val.substring(0, k) + val.substring(k + 1);
-	                }
-	            }
-	        }
-	        // min/max
-	        if (val > max) {
-	            val = max;
-	        } else if (val < min) {
-	            val = min;
-	        }
+			setupEventHandlers($collection, trimAlphaNum, combinedSettings);
 	
-	        // set the value and prevent the cursor moving to the end
-	        this.value = val;
-	        $.fn.setSelection(this, [carat, selectionEnd]);
-	    }
-	};
+			return this;
+		};
 	
-	$.fn.numeric.blur = function()
-	{
-	    var decimal = $.data(this, "numeric.decimal");
-	    var callback = $.data(this, "numeric.callback");
-	    var min = $.data(this, "numeric.min");
-	    var val = this.value;
-	    // empty then min value
-	    if(val === "") {
-	        val = this.value = Math.max(0, min);
-	    }
-	    if(val !== "")
-	    {
-	        var re = new RegExp("^\\d+$|^\\d*" + decimal + "\\d+$");
-	        if(!re.exec(val))
-	        {
-	            callback.apply(this);
-	        }
-	    }
-	};
+		$.fn.numeric = function(settings) {
 	
-	$.fn.removeNumeric = function()
-	{
-	    return this.data("numeric.decimal", null).data("numeric.negative", null).data("numeric.callback", null).unbind("keypress", $.fn.numeric.keypress).unbind("blur", $.fn.numeric.blur);
-	};
+			var combinedSettings = getCombinedSettingsNum(settings);
+			var $collection = this;
 	
-	// Based on code from http://javascript.nwbox.com/cursor_position/ (Diego Perini <dperini@nwbox.com>)
-	$.fn.getSelectionStart = function(o)
-	{
-	    if(o.type === "number"){
-	        return undefined;
-	    }
-	    else if (o.createTextRange)
-	    {
-	        var r;
-	        if(typeof document.selection == "undefined") {
-	            //On IE < 9 && IE >= 11 : "document.selection" is deprecated and you should use "document.getSelection()"
-	            //https://github.com/SamWM/jQuery-Plugins/issues/62
-	            r = document.getSelection();
-	        } else {
-	            r = document.selection.createRange().duplicate();
-	            r.moveEnd('character', o.value.length);
-	        }
-	        if (r.text == '') return o.value.length;
+			setupEventHandlers($collection, trimNum, combinedSettings);
 	
-	        return o.value.lastIndexOf(r.text);
-	    } else {
-	        try { return o.selectionStart; }
-	        catch(e) { return 0; }
-	    }
-	};
+			$collection.blur(function(){
+				numericField_Blur(this, combinedSettings);
+			});
 	
-	// Based on code from http://javascript.nwbox.com/cursor_position/ (Diego Perini <dperini@nwbox.com>)
-	$.fn.getSelectionEnd = function(o)
-	{
-	    if(o.type === "number"){
-	        return undefined;
-	    }
-	    else if (o.createTextRange) {
-	        var r = document.selection.createRange().duplicate()
-	        r.moveStart('character', -o.value.length)
-	        return r.text.length
-	    } else return o.selectionEnd
-	}
+			return this;
+		};
 	
-	// set the selection, o is the object (input), p is the position ([start, end] or just start)
-	$.fn.setSelection = function(o, p)
-	{
-	    // if p is number, start and end are the same
-	    if(typeof p == "number") { p = [p, p]; }
-	    // only set if p is an array of length 2
-	    if(p && p.constructor == Array && p.length == 2)
-	    {
-	        if(o.type === "number") {
-	            o.focus();
-	        }
-	        else if (o.createTextRange)
-	        {
-	            var r = o.createTextRange();
-	            r.collapse(true);
-	            r.moveStart('character', p[0]);
-	            r.moveEnd('character', p[1]);
-	            r.select();
-	        }
-	        else {
-	            o.focus();
-	            try{
-	                if(o.setSelectionRange)
-	                {
-	                    o.setSelectionRange(p[0], p[1]);
-	                }
-	            } catch(e) {
-	            }
-	        }
-	    }
-	};
+		// End of API /////////////////////////////////////////////////////////////
 	
-	})(jQuery);
-
+	
+		// Start Settings ////////////////////////////////////////////////////////
+	
+		var DEFAULT_SETTINGS_ALPHANUM = {
+			allow              : '',    // Allow extra characters
+			disallow           : '',    // Disallow extra characters
+			allowSpace         : true,  // Allow the space character
+			allowNewline       : true,  // Allow the newline character \n ascii 10
+			allowNumeric       : true,  // Allow digits 0-9
+			allowUpper         : true,  // Allow upper case characters
+			allowLower         : true,  // Allow lower case characters
+			allowCaseless      : true,  // Allow characters that don't have both upper & lower variants - eg Arabic or Chinese
+			allowLatin         : true,  // a-z A-Z
+			allowOtherCharSets : true,  // eg é, Á, Arabic, Chinese etc
+			forceUpper         : false, // Convert lower case characters to upper case
+			forceLower         : false, // Convert upper case characters to lower case
+			maxLength          : NaN    // eg Max Length
+		}
+	
+		var DEFAULT_SETTINGS_NUM = {
+			allowPlus           : false, // Allow the + sign
+			allowMinus          : true,  // Allow the - sign
+			allowThouSep        : true,  // Allow the thousands separator, default is the comma eg 12,000
+			allowDecSep         : true,  // Allow the decimal separator, default is the fullstop eg 3.141
+			allowLeadingSpaces  : false,
+			maxDigits           : NaN,   // The max number of digits
+			maxDecimalPlaces    : NaN,   // The max number of decimal places
+			maxPreDecimalPlaces : NaN,   // The max number digits before the decimal point
+			max                 : NaN,   // The max numeric value allowed
+			min                 : NaN    // The min numeric value allowed
+		}
+	
+		// Some pre-defined groups of settings for convenience
+		var CONVENIENCE_SETTINGS_ALPHANUM = {
+			"alpha" : {
+				allowNumeric  : false
+			},
+			"upper" : {
+				allowNumeric  : false,
+				allowUpper    : true,
+				allowLower    : false,
+				allowCaseless : true
+			},
+			"lower" : {
+				allowNumeric  : false,
+				allowUpper    : false,
+				allowLower    : true,
+				allowCaseless : true
+			}
+		};
+	
+		// Some pre-defined groups of settings for convenience
+		var CONVENIENCE_SETTINGS_NUMERIC = {
+			"integer" : {
+				allowPlus    : false,
+				allowMinus   : true,
+				allowThouSep : false,
+				allowDecSep  : false
+			},
+			"positiveInteger" : {
+				allowPlus    : false,
+				allowMinus   : false,
+				allowThouSep : false,
+				allowDecSep  : false
+			}
+		};
+	
+	
+		var BLACKLIST   = getBlacklistAscii() + getBlacklistNonAscii();
+		var THOU_SEP    = ",";
+		var DEC_SEP     = ".";
+		var DIGITS      = getDigitsMap();
+		var LATIN_CHARS = getLatinCharsSet();
+	
+		// Return the blacklisted special chars that are encodable using 7-bit ascii
+		function getBlacklistAscii(){
+			var blacklist = '!@#$%^&*()+=[]\\\';,/{}|":<>?~`.-_';
+			blacklist += " "; // 'Space' is on the blacklist but can be enabled using the 'allowSpace' config entry
+			return blacklist;
+		}
+	
+		// Return the blacklisted special chars that are NOT encodable using 7-bit ascii
+		// We want this .js file to be encoded using 7-bit ascii so it can reach the widest possible audience
+		// Higher order chars must be escaped eg "\xAC"
+		// Not too worried about comments containing higher order characters for now (let's wait and see if it becomes a problem)
+		function getBlacklistNonAscii(){
+			var blacklist =
+				  "\xAC"     // ¬
+				+ "\u20AC"   // €
+				+ "\xA3"     // £
+				+ "\xA6"     // ¦
+				;
+			return blacklist;
+		}
+	
+		// End Settings ////////////////////////////////////////////////////////
+	
+	
+		// Implementation details go here ////////////////////////////////////////////////////////
+	
+		function setupEventHandlers($textboxes, trimFunction, settings) {
+	
+			$textboxes.each(function(){
+	
+				var $textbox = $(this);
+	
+				$textbox
+					// Unbind existing alphanum event handlers
+					.off(".alphanum")
+	
+					.on("keyup.alphanum change.alphanum paste.alphanum", function(e){
+	
+						var pastedText = "";
+	
+						if(e.originalEvent && e.originalEvent.clipboardData && e.originalEvent.clipboardData.getData)
+							pastedText = e.originalEvent.clipboardData.getData("text/plain")
+	
+						// setTimeout is necessary for handling the 'paste' event
+						setTimeout(function(){
+							trimTextbox($textbox, trimFunction, settings, pastedText);
+						}, 0);
+					})
+	
+					.on("keypress.alphanum", function(e){
+	
+					// Determine which key is pressed.
+					// If it's a control key, then allow the event's default action to occur eg backspace, tab
+					var charCode = !e.charCode ? e.which : e.charCode;
+					if(isControlKey(charCode)
+						|| e.ctrlKey
+						|| e.metaKey ) // cmd on MacOS
+						return;
+	
+					var newChar         = String.fromCharCode(charCode);
+	
+					// Determine if some text was selected / highlighted when the key was pressed
+					var selectionObject = $textbox.selection();
+					var start = selectionObject.start;
+					var end   = selectionObject.end;
+	
+					var textBeforeKeypress  = $textbox.val();
+	
+					// The new char may be inserted:
+					//  1) At the start
+					//  2) In the middle
+					//  3) At the end
+					//  4) User highlights some text and then presses a key which would replace the highlighted text
+					//
+					// Here we build the string that would result after the keypress.
+					// If the resulting string is invalid, we cancel the event.
+					// Unfortunately, it isn't enough to just check if the new char is valid because some chars
+					// are position sensitive eg the decimal point '.'' or the minus sign '-'' are only valid in certain positions.
+					var potentialTextAfterKeypress = textBeforeKeypress.substring(0, start) + newChar + textBeforeKeypress.substring(end);
+					var validatedText              = trimFunction(potentialTextAfterKeypress, settings);
+	
+					// If the keypress would cause the textbox to contain invalid characters, then cancel the keypress event
+					if(validatedText != potentialTextAfterKeypress)
+						e.preventDefault();
+				});
+			});
+	
+		}
+	
+		// Ensure the text is a valid number when focus leaves the textbox
+		// This catches the case where a user enters '-' or '.' without entering any digits
+		function numericField_Blur(inputBox, settings) {
+			var fieldValueNumeric = parseFloat($(inputBox).val());
+			var $inputBox = $(inputBox);
+	
+			if(isNaN(fieldValueNumeric)) {
+				$inputBox.val("");
+				return;
+			}
+	
+			if(isNumeric(settings.min) && fieldValueNumeric < settings.min)
+				$inputBox.val("");
+	
+			if(isNumeric(settings.max) && fieldValueNumeric > settings.max)
+				$inputBox.val("");
+		}
+	
+		function isNumeric(value) {
+			return !isNaN(value);
+		}
+	
+		function isControlKey(charCode) {
+	
+			if(charCode >= 32)
+				return false;
+			if(charCode == 10)
+				return false;
+			if(charCode == 13)
+				return false;
+	
+			return true;
+		}
+	
+		// One way to prevent a character being entered is to cancel the keypress event.
+		// However, this gets messy when you have to deal with things like copy paste which isn't a keypress.
+		// Which event gets fired first, keypress or keyup? What about IE6 etc etc?
+		// Instead, it's easier to allow the 'bad' character to be entered and then to delete it immediately after.
+	
+		function trimTextbox($textBox, trimFunction, settings, pastedText){
+	
+			var inputString = $textBox.val();
+	
+			if(inputString == "" && pastedText.length > 0)
+				inputString = pastedText;
+	
+			var outputString = trimFunction(inputString, settings);
+	
+			if(inputString == outputString)
+				return;
+	
+			var caretPos = $textBox.alphanum_caret();
+	
+			$textBox.val(outputString);
+	
+			//Reset the caret position
+			if(inputString.length ==(outputString.length + 1))
+				$textBox.alphanum_caret(caretPos - 1);
+			else
+				$textBox.alphanum_caret(caretPos);
+		}
+	
+		function getCombinedSettingsAlphaNum(settings, defaultSettings){
+			if(typeof defaultSettings == "undefined")
+				defaultSettings = DEFAULT_SETTINGS_ALPHANUM;
+			var userSettings, combinedSettings = {};
+			if(typeof settings === "string")
+				userSettings = CONVENIENCE_SETTINGS_ALPHANUM[settings];
+			else if(typeof settings == "undefined")
+				userSettings = {};
+			else
+				userSettings = settings;
+	
+			$.extend(combinedSettings, defaultSettings, userSettings);
+	
+			if(typeof combinedSettings.blacklist == 'undefined')
+				combinedSettings.blacklistSet = getBlacklistSet(combinedSettings.allow, combinedSettings.disallow);
+	
+			return combinedSettings;
+		}
+	
+		function getCombinedSettingsNum(settings){
+			var userSettings, combinedSettings = {};
+			if(typeof settings === "string")
+				userSettings = CONVENIENCE_SETTINGS_NUMERIC[settings];
+			else if(typeof settings == "undefined")
+				userSettings = {};
+			else
+				userSettings = settings;
+	
+			$.extend(combinedSettings, DEFAULT_SETTINGS_NUM, userSettings);
+	
+			return combinedSettings;
+		}
+	
+	
+		// This is the heart of the algorithm
+		function alphanum_allowChar(validatedStringFragment, Char, settings){
+	
+			if(settings.maxLength && validatedStringFragment.length >= settings.maxLength)
+				return false;
+	
+			if(settings.allow.indexOf(Char) >=0 )
+				return true;
+	
+			if(settings.allowSpace && (Char == " "))
+				return true;
+	
+			if(!settings.allowNewline && (Char == '\n' || Char == '\r'))
+				return false;
+	
+			if(settings.blacklistSet.contains(Char))
+				return false;
+	
+			if(!settings.allowNumeric && DIGITS[Char])
+				return false;
+	
+			if(!settings.allowUpper && isUpper(Char))
+				return false;
+	
+			if(!settings.allowLower && isLower(Char))
+				return false;
+	
+			if(!settings.allowCaseless && isCaseless(Char))
+				return false;
+	
+			if(!settings.allowLatin && LATIN_CHARS.contains(Char))
+				return false;
+	
+			if(!settings.allowOtherCharSets){
+				if(DIGITS[Char] || LATIN_CHARS.contains(Char))
+					return true;
+				else
+					return false;
+			}
+	
+			return true;
+		}
+	
+		function numeric_allowChar(validatedStringFragment, Char, settings){
+	
+			if(DIGITS[Char]) {
+	
+				if(isMaxDigitsReached(validatedStringFragment, settings))
+					return false;
+	
+				if(isMaxPreDecimalsReached(validatedStringFragment, settings))
+					return false;
+	
+				if(isMaxDecimalsReached(validatedStringFragment, settings))
+					return false;
+	
+				if(isGreaterThanMax(validatedStringFragment + Char, settings))
+					return false;
+	
+				if(isLessThanMin(validatedStringFragment + Char, settings))
+					return false;
+	
+				return true;
+			}
+	
+			if(settings.allowPlus && Char == '+' && validatedStringFragment == '')
+				return true;
+	
+			if(settings.allowMinus && Char == '-' && validatedStringFragment == '')
+				return true;
+	
+			if(Char == THOU_SEP && settings.allowThouSep && allowThouSep(validatedStringFragment))
+				return true;
+	
+			if(Char == DEC_SEP) {
+				// Only one decimal separator allowed
+				if(validatedStringFragment.indexOf(DEC_SEP) >= 0)
+					return false;
+				// Don't allow decimal separator when maxDecimalPlaces is set to 0
+				if(settings.allowDecSep && settings.maxDecimalPlaces === 0)
+					return false;
+				if(settings.allowDecSep)
+					return true;
+			}
+	
+			return false;
+		}
+	
+		function countDigits(string) {
+	
+			// Error handling, nulls etc
+			string = string + "";
+	
+			// Count the digits
+			return string.replace(/[^0-9]/g,"").length;
+		}
+	
+		function isMaxDigitsReached(string, settings) {
+	
+			var maxDigits = settings.maxDigits;
+	
+			if(maxDigits === "" || isNaN(maxDigits))
+				return false; // In this case, there is no maximum
+	
+			var numDigits = countDigits(string);
+	
+			if(numDigits >= maxDigits)
+				return true;
+	
+			return false;
+		}
+	
+		function isMaxDecimalsReached(string, settings) {
+	
+			var maxDecimalPlaces = settings.maxDecimalPlaces;
+	
+			if(maxDecimalPlaces === "" || isNaN(maxDecimalPlaces))
+				return false; // In this case, there is no maximum
+	
+			var indexOfDecimalPoint = string.indexOf(DEC_SEP);
+	
+			if(indexOfDecimalPoint == -1)
+				return false;
+	
+			var decimalSubstring = string.substring(indexOfDecimalPoint);
+			var numDecimals = countDigits(decimalSubstring);
+	
+			if(numDecimals >= maxDecimalPlaces)
+				return true;
+	
+			return false;
+		}
+	
+		function isMaxPreDecimalsReached(string, settings) {
+	
+			var maxPreDecimalPlaces = settings.maxPreDecimalPlaces;
+	
+			if(maxPreDecimalPlaces === "" || isNaN(maxPreDecimalPlaces))
+				return false; // In this case, there is no maximum
+	
+			var indexOfDecimalPoint = string.indexOf(DEC_SEP);
+	
+			if(indexOfDecimalPoint >= 0)
+				return false;
+	
+			var numPreDecimalDigits = countDigits(string);
+	
+			if(numPreDecimalDigits >= maxPreDecimalPlaces)
+				return true;
+	
+			return false;
+		}
+	
+		function isGreaterThanMax(numericString, settings) {
+	
+			if(!settings.max || settings.max < 0)
+				return false;
+	
+			var outputNumber = parseFloat(numericString);
+			if(outputNumber > settings.max)
+				return true;
+	
+			return false;
+		}
+	
+		function isLessThanMin(numericString, settings) {
+	
+			if(!settings.min || settings.min > 0)
+				return false;
+	
+			var outputNumber = parseFloat(numericString);
+			if(outputNumber < settings.min)
+				return true;
+	
+			return false;
+		}
+	
+		/********************************
+		 * Trims a string according to the settings provided
+		 ********************************/
+		function trimAlphaNum(inputString, settings){
+	
+			if(typeof inputString != "string")
+				return inputString;
+	
+			var inChars = inputString.split("");
+			var outChars = [];
+			var i = 0;
+			var Char;
+	
+			for(i=0; i<inChars.length; i++){
+				Char = inChars[i];
+				var validatedStringFragment = outChars.join("");
+				if(alphanum_allowChar(validatedStringFragment, Char, settings))
+					outChars.push(Char);
+			}
+	
+			var outputString = outChars.join("");
+	
+			if(settings.forceLower)
+				outputString = outputString.toLowerCase();
+			else if(settings.forceUpper)
+				outputString = outputString.toUpperCase();
+	
+			return outputString;
+		}
+	
+		function trimNum(inputString, settings){
+			if(typeof inputString != "string")
+				return inputString;
+	
+			var inChars = inputString.split("");
+			var outChars = [];
+			var i = 0;
+			var Char;
+	
+			for(i=0; i<inChars.length; i++){
+				Char = inChars[i];
+				var validatedStringFragment = outChars.join("");
+				if(numeric_allowChar(validatedStringFragment, Char, settings))
+					outChars.push(Char);
+			}
+	
+			return outChars.join("");
+		}
+	
+		function isUpper(Char){
+			var upper = Char.toUpperCase();
+			var lower = Char.toLowerCase();
+	
+			if( (Char == upper) && (upper != lower))
+				return true;
+			else
+				return false;
+		}
+	
+		function isLower(Char){
+			var upper = Char.toUpperCase();
+			var lower = Char.toLowerCase();
+	
+			if( (Char == lower) && (upper != lower))
+				return true;
+			else
+				return false;
+		}
+	
+		function isCaseless(Char){
+			if(Char.toUpperCase() == Char.toLowerCase())
+				return true;
+			else
+				return false;
+		}
+	
+		function getBlacklistSet(allow, disallow){
+	
+			var setOfBadChars  = new Set(BLACKLIST + disallow);
+			var setOfGoodChars = new Set(allow);
+	
+			var blacklistSet   = setOfBadChars.subtract(setOfGoodChars);
+	
+			return blacklistSet;
+		}
+	
+		function getDigitsMap(){
+			var array = "0123456789".split("");
+			var map = {};
+			var i = 0;
+			var digit;
+	
+			for(i=0; i<array.length; i++){
+				digit = array[i];
+				map[digit] = true;
+			}
+	
+			return map;
+		}
+	
+		function getLatinCharsSet(){
+			var lower = "abcdefghijklmnopqrstuvwxyz";
+			var upper = lower.toUpperCase();
+			var azAZ = new Set(lower + upper);
+	
+			return azAZ;
+		}
+	
+		function allowThouSep(currentString) {
+	
+			// Can't start with a THOU_SEP
+			if(currentString.length == 0)
+				return false;
+	
+			// Can't have a THOU_SEP anywhere after a DEC_SEP
+			var posOfDecSep = currentString.indexOf(DEC_SEP);
+			if(posOfDecSep >= 0)
+				return false;
+	
+			var posOfFirstThouSep       = currentString.indexOf(THOU_SEP);
+	
+			// Check if this is the first occurrence of a THOU_SEP
+			if(posOfFirstThouSep < 0)
+				return true;
+	
+			var posOfLastThouSep        = currentString.lastIndexOf(THOU_SEP);
+			var charsSinceLastThouSep   = currentString.length - posOfLastThouSep - 1;
+	
+			// Check if there has been 3 digits since the last THOU_SEP
+			if(charsSinceLastThouSep < 3)
+				return false;
+	
+			var digitsSinceFirstThouSep = countDigits(currentString.substring(posOfFirstThouSep));
+	
+			// Check if there has been a multiple of 3 digits since the first THOU_SEP
+			if((digitsSinceFirstThouSep % 3) > 0)
+				return false;
+	
+			return true;
+		}
+	
+		////////////////////////////////////////////////////////////////////////////////////
+		// Implementation of a Set
+		////////////////////////////////////////////////////////////////////////////////////
+		function Set(elems){
+			if(typeof elems == "string")
+				this.map = stringToMap(elems);
+			else
+				this.map = {};
+		}
+	
+		Set.prototype.add = function(set){
+	
+			var newSet = this.clone();
+	
+			for(var key in set.map)
+				newSet.map[key] = true;
+	
+			return newSet;
+		}
+	
+		Set.prototype.subtract = function(set){
+	
+			var newSet = this.clone();
+	
+			for(var key in set.map)
+				delete newSet.map[key];
+	
+			return newSet;
+		}
+	
+		Set.prototype.contains = function(key){
+			if(this.map[key])
+				return true;
+			else
+				return false;
+		}
+	
+		Set.prototype.clone = function(){
+			var newSet = new Set();
+	
+			for(var key in this.map)
+				newSet.map[key] = true;
+	
+			return newSet;
+		}
+		////////////////////////////////////////////////////////////////////////////////////
+	
+		function stringToMap(string){
+			var map = {};
+			var array = string.split("");
+			var i=0;
+			var Char;
+	
+			for(i=0; i<array.length; i++){
+				Char = array[i];
+				map[Char] = true;
+			}
+	
+			return map;
+		}
+	
+		// Backdoor for testing
+		$.fn.alphanum.backdoorAlphaNum = function(inputString, settings){
+			var combinedSettings = getCombinedSettingsAlphaNum(settings);
+	
+			return trimAlphaNum(inputString, combinedSettings);
+		};
+	
+		$.fn.alphanum.backdoorNumeric = function(inputString, settings){
+			var combinedSettings = getCombinedSettingsNum(settings);
+	
+			return trimNum(inputString, combinedSettings);
+		};
+	
+		$.fn.alphanum.setNumericSeparators = function(settings) {
+	
+			if(settings.thousandsSeparator.length != 1)
+				return;
+	
+			if(settings.decimalSeparator.length != 1)
+				return;
+	
+			THOU_SEP = settings.thousandsSeparator;
+			DEC_SEP = settings.decimalSeparator;
+		}
+	
+	})( jQuery );
+	
+	/*eslint-disable */
+	//Include the 3rd party lib: jquery.caret.js
+	
+	
+	// Set caret position easily in jQuery
+	// Written by and Copyright of Luke Morton, 2011
+	// Licensed under MIT
+	(function ($) {
+		// Behind the scenes method deals with browser
+		// idiosyncrasies and such
+		function caretTo(el, index) {
+			if (el.createTextRange) {
+				var range = el.createTextRange();
+				range.move("character", index);
+				range.select();
+			} else if (el.selectionStart != null) {
+				el.focus();
+				el.setSelectionRange(index, index);
+			}
+		};
+	
+		// Another behind the scenes that collects the
+		// current caret position for an element
+	
+		// TODO: Get working with Opera
+		function caretPos(el) {
+			if ("selection" in document) {
+				var range = el.createTextRange();
+				try {
+					range.setEndPoint("EndToStart", document.selection.createRange());
+				} catch (e) {
+					// Catch IE failure here, return 0 like
+					// other browsers
+					return 0;
+				}
+				return range.text.length;
+			} else if (el.selectionStart != null) {
+				return el.selectionStart;
+			}
+		};
+	
+		// The following methods are queued under fx for more
+		// flexibility when combining with $.fn.delay() and
+		// jQuery effects.
+	
+		// Set caret to a particular index
+		$.fn.alphanum_caret = function (index, offset) {
+			if (typeof(index) === "undefined") {
+				return caretPos(this.get(0));
+			}
+	
+			return this.queue(function (next) {
+				if (isNaN(index)) {
+					var i = $(this).val().indexOf(index);
+	
+					if (offset === true) {
+						i += index.length;
+					} else if (typeof(offset) !== "undefined") {
+						i += offset;
+					}
+	
+					caretTo(this, i);
+				} else {
+					caretTo(this, index);
+				}
+	
+				next();
+			});
+		};
+	}(jQuery));
+	
+	/**********************************************************
+	* Selection Library
+	* Used to determine what text is highlighted in the textbox before a key is pressed.
+	* http://donejs.com/docs.html#!jQuery.fn.selection
+	* https://github.com/jupiterjs/jquerymx/blob/master/dom/selection/selection.js
+	***********************************************************/
+	(function(e){var t=function(e){return e.replace(/([a-z])([a-z]+)/gi,function(e,t,n){return t+n.toLowerCase()}).replace(/_/g,"")},n=function(e){return e.replace(/^([a-z]+)_TO_([a-z]+)/i,function(e,t,n){return n+"_TO_"+t})},r=function(e){return e?e.ownerDocument.defaultView||e.ownerDocument.parentWindow:window},i=function(t,n){var r=e.Range.current(t).clone(),i=e.Range(t).select(t);if(!r.overlaps(i)){return null}if(r.compare("START_TO_START",i)<1){startPos=0;r.move("START_TO_START",i)}else{fromElementToCurrent=i.clone();fromElementToCurrent.move("END_TO_START",r);startPos=fromElementToCurrent.toString().length}if(r.compare("END_TO_END",i)>=0){endPos=i.toString().length}else{endPos=startPos+r.toString().length}return{start:startPos,end:endPos}},s=function(t){var n=r(t);if(t.selectionStart!==undefined){if(document.activeElement&&document.activeElement!=t&&t.selectionStart==t.selectionEnd&&t.selectionStart==0){return{start:t.value.length,end:t.value.length}}return{start:t.selectionStart,end:t.selectionEnd}}else if(n.getSelection){return i(t,n)}else{try{if(t.nodeName.toLowerCase()=="input"){var s=r(t).document.selection.createRange(),o=t.createTextRange();o.setEndPoint("EndToStart",s);var u=o.text.length;return{start:u,end:u+s.text.length}}else{var a=i(t,n);if(!a){return a}var f=e.Range.current().clone(),l=f.clone().collapse().range,c=f.clone().collapse(false).range;l.moveStart("character",-1);c.moveStart("character",-1);if(a.startPos!=0&&l.text==""){a.startPos+=2}if(a.endPos!=0&&c.text==""){a.endPos+=2}return a}}catch(h){return{start:t.value.length,end:t.value.length}}}},o=function(e,t,n){var i=r(e);if(e.setSelectionRange){if(n===undefined){e.focus();e.setSelectionRange(t,t)}else{e.select();e.selectionStart=t;e.selectionEnd=n}}else if(e.createTextRange){var s=e.createTextRange();s.moveStart("character",t);n=n||t;s.moveEnd("character",n-e.value.length);s.select()}else if(i.getSelection){var o=i.document,u=i.getSelection(),f=o.createRange(),l=[t,n!==undefined?n:t];a([e],l);f.setStart(l[0].el,l[0].count);f.setEnd(l[1].el,l[1].count);u.removeAllRanges();u.addRange(f)}else if(i.document.body.createTextRange){var f=document.body.createTextRange();f.moveToElementText(e);f.collapse();f.moveStart("character",t);f.moveEnd("character",n!==undefined?n:t);f.select()}},u=function(e,t,n,r){if(typeof n[0]==="number"&&n[0]<t){n[0]={el:r,count:n[0]-e}}if(typeof n[1]==="number"&&n[1]<=t){n[1]={el:r,count:n[1]-e};}},a=function(e,t,n){var r,i;n=n||0;for(var s=0;e[s];s++){r=e[s];if(r.nodeType===3||r.nodeType===4){i=n;n+=r.nodeValue.length;u(i,n,t,r)}else if(r.nodeType!==8){n=a(r.childNodes,t,n)}}return n};jQuery.fn.selection=function(e,t){if(e!==undefined){return this.each(function(){o(this,e,t)})}else{return s(this[0])}};e.fn.selection.getCharElement=a})(jQuery);
+	/*eslint-enable */
 
 /***/ },
 /* 30 */
@@ -33015,21 +33463,27 @@
 	        this.routers = {};
 	
 	        // i18n
-	        if (session.language === "fr") {
-	            i18next.addResources('fr', 'default', __webpack_require__(149));
+	        try {
+	            i18next.addResources('fr', 'default', __webpack_require__(149)("./" + session.language + '/LC_MESSAGES/default.json'));
+	        } catch (e) {
+	            console.warning("No translation found for the current language. Fallback to english language");
+	        };
 	
-	            /*// inject django json catalog
-	            $.get(application.baseUrl + 'jsoni18n/main/django').done(function (data) {
-	                i18next.addResources('fr', 'default', data.catalog);
-	                deferred.resolve("jsoni18n");
-	            });*/
+	        /*if (session.language === "fr") {
+	            i18next.addResources('fr', 'default', require('./locale/fr/LC_MESSAGES/default.json'));
+	
+	            // inject django json catalog
+	            //$.get(application.baseUrl + 'jsoni18n/main/django').done(function (data) {
+	            //    i18next.addResources('fr', 'default', data.catalog);
+	            //    deferred.resolve("jsoni18n");
+	            //});
 	        } else {  // default to english
 	            //i18next.addResources('en', 'default', require('./locale/en/LC_MESSAGES/default.json'));
-	        }
+	        }*/
 	
-	        var SelectOptionItemView = __webpack_require__(150);
+	        var SelectOptionItemView = __webpack_require__(152);
 	
-	        var LanguageCollection = __webpack_require__(152);
+	        var LanguageCollection = __webpack_require__(154);
 	        this.collections.languages = new LanguageCollection();
 	
 	        this.views.languages = new SelectOptionItemView({
@@ -33037,7 +33491,7 @@
 	            collection: this.collections.languages,
 	        });
 	
-	        var InterfaceLanguageCollection = __webpack_require__(154);
+	        var InterfaceLanguageCollection = __webpack_require__(156);
 	        this.collections.uilanguages = new InterfaceLanguageCollection();
 	
 	        this.views.uilanguages = new SelectOptionItemView({
@@ -33045,17 +33499,17 @@
 	            collection: this.collections.uilanguages,
 	        });
 	
-	        var ContentTypeCollection = __webpack_require__(156);
-	        this.collections.contentType = new ContentTypeCollection();
+	        var ContentTypeCollection = __webpack_require__(158);
+	        this.collections.contentTypes = new ContentTypeCollection();
 	
 	        this.views.contentTypes = new SelectOptionItemView({
 	            className: 'content-type',
-	            collection: this.collections.contentType,
+	            collection: this.collections.contentTypes,
 	        });
 	
 	        this.views.Home = Marionette.CompositeView.extend({
 	            el: '#main_content',
-	            template: __webpack_require__(158),
+	            template: __webpack_require__(160),
 	        });
 	
 	        Logger.timeEnd("Init main module");
@@ -33064,10 +33518,10 @@
 	    onStart: function(options) {
 	        Logger.time("Start main module");
 	
-	        var MainRouter = __webpack_require__(159);
+	        var MainRouter = __webpack_require__(161);
 	        this.routers.main = new MainRouter();
 	
-	        var ProfileRouter = __webpack_require__(166);
+	        var ProfileRouter = __webpack_require__(168);
 	        this.routers.profile = new ProfileRouter();
 	
 	        Logger.timeEnd("Start main module");
@@ -33125,10 +33579,47 @@
 
 /***/ },
 /* 149 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var map = {
+		"./en/LC_MESSAGES/default.json": 150,
+		"./fr/LC_MESSAGES/default.json": 151
+	};
+	function webpackContext(req) {
+		return __webpack_require__(webpackContextResolve(req));
+	};
+	function webpackContextResolve(req) {
+		return map[req] || (function() { throw new Error("Cannot find module '" + req + "'.") }());
+	};
+	webpackContext.keys = function webpackContextKeys() {
+		return Object.keys(map);
+	};
+	webpackContext.resolve = webpackContextResolve;
+	module.exports = webpackContext;
+	webpackContext.id = 149;
+
+
+/***/ },
+/* 150 */
 /***/ function(module, exports) {
 
 	module.exports = {
 		"Done": "",
+		"About...": "",
+		"Help...": "",
+		"Edit my profile informations": "",
+		"English": "",
+		"French": "",
+		"Home": "",
+		"Welcome to Coll-Gate": ""
+	};
+
+/***/ },
+/* 151 */
+/***/ function(module, exports) {
+
+	module.exports = {
+		"Done": "Fait",
 		"About...": "A propos...",
 		"Help...": "Aide..",
 		"Edit my profile informations": "Mettre à jour mon profil",
@@ -33139,7 +33630,7 @@
 	};
 
 /***/ },
-/* 150 */
+/* 152 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -33156,7 +33647,7 @@
 	
 	var SelectOptionItemView = Marionette.ItemView.extend({
 	    //template: _.template('<% _.each(items, function(item){ %><option value="<%= item.id %>"><%= gt.gettext(item.value) %></option><% }) %>'),
-	    template: __webpack_require__(151),
+	    template: __webpack_require__(153),
 	    tagName: 'select',
 	
 	    initialize: function(options) {
@@ -33196,6 +33687,37 @@
 	                    });
 	
 	                    _el.html(model ? model.get('label') : "");
+	                });
+	            }, this);
+	        }
+	    },
+	
+	    attributeFromValue: function(parent, attribute, idOrValue) {
+	        var view = this;
+	        idOrValue || (idOrValue = 'value');
+	
+	        if (this.collection.size() > 0) {
+	            $(parent).find('.' + view.className).each(function (idx, el) {
+	                var _el = $(el);
+	                var value = _el.attr("value");
+	
+	                var model = view.collection.find(function(model) {
+	                    return model.get(idOrValue) == value;
+	                });
+	
+	                _el.attr(attribute, model ? model.get('label') : "");
+	            });
+	        } else {
+	            this.collection.on("sync", function () {
+	                $(parent).find('.' + view.className).each(function (idx, el) {
+	                    var _el = $(el);
+	                    var value = _el.attr("value");
+	
+	                    var model = view.collection.find(function(model) {
+	                        return model.get(idOrValue) == value;
+	                    });
+	
+	                    _el.attr(attribute, model ? model.get('label') : "");
 	                });
 	            }, this);
 	        }
@@ -33247,7 +33769,7 @@
 
 
 /***/ },
-/* 151 */
+/* 153 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -33289,7 +33811,7 @@
 
 
 /***/ },
-/* 152 */
+/* 154 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -33302,7 +33824,7 @@
 	 * @details
 	 */
 	
-	var LanguageModel = __webpack_require__(153);
+	var LanguageModel = __webpack_require__(155);
 	
 	var LanguageCollection = Backbone.Collection.extend({
 	    url: application.baseUrl + 'main/language',
@@ -33332,7 +33854,7 @@
 
 
 /***/ },
-/* 153 */
+/* 155 */
 /***/ function(module, exports) {
 
 	/**
@@ -33358,7 +33880,7 @@
 
 
 /***/ },
-/* 154 */
+/* 156 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -33371,7 +33893,7 @@
 	 * @details
 	 */
 	
-	var InterfaceLanguageModel = __webpack_require__(155);
+	var InterfaceLanguageModel = __webpack_require__(157);
 	
 	var Collection = Backbone.Collection.extend({
 	    url: application.baseUrl + 'main/ui/language',
@@ -33396,7 +33918,7 @@
 
 
 /***/ },
-/* 155 */
+/* 157 */
 /***/ function(module, exports) {
 
 	/**
@@ -33422,7 +33944,7 @@
 
 
 /***/ },
-/* 156 */
+/* 158 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -33435,7 +33957,7 @@
 	 * @details
 	 */
 	
-	var ContentTypeModel = __webpack_require__(157);
+	var ContentTypeModel = __webpack_require__(159);
 	
 	var Collection = Backbone.Collection.extend({
 	    url: application.baseUrl + 'main/content-type',
@@ -33484,7 +34006,7 @@
 
 
 /***/ },
-/* 157 */
+/* 159 */
 /***/ function(module, exports) {
 
 	/**
@@ -33512,7 +34034,7 @@
 
 
 /***/ },
-/* 158 */
+/* 160 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -33533,7 +34055,7 @@
 
 
 /***/ },
-/* 159 */
+/* 161 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -33547,10 +34069,10 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var AboutView = __webpack_require__(160);
-	var HelpIndexView = __webpack_require__(162);
-	var DefaultLayout = __webpack_require__(164);
-	var TitleView = __webpack_require__(165);
+	var AboutView = __webpack_require__(162);
+	var HelpIndexView = __webpack_require__(164);
+	var DefaultLayout = __webpack_require__(166);
+	var TitleView = __webpack_require__(167);
 	
 	var Router = Marionette.AppRouter.extend({
 	    routes : {
@@ -33590,7 +34112,7 @@
 
 
 /***/ },
-/* 160 */
+/* 162 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -33608,60 +34130,6 @@
 	var View = Marionette.ItemView.extend({
 	    tagName: 'div',
 	    className: 'about',
-	    template: __webpack_require__(161),
-	
-	    ui: {
-	    },
-	
-	    events: {
-	    },
-	
-	    initialize: function() {
-	    },
-	
-	    onRender: function() {
-	    },
-	});
-	
-	module.exports = View;
-
-
-/***/ },
-/* 161 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var _ = __webpack_require__(1);
-	
-	module.exports = function (obj) {
-	obj || (obj = {});
-	var __t, __p = '';
-	with (obj) {
-	__p += '<p>Coll-Gate IS Copyright &copy; 2016 INRA and OpenSource project under XXX.</p><div class="help-about-authors"><span>List of authors :</span><ul class="author-list"><li><span style="font-weight: bold">Frédéric SCHERMA</span> at INRA UMR1095 GDEC</li><li><span style="font-weight: bold">Nicolas GUILHOT</span> at INRA UMR1095 GDEC</li></ul></div>';
-	
-	}
-	return __p
-	};
-
-
-/***/ },
-/* 162 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @file index.js
-	 * @brief Help index view
-	 * @author Frederic SCHERMA
-	 * @date 2016-06-14
-	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
-	 * @license @todo
-	 * @details
-	 */
-	
-	var Marionette = __webpack_require__(4);
-	
-	var View = Marionette.ItemView.extend({
-	    tagName: 'div',
-	    className: 'help-index',
 	    template: __webpack_require__(163),
 	
 	    ui: {
@@ -33690,7 +34158,7 @@
 	obj || (obj = {});
 	var __t, __p = '';
 	with (obj) {
-	__p += '<span>TODO</span>';
+	__p += '<p>Coll-Gate IS Copyright &copy; 2016 INRA and OpenSource project under XXX.</p><div class="help-about-authors"><span>List of authors :</span><ul class="author-list"><li><span style="font-weight: bold">Frédéric SCHERMA</span> at INRA UMR1095 GDEC</li><li><span style="font-weight: bold">Nicolas GUILHOT</span> at INRA UMR1095 GDEC</li></ul></div>';
 	
 	}
 	return __p
@@ -33699,6 +34167,60 @@
 
 /***/ },
 /* 164 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file index.js
+	 * @brief Help index view
+	 * @author Frederic SCHERMA
+	 * @date 2016-06-14
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	
+	var View = Marionette.ItemView.extend({
+	    tagName: 'div',
+	    className: 'help-index',
+	    template: __webpack_require__(165),
+	
+	    ui: {
+	    },
+	
+	    events: {
+	    },
+	
+	    initialize: function() {
+	    },
+	
+	    onRender: function() {
+	    },
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 165 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<span>TODO</span>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 166 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -33745,7 +34267,7 @@
 
 
 /***/ },
-/* 165 */
+/* 167 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(_) {/**
@@ -33801,7 +34323,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 166 */
+/* 168 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -33815,10 +34337,10 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var EditProfileView = __webpack_require__(167);
-	var DefaultLayout = __webpack_require__(164);
-	var TitleView = __webpack_require__(165);
-	var ProfileModel = __webpack_require__(169);
+	var EditProfileView = __webpack_require__(169);
+	var DefaultLayout = __webpack_require__(166);
+	var TitleView = __webpack_require__(167);
+	var ProfileModel = __webpack_require__(171);
 	
 	var ProfileRouter = Marionette.AppRouter.extend({
 	    routes : {
@@ -33856,7 +34378,7 @@
 
 
 /***/ },
-/* 167 */
+/* 169 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -33874,7 +34396,7 @@
 	var View = Marionette.ItemView.extend({
 	    tagName: 'div',
 	    className: 'profile-edit',
-	    template: __webpack_require__(168),
+	    template: __webpack_require__(170),
 	
 	    ui: {
 	        username: '#username',
@@ -33905,7 +34427,7 @@
 
 
 /***/ },
-/* 168 */
+/* 170 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -33930,7 +34452,7 @@
 
 
 /***/ },
-/* 169 */
+/* 171 */
 /***/ function(module, exports) {
 
 	/**
@@ -33961,7 +34483,7 @@
 
 
 /***/ },
-/* 170 */
+/* 172 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -33988,15 +34510,15 @@
 	        this.controllers = {};
 	
 	        // i18n
-	        if (session.language === "fr") {
-	            i18next.addResources('fr', 'default', __webpack_require__(171));
-	        } else {  // default to english
-	            //i18next.addResources('en', 'default', require('./locale/en/LC_MESSAGES/default.json'));
-	        }
+	        try {
+	            i18next.addResources('fr', 'default', __webpack_require__(173)("./" + session.language + '/LC_MESSAGES/default.json'));
+	        } catch (e) {
+	            console.warning("No translation found for the current language. Fallback to english language");
+	        };
 	
-	        var SelectOptionItemView = __webpack_require__(150);
+	        var SelectOptionItemView = __webpack_require__(152);
 	
-	        var PermissionTypeCollection = __webpack_require__(172);
+	        var PermissionTypeCollection = __webpack_require__(176);
 	        this.collections.permissionType = new PermissionTypeCollection();
 	
 	        this.views.permissionType = new SelectOptionItemView({
@@ -34010,7 +34532,7 @@
 	    onStart: function(options) {
 	        Logger.time("Start permission module");
 	
-	        var PermissionRouter = __webpack_require__(174);
+	        var PermissionRouter = __webpack_require__(178);
 	        this.routers.permission = new PermissionRouter();
 	
 	        Logger.timeEnd("Start permission module");
@@ -34027,7 +34549,60 @@
 
 
 /***/ },
-/* 171 */
+/* 173 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var map = {
+		"./en/LC_MESSAGES/default.json": 174,
+		"./fr/LC_MESSAGES/default.json": 175
+	};
+	function webpackContext(req) {
+		return __webpack_require__(webpackContextResolve(req));
+	};
+	function webpackContextResolve(req) {
+		return map[req] || (function() { throw new Error("Cannot find module '" + req + "'.") }());
+	};
+	webpackContext.keys = function webpackContextKeys() {
+		return Object.keys(map);
+	};
+	webpackContext.resolve = webpackContextResolve;
+	module.exports = webpackContext;
+	webpackContext.id = 173;
+
+
+/***/ },
+/* 174 */
+/***/ function(module, exports) {
+
+	module.exports = {
+		"Invalid characters (alphanumeric, _ and - only)": "",
+		"3 characters min": "",
+		"Group name already in usage": "",
+		"Select a username": "",
+		"List of users": "",
+		"List of permissions for user": "",
+		"List of groups": "",
+		"List of permissions for group": "",
+		"List of users for group": "",
+		"Change the name of the group of users": "",
+		"Name": "",
+		"Cancel": "",
+		"Apply": "",
+		"Number of users": "",
+		"Number of permissions": "",
+		"Username": "",
+		"First name": "",
+		"Last name": "",
+		"Model": "",
+		"Module": "",
+		"Code": "",
+		"Status": "",
+		"Superuser": "",
+		"Staff": ""
+	};
+
+/***/ },
+/* 175 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -34040,7 +34615,10 @@
 		"List of groups": "Liste des groupes",
 		"List of permissions for group": "Liste des permissions pour le groupe",
 		"List of users for group": "Liste des utilisateurs pour le groupe",
+		"Change the name of the group of users": "",
 		"Name": "Nom",
+		"Cancel": "Annuler",
+		"Apply": "Appliquer",
 		"Number of users": "Nombre d'utilisateurs",
 		"Number of permissions": "Nombre de permissions",
 		"Username": "Nom d'utilisateur",
@@ -34055,7 +34633,7 @@
 	};
 
 /***/ },
-/* 172 */
+/* 176 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -34068,7 +34646,7 @@
 	 * @details
 	 */
 	
-	var PermissionTypeModel = __webpack_require__(173);
+	var PermissionTypeModel = __webpack_require__(177);
 	
 	var Collection = Backbone.Collection.extend({
 	    url: application.baseUrl + 'permission/type/',
@@ -34126,7 +34704,7 @@
 
 
 /***/ },
-/* 173 */
+/* 177 */
 /***/ function(module, exports) {
 
 	/**
@@ -34153,7 +34731,7 @@
 
 
 /***/ },
-/* 174 */
+/* 178 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -34168,24 +34746,24 @@
 	
 	var Marionette = __webpack_require__(4);
 	
-	var PermissionCollection = __webpack_require__(175);
-	var PermissionUserCollection = __webpack_require__(177);
-	var PermissionGroupCollection = __webpack_require__(179);
-	var PermissionGroupUserCollection = __webpack_require__(181);
+	var PermissionCollection = __webpack_require__(179);
+	var PermissionUserCollection = __webpack_require__(181);
+	var PermissionGroupCollection = __webpack_require__(183);
+	var PermissionGroupUserCollection = __webpack_require__(185);
 	
-	var PermissionListView = __webpack_require__(183);
-	var PermissionAddView = __webpack_require__(187);
-	var PermissionUserListView = __webpack_require__(189);
-	var PermissionGroupListView = __webpack_require__(194);
-	var PermissionGroupUserListView = __webpack_require__(200);
-	var PermissionGroupAddUserView = __webpack_require__(204);
-	var PermissionAddGroupView = __webpack_require__(206);
+	var PermissionListView = __webpack_require__(187);
+	var PermissionAddView = __webpack_require__(191);
+	var PermissionUserListView = __webpack_require__(193);
+	var PermissionGroupListView = __webpack_require__(198);
+	var PermissionGroupUserListView = __webpack_require__(204);
+	var PermissionGroupAddUserView = __webpack_require__(208);
+	var PermissionAddGroupView = __webpack_require__(210);
 	
-	var GroupModel = __webpack_require__(180);
+	var GroupModel = __webpack_require__(184);
 	
-	var DefaultLayout = __webpack_require__(164);
-	var TitleView = __webpack_require__(165);
-	var ScrollingMoreView = __webpack_require__(208);
+	var DefaultLayout = __webpack_require__(166);
+	var TitleView = __webpack_require__(167);
+	var ScrollingMoreView = __webpack_require__(212);
 	
 	var PermissionRouter = Marionette.AppRouter.extend({
 	    routes : {
@@ -34309,7 +34887,7 @@
 
 
 /***/ },
-/* 175 */
+/* 179 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -34322,7 +34900,7 @@
 	 * @details
 	 */
 	
-	var PermissionModel = __webpack_require__(176);
+	var PermissionModel = __webpack_require__(180);
 	
 	var PermissionCollection = Backbone.Collection.extend({
 	    url: function() {
@@ -34350,7 +34928,7 @@
 
 
 /***/ },
-/* 176 */
+/* 180 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -34405,7 +34983,7 @@
 
 
 /***/ },
-/* 177 */
+/* 181 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -34418,7 +34996,7 @@
 	 * @details
 	 */
 	
-	var PermissionUserModel = __webpack_require__(178);
+	var PermissionUserModel = __webpack_require__(182);
 	
 	var Collection = Backbone.Collection.extend({
 	    url: function() {
@@ -34452,7 +35030,7 @@
 
 
 /***/ },
-/* 178 */
+/* 182 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -34515,7 +35093,7 @@
 
 
 /***/ },
-/* 179 */
+/* 183 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -34528,7 +35106,7 @@
 	 * @details
 	 */
 	
-	var PermissionGroupModel = __webpack_require__(180);
+	var PermissionGroupModel = __webpack_require__(184);
 	
 	var Collection = Backbone.Collection.extend({
 	    url: function() { return application.baseUrl + 'permission/group/'; },
@@ -34550,7 +35128,7 @@
 
 
 /***/ },
-/* 180 */
+/* 184 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -34603,7 +35181,7 @@
 
 
 /***/ },
-/* 181 */
+/* 185 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -34616,7 +35194,7 @@
 	 * @details
 	 */
 	
-	var PermissionGroupUserModel = __webpack_require__(182);
+	var PermissionGroupUserModel = __webpack_require__(186);
 	
 	var Collection = Backbone.Collection.extend({
 	    url: function() { return application.baseUrl + 'permission/group/' + this.group_id + '/user/'; },
@@ -34641,7 +35219,7 @@
 
 
 /***/ },
-/* 182 */
+/* 186 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -34694,7 +35272,7 @@
 
 
 /***/ },
-/* 183 */
+/* 187 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -34708,11 +35286,11 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var PermissionModel = __webpack_require__(176);
-	var PermissionView = __webpack_require__(184);
+	var PermissionModel = __webpack_require__(180);
+	var PermissionView = __webpack_require__(188);
 	
 	var PermissionListView = Marionette.CompositeView.extend({
-	    template: __webpack_require__(186),
+	    template: __webpack_require__(190),
 	    childViewContainer: ".permission-list",
 	    childView: PermissionView,
 	
@@ -34767,7 +35345,7 @@
 
 
 /***/ },
-/* 184 */
+/* 188 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -34781,11 +35359,11 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var PermissionModel = __webpack_require__(176);
+	var PermissionModel = __webpack_require__(180);
 	
 	var View = Marionette.ItemView.extend({
 	    tagName: 'div',
-	    template: __webpack_require__(185),
+	    template: __webpack_require__(189),
 	
 	    ui: {
 	        "remove_permission": ".remove-permission",
@@ -34807,7 +35385,7 @@
 
 
 /***/ },
-/* 185 */
+/* 189 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -34863,7 +35441,7 @@
 
 
 /***/ },
-/* 186 */
+/* 190 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -34880,7 +35458,7 @@
 
 
 /***/ },
-/* 187 */
+/* 191 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -34898,7 +35476,7 @@
 	var View = Marionette.ItemView.extend({
 	    tagName: 'div',
 	    className: 'permission-add',
-	    template: __webpack_require__(188),
+	    template: __webpack_require__(192),
 	
 	    ui: {
 	        add_permission: ".add-permission",
@@ -34962,7 +35540,7 @@
 
 
 /***/ },
-/* 188 */
+/* 192 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -34979,7 +35557,7 @@
 
 
 /***/ },
-/* 189 */
+/* 193 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -34993,12 +35571,12 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var PermissionUserModel = __webpack_require__(178);
-	var PermissionUserView = __webpack_require__(190);
-	var ScrollView = __webpack_require__(192);
+	var PermissionUserModel = __webpack_require__(182);
+	var PermissionUserView = __webpack_require__(194);
+	var ScrollView = __webpack_require__(196);
 	
 	var View = ScrollView.extend({
-	    template: __webpack_require__(193),
+	    template: __webpack_require__(197),
 	    childView: PermissionUserView,
 	    childViewContainer: 'tbody.permission-user-list',
 	
@@ -35014,7 +35592,7 @@
 
 
 /***/ },
-/* 190 */
+/* 194 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -35028,12 +35606,12 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var PermissionUserModel = __webpack_require__(178);
+	var PermissionUserModel = __webpack_require__(182);
 	
 	var View = Marionette.ItemView.extend({
 	    tagName: 'tr',
 	    className: 'element object user',
-	    template: __webpack_require__(191),
+	    template: __webpack_require__(195),
 	
 	    ui: {
 	        enable_user: 'span.enable-user',
@@ -35121,7 +35699,7 @@
 
 
 /***/ },
-/* 191 */
+/* 195 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -35169,7 +35747,7 @@
 
 
 /***/ },
-/* 192 */
+/* 196 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(_) {/**
@@ -35298,7 +35876,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 193 */
+/* 197 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -35329,7 +35907,7 @@
 
 
 /***/ },
-/* 194 */
+/* 198 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -35343,12 +35921,12 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var PermissionGroupModel = __webpack_require__(180);
-	var PermissionGroupView = __webpack_require__(195);
-	var ScrollView = __webpack_require__(192);
+	var PermissionGroupModel = __webpack_require__(184);
+	var PermissionGroupView = __webpack_require__(199);
+	var ScrollView = __webpack_require__(196);
 	
 	var View = ScrollView.extend({
-	    template: __webpack_require__(199),
+	    template: __webpack_require__(203),
 	    childView: PermissionGroupView,
 	    childViewContainer: 'tbody.permission-group-list',
 	
@@ -35364,7 +35942,7 @@
 
 
 /***/ },
-/* 195 */
+/* 199 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -35378,14 +35956,14 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var PermissionGroupModel = __webpack_require__(180);
+	var PermissionGroupModel = __webpack_require__(184);
 	
-	var Dialog = __webpack_require__(196);
+	var Dialog = __webpack_require__(200);
 	
 	var View = Marionette.ItemView.extend({
 	    tagName: 'tr',
 	    className: 'element object group',
-	    template: __webpack_require__(197),
+	    template: __webpack_require__(201),
 	
 	    ui: {
 	        delete_group: 'span.delete-group',
@@ -35425,7 +36003,7 @@
 	
 	    onRenameGroup: function(e) {
 	        var ChangeName = Dialog.extend({
-	            template: __webpack_require__(198),
+	            template: __webpack_require__(202),
 	
 	            attributes: {
 	                id: "dlg_change_name",
@@ -35488,7 +36066,7 @@
 
 
 /***/ },
-/* 196 */
+/* 200 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(_) {/**
@@ -35608,7 +36186,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 197 */
+/* 201 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -35637,7 +36215,7 @@
 
 
 /***/ },
-/* 198 */
+/* 202 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -35662,7 +36240,7 @@
 
 
 /***/ },
-/* 199 */
+/* 203 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -35685,7 +36263,7 @@
 
 
 /***/ },
-/* 200 */
+/* 204 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -35699,12 +36277,12 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var PermissionGroupUserModel = __webpack_require__(182);
-	var PermissionGroupUserView = __webpack_require__(201);
-	var ScrollView = __webpack_require__(192);
+	var PermissionGroupUserModel = __webpack_require__(186);
+	var PermissionGroupUserView = __webpack_require__(205);
+	var ScrollView = __webpack_require__(196);
 	
 	var View = ScrollView.extend({
-	    template: __webpack_require__(203),
+	    template: __webpack_require__(207),
 	    childView: PermissionGroupUserView,
 	    childViewContainer: 'tbody.group-user-list',
 	
@@ -35720,7 +36298,7 @@
 
 
 /***/ },
-/* 201 */
+/* 205 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -35734,12 +36312,12 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var PermissionGroupUserModel = __webpack_require__(182);
+	var PermissionGroupUserModel = __webpack_require__(186);
 	
 	var View = Marionette.ItemView.extend({
 	    tagName: 'tr',
 	    className: 'element object user',
-	    template: __webpack_require__(202),
+	    template: __webpack_require__(206),
 	
 	    ui: {
 	        remove_user: 'span.remove-user',
@@ -35775,7 +36353,7 @@
 
 
 /***/ },
-/* 202 */
+/* 206 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -35800,7 +36378,7 @@
 
 
 /***/ },
-/* 203 */
+/* 207 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -35823,7 +36401,7 @@
 
 
 /***/ },
-/* 204 */
+/* 208 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -35841,7 +36419,7 @@
 	var View = Marionette.ItemView.extend({
 	    tagName: 'div',
 	    className: 'user-add',
-	    template: __webpack_require__(205),
+	    template: __webpack_require__(209),
 	
 	    ui: {
 	        add_user: ".add-user",
@@ -35925,7 +36503,7 @@
 
 
 /***/ },
-/* 205 */
+/* 209 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -35942,7 +36520,7 @@
 
 
 /***/ },
-/* 206 */
+/* 210 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -35960,7 +36538,7 @@
 	var View = Marionette.ItemView.extend({
 	    tagName: 'div',
 	    className: 'group-add',
-	    template: __webpack_require__(207),
+	    template: __webpack_require__(211),
 	
 	    ui: {
 	        add_group_btn: 'span.add-group',
@@ -36034,7 +36612,7 @@
 
 
 /***/ },
-/* 207 */
+/* 211 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -36051,7 +36629,7 @@
 
 
 /***/ },
-/* 208 */
+/* 212 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(_) {/**
@@ -36111,7 +36689,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ },
-/* 209 */
+/* 213 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -36138,11 +36716,11 @@
 	        this.controllers = {};
 	
 	        // i18n
-	        if (session.language === "fr") {
-	            i18next.addResources('fr', 'default', __webpack_require__(210));
-	        } else {  // default to english
-	            //i18next.addResources('en', 'default', require('./locale/en/LC_MESSAGES/default.json'));
-	        }
+	        try {
+	            i18next.addResources('fr', 'default', __webpack_require__(214)("./" + session.language + '/LC_MESSAGES/default.json'));
+	        } catch (e) {
+	            console.warning("No translation found for the current language. Fallback to english language");
+	        };
 	        
 	        Logger.timeEnd("Init audit module");
 	    },
@@ -36150,10 +36728,10 @@
 	    onStart: function(options) {
 	        Logger.time("Start audit module");
 	        
-	        var AuditController = __webpack_require__(211);
+	        var AuditController = __webpack_require__(217);
 	        this.controllers.audit = new AuditController();
 	
-	        var AuditRouter = __webpack_require__(220);
+	        var AuditRouter = __webpack_require__(226);
 	        this.routers.audit = new AuditRouter();
 	
 	        Logger.timeEnd("Start audit module");
@@ -36171,7 +36749,53 @@
 
 
 /***/ },
-/* 210 */
+/* 214 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var map = {
+		"./en/LC_MESSAGES/default.json": 215,
+		"./fr/LC_MESSAGES/default.json": 216
+	};
+	function webpackContext(req) {
+		return __webpack_require__(webpackContextResolve(req));
+	};
+	function webpackContextResolve(req) {
+		return map[req] || (function() { throw new Error("Cannot find module '" + req + "'.") }());
+	};
+	webpackContext.keys = function webpackContextKeys() {
+		return Object.keys(map);
+	};
+	webpackContext.resolve = webpackContextResolve;
+	module.exports = webpackContext;
+	webpackContext.id = 214;
+
+
+/***/ },
+/* 215 */
+/***/ function(module, exports) {
+
+	module.exports = {
+		"Select a username": "",
+		"List of audit entries related to user": "",
+		"Select an entity UUID or name": "",
+		"List of audit entries related to entity": "",
+		"Get audits entries for an entity": "",
+		"Entity content type": "",
+		"Entity UUID or name": "",
+		"Cancel": "",
+		"Search": "",
+		"Get audits entries for a user": "",
+		"Username": "",
+		"User": "",
+		"Date": "",
+		"Entity": "",
+		"Type": "",
+		"Action": "",
+		"Details": ""
+	};
+
+/***/ },
+/* 216 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -36195,7 +36819,7 @@
 	};
 
 /***/ },
-/* 211 */
+/* 217 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -36209,14 +36833,14 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var AuditCollection = __webpack_require__(212);
-	var AuditListView = __webpack_require__(214);
+	var AuditCollection = __webpack_require__(218);
+	var AuditListView = __webpack_require__(220);
 	
-	var DefaultLayout = __webpack_require__(164);
+	var DefaultLayout = __webpack_require__(166);
 	
-	var TitleView = __webpack_require__(165);
-	var ScrollingMoreView = __webpack_require__(208);
-	var Dialog = __webpack_require__(196);
+	var TitleView = __webpack_require__(167);
+	var ScrollingMoreView = __webpack_require__(212);
+	var Dialog = __webpack_require__(200);
 	
 	var Controller = Marionette.Controller.extend({
 	
@@ -36225,7 +36849,7 @@
 	            attributes: {
 	                'id': 'dlg_audit_by_username',
 	            },
-	            template: __webpack_require__(218),
+	            template: __webpack_require__(224),
 	
 	            ui: {
 	                search: "button.search",
@@ -36330,7 +36954,7 @@
 	            attributes: {
 	                'id': 'dlg_audit_by_entity',
 	            },
-	            template: __webpack_require__(219),
+	            template: __webpack_require__(225),
 	
 	            ui: {
 	                search: "button.search",
@@ -36448,8 +37072,7 @@
 	                    model: model,
 	                    object_id: object_id
 	                },
-	            }).done
-	            (function (data) {
+	            }).done(function (data) {
 	                defaultLayout.getRegion('title').show(new TitleView({
 	                    title: gt.gettext("List of audit entries related to entity"),
 	                    object: data.name
@@ -36475,7 +37098,7 @@
 
 
 /***/ },
-/* 212 */
+/* 218 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -36488,7 +37111,7 @@
 	 * @details
 	 */
 	
-	var AuditModel = __webpack_require__(213);
+	var AuditModel = __webpack_require__(219);
 	
 	var Collection = Backbone.Collection.extend({
 	    url: function() {
@@ -36541,7 +37164,7 @@
 
 
 /***/ },
-/* 213 */
+/* 219 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -36592,7 +37215,7 @@
 
 
 /***/ },
-/* 214 */
+/* 220 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -36606,11 +37229,11 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var AuditView = __webpack_require__(215);
-	var ScrollView = __webpack_require__(192);
+	var AuditView = __webpack_require__(221);
+	var ScrollView = __webpack_require__(196);
 	
 	var View = ScrollView.extend({
-	    template: __webpack_require__(217),
+	    template: __webpack_require__(223),
 	    childView: AuditView,
 	    childViewContainer: 'tbody.audit-list',
 	
@@ -36626,7 +37249,7 @@
 
 
 /***/ },
-/* 215 */
+/* 221 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -36640,7 +37263,7 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var AuditModel = __webpack_require__(213);
+	var AuditModel = __webpack_require__(219);
 	
 	var View = Marionette.ItemView.extend({
 	    tagName: 'tr',
@@ -36648,7 +37271,7 @@
 	    attributes: {
 	        'scope': 'row',
 	    },
-	    template: __webpack_require__(216),
+	    template: __webpack_require__(222),
 	
 	    ui: {
 	        show: 'span.show-entity',
@@ -36679,7 +37302,7 @@
 
 
 /***/ },
-/* 216 */
+/* 222 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -36755,7 +37378,7 @@
 
 
 /***/ },
-/* 217 */
+/* 223 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -36784,7 +37407,7 @@
 
 
 /***/ },
-/* 218 */
+/* 224 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -36809,7 +37432,7 @@
 
 
 /***/ },
-/* 219 */
+/* 225 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -36836,7 +37459,7 @@
 
 
 /***/ },
-/* 220 */
+/* 226 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -36850,11 +37473,11 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var AuditCollection = __webpack_require__(212);
-	var AuditListView = __webpack_require__(214);
-	var DefaultLayout = __webpack_require__(164);
-	var TitleView = __webpack_require__(165);
-	var ScrollingMoreView = __webpack_require__(208);
+	var AuditCollection = __webpack_require__(218);
+	var AuditListView = __webpack_require__(220);
+	var DefaultLayout = __webpack_require__(166);
+	var TitleView = __webpack_require__(167);
+	var ScrollingMoreView = __webpack_require__(212);
 	
 	var Router = Marionette.AppRouter.extend({
 	    controller: application.audit.controllers.audit,
@@ -36878,7 +37501,7 @@
 
 
 /***/ },
-/* 221 */
+/* 227 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -36905,11 +37528,11 @@
 	        this.controllers = {};
 	
 	        // i18n
-	        if (session.language === "fr") {
-	            i18next.addResources('fr', 'default', __webpack_require__(222));
-	        } else {  // default to english
-	            //i18next.addResources('en', 'default', require('./locale/en/LC_MESSAGES/default.json'));
-	        }
+	        try {
+	            i18next.addResources('fr', 'default', __webpack_require__(228)("./" + session.language + '/LC_MESSAGES/default.json'));
+	        } catch (e) {
+	            console.warning("No translation found for the current language. Fallback to english language");
+	        };
 	
 	        Logger.timeEnd("Init descriptor module");
 	    },
@@ -36917,21 +37540,21 @@
 	    onStart: function(options) {
 	        Logger.time("Start descriptor module");
 	
-	        var DescriptorRouter = __webpack_require__(223);
+	        var DescriptorRouter = __webpack_require__(231);
 	        this.routers.descriptor = new DescriptorRouter();
 	
-	        var DescriptorModelRouter = __webpack_require__(260);
+	        var DescriptorModelRouter = __webpack_require__(268);
 	        this.routers.descriptorModel = new DescriptorModelRouter();
 	
-	        var DescriptorMetaModelRouter = __webpack_require__(291);
+	        var DescriptorMetaModelRouter = __webpack_require__(299);
 	        this.routers.descriptorMetaModel = new DescriptorMetaModelRouter();
 	
-	        var DescriptorGroupCollection = __webpack_require__(263);
+	        var DescriptorGroupCollection = __webpack_require__(271);
 	        this.collections.descriptorGroup = new DescriptorGroupCollection();
 	
-	        var SelectOptionItemView = __webpack_require__(150);
+	        var SelectOptionItemView = __webpack_require__(152);
 	
-	        var DescribableCollection = __webpack_require__(317);
+	        var DescribableCollection = __webpack_require__(325);
 	        this.collections.describables = new DescribableCollection();
 	
 	        this.views.describables = new SelectOptionItemView({
@@ -36939,12 +37562,20 @@
 	            collection: this.collections.describables,
 	        });
 	
-	        var ConditionCollection = __webpack_require__(319);
+	        var ConditionCollection = __webpack_require__(327);
 	        this.collections.conditions = new ConditionCollection();
 	
 	        this.views.conditions = new SelectOptionItemView({
 	            className: 'condition',
 	            collection: this.collections.conditions,
+	        });
+	
+	        var DescriptorTypeUnitCollection = __webpack_require__(329);
+	        this.collections.descriptorTypeUnits = new DescriptorTypeUnitCollection();
+	
+	        this.views.descriptorTypeUnits = new SelectOptionItemView({
+	            className: 'descriptor-type-unit',
+	            collection: this.collections.descriptorTypeUnits,
 	        });
 	        
 	        Logger.timeEnd("Start descriptor module");
@@ -36962,58 +37593,230 @@
 
 
 /***/ },
-/* 222 */
+/* 228 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var map = {
+		"./en/LC_MESSAGES/default.json": 229,
+		"./fr/LC_MESSAGES/default.json": 230
+	};
+	function webpackContext(req) {
+		return __webpack_require__(webpackContextResolve(req));
+	};
+	function webpackContextResolve(req) {
+		return map[req] || (function() { throw new Error("Cannot find module '" + req + "'.") }());
+	};
+	webpackContext.keys = function webpackContextKeys() {
+		return Object.keys(map);
+	};
+	webpackContext.resolve = webpackContextResolve;
+	module.exports = webpackContext;
+	webpackContext.id = 228;
+
+
+/***/ },
+/* 229 */
 /***/ function(module, exports) {
 
 	module.exports = {
+		"Enter a value. 3 characters at least for auto-completion": "",
+		"Yes": "",
+		"No": "",
+		"1024 characters max": "",
+		"Invalid format": "",
+		"Field ": "",
+		"Some types of descriptor exists for this group": "",
+		"Invalid characters (alphanumeric, _ and - only)": "",
+		"3 characters min": "",
+		"Group name already in usage": "",
+		"Descriptor type name already in usage": "",
+		"It is not permitted to delete a meta-model of descriptor that contains some panels": "",
+		"64 characters max": "",
+		"Successfully labeled !": "",
+		"Unable to create the meta-model of descriptor !": "",
+		"Descriptor meta-model name already in usage": "",
+		"Done": "",
+		"Name for model of descriptor already in usage": "",
+		"Unable to create the type of model of descriptor !": "",
+		"Unable to reorder the types of model of descriptor": "",
+		"Successfully removed !": "",
+		"Successfully defined !": "",
+		"Unable to reorder the panels of descriptor": "",
+		"Some values exists for this type of descriptor": "",
+		"32 character max": "",
+		"1 character min": "",
+		"Successfully valued !": "",
+		"Successfully changed !": "",
+		"Unable to change the value !": "",
+		"List of groups of descriptors": "",
+		"Types of descriptors for the group": "",
+		"Details for the type of descriptor": "",
+		"Values for the type of descriptor": "",
+		"List of meta-models of descriptor": "",
+		"Details for the meta-model of descriptor": "",
+		"List of panels of descriptor": "",
+		"List of models of descriptor": "",
+		"Details for the model of descriptor": "",
+		"List of types of models of descriptor": "",
+		"Descriptor": "",
+		"Value": "",
+		"Modify": "",
+		"Cancel": "",
+		"Apply": "",
+		"Change the name of the group of descriptors": "",
+		"Name": "",
+		"Number of types of descriptor": "",
+		"Group of descriptors": "",
+		"Change the label for the meta-model of descriptor": "",
+		"Create a meta-model of descriptor": "",
+		"Target entity": "",
+		"Label for the current language": "",
+		"Description": "",
+		"Descriptor meta-model name": "",
+		"Update": "",
+		"Label": "",
+		"Target": "",
+		"Number of panels of descriptor": "",
+		"Descriptor model name": "",
+		"Verbose name": "",
+		"Change the label for the type of model of descriptor": "",
+		"Condition of the type of model of descriptor": "",
+		"Condition": "",
+		"Value from list": "",
+		"Remove condition": "",
+		"Create a model of descriptor": "",
+		"Code": "",
+		"Required": "",
+		"Set Once": "",
+		"Undefined label": "",
+		"Change the label for the panel of descriptor": "",
+		"Create a panel of descriptor": "",
+		"Panels of descriptor": "",
+		"Controls how is displayed the field. Hierarchy mode is a special usage for pseudo hierarchy, for which values are roughly shifted to give an illusion of parent/children. The shift depend of the level declared in the value0 while value1 contains the label. The first value contains something like 1 or 2 or 1.1, 1.2, 1.1.1...": "",
+		"Descriptor type name": "",
+		"Descriptor type code": "",
+		"Type of format": "",
+		"Single value": "",
+		"Boolean": "",
+		"Numeric": "",
+		"Numeric range": "",
+		"Ordinal": "",
+		"GPS coordinate": "",
+		"Text": "",
+		"Date": "",
+		"Time": "",
+		"Date+time": "",
+		"Entity": "",
+		"List of values": "",
+		"Single enumeration": "",
+		"Pair enumeration": "",
+		"Ordinal with text": "",
+		"Translation": "",
+		"First field": "",
+		"Second field": "",
+		"Sort by field": "",
+		"Value0": "",
+		"Value1": "",
+		"Displayed fields": "",
+		"Value0 - Value1": "",
+		"Ordinal - Value0": "",
+		"Hierarchy of Value1": "",
+		"Display the list as": "",
+		"Dropdown (limit of 256 values)": "",
+		"Autocomplete (big lists)": "",
+		"Autocomplete search field": "",
+		"Unit of the format": "",
+		"Custom unit name": "",
+		"Precision of the decimal": "",
+		"Model of the entity": "",
+		"Minimal range value": "",
+		"Maximal range value": "",
+		"Regular expression": "",
+		"Number of values": "",
+		"Type of descriptor": "",
+		"Change the value of a field for a type of descriptor": "",
+		"Value for any languages": ""
+	};
+
+/***/ },
+/* 230 */
+/***/ function(module, exports) {
+
+	module.exports = {
+		"Enter a value. 3 characters at least for auto-completion": "Saisissez une valeur. Au moins 3 caractères pour avoir l'auto-complétion",
+		"Yes": "Oui",
+		"No": "Non",
+		"1024 characters max": "1024 caractères maximum",
+		"Invalid format": "Format invalide",
+		"Field ": "Champ ",
 		"Some types of descriptor exists for this group": "Des types de descripteur existent pour ce groupe",
 		"Invalid characters (alphanumeric, _ and - only)": "Caractères invalides (alphanumérique, _ et - seulement)",
 		"3 characters min": "3 caractères minimum",
 		"Group name already in usage": "Nom de groupe déjà utilisé",
 		"Descriptor type name already in usage": "Nom de type de descriptor déjà utilisé",
+		"It is not permitted to delete a meta-model of descriptor that contains some panels": "Il n'est pas permit de supprimer un méta-modèle de descripteur contenant des panels",
+		"64 characters max": "64 caractères maximum",
 		"Successfully labeled !": "Label définit avec succès !",
-		"Unable to change label !": "Impossible de définir le label !",
 		"Unable to create the meta-model of descriptor !": "Impossible de créer le méta-modèle de descripteur !",
 		"Descriptor meta-model name already in usage": "Nom de méta-modèle de descripteur déjà utilisé",
 		"Done": "Fait",
 		"Name for model of descriptor already in usage": "Ce nom de modèle de descripteur est déjà utilisé",
 		"Unable to create the type of model of descriptor !": "Impossible de créer le type de modèle de descripteur !",
 		"Unable to reorder the types of model of descriptor": "Impossible de réordonner les types de modèle de descripteur",
+		"Successfully removed !": "Retiré avec succé !",
+		"Successfully defined !": "Définie avec succé !",
+		"Unable to reorder the panels of descriptor": "Impossible de réordonner les panels de descripters",
 		"Some values exists for this type of descriptor": "Des valeurs existent pour ce type de descripteur",
-		"1 character min": "1 caractère minimum",
+		"32 character max": "32 characters maximum",
+		"1 character min": "Au moins 1 caractère",
+		"Successfully valued !": "Valeur définie avec succé !",
+		"Successfully changed !": "Changement appliqué avec succé !",
+		"Unable to change the value !": "Impossible de changer la valeur",
 		"List of groups of descriptors": "Liste de groupes de descripteurs",
 		"Types of descriptors for the group": "Types de descripteurs pour le groupe",
 		"Details for the type of descriptor": "Détails pour le type de descripteur",
 		"Values for the type of descriptor": "Valeurs pour le type de descripteur",
 		"List of meta-models of descriptor": "Liste des méta-modèles de descripteur",
 		"Details for the meta-model of descriptor": "Détails pour le méta-modèle de descripteur",
+		"List of panels of descriptor": "Liste des panels de descripteur",
 		"List of models of descriptor": "Liste des models de descripteur",
 		"Details for the model of descriptor": "Détails pour le modèle de descripteur",
 		"List of types of models of descriptor": "Liste des types de modèles de descripteur",
+		"Descriptor": "Descripteur",
+		"Value": "Valeur",
+		"Modify": "Modifier",
+		"Cancel": "Annuler",
+		"Apply": "Appliquer",
+		"Change the name of the group of descriptors": "Changer le nom du groupe de descripteur",
 		"Name": "Nom",
 		"Number of types of descriptor": "Nombre de types de descripteur",
 		"Group of descriptors": "Groupe de descripteurs",
-		"Change the label for a meta-model of descriptor": "Changer le label pour un méta-modèle de descripteur",
+		"Change the label for the meta-model of descriptor": "Changer le label du méta-modèle de descripteur",
+		"Create a meta-model of descriptor": "Créer un méta-modèle de descripteur",
+		"Target entity": "Entité cible",
 		"Label for the current language": "Label pour le langage courant",
-		"Cancel": "Annuler",
-		"Apply": "Appliquer",
-		"Descriptor meta-model name": "Nom de méta-modèle de descripteur",
 		"Description": "Description",
+		"Descriptor meta-model name": "Nom de méta-modèle de descripteur",
 		"Update": "Mettre à jour",
 		"Label": "Label",
 		"Target": "Cible",
 		"Number of panels of descriptor": "Nombre de panels de descripteur",
-		"Create a meta-model of descriptor": "Créer un méta-modèle de descripteur",
-		"Target entity": "Entité cible",
-		"Accession": "Accession",
-		"Batch": "Lot",
-		"Sample": "Echantillon",
 		"Descriptor model name": "Nom de modèle de descripteur",
 		"Verbose name": "Nom complet",
-		"Change the label for a type of model of descriptor": "Changer le label pour un type de modèle de descripteur",
+		"Change the label for the type of model of descriptor": "Changer le label du type de modèle de descripteur",
+		"Condition of the type of model of descriptor": "Condition du type de modèle de descripteur",
+		"Condition": "Condition",
+		"Value from list": "Valeur depuis la liste",
+		"Remove condition": "Supprimer la condition",
+		"Create a model of descriptor": "Créer un modèle de descripteur",
 		"Code": "Code",
-		"Mandatory": "Mandataire",
-		"Set Once": "Définit une fois",
+		"Required": "Obligatoire",
+		"Set Once": "Définie une fois",
+		"Undefined label": "Label indéfini",
+		"Change the label for the panel of descriptor": "Changer le label du panel de descripteur",
+		"Create a panel of descriptor": "Créer un panel de descripteur",
+		"Panels of descriptor": "Panels de descripteurs",
+		"Controls how is displayed the field. Hierarchy mode is a special usage for pseudo hierarchy, for which values are roughly shifted to give an illusion of parent/children. The shift depend of the level declared in the value0 while value1 contains the label. The first value contains something like 1 or 2 or 1.1, 1.2, 1.1.1...": "Contrôle comment est affiché le champs. Le mode hierarchy est utilisé afin de générer une pseudo-hiérarchie, pour laquelle les valeurs sont sensiblement décalé afin de donner une impression de parent/enfant. Le décalage dépend du niveau déclaré dans valeur0 tandis que valeur1 contient le label. La première valeur contient quelque-chose comme 1 or 2 or 1.1, 1.2, 1.1.1...",
 		"Descriptor type name": "Nom du type de descripteur",
 		"Descriptor type code": "Code du type de descripteur",
 		"Type of format": "Type de format",
@@ -37024,25 +37827,43 @@
 		"Ordinal": "Ordinal",
 		"GPS coordinate": "Coordonnée GPS",
 		"Text": "Texte",
+		"Date": "Date",
+		"Time": "Heure",
+		"Date+time": "Date+heure",
+		"Entity": "Entité",
 		"List of values": "Liste de valeurs",
 		"Single enumeration": "Simple énumération",
 		"Pair enumeration": "Enumération de paires",
 		"Ordinal with text": "Ordinal avec texte",
+		"Translation": "Traduction",
 		"First field": "Premier champs",
 		"Second field": "Second champs",
+		"Sort by field": "Trier pas champs",
+		"Value0": "Valeur0",
+		"Value1": "Valeur1",
+		"Displayed fields": "Champs affichés",
+		"Value0 - Value1": "Valeur0 - Valeur1",
+		"Ordinal - Value0": "Ordinal - Valeur0",
+		"Hierarchy of Value1": "Hiérarchie de Valeur1",
+		"Display the list as": "Afficher la liste tel",
+		"Dropdown (limit of 256 values)": "List déroulante (limité à 256 valeurs)",
+		"Autocomplete (big lists)": "Autocomplete (grosse listes)",
+		"Autocomplete search field": "Champ de recherche autocomplete",
 		"Unit of the format": "Unité du format",
 		"Custom unit name": "Nom d'unité personnalisée",
 		"Precision of the decimal": "Précision de la décimale",
+		"Model of the entity": "Modèle de l'entité",
 		"Minimal range value": "Valeur minimale",
 		"Maximal range value": "Valeur maximale",
 		"Regular expression": "Expression régulière",
 		"Number of values": "Nombre de valeurs",
 		"Type of descriptor": "Type de descripteur",
-		"Value": "Valeur"
+		"Change the value of a field for a type of descriptor": "Changer la valeur pour un champs d'un type de descripteur",
+		"Value for any languages": "Valeur pour toutes les langues"
 	};
 
 /***/ },
-/* 223 */
+/* 231 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -37056,25 +37877,25 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var DescriptorGroupModel = __webpack_require__(224);
-	var DescriptorTypeModel = __webpack_require__(225);
-	var DescriptorTypeCollection = __webpack_require__(226);
-	var DescriptorValueCollection = __webpack_require__(227);
-	var DescriptorGroupListView = __webpack_require__(229);
-	var DescriptorTypeListView = __webpack_require__(234);
+	var DescriptorGroupModel = __webpack_require__(232);
+	var DescriptorTypeModel = __webpack_require__(233);
+	var DescriptorTypeCollection = __webpack_require__(234);
+	var DescriptorValueCollection = __webpack_require__(235);
+	var DescriptorGroupListView = __webpack_require__(237);
+	var DescriptorTypeListView = __webpack_require__(242);
 	
-	var DescriptorValueListView = __webpack_require__(238);
-	var DescriptorValuePairListView = __webpack_require__(244);
-	var DescriptorValueOrdinalListView = __webpack_require__(248);
-	var DescriptorValueAddView = __webpack_require__(252);
+	var DescriptorValueListView = __webpack_require__(246);
+	var DescriptorValuePairListView = __webpack_require__(252);
+	var DescriptorValueOrdinalListView = __webpack_require__(256);
+	var DescriptorValueAddView = __webpack_require__(260);
 	
-	var DescriptorTypeDetailView = __webpack_require__(254);
-	var DefaultLayout = __webpack_require__(164);
-	var TitleView = __webpack_require__(165);
-	var ScrollingMoreView = __webpack_require__(208);
+	var DescriptorTypeDetailView = __webpack_require__(262);
+	var DefaultLayout = __webpack_require__(166);
+	var TitleView = __webpack_require__(167);
+	var ScrollingMoreView = __webpack_require__(212);
 	
-	var DescriptorGroupAddView = __webpack_require__(256);
-	var DescriptorGroupTypeAddView = __webpack_require__(258);
+	var DescriptorGroupAddView = __webpack_require__(264);
+	var DescriptorGroupTypeAddView = __webpack_require__(266);
 	
 	var Router = Marionette.AppRouter.extend({
 	    routes : {
@@ -37194,7 +38015,7 @@
 
 
 /***/ },
-/* 224 */
+/* 232 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -37244,7 +38065,7 @@
 
 
 /***/ },
-/* 225 */
+/* 233 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -37322,7 +38143,7 @@
 
 
 /***/ },
-/* 226 */
+/* 234 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -37335,7 +38156,7 @@
 	 * @details
 	 */
 	
-	var DescriptorTypeModel = __webpack_require__(225);
+	var DescriptorTypeModel = __webpack_require__(233);
 	
 	var Collection = Backbone.Collection.extend({
 	    url: function() {
@@ -37362,7 +38183,7 @@
 
 
 /***/ },
-/* 227 */
+/* 235 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -37375,7 +38196,7 @@
 	 * @details
 	 */
 	
-	var DescriptorTypeModel = __webpack_require__(228);
+	var DescriptorTypeModel = __webpack_require__(236);
 	
 	var Collection = Backbone.Collection.extend({
 	    url: function() {
@@ -37422,7 +38243,7 @@
 
 
 /***/ },
-/* 228 */
+/* 236 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -37485,7 +38306,7 @@
 
 
 /***/ },
-/* 229 */
+/* 237 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -37499,12 +38320,12 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var DescriptorGroupModel = __webpack_require__(224);
-	var DescriptorGroupView = __webpack_require__(230);
-	var ScrollView = __webpack_require__(192);
+	var DescriptorGroupModel = __webpack_require__(232);
+	var DescriptorGroupView = __webpack_require__(238);
+	var ScrollView = __webpack_require__(196);
 	
 	var View = ScrollView.extend({
-	    template: __webpack_require__(233),
+	    template: __webpack_require__(241),
 	    childView: DescriptorGroupView,
 	    childViewContainer: 'tbody.descriptor-group-list',
 	
@@ -37522,7 +38343,7 @@
 
 
 /***/ },
-/* 230 */
+/* 238 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -37536,14 +38357,14 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var DescriptorGroupModel = __webpack_require__(224);
+	var DescriptorGroupModel = __webpack_require__(232);
 	
-	var Dialog = __webpack_require__(196);
+	var Dialog = __webpack_require__(200);
 	
 	var View = Marionette.ItemView.extend({
 	    tagName: 'tr',
 	    className: 'element object descriptor-group',
-	    template: __webpack_require__(231),
+	    template: __webpack_require__(239),
 	
 	    ui: {
 	        delete_descriptor_group: 'span.delete-descriptor-group',
@@ -37586,7 +38407,7 @@
 	        }
 	
 	        var ChangeName = Dialog.extend({
-	            template: __webpack_require__(232),
+	            template: __webpack_require__(240),
 	
 	            attributes: {
 	                id: "dlg_change_name",
@@ -37649,7 +38470,7 @@
 
 
 /***/ },
-/* 231 */
+/* 239 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -37674,7 +38495,7 @@
 
 
 /***/ },
-/* 232 */
+/* 240 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -37699,7 +38520,7 @@
 
 
 /***/ },
-/* 233 */
+/* 241 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -37720,7 +38541,7 @@
 
 
 /***/ },
-/* 234 */
+/* 242 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -37734,13 +38555,13 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var ScrollView = __webpack_require__(192);
+	var ScrollView = __webpack_require__(196);
 	
-	var DescriptorTypeModel = __webpack_require__(225);
-	var DescriptorTypeView = __webpack_require__(235);
+	var DescriptorTypeModel = __webpack_require__(233);
+	var DescriptorTypeView = __webpack_require__(243);
 	
 	var View = ScrollView.extend({
-	    template: __webpack_require__(237),
+	    template: __webpack_require__(245),
 	    childView: DescriptorTypeView,
 	    childViewContainer: 'tbody.descriptor-type-list',
 	
@@ -37758,7 +38579,7 @@
 
 
 /***/ },
-/* 235 */
+/* 243 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -37772,12 +38593,12 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var DescriptorTypeModel = __webpack_require__(225);
+	var DescriptorTypeModel = __webpack_require__(233);
 	
 	var View = Marionette.ItemView.extend({
 	    tagName: 'tr',
 	    className: 'element object descriptor-type',
-	    template: __webpack_require__(236),
+	    template: __webpack_require__(244),
 	
 	    ui: {
 	        delete_descriptor_type: 'span.delete-descriptor-type',
@@ -37823,7 +38644,7 @@
 
 
 /***/ },
-/* 236 */
+/* 244 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -37861,7 +38682,7 @@
 
 
 /***/ },
-/* 237 */
+/* 245 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -37886,7 +38707,7 @@
 
 
 /***/ },
-/* 238 */
+/* 246 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -37900,12 +38721,12 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var DescriptorValueModel = __webpack_require__(228);
-	var DescriptorValueView = __webpack_require__(239);
-	var ScrollView = __webpack_require__(192);
+	var DescriptorValueModel = __webpack_require__(236);
+	var DescriptorValueView = __webpack_require__(247);
+	var ScrollView = __webpack_require__(196);
 	
 	var View = ScrollView.extend({
-	    template: __webpack_require__(243),
+	    template: __webpack_require__(251),
 	    childView: DescriptorValueView,
 	    childViewContainer: 'tbody.descriptor-value-list',
 	
@@ -37985,7 +38806,7 @@
 
 
 /***/ },
-/* 239 */
+/* 247 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -37999,14 +38820,14 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var DescriptorValueModel = __webpack_require__(228);
+	var DescriptorValueModel = __webpack_require__(236);
 	
-	var Dialog = __webpack_require__(196);
+	var Dialog = __webpack_require__(200);
 	
 	var View = Marionette.ItemView.extend({
 	    tagName: 'tr',
 	    className: 'element object descriptor-value',
-	    template: __webpack_require__(240),
+	    template: __webpack_require__(248),
 	    templateHelpers: function() {
 	        var ctx = this.model;
 	        ctx.format = this.model.collection.format;
@@ -38055,7 +38876,7 @@
 	                    var values = data;
 	
 	                    var ChangeValues = Dialog.extend({
-	                        template: __webpack_require__(241),
+	                        template: __webpack_require__(249),
 	                        templateHelpers: function () {
 	                            return {
 	                                values: values,
@@ -38086,7 +38907,7 @@
 	                            var v = $(e.target).val();
 	
 	                            if (v.length < 1) {
-	                                $(e.target).validateField('failed', gt.gettext('1 characters min'));
+	                                $(e.target).validateField('failed', gt.gettext('1 character min'));
 	                                return false;
 	                            } else if (v.length > 64) {
 	                                $(e.target).validateField('failed', gt.gettext('64 characters max'));
@@ -38148,7 +38969,7 @@
 	                });
 	            } else {
 	                var ChangeLabel = Dialog.extend({
-	                    template: __webpack_require__(242),
+	                    template: __webpack_require__(250),
 	
 	                    attributes: {
 	                        id: "dlg_change_value",
@@ -38175,7 +38996,7 @@
 	                        var v = this.ui.value.val();
 	
 	                        if (v.length < 1) {
-	                            $(this.ui.value).validateField('failed', gt.gettext('1 characters min'));
+	                            $(this.ui.value).validateField('failed', gt.gettext('1 character min'));
 	                            return false;
 	                        }
 	
@@ -38218,7 +39039,7 @@
 	module.exports = View;
 
 /***/ },
-/* 240 */
+/* 248 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -38246,7 +39067,7 @@
 
 
 /***/ },
-/* 241 */
+/* 249 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -38289,7 +39110,7 @@
 
 
 /***/ },
-/* 242 */
+/* 250 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -38314,7 +39135,7 @@
 
 
 /***/ },
-/* 243 */
+/* 251 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -38335,7 +39156,7 @@
 
 
 /***/ },
-/* 244 */
+/* 252 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -38349,12 +39170,12 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var DescriptorValueModel = __webpack_require__(228);
-	var DescriptorValuePairView = __webpack_require__(245);
-	var ScrollView = __webpack_require__(192);
+	var DescriptorValueModel = __webpack_require__(236);
+	var DescriptorValuePairView = __webpack_require__(253);
+	var ScrollView = __webpack_require__(196);
 	
 	var View = ScrollView.extend({
-	    template: __webpack_require__(247),
+	    template: __webpack_require__(255),
 	    childView: DescriptorValuePairView,
 	    childViewContainer: 'tbody.descriptor-value-list',
 	
@@ -38438,7 +39259,7 @@
 
 
 /***/ },
-/* 245 */
+/* 253 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -38452,14 +39273,14 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var DescriptorValueModel = __webpack_require__(228);
+	var DescriptorValueModel = __webpack_require__(236);
 	
-	var Dialog = __webpack_require__(196);
+	var Dialog = __webpack_require__(200);
 	
 	var View = Marionette.ItemView.extend({
 	    tagName: 'tr',
 	    className: 'element object descriptor-value',
-	    template: __webpack_require__(246),
+	    template: __webpack_require__(254),
 	    templateHelpers: function() {
 	        var ctx = this.model;
 	        ctx.format = this.model.collection.format;
@@ -38507,7 +39328,7 @@
 	                    var values = data;
 	
 	                    var ChangeValues = Dialog.extend({
-	                        template: __webpack_require__(241),
+	                        template: __webpack_require__(249),
 	                        templateHelpers: function () {
 	                            return {
 	                                values: values,
@@ -38538,7 +39359,7 @@
 	                            var v = $(e.target).val();
 	
 	                            if (v.length < 1) {
-	                                $(e.target).validateField('failed', gt.gettext('1 characters min'));
+	                                $(e.target).validateField('failed', gt.gettext('1 character min'));
 	                                return false;
 	                            } else if (v.length > 64) {
 	                                $(e.target).validateField('failed', gt.gettext('64 characters max'));
@@ -38600,7 +39421,7 @@
 	                });
 	            } else {
 	                var ChangeLabel = Dialog.extend({
-	                    template: __webpack_require__(242),
+	                    template: __webpack_require__(250),
 	
 	                    attributes: {
 	                        id: "dlg_change_value",
@@ -38627,7 +39448,7 @@
 	                        var v = this.ui.value.val();
 	
 	                        if (v.length < 1) {
-	                            $(this.ui.value).validateField('failed', gt.gettext('1 characters min'));
+	                            $(this.ui.value).validateField('failed', gt.gettext('1 character min'));
 	                            return false;
 	                        }
 	
@@ -38679,7 +39500,7 @@
 	                    var values = data;
 	
 	                    var ChangeValues = Dialog.extend({
-	                        template: __webpack_require__(241),
+	                        template: __webpack_require__(249),
 	                        templateHelpers: function () {
 	                            return {
 	                                values: values,
@@ -38710,7 +39531,7 @@
 	                            var v = $(e.target).val();
 	
 	                            if (v.length < 1) {
-	                                $(e.target).validateField('failed', gt.gettext('1 characters min'));
+	                                $(e.target).validateField('failed', gt.gettext('1 character min'));
 	                                return false;
 	                            } else if (v.length > 64) {
 	                                $(e.target).validateField('failed', gt.gettext('64 characters max'));
@@ -38772,7 +39593,7 @@
 	                });
 	            } else {
 	                var ChangeLabel = Dialog.extend({
-	                    template: __webpack_require__(242),
+	                    template: __webpack_require__(250),
 	
 	                    attributes: {
 	                        id: "dlg_change_value",
@@ -38799,7 +39620,7 @@
 	                        var v = this.ui.value.val();
 	
 	                        if (v.length < 1) {
-	                            $(this.ui.value).validateField('failed', gt.gettext('1 characters min'));
+	                            $(this.ui.value).validateField('failed', gt.gettext('1 character min'));
 	                            return false;
 	                        }
 	
@@ -38842,7 +39663,7 @@
 	module.exports = View;
 
 /***/ },
-/* 246 */
+/* 254 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -38872,7 +39693,7 @@
 
 
 /***/ },
-/* 247 */
+/* 255 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -38895,7 +39716,7 @@
 
 
 /***/ },
-/* 248 */
+/* 256 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -38909,12 +39730,12 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var DescriptorValueModel = __webpack_require__(228);
-	var DescriptorValueOrdinalView = __webpack_require__(249);
-	var ScrollView = __webpack_require__(192);
+	var DescriptorValueModel = __webpack_require__(236);
+	var DescriptorValueOrdinalView = __webpack_require__(257);
+	var ScrollView = __webpack_require__(196);
 	
 	var View = ScrollView.extend({
-	    template: __webpack_require__(251),
+	    template: __webpack_require__(259),
 	    childView: DescriptorValueOrdinalView,
 	    childViewContainer: 'tbody.descriptor-value-list',
 	
@@ -38998,7 +39819,7 @@
 
 
 /***/ },
-/* 249 */
+/* 257 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -39012,14 +39833,14 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var DescriptorValueModel = __webpack_require__(228);
+	var DescriptorValueModel = __webpack_require__(236);
 	
-	var Dialog = __webpack_require__(196);
+	var Dialog = __webpack_require__(200);
 	
 	var View = Marionette.ItemView.extend({
 	    tagName: 'tr',
 	    className: 'element object descriptor-value',
-	    template: __webpack_require__(250),
+	    template: __webpack_require__(258),
 	    templateHelpers: function() {
 	        var ctx = this.model;
 	        ctx.format = this.model.collection.format;
@@ -39057,7 +39878,7 @@
 	                    var values = data;
 	
 	                    var ChangeValues = Dialog.extend({
-	                        template: __webpack_require__(241),
+	                        template: __webpack_require__(249),
 	                        templateHelpers: function () {
 	                            return {
 	                                values: values,
@@ -39088,7 +39909,7 @@
 	                            var v = $(e.target).val();
 	
 	                            if (v.length < 1) {
-	                                $(e.target).validateField('failed', gt.gettext('1 characters min'));
+	                                $(e.target).validateField('failed', gt.gettext('1 character min'));
 	                                return false;
 	                            } else if (v.length > 64) {
 	                                $(e.target).validateField('failed', gt.gettext('64 characters max'));
@@ -39150,7 +39971,7 @@
 	                });
 	            } else {
 	                var ChangeLabel = Dialog.extend({
-	                    template: __webpack_require__(242),
+	                    template: __webpack_require__(250),
 	
 	                    attributes: {
 	                        id: "dlg_change_value",
@@ -39177,7 +39998,7 @@
 	                        var v = this.ui.value.val();
 	
 	                        if (v.length < 1) {
-	                            $(this.ui.value).validateField('failed', gt.gettext('1 characters min'));
+	                            $(this.ui.value).validateField('failed', gt.gettext('1 character min'));
 	                            return false;
 	                        }
 	
@@ -39220,7 +40041,7 @@
 	module.exports = View;
 
 /***/ },
-/* 250 */
+/* 258 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -39243,7 +40064,7 @@
 
 
 /***/ },
-/* 251 */
+/* 259 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -39266,7 +40087,7 @@
 
 
 /***/ },
-/* 252 */
+/* 260 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -39284,7 +40105,7 @@
 	var View = Marionette.ItemView.extend({
 	    tagName: 'div',
 	    className: 'type-add',
-	    template: __webpack_require__(253),
+	    template: __webpack_require__(261),
 	
 	    ui: {
 	        add_value_btn: 'span.add-descriptor-value',
@@ -39334,7 +40155,7 @@
 
 
 /***/ },
-/* 253 */
+/* 261 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -39351,7 +40172,7 @@
 
 
 /***/ },
-/* 254 */
+/* 262 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -39365,11 +40186,11 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var DescriptorTypeModel = __webpack_require__(225);
+	var DescriptorTypeModel = __webpack_require__(233);
 	
 	var View = Marionette.ItemView.extend({
 	    className: 'element object descriptor-type-detail',
-	    template: __webpack_require__(255),
+	    template: __webpack_require__(263),
 	
 	    ui: {
 	        name: '#descriptor_type_name',
@@ -39546,6 +40367,8 @@
 	            if (this.ui.format_regexp.closest("div.form-group").css('display') != 'none') {
 	                this.ui.format_regexp.closest("div.form-group").hide(false);
 	            }
+	        } else {
+	            this.ui.format_regexp.val(format.regexp);
 	        }
 	    },
 	
@@ -39843,7 +40666,7 @@
 
 
 /***/ },
-/* 255 */
+/* 263 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -39940,7 +40763,7 @@
 	__e( gt.gettext('Value1') ) +
 	'</option></select></div></div></div><div class="descriptor-type-unit form-group" style="width: 50%"><div class="row"><div class="col-xs-6"><label for="format_unit">' +
 	__e( gt.gettext('Unit of the format') ) +
-	'</label><select id="format_unit" class="form-control"><optgroup label="Chroma"><option value="chroma_L_value">L value</option><option value="chroma_a_value">a value</option><option value="chroma_b_value">b value</option></optgroup><optgroup label="Common"><option value="degree_celsius">°C (celcius degree)</option><option value="category">Category</option><option value="custom" style="font-style: italic">Custom</option><option value="joule">J (joule)</option><option value="norm1">Norm 1</option><option value="note">Note</option><option value="percent">% (percent)</option><option value="regexp">Regular expression</option><option value="scale">Scale</option></optgroup><optgroup label="Grain"><option value="gram_per_100_grain">g/100 grain</option><option value="gram_per_200_grain">g/200 grain</option><option value="gram_per_1000_grain">g/1000 grain</option><option value="grain_per_meter2">grain/m²</option><option value="grain_per_spike">grain/spike</option><option value="grain_per_spikelet">grain/spikelet</option></optgroup><optgroup label="Meter"><option value="micrometer">um</option><option value="millimeter">mm</option><option value="centimeter">cm</option><option value="centimeter">dm</option><option value="meter">m</option><option value="kilometer">km</option></optgroup><optgroup label="Plant and plot"><option value="plant_per_meter">plant/m</option><option value="plant_per_meter2">plant/m²</option><option value="plant_per_hectare">plant/ha</option><option value="plant_per_plot">plant/plot</option><option value="gram_per_plant">g/plant</option><option value="gram_per_plot">g/plot</option><option value="kilogram_per_plot">kg/plot</option><option value="stoma_per_millimeter2">stoma/mm²</option><option value="node">node</option><option value="spikelet">spikelet</option><option value="spike_per_meter2">spike/m²</option><option value="tiller_per_meter">tiller/m</option><option value="tiller_per_meter2">tiller/m²</option></optgroup><optgroup label="Quantity and volume"><option value="milliliter">ml</option><option value="milliliter_per_percent">ml/%</option><option value="ppm">ppm</option><option value="milligram_per_kilogram">mg/kg</option><option value="gram_per_kilogram">g/kg</option><option value="gram_per_meter2">g/m²</option><option value="kilogram_per_hectare">kg/ha</option><option value="tonne_per_hectare">t/ha</option><option value="gram_per_liter">g/l</option><option value="kilogram_per_hectolitre">kg/hl</option><option value="millimol_per_meter2_per_second">mmol/m²/s</option><option value="gram_per_meter2_per_day">g/m²/day</option><option value="cci">CCI (chlore)</option><option value="delta_13c">delta 13C (carbon)</option></optgroup><optgroup label="Surface"><option value="millimeter2">mm²</option><option value="centimeter2">cm²</option><option value="meter2">m²</option><option value="hectare">ha</option><option value="kilometer2">km²</option></optgroup><optgroup label="Time"><option value="millisecond">ms</option><option value="second">s</option><option value="minute">min</option><option value="hour">hour</option><option value="day">day</option><option value="month">month</option><option value="year">year</option><option value="date">date (yyyy/mm/dd)</option><option value="time">time (hh:mm:ss)</option><option value="datetime">date time (yyyy/mm/dd hh:mm:ss)</option><option value="percent_per_minute">%/min</option><option value="percent_per_hour">%/hour</option><option value="percent_per_day">%/day</option></optgroup></select></div><div class="col-xs-6"><div class="form-group"><label for="format_unit_custom">' +
+	'</label><select id="format_unit" class="form-control"><optgroup label="Chroma"><option value="chroma_L_value">L value</option><option value="chroma_a_value">a value</option><option value="chroma_b_value">b value</option></optgroup><optgroup label="Common"><option value="degree_celsius">°C</option><option value="category">Category</option><option value="custom" style="font-style: italic">Custom</option><option value="joule">J (joule)</option><option value="norm1">Norm 1</option><option value="note">Note</option><option value="percent">% (percent)</option><option value="regexp">Regular expression</option><option value="scale">Scale</option></optgroup><optgroup label="Grain"><option value="gram_per_100_grain">g/100 grain</option><option value="gram_per_200_grain">g/200 grain</option><option value="gram_per_1000_grain">g/1000 grain</option><option value="grain_per_meter2">grain/m²</option><option value="grain_per_spike">grain/spike</option><option value="grain_per_spikelet">grain/spikelet</option></optgroup><optgroup label="Meter"><option value="micrometer">um</option><option value="millimeter">mm</option><option value="centimeter">cm</option><option value="decimeter">dm</option><option value="meter">m</option><option value="kilometer">km</option></optgroup><optgroup label="Plant and plot"><option value="plant_per_meter">plant/m</option><option value="plant_per_meter2">plant/m²</option><option value="plant_per_hectare">plant/ha</option><option value="plant_per_plot">plant/plot</option><option value="gram_per_plant">g/plant</option><option value="gram_per_plot">g/plot</option><option value="kilogram_per_plot">kg/plot</option><option value="stoma_per_millimeter2">stoma/mm²</option><option value="node">node</option><option value="spikelet">spikelet</option><option value="spike_per_meter2">spike/m²</option><option value="tiller_per_meter">tiller/m</option><option value="tiller_per_meter2">tiller/m²</option></optgroup><optgroup label="Quantity and volume"><option value="milliliter">ml</option><option value="milliliter_per_percent">ml/%</option><option value="ppm">ppm</option><option value="milligram_per_kilogram">mg/kg</option><option value="gram_per_kilogram">g/kg</option><option value="gram_per_meter2">g/m²</option><option value="kilogram_per_hectare">kg/ha</option><option value="ton_per_hectare">t/ha</option><option value="gram_per_liter">g/l</option><option value="kilogram_per_hectolitre">kg/hl</option><option value="millimol_per_meter2_per_second">mmol/m²/s</option><option value="gram_per_meter2_per_day">g/m²/day</option><option value="l">CCl (chlore)</option><option value="delta_13c">delta 13C (carbon)</option></optgroup><optgroup label="Surface"><option value="millimeter2">mm²</option><option value="centimeter2">cm²</option><option value="meter2">m²</option><option value="hectare">ha</option><option value="kilometer2">km²</option></optgroup><optgroup label="Time"><option value="millisecond">ms</option><option value="second">s</option><option value="minute">min</option><option value="hour">hour</option><option value="day">day</option><option value="month">month</option><option value="year">year</option><option value="date">date (yyyy/mm/dd)</option><option value="time">time (hh:mm:ss)</option><option value="datetime">date time (yyyy/mm/dd hh:mm:ss)</option><option value="percent_per_minute">%/min</option><option value="percent_per_hour">%/hour</option><option value="percent_per_day">%/day</option></optgroup></select></div><div class="col-xs-6"><div class="form-group"><label for="format_unit_custom">' +
 	__e( gt.gettext('Custom unit name') ) +
 	'</label><input id="format_unit_custom" class="form-control" type="text" disabled="disabled" maxlength="32" value=""></div></div></div></div><div class="descriptor-type-precision form-group" style="width: 50%"><label for="format_precision">' +
 	__e( gt.gettext('Precision of the decimal') ) +
@@ -39948,11 +40771,11 @@
 	__e( gt.gettext('Model of the entity') ) +
 	'</label><select id="format_model" class="form-control"></select></div><div class="descriptor-type-range form-group" style="width: 50%"><div class="row"><div class="col-xs-6"><label for="format_range_min">' +
 	__e( gt.gettext('Minimal range value') ) +
-	'</label><input id="format_range_min" class="form-control" type="text" disabled="disabled" maxlength="32" value="0"></div><div class="col-xs-6"><label for="format_range_max">' +
+	'</label><input id="format_range_min" class="form-control" type="text" maxlength="32" value="0"></div><div class="col-xs-6"><label for="format_range_max">' +
 	__e( gt.gettext('Maximal range value') ) +
-	'</label><input id="format_range_max" class="form-control" type="text" disabled="disabled" maxlength="32" value="1"></div></div></div><div class="descriptor-type-regexp form-group" style="width: 50%"><label for="format_regexp">' +
+	'</label><input id="format_range_max" class="form-control" type="text" maxlength="32" value="1"></div></div></div><div class="descriptor-type-regexp form-group" style="width: 50%"><label for="format_regexp">' +
 	__e( gt.gettext('Regular expression') ) +
-	'</label><input id="format_regexp" class="form-control" type="text" disabled="disabled" maxlength="255"></div><div class="descriptor-type-description form-group" style="width: 50%"><label for="descriptor_type_description">' +
+	'</label><input id="format_regexp" class="form-control" type="text" maxlength="255"></div><div class="descriptor-type-description form-group" style="width: 50%"><label for="descriptor_type_description">' +
 	__e( gt.gettext('Description') ) +
 	'</label><textarea id="descriptor_type_description" class="form-control" maxlength="1024">' +
 	((__t = ( description )) == null ? '' : __t) +
@@ -39966,7 +40789,7 @@
 
 
 /***/ },
-/* 256 */
+/* 264 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -39984,7 +40807,7 @@
 	var View = Marionette.ItemView.extend({
 	    tagName: 'div',
 	    className: 'group-add',
-	    template: __webpack_require__(257),
+	    template: __webpack_require__(265),
 	
 	    ui: {
 	        add_group_btn: 'span.add-group',
@@ -40058,7 +40881,7 @@
 
 
 /***/ },
-/* 257 */
+/* 265 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -40075,7 +40898,7 @@
 
 
 /***/ },
-/* 258 */
+/* 266 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -40093,7 +40916,7 @@
 	var View = Marionette.ItemView.extend({
 	    tagName: 'div',
 	    className: 'type-add',
-	    template: __webpack_require__(259),
+	    template: __webpack_require__(267),
 	
 	    ui: {
 	        add_type_btn: 'span.add-type',
@@ -40174,7 +40997,7 @@
 
 
 /***/ },
-/* 259 */
+/* 267 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -40191,7 +41014,7 @@
 
 
 /***/ },
-/* 260 */
+/* 268 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -40206,23 +41029,23 @@
 	
 	var Marionette = __webpack_require__(4);
 	
-	var DescriptorModelModel = __webpack_require__(261);
-	var DescriptorModelCollection = __webpack_require__(262);
-	var DescriptorGroupCollection = __webpack_require__(263);
-	var DescriptorModelTypeCollection = __webpack_require__(264);
+	var DescriptorModelModel = __webpack_require__(269);
+	var DescriptorModelCollection = __webpack_require__(270);
+	var DescriptorGroupCollection = __webpack_require__(271);
+	var DescriptorModelTypeCollection = __webpack_require__(272);
 	
-	var DescriptorModelAddView = __webpack_require__(266);
-	var DescriptorModelDetailView = __webpack_require__(268);
-	var DescriptorModelListView = __webpack_require__(270);
-	var DescriptorModelTypeListView = __webpack_require__(274);
+	var DescriptorModelAddView = __webpack_require__(274);
+	var DescriptorModelDetailView = __webpack_require__(276);
+	var DescriptorModelListView = __webpack_require__(278);
+	var DescriptorModelTypeListView = __webpack_require__(282);
 	
-	var DescriptorGroupListAltView = __webpack_require__(282);
-	var DescriptorTypeListAltView = __webpack_require__(284);
+	var DescriptorGroupListAltView = __webpack_require__(290);
+	var DescriptorTypeListAltView = __webpack_require__(292);
 	
-	var DefaultLayout = __webpack_require__(164);
-	var LeftOneRightTwoLayout = __webpack_require__(290);
-	var TitleView = __webpack_require__(165);
-	var ScrollingMoreView = __webpack_require__(208);
+	var DefaultLayout = __webpack_require__(166);
+	var LeftOneRightTwoLayout = __webpack_require__(298);
+	var TitleView = __webpack_require__(167);
+	var ScrollingMoreView = __webpack_require__(212);
 	
 	var Router = Marionette.AppRouter.extend({
 	    routes : {
@@ -40301,7 +41124,7 @@
 
 
 /***/ },
-/* 261 */
+/* 269 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -40351,7 +41174,7 @@
 
 
 /***/ },
-/* 262 */
+/* 270 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -40364,7 +41187,7 @@
 	 * @details
 	 */
 	
-	var DescriptorModelModel = __webpack_require__(261);
+	var DescriptorModelModel = __webpack_require__(269);
 	
 	var Collection = Backbone.Collection.extend({
 	    url: application.baseUrl + 'descriptor/model/',
@@ -40385,7 +41208,7 @@
 
 
 /***/ },
-/* 263 */
+/* 271 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -40398,7 +41221,7 @@
 	 * @details
 	 */
 	
-	var DescriptorGroupModel = __webpack_require__(224);
+	var DescriptorGroupModel = __webpack_require__(232);
 	
 	var Collection = Backbone.Collection.extend({
 	    url: application.baseUrl + 'descriptor/group/',
@@ -40417,7 +41240,7 @@
 
 
 /***/ },
-/* 264 */
+/* 272 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -40430,7 +41253,7 @@
 	 * @details
 	 */
 	
-	var DescriptorModelTypeModel = __webpack_require__(265);
+	var DescriptorModelTypeModel = __webpack_require__(273);
 	
 	var Collection = Backbone.Collection.extend({
 	    url: function() {
@@ -40459,7 +41282,7 @@
 
 
 /***/ },
-/* 265 */
+/* 273 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -40537,7 +41360,7 @@
 
 
 /***/ },
-/* 266 */
+/* 274 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -40555,7 +41378,7 @@
 	var View = Marionette.ItemView.extend({
 	    tagName: 'div',
 	    className: 'descriptor-model-add',
-	    template: __webpack_require__(267),
+	    template: __webpack_require__(275),
 	
 	    ui: {
 	        add_descriptor_model_btn: 'span.add-descriptor-model',
@@ -40629,7 +41452,7 @@
 
 
 /***/ },
-/* 267 */
+/* 275 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -40646,7 +41469,7 @@
 
 
 /***/ },
-/* 268 */
+/* 276 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -40660,11 +41483,11 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var DescriptorModelModel = __webpack_require__(261);
+	var DescriptorModelModel = __webpack_require__(269);
 	
 	var View = Marionette.ItemView.extend({
 	    className: 'element object descriptor-model-detail',
-	    template: __webpack_require__(269),
+	    template: __webpack_require__(277),
 	
 	    ui: {
 	        name: '#descriptor_model_name',
@@ -40719,7 +41542,7 @@
 
 
 /***/ },
-/* 269 */
+/* 277 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -40750,7 +41573,7 @@
 
 
 /***/ },
-/* 270 */
+/* 278 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -40764,13 +41587,13 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var DescriptorModelModel = __webpack_require__(261);
-	var DescriptorModelView = __webpack_require__(271);
+	var DescriptorModelModel = __webpack_require__(269);
+	var DescriptorModelView = __webpack_require__(279);
 	
-	var ScrollView = __webpack_require__(192);
+	var ScrollView = __webpack_require__(196);
 	
 	var View = ScrollView.extend({
-	    template: __webpack_require__(273),
+	    template: __webpack_require__(281),
 	    childView: DescriptorModelView,
 	    childViewContainer: 'tbody.descriptor-model-list',
 	
@@ -40786,7 +41609,7 @@
 
 
 /***/ },
-/* 271 */
+/* 279 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -40800,12 +41623,12 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var DescriptorModelModel = __webpack_require__(261);
+	var DescriptorModelModel = __webpack_require__(269);
 	
 	var View = Marionette.ItemView.extend({
 	    tagName: 'tr',
 	    className: 'element object descriptor-model',
-	    template: __webpack_require__(272),
+	    template: __webpack_require__(280),
 	
 	    ui: {
 	        delete_descriptor_model: 'span.delete-descriptor-model',
@@ -40849,7 +41672,7 @@
 
 
 /***/ },
-/* 272 */
+/* 280 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -40876,7 +41699,7 @@
 
 
 /***/ },
-/* 273 */
+/* 281 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -40901,7 +41724,7 @@
 
 
 /***/ },
-/* 274 */
+/* 282 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -40915,14 +41738,14 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var ScrollView = __webpack_require__(192);
-	var Dialog = __webpack_require__(196);
+	var ScrollView = __webpack_require__(196);
+	var Dialog = __webpack_require__(200);
 	
-	var DescriptorModelTypeModel = __webpack_require__(265);
-	var DescriptorModelTypeView = __webpack_require__(275);
+	var DescriptorModelTypeModel = __webpack_require__(273);
+	var DescriptorModelTypeView = __webpack_require__(283);
 	
 	var View = ScrollView.extend({
-	    template: __webpack_require__(281),
+	    template: __webpack_require__(289),
 	    childView: DescriptorModelTypeView,
 	    childViewContainer: 'tbody.descriptor-model-type-list',
 	
@@ -41028,7 +41851,7 @@
 	            var code = elt.model.get('code');
 	
 	            var DefinesLabel = Dialog.extend({
-	                template: __webpack_require__(278),
+	                template: __webpack_require__(286),
 	
 	                attributes: {
 	                    id: "dlg_define_label",
@@ -41163,11 +41986,11 @@
 	module.exports = View;
 
 /***/ },
-/* 275 */
+/* 283 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
-	 * @file descriptortype.js
+	 * @file descriptormodeltype.js
 	 * @brief Type of descriptor item view
 	 * @author Frederic SCHERMA
 	 * @date 2016-07-21
@@ -41177,21 +42000,20 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var Dialog = __webpack_require__(196);
+	var Dialog = __webpack_require__(200);
 	
-	var DescriptorTypeModel = __webpack_require__(225);
-	var DescriptorModelTypeModel = __webpack_require__(265);
+	var DescriptorTypeModel = __webpack_require__(233);
 	
-	var DisplayDescriptor = __webpack_require__(276);
+	var DisplayDescriptor = __webpack_require__(284);
 	
 	
 	var View = Marionette.ItemView.extend({
 	    tagName: 'tr',
 	    className: 'element object descriptor-model-type',
-	    template: __webpack_require__(277),
+	    template: __webpack_require__(285),
 	
 	    attributes: {
-	        draggable: true,
+	        draggable: true
 	    },
 	
 	    ui: {
@@ -41213,7 +42035,7 @@
 	        'click @ui.label': 'editLabel',
 	        'click @ui.mandatory': 'toggleMandatory',
 	        'click @ui.set_once': 'toggleSetOnce',
-	        'click @ui.condition': 'editCondition',
+	        'click @ui.condition': 'editCondition'
 	    },
 	
 	    initialize: function() {
@@ -41223,6 +42045,11 @@
 	    onRender: function() {
 	        if (!session.user.isStaff && !session.user.isSuperUser) {
 	            $(this.ui.delete_descriptor_model_type).hide();
+	        }
+	
+	        if (this.model.get('mandatory')) {
+	            this.ui.condition.prop('disabled', true);
+	            this.ui.condition.children('span').css('color', '#ddd');
 	        }
 	    },
 	
@@ -41297,18 +42124,18 @@
 	            this.$el.css('border-bottom', 'initial');
 	
 	            var DefinesLabel = Dialog.extend({
-	                template: __webpack_require__(278),
+	                template: __webpack_require__(286),
 	
 	                attributes: {
-	                    id: "dlg_define_label",
+	                    id: "dlg_define_label"
 	                },
 	
 	                ui: {
-	                    label: "#label",
+	                    label: "#label"
 	                },
 	
 	                events: {
-	                    'input @ui.label': 'onLabelInput',
+	                    'input @ui.label': 'onLabelInput'
 	                },
 	
 	                initialize: function (options) {
@@ -41371,7 +42198,7 @@
 	                            }
 	                        });
 	                    }
-	                },
+	                }
 	            });
 	
 	            var definesLabel = new DefinesLabel({
@@ -41469,28 +42296,28 @@
 	        $.ajax({
 	            type: "GET",
 	            url: this.model.url() + 'label/',
-	            dataType: 'json',
+	            dataType: 'json'
 	        }).done(function (data) {
 	            var labels = data;
 	
 	            var ChangeLabel = Dialog.extend({
-	                template: __webpack_require__(279),
+	                template: __webpack_require__(287),
 	                templateHelpers: function () {
 	                    return {
-	                        labels: labels,
+	                        labels: labels
 	                    };
 	                },
 	
 	                attributes: {
-	                    id: "dlg_change_labels",
+	                    id: "dlg_change_labels"
 	                },
 	
 	                ui: {
-	                    label: "#descriptor_model_type_labels input",
+	                    label: "#descriptor_model_type_labels input"
 	                },
 	
 	                events: {
-	                    'input @ui.label': 'onLabelInput',
+	                    'input @ui.label': 'onLabelInput'
 	                },
 	
 	                initialize: function (options) {
@@ -41553,7 +42380,7 @@
 	                            view.remove();
 	                        });
 	                    }
-	                },
+	                }
 	            });
 	
 	            var changeLabel = new ChangeLabel({model: model});
@@ -41593,21 +42420,21 @@
 	        $.ajax({
 	            type: "GET",
 	            url: this.model.url() + 'condition/',
-	            dataType: 'json',
+	            dataType: 'json'
 	        }).done(function (data) {
 	            var condition = data;
 	
 	            var ChangeCondition = Dialog.extend({
-	                template: __webpack_require__(280),
+	                template: __webpack_require__(288),
 	                templateHelpers: function () {
 	                    return {
 	                        targets: model.collection.models,
-	                        condition: condition,
+	                        condition: condition
 	                    };
 	                },
 	
 	                attributes: {
-	                    id: "dlg_change_condition",
+	                    id: "dlg_change_condition"
 	                },
 	
 	                ui: {
@@ -41628,7 +42455,7 @@
 	                events: {
 	                    'change @ui.condition': 'onSelectCondition',
 	                    'change @ui.target': 'onSelectTarget',
-	                    'click @ui.destroy': 'onDestroyCondition',
+	                    'click @ui.destroy': 'onDestroyCondition'
 	                },
 	
 	                initialize: function (options) {
@@ -41681,6 +42508,10 @@
 	                                    view.ui.select_value_group.hide(false);
 	                                    view.ui.autocomplete_value_group.show(false);
 	                                }
+	                            } else if (format.type == "entity") {
+	                                view.ui.simple_value_group.hide(false);
+	                                view.ui.select_value_group.hide(false);
+	                                view.ui.autocomplete_value_group.show(false);
 	                            } else if (format.type == "boolean") {
 	                                view.ui.simple_value_group.hide(false);
 	                                view.ui.select_value_group.show(false);
@@ -41701,7 +42532,7 @@
 	                                view.ui.autocomplete_value_group.hide(false);
 	                            }
 	                        });
-	                    };
+	                    }
 	                },
 	
 	                onSelectCondition: function () {
@@ -41742,36 +42573,58 @@
 	                            if (format.type.startsWith('enum_')) {
 	                                if (format.list_type == "autocomplete") {
 	                                    DisplayDescriptor.initAutocomplete(
-	                                        view.descriptorType,
+	                                        view.descriptorType.get('format'),
+	                                        view.descriptorType.url(),
 	                                        view,
 	                                        view.ui.autocomplete_value,
 	                                        view.definesValues,
 	                                        view.defaultValues);
 	                                } else {
 	                                    DisplayDescriptor.initDropdown(
-	                                        view.descriptorType,
+	                                        view.descriptorType.get('format'),
+	                                        view.descriptorType.url(),
 	                                        view,
 	                                        view.ui.select_value,
 	                                        view.definesValues,
 	                                        view.defaultValues);
 	                                }
+	                            } else if (format.type === 'entity') {
+	                                var url = application.baseUrl + format.model.replace('.', '/') + '/';
+	
+	                                DisplayDescriptor.initEntitySelect(
+	                                        view.descriptorType.get('format'),
+	                                        url,
+	                                        view,
+	                                        view.ui.autocomplete_value,
+	                                        view.definesValues,
+	                                        view.defaultValues);
 	                            } else if (format.type === 'boolean') {
 	                                DisplayDescriptor.initBoolean(
-	                                    view.descriptorType,
+	                                    view.descriptorType.get('format'),
 	                                    view,
 	                                    view.ui.select_value,
 	                                    view.definesValues,
 	                                    view.defaultValues);
 	                            } else if (format.type === 'ordinal') {
-	                                DisplayDescriptor.initOrdinal(
-	                                    view.descriptorType,
-	                                    view,
-	                                    view.ui.select_value,
-	                                    view.definesValues,
-	                                    view.defaultValues);
+	                                // ordinal is displayed as a dropdown when there is at max 256 values
+	                                if ((format.range[1] - format.range[0] + 1) <= 256) {
+	                                    DisplayDescriptor.initOrdinal(
+	                                        view.descriptorType.get('format'),
+	                                        view,
+	                                        view.ui.select_value,
+	                                        view.definesValues,
+	                                        view.defaultValues);
+	                                } else {
+	                                    DisplayDescriptor.initNumeric(
+	                                        format,
+	                                        view,
+	                                        view.ui.simple_value,
+	                                        view.definesValues,
+	                                        view.defaultValues);
+	                                }
 	                            } else if (format.type === 'date') {
 	                                DisplayDescriptor.initDate(
-	                                    view.descriptorType,
+	                                    view.descriptorType.get('format'),
 	                                    view,
 	                                    view.ui.simple_value.parent(),
 	                                    view.definesValues,
@@ -41782,7 +42635,7 @@
 	                                    .parent().css('cursor', 'pointer');
 	                            } else if (format.type === 'time') {
 	                                 DisplayDescriptor.initTime(
-	                                    view.descriptorType,
+	                                    view.descriptorType.get('format'),
 	                                    view,
 	                                    view.ui.simple_value.parent(),
 	                                    view.definesValues,
@@ -41793,7 +42646,7 @@
 	                                     .parent().css('cursor', 'pointer');
 	                            } else if (format.type === 'datetime') {
 	                                DisplayDescriptor.initDateTime(
-	                                    view.descriptorType,
+	                                    view.descriptorType.get('format'),
 	                                    view,
 	                                    view.ui.simple_value.parent(),
 	                                    view.definesValues,
@@ -41826,7 +42679,7 @@
 	                    $.ajax({
 	                        type: "DELETE",
 	                        url: model.url() + "condition/",
-	                        contentType: "application/json; charset=utf-8",
+	                        contentType: "application/json; charset=utf-8"
 	                    }).done(function() {
 	                        $.alert.success(gt.gettext("Successfully removed !"));
 	                    }).always(function() {
@@ -41841,7 +42694,7 @@
 	
 	                    var data = {
 	                        target: parseInt(this.ui.target.val()),
-	                        condition: parseInt(this.ui.condition.val()),
+	                        condition: parseInt(this.ui.condition.val())
 	                    };
 	
 	                    if (!this.descriptorType) {
@@ -41850,25 +42703,46 @@
 	
 	                    // take value
 	                    var format = this.descriptorType.get('format');
+	
 	                    if (data.condition == 2 || data.condition == 3) {
-	                        if (format.list_type == "autocomplete") {
-	                            data.values = [this.ui.autocomplete_value.val()];
-	                        } else if (format.list_type == "dropdown" || format.type === 'boolean' || format.type === 'ordinal') {
-	                            data.values = [this.ui.select_value.val()];
-	                        } else if (format.type === "date" ) {
+	                        if (format.type.startsWith('enum_')) {
+	                            if (format.list_type == "autocomplete") {
+	                                data.values = [this.ui.autocomplete_value.val()];
+	                            } else if (format.list_type === "dropdown") {
+	                                data.values = [this.ui.select_value.val()];
+	                            }
+	                        } else if (format.type === 'entity') {
+	                            data.values = [parseInt(this.ui.autocomplete_value.val())];
+	                        } else if (format.type === 'boolean') {
+	                            data.values = [this.ui.select_value.val() === "true"];
+	                        } else if (format.type === 'ordinal') {
+	                            // max 256 values for a dropdown
+	                            if ((format.range[1] - format.range[0] + 1) <= 256) {
+	                                data.values = [parseInt(this.ui.select_value.val())];
+	                            } else {
+	                                data.values = [parseInt(this.ui.simple_value.val())];
+	                            }
+	                        } else if (format.type === "date") {
 	                            // format to YYYYMMDD date
 	                            data.values = [$("#simple_value").parent().data('DateTimePicker').viewDate().format("YYYYMMDD")];
-	                        } else if (format.type === "time" ) {
+	                        } else if (format.type === "time") {
 	                            // format to HH:mm:ss time
 	                            data.values = [$("#simple_value").parent().data('DateTimePicker').viewDate().format("HH:mm:ss")]; // .MS
-	                        } else if (format.type === "datetime" ) {
+	                        } else if (format.type === "datetime") {
 	                            // format to iso datetime
 	                            data.values = [$("#simple_value").parent().data('DateTimePicker').viewDate().format()];
+	                        } else if (format.type === "string") {
+	                            // text (already validated)
+	                            data.values = [this.ui.simple_value.val()];
+	                        } else if (format.type === "numeric") {
+	                            // numeric (already validated)
+	                            data.values = [this.ui.simple_value.val()];
 	                        } else {
+	                            // ???
 	                            data.values = [this.ui.simple_value.val()];
 	                        }
 	                    } else {
-	                        data.values = null;
+	                        data.values = [];
 	                    }
 	
 	                    // depending if the condition previously existed: post or put.
@@ -41897,7 +42771,7 @@
 	                            view.remove();
 	                        });
 	                    }
-	                },
+	                }
 	            });
 	
 	            var changeCondition = new ChangeCondition({model: model, condition: condition});
@@ -41910,10 +42784,10 @@
 
 
 /***/ },
-/* 276 */
-/***/ function(module, exports, __webpack_require__) {
+/* 284 */
+/***/ function(module, exports) {
 
-	/**
+	 /**
 	 * @file displaydescriptor.js
 	 * @brief Display the correct widget for a type of descriptor and its values with a default.
 	 * @author Frederic SCHERMA
@@ -41923,29 +42797,23 @@
 	 * @details
 	 */
 	
-	var Marionette = __webpack_require__(4);
-	
 	var DisplayDescriptor = {
-	    initAutocomplete: function(descriptorType, view, select, definesValues, defaultValues) {
-	        var format = descriptorType.get('format');
+	    isValueDefined: function (definesValues, defaultValues) {
+	        return !!definesValues && !!defaultValues && defaultValues[0] != null;
+	    },
 	
-	        if (typeof definesValues === "undefined") {
-	            definesValues = false;
-	        }
-	
-	        if (typeof definesValues === "undefined") {
-	            definesValues = null;
-	        }
+	    initAutocomplete: function(format, url, view, select, definesValues, defaultValues) {
+	        definesValues = this.isValueDefined(definesValues, defaultValues);
 	
 	        if (format.type.startsWith('enum_')) {
 	            if (format.list_type == "autocomplete") {
 	                var initials = [];
 	
 	                var params = {
+	                    data: initials,
 	                    dropdownParent: $(view.el),
 	                    ajax: {
-	                        data: initials,
-	                        url: descriptorType.url() + 'value/display/search/',
+	                        url: url + 'value/display/search/',
 	                        dataType: 'json',
 	                        delay: 250,
 	                        data: function (params) {
@@ -41953,7 +42821,7 @@
 	
 	                            return {
 	                                cursor: params.next,
-	                                value: params.term,
+	                                value: params.term
 	                            };
 	                        },
 	                        processResults: function (data, params) {
@@ -41981,26 +42849,24 @@
 	                        },
 	                        cache: true
 	                    },
+	                    allowClear: true,
 	                    minimumInputLength: 3,
-	                    placeholder: gt.gettext("Enter a value. 3 characters at least for auto-completion"),
+	                    placeholder: gt.gettext("Enter a value. 3 characters at least for auto-completion")
 	                };
 	
 	                // autoselect the initial value
 	                if (definesValues) {
 	                    $.ajax({
 	                        type: "GET",
-	                        url: descriptorType.url() + 'value/' + defaultValues[0] + '/display/',
-	                        dataType: 'json',
+	                        url: url + 'value/' + defaultValues[0] + '/display/',
+	                        dataType: 'json'
 	                    }).done(function (data) {
 	                        initials.push({id: data.id, text: data.label});
 	
 	                        params.data = initials;
 	
 	                        select.select2(params);
-	
-	                        if (definesValues) {
-	                            select.val(defaultValues).trigger('change');
-	                        }
+	                        select.val(defaultValues).trigger('change');
 	                    });
 	                } else {
 	                    // make an autocomplete widget on simple_value
@@ -42010,39 +42876,91 @@
 	        }
 	    },
 	
-	    initEntityAutoselect: function(descriptorType, view, select, definesValues, defaultValues) {
-	        var format = descriptorType.get('format');
+	    initEntitySelect: function(format, url, view, select, definesValues, defaultValues) {
+	        definesValues = this.isValueDefined(definesValues, defaultValues);
 	
-	        if (typeof definesValues === "undefined") {
-	            definesValues = false;
-	        }
+	        if (format.type === 'entity') {
+	            var initials = [];
 	
-	        if (typeof definesValues === "undefined") {
-	            definesValues = null;
-	        }
+	            var params = {
+	                data: initials,
+	                dropdownParent: $(view.el),
+	                ajax: {
+	                    url: url + 'search/',
+	                    dataType: 'json',
+	                    delay: 250,
+	                    data: function (params) {
+	                        params.term || (params.term = '');
 	
-	        if (format.type === 'boolean') {
-	            // @todo
+	                        return {
+	                            filters: JSON.stringify({
+	                                method: 'icontains',
+	                                fields: ['name'],
+	                                name: params.term
+	                            }),
+	                            cursor: params.next
+	                        };
+	                    },
+	                    processResults: function (data, params) {
+	                        params.next = null;
+	
+	                        if (data.items.length >= 30) {
+	                            params.next = data.next || null;
+	                        }
+	
+	                        var results = [];
+	
+	                        for (var i = 0; i < data.items.length; ++i) {
+	                            results.push({
+	                                id: data.items[i].id,
+	                                text: data.items[i].label
+	                            });
+	                        }
+	
+	                        return {
+	                            results: results,
+	                            pagination: {
+	                                more: params.next != null
+	                            }
+	                        };
+	                    },
+	                    cache: true
+	                },
+	                allowClear: true,
+	                minimumInputLength: 3,
+	                placeholder: gt.gettext("Enter a value. 3 characters at least for auto-completion")
+	            };
+	
+	            // autoselect the initial value
+	            if (definesValues) {
+	                $.ajax({
+	                    type: "GET",
+	                    url: url + defaultValues[0] + '/',
+	                    dataType: 'json'
+	                }).done(function (data) {
+	                    initials.push({id: data.id, text: data.name});
+	
+	                    params.data = initials;
+	
+	                    select.select2(params);
+	                    select.val(defaultValues).trigger('change');
+	                });
+	            } else {
+	                // make an autocomplete widget on simple_value
+	                select.select2(params);
+	            }
 	        }
 	    },
 	
-	    initDropdown: function(descriptorType, view, select, definesValues, defaultValues) {
-	        var format = descriptorType.get('format');
-	
-	        if (typeof definesValues === "undefined") {
-	            definesValues = false;
-	        }
-	
-	        if (typeof definesValues === "undefined") {
-	            definesValues = null;
-	        }
+	    initDropdown: function(format, url, view, select, definesValues, defaultValues) {
+	        definesValues = this.isValueDefined(definesValues, defaultValues);
 	
 	        if (format.type.startsWith('enum_')) {
 	            if (format.list_type == "dropdown") {
 	                // refresh values
 	                $.ajax({
-	                    url: descriptorType.url() + 'value/display',
-	                    dataType: 'json',
+	                    url: url + 'value/display',
+	                    dataType: 'json'
 	                }).done(function (data) {
 	                    for (var i = 0; i < data.length; ++i) {
 	                        var option = $("<option></option>");
@@ -42069,32 +42987,24 @@
 	                        select.append(option);
 	                    }
 	
-	                    select.selectpicker('refresh');
-	
 	                    if (definesValues) {
-	                        select.val(defaultValues).trigger('change');
+	                        select.val(defaultValues[0]).trigger('change');
 	                    }
+	
+	                    select.selectpicker('refresh');
 	                });
 	            }
 	        }
 	    },
 	
-	    initBoolean: function(descriptorType, view, select, definesValues, defaultValues) {
-	        var format = descriptorType.get('format');
-	
-	        if (typeof definesValues === "undefined") {
-	            definesValues = false;
-	        }
-	
-	        if (typeof definesValues === "undefined") {
-	            definesValues = null;
-	        }
+	    initBoolean: function(format, view, select, definesValues, defaultValues) {
+	        definesValues = this.isValueDefined(definesValues, defaultValues);
 	
 	        if (format.type === 'boolean') {
 	            // true
 	            var option = $("<option></option>");
 	
-	            option.attr("value", true);
+	            option.attr("value", "true");
 	            option.html(gt.gettext('Yes'));
 	
 	            select.append(option);
@@ -42102,29 +43012,21 @@
 	            // false
 	            option = $("<option></option>");
 	
-	            option.attr("value", false);
+	            option.attr("value", "false");
 	            option.html(gt.gettext('No'));
 	
 	            select.append(option);
 	
-	            select.selectpicker('refresh');
-	
 	            if (definesValues) {
-	                select.val(defaultValues).trigger('change');
+	                select.val(defaultValues[0] ? "true": "false").trigger('change');
 	            }
+	
+	            select.selectpicker('refresh');
 	        }
 	    },
 	
-	    initOrdinal: function(descriptorType, view, select, definesValues, defaultValues) {
-	        var format = descriptorType.get('format');
-	
-	        if (typeof definesValues === "undefined") {
-	            definesValues = false;
-	        }
-	
-	        if (typeof definesValues === "undefined") {
-	            definesValues = null;
-	        }
+	    initOrdinal: function(format, view, select, definesValues, defaultValues) {
+	        definesValues = this.isValueDefined(definesValues, defaultValues);
 	
 	        if (format.type === 'ordinal') {
 	            var len = format.range[1] - format.range[0] + 1;
@@ -42139,20 +43041,24 @@
 	                    select.append(option);
 	                }
 	
-	                select.selectpicker('refresh');
-	
 	                if (definesValues) {
-	                    select.val(defaultValues).trigger('change');
+	                    select.val(defaultValues[0].toString()).trigger('change');
 	                }
+	
+	                select.selectpicker('refresh');
 	            }
 	        }
 	    },
 	
-	    initDate: function(descriptorType, view, input, definesValues, defaultValues) {
+	    initDate: function(format, view, input, definesValues, defaultValues) {
+	        definesValues = this.isValueDefined(definesValues, defaultValues);
+	
 	        input.datetimepicker({
 	            locale: session.language,
 	            format: $.datepicker._defaults.dateFormat.toUpperCase(),
 	            showTodayButton: true,
+	            showClear: true,
+	            allowInputToggle: true
 	            //widgetParent: view.$el,
 	            //widgetPositioning: {
 	            //    vertical: 'auto',
@@ -42161,16 +43067,16 @@
 	        }).on('dp.show', function (e) {
 	            // fix position when parent has overflow-y defined
 	            // https://github.com/Eonasdan/bootstrap-datetimepicker/issues/790
-	            var datetimepicker = $('body').find('.bootstrap-datetimepicker-widget:last'),
-	                position = datetimepicker.offset(),
-	                parent = datetimepicker.parent(),
+	            var dateTimePicker = $('body').find('.bootstrap-datetimepicker-widget:last'),
+	                position = dateTimePicker.offset(),
+	                parent = dateTimePicker.parent(),
 	                parentPos = parent.offset(),
-	                width = datetimepicker.width(),
+	                width = dateTimePicker.width(),
 	                parentWid = parent.width();
 	
-	            // move datetimepicker to the exact same place it was but attached to body
-	            datetimepicker.appendTo('body');
-	            datetimepicker.css({
+	            // move dateTimePicker to the exact same place it was but attached to body
+	            dateTimePicker.appendTo('body');
+	            dateTimePicker.css({
 	                position: 'absolute',
 	                top: position.top,
 	                bottom: 'auto',
@@ -42179,38 +43085,43 @@
 	                'z-index': 10001
 	            });
 	
-	            // if datetimepicker is wider than the thing it is attached to then move it so the centers line up
+	            // if dateTimePicker is wider than the thing it is attached to then move it so the centers line up
 	            if (parentPos.left + parentWid < position.left + width) {
 	                var newLeft = parentPos.left;
 	                newLeft += parentWid / 2;
 	                newLeft -= width / 2;
-	                datetimepicker.css({left: newLeft});
+	                dateTimePicker.css({left: newLeft});
 	            }
 	        });
 	
-	        if (defaultValues) {
-	            var date = moment(defaultValues[0])
-	            $("#simple_value").val(date.format($.datepicker._defaults.dateFormat.toUpperCase()));
+	        if (definesValues) {
+	            var date = moment(defaultValues[0]);
+	            var linput = input.is('input') ? input : input.children('input');
+	            linput.val(date.format($.datepicker._defaults.dateFormat.toUpperCase()));
 	        }
 	    },
 	
-	    initTime: function(descriptorType, view, input, definesValues, defaultValues) {
+	    initTime: function(format, view, input, definesValues, defaultValues) {
+	        definesValues = this.isValueDefined(definesValues, defaultValues);
+	
 	        input.datetimepicker({
 	            locale: session.language,
 	            format: 'HH:mm:ss',  // 24h
 	            showTodayButton: true,
+	            showClear: true,
+	            allowInputToggle: true
 	        }).on('dp.show', function (e) {
 	            // fix position when parent has overflow-y defined
-	            var datetimepicker = $('body').find('.bootstrap-datetimepicker-widget:last'),
-	                position = datetimepicker.offset(),
-	                parent = datetimepicker.parent(),
+	            var dateTimePicker = $('body').find('.bootstrap-datetimepicker-widget:last'),
+	                position = dateTimePicker.offset(),
+	                parent = dateTimePicker.parent(),
 	                parentPos = parent.offset(),
-	                width = datetimepicker.width(),
+	                width = dateTimePicker.width(),
 	                parentWid = parent.width();
 	
 	            // move datetimepicker to the exact same place it was but attached to body
-	            datetimepicker.appendTo('body');
-	            datetimepicker.css({
+	            dateTimePicker.appendTo('body');
+	            dateTimePicker.css({
 	                position: 'absolute',
 	                top: position.top,
 	                bottom: 'auto',
@@ -42219,38 +43130,43 @@
 	                'z-index': 10001
 	            });
 	
-	            // if datetimepicker is wider than the thing it is attached to then move it so the centers line up
+	            // if dateTimePicker is wider than the thing it is attached to then move it so the centers line up
 	            if (parentPos.left + parentWid < position.left + width) {
 	                var newLeft = parentPos.left;
 	                newLeft += parentWid / 2;
 	                newLeft -= width / 2;
-	                datetimepicker.css({left: newLeft});
+	                dateTimePicker.css({left: newLeft});
 	            }
 	        });
 	
-	        if (defaultValues) {
+	        if (definesValues) {
 	            // HH:mm:ss
-	            $("#simple_value").val([defaultValues]);
+	            var linput = input.is('input') ? input : input.children('input');
+	            linput.val(defaultValues[0]);
 	        }
 	    },
 	
-	    initDateTime: function(descriptorType, view, input, definesValues, defaultValues) {
+	    initDateTime: function(format, view, input, definesValues, defaultValues) {
+	        definesValues = this.isValueDefined(definesValues, defaultValues);
+	
 	        input.datetimepicker({
 	            locale: session.language,
 	            format: $.datepicker._defaults.dateFormat.toUpperCase() + ' HH:mm:ss',  // 24h
-	            showTodayButton: true
+	            showTodayButton: true,
+	            showClear: true,
+	            allowInputToggle: true
 	        }).on('dp.show', function (e) {
 	            // fix position when parent has overflow-y defined
-	            var datetimepicker = $('body').find('.bootstrap-datetimepicker-widget:last'),
-	                position = datetimepicker.offset(),
-	                parent = datetimepicker.parent(),
+	            var dateTimePicker = $('body').find('.bootstrap-datetimepicker-widget:last'),
+	                position = dateTimePicker.offset(),
+	                parent = dateTimePicker.parent(),
 	                parentPos = parent.offset(),
-	                width = datetimepicker.width(),
+	                width = dateTimePicker.width(),
 	                parentWid = parent.width();
 	
-	            // move datetimepicker to the exact same place it was but attached to body
-	            datetimepicker.appendTo('body');
-	            datetimepicker.css({
+	            // move dateTimePicker to the exact same place it was but attached to body
+	            dateTimePicker.appendTo('body');
+	            dateTimePicker.css({
 	                position: 'absolute',
 	                top: position.top,
 	                bottom: 'auto',
@@ -42259,39 +43175,160 @@
 	                'z-index': 10001
 	            });
 	
-	            // if datetimepicker is wider than the thing it is attached to then move it so the centers line up
+	            // if dateTimePicker is wider than the thing it is attached to then move it so the centers line up
 	            if (parentPos.left + parentWid < position.left + width) {
 	                var newLeft = parentPos.left;
 	                newLeft += parentWid / 2;
 	                newLeft -= width / 2;
-	                datetimepicker.css({left: newLeft});
+	                dateTimePicker.css({left: newLeft});
 	            }
 	        });
 	
-	        if (defaultValues) {
-	            var date = moment(defaultValues[0])
-	            $("#simple_value").val(date.format($.datepicker._defaults.dateFormat.toUpperCase() + ' HH:mm:ss'));
+	        if (definesValues) {
+	            var date = moment(defaultValues[0]);
+	            var linput = input.is('input') ? input : input.children('input');
+	            linput.val(date.format($.datepicker._defaults.dateFormat.toUpperCase() + ' HH:mm:ss'));
 	        }
 	    },
 	
-	    initGpsCoordinate: function(descriptorType, view, input, definesValues, defaultValues) {
+	    initGpsCoordinate: function(format, view, input, definesValues, defaultValues) {
+	        definesValues = this.isValueDefined(definesValues, defaultValues);
+	
 	        // @todo
 	    },
 	
-	    initNumeric: function (descriptorType, view, input, definesValues, defaultValues) {
-	        // @todo validator (min, max, decimal, precision) on input
+	    initNumeric: function (format, view, input, definesValues, defaultValues) {
+	        definesValues = this.isValueDefined(definesValues, defaultValues);
+	
+	        if (format.type === "numeric") {
+	            $(input).numeric({
+	                allowPlus           : false,
+	                allowMinus          : true,
+	                allowThouSep        : false,
+	                allowDecSep         : true,
+	                allowLeadingSpaces  : false,
+	                maxDigits           : NaN,
+	                maxDecimalPlaces    : format.precision,
+	                maxPreDecimalPlaces : NaN,
+	                max                 : NaN,
+	                min                 : NaN
+	            });
+	        } else if (format.type === "numeric_range") {
+	            // @todo .toFixed(....) for read value ?
+	            $(input).numeric({
+	                allowPlus           : false,
+	                allowMinus          : format.range[0] < 0,
+	                allowThouSep        : false,
+	                allowDecSep         : true,
+	                allowLeadingSpaces  : false,
+	                maxDigits           : NaN,
+	                maxDecimalPlaces    : format.precision,
+	                maxPreDecimalPlaces : NaN,
+	                max                 : format.range[1],
+	                min                 : format.range[0]
+	            });
+	        } else if (format.type === "ordinal") {
+	            $(input).numeric({
+	                allowPlus           : false,
+	                allowMinus          : format.range[0] < 0,
+	                allowThouSep        : false,
+	                allowDecSep         : false,
+	                allowLeadingSpaces  : false,
+	                maxDigits           : NaN,
+	                maxDecimalPlaces    : NaN,
+	                maxPreDecimalPlaces : NaN,
+	                max                 : format.range[1],
+	                min                 : format.range[0]
+	            });
+	        }
+	
+	        if (definesValues) {
+	            var linput = input.is('input') ? input : input.children('input');
+	            linput.val(defaultValues[0]);
+	        }
 	    },
 	
-	    initText: function (descriptorType, view, input, definesValues, defaultValues) {
-	        // @todo validator (regexp, length...) on input
+	    validationHelper: function(input, type, comment) {
+	        var el = input.parent().parent();
+	
+	        if (!el.hasClass('has-feedback')) {
+	            el.addClass('has-feedback');
+	        }
+	
+	        var help = input.parent().siblings('span.help-block');
+	        if (help.length == 0) {
+	            help = $('<span class="help-block"></span>');
+	            el.append(help);
+	        }
+	
+	        if (type == -1) {
+	            el.addClass('has-error');
+	            input.addClass('invalid');
+	
+	            help.show(false);
+	            help.text(comment);
+	        } else {
+	            el.removeClass('has-error');
+	            input.removeClass('invalid');
+	
+	            help.hide(false);
+	            help.text("");
+	        }
 	    },
+	
+	    initText: function (format, view, input, definesValues, defaultValues) {
+	        definesValues = this.isValueDefined(definesValues, defaultValues);
+	
+	        // hard limit to 1024 characters
+	        input.attr('maxlength', 1024);
+	
+	        if (format.type === "string") {
+	            if (typeof format.regexp !== "undefined") {
+	                input.on("input", function(e) {
+	                    // check regexp and max length of 1024
+	                    var val = $(e.target).val();
+	                    var re = new RegExp(format.regexp);
+	                    var el = $(e.target);
+	
+	                    if (val.length > 1024) {
+	                        DisplayDescriptor.validationHelper(el, -1, gt.gettext("1024 characters max"));
+	                    } else if (!re.test(val)) {
+	                        DisplayDescriptor.validationHelper(el, -1, gt.gettext("Invalid format"));
+	                    } else {
+	                        DisplayDescriptor.validationHelper(el, 0, null);
+	                    }
+	
+	                    return true;
+	                });
+	            } else {
+	                input.on("input", function(e) {
+	                    var val = $(e.target).val();
+	                    var el = $(e.target);
+	
+	                    // hard limit to 1024 characters
+	                    if (val.length > 1024) {
+	                        DisplayDescriptor.validationHelper(el, -1, gt.gettext("1024 characters max"));
+	                    } else {
+	                        DisplayDescriptor.validationHelper(el, 0, null);
+	                    }
+	
+	                    return true;
+	                });
+	            }
+	        }
+	
+	        if (definesValues) {
+	            var linput = input.is('input') ? input : input.children('input');
+	            linput.val(defaultValues[0]);
+	        }
+	    }
 	};
 	
 	module.exports = DisplayDescriptor;
 
 
 /***/ },
-/* 277 */
+/* 285 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -42325,7 +43362,7 @@
 
 
 /***/ },
-/* 278 */
+/* 286 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -42350,7 +43387,7 @@
 
 
 /***/ },
-/* 279 */
+/* 287 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -42394,7 +43431,7 @@
 
 
 /***/ },
-/* 280 */
+/* 288 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -42442,7 +43479,7 @@
 
 
 /***/ },
-/* 281 */
+/* 289 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -42456,7 +43493,7 @@
 	'</th><th>' +
 	((__t = ( gt.gettext("Label") )) == null ? '' : __t) +
 	'</th><th>' +
-	((__t = ( gt.gettext("Mandatory") )) == null ? '' : __t) +
+	((__t = ( gt.gettext("Required") )) == null ? '' : __t) +
 	'</th><th>' +
 	((__t = ( gt.gettext("Set Once") )) == null ? '' : __t) +
 	'</th><th>' +
@@ -42469,7 +43506,7 @@
 
 
 /***/ },
-/* 282 */
+/* 290 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -42483,13 +43520,13 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var DescriptorGroupModel = __webpack_require__(224);
-	var DescriptorGroupAltView = __webpack_require__(283);
+	var DescriptorGroupModel = __webpack_require__(232);
+	var DescriptorGroupAltView = __webpack_require__(291);
 	
-	var ScrollView = __webpack_require__(192);
+	var ScrollView = __webpack_require__(196);
 	
 	var View = ScrollView.extend({
-	    template: __webpack_require__(289),
+	    template: __webpack_require__(297),
 	    childView: DescriptorGroupAltView,
 	    childViewContainer: 'tbody.descriptor-group-list',
 	
@@ -42513,7 +43550,7 @@
 
 
 /***/ },
-/* 283 */
+/* 291 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -42527,16 +43564,16 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var DescriptorGroupModel = __webpack_require__(224);
+	var DescriptorGroupModel = __webpack_require__(232);
 	
-	var DescriptorTypeCollection = __webpack_require__(226);
-	var DescriptorTypeListAltView = __webpack_require__(284);
-	var ScrollingMoreView = __webpack_require__(208);
+	var DescriptorTypeCollection = __webpack_require__(234);
+	var DescriptorTypeListAltView = __webpack_require__(292);
+	var ScrollingMoreView = __webpack_require__(212);
 	
 	var View = Marionette.ItemView.extend({
 	    tagName: 'tr',
 	    className: 'element object descriptor-group-alt',
-	    template: __webpack_require__(288),
+	    template: __webpack_require__(296),
 	
 	    events: {
 	        'click': 'viewDescriptorTypes'
@@ -42566,7 +43603,7 @@
 
 
 /***/ },
-/* 284 */
+/* 292 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -42580,13 +43617,13 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var ScrollView = __webpack_require__(192);
+	var ScrollView = __webpack_require__(196);
 	
-	var DescriptorTypeModel = __webpack_require__(225);
-	var DescriptorTypeAltView = __webpack_require__(285);
+	var DescriptorTypeModel = __webpack_require__(233);
+	var DescriptorTypeAltView = __webpack_require__(293);
 	
 	var View = ScrollView.extend({
-	    template: __webpack_require__(287),
+	    template: __webpack_require__(295),
 	    childView: DescriptorTypeAltView,
 	    childViewContainer: 'tbody.descriptor-type-list',
 	
@@ -42611,7 +43648,7 @@
 
 
 /***/ },
-/* 285 */
+/* 293 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -42625,12 +43662,12 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var DescriptorTypeModel = __webpack_require__(225);
+	var DescriptorTypeModel = __webpack_require__(233);
 	
 	var View = Marionette.ItemView.extend({
 	    tagName: 'tr',
 	    className: 'element object descriptor-type',
-	    template: __webpack_require__(286),
+	    template: __webpack_require__(294),
 	
 	    attributes: {
 	        draggable: true,
@@ -42663,7 +43700,7 @@
 
 
 /***/ },
-/* 286 */
+/* 294 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -42699,7 +43736,7 @@
 
 
 /***/ },
-/* 287 */
+/* 295 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -42724,7 +43761,7 @@
 
 
 /***/ },
-/* 288 */
+/* 296 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -42749,7 +43786,7 @@
 
 
 /***/ },
-/* 289 */
+/* 297 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -42770,7 +43807,7 @@
 
 
 /***/ },
-/* 290 */
+/* 298 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -42811,7 +43848,7 @@
 
 
 /***/ },
-/* 291 */
+/* 299 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -42826,23 +43863,23 @@
 	
 	var Marionette = __webpack_require__(4);
 	
-	var DescriptorMetaModelModel = __webpack_require__(292);
+	var DescriptorMetaModelModel = __webpack_require__(300);
 	
-	var DescriptorModelCollection = __webpack_require__(262);
-	var DescriptorMetaModelCollection = __webpack_require__(293);
-	var DescriptorPanelCollection = __webpack_require__(294);
+	var DescriptorModelCollection = __webpack_require__(270);
+	var DescriptorMetaModelCollection = __webpack_require__(301);
+	var DescriptorPanelCollection = __webpack_require__(302);
 	
-	var DescriptorMetaModelAddView = __webpack_require__(296);
-	var DescriptorMetaModelDetailView = __webpack_require__(299);
-	var DescriptorMetaModelListView = __webpack_require__(301);
-	var DescriptorPanelListView = __webpack_require__(306);
+	var DescriptorMetaModelAddView = __webpack_require__(304);
+	var DescriptorMetaModelDetailView = __webpack_require__(307);
+	var DescriptorMetaModelListView = __webpack_require__(309);
+	var DescriptorPanelListView = __webpack_require__(314);
 	
-	var DescriptorModelListAltView = __webpack_require__(312);
+	var DescriptorModelListAltView = __webpack_require__(320);
 	
-	var DefaultLayout = __webpack_require__(164);
-	var TwoColumnsLayout = __webpack_require__(316);
-	var TitleView = __webpack_require__(165);
-	var ScrollingMoreView = __webpack_require__(208);
+	var DefaultLayout = __webpack_require__(166);
+	var TwoColumnsLayout = __webpack_require__(324);
+	var TitleView = __webpack_require__(167);
+	var ScrollingMoreView = __webpack_require__(212);
 	
 	var Router = Marionette.AppRouter.extend({
 	    routes : {
@@ -42917,7 +43954,7 @@
 
 
 /***/ },
-/* 292 */
+/* 300 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -42968,7 +44005,7 @@
 
 
 /***/ },
-/* 293 */
+/* 301 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -42981,7 +44018,7 @@
 	 * @details
 	 */
 	
-	var DescriptorMetaModelModel = __webpack_require__(292);
+	var DescriptorMetaModelModel = __webpack_require__(300);
 	
 	var Collection = Backbone.Collection.extend({
 	    url: application.baseUrl + 'descriptor/meta-model/',
@@ -43002,7 +44039,7 @@
 
 
 /***/ },
-/* 294 */
+/* 302 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -43015,7 +44052,7 @@
 	 * @details
 	 */
 	
-	var DescriptorPanelModel = __webpack_require__(295);
+	var DescriptorPanelModel = __webpack_require__(303);
 	
 	var Collection = Backbone.Collection.extend({
 	    url: function() {
@@ -43044,7 +44081,7 @@
 
 
 /***/ },
-/* 295 */
+/* 303 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -43108,7 +44145,7 @@
 
 
 /***/ },
-/* 296 */
+/* 304 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -43123,12 +44160,12 @@
 	
 	var Marionette = __webpack_require__(4);
 	
-	var Dialog = __webpack_require__(196);
+	var Dialog = __webpack_require__(200);
 	
 	var View = Marionette.ItemView.extend({
 	    tagName: 'div',
 	    className: 'descriptor-meta-model-add',
-	    template: __webpack_require__(297),
+	    template: __webpack_require__(305),
 	
 	    ui: {
 	        add: 'span.add-descriptor-meta-model',
@@ -43147,7 +44184,7 @@
 	
 	    addDescriptorMetaModel: function () {
 	        var DescriptorModelCreate = Dialog.extend({
-	           template: __webpack_require__(298),
+	           template: __webpack_require__(306),
 	
 	            attributes: {
 	                id: "dlg_create_descriptor_model",
@@ -43286,7 +44323,7 @@
 
 
 /***/ },
-/* 297 */
+/* 305 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -43303,7 +44340,7 @@
 
 
 /***/ },
-/* 298 */
+/* 306 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -43332,7 +44369,7 @@
 
 
 /***/ },
-/* 299 */
+/* 307 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -43346,11 +44383,11 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var DescriptorMetaModelModel = __webpack_require__(292);
+	var DescriptorMetaModelModel = __webpack_require__(300);
 	
 	var View = Marionette.ItemView.extend({
 	    className: 'element object descriptor-meta-model-detail',
-	    template: __webpack_require__(300),
+	    template: __webpack_require__(308),
 	
 	    ui: {
 	        name: '#descriptor_meta_model_name',
@@ -43401,7 +44438,7 @@
 
 
 /***/ },
-/* 300 */
+/* 308 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -43428,7 +44465,7 @@
 
 
 /***/ },
-/* 301 */
+/* 309 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -43442,13 +44479,13 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var DescriptorMetaModelModel = __webpack_require__(292);
-	var DescriptorMetaModelView = __webpack_require__(302);
+	var DescriptorMetaModelModel = __webpack_require__(300);
+	var DescriptorMetaModelView = __webpack_require__(310);
 	
-	var ScrollView = __webpack_require__(192);
+	var ScrollView = __webpack_require__(196);
 	
 	var View = ScrollView.extend({
-	    template: __webpack_require__(305),
+	    template: __webpack_require__(313),
 	    childView: DescriptorMetaModelView,
 	    childViewContainer: 'tbody.descriptor-meta-model-list',
 	
@@ -43464,7 +44501,7 @@
 
 
 /***/ },
-/* 302 */
+/* 310 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -43479,13 +44516,13 @@
 	
 	var Marionette = __webpack_require__(4);
 	
-	var Dialog = __webpack_require__(196);
-	var DescriptorMetaModelModel = __webpack_require__(292);
+	var Dialog = __webpack_require__(200);
+	var DescriptorMetaModelModel = __webpack_require__(300);
 	
 	var View = Marionette.ItemView.extend({
 	    tagName: 'tr',
 	    className: 'element object descriptor-meta-model',
-	    template: __webpack_require__(303),
+	    template: __webpack_require__(311),
 	
 	    ui: {
 	        delete_descriptor_meta_model: 'span.delete-descriptor-meta-model',
@@ -43542,7 +44579,7 @@
 	            var labels = data;
 	
 	            var ChangeLabel = Dialog.extend({
-	                template: __webpack_require__(304),
+	                template: __webpack_require__(312),
 	                templateHelpers: function () {
 	                    return {
 	                        labels: labels,
@@ -43634,7 +44671,7 @@
 
 
 /***/ },
-/* 303 */
+/* 311 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -43665,7 +44702,7 @@
 
 
 /***/ },
-/* 304 */
+/* 312 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -43709,7 +44746,7 @@
 
 
 /***/ },
-/* 305 */
+/* 313 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -43736,7 +44773,7 @@
 
 
 /***/ },
-/* 306 */
+/* 314 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -43750,14 +44787,14 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var ScrollView = __webpack_require__(192);
-	var Dialog = __webpack_require__(196);
+	var ScrollView = __webpack_require__(196);
+	var Dialog = __webpack_require__(200);
 	
-	var DescriptorPanelModel = __webpack_require__(295);
-	var DescriptorPanelView = __webpack_require__(307);
+	var DescriptorPanelModel = __webpack_require__(303);
+	var DescriptorPanelView = __webpack_require__(315);
 	
 	var View = ScrollView.extend({
-	    template: __webpack_require__(311),
+	    template: __webpack_require__(319),
 	    childView: DescriptorPanelView,
 	    childViewContainer: 'div.descriptor-panel-list',
 	
@@ -43846,7 +44883,7 @@
 	
 	        if (elt.$el.hasClass('descriptor-model')) {
 	            var DefinesLabel = Dialog.extend({
-	                template: __webpack_require__(309),
+	                template: __webpack_require__(317),
 	
 	                attributes: {
 	                    id: "dlg_create_panel",
@@ -43981,7 +45018,7 @@
 	module.exports = View;
 
 /***/ },
-/* 307 */
+/* 315 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -43995,14 +45032,14 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var Dialog = __webpack_require__(196);
-	var DescriptorPanelModel = __webpack_require__(295);
+	var Dialog = __webpack_require__(200);
+	var DescriptorPanelModel = __webpack_require__(303);
 	
 	
 	var View = Marionette.ItemView.extend({
 	    tagName: 'div',
 	    className: 'element object descriptor-panel',
-	    template: __webpack_require__(308),
+	    template: __webpack_require__(316),
 	
 	    attributes: {
 	        draggable: true,
@@ -44132,7 +45169,7 @@
 	            this.ui.bottom_placeholder.css('display', 'none');
 	
 	            var DefinesLabel = Dialog.extend({
-	                template: __webpack_require__(309),
+	                template: __webpack_require__(317),
 	
 	                attributes: {
 	                    id: "dlg_create_panel",
@@ -44309,7 +45346,7 @@
 	            var labels = data;
 	
 	            var ChangeLabel = Dialog.extend({
-	                template: __webpack_require__(310),
+	                template: __webpack_require__(318),
 	                templateHelpers: function () {
 	                    return {
 	                        labels: labels,
@@ -44486,7 +45523,7 @@
 
 
 /***/ },
-/* 308 */
+/* 316 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -44511,7 +45548,7 @@
 
 
 /***/ },
-/* 309 */
+/* 317 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -44536,7 +45573,7 @@
 
 
 /***/ },
-/* 310 */
+/* 318 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -44579,7 +45616,7 @@
 
 
 /***/ },
-/* 311 */
+/* 319 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -44598,7 +45635,7 @@
 
 
 /***/ },
-/* 312 */
+/* 320 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -44612,12 +45649,12 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var DescriptorModelView = __webpack_require__(313);
+	var DescriptorModelView = __webpack_require__(321);
 	
-	var ScrollView = __webpack_require__(192);
+	var ScrollView = __webpack_require__(196);
 	
 	var View = ScrollView.extend({
-	    template: __webpack_require__(315),
+	    template: __webpack_require__(323),
 	    childView: DescriptorModelView,
 	    childViewContainer: 'tbody.descriptor-model-list',
 	
@@ -44633,7 +45670,7 @@
 
 
 /***/ },
-/* 313 */
+/* 321 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -44647,12 +45684,12 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var DescriptorModelModel = __webpack_require__(261);
+	var DescriptorModelModel = __webpack_require__(269);
 	
 	var View = Marionette.ItemView.extend({
 	    tagName: 'tr',
 	    className: 'element object descriptor-model',
-	    template: __webpack_require__(314),
+	    template: __webpack_require__(322),
 	
 	    attributes: {
 	        draggable: true,
@@ -44688,7 +45725,7 @@
 
 
 /***/ },
-/* 314 */
+/* 322 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -44713,7 +45750,7 @@
 
 
 /***/ },
-/* 315 */
+/* 323 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -44738,7 +45775,7 @@
 
 
 /***/ },
-/* 316 */
+/* 324 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -44777,7 +45814,7 @@
 
 
 /***/ },
-/* 317 */
+/* 325 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -44790,7 +45827,7 @@
 	 * @details
 	 */
 	
-	var DescribableModel = __webpack_require__(318);
+	var DescribableModel = __webpack_require__(326);
 	
 	var Collection = Backbone.Collection.extend({
 	    url: application.baseUrl + 'descriptor/describable',
@@ -44813,7 +45850,7 @@
 
 
 /***/ },
-/* 318 */
+/* 326 */
 /***/ function(module, exports) {
 
 	/**
@@ -44839,7 +45876,7 @@
 
 
 /***/ },
-/* 319 */
+/* 327 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -44852,7 +45889,7 @@
 	 * @details
 	 */
 	
-	var ConditionModel = __webpack_require__(320);
+	var ConditionModel = __webpack_require__(328);
 	
 	var Collection = Backbone.Collection.extend({
 	    url: application.baseUrl + 'descriptor/condition',
@@ -44875,7 +45912,7 @@
 
 
 /***/ },
-/* 320 */
+/* 328 */
 /***/ function(module, exports) {
 
 	/**
@@ -44901,7 +45938,142 @@
 
 
 /***/ },
-/* 321 */
+/* 329 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file descriptortypeunit.js
+	 * @brief Descriptor type unit collection
+	 * @author Frederic SCHERMA
+	 * @date 2017-01-04
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var DescriptorTypeUnitModel = __webpack_require__(233);
+	
+	var Collection = Backbone.Collection.extend({
+	    url: application.baseUrl + 'descriptor/typeunit/',
+	    model: DescriptorTypeUnitModel,
+	
+	    initialize: function(models, options) {
+	        Collection.__super__.initialize.apply(this);
+	        this.models = [];
+	        this.lookup = {};
+	
+	        for (var i = 0; i < this.defaults.length; ++i) {
+	            var model = this.defaults[i];
+	            this.lookup[model.id] = model.label;
+	            this.models.push(new DescriptorTypeUnitModel({
+	                id: model.id,
+	                value: model.value,
+	                group: model.group,
+	                group_label: model.group_label,
+	                label: model.label
+	            }));
+	        }
+	    },
+	
+	    parse: function(data) {
+	        return data;
+	    },
+	
+	    fetch: function(options) {
+	        // avoid fetching
+	    },
+	
+	    defaults: [
+	        {id: 'chroma_L_value', group: 'chroma', group_label: 'Chroma', label: gt.gettext("L value")},
+	        {id: 'chroma_a_value', group: 'chroma', group_label: 'Chroma', label: gt.gettext("a value")},
+	        {id: 'chroma_b_value', group: 'chroma', group_label: 'Chroma', label: gt.gettext("b value")},
+	
+	        {id: 'degree_celsius',group: 'common', group_label: 'Common', label: gt.gettext("°C")},
+	        {id: 'category', group: 'common', group_label: 'Common', label: gt.gettext("Category")},
+	        {id: 'custom', group: 'common', group_label: 'Common', label: gt.gettext("Custom")},
+	        {id: 'joule', group: 'common', group_label: 'Common', label: gt.gettext("J (joule)")},
+	        {id: 'norm1', group: 'common', group_label: 'Common', label: gt.gettext("°Norm 1")},
+	        {id: 'note', group: 'common', group_label: 'Common', label: gt.gettext("Note")},
+	        {id: 'percent', group: 'common', group_label: 'Common', label: gt.gettext("% (percent)")},
+	        {id: 'regexp', group: 'common', group_label: 'Common', label: gt.gettext("Regular expression")},
+	        {id: 'scale', group: 'common', group_label: 'Common', label: gt.gettext("Scale")},
+	
+	        {id: 'gram_per_100_grain', group: 'grain', group_label: 'Grain', label: gt.gettext("g/100 grain")},
+	        {id: 'gram_per_200_grain', group: 'grain', group_label: 'Grain', label: gt.gettext("g/200 grain")},
+	        {id: 'gram_per_1000_grain', group: 'grain', group_label: 'Grain', label: gt.gettext("g/1000 grain")},
+	        {id: 'grain_per_meter2', group: 'grain', group_label: 'Grain', label: gt.gettext("grain/m²")},
+	        {id: 'grain_per_spike', group: 'grain', group_label: 'Grain', label: gt.gettext("grain/spike")},
+	        {id: 'grain_per_spikelet', group: 'grain', group_label: 'Grain', label: gt.gettext("grain/spikelet")},
+	
+	        {id: 'micrometer', group: 'meter', group_label: 'Meter', label: gt.gettext("um")},
+	        {id: 'millimeter', group: 'meter', group_label: 'Meter', label: gt.gettext("mm")},
+	        {id: 'centimeter', group: 'meter', group_label: 'Meter', label: gt.gettext("cm")},
+	        {id: 'decimeter', group: 'meter', group_label: 'Meter', label: gt.gettext("dm")},
+	        {id: 'meter', group: 'meter', group_label: 'Meter', label: gt.gettext("m")},
+	        {id: 'kilometer', group: 'meter', group_label: 'Meter', label: gt.gettext("km")},
+	
+	        {id: 'plant_per_meter', group: 'plant_and_plot', group_label: 'Plant and plot', label: gt.gettext("plant/m")},
+	        {id: 'plant_per_meter2', group: 'plant_and_plot', group_label: 'Plant and plot', label: gt.gettext("plant/m²")},
+	        {id: 'plant_per_hectare', group: 'plant_and_plot', group_label: 'Plant and plot', label: gt.gettext("plant/ha")},
+	        {id: 'plant_per_plot', group: 'plant_and_plot', group_label: 'Plant and plot', label: gt.gettext("plant/plot")},
+	        {id: 'gram_per_plant', group: 'plant_and_plot', group_label: 'Plant and plot', label: gt.gettext("g/plant")},
+	        {id: 'gram_per_plot', group: 'plant_and_plot', group_label: 'Plant and plot', label: gt.gettext("g/plot")},
+	        {id: 'kilogram_per_plot', group: 'plant_and_plot', group_label: 'Plant and plot', label: gt.gettext("kg/plot")},
+	        {id: 'stoma_per_millimeter2', group: 'plant_and_plot', group_label: 'Plant and plot', label: gt.gettext("stoma/mm²")},
+	        {id: 'node', group: 'plant_and_plot', group_label: 'Plant and plot', label: gt.gettext("node")},
+	        {id: 'spikelet', group: 'plant_and_plot', group_label: 'Plant and plot', label: gt.gettext("spikelet")},
+	        {id: 'spike_per_meter2', group: 'plant_and_plot', group_label: 'Plant and plot', label: gt.gettext("spike/m²")},
+	        {id: 'tiller_per_meter', group: 'plant_and_plot', group_label: 'Plant and plot', label: gt.gettext("tiller/m")},
+	        {id: 'tiller_per_meter2', group: 'plant_and_plot', group_label: 'Plant and plot', label: gt.gettext("tiller/m²")},
+	
+	        {id: 'milliliter', group: 'quantity_and_volume', group_label: 'Quantity and volume', label: gt.gettext("ml")},
+	        {id: 'milliliter_per_percent', group: 'quantity_and_volume', group_label: 'Quantity and volume', label: gt.gettext("ml/%")},
+	        {id: 'ppm', group: 'quantity_and_volume', group_label: 'Quantity and volume', label: gt.gettext("ppm")},
+	        {id: 'milligram_per_kilogram', group: 'quantity_and_volume', group_label: 'Quantity and volume', label: gt.gettext("mg/kg")},
+	        {id: 'gram_per_kilogram', group: 'quantity_and_volume', group_label: 'Quantity and volume', label: gt.gettext("g/kg")},
+	        {id: 'gram_per_meter2', group: 'quantity_and_volume', group_label: 'Quantity and volume', label: gt.gettext("g/m²")},
+	        {id: 'kilogram_per_hectare', group: 'quantity_and_volume', group_label: 'Quantity and volume', label: gt.gettext("kh/ha")},
+	        {id: 'ton_per_hectare', group: 'quantity_and_volume', group_label: 'Quantity and volume', label: gt.gettext("t/ha")},
+	        {id: 'gram_per_liter', group: 'quantity_and_volume', group_label: 'Quantity and volume', label: gt.gettext("g/l")},
+	        {id: 'kilogram_per_hectolitre', group: 'quantity_and_volume', group_label: 'Quantity and volume', label: gt.gettext("kg/hl")},
+	        {id: 'millimol_per_meter2_per_second', group: 'quantity_and_volume', group_label: 'Quantity and volume', label: gt.gettext("mmol/m²/s")},
+	        {id: 'gram_per_meter2_per_day', group: 'quantity_and_volume', group_label: 'Quantity and volume', label: gt.gettext("g/m²/day")},
+	        {id: 'ccl', group: 'quantity_and_volume', group_label: 'Quantity and volume', label: gt.gettext("CCl (chlore)")},
+	        {id: 'delta_13c', group: 'quantity_and_volume', group_label: 'Quantity and volume', label: gt.gettext("delta 13C (carbon)")},
+	
+	        {id: 'millimeter2', group: 'surface', group_label: 'Surface', label: gt.gettext("mm²")},
+	        {id: 'centimeter2', group: 'surface', group_label: 'Surface', label: gt.gettext("cm²")},
+	        {id: 'meter2', group: 'surface', group_label: 'Surface', label: gt.gettext("m²")},
+	        {id: 'hectare', group: 'surface', group_label: 'Surface', label: gt.gettext("ha")},
+	        {id: 'kilometer2', group: 'surface', group_label: 'Surface', label: gt.gettext("km²")},
+	
+	        {id: 'millisecond', group: 'time', group_label: 'Time', label: gt.gettext("ms")},
+	        {id: 'second', group: 'time', group_label: 'Time', label: gt.gettext("s")},
+	        {id: 'minute', group: 'time', group_label: 'Time', label: gt.gettext("min")},
+	        {id: 'hour', group: 'time', group_label: 'Time', label: gt.gettext("hour")},
+	        {id: 'day', group: 'time', group_label: 'Time', label: gt.gettext("day")},
+	        {id: 'month', group: 'time', group_label: 'Time', label: gt.gettext("month")},
+	        {id: 'year', group_label: 'Time', label: gt.gettext("year")},
+	        {id: 'date', group: 'time', group_label: 'Time', label: gt.gettext("date")},
+	        {id: 'time', group: 'time', group_label: 'Time', label: gt.gettext("time with seconds")},
+	        {id: 'datetime', group: 'time', group_label: 'Time', label: gt.gettext("date+time")},
+	        {id: 'percent_per_minute', group: 'time', group_label: 'Time', label: gt.gettext("%/min")},
+	        {id: 'percent_per_hour', group: 'time', group_label: 'Time', label: gt.gettext("%/hour")},
+	        {id: 'percent_per_day', group: 'time', group_label: 'Time', label: gt.gettext("%/day")}
+	    ],
+	
+	    findLabel: function(value) {
+	        return this.lookup[value];
+	        //var res = this.findWhere({value: value});
+	        //return res ? res.get('label') : '';
+	    },
+	});
+	
+	module.exports = Collection;
+
+
+/***/ },
+/* 330 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -44928,15 +46100,15 @@
 	        this.controllers = {};
 	
 	        // i18n
-	        if (session.language === "fr") {
-	            i18next.addResources('fr', 'default', __webpack_require__(322));
-	        } else {  // default to english
-	            //i18next.addResources('en', 'default', require('./locale/en/LC_MESSAGES/default.json'));
-	        }
+	        try {
+	            i18next.addResources('fr', 'default', __webpack_require__(331)("./" + session.language + '/LC_MESSAGES/default.json'));
+	        } catch (e) {
+	            console.warning("No translation found for the current language. Fallback to english language");
+	        };
 	
-	        var SelectOptionItemView = __webpack_require__(150);
+	        var SelectOptionItemView = __webpack_require__(152);
 	
-	        var TaxonRankCollection = __webpack_require__(323);
+	        var TaxonRankCollection = __webpack_require__(334);
 	        this.collections.taxonRanks = new TaxonRankCollection();
 	
 	        this.views.taxonRanks = new SelectOptionItemView({
@@ -44952,7 +46124,7 @@
 	            ]);*/
 	        });
 	
-	        var TaxonSynonymTypeCollection = __webpack_require__(325);
+	        var TaxonSynonymTypeCollection = __webpack_require__(336);
 	        this.collections.taxonSynonymTypes = new TaxonSynonymTypeCollection();
 	
 	        this.views.taxonSynonymTypes = new SelectOptionItemView({
@@ -44960,7 +46132,7 @@
 	            collection: this.collections.taxonSynonymTypes,
 	        });
 	        
-	        var TaxonController = __webpack_require__(327);
+	        var TaxonController = __webpack_require__(338);
 	        this.controllers.taxon = new TaxonController();
 	
 	        Logger.timeEnd("Init taxonomy module");
@@ -44969,10 +46141,10 @@
 	    onStart: function(options) {
 	        Logger.time("Start taxonomy module");
 	
-	        var TaxonRouter = __webpack_require__(334);
+	        var TaxonRouter = __webpack_require__(345);
 	        this.routers.taxon = new TaxonRouter();
 	
-	        var TaxonCollection = __webpack_require__(329);
+	        var TaxonCollection = __webpack_require__(340);
 	        this.collections.taxons = new TaxonCollection();
 	
 	        Logger.timeEnd("Start taxonomy module");
@@ -44990,33 +46162,105 @@
 
 
 /***/ },
-/* 322 */
+/* 331 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var map = {
+		"./en/LC_MESSAGES/default.json": 332,
+		"./fr/LC_MESSAGES/default.json": 333
+	};
+	function webpackContext(req) {
+		return __webpack_require__(webpackContextResolve(req));
+	};
+	function webpackContextResolve(req) {
+		return map[req] || (function() { throw new Error("Cannot find module '" + req + "'.") }());
+	};
+	webpackContext.keys = function webpackContextKeys() {
+		return Object.keys(map);
+	};
+	webpackContext.resolve = webpackContextResolve;
+	module.exports = webpackContext;
+	webpackContext.id = 331;
+
+
+/***/ },
+/* 332 */
 /***/ function(module, exports) {
 
 	module.exports = {
-		"Invalid characters (alphanumeric, _ and - only)": "Caractères invalides (alphanumérique, _ et - seulement)",
-		"3 characters min": "3 caractères au minimum",
-		"Taxon name already in usage": "Ce nom de taxon est déjà utilisé",
-		"List of taxons": "Liste des taxons",
-		"Taxon details": "Détails du taxon",
-		"Enter a taxon name. 3 characters at least for auto-completion": "Saisissez un nom de taxon. 3 caractères minimum pour l'auto-complétion",
-		"Family rank cannot have a parent taxon": "Le rang taxinomique famille ne peut pas avoir de parent",
-		"This rank must have a parent taxon": "Ce rang taxinomique doit avoir un parent",
-		"Taxon successfully created !": "Taxon créé avec succès !",
-		"Synonyms": "Synonymes",
-		"Type": "Type",
-		"Name": "Nom",
-		"Language": "Language",
-		"Create a taxon": "Créer un taxon",
-		"Principal name of the taxon (must be unique)": "Nom principal du taxon (doit être unique)",
-		"Taxon rank": "Rank taxinomique",
-		"Direct parent": "Parent direct",
-		"Cancel": "Annuler",
-		"Create": "Créer"
+		"Successfully removed !": "",
+		"Enter a taxon name. 3 characters at least for auto-completion": "",
+		"Invalid characters (alphanumeric, _ and - only)": "",
+		"3 characters min": "",
+		"64 characters max": "",
+		"Synonym of taxon already used": "",
+		"Unable to rename the synonym !": "",
+		"List of taxons": "",
+		"Taxon details": "",
+		"Taxon name already in usage": "",
+		"Family rank cannot have a parent taxon": "",
+		"This rank must have a parent taxon": "",
+		"Taxon successfully created !": "",
+		"Change the direct parent of taxon": "",
+		"Direct parent": "",
+		"Cancel": "",
+		"Apply": "",
+		"Change the name for a synonym of taxon": "",
+		"Name": "",
+		"Create a taxon": "",
+		"Principal name of the taxon (must be unique)": "",
+		"Language": "",
+		"Taxon rank": "",
+		"Create": "",
+		"No descriptor meta-model is defined for this taxon.": "",
+		"Defines": "",
+		"Type": "",
+		"Synonyms": "",
+		"Descriptors": "",
+		"Children": "",
+		"Entities": ""
 	};
 
 /***/ },
-/* 323 */
+/* 333 */
+/***/ function(module, exports) {
+
+	module.exports = {
+		"Successfully removed !": "Retiré avec succé !",
+		"Enter a taxon name. 3 characters at least for auto-completion": "Saisissez un nom de taxon. 3 caractères minimum pour l'auto-complétion",
+		"Invalid characters (alphanumeric, _ and - only)": "Caractères invalides (alphanumérique, _ et - seulement)",
+		"3 characters min": "3 caractères minimum",
+		"64 characters max": "64 caractères maximum",
+		"Synonym of taxon already used": "Synonyme de taxon existant",
+		"Unable to rename the synonym !": "Impossible de renommer le synonyme !",
+		"List of taxons": "Liste des taxons",
+		"Taxon details": "Détails du taxon",
+		"Taxon name already in usage": "Ce nom de taxon est déjà utilisé",
+		"Family rank cannot have a parent taxon": "Le rang taxinomique famille ne peut pas avoir de parent",
+		"This rank must have a parent taxon": "Ce rang taxinomique doit avoir un parent",
+		"Taxon successfully created !": "Taxon créé avec succès !",
+		"Change the direct parent of taxon": "Changer le parent immédiat du taxon",
+		"Direct parent": "Parent direct",
+		"Cancel": "Annuler",
+		"Apply": "Appliquer",
+		"Change the name for a synonym of taxon": "Changer le nom d'un synonyme de taxon",
+		"Name": "Nom",
+		"Create a taxon": "Créer un taxon",
+		"Principal name of the taxon (must be unique)": "Nom principal du taxon (doit être unique)",
+		"Language": "Language",
+		"Taxon rank": "Rank taxinomique",
+		"Create": "Créer",
+		"No descriptor meta-model is defined for this taxon.": "Aucun méta-modèle de descripteur n'est définit pour ce taxon.",
+		"Defines": "Définir",
+		"Type": "Type",
+		"Synonyms": "Synonymes",
+		"Descriptors": "Descripteurs",
+		"Children": "Enfants",
+		"Entities": "Entités"
+	};
+
+/***/ },
+/* 334 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -45029,7 +46273,7 @@
 	 * @details
 	 */
 	
-	var TaxonRankModel = __webpack_require__(324);
+	var TaxonRankModel = __webpack_require__(335);
 	
 	var TaxonRankCollection = Backbone.Collection.extend({
 	    url: application.baseUrl + 'taxonomy/rank/',
@@ -45056,7 +46300,7 @@
 
 
 /***/ },
-/* 324 */
+/* 335 */
 /***/ function(module, exports) {
 
 	/**
@@ -45083,7 +46327,7 @@
 
 
 /***/ },
-/* 325 */
+/* 336 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -45096,7 +46340,7 @@
 	 * @details
 	 */
 	
-	var TaxonSynonymTypeModel = __webpack_require__(326);
+	var TaxonSynonymTypeModel = __webpack_require__(337);
 	
 	var Collection = Backbone.Collection.extend({
 	    url: application.baseUrl + 'taxonomy/taxon-synonym-type/',
@@ -45123,7 +46367,7 @@
 
 
 /***/ },
-/* 326 */
+/* 337 */
 /***/ function(module, exports) {
 
 	/**
@@ -45150,7 +46394,7 @@
 
 
 /***/ },
-/* 327 */
+/* 338 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -45164,14 +46408,14 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var TaxonModel = __webpack_require__(328);
-	var TaxonCollection = __webpack_require__(329);
-	var TaxonListView = __webpack_require__(330);
-	var DefaultLayout = __webpack_require__(164);
-	var TitleView = __webpack_require__(165);
-	var Dialog = __webpack_require__(196);
+	var TaxonModel = __webpack_require__(339);
+	var TaxonCollection = __webpack_require__(340);
+	var TaxonListView = __webpack_require__(341);
+	var DefaultLayout = __webpack_require__(166);
+	var TitleView = __webpack_require__(167);
+	var Dialog = __webpack_require__(200);
 	
-	/* If using marionnete 3 and no longer Controller class or inherit from Marionette.Object
+	/* If using marionette 3 and no longer Controller class or inherit from Marionette.Object
 	Controller = function(options) {
 	    this.options = options || {};
 	
@@ -45210,7 +46454,7 @@
 	            attributes: {
 	                'id': 'dlg_create_taxon',
 	            },
-	            template: __webpack_require__(333),
+	            template: __webpack_require__(344),
 	
 	            ui: {
 	                create: "button.create",
@@ -45248,7 +46492,7 @@
 	                                method: 'icontains',
 	                                fields: ['name', 'rank'],
 	                                'name': params.term,
-	                                'rank': $("#taxon_rank").val()
+	                                'rank': parseInt($("#taxon_rank").val())
 	                            };
 	
 	                            return {
@@ -45356,8 +46600,8 @@
 	
 	            onBeforeDestroy: function() {
 	                CreateTaxonView.__super__.onBeforeDestroy.apply(this);
-	                $(this.ui.language).selectpicker('destroy');
-	                $(this.ui.rank).selectpicker('destroy');
+	                this.ui.language.selectpicker('destroy');
+	                this.ui.rank.selectpicker('destroy');
 	            },
 	
 	            onChangeRank: function () {
@@ -45380,7 +46624,7 @@
 	
 	                    $.ajax({
 	                        type: "GET",
-	                        url: application.baseUrl + 'taxonomy/search/',
+	                        url: application.baseUrl + 'taxonomy/taxon/search/',
 	                        dataType: 'json',
 	                        data: {filters: JSON.stringify(filters)},
 	                        el: this.ui.name,
@@ -45454,7 +46698,7 @@
 	                        synonyms: [{
 	                            name: this.ui.name.val(),
 	                            type: 0,  // primary
-	                            language: $(this.ui.language).val()
+	                            language: this.ui.language.val()
 	                        }]
 	                    }, {
 	                        wait: true,
@@ -45463,34 +46707,6 @@
 	                            $.alert.success(gt.gettext("Taxon successfully created !"));
 	                        }
 	                    });
-	                    /*
-	                    // send
-	                    $.ajax({
-	                        type: "POST",
-	                        url: application.baseUrl + "taxonomy/",
-	                        dataType: 'json',
-	                        contentType: "application/json; charset=utf-8",
-	                        view: this,
-	                        data: JSON.stringify({
-	                            taxon: {
-	                                name: this.ui.name.val(),
-	                                rank: parseInt(this.ui.rank.val()),
-	                                parent: parseInt(this.ui.parent.attr('parent-id') || '0'),
-	                            }
-	                        }),
-	                        success: function (data) {
-	                            this.view.remove();
-	                            success(gettext("Taxon successfully created !"));
-	
-	                            var collection = application.taxonomy.collections.taxons;
-	                            collection.add({
-	                                id: data.id,
-	                                name: this.view.ui.name.val(),
-	                                rank: this.view.ui.rank.val(),
-	                                parent: this.view.ui.parent.attr('parent-id'),
-	                            });
-	                        }
-	                    });*/
 	                }
 	            }
 	        });
@@ -45504,7 +46720,7 @@
 
 
 /***/ },
-/* 328 */
+/* 339 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -45527,11 +46743,13 @@
 	            return application.baseUrl + 'taxonomy/taxon/' + this.get('id') + '/'; },
 	
 	    defaults: {
-	      id: null,
-	      name: '',
-	      rank: -1,
-	      parent: undefined,
-	      synonyms: [],
+	        id: null,
+	        name: '',
+	        rank: -1,
+	        parent: undefined,
+	        parent_list: [],
+	        parent_details: [],
+	        synonyms: [],
 	    },
 	
 	    parse: function(data) {
@@ -45626,7 +46844,7 @@
 
 
 /***/ },
-/* 329 */
+/* 340 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -45639,7 +46857,7 @@
 	 * @details
 	 */
 	
-	var TaxonModel = __webpack_require__(328);
+	var TaxonModel = __webpack_require__(339);
 	
 	var TaxonCollection = Backbone.Collection.extend({
 	    url: application.baseUrl + 'taxonomy/taxon/',
@@ -45676,7 +46894,7 @@
 
 
 /***/ },
-/* 330 */
+/* 341 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -45689,19 +46907,12 @@
 	 * @details
 	 */
 	
-	var Marionette = __webpack_require__(4);
-	var TaxonModel = __webpack_require__(328);
-	var TaxonView = __webpack_require__(331);
-	
-	var ScrollView = __webpack_require__(192);
-	
+	var TaxonView = __webpack_require__(342);
+	var ScrollView = __webpack_require__(196);
 	
 	var View = ScrollView.extend({
-	    //el: '#main_content',
-	    //template: require('../templates/taxonlist.html'),
 	    template: "<div></div>",
 	    className: "taxon-list",
-	    //childViewContainer: 'div.panel-body',
 	    childView: TaxonView,
 	
 	    initialize: function(options) {
@@ -45716,7 +46927,7 @@
 
 
 /***/ },
-/* 331 */
+/* 342 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -45730,14 +46941,15 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var TaxonModel = __webpack_require__(328);
+	var TaxonModel = __webpack_require__(339);
 	
 	var TaxonItemView = Marionette.ItemView.extend({
 	    tagName: 'div',
-	    template: __webpack_require__(332),
+	    template: __webpack_require__(343),
 	
 	    ui: {
 	        "taxon": "span.taxon",
+	        "remove_taxon": ".remove-taxon",
 	        "synonym_name": ".synonym-name",
 	        "synonym_language": ".synonym-languages",
 	        "taxon_synonym_type": ".taxon-synonym-types",
@@ -45745,7 +46957,8 @@
 	    },
 	
 	    events: {
-	        "click @ui.taxon": "onTaxonDetails"
+	        "click @ui.taxon": "onTaxonDetails",
+	        "click @ui.remove_taxon": "onRemoveTaxon"
 	    },
 	
 	    initialize: function() {
@@ -45760,6 +46973,12 @@
 	
 	    onTaxonDetails: function() {
 	        Backbone.history.navigate("app/taxonomy/taxon/" + this.model.get('id') + "/", {trigger: true});
+	    },
+	
+	    onRemoveTaxon: function() {
+	        this.model.destroy({wait: true}).then(function() {
+	            $.alert.success(gt.gettext("Successfully removed !"));
+	        });
 	    }
 	});
 	
@@ -45767,7 +46986,7 @@
 
 
 /***/ },
-/* 332 */
+/* 343 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -45779,27 +46998,19 @@
 	with (obj) {
 	__p += '<div class="object taxon" object-type="taxon" object-id="' +
 	((__t = ( id )) == null ? '' : __t) +
-	'" style="width:100%"><span style="font-weight:bold; font-size:18px"><span class="name taxon" taxonid="' +
+	'" style="width:100%; margin-top: 8px; margin-bottom: 8px"><div style="margin-left: 5px; padding-bottom: 5px"><span class="remove-taxon action glyphicon glyphicon-minus-sign"></span> <span style="font-weight:bold; font-size:18px"><span class="name taxon" taxonid="' +
 	((__t = ( id )) == null ? '' : __t) +
 	'" style="cursor: pointer">' +
 	__e( name ) +
 	'</span><span class="taxon-rank badge left-margin" value="' +
 	((__t = ( rank )) == null ? '' : __t) +
-	'"></span><br></span><hr class="hr-default"><div class="taxon-synonyms"></div><h4>' +
-	((__t = ( gt.gettext("Synonyms") )) == null ? '' : __t) +
-	'</h4><table class="table table-striped"><thead><tr><th>' +
-	((__t = ( gt.gettext("Type") )) == null ? '' : __t) +
-	'</th><th>' +
-	((__t = ( gt.gettext("Name") )) == null ? '' : __t) +
-	'</th><th>' +
-	((__t = ( gt.gettext("Language") )) == null ? '' : __t) +
-	'</th></tr></thead><tbody> ';
+	'"></span><br></span></div><div class="taxon-synonyms"></div><table class="table table-striped" style="margin-bottom: 0px"><tbody> ';
 	 _.each(synonyms, function(synonym) { ;
-	__p += ' <tr><td name="type" class="taxon-synonym-type" value="' +
+	__p += ' <tr><td style="width: 30%" name="type" class="taxon-synonym-type" value="' +
 	__e( synonym.type ) +
-	'"></td><td name="name">' +
+	'"></td><td style="width: 40%" name="name">' +
 	__e( synonym.name ) +
-	'</td><td name="language" class="language" value="' +
+	'</td><td style="width: 30%" name="language" class="language" value="' +
 	__e( synonym.language ) +
 	'"></td></tr> ';
 	 }) ;
@@ -45811,7 +47022,7 @@
 
 
 /***/ },
-/* 333 */
+/* 344 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -45824,7 +47035,7 @@
 	((__t = ( gt.gettext("Create a taxon") )) == null ? '' : __t) +
 	'</h4></div><div class="modal-body"><form><div class="row"><div class="col-xs-8"><div class="form-group"><label class="control-label" for="taxon_name">' +
 	((__t = ( gt.gettext("Principal name of the taxon (must be unique)") )) == null ? '' : __t) +
-	'</label><input class="form-control name" id="taxon_name" type="text" name="taxon" value="" maxlength="64" autofocus="" autocomplete="off" style="width:100%"></div></div><div class="col-xs-4"><div class="form-group"><label class="control-label" for="taxon_rank">' +
+	'</label><input class="form-control name" id="taxon_name" type="text" name="taxon" value="" maxlength="64" autofocus="" autocomplete="off" style="width:100%"></div></div><div class="col-xs-4"><div class="form-group"><label class="control-label" for="taxon_language">' +
 	((__t = ( gt.gettext("Language") )) == null ? '' : __t) +
 	'</label><select class="form-control language" id="taxon_language" name="language"></select></div></div></div><div class="form-group"><label class="control-label" for="taxon_rank">' +
 	((__t = ( gt.gettext("Taxon rank") )) == null ? '' : __t) +
@@ -45842,7 +47053,7 @@
 
 
 /***/ },
-/* 334 */
+/* 345 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -45856,21 +47067,24 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var TaxonModel = __webpack_require__(328);
+	var TaxonModel = __webpack_require__(339);
 	
-	var TaxonCollection = __webpack_require__(329);
-	var TaxonChildrenCollection = __webpack_require__(335);
+	var TaxonChildrenCollection = __webpack_require__(346);
+	var TaxonEntitiesCollection = __webpack_require__(347);
 	
-	var TaxonListView = __webpack_require__(330);
-	var TaxonItemView = __webpack_require__(331);
-	var TaxonDetailsView = __webpack_require__(336);
-	var TaxonListFilterView = __webpack_require__(340);
-	var TaxonChildrenView = __webpack_require__(342);
+	var TaxonListView = __webpack_require__(341);
+	var TaxonSynonymsView = __webpack_require__(349);
+	var TaxonDetailsView = __webpack_require__(352);
+	var TaxonListFilterView = __webpack_require__(355);
+	var TaxonChildrenView = __webpack_require__(357);
+	var TaxonEntitiesView = __webpack_require__(358);
+	var TaxonDescriptorView = __webpack_require__(362);
+	var TaxonDescriptorCreateView = __webpack_require__(370);
+	var TaxonLayout = __webpack_require__(373);
 	
-	var DefaultLayout = __webpack_require__(164);
-	var TitleView = __webpack_require__(165);
-	var ScrollingMoreView = __webpack_require__(208);
-	var TwoRowsLayout = __webpack_require__(343);
+	var DefaultLayout = __webpack_require__(166);
+	var TitleView = __webpack_require__(167);
+	var ScrollingMoreView = __webpack_require__(212);
 	
 	var TaxonRouter = Marionette.AppRouter.extend({
 	    routes : {
@@ -45902,12 +47116,31 @@
 	        var defaultLayout = new DefaultLayout();
 	        application.getRegion('mainRegion').show(defaultLayout);
 	
-	        var twoRowsLayout = new TwoRowsLayout();
-	        defaultLayout.getRegion('content').show(twoRowsLayout);
+	        var taxonLayout = new TaxonLayout();
+	        defaultLayout.getRegion('content').show(taxonLayout);
 	
 	        taxon.fetch().then(function() {
 	            defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Taxon details"), model: taxon}));
-	            twoRowsLayout.getRegion('top-content').show(new TaxonDetailsView({model: taxon}));
+	            taxonLayout.getRegion('details').show(new TaxonDetailsView({model: taxon}));
+	            taxonLayout.getRegion('synonyms').show(new TaxonSynonymsView({model: taxon}));
+	
+	            // get the layout before creating the view
+	            if (taxon.get('descriptor_meta_model') != null) {
+	                $.ajax({
+	                    method: "GET",
+	                    url: application.baseUrl + 'descriptor/meta-model/' + taxon.get('descriptor_meta_model') + '/layout/',
+	                    dataType: 'json',
+	                }).done(function (data) {
+	                    var taxonDescriptorView = new TaxonDescriptorView({
+	                        model: taxon,
+	                        descriptorMetaModelLayout: data
+	                    });
+	                    taxonLayout.getRegion('descriptors').show(taxonDescriptorView);
+	                });
+	            } else {
+	                var taxonDescriptorCreateView = new TaxonDescriptorCreateView({model: taxon});
+	                taxonLayout.getRegion('descriptors').show(taxonDescriptorCreateView);
+	            }
 	        });
 	
 	        var taxonChildren = new TaxonChildrenCollection([], {model_id: id});
@@ -45915,8 +47148,17 @@
 	        taxonChildren.fetch().then(function() {
 	            var taxonChildrenView = new TaxonChildrenView({collection: taxonChildren, model: taxon});
 	
-	            twoRowsLayout.getRegion('bottom-content').show(taxonChildrenView);
-	            twoRowsLayout.getRegion('bottom-bottom').show(new ScrollingMoreView({targetView: taxonChildrenView}));
+	            taxonLayout.getRegion('children-content').show(taxonChildrenView);
+	            taxonLayout.getRegion('children-bottom').show(new ScrollingMoreView({targetView: taxonChildrenView}));
+	        });
+	
+	        var taxonEntities = new TaxonEntitiesCollection([], {model_id: id});
+	
+	        taxonEntities.fetch().then(function() {
+	            var taxonEntitiesView = new TaxonEntitiesView({collection: taxonEntities, model: taxon});
+	
+	            taxonLayout.getRegion('entities-content').show(taxonEntitiesView);
+	            taxonLayout.getRegion('entities-bottom').show(new ScrollingMoreView({targetView: taxonEntitiesView}));
 	        });
 	    },
 	});
@@ -45925,7 +47167,7 @@
 
 
 /***/ },
-/* 335 */
+/* 346 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -45938,7 +47180,7 @@
 	 * @details
 	 */
 	
-	var TaxonModel = __webpack_require__(328);
+	var TaxonModel = __webpack_require__(339);
 	
 	var Collection = Backbone.Collection.extend({
 	    url: function() {
@@ -45982,64 +47224,155 @@
 
 
 /***/ },
-/* 336 */
+/* 347 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
-	 * @file taxondetails.js
-	 * @brief Taxon details item view
+	 * @file taxonentities.js
+	 * @brief Taxon children entities collection
 	 * @author Frederic SCHERMA
-	 * @date 2016-04-20
+	 * @date 2016-12-28
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var TaxonEntityModel = __webpack_require__(348);
+	
+	var Collection = Backbone.Collection.extend({
+	    url: function() {
+	        return application.baseUrl + 'taxonomy/taxon/' + this.model_id + '/entities/';
+	    },
+	    model: TaxonEntityModel,
+	
+	    comparator: 'name',
+	
+	    initialize: function(models, options) {
+	        options || (options = {});
+	        this.model_id = options.model_id;
+	    },
+	
+	    parse: function(data) {
+	        this.prev = data.prev;
+	        this.cursor = data.cursor;
+	        this.next = data.next;
+	
+	        return data.items;
+	    },
+	
+	    fetch: function(options) {
+	        options || (options = {});
+	        var data = (options.data || {});
+	
+	        options.data = data;
+	
+	        this.cursor = options.data.cursor;
+	        this.sort_by = options.data.sort_by;
+	
+	        if (this.filters) {
+	            options.data.filters = JSON.stringify(this.filters)
+	        }
+	
+	        return Backbone.Collection.prototype.fetch.call(this, options);
+	    }
+	});
+	
+	module.exports = Collection;
+
+
+/***/ },
+/* 348 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file taxonentity.js
+	 * @brief Taxon entity model
+	 * @author Frederic SCHERMA
+	 * @date 2016-12-28
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Backbone = __webpack_require__(2);
+	
+	var Model = Backbone.Model.extend({
+	    defaults: {
+	        id: null,
+	        name: '',
+	        content_type: null
+	    },
+	
+	    parse: function(data) {
+	        return data;
+	    }
+	});
+	
+	module.exports = Model;
+
+
+/***/ },
+/* 349 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file taxonsynonyms.js
+	 * @brief Taxon synonyms view
+	 * @author Frederic SCHERMA
+	 * @date 2016-12-27
 	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
 	 * @license @todo
 	 * @details
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var TaxonModel = __webpack_require__(328);
+	var Dialog = __webpack_require__(200);
 	
-	var Dialog = __webpack_require__(196);
-	
-	var TaxonItemView = Marionette.ItemView.extend({
+	var View = Marionette.ItemView.extend({
 	    tagName: 'div',
-	    className: 'element object taxon',
-	    template: __webpack_require__(337),
+	    className: 'taxon-synonyms',
+	    template: __webpack_require__(350),
 	
 	    ui: {
-	        "view_taxon": ".view-taxon",
 	        "synonym_name": ".synonym-name",
 	        "synonym_language": ".synonym-languages",
 	        "taxon_synonym_type": ".taxon-synonym-types",
-	        "taxon_rank": ".taxon-ranks",
 	        "add_synonym": ".add-synonym",
 	        "remove_synonym": ".remove-synonym",
 	        "add_synonym_panel": "tr.add-synonym-panel",
-	        "rename_synonym": "td.rename-synonym",
-	        "change_parent": "span.change-parent",
+	        "rename_synonym": "td.rename-synonym"
 	    },
 	
 	    events: {
 	        'input @ui.synonym_name': 'onSynonymNameInput',
-	        'click @ui.view_taxon': 'onViewTaxon',
 	        'click @ui.add_synonym': 'onAddSynonym',
 	        'click @ui.remove_synonym': 'onRemoveSynonym',
-	        'click @ui.rename_synonym': 'onRenameSynonym',
-	        'click @ui.change_parent': 'onChangeParent',
+	        'click @ui.rename_synonym': 'onRenameSynonym'
 	    },
 	
 	    initialize: function() {
 	        this.listenTo(this.model, 'reset', this.render, this);
 	        this.listenTo(this.model, 'change', this.render, this);
+	
+	        $(window).resize($.proxy(this.resize, this));
+	        this.resize(null);
+	
+	        $("div.panel-body").find('a[data-toggle="tab"][href="#taxon_synonyms"]').on('shown.bs.tab', $.proxy(function(e) {
+	            this.resize(e);
+	        }, this));
+	    },
+	
+	    resize: function(e) {
+	        var h = $("div.panel-body").height() - $("#taxon_details").outerHeight(true) - 10 - $("ul.nav-tabs").outerHeight(true);
+	        this.$el.height(Math.max(32, h-1));
 	    },
 	
 	    onRender: function() {
 	        application.main.views.languages.drawSelect(this.ui.synonym_language);
 	        application.taxonomy.views.taxonSynonymTypes.drawSelect(this.ui.taxon_synonym_type);
-	        application.taxonomy.views.taxonRanks.drawSelect(this.ui.taxon_rank);
 	
 	        application.main.views.languages.htmlFromValue(this.el);
 	        application.taxonomy.views.taxonSynonymTypes.htmlFromValue(this.el);
-	        application.taxonomy.views.taxonRanks.htmlFromValue(this.el);
 	
 	        this.ui.taxon_synonym_type.find('option[value="0"]').remove();
 	        $(this.ui.taxon_synonym_type).selectpicker('refresh');
@@ -46137,7 +47470,7 @@
 	
 	    onRenameSynonym: function(e) {
 	        var ChangeSynonym = Dialog.extend({
-	            template: __webpack_require__(338),
+	            template: __webpack_require__(351),
 	
 	            attributes: {
 	                id: "dlg_change_synonym",
@@ -46219,6 +47552,122 @@
 	
 	        changeSynonym.render();
 	        changeSynonym.ui.name.val(e.target.innerHTML);
+	    }
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 350 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+	function print() { __p += __j.call(arguments, '') }
+	with (obj) {
+	__p += '<table class="table table-striped" style="margin-bottom: 0px"><thead><tr><th><span class="glyphicon glyphicon-asterisk"></span></th><th>' +
+	((__t = ( gt.gettext("Type") )) == null ? '' : __t) +
+	'</th><th>' +
+	((__t = ( gt.gettext("Name") )) == null ? '' : __t) +
+	'</th><th>' +
+	((__t = ( gt.gettext("Language") )) == null ? '' : __t) +
+	'</th></tr></thead><tbody> ';
+	 _.each(synonyms, function(synonym) { ;
+	__p += ' <tr><th scope="row"> ';
+	 if (synonym.type != 0) { ;
+	__p += '<span data-synonym-id="' +
+	((__t = ( synonym.id )) == null ? '' : __t) +
+	'" class="action remove-synonym glyphicon glyphicon-minus-sign"></span>';
+	 } ;
+	__p += ' </th><td name="type" class="taxon-synonym-type" value="' +
+	__e( synonym.type ) +
+	'"></td><td name="name" class="action rename-synonym" data-synonym-id="' +
+	((__t = ( synonym.id )) == null ? '' : __t) +
+	'">' +
+	__e( synonym.name ) +
+	'</td><td name="language" class="language" value="' +
+	__e( synonym.language ) +
+	'"></td></tr> ';
+	 }) ;
+	__p += ' <tr class="add-synonym-panel"><form><th scope="row"><span class="add-synonym action glyphicon glyphicon-plus-sign" style="margin-top: 9px"></span></th><td><select class="taxon-synonym-types" name="taxon-synonym-type"></select></td><td><div class="form-group" style="margin-bottom: 0px"><input class="form-control synonym-name" type="text" maxlength="64" autocomplete="off" name="synonym-name"></div></td><td><select class="synonym-languages" name="synonym-language"></select></td></form></tr></tbody></table>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 351 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title">' +
+	((__t = ( gt.gettext("Change the name for a synonym of taxon") )) == null ? '' : __t) +
+	'</h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="label">' +
+	((__t = ( gt.gettext("Name") )) == null ? '' : __t) +
+	'</label><input class="form-control" id="name" type="text" name="name" value="" maxlength="128" autofocus="" autocomplete="off" style="width:100%"></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal">' +
+	((__t = ( gt.gettext("Cancel") )) == null ? '' : __t) +
+	'</button> <button type="button" class="btn btn-primary apply">' +
+	((__t = ( gt.gettext("Apply") )) == null ? '' : __t) +
+	'</button></div></div></div>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 352 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file taxondetails.js
+	 * @brief Taxon details item view
+	 * @author Frederic SCHERMA
+	 * @date 2016-04-20
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	
+	var Dialog = __webpack_require__(200);
+	
+	var View = Marionette.ItemView.extend({
+	    tagName: 'div',
+	    className: 'element object taxon',
+	    template: __webpack_require__(353),
+	
+	    ui: {
+	        "view_taxon": ".view-taxon",
+	        "taxon_rank": ".taxon-ranks",
+	        "change_parent": "span.change-parent"
+	    },
+	
+	    events: {
+	        'click @ui.view_taxon': 'onViewTaxon',
+	        'click @ui.change_parent': 'onChangeParent',
+	    },
+	
+	    initialize: function() {
+	        this.listenTo(this.model, 'reset', this.render, this);
+	        this.listenTo(this.model, 'change', this.render, this);
+	    },
+	
+	    onRender: function() {
+	        application.main.views.languages.htmlFromValue(this.el);
+	        application.taxonomy.views.taxonSynonymTypes.htmlFromValue(this.el);
+	        application.taxonomy.views.taxonRanks.htmlFromValue(this.el);
 	    },
 	
 	    onViewTaxon: function(e) {
@@ -46229,7 +47678,7 @@
 	
 	    onChangeParent: function () {
 	        var ChangeParent = Dialog.extend({
-	            template: __webpack_require__(339),
+	            template: __webpack_require__(354),
 	
 	            attributes: {
 	                id: "dlg_change_parent",
@@ -46246,7 +47695,7 @@
 	            onRender: function () {
 	                ChangeParent.__super__.onRender.apply(this);
 	
-	                var rank = this.model.get('rank');
+	                var rank = parseInt(this.model.get('rank'));
 	
 	                $(this.ui.parent).select2({
 	                    dropdownParent: $(this.el),
@@ -46300,7 +47749,7 @@
 	                var model = this.getOption('model');
 	                var parent = null;
 	
-	                if ($(this.ui.parent).val()) {
+	                if (this.ui.parent.val()) {
 	                    parent = parseInt($(this.ui.parent).val());
 	                }
 	
@@ -46317,11 +47766,11 @@
 	    }
 	});
 	
-	module.exports = TaxonItemView;
+	module.exports = View;
 
 
 /***/ },
-/* 337 */
+/* 353 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -46331,9 +47780,7 @@
 	var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 	function print() { __p += __j.call(arguments, '') }
 	with (obj) {
-	__p += '<div class="object taxon" object-type="taxon" object-id="' +
-	((__t = ( id )) == null ? '' : __t) +
-	'" style="width:100%"><span style="font-weight:bold; font-size:18px"> ';
+	__p += '<span style="font-weight:bold; font-size:18px"> ';
 	 for (var i = parent_details.length-1; i >= 0; --i) { ;
 	__p += ' <span><span class="action view-taxon" data-taxon-id="' +
 	((__t = ( parent_details[i].id )) == null ? '' : __t) +
@@ -46349,33 +47796,7 @@
 	__e( name ) +
 	'</span><span class="taxon-rank badge left-margin" value="' +
 	((__t = ( rank )) == null ? '' : __t) +
-	'"></span> </span><span class="glyphicon glyphicon-edit action change-parent"></span><br></span><hr class="hr-default"><div class="taxon-synonyms"></div><h4>' +
-	((__t = ( gt.gettext("Synonyms") )) == null ? '' : __t) +
-	'</h4><table class="table table-striped"><thead><tr><th><span class="glyphicon glyphicon-asterisk"></span></th><th>' +
-	((__t = ( gt.gettext("Type") )) == null ? '' : __t) +
-	'</th><th>' +
-	((__t = ( gt.gettext("Name") )) == null ? '' : __t) +
-	'</th><th>' +
-	((__t = ( gt.gettext("Language") )) == null ? '' : __t) +
-	'</th></tr></thead><tbody> ';
-	 _.each(synonyms, function(synonym) { ;
-	__p += ' <tr><th scope="row"> ';
-	 if (synonym.type != 0) { ;
-	__p += '<span data-synonym-id="' +
-	((__t = ( synonym.id )) == null ? '' : __t) +
-	'" class="action remove-synonym glyphicon glyphicon-minus-sign"></span>';
-	 } ;
-	__p += ' </th><td name="type" class="taxon-synonym-type" value="' +
-	__e( synonym.type ) +
-	'"></td><td name="name" class="action rename-synonym" data-synonym-id="' +
-	((__t = ( synonym.id )) == null ? '' : __t) +
-	'">' +
-	__e( synonym.name ) +
-	'</td><td name="language" class="language" value="' +
-	__e( synonym.language ) +
-	'"></td></tr> ';
-	 }) ;
-	__p += ' <tr class="add-synonym-panel"><form><th scope="row"><span class="add-synonym action glyphicon glyphicon-plus-sign" style="margin-top: 9px"></span></th><td><select class="taxon-synonym-types" name="taxon-synonym-type"></select></td><td><div class="form-group"><input class="form-control synonym-name" type="text" maxlength="64" autocomplete="off" name="synonym-name"></div></td><td><select class="synonym-languages" name="synonym-language"></select></td></form></tr></tbody></table></div>';
+	'"></span> </span><span class="glyphicon glyphicon-edit action change-parent"></span><br></span>';
 	
 	}
 	return __p
@@ -46383,32 +47804,7 @@
 
 
 /***/ },
-/* 338 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var _ = __webpack_require__(1);
-	
-	module.exports = function (obj) {
-	obj || (obj = {});
-	var __t, __p = '';
-	with (obj) {
-	__p += '<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title">' +
-	((__t = ( gt.gettext("Change the name for a synonym of taxon") )) == null ? '' : __t) +
-	'</h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="label">' +
-	((__t = ( gt.gettext("Name") )) == null ? '' : __t) +
-	'</label><input class="form-control" id="name" type="text" name="name" value="" maxlength="128" autofocus="" autocomplete="off" style="width:100%"></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal">' +
-	((__t = ( gt.gettext("Cancel") )) == null ? '' : __t) +
-	'</button> <button type="button" class="btn btn-primary apply">' +
-	((__t = ( gt.gettext("Apply") )) == null ? '' : __t) +
-	'</button></div></div></div>';
-	
-	}
-	return __p
-	};
-
-
-/***/ },
-/* 339 */
+/* 354 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -46433,7 +47829,7 @@
 
 
 /***/ },
-/* 340 */
+/* 355 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -46451,7 +47847,7 @@
 	var View = Marionette.ItemView.extend({
 	    tagName: 'div',
 	    className: 'taxon-filter',
-	    template: __webpack_require__(341),
+	    template: __webpack_require__(356),
 	
 	    ui: {
 	        filter_btn: 'button.taxon-filter',
@@ -46513,7 +47909,7 @@
 
 
 /***/ },
-/* 341 */
+/* 356 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var _ = __webpack_require__(1);
@@ -46530,7 +47926,7 @@
 
 
 /***/ },
-/* 342 */
+/* 357 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -46544,22 +47940,40 @@
 	 */
 	
 	var Marionette = __webpack_require__(4);
-	var TaxonModel = __webpack_require__(328);
-	var TaxonView = __webpack_require__(331);
+	var TaxonModel = __webpack_require__(339);
+	var TaxonView = __webpack_require__(342);
 	
-	var ScrollView = __webpack_require__(192);
+	var ScrollView = __webpack_require__(196);
 	
 	
 	var View = ScrollView.extend({
 	    template: "<div></div>",
 	    className: "taxon-list",
 	    childView: TaxonView,
+	    attributes: {
+	    },
 	
 	    initialize: function(options) {
 	        options || (options = {});
-	        this.listenTo(this.collection, 'reset', this.render, this);
 	
 	        View.__super__.initialize.apply(this);
+	
+	        this.listenTo(this.collection, 'reset', this.render, this);
+	
+	        $(window).resize($.proxy(this.resize, this));
+	
+	        $("div.panel-body").find('a[data-toggle="tab"][href="#taxon_children"]').on('shown.bs.tab', $.proxy(function(e) {
+	            this.resize(e);
+	        }, this));
+	    },
+	
+	    resize: function(e) {
+	        var container = $(this.el).parent();
+	        var bottomHeight = container.parent().children("div.children-bottom").children("div").outerHeight(true);
+	
+	        // 10 is the padding before nav bar
+	        var h = $("div.panel-body").height() - $("#taxon_details").outerHeight(true) - 10 - $("ul.nav-tabs").outerHeight(true) - bottomHeight;
+	        this.$el.height(Math.max(32, h-1));
 	    }
 	});
 	
@@ -46567,14 +47981,68 @@
 
 
 /***/ },
-/* 343 */
+/* 358 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
-	 * @file tworowslayout.js
-	 * @brief Two rows layout
+	 * @file taxonentities.js
+	 * @brief Taxon entities list view
 	 * @author Frederic SCHERMA
-	 * @date 2016-12-10
+	 * @date 2016-12-28
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var TaxonEntityView = __webpack_require__(359);
+	var ScrollView = __webpack_require__(196);
+	
+	
+	var View = ScrollView.extend({
+	    template: __webpack_require__(361),
+	    className: "taxon-entity-list",
+	    childView: TaxonEntityView,
+	    childViewContainer: 'tbody.entities-list',
+	
+	    initialize: function(options) {
+	        options || (options = {});
+	
+	        View.__super__.initialize.apply(this);
+	
+	        this.listenTo(this.collection, 'reset', this.render, this);
+	        this.listenTo($('window'), 'load', this.resize, this);
+	        this.listenTo($('window'), 'resize', this.resize, this);
+	
+	        $(window).resize($.proxy(this.resize, this));
+	
+	        $("div.panel-body").find('a[data-toggle="tab"][href="#taxon_entities"]').on('shown.bs.tab', $.proxy(function(e) {
+	            this.resize(e);
+	        }, this));
+	        //this.resize();
+	    },
+	
+	    resize: function(e) {
+	        var container = $(this.el).parent();
+	        var bottomHeight = container.parent().children("div.entities-bottom").children("div").outerHeight(true);
+	
+	        // 10 is the padding before nav bar
+	        var h = $("div.panel-body").height() - $("#taxon_details").outerHeight(true) - 10 - $("ul.nav-tabs").outerHeight(true) - bottomHeight;
+	        this.$el.height(Math.max(32, h-1));
+	    }
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 359 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file taxonentity.js
+	 * @brief Taxon entity item view
+	 * @author Frederic SCHERMA
+	 * @date 2016-12-28
 	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
 	 * @license @todo
 	 * @details
@@ -46582,31 +48050,1971 @@
 	
 	var Marionette = __webpack_require__(4);
 	
-	var TwoRowsLayout = Marionette.LayoutView.extend({
-	    template: "#two_rows_layout_view",
-	    attributes: {
-	        // style: "height: 95%;"
+	var View = Marionette.ItemView.extend({
+	    tagName: 'tr',
+	    template: __webpack_require__(360),
+	    taxon: null,
+	
+	    ui: {
+	        view_entity: ".view-entity",
+	        content_type: "td.entity-type > abbr.content-type"
 	    },
 	
-	    regions: {
-	        'top-content': ".top-content",
-	        'top-bottom': ".top-bottom",
-	        'bottom-content': ".bottom-content",
-	        'bottom-bottom': ".bottom-bottom",
+	    events: {
+	        'click @ui.view_entity': 'onViewEntity',
 	    },
 	
-	    onBeforeShow: function() {
+	    initialize: function(options) {
+	        this.mergeOptions(options, ['taxon']);
+	
+	        this.listenTo(this.model, 'reset', this.render, this);
+	        this.listenTo(this.entity, 'change', this.render, this);
 	    },
 	
-	    onBeforeDestroy: function () {
+	    onRender: function() {
+	        application.main.views.contentTypes.htmlFromValue(this.el);
+	    },
+	
+	    onViewEntity: function(e) {
+	        var path = this.model.get('content_type').replace('.', '/');
+	        Backbone.history.navigate("app/" + path + "/" + this.model.get('id') + "/", {trigger: true});
 	    },
 	});
 	
-	module.exports = TwoRowsLayout;
+	module.exports = View;
 
 
 /***/ },
-/* 344 */
+/* 360 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<td name="name" class="entity-name action view-entity" entity-id="' +
+	((__t = ( id )) == null ? '' : __t) +
+	'">' +
+	((__t = ( name )) == null ? '' : __t) +
+	'</td><td name="type" class="entity-type"><abbr class="content-type" value="' +
+	((__t = ( content_type )) == null ? '' : __t) +
+	'" title="' +
+	((__t = ( content_type )) == null ? '' : __t) +
+	'"></abbr></td>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 361 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<table class="table table-striped" style="margin-bottom: 0px"><thead><tr scope="row" class="sticky-header"><th>' +
+	((__t = ( gt.gettext("Name") )) == null ? '' : __t) +
+	'</th><th>' +
+	((__t = ( gt.gettext("Type") )) == null ? '' : __t) +
+	'</th></tr></thead><tbody class="entities-list"></tbody></table>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 362 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file taxondescriptor.js
+	 * @brief Taxon descriptors view
+	 * @author Frederic SCHERMA
+	 * @date 2016-12-29
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var DescribableDetails = __webpack_require__(363);
+	var TaxonDescriptorEditView = __webpack_require__(367);
+	
+	var View = DescribableDetails.extend({
+	    onModify: function () {
+	        // does not reload models, just redo the views
+	        var model = this.model;
+	        var name = model.get('name');
+	
+	        // update the descriptor part of the taxon layout
+	        var taxonLayout = application.getRegion('mainRegion').currentView.getRegion('content').currentView;
+	
+	        var view = new TaxonDescriptorEditView({model: this.model, descriptorMetaModelLayout: this.descriptorMetaModelLayout});
+	        taxonLayout.getRegion('descriptors').show(view);
+	    }
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 363 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file describabledetails.js
+	 * @brief Describable entity details item view
+	 * @author Frederic SCHERMA
+	 * @date 2016-12-20
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var ItemView = __webpack_require__(364);
+	var DisplayReadDescriptor = __webpack_require__(365);
+	
+	var View = ItemView.extend({
+	    tagName: 'div',
+	    template: __webpack_require__(366),
+	    templateHelpers: function () {
+	        return {
+	            panels: this.descriptorMetaModelLayout.panels,
+	            target: this.descriptorMetaModelLayout.target
+	        };
+	    },
+	
+	    ui: {
+	        "descriptor": "tr.descriptor",
+	        "modify": "button.modify"
+	    },
+	
+	    events: {
+	        "click @ui.modify": "onModify"
+	    },
+	
+	    initialize: function(options) {
+	        View.__super__.initialize.apply(this);
+	
+	        this.descriptorMetaModelLayout = options.descriptorMetaModelLayout;
+	
+	        this.listenTo(this.model, 'reset', this.render, this);
+	    },
+	
+	    onRender: function() {
+	        var view = this;
+	        var model = this.model;
+	        var descriptors = model.get('descriptors');
+	
+	        $.each(this.ui.descriptor, function(index) {
+	            var el = $(this);
+	
+	            var pi = el.attr('panel-index');
+	            var i = el.attr('index');
+	            var descriptorModelType = view.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
+	            var descriptorType = descriptorModelType.descriptor_type;
+	            var format = descriptorType.format;
+	
+	            values = [model.get('descriptors')[descriptorModelType.id]];
+	
+	            if (format.type.startsWith('enum_')) {
+	                var url = application.baseUrl + 'descriptor/group/' + descriptorType.group + '/type/' + descriptorType.id + '/';
+	
+	                if (format.list_type == "autocomplete") {
+	                    var group = el.children('td.descriptor-value').children('div.input-group');
+	                    group.children('span').children('span').addClass('glyphicon-list');
+	
+	                    DisplayReadDescriptor.initAutocomplete(
+	                        format,
+	                        url,
+	                        view,
+	                        group,
+	                        true,
+	                        values);
+	                } else {
+	                    var group = el.children('td.descriptor-value').children('div.input-group');
+	                    group.children('span').children('span').addClass('glyphicon-list');
+	
+	                    DisplayReadDescriptor.initDropdown(
+	                        format,
+	                        url,
+	                        view,
+	                        group,
+	                        true,
+	                        values);
+	                }
+	            } else if (format.type == "entity") {
+	                var url = application.baseUrl + format.model.replace('.', '/') + '/';
+	
+	                var group = el.children('td.descriptor-value').children('div.input-group');
+	                group.children('span').children('span').addClass('glyphicon-share');
+	
+	                DisplayReadDescriptor.initEntitySelect(
+	                    format,
+	                    url,
+	                    view,
+	                    group,
+	                    true,
+	                    values);
+	            } else if (format.type === "boolean") {
+	                var group = el.children('td.descriptor-value').children('div.input-group');
+	
+	                if (values[0]) {
+	                    group.children('span').children('span').addClass('glyphicon-check');
+	                } else {
+	                    group.children('span').children('span').addClass('glyphicon-unchecked');
+	                }
+	
+	                DisplayReadDescriptor.initBoolean(
+	                    format,
+	                    view,
+	                    group,
+	                    true,
+	                    values);
+	            } else if ((format.type === "ordinal") && ((format.range[1] - format.range[0] + 1) <= 256)) {
+	                // ordinal with at max 256 values as a dropdown
+	                var group = el.children('td.descriptor-value').children('div.input-group');
+	                group.children('span').children('span').addClass('glyphicon-option-vertical');
+	
+	                DisplayReadDescriptor.initOrdinal(
+	                    format,
+	                    view,
+	                    group,
+	                    true,
+	                    values);
+	            } else if (format.type === "date") {
+	                var group = el.children('td.descriptor-value').children('div.input-group');
+	                group.children('span').children('span').addClass('glyphicon-calendar');
+	
+	                DisplayReadDescriptor.initDate(
+	                    format,
+	                    view,
+	                    group,
+	                    true,
+	                    values);
+	            } else if (format.type === "time") {
+	                var group = el.children('td.descriptor-value').children('div.input-group');
+	                group.children('span').children('span').addClass('glyphicon-time');
+	
+	                DisplayReadDescriptor.initTime(
+	                    format,
+	                    view,
+	                    group,
+	                    true,
+	                    values);
+	            } else if (format.type === "datetime") {
+	                var group = el.children('td.descriptor-value').children('div.input-group');
+	                group.children('span').children('span').addClass('glyphicon-calendar');
+	
+	                DisplayReadDescriptor.initDateTime(
+	                    format,
+	                    view,
+	                    group,
+	                    true,
+	                    values);
+	            } else {
+	                var group = el.children('td.descriptor-value').children('div.input-group');
+	                group.children('span').children('span').addClass('glyphicon-cog');
+	
+	                // numeric, numeric range, and ordinal with more than 256 values
+	                if (format.type === "numeric" || format.type === "numeric_range" || format.type === "ordinal") {
+	                    DisplayReadDescriptor.initNumeric(
+	                        format,
+	                        view,
+	                        group,
+	                        true,
+	                        values);
+	                } else if (format.type === "string") { // regexp text
+	                    DisplayReadDescriptor.initText(
+	                        format,
+	                        view,
+	                        group,
+	                        true,
+	                        values);
+	                }
+	            }
+	        });
+	    },
+	
+	    onShow: function() {
+	        var view = this;
+	        var model = this.model;
+	
+	        $.each(this.ui.descriptor, function(index) {
+	            var el = $(this);
+	
+	            var pi = el.attr('panel-index');
+	            var i = el.attr('index');
+	            var descriptorModelType = view.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
+	            var condition = descriptorModelType.condition;
+	
+	            if (condition.defined) {
+	                var display = false;
+	
+	                // search the target descriptor type for the condition
+	                var target = view.$el.find("tr.descriptor[descriptor-model-type=" + condition.target + "]");
+	                var targetDescriptorModelType = view.descriptorMetaModelLayout.panels[target.attr('panel-index')].descriptor_model.descriptor_model_types[target.attr('index')];
+	                var format = targetDescriptorModelType.descriptor_type.format;
+	
+	                values = [model.get('descriptors')[targetDescriptorModelType.id]];
+	
+	                if (format.type.startsWith('enum_')) {
+	                    switch (condition.condition) {
+	                        case 0:
+	                            display = values[0] == null || values[0] === "";
+	                            break;
+	                        case 1:
+	                            display = values[0] != null && values[0] !== "";
+	                            break;
+	                        case 2:
+	                            display = values[0] === condition.values[0];
+	                            break;
+	                        case 3:
+	                            display = values[0] !== condition.values[0];
+	                            break;
+	                        default:
+	                            break;
+	                    }
+	                } else if (format.type === "entity") {
+	                    switch (condition.condition) {
+	                        case 0:
+	                            display = values[0] == null || values[0] === "";
+	                            break;
+	                        case 1:
+	                            display = values[0] != null && values[0] !== "";
+	                            break;
+	                        case 2:
+	                            display = values[0] === condition.values[0];
+	                            break;
+	                        case 3:
+	                            display = values[0] !== condition.values[0];
+	                            break;
+	                        default:
+	                            break;
+	                    }
+	                } else if (format.type === "boolean") {
+	                    switch (condition.condition) {
+	                        case 0:
+	                            display = false;  // a boolean is always defined
+	                            break;
+	                        case 1:
+	                            display = true;  // a boolean is always defined
+	                            break;
+	                        case 2:
+	                            display = values[0] === condition.values[0];
+	                            break;
+	                        case 3:
+	                            display = value[0] !== condition.values[0];
+	                            break;
+	                        default:
+	                            break;
+	                    }
+	                } else if ((format.type === "ordinal") && ((format.range[1] - format.range[0] + 1) <= 256)) {
+	                    switch (condition.condition) {
+	                        case 0:
+	                            display = false;  // an ordinal is always defined
+	                            break;
+	                        case 1:
+	                            display = true;  // an ordinal is always defined
+	                            break;
+	                        case 2:
+	                            display = values[0] === condition.values[0];
+	                            break;
+	                        case 3:
+	                            display = values[0] !== condition.values[0];
+	                            break;
+	                        default:
+	                            break;
+	                    }
+	                } else if ((format.type === "date") || (format.type === "time") || (format.type === "datetime")) {
+	                    switch (condition.condition) {
+	                        case 0:
+	                            display = values[0] == null || values[0] === "";
+	                            break;
+	                        case 1:
+	                            display = values[0] != null && values[0] !== "";
+	                            break;
+	                        case 2:
+	                            display = values[0] === condition.values[0];
+	                            break;
+	                        case 3:
+	                            display = values[0] !== condition.values[0];
+	                            break;
+	                        default:
+	                            break;
+	                    }
+	                } else {
+	                    // numeric, numeric range, ordinal with more than 256 values, text with regexp
+	                    switch (condition.condition) {
+	                        case 0:
+	                            display = values[0] == null || values[0] === "";
+	                            break;
+	                        case 1:
+	                            display = values[0] != null && values[0] !== "";
+	                            break;
+	                        case 2:
+	                            display = values[0] === condition.values[0];
+	                            break;
+	                        case 3:
+	                            display = values[0] !== condition.values[0];
+	                            break;
+	                        default:
+	                            break;
+	                    }
+	                }
+	
+	                if (!display) {
+	                    el.hide(false);
+	                }
+	            }
+	        });
+	    },
+	    
+	    onModify: function () {
+	
+	    }
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 364 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(_) {/**
+	 * @file itemview.js
+	 * @brief Base item view with compoundable properties
+	 * @author Frederic SCHERMA
+	 * @date 2016-12-15
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	
+	var View = Marionette.ItemView.extend({
+	    constructor: function() {
+	        var prototype = this.constructor.prototype;
+	
+	        this.events = {};
+	        this.defaultOptions = {};
+	        this.ui = {};
+	        this.attributes = {};
+	        this.className = "";
+	
+	        while (prototype) {
+	            if (prototype.hasOwnProperty("events")) {
+	                _.defaults(this.events, prototype.events);
+	            }
+	            if (prototype.hasOwnProperty("defaultOptions")) {
+	                _.defaults(this.defaultOptions, prototype.defaultOptions);
+	            }
+	            if (prototype.hasOwnProperty("ui")) {
+	                _.defaults(this.ui, prototype.ui);
+	            }
+	            if (prototype.hasOwnProperty("attributes")) {
+	                _.defaults(this.attributes, prototype.attributes);
+	            }
+	            if (prototype.hasOwnProperty("className")) {
+	                this.className += " " + prototype.className;
+	            }
+	            prototype = prototype.constructor.__super__;
+	        }
+	
+	        Marionette.ItemView.apply(this, arguments);
+	    },
+	
+	    initialize: function (options) {
+	        View.__super__.initialize.apply(this);
+	    }
+	});
+	
+	module.exports = View;
+	
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 365 */
+/***/ function(module, exports) {
+
+	/**
+	 * @file displayreaddescriptor.js
+	 * @brief Display the correct widget for a type of descriptor and its values with a default for reading only.
+	 * @author Frederic SCHERMA
+	 * @date 2016-12-21
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var DisplayReadDescriptor = {
+	    isValueDefined: function (definesValues, defaultValues) {
+	        return !!definesValues && !!defaultValues && defaultValues[0] != null;
+	    },
+	
+	    initAutocomplete: function(format, url, view, input, definesValues, defaultValues) {
+	        definesValues = this.isValueDefined(definesValues, defaultValues);
+	
+	        if (format.type.startsWith('enum_')) {
+	            if (format.list_type == "autocomplete") {
+	                if (definesValues) {
+	                    $.ajax({
+	                        type: "GET",
+	                        url: url + 'value/' + defaultValues[0] + '/display/',
+	                        dataType: 'json'
+	                    }).done(function (data) {
+	                        var linput = input.is('input') ? input : input.children('input');
+	                        linput.val(data.label);
+	                    });
+	                }
+	            }
+	        }
+	    },
+	
+	    initEntitySelect: function(format, url, view, input, definesValues, defaultValues) {
+	        definesValues = this.isValueDefined(definesValues, defaultValues);
+	
+	        if (format.type === 'entity') {
+	            if (definesValues) {
+	                $.ajax({
+	                    type: "GET",
+	                    url: url + defaultValues[0] + '/',
+	                    dataType: 'json'
+	                }).done(function (data) {
+	                    var linput = input.is('input') ? input : input.children('input');
+	                    linput.val(data.name);
+	                });
+	            }
+	        }
+	    },
+	
+	    initDropdown: function(format, url, view, input, definesValues, defaultValues) {
+	        definesValues = this.isValueDefined(definesValues, defaultValues);
+	
+	        if (format.type.startsWith('enum_')) {
+	            if (format.list_type == "dropdown") {
+	                if (definesValues) {
+	                    if (definesValues) {
+	                        $.ajax({
+	                            type: "GET",
+	                            url: url + 'value/' + defaultValues[0] + '/display/',
+	                            dataType: 'json'
+	                        }).done(function (data) {
+	                            var linput = input.is('input') ? input : input.children('input');
+	                            linput.val(data.label);
+	                        });
+	                    }
+	                }
+	            }
+	        }
+	    },
+	
+	    initBoolean: function(format, view, input, definesValues, defaultValues) {
+	        definesValues = this.isValueDefined(definesValues, defaultValues);
+	
+	        if (format.type === 'boolean') {
+	            if (definesValues) {
+	                var linput = input.is('input') ? input : input.children('input');
+	                linput.val(defaultValues[0] ? gt.gettext('Yes') : gt.gettext('No'));
+	            }
+	        }
+	    },
+	
+	    initOrdinal: function(format, view, input, definesValues, defaultValues) {
+	        definesValues = this.isValueDefined(definesValues, defaultValues);
+	
+	        if (format.type === 'ordinal') {
+	            if (definesValues) {
+	                var linput = input.is('input') ? input : input.children('input');
+	                linput.val(defaultValues[0]);
+	            }
+	        }
+	    },
+	
+	    initDate: function(format, view, input, definesValues, defaultValues) {
+	        definesValues = this.isValueDefined(definesValues, defaultValues);
+	
+	        if (definesValues) {
+	            var date = moment(defaultValues[0]);
+	            var linput = input.is('input') ? input : input.children('input');
+	            linput.val(date.format($.datepicker._defaults.dateFormat.toUpperCase()));
+	        }
+	    },
+	
+	    initTime: function(format, view, input, definesValues, defaultValues) {
+	        definesValues = this.isValueDefined(definesValues, defaultValues);
+	
+	        if (definesValues) {
+	            // HH:mm:ss
+	            var linput = input.is('input') ? input : input.children('input');
+	            linput.val(defaultValues[0]);
+	        }
+	    },
+	
+	    initDateTime: function(format, view, input, definesValues, defaultValues) {
+	        definesValues = this.isValueDefined(definesValues, defaultValues);
+	
+	        if (definesValues) {
+	            var date = moment(defaultValues[0]);
+	            var linput = input.is('input') ? input : input.children('input');
+	            linput.val(date.format($.datepicker._defaults.dateFormat.toUpperCase() + ' HH:mm:ss'));
+	        }
+	    },
+	
+	    initGpsCoordinate: function(format, view, input, definesValues, defaultValues) {
+	        definesValues = this.isValueDefined(definesValues, defaultValues);
+	
+	        if (definesValues) {
+	            var linput = input.is('input') ? input : input.children('input');
+	            // @todo
+	        }
+	    },
+	
+	    initNumeric: function (format, view, input, definesValues, defaultValues) {
+	        definesValues = this.isValueDefined(definesValues, defaultValues);
+	
+	        if (definesValues) {
+	            var linput = input.is('input') ? input : input.children('input');
+	            linput.val(defaultValues[0]);
+	        }
+	    },
+	
+	    initText: function (format, view, input, definesValues, defaultValues) {
+	        definesValues = this.isValueDefined(definesValues, defaultValues);
+	
+	        if (definesValues) {
+	            var linput = input.is('input') ? input : input.children('input');
+	            linput.val(defaultValues[0]);
+	        }
+	    }
+	};
+	
+	module.exports = DisplayReadDescriptor;
+
+
+/***/ },
+/* 366 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '', __j = Array.prototype.join;
+	function print() { __p += __j.call(arguments, '') }
+	with (obj) {
+	__p += '<div class="object ' +
+	((__t = ( target.split('.')[1] )) == null ? '' : __t) +
+	'" object-type="' +
+	((__t = ( target )) == null ? '' : __t) +
+	'" object-id="-1" style="width:100%"><div class="panels panel-group" style="margin-top: 10px"> ';
+	 var pi = 0; ;
+	__p += ' ';
+	 _.each(panels, function(panel) { ;
+	__p += ' <div class="panel panel panel-default" name="' +
+	((__t = ( panel.name )) == null ? '' : __t) +
+	'" panel-id="' +
+	((__t = ( panel.id )) == null ? '' : __t) +
+	'"> ';
+	 var collapsed = pi > 0 ? "collapsed" : ""; ;
+	__p += ' <div class="panel-heading" data-toggle="tooltip" data-placement="left" title="' +
+	((__t = ( gt.gettext('Collapse/Expand') )) == null ? '' : __t) +
+	'"><a class="accordion-toggle ' +
+	((__t = ( collapsed )) == null ? '' : __t) +
+	'" data-toggle="collapse" href="#collapse' +
+	((__t = ( pi )) == null ? '' : __t) +
+	'">' +
+	((__t = ( panel.label )) == null ? '' : __t) +
+	'</a></div> ';
+	 var inout = pi == 0 ? "in" : ""; ;
+	__p += ' <div id="collapse' +
+	((__t = ( pi )) == null ? '' : __t) +
+	'" class="panel-collapse collapse ' +
+	((__t = ( inout )) == null ? '' : __t) +
+	'"><div class="descriptors"><table class="table table-striped"><thead><tr><th>' +
+	((__t = ( gt.gettext("Descriptor") )) == null ? '' : __t) +
+	'</th><th>' +
+	((__t = ( gt.gettext("Value") )) == null ? '' : __t) +
+	'</th></tr></thead><tbody> ';
+	 var i = 0; ;
+	__p += ' ';
+	 _.each(panel.descriptor_model.descriptor_model_types, function(descriptor_model_type) { ;
+	__p += ' ';
+	 var format = descriptor_model_type.descriptor_type.format; ;
+	__p += ' ';
+	 var mandatory = descriptor_model_type.mandatory ? "mandatory-field" : ""; ;
+	__p += ' <tr class="descriptor" panel-index="' +
+	((__t = ( pi )) == null ? '' : __t) +
+	'" index="' +
+	((__t = ( i )) == null ? '' : __t) +
+	'" descriptor-model-type="' +
+	((__t = ( descriptor_model_type.id )) == null ? '' : __t) +
+	'" name="' +
+	((__t = ( descriptor_model_type.descriptor_type.code )) == null ? '' : __t) +
+	'"><td class="descriptor-name" style="padding-top: 5px; padding-bottom: 3px"> ' +
+	((__t = ( descriptor_model_type.label )) == null ? '' : __t) +
+	' <span class="descriptor-type-unit"> ';
+	 if (descriptor_model_type.descriptor_type.format.unit === "custom") { ;
+	__p += ' ';
+	 if (descriptor_model_type.descriptor_type.format.custom_unit != undefined && descriptor_model_type.descriptor_type.format.custom_unit !== "") { ;
+	__p += ' (' +
+	((__t = ( descriptor_model_type.descriptor_type.format.custom_unit )) == null ? '' : __t) +
+	') ';
+	 } ;
+	__p += ' ';
+	 } else { ;
+	__p += ' (' +
+	((__t = ( application.descriptor.collections.descriptorTypeUnits.findLabel(descriptor_model_type.descriptor_type.format.unit) )) == null ? '' : __t) +
+	') ';
+	 } ;
+	__p += ' </span></td><td class="descriptor-value" format-type="' +
+	((__t = ( format.type )) == null ? '' : __t) +
+	'" style="padding-top: 3px; padding-bottom: 3px"><div class="input-group"><input class="form-control" width="100%" readonly="" style="height: 24px; padding-top: 3px; padding-bottom: 3px"> <span class="input-group-addon" style="padding-top: 3px; padding-bottom: 3px"><span class="glyphicon"></span></span></div></td></tr> ';
+	 ++i; ;
+	__p += ' ';
+	 }) ;
+	__p += ' </tbody></table></div></div></div> ';
+	 ++pi ;
+	__p += ' ';
+	 }) ;
+	__p += ' </div><div class="footer" style="float: right"><button type="button" class="btn btn-primary modify">' +
+	((__t = ( gt.gettext("Modify") )) == null ? '' : __t) +
+	'</button></div></div>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 367 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file taxondescriptoredit.js
+	 * @brief Taxon descriptor edit view
+	 * @author Frederic SCHERMA
+	 * @date 2016-12-29
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var DescribableEdit = __webpack_require__(368);
+	
+	var View = DescribableEdit.extend({
+	    onCancel: function() {
+	        // does not reload models, just redo the views
+	        var view = this;
+	        var model = this.model;
+	        var name = model.get('name');
+	
+	        // update the descriptor part of the taxon layout
+	        var taxonLayout = application.getRegion('mainRegion').currentView.getRegion('content').currentView;
+	
+	        var TaxonDescriptorView = __webpack_require__(362);
+	        var taxonDescriptorView = new TaxonDescriptorView({
+	            model: this.model,
+	            descriptorMetaModelLayout: view.descriptorMetaModelLayout});
+	
+	        taxonLayout.getRegion('descriptors').show(taxonDescriptorView);
+	    },
+	
+	    onApply: function () {
+	        // does not reload  models, save and redo the views
+	        var view = this;
+	        var model = this.model;
+	
+	        var descriptors = this.prepareDescriptors();
+	        if (descriptors === null) {
+	            return;
+	        }
+	
+	        this.model.save({descriptors: descriptors}, {wait: true, patch: !model.isNew()}).then(function () {
+	            // update the descriptor part of the taxon layout
+	            var taxonLayout = application.getRegion('mainRegion').currentView.getRegion('content').currentView;
+	
+	            var TaxonDescriptorView = __webpack_require__(362);
+	            var taxonDescriptorView = new TaxonDescriptorView({
+	                model: model,
+	                descriptorMetaModelLayout: view.descriptorMetaModelLayout});
+	
+	            taxonLayout.getRegion('descriptors').show(taxonDescriptorView);
+	        });
+	    }
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 368 */
+/***/ function(module, exports, __webpack_require__) {
+
+	    /**
+	 * @file describableedit.js
+	 * @brief Describable entity item edit view
+	 * @author Frederic SCHERMA
+	 * @date 2016-12-15
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var ItemView = __webpack_require__(364);
+	var DisplayDescriptor = __webpack_require__(284);
+	
+	var View = ItemView.extend({
+	    tagName: 'div',
+	    template: __webpack_require__(369),
+	    templateHelpers: function () {
+	        return {
+	            panels: this.descriptorMetaModelLayout.panels,
+	            target: this.descriptorMetaModelLayout.target
+	        };
+	    },
+	
+	    ui: {
+	        "descriptor": "tr.descriptor",
+	        "cancel": "button.cancel",
+	        "apply": "button.apply"
+	    },
+	
+	    events: {
+	        "click @ui.cancel": "onCancel",
+	        "click @ui.apply": "onApply",
+	    },
+	
+	    initialize: function(options) {
+	        View.__super__.initialize.apply(this);
+	
+	        this.descriptorMetaModelLayout = options.descriptorMetaModelLayout;
+	
+	        this.listenTo(this.model, 'reset', this.render, this);
+	    },
+	
+	    onRender: function() {
+	        var view = this;
+	        var model = this.model;
+	        var exists = !model.isNew();
+	
+	        $.each(this.ui.descriptor, function(index) {
+	            var el = $(this);
+	
+	            var pi = el.attr('panel-index');
+	            var i = el.attr('index');
+	            var descriptorModelType = view.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
+	            var descriptorType = descriptorModelType.descriptor_type;
+	            var format = descriptorType.format;
+	
+	            var definesValues = false;
+	            var defaultValues = null;
+	
+	            // default value or current descriptor value
+	            if (exists) {
+	                defaultValues = [model.get('descriptors')[descriptorModelType.id]];
+	                definesValues = defaultValues[0] != null && defaultValues[0] != undefined;
+	            } else {
+	                // @todo default value
+	                switch (format.type) {
+	                    case "boolean":
+	                        defaultValues = [false];
+	                        definesValues = true;
+	                        break;
+	                    default:
+	                        break;
+	                }
+	            }
+	
+	            if (format.type.startsWith('enum_')) {
+	                var url = application.baseUrl + 'descriptor/group/' + descriptorType.group + '/type/' + descriptorType.id + '/';
+	
+	                if (format.list_type == "autocomplete") {
+	                    var select = $('<select style="width: 100%;"></select>');
+	                    el.children('td.descriptor-value').append(select);
+	
+	                    DisplayDescriptor.initAutocomplete(
+	                        format,
+	                        url,
+	                        view,
+	                        select,
+	                        definesValues,
+	                        defaultValues);
+	
+	                    if (descriptorModelType.set_once && exists) {
+	                        select.prop("disabled", true);
+	                    }
+	                } else {
+	                    var select = $('<select data-width="100%"></select>');
+	                    el.children('td.descriptor-value').append(select);
+	
+	                    select.selectpicker({container: 'body', style: 'btn-default'});
+	
+	                    DisplayDescriptor.initDropdown(
+	                        format,
+	                        url,
+	                        view,
+	                        select,
+	                        definesValues,
+	                        defaultValues);
+	
+	                    if (descriptorModelType.set_once && exists) {
+	                        select.prop("disabled", true).selectpicker('refresh');
+	                    }
+	                }
+	            } else if (format.type == "entity") {
+	                var url = application.baseUrl + format.model.replace('.', '/') + '/';
+	
+	                var select = $('<select style="width: 100%;"></select>');
+	                el.children('td.descriptor-value').append(select);
+	
+	                DisplayDescriptor.initEntitySelect(
+	                    format,
+	                    url,
+	                    view,
+	                    select,
+	                    definesValues,
+	                    defaultValues);
+	
+	                if (descriptorModelType.set_once && exists) {
+	                    select.prop("disabled", true);
+	                }
+	            } else if (format.type === "boolean") {
+	                var select = $('<select data-width="100%"></select>');
+	                el.children('td.descriptor-value').append(select);
+	
+	                select.selectpicker({container: 'body', style: 'btn-default'});
+	
+	                DisplayDescriptor.initBoolean(
+	                    format,
+	                    view,
+	                    select,
+	                    definesValues,
+	                    defaultValues);
+	
+	                if (descriptorModelType.set_once && exists) {
+	                    select.prop("disabled", true).selectpicker('refresh');
+	                }
+	            } else if ((format.type === "ordinal") && ((format.range[1] - format.range[0] + 1) <= 256)) {
+	                // ordinal with at max 256 values as a dropdown
+	                var select = $('<select data-width="100%"></select>');
+	                el.children('td.descriptor-value').append(select);
+	
+	                select.selectpicker({container: 'body', style: 'btn-default'});
+	
+	                DisplayDescriptor.initOrdinal(
+	                    format,
+	                    view,
+	                    select,
+	                    definesValues,
+	                    defaultValues);
+	
+	                if (descriptorModelType.set_once && exists) {
+	                    select.prop("disabled", true).selectpicker('refresh');
+	                }
+	            } else if (format.type === "date") {
+	                var group = $('<div class="input-group"></div>');
+	                var input = $('<input class="form-control" width="100%">');
+	                var glyph = $('<span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>').css('cursor', 'pointer');
+	                group.append(input);
+	                group.append(glyph);
+	
+	                el.children('td.descriptor-value').append(group);
+	
+	                DisplayDescriptor.initDate(
+	                    format,
+	                    view,
+	                    group,
+	                    definesValues,
+	                    defaultValues);
+	
+	                if (descriptorModelType.set_once && exists) {
+	                    group.data('DateTimePicker').disable();
+	                }
+	            } else if (format.type === "time") {
+	                var group = $('<div class="input-group"></div>');
+	                var input = $('<input class="form-control" width="100%">');
+	                var glyph = $('<span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span>').css('cursor', 'pointer');
+	                group.append(input);
+	                group.append(glyph);
+	
+	                el.children('td.descriptor-value').append(group);
+	
+	                DisplayDescriptor.initTime(
+	                    format,
+	                    view,
+	                    group,
+	                    definesValues,
+	                    defaultValues);
+	
+	                if (descriptorModelType.set_once && exists) {
+	                    group.data('DateTimePicker').disable();
+	                }
+	            } else if (format.type === "datetime") {
+	                var group = $('<div class="input-group"></div>');
+	                var input = $('<input class="form-control" width="100%">');
+	                var glyph = $('<span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>').css('cursor', 'pointer');
+	                group.append(input);
+	                group.append(glyph);
+	
+	                el.children('td.descriptor-value').append(group);
+	
+	                DisplayDescriptor.initDateTime(
+	                    format,
+	                    view,
+	                    group,
+	                    definesValues,
+	                    defaultValues);
+	
+	                if (descriptorModelType.set_once && exists) {
+	                    group.data('DateTimePicker').disable();
+	                }
+	            } else {
+	                var group = $('<div class="input-group"></div>');
+	                var input = $('<input class="form-control" width="100%">');
+	                var glyph = $('<span class="input-group-addon"><span class="glyphicon glyphicon-cog"></span></span>');
+	                group.append(input);
+	                group.append(glyph);
+	
+	                // numeric, numeric range, and ordinal with more than 256 values
+	                if (format.type === "numeric" || format.type === "numeric_range" || format.type === "ordinal") {
+	
+	                    // if ordinal default value is undefined set it to its minimal value to have a initial state
+	                    if (format.type === "ordinal" && !definesValues) {
+	                        definesValues = true;
+	                        defaultValues = [format.range[0]];
+	                    }
+	
+	                    DisplayDescriptor.initNumeric(
+	                        format,
+	                        view,
+	                        input,
+	                        definesValues,
+	                        defaultValues);
+	                } else if (format.type === "string") { // regexp text
+	                    DisplayDescriptor.initText(
+	                        format,
+	                        view,
+	                        input,
+	                        definesValues,
+	                        defaultValues);
+	                }
+	
+	                el.children('td.descriptor-value').append(group);
+	
+	                if (descriptorModelType.set_once && exists) {
+	                    input.prop('disabled', true);
+	                }
+	            }
+	        });
+	    },
+	
+	    onShow: function() {
+	        var view = this;
+	        var model = this.model;
+	        var exists = !model.isNew();
+	
+	        $.each(this.ui.descriptor, function(index) {
+	            var el = $(this);
+	
+	            var pi = el.attr('panel-index');
+	            var i = el.attr('index');
+	            var descriptorModelType = view.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
+	            var condition = descriptorModelType.condition;
+	
+	            if (condition.defined) {
+	                var display = false;
+	
+	                // search the target descriptor type for the condition
+	                var target = view.$el.find("tr.descriptor[descriptor-model-type=" + condition.target + "]");
+	                var targetDescriptorModelType = view.descriptorMetaModelLayout.panels[target.attr('panel-index')].descriptor_model.descriptor_model_types[target.attr('index')];
+	                var format = targetDescriptorModelType.descriptor_type.format;
+	
+	                var initialValue = [null];
+	
+	                // default or current descriptor value
+	                if (exists) {
+	                    initialValue = [model.get('descriptors')[targetDescriptorModelType.id]];
+	                } else {
+	                    // @todo default value if defined
+	                    //  initialValue = ;
+	                }
+	
+	                if (format.type.startsWith('enum_')) {
+	                    if (format.list_type === "autocomplete") {
+	                        var select = target.children('td.descriptor-value').children('select');
+	                        select.on("select2:select", $.proxy(view.onAutocompleteChangeValue, view));
+	                        select.on("select2:unselect", $.proxy(view.onAutocompleteUnselectValue, view));
+	
+	                        var value = initialValue[0];
+	
+	                        // initial condition
+	                        switch (condition.condition) {
+	                            case 0:
+	                                display = value == null || value === "";
+	                                break;
+	                            case 1:
+	                                display = value != null && value !== "";
+	                                break;
+	                            case 2:
+	                                display = value != null && value === condition.values[0];
+	                                break;
+	                            case 3:
+	                                display = value != null && value !== condition.values[0];
+	                                break;
+	                            default:
+	                                break;
+	                        }
+	                    } else {
+	                        var select = target.children('td.descriptor-value').children('div').children('select');
+	                        select.parent('div.bootstrap-select').on('changed.bs.select', $.proxy(view.onSelectChangeValue, view));
+	
+	                        var value = initialValue[0];
+	
+	                        // initial condition
+	                        switch (condition.condition) {
+	                            case 0:
+	                                display = value == null || value === "";
+	                                break;
+	                            case 1:
+	                                display = value != null && value !== "";
+	                                break;
+	                            case 2:
+	                                display = value != null && value === condition.values[0];
+	                                break;
+	                            case 3:
+	                                display = value != null && value !== condition.values[0];
+	                                break;
+	                            default:
+	                                break;
+	                        }
+	                    }
+	                } else if (format.type === "entity") {
+	                    var select = target.children('td.descriptor-value').children('select');
+	                    select.on("select2:select", $.proxy(view.onAutocompleteChangeValue, view));
+	                    select.on("select2:unselect", $.proxy(view.onAutocompleteUnselectValue, view));
+	
+	                    var value = initialValue[0];
+	
+	                    // initial condition
+	                    switch (condition.condition) {
+	                        case 0:
+	                            display = value == null;
+	                            break;
+	                        case 1:
+	                            display = value != null;
+	                            break;
+	                        case 2:
+	                            display = value != null && value === condition.values[0];
+	                            break;
+	                        case 3:
+	                            display = value != null && value !== condition.values[0];
+	                            break;
+	                        default:
+	                            break;
+	                    }
+	                } else if (format.type === "boolean") {
+	                    var select = target.children('td.descriptor-value').children('div').children('select');
+	                    select.parent('div.bootstrap-select').on('changed.bs.select', $.proxy(view.onSelectChangeValue, view));
+	
+	                    var value = initialValue[0] || false;
+	
+	                    // initial condition
+	                    switch (condition.condition) {
+	                        case 0:
+	                            display = value == null;  // false;  // a boolean is always defined
+	                            break;
+	                        case 1:
+	                            display = value != null;  // true;  // a boolean is always defined
+	                            break;
+	                        case 2:
+	                            display = value != null && value === condition.values[0];
+	                            break;
+	                        case 3:
+	                            display = value != null && value !== condition.values[0];
+	                            break;
+	                        default:
+	                            break;
+	                    }
+	                } else if (format.type === "ordinal") {
+	                    // max of 256 value (select)
+	                    if ((format.range[1] - format.range[0] + 1) <= 256) {
+	                        var select = target.children('td.descriptor-value').children('div').children('select');
+	                        select.parent('div.bootstrap-select').on('changed.bs.select', $.proxy(view.onSelectChangeValue, view));
+	
+	                        var value = initialValue[0];
+	
+	                        // initial condition
+	                        switch (condition.condition) {
+	                            case 0:
+	                                display = value == null;  // false;  // an ordinal is always defined
+	                                break;
+	                            case 1:
+	                                display = value != null;  // true;  // an ordinal is always defined
+	                                break;
+	                            case 2:
+	                                display = value != null && value === condition.values[0];
+	                                break;
+	                            case 3:
+	                                display = value != null && value !== condition.values[0];
+	                                break;
+	                            default:
+	                                break;
+	                        }
+	                    } else {
+	                        // ordinal with more than 256 values => input
+	                        var input = target.children('td.descriptor-value').children('div.input-group').children('input.form-control');
+	                        input.on('input', $.proxy(view.onInputChangeValue, view));
+	
+	                        var value = initialValue[0];
+	
+	                        // initial condition
+	                        switch (condition.condition) {
+	                            case 0:
+	                                display = value == null;  // false;  // an ordinal is always defined
+	                                break;
+	                            case 1:
+	                                display = value != null;  // true;  // an ordinal is always defined
+	                                break;
+	                            case 2:
+	                                display = value != null && value === condition.values[0];
+	                                break;
+	                            case 3:
+	                                display = value != null && value !== condition.values[0];
+	                                break;
+	                            default:
+	                                break;
+	                        }
+	                    }
+	                } else if (format.type === "date" || format.type === "time" || format.type === "datetime") {
+	                    var input = target.children('td.descriptor-value').children('div.input-group').children('input.form-control');
+	                    input.parent().on('dp.change', $.proxy(view.onDateChange, view));
+	
+	                    var value = initialValue[0];
+	
+	                    // initial condition
+	                    switch (condition.condition) {
+	                        case 0:
+	                            display = value == null || value === "";
+	                            break;
+	                        case 1:
+	                            display = value != null && value !== "";
+	                            break;
+	                        case 2:
+	                            display = value != null && value === condition.values[0];
+	                            break;
+	                        case 3:
+	                            display = value != null && value !== condition.values[0];
+	                            break;
+	                        default:
+	                            break;
+	                    }
+	                } else {
+	                    // numeric, numeric range, text with regexp
+	                    var input = target.children('td.descriptor-value').children('div.input-group').children('input.form-control');
+	                    input.on('input', $.proxy(view.onInputChangeValue, view));
+	
+	                    var value = initialValue[0];
+	
+	                    // initial condition
+	                    switch (condition.condition) {
+	                        case 0:
+	                            display = value == null || value === "";
+	                            break;
+	                        case 1:
+	                            display = value != null && value !== "";
+	                            break;
+	                        case 2:
+	                            display = value != null && value === condition.values[0];
+	                            break;
+	                        case 3:
+	                            display = value != null && value !== condition.values[0];
+	                            break;
+	                        default:
+	                            break;
+	                    }
+	                }
+	
+	                if (!display) {
+	                    el.hide(false);
+	                }
+	            }
+	        });
+	    },
+	
+	    findDescriptorModelTypeForConditionTarget: function(target) {
+	        var pi = target.attr('panel-index');
+	        var i = target.attr('index');
+	        var targetDescriptorModelType = this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
+	
+	        // find el from target
+	        var descriptorModelTypes = this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types;
+	        for (var i = 0; i < descriptorModelTypes.length; ++i) {
+	            if (descriptorModelTypes[i].condition.target === targetDescriptorModelType.id) {
+	                var descriptorModelType = descriptorModelTypes[i];
+	
+	                return {
+	                    targetDescriptorModelType: targetDescriptorModelType,
+	                    descriptorModelType: descriptorModelType,
+	                    el: this.$el.find("tr.descriptor[descriptor-model-type=" + descriptorModelType.id + "]")
+	                }
+	            }
+	        }
+	
+	        return null;
+	    },
+	
+	    onAutocompleteChangeValue: function(e) {
+	        var display = false;
+	        var select = $(e.target);
+	
+	        var target = select.parent().parent();
+	        var source = this.findDescriptorModelTypeForConditionTarget(target);
+	        var condition = source.descriptorModelType.condition;
+	
+	        var value = select.val();
+	
+	        // cast to correct type if necessary
+	        if (source.targetDescriptorModelType.descriptor_type.format.type === "entity") {
+	            value = parseInt(select.val());
+	        }
+	
+	        // initial condition
+	        switch (condition.condition) {
+	            case 0:
+	                display = select.val() === "" || select.val() === undefined;
+	                break;
+	            case 1:
+	                display = select.val() !== "";
+	                break;
+	            case 2:
+	                display = value === condition.values[0];
+	                break;
+	            case 3:
+	                display = value !== condition.values[0];
+	                break;
+	            default:
+	                break;
+	        }
+	
+	        if (display) {
+	            source.el.show(true);
+	        } else {
+	            source.el.hide(true);
+	        }
+	    },
+	
+	    onAutocompleteUnselectValue: function(e) {
+	        var display = false;
+	        var select = $(e.target);
+	
+	        var target = select.parent().parent();
+	        var source = this.findDescriptorModelTypeForConditionTarget(target);
+	        var condition = source.descriptorModelType.condition;
+	
+	        // initial condition
+	        switch (condition.condition) {
+	            case 0:
+	                display = true;
+	                break;
+	            case 1:
+	                display = false;
+	                break;
+	            case 2:
+	                display = false;
+	                break;
+	            case 3:
+	                display = false;
+	                break;
+	            default:
+	                break;
+	        }
+	
+	        if (display) {
+	            source.el.show(true);
+	        } else {
+	            source.el.hide(true);
+	        }
+	    },
+	
+	    onSelectChangeValue: function(e) {
+	        var display = false;
+	        var select = $(e.target);
+	
+	        var target = select.parent().parent().parent();
+	        var source = this.findDescriptorModelTypeForConditionTarget(target);
+	        var condition = source.descriptorModelType.condition;
+	
+	        var value = select.val();
+	
+	        // cast to correct type if necessary
+	        if (source.targetDescriptorModelType.descriptor_type.format.type === "boolean") {
+	            value = select.val() === "true";  // always defined
+	        } else if (source.targetDescriptorModelType.descriptor_type.format.type === "ordinal") {
+	            value = parseInt(select.val());  // always defines
+	        }
+	
+	        // initial condition
+	        switch (condition.condition) {
+	            case 0:
+	                display = select.val() === "" || select.val() === undefined;
+	                break;
+	            case 1:
+	                display = select.val() !== "";
+	                break;
+	            case 2:
+	                display = value === condition.values[0];
+	                break;
+	            case 3:
+	                display = value !== condition.values[0];
+	                break;
+	            default:
+	                break;
+	        }
+	
+	        if (display) {
+	            source.el.show(true);
+	        } else {
+	            source.el.hide(true);
+	        }
+	    },
+	
+	    onDateChange: function (e) {
+	        var display = false;
+	        var input = $(e.target);
+	
+	        var target = input.parent().parent();
+	        var source = this.findDescriptorModelTypeForConditionTarget(target);
+	        var condition = source.descriptorModelType.condition;
+	        var date = input.data('DateTimePicker').date();
+	
+	        var dateFormat = null;
+	        if (source.descriptorModelType.descriptor_type.format.type === "date" ) {
+	            // format to YYYYMMDD date
+	            dateFormat = "YYYYMMDD";
+	        } else if (source.descriptorModelType.descriptor_type.format.type === "time" ) {
+	            // format to HH:mm:ss time
+	            dateFormat = "HH:mm:ss";
+	        } else if (source.descriptorModelType.descriptor_type.format.type === "datetime" ) {
+	            // format to iso datetime
+	            dateFormat = null;
+	        }
+	
+	        // initial condition
+	        switch (condition.condition) {
+	            case 0:
+	                display = date == null;
+	                break;
+	            case 1:
+	                display = date != null;
+	                break;
+	            case 2:
+	                display = date != null && date.format(dateFormat) === condition.values[0];
+	                break;
+	            case 3:
+	                display = date != null && date.format(dateFormat) !== condition.values[0];
+	                break;
+	            default:
+	                break;
+	        }
+	
+	        if (display) {
+	            source.el.show(true);
+	        } else {
+	            source.el.hide(true);
+	        }
+	    },
+	
+	    onInputChangeValue: function(e) {
+	        var display = false;
+	        var input = $(e.target);
+	
+	        var target = input.parent().parent().parent();
+	        var source = this.findDescriptorModelTypeForConditionTarget(target);
+	        var condition = source.descriptorModelType.condition;
+	
+	        var value = select.val();
+	
+	        // cast to correct type if necessary (numeric and numeric_range are read as usual string)
+	        if (source.targetDescriptorModelType.descriptor_type.format.type === "ordinal") {
+	            value = parseInt(input.val());  // always defines
+	        }
+	
+	        // initial condition
+	        switch (condition.condition) {
+	            case 0:
+	                display = input.val() === "" || input.val() === undefined;
+	                break;
+	            case 1:
+	                display = input.val() !== "";
+	                break;
+	            case 2:
+	                display = value === condition.values[0];
+	                break;
+	            case 3:
+	                display = value !== condition.values[0];
+	                break;
+	            default:
+	                break;
+	        }
+	
+	        if (display) {
+	            source.el.show(true);
+	        } else {
+	            source.el.hide(true);
+	        }
+	    },
+	
+	    prepareDescriptors: function () {
+	        var view = this;
+	
+	        var descriptors = {};
+	
+	        $.each(this.ui.descriptor, function(index) {
+	            var el = $(this);
+	
+	            var pi = el.attr('panel-index');
+	            var i = el.attr('index');
+	            var descriptorModelType = view.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
+	            var mandatory = descriptorModelType.mandatory;
+	
+	            var currValue = view.model.get('descriptors')[descriptorModelType.id];
+	            var values = [null];
+	
+	            if (el.css('display') !== "none") {
+	                // take value
+	                var format = descriptorModelType.descriptor_type.format;
+	
+	                if (format.type.startsWith('enum_')) {
+	                    if (format.list_type == "autocomplete") {
+	                        values = [el.find('select').val()];
+	                    } else if (format.list_type === "dropdown") {
+	                        values = [el.find('select').val()];
+	                    }
+	                } else if (format.type === 'entity') {
+	                    values = [parseInt(el.find('select').val())];
+	                } else if (format.type === 'boolean') {
+	                    values = [el.find('select').val() === "true"];
+	                } else if (format.type === 'ordinal') {
+	                    // max 256 values for a dropdown
+	                    if ((format.range[1] - format.range[0] + 1) <= 256) {
+	                        values = [parseInt(el.find('select').val())];
+	                    } else {
+	                        values = [parseInt(el.find('input').val())];
+	                    }
+	                } else if (format.type === "date") {
+	                    // format to YYYYMMDD date
+	                    var date = el.find('input').parent().data('DateTimePicker').date();
+	                    if (date != null) {
+	                        values = [date.format("YYYYMMDD")];
+	                    }
+	                } else if (format.type === "time") {
+	                    var date = el.find('input').parent().data('DateTimePicker').date();
+	                    if (date != null) {
+	                        // format to HH:mm:ss time
+	                        values = [date.format("HH:mm:ss")]; // .MS
+	                    }
+	                } else if (format.type === "datetime") {
+	                    var date = el.find('input').parent().data('DateTimePicker').date();
+	                    if (date != null) {
+	                        // format to iso datetime
+	                        values = [date.format()];
+	                    }
+	                } else if (format.type === "string") {
+	                    // text (already validated)
+	                    values = [el.find('input').val()];
+	                } else if (format.type === "numeric") {
+	                    // numeric, text (already validated)
+	                    values = [el.find('input').val()];
+	                } else {
+	                    // ???
+	                    values = [el.find('input').val()];
+	                }
+	            }
+	
+	            if (mandatory && values[0] === null) {
+	                $.alert.error(gt.gettext("Field " + descriptorModelType.label + " is required"));
+	                return null;
+	            }
+	
+	            var write = true;
+	            if (descriptorModelType.set_once && currValue != undefined) {
+	                write = false;
+	            }
+	
+	            if (values[0] == currValue) {
+	                write = false;
+	            }
+	
+	            if (write) {
+	                descriptors[descriptorModelType.id] = values[0];
+	            }
+	        });
+	
+	        return descriptors;
+	    },
+	
+	    onCancel: function() {
+	        // non optimized default behavior reload url
+	        Backbone.history.loadUrl();
+	    },
+	
+	    onApply: function() {
+	        // non optimized default behavior, load after save
+	        var model = this.model;
+	
+	        var descriptors = this.prepareDescriptors();
+	        if (descriptors === null) {
+	            return;
+	        }
+	
+	        this.model.save({descriptors: descriptors}, {wait: true, patch: !model.isNew()}).then(function () {
+	            Backbone.history.loadUrl();
+	        });
+	    }
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 369 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '', __j = Array.prototype.join;
+	function print() { __p += __j.call(arguments, '') }
+	with (obj) {
+	__p += '<div class="object ' +
+	((__t = ( target.split('.')[1] )) == null ? '' : __t) +
+	'" object-type="' +
+	((__t = ( target )) == null ? '' : __t) +
+	'" object-id="-1" style="width:100%"><div class="panels panel-group" style="margin-top: 10px"> ';
+	 var pi = 0; ;
+	__p += ' ';
+	 _.each(panels, function(panel) { ;
+	__p += ' <div class="panel panel panel-default" name="' +
+	((__t = ( panel.name )) == null ? '' : __t) +
+	'" panel-id="' +
+	((__t = ( panel.id )) == null ? '' : __t) +
+	'"> ';
+	 var collapsed = pi > 0 ? "collapsed" : ""; ;
+	__p += ' <div class="panel-heading" data-toggle="tooltip" data-placement="left" title="' +
+	((__t = ( gt.gettext('Collapse/Expand') )) == null ? '' : __t) +
+	'"><a class="accordion-toggle ' +
+	((__t = ( collapsed )) == null ? '' : __t) +
+	'" data-toggle="collapse" href="#collapse' +
+	((__t = ( pi )) == null ? '' : __t) +
+	'">' +
+	((__t = ( panel.label )) == null ? '' : __t) +
+	'</a></div> ';
+	 var inout = pi == 0 ? "in" : ""; ;
+	__p += ' <div id="collapse' +
+	((__t = ( pi )) == null ? '' : __t) +
+	'" class="panel-collapse collapse ' +
+	((__t = ( inout )) == null ? '' : __t) +
+	'"><div class="descriptors"><table class="table table-striped"><thead><tr><th>' +
+	((__t = ( gt.gettext("Descriptor") )) == null ? '' : __t) +
+	'</th><th>' +
+	((__t = ( gt.gettext("Value") )) == null ? '' : __t) +
+	'</th></tr></thead><tbody> ';
+	 var i = 0; ;
+	__p += ' ';
+	 _.each(panel.descriptor_model.descriptor_model_types, function(descriptor_model_type) { ;
+	__p += ' ';
+	 var format = descriptor_model_type.descriptor_type.format; ;
+	__p += ' ';
+	 var mandatory = descriptor_model_type.mandatory ? "mandatory-field" : ""; ;
+	__p += ' <tr class="descriptor" panel-index="' +
+	((__t = ( pi )) == null ? '' : __t) +
+	'" index="' +
+	((__t = ( i )) == null ? '' : __t) +
+	'" descriptor-model-type="' +
+	((__t = ( descriptor_model_type.id )) == null ? '' : __t) +
+	'" name="' +
+	((__t = ( descriptor_model_type.descriptor_type.code )) == null ? '' : __t) +
+	'"><td class="descriptor-name ' +
+	((__t = ( mandatory )) == null ? '' : __t) +
+	'" style="padding-top: 15px"> ' +
+	((__t = ( descriptor_model_type.label )) == null ? '' : __t) +
+	' <span class="descriptor-type-unit"> ';
+	 if (descriptor_model_type.descriptor_type.format.unit === "custom") { ;
+	__p += ' ';
+	 if (descriptor_model_type.descriptor_type.format.custom_unit != undefined && descriptor_model_type.descriptor_type.format.custom_unit !== "") { ;
+	__p += ' (' +
+	((__t = ( descriptor_model_type.descriptor_type.format.custom_unit )) == null ? '' : __t) +
+	') ';
+	 } ;
+	__p += ' ';
+	 } else { ;
+	__p += ' (' +
+	((__t = ( application.descriptor.collections.descriptorTypeUnits.findLabel(descriptor_model_type.descriptor_type.format.unit) )) == null ? '' : __t) +
+	') ';
+	 } ;
+	__p += ' </span></td><td class="descriptor-value" format-type="' +
+	((__t = ( format.type )) == null ? '' : __t) +
+	'"></td></tr> ';
+	 ++i; ;
+	__p += ' ';
+	 }) ;
+	__p += ' </tbody></table></div></div></div> ';
+	 ++pi ;
+	__p += ' ';
+	 }) ;
+	__p += ' </div><div class="footer" style="float: right"><button type="button" class="btn btn-default cancel" data-dismiss="modal">' +
+	((__t = ( gt.gettext("Cancel") )) == null ? '' : __t) +
+	'</button> <button type="button" class="btn btn-primary apply">' +
+	((__t = ( gt.gettext("Apply") )) == null ? '' : __t) +
+	'</button></div></div>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 370 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file taxondescriptorcreate.js
+	 * @brief Taxon create descriptor view
+	 * @author Frederic SCHERMA
+	 * @date 2016-12-29
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	var Dialog = __webpack_require__(200);
+	var TaxonDescriptorView = __webpack_require__(362);
+	
+	var View = Marionette.ItemView.extend({
+	    tagName: 'div',
+	    template: __webpack_require__(371),
+	
+	    ui: {
+	        defines: 'button.defines'
+	    },
+	
+	    events: {
+	        'click @ui.defines': 'onDefines',
+	    },
+	
+	    initialize: function(options) {
+	    },
+	
+	    onRender: function() {
+	    },
+	
+	    onDefines: function(e) {
+	        var model = this.model;
+	
+	        $.ajax({
+	            type: "GET",
+	            url: application.baseUrl + 'descriptor/meta-model/for-describable/' + 'taxonomy.taxon/',
+	            dataType: 'json',
+	        }).done(function(data) {
+	            var CreateDescriptorView = Dialog.extend({
+	                attributes: {
+	                    'id': 'dlg_create_descriptor',
+	                },
+	                template: __webpack_require__(372),
+	                templateHelpers: function () {
+	                    return {
+	                        meta_models: data,
+	                    };
+	                },
+	
+	                ui: {
+	                    validate: "button.continue",
+	                    meta_model: "#meta_model",
+	                },
+	
+	                events: {
+	                    'click @ui.validate': 'onContinue'
+	                },
+	
+	                onRender: function () {
+	                    CreateDescriptorView.__super__.onRender.apply(this);
+	
+	                    this.ui.meta_model.selectpicker({});
+	                },
+	
+	                onBeforeDestroy: function() {
+	                    CreateDescriptorView.__super__.onBeforeDestroy.apply(this);
+	
+	                    this.ui.meta_model.selectpicker('destroy');
+	                },
+	
+	                onContinue: function() {
+	                    var view = this;
+	                    var model = this.getOption('model');
+	
+	                    if (this.ui.meta_model.val() != null) {
+	                        var metaModel = parseInt(this.ui.meta_model.val());
+	
+	                        view.remove();
+	
+	                        // update the descriptor part of the taxon layout
+	                        var defaultLayout = application.getRegion('mainRegion').currentView;
+	                        var taxonLayout = defaultLayout.getRegion('content').currentView;
+	
+	                        // patch the taxon descriptor meta model
+	                        model.save({descriptor_meta_model: metaModel}, {patch: true, wait: false});
+	
+	                        $.ajax({
+	                            method: "GET",
+	                            url: application.baseUrl + 'descriptor/meta-model/' + metaModel + '/layout/',
+	                            dataType: 'json',
+	                        }).done(function(data) {
+	                            var taxonDescriptorView = new TaxonDescriptorView({
+	                                model: model,
+	                                descriptorMetaModelLayout: data
+	                            });
+	                            taxonLayout.getRegion('descriptors').show(taxonDescriptorView);
+	                        });
+	                    }
+	                }
+	            });
+	
+	            var createDescriptorView = new CreateDescriptorView({model: model});
+	            createDescriptorView.render();
+	        });
+	    },
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 371 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<div style="margin: 15px"><p>' +
+	((__t = ( gt.gettext("No descriptor meta-model is defined for this taxon.") )) == null ? '' : __t) +
+	'</p><button type="button" class="btn btn-primary defines">' +
+	((__t = ( gt.gettext("Defines") )) == null ? '' : __t) +
+	'</button></div>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 372 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '', __j = Array.prototype.join;
+	function print() { __p += __j.call(arguments, '') }
+	with (obj) {
+	__p += '<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title">' +
+	((__t = ( gt.gettext("Defines a meta-model of descriptors") )) == null ? '' : __t) +
+	'</h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="meta_model">' +
+	((__t = ( gt.gettext("Template") )) == null ? '' : __t) +
+	'</label><select id="meta_model" style="width:100%" class="form-control"> ';
+	 _.each(meta_models, function(meta_model) { ;
+	__p += ' <option value="' +
+	((__t = ( meta_model.id )) == null ? '' : __t) +
+	'">' +
+	((__t = ( meta_model.label )) == null ? '' : __t) +
+	'</option> ';
+	 }) ;
+	__p += ' </select></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal">' +
+	((__t = ( gt.gettext("Cancel") )) == null ? '' : __t) +
+	'</button> <button type="button" class="btn btn-primary continue">' +
+	((__t = ( gt.gettext("Continue") )) == null ? '' : __t) +
+	'</button></div></div></div>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 373 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file taxonlayout.js
+	 * @brief Optimized layout for taxon details
+	 * @author Frederic SCHERMA
+	 * @date 2016-12-27
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	
+	var Layout = Marionette.LayoutView.extend({
+	    template: __webpack_require__(374),
+	
+	    regions: {
+	        'details': "#taxon_details",
+	        'synonyms': "#taxon_synonyms",
+	        'descriptors': "#taxon_descriptors",
+	        'children-content': "#taxon_children > div.children-content",
+	        'children-bottom': "#taxon_children > div.children-bottom",
+	        'entities-content': "#taxon_entities > div.entities-content",
+	        'entities-bottom': "#taxon_entities > div.entities-bottom"
+	    }
+	});
+	
+	module.exports = Layout;
+
+
+/***/ },
+/* 374 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<div id="taxon_details"></div><div class="column" style="margin-top: 10px"><ul class="nav nav-tabs" role="tablist"><li role="presentation" class="active"><a href="#taxon_synonyms" aria-controls="details" role="tab" data-toggle="tab">' +
+	((__t = ( gt.gettext("Synonyms") )) == null ? '' : __t) +
+	'</a></li><li role="presentation"><a href="#taxon_descriptors" aria-controls="descriptors" role="tab" data-toggle="tab">' +
+	((__t = ( gt.gettext("Descriptors") )) == null ? '' : __t) +
+	'</a></li><li role="presentation"><a href="#taxon_children" aria-controls="children" role="tab" data-toggle="tab">' +
+	((__t = ( gt.gettext("Children") )) == null ? '' : __t) +
+	'</a></li><li role="presentation"><a href="#taxon_entities" aria-controls="entities" role="tab" data-toggle="tab">' +
+	((__t = ( gt.gettext("Entities") )) == null ? '' : __t) +
+	'</a></li></ul><div class="tab-content"><div role="tabpanel" class="tab-pane active" id="taxon_synonyms" style="overflow-y: auto"></div><div role="tabpanel" class="tab-pane" id="taxon_descriptors" style="overflow-y: auto"></div><div role="tabpanel" class="tab-pane" id="taxon_children"><div class="children-content" style="overflow-y: auto"></div><div class="children-bottom"></div></div><div role="tabpanel" class="tab-pane" id="taxon_entities"><div class="entities-content" style="overflow-y: auto"></div><div class="entities-bottom"></div></div></div></div>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 375 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -46633,11 +50041,11 @@
 	        this.controllers = {};
 	
 	        // i18n
-	        if (session.language === "fr") {
-	            i18next.addResources('fr', 'default', __webpack_require__(345));
-	        } else {  // default to english
-	            //i18next.addResources('en', 'default', require('./locale/en/LC_MESSAGES/default.json'));
-	        }
+	        try {
+	            i18next.addResources('fr', 'default', __webpack_require__(376)("./" + session.language + '/LC_MESSAGES/default.json'));
+	        } catch (e) {
+	            console.warning("No translation found for the current language. Fallback to english language");
+	        };
 	
 	        Logger.timeEnd("Init accession module");
 	    },
@@ -46645,8 +50053,11 @@
 	    onStart: function(options) {
 	        Logger.time("Start accession module");
 	
-	        var AccessionRouter = __webpack_require__(346);
+	        var AccessionRouter = __webpack_require__(379);
 	        this.routers.accession = new AccessionRouter();
+	
+	        var AccessionController = __webpack_require__(391);
+	        this.controllers.accession = new AccessionController();
 	
 	        Logger.timeEnd("Start accession module");
 	    },
@@ -46663,13 +50074,79 @@
 
 
 /***/ },
-/* 345 */
-/***/ function(module, exports) {
+/* 376 */
+/***/ function(module, exports, __webpack_require__) {
 
-	module.exports = {};
+	var map = {
+		"./en/LC_MESSAGES/default.json": 377,
+		"./fr/LC_MESSAGES/default.json": 378
+	};
+	function webpackContext(req) {
+		return __webpack_require__(webpackContextResolve(req));
+	};
+	function webpackContextResolve(req) {
+		return map[req] || (function() { throw new Error("Cannot find module '" + req + "'.") }());
+	};
+	webpackContext.keys = function webpackContextKeys() {
+		return Object.keys(map);
+	};
+	webpackContext.resolve = webpackContextResolve;
+	module.exports = webpackContext;
+	webpackContext.id = 376;
+
 
 /***/ },
-/* 346 */
+/* 377 */
+/***/ function(module, exports) {
+
+	module.exports = {
+		"List of accessions": "Liste des accessions",
+		"Accession": "Accession",
+		"Enter a taxon name. 3 characters at least for auto-completion": "Saisissez un nom de taxon. A moins 3 caractères pour l'auto-complétion",
+		"Taxon name already in usage": "Nom de taxon existant",
+		"64 characters max": "64 caractères maximum",
+		"3 characters min": "3 caractères minimum",
+		"The parent must be defined": "Le parent doit être définit",
+		"Create an accession": "Créer une accession",
+		"Template": "Modèle",
+		"Principal name of the accession (must be unique)": "Nom principal de l'accession (doit être unique)",
+		"Language": "Langue",
+		"Parent": "Parent",
+		"Cancel": "Annuler",
+		"Continue": "Continuer",
+		"Name": "Nom",
+		"Xxx": "Xxx",
+		"Yyy": "Yyy",
+		"Zzz": "Zzz"
+	};
+
+/***/ },
+/* 378 */
+/***/ function(module, exports) {
+
+	module.exports = {
+		"List of accessions": "Liste des accessions",
+		"Accession": "Accession",
+		"Enter a taxon name. 3 characters at least for auto-completion": "Saisissez un nom de taxon. A moins 3 caractère pour l'auto-complétion",
+		"Taxon name already in usage": "Nom de taxon existant",
+		"64 characters max": "64 caractères maximum",
+		"3 characters min": "3 caractères minimum",
+		"The parent must be defined": "Le parent doit être définit",
+		"Create an accession": "Créer une accession",
+		"Template": "Modèle",
+		"Principal name of the accession (must be unique)": "Nom principal de l'accession (doit être unique)",
+		"Language": "Langue",
+		"Parent": "Parent",
+		"Cancel": "Annuler",
+		"Continue": "Continuer",
+		"Name": "Nom",
+		"Xxx": "Xxx",
+		"Yyy": "Yyy",
+		"Zzz": "Zzz"
+	};
+
+/***/ },
+/* 379 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -46684,19 +50161,25 @@
 	
 	var Marionette = __webpack_require__(4);
 	
-	// var AccessionModel = require('../models/accession');
+	var TaxonModel = __webpack_require__(339);
+	var AccessionModel = __webpack_require__(380);
 	// var BatchModel = require('../models/batch');
 	
-	// var AccessionCollection = require('../collections/accession');
+	var AccessionCollection = __webpack_require__(381);
 	// var BatchCollection = require('../collections/batch');
 	
-	// var AccessionListView = require('../views/accessionlist');
+	var EntityPathView = __webpack_require__(382);
+	var AccessionListView = __webpack_require__(384);
 	// var BatchListView = require('../views/batchlist');
 	// var AccessionItemView = require('../views/accessionitem');
 	// var BatchItemView = require('../views/batchitem');
+	var AccessionEditView = __webpack_require__(388);
+	var AccessionDetailsView = __webpack_require__(389);
 	
-	var DefaultLayout = __webpack_require__(164);
-	var TitleView = __webpack_require__(165);
+	var DefaultLayout = __webpack_require__(166);
+	var ScrollingMoreView = __webpack_require__(212);
+	var TitleView = __webpack_require__(167);
+	var DescribableLayout = __webpack_require__(390);
 	
 	var Router = Marionette.AppRouter.extend({
 	    routes : {
@@ -46709,21 +50192,47 @@
 	    },
 	
 	    getAccessionList : function() {
-	        alert("Not yet implemented");
-	        // var collection = application.accession.collections.accession;
-	        //
-	        // var defaultLayout = new DefaultLayout({});
-	        // application.getRegion('mainRegion').show(defaultLayout);
-	        //
-	        // defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of accessions")}));
-	        //
-	        // collection.fetch().then(function () {
-	        //     defaultLayout.getRegion('content').show(new AccessionListView({read_only: true, collection : collection}));
-	        // });
+	        var collection = new AccessionCollection();
+	
+	        var defaultLayout = new DefaultLayout({});
+	        application.getRegion('mainRegion').show(defaultLayout);
+	
+	        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of accessions")}));
+	
+	        collection.fetch().then(function () {
+	            var accessionListView = new AccessionListView({collection : collection});
+	
+	            defaultLayout.getRegion('content').show(accessionListView);
+	            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: accessionListView}));
+	        });
 	    },
 	
 	    getAccession : function(id) {
-	        alert("Not yet implemented");
+	        var defaultLayout = new DefaultLayout();
+	        application.getRegion('mainRegion').show(defaultLayout);
+	
+	        var describableLayout = new DescribableLayout();
+	        defaultLayout.getRegion('content').show(describableLayout);
+	
+	        var model = new AccessionModel({id: id});
+	        model.fetch().then(function() {
+	            var taxon = new TaxonModel({id: model.get('parent')});
+	            taxon.fetch().then(function() {
+	                describableLayout.getRegion('header').show(new EntityPathView({model: model, taxon: taxon}));
+	            });
+	
+	            defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Accession"), model: model}));
+	
+	            // get the layout before creating the view
+	            $.ajax({
+	                method: "GET",
+	                url: application.baseUrl + 'descriptor/meta-model/' + model.get('descriptor_meta_model') + '/layout/',
+	                dataType: 'json',
+	            }).done(function(data) {
+	                var accessionDetailsView = new AccessionDetailsView({model: model, descriptorMetaModelLayout: data});
+	                describableLayout.getRegion('body').show(accessionDetailsView);
+	            });
+	        });
 	    },
 	
 	    getBatchList : function(id) {
@@ -46744,6 +50253,872 @@
 	});
 	
 	module.exports = Router;
+
+
+/***/ },
+/* 380 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file accession.js
+	 * @brief Accession model
+	 * @author Frederic SCHERMA
+	 * @date 2016-12-07
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Backbone = __webpack_require__(2);
+	
+	var Model = Backbone.Model.extend({
+	    url: function() {
+	        if (this.isNew())
+	            return application.baseUrl + 'accession/accession/';
+	        else
+	            return application.baseUrl + 'accession/accession/' + this.get('id') + '/';
+	    },
+	
+	    defaults: {
+	        id: null,
+	        name: '',
+	        parent: undefined,
+	        descriptor_meta_model: undefined,
+	        descriptors: {}
+	    },
+	
+	    parse: function(data) {
+	        return data;
+	    },
+	
+	    validate: function(attrs) {
+	        var errors = {};
+	        var hasError = false;
+	        if (!attrs.name) {
+	            errors.name = 'Name must be valid and at least 3 characters length';
+	            hasError = true;
+	        }
+	
+	        if (hasError) {
+	          return errors;
+	        }
+	    },
+	});
+	
+	module.exports = Model;
+
+
+/***/ },
+/* 381 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file accession.js
+	 * @brief Accession collection
+	 * @author Frederic SCHERMA
+	 * @date 2016-12-09
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var AccessionModel = __webpack_require__(380);
+	
+	var Collection = Backbone.Collection.extend({
+	    url: application.baseUrl + 'accession/accession/',
+	    model: AccessionModel,
+	
+	    comparator: 'name',
+	
+	    parse: function(data) {
+	        this.prev = data.prev;
+	        this.cursor = data.cursor;
+	        this.next = data.next;
+	        this.perms = data.perms;
+	
+	        return data.items;
+	    },
+	
+	    fetch: function(options) {
+	        options || (options = {});
+	        var data = (options.data || {});
+	
+	        options.data = data;
+	
+	        this.cursor = options.data.cursor;
+	        this.sort_by = options.data.sort_by;
+	
+	        if (this.filters) {
+	            options.data.filters = JSON.stringify(this.filters)
+	        }
+	
+	        return Backbone.Collection.prototype.fetch.call(this, options);
+	    }
+	});
+	
+	module.exports = Collection;
+
+
+/***/ },
+/* 382 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file entitypath.js
+	 * @brief Taxon path + entity name item view
+	 * @author Frederic SCHERMA
+	 * @date 2016-12-29
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	var Dialog = __webpack_require__(200);
+	
+	var TaxonModel = __webpack_require__(339);
+	
+	var View = Marionette.ItemView.extend({
+	    tagName: 'div',
+	    template: __webpack_require__(383),
+	    templateHelpers: function () {
+	        return {
+	            taxon: this.taxon
+	        };
+	    },
+	
+	    taxon: {name: '', rank: 0, parent_details: []},
+	    noLink: false,
+	
+	    ui: {
+	        view_taxon: ".view-taxon",
+	        taxon_rank: ".taxon-ranks",
+	        change_parent: ".change-parent"
+	    },
+	
+	    events: {
+	        'click @ui.view_taxon': 'onViewTaxon',
+	        'click @ui.change_parent': 'onChangeParent',
+	    },
+	
+	    initialize: function(options) {
+	        this.mergeOptions(options, ['taxon']);
+	
+	        this.listenTo(this.model, 'reset', this.render, this);
+	        this.listenTo(this.model, 'change:name', this.render, this);
+	        this.listenTo(this.model, 'change:parent', this.updateParent, this);
+	    },
+	
+	    updateParent: function(model, value) {
+	        var view = this;
+	
+	        // update the taxon
+	        this.taxon = new TaxonModel({id: value});
+	        this.taxon.fetch().then(function() {
+	            view.render();
+	        });
+	    },
+	
+	    onRender: function() {
+	        application.taxonomy.views.taxonRanks.htmlFromValue(this.el);
+	
+	        if (this.getOption('noLink')) {
+	            this.ui.view_taxon.removeClass('action');
+	        }
+	    },
+	
+	    onViewTaxon: function(e) {
+	        if (this.getOption('noLink')) {
+	            return;
+	        }
+	
+	        var taxon_id = $(e.target).data('taxon-id');
+	        Backbone.history.navigate("app/taxonomy/taxon/" + taxon_id + "/", {trigger: true});
+	    },
+	
+	    onChangeParent: function() {
+	        var ChangeParent = Dialog.extend({
+	            template: __webpack_require__(354),
+	
+	            attributes: {
+	                id: "dlg_change_parent",
+	            },
+	
+	            ui: {
+	                parent: "#taxon_parent",
+	            },
+	
+	            initialize: function (options) {
+	                ChangeParent.__super__.initialize.apply(this);
+	            },
+	
+	            onRender: function () {
+	                ChangeParent.__super__.onRender.apply(this);
+	
+	                var rank = 100;
+	
+	                $(this.ui.parent).select2({
+	                    dropdownParent: $(this.el),
+	                    ajax: {
+	                        url: application.baseUrl + "taxonomy/taxon/search/",
+	                        dataType: 'json',
+	                        delay: 250,
+	                        data: function (params) {
+	                            params.term || (params.term = '');
+	
+	                            var filters = {
+	                                method: 'icontains',
+	                                fields: ['name', 'rank'],
+	                                'name': params.term,
+	                                'rank': rank
+	                            };
+	
+	                            return {
+	                                page: params.page,
+	                                filters: JSON.stringify(filters),
+	                            };
+	                        },
+	                        processResults: function (data, params) {
+	                            // no pagination
+	                            params.page = params.page || 1;
+	
+	                            var results = [];
+	
+	                            for (var i = 0; i < data.items.length; ++i) {
+	                                results.push({
+	                                    id: data.items[i].id,
+	                                    text: data.items[i].label
+	                                });
+	                            }
+	
+	                            return {
+	                                results: results,
+	                                pagination: {
+	                                    more: (params.page * 30) < data.total_count
+	                                }
+	                            };
+	                        },
+	                        cache: true
+	                    },
+	                    minimumInputLength: 3,
+	                    placeholder: gt.gettext("Enter a taxon name. 3 characters at least for auto-completion"),
+	                });
+	            },
+	
+	            onApply: function() {
+	                var model = this.getOption('model');
+	                var parent = null;
+	
+	                if ($(this.ui.parent).val()) {
+	                    parent = parseInt($(this.ui.parent).val());
+	                }
+	
+	                if (model.isNew()) {
+	                    model.set('parent', parent);
+	                } else {
+	                    model.save({parent: parent}, {patch: true, wait: true});
+	                }
+	
+	                this.remove();
+	            },
+	        });
+	
+	        var changeParent = new ChangeParent({
+	            model: this.model
+	        });
+	
+	        changeParent.render();
+	    }
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 383 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+	function print() { __p += __j.call(arguments, '') }
+	with (obj) {
+	__p += '<span style="font-weight:bold; font-size:18px; margin-bottom: 15px"> ';
+	 for (var i = taxon.get('parent_details').length-1; i >= 0; --i) { ;
+	__p += ' <span><span class="action view-taxon" data-taxon-id="' +
+	((__t = ( taxon.get('parent_details')[i].id )) == null ? '' : __t) +
+	'">' +
+	((__t = ( taxon.get('parent_details')[i].name )) == null ? '' : __t) +
+	'</span><span class="taxon-rank badge left-margin" value="' +
+	((__t = ( taxon.get('parent_details')[i].rank )) == null ? '' : __t) +
+	'"></span> </span><span class="glyphicon glyphicon-chevron-right"></span> ';
+	 } ;
+	__p += ' <span><span class="action view-taxon" data-taxon-id="' +
+	((__t = ( taxon.get('id') )) == null ? '' : __t) +
+	'">' +
+	((__t = ( taxon.get('name') )) == null ? '' : __t) +
+	'</span><span class="taxon-rank badge left-margin" value="' +
+	((__t = ( taxon.get('rank') )) == null ? '' : __t) +
+	'"></span> </span><span class="glyphicon glyphicon-chevron-right"></span> <span><span class="name entity">' +
+	__e( name ) +
+	'</span></span>&nbsp; <span class="glyphicon glyphicon-edit action change-parent"></span> </span>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 384 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file accessionlist.js
+	 * @brief Accession list view
+	 * @author Frederic SCHERMA
+	 * @date 2016-12-19
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	var AccessionView = __webpack_require__(385);
+	var ScrollView = __webpack_require__(196);
+	
+	var View = ScrollView.extend({
+	    template: __webpack_require__(387),
+	    childView: AccessionView,
+	    childViewContainer: 'tbody.accession-list',
+	
+	    initialize: function() {
+	        this.listenTo(this.collection, 'reset', this.render, this);
+	        this.listenTo(this.collection, 'change', this.render, this);
+	
+	        View.__super__.initialize.apply(this);
+	    },
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 385 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file accession.js
+	 * @brief Accession item view
+	 * @author Frederic SCHERMA
+	 * @date 2016-12-19
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	
+	var View = Marionette.ItemView.extend({
+	    tagName: 'tr',
+	    className: 'object accession',
+	    attributes: {
+	        'scope': 'row',
+	    },
+	    template: __webpack_require__(386),
+	
+	    ui: {
+	        details: 'td.view-accession-details',
+	        parent: 'td.view-parent-details'
+	    },
+	
+	    events: {
+	        'click @ui.details': 'viewDetails',
+	        'click @ui.parent': 'viewParent'
+	    },
+	
+	    initialize: function() {
+	        this.listenTo(this.model, 'reset', this.render, this);
+	    },
+	
+	    onRender: function() {
+	        // parent rank
+	        application.taxonomy.views.taxonRanks.attributeFromValue(this.el, "title");
+	        // and date-time
+	        // this.ui.datetime.localizeDate(null, session.language);
+	    },
+	
+	    viewDetails: function () {
+	        Backbone.history.navigate('app/accession/accession/' + this.model.get('id') + '/', {trigger: true});
+	    },
+	
+	    viewParent: function () {
+	        Backbone.history.navigate('app/taxonomy/taxon/' + this.model.get('parent') + '/', {trigger: true});
+	    }
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 386 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+	function print() { __p += __j.call(arguments, '') }
+	with (obj) {
+	__p += '<th><span class="remove-accession action glyphicon glyphicon-minus-sign"></span></th><td class="action view-accession-details">' +
+	__e( name ) +
+	'</td><td class="action view-parent-details"><abbr class="parent taxon-rank" title="" value="' +
+	__e( parent.rank ) +
+	'" object-id="';
+	 parent.id ;
+	__p += '">' +
+	__e( parent.name ) +
+	'</abbr></td><td>Xxx</td><td>Yyy</td><td>Zzz</td>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 387 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '';
+	with (obj) {
+	__p += '<table class="table table-striped"><thead><tr scope="row" class="sticky-header"><th><span class="glyphicon glyphicon-asterisk"></span></th><th>' +
+	((__t = ( gt.gettext("Name") )) == null ? '' : __t) +
+	'</th><th>' +
+	((__t = ( gt.gettext("Parent") )) == null ? '' : __t) +
+	'</th><th>' +
+	((__t = ( gt.gettext("Xxx") )) == null ? '' : __t) +
+	'</th><th>' +
+	((__t = ( gt.gettext("Yyy") )) == null ? '' : __t) +
+	'</th><th>' +
+	((__t = ( gt.gettext("Zzz") )) == null ? '' : __t) +
+	'</th></tr></thead><tbody class="accession-list"></tbody></table>';
+	
+	}
+	return __p
+	};
+
+
+/***/ },
+/* 388 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file accessionedit.js
+	 * @brief Accession entity item edit view
+	 * @author Frederic SCHERMA
+	 * @date 2016-12-15
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var DescribableEdit = __webpack_require__(368);
+	
+	var View = DescribableEdit.extend({
+	    onCancel: function() {
+	        // does not reload models, just redo the views
+	        var view = this;
+	        var name = this.model.get('name');
+	
+	        // update the layout content
+	        var describableLayout = application.getRegion('mainRegion').currentView.getRegion('content').currentView;
+	
+	        var AccessionDetailsView = __webpack_require__(389);
+	        var accessionDetailsView = new AccessionDetailsView({
+	            model: this.model,
+	            descriptorMetaModelLayout: view.descriptorMetaModelLayout});
+	
+	        describableLayout.getRegion('body').show(accessionDetailsView);
+	    },
+	
+	    onApply: function () {
+	        // does not reload  models, save and redo the views
+	        var view = this;
+	        var model = this.model;
+	
+	        var descriptors = this.prepareDescriptors();
+	        if (descriptors === null) {
+	            return;
+	        }
+	
+	        this.model.save({descriptors: descriptors}, {wait: true, patch: !model.isNew()}).then(function () {
+	            //Backbone.history.navigate('app/accession/accession/' + model.get('id') + '/', {trigger: true, replace: true});
+	            var describableLayout = application.getRegion('mainRegion').currentView.getRegion('content').currentView;
+	
+	            // update the layout content
+	            var AccessionDetailsView = __webpack_require__(389);
+	            var accessionDetailsView = new AccessionDetailsView({
+	                model: model,
+	                descriptorMetaModelLayout: view.descriptorMetaModelLayout});
+	
+	            describableLayout.getRegion('body').show(accessionDetailsView);
+	        });
+	    }
+	});
+	
+	module.exports = View;
+
+
+/***/ },
+/* 389 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file accessiondetails.js
+	 * @brief Accession details item view
+	 * @author Frederic SCHERMA
+	 * @date 2016-12-19
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var DescribableDetails = __webpack_require__(363);
+	var AccessionEditView = __webpack_require__(388);
+	
+	var View = DescribableDetails.extend({
+	    onModify: function () {
+	        // does not reload models, just redo the views
+	        var name = this.model.get('name');
+	
+	        // update the layout content
+	        var describableLayout = application.getRegion('mainRegion').currentView.getRegion('content').currentView;
+	
+	        var view = new AccessionEditView({model: this.model, descriptorMetaModelLayout: this.descriptorMetaModelLayout});
+	        describableLayout.getRegion('body').show(view);
+	    }
+	});
+	
+	module.exports = View;
+
+/***/ },
+/* 390 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(_) {/**
+	 * @file describablelayout.js
+	 * @brief Three divs (rows) layout for describable entities
+	 * @author Frederic SCHERMA
+	 * @date 2016-15-10
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	
+	var Layout = Marionette.LayoutView.extend({
+	    template: _.template('<div class="describable-header"></div><div class="describable-body"></div><div class="describable-footer"></div>'),
+	    attributes: {
+	    },
+	
+	    regions: {
+	        'header': "div.describable-header",
+	        'body': "div.describable-body",
+	        'footer': "div.describable-footer"
+	    }
+	});
+	
+	module.exports = Layout;
+	
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ },
+/* 391 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @file accession.js
+	 * @brief Accession controller
+	 * @author Frederic SCHERMA
+	 * @date 2016-12-07
+	 * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+	 * @license @todo
+	 * @details
+	 */
+	
+	var Marionette = __webpack_require__(4);
+	
+	var TaxonModel = __webpack_require__(339);
+	var AccessionModel = __webpack_require__(380);
+	
+	//var AccessionCollection = require('../collections/accession');
+	
+	//var AccessionListView = require('../views/accessionlist');
+	
+	var DefaultLayout = __webpack_require__(166);
+	var TitleView = __webpack_require__(167);
+	var Dialog = __webpack_require__(200);
+	var DescribableLayout = __webpack_require__(390);
+	
+	var EntityPathView = __webpack_require__(382);
+	var AccessionEditView = __webpack_require__(388);
+	
+	
+	var Controller = Marionette.Controller/*Object*/.extend({
+	
+	    create: function() {
+	        $.ajax({
+	            type: "GET",
+	            url: application.baseUrl + 'descriptor/meta-model/for-describable/' + 'accession.accession/',
+	            dataType: 'json',
+	        }).done(function(data) {
+	            var CreateAccessionView = Dialog.extend({
+	                attributes: {
+	                    'id': 'dlg_create_accession',
+	                },
+	                template: __webpack_require__(392),
+	                templateHelpers: function () {
+	                    return {
+	                        meta_models: data,
+	                    };
+	                },
+	
+	                ui: {
+	                    validate: "button.continue",
+	                    name: "#accession_name",
+	                    language: "#accession_language",
+	                    meta_model: "#meta_model",
+	                    parent: "#accession_parent"
+	                },
+	
+	                events: {
+	                    'click @ui.validate': 'onContinue',
+	                    'input @ui.name': 'onNameInput',
+	                },
+	
+	                onRender: function () {
+	                    CreateAccessionView.__super__.onRender.apply(this);
+	
+	                    application.main.views.languages.drawSelect(this.ui.language);
+	                    this.ui.meta_model.selectpicker({});
+	
+	                    $(this.ui.parent).select2({
+	                        dropdownParent: $(this.el),
+	                        ajax: {
+	                            url: application.baseUrl + "taxonomy/taxon/search/",
+	                            dataType: 'json',
+	                            delay: 250,
+	                            data: function (params) {
+	                                params.term || (params.term = '');
+	
+	                                var filters = {
+	                                    method: 'icontains',
+	                                    fields: ['name'],
+	                                    'name': params.term
+	                                };
+	
+	                                return {
+	                                    page: params.page,
+	                                    filters: JSON.stringify(filters),
+	                                };
+	                            },
+	                            processResults: function (data, params) {
+	                                // no pagination
+	                                params.page = params.page || 1;
+	
+	                                var results = [];
+	
+	                                for (var i = 0; i < data.items.length; ++i) {
+	                                    results.push({
+	                                        id: data.items[i].id,
+	                                        text: data.items[i].label
+	                                    });
+	                                }
+	
+	                                return {
+	                                    results: results,
+	                                    pagination: {
+	                                        more: (params.page * 30) < data.total_count
+	                                    }
+	                                };
+	                            },
+	                            cache: true
+	                        },
+	                        minimumInputLength: 3,
+	                        placeholder: gt.gettext("Enter a taxon name. 3 characters at least for auto-completion"),
+	                    });
+	                },
+	
+	                onBeforeDestroy: function() {
+	                    CreateAccessionView.__super__.onBeforeDestroy.apply(this);
+	
+	                    this.ui.language.selectpicker('destroy');
+	                    this.ui.meta_model.selectpicker('destroy');
+	                },
+	
+	                onNameInput: function () {
+	                    if (this.validateName()) {
+	                        var filters = {
+	                            method: 'ieq',
+	                            fields: ['name'],
+	                            'name': this.ui.name.val()
+	                        };
+	
+	                        $.ajax({
+	                            type: "GET",
+	                            url: application.baseUrl + 'accession/accession/search/',
+	                            dataType: 'json',
+	                            contentType: 'application/json; charset=utf8',
+	                            data: {filters: JSON.stringify(filters)},
+	                            el: this.ui.name,
+	                            success: function(data) {
+	                                if (data.items.length > 0) {
+	                                    for (var i in data.items) {
+	                                        var t = data.items[i];
+	
+	                                        if (t.value.toUpperCase() == this.el.val().toUpperCase()) {
+	                                            $(this.el).validateField('failed', gt.gettext('Taxon name already in usage'));
+	                                            break;
+	                                        }
+	                                    }
+	                                } else {
+	                                    $(this.el).validateField('ok');
+	                                }
+	                            }
+	                        });
+	                    }
+	                },
+	
+	                validateName: function() {
+	                    var v = this.ui.name.val();
+	
+	                    if (v.length > 64) {
+	                        $(this.ui.name).validateField('failed', gt.gettext("64 characters max"));
+	                        return false;
+	                    } else if (v.length < 3) {
+	                        $(this.ui.name).validateField('failed', gt.gettext('3 characters min'));
+	                        return false;
+	                    }
+	
+	                    return true;
+	                },
+	
+	                validate: function() {
+	                    var valid = this.validateName();
+	
+	                    var parentId = 0;
+	
+	                    if (this.ui.parent.val())
+	                        parentId = parseInt(this.ui.parent.val());
+	
+	                    if (parentId == 0) {
+	                        $.alert.error(gt.gettext("The parent must be defined"));
+	                        valid = false;
+	                    }
+	
+	                    if (this.ui.name.hasClass('invalid') || this.ui.parent.hasClass('invalid')) {
+	                        valid = false;
+	                    }
+	
+	                    return valid;
+	                },
+	
+	                onContinue: function() {
+	                    var view = this;
+	
+	                    if (this.validate()) {
+	                        var name = this.ui.name.val();
+	                        var parent = parseInt(this.ui.parent.val());
+	                        var metaModel = parseInt(this.ui.meta_model.val());
+	
+	                        // create a new local model and open an edit view with this model
+	                        var model = new AccessionModel({
+	                            name: name,
+	                            parent: parent,
+	                            descriptor_meta_model: metaModel,
+	                            language: this.ui.language.val(),
+	                        });
+	
+	                        view.remove();
+	
+	                        var defaultLayout = new DefaultLayout();
+	                        application.getRegion('mainRegion').show(defaultLayout);
+	
+	                        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Accession"), model: model}));
+	
+	                        var describableLayout = new DescribableLayout();
+	                        defaultLayout.getRegion('content').show(describableLayout);
+	
+	                        var taxon = new TaxonModel({id: parent});
+	                        taxon.fetch().then(function() {
+	                            describableLayout.getRegion('header').show(new EntityPathView({model: model, taxon: taxon, noLink: true}));
+	                        });
+	
+	                        $.ajax({
+	                            method: "GET",
+	                            url: application.baseUrl + 'descriptor/meta-model/' + metaModel + '/layout/',
+	                            dataType: 'json',
+	                        }).done(function(data) {
+	                            var view = new AccessionEditView({model: model, descriptorMetaModelLayout: data});
+	                            describableLayout.getRegion('body').show(view);
+	                        });
+	                    }
+	                }
+	            });
+	
+	            var createAccessionView = new CreateAccessionView();
+	            createAccessionView.render();
+	        });
+	    },
+	});
+	
+	module.exports = Controller;
+
+/***/ },
+/* 392 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(1);
+	
+	module.exports = function (obj) {
+	obj || (obj = {});
+	var __t, __p = '', __j = Array.prototype.join;
+	function print() { __p += __j.call(arguments, '') }
+	with (obj) {
+	__p += '<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title">' +
+	((__t = ( gt.gettext("Create an accession") )) == null ? '' : __t) +
+	'</h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="meta_model">' +
+	((__t = ( gt.gettext("Template") )) == null ? '' : __t) +
+	'</label><select id="meta_model" style="width:100%" class="form-control"> ';
+	 _.each(meta_models, function(meta_model) { ;
+	__p += ' <option value="' +
+	((__t = ( meta_model.id )) == null ? '' : __t) +
+	'">' +
+	((__t = ( meta_model.label )) == null ? '' : __t) +
+	'</option> ';
+	 }) ;
+	__p += ' </select></div><div class="row"><div class="col-xs-8"><div class="form-group"><label class="control-label" for="accession_name">' +
+	((__t = ( gt.gettext("Principal name of the accession (must be unique)") )) == null ? '' : __t) +
+	'</label><input class="form-control name" id="accession_name" type="text" name="accession" value="" maxlength="64" autofocus="" autocomplete="off" style="width:100%"></div></div><div class="col-xs-4"><div class="form-group"><label class="control-label" for="accession_language">' +
+	((__t = ( gt.gettext("Language") )) == null ? '' : __t) +
+	'</label><select class="form-control language" id="accession_language" name="language"></select></div></div></div><div class="form-group accession-parent-group"><label class="control-label" for="accession_parent">' +
+	((__t = ( gt.gettext("Parent") )) == null ? '' : __t) +
+	'</label><select id="accession_parent" style="width:100%" class="form-control"></select></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal">' +
+	((__t = ( gt.gettext("Cancel") )) == null ? '' : __t) +
+	'</button> <button type="button" class="btn btn-primary continue">' +
+	((__t = ( gt.gettext("Continue") )) == null ? '' : __t) +
+	'</button></div></div></div>';
+	
+	}
+	return __p
+	};
 
 
 /***/ }

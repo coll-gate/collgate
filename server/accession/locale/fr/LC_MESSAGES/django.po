@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-12-23 12:05+0100\n"
+"POT-Creation-Date: 2017-01-04 16:01+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,11 +22,11 @@ msgstr ""
 msgid "You are not allowed to create an accession"
 msgstr "Vous n'êtes pas autorisé à créer une accession"
 
-#: accession.py:68 accession.py:277
+#: accession.py:68 accession.py:270
 msgid "The name of the accession is already used as a primary synonym"
 msgstr "Le nom de l'accession est déjà utilisé comme nom principal"
 
-#: accession.py:71 accession.py:280
+#: accession.py:71 accession.py:273
 msgid "The name of the accession is already used"
 msgstr "Le nom de l'accession est déjà utilisé"
 
@@ -38,31 +38,31 @@ msgstr "La langue n'est pas supportée"
 msgid "You are not allowed to list the accessions"
 msgstr "Vous n'êtes pas autorisé à lister les accessions"
 
-#: accession.py:261
+#: accession.py:254
 #, fuzzy
 #| msgid "You are not allowed to create an accession"
 msgid "You are not allowed to modify an accession"
 msgstr "Vous n'êtes pas autorisé à créer une accession"
 
-#: accession.py:299
+#: accession.py:302
 #, fuzzy
 #| msgid "You are not allowed to create an accession"
 msgid "You are not allowed to delete an accession"
 msgstr "Vous n'êtes pas autorisé à créer une accession"
 
-#: apps.py:50
+#: apps.py:56
 msgid "Accession"
 msgstr "Accession"
 
-#: apps.py:52
+#: apps.py:58
 msgid "Create accession"
 msgstr "Créer une accession"
 
-#: apps.py:55
+#: apps.py:61
 msgid "Create batch"
 msgstr "Créer un lot"
 
-#: apps.py:59
+#: apps.py:65
 msgid "List accessions"
 msgstr "Liste des accessions"
 

@@ -61,7 +61,7 @@ application = new Marionette.Application({
             dfd = $.Deferred();
 
             // opts.success and opts.error are resolved against the deferred object
-            // instead of the jqXHR object
+            // instead of the xhr object
             if (opts)
                 dfd.then(opts.success, opts.error);
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-12-23 12:05+0100\n"
+"POT-Creation-Date: 2017-01-04 16:01+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -95,18 +95,18 @@ msgstr ""
 msgid "The descriptor value must be a string matching the defined format"
 msgstr ""
 
-#: describable.py:216
+#: describable.py:224
 #, python-format
 msgid "Missing mandatory descriptor %s"
 msgstr ""
 
-#: describable.py:221
+#: describable.py:229
 #, python-format
 msgid "Already defined set once descriptor %s"
 msgstr ""
 
-#: describable.py:234 describable.py:239 describable.py:247 describable.py:253
-#: describable.py:262 describable.py:269
+#: describable.py:247 describable.py:253 describable.py:262 describable.py:269
+#: describable.py:279 describable.py:287
 msgid "A conditional descriptor is defined but the condition is not true"
 msgstr ""
 
@@ -131,7 +131,7 @@ msgid "Name of group of descriptor already in usage"
 msgstr ""
 
 #: descriptor.py:213
-msgid "It is not permit to modify this group of descriptors"
+msgid "It is not permit to modify this group of type of descriptors"
 msgstr ""
 
 #: descriptor.py:414 descriptor.py:458 descriptor.py:505

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-12-23 12:05+0100\n"
+"POT-Creation-Date: 2017-01-04 16:01+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,7 +18,9 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: apps.py:44
-msgid "type de descripteur"
+#, fuzzy
+#| msgid "descriptor type"
+msgid "Descriptor"
 msgstr "type de descripteur"
 
 #: apps.py:48
@@ -90,24 +92,26 @@ msgid ""
 "The descriptor value must be a string with a maximum length of 1024 "
 "characters"
 msgstr ""
-"La valeur du descripteur doit être une chaîne d'une longueur maximum "
-"de 1024 caractères"
+"La valeur du descripteur doit être une chaîne d'une longueur maximum de 1024 "
+"caractères"
 
 #: describable.py:188
 msgid "The descriptor value must be a string matching the defined format"
-msgstr "La valeur du descripteur doit être une chaîne validant le format définit"
+msgstr ""
+"La valeur du descripteur doit être une chaîne validant le format définit"
 
-#: describable.py:216
+#: describable.py:224
+#, python-format
 msgid "Missing mandatory descriptor %s"
 msgstr "Descripteur obligatoire manquant %s"
 
-#: describable.py:221
+#: describable.py:229
 #, python-format
 msgid "Already defined set once descriptor %s"
 msgstr "Descripteur à écriture unique déjà définit %s"
 
-#: describable.py:234 describable.py:239 describable.py:247 describable.py:253
-#: describable.py:262 describable.py:269
+#: describable.py:247 describable.py:253 describable.py:262 describable.py:269
+#: describable.py:279 describable.py:287
 msgid "A conditional descriptor is defined but the condition is not true"
 msgstr "Un déscripteur conditionel est définit mais la condition est invalide"
 
@@ -171,19 +175,24 @@ msgstr "Le type simple énumération ne supported pas le listing sur valeur1"
 
 #: descriptor.py:539
 msgid "Single enumeration list can only display the value0 field"
-msgstr "Le type simple énumération accepte seulement l'affichage du champs valeur0"
+msgstr ""
+"Le type simple énumération accepte seulement l'affichage du champs valeur0"
 
 #: descriptor.py:542
 msgid "Single enumeration list can only search on value0"
-msgstr "Le type simple énumération accepte seulement la recherche sur le champs valeur0"
+msgstr ""
+"Le type simple énumération accepte seulement la recherche sur le champs "
+"valeur0"
 
 #: descriptor.py:556
 msgid "Pair enumeration list cannot be sorted by ordinal"
-msgstr "Le type énumération de pair n'accepte pas le tris sur le champs ordinal"
+msgstr ""
+"Le type énumération de pair n'accepte pas le tris sur le champs ordinal"
 
 #: descriptor.py:559
 msgid "Pair enumeration list cannot display ordinal field"
-msgstr "Le type énumération de paire n'accepte pas l'affichage du champs ordinal"
+msgstr ""
+"Le type énumération de paire n'accepte pas l'affichage du champs ordinal"
 
 #: descriptor.py:562
 msgid "Type of descriptor with enumeration of pairs require two fields"
@@ -191,15 +200,19 @@ msgstr "Le type de descripteur avec énumération de paires requiert deux champs
 
 #: descriptor.py:575
 msgid "Ordinal enumeration list can only be sorted by ordinal"
-msgstr "Le type énumération d'ordinal accepte seulement le tris sur le champs ordinal"
+msgstr ""
+"Le type énumération d'ordinal accepte seulement le tris sur le champs ordinal"
 
 #: descriptor.py:578
 msgid "Ordinal enumeration list can only display value0 and ordinal fields"
-msgstr "Seule les champs valeur0 et ordinal peuvent être affichés avec une liste d'énumération"
+msgstr ""
+"Seule les champs valeur0 et ordinal peuvent être affichés avec une liste "
+"d'énumération"
 
 #: descriptor.py:581
 msgid "Ordinal enumeration list can only search on value0"
-msgstr "Seule la recherche sur la valeur0 est possible avec une énumération d'ordinal"
+msgstr ""
+"Seule la recherche sur la valeur0 est possible avec une énumération d'ordinal"
 
 #: descriptor.py:592
 msgid "Range limits are [-127, 127]"
@@ -220,8 +233,8 @@ msgstr "Il n'y a pas de valeurs possibles pour ce type de descripteur"
 #: descriptor.py:807
 msgid "Ordinal field is only defined for enumeration with ordinal"
 msgstr ""
-"Le champs ordinal est défini seulement pour le type d'"
-"énumération avec ordinal"
+"Le champs ordinal est défini seulement pour le type d'énumération avec "
+"ordinal"
 
 #: descriptor.py:810
 msgid "Second value field is only defined for enumeration of pairs"
@@ -290,8 +303,8 @@ msgid ""
 "A panel of descriptor for this model already exists into this meta-model of "
 "descriptor"
 msgstr ""
-"Un panel de descripteur avec ce modèle existe déjà dans ce méta-modèle de"
-"descripteur"
+"Un panel de descripteur avec ce modèle existe déjà dans ce méta-modèle "
+"dedescripteur"
 
 #: descriptormetamodel.py:559 descriptormetamodel.py:624
 #: descriptormetamodel.py:774
@@ -375,11 +388,14 @@ msgstr ""
 
 #: descriptormodel.py:716
 msgid "You are not allowed to modify a condition of a model of descriptor"
-msgstr "Vous n'êtes pas autorisé à modifier une condition ce modèle de descripteur"
+msgstr ""
+"Vous n'êtes pas autorisé à modifier une condition ce modèle de descripteur"
 
 #: descriptormodel.py:767
 msgid "You are not allowed to delete a condition of a model of descriptor"
-msgstr "Vous n'êtes pas autorisé à supprimer une condition sur ce modèle de descripteur"
+msgstr ""
+"Vous n'êtes pas autorisé à supprimer une condition sur ce modèle de "
+"descripteur"
 
 #: models.py:64
 msgid "descriptor group"
@@ -428,6 +444,9 @@ msgstr "Différent de"
 #: models.py:1026
 msgid "descriptor model type condition"
 msgstr "condition de modèle de descripteur"
+
+#~ msgid "type de descripteur"
+#~ msgstr "type de descripteur"
 
 #~ msgid ""
 #~ "It is not possible to remove a meta-model of descriptor that is used by "

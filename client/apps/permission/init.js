@@ -22,11 +22,11 @@ var PermissionModule = Marionette.Module.extend({
         this.controllers = {};
 
         // i18n
-        if (session.language === "fr") {
-            i18next.addResources('fr', 'default', require('./locale/fr/LC_MESSAGES/default.json'));
-        } else {  // default to english
-            //i18next.addResources('en', 'default', require('./locale/en/LC_MESSAGES/default.json'));
-        }
+        try {
+            i18next.addResources('fr', 'default', require('./locale/' + session.language + '/LC_MESSAGES/default.json'));
+        } catch (e) {
+            console.warning("No translation found for the current language. Fallback to english language");
+        };
 
         var SelectOptionItemView = require('../main/views/selectoptionitemview');
 
