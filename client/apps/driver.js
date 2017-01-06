@@ -14,21 +14,18 @@ var Marionette = require('backbone.marionette');
 i18next = require('i18next');
 Logger = require('js-logger');
 
-// select2 as jquery plugin
-/*$.select2 = */require("select2");
+// select2 as jquery plugin ($.select2)
+require("select2");
 require("select2/dist/css/select2.min.css");
 
-// numeric validator (useless, replaced by alphanum)
-/*$.numeric = *///require("./deps/js/jquery.numeric");
+// alphanum validator ($.alphanum)
+require("./deps/js/jquery.alphanum");
 
-// alphanum validator
-/*$.* = */require("./deps/js/jquery.alphanum");
+// make table header fixed position ($.stickyTableHeaders)
+require("sticky-table-headers");
 
-// make table header fixed position
-/*$.stickyTableHeaders = */require("sticky-table-headers");
-
-// datetime picker
-/*$.datetimepicker = */require("eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min");
+// datetime picker ($.datetimepicker)
+require("eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min");
 require("eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css");
 
 // moment
@@ -203,6 +200,7 @@ application.on("before:start", function(options) {
     window.gt = i18next;
     window.gt.gettext = i18next.t;
     window.gt._ = i18next.t;
+    window.gt.pgettext = function(context, msg) { return i18next.t(msg, {context: context}); }
 
     // select2
     if (session.language === "fr") {
@@ -215,13 +213,14 @@ application.on("before:start", function(options) {
     // moment
     moment.locale(session.language);
 
+    // defaults modules
+    session.modules || (session.modules = ['main']);
+
     // each modules
-    this.main = require('./main/init');
-    this.permission = require('./permission/init');
-    this.audit = require('./audit/init');
-    this.descriptor = require('./descriptor/init');
-    this.taxonomy = require('./taxonomy/init');
-    this.accession = require('./accession/init');
+    for (var i = 0; i < session.modules.length; ++i) {
+        var module = session.modules[i];
+        this[module] = require('./' + module + '/init');
+    }
 });
 
 application.start({initialData: ''});

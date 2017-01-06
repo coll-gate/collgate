@@ -1,6 +1,6 @@
 {
-    "Successfully removed !": "",
     "Enter a taxon name. 3 characters at least for auto-completion": "",
+    "Successfully removed !": "",
     "Invalid characters (alphanumeric, _ and - only)": "",
     "3 characters min": "",
     "64 characters max": "",
@@ -25,6 +25,9 @@
     "Create": "",
     "No descriptor meta-model is defined for this taxon.": "",
     "Defines": "",
+    "Defines a meta-model of descriptors": "",
+    "Template": "",
+    "Continue": "",
     "Type": "",
     "Synonyms": "",
     "Descriptors": "",

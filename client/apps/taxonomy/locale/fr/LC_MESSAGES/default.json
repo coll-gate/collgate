@@ -1,6 +1,6 @@
 {
-    "Successfully removed !": "Retiré avec succé !",
     "Enter a taxon name. 3 characters at least for auto-completion": "Saisissez un nom de taxon. 3 caractères minimum pour l'auto-complétion",
+    "Successfully removed !": "Retiré avec succé !",
     "Invalid characters (alphanumeric, _ and - only)": "Caractères invalides (alphanumérique, _ et - seulement)",
     "3 characters min": "3 caractères minimum",
     "64 characters max": "64 caractères maximum",
@@ -25,6 +25,9 @@
     "Create": "Créer",
     "No descriptor meta-model is defined for this taxon.": "Aucun méta-modèle de descripteur n'est définit pour ce taxon.",
     "Defines": "Définir",
+    "Defines a meta-model of descriptors": "",
+    "Template": "",
+    "Continue": "",
     "Type": "Type",
     "Synonyms": "Synonymes",
     "Descriptors": "Descripteurs",

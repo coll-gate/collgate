@@ -1,9 +1,9 @@
 # -*- coding: utf-8; -*-
 #
-# Copyright (c) 2016 INRA UMR1095 GDEC
+# Copyright (c) 2017 INRA UMR1095 GDEC
 
 """
-coll-gate audit url entry point.
+coll-gate medialibrary module url entry point.
 """
 
 from django.conf.urls import include, url

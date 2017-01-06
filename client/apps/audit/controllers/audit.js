@@ -213,6 +213,11 @@ var Controller = Marionette.Controller.extend({
                     minimumInputLength: 3,
                     placeholder: gt.gettext("Select an entity UUID or name"),
                 }).select2('open');
+            },
+
+            onBeforeDestroy: function() {
+                ModalView.__super__.onBeforeDestroy.apply(this);
+                this.ui.content_type.selectpicker('destroy');
             }
         });
 

@@ -65,7 +65,7 @@
 /******/ 	}
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "c495555284548089f31b"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "20b4b89b859931bef07c"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -33654,8 +33654,12 @@
 	        options || (options = {});
 	        Marionette.ItemView.prototype.initialize.apply(this, options);
 	
-	        this.collection.fetch();  // lazy loading
-	        this.collection.on("sync", this.render, this);  // render the template once got
+	        if (!!options.sync) {
+	            this.render();
+	        } else {
+	            this.collection.fetch();  // lazy loading
+	            this.collection.on("sync", this.render, this);  // render the template once got
+	        }
 	    },
 	
 	    onRender: function(e) {
@@ -37574,6 +37578,7 @@
 	        this.collections.descriptorTypeUnits = new DescriptorTypeUnitCollection();
 	
 	        this.views.descriptorTypeUnits = new SelectOptionItemView({
+	            sync: true,
 	            className: 'descriptor-type-unit',
 	            collection: this.collections.descriptorTypeUnits,
 	        });
@@ -40234,6 +40239,7 @@
 	
 	    onRender: function() {
 	        application.descriptor.views.describables.drawSelect(this.ui.format_model);
+	        application.descriptor.views.descriptorTypeUnits.drawSelect(this.ui.format_unit);
 	
 	        // @todo check user permissions
 	        if (!this.model.get('can_modify')) {
@@ -40242,7 +40248,6 @@
 	
 	        this.ui.format_trans.selectpicker({style: 'btn-default', container: 'body'});
 	        this.ui.format_type.selectpicker({style: 'btn-default', container: 'body'});
-	        this.ui.format_unit.selectpicker({style: 'btn-default', container: 'body'});
 	        this.ui.format_precision.selectpicker({style: 'btn-default', container: 'body'});
 	
 	        this.ui.sortby_field.selectpicker({style: 'btn-default'});
@@ -40763,7 +40768,7 @@
 	__e( gt.gettext('Value1') ) +
 	'</option></select></div></div></div><div class="descriptor-type-unit form-group" style="width: 50%"><div class="row"><div class="col-xs-6"><label for="format_unit">' +
 	__e( gt.gettext('Unit of the format') ) +
-	'</label><select id="format_unit" class="form-control"><optgroup label="Chroma"><option value="chroma_L_value">L value</option><option value="chroma_a_value">a value</option><option value="chroma_b_value">b value</option></optgroup><optgroup label="Common"><option value="degree_celsius">°C</option><option value="category">Category</option><option value="custom" style="font-style: italic">Custom</option><option value="joule">J (joule)</option><option value="norm1">Norm 1</option><option value="note">Note</option><option value="percent">% (percent)</option><option value="regexp">Regular expression</option><option value="scale">Scale</option></optgroup><optgroup label="Grain"><option value="gram_per_100_grain">g/100 grain</option><option value="gram_per_200_grain">g/200 grain</option><option value="gram_per_1000_grain">g/1000 grain</option><option value="grain_per_meter2">grain/m²</option><option value="grain_per_spike">grain/spike</option><option value="grain_per_spikelet">grain/spikelet</option></optgroup><optgroup label="Meter"><option value="micrometer">um</option><option value="millimeter">mm</option><option value="centimeter">cm</option><option value="decimeter">dm</option><option value="meter">m</option><option value="kilometer">km</option></optgroup><optgroup label="Plant and plot"><option value="plant_per_meter">plant/m</option><option value="plant_per_meter2">plant/m²</option><option value="plant_per_hectare">plant/ha</option><option value="plant_per_plot">plant/plot</option><option value="gram_per_plant">g/plant</option><option value="gram_per_plot">g/plot</option><option value="kilogram_per_plot">kg/plot</option><option value="stoma_per_millimeter2">stoma/mm²</option><option value="node">node</option><option value="spikelet">spikelet</option><option value="spike_per_meter2">spike/m²</option><option value="tiller_per_meter">tiller/m</option><option value="tiller_per_meter2">tiller/m²</option></optgroup><optgroup label="Quantity and volume"><option value="milliliter">ml</option><option value="milliliter_per_percent">ml/%</option><option value="ppm">ppm</option><option value="milligram_per_kilogram">mg/kg</option><option value="gram_per_kilogram">g/kg</option><option value="gram_per_meter2">g/m²</option><option value="kilogram_per_hectare">kg/ha</option><option value="ton_per_hectare">t/ha</option><option value="gram_per_liter">g/l</option><option value="kilogram_per_hectolitre">kg/hl</option><option value="millimol_per_meter2_per_second">mmol/m²/s</option><option value="gram_per_meter2_per_day">g/m²/day</option><option value="l">CCl (chlore)</option><option value="delta_13c">delta 13C (carbon)</option></optgroup><optgroup label="Surface"><option value="millimeter2">mm²</option><option value="centimeter2">cm²</option><option value="meter2">m²</option><option value="hectare">ha</option><option value="kilometer2">km²</option></optgroup><optgroup label="Time"><option value="millisecond">ms</option><option value="second">s</option><option value="minute">min</option><option value="hour">hour</option><option value="day">day</option><option value="month">month</option><option value="year">year</option><option value="date">date (yyyy/mm/dd)</option><option value="time">time (hh:mm:ss)</option><option value="datetime">date time (yyyy/mm/dd hh:mm:ss)</option><option value="percent_per_minute">%/min</option><option value="percent_per_hour">%/hour</option><option value="percent_per_day">%/day</option></optgroup></select></div><div class="col-xs-6"><div class="form-group"><label for="format_unit_custom">' +
+	'</label><select id="format_unit" class="form-control"></select></div><div class="col-xs-6"><div class="form-group"><label for="format_unit_custom">' +
 	__e( gt.gettext('Custom unit name') ) +
 	'</label><input id="format_unit_custom" class="form-control" type="text" disabled="disabled" maxlength="32" value=""></div></div></div></div><div class="descriptor-type-precision form-group" style="width: 50%"><label for="format_precision">' +
 	__e( gt.gettext('Precision of the decimal') ) +
@@ -45959,6 +45964,7 @@
 	
 	    initialize: function(models, options) {
 	        Collection.__super__.initialize.apply(this);
+	
 	        this.models = [];
 	        this.lookup = {};
 	
@@ -45967,7 +45973,7 @@
 	            this.lookup[model.id] = model.label;
 	            this.models.push(new DescriptorTypeUnitModel({
 	                id: model.id,
-	                value: model.value,
+	                value: model.id,
 	                group: model.group,
 	                group_label: model.group_label,
 	                label: model.label
@@ -45979,8 +45985,31 @@
 	        return data;
 	    },
 	
-	    fetch: function(options) {
-	        // avoid fetching
+	    toJSON: function() {
+	        var result = [];
+	        var prev = "";
+	        var group = {};
+	
+	        console.log(this.models)
+	        for (var i = 0; i < this.models.length; ++i) {
+	            var model = this.models[i];
+	            var g = model.get('group');
+	
+	            if (g != prev) {
+	                group = {id: -1, value: "", label: model.get('group_label'), options: []};
+	                result.push(group);
+	            }
+	
+	            group.options.push({
+	                id: model.get('id'),
+	                value: model.get('value'),
+	                label: model.get('label')
+	            });
+	
+	            prev = g;
+	        }
+	
+	        return result;
 	    },
 	
 	    defaults: [
@@ -45995,7 +46024,6 @@
 	        {id: 'norm1', group: 'common', group_label: 'Common', label: gt.gettext("°Norm 1")},
 	        {id: 'note', group: 'common', group_label: 'Common', label: gt.gettext("Note")},
 	        {id: 'percent', group: 'common', group_label: 'Common', label: gt.gettext("% (percent)")},
-	        {id: 'regexp', group: 'common', group_label: 'Common', label: gt.gettext("Regular expression")},
 	        {id: 'scale', group: 'common', group_label: 'Common', label: gt.gettext("Scale")},
 	
 	        {id: 'gram_per_100_grain', group: 'grain', group_label: 'Grain', label: gt.gettext("g/100 grain")},
@@ -46053,10 +46081,10 @@
 	        {id: 'hour', group: 'time', group_label: 'Time', label: gt.gettext("hour")},
 	        {id: 'day', group: 'time', group_label: 'Time', label: gt.gettext("day")},
 	        {id: 'month', group: 'time', group_label: 'Time', label: gt.gettext("month")},
-	        {id: 'year', group_label: 'Time', label: gt.gettext("year")},
-	        {id: 'date', group: 'time', group_label: 'Time', label: gt.gettext("date")},
-	        {id: 'time', group: 'time', group_label: 'Time', label: gt.gettext("time with seconds")},
-	        {id: 'datetime', group: 'time', group_label: 'Time', label: gt.gettext("date+time")},
+	        {id: 'year', group: 'time', group_label: 'Time', label: gt.gettext("year")},
+	        {id: 'date', group: 'time', group_label: 'Time', label: gt.gettext("Date")},
+	        {id: 'time', group: 'time', group_label: 'Time', label: gt.gettext("Time")},
+	        {id: 'datetime', group: 'time', group_label: 'Time', label: gt.gettext("Date Time")},
 	        {id: 'percent_per_minute', group: 'time', group_label: 'Time', label: gt.gettext("%/min")},
 	        {id: 'percent_per_hour', group: 'time', group_label: 'Time', label: gt.gettext("%/hour")},
 	        {id: 'percent_per_day', group: 'time', group_label: 'Time', label: gt.gettext("%/day")}

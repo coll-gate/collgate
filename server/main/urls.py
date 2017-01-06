@@ -1,6 +1,6 @@
 # -*- coding: utf-8; -*-
 #
-# Copyright (c) 2014 INRA UMR1095 GDEC
+# Copyright (c) 2016 INRA UMR1095 GDEC
 
 """
 coll-gate main url entry point.

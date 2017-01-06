@@ -198,6 +198,7 @@ INSTALLED_APPS = (
     'permission',
     'audit',
     'descriptor',
+    'medialibrary',
     'taxonomy',
     'accession',
 )

@@ -48,6 +48,9 @@ class TemplateAppValue(Node):
         # custom variable 'version'
         if arg_repr == "version":
             ret_val = '.'.join([str(x) for x in appsettings.APP_VERSION])
+        elif arg_repr == "modules":
+            from igdectk.module.manager import module_manager
+            ret_val = [module.name for module in module_manager.modules]
         elif arg_repr == "development":
             ret_val = hasattr(settings, 'WEBPACK')
         elif arg_repr == "webpack_host":

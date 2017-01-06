@@ -40,6 +40,34 @@ class CollGateDescriptor(ApplicationMain):
         # defines the list of entities models that uses of a meta-model of descriptor
         self.describable_entities = []
 
+        # different types of format for type of descriptors
+        self.format_types = [
+            {'group': 'single', 'label': _('Single value'), 'items': [
+                {'id': 'boolean', 'label': _('Boolean')},
+                {'id': 'numeric', 'label': _('Numeric')},
+                {'id': 'numeric_range', 'label': _('Numeric range')},
+                {'id': 'ordinal', 'label': _('Ordinal')},
+                {'id': 'gps', 'label': _('GPS coordinate')},
+                {'id': 'string', 'label': _('Text')},
+                {'id': 'date', 'label': _('Date')},
+                {'id': 'time', 'label': _('Time')},
+                {'id': 'datetime', 'label': _('Date+time')},
+                {'id': 'entity', 'label': _('Entity')},
+                {'id': 'media', 'label': _('Media')},
+            ]},
+
+            {'group': 'list', 'label': _('List of values'), 'items': [
+                {'id': 'enum_single', 'label': _('Single enumeration')},
+                {'id': 'enum_pair', 'label': _('Pair enumeration')},
+                {'id': 'enum_ordinal', 'label': _('Ordinal with text')}
+            ]}
+        ]
+
+        # different units of format for type of descriptors
+        self.format_units = [
+
+        ]
+
         # descriptor menu
         menu_descriptor = ModuleMenu('descriptor', _('Descriptor'), order=100, auth=AUTH_STAFF)
 

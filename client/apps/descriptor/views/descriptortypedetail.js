@@ -57,7 +57,8 @@ var View = Marionette.ItemView.extend({
 
     onRender: function() {
         application.descriptor.views.describables.drawSelect(this.ui.format_model);
-        application.descriptor.views.descriptorTypeUnits.drawSelect(this.ui.format_unit);
+        application.descriptor.views.formatTypes.drawSelect(this.ui.format_type);
+        application.descriptor.views.formatUnits.drawSelect(this.ui.format_unit);
 
         // @todo check user permissions
         if (!this.model.get('can_modify')) {
@@ -65,8 +66,7 @@ var View = Marionette.ItemView.extend({
         }
 
         this.ui.format_trans.selectpicker({style: 'btn-default', container: 'body'});
-        this.ui.format_type.selectpicker({style: 'btn-default', container: 'body'});
-        //this.ui.format_unit.selectpicker({style: 'btn-default', container: 'body'});
+        //this.ui.format_type.selectpicker({style: 'btn-default', container: 'body'});
         this.ui.format_precision.selectpicker({style: 'btn-default', container: 'body'});
 
         this.ui.sortby_field.selectpicker({style: 'btn-default'});
@@ -175,19 +175,19 @@ var View = Marionette.ItemView.extend({
                 break;
         }
 
-        if (format.type != "entity") {
+        if (format.type !== "entity") {
             if (this.ui.format_model.closest("div.form-group").css('display') != 'none') {
                 this.ui.format_model.closest("div.form-group").hide(false);
             }
         }
 
-        if (format.type != "numeric" && format.type != "numeric_range") {
+        if (format.type !== "numeric" && format.type !== "numeric_range") {
             if (this.ui.format_precision.closest("div.form-group").css('display') != 'none') {
                 this.ui.format_precision.closest("div.form-group").hide(false);
             }
         }
 
-        if (format.type != "string") {
+        if (format.type !== "string" && format.type !== "media") {
             if (this.ui.format_regexp.closest("div.form-group").css('display') != 'none') {
                 this.ui.format_regexp.closest("div.form-group").hide(false);
             }
@@ -216,6 +216,8 @@ var View = Marionette.ItemView.extend({
             case "enum_single":
             case "enum_pair":
             case "enum_ordinal":
+            case "entity":
+            case "media":
                 this.ui.format_precision.prop("disabled", true).val("0.0");
                 if (this.ui.format_precision.closest("div.form-group").css('display') != 'none') {
                     this.ui.format_precision.closest("div.form-group").hide(true);
@@ -260,6 +262,7 @@ var View = Marionette.ItemView.extend({
             case "boolean":
             case "ordinal":
             case "entity":
+            case "media":
                 this.ui.format_unit_custom.prop("disabled", true).val("");
                 this.ui.format_unit.val('custom').prop('disabled', true).selectpicker('refresh');
                 if (this.ui.format_unit.closest("div.form-group").css('display') != 'none') {
@@ -300,7 +303,7 @@ var View = Marionette.ItemView.extend({
                 break;
         }
 
-        if (type == "string") {
+        if (type === "string" || type === "media") {
             this.ui.format_regexp.prop("disabled", false).val("");
 
             if (this.ui.format_regexp.closest("div.form-group").css('display') == 'none') {
@@ -321,7 +324,7 @@ var View = Marionette.ItemView.extend({
             if (this.ui.range.css('display') == 'none') {
                 this.ui.range.show(true);
             }
-        } else if (type == "enum_ordinal" || type == "ordinal") {
+        } else if (type === "enum_ordinal" || type === "ordinal") {
             this.ui.format_range_min.prop("disabled", false).val("0").numeric({decimal : false, negative : false});
             this.ui.format_range_max.prop("disabled", false).val("10").numeric({decimal : false, negative : false});
 
@@ -435,11 +438,11 @@ var View = Marionette.ItemView.extend({
             format.fields = [field0, field1];
         }
 
-        if (format.unit == 'custom') {
+        if (format.unit === 'custom') {
             format.custom_unit = this.ui.format_unit_custom.val();
         }
 
-        if (format.type == 'entity') {
+        if (format.type === 'entity') {
             format.model = this.ui.format_model.val();
             format.custom_unit = "";
         }
@@ -454,11 +457,11 @@ var View = Marionette.ItemView.extend({
             ];
         }
 
-        if (format.type == 'string') {
+        if (format.type === 'string' || format.type === 'media') {
             format.regexp = this.ui.format_regexp.val();
         }
 
-        if (format.type == 'enum_pair') {
+        if (format.type === 'enum_pair') {
             format.sortby_field = this.ui.sortby_field.val();
             format.display_fields = this.ui.display_fields.val();
             format.list_type = this.ui.list_type.val();

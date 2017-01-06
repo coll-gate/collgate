@@ -188,6 +188,9 @@ def descriptor_value_validate(format, value, descriptor_model_type):
                 raise ValueError(_("The descriptor value must be a string matching the defined format") +
                                  " (%s)" % descriptor_model_type.get_label())
 
+    elif format['type'] == "media":
+        pass
+
 
 def check_and_defines_descriptors(entity_descriptors, descriptor_meta_model, descriptors):
     results = {}

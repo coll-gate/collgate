@@ -154,6 +154,7 @@ session = function() {
     }
 }();
 
+session.modules = {% collgate "modules" %};
 session.debug = {{ debug|yesno:"true,false" }};
 session.language = "{{ LANGUAGE_CODE }}";
 session.languageDirection = "ltr";
