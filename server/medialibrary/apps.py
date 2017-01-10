@@ -21,6 +21,7 @@ class CollGateMediaLibrary(ApplicationMain):
         media_library_module = Module('medialibrary', base_url='coll-gate')
         media_library_module.include_urls((
             'base',
+            'media'
             )
         )
 

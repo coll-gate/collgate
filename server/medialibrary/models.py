@@ -14,11 +14,15 @@ from main.models import Entity
 class Media(Entity):
     """
     Defines a file contained by the local file system.
-    The upload file name is contained by name and it is syntactically OS independent.
+    Name contains the local file path + name that is unique.
     """
 
-    # file path + file name from the storage location directory
-    file = models.CharField(max_length=1024, null=True)
+    # upload version number
+    version = models.PositiveIntegerField(default=0)
+
+    # initial uploaded file name with some specials characters replaced by '_'
+    # to prevent forbidden characters with commons OS.
+    file_name = models.CharField(max_length=256)
 
     # mime type of the media (image, pdf...)
     mime_type = models.CharField(max_length=64)

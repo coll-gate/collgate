@@ -1,6 +1,6 @@
 django-guardian>=1.4.4
 setuptools>=19.4
-Django>=1.9.1
+Django>=1.10
 django-bootstrap3>=6.2.2
 httplib2>=0.9.1
 git+file:///home/fscherma/nas-gdec/sercom/Informatique/repositories/inra-gdec#egg=igdectk

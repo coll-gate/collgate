@@ -13,3 +13,4 @@ __pycache__
 /docs/_build/
 /client/npm-debug.log
 /server/main/static/main/js/app.min.js
+/server/media
