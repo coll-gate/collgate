@@ -3,8 +3,10 @@
 # Copyright (c) 2017 INRA UMR1095 GDEC
 
 import io
+import mimetypes
 import os
 import stat
+import magic
 
 from django.conf import settings
 from django.core.exceptions import SuspiciousOperation
@@ -120,6 +122,11 @@ def upload_media(request, uuid):
     if up.size > get_setting('medialibrary', 'max_file_size'):
         SuspiciousOperation(_("Upload file size limit is set to %i bytes") % get_setting('medialibrary', 'max_file_size'))
 
+    # simple check mimetypes using the file extension (can process a test using libmagic)
+    guessed_mime_type = mimetypes.guess_type(up.name)[0]
+    if guessed_mime_type is None:
+        SuspiciousOperation(_("Undetermined uploaded file type"))
+
     # validate the file name and update it in way to be multi OS compliant
     # remove any '.' before and after
     name = up.name.strip('.')
@@ -132,9 +139,6 @@ def upload_media(request, uuid):
 
         valid_name.write(c)
 
-    # @todo check mimetypes and same on PUT
-    # mimetype = mimetypes.guess_type(os.path.basename(header.image.name))[0]
-
     media = Media()
 
     # generate two levels of path from the uuid node
@@ -146,7 +150,6 @@ def upload_media(request, uuid):
 
     media.name = os.path.join(local_path, local_file_name)
     media.version = 1
-    media.mime_type = up.content_type
     media.file_name = valid_name.getvalue()
 
     # create the path if necessary
@@ -157,15 +160,26 @@ def upload_media(request, uuid):
     abs_file_name = os.path.join(abs_path, local_file_name)
     dst_file = open(abs_file_name, "wb")
 
+    # test mime-type with a buffer of a least 1024 bytes
+    test_mime_buffer = io.BytesIO()
+
     # copy file content
     for chunk in up.chunks():
         dst_file.write(chunk)
 
+        if test_mime_buffer.tell() < 1024:
+            test_mime_buffer.write(chunk)
+
     dst_file.close()
+
+    guessed_mime_type = magic.from_buffer(test_mime_buffer, mime=True)
 
     # 0660 on file
     os.chmod(local_file_name, stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IWGRP)
 
+    media.mime_type = guessed_mime_type  # up.content_type
+
+    # save the model once file is correctly saved
     media.save()
 
     result = {
@@ -202,6 +216,11 @@ def update_upload_media(request, uuid):
     if up.size > get_setting('medialibrary', 'max_file_size'):
         SuspiciousOperation(_("Upload file size limit is set to %i bytes") % get_setting('medialibrary', 'max_file_size'))
 
+    # simple check mimetypes using the file extension (can process a test using libmagic)
+    guessed_mime_type = mimetypes.guess_type(up.name)[0]
+    if guessed_mime_type is None:
+        SuspiciousOperation(_("Undetermined uploaded file type"))
+
     media = get_object_or_404(Media, uuid=uuid)
     version = media.version + 1
 
@@ -212,11 +231,19 @@ def update_upload_media(request, uuid):
 
     dst_file = open(abs_file_name, "wb")
 
+    # test mime-type with a buffer of a least 1024 bytes
+    test_mime_buffer = io.BytesIO()
+
     # copy file content
     for chunk in up.chunks():
         dst_file.write(chunk)
 
+        if test_mime_buffer.tell() < 1024:
+            test_mime_buffer.write(chunk)
+
     dst_file.close()
+
+    guessed_mime_type = magic.from_buffer(test_mime_buffer, mime=True)
 
     # 0660 on file
     os.chmod(abs_file_name, stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IWGRP)
@@ -224,7 +251,9 @@ def update_upload_media(request, uuid):
     # upgrade the version number and file size
     media.version = version
     media.file_size = up.size
-    media.mime_type = up.content_type
+    media.mime_type = guessed_mime_type  # up.content_type
+
+    # update the model once file is correctly saved
     media.save()
 
     result = {
