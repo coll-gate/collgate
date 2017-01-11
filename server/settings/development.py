@@ -21,8 +21,8 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'HOST': '127.0.0.1',
-        'PORT': '5432',
+        'HOST': '',  # '127.0.0.1',
+        'PORT': '',  # '5432',
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'collgate_dev',
         'USER': 'collgate_dev',

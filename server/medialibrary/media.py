@@ -172,7 +172,7 @@ def upload_media(request, uuid):
 
     dst_file.close()
 
-    guessed_mime_type = magic.from_buffer(test_mime_buffer, mime=True)
+    guessed_mime_type = magic.from_buffer(test_mime_buffer.getvalue(), mime=True)
 
     # 0660 on file
     os.chmod(local_file_name, stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IWGRP)
@@ -243,7 +243,7 @@ def update_upload_media(request, uuid):
 
     dst_file.close()
 
-    guessed_mime_type = magic.from_buffer(test_mime_buffer, mime=True)
+    guessed_mime_type = magic.from_buffer(test_mime_buffer.getvalue(), mime=True)
 
     # 0660 on file
     os.chmod(abs_file_name, stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IWGRP)
