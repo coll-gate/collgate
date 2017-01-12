@@ -6,7 +6,7 @@ Setup the types of descriptors.
 import json
 import sys
 
-from ..models import DescriptorGroup, DescriptorType
+from descriptor.models import DescriptorType
 from .descriptorsgroups import GROUPS
 
 DESCRIPTORS = {

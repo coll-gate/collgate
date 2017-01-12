@@ -7,7 +7,7 @@ import json
 import sys
 import os.path
 
-from ..models import DescriptorType
+from descriptor.models import DescriptorType
 from .descriptorstypes import DESCRIPTORS
 
 

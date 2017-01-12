@@ -7,7 +7,7 @@ import json
 import sys
 import os.path
 
-from ..models import DescriptorType, DescriptorValue
+from descriptor.models import DescriptorType, DescriptorValue
 from .descriptorstypes import DESCRIPTORS
 
 
@@ -29,18 +29,14 @@ def fixture():
     # curate data
     for lang, subdata, in data.items():
         for code, country in subdata.items():
-            value = DescriptorValue()
-
-            value.descriptor = descriptor_object
-
-            value.name = "%s:%s" % (code, lang)
-            value.language = lang
-            value.code = code
-
-            value.value0 = country['name']
-            value.value1 = country.get('iso_a2')
-
-            value.save()
+            value, created = DescriptorValue.objects.get_or_create(
+                descriptor=descriptor_object,
+                name="%s:%s" % (code, lang),
+                language=lang,
+                code=code,
+                value0=country['name'],
+                value1=country.get('iso_a2')
+            )
 
             # keep for cities
             descriptor['lookup'][value.value1] = code

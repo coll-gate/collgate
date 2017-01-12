@@ -6,7 +6,7 @@ Setup the groups of descriptors.
 
 import sys
 
-from ..models import DescriptorGroup
+from descriptor.models import DescriptorGroup
 
 GROUPS = {
     'general': {

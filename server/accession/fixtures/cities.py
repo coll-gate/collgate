@@ -7,7 +7,7 @@ import json
 import sys
 import os.path
 
-from ..models import DescriptorType, DescriptorValue
+from descriptor.models import DescriptorType, DescriptorValue
 from .descriptorstypes import DESCRIPTORS
 
 
@@ -32,29 +32,30 @@ def fixture():
 
     # curate and insert data
     for city in data:
-        sys.stdout.write(" -> city: %i/%i\n" % (count, total))
+        if (count % 1000) == 0:
+            sys.stdout.write(" -> city: %i/%i\n" % (count, total))
 
         for lang in ['en', 'fr']:
-            value = DescriptorValue()
+            name = "%s:%07i:%s" % (descriptor['code'], int(city['_id']), lang)
+            code = "%s:%07i" % (descriptor['code'], int(city['_id']))
+            value0 = city['name']
+            value1 = "%s,%s" % (city['coord']['lon'], city['coord']['lat'])
 
-            value.descriptor = descriptor_object
-
-            value.name = "%s:%07i:%s" % (descriptor['code'], int(city['_id']), lang)
-            value.code = "%s:%07i" % (descriptor['code'], int(city['_id']))
-            value.language = lang
-
-            value.value0 = city['name']
-            value.value1 = "%s,%s" % (city['coord']['lon'], city['coord']['lat'])
-
-            # not read during this transaction
-            # countries = DescriptorValue.objects.filter(value0=city['country'])
-            # if countries.exists():
-            #     value.parent = countries[0].code
-
+            # not read during this transaction (lookup table)
             country_code = country_descriptor['lookup'].get(city['country'])
             if country_code:
-                value.parent = country_code
+                parent = country_code
+            else:
+                parent = None
 
-            value.save()
+            value, create = DescriptorValue.objects.get_or_create(
+                descriptor=descriptor_object,
+                name=name,
+                code=code,
+                parent=parent,
+                language=lang,
+                value0=value0,
+                value1=value1,
+            )
 
         count += 1
