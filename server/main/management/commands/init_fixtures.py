@@ -32,13 +32,14 @@ class Command(BaseCommand):
         error = False
 
         for module in module_manager.modules:
+            # avoid audit during fixture processing
+            unregister_models(module.name)
+
+        for module in module_manager.modules:
             sys.stdout.write("Lookups for fixtures in module '%s'\n" % module.name)
 
             try:
                 lib = importlib.import_module(module.name + ".fixtures", 'ORDER')
-
-                # avoid audit during fixture processing
-                unregister_models(module.name)
 
                 if len(lib.ORDER) > 0:
                     sys.stdout.write("> Founds fixtures for the module '%s'\n" % module.name)
