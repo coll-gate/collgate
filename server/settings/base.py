@@ -14,8 +14,8 @@ from os.path import dirname, join, realpath
 DEBUG = True
 
 ADMINS = (
-    ('admin_fscherma', 'frederic.scherma@clermont.inra.fr'),
-    ('admin_nguilhot', 'nicolas.guilhot@clermont.inra.fr'),
+    ('admin_fscherma', 'frederic.scherma@inra.fr'),
+    ('admin_nguilhot', 'nicolas.guilhot@inra.fr'),
 )
 
 MANAGERS = ADMINS
@@ -265,7 +265,7 @@ LOGGING = {
 
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
-DEFAULT_FROM_EMAIL = "frederic.scherma@clermont.inra.fr"
+DEFAULT_FROM_EMAIL = "frederic.scherma@inra.fr"
 EMAIL_HOST = "smtp.clermont.inra.fr"
 EMAIL_PORT = 25
 EMAIL_SUBJECT_PREFIX = "Coll-Gate IS"

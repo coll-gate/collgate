@@ -13,8 +13,8 @@ from .base import *
 DEBUG = False
 
 ADMINS = (
-    ('admin_fscherma', 'frederic.scherma@clermont.inra.fr'),
-    ('admin_nguilhot', 'nicolas.guilhot@clermont.inra.fr'),
+    ('admin_fscherma', 'frederic.scherma@inra.fr'),
+    ('admin_nguilhot', 'nicolas.guilhot@inra.fr'),
 )
 
 MANAGERS = ADMINS
@@ -147,7 +147,7 @@ LOGGING = {
     }
 }
 
-DEFAULT_FROM_EMAIL = "frederic.scherma@clermont.inra.fr"
+DEFAULT_FROM_EMAIL = "frederic.scherma@inra.fr"
 EMAIL_HOST = "smtp.clermont.inra.fr"
 #EMAIL_USE_TLS = True
 EMAIL_PORT = 25  # 465
