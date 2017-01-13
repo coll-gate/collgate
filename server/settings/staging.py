@@ -13,25 +13,25 @@ from .base import *
 DEBUG = False
 
 ADMINS = (
-    ('admin_fscherma', 'frederic.scherma@clermont.inra.fr'),
-    ('admin_nguilhot', 'nicolas.guilhot@clermont.inra.fr'),
+    ('admin_fscherma', 'frederic.scherma@inra.fr'),
+    ('admin_nguilhot', 'nicolas.guilhot@inra.fr'),
 )
 
 MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'HOST': '127.0.0.1',
-        'PORT': '5432',
+        'HOST': '',
+        'PORT': '',
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'collgate_dev',
-        'USER': 'collgate_dev',
-        'PASSWORD': 'collgate_dev',
+        'NAME': 'collgate_dev2',
+        'USER': 'collgate_dev2',
+        'PASSWORD': 'collgate_dev2',
         'CONN_MAX_AGE': 86400
     }
 }
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '147.99.146.242', '147.99.144.145']
+ALLOWED_HOSTS = ['staging.gdec.clermont.inra.fr', 'localhost', '127.0.0.1']
 
 # session cookie path
 SESSION_COOKIE_PATH = "/coll-gate/"
@@ -150,7 +150,7 @@ LOGGING = {
     }
 }
 
-DEFAULT_FROM_EMAIL = "frederic.scherma@clermont.inra.fr"
+DEFAULT_FROM_EMAIL = "frederic.scherma@inra.fr"
 EMAIL_HOST = "smtp.clermont.inra.fr"
 #EMAIL_USE_TLS = True
 EMAIL_PORT = 25  # 465

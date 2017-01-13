@@ -9,7 +9,7 @@ import json
 
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import SuspiciousOperation
-from django.db import models
+from django.db import models, connection
 from django.contrib.auth.models import User
 from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
@@ -286,6 +286,9 @@ def entity_m2m_changed(sender, instance, action, reverse, model, **kwargs):
 
 
 def register_models(app_name):
+    if 'django_content_type' not in connection.introspection.table_names():
+        return
+
     content_types = ContentType.objects.filter(app_label=app_name)
     for content_type in content_types:
         model = content_type.model_class()
@@ -295,6 +298,9 @@ def register_models(app_name):
 
 
 def unregister_models(app_name):
+    if 'django_content_type' not in connection.introspection.table_names():
+        return
+
     content_types = ContentType.objects.filter(app_label=app_name)
     for content_type in content_types:
         model = content_type.model_class()
