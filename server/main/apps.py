@@ -35,11 +35,11 @@ class CollGateMain(ApplicationMain):
         )
 
         # profile menu
-        menu_profile = ModuleMenu('profile', _('Profile'), auth=AUTH_USER, order=1000)
-        menu_profile.add_entry(MenuEntry('edit', _('Edit information'), "#main/profile/edit/", icon=Glyph.USER, order=8))
-        menu_profile.add_entry(MenuSeparator(9))
-        menu_profile.add_entry(MenuEntry('logout', _('Logout'), "#main/profile/logout/", icon=Glyph.OFF, order=10))
-        main_module.add_menu(menu_profile)
+        # menu_profile = ModuleMenu('profile', _('Profile'), auth=AUTH_USER, order=1000)
+        # menu_profile.add_entry(MenuEntry('edit', _('Edit information'), "#main/profile/edit/", icon=Glyph.USER, order=8))
+        # menu_profile.add_entry(MenuSeparator(9))
+        # menu_profile.add_entry(MenuEntry('logout', _('Logout'), "#main/profile/logout/", icon=Glyph.OFF, order=10))
+        # main_module.add_menu(menu_profile)
 
         # help menu
         menu_help = ModuleMenu('help', _('Help'), order=1001)

@@ -30,12 +30,11 @@ class CollGatePermission(ApplicationMain):
         )
 
         # permission menu
-        menu_permission = ModuleMenu('permission', _('Permission'), order=999, auth=AUTH_STAFF)
+        menu_permission = ModuleMenu('administration', _('Administration'), order=999, auth=AUTH_STAFF)
         menu_permission.add_entry(
             MenuEntry('user-permission', _('Manage users'), "#permission/user/", icon=Glyph.CONSOLE, order=1))
         menu_permission.add_entry(
             MenuEntry('group-permission', _('Manage groups'), "#permission/group/", icon=Glyph.FOLDER_CLOSE, order=2))
-        menu_permission.add_entry(MenuSeparator(100))
         permission_module.add_menu(menu_permission)
 
         module_manager.register_menu(permission_module)

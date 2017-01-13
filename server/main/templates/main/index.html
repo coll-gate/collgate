@@ -74,39 +74,55 @@ some translations before every catalogs are loaded, and normally the server sent
                     <button class="btn btn-sm btn-default" id="toggle_display"><span class="glyphicon glyphicon-expand"></span></button>
                 </div>
             </ul>
-            <div>
-                <form class="navbar-form navbar-right" id='profile_signin' role="form" method="post" action="{% url 'main:profile-signin' %}">
+                <form class="navbar-form navbar-right" style="padding-top: 4px;" role="form" method="post" action="{% url 'main:profile-signin' %}">
                     {% csrf_token %}
                     {% if not user.is_authenticated %}
-                    <div class="form-group">
-                        <input type="text" placeholder="{% trans 'Username' %}" class="form-control" name="username">
-                    </div>
-                    <div class="form-group">
-                        <input type="password" placeholder="{% trans 'Password' %}" class="form-control" name="password">
-                    </div>
-                    <button type="submit" class="btn btn-success">{% trans "Sign in" %}</button>
+                        <div class="form-group">
+                            <input type="text" placeholder="{% trans 'Username' %}" class="form-control" name="username">
+                        </div>
+                        <div class="form-group">
+                            <input type="password" placeholder="{% trans 'Password' %}" class="form-control" name="password">
+                        </div>
+                        <button type="submit" class="btn btn-success">{% trans "Sign in" %}</button>
                     {% else %}
-                    {% if user.first_name and user.last_name %}
-                        <a class="text login">{{ user.first_name }} {{ user.last_name }}</a>
-                    {% else %}
-                        <a class="text login">{{ user.username }}</a>
-                    {% endif %}
-                    <button type="submit" class="btn btn-danger"><span class="glyphicon glyphicon-off"></span></button>
+                        <button type="submit" class="btn btn-sm btn-danger"><span class="glyphicon glyphicon-off"></span></button>
                     {% endif %}
                 </form>
-                <form class="navbar-form navbar-right" style="padding-top: 4px;" id='set_language' role="form" method="post" action="/coll-gate/i18n/setlang/">
-                    {% csrf_token %}
-                    <input hidden id="lang_redirect" value="/coll-gate/" name="next">
-                    <select name="language" id="languages" style="width: 100%;">
-                        {% get_language_info_list for LANGUAGES as languages %}
-                        {% for language in languages %}
-                            {% with 'main/img/lang/'|add:language.code|add:'.png' as image_static %}
-                            <option value="{{ language.code }}" img="{% static image_static %}">{{ language.name_local|capfirst }} ({{ language.code }})</option>
-                            {% endwith %}
-                        {% endfor %}
-                    </select>
-                </form>
-            </div>
+            {% if user.is_authenticated %}
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="dropdown auth-user">
+                        <a id="drop-profile" href="#" role="button" class="dropdown-toggle" data-toggle="dropdown">
+                            {% if user.first_name and user.last_name %}{{ user.first_name }} {{ user.last_name }}{% else %}{{ user.username }}{% endif %}
+                            <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu" role="menu" aria-labelledby="menu-drop-profile">
+                            <li role="presentation" class="auth-user">
+                                <a role="menuitem" class="url" tabindex="-1" href="#main/profile/edit/">
+                                    <span class="glyphicon glyphicon-user"></span>&nbsp;{% trans "Edit information" %}
+                                </a>
+                            </li>
+                            <li role="presentation" class="divider auth-user"></li>
+                            <li role="presentation" class="auth-user">
+                                <a role="menuitem" class="url" tabindex="-1" href="#main/profile/logout/">
+                                    <span class="glyphicon glyphicon-off"></span>&nbsp;{% trans "Logout" %}
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            {% endif %}
+            <form class="navbar-form navbar-right" style="padding-top: 4px;" id='set_language' role="form" method="post" action="/coll-gate/i18n/setlang/">
+                {% csrf_token %}
+                <input hidden id="lang_redirect" value="/coll-gate/" name="next">
+                <select name="language" id="languages" style="width: 100%;">
+                    {% get_language_info_list for LANGUAGES as languages %}
+                    {% for language in languages %}
+                        {% with 'main/img/lang/'|add:language.code|add:'.png' as image_static %}
+                        <option value="{{ language.code }}" img="{% static image_static %}">{{ language.name_local|capfirst }} ({{ language.code }})</option>
+                        {% endwith %}
+                    {% endfor %}
+                </select>
+            </form>
         </div><!--/.navbar-collapse -->
     </div>
 </div>

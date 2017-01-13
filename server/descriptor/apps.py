@@ -65,13 +65,14 @@ class CollGateDescriptor(ApplicationMain):
 
         # different units of format for type of descriptors
         self.format_units = [
-
+            # @todo
         ]
 
         # descriptor menu
-        menu_descriptor = ModuleMenu('descriptor', _('Descriptor'), order=100, auth=AUTH_STAFF)
+        menu_descriptor = ModuleMenu('administration', _('Administration'), order=999, auth=AUTH_STAFF)
 
         # descriptor related menus
+        menu_descriptor.add_entry(MenuSeparator(200))
         menu_descriptor.add_entry(
             MenuEntry('list-descriptor-group', _('List groups of descriptors'), "#descriptor/group/",
                       icon=Glyph.TH_LIST, order=201, auth=AUTH_STAFF))
