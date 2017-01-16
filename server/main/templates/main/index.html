@@ -109,17 +109,19 @@ some translations before every catalogs are loaded, and normally the server sent
                     </li>
                 </ul>
             {% endif %}
-            <form class="navbar-form navbar-right" style="padding: 4px;" id='set_language' role="form" method="post" action="/coll-gate/i18n/setlang/">
+            <form class="navbar-form navbar-right" id='set_language' role="form" method="post" action="/coll-gate/i18n/setlang/">
                 {% csrf_token %}
                 <input hidden id="lang_redirect" value="/coll-gate/" name="next">
-                <select name="language" id="languages" style="width: 100%;">
-                    {% get_language_info_list for LANGUAGES as languages %}
-                    {% for language in languages %}
-                        {% with 'main/img/lang/'|add:language.code|add:'.png' as image_static %}
-                        <option value="{{ language.code }}" img="{% static image_static %}">{{ language.name_local|capfirst }} ({{ language.code }})</option>
-                        {% endwith %}
-                    {% endfor %}
-                </select>
+                <div class="form-group" style="margin-top: 4px;">
+                    <select name="language" id="languages" style="width: 100%;">
+                        {% get_language_info_list for LANGUAGES as languages %}
+                        {% for language in languages %}
+                            {% with 'main/img/lang/'|add:language.code|add:'.png' as image_static %}
+                            <option value="{{ language.code }}" img="{% static image_static %}">{{ language.name_local|capfirst }} ({{ language.code }})</option>
+                            {% endwith %}
+                        {% endfor %}
+                    </select>
+                </div>
             </form>
         </div><!--/.navbar-collapse -->
     </div>
@@ -246,11 +248,12 @@ if (session.languageDirection == "rtl") {
         };
 
         $('#languages').select2({
+            minimumResultsForSearch: -1,  // no search box
             templateSelection: formatLanguage,
             templateResult: formatLanguage,
         });
 
-        $('#languages').on("select2:close", function(e) {
+        $('#languages').on("select2:select", function(e) {
             $.ajax({
                 type: "POST",
                 url: application.baseUrl + "i18n/setlang/",
