@@ -42,3 +42,5 @@ def synonym_type(request):
         })
 
     return HttpResponseRest(request, synonym_types)
+
+

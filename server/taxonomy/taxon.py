@@ -441,7 +441,7 @@ def delete_taxon(request, id):
         "properties": {
             "type": {"type:": "number"},
             "language": {"type:": "string", 'minLength': 2, 'maxLength': 5},
-            "name": {"type": "string", 'minLength': 3, 'maxLength': 32}
+            "name": {"type": "string", 'minLength': 3, 'maxLength': 64}
         },
     },
     perms={
@@ -468,7 +468,7 @@ def taxon_add_synonym(request, id):
     Method.PUT, Format.JSON, content={
         "type": "object",
         "properties": {
-            "name": {"type": "string", 'minLength': 3, 'maxLength': 32}
+            "name": {"type": "string", 'minLength': 3, 'maxLength': 64}
         },
     },
     perms={

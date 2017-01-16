@@ -38,9 +38,14 @@ class RestAccessionId(RestAccessionAccession):
     suffix = 'id'
 
 
-class RestAccessionSynonym(RestAccessionAccession):
+class RestAccessionIdSynonym(RestAccessionId):
     regex = r'^synonym/$'
     suffix = 'synonym'
+
+
+class RestAccessionIdSynonymId(RestAccessionIdSynonym):
+    regex = r'^(?P<sid>[0-9]+)/$'
+    suffix = 'id'
 
 
 @RestAccessionAccession.def_auth_request(Method.POST, Format.JSON, content={
@@ -319,4 +324,89 @@ def delete_accession(request, id):
     return HttpResponseRest(request, {})
 
 
-# @todo : synonyms post (add), put (modify), delete (remove)
+@RestAccessionIdSynonym.def_auth_request(
+    Method.POST, Format.JSON, content={
+        "type": "object",
+        "properties": {
+            "type": {"type:": "string", 'minLength': 14, 'maxLength': 14},
+            "language": {"type:": "string", 'minLength': 2, 'maxLength': 5},
+            "name": {"type": "string", 'minLength': 3, 'maxLength': 64}
+        },
+    },
+    perms={
+        'accession.change_accession': _("You are not allowed to modify an accession"),
+        'accession.add_accessionsynonym': _("You are not allowed to add a synonym of accession"),
+    }
+)
+def accession_add_synonym(request, id):
+    aid = int_arg(id)
+    accession = get_object_or_404(Accession, id=aid)
+
+    synonym = {
+        'type': int(request.data['type']),
+        'name': str(request.data['name']),
+        'language': str(request.data['language']),
+    }
+
+    # @todo
+    # Accession.add_synonym(accession, synonym)
+
+    return HttpResponseRest(request, {})
+
+
+@RestAccessionIdSynonymId.def_auth_request(
+    Method.PUT, Format.JSON, content={
+        "type": "object",
+        "properties": {
+            "name": {"type": "string", 'minLength': 3, 'maxLength': 64}
+        },
+    },
+    perms={
+        'accession.change_accession': _("You are not allowed to modify an accession"),
+        'accession.change_accessionsynonym': _("You are not allowed to modify a synonym of accession"),
+    }
+)
+def accession_change_synonym(request, id, sid):
+    aid = int(id)
+    sid = int(sid)
+
+    # @todo
+    # synonym = get_object_or_404(AccessionSynonym, Q(id=sid), Q(accession=aid))
+
+    name = request.data['name']
+
+    # rename the taxon if the synonym name is the taxon name
+    # if synonym.taxon.name == synonym.name:
+    #     synonym.taxon.name = name
+    #     synonym.taxon.save()
+
+    # synonym.name = name
+    # synonym.save()
+
+    result = {
+    #     'id': synonym.id,
+    #     'name': synonym.name
+    }
+
+    return HttpResponseRest(request, result)
+
+
+@RestAccessionIdSynonymId.def_auth_request(
+    Method.DELETE, Format.JSON,
+    perms={
+        'accession.change_accession': _("You are not allowed to modify an accession"),
+        'accession.delete_accessionsynonym': _("You are not allowed to delete a synonym of accession"),
+    }
+)
+def accession_remove_synonym(request, id, sid):
+    aid = int(id)
+    sid = int(sid)
+
+    # synonym = get_object_or_404(AccessionSynonym, Q(id=sid), Q(accession=aid))
+
+    # if synonym.type == 'IN_001:0000001':
+    #     raise SuspiciousOperation(_("It is not possible to remove a primary synonym"))
+
+    # synonym.delete()
+
+    return HttpResponseRest(request, {})
