@@ -29,6 +29,7 @@ class CollGateAccession(ApplicationMain):
         accession_module = Module('accession', base_url='coll-gate')
         accession_module.include_urls((
             'base',
+            'accessionsynonym',
             'accession',
             'accessioncreate',
             )

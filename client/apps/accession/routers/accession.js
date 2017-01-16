@@ -23,11 +23,11 @@ var AccessionListView = require('../views/accessionlist');
 // var AccessionItemView = require('../views/accessionitem');
 // var BatchItemView = require('../views/batchitem');
 var AccessionDetailsView = require('../views/accessiondetails');
+var AccessionSynonymsView = require('../views/accessionsynonyms');
 
 var DefaultLayout = require('../../main/views/defaultlayout');
 var ScrollingMoreView = require('../../main/views/scrollingmore');
 var TitleView = require('../../main/views/titleview');
-var DescribableLayout = require('../../descriptor/views/describablelayout');
 var AccessionLayout = require('../views/accessionlayout');
 
 var Router = Marionette.AppRouter.extend({
@@ -67,7 +67,6 @@ var Router = Marionette.AppRouter.extend({
         model.fetch().then(function() {
             var taxon = new TaxonModel({id: model.get('parent')});
             taxon.fetch().then(function() {
-                //describableLayout.getRegion('header').show(new EntityPathView({model: model, taxon: taxon}));
                 accessionLayout.getRegion('details').show(new EntityPathView({model: model, taxon: taxon}));
             });
 
@@ -82,6 +81,9 @@ var Router = Marionette.AppRouter.extend({
                 var accessionDetailsView = new AccessionDetailsView({model: model, descriptorMetaModelLayout: data});
                 accessionLayout.getRegion('descriptors').show(accessionDetailsView);
             });
+
+            var accessionSynonymsView = new AccessionSynonymsView({model: model});
+            accessionLayout.getRegion('synonyms').show(accessionSynonymsView);
         });
     },
 

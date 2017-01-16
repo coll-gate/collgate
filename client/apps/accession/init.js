@@ -34,6 +34,16 @@ var AccessionModule = Marionette.Module.extend({
     onStart: function(options) {
         Logger.time("Start accession module");
 
+        var SelectOptionItemView = require('../main/views/selectoptionitemview');
+
+        var AccessionSynonymTypeCollection = require('./collections/accessionsynonymtype');
+        this.collections.accessionSynonymTypes = new AccessionSynonymTypeCollection();
+
+        this.views.accessionSynonymTypes = new SelectOptionItemView({
+            className: 'accession-synonym-type',
+            collection: this.collections.accessionSynonymTypes,
+        });
+
         var AccessionRouter = require('./routers/accession');
         this.routers.accession = new AccessionRouter();
 

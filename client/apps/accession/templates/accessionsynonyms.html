@@ -1,0 +1,34 @@
+<table class="table table-striped" style="margin-bottom: 0px;">
+    <thead>
+        <tr>
+            <th><span class="glyphicon glyphicon-asterisk" /></th>
+            <th><%= gt.gettext("Type") %></th>
+            <th><%= gt.gettext("Name") %></th>
+            <th><%= gt.gettext("Language") %></th>
+        </tr>
+    </thead>
+    <tbody>
+        <% _.each(synonyms, function(synonym) { %>
+        <tr>
+            <th scope="row">
+                <% if (synonym.type != 0) { %><span data-synonym-id="<%= synonym.id %>" class="action remove-synonym glyphicon glyphicon-minus-sign"></span><% } %>
+            </th>
+            <td name="type" class="accession-synonym-type" value="<%- synonym.type %>"></td>
+            <td name="name" class="action rename-synonym" data-synonym-id="<%= synonym.id %>"><%- synonym.name %></td>
+            <td name="language" class="language" value="<%- synonym.language %>"></td>
+        </tr>
+        <% }) %>
+        <tr class="add-synonym-panel">
+            <form>
+                <th scope="row"><span class="add-synonym action glyphicon glyphicon-plus-sign" style="margin-top: 9px;"></span></th>
+                <td><select class="accession-synonym-types" name="accession-synonym-type"></select></td>
+                <td>
+                    <div class="form-group" style="margin-bottom: 0px;">
+                        <input class="form-control synonym-name" type="text" maxlength="64" autocomplete="off" name="synonym-name" />
+                    </div>
+                </td>
+                <td><select class="synonym-languages" name="synonym-language"></select></td>
+            </form>
+        </tr>
+    </tbody>
+</table>

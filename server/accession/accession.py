@@ -64,7 +64,7 @@ def create_accession(request):
     language = request.data['language']
 
     # check uniqueness of the name
-    if AccessionSynonym.objects.filter(name=name, type='ID_001:0000001').exists():
+    if AccessionSynonym.objects.filter(name=name, type='IN_001:0000001').exists():
         raise SuspiciousOperation(_("The name of the accession is already used as a primary synonym"))
 
     if Accession.objects.filter(name=name).exists():
@@ -91,7 +91,7 @@ def create_accession(request):
     accession.save()
 
     # principal synonym
-    primary = AccessionSynonym(name=name, type='ID_001:0000001', language=language)
+    primary = AccessionSynonym(name=name, type='IN_001:0000001', language=language)
     primary.save()
 
     accession.synonyms.add(primary)
@@ -101,7 +101,15 @@ def create_accession(request):
         'name': accession.name,
         'descriptor_meta_model': dmm.id,
         'parent': parent.id,
-        'descriptors': descriptors
+        'descriptors': descriptors,
+        'synonyms': [
+            {
+                'id': primary.id,
+                'name': primary.name,
+                'type': primary.type,
+                'language': primary.language
+            }
+        ]
     }
 
     return HttpResponseRest(request, response)
@@ -266,7 +274,7 @@ def patch_accession(request, id):
     }
 
     if name is not None and accession.name != name:
-        if AccessionSynonym.objects.filter(name=name, type='ID_001:0000001').exists():
+        if AccessionSynonym.objects.filter(name=name, type='IN_001:0000001').exists():
             raise SuspiciousOperation(_("The name of the accession is already used as a primary synonym"))
 
         if Accession.objects.filter(name=name).exists():
@@ -309,3 +317,6 @@ def delete_accession(request, id):
     accession.delete()
 
     return HttpResponseRest(request, {})
+
+
+# @todo : synonyms post (add), put (modify), delete (remove)
