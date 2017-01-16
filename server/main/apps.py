@@ -34,7 +34,7 @@ class CollGateMain(ApplicationMain):
             )
         )
 
-        # profile menu
+        # profile menu (merged directly into main/index.html
         # menu_profile = ModuleMenu('profile', _('Profile'), auth=AUTH_USER, order=1000)
         # menu_profile.add_entry(MenuEntry('edit', _('Edit information'), "#main/profile/edit/", icon=Glyph.USER, order=8))
         # menu_profile.add_entry(MenuSeparator(9))

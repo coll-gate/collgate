@@ -17,10 +17,10 @@ var View = DescribableDetails.extend({
         var name = this.model.get('name');
 
         // update the layout content
-        var describableLayout = application.getRegion('mainRegion').currentView.getRegion('content').currentView;
+        var accessionLayout = application.getRegion('mainRegion').currentView.getRegion('content').currentView;
 
         var view = new AccessionEditView({model: this.model, descriptorMetaModelLayout: this.descriptorMetaModelLayout});
-        describableLayout.getRegion('body').show(view);
+        accessionLayout.getRegion('descriptors').show(view);
     }
 });
 

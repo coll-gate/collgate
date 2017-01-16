@@ -1,0 +1,20 @@
+<div id="accession_details"></div>
+<div class="column" style="margin-top: 10px;">
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active"><a href="#accession_descriptors" aria-controls="descriptors" role="tab" data-toggle="tab"><%= gt.gettext("Descriptors") %></a></li>
+        <li role="presentation"><a href="#accession_synonyms" aria-controls="details" role="tab" data-toggle="tab"><%= gt.gettext("Synonyms") %></a></li>
+        <li role="presentation"><a href="#accession_batches" aria-controls="batches" role="tab" data-toggle="tab"><%= gt.gettext("Batches") %></a></li>
+    </ul>
+    <!-- Tab panes -->
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="accession_descriptors" style="overflow-y: auto;">
+        </div>
+        <div role="tabpanel" class="tab-pane" id="accession_synonyms" style="overflow-y: auto;">
+        </div>
+        <div role="tabpanel" class="tab-pane" id="accession_batches">
+            <div class="batches-content" style="overflow-y: auto;"></div>
+            <div class="batches-bottom"></div>
+        </div>
+    </div>
+</div>

@@ -15,7 +15,7 @@
 
 <html lang="{{ LANGUAGE_CODE }}">
 <head>
-    <title>Coll-Gate Collection of Genetic Resources</title>
+    <title>Coll-Gate IS Collection of Genetic Resources</title>
     {% if debug %}
         <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
     {% else %}
@@ -62,32 +62,30 @@ some translations before every catalogs are loaded, and normally the server sent
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand url" href="#home/">Coll-Gate <span class="label">{% collgate "version" %}</span></a>
+            <a class="navbar-brand url" href="#home/" style="color: white;">Coll-Gate IS</a>
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
                 {% include 'bootstrap/menu.html' %}
-                <div class="navbar-form navbar-left" style="margin-top: 10px;">
-                    <button class="btn btn-sm btn-success" id="nav_back"><span class="glyphicon glyphicon-backward"></span></button>
-                    <button class="btn btn-sm btn-success" id="nav_fwd"><span class="glyphicon glyphicon-forward"></span></button>
-                    <button class="btn btn-sm btn-success" id="nav_refresh"><span class="glyphicon glyphicon-refresh"></span></button>
-                    <button class="btn btn-sm btn-default" id="toggle_display"><span class="glyphicon glyphicon-expand"></span></button>
-                </div>
             </ul>
-                <form class="navbar-form navbar-right" style="padding-top: 4px;" role="form" method="post" action="{% url 'main:profile-signin' %}">
-                    {% csrf_token %}
-                    {% if not user.is_authenticated %}
-                        <div class="form-group">
-                            <input type="text" placeholder="{% trans 'Username' %}" class="form-control" name="username">
-                        </div>
-                        <div class="form-group">
-                            <input type="password" placeholder="{% trans 'Password' %}" class="form-control" name="password">
-                        </div>
-                        <button type="submit" class="btn btn-success">{% trans "Sign in" %}</button>
-                    {% else %}
-                        <button type="submit" class="btn btn-sm btn-danger"><span class="glyphicon glyphicon-off"></span></button>
-                    {% endif %}
-                </form>
+            <button class="btn btn-sm btn-success navbar-btn" id="nav_back"><span class="glyphicon glyphicon-backward"></span></button>
+            <button class="btn btn-sm btn-success navbar-btn" id="nav_fwd"><span class="glyphicon glyphicon-forward"></span></button>
+            <button class="btn btn-sm btn-success navbar-btn" id="nav_refresh"><span class="glyphicon glyphicon-refresh"></span></button>
+            <button class="btn btn-sm btn-default navbar-btn" id="toggle_display"><span class="glyphicon glyphicon-expand"></span></button>
+            <form class="navbar-form navbar-right" role="form" method="post" action="{% url 'main:profile-signin' %}">
+                {% csrf_token %}
+                {% if not user.is_authenticated %}
+                    <div class="form-group">
+                        <input type="text" placeholder="{% trans 'Username' %}" class="form-control" name="username">
+                    </div>
+                    <div class="form-group">
+                        <input type="password" placeholder="{% trans 'Password' %}" class="form-control" name="password">
+                    </div>
+                    <button type="submit" class="btn btn-success">{% trans "Sign in" %}</button>
+                {% else %}
+                    <button type="submit" class="btn btn-danger"><span class="glyphicon glyphicon-off"></span></button>
+                {% endif %}
+            </form>
             {% if user.is_authenticated %}
                 <ul class="nav navbar-nav navbar-right">
                     <li class="dropdown auth-user">
@@ -111,7 +109,7 @@ some translations before every catalogs are loaded, and normally the server sent
                     </li>
                 </ul>
             {% endif %}
-            <form class="navbar-form navbar-right" style="padding-top: 4px;" id='set_language' role="form" method="post" action="/coll-gate/i18n/setlang/">
+            <form class="navbar-form navbar-right" style="padding: 4px;" id='set_language' role="form" method="post" action="/coll-gate/i18n/setlang/">
                 {% csrf_token %}
                 <input hidden id="lang_redirect" value="/coll-gate/" name="next">
                 <select name="language" id="languages" style="width: 100%;">
@@ -149,7 +147,7 @@ some translations before every catalogs are loaded, and normally the server sent
 
 <footer class="footer" style="margin-top: 5px;">
     <div class="container">
-        <p style="text-align:center;">Coll-Gate {% collgate "version" %} Copyright &copy; 2016 INRA UMR1095</p>
+        <p style="text-align:center;">Coll-Gate IS {% collgate "version" %} Copyright &copy; 2016 INRA UMR1095</p>
     </div>
 </footer>
 

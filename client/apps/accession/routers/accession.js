@@ -22,13 +22,13 @@ var AccessionListView = require('../views/accessionlist');
 // var BatchListView = require('../views/batchlist');
 // var AccessionItemView = require('../views/accessionitem');
 // var BatchItemView = require('../views/batchitem');
-var AccessionEditView = require('../views/accessionedit');
 var AccessionDetailsView = require('../views/accessiondetails');
 
 var DefaultLayout = require('../../main/views/defaultlayout');
 var ScrollingMoreView = require('../../main/views/scrollingmore');
 var TitleView = require('../../main/views/titleview');
 var DescribableLayout = require('../../descriptor/views/describablelayout');
+var AccessionLayout = require('../views/accessionlayout');
 
 var Router = Marionette.AppRouter.extend({
     routes : {
@@ -60,14 +60,15 @@ var Router = Marionette.AppRouter.extend({
         var defaultLayout = new DefaultLayout();
         application.getRegion('mainRegion').show(defaultLayout);
 
-        var describableLayout = new DescribableLayout();
-        defaultLayout.getRegion('content').show(describableLayout);
+        var accessionLayout = new AccessionLayout();
+        defaultLayout.getRegion('content').show(accessionLayout);
 
         var model = new AccessionModel({id: id});
         model.fetch().then(function() {
             var taxon = new TaxonModel({id: model.get('parent')});
             taxon.fetch().then(function() {
-                describableLayout.getRegion('header').show(new EntityPathView({model: model, taxon: taxon}));
+                //describableLayout.getRegion('header').show(new EntityPathView({model: model, taxon: taxon}));
+                accessionLayout.getRegion('details').show(new EntityPathView({model: model, taxon: taxon}));
             });
 
             defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Accession"), model: model}));
@@ -79,7 +80,7 @@ var Router = Marionette.AppRouter.extend({
                 dataType: 'json',
             }).done(function(data) {
                 var accessionDetailsView = new AccessionDetailsView({model: model, descriptorMetaModelLayout: data});
-                describableLayout.getRegion('body').show(accessionDetailsView);
+                accessionLayout.getRegion('descriptors').show(accessionDetailsView);
             });
         });
     },

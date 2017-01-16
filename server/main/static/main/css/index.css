@@ -14,7 +14,7 @@ hr {
     background-image: linear-gradient(to bottom, #000000 0, #A0BD2E 100%);
 }
 
-@media (min-width: 1600px) {
+@media (min-width: 1200px) {
     .container {
         width: 100%;
     }

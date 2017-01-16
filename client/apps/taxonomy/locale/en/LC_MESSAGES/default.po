@@ -158,7 +158,7 @@ msgid "Descriptors"
 msgstr ""
 
 #: ../../../templates/taxonlayout.html:7
-msgid "Children"
+msgid "Sub-ranks"
 msgstr ""
 
 #: ../../../templates/taxonlayout.html:8

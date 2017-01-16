@@ -12,19 +12,25 @@ var DescribableEdit = require('../../descriptor/views/describableedit');
 
 var View = DescribableEdit.extend({
     onCancel: function() {
+        // non existing accession, simply reload previous content (url has not changed)
+        if (this.model.isNew()) {
+            Backbone.history.loadUrl();
+            return;
+        }
+
         // does not reload models, just redo the views
         var view = this;
         var name = this.model.get('name');
 
         // update the layout content
-        var describableLayout = application.getRegion('mainRegion').currentView.getRegion('content').currentView;
+        var accessionLayout = application.getRegion('mainRegion').currentView.getRegion('content').currentView;
 
         var AccessionDetailsView = require('../views/accessiondetails');
         var accessionDetailsView = new AccessionDetailsView({
             model: this.model,
             descriptorMetaModelLayout: view.descriptorMetaModelLayout});
 
-        describableLayout.getRegion('body').show(accessionDetailsView);
+        accessionLayout.getRegion('descriptors').show(accessionDetailsView);
     },
 
     onApply: function () {
@@ -39,7 +45,7 @@ var View = DescribableEdit.extend({
 
         this.model.save({descriptors: descriptors}, {wait: true, patch: !model.isNew()}).then(function () {
             //Backbone.history.navigate('app/accession/accession/' + model.get('id') + '/', {trigger: true, replace: true});
-            var describableLayout = application.getRegion('mainRegion').currentView.getRegion('content').currentView;
+            var accessionLayout = application.getRegion('mainRegion').currentView.getRegion('content').currentView;
 
             // update the layout content
             var AccessionDetailsView = require('../views/accessiondetails');
@@ -47,7 +53,7 @@ var View = DescribableEdit.extend({
                 model: model,
                 descriptorMetaModelLayout: view.descriptorMetaModelLayout});
 
-            describableLayout.getRegion('body').show(accessionDetailsView);
+            accessionLayout.getRegion('descriptors').show(accessionDetailsView);
         });
     }
 });

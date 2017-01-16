@@ -20,7 +20,7 @@ var AccessionModel = require('../models/accession');
 var DefaultLayout = require('../../main/views/defaultlayout');
 var TitleView = require('../../main/views/titleview');
 var Dialog = require('../../main/views/dialog');
-var DescribableLayout = require('../../descriptor/views/describablelayout');
+var AccessionLayout = require('../views/accessionlayout');
 
 var EntityPathView = require('../../taxonomy/views/entitypath');
 var AccessionEditView = require('../views/accessionedit');
@@ -208,12 +208,15 @@ var Controller = Marionette.Controller/*Object*/.extend({
 
                         defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Accession"), model: model}));
 
-                        var describableLayout = new DescribableLayout();
-                        defaultLayout.getRegion('content').show(describableLayout);
+                        var accessionLayout = new AccessionLayout();
+                        defaultLayout.getRegion('content').show(accessionLayout);
+
+                        accessionLayout.disableSynonymsTab();
+                        accessionLayout.disableBatchesTab();
 
                         var taxon = new TaxonModel({id: parent});
                         taxon.fetch().then(function() {
-                            describableLayout.getRegion('header').show(new EntityPathView({model: model, taxon: taxon, noLink: true}));
+                            accessionLayout.getRegion('details').show(new EntityPathView({model: model, taxon: taxon, noLink: true}));
                         });
 
                         $.ajax({
@@ -222,7 +225,7 @@ var Controller = Marionette.Controller/*Object*/.extend({
                             dataType: 'json',
                         }).done(function(data) {
                             var view = new AccessionEditView({model: model, descriptorMetaModelLayout: data});
-                            describableLayout.getRegion('body').show(view);
+                            accessionLayout.getRegion('descriptors').show(view);
                         });
                     }
                 }

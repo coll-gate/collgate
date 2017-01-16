@@ -158,8 +158,8 @@ msgid "Descriptors"
 msgstr "Descripteurs"
 
 #: ../../../templates/taxonlayout.html:7
-msgid "Children"
-msgstr "Enfants"
+msgid "Sub-ranks"
+msgstr "Sous-niveaux"
 
 #: ../../../templates/taxonlayout.html:8
 msgid "Entities"
