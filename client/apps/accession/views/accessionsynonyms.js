@@ -110,9 +110,9 @@ var View = Marionette.ItemView.extend({
 
     onAddSynonym: function () {
         if (this.validateName() && !this.ui.synonym_name.hasClass('invalid')) {
-            var type = $(this.ui.accession_synonym_type).val();
-            var name = $(this.ui.synonym_name).val();
-            var language = $(this.ui.synonym_language).val();
+            var type = this.ui.accession_synonym_type.val();
+            var name = this.ui.synonym_name.val();
+            var language = this.ui.synonym_language.val();
 
             $.ajax({
                 view: this,
@@ -156,7 +156,7 @@ var View = Marionette.ItemView.extend({
             },
 
             ui: {
-                name: "#name",
+                name: "#accession_synonym_name",
             },
 
             events: {

@@ -5,6 +5,7 @@
 """
 Views related to the accession synonym model.
 """
+from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404
 from django.views.decorators.cache import cache_page
 
@@ -26,6 +27,7 @@ class RestAccessionSynonymType(RestAccession):
 def synonym_type(request):
     """
     Get the list of type of synonym in JSON
+    @todo how to refresh the cache and clients if values of descriptors changed ?
     """
     synonym_types = []
 
@@ -44,3 +46,12 @@ def synonym_type(request):
     return HttpResponseRest(request, synonym_types)
 
 
+def is_synonym_type(type):
+    descriptor_type = get_object_or_404(DescriptorType, code='IN_001')
+
+    try:
+        descriptor_type.get_value(type)
+    except ObjectDoesNotExist:
+        return False
+
+    return True

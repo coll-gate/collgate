@@ -31,7 +31,7 @@ var MainModule = Marionette.Module.extend({
 
         // i18n
         try {
-            i18next.addResources('fr', 'default', require('./locale/' + session.language + '/LC_MESSAGES/default.json'));
+            i18next.addResources(session.language, 'default', require('./locale/' + session.language + '/LC_MESSAGES/default.json'));
         } catch (e) {
             console.warning("No translation found for the current language. Fallback to english language");
         };

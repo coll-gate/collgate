@@ -160,7 +160,7 @@ var View = Marionette.ItemView.extend({
             },
 
             ui: {
-                name: "#name",
+                name: "#taxon_synonym_name",
             },
 
             events: {

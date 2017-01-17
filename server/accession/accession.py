@@ -10,6 +10,7 @@ from django.core.exceptions import SuspiciousOperation
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 
+from accession.accessionsynonym import is_synonym_type
 from descriptor.describable import check_and_defines_descriptors
 from descriptor.models import DescriptorMetaModel
 from igdectk.rest.handler import *
@@ -306,6 +307,8 @@ def patch_accession(request, id):
 
         result['descriptors'] = accession.descriptors
 
+    # @todo details for the audit
+
     accession.save()
 
     return HttpResponseRest(request, result)
@@ -343,15 +346,25 @@ def accession_add_synonym(request, id):
     accession = get_object_or_404(Accession, id=aid)
 
     synonym = {
-        'type': int(request.data['type']),
-        'name': str(request.data['name']),
-        'language': str(request.data['language']),
+        'type': request.data['type'],
+        'name': request.data['name'],
+        'language': request.data['language'],
     }
 
-    # @todo
-    # Accession.add_synonym(accession, synonym)
+    # check that type is in the values of descriptor
+    if not is_synonym_type(synonym['type']):
+        raise SuspiciousOperation(_("Unsupported type of synonym"))
 
-    return HttpResponseRest(request, {})
+    accession_synonym = AccessionSynonym(
+        name=synonym['name'], language=synonym['language'], type=synonym['type'])
+
+    accession_synonym.save()
+
+    accession.synonyms.add(accession_synonym)
+
+    synonym['id'] = accession_synonym.id
+
+    return HttpResponseRest(request, synonym)
 
 
 @RestAccessionIdSynonymId.def_auth_request(
@@ -370,22 +383,22 @@ def accession_change_synonym(request, id, sid):
     aid = int(id)
     sid = int(sid)
 
-    # @todo
-    # synonym = get_object_or_404(AccessionSynonym, Q(id=sid), Q(accession=aid))
+    accession = get_object_or_404(Accession, id=aid)
+    synonym = accession.synonyms.get(id=sid)
 
     name = request.data['name']
 
-    # rename the taxon if the synonym name is the taxon name
-    # if synonym.taxon.name == synonym.name:
-    #     synonym.taxon.name = name
-    #     synonym.taxon.save()
+    # rename the accession if the synonym name is the accession name
+    if accession.name == synonym.name:
+        accession.name = name
+        accession.save()
 
-    # synonym.name = name
-    # synonym.save()
+    synonym.name = name
+    synonym.save()
 
     result = {
-    #     'id': synonym.id,
-    #     'name': synonym.name
+        'id': synonym.id,
+        'name': synonym.name
     }
 
     return HttpResponseRest(request, result)
@@ -402,11 +415,12 @@ def accession_remove_synonym(request, id, sid):
     aid = int(id)
     sid = int(sid)
 
-    # synonym = get_object_or_404(AccessionSynonym, Q(id=sid), Q(accession=aid))
+    accession = get_object_or_404(Accession, id=aid)
+    synonym = accession.synonyms.get(id=sid)
 
-    # if synonym.type == 'IN_001:0000001':
-    #     raise SuspiciousOperation(_("It is not possible to remove a primary synonym"))
+    if synonym.type == 'IN_001:0000001':
+        raise SuspiciousOperation(_("It is not possible to remove a primary synonym"))
 
-    # synonym.delete()
+    synonym.delete()
 
     return HttpResponseRest(request, {})
