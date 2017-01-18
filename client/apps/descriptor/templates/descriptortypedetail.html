@@ -12,16 +12,24 @@
     <p><%= gt.gettext("Controls how is displayed the field. Hierarchy mode is a special usage for pseudo hierarchy, for which values are roughly shifted to give an illusion of parent/children. The shift depend of the level declared in the value0 while value1 contains the label. The first value contains something like 1 or 2 or 1.1, 1.2, 1.1.1...") %></p>
 </div>
 
-<div class="descriptor-detail">
-    <div class="descriptor-type-name form-group" style="width: 50%;">
-        <label for="descriptor_type_name"><%- gt.gettext('Descriptor type name') %></label>
-        <input id="descriptor_type_name" class="form-control" type="text" maxlength="255" value="<%= name %>">
-    </div>
-    <div class="descriptor-type-code form-group" style="width: 50%;">
-        <label for="descriptor_type_code"><%- gt.gettext('Descriptor type code') %></label>
-        <input id="descriptor_type_code" class="form-control" type="text" readonly="readonly" maxlength="255" value="<%= code %>">
-    </div>
+<div class="descriptor-detail block">
     <div style="width: 50%;">
+        <div class="row">
+            <div class="col-xs-6">
+                <div class="descriptor-type-name form-group">
+                    <label for="descriptor_type_name"><%- gt.gettext('Descriptor type name') %></label>
+                    <input id="descriptor_type_name" class="form-control" type="text" maxlength="255" value="<%= name %>">
+                </div>
+            </div>
+            <div class="col-xs-6">
+                <div class="descriptor-type-code form-group">
+                    <label for="descriptor_type_code"><%- gt.gettext('Descriptor type code') %></label>
+                    <input id="descriptor_type_code" class="form-control" type="text" readonly="readonly" maxlength="255" value="<%= code %>">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="block" style="width: 50%;">
         <div class="row">
             <div class="col-xs-6">
                 <div class="descriptor-type-format form-group">
@@ -40,7 +48,7 @@
             </div>
         </div>
     </div>
-    <div class="descriptor-type-fields form-group" style="width: 50%;">
+    <div class="descriptor-type-fields form-group block" style="width: 50%;">
         <div class="row">
             <div class="col-xs-6">
                 <label for="type_field0"><%- gt.gettext('First field') %></label>
@@ -52,7 +60,7 @@
             </div>
         </div>
     </div>
-    <div class="descriptor-type-fields-info form-group" style="width: 50%;">
+    <div class="descriptor-type-fields-info form-group block" style="width: 50%;">
         <div class="row">
             <div class="col-xs-6">
                 <label for="sortby_field"><%- gt.gettext('Sort by field') %></label>
@@ -77,29 +85,35 @@
             </div>
         </div>
     </div>
-    <div class="descriptor-type-fields-list form-group" style="width: 50%;">
+    <div class="descriptor-type-fields-list block" style="width: 50%;">
         <div class="row">
             <div class="col-xs-6">
-                <label for="list_type"><%- gt.gettext('Display the list as') %></label>
-                <select id="list_type" class="form-control">
-                    <option value="dropdown"><%- gt.gettext('Dropdown (limit of 256 values)') %></option>
-                    <option value="autocomplete"><%- gt.gettext('Autocomplete (big lists)') %></option>
-                </select>
+                <div class="form-group">
+                    <label for="list_type"><%- gt.gettext('Display the list as') %></label>
+                    <select id="list_type" class="form-control">
+                        <option value="dropdown"><%- gt.gettext('Dropdown (limit of 256 values)') %></option>
+                        <option value="autocomplete"><%- gt.gettext('Autocomplete (big lists)') %></option>
+                    </select>
+                </div>
             </div>
             <div class="col-xs-6">
-                <label for="search_field"><%- gt.gettext('Autocomplete search field') %></label>
-                <select id="search_field" class="form-control">
-                    <option value="value0"><%- gt.gettext('Value0') %></option>
-                    <option value="value1"><%- gt.gettext('Value1') %></option>
-                </select>
+                <div class="form-group">
+                    <label for="search_field"><%- gt.gettext('Autocomplete search field') %></label>
+                    <select id="search_field" class="form-control">
+                        <option value="value0"><%- gt.gettext('Value0') %></option>
+                        <option value="value1"><%- gt.gettext('Value1') %></option>
+                    </select>
+                </div>
             </div>
         </div>
     </div>
-    <div class="descriptor-type-unit form-group" style="width: 50%;">
+    <div class="descriptor-type-unit block" style="width: 50%;">
         <div class="row">
             <div class="col-xs-6">
-                <label for="format_unit"><%- gt.gettext('Unit of the format') %></label>
-                <select id="format_unit" class="form-control"></select>
+                <div class="form-group">
+                    <label for="format_unit"><%- gt.gettext('Unit of the format') %></label>
+                    <select id="format_unit" class="form-control"></select>
+                </div>
             </div>
             <div class="col-xs-6">
                 <div class="form-group">
@@ -109,7 +123,7 @@
             </div>
         </div>
     </div>
-    <div class="descriptor-type-precision form-group" style="width: 50%;">
+    <div class="descriptor-type-precision form-group block" style="width: 50%;">
         <label for="format_precision"><%- gt.gettext('Precision of the decimal') %></label>
         <select id="format_precision" class="form-control">
             <option value="0.0">0.0</option>
@@ -124,11 +138,11 @@
             <option value="9.0">9.0</option>
         </select>
     </div>
-    <div class="descriptor-type-model form-group" style="width: 50%;">
+    <div class="descriptor-type-model form-group block" style="width: 50%;">
         <label for="format_model"><%- gt.gettext('Model of the entity') %></label>
         <select id="format_model" class="form-control"></select>
     </div>
-    <div class="descriptor-type-range form-group" style="width: 50%;">
+    <div class="descriptor-type-range form-group block" style="width: 50%;">
         <div class="row">
             <div class="col-xs-6">
                 <label for="format_range_min"><%- gt.gettext('Minimal range value') %></label>
@@ -140,15 +154,28 @@
             </div>
         </div>
     </div>
-    <div class="descriptor-type-regexp form-group" style="width: 50%;">
+    <div class="descriptor-type-regexp form-group block" style="width: 50%;">
         <label for="format_regexp"><%- gt.gettext('Regular expression') %></label>
         <input id="format_regexp" class="form-control" type="text" maxlength="255">
     </div>
-    <div class="descriptor-type-description form-group" style="width: 50%;">
+    <div class="descriptor-type-media-types form-group block" style="width: 50%;">
+        <label for="format_media_types"><%- gt.gettext('Type of media') %></label>
+        <select id="format_media_types" class="form-control" multiple>
+            <option value="archives"><%- gt.gettext('Archives (zip, rar, 7z, tar, gz, bz, bz2)') %></option>
+            <option value="images"><%- gt.gettext('Images (gif, png, jpg, jpeg, tif, tiff, psd, svg)') %></option>
+            <option value="documents"><%- gt.gettext('Documents (doc, docx, ppt, pptx, odt, odp, pdf, ps)') %></option>
+            <option value="tables"><%- gt.gettext('Spreadsheets (xls, xlsx, ods, csv)') %></option>
+        </select>
+    </div>
+    <div class="descriptor-type-max-items form-group block" style="width: 50%;">
+        <label for="format_max_items"><%- gt.gettext('Max items number') %></label>
+        <input id="format_max_items" class="form-control" type="number" min="2" max="256">
+    </div>
+    <div class="descriptor-type-description form-group block" style="width: 50%;">
         <label for="descriptor_type_description"><%- gt.gettext('Description') %></label>
         <textarea id="descriptor_type_description" class="form-control" maxlength="1024"><%= description %></textarea>
     </div>
-    <div class="descriptor-type-update form-group" style="width: 100px; margin-left: 20%; margin-top: 25px;">
+    <div class="descriptor-type-update form-group block" style="width: 100px; margin-left: 20%; margin-top: 25px;">
         <button id="save" class="form-control btn btn-primary"><%- gt.gettext('Update') %></button>
     </div>
 </div>

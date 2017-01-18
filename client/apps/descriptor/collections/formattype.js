@@ -81,6 +81,7 @@ var Collection = Backbone.Collection.extend({
         {id: 'datetime', group: 'single', label: gt.gettext('Date+time')},
         {id: 'entity', group: 'single', label: gt.gettext('Entity')},
         {id: 'media', group: 'single', label: gt.gettext('Media')},
+        {id: 'media_collection', group: 'single', label: gt.gettext('Media collection')},
 
         {id: 'enum_single', group: 'list', label: gt.gettext('Single enumeration')},
         {id: 'enum_pair', group: 'list', label: gt.gettext('Pair enumeration')},

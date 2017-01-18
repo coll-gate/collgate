@@ -54,6 +54,7 @@ class CollGateDescriptor(ApplicationMain):
                 {'id': 'datetime', 'label': _('Date+time')},
                 {'id': 'entity', 'label': _('Entity')},
                 {'id': 'media', 'label': _('Media')},
+                {'id': 'media_collection', 'label': _('Media collection')},
             ]},
 
             {'group': 'list', 'label': _('List of values'), 'items': [

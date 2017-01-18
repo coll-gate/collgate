@@ -39,6 +39,8 @@ var View = Marionette.ItemView.extend({
         format_range_min: '#format_range_min',
         format_range_max: '#format_range_max',
         format_regexp: '#format_regexp',
+        format_media_types: '#format_media_types',
+        format_max_items: '#format_max_items',
         save: '#save'
     },
 
@@ -79,6 +81,11 @@ var View = Marionette.ItemView.extend({
         this.ui.format_type.selectpicker('val', format.type);
         this.ui.format_unit.selectpicker('val', format.unit);
         this.ui.format_precision.selectpicker('val', format.precision);
+
+        this.ui.format_media_types.selectpicker({
+            style: 'btn-default',
+            container: 'body'
+        });
 
         if (format.trans) {
             this.ui.format_trans.val("true");
@@ -166,30 +173,63 @@ var View = Marionette.ItemView.extend({
             case "boolean":
             case "ordinal":
             case "entity":
+            case "media":
+            case "media_collection":
                 this.ui.format_unit_custom.prop("disabled", true).val("");
-                if (this.ui.format_unit.closest("div.form-group").css('display') != 'none') {
-                    this.ui.format_unit.closest("div.form-group").hide(false);
+                if (this.ui.format_unit.closest("div.block").css('display') != 'none') {
+                    this.ui.format_unit.closest("div.block").hide(false);
                 }
                 break;
             default:
                 break;
         }
 
+        switch(format.type) {
+            case "media":
+            case "media_collection":
+                this.ui.format_media_types.prop("disabled", false).selectpicker('val', format.media_types);
+                if (this.ui.format_media_types.closest("div.block").css('display') == 'none') {
+                    this.ui.format_media_types.closest("div.block").show(false);
+                }
+                break;
+            default:
+                this.ui.format_media_types.prop("disabled", true).val("");
+                if (this.ui.format_media_types.closest("div.block").css('display') != 'none') {
+                    this.ui.format_media_types.closest("div.block").hide(false);
+                }
+                break;
+        }
+
+        switch(format.type) {
+            case "media_collection":
+                this.ui.format_max_items.prop("disabled", false).val(format.max_items);
+                if (this.ui.format_max_items.closest("div.block").css('display') == 'none') {
+                    this.ui.format_max_items.closest("div.block").show(false);
+                }
+                break;
+            default:
+                this.ui.format_max_items.prop("disabled", true).val("");
+                if (this.ui.format_max_items.closest("div.block").css('display') != 'none') {
+                    this.ui.format_max_items.closest("div.block").hide(false);
+                }
+                break;
+        }
+
         if (format.type !== "entity") {
-            if (this.ui.format_model.closest("div.form-group").css('display') != 'none') {
-                this.ui.format_model.closest("div.form-group").hide(false);
+            if (this.ui.format_model.closest("div.block").css('display') != 'none') {
+                this.ui.format_model.closest("div.block").hide(false);
             }
         }
 
         if (format.type !== "numeric" && format.type !== "numeric_range") {
-            if (this.ui.format_precision.closest("div.form-group").css('display') != 'none') {
-                this.ui.format_precision.closest("div.form-group").hide(false);
+            if (this.ui.format_precision.closest("div.block").css('display') != 'none') {
+                this.ui.format_precision.closest("div.block").hide(false);
             }
         }
 
-        if (format.type !== "string" && format.type !== "media") {
-            if (this.ui.format_regexp.closest("div.form-group").css('display') != 'none') {
-                this.ui.format_regexp.closest("div.form-group").hide(false);
+        if (format.type !== "string") {
+            if (this.ui.format_regexp.closest("div.block").css('display') != 'none') {
+                this.ui.format_regexp.closest("div.block").hide(false);
             }
         } else {
             this.ui.format_regexp.val(format.regexp);
@@ -218,9 +258,10 @@ var View = Marionette.ItemView.extend({
             case "enum_ordinal":
             case "entity":
             case "media":
+            case "media_collection":
                 this.ui.format_precision.prop("disabled", true).val("0.0");
-                if (this.ui.format_precision.closest("div.form-group").css('display') != 'none') {
-                    this.ui.format_precision.closest("div.form-group").hide(true);
+                if (this.ui.format_precision.closest("div.block").css('display') != 'none') {
+                    this.ui.format_precision.closest("div.block").hide(true);
                 }
                 this.ui.list_type.selectpicker('val', 'dropdown');
                 this.ui.search_field.val('value0').prop('disabled', true).selectpicker('refresh');
@@ -228,8 +269,8 @@ var View = Marionette.ItemView.extend({
             case "numeric":
             case "numeric_range":
                 this.ui.format_precision.prop("disabled", false).val("1.0");
-                if (this.ui.format_precision.closest("div.form-group").css('display') == 'none') {
-                    this.ui.format_precision.closest("div.form-group").show(true);
+                if (this.ui.format_precision.closest("div.block").css('display') == 'none') {
+                    this.ui.format_precision.closest("div.block").show(true);
                 }
                 break;
             default:
@@ -240,22 +281,22 @@ var View = Marionette.ItemView.extend({
             case "date":
                 this.ui.format_unit_custom.prop("disabled", true).val("");
                 this.ui.format_unit.val("date").prop('disabled', true).selectpicker('refresh');
-                if (this.ui.format_unit.closest("div.form-group").css('display') == 'none') {
-                    this.ui.format_unit.closest("div.form-group").show(true);
+                if (this.ui.format_unit.closest("div.block").css('display') == 'none') {
+                    this.ui.format_unit.closest("div.block").show(true);
                 }
                 break;
             case "time":
                 this.ui.format_unit_custom.prop("disabled", true).val("");
                 this.ui.format_unit.val("time").prop('disabled', true).selectpicker('refresh');
-                if (this.ui.format_unit.closest("div.form-group").css('display') == 'none') {
-                    this.ui.format_unit.closest("div.form-group").show(true);
+                if (this.ui.format_unit.closest("div.block").css('display') == 'none') {
+                    this.ui.format_unit.closest("div.block").show(true);
                 }
                 break;
             case "datetime":
                 this.ui.format_unit_custom.prop("disabled", true).val("");
                 this.ui.format_unit.val("datetime").prop('disabled', true).selectpicker('refresh');
-                if (this.ui.format_unit.closest("div.form-group").css('display') == 'none') {
-                    this.ui.format_unit.closest("div.form-group").show(true);
+                if (this.ui.format_unit.closest("div.block").css('display') == 'none') {
+                    this.ui.format_unit.closest("div.block").show(true);
                 }
                 break;
             case "gps":
@@ -263,17 +304,18 @@ var View = Marionette.ItemView.extend({
             case "ordinal":
             case "entity":
             case "media":
+            case "media_collection":
                 this.ui.format_unit_custom.prop("disabled", true).val("");
                 this.ui.format_unit.val('custom').prop('disabled', true).selectpicker('refresh');
-                if (this.ui.format_unit.closest("div.form-group").css('display') != 'none') {
-                    this.ui.format_unit.closest("div.form-group").hide(true);
+                if (this.ui.format_unit.closest("div.block").css('display') != 'none') {
+                    this.ui.format_unit.closest("div.block").hide(true);
                 }
                 break;
             default:
                 this.ui.format_unit_custom.prop("disabled", false).val("");
                 this.ui.format_unit.val('custom').prop('disabled', false).selectpicker('refresh');
-                if (this.ui.format_unit.closest("div.form-group").css('display') == 'none') {
-                    this.ui.format_unit.closest("div.form-group").show(true);
+                if (this.ui.format_unit.closest("div.block").css('display') == 'none') {
+                    this.ui.format_unit.closest("div.block").show(true);
                 }
                 break;
         }
@@ -303,17 +345,17 @@ var View = Marionette.ItemView.extend({
                 break;
         }
 
-        if (type === "string" || type === "media") {
+        if (type === "string") {
             this.ui.format_regexp.prop("disabled", false).val("");
 
-            if (this.ui.format_regexp.closest("div.form-group").css('display') == 'none') {
-                this.ui.format_regexp.closest("div.form-group").show(true);
+            if (this.ui.format_regexp.closest("div.block").css('display') == 'none') {
+                this.ui.format_regexp.closest("div.block").show(true);
             }
         } else {
             this.ui.format_regexp.prop("disabled", true).val("");
 
-            if (this.ui.format_regexp.closest("div.form-group").css('display') != 'none') {
-                this.ui.format_regexp.closest("div.form-group").hide(true);
+            if (this.ui.format_regexp.closest("div.block").css('display') != 'none') {
+                this.ui.format_regexp.closest("div.block").hide(true);
             }
         }
 
@@ -347,13 +389,44 @@ var View = Marionette.ItemView.extend({
         }
 
         if (type == "entity") {
-            if (this.ui.format_model.closest("div.form-group").css('display') == 'none') {
-                this.ui.format_model.closest("div.form-group").show(true);
+            if (this.ui.format_model.closest("div.block").css('display') == 'none') {
+                this.ui.format_model.closest("div.block").show(true);
             }
         } else {
-            if (this.ui.format_model.closest("div.form-group").css('display') != 'none') {
-                this.ui.format_model.closest("div.form-group").hide(true);
+            if (this.ui.format_model.closest("div.block").css('display') != 'none') {
+                this.ui.format_model.closest("div.block").hide(true);
             }
+        }
+
+        switch(type) {
+            case "media":
+            case "media_collection":
+                this.ui.format_media_types.prop("disabled", false).val("");
+                if (this.ui.format_media_types.closest("div.block").css('display') == 'none') {
+                    this.ui.format_media_types.closest("div.block").show(false);
+                }
+                break;
+            default:
+                this.ui.format_media_types.prop("disabled", true).val("");
+                if (this.ui.format_media_types.closest("div.block").css('display') != 'none') {
+                    this.ui.format_media_types.closest("div.block").hide(false);
+                }
+                break;
+        }
+
+        switch(type) {
+            case "media_collection":
+                this.ui.format_max_items.prop("disabled", false).val(2);
+                if (this.ui.format_max_items.closest("div.block").css('display') == 'none') {
+                    this.ui.format_max_items.closest("div.block").show(false);
+                }
+                break;
+            default:
+                this.ui.format_max_items.prop("disabled", true).val("");
+                if (this.ui.format_max_items.closest("div.block").css('display') != 'none') {
+                    this.ui.format_max_items.closest("div.block").hide(false);
+                }
+                break;
         }
     },
     
@@ -457,8 +530,13 @@ var View = Marionette.ItemView.extend({
             ];
         }
 
-        if (format.type === 'string' || format.type === 'media') {
+        if (format.type === 'string') {
             format.regexp = this.ui.format_regexp.val();
+        }
+
+        if (format.type === 'media' || format.type === 'media_collection') {
+            format.media_types = this.ui.format_media_types.val();
+            format.max_items = this.ui.format_max_items.val();
         }
 
         if (format.type === 'enum_pair') {
