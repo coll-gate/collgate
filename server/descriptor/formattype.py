@@ -5,6 +5,7 @@
 """
 coll-gate descriptor module, descriptor format
 """
+from django.core.exceptions import SuspiciousOperation
 from django.views.decorators.cache import cache_page
 from igdectk.rest import Format, Method
 from igdectk.rest.response import HttpResponseRest
@@ -33,27 +34,31 @@ def get_format_type_list(request):
     """
     Return the list of types of format.
     """
-    groups = []
-    items = []
+    groups = {}
+    items = {}
 
     from django.apps import apps
     descriptor_app = apps.get_app_config('descriptor')
 
-    for group in descriptor_app.format_types:
-        items.append({
-            'group': group.group,
-            'label': str(group.label)
-        })
+    for ft in descriptor_app.format_types:
+        if ft.group:
+            if ft.group.name not in groups:
+                groups[ft.group.name] = {
+                    'group': ft.group.name,
+                    'label': str(ft.group.verbose_name)
+                }
 
-        for ltype in group.items:
-            items.append({
-                'id': ltype.value,
-                'group': group.group,
-                'value': ltype.value,
-                'label': str(ltype.label)
-            })
+        if ft.name in items:
+            raise SuspiciousOperation("Already registered descriptor format type %s" % ft.name)
 
-    return HttpResponseRest(request, {'groups': groups, 'items': items})
+        items[ft.name] = {
+            'id': ft.name,
+            'group': ft.group.name,
+            'value': ft.name,
+            'label': str(ft.verbose_name)
+        }
+
+    return HttpResponseRest(request, {'groups': list(groups.values()), 'items': list(items.values())})
 
 
 @cache_page(60*60*24)

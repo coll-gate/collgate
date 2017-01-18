@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-04 16:01+0100\n"
+"POT-Creation-Date: 2017-01-18 19:09+0100\n"
 "PO-Revision-Date: 2016-02-01 11:53+0100\n"
 "Last-Translator: Frederic SCHERMA <frederic.scherma@clermont.inra.fr>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,18 +17,6 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-
-#: apps.py:38
-msgid "Profile"
-msgstr "Profil"
-
-#: apps.py:39
-msgid "Edit information"
-msgstr "Mise à jour des informations"
-
-#: apps.py:41
-msgid "Logout"
-msgstr "Se déconnecter"
 
 #: apps.py:45
 msgid "Help"
@@ -111,17 +99,28 @@ msgstr "Déconnecté"
 msgid "Welcome"
 msgstr "Bienvenue"
 
-#: templates/main/index.html:82
+#: templates/main/index.html:79
 msgid "Username"
 msgstr "Identifiant"
 
-#: templates/main/index.html:85
+#: templates/main/index.html:82
 msgid "Password"
 msgstr "Mot de passe"
 
-#: templates/main/index.html:87
+#: templates/main/index.html:84
 msgid "Sign in"
 msgstr "Se connecter"
+
+#: templates/main/index.html:99
+msgid "Edit information"
+msgstr "Mise à jour des informations"
+
+#: templates/main/index.html:105
+msgid "Logout"
+msgstr "Se déconnecter"
+
+#~ msgid "Profile"
+#~ msgstr "Profil"
 
 #~ msgid ""
 #~ "Name must contains only alphanumerics characters or _ or - and be at "

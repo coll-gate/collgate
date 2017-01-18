@@ -25,4 +25,14 @@ class CollGateMediaLibrary(ApplicationMain):
             )
         )
 
+        # registers media types of formats
+        from . import descriptorformattype
+
+        from django.apps import apps
+        descriptor_app = apps.get_app_config('descriptor')
+        descriptor_app.format_types += [
+            descriptorformattype.DescriptorFormatTypeMedia(),
+            descriptorformattype.DescriptorFormatTypeMediaCollection()
+        ]
+
         module_manager.register_menu(media_library_module)

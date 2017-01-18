@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-04 16:01+0100\n"
+"POT-Creation-Date: 2017-01-18 19:09+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,47 +17,67 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: accession.py:56
+#: accession.py:62
 msgid "You are not allowed to create an accession"
 msgstr ""
 
-#: accession.py:68 accession.py:270
+#: accession.py:74 accession.py:284
 msgid "The name of the accession is already used as a primary synonym"
 msgstr ""
 
-#: accession.py:71 accession.py:273
+#: accession.py:77 accession.py:287
 msgid "The name of the accession is already used"
 msgstr ""
 
-#: accession.py:74
+#: accession.py:80
 msgid "The language is not supported"
 msgstr ""
 
-#: accession.py:112
+#: accession.py:126
 msgid "You are not allowed to list the accessions"
 msgstr ""
 
-#: accession.py:254
+#: accession.py:268 accession.py:340 accession.py:378 accession.py:410
 msgid "You are not allowed to modify an accession"
 msgstr ""
 
-#: accession.py:302
+#: accession.py:318
 msgid "You are not allowed to delete an accession"
 msgstr ""
 
-#: apps.py:56
+#: accession.py:341
+msgid "You are not allowed to add a synonym of accession"
+msgstr ""
+
+#: accession.py:356
+msgid "Unsupported type of synonym"
+msgstr ""
+
+#: accession.py:379
+msgid "You are not allowed to modify a synonym of accession"
+msgstr ""
+
+#: accession.py:411
+msgid "You are not allowed to delete a synonym of accession"
+msgstr ""
+
+#: accession.py:422
+msgid "It is not possible to remove a primary synonym"
+msgstr ""
+
+#: apps.py:57
 msgid "Accession"
 msgstr ""
 
-#: apps.py:58
+#: apps.py:59
 msgid "Create accession"
 msgstr ""
 
-#: apps.py:61
+#: apps.py:62
 msgid "Create batch"
 msgstr ""
 
-#: apps.py:65
+#: apps.py:66
 msgid "List accessions"
 msgstr ""
 

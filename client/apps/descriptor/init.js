@@ -68,7 +68,7 @@ var DescriptorModule = Marionette.Module.extend({
         this.collections.formatTypes = new FormatTypeCollection();
 
         this.views.formatTypes = new SelectOptionItemView({
-            sync: true,
+            // sync: true,
             className: 'format-type',
             collection: this.collections.formatTypes,
         });
