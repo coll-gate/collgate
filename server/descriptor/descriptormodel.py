@@ -329,7 +329,7 @@ def list_descriptor_model_types_for_model(request, id):
         'descriptor.add_descriptormodeltype': _('You are not allowed to create a type of model of descriptor'),
     },
     staff=True)
-def create_descriptor_type_for_model(request, id):
+def create_descriptor_model_type_for_type(request, id):
     dm_id = int(id)
 
     dt_code = request.data['descriptor_type_code']

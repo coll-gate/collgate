@@ -9,6 +9,7 @@ import json
 
 from django.core.exceptions import SuspiciousOperation
 from django.db.models import Q
+from django.db.models.functions import Length
 from django.shortcuts import get_object_or_404
 from django.utils import translation
 from django.utils.translation import ugettext_lazy as _
@@ -422,18 +423,18 @@ def create_descriptor_type(request, id):
     group_id = int_arg(id)
     group = get_object_or_404(DescriptorGroup, id=group_id)
 
-    # generate a new internal code
-    found = False
-    code = DescriptorType.objects.filter(code__startswith='ID_').count() + 1
-    while found:
-        if not DescriptorType.objects.filter(code='ID_%03i' % code).exists():
-            found = True
-        else:
-            code += 1
+    # generate a new internal code base on previous max ID_xxx
+    qs = DescriptorType.objects.filter(code__startswith='ID_').order_by(Length('code').desc(), '-code')[:1]
+    if qs.exists():
+        suffix = int(qs[0].code.split('_')[1]) + 1
+    else:
+        suffix = 1
+
+    code = 'ID_%03i' % suffix
 
     descr_type = DescriptorType.objects.create(
         name=descr_type_params['name'],
-        code='ID_%03i' % code,
+        code=code,
         group=group,
         can_delete=True,
         can_modify=True)
