@@ -1,12 +1,12 @@
+django>=1.10
 django-guardian>=1.4.4
 setuptools>=19.4
-Django>=1.10
 django-bootstrap3>=6.2.2
 httplib2>=0.9.1
 git+file:///home/fscherma/nas-gdec/sercom/Informatique/repositories/inra-gdec#egg=igdectk
 ldap3>=0.9.9.1
 pyasn1>=0.1.9
-Unidecode>=0.4.18
+unidecode>=0.4.18
 validictory>=1.0.1
 psycopg2>=2.6.1
 python-magic>=0.4

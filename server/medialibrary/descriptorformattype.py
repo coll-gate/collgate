@@ -8,7 +8,16 @@ coll-gate descriptor format type class for media library
 
 from django.utils.translation import ugettext_lazy as _
 
-from descriptor.descriptorformattype import DescriptorFormatTypeGroupSingle, DescriptorFormatType
+from descriptor.descriptorformattype import DescriptorFormatTypeGroupSingle, DescriptorFormatType, DescriptorFormatTypeGroup
+
+
+class DescriptorFormatTypeGroupMedia(DescriptorFormatTypeGroup):
+    """
+    Group of media descriptors.
+    """
+
+    def __init__(self):
+        super().__init__("media", _("Media"))
 
 
 class DescriptorFormatTypeMedia(DescriptorFormatType):
@@ -20,7 +29,7 @@ class DescriptorFormatTypeMedia(DescriptorFormatType):
         super().__init__()
 
         self.name = "media"
-        self.group = DescriptorFormatTypeGroupSingle()
+        self.group = DescriptorFormatTypeGroupMedia()
         self.verbose_name = _("Media")
         self.format_fields = [
             "media_types",
@@ -53,7 +62,7 @@ class DescriptorFormatTypeMediaCollection(DescriptorFormatType):
         super().__init__()
 
         self.name = "media_collection"
-        self.group = DescriptorFormatTypeGroupSingle()
+        self.group = DescriptorFormatTypeGroupMedia()
         self.verbose_name = _("Media collection")
         self.format_fields = [
             "media_types",

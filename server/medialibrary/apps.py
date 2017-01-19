@@ -14,6 +14,12 @@ from igdectk.module.module import Module
 class CollGateMediaLibrary(ApplicationMain):
     name = '.'.join(__name__.split('.')[0:-1])
 
+    def __init__(self, app_name, app_module):
+        super(CollGateMediaLibrary, self).__init__(app_name, app_module)
+
+        # different types of format for type of descriptors for this module
+        self.format_types = []
+
     def ready(self):
         super().ready()
 
@@ -28,11 +34,12 @@ class CollGateMediaLibrary(ApplicationMain):
         # registers media types of formats
         from . import descriptorformattype
 
-        from django.apps import apps
-        descriptor_app = apps.get_app_config('descriptor')
-        descriptor_app.format_types += [
+        self.format_types += [
             descriptorformattype.DescriptorFormatTypeMedia(),
             descriptorformattype.DescriptorFormatTypeMediaCollection()
         ]
+
+        from descriptor.descriptorformattype import DescriptorFormatTypeManager
+        DescriptorFormatTypeManager.register(self.format_types)
 
         module_manager.register_menu(media_library_module)

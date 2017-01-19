@@ -10,7 +10,7 @@ import re
 import decimal
 
 from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ImproperlyConfigured
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _, pgettext_lazy
 
@@ -55,6 +55,53 @@ class DescriptorFormatType(object):
         :return: True if the validation is done
         """
         return True
+
+
+class DescriptorFormatTypeManager(object):
+    """
+    Singleton manager of set of descriptor format type.
+    """
+
+    descriptor_format_types = {}
+
+    @classmethod
+    def register(cls, descriptor_format_types_list):
+        """
+        Register a list of descriptor format type.
+        :param descriptor_format_types_list: An array of descriptor format type.
+        """
+        # register each type into a map
+        for dft in descriptor_format_types_list:
+            if dft.name in cls.descriptor_format_types:
+                raise ImproperlyConfigured("Descriptor format type not already defined (%s)" % dft.name)
+
+            cls.descriptor_format_types[dft.name] = dft
+
+    @classmethod
+    def validate(cls, descriptor_type_format, value, descriptor_model_type):
+        """
+        Call the correct descriptor format type.
+        :param descriptor_type_format: Format of the type of descriptor as python dict
+        :param value: Value to validate
+        :param descriptor_model_type: Related type of model of descriptor
+        :return: True if validation success.
+        """
+        format_type = descriptor_type_format['type']
+
+        dft = cls.descriptor_format_types.get(format_type)
+        if dft is None:
+            raise ValueError("Unsupported descriptor format type %s" % format_type)
+
+        res = dft.validate(descriptor_type_format, value, descriptor_model_type)
+        if not res:
+            raise ValueError(dft.error + " (%s)" % descriptor_model_type.get_label())
+
+    @classmethod
+    def values(cls):
+        """
+        Return the list of any registered descriptor format types.
+        """
+        return list(cls.descriptor_format_types.values())
 
 
 class DescriptorFormatTypeGroupSingle(DescriptorFormatTypeGroup):
@@ -352,7 +399,7 @@ class DescriptorFormatTypeString(DescriptorFormatType):
         if "regexp" in descriptor_type_format and descriptor_type_format['regexp']:
             str_re = re.compile(descriptor_type_format['regexp'])
             if str_re.match(value) is None:
-                self.error =  _("The descriptor value must be a string matching the defined format")
+                self.error = _("The descriptor value must be a string matching the defined format")
                 return False
 
         return True

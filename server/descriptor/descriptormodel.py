@@ -14,7 +14,7 @@ from django.utils import translation
 from django.utils.translation import ugettext_lazy as _
 from django.db.models.functions import Length
 
-from descriptor.describable import descriptor_value_validate
+from descriptor.descriptorformattype import DescriptorFormatTypeManager
 from igdectk.common.helpers import int_arg
 from igdectk.rest import Format, Method
 from igdectk.rest.response import HttpResponseRest
@@ -671,7 +671,7 @@ def create_condition_for_descriptor_model_type(request, id, tid):
     format = json.loads(target.descriptor_type.format)
 
     for value in values:
-        descriptor_value_validate(format, value, target)
+        DescriptorFormatTypeManager.validate(format, value, target)
 
     dmtc = DescriptorModelTypeCondition()
 
@@ -737,7 +737,7 @@ def modify_condition_for_descriptor_model_type(request, id, tid):
         format = json.loads(target.descriptor_type.format)
 
         for value in values:
-            descriptor_value_validate(format, value, target)
+            DescriptorFormatTypeManager.validate(format, value, target)
 
         condition = DescriptorCondition(request.data['condition'])
 

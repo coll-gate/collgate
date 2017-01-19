@@ -11,6 +11,7 @@ from igdectk.rest import Format, Method
 from igdectk.rest.response import HttpResponseRest
 
 from .descriptor import RestDescriptor
+from .descriptorformattype import DescriptorFormatTypeManager
 
 
 class RestDescriptorFormat(RestDescriptor):
@@ -37,10 +38,7 @@ def get_format_type_list(request):
     groups = {}
     items = {}
 
-    from django.apps import apps
-    descriptor_app = apps.get_app_config('descriptor')
-
-    for ft in descriptor_app.format_types:
+    for ft in DescriptorFormatTypeManager.values():
         if ft.group:
             if ft.group.name not in groups:
                 groups[ft.group.name] = {
@@ -58,7 +56,10 @@ def get_format_type_list(request):
             'label': str(ft.verbose_name)
         }
 
-    return HttpResponseRest(request, {'groups': list(groups.values()), 'items': list(items.values())})
+    groups_list = sorted(list(groups.values()), key=lambda x: x['group'])
+    items_list = sorted(list(items.values()), key=lambda x: x['id'])
+
+    return HttpResponseRest(request, {'groups': groups_list, 'items': items_list})
 
 
 @cache_page(60*60*24)
