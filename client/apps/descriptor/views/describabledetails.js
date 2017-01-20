@@ -54,7 +54,8 @@ var View = ItemView.extend({
 
             values = [model.get('descriptors')[descriptorModelType.id]];
 
-            if (format.type.startsWith('enum_')) {
+            // @todo remove me once migration done
+            /*if (format.type.startsWith('enum_')) {
                 var url = application.baseUrl + 'descriptor/group/' + descriptorType.group + '/type/' + descriptorType.id + '/';
 
                 if (format.list_type == "autocomplete") {
@@ -169,6 +170,15 @@ var View = ItemView.extend({
                         true,
                         values);
                 }
+            } else*/ {
+                // el.children('td.descriptor-value').children('div.input-group').remove(); // @todo remove me
+
+                var widget = application.descriptor.widgets.newElement(format.type);
+                widget.create(format, el.children('td.descriptor-value'), true, true, descriptorType.group, descriptorType.id);
+                widget.set(format, true, values, descriptorType.group, descriptorType.id);
+
+                // save the descriptor format type widget instance
+                descriptorModelType.widget = widget;
             }
         });
     },

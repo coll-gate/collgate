@@ -34,6 +34,31 @@ var DescriptorModule = Marionette.Module.extend({
     onStart: function(options) {
         Logger.time("Start descriptor module");
 
+        var DescriptorFormatTypeManager = require('./widgets/descriptorformattypemanager');
+        this.widgets = new DescriptorFormatTypeManager();
+
+        // register the standard format type of descriptors
+        var widgets = [
+            'boolean',
+            'numeric',
+            'numeric_range',
+            'ordinal',
+            'string',
+            'date',
+            'time',
+            'datetime',
+            'entity',
+            'gps',
+            'enum_single',
+            'enum_pair',
+            'enum_ordinal'
+        ];
+
+        for (var i = 0; i < widgets.length; ++i) {
+            var moduleName = widgets[i].replace('_', '').toLowerCase();
+            this.widgets.registerElement(widgets[i], require('./widgets/' + moduleName));
+        }
+
         var DescriptorRouter = require('./routers/descriptor');
         this.routers.descriptor = new DescriptorRouter();
 

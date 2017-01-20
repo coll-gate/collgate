@@ -55,16 +55,14 @@ var DisplayReadDescriptor = {
         if (format.type.startsWith('enum_')) {
             if (format.list_type == "dropdown") {
                 if (definesValues) {
-                    if (definesValues) {
-                        $.ajax({
-                            type: "GET",
-                            url: url + 'value/' + defaultValues[0] + '/display/',
-                            dataType: 'json'
-                        }).done(function (data) {
-                            var linput = input.is('input') ? input : input.children('input');
-                            linput.val(data.label);
-                        });
-                    }
+                    $.ajax({
+                        type: "GET",
+                        url: url + 'value/' + defaultValues[0] + '/display/',
+                        dataType: 'json'
+                    }).done(function (data) {
+                        var linput = input.is('input') ? input : input.children('input');
+                        linput.val(data.label);
+                    });
                 }
             }
         }

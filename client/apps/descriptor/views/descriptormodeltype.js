@@ -665,6 +665,7 @@ var View = Marionette.ItemView.extend({
                                 view.ui.simple_value_icon.removeClass().addClass("glyphicon glyphicon-calendar")
                                     .parent().css('cursor', 'pointer');
                             } else {
+                                // @todo how todo more dynamic with external type of format of descritpor ?
                                 view.ui.simple_value.val("");
 
                                 // glyphicon and pointer

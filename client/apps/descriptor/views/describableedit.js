@@ -1,4 +1,4 @@
-    /**
+/**
  * @file describableedit.js
  * @brief Describable entity item edit view
  * @author Frederic SCHERMA
@@ -731,6 +731,8 @@ var View = ItemView.extend({
             if (el.css('display') !== "none") {
                 // take value
                 var format = descriptorModelType.descriptor_type.format;
+
+                /* @todo using new widgets */
 
                 if (format.type.startsWith('enum_')) {
                     if (format.list_type == "autocomplete") {
