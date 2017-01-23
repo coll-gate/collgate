@@ -43,7 +43,7 @@ _.extend(Ordinal.prototype, DescriptorFormatType.prototype, {
             this.readOnly = true;
             this.el = input;
         } else {
-            if (self.isInput) {
+            if (this.isInput) {
                 var group = $('<div class="input-group"></div>');
                 var input = $('<input class="form-control" width="100%">');
                 var glyph = $('<span class="input-group-addon"><span class="glyphicon glyphicon-option-vertical"></span></span>');
@@ -60,6 +60,15 @@ _.extend(Ordinal.prototype, DescriptorFormatType.prototype, {
                 var select = $('<select data-width="100%"></select>');
                 parent.append(select);
 
+                for (var i = format.range[0]; i <= format.range[1]; ++i) {
+                    var option = $("<option></option>");
+
+                    option.attr("value", i);
+                    option.html(i);
+
+                    select.append(option);
+                }
+
                 select.selectpicker({container: 'body', style: 'btn-default'});
 
                 this.parent = parent;
@@ -73,7 +82,7 @@ _.extend(Ordinal.prototype, DescriptorFormatType.prototype, {
             if (this.readOnly) {
                 this.parent.remove(this.el.parent());
             } else {
-                this.parent.remove(this.el);
+                this.parent.remove(this.el.parent());
             }
         }
     },
@@ -128,7 +137,8 @@ _.extend(Ordinal.prototype, DescriptorFormatType.prototype, {
                     this.el.val(defaultValues[0]);
                 }
             } else {
-
+                this.el.val(defaultValues[0].toString()).trigger('change');
+                this.el.selectpicker('refresh');
             }
         }
     },
@@ -136,6 +146,56 @@ _.extend(Ordinal.prototype, DescriptorFormatType.prototype, {
     values: function() {
         if (this.el && this.parent) {
             return [parseInt(this.el.val())];
+        }
+
+        return [NaN]
+    },
+
+    checkCondition: function (condition, values) {
+        switch (condition) {
+            case 0:
+                return this.values()[0] === NaN;
+            case 1:
+                return this.values()[0] !== NaN;
+            case 2:
+                return this.values()[0] === values[0];
+            case 3:
+                return this.values()[0] !== values[0];
+            default:
+                return false;
+        }
+    },
+
+    bindConditionListener: function(listeners, condition, values) {
+        if (this.el && this.parent && !this.readOnly) {
+            if (!this.bound) {
+                if (this.isInput) {
+                    this.el.on('input', $.proxy(this.onValueChanged, this));
+                } else {
+                    this.el.parent('div.bootstrap-select').on('changed.bs.select', $.proxy(this.onValueChanged, this));
+                }
+
+                this.bound = true;
+            }
+
+            this.conditionType = condition;
+            this.conditionValues = values;
+            this.listeners = listeners || [];
+        }
+    },
+
+    onValueChanged: function(e) {
+        var display = this.checkCondition(this.conditionType, this.conditionValues);
+
+        // show or hide the parent element
+        if (display) {
+            for (var i = 0; i < this.listeners.length; ++i) {
+                this.listeners[i].parent.parent().show(true);
+            }
+        } else {
+            for (var i = 0; i < this.listeners.length; ++i) {
+                this.listeners[i].parent.parent().hide(true);
+            }
         }
     }
 });

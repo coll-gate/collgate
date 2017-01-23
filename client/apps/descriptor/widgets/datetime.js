@@ -56,20 +56,21 @@ _.extend(DateTimeType.prototype, DescriptorFormatType.prototype, {
             if (this.readOnly) {
                 this.parent.remove(this.el.parent());
             } else {
-                this.parent.remove(this.el);
+                this.el.data('DateTimePicker').destroy();
+                this.parent.remove(this.el.parent());
             }
         }
     },
 
     enable: function() {
         if (this.el) {
-            this.el.parent().data('DateTimePicker').enable();
+            this.el.data('DateTimePicker').enable();
         }
     },
 
     disable: function() {
         if (this.el) {
-            this.el.parent().data('DateTimePicker').disable();
+            this.el.data('DateTimePicker').disable();
         }
     },
 
@@ -123,20 +124,69 @@ _.extend(DateTimeType.prototype, DescriptorFormatType.prototype, {
 
             if (definesValues) {
                 var date = moment(defaultValues[0]);
-                this.el.val(date.format($.datepicker._defaults.dateFormat.toUpperCase() + ' HH:mm:ss'));
+                this.el.data('DateTimePicker').date(date);
             }
         }
     },
 
     values: function() {
         if (this.el && this.parent) {
-            // format to YYYYMMDD date
-            var date = this.el.parent().data('DateTimePicker').date();
-            if (date != null) {
-                // format to iso datetime
-                return [date.format()];
+            if (this.readOnly) {
+                return [this.el.val()];
             } else {
-                return [""]
+                // format to YYYYMMDD date
+                var date = this.el.data('DateTimePicker').date();
+                if (date != null) {
+                    // format to iso datetime
+                    return [date.format()];
+                } else {
+                    return [""];
+                }
+            }
+        }
+
+        return [""];
+    },
+
+    checkCondition: function (condition, values) {
+        switch (condition) {
+            case 0:
+                return this.values()[0] === "";
+            case 1:
+                return this.values()[0] !== "";
+            case 2:
+                return this.values()[0] === values[0];
+            case 3:
+                return this.values()[0] !== values[0];
+            default:
+                return false;
+        }
+    },
+
+    bindConditionListener: function(listeners, condition, values) {
+        if (this.el && this.parent && !this.readOnly) {
+            if (!this.bound) {
+                this.el.parent().on('dp.change', $.proxy(this.onValueChanged, this));
+                this.bound = true;
+            }
+
+            this.conditionType = condition;
+            this.conditionValues = values;
+            this.listeners = listeners || [];
+        }
+    },
+
+    onValueChanged: function(e) {
+        var display = this.checkCondition(this.conditionType, this.conditionValues);
+
+        // show or hide the parent element
+        if (display) {
+            for (var i = 0; i < this.listeners.length; ++i) {
+                this.listeners[i].parent.parent().show(true);
+            }
+        } else {
+            for (var i = 0; i < this.listeners.length; ++i) {
+                this.listeners[i].parent.parent().hide(true);
             }
         }
     }

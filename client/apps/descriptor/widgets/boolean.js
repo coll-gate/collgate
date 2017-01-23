@@ -78,7 +78,7 @@ _.extend(Boolean.prototype, DescriptorFormatType.prototype, {
 
         if (this.readOnly) {
             if (definesValues) {
-                this.el.val(defaultValues[0] ? gt.gettext('Yes') : gt.gettext('No'));
+                this.el.val(defaultValues[0] ? gt.gettext('Yes') : gt.gettext('No')).attr('value', defaultValues[0]);
 
                 if (defaultValues[0]) {
                     this.el.parent().children('span').children('span').addClass('glyphicon-check');
@@ -113,7 +113,56 @@ _.extend(Boolean.prototype, DescriptorFormatType.prototype, {
 
     values: function() {
         if (this.el && this.parent) {
-            return [this.el.val() === "true"];
+            if (this.readOnly) {
+                return [this.el.attr("value") === "true"];
+            } else {
+                return [this.el.val() === "true"];
+            }
+        }
+
+        return [false];
+    },
+
+    checkCondition: function(condition, values) {
+        switch (condition) {
+            case 0:
+                return false;  // a boolean is always defined
+            case 1:
+                return true;   // a boolean is always defined
+            case 2:
+                return this.values()[0] === values[0];
+            case 3:
+                return this.values()[0] !== values[0];
+            default:
+                return false;
+        }
+    },
+
+    bindConditionListener: function(listeners, condition, values) {
+        if (this.el && this.parent && !this.readOnly) {
+            if (!this.bound) {
+                this.el.parent('div.bootstrap-select').on('changed.bs.select', $.proxy(this.onValueChanged, this));
+                this.bound = true;
+            }
+
+            this.conditionType = condition;
+            this.conditionValues = values;
+            this.listeners = listeners || [];
+        }
+    },
+
+    onValueChanged: function(e) {
+        var display = this.checkCondition(this.conditionType, this.conditionValues);
+
+        // show or hide the parent element
+        if (display) {
+            for (var i = 0; i < this.listeners.length; ++i) {
+                this.listeners[i].parent.parent().show(true);
+            }
+        } else {
+            for (var i = 0; i < this.listeners.length; ++i) {
+                this.listeners[i].parent.parent().hide(true);
+            }
         }
     }
 });

@@ -70,6 +70,15 @@ DescriptorFormatType.prototype = {
     values: function() {
         /* return the formatted values */
         return [""];
+    },
+
+    checkCondition: function (condition, value) {
+        /* check if the value of the widget respect the condition and the given value */
+        return true;
+    },
+
+    bindConditionListener: function(listeners, condition, values) {
+        /* bind an array of widget that are shown or hidden according the the given condition and values */
     }
 };
 

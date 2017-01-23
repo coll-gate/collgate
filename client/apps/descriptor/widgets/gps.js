@@ -62,7 +62,7 @@ _.extend(GpsType.prototype, DescriptorFormatType.prototype, {
             if (this.readOnly) {
                 this.parent.remove(this.el.parent());
             } else {
-                this.parent.remove(this.el);
+                this.parent.remove(this.el.parent());
             }
         }
     },
@@ -96,6 +96,29 @@ _.extend(GpsType.prototype, DescriptorFormatType.prototype, {
             if (definesValues) {
                 this.el.val(defaultValues[0]);
             }
+        }
+    },
+
+    values: function() {
+        if (this.el && this.parent) {
+            return [this.el.val()];
+        }
+
+        return [null];
+    },
+
+    checkCondition: function (condition, values) {
+        switch (condition) {
+            case 0:
+                return this.values()[0] === "";
+            case 1:
+                return this.values()[0] !== "";
+            case 2:
+                return this.values()[0] === values[0];
+            case 3:
+                return this.values()[0] !== values[0];
+            default:
+                return false;
         }
     },
 

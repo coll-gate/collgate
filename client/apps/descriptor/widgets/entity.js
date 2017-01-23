@@ -93,26 +93,8 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
                 placeholder: gt.gettext("Enter a value. 3 characters at least for auto-completion")
             };
 
-            // autoselect the initial value
-            if (definesValues) { // @todo @set
-                var url = application.baseUrl + format.model.replace('.', '/') + '/';
-
-                $.ajax({
-                    type: "GET",
-                    url: url + defaultValues[0] + '/',
-                    dataType: 'json'
-                }).done(function (data) {
-                    initials.push({id: data.id, text: data.name});
-
-                    params.data = initials;
-
-                    select.select2(params);
-                    select.val(defaultValues).trigger('change');
-                });
-            } else {
-                // make an autocomplete widget on simple_value
-                select.select2(params);
-            }
+            // make an autocomplete widget on simple_value
+            select.select2(params);
 
             this.parent = parent;
             this.el = select;
@@ -124,6 +106,7 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
             if (this.readOnly) {
                 this.parent.remove(this.el.parent());
             } else {
+                this.el.select2('destroy');
                 this.parent.remove(this.el);
             }
         }
@@ -148,8 +131,9 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
 
         definesValues = this.isValueDefined(definesValues, defaultValues);
 
+        var url = application.baseUrl + format.model.replace('.', '/') + '/';
+
         if (this.readOnly) {
-            var url = application.baseUrl + format.model.replace('.', '/') + '/';
             var type = this;
 
             if (definesValues) {
@@ -162,13 +146,101 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
                 });
             }
         } else {
-            /* @todo WTF !? @see enumsingle::autocomplete */
+            if (definesValues) {
+                var type = this;
+
+                // need to re-init the select2 widget
+                this.el.select2('destroy');
+
+                // init the autocomplete
+                var initials = [];
+
+                var params = {
+                    data: initials,
+                    dropdownParent: this.parent.parent(),  // $(view.el), @todo is parent works ??
+                    ajax: {
+                        url: url + 'search/',
+                        dataType: 'json',
+                        delay: 250,
+                        data: function (params) {
+                            params.term || (params.term = '');
+
+                            return {
+                                filters: JSON.stringify({
+                                    method: 'icontains',
+                                    fields: ['name'],
+                                    name: params.term
+                                }),
+                                cursor: params.next
+                            };
+                        },
+                        processResults: function (data, params) {
+                            params.next = null;
+
+                            if (data.items.length >= 30) {
+                                params.next = data.next || null;
+                            }
+
+                            var results = [];
+
+                            for (var i = 0; i < data.items.length; ++i) {
+                                results.push({
+                                    id: data.items[i].id,
+                                    text: data.items[i].label
+                                });
+                            }
+
+                            return {
+                                results: results,
+                                pagination: {
+                                    more: params.next != null
+                                }
+                            };
+                        },
+                        cache: true
+                    },
+                    allowClear: true,
+                    minimumInputLength: 3,
+                    placeholder: gt.gettext("Enter a value. 3 characters at least for auto-completion")
+                };
+
+                // autoselect the initial value
+                $.ajax({
+                    type: "GET",
+                    url: url + defaultValues[0] + '/',
+                    dataType: 'json'
+                }).done(function (data) {
+                    initials.push({id: data.id, text: data.name});
+
+                    params.data = initials;
+
+                    type.el.select2(params);
+                    type.el.val(defaultValues).trigger('change');
+                });
+            }
         }
     },
 
     values: function() {
         if (this.el && this.parent) {
-            return [this.el.val()];
+            return [parseInt(this.el.val())];
+        }
+
+        return [NaN];
+    },
+
+    checkCondition: function (condition, values) {
+        switch (condition) {
+            case 0:
+                return this.values()[0] === NaN;
+            case 1:
+                return this.values()[0] !== NaN;
+            case 2:
+                return this.values()[0] === values[0];
+            case 3:
+                return this.values()[0] !== values[0];
+            default:
+                return false;
         }
     }
 });

@@ -62,7 +62,7 @@ var View = ItemView.extend({
                 defaultValues = [model.get('descriptors')[descriptorModelType.id]];
                 definesValues = defaultValues[0] != null && defaultValues[0] != undefined;
             } else {
-                // @todo default value
+                // @todo default value from descriptor type
                 switch (format.type) {
                     case "boolean":
                         defaultValues = [false];
@@ -77,7 +77,18 @@ var View = ItemView.extend({
                 var url = application.baseUrl + 'descriptor/group/' + descriptorType.group + '/type/' + descriptorType.id + '/';
 
                 if (format.list_type == "autocomplete") {
-                    var select = $('<select style="width: 100%;"></select>');
+                    var widget = application.descriptor.widgets.newElement(format.type);
+                    widget.create(format, el.children('td.descriptor-value'), false, true, descriptorType.group, descriptorType.id);
+                    widget.set(format, definesValues, defaultValues, descriptorType.group, descriptorType.id);
+
+                    // save the descriptor format type widget instance
+                    descriptorModelType.widget = widget;
+
+                    if (descriptorModelType.set_once && exists) {
+                        widget.disable();
+                    }
+
+                    /*var select = $('<select style="width: 100%;"></select>');
                     el.children('td.descriptor-value').append(select);
 
                     DisplayDescriptor.initAutocomplete(
@@ -90,9 +101,20 @@ var View = ItemView.extend({
 
                     if (descriptorModelType.set_once && exists) {
                         select.prop("disabled", true);
-                    }
+                    }*/
                 } else {
-                    var select = $('<select data-width="100%"></select>');
+                    var widget = application.descriptor.widgets.newElement(format.type);
+                    widget.create(format, el.children('td.descriptor-value'), false, true, descriptorType.group, descriptorType.id);
+                    widget.set(format, definesValues, defaultValues, descriptorType.group, descriptorType.id);
+
+                    // save the descriptor format type widget instance
+                    descriptorModelType.widget = widget;
+
+                    if (descriptorModelType.set_once && exists) {
+                        widget.disable();
+                    }
+
+                    /*var select = $('<select data-width="100%"></select>');
                     el.children('td.descriptor-value').append(select);
 
                     select.selectpicker({container: 'body', style: 'btn-default'});
@@ -107,10 +129,21 @@ var View = ItemView.extend({
 
                     if (descriptorModelType.set_once && exists) {
                         select.prop("disabled", true).selectpicker('refresh');
-                    }
+                    }*/
                 }
             } else if (format.type == "entity") {
-                var url = application.baseUrl + format.model.replace('.', '/') + '/';
+                var widget = application.descriptor.widgets.newElement(format.type);
+                widget.create(format, el.children('td.descriptor-value'), false, true, descriptorType.group, descriptorType.id);
+                widget.set(format, definesValues, defaultValues, descriptorType.group, descriptorType.id);
+
+                // save the descriptor format type widget instance
+                descriptorModelType.widget = widget;
+
+                if (descriptorModelType.set_once && exists) {
+                    widget.disable();
+                }
+
+                /*var url = application.baseUrl + format.model.replace('.', '/') + '/';
 
                 var select = $('<select style="width: 100%;"></select>');
                 el.children('td.descriptor-value').append(select);
@@ -125,8 +158,20 @@ var View = ItemView.extend({
 
                 if (descriptorModelType.set_once && exists) {
                     select.prop("disabled", true);
-                }
+                }*/
             } else if (format.type === "boolean") {
+                var widget = application.descriptor.widgets.newElement(format.type);
+                widget.create(format, el.children('td.descriptor-value'), false, true, descriptorType.group, descriptorType.id);
+                widget.set(format, definesValues, defaultValues, descriptorType.group, descriptorType.id);
+
+                // save the descriptor format type widget instance
+                descriptorModelType.widget = widget;
+/*
+                if (descriptorModelType.set_once && exists) {
+                    widget.disable();
+                }
+*/
+                /*
                 var select = $('<select data-width="100%"></select>');
                 el.children('td.descriptor-value').append(select);
 
@@ -141,8 +186,19 @@ var View = ItemView.extend({
 
                 if (descriptorModelType.set_once && exists) {
                     select.prop("disabled", true).selectpicker('refresh');
-                }
+                }*/
             } else if ((format.type === "ordinal") && ((format.range[1] - format.range[0] + 1) <= 256)) {
+                var widget = application.descriptor.widgets.newElement(format.type);
+                widget.create(format, el.children('td.descriptor-value'), false, true, descriptorType.group, descriptorType.id);
+                widget.set(format, definesValues, defaultValues, descriptorType.group, descriptorType.id);
+
+                // save the descriptor format type widget instance
+                descriptorModelType.widget = widget;
+
+                if (descriptorModelType.set_once && exists) {
+                    widget.disable();
+                }
+/*
                 // ordinal with at max 256 values as a dropdown
                 var select = $('<select data-width="100%"></select>');
                 el.children('td.descriptor-value').append(select);
@@ -158,9 +214,20 @@ var View = ItemView.extend({
 
                 if (descriptorModelType.set_once && exists) {
                     select.prop("disabled", true).selectpicker('refresh');
-                }
+                }*/
             } else if (format.type === "date") {
-                var group = $('<div class="input-group"></div>');
+                var widget = application.descriptor.widgets.newElement(format.type);
+                widget.create(format, el.children('td.descriptor-value'), false, true, descriptorType.group, descriptorType.id);
+                widget.set(format, definesValues, defaultValues, descriptorType.group, descriptorType.id);
+
+                // save the descriptor format type widget instance
+                descriptorModelType.widget = widget;
+
+                if (descriptorModelType.set_once && exists) {
+                    widget.disable();
+                }
+
+                /*var group = $('<div class="input-group"></div>');
                 var input = $('<input class="form-control" width="100%">');
                 var glyph = $('<span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>').css('cursor', 'pointer');
                 group.append(input);
@@ -177,9 +244,20 @@ var View = ItemView.extend({
 
                 if (descriptorModelType.set_once && exists) {
                     group.data('DateTimePicker').disable();
-                }
+                }*/
             } else if (format.type === "time") {
-                var group = $('<div class="input-group"></div>');
+                var widget = application.descriptor.widgets.newElement(format.type);
+                widget.create(format, el.children('td.descriptor-value'), false, true, descriptorType.group, descriptorType.id);
+                widget.set(format, definesValues, defaultValues, descriptorType.group, descriptorType.id);
+
+                // save the descriptor format type widget instance
+                descriptorModelType.widget = widget;
+
+                if (descriptorModelType.set_once && exists) {
+                    widget.disable();
+                }
+
+                /*var group = $('<div class="input-group"></div>');
                 var input = $('<input class="form-control" width="100%">');
                 var glyph = $('<span class="input-group-addon"><span class="glyphicon glyphicon-time"></span></span>').css('cursor', 'pointer');
                 group.append(input);
@@ -196,9 +274,20 @@ var View = ItemView.extend({
 
                 if (descriptorModelType.set_once && exists) {
                     group.data('DateTimePicker').disable();
-                }
+                }*/
             } else if (format.type === "datetime") {
-                var group = $('<div class="input-group"></div>');
+                var widget = application.descriptor.widgets.newElement(format.type);
+                widget.create(format, el.children('td.descriptor-value'), false, true, descriptorType.group, descriptorType.id);
+                widget.set(format, definesValues, defaultValues, descriptorType.group, descriptorType.id);
+
+                // save the descriptor format type widget instance
+                descriptorModelType.widget = widget;
+
+                if (descriptorModelType.set_once && exists) {
+                    widget.disable();
+                }
+
+                /*var group = $('<div class="input-group"></div>');
                 var input = $('<input class="form-control" width="100%">');
                 var glyph = $('<span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>').css('cursor', 'pointer');
                 group.append(input);
@@ -215,9 +304,20 @@ var View = ItemView.extend({
 
                 if (descriptorModelType.set_once && exists) {
                     group.data('DateTimePicker').disable();
-                }
+                }*/
             } else {
-                var group = $('<div class="input-group"></div>');
+                var widget = application.descriptor.widgets.newElement(format.type);
+                widget.create(format, el.children('td.descriptor-value'), false, true, descriptorType.group, descriptorType.id);
+                widget.set(format, definesValues, defaultValues, descriptorType.group, descriptorType.id);
+
+                // save the descriptor format type widget instance
+                descriptorModelType.widget = widget;
+
+                if (descriptorModelType.set_once && exists) {
+                    widget.disable();
+                }
+
+                /*var group = $('<div class="input-group"></div>');
                 var input = $('<input class="form-control" width="100%">');
                 var glyph = $('<span class="input-group-addon"><span class="glyphicon glyphicon-cog"></span></span>');
                 group.append(input);
@@ -251,15 +351,63 @@ var View = ItemView.extend({
 
                 if (descriptorModelType.set_once && exists) {
                     input.prop('disabled', true);
-                }
+                }*/
             }
         });
     },
 
     onShow: function() {
+        var descriptors = {};
+
+        // firstly make a list for each descriptor of which descriptors need them for a condition
+        for (var pi = 0; pi < this.descriptorMetaModelLayout.panels.length; ++pi) {
+            for (var i = 0; i < this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types.length; ++i) {
+                var descriptorModelType = this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
+                var condition = descriptorModelType.condition;
+
+                // if given set initials values for the widget
+                if (this.model.isNew()) {
+                    // @todo
+                }
+
+                if (condition.defined) {
+                    /* @todo optimize with model not dom !! */
+                    var target = this.$el.find("tr.descriptor[descriptor-model-type=" + condition.target + "]");
+                    var targetDescriptorModelType = this.descriptorMetaModelLayout.panels[target.attr('panel-index')].descriptor_model.descriptor_model_types[target.attr('index')];
+
+                    if (targetDescriptorModelType.id in descriptors) {
+                        descriptors[targetDescriptorModelType.id].listeners.push(descriptorModelType.widget);
+                    } else {
+                        descriptors[targetDescriptorModelType.id] = {
+                            widget: targetDescriptorModelType.widget,
+                            conditionType: condition.condition,
+                            conditionValue: condition.values,
+                            listeners: [descriptorModelType.widget]};
+                    }
+
+                    // initial state of the condition
+                    var display = targetDescriptorModelType.widget.checkCondition(condition.condition, condition.values);
+
+                    if (!display) {
+                        // hide at tr level
+                        descriptorModelType.widget.parent.parent().hide(false);
+                    }
+                }
+            }
+        }
+
+        // once lists are done attach them to their widgets and bind the change event
+        for (var k in descriptors) {
+            var descriptor = descriptors[k];
+            descriptor.widget.bindConditionListener(descriptor.listeners, descriptor.conditionType, descriptor.conditionValue);
+        }
+
+        /*
         var view = this;
         var model = this.model;
         var exists = !model.isNew();
+
+        var descriptors = {};
 
         $.each(this.ui.descriptor, function(index) {
             var el = $(this);
@@ -486,9 +634,9 @@ var View = ItemView.extend({
                     el.hide(false);
                 }
             }
-        });
+        });*/
     },
-
+/*
     findDescriptorModelTypeForConditionTarget: function(target) {
         var pi = target.attr('panel-index');
         var i = target.attr('index');
@@ -711,10 +859,46 @@ var View = ItemView.extend({
             source.el.hide(true);
         }
     },
-
+*/
     prepareDescriptors: function () {
-        var view = this;
+        var descriptors = {};
 
+        for (var pi = 0; pi < this.descriptorMetaModelLayout.panels.length; ++pi) {
+            for (var i = 0; i < this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types.length; ++i) {
+                var descriptorModelType = this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
+            }
+
+            var mandatory = descriptorModelType.mandatory;
+
+            var currValue = this.model.get('descriptors')[descriptorModelType.id];
+            var values = [null];
+
+            if (descriptorModelType.widget.parent.css('display') !== "none") {
+                values = descriptorModelType.widgets.values();
+            }
+
+            if (mandatory && values[0] === null) {
+                $.alert.error(gt.gettext("Field " + descriptorModelType.label + " is required"));
+                return null;
+            }
+
+            var write = true;
+            if (descriptorModelType.set_once && currValue != undefined) {
+                write = false;
+            }
+
+            if (values[0] == currValue) {
+                write = false;
+            }
+
+            if (write) {
+                descriptors[descriptorModelType.id] = values[0];
+            }
+        }
+
+        // @todo remove once finish migration
+        /*
+        var view = this;
         var descriptors = {};
 
         $.each(this.ui.descriptor, function(index) {
@@ -731,8 +915,6 @@ var View = ItemView.extend({
             if (el.css('display') !== "none") {
                 // take value
                 var format = descriptorModelType.descriptor_type.format;
-
-                /* @todo using new widgets */
 
                 if (format.type.startsWith('enum_')) {
                     if (format.list_type == "autocomplete") {
@@ -798,7 +980,7 @@ var View = ItemView.extend({
             if (write) {
                 descriptors[descriptorModelType.id] = values[0];
             }
-        });
+        });*/
 
         return descriptors;
     },

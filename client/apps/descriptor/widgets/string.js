@@ -62,7 +62,7 @@ _.extend(StringType.prototype, DescriptorFormatType.prototype, {
             if (this.readOnly) {
                 this.parent.remove(this.el.parent());
             } else {
-                this.parent.remove(this.el);
+                this.parent.remove(this.el.parent());
             }
         }
     },
@@ -99,11 +99,11 @@ _.extend(StringType.prototype, DescriptorFormatType.prototype, {
                     var el = $(e.target);
 
                     if (val.length > 1024) {
-                        this._validationHelper(el, -1, gt.gettext("1024 characters max"));
+                        StringType.prototype._validationHelper(el, -1, gt.gettext("1024 characters max"));
                     } else if (!re.test(val)) {
-                        this._validationHelper(el, -1, gt.gettext("Invalid format"));
+                        StringType.prototype._validationHelper(el, -1, gt.gettext("Invalid format"));
                     } else {
-                        this._validationHelper(el, 0, null);
+                        StringType.prototype._validationHelper(el, 0, null);
                     }
 
                     return true;
@@ -115,9 +115,9 @@ _.extend(StringType.prototype, DescriptorFormatType.prototype, {
 
                     // hard limit to 1024 characters
                     if (val.length > 1024) {
-                        this._validationHelper(el, -1, gt.gettext("1024 characters max"));
+                        StringType.prototype._validationHelper(el, -1, gt.gettext("1024 characters max"));
                     } else {
-                        this._validationHelper(el, 0, null);
+                        StringType.prototype._validationHelper(el, 0, null);
                     }
 
                     return true;
@@ -133,6 +133,51 @@ _.extend(StringType.prototype, DescriptorFormatType.prototype, {
     values: function() {
         if (this.el && this.parent) {
             return [this.el.val()];
+        }
+
+        return [""];
+    },
+
+    checkCondition: function (condition, values) {
+        switch (condition) {
+            case 0:
+                return this.values()[0] === "";
+            case 1:
+                return this.values()[0] !== "";
+            case 2:
+                return this.values()[0] === values[0];
+            case 3:
+                return this.values()[0] !== values[0];
+            default:
+                return false;
+        }
+    },
+
+    bindConditionListener: function(listeners, condition, values) {
+        if (this.el && this.parent && !this.readOnly) {
+            if (!this.bound) {
+                this.el.on('input', $.proxy(this.onValueChanged, this));
+                this.bound = true;
+            }
+
+            this.conditionType = condition;
+            this.conditionValues = values;
+            this.listeners = listeners || [];
+        }
+    },
+
+    onValueChanged: function(e) {
+        var display = this.checkCondition(this.conditionType, this.conditionValues);
+
+        // show or hide the parent element
+        if (display) {
+            for (var i = 0; i < this.listeners.length; ++i) {
+                this.listeners[i].parent.parent().show(true);
+            }
+        } else {
+            for (var i = 0; i < this.listeners.length; ++i) {
+                this.listeners[i].parent.parent().hide(true);
+            }
         }
     },
 
