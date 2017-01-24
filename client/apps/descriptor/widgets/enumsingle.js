@@ -114,7 +114,7 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
                 var url = application.baseUrl + 'descriptor/group/' + descriptorTypeGroup + '/type/' + descriptorTypeId + '/';
 
                 // refresh values
-                $.ajax({
+                this.promise = $.ajax({
                     url: url + 'value/display',
                     dataType: 'json'
                 }).done(function (data) {
@@ -202,29 +202,19 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
             if (definesValues) {
                 this.el.attr('value', defaultValues[0]);
 
-                if (format.list_type == "autocomplete") {
-                    $.ajax({
-                        type: "GET",
-                        url: url + 'value/' + defaultValues[0] + '/display/',
-                        dataType: 'json'
-                    }).done(function (data) {
-                        type.el.val(data.label);
-                    });
-                } else if (format.list_type == "dropdown") {
-                    $.ajax({
-                        type: "GET",
-                        url: url + 'value/' + defaultValues[0] + '/display/',
-                        dataType: 'json'
-                    }).done(function (data) {
-                        type.el.val(data.label);
-                    });
-                }
+                $.ajax({
+                    type: "GET",
+                    url: url + 'value/' + defaultValues[0] + '/display/',
+                    dataType: 'json'
+                }).done(function (data) {
+                    type.el.val(data.label);
+                });
             }
         } else {
             if (definesValues) {
                 var type = this;
 
-                if (format.list_type === "autocomplete") {
+                if (this.autocomplete) {
                     // need to re-init the select2 widget
                     this.el.select2('destroy');
 
@@ -276,8 +266,8 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
                         placeholder: gt.gettext("Enter a value. 3 characters at least for auto-completion")
                     };
 
-                    // need to be set before waiting
-                    type.el.attr('value', defaultValues[0]);
+                    // defines temporary value (before waiting)
+                    this.el.attr('value', defaultValues[0]);
 
                     // autoselect the initial value
                     $.ajax({
@@ -289,15 +279,23 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
 
                         params.data = initials;
 
-                        type.el.removeAttr('value');
                         type.el.select2(params);
                         type.el.val(defaultValues).trigger('change');
+
+                        // remove temporary value
+                        type.el.removeAttr('value');
                     });
-                }
-            } else if (format.list_type === "dropdown") {
-                if (definesValues) {
-                    this.el.val(defaultValues[0]).trigger('change');
-                    this.el.selectpicker('refresh');  // @todo needed ?
+                } else {
+                    // defines temporary value (before waiting)
+                    this.el.attr('value', defaultValues[0]);
+
+                    $.when(this.promise).done(function (data) {
+                        type.el.val(defaultValues[0]).trigger('change');
+                        type.el.selectpicker('refresh');
+
+                        // remove temporary vale
+                        type.el.removeAttr('value');
+                    });
                 }
             }
         }

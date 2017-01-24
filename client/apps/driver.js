@@ -200,7 +200,7 @@ application.on("before:start", function(options) {
     window.gt = i18next;
     window.gt.gettext = i18next.t;
     window.gt._ = i18next.t;
-    window.gt.pgettext = function(context, msg) { return i18next.t(msg, {context: context}); }
+    window.gt.pgettext = function(context, msg) { return i18next.t(msg, {context: context}); };
 
     // select2
     if (session.language === "fr") {

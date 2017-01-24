@@ -21,12 +21,14 @@ var AuditModule = Marionette.Module.extend({
         this.routers = {};
         this.controllers = {};
 
-        // i18n
-        try {
-            i18next.addResources(session.language, 'default', require('./locale/' + session.language + '/LC_MESSAGES/default.json'));
-        } catch (e) {
-            console.warning("No translation found for the current language. Fallback to english language");
-        };
+        // i18n if not english
+        if (session.language !== "en") {
+            try {
+                i18next.addResources(session.language, 'default', require('./locale/' + session.language + '/LC_MESSAGES/default.json'));
+            } catch (e) {
+                console.warning("No translation found for the current language. Fallback to english language");
+            }
+        }
         
         Logger.timeEnd("Init audit module");
     },

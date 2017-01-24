@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-12-23 12:05+0100\n"
+"POT-Creation-Date: 2017-01-24 12:08+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,6 +15,26 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#: ../../../views/accessionsynonyms.js:68
+#: ../../../views/accessionsynonyms.js:181
+#: ../../../controllers/accession.js:158
+msgid "64 characters max"
+msgstr "64 caractères maximum"
+
+#: ../../../views/accessionsynonyms.js:71
+#: ../../../views/accessionsynonyms.js:178
+#: ../../../controllers/accession.js:161
+msgid "3 characters min"
+msgstr "3 caractères minimum"
+
+#: ../../../views/accessionsynonyms.js:99
+msgid "Synonym of accession already used"
+msgstr "Synonyme d'accession déjà utilisé"
+
+#: ../../../views/accessionsynonyms.js:208
+msgid "Unable to rename the synonym !"
+msgstr "Impossible de renommer le synonyme !"
 
 #: ../../../routers/accession.js:49
 msgid "List of accessions"
@@ -32,17 +52,28 @@ msgstr "Saisissez un nom de taxon. A moins 3 caractère pour l'auto-complétion"
 msgid "Taxon name already in usage"
 msgstr "Nom de taxon existant"
 
-#: ../../../controllers/accession.js:158
-msgid "64 characters max"
-msgstr "64 caractères maximum"
-
-#: ../../../controllers/accession.js:161
-msgid "3 characters min"
-msgstr "3 caractères minimum"
-
 #: ../../../controllers/accession.js:177
 msgid "The parent must be defined"
 msgstr "Le parent doit être définit"
+
+#: ../../../templates/accessionchangesynonym.html:5
+msgid "Change the name for a synonym of accession"
+msgstr "Changer le nom d'un synonyme d'accession"
+
+#: ../../../templates/accessionchangesynonym.html:10
+#: ../../../templates/accessionlist.html:5
+#: ../../../templates/accessionsynonyms.html:6
+msgid "Name"
+msgstr "Nom"
+
+#: ../../../templates/accessionchangesynonym.html:16
+#: ../../../templates/accessioncreate.html:38
+msgid "Cancel"
+msgstr "Annuler"
+
+#: ../../../templates/accessionchangesynonym.html:17
+msgid "Apply"
+msgstr "Appliquer"
 
 #: ../../../templates/accessioncreate.html:5
 msgid "Create an accession"
@@ -57,6 +88,7 @@ msgid "Principal name of the accession (must be unique)"
 msgstr "Nom principal de l'accession (doit être unique)"
 
 #: ../../../templates/accessioncreate.html:26
+#: ../../../templates/accessionsynonyms.html:7
 msgid "Language"
 msgstr "Langue"
 
@@ -65,17 +97,21 @@ msgstr "Langue"
 msgid "Parent"
 msgstr "Parent"
 
-#: ../../../templates/accessioncreate.html:38
-msgid "Cancel"
-msgstr "Annuler"
-
 #: ../../../templates/accessioncreate.html:39
 msgid "Continue"
 msgstr "Continuer"
 
-#: ../../../templates/accessionlist.html:5
-msgid "Name"
-msgstr "Nom"
+#: ../../../templates/accessionlayout.html:5
+msgid "Synonyms"
+msgstr "Synonyms"
+
+#: ../../../templates/accessionlayout.html:6
+msgid "Descriptors"
+msgstr "Descripteurs"
+
+#: ../../../templates/accessionlayout.html:7
+msgid "Batches"
+msgstr "Lots"
 
 #: ../../../templates/accessionlist.html:7
 msgid "Xxx"
@@ -88,3 +124,7 @@ msgstr "Yyy"
 #: ../../../templates/accessionlist.html:9
 msgid "Zzz"
 msgstr "Zzz"
+
+#: ../../../templates/accessionsynonyms.html:5
+msgid "Type"
+msgstr "Type"

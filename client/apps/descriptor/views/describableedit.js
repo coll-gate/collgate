@@ -866,33 +866,34 @@ var View = ItemView.extend({
         for (var pi = 0; pi < this.descriptorMetaModelLayout.panels.length; ++pi) {
             for (var i = 0; i < this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types.length; ++i) {
                 var descriptorModelType = this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
-            }
 
-            var mandatory = descriptorModelType.mandatory;
+                var mandatory = descriptorModelType.mandatory;
 
-            var currValue = this.model.get('descriptors')[descriptorModelType.id];
-            var values = [null];
+                var currValue = this.model.get('descriptors')[descriptorModelType.id];
+                var values = [null];
 
-            if (descriptorModelType.widget.parent.css('display') !== "none") {
-                values = descriptorModelType.widgets.values();
-            }
+                // display of the tr
+                if (descriptorModelType.widget.parent.parent().css('display') !== "none") {
+                    values = descriptorModelType.widget.values();
+                }
 
-            if (mandatory && values[0] === null) {
-                $.alert.error(gt.gettext("Field " + descriptorModelType.label + " is required"));
-                return null;
-            }
+                if (mandatory && values[0] === null) {
+                    $.alert.error(gt.gettext("Field " + descriptorModelType.label + " is required"));
+                    return null;
+                }
 
-            var write = true;
-            if (descriptorModelType.set_once && currValue != undefined) {
-                write = false;
-            }
+                var write = true;
+                if (descriptorModelType.set_once && currValue != undefined) {
+                    write = false;
+                }
 
-            if (values[0] == currValue) {
-                write = false;
-            }
+                if (values[0] == currValue) {
+                    write = false;
+                }
 
-            if (write) {
-                descriptors[descriptorModelType.id] = values[0];
+                if (write) {
+                    descriptors[descriptorModelType.id] = values[0];
+                }
             }
         }
 

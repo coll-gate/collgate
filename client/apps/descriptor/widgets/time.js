@@ -123,8 +123,7 @@ _.extend(TimeType.prototype, DescriptorFormatType.prototype, {
             });
 
             if (definesValues) {
-                // HH:mm:ss
-                var date = moment("2000-01-01T" + defaultValues[0]);
+                var date = moment(defaultValues[0], "HH:mm:ss");
                 this.el.data('DateTimePicker').date(date);
             }
         }

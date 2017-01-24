@@ -42,8 +42,9 @@ var View = DescribableEdit.extend({
         if (descriptors === null) {
             return;
         }
+        console.log(descriptors)
 
-        this.model.save({descriptors: descriptors}, {wait: true, patch: !model.isNew()}).then(function () {
+        /*this.model.save({descriptors: descriptors}, {wait: true, patch: !model.isNew()}).then(function () {
             //Backbone.history.navigate('app/accession/accession/' + model.get('id') + '/', {trigger: true, replace: true});
             var accessionLayout = application.getRegion('mainRegion').currentView.getRegion('content').currentView;
 
@@ -54,7 +55,7 @@ var View = DescribableEdit.extend({
                 descriptorMetaModelLayout: view.descriptorMetaModelLayout});
 
             accessionLayout.getRegion('descriptors').show(accessionDetailsView);
-        });
+        });*/
     }
 });
 

@@ -134,15 +134,15 @@ msgstr "Définir"
 
 #: ../../../templates/taxondescriptorcreatedialog.html:5
 msgid "Defines a meta-model of descriptors"
-msgstr ""
+msgstr "Définir un méta-model de descripteurs"
 
 #: ../../../templates/taxondescriptorcreatedialog.html:10
 msgid "Template"
-msgstr ""
+msgstr "Modèle"
 
 #: ../../../templates/taxondescriptorcreatedialog.html:21
 msgid "Continue"
-msgstr ""
+msgstr "Continue"
 
 #: ../../../templates/taxonentitieslist.html:15
 #: ../../../templates/taxonsynonyms.html:5

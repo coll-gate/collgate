@@ -29,12 +29,14 @@ var MainModule = Marionette.Module.extend({
         this.views = {};
         this.routers = {};
 
-        // i18n
-        try {
-            i18next.addResources(session.language, 'default', require('./locale/' + session.language + '/LC_MESSAGES/default.json'));
-        } catch (e) {
-            console.warning("No translation found for the current language. Fallback to english language");
-        };
+        // i18n if not english
+        if (session.language !== "en") {
+            try {
+                i18next.addResources(session.language, 'default', require('./locale/' + session.language + '/LC_MESSAGES/default.json'));
+            } catch (e) {
+                console.warning("No translation found for the current language. Fallback to english language");
+            }
+        }
 
         /*if (session.language === "fr") {
             i18next.addResources('fr', 'default', require('./locale/fr/LC_MESSAGES/default.json'));
@@ -55,7 +57,7 @@ var MainModule = Marionette.Module.extend({
 
         this.views.languages = new SelectOptionItemView({
             className: 'language',
-            collection: this.collections.languages,
+            collection: this.collections.languages
         });
 
         var InterfaceLanguageCollection = require('./collections/uilanguage');
@@ -63,7 +65,7 @@ var MainModule = Marionette.Module.extend({
 
         this.views.uilanguages = new SelectOptionItemView({
             className: 'ui-language',
-            collection: this.collections.uilanguages,
+            collection: this.collections.uilanguages
         });
 
         var ContentTypeCollection = require('./collections/contenttype');
@@ -71,12 +73,12 @@ var MainModule = Marionette.Module.extend({
 
         this.views.contentTypes = new SelectOptionItemView({
             className: 'content-type',
-            collection: this.collections.contentTypes,
+            collection: this.collections.contentTypes
         });
 
         this.views.Home = Marionette.CompositeView.extend({
             el: '#main_content',
-            template: require('./templates/home.html'),
+            template: require('./templates/home.html')
         });
 
         Logger.timeEnd("Init main module");

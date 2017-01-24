@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-06 11:56+0100\n"
+"POT-Creation-Date: 2017-01-24 12:07+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,33 +17,38 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../../widgets/displaydescriptor.js:65
-#: ../../../widgets/displaydescriptor.js:142
-msgid "Enter a value. 3 characters at least for auto-completion"
-msgstr ""
-
+#: ../../../widgets/boolean.js:81 ../../../widgets/boolean.js:94
 #: ../../../widgets/displaydescriptor.js:219
-#: ../../../widgets/displayreaddescriptor.js:79
-#: ../../../templates/descriptortypedetail.html:36
+#: ../../../widgets/displayreaddescriptor.js:77
+#: ../../../templates/descriptortypedetail.html:44
 msgid "Yes"
 msgstr ""
 
+#: ../../../widgets/boolean.js:81 ../../../widgets/boolean.js:102
 #: ../../../widgets/displaydescriptor.js:227
-#: ../../../widgets/displayreaddescriptor.js:79
-#: ../../../templates/descriptortypedetail.html:37
+#: ../../../widgets/displayreaddescriptor.js:77
+#: ../../../templates/descriptortypedetail.html:45
 msgid "No"
 msgstr ""
 
+#: ../../../widgets/displaydescriptor.js:65
+#: ../../../widgets/displaydescriptor.js:142 ../../../widgets/entity.js:93
+#: ../../../widgets/entity.js:204 ../../../widgets/enumsingle.js:98
+#: ../../../widgets/enumsingle.js:266
+msgid "Enter a value. 3 characters at least for auto-completion"
+msgstr ""
+
 #: ../../../widgets/displaydescriptor.js:505
-#: ../../../widgets/displaydescriptor.js:521
+#: ../../../widgets/displaydescriptor.js:521 ../../../widgets/string.js:102
+#: ../../../widgets/string.js:118
 msgid "1024 characters max"
 msgstr ""
 
-#: ../../../widgets/displaydescriptor.js:507
+#: ../../../widgets/displaydescriptor.js:507 ../../../widgets/string.js:104
 msgid "Invalid format"
 msgstr ""
 
-#: ../../../views/describableedit.js:783
+#: ../../../views/describableedit.js:881
 msgid "Field "
 msgstr ""
 
@@ -57,7 +62,7 @@ msgstr ""
 #: ../../../views/descriptormetamodeldetail.js:41
 #: ../../../views/descriptormodeladd.js:45
 #: ../../../views/descriptormodeldetail.js:43
-#: ../../../views/descriptortypedetail.js:409
+#: ../../../views/descriptortypedetail.js:482
 msgid "Invalid characters (alphanumeric, _ and - only)"
 msgstr ""
 
@@ -73,7 +78,7 @@ msgstr ""
 #: ../../../views/descriptorpanel.js:175 ../../../views/descriptorpanel.js:357
 #: ../../../views/descriptorpanel.js:374
 #: ../../../views/descriptorpanellist.js:134
-#: ../../../views/descriptortypedetail.js:411
+#: ../../../views/descriptortypedetail.js:484
 #: ../../../views/descriptorvalue.js:116
 #: ../../../views/descriptorvalueordinal.js:105
 #: ../../../views/descriptorvaluepair.js:115
@@ -126,7 +131,7 @@ msgstr ""
 
 #: ../../../views/descriptormetamodeldetail.js:59
 #: ../../../views/descriptormodeldetail.js:63
-#: ../../../views/descriptortypedetail.js:487
+#: ../../../views/descriptortypedetail.js:565
 msgid "Done"
 msgstr ""
 
@@ -144,12 +149,12 @@ msgstr ""
 msgid "Unable to reorder the types of model of descriptor"
 msgstr ""
 
-#: ../../../views/descriptormodeltype.js:693
+#: ../../../views/descriptormodeltype.js:694
 msgid "Successfully removed !"
 msgstr ""
 
-#: ../../../views/descriptormodeltype.js:766
-#: ../../../views/descriptormodeltype.js:778
+#: ../../../views/descriptormodeltype.js:767
+#: ../../../views/descriptormodeltype.js:779
 msgid "Successfully defined !"
 msgstr ""
 
@@ -162,7 +167,7 @@ msgstr ""
 msgid "Some values exists for this type of descriptor"
 msgstr ""
 
-#: ../../../views/descriptortypedetail.js:395
+#: ../../../views/descriptortypedetail.js:468
 msgid "32 character max"
 msgstr ""
 
@@ -259,7 +264,7 @@ msgid "Numeric range"
 msgstr ""
 
 #: ../../../collections/formattype.js:76
-#: ../../../templates/descriptortypedetail.html:61
+#: ../../../templates/descriptortypedetail.html:69
 #: ../../../templates/descriptorvalueordinallist.html:17
 msgid "Ordinal"
 msgstr ""
@@ -292,15 +297,19 @@ msgstr ""
 msgid "Media"
 msgstr ""
 
-#: ../../../collections/formattype.js:85
-msgid "Single enumeration"
+#: ../../../collections/formattype.js:84
+msgid "Media collection"
 msgstr ""
 
 #: ../../../collections/formattype.js:86
-msgid "Pair enumeration"
+msgid "Single enumeration"
 msgstr ""
 
 #: ../../../collections/formattype.js:87
+msgid "Pair enumeration"
+msgstr ""
+
+#: ../../../collections/formattype.js:88
 msgid "Ordinal with text"
 msgstr ""
 
@@ -614,7 +623,7 @@ msgstr ""
 msgid "Value"
 msgstr ""
 
-#: ../../../templates/describabledetails.html:66
+#: ../../../templates/describabledetails.html:62
 msgid "Modify"
 msgstr ""
 
@@ -694,7 +703,7 @@ msgstr ""
 #: ../../../templates/descriptormodeldetail.html:21
 #: ../../../templates/descriptormodellist.html:19
 #: ../../../templates/descriptormodellistalt.html:18
-#: ../../../templates/descriptortypedetail.html:148
+#: ../../../templates/descriptortypedetail.html:175
 #: ../../../templates/descriptortypelist.html:19
 #: ../../../templates/descriptortypelistalt.html:18
 msgid "Description"
@@ -706,7 +715,7 @@ msgstr ""
 
 #: ../../../templates/descriptormetamodeldetail.html:21
 #: ../../../templates/descriptormodeldetail.html:25
-#: ../../../templates/descriptortypedetail.html:152
+#: ../../../templates/descriptortypedetail.html:179
 msgid "Update"
 msgstr ""
 
@@ -760,7 +769,7 @@ msgid "Create a model of descriptor"
 msgstr ""
 
 #: ../../../templates/descriptormodeltypelist.html:16
-#: ../../../templates/descriptortypedetail.html:60
+#: ../../../templates/descriptortypedetail.html:68
 #: ../../../templates/descriptortypelist.html:17
 #: ../../../templates/descriptortypelistalt.html:16
 #: ../../../templates/descriptorvaluelist.html:16
@@ -802,104 +811,128 @@ msgid ""
 "or 2 or 1.1, 1.2, 1.1.1..."
 msgstr ""
 
-#: ../../../templates/descriptortypedetail.html:17
+#: ../../../templates/descriptortypedetail.html:20
 msgid "Descriptor type name"
 msgstr ""
 
-#: ../../../templates/descriptortypedetail.html:21
+#: ../../../templates/descriptortypedetail.html:26
 msgid "Descriptor type code"
 msgstr ""
 
-#: ../../../templates/descriptortypedetail.html:28
+#: ../../../templates/descriptortypedetail.html:36
 msgid "Type of format"
 msgstr ""
 
-#: ../../../templates/descriptortypedetail.html:34
+#: ../../../templates/descriptortypedetail.html:42
 msgid "Translation"
 msgstr ""
 
-#: ../../../templates/descriptortypedetail.html:46
+#: ../../../templates/descriptortypedetail.html:54
 msgid "First field"
 msgstr ""
 
-#: ../../../templates/descriptortypedetail.html:50
+#: ../../../templates/descriptortypedetail.html:58
 msgid "Second field"
 msgstr ""
 
-#: ../../../templates/descriptortypedetail.html:58
+#: ../../../templates/descriptortypedetail.html:66
 msgid "Sort by field"
 msgstr ""
 
-#: ../../../templates/descriptortypedetail.html:62
-#: ../../../templates/descriptortypedetail.html:71
-#: ../../../templates/descriptortypedetail.html:92
+#: ../../../templates/descriptortypedetail.html:70
+#: ../../../templates/descriptortypedetail.html:79
+#: ../../../templates/descriptortypedetail.html:103
 msgid "Value0"
 msgstr ""
 
-#: ../../../templates/descriptortypedetail.html:63
-#: ../../../templates/descriptortypedetail.html:72
-#: ../../../templates/descriptortypedetail.html:93
+#: ../../../templates/descriptortypedetail.html:71
+#: ../../../templates/descriptortypedetail.html:80
+#: ../../../templates/descriptortypedetail.html:104
 msgid "Value1"
 msgstr ""
 
-#: ../../../templates/descriptortypedetail.html:67
+#: ../../../templates/descriptortypedetail.html:75
 msgid "Displayed fields"
 msgstr ""
 
-#: ../../../templates/descriptortypedetail.html:73
+#: ../../../templates/descriptortypedetail.html:81
 msgid "Value0 - Value1"
 msgstr ""
 
-#: ../../../templates/descriptortypedetail.html:74
+#: ../../../templates/descriptortypedetail.html:82
 msgid "Ordinal - Value0"
 msgstr ""
 
-#: ../../../templates/descriptortypedetail.html:75
+#: ../../../templates/descriptortypedetail.html:83
 msgid "Hierarchy of Value1"
 msgstr ""
 
-#: ../../../templates/descriptortypedetail.html:83
+#: ../../../templates/descriptortypedetail.html:92
 msgid "Display the list as"
 msgstr ""
 
-#: ../../../templates/descriptortypedetail.html:85
+#: ../../../templates/descriptortypedetail.html:94
 msgid "Dropdown (limit of 256 values)"
 msgstr ""
 
-#: ../../../templates/descriptortypedetail.html:86
+#: ../../../templates/descriptortypedetail.html:95
 msgid "Autocomplete (big lists)"
 msgstr ""
 
-#: ../../../templates/descriptortypedetail.html:90
+#: ../../../templates/descriptortypedetail.html:101
 msgid "Autocomplete search field"
 msgstr ""
 
-#: ../../../templates/descriptortypedetail.html:101
+#: ../../../templates/descriptortypedetail.html:114
 msgid "Unit of the format"
 msgstr ""
 
-#: ../../../templates/descriptortypedetail.html:106
+#: ../../../templates/descriptortypedetail.html:120
 msgid "Custom unit name"
 msgstr ""
 
-#: ../../../templates/descriptortypedetail.html:113
+#: ../../../templates/descriptortypedetail.html:127
 msgid "Precision of the decimal"
 msgstr ""
 
-#: ../../../templates/descriptortypedetail.html:128
+#: ../../../templates/descriptortypedetail.html:142
 msgid "Model of the entity"
 msgstr ""
 
-#: ../../../templates/descriptortypedetail.html:134
+#: ../../../templates/descriptortypedetail.html:148
 msgid "Minimal range value"
 msgstr ""
 
-#: ../../../templates/descriptortypedetail.html:138
+#: ../../../templates/descriptortypedetail.html:152
 msgid "Maximal range value"
 msgstr ""
 
-#: ../../../templates/descriptortypedetail.html:144
+#: ../../../templates/descriptortypedetail.html:158
 msgid "Regular expression"
+msgstr ""
+
+#: ../../../templates/descriptortypedetail.html:162
+msgid "Type of media"
+msgstr ""
+
+#: ../../../templates/descriptortypedetail.html:164
+msgid "Archives (zip, rar, 7z, tar, gz, bz, bz2)"
+msgstr ""
+
+#: ../../../templates/descriptortypedetail.html:165
+msgid "Images (gif, png, jpg, jpeg, tif, tiff, psd, svg)"
+msgstr ""
+
+#: ../../../templates/descriptortypedetail.html:166
+msgid "Documents (doc, docx, ppt, pptx, odt, odp, pdf, ps)"
+msgstr ""
+
+#: ../../../templates/descriptortypedetail.html:167
+msgid "Spreadsheets (xls, xlsx, ods, csv)"
+msgstr ""
+
+#: ../../../templates/descriptortypedetail.html:171
+msgid "Max items number"
 msgstr ""
 
 #: ../../../templates/descriptortypelist.html:18
