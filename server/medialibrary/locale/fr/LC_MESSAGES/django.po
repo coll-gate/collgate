@@ -1,0 +1,60 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-01-24 15:40+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: descriptorformattype.py:20 descriptorformattype.py:33
+msgid "Media"
+msgstr ""
+
+#: descriptorformattype.py:41 descriptorformattype.py:75
+msgid "The descriptor value must be an integer"
+msgstr ""
+
+#: descriptorformattype.py:66
+msgid "Media collection"
+msgstr ""
+
+#: media.py:83 media.py:114 media.py:208
+msgid "Media library destination folder misconfiguration"
+msgstr ""
+
+#: media.py:117 media.py:211
+msgid "No file specified"
+msgstr ""
+
+#: media.py:123 media.py:217
+#, python-format
+msgid "Upload file size limit is set to %i bytes"
+msgstr ""
+
+#: media.py:128 media.py:222
+msgid "Undetermined uploaded file type"
+msgstr ""
+
+#: media.py:230
+msgid "Trying to update a non-existing file"
+msgstr ""
+
+#: models.py:21
+msgid "media collection"
+msgstr ""
+
+#: models.py:47
+msgid "media"
+msgstr ""

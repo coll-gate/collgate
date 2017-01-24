@@ -17,50 +17,43 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: apps.py:41
-msgid "Tracability"
+#: descriptorformattype.py:20 descriptorformattype.py:33
+msgid "Media"
 msgstr ""
 
-#: apps.py:42
-msgid "Tracability for a user"
+#: descriptorformattype.py:41 descriptorformattype.py:75
+msgid "The descriptor value must be an integer"
 msgstr ""
 
-#: apps.py:43
-msgid "Tracability for an entity"
+#: descriptorformattype.py:66
+msgid "Media collection"
 msgstr ""
 
-#: models.py:51 models.py:72 models.py:98
-msgid "Invalid content type or application name"
+#: media.py:83 media.py:114 media.py:208
+msgid "Media library destination folder misconfiguration"
 msgstr ""
 
-#: models.py:54 models.py:75 models.py:101
-msgid "Invalid object identifier"
+#: media.py:117 media.py:211
+msgid "No file specified"
 msgstr ""
 
-#: models.py:78 models.py:104
-msgid "Invalid user"
+#: media.py:123 media.py:217
+#, python-format
+msgid "Upload file size limit is set to %i bytes"
 msgstr ""
 
-#: models.py:140
-msgid "Create"
+#: media.py:128 media.py:222
+msgid "Undetermined uploaded file type"
 msgstr ""
 
-#: models.py:141
-msgid "Update"
+#: media.py:230
+msgid "Trying to update a non-existing file"
 msgstr ""
 
-#: models.py:142
-msgid "Delete"
+#: models.py:21
+msgid "media collection"
 msgstr ""
 
-#: models.py:144
-msgid "Remove"
-msgstr ""
-
-#: models.py:145
-msgid "Action"
-msgstr ""
-
-#: models.py:147
-msgid "M2M change"
+#: models.py:47
+msgid "media"
 msgstr ""

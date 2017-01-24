@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-18 19:09+0100\n"
+"POT-Creation-Date: 2017-01-24 15:40+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,105 +17,34 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: apps.py:96
+#: apps.py:77
 msgid "Administration"
 msgstr "Administration"
 
-#: apps.py:101
+#: apps.py:82
 msgid "List groups of descriptors"
 msgstr "Liste des groupes de descripteurs"
 
-#: apps.py:104
+#: apps.py:85
 msgid "List models of descriptor"
 msgstr "Liste des modèles de descripteur"
 
-#: apps.py:107
+#: apps.py:88
 msgid "List meta-models of descriptor"
 msgstr "Liste des méta-modèles de descripteur"
 
-#: describable.py:75 describable.py:176 descriptorformattype.py:96
-#: descriptorformattype.py:127 descriptorformattype.py:158
-#: descriptorformattype.py:343
-msgid "The descriptor value must be a string"
-msgstr "La valeur du descripteur doit être une chaîne"
-
-#: describable.py:81 descriptorformattype.py:103 descriptorformattype.py:134
-#: descriptorformattype.py:165
-msgid "The descriptor value must exists"
-msgstr "La valeur du descripteur doit être définie"
-
-#: describable.py:86 describable.py:100 descriptorformattype.py:293
-#: descriptorformattype.py:448
-msgid "The descriptor value must be an integer"
-msgstr "La valeur du descripteur doit être un entier"
-
-#: describable.py:94 descriptorformattype.py:457
-msgid "The descriptor value must refers to an existing entity"
-msgstr "La valeur du descripteur doit référencer une valeur existante"
-
-#: describable.py:104 descriptorformattype.py:298
-msgid "The descriptor value must be an integer between "
-msgstr "La valeur du descripteur doit être un entier compris entre "
-
-#: describable.py:110 descriptorformattype.py:186
-msgid "The descriptor value must be a boolean"
-msgstr "La valeur du descripteur doit être un booléen"
-
-#: describable.py:115 descriptorformattype.py:379
-msgid "The descriptor value must be a date string (YYYYMMDD)"
-msgstr "La valeur du descripteur doit être une chaîne de date (YYYYMMDD)"
-
-#: describable.py:121 descriptorformattype.py:403
-msgid "The descriptor value must be a time string (HH:MM:SS)"
-msgstr "La valeur du descripteur doit être une chaîne d'heure (HH:MM:SS)"
-
-#: describable.py:127 descriptorformattype.py:427
-msgid "The descriptor value must be a datetime string (ISO 8601)"
-msgstr "La valeur du descripteur doit être une chaîne dateheure (ISO 8601)"
-
-#: describable.py:134 descriptorformattype.py:210
-msgid "The descriptor value must be a decimal string"
-msgstr "La valeur du descripteur doit être une chaîne de décimal"
-
-#: describable.py:141 describable.py:153 describable.py:159
-#: descriptorformattype.py:217 descriptorformattype.py:249
-#: descriptorformattype.py:256
-msgid "The descriptor value must be a decimal"
-msgstr "La valeur du descripteur doit être un décimal"
-
-#: describable.py:146 describable.py:164 descriptorformattype.py:222
-msgid "The descriptor value must be a decimal with a precision of "
-msgstr "La valeur du descripteur doit être un décimal avec une précision de "
-
-#: describable.py:170 descriptorformattype.py:268
-msgid "The descriptor value must be a decimal between"
-msgstr "La valeur du descripteur doit être un décimal compris entre"
-
-#: describable.py:181 descriptorformattype.py:348
-msgid ""
-"The descriptor value must be a string with a maximum length of 1024 "
-"characters"
-msgstr ""
-"La valeur du descripteur doit être une chaîne d'une longueur maximum de 1024 "
-"caractères"
-
-#: describable.py:188 descriptorformattype.py:355
-msgid "The descriptor value must be a string matching the defined format"
-msgstr ""
-"La valeur du descripteur doit être une chaîne validant le format définit"
-
-#: describable.py:227
+#: describable.py:82
 #, python-format
 msgid "Missing mandatory descriptor %s"
 msgstr "Descripteur obligatoire manquant %s"
 
-#: describable.py:232
+#: describable.py:87
 #, python-format
 msgid "Already defined set once descriptor %s"
 msgstr "Descripteur à écriture unique déjà définit %s"
 
-#: describable.py:250 describable.py:256 describable.py:265 describable.py:272
-#: describable.py:282 describable.py:290
+#: describable.py:105 describable.py:111 describable.py:120 describable.py:127
+#: describable.py:137 describable.py:145
 msgid "A conditional descriptor is defined but the condition is not true"
 msgstr "Un déscripteur conditionel est définit mais la condition est invalide"
 
@@ -271,72 +200,140 @@ msgstr "Identifiant de langue indéfini"
 msgid "List of values are not available for drop-down"
 msgstr "La liste des valeurs n'est pas disponible pour la liste déroulante"
 
-#: descriptorformattype.py:66
+#: descriptorformattype.py:113
 msgid "Single value"
 msgstr "Valeur simple"
 
-#: descriptorformattype.py:75
+#: descriptorformattype.py:122
 #, fuzzy
 #| msgid "descriptor value"
 msgid "List of values"
 msgstr "valeur de descripteur"
 
-#: descriptorformattype.py:88
+#: descriptorformattype.py:135
 msgid "Single enumeration"
 msgstr "Simple énumération"
 
-#: descriptorformattype.py:119
+#: descriptorformattype.py:143 descriptorformattype.py:174
+#: descriptorformattype.py:205 descriptorformattype.py:390
+msgid "The descriptor value must be a string"
+msgstr "La valeur du descripteur doit être une chaîne"
+
+#: descriptorformattype.py:150 descriptorformattype.py:181
+#: descriptorformattype.py:212
+msgid "The descriptor value must exists"
+msgstr "La valeur du descripteur doit être définie"
+
+#: descriptorformattype.py:166
 msgid "Pair enumeration"
 msgstr "Enumération de paires"
 
-#: descriptorformattype.py:150
+#: descriptorformattype.py:197
 msgid "Ordinal with text"
 msgstr "Ordinal avec texte"
 
-#: descriptorformattype.py:181
+#: descriptorformattype.py:228
 msgid "Boolean"
 msgstr "Booléen"
 
-#: descriptorformattype.py:202
+#: descriptorformattype.py:233
+msgid "The descriptor value must be a boolean"
+msgstr "La valeur du descripteur doit être un booléen"
+
+#: descriptorformattype.py:249
 msgid "Numeric"
 msgstr "Numérique"
 
-#: descriptorformattype.py:239
+#: descriptorformattype.py:257
+msgid "The descriptor value must be a decimal string"
+msgstr "La valeur du descripteur doit être une chaîne de décimal"
+
+#: descriptorformattype.py:264 descriptorformattype.py:296
+#: descriptorformattype.py:303
+msgid "The descriptor value must be a decimal"
+msgstr "La valeur du descripteur doit être un décimal"
+
+#: descriptorformattype.py:269
+msgid "The descriptor value must be a decimal with a precision of "
+msgstr "La valeur du descripteur doit être un décimal avec une précision de "
+
+#: descriptorformattype.py:286
 msgid "Numeric range"
 msgstr "Plage numérique"
 
-#: descriptorformattype.py:261
+#: descriptorformattype.py:308
 msgid "The descriptor value must be a decimal with a precision of"
 msgstr "La valeur du descripteur doit être un décimal avec une précision de"
 
-#: descriptorformattype.py:285
+#: descriptorformattype.py:315
+msgid "The descriptor value must be a decimal between"
+msgstr "La valeur du descripteur doit être un décimal compris entre"
+
+#: descriptorformattype.py:332
 msgid "Ordinal"
 msgstr "Ordinal"
 
-#: descriptorformattype.py:315
+#: descriptorformattype.py:340 descriptorformattype.py:495
+msgid "The descriptor value must be an integer"
+msgstr "La valeur du descripteur doit être un entier"
+
+#: descriptorformattype.py:345
+msgid "The descriptor value must be an integer between "
+msgstr "La valeur du descripteur doit être un entier compris entre "
+
+#: descriptorformattype.py:362
 msgid "GPS coordinate"
 msgstr "Coordonnée GPS"
 
-#: descriptorformattype.py:335
+#: descriptorformattype.py:382
 msgid "Text"
 msgstr "Texte"
 
-#: descriptorformattype.py:374
+#: descriptorformattype.py:395
+msgid ""
+"The descriptor value must be a string with a maximum length of 1024 "
+"characters"
+msgstr ""
+"La valeur du descripteur doit être une chaîne d'une longueur maximum de 1024 "
+"caractères"
+
+#: descriptorformattype.py:402
+msgid "The descriptor value must be a string matching the defined format"
+msgstr ""
+"La valeur du descripteur doit être une chaîne validant le format définit"
+
+#: descriptorformattype.py:421
 msgid "Date"
 msgstr "Date"
 
-#: descriptorformattype.py:398
+#: descriptorformattype.py:426
+msgid "The descriptor value must be a date string (YYYYMMDD)"
+msgstr "La valeur du descripteur doit être une chaîne de date (YYYYMMDD)"
+
+#: descriptorformattype.py:445
 msgctxt "concept"
 msgid "Time"
 msgstr "Temps"
 
-#: descriptorformattype.py:422
+#: descriptorformattype.py:450
+msgid "The descriptor value must be a time string (HH:MM:SS)"
+msgstr "La valeur du descripteur doit être une chaîne d'heure (HH:MM:SS)"
+
+#: descriptorformattype.py:469
 msgid "Date+time"
 msgstr "Date+Temps"
 
-#: descriptorformattype.py:443
+#: descriptorformattype.py:474
+msgid "The descriptor value must be a datetime string (ISO 8601)"
+msgstr "La valeur du descripteur doit être une chaîne dateheure (ISO 8601)"
+
+#: descriptorformattype.py:490
 msgid "Entity"
 msgstr "Entité"
+
+#: descriptorformattype.py:504
+msgid "The descriptor value must refers to an existing entity"
+msgstr "La valeur du descripteur doit référencer une valeur existante"
 
 #: descriptormetamodel.py:138
 msgid "You are not allowed to create a meta-model of descriptor"

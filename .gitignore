@@ -3,6 +3,7 @@
 /build
 *.pyc
 *.sublime-*
+*.pot
 *.po~
 *.mo
 .idea
