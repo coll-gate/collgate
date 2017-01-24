@@ -223,18 +223,23 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
 
     values: function() {
         if (this.el && this.parent) {
-            return [parseInt(this.el.val())];
+            if (this.el.val() !== "") {
+                var value = parseInt(this.el.val());
+                return [isNaN(value) ? null : value];
+            } else {
+                return [null];
+            }
         }
 
-        return [NaN];
+        return [null];
     },
 
     checkCondition: function (condition, values) {
         switch (condition) {
             case 0:
-                return this.values()[0] === NaN;
+                return this.values()[0] === null;
             case 1:
-                return this.values()[0] !== NaN;
+                return this.values()[0] !== null;
             case 2:
                 return this.values()[0] === values[0];
             case 3:
