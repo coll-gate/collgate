@@ -177,7 +177,7 @@ MediaCollection.DescriptorTypeDetailsView = Marionette.ItemView.extend({
     getFormat: function() {
         return {
             'media_types': this.ui.format_media_types.val(),
-            'max_items': this.ui.format_max_items.val()
+            'max_items': parseInt(this.ui.format_max_items.val())
         }
     }
 });

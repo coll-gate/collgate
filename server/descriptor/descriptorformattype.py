@@ -31,9 +31,6 @@ class DescriptorFormatType(object):
     """
 
     def __init__(self):
-        # i18n error message
-        self.error = None
-
         # name referred as a code, stored in format.type.
         self.name = ''
 
@@ -52,9 +49,17 @@ class DescriptorFormatType(object):
         :param descriptor_type_format: Format of the related type of descriptor
         :param value: Value to validate
         :param descriptor_model_type: related descriptor model type
-        :return: True if the validation is done
+        :return: None if the validation is done, else a string with the error detail
         """
-        return True
+        return None
+
+    def check(self, descriptor_type_format):
+        """
+        Check the format of a descriptor type, if it is valid for a specific type of format.
+        :param descriptor_type_format: Format of type of descriptor to check
+        :return: None if the check is done, else a string with the error detail
+        """
+        return None
 
 
 class DescriptorFormatTypeManager(object):
@@ -80,11 +85,11 @@ class DescriptorFormatTypeManager(object):
     @classmethod
     def validate(cls, descriptor_type_format, value, descriptor_model_type):
         """
-        Call the correct descriptor format type.
+        Call the validate of the correct descriptor format type.
         :param descriptor_type_format: Format of the type of descriptor as python dict
         :param value: Value to validate
         :param descriptor_model_type: Related type of model of descriptor
-        :return: True if validation success.
+        :except ValueError with descriptor of the problem
         """
         format_type = descriptor_type_format['type']
 
@@ -93,8 +98,26 @@ class DescriptorFormatTypeManager(object):
             raise ValueError("Unsupported descriptor format type %s" % format_type)
 
         res = dft.validate(descriptor_type_format, value, descriptor_model_type)
-        if not res:
+        if res is not None:
             raise ValueError(dft.error + " (%s)" % descriptor_model_type.get_label())
+
+    @classmethod
+    def check(cls, descriptor_type_format):
+        """
+        Call the check of the correct descriptor format type.
+        :param descriptor_type_format: Format of the type of descriptor as python dict
+        :return: True if check success.
+        :except ValueError with descriptor of the problem
+        """
+        format_type = descriptor_type_format['type']
+
+        dft = cls.descriptor_format_types.get(format_type)
+        if dft is None:
+            raise ValueError("Unsupported descriptor format type %s" % format_type)
+
+        res = dft.check(descriptor_type_format)
+        if res is not None:
+            raise ValueError(str(res))
 
     @classmethod
     def values(cls):
@@ -140,17 +163,45 @@ class DescriptorFormatTypeEnumSingle(DescriptorFormatType):
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         # check if the value is a string and exists into the type of descriptor
         if not isinstance(value, str):
-            self.error = _("The descriptor value must be a string")
-            return False
+            return _("The descriptor value must be a string")
 
         # check if the value exists
         try:
             descriptor_model_type.descriptor_type.get_value(value)
         except ObjectDoesNotExist:
-            self.error = _("The descriptor value must exists")
-            return False
+            return _("The descriptor value must exists")
 
-        return True
+        return None
+
+    def check(self, descriptor_type_format):
+        if "trans" not in descriptor_type_format:
+            return _("Missing translation parameter to indicate if translation are defined or not (trans)")
+
+        if "fields" not in descriptor_type_format:
+            return _("Missing fields description (fields)")
+
+        if len(descriptor_type_format["field"]) != 1:
+            return _("Fields descriptor array length must be 1 (fields)")
+
+        if "sortby_field" not in descriptor_type_format:
+            return _("Missing sort-by field value (sortby_field)")
+
+        if descriptor_type_format["sortby_field"] == 'value1':
+            raise _("List cannot be sorted by value1 (sortby_field)")
+
+        if "display_fields" not in descriptor_type_format:
+            return _("Missing display field value (display_fields)")
+
+        if descriptor_type_format["display_fields"] != 'value0':
+            raise _("List can only display the value0 field (display_fields)")
+
+        if "search_field" not in descriptor_type_format:
+            return _("Missing search field value (search_field)")
+
+        if descriptor_type_format["search_field"] != 'value0':
+            raise _("List can only search on value0 (search_field)")
+
+        return None
 
 
 class DescriptorFormatTypeEnumPair(DescriptorFormatType):
@@ -171,17 +222,15 @@ class DescriptorFormatTypeEnumPair(DescriptorFormatType):
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         # check if the value is a string and exists into the type of descriptor
         if not isinstance(value, str):
-            self.error = _("The descriptor value must be a string")
-            return False
+            return _("The descriptor value must be a string")
 
         # check if the value exists
         try:
             descriptor_model_type.descriptor_type.get_value(value)
         except ObjectDoesNotExist:
-            self.error = _("The descriptor value must exists")
-            return False
+            return _("The descriptor value must exists")
 
-        return True
+        return None
 
 
 class DescriptorFormatTypeEnumOrdinal(DescriptorFormatType):
@@ -202,17 +251,15 @@ class DescriptorFormatTypeEnumOrdinal(DescriptorFormatType):
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         # check if the value is a string and exists into the type of descriptor
         if not isinstance(value, str):
-            self.error = _("The descriptor value must be a string")
-            return False
+            return _("The descriptor value must be a string")
 
         # check if the value exists
         try:
             descriptor_model_type.descriptor_type.get_value(value)
         except ObjectDoesNotExist:
-            self.error = _("The descriptor value must exists")
-            return False
+            return  _("The descriptor value must exists")
 
-        return True
+        return None
 
 
 class DescriptorFormatTypeBoolean(DescriptorFormatType):
@@ -230,10 +277,9 @@ class DescriptorFormatTypeBoolean(DescriptorFormatType):
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         # check if the value is a boolean
         if not isinstance(value, bool):
-            self.error = _("The descriptor value must be a boolean")
-            return False
+            return _("The descriptor value must be a boolean")
 
-        return True
+        return None
 
 
 class DescriptorFormatTypeNumeric(DescriptorFormatType):
@@ -254,23 +300,20 @@ class DescriptorFormatTypeNumeric(DescriptorFormatType):
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         # check if the value is a decimal (string with digits - and .) with the according precision of decimals
         if not isinstance(value, str):
-            self.error = _("The descriptor value must be a decimal string")
-            return False
+            return _("The descriptor value must be a decimal string")
 
         # check format
         try:
             dec = decimal.Decimal(value)
         except decimal.InvalidOperation:
-            self.error = _("The descriptor value must be a decimal")
-            return False
+            return _("The descriptor value must be a decimal")
 
         # and precision
         if dec.as_tuple().exponent != -int(decimal.Decimal(descriptor_type_format['precision'])):
-            self.error = _("The descriptor value must be a decimal with a precision of ") + " %s" % (
+            return _("The descriptor value must be a decimal with a precision of ") + " %s" % (
                 descriptor_type_format['precision'],)
-            return False
 
-        return True
+        return None
 
 
 class DescriptorFormatTypeNumericRange(DescriptorFormatType):
@@ -293,30 +336,26 @@ class DescriptorFormatTypeNumericRange(DescriptorFormatType):
         # check if the value is a decimal (string with digits - and .) with the according precision of
         # decimals and into the range min/max
         if not isinstance(value, str):
-            self.error = _("The descriptor value must be a decimal")
-            return False
+            return _("The descriptor value must be a decimal")
 
         # check format
         try:
             dec = decimal.Decimal(value)
         except decimal.InvalidOperation:
-            self.error = _("The descriptor value must be a decimal")
-            return False
+            return _("The descriptor value must be a decimal")
 
         # precision
         if dec.as_tuple().exponent != -int(decimal.Decimal(descriptor_type_format['precision'])):
-            self.error = _("The descriptor value must be a decimal with a precision of") + " %s" % (
+            return _("The descriptor value must be a decimal with a precision of") + " %s" % (
                 descriptor_type_format['precision'],)
-            return False
 
         # and min/max
         if dec < decimal.Decimal(descriptor_type_format['range'][0]) or dec > decimal.Decimal(descriptor_type_format['range'][1]):
             if not isinstance(value, str):
-                self.error = _("The descriptor value must be a decimal between") + " %i and %i" % (
+                return _("The descriptor value must be a decimal between") + " %i and %i" % (
                     descriptor_type_format['range'][0], descriptor_type_format['range'][1])
-                return False
 
-        return True
+        return None
 
 
 class DescriptorFormatTypeOrdinal(DescriptorFormatType):
@@ -337,16 +376,14 @@ class DescriptorFormatTypeOrdinal(DescriptorFormatType):
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         # check if the value is an integer into the range min/max
         if not isinstance(value, int):
-            self.error = _("The descriptor value must be an integer")
-            return False
+            return _("The descriptor value must be an integer")
 
         # check min/max
         if value < int(descriptor_type_format['range'][0]) or value > int(descriptor_type_format['range'][1]):
-            self.error = _("The descriptor value must be an integer between ") + " %i and %i" % (
+            return _("The descriptor value must be an integer between ") + " %i and %i" % (
                 descriptor_type_format['range'][0], descriptor_type_format['range'][1])
-            return False
 
-        return True
+        return None
 
 
 class DescriptorFormatTypeGPSCoordinate(DescriptorFormatType):
@@ -366,7 +403,7 @@ class DescriptorFormatTypeGPSCoordinate(DescriptorFormatType):
 
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         # @todo
-        return True
+        return None
 
 
 class DescriptorFormatTypeString(DescriptorFormatType):
@@ -387,22 +424,19 @@ class DescriptorFormatTypeString(DescriptorFormatType):
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         # check if the value is a string matching the regexp and the max length of 1024 characters
         if not isinstance(value, str):
-            self.error = _("The descriptor value must be a string")
-            return False
+            return _("The descriptor value must be a string")
 
         # test max length
         if len(value) > 1024:
-            self.error = _("The descriptor value must be a string with a maximum length of 1024 characters")
-            return False
+            return _("The descriptor value must be a string with a maximum length of 1024 characters")
 
         # test regexp
         if "regexp" in descriptor_type_format and descriptor_type_format['regexp']:
             str_re = re.compile(descriptor_type_format['regexp'])
             if str_re.match(value) is None:
-                self.error = _("The descriptor value must be a string matching the defined format")
-                return False
+                return _("The descriptor value must be a string matching the defined format")
 
-        return True
+        return None
 
 
 class DescriptorFormatTypeDate(DescriptorFormatType):
@@ -423,10 +457,9 @@ class DescriptorFormatTypeDate(DescriptorFormatType):
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         # check if the value is a YYYYMMDD date
         if not isinstance(value, str) or DescriptorFormatTypeDate.DATE_RE.match(value) is None:
-            self.error = _("The descriptor value must be a date string (YYYYMMDD)")
-            return False
+            return _("The descriptor value must be a date string (YYYYMMDD)")
 
-        return True
+        return None
 
 
 class DescriptorFormatTypeTime(DescriptorFormatType):
@@ -447,10 +480,9 @@ class DescriptorFormatTypeTime(DescriptorFormatType):
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         # check if the value is a HH:MM:SS time
         if not isinstance(value, str) or DescriptorFormatTypeTime.TIME_RE.match(value) is None:
-            self.error = _("The descriptor value must be a time string (HH:MM:SS)")
-            return False
+            return _("The descriptor value must be a time string (HH:MM:SS)")
 
-        return True
+        return None
 
 
 class DescriptorFormatTypeDateTime(DescriptorFormatType):
@@ -471,10 +503,9 @@ class DescriptorFormatTypeDateTime(DescriptorFormatType):
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         # check if the value is an ISO and UTC (convert to UTC if necessary)
         if not isinstance(value, str) or DescriptorFormatTypeDateTime.DATETIME_RE.match(value) is None:
-            self.error = _("The descriptor value must be a datetime string (ISO 8601)")
-            return False
+            return _("The descriptor value must be a datetime string (ISO 8601)")
 
-        return True
+        return None
 
 
 class DescriptorFormatTypeEntity(DescriptorFormatType):
@@ -492,8 +523,7 @@ class DescriptorFormatTypeEntity(DescriptorFormatType):
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         # check if the value is an integer and if the related entity exists
         if not isinstance(value, int):
-            self.error = _("The descriptor value must be an integer")
-            return False
+            return _("The descriptor value must be an integer")
 
         # check if the entity exists
         try:
@@ -501,7 +531,6 @@ class DescriptorFormatTypeEntity(DescriptorFormatType):
             content_type = get_object_or_404(ContentType, app_label=app_label, model=model)
             content_type.get_object_for_this_type(id=value)
         except ObjectDoesNotExist:
-            self.error = _("The descriptor value must refers to an existing entity")
-            return False
+            return _("The descriptor value must refers to an existing entity")
 
-        return True
+        return None
