@@ -52,6 +52,39 @@ _.extend(StringType.prototype, DescriptorFormatType.prototype, {
             // hard limit to 1024 characters
             input.attr('maxlength', 1024);
 
+            if (typeof format.regexp !== "undefined") {
+                input.on("input", function(e) {
+                    // check regexp and max length of 1024
+                    var val = $(e.target).val();
+                    var re = new RegExp(format.regexp);
+                    var el = $(e.target);
+
+                    if (val.length > 1024) {
+                        StringType.prototype._validationHelper(el, -1, gt.gettext("1024 characters max"));
+                    } else if (!re.test(val)) {
+                        StringType.prototype._validationHelper(el, -1, gt.gettext("Invalid format"));
+                    } else {
+                        StringType.prototype._validationHelper(el, 0, null);
+                    }
+
+                    return true;
+                });
+            } else {
+                input.on("input", function(e) {
+                    var val = $(e.target).val();
+                    var el = $(e.target);
+
+                    // hard limit to 1024 characters
+                    if (val.length > 1024) {
+                        StringType.prototype._validationHelper(el, -1, gt.gettext("1024 characters max"));
+                    } else {
+                        StringType.prototype._validationHelper(el, 0, null);
+                    }
+
+                    return true;
+                });
+            }
+
             this.parent = parent;
             this.el = input;
         }
@@ -91,39 +124,6 @@ _.extend(StringType.prototype, DescriptorFormatType.prototype, {
                 this.el.val(defaultValues[0]);
             }
         } else {
-            if (typeof format.regexp !== "undefined") {
-                this.el.on("input", function(e) {
-                    // check regexp and max length of 1024
-                    var val = $(e.target).val();
-                    var re = new RegExp(format.regexp);
-                    var el = $(e.target);
-
-                    if (val.length > 1024) {
-                        StringType.prototype._validationHelper(el, -1, gt.gettext("1024 characters max"));
-                    } else if (!re.test(val)) {
-                        StringType.prototype._validationHelper(el, -1, gt.gettext("Invalid format"));
-                    } else {
-                        StringType.prototype._validationHelper(el, 0, null);
-                    }
-
-                    return true;
-                });
-            } else {
-                this.el.on("input", function(e) {
-                    var val = $(e.target).val();
-                    var el = $(e.target);
-
-                    // hard limit to 1024 characters
-                    if (val.length > 1024) {
-                        StringType.prototype._validationHelper(el, -1, gt.gettext("1024 characters max"));
-                    } else {
-                        StringType.prototype._validationHelper(el, 0, null);
-                    }
-
-                    return true;
-                });
-            }
-
             if (definesValues) {
                 this.el.val(defaultValues[0]);
             }

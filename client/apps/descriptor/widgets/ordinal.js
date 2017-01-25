@@ -53,6 +53,19 @@ _.extend(Ordinal.prototype, DescriptorFormatType.prototype, {
 
                 parent.append(group);
 
+                input.numeric({
+                    allowPlus: false,
+                    allowMinus: format.range[0] < 0,
+                    allowThouSep: false,
+                    allowDecSep: false,
+                    allowLeadingSpaces: false,
+                    maxDigits: NaN,
+                    maxDecimalPlaces: NaN,
+                    maxPreDecimalPlaces: NaN,
+                    max: format.range[1],
+                    min: format.range[0]
+                });
+
                 this.parent = parent;
                 this.el = input;
             } else {
@@ -124,26 +137,13 @@ _.extend(Ordinal.prototype, DescriptorFormatType.prototype, {
                 this.el.val(defaultValues[0]);
             }
         } else {
-            if (this.isInput) {
-                $(this.el).numeric({
-                    allowPlus: false,
-                    allowMinus: format.range[0] < 0,
-                    allowThouSep: false,
-                    allowDecSep: false,
-                    allowLeadingSpaces: false,
-                    maxDigits: NaN,
-                    maxDecimalPlaces: NaN,
-                    maxPreDecimalPlaces: NaN,
-                    max: format.range[1],
-                    min: format.range[0]
-                });
-
-                if (definesValues) {
+            if (definesValues) {
+                if (this.isInput) {
                     this.el.val(defaultValues[0]);
+                } else {
+                    this.el.val(defaultValues[0].toString()).trigger('change');
+                    this.el.selectpicker('refresh');
                 }
-            } else {
-                this.el.val(defaultValues[0].toString()).trigger('change');
-                this.el.selectpicker('refresh');
             }
         }
     },

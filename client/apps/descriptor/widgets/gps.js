@@ -91,8 +91,6 @@ _.extend(GpsType.prototype, DescriptorFormatType.prototype, {
                 this.el.val(defaultValues[0]);
             }
         } else {
-            /* @todo like in string */
-
             if (definesValues) {
                 this.el.val(defaultValues[0]);
             }

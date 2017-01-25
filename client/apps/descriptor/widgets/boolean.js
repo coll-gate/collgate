@@ -40,6 +40,22 @@ _.extend(Boolean.prototype, DescriptorFormatType.prototype, {
             var select = $('<select data-width="100%"></select>');
             parent.append(select);
 
+            // true
+            var option = $("<option></option>");
+
+            option.attr("value", "true");
+            option.html(gt.gettext('Yes'));
+
+            select.append(option);
+
+            // false
+            option = $("<option></option>");
+
+            option.attr("value", "false");
+            option.html(gt.gettext('No'));
+
+            select.append(option);
+
             select.selectpicker({container: 'body', style: 'btn-default'});
 
             this.parent = parent;
@@ -88,22 +104,6 @@ _.extend(Boolean.prototype, DescriptorFormatType.prototype, {
                 }
             }
         } else {
-            // true
-            var option = $("<option></option>");
-
-            option.attr("value", "true");
-            option.html(gt.gettext('Yes'));
-
-            this.el.append(option);
-
-            // false
-            option = $("<option></option>");
-
-            option.attr("value", "false");
-            option.html(gt.gettext('No'));
-
-            this.el.append(option);
-
             if (definesValues) {
                 this.el.val(defaultValues[0] ? "true" : "false").trigger('change');
             }

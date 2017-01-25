@@ -46,6 +46,19 @@ _.extend(NumericRange.prototype, DescriptorFormatType.prototype, {
 
             parent.append(group);
 
+            input.numeric({
+                allowPlus           : false,
+                allowMinus          : format.range[0] < 0,
+                allowThouSep        : false,
+                allowDecSep         : true,
+                allowLeadingSpaces  : false,
+                maxDigits           : NaN,
+                maxDecimalPlaces    : format.precision,
+                maxPreDecimalPlaces : NaN,
+                max                 : format.range[1],
+                min                 : format.range[0]
+            });
+
             this.parent = parent;
             this.el = input;
         }
@@ -85,19 +98,6 @@ _.extend(NumericRange.prototype, DescriptorFormatType.prototype, {
                 this.el.val(defaultValues[0]);
             }
         } else {
-            $(this.el).numeric({
-                allowPlus           : false,
-                allowMinus          : format.range[0] < 0,
-                allowThouSep        : false,
-                allowDecSep         : true,
-                allowLeadingSpaces  : false,
-                maxDigits           : NaN,
-                maxDecimalPlaces    : format.precision,
-                maxPreDecimalPlaces : NaN,
-                max                 : format.range[1],
-                min                 : format.range[0]
-            });
-
             if (definesValues) {
                 this.el.val(defaultValues[0]);
             }
