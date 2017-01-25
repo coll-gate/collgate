@@ -171,11 +171,11 @@ class DescriptorType(Entity):
         values_list = []
 
         # map fields name with columns
-        fields = format.get('fields', [])
+        fields = format.get('fields')
         if fields:
-            if sort_by == fields[0]:
+            if len(fields) >= 1 and sort_by == fields[0]:
                 sort_by = "value0"
-            elif sort_by == fields[1]:
+            elif len(fields) >= 2 and sort_by == fields[1]:
                 sort_by = "value1"
 
         # id is code

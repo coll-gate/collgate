@@ -9,6 +9,7 @@
  */
 
 var DescriptorFormatType = require('./descriptorformattype');
+var Marionette = require('backbone.marionette');
 
 var Entity = function() {
     DescriptorFormatType.call(this);
@@ -256,6 +257,32 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
                 return this.values()[0] !== values[0];
             default:
                 return false;
+        }
+    }
+});
+
+
+Entity.DescriptorTypeDetailsView = Marionette.ItemView.extend({
+    className: 'descriptor-type-details-format',
+    template: require('../templates/widgets/entity.html'),
+
+    ui: {
+        format_model: '#format_model'
+    },
+
+    initialize: function() {
+        this.listenTo(this.model, 'reset', this.render, this);
+    },
+
+    onRender: function() {
+        var format = this.model.get('format');
+
+        application.descriptor.views.describables.drawSelect(this.ui.format_model, true, false, format.model);
+    },
+
+    getFormat: function() {
+        return {
+            'model': this.ui.format_model.val()
         }
     }
 });

@@ -92,11 +92,11 @@ var SelectOptionItemView = Marionette.ItemView.extend({
         }
     },
 
-    drawSelect: function(sel, widget, emptyValue) {
+    drawSelect: function(sel, widget, emptyValue, initialValue) {
+        widget || (widget = true);
         emptyValue || (emptyValue = false);
 
         var view = this;
-        typeof widget !== 'undefined' || (widget = true);
 
         if (this.collection.size() > 0) {
             var s = $(sel);
@@ -113,6 +113,10 @@ var SelectOptionItemView = Marionette.ItemView.extend({
                     container: 'body',
                 });
             }
+
+            if (initialValue) {
+                s.selectpicker('val', initialValue);
+            }
         } else {
             this.collection.on("sync", function () {
                 var s = $(sel);
@@ -128,6 +132,10 @@ var SelectOptionItemView = Marionette.ItemView.extend({
                         style: 'btn-default',
                         container: 'body',
                     });
+                }
+
+                if (initialValue) {
+                    s.selectpicker('val', initialValue);
                 }
             }, this);
         }

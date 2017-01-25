@@ -431,12 +431,25 @@ EnumSingle.DescriptorTypeDetailsView = Marionette.ItemView.extend({
         this.ui.list_type.selectpicker({style: 'btn-default'});
 
         var format = this.model.get('format');
+
+        if (format.fields != undefined) {
+            if (format.fields.length >= 1)
+                this.ui.field0.val(format.fields[0]);
+        }
+
+        if (format.sortby_field != undefined) {
+            this.ui.sort_by_field.selectpicker('val', format.sortby_field);
+        }
+
+        if (format.list_type != undefined) {
+            this.ui.list_type.selectpicker('val', format.list_type);
+        }
     },
 
     getFormat: function() {
         return {
             'trans': this.ui.format_trans.val() === "true",
-            'fields': [this.ui.field0.val(), ""],
+            'fields': [this.ui.field0.val()],
             'sortby_field': this.ui.sort_by_field.val(),
             'display_fields': 'value0',
             'list_type': this.ui.list_type.val(),

@@ -488,9 +488,9 @@ def delete_descriptor_type_for_group(request, id, tid):
             "format": {
                 "type": "object",
                 "properties": {
-                    "type": {"type": "string", 'minLength': 1, 'maxLength': 32},  # @todo with enum
-                    "unit": {"type": "string", 'minLength': 0, 'maxLength': 32},
-                    "fields": {"type": "array", 'minLength': 0, 'maxLength': 2},
+                    "type": {"type": "string", 'minLength': 1, 'maxLength': 32},
+                    "unit": {"type": "string", 'minLength': 0, 'maxLength': 32, 'required': False},
+                    "fields": {"type": "array", 'minLength': 0, 'maxLength': 2, 'required': False},
                     "precision": {"type": "string", 'required': False},
                     "range": {"type": "array", 'minLength': 2, 'maxLength': 2, 'required': False},
                     "trans": {"type": "boolean", 'required': False},
@@ -520,6 +520,8 @@ def update_descriptor_type(request, id, tid):
     descr_type = get_object_or_404(DescriptorType, id=type_id, group=group)
     org_format = json.loads(descr_type.format)
 
+    # @todo this part may be offers a dynamic validation according to registered type of format
+
     trans = format.get('trans', False)
 
     if not descr_type.can_modify:
@@ -542,10 +544,12 @@ def update_descriptor_type(request, id, tid):
         if format["search_field"] != 'value0':
             raise SuspiciousOperation(_("Single enumeration list can only search on value0"))
 
+        if len(format['fields']) != 1:
+            raise SuspiciousOperation(_("Type of descriptor with an enumeration of singleton require one field"))
+
         # reset if type or translation differs
         if org_format['type'] != 'enum_single' or trans != org_format.get('trans', False):
             format['trans'] = trans
-            format['fields'] = ['value', '']
 
             # rest values
             descr_type.values = ""
@@ -580,6 +584,9 @@ def update_descriptor_type(request, id, tid):
 
         if format["search_field"] != 'value0':
             raise SuspiciousOperation(_("Ordinal enumeration list can only search on value0"))
+
+        if len(format['fields']) != 1:
+            raise SuspiciousOperation(_("Type of descriptor with an enumeration of ordinal require one field"))
 
         # translation with enum_ordinal
         format['trans'] = trans

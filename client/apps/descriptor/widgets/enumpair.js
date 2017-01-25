@@ -69,7 +69,7 @@ EnumPair.DescriptorTypeDetailsView = Marionette.ItemView.extend({
         }
 
         if (format.sortby_field != undefined) {
-            this.ui.sortby_field.selectpicker('val', format.sortby_field);
+            this.ui.sort_by_field.selectpicker('val', format.sortby_field);
         }
 
         if (format.display_fields != undefined) {

@@ -75,13 +75,10 @@ EnumOrdinal.DescriptorTypeDetailsView = Marionette.ItemView.extend({
         if (format.fields != undefined) {
             if (format.fields.length >= 1)
                 this.ui.field0.val(format.fields[0]);
-
-            if (format.fields.length >= 2)
-                this.ui.field1.val(format.fields[1]);
         }
 
         if (format.sortby_field != undefined) {
-            this.ui.sortby_field.selectpicker('val', format.sortby_field);
+            this.ui.sort_by_field.selectpicker('val', format.sortby_field);
         }
 
         if (format.display_fields != undefined) {
@@ -119,7 +116,7 @@ EnumOrdinal.DescriptorTypeDetailsView = Marionette.ItemView.extend({
     getFormat: function() {
         return {
             'trans': this.ui.format_trans.val() === "true",
-            'fields': [this.ui.field0.val(), ""],
+            'fields': [this.ui.field0.val()],
             'sortby_field': this.ui.sort_by_field.val(),
             'display_fields': this.ui.display_fields.val(),
             'list_type': this.ui.list_type.val(),
