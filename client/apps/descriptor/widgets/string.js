@@ -9,13 +9,14 @@
  */
 
 var DescriptorFormatType = require('./descriptorformattype');
+var Marionette = require('backbone.marionette');
 
 var StringType = function() {
     DescriptorFormatType.call(this);
 
     this.name = "string";
     this.group = "single";
-}
+};
 
 _.extend(StringType.prototype, DescriptorFormatType.prototype, {
     create: function(format, parent, readOnly, create) {
@@ -209,6 +210,31 @@ _.extend(StringType.prototype, DescriptorFormatType.prototype, {
             help.text("");
         }
     },
+});
+
+StringType.DescriptorTypeDetailsView = Marionette.ItemView.extend({
+    className: 'descriptor-type-details-format',
+    template: require('../templates/widgets/string.html'),
+
+    ui: {
+        'format_regexp': '#format_regexp'
+    },
+
+    initialize: function() {
+        this.listenTo(this.model, 'reset', this.render, this);
+    },
+
+    onRender: function() {
+        var format = this.model.get('format');
+
+        this.ui.format_regexp.val(format.regexp);
+    },
+
+    getFormat: function() {
+        return {
+            'regexp': this.ui.format_regexp.val()
+        }
+    }
 });
 
 module.exports = StringType;

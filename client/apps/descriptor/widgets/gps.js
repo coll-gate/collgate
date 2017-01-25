@@ -15,7 +15,7 @@ var GpsType = function() {
 
     this.name = "gps";
     this.group = "single";
-}
+};
 
 _.extend(GpsType.prototype, DescriptorFormatType.prototype, {
     create: function(format, parent, readOnly, create) {

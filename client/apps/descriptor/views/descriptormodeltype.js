@@ -13,8 +13,6 @@ var Dialog = require('../../main/views/dialog');
 
 var DescriptorTypeModel = require('../models/descriptortype');
 
-var DisplayDescriptor = require('../widgets/displaydescriptor');
-
 
 var View = Marionette.ItemView.extend({
     tagName: 'tr',
@@ -450,15 +448,6 @@ var View = Marionette.ItemView.extend({
                     condition: "#condition",
                     target: "#target",
                     condition_values: "div.condition-values",
-                    simple_value: "#simple_value",    // @todo remove
-                    autocomplete_value: "#autocomplete_value",   // @todo remove
-                    select_value: "#select_value",   // @todo remove
-                    value_group: "div.value-group",  // @todo remove
-                    simple_value_group: "#simple_value_group", // @todo remove
-                    simple_value_icon: "#simple_value_icon",   // @todo remove
-                    autocomplete_value_group: "#autocomplete_value_group", // @todo remove
-                    select_value_group: "#select_value_group",  // @todo remove
-                    unit: "#unit",
                     destroy: "button.destroy"
                 },
 

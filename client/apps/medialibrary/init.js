@@ -36,6 +36,17 @@ var MediaLibraryModule = Marionette.Module.extend({
     onStart: function(options) {
         Logger.time("Start permission module");
 
+        // register the format type of descriptors
+        var widgets = [
+            'media',
+            'media_collection'
+        ];
+
+        for (var i = 0; i < widgets.length; ++i) {
+            var moduleName = widgets[i].replace('_', '').toLowerCase();
+            application.descriptor.widgets.registerElement(widgets[i], require('./widgets/' + moduleName));
+        }
+
         //var MediaLibraryRouter = require('./routers/medialibrary');
         //this.routers.medialibrary = new MediaLibraryRouter();
 

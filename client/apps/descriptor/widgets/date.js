@@ -9,13 +9,14 @@
  */
 
 var DescriptorFormatType = require('./descriptorformattype');
+var Marionette = require('backbone.marionette');
 
 var DateType = function() {
     DescriptorFormatType.call(this);
 
     this.name = "date";
     this.group = "single";
-}
+};
 
 _.extend(DateType.prototype, DescriptorFormatType.prototype, {
     create: function(format, parent, readOnly, create) {
@@ -194,6 +195,19 @@ _.extend(DateType.prototype, DescriptorFormatType.prototype, {
                 this.listeners[i].parent.parent().hide(true);
             }
         }
+    }
+});
+
+DateType.DescriptorTypeDetailsView = Marionette.ItemView.extend({
+    className: 'descriptor-type-details-format',
+    template: "<div></div>",
+
+    initialize: function() {
+        this.listenTo(this.model, 'reset', this.render, this);
+    },
+
+    getFormat: function() {
+        return {}
     }
 });
 

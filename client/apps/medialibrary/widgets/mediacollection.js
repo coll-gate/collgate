@@ -1,24 +1,24 @@
 /**
- * @file boolean.js
- * @brief Display and manage a boolean format of type of descriptor
+ * @file mediacollection.js
+ * @brief Display and manage a collection of medias format of type of descriptor
  * @author Frederic SCHERMA
- * @date 2017-01-20
+ * @date 2017-01-25
  * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
  * @license @todo
  * @details
  */
 
-var DescriptorFormatType = require('./descriptorformattype');
+var DescriptorFormatType = require('../../descriptor/widgets/descriptorformattype');
 var Marionette = require('backbone.marionette');
 
-var Boolean = function() {
+var MediaCollection = function() {
     DescriptorFormatType.call(this);
 
-    this.name = "boolean";
-    this.group = "single";
+    this.name = "media_collection";
+    this.group = "media";
 };
 
-_.extend(Boolean.prototype, DescriptorFormatType.prototype, {
+_.extend(MediaCollection.prototype, DescriptorFormatType.prototype, {
     create: function(format, parent, readOnly, create) {
         readOnly || (readOnly = false);
         create || (create = true);
@@ -28,6 +28,7 @@ _.extend(Boolean.prototype, DescriptorFormatType.prototype, {
         if (readOnly) {
             var input = null;
 
+            /* @todo */
             if (create) {
                 input = this._createStdInput(parent, "glyphicon-check");
             } else {
@@ -38,26 +39,7 @@ _.extend(Boolean.prototype, DescriptorFormatType.prototype, {
             this.readOnly = true;
             this.el = input;
         } else {
-            var select = $('<select data-width="100%"></select>');
-            parent.append(select);
-
-            // true
-            var option = $("<option></option>");
-
-            option.attr("value", "true");
-            option.html(gt.gettext('Yes'));
-
-            select.append(option);
-
-            // false
-            option = $("<option></option>");
-
-            option.attr("value", "false");
-            option.html(gt.gettext('No'));
-
-            select.append(option);
-
-            select.selectpicker({container: 'body', style: 'btn-default'});
+            /* @todo */
 
             this.parent = parent;
             this.el = select;
@@ -69,8 +51,7 @@ _.extend(Boolean.prototype, DescriptorFormatType.prototype, {
             if (this.readOnly) {
                 this.el.parent().remove();
             } else {
-                this.el.selectpicker('destroy');
-                this.el.remove();
+                /*this.el.remove(); @todo */
             }
         }
     },
@@ -96,41 +77,33 @@ _.extend(Boolean.prototype, DescriptorFormatType.prototype, {
 
         if (this.readOnly) {
             if (definesValues) {
-                this.el.val(defaultValues[0] ? gt.gettext('Yes') : gt.gettext('No')).attr('value', defaultValues[0]);
-
-                if (defaultValues[0]) {
-                    this.el.parent().children('span').children('span').addClass('glyphicon-check');
-                } else {
-                    this.el.parent().children('span').children('span').addClass('glyphicon-unchecked');
-                }
+                /* @todo */
             }
         } else {
             if (definesValues) {
-                this.el.val(defaultValues[0] ? "true" : "false").trigger('change');
+                /* @todo */
             }
-
-            this.el.selectpicker('refresh');
         }
     },
 
     values: function() {
         if (this.el && this.parent) {
             if (this.readOnly) {
-                return [this.el.attr("value") === "true"];
+                return [this.el.attr("value")];
             } else {
-                return [this.el.val() === "true"];
+                return [this.el.val()];
             }
         }
 
-        return [false];
+        return [null];
     },
 
     checkCondition: function(condition, values) {
         switch (condition) {
             case 0:
-                return false;  // a boolean is always defined
+                return this.values()[0] === "";
             case 1:
-                return true;   // a boolean is always defined
+                return this.values()[0] !== "";
             case 2:
                 return this.values()[0] === values[0];
             case 3:
@@ -143,7 +116,7 @@ _.extend(Boolean.prototype, DescriptorFormatType.prototype, {
     bindConditionListener: function(listeners, condition, values) {
         if (this.el && this.parent && !this.readOnly) {
             if (!this.bound) {
-                this.el.parent('div.bootstrap-select').on('changed.bs.select', $.proxy(this.onValueChanged, this));
+                /* @todo */
                 this.bound = true;
             }
 
@@ -169,21 +142,44 @@ _.extend(Boolean.prototype, DescriptorFormatType.prototype, {
     }
 });
 
-Boolean.DescriptorTypeDetailsView = Marionette.ItemView.extend({
+MediaCollection.DescriptorTypeDetailsView = Marionette.ItemView.extend({
     className: 'descriptor-type-details-format',
-    template: "<div></div>",
+    template: require('../templates/widgets/mediacollection.html'),
+
+    ui: {
+        format_media_types: '#format_media_types',
+        format_max_items: '#format_max_items',
+    },
 
     initialize: function() {
         this.listenTo(this.model, 'reset', this.render, this);
     },
 
     onRender: function() {
+        this.ui.format_media_types.selectpicker({
+            style: 'btn-default',
+            container: 'body'
+        });
+
+        var format = this.model.get('format');
+
+        if (format.media_types != undefined) {
+            this.ui.format_media_types.selectpicker('val', format.media_types);
+        }
+
+        if (format.max_items != undefined) {
+            this.ui.format_max_items.val(format.max_items);
+        } else {
+            this.ui.format_max_items.val(2);
+        }
     },
 
     getFormat: function() {
         return {
+            'media_types': this.ui.format_media_types.val(),
+            'max_items': this.ui.format_max_items.val()
         }
     }
 });
 
-module.exports = Boolean;
+module.exports = MediaCollection;

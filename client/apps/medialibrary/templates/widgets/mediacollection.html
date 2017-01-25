@@ -1,0 +1,13 @@
+<div class="form-group" style="width: 50%;">
+    <label for="format_media_types"><%- gt.gettext('Type of media') %></label>
+    <select id="format_media_types" class="form-control" multiple>
+        <option value="archives"><%- gt.gettext('Archives (zip, rar, 7z, tar, gz, bz, bz2)') %></option>
+        <option value="images"><%- gt.gettext('Images (gif, png, jpg, jpeg, tif, tiff, psd, svg)') %></option>
+        <option value="documents"><%- gt.gettext('Documents (doc, docx, ppt, pptx, odt, odp, pdf, ps)') %></option>
+        <option value="tables"><%- gt.gettext('Spreadsheets (xls, xlsx, ods, csv)') %></option>
+    </select>
+</div>
+<div class="form-group" style="width: 50%;">
+    <label for="format_max_items"><%- gt.gettext('Max items number') %></label>
+    <input id="format_max_items" class="form-control" type="number" min="2" max="256">
+</div>

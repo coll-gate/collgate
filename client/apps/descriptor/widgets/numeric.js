@@ -9,13 +9,14 @@
  */
 
 var DescriptorFormatType = require('./descriptorformattype');
+var Marionette = require('backbone.marionette');
 
 var Numeric = function() {
     DescriptorFormatType.call(this);
 
     this.name = "numeric";
     this.group = "single";
-}
+};
 
 _.extend(Numeric.prototype, DescriptorFormatType.prototype, {
     create: function(format, parent, readOnly, create) {
@@ -152,6 +153,83 @@ _.extend(Numeric.prototype, DescriptorFormatType.prototype, {
             for (var i = 0; i < this.listeners.length; ++i) {
                 this.listeners[i].parent.parent().hide(true);
             }
+        }
+    }
+});
+
+Numeric.DescriptorTypeDetailsView = Marionette.ItemView.extend({
+    className: 'descriptor-type-details-format',
+    template: require('../templates/widgets/numeric.html'),
+
+    ui: {
+        'format_unit': '#format_unit',
+        'format_unit_custom': '#format_unit_custom',
+        'format_precision': '#format_precision'
+    },
+
+    events: {
+        'change @ui.format_unit': 'changeFormatUnit',
+        'input @ui.format_unit_custom': 'inputFormatUnitCustom'
+    },
+
+    initialize: function() {
+        this.listenTo(this.model, 'reset', this.render, this);
+    },
+
+    onRender: function() {
+        application.descriptor.views.formatUnits.drawSelect(this.ui.format_unit);
+
+        this.ui.format_precision.selectpicker({style: 'btn-default', container: 'body'});
+
+        var format = this.model.get('format');
+
+        if (format.unit != undefined) {
+            this.ui.format_unit.selectpicker('val', format.unit);
+        }
+
+        if (format.precision != undefined) {
+            this.ui.format_precision.selectpicker('val', format.precision);
+        }
+    },
+
+    getFormat: function() {
+        var customUnit = this.ui.format_unit.val() === "custom" ? this.ui.format_unit_custom.val() : "";
+
+        return {
+            'unit': this.ui.format_unit.val(),
+            'custom_unit': customUnit,
+            'precision': this.ui.format_precision.val()
+        }
+    },
+
+    changeFormatUnit: function () {
+        var unit = $(this.ui.format_unit).val();
+
+        switch (unit) {
+            case "custom":
+                this.ui.format_unit_custom.prop("disabled", false).val("");
+                $(this.ui.format_unit_custom).cleanField();
+                break;
+            default:
+                this.ui.format_unit_custom.prop("disabled", true).val("");
+                $(this.ui.format_unit_custom).cleanField();
+                break;
+        }
+    },
+
+    inputFormatUnitCustom: function () {
+        var v = this.ui.format_unit_custom.val();
+        var re = /^[a-zA-Z0-9_\-%°⁼⁺⁻⁰¹²³⁴⁵⁶⁷⁸⁹/µ]+$/i;
+
+        if (v.length > 0 && !re.test(v)) {
+            $(this.ui.format_unit_custom).validateField('failed', gt.gettext("Invalid characters (alphanumeric, _-°%°⁼⁺⁻⁰¹²³⁴⁵⁶⁷⁸⁹/µ allowed)"));
+        } else if (v.length > 32) {
+            $(this.ui.format_unit_custom).validateField('failed', gt.gettext('32 character max'));
+        } else if (v.length < 1) {
+            //$(this.ui.format_unit_custom).validateField('failed', gt.gettext('1 character min'));
+            $(this.ui.format_unit_custom).cleanField();
+        } else {
+            $(this.ui.format_unit_custom).validateField('ok');
         }
     }
 });

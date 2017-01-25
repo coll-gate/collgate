@@ -21,7 +21,8 @@ var DescriptorValuePairListView = require('../views/descriptorvaluepairlist');
 var DescriptorValueOrdinalListView = require('../views/descriptorvalueordinallist');
 var DescriptorValueAddView = require('../views/descriptorvalueadd');
 
-var DescriptorTypeDetailView = require('../views/descriptortypedetail');
+var DescriptorTypeDetailView = require('../views/descriptortypedetail');  // @todo remove me
+var DescriptorTypeDetailsLayout = require('../views/descriptortypedetailslayout');
 var DefaultLayout = require('../../main/views/defaultlayout');
 var TitleView = require('../../main/views/titleview');
 var ScrollingMoreView = require('../../main/views/scrollingmore');
@@ -88,9 +89,15 @@ var Router = Marionette.AppRouter.extend({
 
         var model = new DescriptorTypeModel({id: tid}, {group_id: gid});
 
+        /* @todo remove me
         model.fetch().then(function () {
             defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Details for the type of descriptor"), model: model}));
             defaultLayout.getRegion('content').show(new DescriptorTypeDetailView({model : model}));
+        });*/
+
+        model.fetch().then(function () {
+            defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Details for the type of descriptor"), model: model}));
+            defaultLayout.getRegion('content').show(new DescriptorTypeDetailsLayout({model: model}));
         });
     },
 

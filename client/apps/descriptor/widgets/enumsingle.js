@@ -9,13 +9,14 @@
  */
 
 var DescriptorFormatType = require('./descriptorformattype');
+var Marionette = require('backbone.marionette');
 
 var EnumSingle = function() {
     DescriptorFormatType.call(this);
 
     this.name = "enum_single";
     this.group = "list";
-}
+};
 
 _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
     create: function(format, parent, readOnly, create, descriptorTypeGroup, descriptorTypeId) {
@@ -404,6 +405,42 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
             for (var i = 0; i < this.listeners.length; ++i) {
                 this.listeners[i].parent.parent().hide(true);
             }
+        }
+    }
+});
+
+EnumSingle.DescriptorTypeDetailsView = Marionette.ItemView.extend({
+    className: 'descriptor-type-details-format',
+    template: require('../templates/widgets/enumsingle.html'),
+
+    ui: {
+        format_trans: "#format_trans",
+        field0: '#type_field0',
+        sort_by_field: '#sort_by_field',
+        list_type: '#list_type'
+    },
+
+    initialize: function() {
+        this.listenTo(this.model, 'reset', this.render, this);
+    },
+
+    onRender: function() {
+        this.ui.format_trans.selectpicker({style: 'btn-default', container: 'body'});
+
+        this.ui.sort_by_field.selectpicker({style: 'btn-default'});
+        this.ui.list_type.selectpicker({style: 'btn-default'});
+
+        var format = this.model.get('format');
+    },
+
+    getFormat: function() {
+        return {
+            'trans': this.ui.format_trans.val() === "true",
+            'fields': [this.ui.field0.val(), ""],
+            'sortby_field': this.ui.sort_by_field.val(),
+            'display_fields': 'value0',
+            'list_type': this.ui.list_type.val(),
+            'search_field': 'value0'
         }
     }
 });

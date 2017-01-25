@@ -15,7 +15,7 @@ var NumericRange = function() {
 
     this.name = "numeric_range";
     this.group = "single";
-}
+};
 
 _.extend(NumericRange.prototype, DescriptorFormatType.prototype, {
     create: function(format, parent, readOnly, create) {
@@ -153,6 +153,53 @@ _.extend(NumericRange.prototype, DescriptorFormatType.prototype, {
                 this.listeners[i].parent.parent().hide(true);
             }
         }
+    }
+});
+
+var Numeric = require('./numeric');
+
+NumericRange.DescriptorTypeDetailsView = Numeric.DescriptorTypeDetailsView.extend({
+    template: require('../templates/widgets/numericrange.html'),
+
+    ui: {
+        'format_unit': '#format_unit',
+        'format_unit_custom': '#format_unit_custom',
+        'format_precision': '#format_precision',
+        'format_range_min': '#format_range_min',
+        'format_range_max': '#format_range_max'
+    },
+
+    events: {
+        'change @ui.format_unit': 'changeFormatUnit',
+        'input @ui.format_unit_custom': 'inputFormatUnitCustom'
+    },
+
+    onRender: function() {
+        NumericRange.DescriptorTypeDetailsView.__super__.onRender.apply(this);
+
+        this.ui.format_range_min.numeric({decimal: '.', negative: false});
+        this.ui.format_range_max.numeric({decimal: '.', negative: false});
+
+        var format = this.model.get('format');
+
+        if (format.range !== undefined) {
+            this.ui.format_range_min.val(format.range[0]);
+            this.ui.format_range_max.val(format.range[1]);
+        } else {
+            this.ui.format_range_min.val("0.0");
+            this.ui.format_range_max.val("100.0");
+        }
+    },
+
+    getFormat: function() {
+        var format = NumericRange.DescriptorTypeDetailsView.__super__.getFormat.apply(this);
+
+        format.range = [
+            this.ui.format_range_min.val(),
+            this.ui.format_range_max.val()
+        ];
+
+        return format;
     }
 });
 

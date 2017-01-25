@@ -845,7 +845,7 @@ msgstr "Second champs"
 
 #: ../../../templates/descriptortypedetail.html:66
 msgid "Sort by field"
-msgstr "Trier pas champs"
+msgstr "Trier par champs"
 
 #: ../../../templates/descriptortypedetail.html:70
 #: ../../../templates/descriptortypedetail.html:79
@@ -884,8 +884,8 @@ msgid "Dropdown (limit of 256 values)"
 msgstr "List déroulante (limité à 256 valeurs)"
 
 #: ../../../templates/descriptortypedetail.html:95
-msgid "Autocomplete (big lists)"
-msgstr "Autocomplete (grosse listes)"
+msgid "Autocomplete (big list)"
+msgstr "Autocomplete (liste importante)"
 
 #: ../../../templates/descriptortypedetail.html:101
 msgid "Autocomplete search field"

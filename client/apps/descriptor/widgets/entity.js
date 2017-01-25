@@ -15,7 +15,7 @@ var Entity = function() {
 
     this.name = "entity";
     this.group = "single";
-}
+};
 
 _.extend(Entity.prototype, DescriptorFormatType.prototype, {
     create: function(format, parent, readOnly, create) {

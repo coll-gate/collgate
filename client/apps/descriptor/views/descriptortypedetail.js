@@ -9,7 +9,6 @@
  */
 
 var Marionette = require('backbone.marionette');
-var DescriptorTypeModel = require('../models/descriptortype');
 
 var View = Marionette.ItemView.extend({
     className: 'element object descriptor-type-detail',

@@ -1,0 +1,41 @@
+<div class="block" style="width: 50%;">
+    <div class="row">
+        <div class="col-xs-6">
+            <div class="form-group">
+                <label for="format_trans"><%- gt.gettext('Translation') %></label>
+                <select id="format_trans" class="form-control">
+                    <option value="true"><%- gt.gettext('Yes') %></option>
+                    <option value="false"><%- gt.gettext('No') %></option>
+                </select>
+            </div>
+        </div>
+        <div class="col-xs-6">
+            <div class="form-group">
+                <label for="type_field0"><%- gt.gettext('Field name (value0)') %></label>
+                <input id="type_field0" class="form-control" type="text" maxlength="32" value="">
+            </div>
+        </div>
+    </div>
+</div>
+<div class="block" style="width: 50%;">
+    <div class="row">
+        <div class="col-xs-6">
+            <div class="form-group">
+                <label for="sort_by_field"><%- gt.gettext('Sort by field') %></label>
+                <select id="sort_by_field" class="form-control">
+                    <option value="code"><%- gt.gettext('Code') %></option>
+                    <option value="value0"><%- gt.gettext('Value0') %></option>
+                </select>
+            </div>
+        </div>
+        <div class="col-xs-6">
+            <div class="form-group">
+                <label for="list_type"><%- gt.gettext('Display the list as') %></label>
+                <select id="list_type" class="form-control">
+                    <option value="dropdown"><%- gt.gettext('Dropdown (limit of 256 values)') %></option>
+                    <option value="autocomplete"><%- gt.gettext('Autocomplete (big list)') %></option>
+                </select>
+            </div>
+        </div>
+    </div>
+</div>

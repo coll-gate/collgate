@@ -15,7 +15,7 @@ var Ordinal = function() {
 
     this.name = "ordinal";
     this.group = "single";
-}
+};
 
 _.extend(Ordinal.prototype, DescriptorFormatType.prototype, {
     create: function(format, parent, readOnly, create) {
@@ -207,6 +207,61 @@ _.extend(Ordinal.prototype, DescriptorFormatType.prototype, {
                 this.listeners[i].parent.parent().hide(true);
             }
         }
+    }
+});
+
+var Numeric = require('./numeric');
+
+Ordinal.DescriptorTypeDetailsView = Numeric.DescriptorTypeDetailsView.extend({
+    template: require('../templates/widgets/ordinal.html'),
+
+    ui: {
+        'format_unit': '#format_unit',
+        'format_unit_custom': '#format_unit_custom',
+        'format_range_min': '#format_range_min',
+        'format_range_max': '#format_range_max'
+    },
+
+    events: {
+        'change @ui.format_unit': 'changeFormatUnit',
+        'input @ui.format_unit_custom': 'inputFormatUnitCustom'
+    },
+
+    onRender: function() {
+        // same as numeric excepted the precision
+        application.descriptor.views.formatUnits.drawSelect(this.ui.format_unit);
+
+        var format = this.model.get('format');
+
+        if (format.unit != undefined) {
+            this.ui.format_unit.selectpicker('val', format.unit);
+        }
+
+        this.ui.format_range_min.numeric({decimal : false, negative : false});
+        this.ui.format_range_max.numeric({decimal : false, negative : false});
+
+        var format = this.model.get('format');
+
+        if (format.range !== undefined) {
+            this.ui.format_range_min.val(format.range[0]);
+            this.ui.format_range_max.val(format.range[1]);
+        } else {
+            this.ui.format_range_min.val("0");
+            this.ui.format_range_max.val("10");
+        }
+    },
+
+    getFormat: function() {
+        var customUnit = this.ui.format_unit.val() === "custom" ? this.ui.format_unit_custom.val() : "";
+
+        return {
+            'unit': this.ui.format_unit.val(),
+            'custom_unit': customUnit,
+            'range': [
+                this.ui.format_range_min.val(),
+                this.ui.format_range_max.val()
+            ]
+        };
     }
 });
 
