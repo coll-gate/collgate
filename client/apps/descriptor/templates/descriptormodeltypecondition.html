@@ -22,26 +22,7 @@
                     <select id="condition" class="form-control">
                     </select>
                 </div>
-                <div class="form-group value-group" id="simple_value_group" style="display: none;">
-                    <label class="control-label"><%= gt.gettext("Value") %>&nbsp;(<span id="unit"></span>)</label>
-                    <div class="input-group">
-                        <input class="form-control" id="simple_value" type="text" value="" maxlength="64" autocomplete="off">
-                        <span class="input-group-addon">
-                            <span id="simple_value_icon" class="glyphicon glyphicon-calendar"></span>
-                        </span>
-                    </div>
-                </div>
-                <div class="form-group value-group" id="autocomplete_value_group" style="display: none;">
-                    <label for="autocomplete_value" class="control-label"><%= gt.gettext("Value") %></label>
-                    <div>
-                        <select id="autocomplete_value" class="form-control" data-container="body" style="width: 100%;"></select>
-                    </div>
-                </div>
-                <div class="form-group value-group" id="select_value_group" style="display: none;">
-                    <label for="select_value" class="control-label"><%= gt.gettext("Value from list") %></label>
-                    <select id="select_value" class="form-control" data-container="body">
-                    </select>
-                </div>
+                <div class="condition-values"></div>
             </form>
         </div>
         <div class="modal-footer">

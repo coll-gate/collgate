@@ -46,48 +46,7 @@ _.extend(TimeType.prototype, DescriptorFormatType.prototype, {
 
             parent.append(group);
 
-            this.parent = parent;
-            this.el = input;
-        }
-    },
-
-    destroy: function() {
-        if (this.el && this.parent && this.owned) {
-            if (this.readOnly) {
-                this.parent.remove(this.el.parent());
-            } else {
-                this.el.data('DateTimePicker').destroy();
-                this.parent.remove(this.el.parent());
-            }
-        }
-    },
-
-    enable: function() {
-        if (this.el) {
-            this.el.data('DateTimePicker').enable();
-        }
-    },
-
-    disable: function() {
-        if (this.el) {
-            this.el.data('DateTimePicker').disable();
-        }
-    },
-
-    set: function (format, definesValues, defaultValues, descriptorTypeGroup, descriptorTypeId) {
-        if (!this.el || !this.parent) {
-            return;
-        }
-
-        definesValues = this.isValueDefined(definesValues, defaultValues);
-
-        if (this.readOnly) {
-            if (definesValues) {
-                // HH:mm:ss
-                this.el.val(defaultValues[0]);
-            }
-        } else {
-            this.el.datetimepicker({
+            input.datetimepicker({
                 locale: session.language,
                 format: 'HH:mm:ss',  // 24h
                 showTodayButton: true,
@@ -122,6 +81,47 @@ _.extend(TimeType.prototype, DescriptorFormatType.prototype, {
                 }
             });
 
+            this.parent = parent;
+            this.el = input;
+        }
+    },
+
+    destroy: function() {
+        if (this.el && this.parent && this.owned) {
+            if (this.readOnly) {
+                this.el.parent().remove();
+            } else {
+                this.el.data('DateTimePicker').destroy();
+                this.el.parent().remove();
+            }
+        }
+    },
+
+    enable: function() {
+        if (this.el) {
+            this.el.data('DateTimePicker').enable();
+        }
+    },
+
+    disable: function() {
+        if (this.el) {
+            this.el.data('DateTimePicker').disable();
+        }
+    },
+
+    set: function (format, definesValues, defaultValues, descriptorTypeGroup, descriptorTypeId) {
+        if (!this.el || !this.parent) {
+            return;
+        }
+
+        definesValues = this.isValueDefined(definesValues, defaultValues);
+
+        if (this.readOnly) {
+            if (definesValues) {
+                // HH:mm:ss
+                this.el.val(defaultValues[0]);
+            }
+        } else {
             if (definesValues) {
                 var date = moment(defaultValues[0], "HH:mm:ss");
                 this.el.data('DateTimePicker').date(date);

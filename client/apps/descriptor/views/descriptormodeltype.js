@@ -449,14 +449,15 @@ var View = Marionette.ItemView.extend({
                 ui: {
                     condition: "#condition",
                     target: "#target",
-                    simple_value: "#simple_value",
-                    autocomplete_value: "#autocomplete_value",
-                    select_value: "#select_value",
-                    value_group: "div.value-group",
-                    simple_value_group: "#simple_value_group",
-                    simple_value_icon: "#simple_value_icon",
-                    autocomplete_value_group: "#autocomplete_value_group",
-                    select_value_group: "#select_value_group",
+                    condition_values: "div.condition-values",
+                    simple_value: "#simple_value",    // @todo remove
+                    autocomplete_value: "#autocomplete_value",   // @todo remove
+                    select_value: "#select_value",   // @todo remove
+                    value_group: "div.value-group",  // @todo remove
+                    simple_value_group: "#simple_value_group", // @todo remove
+                    simple_value_icon: "#simple_value_icon",   // @todo remove
+                    autocomplete_value_group: "#autocomplete_value_group", // @todo remove
+                    select_value_group: "#select_value_group",  // @todo remove
                     unit: "#unit",
                     destroy: "button.destroy"
                 },
@@ -499,48 +500,9 @@ var View = Marionette.ItemView.extend({
 
                 toggleCondition: function (condition) {
                     if (condition == 0 || condition == 1) {
-                        this.ui.value_group.hide(false);
-                    } else if (this.descriptorTypePromise) {
-                        // sync with descriptorType
-                        var view = this;
-
-                        this.descriptorTypePromise.then(function() {
-                            var format = view.descriptorType.get('format');
-
-                            if (format.type.startsWith('enum_')) {
-                                view.ui.simple_value_group.hide(false);
-
-                                if (format.list_type == "dropdown") {
-                                    view.ui.select_value_group.show(false);
-                                    view.ui.autocomplete_value_group.hide(false);
-                                } else {
-                                    view.ui.select_value_group.hide(false);
-                                    view.ui.autocomplete_value_group.show(false);
-                                }
-                            } else if (format.type == "entity") {
-                                view.ui.simple_value_group.hide(false);
-                                view.ui.select_value_group.hide(false);
-                                view.ui.autocomplete_value_group.show(false);
-                            } else if (format.type == "boolean") {
-                                view.ui.simple_value_group.hide(false);
-                                view.ui.select_value_group.show(false);
-                                view.ui.autocomplete_value_group.hide(false);
-                            } else if (format.type == "ordinal") {
-                                if ((format.range[1] - format.range[0] + 1) <= 256) {
-                                    view.ui.simple_value_group.hide(false);
-                                    view.ui.select_value_group.show(false);
-                                    view.ui.autocomplete_value_group.hide(false);
-                                } else {
-                                    view.ui.simple_value_group.show(false);
-                                    view.ui.select_value_group.hide(false);
-                                    view.ui.autocomplete_value_group.hide(false);
-                                }
-                            } else {
-                                view.ui.simple_value_group.show(false);
-                                view.ui.select_value_group.hide(false);
-                                view.ui.autocomplete_value_group.hide(false);
-                            }
-                        });
+                        this.ui.condition_values.hide(false);
+                    } else {
+                        this.ui.condition_values.show(false);
                     }
                 },
 
@@ -555,123 +517,43 @@ var View = Marionette.ItemView.extend({
 
                     var model = this.getOption('model').collection.findWhere({id: parseInt(targetId)});
                     if (model) {
+                        // destroy an older widget and label
+                        if (this.descriptorType && this.descriptorType.widget) {
+                            this.descriptorType.widget.destroy();
+                            this.ui.condition_values.children('label').remove();
+                        }
+
                         this.descriptorType = new DescriptorTypeModel(
                             {id: model.get('descriptor_type')},
                             {group_id: model.get('descriptor_type_group')}
                         );
 
-                        this.descriptorTypePromise = this.descriptorType.fetch().then(function() {
+                        this.descriptorType.fetch().then(function() {
                             var format = view.descriptorType.get('format');
 
                             var condition = view.ui.condition.val();
                             view.toggleCondition(condition);
 
-                            view.ui.select_value.find('option').remove();
+                            // unit label
+                            var unit = format.unit === "custom" ? 'custom_unit' in format ? format.custom_unit : "" : format.unit;
 
-                            if (format.unit === "custom") {
-                                view.ui.unit.html(format.custom_unit)
+                            if (unit !== "") {
+                                var label = $('<label class="control-label">' + gt.gettext("Value") + '&nbsp;<span>(' + unit + ')</span></label>');
+                                view.ui.condition_values.append(label);
                             } else {
-                                view.ui.unit.html(format.unit)
+                                var label = $('<label class="control-label">' + gt.gettext("Value") + '</label>');
+                                view.ui.condition_values.append(label);
                             }
 
-                            // destroy a previous datetimepicker
-                            if (view.ui.simple_value.parent().data('DateTimePicker')) {
-                                view.ui.simple_value.parent().data('DateTimePicker').destroy();
+                            var widget = application.descriptor.widgets.newElement(format.type);
+                            widget.create(format, view.ui.condition_values, false, true, view.descriptorType.group, view.descriptorType.id);
+
+                            if (view.definesValues) {
+                                widget.set(format, view.definesValues, view.defaultValues, view.descriptorType.group, view.descriptorType.id);
                             }
 
-                            if (format.type.startsWith('enum_')) {
-                                if (format.list_type == "autocomplete") {
-                                    DisplayDescriptor.initAutocomplete(
-                                        view.descriptorType.get('format'),
-                                        view.descriptorType.url(),
-                                        view,
-                                        view.ui.autocomplete_value,
-                                        view.definesValues,
-                                        view.defaultValues);
-                                } else {
-                                    DisplayDescriptor.initDropdown(
-                                        view.descriptorType.get('format'),
-                                        view.descriptorType.url(),
-                                        view,
-                                        view.ui.select_value,
-                                        view.definesValues,
-                                        view.defaultValues);
-                                }
-                            } else if (format.type === 'entity') {
-                                var url = application.baseUrl + format.model.replace('.', '/') + '/';
-
-                                DisplayDescriptor.initEntitySelect(
-                                        view.descriptorType.get('format'),
-                                        url,
-                                        view,
-                                        view.ui.autocomplete_value,
-                                        view.definesValues,
-                                        view.defaultValues);
-                            } else if (format.type === 'boolean') {
-                                DisplayDescriptor.initBoolean(
-                                    view.descriptorType.get('format'),
-                                    view,
-                                    view.ui.select_value,
-                                    view.definesValues,
-                                    view.defaultValues);
-                            } else if (format.type === 'ordinal') {
-                                // ordinal is displayed as a dropdown when there is at max 256 values
-                                if ((format.range[1] - format.range[0] + 1) <= 256) {
-                                    DisplayDescriptor.initOrdinal(
-                                        view.descriptorType.get('format'),
-                                        view,
-                                        view.ui.select_value,
-                                        view.definesValues,
-                                        view.defaultValues);
-                                } else {
-                                    DisplayDescriptor.initNumeric(
-                                        format,
-                                        view,
-                                        view.ui.simple_value,
-                                        view.definesValues,
-                                        view.defaultValues);
-                                }
-                            } else if (format.type === 'date') {
-                                DisplayDescriptor.initDate(
-                                    view.descriptorType.get('format'),
-                                    view,
-                                    view.ui.simple_value.parent(),
-                                    view.definesValues,
-                                    view.defaultValues);
-
-                                // glyphicon and pointer
-                                view.ui.simple_value_icon.removeClass().addClass("glyphicon glyphicon-calendar")
-                                    .parent().css('cursor', 'pointer');
-                            } else if (format.type === 'time') {
-                                 DisplayDescriptor.initTime(
-                                    view.descriptorType.get('format'),
-                                    view,
-                                    view.ui.simple_value.parent(),
-                                    view.definesValues,
-                                    view.defaultValues);
-
-                                 // glyphicon and pointer
-                                 view.ui.simple_value_icon.removeClass().addClass("glyphicon glyphicon-time")
-                                     .parent().css('cursor', 'pointer');
-                            } else if (format.type === 'datetime') {
-                                DisplayDescriptor.initDateTime(
-                                    view.descriptorType.get('format'),
-                                    view,
-                                    view.ui.simple_value.parent(),
-                                    view.definesValues,
-                                    view.defaultValues);
-
-                                // glyphicon and pointer
-                                view.ui.simple_value_icon.removeClass().addClass("glyphicon glyphicon-calendar")
-                                    .parent().css('cursor', 'pointer');
-                            } else {
-                                // @todo how todo more dynamic with external type of format of descritpor ?
-                                view.ui.simple_value.val("");
-
-                                // glyphicon and pointer
-                                view.ui.simple_value_icon.removeClass()
-                                    .addClass("glyphicon glyphicon-cog").parent().css('cursor', 'initial');
-                            }
+                            // save the descriptor format type widget instance
+                            view.descriptorType.widget = widget;
 
                             if (view.definesValues) {
                                 view.definesValues = false;
@@ -685,6 +567,12 @@ var View = Marionette.ItemView.extend({
                     var view = this;
                     var model = this.getOption('model');
                     var condition = this.getOption('condition');
+
+                    // destroy the widget
+                    if (this.descriptorType && this.descriptorType.widget) {
+                        this.descriptorType.widget.destroy();
+                        this.descriptorType.widget = null;
+                    }
 
                     $.ajax({
                         type: "DELETE",
@@ -707,50 +595,15 @@ var View = Marionette.ItemView.extend({
                         condition: parseInt(this.ui.condition.val())
                     };
 
-                    if (!this.descriptorType) {
+                    if (!this.descriptorType || !this.descriptorType.widget) {
                         return this.onDestroyCondition();
                     }
 
-                    // take value
-                    var format = this.descriptorType.get('format');
+                    // destroy the widget
+                    this.descriptorType.widget.destroy();
 
                     if (data.condition == 2 || data.condition == 3) {
-                        if (format.type.startsWith('enum_')) {
-                            if (format.list_type == "autocomplete") {
-                                data.values = [this.ui.autocomplete_value.val()];
-                            } else if (format.list_type === "dropdown") {
-                                data.values = [this.ui.select_value.val()];
-                            }
-                        } else if (format.type === 'entity') {
-                            data.values = [parseInt(this.ui.autocomplete_value.val())];
-                        } else if (format.type === 'boolean') {
-                            data.values = [this.ui.select_value.val() === "true"];
-                        } else if (format.type === 'ordinal') {
-                            // max 256 values for a dropdown
-                            if ((format.range[1] - format.range[0] + 1) <= 256) {
-                                data.values = [parseInt(this.ui.select_value.val())];
-                            } else {
-                                data.values = [parseInt(this.ui.simple_value.val())];
-                            }
-                        } else if (format.type === "date") {
-                            // format to YYYYMMDD date
-                            data.values = [$("#simple_value").parent().data('DateTimePicker').viewDate().format("YYYYMMDD")];
-                        } else if (format.type === "time") {
-                            // format to HH:mm:ss time
-                            data.values = [$("#simple_value").parent().data('DateTimePicker').viewDate().format("HH:mm:ss")]; // .MS
-                        } else if (format.type === "datetime") {
-                            // format to iso datetime
-                            data.values = [$("#simple_value").parent().data('DateTimePicker').viewDate().format()];
-                        } else if (format.type === "string") {
-                            // text (already validated)
-                            data.values = [this.ui.simple_value.val()];
-                        } else if (format.type === "numeric") {
-                            // numeric (already validated)
-                            data.values = [this.ui.simple_value.val()];
-                        } else {
-                            // ???
-                            data.values = [this.ui.simple_value.val()];
-                        }
+                        data.values = this.descriptorType.widget.values();
                     } else {
                         data.values = [];
                     }

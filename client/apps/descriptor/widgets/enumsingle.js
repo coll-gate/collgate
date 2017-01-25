@@ -53,9 +53,14 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
                 var url = application.baseUrl + 'descriptor/group/' + descriptorTypeGroup + '/type/' + descriptorTypeId + '/';
                 var initials = [];
 
+                var container = parent.closest('div.modal-dialog').parent();
+                if (container.length == 0) {
+                    container = parent.closest('div.panel');
+                }
+
                 var params = {
                     data: initials,
-                    dropdownParent: parent.parent(),  // $(view.el), @todo is parent works ??
+                    dropdownParent: container,
                     ajax: {
                         url: url + 'value/display/search/',
                         dataType: 'json',
@@ -155,14 +160,14 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
     destroy: function() {
         if (this.el && this.parent && this.owned) {
             if (this.readOnly) {
+                this.el.parent().remove();
+            } else {
                 if (this.autocomplete) {
-                    this.el.select2().destroy();
+                    this.el.select2('destroy');
                 } else {
                     this.el.selectpicker('destroy');
                 }
-                this.parent.remove(this.el.parent());
-            } else {
-                this.parent.remove(this.el);
+                this.el.remove();
             }
         }
     },
@@ -221,9 +226,14 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
                     // init the autocomplete
                     var initials = [];
 
+                    var container = this.parent.closest('div.modal-dialog').parent();
+                    if (container.length == 0) {
+                        container = this.parent.closest('div.panel');
+                    }
+
                     var params = {
                         data: initials,
-                        dropdownParent: this.parent.parent(),  // $(view.el), @todo is parent works ??
+                        dropdownParent: container,
                         ajax: {
                             url: url + 'value/display/search/',
                             dataType: 'json',

@@ -80,9 +80,14 @@ _.extend(Ordinal.prototype, DescriptorFormatType.prototype, {
     destroy: function() {
         if (this.el && this.parent && this.owned) {
             if (this.readOnly) {
-                this.parent.remove(this.el.parent());
+                this.el.parent().remove();
             } else {
-                this.parent.remove(this.el.parent());
+                if (this.isInput) {
+                    this.el.parent().remove();
+                } else {
+                    this.el.selectpicker('destroy');
+                    this.el.remove();
+                }
             }
         }
     },
