@@ -237,8 +237,8 @@ Ordinal.DescriptorTypeDetailsView = Numeric.DescriptorTypeDetailsView.extend({
             this.ui.format_unit.selectpicker('val', format.unit);
         }
 
-        this.ui.format_range_min.numeric({decimal : false, negative : false});
-        this.ui.format_range_max.numeric({decimal : false, negative : false});
+        this.ui.format_range_min.numeric({decimal : false, negative : false, maxDecimalPlaces: 0});
+        this.ui.format_range_max.numeric({decimal : false, negative : false, maxDecimalPlaces: 0});
 
         var format = this.model.get('format');
 

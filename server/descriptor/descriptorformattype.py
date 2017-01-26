@@ -9,6 +9,7 @@ coll-gate descriptor format type class
 import re
 import decimal
 
+import validictory
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist, ImproperlyConfigured
 from django.shortcuts import get_object_or_404
@@ -41,7 +42,7 @@ class DescriptorFormatType(object):
         self.verbose_name = ''
 
         # list of related field into format.*.
-        self.format_fields = []
+        self.format_fields = ["type"]
 
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         """
@@ -157,7 +158,7 @@ class DescriptorFormatTypeEnumSingle(DescriptorFormatType):
         self.group = DescriptorFormatTypeGroupList()
         self.verbose_name = _("Single enumeration")
         self.format_fields = [
-            # @todo
+            "type", "trans", "fields", "list_type", "sortby_field", "display_fields", "search_field"
         ]
 
     def validate(self, descriptor_type_format, value, descriptor_model_type):
@@ -174,32 +175,25 @@ class DescriptorFormatTypeEnumSingle(DescriptorFormatType):
         return None
 
     def check(self, descriptor_type_format):
-        if "trans" not in descriptor_type_format:
-            return _("Missing translation parameter to indicate if translation are defined or not (trans)")
+        schema = {
+            "type": "object",
+            "properties": {
+                "fields": {"type": "array", 'minLength': 1, 'maxLength': 1, 'items': [
+                        {'type': 'string', 'minLength': 0, 'maxLength': 32, 'blank': True}
+                    ]
+                },
+                "trans": {"type": "boolean"},
+                "sortby_field": {"type": "string", "enum": ['code', 'value0']},
+                "display_fields": {"type": "string", "enum": ['value0']},
+                "list_type": {"type": "string", "enum": ['dropdown', 'autocomplete']},
+                "search_field": {"type": "string", "enum": ['value0']}
+            }
+        }
 
-        if "fields" not in descriptor_type_format:
-            return _("Missing fields description (fields)")
-
-        if len(descriptor_type_format["field"]) != 1:
-            return _("Fields descriptor array length must be 1 (fields)")
-
-        if "sortby_field" not in descriptor_type_format:
-            return _("Missing sort-by field value (sortby_field)")
-
-        if descriptor_type_format["sortby_field"] == 'value1':
-            raise _("List cannot be sorted by value1 (sortby_field)")
-
-        if "display_fields" not in descriptor_type_format:
-            return _("Missing display field value (display_fields)")
-
-        if descriptor_type_format["display_fields"] != 'value0':
-            raise _("List can only display the value0 field (display_fields)")
-
-        if "search_field" not in descriptor_type_format:
-            return _("Missing search field value (search_field)")
-
-        if descriptor_type_format["search_field"] != 'value0':
-            raise _("List can only search on value0 (search_field)")
+        try:
+            validictory.validate(descriptor_type_format, schema)
+        except validictory.MultipleValidationError as e:
+            return str(e)
 
         return None
 
@@ -216,7 +210,7 @@ class DescriptorFormatTypeEnumPair(DescriptorFormatType):
         self.group = DescriptorFormatTypeGroupList()
         self.verbose_name = _("Pair enumeration")
         self.format_fields = [
-            # @todo
+            "type", "trans", "fields", "list_type", "sortby_field", "display_fields", "search_field"
         ]
 
     def validate(self, descriptor_type_format, value, descriptor_model_type):
@@ -229,6 +223,31 @@ class DescriptorFormatTypeEnumPair(DescriptorFormatType):
             descriptor_model_type.descriptor_type.get_value(value)
         except ObjectDoesNotExist:
             return _("The descriptor value must exists")
+
+        return None
+
+    def check(self, descriptor_type_format):
+        schema = {
+            "type": "object",
+            "properties": {
+                "fields": {"type": "array", 'minLength': 2, 'maxLength': 2, 'items': [
+                        {'type': 'string', 'minLength': 0, 'maxLength': 32, 'blank': True},
+                        {'type': 'string', 'minLength': 0, 'maxLength': 32, 'blank': True}
+                    ]
+                },
+                "trans": {"type": "boolean"},
+                "sortby_field": {"type": "string", "enum": ['code', 'value0', 'value1']},
+                "display_fields": {"type": "string",
+                                   "enum": ['value0', 'value1', 'value0-value1', 'hier0-value1']},
+                "list_type": {"type": "string", "enum": ['dropdown', 'autocomplete']},
+                "search_field": {"type": "string", "enum": ['value0', 'value1']}
+            }
+        }
+
+        try:
+            validictory.validate(descriptor_type_format, schema)
+        except validictory.MultipleValidationError as e:
+            return str(e)
 
         return None
 
@@ -245,7 +264,7 @@ class DescriptorFormatTypeEnumOrdinal(DescriptorFormatType):
         self.group = DescriptorFormatTypeGroupList()
         self.verbose_name = _("Ordinal with text")
         self.format_fields = [
-            # @todo
+            "type", "trans", "fields", "list_type", "sortby_field", "display_fields", "search_field"
         ]
 
     def validate(self, descriptor_type_format, value, descriptor_model_type):
@@ -257,7 +276,40 @@ class DescriptorFormatTypeEnumOrdinal(DescriptorFormatType):
         try:
             descriptor_model_type.descriptor_type.get_value(value)
         except ObjectDoesNotExist:
-            return  _("The descriptor value must exists")
+            return _("The descriptor value must exists")
+
+        return None
+
+    def check(self, descriptor_type_format):
+        schema = {
+            "type": "object",
+            "properties": {
+                "fields": {"type": "array", 'minLength': 1, 'maxLength': 1, 'items': [
+                        {'type': 'string', 'minLength': 0, 'maxLength': 32, 'blank': True}
+                    ]
+                },
+                "trans": {"type": "boolean"},
+                "sortby_field": {"type": "string", "enum": ['code', 'ordinal', 'value0']},
+                "display_fields": {"type": "string", "enum": ['value0', 'ordinal-value0']},
+                "list_type": {"type": "string", "enum": ['automatic', 'dropdown', 'autocomplete']},
+                "search_field": {"type": "string", "enum": ['ordinal', 'value0']},
+                "range": {"type": "array", 'minLength': 2, 'maxLength': 2, 'items': [
+                    {"type": "string", 'minLength': 1, 'maxLength': 9},
+                    {"type": "string", 'minLength': 1, 'maxLength': 9}
+                ]},
+            }
+        }
+
+        try:
+            validictory.validate(descriptor_type_format, schema)
+        except validictory.MultipleValidationError as e:
+            return str(e)
+
+        min_range, max_range = [int(x) for x in descriptor_type_format['range']]
+
+        # range validation
+        if min_range < -127 or max_range > 127:
+            return _('Range limits are [-127, 127]')
 
         return None
 
@@ -273,12 +325,16 @@ class DescriptorFormatTypeBoolean(DescriptorFormatType):
         self.name = "boolean"
         self.group = DescriptorFormatTypeGroupSingle()
         self.verbose_name = _("Boolean")
+        self.format_fields = ["type"]
 
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         # check if the value is a boolean
         if not isinstance(value, bool):
             return _("The descriptor value must be a boolean")
 
+        return None
+
+    def check(self, descriptor_type_format):
         return None
 
 
@@ -293,9 +349,7 @@ class DescriptorFormatTypeNumeric(DescriptorFormatType):
         self.name = "numeric"
         self.group = DescriptorFormatTypeGroupSingle()
         self.verbose_name = _("Numeric")
-        self.format_fields = [
-            "precision"
-        ]
+        self.format_fields = ["type", "precision", "unit", "custom_unit"]
 
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         # check if the value is a decimal (string with digits - and .) with the according precision of decimals
@@ -315,6 +369,28 @@ class DescriptorFormatTypeNumeric(DescriptorFormatType):
 
         return None
 
+    def check(self, descriptor_type_format):
+        schema = {
+            "type": "object",
+            "properties": {
+                "unit": {"type": "string", 'minLength': 1, 'maxLength': 32},
+                "custom_unit": {"type": "string", 'minLength': 0, 'maxLength': 32, 'blank': True},
+                "precision": {"type": "string", 'enum': ["0.0", "1.0", "2.0", "3.0", "4.0", "5.0", "6.0", "7.0", "8.0", "9.0"]}
+            }
+        }
+
+        try:
+            validictory.validate(descriptor_type_format, schema)
+        except validictory.MultipleValidationError as e:
+            return str(e)
+
+        # @todo "unit" must be in the allowed list
+
+        if descriptor_type_format['unit'] != "custom" and descriptor_type_format['custom_unit'] != "":
+            return _("Custom unit can only be defined is unit is set to custom (unit, custom_unit)")
+
+        return None
+
 
 class DescriptorFormatTypeNumericRange(DescriptorFormatType):
     """
@@ -327,10 +403,7 @@ class DescriptorFormatTypeNumericRange(DescriptorFormatType):
         self.name = "numeric_range"
         self.group = DescriptorFormatTypeGroupSingle()
         self.verbose_name = _("Numeric range")
-        self.format_fields = [
-            "precision",
-            "range",
-        ]
+        self.format_fields = ["type", "range", "precision", "unit", "custom_unit"]
 
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         # check if the value is a decimal (string with digits - and .) with the according precision of
@@ -357,6 +430,47 @@ class DescriptorFormatTypeNumericRange(DescriptorFormatType):
 
         return None
 
+    def check(self, descriptor_type_format):
+        schema = {
+            "type": "object",
+            "properties": {
+                "unit": {"type": "string", 'minLength': 1, 'maxLength': 32},
+                "custom_unit": {"type": "string", 'minLength': 0, 'maxLength': 32, 'blank': True},
+                "precision": {"type": "string", 'enum': ["0.0", "1.0", "2.0", "3.0", "4.0", "5.0", "6.0", "7.0", "8.0", "9.0"]},
+                "range": {"type": "array", 'minLength': 2, 'maxLength': 2, 'items': [
+                    {"type": "string", 'minLength': 1, 'maxLength': 99},
+                    {"type": "string", 'minLength': 1, 'maxLength': 99}
+                ]},
+            }
+        }
+
+        try:
+            validictory.validate(descriptor_type_format, schema)
+        except validictory.MultipleValidationError as e:
+            return str(e)
+
+        # @todo "unit" must be in the allowed list
+
+        if descriptor_type_format['unit'] != "custom" and descriptor_type_format['custom_unit'] != "":
+            return _("Custom unit can only be defined is unit is set to custom (unit, custom_unit)")
+
+        # check format
+        try:
+            range_min = decimal.Decimal(descriptor_type_format["range"][0])
+        except decimal.InvalidOperation:
+            return _("Range min must be a decimal")
+
+        # check format
+        try:
+            range_max = decimal.Decimal(descriptor_type_format["range"][1])
+        except decimal.InvalidOperation:
+            return _("Range min must be a decimal")
+
+        if range_min > range_max:
+            return _("Range min must be lesser than range max")
+
+        return None
+
 
 class DescriptorFormatTypeOrdinal(DescriptorFormatType):
     """
@@ -369,9 +483,7 @@ class DescriptorFormatTypeOrdinal(DescriptorFormatType):
         self.name = "ordinal"
         self.group = DescriptorFormatTypeGroupSingle()
         self.verbose_name = _("Ordinal")
-        self.format_fields = [
-            "range",
-        ]
+        self.format_fields = ["type", "range", "unit", "custom_unit"]
 
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         # check if the value is an integer into the range min/max
@@ -382,6 +494,46 @@ class DescriptorFormatTypeOrdinal(DescriptorFormatType):
         if value < int(descriptor_type_format['range'][0]) or value > int(descriptor_type_format['range'][1]):
             return _("The descriptor value must be an integer between ") + " %i and %i" % (
                 descriptor_type_format['range'][0], descriptor_type_format['range'][1])
+
+        return None
+
+    def check(self, descriptor_type_format):
+        schema = {
+            "type": "object",
+            "properties": {
+                "unit": {"type": "string", 'minLength': 1, 'maxLength': 32},
+                "custom_unit": {"type": "string", 'minLength': 0, 'maxLength': 32, 'blank': True},
+                "range": {"type": "array", 'minLength': 2, 'maxLength': 2, 'items': [
+                    {"type": "string", 'minLength': 1, 'maxLength': 99},
+                    {"type": "string", 'minLength': 1, 'maxLength': 99}
+                ]},
+            }
+        }
+
+        try:
+            validictory.validate(descriptor_type_format, schema)
+        except validictory.MultipleValidationError as e:
+            return str(e)
+
+        # @todo "unit" must be in the allowed list
+
+        if descriptor_type_format['unit'] != "custom" and descriptor_type_format['custom_unit'] != "":
+            return _("Custom unit can only be defined is unit is set to custom (unit, custom_unit)")
+
+        # check format
+        try:
+            range_min = int(descriptor_type_format["range"][0])
+        except decimal.InvalidOperation:
+            return _("Range min must be an integer")
+
+        # check format
+        try:
+            range_max = int(descriptor_type_format["range"][1])
+        except decimal.InvalidOperation:
+            return _("Range min must be an integer")
+
+        if range_min > range_max:
+            return _("Range min must be lesser than range max")
 
         return None
 
@@ -402,6 +554,10 @@ class DescriptorFormatTypeGPSCoordinate(DescriptorFormatType):
         ]
 
     def validate(self, descriptor_type_format, value, descriptor_model_type):
+        # @todo
+        return None
+
+    def check(self, descriptor_type_format):
         # @todo
         return None
 
@@ -438,6 +594,27 @@ class DescriptorFormatTypeString(DescriptorFormatType):
 
         return None
 
+    def check(self, descriptor_type_format):
+        schema = {
+            "type": "object",
+            "properties": {
+                "regexp": {"type": "string", 'minLength': 0, 'maxLength': 256, 'blank': True}
+            }
+        }
+
+        try:
+            validictory.validate(descriptor_type_format, schema)
+        except validictory.MultipleValidationError as e:
+            return str(e)
+
+        # validate the regexp
+        try:
+            re.compile(descriptor_type_format["regexp"])
+        except Exception as e:
+            return str(e)
+
+        return None
+
 
 class DescriptorFormatTypeDate(DescriptorFormatType):
     """
@@ -459,6 +636,9 @@ class DescriptorFormatTypeDate(DescriptorFormatType):
         if not isinstance(value, str) or DescriptorFormatTypeDate.DATE_RE.match(value) is None:
             return _("The descriptor value must be a date string (YYYYMMDD)")
 
+        return None
+
+    def check(self, descriptor_type_format):
         return None
 
 
@@ -484,6 +664,9 @@ class DescriptorFormatTypeTime(DescriptorFormatType):
 
         return None
 
+    def check(self, descriptor_type_format):
+        return None
+
 
 class DescriptorFormatTypeDateTime(DescriptorFormatType):
     """
@@ -507,10 +690,13 @@ class DescriptorFormatTypeDateTime(DescriptorFormatType):
 
         return None
 
+    def check(self, descriptor_type_format):
+        return None
+
 
 class DescriptorFormatTypeEntity(DescriptorFormatType):
     """
-    Specialisation for a refered entity value.
+    Specialisation for a referred entity value.
     """
 
     def __init__(self):
@@ -532,5 +718,29 @@ class DescriptorFormatTypeEntity(DescriptorFormatType):
             content_type.get_object_for_this_type(id=value)
         except ObjectDoesNotExist:
             return _("The descriptor value must refers to an existing entity")
+
+        return None
+
+    def check(self, descriptor_type_format):
+        schema = {
+            "type": "object",
+            "properties": {
+                "model": {"type": "string", 'minLength': 3, 'maxLength': 256}
+            }
+        }
+
+        try:
+            validictory.validate(descriptor_type_format, schema)
+        except validictory.MultipleValidationError as e:
+            return str(e)
+
+        entity_list = []
+
+        from django.apps import apps
+        for entity in apps.get_app_config('descriptor').describable_entities:
+            entity_list.append("%s.%s" % (entity._meta.app_label, entity._meta.model_name))
+
+        if descriptor_type_format['model'] not in entity_list:
+            return _("Invalid describable entity model type name")
 
         return None

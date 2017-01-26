@@ -53,8 +53,8 @@ EnumOrdinal.DescriptorTypeDetailsView = Marionette.ItemView.extend({
         this.ui.display_fields.selectpicker({style: 'btn-default'});
         this.ui.search_field.selectpicker({style: 'btn-default'});
 
-        this.ui.format_range_min.numeric({decimal : false, negative : false});
-        this.ui.format_range_max.numeric({decimal : false, negative : false});
+        this.ui.format_range_min.numeric({decimal : false, negative : false, maxDecimalPlaces: 0});
+        this.ui.format_range_max.numeric({decimal : false, negative : false, maxDecimalPlaces: 0});
 
         var format = this.model.get('format');
 

@@ -46,9 +46,9 @@ var Layout = Marionette.LayoutView.extend({
         }
 
         // update the contextual region according to the format
-        var DescriptorTypeDetailsView = application.descriptor.widgets.getElement(format.type).DescriptorTypeDetailsView;
-        if (DescriptorTypeDetailsView) {
-            this.getRegion('content').show(new DescriptorTypeDetailsView({model: this.model}));
+        var Element = application.descriptor.widgets.getElement(format.type);
+        if (Element && Element.DescriptorTypeDetailsView) {
+            this.getRegion('content').show(new Element.DescriptorTypeDetailsView({model: this.model}));
         } else {
             this.getRegion('content').empty();
         }

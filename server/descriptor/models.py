@@ -85,8 +85,7 @@ class DescriptorType(Entity):
     values = models.TextField(default="")
 
     # JSON encoded format of the descriptor
-    format = models.TextField(
-        default='{"type": "string", "unit": "custom", "precision": "0.0", "fields": [], "trans": false}')
+    format = models.TextField(default='{"type": "undefined"}')
 
     # Is this descriptor can be deleted by an authorised staff people
     can_delete = models.BooleanField(default=True)

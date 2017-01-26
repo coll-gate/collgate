@@ -490,15 +490,9 @@ def delete_descriptor_type_for_group(request, id, tid):
                 "type": "object",
                 "properties": {
                     "type": {"type": "string", 'minLength': 1, 'maxLength': 32},
-                    "unit": {"type": "string", 'minLength': 0, 'maxLength': 32, 'required': False},
-                    "fields": {"type": "array", 'minLength': 0, 'maxLength': 2, 'required': False},
-                    "precision": {"type": "string", 'required': False},
-                    "range": {"type": "array", 'minLength': 2, 'maxLength': 2, 'required': False},
-                    "trans": {"type": "boolean", 'required': False},
-                    "sortby_field": {"type": "string", "enum": ['code', 'ordinal', 'value0', 'value1'], 'required': False},
-                    "display_fields": {"type": "string", "enum": ['value0', 'value1', 'value0-value1', 'ordinal-value0', 'hier0-value1'], 'required': False},
-                    "list_type": {"type": "string", "enum": ['automatic', 'dropdown', 'autocomplete'], 'required': False},
-                    "search_field": {"type": "string", "enum": ['value0', 'value1'], 'required': False},
+                },
+                "additionalProperties": {
+                    "type": "any"
                 }
             }
         },
@@ -524,13 +518,12 @@ def update_descriptor_type(request, id, tid):
     if not descr_type.can_modify:
         raise SuspiciousOperation(_("It is not permit to modify this type of descriptor"))
 
-    # @todo check if there is somes values and used descriptor type... inconsistency of the describables in DB
+    # @todo check if there is some values and used descriptor type... inconsistency of the describables in DB
+    # may we test if the descriptor type is mapped into descriptor model type, and if these descriptor model type
+    # have data ?
 
-    # @todo this part may be offers a dynamic validation according to registered type of format
+    # format validation
     DescriptorFormatTypeManager.check(format)
-
-    # @todo remove after migration
-    trans = format.get('trans', False)
 
     # had values -> has no values
     if not format['type'].startswith('enum_') and org_format['type'].startswith('enum_'):
@@ -540,69 +533,25 @@ def update_descriptor_type(request, id, tid):
 
     # single enumeration
     if format['type'] == 'enum_single':
-        if format["sortby_field"] == 'value1':
-            raise SuspiciousOperation(_("Single enumeration list cannot be sorted by value1"))
-
-        if format["display_fields"] != 'value0':
-            raise SuspiciousOperation(_("Single enumeration list can only display the value0 field"))
-
-        if format["search_field"] != 'value0':
-            raise SuspiciousOperation(_("Single enumeration list can only search on value0"))
-
-        if len(format['fields']) != 1:
-            raise SuspiciousOperation(_("Type of descriptor with an enumeration of singleton require one field"))
-
         # reset if type or translation differs
-        if org_format['type'] != 'enum_single' or trans != org_format.get('trans', False):
-            format['trans'] = trans
-
+        if org_format['type'] != 'enum_single' or format['trans'] != org_format.get('trans', False):
             # rest values
             descr_type.values = ""
             descr_type.values_set.all().delete()
 
     # pair enumeration
     elif format['type'] == 'enum_pair':
-        if format["sortby_field"] == 'ordinal':
-            raise SuspiciousOperation(_("Pair enumeration list cannot be sorted by ordinal"))
-
-        if format["display_fields"] == 'ordinal-value0':
-            raise SuspiciousOperation(_("Pair enumeration list cannot display ordinal field"))
-
-        if len(format['fields']) != 2:
-            raise SuspiciousOperation(_("Type of descriptor with enumeration of pairs require two fields"))
-
         # reset if type or translation differs
-        if org_format['type'] != 'enum_pair' or trans != org_format.get('trans', False):
-            format['trans'] = trans
-
+        if org_format['type'] != 'enum_pair' or format['trans'] != org_format.get('trans', False):
             # reset values
             descr_type.values = ""
             descr_type.values_set.all().delete()
 
     # ordinal enumeration
     elif format['type'] == 'enum_ordinal':
-        if format["sortby_field"] != 'ordinal':
-            raise SuspiciousOperation(_("Ordinal enumeration list can only be sorted by ordinal"))
-
-        if format["display_fields"] not in ('value0', 'ordinal-value0'):
-            raise SuspiciousOperation(_("Ordinal enumeration list can only display value0 and ordinal fields"))
-
-        if format["search_field"] != 'value0':
-            raise SuspiciousOperation(_("Ordinal enumeration list can only search on value0"))
-
-        if len(format['fields']) != 1:
-            raise SuspiciousOperation(_("Type of descriptor with an enumeration of ordinal require one field"))
-
-        # translation with enum_ordinal
-        format['trans'] = trans
-
         # range as integer in this case
         org_min_range, org_max_range = [int(x) for x in org_format.get('range', ['0', '0'])]
         min_range, max_range = [int(x) for x in format['range']]
-
-        # range validation
-        if min_range < -127 or max_range > 127:
-            raise SuspiciousOperation(_('Range limits are [-127, 127]'))
 
         # reset values because it changes of type
         if org_format['type'] != 'enum_ordinal':
@@ -610,16 +559,13 @@ def update_descriptor_type(request, id, tid):
             descr_type.values_set.all().delete()
 
         # regenerate values only if difference in range or translation
-        if org_min_range != min_range or org_max_range != max_range or trans != org_format.get('trans', False):
-            # this will regenerate new entries for ordinal
-            format['fields'] = ['label', '']
-
+        if org_min_range != min_range or org_max_range != max_range or format['trans'] != org_format.get('trans', False):
             values = {}
 
             i = 1  # begin to 1
 
             # translation mean a dict of dict
-            if trans:
+            if format['trans']:
                 for lang in InterfaceLanguages.choices():
                     lvalues = {}
 

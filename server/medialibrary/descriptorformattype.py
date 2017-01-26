@@ -6,9 +6,11 @@
 coll-gate descriptor format type class for media library
 """
 
+import validictory
+
 from django.utils.translation import ugettext_lazy as _
 
-from descriptor.descriptorformattype import DescriptorFormatTypeGroupSingle, DescriptorFormatType, DescriptorFormatTypeGroup
+from descriptor.descriptorformattype import DescriptorFormatType, DescriptorFormatTypeGroup
 
 
 class DescriptorFormatTypeGroupMedia(DescriptorFormatTypeGroup):
@@ -51,11 +53,21 @@ class DescriptorFormatTypeMedia(DescriptorFormatType):
         return None
 
     def check(self, descriptor_type_format):
-        if "media_types" not in descriptor_type_format:
-            return _("Missing media types (media_types)")
+        schema = {
+            "type": "object",
+            "properties": {
+                "media_types": {"type": "array", 'minLength': 1, 'maxLength': 16}
+            }
+        }
 
-        if len(descriptor_type_format["media_types"]) > 16:
-            return _("Media types array length must not exceed 16 (media_types)")
+        try:
+            validictory.validate(descriptor_type_format, schema)
+        except validictory.MultipleValidationError as e:
+            return str(e)
+
+        for media_type in descriptor_type_format["media_types"]:
+            if media_type not in ['archives', 'images', 'documents', 'spreadsheets']:
+                return _("Media type must be archives, images, documents or spreadsheets (media_types)")
 
         return None
 
@@ -92,16 +104,21 @@ class DescriptorFormatTypeMediaCollection(DescriptorFormatType):
         return None
 
     def check(self, descriptor_type_format):
-        if "media_types" not in descriptor_type_format:
-            return _("Missing media types (media_types)")
+        schema = {
+            "type": "object",
+            "properties": {
+                "media_types": {"type": "array", 'minLength': 1, 'maxLength': 16},
+                "max_items": {"type": "integer", 'minimum': 2, 'maximum': 256}
+            }
+        }
 
-        if len(descriptor_type_format["media_types"]) > 16:
-            return _("Media types array length must not exceed 16 (media_types)")
+        try:
+            validictory.validate(descriptor_type_format, schema)
+        except validictory.MultipleValidationError as e:
+            return str(e)
 
-        if "max_items" not in descriptor_type_format:
-            return _("Missing number of max items (max_items)")
-
-        if descriptor_type_format["max_items"] < 2 or descriptor_type_format["max_items"] > 256:
-            return _("Max items number must be between 2 and 256 (max_items)")
+        for media_type in descriptor_type_format["media_types"]:
+            if media_type not in ['archives', 'images', 'documents', 'spreadsheets']:
+                return _("Media type must be archives, images, documents or spreadsheets (media_types)")
 
         return None
