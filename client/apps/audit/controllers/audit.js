@@ -18,7 +18,7 @@ var TitleView = require('../../main/views/titleview');
 var ScrollingMoreView = require('../../main/views/scrollingmore');
 var Dialog = require('../../main/views/dialog');
 
-var Controller = Marionette.Controller.extend({
+var Controller = Marionette.Object.extend({
 
     searchByUserName: function () {
         var ModalView = Dialog.extend({

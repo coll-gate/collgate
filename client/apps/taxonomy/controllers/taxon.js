@@ -48,7 +48,7 @@ _.extend(Controller.prototype, Backbone.Events, {
     getOption: Marionette.proxyGetOption
 });*/
 
-var TaxonController = Marionette.Controller/*Object*/.extend({
+var TaxonController = Marionette.Object.extend({
 
     create: function() {
         var CreateTaxonView = Dialog.extend({

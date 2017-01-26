@@ -26,7 +26,7 @@ var EntityPathView = require('../../taxonomy/views/entitypath');
 var AccessionEditView = require('../views/accessionedit');
 
 
-var Controller = Marionette.Controller/*Object*/.extend({
+var Controller = Marionette.Object.extend({
 
     create: function() {
         $.ajax({
