@@ -10,10 +10,11 @@
 
 var Marionette = require('backbone.marionette');
 
-var AccessionModule = {
+var AccessionModule = function() {
+    this.name = "accession";
+};
 
-    name: "accession",
-
+AccessionModule.prototype = {
     initialize: function(app, options) {
         Logger.time("Init accession module");
 

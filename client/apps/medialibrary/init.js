@@ -10,10 +10,11 @@
 
 var Marionette = require('backbone.marionette');
 
-var MediaLibraryModule = {
+var MediaLibraryModule = function() {
+    this.name = "medialibrary";
+};
 
-    name: "medialibrary",
-
+MediaLibraryModule.prototype = {
     initialize: function(app, options) {
         Logger.time("Init medialibrary module");
 

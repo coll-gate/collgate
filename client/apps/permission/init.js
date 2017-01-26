@@ -10,10 +10,11 @@
 
 var Marionette = require('backbone.marionette');
 
-var PermissionModule = {
+var PermissionModule = function() {
+    this.name = "permission";
+};
 
-    name: "permission",
-
+PermissionModule.prototype = {
     initialize: function(app, options) {
         Logger.time("Init permission module");
 

@@ -194,9 +194,25 @@ application = new Marionette.Application({
         for (var i = 0; i < session.modules.length; ++i) {
             var module = session.modules[i];
 
-            this[module] = require('./' + module + '/init');
+            try {
+                var Module = require('./' + module + '/init');
+                this[module] = new Module();
+            } catch (e) {
+                var msg = gt.gettext("Missing client module") + " : " + module + ". " +
+                          gt.gettext("Please contact your administrator.");
+
+                alert(msg);
+            }
+
             if (this[module].initialize) {
-                this[module].initialize(this, {});
+                try {
+                    this[module].initialize(this, {});
+                } catch (e) {
+                    var msg = gt.gettext("Module initialization failed") + " : " + module + ". " +
+                              gt.gettext("Please contact your administrator.");
+
+                    alert(msg);
+                }
             }
         }
     },
@@ -210,7 +226,14 @@ application = new Marionette.Application({
             var module = session.modules[i];
 
             if (this[module].start) {
-                this[module].start({});
+                try {
+                    this[module].start({});
+                } catch (e) {
+                    var msg = gt.gettext("Module startup failed") + " : " + module + ". " +
+                              gt.gettext("Please contact your administrator.");
+
+                    alert(msg);
+                }
             }
         }
 

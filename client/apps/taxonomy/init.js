@@ -10,10 +10,11 @@
 
 var Marionette = require('backbone.marionette');
 
-var TaxonomyModule = {
+var TaxonomyModule = function() {
+    this.name = "taxonomy";
+};
 
-    name: "taxonomy",
-
+TaxonomyModule.prototype = {
     initialize: function(app, options) {
         Logger.time("Init taxonomy module");
 

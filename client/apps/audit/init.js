@@ -10,10 +10,11 @@
 
 var Marionette = require('backbone.marionette');
 
-var AuditModule = {
+var AuditModule = function() {
+    this.name = "audit";
+};
 
-    name: "audit",
-
+AuditModule.prototype = {
     initialize: function (app, options) {
         Logger.time("Init audit module");
 

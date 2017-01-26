@@ -12,15 +12,12 @@ var Marionette = require('backbone.marionette');
 
 require('./css/main.css');
 
-//
-// Main module definition
-//
+var MainModule = function() {
+    this.name = "main";
+};
 
-var MainModule = {
-
-    name: "main",
-
-    initialize: function(app, options) {
+MainModule.prototype = {
+    initialize : function(app, options) {
         Logger.time("Init main module");
 
         //var deferred = $.Deferred();

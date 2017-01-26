@@ -10,10 +10,11 @@
 
 var Marionette = require('backbone.marionette');
 
-var DescriptorModule = {
+var DescriptorModule = function() {
+    this.name = "descriptor";
+};
 
-    name: "audit",
-
+DescriptorModule.prototype = {
     initialize: function(app, options) {
         Logger.time("Init descriptor module");
 
