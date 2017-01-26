@@ -124,12 +124,98 @@ application = new Marionette.Application({
             }
         });
     },
-    onStart: function(options) {
-        // Starts the URL handling framework and automatically route as possible
-        Backbone.history.start({pushState: true, silent: false, root: '/coll-gate'});
 
+    onBeforeStart: function(options) {
+        this.baseUrl = '/coll-gate/';
+
+        /**
+         * @brief Set the display layout of the 3 columns of content (bootstrap layout grid system).
+         * @param mode Must be a string with numeric between 1..10 and split by dashes -. The sums of
+         * the columns must not exceed 12.
+         * @example 2-8-2 Make left column visible with a width of 2, middle size of 8 and right of 2.
+         * 0 or empty value mean not displayed column. For a single content column uses -12-.
+         */
+        this.setDisplay = function(mode) {
+            if (typeof(mode) !== 'string' || !mode)
+                return;
+
+            var m = mode.split('-');
+            if (m.length == 3) {
+                var panels = [
+                    $("#left_details"),
+                    $("#main_content"),
+                    $("#right_content")
+                ];
+
+                for (var i = 0; i < panels.length; ++i) {
+                    panels[i].removeClass();
+                    if (m[i] && m[i] > 0) {
+                        panels[i].addClass("col-md-" + m[i]);
+                        panels[i].css("display", "block");
+                    }
+                    else {
+                        panels[i].addClass("col-md-" + m[i]);
+                        panels[i].css("display", "none");
+                    }
+                }
+            }
+        };
+
+        // i18n
+        i18next.init({
+            initImmediate: false,  // avoid setTimeout
+            lng: session.language,
+            ns: 'default',
+            debug: false,
+            fallbackLng: 'en'
+        });
+        i18next.setDefaultNamespace('default');
+
+        window.gt = i18next;
+        window.gt.gettext = i18next.t;
+        window.gt._ = i18next.t;
+        window.gt.pgettext = function(context, msg) { return i18next.t(msg, {context: context}); };
+
+        // select2
+        if (session.language === "fr") {
+            require('select2/dist/js/i18n/fr');
+        } else {  // default to english
+        }
+
+        $.fn.select2.defaults.set('language', session.language);
+
+        // moment
+        moment.locale(session.language);
+
+        // defaults modules
+        session.modules || (session.modules = ['main']);
+
+        // require and initialize each modules
+        for (var i = 0; i < session.modules.length; ++i) {
+            var module = session.modules[i];
+
+            this[module] = require('./' + module + '/init');
+            if (this[module].initialize) {
+                this[module].initialize(this, {});
+            }
+        }
+    },
+
+    onStart: function(options) {
         $.alert({container: '#main_content'/*'div.panel-body'*/, className: 'alert'});
         $.alert.update();
+
+        // start each module
+        for (var i = 0; i < session.modules.length; ++i) {
+            var module = session.modules[i];
+
+            if (this[module].start) {
+                this[module].start({});
+            }
+        }
+
+        // Starts the URL handling framework and automatically route as possible
+        Backbone.history.start({pushState: true, silent: false, root: '/coll-gate'});
 
         // add alerted initiated by django server side
         if (typeof initials_alerts !== "undefined") {
@@ -149,78 +235,6 @@ application.addRegions({
     leftRegion: "#left_details",
     rightRegion: "#right_content",
     modalRegion: "#dialog_content"
-});
-
-application.on("before:start", function(options) {
-    this.baseUrl = '/coll-gate/';
-
-    /**
-     * @brief Set the display layout of the 3 columns of content (bootstrap layout grid system).
-     * @param mode Must be a string with numeric between 1..10 and split by dashes -. The sums of
-     * the columns must not exceed 12.
-     * @example 2-8-2 Make left column visible with a width of 2, middle size of 8 and right of 2.
-     * 0 or empty value mean not displayed column. For a single content column uses -12-.
-     */
-    this.setDisplay = function(mode) {
-        if (typeof(mode) !== 'string' || !mode)
-            return;
-
-        var m = mode.split('-');
-        if (m.length == 3) {
-            var panels = [
-                $("#left_details"),
-                $("#main_content"),
-                $("#right_content")
-            ];
-
-            for (var i = 0; i < panels.length; ++i) {
-                panels[i].removeClass();
-                if (m[i] && m[i] > 0) {
-                    panels[i].addClass("col-md-" + m[i]);
-                    panels[i].css("display", "block");
-                }
-                else {
-                    panels[i].addClass("col-md-" + m[i]);
-                    panels[i].css("display", "none");
-                }
-            }
-        }
-    };
-
-    // i18n
-    i18next.init({
-        initImmediate: false,  // avoid setTimeout
-        lng: session.language,
-        ns: 'default',
-        debug: false,
-        fallbackLng: 'en'
-    });
-    i18next.setDefaultNamespace('default');
-
-    window.gt = i18next;
-    window.gt.gettext = i18next.t;
-    window.gt._ = i18next.t;
-    window.gt.pgettext = function(context, msg) { return i18next.t(msg, {context: context}); };
-
-    // select2
-    if (session.language === "fr") {
-        require('select2/dist/js/i18n/fr');
-    } else {  // default to english
-    }
-
-    $.fn.select2.defaults.set('language', session.language);
-
-    // moment
-    moment.locale(session.language);
-
-    // defaults modules
-    session.modules || (session.modules = ['main']);
-
-    // each modules
-    for (var i = 0; i < session.modules.length; ++i) {
-        var module = session.modules[i];
-        this[module] = require('./' + module + '/init');
-    }
 });
 
 application.start({initialData: ''});

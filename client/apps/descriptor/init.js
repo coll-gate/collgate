@@ -10,9 +10,11 @@
 
 var Marionette = require('backbone.marionette');
 
-var DescriptorModule = Marionette.Module.extend({
+var DescriptorModule = {
 
-    initialize: function(moduleName, app, options) {
+    name: "audit",
+
+    initialize: function(app, options) {
         Logger.time("Init descriptor module");
 
         this.models = {};
@@ -33,7 +35,7 @@ var DescriptorModule = Marionette.Module.extend({
         Logger.timeEnd("Init descriptor module");
     },
 
-    onStart: function(options) {
+    start: function(options) {
         Logger.time("Start descriptor module");
 
         var DescriptorFormatTypeManager = require('./widgets/descriptorformattypemanager');
@@ -112,12 +114,9 @@ var DescriptorModule = Marionette.Module.extend({
         Logger.timeEnd("Start descriptor module");
     },
 
-    onStop: function(options) {
+    stop: function(options) {
 
-    },
-});
+    }
+};
 
-// descriptor module
-var descriptor = application.module("descriptor", DescriptorModule);
-
-module.exports = descriptor;
+module.exports = DescriptorModule;

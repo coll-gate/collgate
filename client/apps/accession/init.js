@@ -10,9 +10,11 @@
 
 var Marionette = require('backbone.marionette');
 
-var AccessionModule = Marionette.Module.extend({
+var AccessionModule = {
 
-    initialize: function(moduleName, app, options) {
+    name: "accession",
+
+    initialize: function(app, options) {
         Logger.time("Init accession module");
 
         this.models = {};
@@ -33,7 +35,7 @@ var AccessionModule = Marionette.Module.extend({
         Logger.timeEnd("Init accession module");
     },
 
-    onStart: function(options) {
+    start: function(options) {
         Logger.time("Start accession module");
 
         var SelectOptionItemView = require('../main/views/selectoptionitemview');
@@ -55,12 +57,9 @@ var AccessionModule = Marionette.Module.extend({
         Logger.timeEnd("Start accession module");
     },
 
-    onStop: function(options) {
+    stop: function(options) {
 
-    },
-});
+    }
+};
 
-// accession module
-var accession = application.module("accession", AccessionModule);
-
-module.exports = accession;
+module.exports = AccessionModule;

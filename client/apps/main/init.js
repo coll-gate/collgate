@@ -16,9 +16,11 @@ require('./css/main.css');
 // Main module definition
 //
 
-var MainModule = Marionette.Module.extend({
+var MainModule = {
 
-    initialize: function(moduleName, app, options) {
+    name: "main",
+
+    initialize: function(app, options) {
         Logger.time("Init main module");
 
         //var deferred = $.Deferred();
@@ -76,15 +78,10 @@ var MainModule = Marionette.Module.extend({
             collection: this.collections.contentTypes
         });
 
-        this.views.Home = Marionette.CompositeView.extend({
-            el: '#main_content',
-            template: require('./templates/home.html')
-        });
-
         Logger.timeEnd("Init main module");
     },
 
-    onStart: function(options) {
+    start: function(options) {
         Logger.time("Start main module");
 
         var MainRouter = require('./routers/main');
@@ -96,11 +93,9 @@ var MainModule = Marionette.Module.extend({
         Logger.timeEnd("Start main module");
     },
 
-    onStop: function(options) {
+    stop: function(options) {
 
-    },
-});
+    }
+};
 
-var main =  application.module("main", MainModule);
-
-module.exports = main;
+module.exports = MainModule;

@@ -10,9 +10,11 @@
 
 var Marionette = require('backbone.marionette');
 
-var TaxonomyModule = Marionette.Module.extend({
+var TaxonomyModule = {
 
-    initialize: function(moduleName, app, options) {
+    name: "taxonomy",
+
+    initialize: function(app, options) {
         Logger.time("Init taxonomy module");
 
         this.models = {};
@@ -62,7 +64,7 @@ var TaxonomyModule = Marionette.Module.extend({
         Logger.timeEnd("Init taxonomy module");
     },
 
-    onStart: function(options) {
+    start: function(options) {
         Logger.time("Start taxonomy module");
 
         var TaxonRouter = require('./routers/taxon');
@@ -74,12 +76,9 @@ var TaxonomyModule = Marionette.Module.extend({
         Logger.timeEnd("Start taxonomy module");
     },
 
-    onStop: function(options) {
+    stop: function(options) {
 
-    },
-});
+    }
+};
 
-// taxonomy module
-var taxonomy = application.module("taxonomy", TaxonomyModule);
-
-module.exports = taxonomy;
+module.exports = TaxonomyModule;

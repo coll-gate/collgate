@@ -10,9 +10,11 @@
 
 var Marionette = require('backbone.marionette');
 
-var PermissionModule = Marionette.Module.extend({
+var PermissionModule = {
 
-    initialize: function(moduleName, app, options) {
+    name: "permission",
+
+    initialize: function(app, options) {
         Logger.time("Init permission module");
 
         this.models = {};
@@ -43,7 +45,7 @@ var PermissionModule = Marionette.Module.extend({
         Logger.timeEnd("Init permission module");
     },
 
-    onStart: function(options) {
+    start: function(options) {
         Logger.time("Start permission module");
 
         var PermissionRouter = require('./routers/permission');
@@ -52,11 +54,8 @@ var PermissionModule = Marionette.Module.extend({
         Logger.timeEnd("Start permission module");
     },
 
-    onStop: function(options) {
-    },
-});
+    stop: function(options) {
+    }
+};
 
-// permission module
-var permission = application.module("permission", PermissionModule);
-
-module.exports = permission;
+module.exports = PermissionModule;

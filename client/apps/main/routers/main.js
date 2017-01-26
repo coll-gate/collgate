@@ -27,8 +27,17 @@ var Router = Marionette.AppRouter.extend({
     },
 
     home: function() {
-        var home = new application.main.views.Home();
-        home.render();
+        var HomeView = Marionette.ItemView.extend({
+            tagName: 'div',
+            className: 'about',
+            template: require('../templates/home.html')
+        });
+
+        var defaultLayout = new DefaultLayout({});
+        application.getRegion('mainRegion').show(defaultLayout);
+
+        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Accueil")}));
+        defaultLayout.getRegion('content').show(new HomeView());
     },
 
     about: function() {

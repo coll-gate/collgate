@@ -10,9 +10,11 @@
 
 var Marionette = require('backbone.marionette');
 
-var AuditModule = Marionette.Module.extend({
+var AuditModule = {
 
-    initialize: function(moduleName, app, options) {
+    name: "audit",
+
+    initialize: function (app, options) {
         Logger.time("Init audit module");
 
         this.models = {};
@@ -29,13 +31,13 @@ var AuditModule = Marionette.Module.extend({
                 console.warning("No translation found for the current language. Fallback to english language");
             }
         }
-        
+
         Logger.timeEnd("Init audit module");
     },
 
-    onStart: function(options) {
+    start: function (options) {
         Logger.time("Start audit module");
-        
+
         var AuditController = require('./controllers/audit');
         this.controllers.audit = new AuditController();
 
@@ -45,12 +47,9 @@ var AuditModule = Marionette.Module.extend({
         Logger.timeEnd("Start audit module");
     },
 
-    onStop: function(options) {
+    stop: function (options) {
 
-    },
-});
+    }
+};
 
-// audit module
-var audit = application.module("audit", AuditModule);
-
-module.exports = audit;
+module.exports = AuditModule;

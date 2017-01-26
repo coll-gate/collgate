@@ -10,9 +10,11 @@
 
 var Marionette = require('backbone.marionette');
 
-var MediaLibraryModule = Marionette.Module.extend({
+var MediaLibraryModule = {
 
-    initialize: function(moduleName, app, options) {
+    name: "medialibrary",
+
+    initialize: function(app, options) {
         Logger.time("Init medialibrary module");
 
         this.models = {};
@@ -33,8 +35,8 @@ var MediaLibraryModule = Marionette.Module.extend({
         Logger.timeEnd("Init medialibrary module");
     },
 
-    onStart: function(options) {
-        Logger.time("Start permission module");
+    start: function(options) {
+        Logger.time("Start medialibrary module");
 
         // register the format type of descriptors
         var widgets = [
@@ -53,11 +55,8 @@ var MediaLibraryModule = Marionette.Module.extend({
         Logger.timeEnd("Start medialibrary module");
     },
 
-    onStop: function(options) {
-    },
-});
+    stop: function(options) {
+    }
+};
 
-// medialibrary module
-var medialibrary = application.module("medialibrary", MediaLibraryModule);
-
-module.exports = medialibrary;
+module.exports = MediaLibraryModule;
