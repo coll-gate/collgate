@@ -46,7 +46,7 @@ class DescriptorFormatType(object):
 
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         """
-        Validate the value according the format. self.error contains the details of the error if False is returned.
+        Validate the value according the format.
         :param descriptor_type_format: Format of the related type of descriptor
         :param value: Value to validate
         :param descriptor_model_type: related descriptor model type
@@ -100,7 +100,7 @@ class DescriptorFormatTypeManager(object):
 
         res = dft.validate(descriptor_type_format, value, descriptor_model_type)
         if res is not None:
-            raise ValueError(dft.error + " (%s)" % descriptor_model_type.get_label())
+            raise ValueError(res + " (%s)" % descriptor_model_type.get_label())
 
     @classmethod
     def check(cls, descriptor_type_format):

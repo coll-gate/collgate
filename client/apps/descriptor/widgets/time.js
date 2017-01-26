@@ -140,12 +140,12 @@ _.extend(TimeType.prototype, DescriptorFormatType.prototype, {
                     // format to HH:mm:ss time
                     return [date.format("HH:mm:ss")];  // .MS
                 } else {
-                    return [""];
+                    return [null];
                 }
             }
         }
 
-        return [""];
+        return [null];
     },
 
     checkCondition: function (condition, values) {

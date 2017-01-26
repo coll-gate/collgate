@@ -54,8 +54,10 @@ var View = ItemView.extend({
             var values = [model.get('descriptors')[descriptorModelType.id]];
 
             var widget = application.descriptor.widgets.newElement(format.type);
-            widget.create(format, el.children('td.descriptor-value'), true, true, descriptorType.group, descriptorType.id);
-            widget.set(format, true, values, descriptorType.group, descriptorType.id);
+            if (widget) {
+                widget.create(format, el.children('td.descriptor-value'), true, true, descriptorType.group, descriptorType.id);
+                widget.set(format, true, values, descriptorType.group, descriptorType.id);
+            }
 
             // save the descriptor format type widget instance
             descriptorModelType.widget = widget;
@@ -74,11 +76,17 @@ var View = ItemView.extend({
                     var targetDescriptorModelType = this.descriptorMetaModelLayout.panels[target.attr('panel-index')].descriptor_model.descriptor_model_types[target.attr('index')];
 
                     // initial state of the condition
-                    var display = targetDescriptorModelType.widget.checkCondition(condition.condition, condition.values);
+                    var display = true;
+
+                    if (targetDescriptorModelType.widget) {
+                        display = targetDescriptorModelType.widget.checkCondition(condition.condition, condition.values);
+                    }
 
                     if (!display) {
                         // hide at tr level
-                        descriptorModelType.widget.parent.parent().hide(false);
+                        if (descriptorModelType.widget) {
+                            descriptorModelType.widget.parent.parent().hide(false);
+                        }
                     }
                 }
             }

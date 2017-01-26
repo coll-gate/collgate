@@ -146,12 +146,12 @@ _.extend(DateType.prototype, DescriptorFormatType.prototype, {
                     // format to YYYYMMDD date
                     return [date.format("YYYYMMDD")];
                 } else {
-                    return [""];
+                    return [null];
                 }
             }
         }
 
-        return [""];
+        return [null];
     },
 
     checkCondition: function (condition, values) {

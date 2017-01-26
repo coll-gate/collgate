@@ -40,7 +40,7 @@
                                                 <% if (descriptor_model_type.descriptor_type.format.custom_unit != undefined && descriptor_model_type.descriptor_type.format.custom_unit !== "") { %>
                                                     (<%= descriptor_model_type.descriptor_type.format.custom_unit %>)
                                                 <% } %>
-                                            <% } else { %>
+                                            <% } else if (descriptor_model_type.descriptor_type.format.unit != undefined) { %>
                                                 (<%= application.descriptor.collections.formatUnits.findLabel(descriptor_model_type.descriptor_type.format.unit) %>)
                                             <% } %>
                                             </span>

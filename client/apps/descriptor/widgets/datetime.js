@@ -141,12 +141,12 @@ _.extend(DateTimeType.prototype, DescriptorFormatType.prototype, {
                     // format to iso datetime
                     return [date.format()];
                 } else {
-                    return [""];
+                    return [null];
                 }
             }
         }
 
-        return [""];
+        return [null];
     },
 
     checkCondition: function (condition, values) {

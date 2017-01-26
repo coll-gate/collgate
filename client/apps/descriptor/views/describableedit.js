@@ -73,15 +73,17 @@ var View = ItemView.extend({
             }
 
             var widget = application.descriptor.widgets.newElement(format.type);
-            widget.create(format, el.children('td.descriptor-value'), false, true, descriptorType.group, descriptorType.id);
-            widget.set(format, definesValues, defaultValues, descriptorType.group, descriptorType.id);
+            if (widget) {
+                widget.create(format, el.children('td.descriptor-value'), false, true, descriptorType.group, descriptorType.id);
+                widget.set(format, definesValues, defaultValues, descriptorType.group, descriptorType.id);
+
+                if (descriptorModelType.set_once && exists) {
+                    widget.disable();
+                }
+            }
 
             // save the descriptor format type widget instance
             descriptorModelType.widget = widget;
-
-            if (descriptorModelType.set_once && exists) {
-                widget.disable();
-            }
         });
     },
 
@@ -104,22 +106,25 @@ var View = ItemView.extend({
                     var target = this.$el.find("tr.descriptor[descriptor-model-type=" + condition.target + "]");
                     var targetDescriptorModelType = this.descriptorMetaModelLayout.panels[target.attr('panel-index')].descriptor_model.descriptor_model_types[target.attr('index')];
 
-                    if (targetDescriptorModelType.id in descriptors) {
-                        descriptors[targetDescriptorModelType.id].listeners.push(descriptorModelType.widget);
-                    } else {
-                        descriptors[targetDescriptorModelType.id] = {
-                            widget: targetDescriptorModelType.widget,
-                            conditionType: condition.condition,
-                            conditionValue: condition.values,
-                            listeners: [descriptorModelType.widget]};
-                    }
+                    if (targetDescriptorModelType.widget && descriptorModelType.widget) {
+                        if (targetDescriptorModelType.id in descriptors) {
+                            descriptors[targetDescriptorModelType.id].listeners.push(descriptorModelType.widget);
+                        } else {
+                            descriptors[targetDescriptorModelType.id] = {
+                                widget: targetDescriptorModelType.widget,
+                                conditionType: condition.condition,
+                                conditionValue: condition.values,
+                                listeners: [descriptorModelType.widget]
+                            };
+                        }
 
-                    // initial state of the condition
-                    var display = targetDescriptorModelType.widget.checkCondition(condition.condition, condition.values);
+                        // initial state of the condition
+                        var display = targetDescriptorModelType.widget.checkCondition(condition.condition, condition.values);
 
-                    if (!display) {
-                        // hide at tr level
-                        descriptorModelType.widget.parent.parent().hide(false);
+                        if (!display) {
+                            // hide at tr level
+                            descriptorModelType.widget.parent.parent().hide(false);
+                        }
                     }
                 }
             }
@@ -167,7 +172,7 @@ var View = ItemView.extend({
                 var values = [null];
 
                 // display of the tr
-                if (descriptorModelType.widget.parent.parent().css('display') !== "none") {
+                if (descriptorModelType.widget && descriptorModelType.widget.parent.parent().css('display') !== "none") {
                     values = descriptorModelType.widget.values();
                 }
 
