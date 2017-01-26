@@ -127,24 +127,9 @@ some translations before every catalogs are loaded, and normally the server sent
     </div>
 </div>
 
-<div class="container content">
-    <!-- 1 row 3 columns -->
-    <div class="column">
-        <div class="col-md-2" id="left_details">
-            {% block left_content %}
-            {% endblock %}
-        </div>
-        <div class="col-md-8" id="main_content">
-            {% block main_content %}
-            {% endblock %}
-        </div>
-        <div class="col-md-2" id="right_content">
-            {% block right_content %}
-            {% endblock %}
-        </div>
-        <div id="dialog_content">
-        </div>
-    </div>
+<div id="root" class="container content">
+    {% block root %}
+    {% endblock %}
 </div> <!-- /container -->
 
 <footer class="footer" style="margin-top: 5px;">
@@ -352,71 +337,6 @@ if (session.languageDirection == "rtl") {
             }
         });
     });
-</script>
-
-<!-- Panel layout view (with title, body and two sub-sections (bottom) -->
-<script language="text/template" id="layout_view">
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <span style="font-weight:bold; font-size:18px;">
-                <span class="panel-title"></span>
-            </span>
-        </div>
-        <div class="panel-body">
-        </div>
-        <div class="panel-body-bottom">
-        </div>
-        <div class="panel-bottom">
-        </div>
-    </div>
-</script>
-
-<!-- Two columns layout view -->
-<script language="text/template" id="two_columns_layout_view">
-    <div class="column" style="height: 100%;">
-        <div class="left col-md-6">
-            <div class="left-content"></div>
-            <div class="left-bottom"></div>
-        </div>
-        <div class="right col-md-6">
-            <div class="right-content"></div>
-            <div class="right-bottom"></div>
-        </div>
-    </div>
-</script>
-
-<!-- Two columns, left one row, right two rows layout view -->
-<script language="text/template" id="left_one_right_two_layout_view">
-    <div class="column" style="height: 100%;">
-        <div class="left col-md-6">
-            <div class="left-content"></div>
-            <div class="left-bottom"></div>
-        </div>
-        <div class="right col-md-6">
-            <div class="right-up">
-                <div class="right-up-content"></div>
-                <div class="right-up-bottom"></div>
-            </div>
-            <div class="right-down">
-                <div class="right-down-content"></div>
-                <div class="right-down-bottom"></div>
-            </div>
-        </div>
-    </div>
-</script>
-
-<!-- Two rows layout view -->
-<script language="text/template" id="two_rows_layout_view">
-    <div class="column" style="height: 100%;">
-        <div class="top" style="height: 50%;">
-            <div class="top-content"></div>
-            <div class="top-bottom"></div>
-        </div>
-        <div class="bottom" style="height: 50%;">
-            <div class="bottom-content"></div>
-            <div class="bottom-bottom"></div>
-        </div>
-    </div>
 </script>
 
 {% bootstrap igdectk.alert_js %}

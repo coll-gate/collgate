@@ -34,7 +34,7 @@ var Router = Marionette.AppRouter.extend({
         });
 
         var defaultLayout = new DefaultLayout({});
-        application.getRegion('mainRegion').show(defaultLayout);
+        application.show(defaultLayout);
 
         defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Accueil")}));
         defaultLayout.getRegion('content').show(new HomeView());
@@ -42,7 +42,7 @@ var Router = Marionette.AppRouter.extend({
 
     about: function() {
         var defaultLayout = new DefaultLayout({});
-        application.getRegion('mainRegion').show(defaultLayout);
+        application.show(defaultLayout);
 
         defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("About...")}));
         defaultLayout.getRegion('content').show(new AboutView());
@@ -50,7 +50,7 @@ var Router = Marionette.AppRouter.extend({
 
     help: function() {
         var defaultLayout = new DefaultLayout({});
-        application.getRegion('mainRegion').show(defaultLayout);
+        application.show(defaultLayout);
 
         defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Help...")}));
         defaultLayout.getRegion('content').show(new HelpIndexView());

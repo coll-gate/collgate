@@ -1,22 +1,9 @@
 {% extends "main/index.html" %}
 
-{% load i18n %}
-
-{# main_content #}
-{% block main_content %}
+{% block root %}
 
 <script language="JavaScript">
 window.initialPath = '{{path|default:"home/"}}';
 </script>
 
-{% endblock %}
-
-{# detail #}
-
-{% block left_content %}
-<h3>{% trans "Welcome" %}</h3>
-{% endblock %}
-
-{% block right_content %}
-{% include "main/side_bar.html" %}
 {% endblock %}

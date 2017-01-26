@@ -38,7 +38,7 @@ var TaxonRouter = Marionette.AppRouter.extend({
         var collection = application.taxonomy.collections.taxons;
 
         var defaultLayout = new DefaultLayout({});
-        application.getRegion('mainRegion').show(defaultLayout);
+        application.show(defaultLayout);
 
         defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of taxons")}));
 
@@ -56,7 +56,7 @@ var TaxonRouter = Marionette.AppRouter.extend({
         var taxon = new TaxonModel({id: id});
 
         var defaultLayout = new DefaultLayout();
-        application.getRegion('mainRegion').show(defaultLayout);
+        application.show(defaultLayout);
 
         var taxonLayout = new TaxonLayout();
         defaultLayout.getRegion('content').show(taxonLayout);

@@ -42,7 +42,7 @@ var PermissionRouter = Marionette.AppRouter.extend({
         var userCollection = new PermissionUserCollection();
 
         var defaultLayout = new DefaultLayout({});
-        application.getRegion('mainRegion').show(defaultLayout);
+        application.show(defaultLayout);
 
         defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of users")}));
 
@@ -58,7 +58,7 @@ var PermissionRouter = Marionette.AppRouter.extend({
         var permissionsCollection = new PermissionCollection([], {username: username})
 
         var defaultLayout = new DefaultLayout({});
-        application.getRegion('mainRegion').show(defaultLayout);
+        application.show(defaultLayout);
 
         defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of permissions for user"), object: username}));
 
@@ -78,7 +78,7 @@ var PermissionRouter = Marionette.AppRouter.extend({
         var groupCollection = new PermissionGroupCollection();
 
         var defaultLayout = new DefaultLayout({});
-        application.getRegion('mainRegion').show(defaultLayout);
+        application.show(defaultLayout);
 
         defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of groups")}));
 
@@ -98,7 +98,7 @@ var PermissionRouter = Marionette.AppRouter.extend({
         var permissionsCollection = new PermissionCollection([], {group_id: id, is_group: true})
 
         var defaultLayout = new DefaultLayout({});
-        application.getRegion('mainRegion').show(defaultLayout);
+        application.show(defaultLayout);
 
         var group = new GroupModel({id: id});
         group.fetch().then(function() {
@@ -124,7 +124,7 @@ var PermissionRouter = Marionette.AppRouter.extend({
         var userCollection = new PermissionGroupUserCollection([], {group_id: id});
 
         var defaultLayout = new DefaultLayout({});
-        application.getRegion('mainRegion').show(defaultLayout);
+        application.show(defaultLayout);
 
         var group = new GroupModel({id: id});
         group.fetch().then(function() {

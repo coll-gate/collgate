@@ -96,7 +96,7 @@ var Controller = Marionette.Object.extend({
         });
 
         var modal = new ModalView({controller: this});
-        application.getRegion('modalRegion').show(modal);
+        modal.render();
 
         modal.on("view:search", function(args) {
             var username = $(args.view.ui.username).val();
@@ -113,7 +113,7 @@ var Controller = Marionette.Object.extend({
         var auditCollection = new AuditCollection([], {username: username});
 
         var defaultLayout = new DefaultLayout({});
-        application.getRegion('mainRegion').show(defaultLayout);
+        application.show(defaultLayout);
 
         defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of audit entries related to user"), object: username}));
 
@@ -222,7 +222,7 @@ var Controller = Marionette.Object.extend({
         });
 
         var modal = new ModalView({controller: this});
-        application.getRegion('modalRegion').show(modal);
+        modal.render();
 
         modal.on("view:search", function(args) {
             var object_id = $(args.view.ui.entity).val();
@@ -241,7 +241,7 @@ var Controller = Marionette.Object.extend({
         var auditCollection = new AuditCollection([], {entity: {app_label: app_label, model: model, object_id: object_id}});
 
         var defaultLayout = new DefaultLayout({});
-        application.getRegion('mainRegion').show(defaultLayout);
+        application.show(defaultLayout);
 
         // if not specified retrieve the entity name
         if (object_name == null) {

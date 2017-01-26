@@ -32,7 +32,7 @@ var ProfileRouter = Marionette.AppRouter.extend({
 
     edit: function() {
         var defaultLayout = new DefaultLayout({});
-        application.getRegion('mainRegion').show(defaultLayout);
+        application.show(defaultLayout);
 
         model = new ProfileModel({username: session.user.username});
 

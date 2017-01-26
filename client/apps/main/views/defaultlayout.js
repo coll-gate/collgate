@@ -11,7 +11,7 @@
 var Marionette = require('backbone.marionette');
 
 var DefaultLayout = Marionette.LayoutView.extend({
-    template: "#layout_view",
+    template: require("../templates/defaultlayout.html"),
     attributes: {
         style: "height: 100%;"
     },

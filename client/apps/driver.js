@@ -201,7 +201,7 @@ application = new Marionette.Application({
                 var msg = gt.gettext("Missing client module") + " : " + module + ". " +
                           gt.gettext("Please contact your administrator.");
 
-                alert(msg);
+                window.alert(msg);
             }
 
             if (this[module].initialize) {
@@ -211,7 +211,7 @@ application = new Marionette.Application({
                     var msg = gt.gettext("Module initialization failed") + " : " + module + ". " +
                               gt.gettext("Please contact your administrator.");
 
-                    alert(msg);
+                    window.alert(msg);
                 }
             }
         }
@@ -232,7 +232,7 @@ application = new Marionette.Application({
                     var msg = gt.gettext("Module startup failed") + " : " + module + ". " +
                               gt.gettext("Please contact your administrator.");
 
-                    alert(msg);
+                    window.alert(msg);
                 }
             }
         }
@@ -250,14 +250,17 @@ application = new Marionette.Application({
         }
 
         Logger.timeEnd('Application startup');
+    },
+
+    // helper to be removed in Mn 3
+    show: function(view) {
+        return this.getRegion('root').currentView.getRegion('content').show(view);
     }
 });
 
 application.addRegions({
-    mainRegion: "#main_content",
-    leftRegion: "#left_details",
-    rightRegion: "#right_content",
-    modalRegion: "#dialog_content"
+    root: "#root",
+    mainRegion: "#main_content" // @todo remove me and replace me everewhere by application.getRegion('root').currentView.getRegion('content')
 });
 
 application.start({initialData: ''});

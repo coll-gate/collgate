@@ -81,6 +81,17 @@ MainModule.prototype = {
     start: function(options) {
         Logger.time("Start main module");
 
+        // main view
+        var MainView = require('./views/main');
+        var mainView = new MainView();
+        application.getRegion('root').show(mainView);
+
+        var LeftBarView = require('./views/leftbar');
+        mainView.getRegion('left').show(new LeftBarView());
+
+        var RightBarView = require('./views/rightbar');
+        mainView.getRegion('right').show(new RightBarView());
+
         var MainRouter = require('./routers/main');
         this.routers.main = new MainRouter();
 

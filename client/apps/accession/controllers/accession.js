@@ -204,7 +204,7 @@ var Controller = Marionette.Object.extend({
                         view.remove();
 
                         var defaultLayout = new DefaultLayout();
-                        application.getRegion('mainRegion').show(defaultLayout);
+                        application.show(defaultLayout);
 
                         defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Accession"), model: model}));
 

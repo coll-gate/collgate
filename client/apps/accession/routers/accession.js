@@ -44,7 +44,7 @@ var Router = Marionette.AppRouter.extend({
         var collection = new AccessionCollection();
 
         var defaultLayout = new DefaultLayout({});
-        application.getRegion('mainRegion').show(defaultLayout);
+        application.show(defaultLayout);
 
         defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of accessions")}));
 
@@ -58,7 +58,7 @@ var Router = Marionette.AppRouter.extend({
 
     getAccession : function(id) {
         var defaultLayout = new DefaultLayout();
-        application.getRegion('mainRegion').show(defaultLayout);
+        application.show(defaultLayout);
 
         var accessionLayout = new AccessionLayout();
         defaultLayout.getRegion('content').show(accessionLayout);

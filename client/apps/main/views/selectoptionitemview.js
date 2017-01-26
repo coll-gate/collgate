@@ -93,8 +93,8 @@ var SelectOptionItemView = Marionette.ItemView.extend({
     },
 
     drawSelect: function(sel, widget, emptyValue, initialValue) {
-        widget || (widget = true);
-        emptyValue || (emptyValue = false);
+        widget != undefined || (widget = true);
+        emptyValue != undefined || (emptyValue = false);
 
         var view = this;
 

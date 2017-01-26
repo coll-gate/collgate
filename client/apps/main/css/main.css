@@ -1,0 +1,9 @@
+#right_content {
+    border: solid 1px #96a052;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px #A0BD2E;
+}
+
+#main_content {
+    height: 100%;
+}

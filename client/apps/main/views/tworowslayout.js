@@ -11,7 +11,7 @@
 var Marionette = require('backbone.marionette');
 
 var TwoRowsLayout = Marionette.LayoutView.extend({
-    template: "#two_rows_layout_view",
+    template: require("../templates/tworowslayout.html"),
     attributes: {
         // style: "height: 95%;"
     },

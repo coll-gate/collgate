@@ -101,16 +101,6 @@ div.panel div.panel-body-bottom {
     flex: 0 1 auto;
 }
 
-#right_content {
-    border: solid 1px #96a052;
-    border-radius: 5px;
-    box-shadow: 0px 0px 10px #A0BD2E;
-}
-
-#main_content {
-    height: 100%;
-}
-
 .content {
     /*margin-top: 60px;*/
     /*margin-bottom: 10px;*/
