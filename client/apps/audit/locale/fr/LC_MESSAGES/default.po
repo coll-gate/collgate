@@ -86,6 +86,3 @@ msgstr "Action"
 #: ../../../templates/auditlist.html:9
 msgid "Details"
 msgstr "Détails"
-
-#~ msgid "List of audit entries by date"
-#~ msgstr "Liste des entrées d'audits par date"

@@ -54,7 +54,7 @@ msgid "List of users for group"
 msgstr ""
 
 #: ../../../templates/groupchangename.html:5
-msgid "Change the name of the group of users"
+msgid "Rename the group of users"
 msgstr ""
 
 #: ../../../templates/groupchangename.html:10

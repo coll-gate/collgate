@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-24 15:40+0100\n"
+"POT-Creation-Date: 2017-01-27 11:42+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,43 +18,49 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: descriptorformattype.py:20 descriptorformattype.py:33
+#: descriptorformattype.py:22 descriptorformattype.py:35
 msgid "Media"
-msgstr ""
+msgstr "Média"
 
-#: descriptorformattype.py:41 descriptorformattype.py:75
+#: descriptorformattype.py:43 descriptorformattype.py:94
 msgid "The descriptor value must be an integer"
-msgstr ""
+msgstr "La valeur du descripteur doit être un entier"
 
-#: descriptorformattype.py:66
-msgid "Media collection"
+#: descriptorformattype.py:70 descriptorformattype.py:122
+msgid ""
+"Media type must be archives, images, documents or spreadsheets (media_types)"
 msgstr ""
+"Le type de média doit être archives, images, documents ou spreadsheets (media_types)"
+
+#: descriptorformattype.py:85
+msgid "Media collection"
+msgstr "Collection de média"
 
 #: media.py:83 media.py:114 media.py:208
 msgid "Media library destination folder misconfiguration"
-msgstr ""
+msgstr "Répertoire de destination de la média librairie mal configuré"
 
 #: media.py:117 media.py:211
 msgid "No file specified"
-msgstr ""
+msgstr "Pas de fichier spécifié"
 
 #: media.py:123 media.py:217
 #, python-format
 msgid "Upload file size limit is set to %i bytes"
-msgstr ""
+msgstr "La taille limite d'un fichier téléchargé est définie à %i octets"
 
 #: media.py:128 media.py:222
 msgid "Undetermined uploaded file type"
-msgstr ""
+msgstr "Type de fichier téléchargé indéterminé"
 
 #: media.py:230
 msgid "Trying to update a non-existing file"
-msgstr ""
+msgstr "Tentative de mise-à-jour d'un fichier inexistant"
 
 #: models.py:21
 msgid "media collection"
-msgstr ""
+msgstr "collection de médias"
 
 #: models.py:47
 msgid "media"
-msgstr ""
+msgstr "média"

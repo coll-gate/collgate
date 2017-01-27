@@ -36,7 +36,7 @@ var Router = Marionette.AppRouter.extend({
         var defaultLayout = new DefaultLayout({});
         application.show(defaultLayout);
 
-        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Accueil")}));
+        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Home")}));
         defaultLayout.getRegion('content').show(new HomeView());
     },
 

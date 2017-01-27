@@ -428,7 +428,7 @@ def delete_taxon(request, id):
 
     # check if some accessions uses it before remove
     if taxon.children.exists():
-        raise SuspiciousOperation(_("This taxon has children. It cannot be deleted."))
+        raise SuspiciousOperation(_("This taxon has sub-ranks. It cannot be deleted."))
 
     taxon.delete()
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-24 15:40+0100\n"
+"POT-Creation-Date: 2017-01-27 11:42+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -138,7 +138,7 @@ msgid "This taxon is referred by one or more entities. It cannot be deleted."
 msgstr ""
 
 #: taxon.py:431
-msgid "This taxon has children. It cannot be deleted."
+msgid "This taxon has sub-ranks. It cannot be deleted."
 msgstr ""
 
 #: taxon.py:449

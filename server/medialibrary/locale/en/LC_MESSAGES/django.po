@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-24 15:40+0100\n"
+"POT-Creation-Date: 2017-01-27 11:42+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,15 +17,20 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: descriptorformattype.py:20 descriptorformattype.py:33
+#: descriptorformattype.py:22 descriptorformattype.py:35
 msgid "Media"
 msgstr ""
 
-#: descriptorformattype.py:41 descriptorformattype.py:75
+#: descriptorformattype.py:43 descriptorformattype.py:94
 msgid "The descriptor value must be an integer"
 msgstr ""
 
-#: descriptorformattype.py:66
+#: descriptorformattype.py:70 descriptorformattype.py:122
+msgid ""
+"Media type must be archives, images, documents or spreadsheets (media_types)"
+msgstr ""
+
+#: descriptorformattype.py:85
 msgid "Media collection"
 msgstr ""
 

@@ -54,11 +54,11 @@ msgstr "Nom de taxon existant"
 
 #: ../../../controllers/accession.js:177
 msgid "The parent must be defined"
-msgstr "Le parent doit être définit"
+msgstr "Le parent doit être défini"
 
 #: ../../../templates/accessionchangesynonym.html:5
-msgid "Change the name for a synonym of accession"
-msgstr "Changer le nom d'un synonyme d'accession"
+msgid "Rename a synonym of accession"
+msgstr "Renomer un synonyme d'accession"
 
 #: ../../../templates/accessionchangesynonym.html:10
 #: ../../../templates/accessionlist.html:5

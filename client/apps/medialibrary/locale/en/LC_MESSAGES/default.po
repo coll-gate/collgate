@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-24 12:08+0100\n"
+"POT-Creation-Date: 2017-01-27 11:42+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,3 +16,32 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#: ../../../templates/widgets/media.html:2
+#: ../../../templates/widgets/mediacollection.html:2
+msgid "Type of media"
+msgstr ""
+
+#: ../../../templates/widgets/media.html:4
+#: ../../../templates/widgets/mediacollection.html:4
+msgid "Archives (zip, rar, 7z, tar, gz, bz, bz2)"
+msgstr ""
+
+#: ../../../templates/widgets/media.html:5
+#: ../../../templates/widgets/mediacollection.html:5
+msgid "Images (gif, png, jpg, jpeg, tif, tiff, psd, svg)"
+msgstr ""
+
+#: ../../../templates/widgets/media.html:6
+#: ../../../templates/widgets/mediacollection.html:6
+msgid "Documents (doc, docx, ppt, pptx, odt, odp, pdf, ps)"
+msgstr ""
+
+#: ../../../templates/widgets/media.html:7
+#: ../../../templates/widgets/mediacollection.html:7
+msgid "Spreadsheets (xls, xlsx, ods, csv)"
+msgstr ""
+
+#: ../../../templates/widgets/mediacollection.html:11
+msgid "Max items number"
+msgstr ""

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-11-15 14:20+0100\n"
+"POT-Creation-Date: 2017-01-27 11:42+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,11 +21,15 @@ msgstr ""
 msgid "Done"
 msgstr "Fait"
 
-#: ../../../routers/main.js:38
+#: ../../../routers/main.js:39
+msgid "Home"
+msgstr "Accueil"
+
+#: ../../../routers/main.js:47
 msgid "About..."
 msgstr "A propos..."
 
-#: ../../../routers/main.js:46
+#: ../../../routers/main.js:55
 msgid "Help..."
 msgstr "Aide.."
 
@@ -41,10 +45,10 @@ msgstr "Anglais"
 msgid "French"
 msgstr "Français"
 
-#: ../../../templates/home.html:14
-msgid "Home"
-msgstr "Accueil"
-
-#: ../../../templates/home.html:18
+#: ../../../templates/home.html:11
 msgid "Welcome to Coll-Gate"
 msgstr "Bienvenue sur Coll-Gate"
+
+#: ../../../templates/leftbar.html:1
+msgid "Welcome"
+msgstr "Bienvenue"
