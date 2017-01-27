@@ -14,7 +14,7 @@ var Dialog = require('../../main/views/dialog');
 
 var View = Marionette.ItemView.extend({
     tagName: 'div',
-    className: 'element object taxon',
+    className: 'object taxon',
     template: require('../templates/taxondetails.html'),
 
     ui: {

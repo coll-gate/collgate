@@ -1,3 +1,13 @@
+/**
+ * @file index.css
+ * @brief Application initial index CSS
+ * @author Frederic SCHERMA
+ * @date 2016-07-01
+ * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+ * @license @todo
+ * @details
+ */
+
 body {
     background-color: #faf0eb;
 }
@@ -24,81 +34,6 @@ html,
 body {
     /*height: 94%;*/
     margin: 0
-}
-
-div.column {
-    height: 100%;
-    margin: 0
-}
-
-div.panel.panel-default {
-    display: flex;
-    flex-flow: column;
-    height: 100%;
-}
-
-div.left, div.right {
-    padding-left: 5px;
-    padding-right: 5px;
-    height: 100%;
-}
-
-div.left {
-    border-right: 1px solid #d8d8d8;
-}
-
-div.panel div.panel-heading {
-    height: 45px;
-    flex: 0 1 auto;
-}
-
-div.panel div.panel-body {
-    overflow-y: auto;
-    overflow-x: hidden;
-    flex: 1 1 auto;
-    height: 100%;
-}
-
-div.right-up {
-    height: 52.5%;
-    border-bottom: 1px solid #d8d8d8;
-}
-
-div.right-down {
-    height: 47.5%;
-}
-
-div.left-content, div.right-content {
-    overflow-y: auto;
-    height: 100%;
-}
-
-div.right-up-content {
-    overflow-y: auto;
-    height: 90%;
-}
-
-div.right-down-content {
-    overflow-y: auto;
-    height: 100%;
-}
-
-div.panel div.panel-bottom {
-    height: auto;
-    flex: 0 1 auto;
-}
-
-div.panel.panel-default {
-    margin: 0px;
-}
-
-div.left-bottom, div.right-bottom, div.right-up-bottom, div.right-down-bottom {
-    height: auto;
-}
-
-div.panel div.panel-body-bottom {
-    height: auto;
-    flex: 0 1 auto;
 }
 
 .content {
@@ -130,19 +65,6 @@ a.login {
     color: whitesmoke;
 }
 
-.panel-heading .accordion-toggle:after {
-    /* symbol for "opening" panels */
-    font-family: 'Glyphicons Halflings';  /* essential for enabling glyphicon */
-    content: "\e114";    /* adjust as needed, taken from bootstrap.css */
-    float: right;        /* adjust as needed */
-    color: grey;         /* adjust as needed */
-}
-
-.panel-heading .accordion-toggle.collapsed:after {
-    /* symbol for "collapsed" panels */
-    content: "\e080";    /* adjust as needed, taken from bootstrap.css */
-}
-
 /* disable bootstrap collapsing animation */
 .collapsing {
     -webkit-transition: none;
@@ -155,48 +77,9 @@ a.login {
     box-shadow: none;
 }
 
-span.url {
-    cursor: pointer;
-}
-
-.action {
-    cursor: pointer;
-}
-
-.left-margin {
-    margin-left: 10px;
-}
-
-/*.element {*/
-    /*border-bottom: 1px solid #96a052;*/
-    /*maring-top: 0px;*/
-    /*margin-bottom: 15px;*/
-/*}*/
-
-/*.ui-autocomplete {*/
-    /*position: absolute;*/
-    /*cursor: default;*/
-    /*z-index:10000 !important;*/
-/*}*/
-
 .hr-default {
     margin-top: 10px;
     margin-bottom: 0px;
-}
-
-/*.table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th {
-    padding: 3px !important;
-}*/
-
-.heading {
-    background-color: #6c995a;
-    padding: 5px;
-    margin-left: 0.25em;
-    border-radius: 5px;
-}
-
-.sticky-header {
-    background-color: white;
 }
 
 .unselectable {
@@ -204,76 +87,4 @@ span.url {
     -khtml-user-select: none;
     -webkit-user-select: none;
     -o-user-select: none;
-}
-
-tr.element:hover {
-    background: #5cb85c !important;
-}
-
-[draggable=true] {
-    cursor: move;
-}
-
-[draggable] {
-  -moz-user-select: none;
-  -khtml-user-select: none;
-  -webkit-user-select: none;
-  user-select: none;
-  /* Required to make elements draggable in old WebKit */
-  -khtml-user-drag: element;
-  -webkit-user-drag: element;
-}
-
-.draggable-over {
-    border: 2px dashed #000;
-    border-radius: 5px;
-}
-
-span[name='label']:empty ~ span.label-placeholder {
-    display: inline;
-}
-
-span[name='label']:not(:empty) ~ span.label-placeholder {
-    display: none;
-}
-
-/** add a little space before the first row in tbody, in way to see its top border */
-/*tbody.header-line::before {
-    line-height: 2px;
-    content:"\200C";
-    display:table-row;
-}
-*/
-
-/*.helper {
-    top: -8px;
-    left: 2px;
-    height: 16px;
-    padding: 0px 1px;
-    border: 0px;
-}*/
-
-.help {
-    display: none;
-}
-
-/** add a glyphicon to collapsable panels */
-.panel-heading .accordion-toggle:after {
-    font-family: 'Glyphicons Halflings';
-    content: "\e114";
-    float: right;
-    color: grey;
-}
-
-.panel-heading .accordion-toggle.collapsed:after {
-    content: "\e080";
-}
-
-.mandatory-field {
-    font-weight: bold;
-    font-style: italic;
-}
-
-.mandatory-field:after {
-    content: '*';
 }

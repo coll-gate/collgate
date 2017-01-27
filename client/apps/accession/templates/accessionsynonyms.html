@@ -9,7 +9,7 @@
     </thead>
     <tbody>
         <% _.each(synonyms, function(synonym) { %>
-        <tr>
+        <tr class="element">
             <th scope="row">
                 <% if (synonym.type != 'IN_001:0000001') { %><span data-synonym-id="<%= synonym.id %>" class="action remove-synonym glyphicon glyphicon-minus-sign"></span><% } %>
             </th>

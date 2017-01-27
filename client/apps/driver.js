@@ -33,6 +33,9 @@ moment = require("moment");
 
 // global application
 application = new Marionette.Application({
+
+    // region: '#root',  // @todo Uncomment me after Mn 3 migration and remove the addRegions
+
     initialize: function(options) {
         Logger.useDefaults({
             defaultLevel: Logger.WARN,
@@ -252,15 +255,33 @@ application = new Marionette.Application({
         Logger.timeEnd('Application startup');
     },
 
-    // helper to be removed in Mn 3
+    // helper to be removed in Mn 3 (@see Marionette.Application)
+    showView: function(view) {
+        return this.getRegion('root').show(view);
+    },
+
+    // helper to be removed in Mn 3 (@see Marionette.Application)
+    getView: function() {
+        return this.getRegion('root').currentView;
+    },
+
+    /**
+     * Show a view into the content region of the main view.
+     * @param view
+     */
     show: function(view) {
-        return this.getRegion('root').currentView.getRegion('content').show(view);
+        return this.getView().getRegion('content').show(view);
+    },
+
+    /**
+     * Get the view of the content region of the main view.
+     * @returns Marionette.View or undefined
+     */
+    view: function () {
+        return this.getView().getRegion('content').currentView;
     }
 });
 
-application.addRegions({
-    root: "#root",
-    mainRegion: "#main_content" // @todo remove me and replace me everewhere by application.getRegion('root').currentView.getRegion('content')
-});
+application.addRegions({root: "#root"});
 
 application.start({initialData: ''});

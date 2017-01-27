@@ -23,7 +23,7 @@ var View = DescribableEdit.extend({
         var name = this.model.get('name');
 
         // update the layout content
-        var accessionLayout = application.getRegion('mainRegion').currentView.getRegion('content').currentView;
+        var accessionLayout = application.view().getRegion('content').currentView;
 
         var AccessionDetailsView = require('../views/accessiondetails');
         var accessionDetailsView = new AccessionDetailsView({
@@ -45,7 +45,7 @@ var View = DescribableEdit.extend({
 
         this.model.save({descriptors: descriptors}, {wait: true, patch: !model.isNew()}).then(function () {
             //Backbone.history.navigate('app/accession/accession/' + model.get('id') + '/', {trigger: true, replace: true});
-            var accessionLayout = application.getRegion('mainRegion').currentView.getRegion('content').currentView;
+            var accessionLayout = application.view().getRegion('content').currentView;
 
             // update the layout content
             var AccessionDetailsView = require('../views/accessiondetails');

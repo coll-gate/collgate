@@ -13,7 +13,7 @@ var AuditModel = require('../models/audit');
 
 var View = Marionette.ItemView.extend({
     tagName: 'tr',
-    className: 'object audit',
+    className: 'object audit element',
     attributes: {
         'scope': 'row',
     },

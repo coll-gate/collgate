@@ -33,6 +33,10 @@ TaxonomyModule.prototype = {
             }
         }
 
+        //
+        // main collections
+        //
+
         var SelectOptionItemView = require('../main/views/selectoptionitemview');
 
         var TaxonRankCollection = require('./collections/taxonrank');
@@ -58,9 +62,23 @@ TaxonomyModule.prototype = {
             className: 'taxon-synonym-type',
             collection: this.collections.taxonSynonymTypes,
         });
-        
+
+        //
+        // controllers
+        //
+
         var TaxonController = require('./controllers/taxon');
         this.controllers.taxon = new TaxonController();
+
+        //
+        // routers
+        //
+
+        var TaxonRouter = require('./routers/taxon');
+        this.routers.taxon = new TaxonRouter();
+
+        var TaxonCollection = require('./collections/taxon');
+        this.collections.taxons = new TaxonCollection();
 
         Logger.timeEnd("Init taxonomy module");
     },
@@ -68,11 +86,7 @@ TaxonomyModule.prototype = {
     start: function(options) {
         Logger.time("Start taxonomy module");
 
-        var TaxonRouter = require('./routers/taxon');
-        this.routers.taxon = new TaxonRouter();
-
-        var TaxonCollection = require('./collections/taxon');
-        this.collections.taxons = new TaxonCollection();
+        // nothing to do
 
         Logger.timeEnd("Start taxonomy module");
     },

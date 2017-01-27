@@ -33,11 +33,9 @@ AccessionModule.prototype = {
             }
         }
 
-        Logger.timeEnd("Init accession module");
-    },
-
-    start: function(options) {
-        Logger.time("Start accession module");
+        //
+        // main collections
+        //
 
         var SelectOptionItemView = require('../main/views/selectoptionitemview');
 
@@ -49,11 +47,27 @@ AccessionModule.prototype = {
             collection: this.collections.accessionSynonymTypes,
         });
 
-        var AccessionRouter = require('./routers/accession');
-        this.routers.accession = new AccessionRouter();
+        //
+        // controllers
+        //
 
         var AccessionController = require('./controllers/accession');
         this.controllers.accession = new AccessionController();
+
+        //
+        // routers
+        //
+
+        var AccessionRouter = require('./routers/accession');
+        this.routers.accession = new AccessionRouter();
+
+        Logger.timeEnd("Init accession module");
+    },
+
+    start: function(options) {
+        Logger.time("Start accession module");
+
+        // nothing to do
 
         Logger.timeEnd("Start accession module");
     },

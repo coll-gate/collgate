@@ -80,8 +80,7 @@ var View = Marionette.ItemView.extend({
                         view.remove();
 
                         // update the descriptor part of the taxon layout
-                        var defaultLayout = application.getRegion('mainRegion').currentView;
-                        var taxonLayout = defaultLayout.getRegion('content').currentView;
+                        var taxonLayout = application.view().getRegion('content').currentView;
 
                         // patch the taxon descriptor meta model
                         model.save({descriptor_meta_model: metaModel}, {patch: true, wait: false});

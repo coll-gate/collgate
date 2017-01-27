@@ -43,14 +43,20 @@ PermissionModule.prototype = {
             collection: this.collections.permissionType,
         });
 
+        //
+        // routers
+        //
+
+        var PermissionRouter = require('./routers/permission');
+        this.routers.permission = new PermissionRouter();
+
         Logger.timeEnd("Init permission module");
     },
 
     start: function(options) {
         Logger.time("Start permission module");
 
-        var PermissionRouter = require('./routers/permission');
-        this.routers.permission = new PermissionRouter();
+        // nothing to do
 
         Logger.timeEnd("Start permission module");
     },

@@ -12,7 +12,7 @@ var Marionette = require('backbone.marionette');
 
 var View = Marionette.ItemView.extend({
     tagName: 'tr',
-    className: 'object accession',
+    className: 'object accession element',
     attributes: {
         'scope': 'row',
     },

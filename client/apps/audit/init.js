@@ -33,17 +33,27 @@ AuditModule.prototype = {
             }
         }
 
+        //
+        // controllers
+        //
+
+        var AuditController = require('./controllers/audit');
+        this.controllers.audit = new AuditController();
+
+        //
+        // routers
+        //
+
+        var AuditRouter = require('./routers/audit');
+        this.routers.audit = new AuditRouter();
+
         Logger.timeEnd("Init audit module");
     },
 
     start: function (options) {
         Logger.time("Start audit module");
 
-        var AuditController = require('./controllers/audit');
-        this.controllers.audit = new AuditController();
-
-        var AuditRouter = require('./routers/audit');
-        this.routers.audit = new AuditRouter();
+        // nothing to do
 
         Logger.timeEnd("Start audit module");
     },

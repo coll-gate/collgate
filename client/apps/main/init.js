@@ -49,6 +49,10 @@ MainModule.prototype = {
             //i18next.addResources('en', 'default', require('./locale/en/LC_MESSAGES/default.json'));
         }*/
 
+        //
+        // collections
+        //
+
         var SelectOptionItemView = require('./views/selectoptionitemview');
 
         var LanguageCollection = require('./collections/language');
@@ -75,6 +79,16 @@ MainModule.prototype = {
             collection: this.collections.contentTypes
         });
 
+        //
+        // routers
+        //
+
+        var MainRouter = require('./routers/main');
+        this.routers.main = new MainRouter();
+
+        var ProfileRouter = require('./routers/profile');
+        this.routers.profile = new ProfileRouter();
+
         Logger.timeEnd("Init main module");
     },
 
@@ -91,12 +105,6 @@ MainModule.prototype = {
 
         var RightBarView = require('./views/rightbar');
         mainView.getRegion('right').show(new RightBarView());
-
-        var MainRouter = require('./routers/main');
-        this.routers.main = new MainRouter();
-
-        var ProfileRouter = require('./routers/profile');
-        this.routers.profile = new ProfileRouter();
 
         Logger.timeEnd("Start main module");
     },

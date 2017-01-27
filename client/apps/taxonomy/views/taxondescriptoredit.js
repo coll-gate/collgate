@@ -18,7 +18,7 @@ var View = DescribableEdit.extend({
         var name = model.get('name');
 
         // update the descriptor part of the taxon layout
-        var taxonLayout = application.getRegion('mainRegion').currentView.getRegion('content').currentView;
+        var taxonLayout = application.view().getRegion('content').currentView;
 
         var TaxonDescriptorView = require('../views/taxondescriptor');
         var taxonDescriptorView = new TaxonDescriptorView({
@@ -40,7 +40,7 @@ var View = DescribableEdit.extend({
 
         this.model.save({descriptors: descriptors}, {wait: true, patch: !model.isNew()}).then(function () {
             // update the descriptor part of the taxon layout
-            var taxonLayout = application.getRegion('mainRegion').currentView.getRegion('content').currentView;
+            var taxonLayout = application.view().getRegion('content').currentView;
 
             var TaxonDescriptorView = require('../views/taxondescriptor');
             var taxonDescriptorView = new TaxonDescriptorView({

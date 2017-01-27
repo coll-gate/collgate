@@ -33,48 +33,9 @@ DescriptorModule.prototype = {
             }
         }
 
-        Logger.timeEnd("Init descriptor module");
-    },
-
-    start: function(options) {
-        Logger.time("Start descriptor module");
-
-        var DescriptorFormatTypeManager = require('./widgets/descriptorformattypemanager');
-        this.widgets = new DescriptorFormatTypeManager();
-
-        // register the standard format type of descriptors
-        var widgets = [
-            'boolean',
-            'numeric',
-            'numeric_range',
-            'ordinal',
-            'string',
-            'date',
-            'time',
-            'datetime',
-            'entity',
-            'gps',
-            'enum_single',
-            'enum_pair',
-            'enum_ordinal'
-        ];
-
-        for (var i = 0; i < widgets.length; ++i) {
-            var moduleName = widgets[i].replace('_', '').toLowerCase();
-            this.widgets.registerElement(widgets[i], require('./widgets/' + moduleName));
-        }
-
-        var DescriptorRouter = require('./routers/descriptor');
-        this.routers.descriptor = new DescriptorRouter();
-
-        var DescriptorModelRouter = require('./routers/descriptormodel');
-        this.routers.descriptorModel = new DescriptorModelRouter();
-
-        var DescriptorMetaModelRouter = require('./routers/descriptormetamodel');
-        this.routers.descriptorMetaModel = new DescriptorMetaModelRouter();
-
-        var DescriptorGroupCollection = require('./collections/descriptorgroup');
-        this.collections.descriptorGroup = new DescriptorGroupCollection();
+        //
+        // main collections
+        //
 
         var SelectOptionItemView = require('../main/views/selectoptionitemview');
 
@@ -111,6 +72,59 @@ DescriptorModule.prototype = {
             className: 'format-unit',
             collection: this.collections.formatUnits,
         });
+
+        //
+        // descriptor format types
+        //
+
+        var DescriptorFormatTypeManager = require('./widgets/descriptorformattypemanager');
+        this.widgets = new DescriptorFormatTypeManager();
+
+        // register the standard format type of descriptors
+        var widgets = [
+            'boolean',
+            'numeric',
+            'numeric_range',
+            'ordinal',
+            'string',
+            'date',
+            'time',
+            'datetime',
+            'entity',
+            'gps',
+            'enum_single',
+            'enum_pair',
+            'enum_ordinal'
+        ];
+
+        for (var i = 0; i < widgets.length; ++i) {
+            var moduleName = widgets[i].replace('_', '').toLowerCase();
+            this.widgets.registerElement(widgets[i], require('./widgets/' + moduleName));
+        }
+
+        //
+        // routers
+        //
+
+        var DescriptorRouter = require('./routers/descriptor');
+        this.routers.descriptor = new DescriptorRouter();
+
+        var DescriptorModelRouter = require('./routers/descriptormodel');
+        this.routers.descriptorModel = new DescriptorModelRouter();
+
+        var DescriptorMetaModelRouter = require('./routers/descriptormetamodel');
+        this.routers.descriptorMetaModel = new DescriptorMetaModelRouter();
+
+        var DescriptorGroupCollection = require('./collections/descriptorgroup');
+        this.collections.descriptorGroup = new DescriptorGroupCollection();
+
+        Logger.timeEnd("Init descriptor module");
+    },
+
+    start: function(options) {
+        Logger.time("Start descriptor module");
+
+        // nothing to do
         
         Logger.timeEnd("Start descriptor module");
     },

@@ -17,7 +17,7 @@ var View = DescribableDetails.extend({
         var name = this.model.get('name');
 
         // update the layout content
-        var accessionLayout = application.getRegion('mainRegion').currentView.getRegion('content').currentView;
+        var accessionLayout = application.view().getRegion('content').currentView;
 
         var view = new AccessionEditView({model: this.model, descriptorMetaModelLayout: this.descriptorMetaModelLayout});
         accessionLayout.getRegion('descriptors').show(view);

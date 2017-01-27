@@ -13,6 +13,7 @@ var Marionette = require('backbone.marionette');
 var View = Marionette.ItemView.extend({
     tagName: 'tr',
     template: require('../templates/taxonentity.html'),
+    className: "element",
     taxon: null,
 
     ui: {

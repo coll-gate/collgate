@@ -14,6 +14,7 @@ var TaxonModel = require('../models/taxon');
 var TaxonItemView = Marionette.ItemView.extend({
     tagName: 'div',
     template: require('../templates/taxon.html'),
+    className: "object taxon",
 
     ui: {
         "taxon": "span.taxon",

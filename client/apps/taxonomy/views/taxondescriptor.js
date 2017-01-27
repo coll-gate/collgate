@@ -18,7 +18,7 @@ var View = DescribableDetails.extend({
         var name = model.get('name');
 
         // update the descriptor part of the taxon layout
-        var taxonLayout = application.getRegion('mainRegion').currentView.getRegion('content').currentView;
+        var taxonLayout = application.view().getRegion('content').currentView;
 
         var view = new TaxonDescriptorEditView({model: this.model, descriptorMetaModelLayout: this.descriptorMetaModelLayout});
         taxonLayout.getRegion('descriptors').show(view);

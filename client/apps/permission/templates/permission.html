@@ -8,7 +8,7 @@
  - @details
 -->
 
-<div class="element object permission" object-type="permission" style="width:100%;">
+<div class="object permission" object-type="permission" style="width:100%;">
     <span style="font-weight:bold; font-size:18px;"><% gt.gettext("Model") %>
         <span class="model permission label label-info" style="cursor: pointer;"><% gt.gettext("Model") + ": " %><%= model %></span>
         <% if (object_name) { %><span class="model object badge left-margin" style="cursor: pointer;" object-id="<%- object %>"><%= object_name %></span><% } %>
@@ -27,7 +27,7 @@
             </thead>
             <tbody>
                 <% _.each(permissions, function(perm) { %>
-                <tr>
+                <tr class="element">
                     <th><span class="edition action remove-permission glyphicon glyphicon-minus-sign" model="<%- model %>" object="<%- object %>" codename="<%- perm.id %>" app_label="<%- perm.app_label %>"></span></th>
                     <td name="module" class="permission-module"><%- perm.app_label %></td>
                     <td name="name"><%- perm.name %></td>

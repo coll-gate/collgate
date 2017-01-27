@@ -33,11 +33,9 @@ MediaLibraryModule.prototype = {
             }
         }
 
-        Logger.timeEnd("Init medialibrary module");
-    },
-
-    start: function(options) {
-        Logger.time("Start medialibrary module");
+        //
+        // descriptor format types
+        //
 
         // register the format type of descriptors
         var widgets = [
@@ -50,8 +48,20 @@ MediaLibraryModule.prototype = {
             application.descriptor.widgets.registerElement(widgets[i], require('./widgets/' + moduleName));
         }
 
+        //
+        // routers
+        //
+
         //var MediaLibraryRouter = require('./routers/medialibrary');
         //this.routers.medialibrary = new MediaLibraryRouter();
+
+        Logger.timeEnd("Init medialibrary module");
+    },
+
+    start: function(options) {
+        Logger.time("Start medialibrary module");
+
+        // nothing to do
 
         Logger.timeEnd("Start medialibrary module");
     },
