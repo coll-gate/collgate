@@ -15,7 +15,7 @@ var DescriptorPanelModel = require('../models/descriptorpanel');
 
 var View = Marionette.ItemView.extend({
     tagName: 'div',
-    className: 'element object descriptor-panel',
+    className: 'object descriptor-panel',
     template: require('../templates/descriptorpanel.html'),
 
     attributes: {
@@ -208,10 +208,10 @@ var View = Marionette.ItemView.extend({
                         }, {
                             wait: true,
                             success: function () {
-                                view.remove();
+                                view.destroy();
                             },
                             error: function () {
-                                view.remove();
+                                view.destroy();
 
                                 // left shift (undo) for consistency with server
                                 for (var i = 0; i < to_rshift.length; ++i) {
@@ -405,7 +405,7 @@ var View = Marionette.ItemView.extend({
                             model.set('label', labels[session.language]);
                             $.alert.success(gt.gettext("Successfully labeled !"));
                         }).always(function () {
-                            view.remove();
+                            view.destroy();
                         });
                     }
                 },
@@ -460,7 +460,7 @@ var View = Marionette.ItemView.extend({
                         patch: true,
                         wait: true,
                         success: function() {
-                            view.remove();
+                            view.destroy();
                             $.alert.success(gt.gettext("Successfully labeled !"));
                         },
                         error: function() {

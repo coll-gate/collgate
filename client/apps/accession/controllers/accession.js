@@ -112,10 +112,10 @@ var Controller = Marionette.Object.extend({
                 },
 
                 onBeforeDestroy: function() {
-                    CreateAccessionView.__super__.onBeforeDestroy.apply(this);
-
                     this.ui.language.selectpicker('destroy');
                     this.ui.meta_model.selectpicker('destroy');
+
+                    CreateAccessionView.__super__.onBeforeDestroy.apply(this);
                 },
 
                 onNameInput: function () {
@@ -201,7 +201,7 @@ var Controller = Marionette.Object.extend({
                             language: this.ui.language.val(),
                         });
 
-                        view.remove();
+                        view.destroy();
 
                         var defaultLayout = new DefaultLayout();
                         application.show(defaultLayout);

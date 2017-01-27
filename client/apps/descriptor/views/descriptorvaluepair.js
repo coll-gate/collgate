@@ -146,7 +146,7 @@ var View = Marionette.ItemView.extend({
                                     model.set('value0', values[session.language]);
                                     $.alert.success(gt.gettext("Successfully valued !"));
                                 }).always(function () {
-                                    view.remove();
+                                    view.destroy();
                                 });
                             }
                         },
@@ -202,7 +202,7 @@ var View = Marionette.ItemView.extend({
                                 patch: true,
                                 wait: true,
                                 success: function () {
-                                    view.remove();
+                                    view.destroy();
                                     $.alert.success(gt.gettext("Successfully changed !"));
                                 },
                                 error: function () {
@@ -318,7 +318,7 @@ var View = Marionette.ItemView.extend({
                                     model.set('value1', values[session.language]);
                                     $.alert.success(gt.gettext("Successfully valued !"));
                                 }).always(function () {
-                                    view.remove();
+                                    view.destroy();
                                 });
                             }
                         },
@@ -374,7 +374,7 @@ var View = Marionette.ItemView.extend({
                                 patch: true,
                                 wait: true,
                                 success: function () {
-                                    view.remove();
+                                    view.destroy();
                                     $.alert.success(gt.gettext("Successfully changed !"));
                                 },
                                 error: function () {
@@ -382,7 +382,7 @@ var View = Marionette.ItemView.extend({
                                 }
                             });
                         }
-                    },
+                    }
                 });
 
                 var changeLabel = new ChangeLabel({

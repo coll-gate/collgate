@@ -60,8 +60,9 @@ var View = Marionette.ItemView.extend({
             },
 
             onBeforeDestroy: function() {
-                DescriptorModelCreate.__super__.onBeforeDestroy.apply(this);
                 $(this.ui.descriptor_meta_model_target).selectpicker('destroy');
+
+                DescriptorModelCreate.__super__.onBeforeDestroy.apply(this);
             },
 
             onApply: function() {
@@ -166,7 +167,7 @@ var View = Marionette.ItemView.extend({
                 }
             });
         }
-    },
+    }
 });
 
 module.exports = View;

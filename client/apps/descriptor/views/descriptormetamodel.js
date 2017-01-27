@@ -149,10 +149,10 @@ var View = Marionette.ItemView.extend({
                             model.set('label', labels[session.language]);
                             $.alert.success(gt.gettext("Successfully labeled !"));
                         }).always(function() {
-                            view.remove();
+                            view.destroy();
                         });
                     }
-                },
+                }
             });
 
             var changeLabel = new ChangeLabel({model: model});

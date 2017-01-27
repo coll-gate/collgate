@@ -12,7 +12,7 @@ var Marionette = require('backbone.marionette');
 var DescriptorModelModel = require('../models/descriptormodel');
 
 var View = Marionette.ItemView.extend({
-    className: 'element object descriptor-model-detail',
+    className: 'object descriptor-model-detail',
     template: require('../templates/descriptormodeldetail.html'),
 
     ui: {

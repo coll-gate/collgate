@@ -184,7 +184,7 @@ var View = ScrollView.extend({
                         }, {
                             wait: true,
                             success: function () {
-                                view.remove();
+                                view.destroy();
                             },
                             error: function () {
                                 $.alert.error(gt.gettext("Unable to create the type of model of descriptor !"));
@@ -196,7 +196,7 @@ var View = ScrollView.extend({
                             }
                         });
                     }
-                },
+                }
             });
 
             var collection = this.collection;

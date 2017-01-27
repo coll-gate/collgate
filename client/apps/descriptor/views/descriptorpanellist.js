@@ -167,10 +167,10 @@ var View = ScrollView.extend({
                         }, {
                             wait: true,
                             success: function () {
-                                view.remove();
+                                view.destroy();
                             },
                             error: function () {
-                                view.remove();
+                                view.destroy();
 
                                 // left shift (undo) for consistency with server
                                 for (var i = 0; i < to_rshift.length; ++i) {
@@ -179,7 +179,7 @@ var View = ScrollView.extend({
                             }
                         });
                     }
-                },
+                }
             });
 
             var collection = this.collection;

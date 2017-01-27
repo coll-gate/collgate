@@ -67,13 +67,20 @@ var View = Marionette.ItemView.extend({
     onRender: function () {
         // display the bootstrap modal
         $(this.el).modal();
+
         // interest on this even when the user click on the backdrop
-        $(this.el).on('hidden.bs.modal', $.proxy(function() { this.destroy(); }, this));
+        $(this.el).on('hidden.bs.modal', $.proxy(function() {
+            this.destroy();
+        }, this));
+
         // autofocus is processed now on the first input having the autofocus attribute
         $(this.el).find(':input[autofocus]').focus();
     },
 
     onBeforeDestroy: function() {
+        // unbind the event before remove the bs.modal to avoid a double destroy call
+        $(this.el).off('hidden.bs.modal');
+        $(this.el).modal('hide').data('bs.modal', null);
     },
 
     onCancel: function () {
@@ -96,17 +103,6 @@ var View = Marionette.ItemView.extend({
             // avoid reload page
             return false;
         }
-    },
-
-    // the backbones remove method is overriden in way to clean-up the bootstrap modal and its backdrop
-    remove: function() {
-        $(this.el).modal('hide').data('bs.modal', null);
-
-        // unbind the events
-        this.$el.empty().off();
-        this.stopListening();
-
-        return View.__super__.remove.apply(this);
     }
 });
 

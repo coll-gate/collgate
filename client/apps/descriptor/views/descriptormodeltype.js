@@ -193,7 +193,7 @@ var View = Marionette.ItemView.extend({
                         }, {
                             wait: true,
                             success: function () {
-                                view.remove();
+                                view.destroy();
                             },
                             error: function () {
                                 $.alert.error(gt.gettext("Unable to create the type of model of descriptor !"));
@@ -384,7 +384,7 @@ var View = Marionette.ItemView.extend({
                             model.set('label', labels[session.language]);
                             $.alert.success(gt.gettext("Successfully labeled !"));
                         }).always(function() {
-                            view.remove();
+                            view.destroy();
                         });
                     }
                 }
@@ -482,9 +482,10 @@ var View = Marionette.ItemView.extend({
                 },
 
                 onBeforeDestroy: function() {
-                    ChangeCondition.__super__.onBeforeDestroy.apply(this);
                     this.ui.condition.selectpicker('destroy');
                     this.ui.target.selectpicker('destroy');
+
+                    ChangeCondition.__super__.onBeforeDestroy.apply(this);
                 },
 
                 toggleCondition: function (condition) {
@@ -570,7 +571,7 @@ var View = Marionette.ItemView.extend({
                     }).done(function() {
                         $.alert.success(gt.gettext("Successfully removed !"));
                     }).always(function() {
-                        view.remove();
+                        view.destroy();
                     });
                 },
 
@@ -608,7 +609,7 @@ var View = Marionette.ItemView.extend({
                         }).done(function() {
                             $.alert.success(gt.gettext("Successfully defined !"));
                         }).always(function() {
-                            view.remove();
+                            view.destroy();
                         });
                     } else {
                         $.ajax({
@@ -620,7 +621,7 @@ var View = Marionette.ItemView.extend({
                         }).done(function () {
                             $.alert.success(gt.gettext("Successfully defined !"));
                         }).always(function () {
-                            view.remove();
+                            view.destroy();
                         });
                     }
                 }

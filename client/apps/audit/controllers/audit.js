@@ -92,6 +92,11 @@ var Controller = Marionette.Object.extend({
                     minimumInputLength: 3,
                     placeholder: gt.gettext("Select a username"),
                 }).select2('open');
+            },
+
+            onBeforeDestroy: function() {
+                this.ui.username.select2('destroy');
+                ModalView.__super__.onBeforeDestroy.apply(this);
             }
         });
 
@@ -99,10 +104,10 @@ var Controller = Marionette.Object.extend({
         modal.render();
 
         modal.on("view:search", function(args) {
-            var username = $(args.view.ui.username).val();
+            var username = args.view.ui.username.val();
             if (username) {
                 this.getAuditListByUsername(username);
-                args.view.remove();
+                args.view.destroy();
 
                 Backbone.history.navigate('app/audit/search/?username=' + username, {silent: true});
             }
@@ -216,8 +221,10 @@ var Controller = Marionette.Object.extend({
             },
 
             onBeforeDestroy: function() {
-                ModalView.__super__.onBeforeDestroy.apply(this);
+                this.ui.entity.select2('destroy');
                 this.ui.content_type.selectpicker('destroy');
+
+                ModalView.__super__.onBeforeDestroy.apply(this);
             }
         });
 
@@ -230,7 +237,7 @@ var Controller = Marionette.Object.extend({
             var ct = $(args.view.ui.content_type).val().split('.');
             if (ct.length == 2 && object_id) {
                 this.getAuditListByEntity(ct[0], ct[1], object_id, object_name);
-                args.view.remove();
+                args.view.destroy();
 
                 Backbone.history.navigate('app/audit/search/?app_label=' + ct[0] + '&model=' + ct[1] + '&object_id=' + object_id, {silent: true});
             }

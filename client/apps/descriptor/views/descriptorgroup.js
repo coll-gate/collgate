@@ -104,9 +104,9 @@ var View = Marionette.ItemView.extend({
 
                 if (this.validateName()) {
                     model.save({name: name}, {patch: true, wait:true});
-                    this.remove();
+                    this.destroy();
                 }
-            },
+            }
         });
 
         var changeName = new ChangeName({
