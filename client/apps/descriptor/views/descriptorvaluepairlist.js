@@ -18,7 +18,7 @@ var View = ScrollView.extend({
     childView: DescriptorValuePairView,
     childViewContainer: 'tbody.descriptor-value-list',
 
-    templateHelpers: function() {
+    templateHelpers/*templateContext*/: function() {
         return {
             format: this.collection.format,
             items: this.collection.toJSON()

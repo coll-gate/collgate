@@ -37,12 +37,12 @@ AccessionModule.prototype = {
         // main collections
         //
 
-        var SelectOptionItemView = require('../main/views/selectoptionitemview');
+        var SelectOption = require('../main/renderers/selectoption');
 
         var AccessionSynonymTypeCollection = require('./collections/accessionsynonymtype');
         this.collections.accessionSynonymTypes = new AccessionSynonymTypeCollection();
 
-        this.views.accessionSynonymTypes = new SelectOptionItemView({
+        this.views.accessionSynonymTypes = new SelectOption({
             className: 'accession-synonym-type',
             collection: this.collections.accessionSynonymTypes,
         });

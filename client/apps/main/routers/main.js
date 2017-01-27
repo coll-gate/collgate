@@ -27,7 +27,7 @@ var Router = Marionette.AppRouter.extend({
     },
 
     home: function() {
-        var HomeView = Marionette.ItemView.extend({
+        var HomeView = Marionette.LayoutView.extend({
             tagName: 'div',
             className: 'about',
             template: require('../templates/home.html')

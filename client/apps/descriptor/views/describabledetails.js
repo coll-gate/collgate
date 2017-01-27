@@ -13,7 +13,7 @@ var ItemView = require('../../main/views/itemview');
 var View = ItemView.extend({
     tagName: 'div',
     template: require('../templates/describabledetails.html'),
-    templateHelpers: function () {
+    templateHelpers/*templateContext*/: function () {
         return {
             panels: this.descriptorMetaModelLayout.panels,
             target: this.descriptorMetaModelLayout.target
@@ -64,7 +64,7 @@ var View = ItemView.extend({
         });
     },
 
-    onShow: function() {
+    onDomRefresh: function() {
         for (var pi = 0; pi < this.descriptorMetaModelLayout.panels.length; ++pi) {
             for (var i = 0; i < this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types.length; ++i) {
                 var descriptorModelType = this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];

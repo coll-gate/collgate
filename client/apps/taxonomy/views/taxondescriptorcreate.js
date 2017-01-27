@@ -43,7 +43,7 @@ var View = Marionette.ItemView.extend({
                     'id': 'dlg_create_descriptor',
                 },
                 template: require('../templates/taxondescriptorcreatedialog.html'),
-                templateHelpers: function () {
+                templateHelpers/*templateContext*/: function () {
                     return {
                         meta_models: data,
                     };

@@ -53,12 +53,12 @@ MainModule.prototype = {
         // collections
         //
 
-        var SelectOptionItemView = require('./views/selectoptionitemview');
+        var SelectOption = require('./renderers/selectoption');
 
         var LanguageCollection = require('./collections/language');
         this.collections.languages = new LanguageCollection();
 
-        this.views.languages = new SelectOptionItemView({
+        this.views.languages = new SelectOption({
             className: 'language',
             collection: this.collections.languages
         });
@@ -66,7 +66,7 @@ MainModule.prototype = {
         var InterfaceLanguageCollection = require('./collections/uilanguage');
         this.collections.uilanguages = new InterfaceLanguageCollection();
 
-        this.views.uilanguages = new SelectOptionItemView({
+        this.views.uilanguages = new SelectOption({
             className: 'ui-language',
             collection: this.collections.uilanguages
         });
@@ -74,7 +74,7 @@ MainModule.prototype = {
         var ContentTypeCollection = require('./collections/contenttype');
         this.collections.contentTypes = new ContentTypeCollection();
 
-        this.views.contentTypes = new SelectOptionItemView({
+        this.views.contentTypes = new SelectOption({
             className: 'content-type',
             collection: this.collections.contentTypes
         });

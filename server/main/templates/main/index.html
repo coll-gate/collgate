@@ -44,15 +44,6 @@
 {% bootstrap bootstrap_js %}
 {% jquery igdectk.validator_js %}
 
-<!-- TODO no longer necessary, and can be loaded dynamically if needed, but need a synchronization for
-some translations before every catalogs are loaded, and normally the server sent translated strings. -->
-<!--
-<script type="text/javascript" src="{% url 'main:javascript-catalog' packages='main' domain='django' %}"></script>
-<script type="text/javascript" src="{% url 'main:javascript-catalog' packages='accession' domain='django' %}"></script>
-<script type="text/javascript" src="{% url 'main:javascript-catalog' packages='taxonomy' domain='django' %}"></script>
-<script type="text/javascript" src="{% url 'main:javascript-catalog' packages='permission' domain='django' %}"></script>
--->
-
 <div class="navbar navbar-inverse navbar-static-top" role="navigation">
     <div class="container">
         <div class="navbar-header">

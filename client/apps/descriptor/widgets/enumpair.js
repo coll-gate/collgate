@@ -91,7 +91,9 @@ EnumPair.DescriptorTypeDetailsView = Marionette.ItemView.extend({
         }
     },
 
-    onShow: function() {
+    onDomRefresh: function() {
+        // makePopover need to find the helper by its id on the DOM
+        // @todo could be done with a behavior ?
         $(this.ui.helper_display_fields).makePopover();
     },
 

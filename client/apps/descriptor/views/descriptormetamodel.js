@@ -74,7 +74,7 @@ var View = Marionette.ItemView.extend({
 
             var ChangeLabel = Dialog.extend({
                 template: require('../templates/descriptormetamodelchangelabel.html'),
-                templateHelpers: function () {
+                templateHelpers/*templateContext*/: function () {
                     return {
                         labels: labels,
                     };

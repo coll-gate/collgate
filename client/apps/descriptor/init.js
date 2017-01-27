@@ -37,12 +37,12 @@ DescriptorModule.prototype = {
         // main collections
         //
 
-        var SelectOptionItemView = require('../main/views/selectoptionitemview');
+        var SelectOption = require('../main/renderers/selectoption');
 
         var DescribableCollection = require('./collections/describable');
         this.collections.describables = new DescribableCollection();
 
-        this.views.describables = new SelectOptionItemView({
+        this.views.describables = new SelectOption({
             className: 'describable',
             collection: this.collections.describables,
         });
@@ -50,7 +50,7 @@ DescriptorModule.prototype = {
         var ConditionCollection = require('./collections/condition');
         this.collections.conditions = new ConditionCollection();
 
-        this.views.conditions = new SelectOptionItemView({
+        this.views.conditions = new SelectOption({
             className: 'condition',
             collection: this.collections.conditions,
         });
@@ -58,7 +58,7 @@ DescriptorModule.prototype = {
         var FormatTypeCollection = require('./collections/formattype');
         this.collections.formatTypes = new FormatTypeCollection();
 
-        this.views.formatTypes = new SelectOptionItemView({
+        this.views.formatTypes = new SelectOption({
             // sync: true,
             className: 'format-type',
             collection: this.collections.formatTypes,
@@ -67,7 +67,7 @@ DescriptorModule.prototype = {
         var FormatUnitCollection = require('./collections/formatunit');
         this.collections.formatUnits = new FormatUnitCollection();
 
-        this.views.formatUnits = new SelectOptionItemView({
+        this.views.formatUnits = new SelectOption({
             sync: true,
             className: 'format-unit',
             collection: this.collections.formatUnits,

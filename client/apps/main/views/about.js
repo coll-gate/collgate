@@ -10,7 +10,7 @@
 
 var Marionette = require('backbone.marionette');
 
-var View = Marionette.ItemView.extend({
+var View = Marionette.LayoutView.extend({
     tagName: 'div',
     className: 'about',
     template: require('../templates/about.html'),
@@ -25,7 +25,7 @@ var View = Marionette.ItemView.extend({
     },
 
     onRender: function() {
-    },
+    }
 });
 
 module.exports = View;

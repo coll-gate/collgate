@@ -13,7 +13,7 @@ var ItemView = require('../../main/views/itemview');
 var View = ItemView.extend({
     tagName: 'div',
     template: require('../templates/describableedit.html'),
-    templateHelpers: function () {
+    templateHelpers/*templateContext*/: function () {
         return {
             panels: this.descriptorMetaModelLayout.panels,
             target: this.descriptorMetaModelLayout.target
@@ -87,7 +87,7 @@ var View = ItemView.extend({
         });
     },
 
-    onShow: function() {
+    onDomRefresh: function() {
         var descriptors = {};
 
         // firstly make a list for each descriptor of which descriptors need them for a condition

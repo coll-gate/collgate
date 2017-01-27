@@ -39,7 +39,7 @@ var Controller = Marionette.Object.extend({
                     'id': 'dlg_create_accession',
                 },
                 template: require('../templates/accessioncreate.html'),
-                templateHelpers: function () {
+                templateHelpers/*templateContext*/: function () {
                     return {
                         meta_models: data,
                     };

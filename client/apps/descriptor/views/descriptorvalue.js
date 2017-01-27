@@ -17,7 +17,7 @@ var View = Marionette.ItemView.extend({
     tagName: 'tr',
     className: 'element object descriptor-value',
     template: require('../templates/descriptorvalue.html'),
-    templateHelpers: function() {
+    templateHelpers/*templateContext*/: function() {
         var ctx = this.model;
         ctx.format = this.model.collection.format;
 
@@ -66,7 +66,7 @@ var View = Marionette.ItemView.extend({
 
                     var ChangeValues = Dialog.extend({
                         template: require('../templates/descriptorvaluechangefieldmultiple.html'),
-                        templateHelpers: function () {
+                        templateHelpers/*templateContext*/: function () {
                             return {
                                 values: values,
                             };

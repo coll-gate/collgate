@@ -309,7 +309,7 @@ var View = Marionette.ItemView.extend({
 
             var ChangeLabel = Dialog.extend({
                 template: require('../templates/descriptormodeltypechangelabel.html'),
-                templateHelpers: function () {
+                templateHelpers/*templateContext*/: function () {
                     return {
                         labels: labels
                     };
@@ -433,7 +433,7 @@ var View = Marionette.ItemView.extend({
 
             var ChangeCondition = Dialog.extend({
                 template: require('../templates/descriptormodeltypecondition.html'),
-                templateHelpers: function () {
+                templateHelpers/*templateContext*/: function () {
                     return {
                         targets: model.collection.models,
                         condition: condition

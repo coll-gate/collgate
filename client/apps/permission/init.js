@@ -33,12 +33,16 @@ PermissionModule.prototype = {
             }
         }
 
-        var SelectOptionItemView = require('../main/views/selectoptionitemview');
+        //
+        // main collections
+        //
+
+        var SelectOption = require('../main/renderers/selectoption');
 
         var PermissionTypeCollection = require('./collections/permissiontype');
         this.collections.permissionType = new PermissionTypeCollection();
 
-        this.views.permissionType = new SelectOptionItemView({
+        this.views.permissionType = new SelectOption({
             className: 'permission-type',
             collection: this.collections.permissionType,
         });

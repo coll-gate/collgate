@@ -54,9 +54,6 @@ var Layout = Marionette.LayoutView.extend({
         }
     },
 
-    onShow: function() {
-    },
-
     changeFormatType: function () {
         var type = this.ui.format_type.val();
 

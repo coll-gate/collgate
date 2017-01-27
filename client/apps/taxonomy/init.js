@@ -37,28 +37,20 @@ TaxonomyModule.prototype = {
         // main collections
         //
 
-        var SelectOptionItemView = require('../main/views/selectoptionitemview');
+        var SelectOption = require('../main/renderers/selectoption');
 
         var TaxonRankCollection = require('./collections/taxonrank');
         this.collections.taxonRanks = new TaxonRankCollection();
 
-        this.views.taxonRanks = new SelectOptionItemView({
+        this.views.taxonRanks = new SelectOption({
             className: "taxon-rank",
-            collection: this.collections.taxonRanks,
-            /*collection: new Backbone.Collection([
-                {id: 60, value: gt.gettext("Family")},
-                {id: 61, value: gt.gettext("Sub-family")},
-                {id: 70, value: gt.gettext("Genus")},
-                {id: 71, value: gt.gettext("Sub-genus")},
-                {id: 80, value: gt.gettext("Specie")},
-                {id: 81, value: gt.gettext("Sub-specie")}
-            ]);*/
+            collection: this.collections.taxonRanks
         });
 
         var TaxonSynonymTypeCollection = require('./collections/taxonsynonymtype');
         this.collections.taxonSynonymTypes = new TaxonSynonymTypeCollection();
 
-        this.views.taxonSynonymTypes = new SelectOptionItemView({
+        this.views.taxonSynonymTypes = new SelectOption({
             className: 'taxon-synonym-type',
             collection: this.collections.taxonSynonymTypes,
         });

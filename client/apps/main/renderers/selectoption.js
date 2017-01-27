@@ -1,6 +1,6 @@
 /**
- * @file selectoptionitemview.js
- * @brief View for single value based on collection, and for select widgets.
+ * @file selectoption.js
+ * @brief Renderer for single value based on collection, and for select widgets.
  * @author Frederic SCHERMA
  * @date 2016-05-20
  * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
@@ -10,36 +10,42 @@
 
 var Marionette = require('backbone.marionette');
 
-var SelectOptionItemView = Marionette.ItemView.extend({
-    //template: _.template('<% _.each(items, function(item){ %><option value="<%= item.id %>"><%= gt.gettext(item.value) %></option><% }) %>'),
+var Renderer = Marionette.Object.extend({
     template: require('../templates/selectoption.html'),
     tagName: 'select',
 
     initialize: function(options) {
-        options || (options = {});
-        Marionette.ItemView.prototype.initialize.apply(this, options);
+        Marionette.Object.prototype.initialize.apply(this, options);
 
+        this.className = options.className;
+        this.collection = options.collection;
+
+        // static list can use the sync option
         if (!!options.sync) {
             this.render();
         } else {
             this.collection.fetch();  // lazy loading
+
             this.collection.on("sync", this.render, this);  // render the template once got
+            this.collection.on("change", this.render, this);
+            this.collection.on("reset", this.render, this);
         }
     },
 
-    onRender: function(e) {
+    render: function() {
+        this.html = Marionette.Renderer.render(this.template, {items: this.collection.toJSON()});
     },
 
     htmlFromValue: function(parent, idOrValue) {
-        var view = this;
+        var self = this;
         idOrValue || (idOrValue = 'value');
 
         if (this.collection.size() > 0) {
-            $(parent).find('.' + view.className).each(function (idx, el) {
+            $(parent).find('.' + self.className).each(function (idx, el) {
                 var _el = $(el);
                 var value = _el.attr("value");
 
-                var model = view.collection.find(function(model) {
+                var model = self.collection.find(function(model) {
                     return model.get(idOrValue) == value;
                 });
 
@@ -47,11 +53,11 @@ var SelectOptionItemView = Marionette.ItemView.extend({
             });
         } else {
             this.collection.on("sync", function () {
-                $(parent).find('.' + view.className).each(function (idx, el) {
+                $(parent).find('.' + self.className).each(function (idx, el) {
                     var _el = $(el);
                     var value = _el.attr("value");
 
-                    var model = view.collection.find(function(model) {
+                    var model = self.collection.find(function(model) {
                         return model.get(idOrValue) == value;
                     });
 
@@ -62,15 +68,15 @@ var SelectOptionItemView = Marionette.ItemView.extend({
     },
 
     attributeFromValue: function(parent, attribute, idOrValue) {
-        var view = this;
+        var self = this;
         idOrValue || (idOrValue = 'value');
 
         if (this.collection.size() > 0) {
-            $(parent).find('.' + view.className).each(function (idx, el) {
+            $(parent).find('.' + self.className).each(function (idx, el) {
                 var _el = $(el);
                 var value = _el.attr("value");
 
-                var model = view.collection.find(function(model) {
+                var model = self.collection.find(function(model) {
                     return model.get(idOrValue) == value;
                 });
 
@@ -78,11 +84,11 @@ var SelectOptionItemView = Marionette.ItemView.extend({
             });
         } else {
             this.collection.on("sync", function () {
-                $(parent).find('.' + view.className).each(function (idx, el) {
+                $(parent).find('.' + self.className).each(function (idx, el) {
                     var _el = $(el);
                     var value = _el.attr("value");
 
-                    var model = view.collection.find(function(model) {
+                    var model = self.collection.find(function(model) {
                         return model.get(idOrValue) == value;
                     });
 
@@ -96,15 +102,15 @@ var SelectOptionItemView = Marionette.ItemView.extend({
         widget != undefined || (widget = true);
         emptyValue != undefined || (emptyValue = false);
 
-        var view = this;
+        var self = this;
 
         if (this.collection.size() > 0) {
             var s = $(sel);
             if (emptyValue) {
                 var emptyOption = "<option value=''></option>"
-                s.html(emptyOption + view.el.innerHTML);
+                s.html(emptyOption + self.html);
             } else {
-                s.html(view.el.innerHTML);
+                s.html(self.html);
             }
 
             if (widget) {
@@ -122,9 +128,9 @@ var SelectOptionItemView = Marionette.ItemView.extend({
                 var s = $(sel);
                 if (emptyValue) {
                     var emptyOption = "<option value=''></option>"
-                    s.html(emptyOption + view.el.innerHTML);
+                    s.html(emptyOption + self.html);
                 } else {
-                    s.html(view.el.innerHTML);
+                    s.html(self.html);
                 }
 
                 if (widget) {
@@ -139,7 +145,7 @@ var SelectOptionItemView = Marionette.ItemView.extend({
                 }
             }, this);
         }
-    },
+    }
 });
 
-module.exports = SelectOptionItemView;
+module.exports = Renderer;
