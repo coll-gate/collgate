@@ -11,6 +11,8 @@
 var EnumSingle = require('./enumsingle');
 var Marionette = require('backbone.marionette');
 
+var Popover = require('../../main/behaviors/popover');
+
 var EnumPair = function() {
     EnumSingle.call(this);
 
@@ -40,11 +42,19 @@ EnumPair.DescriptorTypeDetailsView = Marionette.ItemView.extend({
         'change @ui.list_type': 'changeListType'
     },
 
+    behaviors: {
+        Popover: {
+            behaviorClass: Popover
+        }
+    },
+
     initialize: function() {
         this.listenTo(this.model, 'reset', this.render, this);
     },
 
     onRender: function() {
+        this.ui.helper_display_fields.makePopover();
+
         this.ui.format_trans.selectpicker({style: 'btn-default', container: 'body'});
 
         this.ui.sort_by_field.selectpicker({style: 'btn-default'});
@@ -89,12 +99,6 @@ EnumPair.DescriptorTypeDetailsView = Marionette.ItemView.extend({
         } else {
             this.ui.search_field.val('value0').prop('disabled', true).selectpicker('refresh');
         }
-    },
-
-    onDomRefresh: function() {
-        // makePopover need to find the helper by its id on the DOM
-        // @todo could be done with a behavior ?
-        $(this.ui.helper_display_fields).makePopover();
     },
 
     changeListType: function () {

@@ -204,18 +204,6 @@ span[name='label']:not(:empty) ~ span.label-placeholder {
 }
 */
 
-/*.helper {
-    top: -8px;
-    left: 2px;
-    height: 16px;
-    padding: 0px 1px;
-    border: 0px;
-}*/
-
-.help {
-    display: none;
-}
-
 /** add a glyphicon to collapsable panels */
 .panel-heading .accordion-toggle:after {
     font-family: 'Glyphicons Halflings';
