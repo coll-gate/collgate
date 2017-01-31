@@ -24,7 +24,6 @@ var View = ScrollView.extend({
         View.__super__.initialize.apply(this);
 
         this.listenTo(this.collection, 'reset', this.render, this);
-        this.listenTo(this.collection, 'change', this.render, this);
 
         $("div.left-content").on("dragenter", $.proxy(this.dragEnterContent, this));
         $("div.left-content").on("dragleave", $.proxy(this.dragLeaveContent, this));

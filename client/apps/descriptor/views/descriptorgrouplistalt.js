@@ -27,7 +27,6 @@ var View = ScrollView.extend({
 
     initialize: function(options) {
         this.listenTo(this.collection, 'reset', this.render, this);
-        this.listenTo(this.collection, 'change', this.render, this);
         //this.listenTo(this.collection, 'add', this.render, this);
         //this.listenTo(this.collection, 'remove', this.render, this);
 

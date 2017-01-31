@@ -11,6 +11,7 @@
 var Marionette = require('backbone.marionette');
 
 var View = Marionette.LayoutView.extend({
+    className: "objects events",
     template: require('../templates/rightbar.html'),
 
     initialize: function(options) {

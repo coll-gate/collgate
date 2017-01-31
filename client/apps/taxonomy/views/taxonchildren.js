@@ -31,7 +31,7 @@ var View = ScrollView.extend({
 
         $(window).resize($.proxy(this.resize, this));
 
-        $("div.panel-body").find('a[data-toggle="tab"][href="#taxon_children"]').on('shown.bs.tab', $.proxy(function(e) {
+        application.view().$el.find("div.panel-body").find('a[data-toggle="tab"][href="#taxon_children"]').on('shown.bs.tab', $.proxy(function(e) {
             this.resize(e);
         }, this));
     },
@@ -41,7 +41,7 @@ var View = ScrollView.extend({
         var bottomHeight = container.parent().children("div.children-bottom").children("div").outerHeight(true);
 
         // 10 is the padding before nav bar
-        var h = $("div.panel-body").height() - $("#taxon_details").outerHeight(true) - 10 - $("ul.nav-tabs").outerHeight(true) - bottomHeight;
+        var h = application.view().$el.find("div.panel-body").height() - $("#taxon_details").outerHeight(true) - 10 - $("ul.nav-tabs").outerHeight(true) - bottomHeight;
         this.$el.height(Math.max(32, h-1));
     }
 });

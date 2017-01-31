@@ -29,7 +29,6 @@ var View = Marionette.ItemView.extend({
     },
 
     initialize: function() {
-        this.listenTo(this.model, 'reset', this.render, this);
         this.listenTo(this.model, 'change', this.render, this);
     },
 
@@ -114,6 +113,12 @@ var View = Marionette.ItemView.extend({
                 });
             },
 
+            onBeforeDestroy: function() {
+                this.ui.parent.select2('destroy');
+
+                ChangeParent.__super__.onBeforeDestroy.apply(this);
+            },
+
             onApply: function() {
                 var model = this.getOption('model');
                 var parent = null;
@@ -123,7 +128,8 @@ var View = Marionette.ItemView.extend({
                 }
 
                 model.save({parent: parent}, {patch: true, wait: true});
-                this.remove();
+
+                this.destroy();
             },
         });
 

@@ -193,6 +193,10 @@ application = new Marionette.Application({
         // defaults modules
         session.modules || (session.modules = ['main']);
 
+        // alert display component
+        $.alert({container: '#main_content'/*'div.panel-body'*/, className: 'alert'});
+        $.alert.update();
+
         // require and initialize each modules
         for (var i = 0; i < session.modules.length; ++i) {
             var module = session.modules[i];
@@ -204,7 +208,7 @@ application = new Marionette.Application({
                 var msg = gt.gettext("Missing client module") + " : " + module + ". " +
                           gt.gettext("Please contact your administrator.");
 
-                window.alert(msg);
+                $.alert.error(msg);
             }
 
             if (this[module].initialize) {
@@ -214,16 +218,13 @@ application = new Marionette.Application({
                     var msg = gt.gettext("Module initialization failed") + " : " + module + ". " +
                               gt.gettext("Please contact your administrator.");
 
-                    window.alert(msg);
+                    $.alert.error(msg);
                 }
             }
         }
     },
 
     onStart: function(options) {
-        $.alert({container: '#main_content'/*'div.panel-body'*/, className: 'alert'});
-        $.alert.update();
-
         // start each module
         for (var i = 0; i < session.modules.length; ++i) {
             var module = session.modules[i];
@@ -277,7 +278,7 @@ application = new Marionette.Application({
      * Get the view of the content region of the main view.
      * @returns Marionette.View or undefined
      */
-    view: function () {
+    view: function() {
         return this.getView().getRegion('content').currentView;
     }
 });
