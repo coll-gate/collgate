@@ -1,20 +1,15 @@
-<div id="accession_details"></div>
-<div class="column" style="margin-top: 10px;">
+<div name="details"></div>
+<div class="column" style="margin-top: 10px; height: calc(100% - 25px);">
     <!-- Nav tabs -->
     <ul class="nav nav-tabs" role="tablist">
-        <li role="presentation"><a href="#accession_synonyms" aria-controls="details" role="tab" data-toggle="tab"><%= gt.gettext("Synonyms") %></a></li>
-        <li role="presentation" class="active"><a href="#accession_descriptors" aria-controls="descriptors" role="tab" data-toggle="tab"><%= gt.gettext("Descriptors") %></a></li>
-        <li role="presentation"><a href="#accession_batches" aria-controls="batches" role="tab" data-toggle="tab"><%= gt.gettext("Batches") %></a></li>
+        <li role="presentation"><a href="div.tab-pane[name=synonyms]" aria-controls="synonyms" role="tab" data-toggle="tab"><%= gt.gettext("Synonyms") %></a></li>
+        <li role="presentation" class="active"><a href="div.tab-pane[name=descriptors]" aria-controls="descriptors" role="tab" data-toggle="tab"><%= gt.gettext("Descriptors") %></a></li>
+        <li role="presentation"><a href="div.tab-pane[name=batches]" aria-controls="batches" role="tab" data-toggle="tab"><%= gt.gettext("Batches") %></a></li>
     </ul>
     <!-- Tab panes -->
-    <div class="tab-content">
-        <div role="tabpanel" class="tab-pane" id="accession_synonyms" style="overflow-y: auto;">
-        </div>
-        <div role="tabpanel" class="tab-pane active" id="accession_descriptors" style="overflow-y: auto;">
-        </div>
-        <div role="tabpanel" class="tab-pane" id="accession_batches">
-            <div class="batches-content" style="overflow-y: auto;"></div>
-            <div class="batches-bottom"></div>
-        </div>
+    <div class="tab-content" style="height: calc(100% - 41px - 10px);">
+        <div role="tabpanel" class="tab-pane" name="synonyms" style="height: 100%; overflow-y: auto;"></div>
+        <div role="tabpanel" class="tab-pane active" name="descriptors" style="height: 100%; overflow-y: auto; padding-right: 5px;"></div>
+        <div role="tabpanel" class="tab-pane" name="batches" style="height: 100%;"></div>
     </div>
 </div>

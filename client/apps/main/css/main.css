@@ -213,15 +213,23 @@ span[name='label']:not(:empty) ~ span.label-placeholder {
     color: grey;
 }
 
+/** panel according toggle symbol */
 .panel-heading .accordion-toggle.collapsed:after {
     content: "\e080";
 }
 
+/** put bold and italic each mandatory field */
 .mandatory-field {
     font-weight: bold;
     font-style: italic;
 }
 
+/** add a * after each mandatory field */
 .mandatory-field:after {
     content: '*';
+}
+
+/** disable a href when li tab has class disabled */
+li.disabled > a[role=tab] {
+    pointer-events: none;
 }

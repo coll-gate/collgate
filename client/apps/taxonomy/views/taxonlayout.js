@@ -28,8 +28,8 @@ var Layout = Marionette.LayoutView.extend({
     },
 
     ui: {
-        'tabs': 'a[data-toggle="tab"]',
-        'active_tab': 'div.tab-pane.active'
+        tabs: 'a[data-toggle="tab"]',
+        active_pane: 'div.tab-pane.active'
     },
 
     initialize: function(model, options) {
@@ -67,7 +67,7 @@ var Layout = Marionette.LayoutView.extend({
 
                 /*console.log(taxonLayout.getRegion('descriptors').currentView.$el.css("display"));
                 console.log(taxonDescriptorView._parent.$el.css('display'));
-                console.log(taxonLayout.ui.active_tab)*/
+                console.log(taxonLayout.ui.active_pane)*/
 
                 // manually called
                 if (taxonLayout.activeTab === 'descriptors') {
