@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-06 11:52+0100\n"
+"POT-Creation-Date: 2017-02-01 18:38+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,15 +21,15 @@ msgstr ""
 msgid "Select a username"
 msgstr ""
 
-#: ../../../controllers/audit.js:118
+#: ../../../controllers/audit.js:123
 msgid "List of audit entries related to user"
 msgstr ""
 
-#: ../../../controllers/audit.js:214
+#: ../../../controllers/audit.js:219
 msgid "Select an entity UUID or name"
 msgstr ""
 
-#: ../../../controllers/audit.js:258 ../../../controllers/audit.js:264
+#: ../../../controllers/audit.js:265 ../../../controllers/audit.js:271
 msgid "List of audit entries related to entity"
 msgstr ""
 

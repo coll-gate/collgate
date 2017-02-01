@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-24 12:08+0100\n"
+"POT-Creation-Date: 2017-02-01 18:38+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,23 +16,23 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../../views/accessionsynonyms.js:68
-#: ../../../views/accessionsynonyms.js:181
+#: ../../../views/accessionsynonyms.js:55
+#: ../../../views/accessionsynonyms.js:168
 #: ../../../controllers/accession.js:158
 msgid "64 characters max"
 msgstr "64 caractères maximum"
 
-#: ../../../views/accessionsynonyms.js:71
-#: ../../../views/accessionsynonyms.js:178
+#: ../../../views/accessionsynonyms.js:58
+#: ../../../views/accessionsynonyms.js:165
 #: ../../../controllers/accession.js:161
 msgid "3 characters min"
 msgstr "3 caractères minimum"
 
-#: ../../../views/accessionsynonyms.js:99
+#: ../../../views/accessionsynonyms.js:86
 msgid "Synonym of accession already used"
 msgstr "Synonyme d'accession déjà utilisé"
 
-#: ../../../views/accessionsynonyms.js:208
+#: ../../../views/accessionsynonyms.js:195
 msgid "Unable to rename the synonym !"
 msgstr "Impossible de renommer le synonyme !"
 
