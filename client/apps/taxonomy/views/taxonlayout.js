@@ -65,10 +65,6 @@ var Layout = Marionette.LayoutView.extend({
                 });
                 taxonLayout.getRegion('descriptors').show(taxonDescriptorView);
 
-                /*console.log(taxonLayout.getRegion('descriptors').currentView.$el.css("display"));
-                console.log(taxonDescriptorView._parent.$el.css('display'));
-                console.log(taxonLayout.ui.active_pane)*/
-
                 // manually called
                 if (taxonLayout.activeTab === 'descriptors') {
                     taxonDescriptorView.onShowTab();
@@ -132,22 +128,18 @@ var Layout = Marionette.LayoutView.extend({
         var tab = e.target.getAttribute('aria-controls');
         this.activeTab = tab;
 
-        if (tab === "descriptors") {
-            if (this.getRegion('descriptors').currentView.onShowTab) {
-                this.getRegion('descriptors').currentView.onShowTab();
-            }
-        } else {
-            console.log(tab, this.getRegion(tab).$el.outerHeight(true));
+        var region = this.getRegion(tab);
+        if (region && region.currentView.onShowTab) {
+            this.getRegion('descriptors').currentView.onShowTab();
         }
     },
 
     onHideTab: function(e) {
         var tab = e.target.getAttribute('aria-controls');
 
-        if (tab === "descriptors") {
-            if (this.getRegion('descriptors').currentView.onHideTab) {
-                this.getRegion('descriptors').currentView.onHideTab();
-            }
+        var region = this.getRegion(tab);
+        if (region && region.currentView.onHideTab) {
+            this.getRegion('descriptors').currentView.onHideTab();
         }
 
         application.main.defaultRightView();

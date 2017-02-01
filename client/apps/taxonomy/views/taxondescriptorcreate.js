@@ -21,7 +21,7 @@ var View = Marionette.ItemView.extend({
     },
 
     events: {
-        'click @ui.defines': 'onDefines',
+        'click @ui.defines': 'onDefine'
     },
 
     initialize: function(options) {
@@ -30,7 +30,7 @@ var View = Marionette.ItemView.extend({
     onRender: function() {
     },
 
-    onDefines: function(e) {
+    onDefine: function(e) {
         var model = this.model;
 
         $.ajax({
@@ -124,7 +124,7 @@ var View = Marionette.ItemView.extend({
         contextLayout.getRegion('content').show(contextView);
 
         contextView.on("descriptormetamodel:add", function() {
-            view.onDefines();
+            view.onDefine();
         });
     }
 });

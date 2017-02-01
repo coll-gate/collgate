@@ -33,7 +33,10 @@ var View = DescribableEdit.extend({
 
         contextView.on("descriptormetamodel:replace", function() {
             // this will update the model and so on the view
-            alert("not yet implemented");
+            var TaxonDescriptorCreateView = require('./taxondescriptorcreate');
+            var taxonDescriptorCreateView = new TaxonDescriptorCreateView({model: view.model});
+
+            taxonDescriptorCreateView.onDefine();
         });
 
         contextView.on("descriptormetamodel:delete", function() {
