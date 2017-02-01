@@ -47,8 +47,17 @@ var View = DescribableDetails.extend({
         });
 
         contextView.on("descriptormetamodel:delete", function () {
-            // this will update the model and so on the view
-            alert("not yet implemented");
+            var ConfirmDialog = require('../../main/views/confirmdialog');
+            var confirmDialog = new ConfirmDialog({
+                title: gt.gettext('Delete descriptors'),
+                label: gt.gettext('Are you sure you want to delete any descriptors for this taxon ?')
+            });
+            confirmDialog.render();
+
+            confirmDialog.on('dialog:confirm', function() {
+                // this will update the model and so on the view
+                view.model.save({descriptor_meta_model: null}, {patch: true, trigger: true});
+            });
         });
     },
 

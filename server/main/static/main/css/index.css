@@ -88,3 +88,13 @@ a.login {
     -webkit-user-select: none;
     -o-user-select: none;
 }
+
+a {
+    color: #3a7634;
+    text-decoration: none;
+}
+
+a:focus, a:hover {
+    color: #5e7604;
+    text-decoration: underline;
+}

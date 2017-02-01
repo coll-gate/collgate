@@ -321,7 +321,7 @@ def search_taxon(request):
         "type": "object",
         "properties": {
             "parent": {"type": ["number", "null"], 'required': False},
-            "descriptor_meta_model": {"type": "integer", 'required': False},
+            "descriptor_meta_model": {"type": ["integer", "null"], 'required': False},
             "descriptors": {"type": "object", 'required': False}
         },
     },
@@ -373,6 +373,8 @@ def patch_taxon(request, id):
             result['parent_list'] = parents
             result['parent_details'] = parents
 
+        taxon.update_field(['parent', 'parent_list'])
+
     if 'descriptor_meta_model' in request.data:
         dmm_id = request.data["descriptor_meta_model"]
 
@@ -394,8 +396,10 @@ def patch_taxon(request, id):
                 taxon.descriptor_meta_model = dmm
                 taxon.descriptors = {}
 
-                result['descriptor_meta_model'] = dmm
+                result['descriptor_meta_model'] = dmm.id
                 result['descriptors'] = {}
+
+        taxon.update_field(['descriptor_meta_model', 'descriptors'])
 
     if 'descriptors' in request.data:
         descriptors = request.data["descriptors"]
@@ -409,6 +413,8 @@ def patch_taxon(request, id):
                 taxon.descriptors, taxon.descriptor_meta_model, descriptors)
 
         result['descriptors'] = taxon.descriptors
+
+        taxon.update_field('descriptors')
 
     taxon.save()
 
@@ -487,9 +493,13 @@ def taxon_change_synonym(request, id, sid):
     # rename the taxon if the synonym name is the taxon name
     if synonym.taxon.name == synonym.name:
         synonym.taxon.name = name
+        synonym.taxon.update_field('name')
+
         synonym.taxon.save()
 
     synonym.name = name
+    synonym.update_field('name')
+
     synonym.save()
 
     result = {

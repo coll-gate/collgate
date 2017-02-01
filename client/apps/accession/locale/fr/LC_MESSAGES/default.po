@@ -103,7 +103,7 @@ msgstr "Continuer"
 
 #: ../../../templates/accessionlayout.html:5
 msgid "Synonyms"
-msgstr "Synonyms"
+msgstr "Synonymes"
 
 #: ../../../templates/accessionlayout.html:6
 msgid "Descriptors"

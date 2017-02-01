@@ -148,6 +148,9 @@ class Entity(models.Model):
         return ContentType.objects.get_for_model(type(self))
 
     def save(self, *args, **kwargs):
+        """
+        Save is overridden to auto-defines the content_type if necessary
+        """
         if not self.content_type_id:
             self.content_type = self._get_content_type()
         super(Entity, self).save(*args, **kwargs)
@@ -156,10 +159,18 @@ class Entity(models.Model):
         return self.content_type.get_object_for_this_type(pk=self.pk)
 
     def update_field(self, field_name):
+        """
+        Update the updated fields with a single or a list of field names.
+        :param field_name: String or tuple or list or field names
+        :return:
+        """
         if not hasattr(self, 'updated_fields'):
             self.updated_fields = []
 
-        self.updated_fields.append(field_name)
+        if isinstance(field_name, str):
+            self.updated_fields.append(field_name)
+        elif isinstance(field_name, list) or isinstance(field_name, tuple):
+            self.updated_fields += field_name
 
     @classmethod
     def is_name_valid(cls, name):

@@ -2,19 +2,14 @@
     <div class="modal-content">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h4 class="modal-title"><%= gt.gettext("Get audits entries for a user") %></h4>
+            <h4 class="modal-title"><%= title %></h4>
         </div>
         <div class="modal-body">
-            <form>
-                <div class="form-group">
-                    <label class="control-label" for="username"><%= gt.gettext("Username") %></label>
-                     <select class="form-control usernames" id="username" name="username"></select>
-                </div>
-            </form>
+            <p><%= label %></p>
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= gt.gettext("Cancel") %></button>
-            <button type="button" class="btn btn-success search"><%= gt.gettext("Search") %></button>
+            <button type="button" class="btn btn-success confirm"><%= gt.gettext("Confirm") %></button>
         </div>
     </div><!-- /.modal-content -->
 </div><!-- /.modal-dialog -->

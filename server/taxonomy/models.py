@@ -63,7 +63,9 @@ class Taxon(Entity):
         return {
             'rank': self.rank,
             'parent': self.parent_id,
-            'parent_list': self.parent_list
+            'parent_list': self.parent_list,
+            'descriptor_meta_model': self.descriptor_meta_model,
+            'descriptors': self.descriptors
         }
 
     def audit_update(self, user):
@@ -72,14 +74,23 @@ class Taxon(Entity):
 
             if 'rank' in self.updated_fields:
                 result['rank'] = self.rank
+
             if 'parent' in self.updated_fields or 'parent_list' in self.updated_fields:
                 result['parent'] = self.parent
                 result['parent_list'] = self.parent_list
+
+            if 'descriptor_meta_model' in self.updated_fields:
+                result['descriptor_meta_model'] = self.descriptor_meta_model
+
+            if 'descriptors' in self.updated_fields:
+                result['descriptors'] = self.descriptors
         else:
             return {
                 'rank': self.rank,
                 'parent': self.parent_id,
-                'parent_list': self.parent_list
+                'parent_list': self.parent_list,
+                'descriptor_meta_model': self.descriptor_meta_model,
+                'descriptors': self.descriptors
             }
 
     def audit_delete(self, user):
@@ -122,6 +133,7 @@ class TaxonSynonym(Entity):
 
             if 'language' in self.updated_fields:
                 result['language'] = self.language
+
             if 'type' in self.updated_fields:
                 result['type'] = self.type
         else:

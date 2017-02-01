@@ -26,22 +26,6 @@ var View = ScrollView.extend({
         this.listenTo(this.collection, 'reset', this.render, this);
         this.listenTo($('window'), 'load', this.resize, this);
         this.listenTo($('window'), 'resize', this.resize, this);
-
-        $(window).resize($.proxy(this.resize, this));
-
-        application.view().$el.find("div.panel-body").find('a[data-toggle="tab"][href="#taxon_entities"]').on('shown.bs.tab', $.proxy(function(e) {
-            this.resize(e);
-        }, this));
-        //this.resize();
-    },
-
-    resize: function(e) {
-        var container = $(this.el).parent();
-        var bottomHeight = container.parent().children("div.entities-bottom").children("div").outerHeight(true);
-
-        // 10 is the padding before nav bar
-        var h = application.view().$el.find("div.panel-body").height() - $("#taxon_details").outerHeight(true) - 10 - $("ul.nav-tabs").outerHeight(true) - bottomHeight;
-        this.$el.height(Math.max(32, h-1));
     }
 });
 
