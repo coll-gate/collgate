@@ -36,7 +36,7 @@ var View = ItemView.extend({
 
         this.descriptorMetaModelLayout = options.descriptorMetaModelLayout;
 
-        this.listenTo(this.model, 'reset', this.render, this);
+        this.listenTo(this.model, 'change:descriptors', this.render, this);
     },
 
     onRender: function() {

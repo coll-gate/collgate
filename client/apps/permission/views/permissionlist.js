@@ -27,7 +27,6 @@ var PermissionListView = Marionette.CompositeView.extend({
 
     initialize: function() {
         this.listenTo(this.collection, 'reset', this.render, this);
-        this.listenTo(this.collection, 'change', this.render, this);
     },
 
     removePermission: function (e) {

@@ -843,7 +843,7 @@ msgstr "Traduction"
 #: ../../../templates/widgets/enumpair.html:22
 #: ../../../templates/widgets/enumsingle.html:14
 msgid "Field name (value0)"
-msgstr "Nom du chamsp (valeur0)"
+msgstr "Nom du champs (valeur0)"
 
 #: ../../../templates/widgets/enumordinal.html:23
 #: ../../../templates/widgets/numericrange.html:35

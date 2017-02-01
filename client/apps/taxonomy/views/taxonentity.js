@@ -28,7 +28,7 @@ var View = Marionette.ItemView.extend({
     initialize: function(options) {
         this.mergeOptions(options, ['taxon']);
 
-        this.listenTo(this.model, 'reset', this.render, this);
+        this.listenTo(this.model, 'change', this.render, this);
         this.listenTo(this.entity, 'change', this.render, this);
     },
 

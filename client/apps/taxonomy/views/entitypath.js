@@ -39,7 +39,6 @@ var View = Marionette.ItemView.extend({
     initialize: function(options) {
         this.mergeOptions(options, ['taxon']);
 
-        this.listenTo(this.model, 'reset', this.render, this);
         this.listenTo(this.model, 'change:name', this.render, this);
         this.listenTo(this.model, 'change:parent', this.updateParent, this);
     },
@@ -140,6 +139,12 @@ var View = Marionette.ItemView.extend({
                 });
             },
 
+            onBeforeDestroy: function() {
+                this.ui.parent.select2('destroy');
+
+                ChangeParent.__super__.onBeforeDestroy.apply(this);
+            },
+
             onApply: function() {
                 var model = this.getOption('model');
                 var parent = null;
@@ -154,7 +159,7 @@ var View = Marionette.ItemView.extend({
                     model.save({parent: parent}, {patch: true, wait: true});
                 }
 
-                this.remove();
+                this.destroy();
             },
         });
 

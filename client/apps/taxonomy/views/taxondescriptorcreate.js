@@ -77,7 +77,7 @@ var View = Marionette.ItemView.extend({
                     if (this.ui.meta_model.val() != null) {
                         var metaModel = parseInt(this.ui.meta_model.val());
 
-                        view.remove();
+                        view.destroy();
 
                         // update the descriptor part of the taxon layout
                         var taxonLayout = application.view().getRegion('content').currentView;
@@ -104,6 +104,29 @@ var View = Marionette.ItemView.extend({
             createDescriptorView.render();
         });
     },
+
+    onShowTab: function() {
+        var view = this;
+
+        var DefaultLayout = require('../../main/views/defaultlayout');
+        var contextLayout = new DefaultLayout();
+        application.getView().getRegion('right').show(contextLayout);
+
+        var actions = [];
+
+        actions.push('add');
+
+        var TaxonDescriptorsContextView = require('../views/taxondescriptorscontext');
+        var contextView = new TaxonDescriptorsContextView({actions: actions});
+
+        var TitleView = require('../../main/views/titleview');
+        contextLayout.getRegion('title').show(new TitleView({title: gt.gettext("Descriptors")}));
+        contextLayout.getRegion('content').show(contextView);
+
+        contextView.on("descriptormetamodel:add", function() {
+            view.onDefines();
+        });
+    }
 });
 
 module.exports = View;

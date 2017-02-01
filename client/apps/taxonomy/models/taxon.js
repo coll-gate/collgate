@@ -25,6 +25,7 @@ var Taxon = Backbone.Model.extend({
         parent_list: [],
         parent_details: [],
         synonyms: [],
+        descriptor_meta_model: null
     },
 
     parse: function(data) {

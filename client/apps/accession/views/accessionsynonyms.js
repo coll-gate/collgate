@@ -34,19 +34,18 @@ var View = Marionette.ItemView.extend({
     },
 
     initialize: function() {
-        this.listenTo(this.model, 'reset', this.render, this);
         this.listenTo(this.model, 'change', this.render, this);
 
         $(window).resize($.proxy(this.resize, this));
         this.resize(null);
 
-        $("div.panel-body").find('a[data-toggle="tab"][href="#accession_synonyms"]').on('shown.bs.tab', $.proxy(function(e) {
+        application.view().$el.find("div.panel-body").find('a[data-toggle="tab"][href="#accession_synonyms"]').on('shown.bs.tab', $.proxy(function(e) {
             this.resize(e);
         }, this));
     },
 
     resize: function(e) {
-        var h = $("div.panel-body").height() - $("#accession_details").outerHeight(true) - 10 - $("ul.nav-tabs").outerHeight(true);
+        var h = application.view().$el.find("div.panel-body").height() - $("#accession_details").outerHeight(true) - 10 - $("ul.nav-tabs").outerHeight(true);
         this.$el.height(Math.max(32, h-1));
     },
 

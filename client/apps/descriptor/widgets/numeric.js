@@ -173,7 +173,7 @@ Numeric.DescriptorTypeDetailsView = Marionette.ItemView.extend({
     },
 
     initialize: function() {
-        this.listenTo(this.model, 'reset', this.render, this);
+        this.listenTo(this.model, 'change', this.render, this);
     },
 
     onRender: function() {

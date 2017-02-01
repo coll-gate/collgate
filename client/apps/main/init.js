@@ -98,7 +98,7 @@ MainModule.prototype = {
         // main view
         var MainView = require('./views/main');
         var mainView = new MainView();
-        application.getRegion('root').show(mainView);
+        application.showView(mainView);
 
         var LeftBarView = require('./views/leftbar');
         mainView.getRegion('left').show(new LeftBarView());
@@ -111,6 +111,20 @@ MainModule.prototype = {
 
     stop: function(options) {
 
+    },
+
+    defaultLeftView: function() {
+        var mainView = application.getView();
+
+        var LeftBarView = require('./views/leftbar');
+        mainView.getRegion('left').show(new LeftBarView());
+    },
+
+    defaultRightView: function() {
+        var mainView = application.getView();
+
+        var RightBarView = require('./views/rightbar');
+        mainView.getRegion('right').show(new RightBarView());
     }
 };
 
