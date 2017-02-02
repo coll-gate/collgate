@@ -133,8 +133,15 @@ def accession_list(request):
 
     # @todo filters
     # @todo name search based on synonyms
-    accessions = Accession.objects.select_related('parent').all()[:limit]
     # synonyms = AccessionSynonym.objects.all()
+
+    if cursor:
+        cursor_name, cursor_id = cursor.split('/')
+        accessions = Accession.objects.filter(Q(name__gt=cursor_name))
+    else:
+        accessions = Accession.objects.all()
+
+    accessions = accessions.select_related('parent').order_by('name')[:limit]
 
     accession_list = []
 

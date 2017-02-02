@@ -8,20 +8,28 @@
  * @details
  */
 
-div.events {
+div.event-message-panel {
     padding: 5px;
     border: solid 1px #96a052;
     border-radius: 5px;
     box-shadow: 0px 0px 10px #A0BD2E;
 }
 
+#left_content {
+    height: 100%;
+}
+
 #main_content {
+    height: 100%;
+}
+
+#right_content {
     height: 100%;
 }
 
 div.column {
     height: 100%;
-    margin: 0
+    margin: 0;
 }
 
 div.left, div.right {
@@ -99,6 +107,14 @@ div.panel div.panel-body-bottom {
 
 .event + .event {
     border-top: solid 1px #A0BD2E;
+}
+
+div.event-message > span.remove-event-message {
+    display: none;
+}
+
+div.event-message:hover > span.remove-event-message {
+    display: inline-block;
 }
 
 .panel-heading .accordion-toggle:after {

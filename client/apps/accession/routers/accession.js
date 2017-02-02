@@ -88,19 +88,19 @@ var Router = Marionette.AppRouter.extend({
     },
 
     getBatchList : function(id) {
-        alert("Not yet implemented");
+        alert("Le gras c'est la vie !");
     },
 
     getBatch : function(id) {
-        alert("Not yet implemented");
+        alert("Pourquoi pas ?");
     },
 
     getSampleList : function(id) {
-        alert("Not yet implemented");
+        alert("Cette fois-ci, on part avec les femmes ! HAHAAAHA !!!!");
     },
 
     getSample : function(id) {
-        alert("Not yet implemented");
+        alert("Ça vous ennuie si je vomis ?");
     },
 });
 

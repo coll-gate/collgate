@@ -79,6 +79,9 @@ MainModule.prototype = {
             collection: this.collections.contentTypes
         });
 
+        var EventMessageCollection = require('./collections/eventmessage');
+        this.collections.eventMessages = new EventMessageCollection();
+
         //
         // routers
         //
@@ -103,8 +106,8 @@ MainModule.prototype = {
         var LeftBarView = require('./views/leftbar');
         mainView.getRegion('left').show(new LeftBarView());
 
-        var RightBarView = require('./views/rightbar');
-        mainView.getRegion('right').show(new RightBarView());
+        var EventMessagePanelView = require('./views/eventmessagepanel');
+        mainView.getRegion('right').show(new EventMessagePanelView());
 
         Logger.timeEnd("Start main module");
     },
@@ -123,8 +126,8 @@ MainModule.prototype = {
     defaultRightView: function() {
         var mainView = application.getView();
 
-        var RightBarView = require('./views/rightbar');
-        mainView.getRegion('right').show(new RightBarView());
+        var EventMessagePanelView = require('./views/eventmessagepanel');
+        mainView.getRegion('right').show(new EventMessagePanelView());
     }
 };
 

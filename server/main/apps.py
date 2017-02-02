@@ -30,7 +30,8 @@ class CollGateMain(ApplicationMain):
             'entity',
             'profile',
             'language',
-            'help'
+            'help',
+            'eventmessage'
             )
         )
 

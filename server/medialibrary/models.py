@@ -41,7 +41,7 @@ class Media(Entity):
     file_size = models.PositiveIntegerField(default=0)
 
     # can belong to a collection
-    collection = models.ForeignKey('MediaCollection', related_name='medias')
+    collection = models.ForeignKey('MediaCollection', related_name='medias', null=True)
 
     class Meta:
         verbose_name = _("media")

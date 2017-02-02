@@ -137,7 +137,7 @@ class Migration(migrations.Migration):
                 ('code', models.CharField(max_length=64, unique=True)),
                 ('description', models.TextField(blank=True, default='')),
                 ('values', models.TextField(default='')),
-                ('format', models.TextField(default='{"type": "string", "unit": "custom", "precision": "0.0", "fields": [], "trans": false}')),
+                ('format', models.TextField(default='{"type": "undefined"}')),
                 ('can_delete', models.BooleanField(default=True)),
                 ('can_modify', models.BooleanField(default=True)),
                 ('content_type', models.ForeignKey(editable=False, on_delete=django.db.models.deletion.CASCADE, to='contenttypes.ContentType')),

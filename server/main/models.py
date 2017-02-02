@@ -218,3 +218,19 @@ class Entity(models.Model):
             raise SuspiciousOperation(_("It is not allowed to change the status of an archived entity"))
 
         self.entity_status = entity_status
+
+
+class EventMessage(models.Model):
+    """
+    Displayable and managed event message. No history, no audit, simple creation/deletion, no edition.
+    """
+
+    # author of the message
+    author = models.ForeignKey(User)
+
+    # creation date
+    created_date = models.DateTimeField(auto_now_add=True)
+
+    # message in a JSON text field with an object where key are language code and value
+    # are message in locale
+    message = models.TextField()
