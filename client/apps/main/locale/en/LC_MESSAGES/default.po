@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-01 18:38+0100\n"
+"POT-Creation-Date: 2017-02-03 14:34+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,15 +21,24 @@ msgstr ""
 msgid "Done"
 msgstr ""
 
-#: ../../../routers/main.js:39
+#: ../../../views/eventmessagepanel.js:76
+#: ../../../views/eventmessagepanel.js:90
+msgid "Should not be empty"
+msgstr ""
+
+#: ../../../views/eventmessagepanel.js:118
+msgid "Successfully inserted !"
+msgstr ""
+
+#: ../../../routers/main.js:41
 msgid "Home"
 msgstr ""
 
-#: ../../../routers/main.js:47
+#: ../../../routers/main.js:61
 msgid "About..."
 msgstr ""
 
-#: ../../../routers/main.js:55
+#: ../../../routers/main.js:69
 msgid "Help..."
 msgstr ""
 
@@ -45,7 +54,12 @@ msgstr ""
 msgid "French"
 msgstr ""
 
+#: ../../../templates/actionpanel.html:3
+msgid "Last actions"
+msgstr ""
+
 #: ../../../templates/confirmdialog.html:11
+#: ../../../templates/eventmessagecreate.html:24
 msgid "Cancel"
 msgstr ""
 
@@ -53,7 +67,23 @@ msgstr ""
 msgid "Confirm"
 msgstr ""
 
-#: ../../../templates/home.html:11
+#: ../../../templates/eventmessagecreate.html:5
+msgid "Defines the message for each language"
+msgstr ""
+
+#: ../../../templates/eventmessagecreate.html:25
+msgid "Create"
+msgstr ""
+
+#: ../../../templates/eventmessagepanel.html:3
+msgid "Events"
+msgstr ""
+
+#: ../../../templates/home.html:3
+msgid "Introduction"
+msgstr ""
+
+#: ../../../templates/home.html:7
 msgid "Welcome to Coll-Gate"
 msgstr ""
 
