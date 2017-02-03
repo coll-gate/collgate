@@ -12,7 +12,7 @@ var Marionette = require('backbone.marionette');
 var Dialog = require('./dialog');
 
 var View = Marionette.LayoutView.extend({
-    className: "event-message-panel col-sm-6",
+    className: "event-message-panel",
     template: require('../templates/eventmessagepanel.html'),
 
     attributes: {

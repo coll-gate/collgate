@@ -1,11 +1,9 @@
-<!--
- - @file home.html
- - @brief Template for a list of taxon (collection)
- - @author Frederic SCHERMA
- - @date 2016-04-12
- - @copyright Copyright (c) 2016 INRA UMR1095 GDEC
- - @license @todo
- - @details
--->
-
-<span><%= gt.gettext("Welcome to Coll-Gate") %></span>
+<div class="panel panel-info insider-panel">
+    <div class="panel-heading">
+        <span class="panel-title"><%= gt.gettext("Introduction") %>&nbsp;</span>
+        <span class="glyphicon glyphicon-edit action edit-message" style="float: right; color: #3c763d;"></span>
+    </div>
+    <div class="panel-body" style="height: calc(100% - 14px - 5px - 20px); overflow-y: auto;">
+        <span><%= gt.gettext("Welcome to Coll-Gate") %></span>
+    </div>
+</div>

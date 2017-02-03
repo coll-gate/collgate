@@ -31,8 +31,15 @@ div.left, div.right {
     height: calc(100% - 2px);
 }
 
-div.left {
-    border-right: 1px solid #d8d8d8;
+div.column-left, div.column-right {
+    width: calc(50% - 1px);
+}
+
+div.column-spacer {
+    width: 0px;
+    height: calc(100% - 2px);
+    border-left: 1px solid #d8d8d8;
+    padding: 0px;
 }
 
 div.panel/*.panel-default*/ {
@@ -93,13 +100,13 @@ div.panel div.panel-body-bottom {
     flex: 0 1 auto;
 }
 
-.event {
+/*.event-message {
     font-family: "DejaVu Serif";
     font-size: 12px;
     padding: 5px;
-}
+}*/
 
-.event + .event {
+.event-message + .event-message {
     border-top: solid 1px #A0BD2E;
 }
 
