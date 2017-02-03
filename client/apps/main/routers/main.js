@@ -24,7 +24,7 @@ var Router = Marionette.AppRouter.extend({
     },
 
     default: function(p) {
-        alert("what ??! : " + p);
+        $.alert.error("Invalid view : " + p);
     },
 
     home: function() {

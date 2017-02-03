@@ -35,7 +35,7 @@ div.left {
     border-right: 1px solid #d8d8d8;
 }
 
-div.panel.panel-default {
+div.panel/*.panel-default*/ {
     display: flex;
     flex-flow: column;
     height: 100%;
