@@ -106,9 +106,6 @@ MainModule.prototype = {
         var LeftBarView = require('./views/leftbar');
         mainView.getRegion('left').show(new LeftBarView());
 
-        var EventMessagePanelView = require('./views/eventmessagepanel');
-        mainView.getRegion('right').show(new EventMessagePanelView());
-
         Logger.timeEnd("Start main module");
     },
 
@@ -125,9 +122,7 @@ MainModule.prototype = {
 
     defaultRightView: function() {
         var mainView = application.getView();
-
-        var EventMessagePanelView = require('./views/eventmessagepanel');
-        mainView.getRegion('right').show(new EventMessagePanelView());
+        mainView.getRegion('right').empty();
     }
 };
 

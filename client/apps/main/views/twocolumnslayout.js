@@ -13,7 +13,7 @@ var Marionette = require('backbone.marionette');
 var TwoColumnsLayout = Marionette.LayoutView.extend({
     template: require("../templates/twocolumnslayout.html"),
     attributes: {
-        style: "height: 95%;"
+        style: "height: 100%;"
     },
 
     regions: {
@@ -21,13 +21,7 @@ var TwoColumnsLayout = Marionette.LayoutView.extend({
         'left-bottom': ".left-bottom",
         'right-content': ".right-content",
         'right-bottom': ".right-bottom",
-    },
-
-    onBeforeShow: function() {
-    },
-
-    onBeforeDestroy: function () {
-    },
+    }
 });
 
 module.exports = TwoColumnsLayout;

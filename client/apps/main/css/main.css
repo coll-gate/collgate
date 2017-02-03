@@ -8,13 +8,6 @@
  * @details
  */
 
-div.event-message-panel {
-    padding: 5px;
-    border: solid 1px #96a052;
-    border-radius: 5px;
-    box-shadow: 0px 0px 10px #A0BD2E;
-}
-
 #left_content {
     height: 100%;
 }
@@ -35,7 +28,7 @@ div.column {
 div.left, div.right {
     padding-left: 5px;
     padding-right: 5px;
-    height: 100%;
+    height: calc(100% - 2px);
 }
 
 div.left {
@@ -49,8 +42,14 @@ div.panel.panel-default {
     margin: 0px;
 }
 
+div.insider-panel div.panel-heading {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    height: 30px;
+}
+
 div.panel div.panel-heading {
-    height: 45px;
+    /*height: 45px;*/
     flex: 0 1 auto;
 }
 
@@ -59,39 +58,34 @@ div.panel div.panel-body {
     overflow-x: hidden;
     flex: 1 1 auto;
     height: 100%;
+    padding: 10px;
 }
 
-div.right-up {
-    height: 52.5%;
+div.row-up, div.row-down {
+    height: 50%;
+}
+
+div.bottom {
+    height: 30px;
+}
+
+div.right-up, div.right-down {
+    height: calc(50% - 1px);
+}
+
+div.row-spacer {
+    height: 3px;
     border-bottom: 1px solid #d8d8d8;
 }
 
-div.right-down {
-    height: 47.5%;
-}
-
-div.left-content, div.right-content {
+div.left-content, div.right-content, div.right-up-content, div.right-down-content {
     overflow-y: auto;
-    height: 100%;
-}
-
-div.right-up-content {
-    overflow-y: auto;
-    height: 90%;
-}
-
-div.right-down-content {
-    overflow-y: auto;
-    height: 100%;
+    height: calc(100% - 20px - 5px);
 }
 
 div.panel div.panel-bottom {
     height: auto;
     flex: 0 1 auto;
-}
-
-div.left-bottom, div.right-bottom, div.right-up-bottom, div.right-down-bottom {
-    height: auto;
 }
 
 div.panel div.panel-body-bottom {

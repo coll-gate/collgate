@@ -12,6 +12,7 @@ var Marionette = require('backbone.marionette');
 var AboutView = require('../views/about');
 var HelpIndexView = require('../views/help/index');
 var DefaultLayout = require('../views/defaultlayout');
+var TwoRowsLayout = require('../views/tworowslayout');
 var TitleView = require('../views/titleview');
 
 var Router = Marionette.AppRouter.extend({
@@ -37,7 +38,16 @@ var Router = Marionette.AppRouter.extend({
         application.show(defaultLayout);
 
         defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Home")}));
-        defaultLayout.getRegion('content').show(new HomeView());
+
+        var twoRowsLayout = new TwoRowsLayout();
+        defaultLayout.getRegion('content').show(twoRowsLayout);
+
+        twoRowsLayout.getRegion('up').show(new HomeView());
+
+        if (session.user.isAuth) {
+            var EventMessagePanelView = require('../views/eventmessagepanel');
+            twoRowsLayout.getRegion('down').show(new EventMessagePanelView());
+        }
     },
 
     about: function() {

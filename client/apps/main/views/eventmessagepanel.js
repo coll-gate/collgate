@@ -12,15 +12,15 @@ var Marionette = require('backbone.marionette');
 var Dialog = require('./dialog');
 
 var View = Marionette.LayoutView.extend({
-    className: "event-message-panel",
+    className: "event-message-panel col-sm-6",
     template: require('../templates/eventmessagepanel.html'),
 
     attributes: {
-        'style': 'height: 100%;'
+        'style': 'height: 100%; padding: 5px;'
     },
 
     regions: {
-        'event-messages': 'div.event-messages'
+        'content': 'div.panel-body'
     },
 
     ui: {
@@ -41,7 +41,7 @@ var View = Marionette.LayoutView.extend({
         var EventMessageListView = require('./eventmessagelist');
 
         application.main.collections.eventMessages.fetch().then(function() {
-            view.getRegion('event-messages').show(new EventMessageListView({collection: application.main.collections.eventMessages}));
+            view.getRegion('content').show(new EventMessageListView({collection: application.main.collections.eventMessages}));
         });
     },
 
@@ -123,12 +123,12 @@ var View = Marionette.LayoutView.extend({
             }
         });
 
-        var createEventMessage = new CreateEventMessage({collection: this.getChildView('event-messages').collection});
+        var createEventMessage = new CreateEventMessage({collection: this.getChildView('content').collection});
         createEventMessage.render();
     },
 
     onRefreshEventMessages: function () {
-        this.getChildView('event-messages').collection.fetch();
+        this.getChildView('content').collection.fetch();
     }
 });
 
