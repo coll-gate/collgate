@@ -24,20 +24,47 @@ hr {
     background-image: linear-gradient(to bottom, #000000 0, #A0BD2E 100%);
 }
 
+@media (min-width: 1800px) {
+    div.navbar-container {
+        margin-left: 17.5%;
+        margin-right: 17.5%;
+    }
+}
+
+@media (max-width: 1799px) {
+    div.navbar-container {
+        margin-left: 12%;
+        margin-right: 12%;
+    }
+}
+
+@media (max-width: 1555px) {
+    div.navbar-container {
+        margin-left: 7%;
+        margin-right: 7%;
+    }
+}
+
+@media (max-width: 1400px) {
+    div.navbar-container {
+        margin-left: 3%;
+        margin-right: 3%;
+    }
+}
+
+@media (max-width: 1250px) {
+    div.navbar-container {
+        margin-left: 0%;
+        margin-right: 0%;
+    }
+}
+
 @media (min-width: 1200px) {
     .container {
         width: 100%;
     }
-    /*.navbar-container {
-        margin-left: 17.5%;
-        width: 65%;
-    }*/
 
     #root {
-        /*margin-top: 60px;*/
-        /*margin-bottom: 10px;*/
-        /*padding-top: 60px;*/
-        /*padding-bottom: 10px;*/
         height: calc(100vh - 50px - 10px - 5px - 30px - 1px);  /* 100% of the viewport height - height of header and footer */
     }
 }
