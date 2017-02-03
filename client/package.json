@@ -4,7 +4,7 @@
   "description": "Collection of Genetics Resources",
   "main": "./apps/driver.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "./node_modules/.bin/ava --verbose",
     "dev": "./node_modules/.bin/webpack-dev-server",
     "browserify": "./node_modules/browserify/bin/cmd.js -t node-underscorify apps/driver.js -o static/js/app.js",
     "build": "./node_modules/.bin/webpack",
@@ -50,5 +50,19 @@
     "underscore-loader": "^0.1.0",
     "webpack": "^1.12.14",
     "webpack-dev-server": "^1.14.1"
+  },
+  "ava": {
+    "files": [
+      "test/*.js"
+    ],
+    "source": [
+      "**/*.{js,jsx}",
+      "!build/**/*",
+      "!apps/**/*"
+    ],
+    "match": [
+    ],
+    "concurrency": 5,
+    "failFast": true
   }
 }

@@ -8,16 +8,14 @@
  * @details
  */
 
-#left_content {
+div.root-left-bar {
+}
+
+div.root-content {
     height: 100%;
 }
 
-#main_content {
-    height: 100%;
-}
-
-#right_content {
-    height: 100%;
+div.root-right-bar {
 }
 
 div.column {
@@ -31,8 +29,15 @@ div.left, div.right {
     height: calc(100% - 2px);
 }
 
-div.column-left, div.column-right {
-    width: calc(50% - 1px);
+/** based on bootstrap min-width */
+@media (min-width: 992px) {
+    div.column-left, div.column-right {
+        width: calc(50% - 1px);
+    }
+
+    div.row-up, div.row-down {
+        height: 50%;
+    }
 }
 
 div.column-spacer {
@@ -66,10 +71,6 @@ div.panel div.panel-body {
     flex: 1 1 auto;
     height: 100%;
     padding: 10px;
-}
-
-div.row-up, div.row-down {
-    height: 50%;
 }
 
 div.bottom {

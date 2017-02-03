@@ -145,13 +145,22 @@ application = new Marionette.Application({
             var m = mode.split('-');
             if (m.length == 3) {
                 var panels = [
-                    $("#left_details"),
-                    $("#main_content"),
-                    $("#right_content")
+                    $("div.root-left-bar"),
+                    $("div.root-content"),
+                    $("div.root-right-bar")
                 ];
 
                 for (var i = 0; i < panels.length; ++i) {
-                    panels[i].removeClass();
+                    var classes = panels[i].attr('class').split(' ');
+                    var classList = [];
+
+                    for (var j = 0; j < classes.length; ++j) {
+                        if (classes[j].startsWith('col-')) {
+                            panels[i].removeClass(classes[j]);
+                        }
+                    }
+
+                    //panels[i].removeClass();
                     if (m[i] && m[i] > 0) {
                         panels[i].addClass("col-md-" + m[i]);
                         panels[i].css("display", "block");

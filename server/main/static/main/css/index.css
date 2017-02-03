@@ -28,20 +28,24 @@ hr {
     .container {
         width: 100%;
     }
+    /*.navbar-container {
+        margin-left: 17.5%;
+        width: 65%;
+    }*/
+
+    #root {
+        /*margin-top: 60px;*/
+        /*margin-bottom: 10px;*/
+        /*padding-top: 60px;*/
+        /*padding-bottom: 10px;*/
+        height: calc(100vh - 50px - 10px - 5px - 30px - 1px);  /* 100% of the viewport height - height of header and footer */
+    }
 }
 
 html,
 body {
     /*height: 94%;*/
     margin: 0
-}
-
-#root {
-    /*margin-top: 60px;*/
-    /*margin-bottom: 10px;*/
-    /*padding-top: 60px;*/
-    /*padding-bottom: 10px;*/
-    height: calc(100vh - 50px - 10px - 5px - 30px - 1px);  /* 100% of the viewport height - height of header and footer */
 }
 
 .footer {

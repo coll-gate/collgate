@@ -3,8 +3,7 @@
 {% load i18n %}
 {% load bootstrap3 %}
 
-{# main_content #}
-{% block main_content %}
+{% block root %}
 
 <div class="panel panel-danger">
     <div class="panel-heading">
@@ -13,14 +12,4 @@
     <div class="panel-body">{{cause}}</div>
 </div>
 
-{% endblock %}
-
-{# detail #}
-
-{% block left_content %}
-<h3>Error 403</h3>
-{% endblock %}
-
-{% block right_content %}
-{% include "main/side_bar.html" %}
 {% endblock %}
