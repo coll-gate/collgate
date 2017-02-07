@@ -19,35 +19,96 @@ var Media = function() {
 };
 
 _.extend(Media.prototype, DescriptorFormatType.prototype, {
-    create: function(format, parent, readOnly, create) {
+    create: function(format, parent, readOnly) {
         readOnly || (readOnly = false);
-        create || (create = true);
-
-        this.owned = create;
 
         if (readOnly) {
-            var input = null;
+            var group = $('<div class="input-group"></div>');
+            var glyph = $('<span class="input-group-addon"><span class="glyphicon glyphicon-file"></span></span>');
+            glyph.css(this.spanStyle);
 
-            /* @todo */
-            if (create) {
-                input = this._createStdInput(parent, "glyphicon-check");
+            if (format.media_inline) {
+                /* todo show miniature inline + download button */
             } else {
-                input = parent.children('input');
+                var btnGroup = $('<span class="input-group-btn"></span>');
+                btnGroup.css({
+                    'width': '100%',
+                    'height': '24px',
+                    'padding': '0px'
+                });
+
+                var preview = $('<span class="media-preview btn btn-default"><span class="glyphicon glyphicon-eye-open"></span>&nbsp;' + gt.gettext('Preview') + '</span>');
+                preview.css({
+                    'padding-top': '1px',
+                    'padding-bottom': '1px',
+                    'height': '24px',
+                    'width': 'calc(50% + 1px)'
+                });
+                btnGroup.append(preview);
+
+                var download = $('<span class="media-download btn btn-default"><span class="glyphicon glyphicon-download"></span>&nbsp;' + gt.gettext('Download') + '</span>');
+                download.css({
+                    'padding-top': '1px',
+                    'padding-bottom': '1px',
+                    'height': '24px',
+                    'width': 'calc(50% + 1px)'
+                });
+                btnGroup.append(download);
+
+                group.append(btnGroup);
+                group.append(glyph);
+
+                parent.append(group);
+
+                this.parent = parent;
+                this.readOnly = true;
+                this.el = btnGroup;
             }
-
-            this.parent = parent;
-            this.readOnly = true;
-            this.el = input;
         } else {
-            /* @todo */
+            /* show upload button and progress bar */
+            var group = $('<div class="input-group"></div>');
+
+            var btnGroup = $('<span class="input-group-btn"></span>');
+
+            var button = $('<span class="btn btn-default btn-file">' + gt.gettext('Browse') + '</span>');
+            var input = $('<input type="file">');
+            var progress = $('<span class="input-group-addon progress"><span class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="min-width: 2em;">0%</span></span>');
+            var fileName = $('<input type="text" class="form-control" readonly>');
+            var glyph = $('<span class="input-group-addon"><span class="glyphicon glyphicon-file"></span></span>');
+
+            input.on("change", function() {
+                var label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+                fileName.val(label);
+            });
+
+            fileName.css({
+            });
+
+            progress.css({
+                'width': '30%',
+                'padding': '0px',
+                //'border-top': '0px',
+                //'border-bottom': '0px',
+                'border-left': '0px'
+            });
+
+            button.append(input);
+            btnGroup.append(button);
+
+            group.append(btnGroup);
+            group.append(fileName);
+            group.append(progress);
+            group.append(glyph);
+
+            parent.append(group);
 
             this.parent = parent;
-            this.el = select;
+            this.el = input;
         }
     },
 
     destroy: function() {
-        if (this.el && this.parent && this.owned) {
+        if (this.el && this.parent) {
             if (this.readOnly) {
                 this.el.parent().remove();
             } else {
@@ -148,7 +209,7 @@ Media.DescriptorTypeDetailsView = Marionette.ItemView.extend({
 
     ui: {
         format_media_types: '#format_media_types',
-        format_max_items: '#format_max_items',
+        format_media_inline: '#format_media_inline'
     },
 
     initialize: function() {
@@ -161,16 +222,25 @@ Media.DescriptorTypeDetailsView = Marionette.ItemView.extend({
             container: 'body'
         });
 
+        this.ui.format_media_inline.selectpicker({style: 'btn-default'});
+
         var format = this.model.get('format');
 
         if (format.media_types != undefined) {
             this.ui.format_media_types.selectpicker('val', format.media_types);
         }
+
+        if (format.media_inline != undefined) {
+            this.ui.format_media_inline.selectpicker('val', format.media_inline ? "true" : "false");
+        } else {
+            this.ui.format_media_inline.selectpicker('val', "false");
+        }
     },
 
     getFormat: function() {
         return {
-            'media_types': this.ui.format_media_types.val()
+            'media_types': this.ui.format_media_types.val(),
+            'media_inline': this.ui.format_media_inline.val() === "true"
         }
     }
 });

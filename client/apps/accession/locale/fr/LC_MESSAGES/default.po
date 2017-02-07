@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-01 18:38+0100\n"
+"POT-Creation-Date: 2017-02-06 11:19+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -93,9 +93,8 @@ msgid "Language"
 msgstr "Langue"
 
 #: ../../../templates/accessioncreate.html:32
-#: ../../../templates/accessionlist.html:6
-msgid "Parent"
-msgstr "Parent"
+msgid "Taxon (specie, variety...)"
+msgstr "Taxon (espèce, variété...)"
 
 #: ../../../templates/accessioncreate.html:39
 msgid "Continue"
@@ -112,6 +111,10 @@ msgstr "Descripteurs"
 #: ../../../templates/accessionlayout.html:7
 msgid "Batches"
 msgstr "Lots"
+
+#: ../../../templates/accessionlist.html:6
+msgid "Parent"
+msgstr "Parent"
 
 #: ../../../templates/accessionlist.html:7
 msgid "Xxx"

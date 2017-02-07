@@ -59,7 +59,7 @@ var View = ItemView.extend({
 
             var widget = application.descriptor.widgets.newElement(format.type);
             if (widget) {
-                widget.create(format, el.children('td.descriptor-value'), true, true, descriptorType.group, descriptorType.id);
+                widget.create(format, el.children('td.descriptor-value'), true, descriptorType.group, descriptorType.id);
                 widget.set(format, true, values, descriptorType.group, descriptorType.id);
             }
 

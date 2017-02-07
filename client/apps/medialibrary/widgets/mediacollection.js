@@ -19,21 +19,11 @@ var MediaCollection = function() {
 };
 
 _.extend(MediaCollection.prototype, DescriptorFormatType.prototype, {
-    create: function(format, parent, readOnly, create) {
+    create: function(format, parent, readOnly) {
         readOnly || (readOnly = false);
-        create || (create = true);
-
-        this.owned = create;
 
         if (readOnly) {
-            var input = null;
-
-            /* @todo */
-            if (create) {
-                input = this._createStdInput(parent, "glyphicon-check");
-            } else {
-                input = parent.children('input');
-            }
+            var input = this._createStdInput(parent, "glyphicon-check");
 
             this.parent = parent;
             this.readOnly = true;
@@ -47,7 +37,7 @@ _.extend(MediaCollection.prototype, DescriptorFormatType.prototype, {
     },
 
     destroy: function() {
-        if (this.el && this.parent && this.owned) {
+        if (this.el && this.parent) {
             if (this.readOnly) {
                 this.el.parent().remove();
             } else {
@@ -149,6 +139,7 @@ MediaCollection.DescriptorTypeDetailsView = Marionette.ItemView.extend({
     ui: {
         format_media_types: '#format_media_types',
         format_max_items: '#format_max_items',
+        format_media_inline: '#format_media_inline'
     },
 
     initialize: function() {
@@ -161,6 +152,8 @@ MediaCollection.DescriptorTypeDetailsView = Marionette.ItemView.extend({
             container: 'body'
         });
 
+        this.ui.format_media_inline.selectpicker({style: 'btn-default'});
+
         var format = this.model.get('format');
 
         if (format.media_types != undefined) {
@@ -172,12 +165,19 @@ MediaCollection.DescriptorTypeDetailsView = Marionette.ItemView.extend({
         } else {
             this.ui.format_max_items.val(2);
         }
+
+        if (format.media_inline != undefined) {
+            this.ui.format_media_inline.selectpicker('val', format.media_inline ? "true" : "false");
+        } else {
+            this.ui.format_media_inline.selectpicker('val', "false");
+        }
     },
 
     getFormat: function() {
         return {
             'media_types': this.ui.format_media_types.val(),
-            'max_items': parseInt(this.ui.format_max_items.val())
+            'max_items': parseInt(this.ui.format_max_items.val()),
+            'media_inline': this.ui.format_media_inline.val() === "true"
         }
     }
 });

@@ -19,25 +19,17 @@ var EnumSingle = function() {
 };
 
 _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
-    create: function(format, parent, readOnly, create, descriptorTypeGroup, descriptorTypeId) {
+    create: function(format, parent, readOnly, descriptorTypeGroup, descriptorTypeId) {
         readOnly || (readOnly = false);
-        create || (create = true);
-
-        this.owned = create;
 
         if (readOnly) {
             var input = null;
 
-            if (create) {
-                // autocomplete or dropdown
-                if (format.list_type === "autocomplete") {
-                    input = this._createStdInput(parent, "glyphicon-list");
-                } else if (format.list_type === "dropdown") {
-                    input = this._createStdInput(parent, "glyphicon-list");
-                }
-
-            } else {
-                input = parent.children('input');
+            // autocomplete or dropdown
+            if (format.list_type === "autocomplete") {
+                input = this._createStdInput(parent, "glyphicon-list");
+            } else if (format.list_type === "dropdown") {
+                input = this._createStdInput(parent, "glyphicon-list");
             }
 
             this.parent = parent;
@@ -159,7 +151,7 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
     },
 
     destroy: function() {
-        if (this.el && this.parent && this.owned) {
+        if (this.el && this.parent) {
             if (this.readOnly) {
                 this.el.parent().remove();
             } else {

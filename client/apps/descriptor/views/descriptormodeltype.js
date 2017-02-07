@@ -536,7 +536,7 @@ var View = Marionette.ItemView.extend({
                             }
 
                             var widget = application.descriptor.widgets.newElement(format.type);
-                            widget.create(format, view.ui.condition_values, false, true, view.descriptorType.group, view.descriptorType.id);
+                            widget.create(format, view.ui.condition_values, false, view.descriptorType.group, view.descriptorType.id);
 
                             if (view.definesValues) {
                                 widget.set(format, view.definesValues, view.defaultValues, view.descriptorType.group, view.descriptorType.id);

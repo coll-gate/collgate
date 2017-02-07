@@ -12,7 +12,6 @@ var DescriptorFormatType = function() {
     this.name ="";          // format type name
     this.group = "";        // related group name
 
-    this.owned = false;     // true mean the element is owned, and must be destroyed
     this.readOnly = false;  // true mean the widget is read only
     this.parent = null;     // direct parent
     this.el = null;         // element itself
@@ -52,7 +51,7 @@ DescriptorFormatType.prototype = {
     },
 
     destroy: function() {
-        /* destroy the widget if owned */
+        /* destroy the widget if created */
     },
 
     enable: function() {

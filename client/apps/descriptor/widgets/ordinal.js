@@ -18,11 +18,8 @@ var Ordinal = function() {
 };
 
 _.extend(Ordinal.prototype, DescriptorFormatType.prototype, {
-    create: function(format, parent, readOnly, create) {
+    create: function(format, parent, readOnly) {
         readOnly || (readOnly = false);
-        create || (create = true);
-
-        this.owned = create;
 
         if ((format.range[1] - format.range[0] + 1) <= 256) {
             this.isInput = false;
@@ -31,13 +28,7 @@ _.extend(Ordinal.prototype, DescriptorFormatType.prototype, {
         }
 
         if (readOnly) {
-            var input = null;
-
-            if (create) {
-                input = this._createStdInput(parent, "glyphicon-option-vertical");
-            } else {
-                input = parent.children('input');
-            }
+            var input = this._createStdInput(parent, "glyphicon-option-vertical");
 
             this.parent = parent;
             this.readOnly = true;
@@ -91,7 +82,7 @@ _.extend(Ordinal.prototype, DescriptorFormatType.prototype, {
     },
 
     destroy: function() {
-        if (this.el && this.parent && this.owned) {
+        if (this.el && this.parent) {
             if (this.readOnly) {
                 this.el.parent().remove();
             } else {

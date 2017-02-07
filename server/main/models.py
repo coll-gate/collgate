@@ -49,6 +49,9 @@ class Profile(models.Model):
 
     admin_status = models.CharField(max_length=512)
 
+    # user saved settings as JSON object
+    settings = models.TextField(default="{}")
+
 
 class Settings(models.Model):
     """

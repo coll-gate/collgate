@@ -33,9 +33,7 @@ class DescriptorFormatTypeMedia(DescriptorFormatType):
         self.name = "media"
         self.group = DescriptorFormatTypeGroupMedia()
         self.verbose_name = _("Media")
-        self.format_fields = [
-            "media_types",
-        ]
+        self.format_fields = ["media_types", "media_inline"]
 
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         # check if the value is an integer and if the related entity exists
@@ -56,7 +54,8 @@ class DescriptorFormatTypeMedia(DescriptorFormatType):
         schema = {
             "type": "object",
             "properties": {
-                "media_types": {"type": "array", 'minLength': 1, 'maxLength': 16}
+                "media_types": {"type": "array", 'minLength': 1, 'maxLength': 16},
+                "media_inline": {"type": "boolean"}
             }
         }
 
@@ -83,10 +82,7 @@ class DescriptorFormatTypeMediaCollection(DescriptorFormatType):
         self.name = "media_collection"
         self.group = DescriptorFormatTypeGroupMedia()
         self.verbose_name = _("Media collection")
-        self.format_fields = [
-            "media_types",
-            "max_items"
-        ]
+        self.format_fields = ["media_types", "max_items", "media_inline"]
 
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         # check if the value is an integer and if the related entity exists
@@ -108,7 +104,8 @@ class DescriptorFormatTypeMediaCollection(DescriptorFormatType):
             "type": "object",
             "properties": {
                 "media_types": {"type": "array", 'minLength': 1, 'maxLength': 16},
-                "max_items": {"type": "integer", 'minimum': 2, 'maximum': 256}
+                "max_items": {"type": "integer", 'minimum': 2, 'maximum': 256},
+                "media_inline": {"type": "boolean"}
             }
         }
 

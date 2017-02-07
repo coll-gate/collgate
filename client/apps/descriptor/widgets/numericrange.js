@@ -18,20 +18,11 @@ var NumericRange = function() {
 };
 
 _.extend(NumericRange.prototype, DescriptorFormatType.prototype, {
-    create: function(format, parent, readOnly, create) {
+    create: function(format, parent, readOnly) {
         readOnly || (readOnly = false);
-        create || (create = true);
-
-        this.owned = create;
 
         if (readOnly) {
-            var input = null;
-
-            if (create) {
-                input = this._createStdInput(parent, "glyphicon-cog");
-            } else {
-                input = parent.children('input');
-            }
+            var input = this._createStdInput(parent, "glyphicon-cog");
 
             this.parent = parent;
             this.readOnly = true;
@@ -65,7 +56,7 @@ _.extend(NumericRange.prototype, DescriptorFormatType.prototype, {
     },
 
     destroy: function() {
-        if (this.el && this.parent && this.owned) {
+        if (this.el && this.parent) {
             if (this.readOnly) {
                 this.el.parent().remove();
             } else {

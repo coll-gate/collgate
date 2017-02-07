@@ -24,7 +24,7 @@ var Model = Backbone.Model.extend({
         group: null,
         name: '',
         values: null,
-        format: {type: 'string'},
+        format: {type: 'undefined'},
         can_delete: false,
         can_modify: false,
         description: '',

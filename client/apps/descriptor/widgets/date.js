@@ -19,20 +19,11 @@ var DateType = function() {
 };
 
 _.extend(DateType.prototype, DescriptorFormatType.prototype, {
-    create: function(format, parent, readOnly, create) {
+    create: function(format, parent, readOnly) {
         readOnly || (readOnly = false);
-        create || (create = true);
-
-        this.owned = create;
 
         if (readOnly) {
-            var input = null;
-
-            if (create) {
-                input = this._createStdInput(parent, "glyphicon-calendar");
-            } else {
-                input = parent.children('input');
-            }
+            var input = this._createStdInput(parent, "glyphicon-calendar");
 
             this.parent = parent;
             this.readOnly = true;
@@ -53,7 +44,7 @@ _.extend(DateType.prototype, DescriptorFormatType.prototype, {
                 showTodayButton: true,
                 showClear: true,
                 allowInputToggle: true
-                //widgetParent: view.$el,
+                //widgetParent:   // view.$el,
                 //widgetPositioning: {
                 //    vertical: 'auto',
                 //    horizontal: 'auto'
@@ -94,7 +85,7 @@ _.extend(DateType.prototype, DescriptorFormatType.prototype, {
     },
 
     destroy: function() {
-        if (this.el && this.parent && this.owned) {
+        if (this.el && this.parent) {
             if (this.readOnly) {
                 this.el.parent().remove();
             } else {
