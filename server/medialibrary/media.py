@@ -9,6 +9,7 @@ import stat
 import magic
 
 from django.conf import settings
+from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import SuspiciousOperation
 from django.http import HttpResponse
 from django.http import StreamingHttpResponse
@@ -18,15 +19,14 @@ from django.utils.translation import ugettext_lazy as _
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
 from igdectk.common.helpers import get_setting
+from main.models import Entity
 
 from medialibrary.models import Media
+from permission.utils import get_permissions_for
 
 from .base import RestMediaLibrary
 
 logger = logging.getLogger('collgate')
-
-# chunk size in bytes (to download a file)
-CHUNK_SIZE = 65536
 
 
 class RestMedia(RestMediaLibrary):
@@ -52,13 +52,28 @@ class RestMediaUUIDDownload(RestMediaUUID):
 @RestMediaUUID.def_auth_request(Method.GET, Format.JSON)
 def get_media(request, uuid):
     """
-
-    :param request:
-    :param uuid:
-    :return:
+    Returns the media details (mime-type, file name, size...) but not the file content.
     """
+    media = get_object_or_404(Media, uuid=uuid)
 
-    result = {}
+    # check user permission on the entity @todo
+    perms = get_permissions_for(request.user,
+                                media.owner_content_type.app_label,
+                                media.owner_content_type.model,
+                                media.owner_object_id)
+    if len(perms) == 0:
+        raise PermissionDenied(_('Invalid permission to access to this media'))
+
+    result = {
+        'id': media.pk,
+        'uuid': media.uuid,
+        'name': media.name,
+        'created_date': media.created_date,
+        'modified_date': media.modified_date,
+        'file_name': media.file_name,
+        'file_size': media.file_size,
+        'mime_type': media.mime_type
+    }
 
     return HttpResponseRest(request, result)
 
@@ -71,6 +86,14 @@ def download_media_content(request, uuid):
     @see https://bitbucket.org/renlinx007/django-fileprovider project for example
     """
     media = get_object_or_404(Media, uuid=uuid)
+
+    # check user permission on the entity @todo
+    perms = get_permissions_for(request.user,
+                                media.owner_content_type.app_label,
+                                media.owner_content_type.model,
+                                media.owner_object_id)
+    if len(perms) == 0:
+        raise PermissionDenied(_('Invalid permission to access to this media'))
 
     storage_location = get_setting('medialibrary', 'storage_location')
 
@@ -100,12 +123,31 @@ def download_media_content(request, uuid):
     return response
 
 
-@RestMedia.def_auth_request(Method.POST, Format.JSON)
-def upload_media(request, uuid):
+@RestMedia.def_auth_request(Method.POST, Format.JSON, content={
+    "type": "object",
+    "properties": {
+        "owner_content_type": {"type:": "string", 'minLength': 7, 'maxLength': 256, 'pattern': r'^[a-z]{3,}\.[a-z]{3,}$'},
+        "owner_object_id": {"type:": "number"}
+    }
+})
+def upload_media(request):
     """
     Upload a media file from multi-part HTTP file request.
     @see https://docs.djangoproject.com/fr/1.10/ref/files/uploads/#custom-upload-handlers
     """
+    owner_object_id = int(request.data['owner_object_id'])
+    app_label, model = request.data['owner_content_type'].split('.')
+
+    owner_entity = Entity.get_by_content_type_and_id(app_label, model, owner_object_id)
+
+    # check user permission on the owner entity @todo check for a change permission ?
+    perms = get_permissions_for(request.user,
+                                app_label,
+                                model,
+                                owner_object_id)
+    if '%s.change_%s' % (app_label, model) not in perms:
+        raise PermissionDenied(_('No change permission to the owner entity'))
+
     storage_path = get_setting('medialibrary', 'storage_path')
     if not os.path.isabs(storage_path):
         storage_path = os.path.abspath(storage_path)
@@ -152,9 +194,12 @@ def upload_media(request, uuid):
     media.version = 1
     media.file_name = valid_name.getvalue()
 
+    media.owner_object_id = owner_entity.pk
+    media.owner_content_type = owner_entity.content_type
+
     # create the path if necessary
     abs_path = os.path.join(storage_path, local_path)
-    if not os.direxists(abs_path):
+    if not os.path.exists(abs_path):
         os.makedirs(abs_path, 0o770)
 
     abs_file_name = os.path.join(abs_path, local_file_name)

@@ -6,11 +6,15 @@
 coll-gate descriptor format type class for media library
 """
 
+import re
 import validictory
 
 from django.utils.translation import ugettext_lazy as _
 
 from descriptor.descriptorformattype import DescriptorFormatType, DescriptorFormatTypeGroup
+from medialibrary.models import Media
+
+RE_UUID = re.compile(r'^[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}$')
 
 
 class DescriptorFormatTypeGroupMedia(DescriptorFormatTypeGroup):
@@ -34,19 +38,22 @@ class DescriptorFormatTypeMedia(DescriptorFormatType):
         self.group = DescriptorFormatTypeGroupMedia()
         self.verbose_name = _("Media")
         self.format_fields = ["media_types", "media_inline"]
+        self.relation = True
 
     def validate(self, descriptor_type_format, value, descriptor_model_type):
-        # check if the value is an integer and if the related entity exists
-        if not isinstance(value, int):
-            return _("The descriptor value must be an integer")
+        # check if the value is a string and if the related entity exists
+        if not isinstance(value, str):
+            return _("The descriptor value must be a string")
 
-        # check if the entity exists @todo
-        # try:
-        #     app_label, model = descriptor_type_format['model'].split('.')
-        #     content_type = get_object_or_404(ContentType, app_label=app_label, model=model)
-        #     content_type.get_object_for_this_type(id=value)
-        # except ObjectDoesNotExist:
-        #     return _("The descriptor value must refers to an existing media")
+        # regexp on uuid
+        if RE_UUID.match(value) is None:
+            return _("The descriptor value must match with the UUID format")
+
+        # check if the media exists
+        try:
+            media = Media.objects.get(uuid=value)
+        except Media.DoesNotExist:
+            return _("The descriptor value must refers to an existing media")
 
         return None
 
@@ -70,6 +77,15 @@ class DescriptorFormatTypeMedia(DescriptorFormatType):
 
         return None
 
+    def relate(self, entity, value):
+        """
+        Associate or dissociate two entities. One is the entity that contains descriptors,
+        the other is targeted by its value.
+        :param entity: Master (left) entity of the association
+        :param value: Target (right) entity of the association
+        """
+        pass
+
 
 class DescriptorFormatTypeMediaCollection(DescriptorFormatType):
     """
@@ -83,19 +99,26 @@ class DescriptorFormatTypeMediaCollection(DescriptorFormatType):
         self.group = DescriptorFormatTypeGroupMedia()
         self.verbose_name = _("Media collection")
         self.format_fields = ["media_types", "max_items", "media_inline"]
+        self.relation = True
 
     def validate(self, descriptor_type_format, value, descriptor_model_type):
-        # check if the value is an integer and if the related entity exists
-        if not isinstance(value, int):
-            return _("The descriptor value must be an integer")
+        # check if the value is a string and if the related entity exists
+        if not isinstance(value, list):
+            return _("The descriptor value must be an array of string")
 
-        # check if the media collection exists @todo
-        # try:
-        #     app_label, model = descriptor_type_format['model'].split('.')
-        #     content_type = get_object_or_404(ContentType, app_label=app_label, model=model)
-        #     content_type.get_object_for_this_type(id=value)
-        # except ObjectDoesNotExist:
-        #     return _("The descriptor value must refers to an existing collection of media")
+        # check max items number
+        if len(value) > descriptor_type_format['max_items']:
+            return _("The number of medias must be lesser or equal than %i" % descriptor_type_format['max_items'])
+
+        # regexp on uuid
+        for val in value:
+            if RE_UUID.match(val) is None:
+                return _("The descriptor value must match with the UUID format")
+
+        # check if the media exists
+        medias = Media.objects.filter(uuid__in=value)
+        if medias.count() != len(value):
+            return _("The descriptor value must refers to an existing media")
 
         return None
 

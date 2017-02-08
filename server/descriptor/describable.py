@@ -149,3 +149,12 @@ def check_and_defines_descriptors(entity_descriptors, descriptor_meta_model, des
             results[dmt.id] = src_value if src_defined else acc_value
 
     return results
+
+
+def update_associations(entity, entity_descriptors, descriptor_meta_model):
+    """
+    Update the related entity between this entity and the target from values of descriptors.
+    :param entity Master entity
+    :param entity_descriptors: Entity descriptors (key:value)
+    :param descriptor_meta_model: Meta-model of descriptor, related to the givens descriptors
+    """

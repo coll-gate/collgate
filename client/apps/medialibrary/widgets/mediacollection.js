@@ -58,7 +58,7 @@ _.extend(MediaCollection.prototype, DescriptorFormatType.prototype, {
         }
     },
 
-    set: function (format, definesValues, defaultValues, descriptorTypeGroup, descriptorTypeId) {
+    set: function (format, definesValues, defaultValues) {
         if (!this.el || !this.parent) {
             return;
         }

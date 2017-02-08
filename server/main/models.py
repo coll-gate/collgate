@@ -114,15 +114,11 @@ class EntityStatus(ChoiceEnum):
 
 
 class EntityManager(models.Manager):
-    # @todo est ce que django-polymorphic serait util ? car il apporte un iterator
+    # Est ce que django-polymorphic serait util ? car il apporte un iterator,
     # et une optimisation via union sur les QuerySet, et aussi un cast automatique
 
     def get_by_uuid(self, uuid):
         return self.get(uuid=uuid)
-
-    def get_by_content_type_and_id(self, app_label, model, id):
-        content_type = ContentType.objects.get_by_natural_key(app_label, model)
-        return self.get(content_type=content_type, id=id)
 
 
 class Entity(models.Model):
@@ -130,7 +126,9 @@ class Entity(models.Model):
     Base model for any object that must support audit, history, or
     any other modular features.
     """
+
     NAME_RE = re.compile(r'^[a-zA-Z0-9_-]{3,}$', re.IGNORECASE)
+    CONTENT_TYPE_RE = re.compile(r'^[a-z]{3,}\.[a-z]{3,}$')
 
     content_type = models.ForeignKey(ContentType, editable=False)
     entity_status = models.IntegerField(
@@ -180,7 +178,28 @@ class Entity(models.Model):
         """
         Check whether or not the name respect a certain convention [a-zA-Z0-9_-]{3,}.
         """
+        if name is None or not isinstance(name, str):
+            return False
+
         return Entity.NAME_RE.match(name) is not None
+
+    @classmethod
+    def is_content_type_valid(cls, name):
+        """
+        Check whether or not the name of the content type respect the format.
+        """
+        if name is None or not isinstance(name, str):
+            return False
+
+        return Entity.CONTENT_TYPE_RE.match(name) is not None
+
+    @classmethod
+    def get_by_content_type_and_id(cls, app_label, model, id):
+        """
+        Get an entity by its content type (app_label, model) and its id.
+        """
+        content_type = ContentType.objects.get_by_natural_key(app_label, model)
+        return content_type.get_object_for_this_type(id=id)
 
     def remove_entity(self):
         """

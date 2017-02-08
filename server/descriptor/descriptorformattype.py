@@ -44,6 +44,9 @@ class DescriptorFormatType(object):
         # list of related field into format.*.
         self.format_fields = ["type"]
 
+        # set to true if there a relation between value and entity
+        self.relation = False
+
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         """
         Validate the value according the format.
@@ -61,6 +64,15 @@ class DescriptorFormatType(object):
         :return: None if the check is done, else a string with the error detail
         """
         return None
+
+    def relate(self, entity, value):
+        """
+        Associate or dissociate two entities. One is the entity that contains descriptors,
+        the other is targeted by its value.
+        :param entity: Master (left) entity of the association
+        :param value: Target (right) entity of the association
+        """
+        pass
 
 
 class DescriptorFormatTypeManager(object):
@@ -119,6 +131,21 @@ class DescriptorFormatTypeManager(object):
         res = dft.check(descriptor_type_format)
         if res is not None:
             raise ValueError(str(res))
+
+    @classmethod
+    def has_related(cls, descriptor_type_format):
+        """
+        Returns true if the descriptor format type need a special association.
+        :param descriptor_type_format: Format of the type of descriptor as python dict
+        :except ValueError with descriptor of the problem
+        """
+        format_type = descriptor_type_format['type']
+
+        dft = cls.descriptor_format_types.get(format_type)
+        if dft is None:
+            raise ValueError("Unsupported descriptor format type %s" % format_type)
+
+        return dft.relation
 
     @classmethod
     def values(cls):

@@ -60,6 +60,41 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
 
                 parent.append(group);
 
+                preview.attr('media-target', "").addClass('disabled');
+                download.attr('media-target', "").addClass('disabled');
+
+                preview.on('click', $.proxy(function(e) {
+                    var media = this.preview.attr('media-target');
+                    if (media !== "") {
+                        $.ajax({
+                            url: application.baseUrl + 'medialibrary/media/' + media + '/'
+                        }).success(function (data) {
+                            // get mime-type, and if compatible with a client view show it else download it
+                            if (data.mime_type.startsWith('image/')) {
+                                window.open(application.baseUrl + 'medialibrary/media/' + media + '/download/', "_blank")
+                            } else {
+                                // download the document
+                                $('<form></form>')
+                                    .attr('action', application.baseUrl + 'medialibrary/media/' + media + '/download/')
+                                    .appendTo('body').submit().remove();
+                            }
+                        });
+                    }
+                }, this));
+
+                download.on('click', $.proxy(function(e) {
+                    var media = this.preview.attr('media-target');
+                    if (media !== "") {
+                        // download the document
+                        $('<form></form>')
+                            .attr('action', application.baseUrl + 'medialibrary/media/' + media + '/download/')
+                            .appendTo('body').submit().remove();
+                    }
+                }, this));
+
+                this.preview = preview;
+                this.download = download;
+
                 this.parent = parent;
                 this.readOnly = true;
                 this.el = btnGroup;
@@ -119,17 +154,37 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
 
     enable: function() {
         if (this.el) {
-            this.el.prop("disabled", false).selectpicker('refresh');
+            if (this.readOnly) {
+                if (this.preview.attr('media-target') !== "" && this.preview.hasClass('disabled')) {
+                    this.preview.removeClass('disabled');
+                }
+
+                if (this.download.attr('media-target') !== "" && this.download.hasClass('disabled')) {
+                    this.download.removeClass('disabled');
+                }
+            } else {
+
+            }
         }
     },
 
     disable: function() {
         if (this.el) {
-            this.el.prop("disabled", true).selectpicker('refresh');
+            if (this.readOnly) {
+                if (!this.preview.hasClass('disabled')) {
+                    this.preview.addClass('disabled');
+                }
+
+                if (!this.download.hasClass('disabled')) {
+                    this.download.addClass('disabled');
+                }
+            } else {
+
+            }
         }
     },
 
-    set: function (format, definesValues, defaultValues, descriptorTypeGroup, descriptorTypeId) {
+    set: function (format, definesValues, defaultValues) {
         if (!this.el || !this.parent) {
             return;
         }
@@ -138,7 +193,16 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
 
         if (this.readOnly) {
             if (definesValues) {
-                /* @todo */
+                this.preview.attr('media-target', defaultValues[0]);
+                this.download.attr('media-target', defaultValues[0]);
+
+                if (this.preview.hasClass('disabled')) {
+                    this.preview.removeClass('disabled');
+                }
+
+                if (this.download.hasClass('disabled')) {
+                    this.download.removeClass('disabled');
+                }
             }
         } else {
             if (definesValues) {

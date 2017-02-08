@@ -16,6 +16,7 @@ from descriptor.models import DescriptorMetaModel
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
 from main.models import Languages, EntityStatus
+from permission.utils import get_permissions_for
 from taxonomy.models import Taxon
 
 from .models import Accession, AccessionSynonym
@@ -190,7 +191,15 @@ def accession_list(request):
 
 @RestAccessionId.def_auth_request(Method.GET, Format.JSON)
 def get_accession_details_json(request, id):
+    """
+    Get the details of an accession.
+    """
     accession = Accession.objects.get(id=int_arg(id))
+
+    # check permission on this object @todo
+    perms = get_permissions_for(request.user, accession.content_type.app_label, accession.content_type.model, accession.pk)
+    if len(perms) == 0:
+        raise PermissionDenied(_('Invalid permission to access to this accession'))
 
     result = {
         'id': accession.id,
