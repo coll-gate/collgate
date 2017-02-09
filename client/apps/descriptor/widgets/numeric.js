@@ -98,10 +98,11 @@ _.extend(Numeric.prototype, DescriptorFormatType.prototype, {
 
     values: function() {
         if (this.el && this.parent) {
-            return [this.el.val()];
+            var value = this.el.val();
+            return [value !== "" ? value : null];
         }
 
-        return [""];
+        return [null];
     },
 
     checkCondition: function (condition, values) {

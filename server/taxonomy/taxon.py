@@ -7,10 +7,12 @@ coll-gate taxonomy taxon rest handlers
 """
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import SuspiciousOperation
+from django.db import IntegrityError
+from django.db import transaction
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 
-from descriptor.describable import check_and_defines_descriptors
+from descriptor.describable import DescriptorsBuilder
 from descriptor.models import DescriptorMetaModel
 from main.models import Languages
 from permission.utils import get_permissions_for
@@ -375,48 +377,74 @@ def patch_taxon(request, id):
 
         taxon.update_field(['parent', 'parent_list'])
 
-    if 'descriptor_meta_model' in request.data:
-        dmm_id = request.data["descriptor_meta_model"]
+    try:
+        with transaction.atomic():
+            # update meta-model of descriptors and descriptors
+            if 'descriptor_meta_model' in request.data:
+                dmm_id = request.data["descriptor_meta_model"]
 
-        # changing of meta model erase all previous descriptors values
-        if dmm_id is None:
-            taxon.descriptor_meta_model = None
-            taxon.descriptors = {}
+                # changing of meta model erase all previous descriptors values
+                if dmm_id is None and taxon.descriptor_meta_model is not None:
+                    # clean previous descriptors and owns
+                    descriptors_builder = DescriptorsBuilder(taxon)
 
-            result['descriptor_meta_model'] = None
-            result['descriptors'] = {}
-        else:
-            content_type = get_object_or_404(ContentType, app_label="taxonomy", model="taxon")
-            dmm = get_object_or_404(DescriptorMetaModel, id=dmm_id, target=content_type)
+                    descriptors_builder.check_and_update(taxon.descriptor_meta_model, {})
 
-            # dmm is different
-            if taxon.descriptor_meta_model is None or (
-                taxon.descriptor_meta_model is not None and taxon.descriptor_meta_model.id != dmm_id):
+                    taxon.descriptors = {}
+                    taxon.descriptor_meta_model = None
 
-                taxon.descriptor_meta_model = dmm
-                taxon.descriptors = {}
+                    descriptors_builder.update_associations()
 
-                result['descriptor_meta_model'] = dmm.id
-                result['descriptors'] = {}
+                    result['descriptor_meta_model'] = None
+                    result['descriptors'] = {}
 
-        taxon.update_field(['descriptor_meta_model', 'descriptors'])
+                elif dmm_id is not None:
+                    # existing descriptors and new meta-model is different : first clean previous descriptors
+                    if taxon.descriptor_meta_model is not None and taxon.descriptor_meta_model.pk != dmm_id:
+                        # clean previous descriptors and owns
+                        descriptors_builder = DescriptorsBuilder(taxon)
 
-    if 'descriptors' in request.data:
-        descriptors = request.data["descriptors"]
+                        descriptors_builder.check_and_update(taxon.descriptor_meta_model, {})
 
-        # reset any values
-        if descriptors is None:
-            taxon.descriptors = {}
-        else:
+                        taxon.descriptors = {}
+                        taxon.descriptor_meta_model = None
+
+                        descriptors_builder.update_associations()
+
+                    # and set the new one
+                    content_type = get_object_or_404(ContentType, app_label="taxonomy", model="taxon")
+                    dmm = get_object_or_404(DescriptorMetaModel, id=dmm_id, target=content_type)
+
+                    taxon.descriptor_meta_model = dmm
+                    taxon.descriptors = {}
+
+                    result['descriptor_meta_model'] = dmm.id
+                    result['descriptors'] = {}
+
+                # @todo details for the audit
+                taxon.update_field(['descriptor_meta_model', 'descriptors'])
+
             # update descriptors
-            taxon.descriptors = check_and_defines_descriptors(
-                taxon.descriptors, taxon.descriptor_meta_model, descriptors)
+            if 'descriptors' in request.data:
+                descriptors = request.data["descriptors"]
 
-        result['descriptors'] = taxon.descriptors
+                descriptors_builder = DescriptorsBuilder(taxon)
 
-        taxon.update_field('descriptors')
+                descriptors_builder.check_and_update(taxon.descriptor_meta_model, descriptors)
+                taxon.descriptors = descriptors_builder.descriptors
 
-    taxon.save()
+                descriptors_builder.update_associations()
+
+                result['descriptors'] = taxon.descriptors
+
+                # @todo details for the audit
+                taxon.update_field('descriptors')
+
+            taxon.save()
+
+    except IntegrityError as e:
+        logger.log(repr(e))
+        raise SuspiciousOperation(_("Unable to update a taxon"))
 
     return HttpResponseRest(request, result)
 
@@ -490,22 +518,27 @@ def taxon_change_synonym(request, id, sid):
 
     name = request.data['name']
 
-    # rename the taxon if the synonym name is the taxon name
-    if synonym.taxon.name == synonym.name:
-        synonym.taxon.name = name
-        synonym.taxon.update_field('name')
+    try:
+        with transaction.atomic():
+            # rename the taxon if the synonym name is the taxon name
+            if synonym.taxon.name == synonym.name:
+                synonym.taxon.name = name
+                synonym.taxon.update_field('name')
 
-        synonym.taxon.save()
+                synonym.taxon.save()
 
-    synonym.name = name
-    synonym.update_field('name')
+            synonym.name = name
+            synonym.update_field('name')
 
-    synonym.save()
+            synonym.save()
 
-    result = {
-        'id': synonym.id,
-        'name': synonym.name
-    }
+            result = {
+                'id': synonym.id,
+                'name': synonym.name
+            }
+    except IntegrityError as e:
+        logger.log(repr(e))
+        raise SuspiciousOperation(_("Unable to rename a synonym of a taxon"))
 
     return HttpResponseRest(request, result)
 

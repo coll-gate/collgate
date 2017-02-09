@@ -5,13 +5,14 @@
 """
 coll-gate descriptor format type class for media library
 """
-
+import os
 import re
 import validictory
 
 from django.utils.translation import ugettext_lazy as _
 
 from descriptor.descriptorformattype import DescriptorFormatType, DescriptorFormatTypeGroup
+from medialibrary import localsettings
 from medialibrary.models import Media
 
 RE_UUID = re.compile(r'^[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}$')
@@ -38,7 +39,7 @@ class DescriptorFormatTypeMedia(DescriptorFormatType):
         self.group = DescriptorFormatTypeGroupMedia()
         self.verbose_name = _("Media")
         self.format_fields = ["media_types", "media_inline"]
-        self.relation = True
+        self.external = True
 
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         # check if the value is a string and if the related entity exists
@@ -77,14 +78,38 @@ class DescriptorFormatTypeMedia(DescriptorFormatType):
 
         return None
 
-    def relate(self, entity, value):
-        """
-        Associate or dissociate two entities. One is the entity that contains descriptors,
-        the other is targeted by its value.
-        :param entity: Master (left) entity of the association
-        :param value: Target (right) entity of the association
-        """
-        pass
+    def own(self, entity, old_value, new_value):
+        # compare
+        if old_value == new_value:
+            return
+
+        # delete old
+        if old_value is not None:
+            try:
+                old_media = Media.objects.get(uuid=old_value)
+            except Media.DoesNotExist:
+                return _("The descriptor old_value must refers to an existing media")
+
+            # delete the related file
+            abs_filename = os.path.join(localsettings.storage_path, old_media.name)
+
+            if os.path.exists(abs_filename):
+                os.remove(abs_filename)
+
+            # and the model
+            old_media.delete()
+
+        # associate new
+        if new_value is not None:
+            try:
+                new_media = Media.objects.get(uuid=new_value)
+            except Media.DoesNotExist:
+                return _("The descriptor new_value must refers to an existing media")
+
+            new_media.owner_content_type = entity.content_type
+            new_media.owner_object_id = entity.pk
+
+            new_media.save()
 
 
 class DescriptorFormatTypeMediaCollection(DescriptorFormatType):
@@ -99,7 +124,7 @@ class DescriptorFormatTypeMediaCollection(DescriptorFormatType):
         self.group = DescriptorFormatTypeGroupMedia()
         self.verbose_name = _("Media collection")
         self.format_fields = ["media_types", "max_items", "media_inline"]
-        self.relation = True
+        self.external = True
 
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         # check if the value is a string and if the related entity exists
@@ -142,3 +167,7 @@ class DescriptorFormatTypeMediaCollection(DescriptorFormatType):
                 return _("Media type must be archives, images, documents or spreadsheets (media_types)")
 
         return None
+
+    def own(self, entity, old_value, new_value):
+        # @todo as media but with a list
+        pass

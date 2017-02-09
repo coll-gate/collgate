@@ -169,9 +169,10 @@ class Entity(models.Model):
             self.updated_fields = []
 
         if isinstance(field_name, str):
-            self.updated_fields.append(field_name)
+            if field_name not in self.updated_fields:
+                self.updated_fields.append(field_name)
         elif isinstance(field_name, list) or isinstance(field_name, tuple):
-            self.updated_fields += field_name
+            self.updated_fields += [name for name in field_name if name not in self.updated_fields]
 
     @classmethod
     def is_name_valid(cls, name):

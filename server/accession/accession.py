@@ -7,11 +7,13 @@ coll-gate accession rest handler
 """
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import SuspiciousOperation
+from django.db import IntegrityError
+from django.db import transaction
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 
 from accession.accessionsynonym import is_synonym_type
-from descriptor.describable import check_and_defines_descriptors
+from descriptor.describable import DescriptorsBuilder
 from descriptor.models import DescriptorMetaModel
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
@@ -83,25 +85,36 @@ def create_accession(request):
     content_type = get_object_or_404(ContentType, app_label="accession", model="accession")
     dmm = get_object_or_404(DescriptorMetaModel, id=dmm_id, target=content_type)
 
-    # common properties
-    accession = Accession()
-    accession.name = name
-    accession.descriptor_meta_model = dmm
+    try:
+        with transaction.atomic():
+            # common properties
+            accession = Accession()
+            accession.name = name
+            accession.descriptor_meta_model = dmm
 
-    # parent taxon or variety
-    parent = get_object_or_404(Taxon, id=parent_id)
-    accession.parent = parent
+            # parent taxon or variety
+            parent = get_object_or_404(Taxon, id=parent_id)
+            accession.parent = parent
 
-    # descriptors
-    accession.descriptors = check_and_defines_descriptors({}, dmm, descriptors)
+            # descriptors
+            descriptors_builder = DescriptorsBuilder(accession)
 
-    accession.save()
+            descriptors_builder.check_and_update(dmm, descriptors)
+            accession.descriptors = descriptors_builder.descriptors
 
-    # principal synonym
-    primary = AccessionSynonym(name=name, type='IN_001:0000001', language=language)
-    primary.save()
+            accession.save()
 
-    accession.synonyms.add(primary)
+            # update owner on external descriptors
+            descriptors_builder.update_associations()
+
+            # principal synonym
+            primary = AccessionSynonym(name=name, type='IN_001:0000001', language=language)
+            primary.save()
+
+            accession.synonyms.add(primary)
+    except IntegrityError as e:
+        logger.error(repr(e))
+        raise SuspiciousOperation(_("Unable to create the accession"))
 
     response = {
         'id': accession.pk,
@@ -274,7 +287,6 @@ def search_accession(request):
 @RestAccessionId.def_auth_request(Method.PATCH, Format.JSON, content={
         "type": "object",
         "properties": {
-            "name": {"type": "string", "minLength": 3, "maxLength": 64, "required": False},
             "parent": {"type": "integer", "required": False},
             "entity_status": {"type": "integer", "minimum": 0, "maximum": 3, "required": False},
             "descriptors": {"type": "object", "required": False},
@@ -287,7 +299,6 @@ def patch_accession(request, id):
     acc_id = int(id)
     accession = get_object_or_404(Accession, id=acc_id)
 
-    name = request.data.get("name")
     entity_status = request.data.get("entity_status")
     descriptors = request.data.get("descriptors")
 
@@ -295,37 +306,39 @@ def patch_accession(request, id):
         'id': accession.id
     }
 
-    if name is not None and accession.name != name:
-        if AccessionSynonym.objects.filter(name=name, type='IN_001:0000001').exists():
-            raise SuspiciousOperation(_("The name of the accession is already used as a primary synonym"))
+    try:
+        with transaction.atomic():
+            if 'parent' in request.data:
+                parent = int(request.data['parent'])
+                taxon = get_object_or_404(Taxon, id=parent)
 
-        if Accession.objects.filter(name=name).exists():
-            raise SuspiciousOperation(_("The name of the accession is already used"))
+                accession.parent = taxon
+                result['parent'] = taxon.id
 
-        accession.name = name
-        result['name'] = name
+                accession.update_field('parent')
 
-    if 'parent' in request.data:
-        parent = int(request.data['parent'])
-        taxon = get_object_or_404(Taxon, id=parent)
+            if entity_status is not None and accession.entity_status != entity_status:
+                accession.set_status(entity_status)
+                result['entity_status'] = entity_status
 
-        accession.parent = taxon
-        result['parent'] = taxon.id
+            if descriptors is not None:
+                # update descriptors
+                descriptors_builder = DescriptorsBuilder(accession)
 
-    if entity_status is not None and accession.entity_status != entity_status:
-        accession.set_status(entity_status)
-        result['entity_status'] = entity_status
+                descriptors_builder.check_and_update(accession.descriptor_meta_model, descriptors)
 
-    if descriptors is not None:
-        # update descriptors
-        accession.descriptors = check_and_defines_descriptors(
-            accession.descriptors, accession.descriptor_meta_model, descriptors)
+                accession.descriptors = descriptors_builder.descriptors
+                result['descriptors'] = accession.descriptors
 
-        result['descriptors'] = accession.descriptors
+                descriptors_builder.update_associations()
 
-    # @todo details for the audit
+                # @todo details for the audit
+                accession.update_field('descriptors')
 
-    accession.save()
+            accession.save()
+    except IntegrityError as e:
+        logger.error(repr(e))
+        raise SuspiciousOperation(_("Unable to create the accession"))
 
     return HttpResponseRest(request, result)
 
@@ -404,18 +417,23 @@ def accession_change_synonym(request, id, sid):
 
     name = request.data['name']
 
-    # rename the accession if the synonym name is the accession name
-    if accession.name == synonym.name:
-        accession.name = name
-        accession.save()
+    try:
+        with transaction.atomic():
+            # rename the accession if the synonym name is the accession name
+            if accession.name == synonym.name:
+                accession.name = name
+                accession.save()
 
-    synonym.name = name
-    synonym.save()
+            synonym.name = name
+            synonym.save()
 
-    result = {
-        'id': synonym.id,
-        'name': synonym.name
-    }
+            result = {
+                'id': synonym.id,
+                'name': synonym.name
+            }
+    except IntegrityError as e:
+        logger.log(repr(e))
+        raise SuspiciousOperation(_("Unable to rename a synonym of an accession"))
 
     return HttpResponseRest(request, result)
 

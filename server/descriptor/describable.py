@@ -47,114 +47,126 @@ def get_describable_list(request):
     return HttpResponseRest(request, describables)
 
 
-def check_and_defines_descriptors(entity_descriptors, descriptor_meta_model, descriptors):
-    results = {}
+class DescriptorsBuilder(object):
 
-    dps = DescriptorPanel.objects.filter(descriptor_meta_model=descriptor_meta_model).order_by('position')
-    dps.select_related('descriptor_model')
+    def __init__(self, entity):
+        self.entity = entity
+        self.own_list = []
+        self._descriptors = {}
 
-    for panel in dps:
-        descriptor_model = panel.descriptor_model
+    @property
+    def descriptors(self):
+        return self._descriptors
 
-        for dmt in descriptor_model.descriptor_model_types.all().order_by('position').select_related('descriptor_type'):
-            descriptor_type = dmt.descriptor_type
+    def clear(self, descriptor_meta_model):
+        pass
+        # @todo
 
-            # values are loaded on demand (displaying the panel or opening the dropdown)
-            format = json.loads(descriptor_type.format)
+    def check_and_update(self, descriptor_meta_model, descriptors):
+        dps = DescriptorPanel.objects.filter(descriptor_meta_model=descriptor_meta_model).order_by('position')
+        dps.select_related('descriptor_model')
 
-            conditions = DescriptorModelTypeCondition.objects.filter(descriptor_model_type_id=dmt.id)
-            src_id = str(dmt.id)
+        for panel in dps:
+            descriptor_model = panel.descriptor_model
 
-            src_defined = src_id in descriptors
+            for dmt in descriptor_model.descriptor_model_types.all().order_by('position').select_related('descriptor_type'):
+                descriptor_type = dmt.descriptor_type
 
-            acc_value = entity_descriptors.get(src_id)
-            src_value = descriptors.get(src_id)
+                # values are loaded on demand (displaying the panel or opening the dropdown)
+                dt_format = json.loads(descriptor_type.format)
 
-            merged_value = src_value if src_defined else acc_value
+                conditions = DescriptorModelTypeCondition.objects.filter(descriptor_model_type_id=dmt.id)
+                src_id = str(dmt.id)
 
-            # valid the new value
-            if src_defined and src_value is not None:
-                DescriptorFormatTypeManager.validate(format, src_value, dmt)
+                src_defined = src_id in descriptors
 
-            # mandatory descriptor
-            if dmt.mandatory:
-                if src_value is None and acc_value is None:
-                    raise ValueError(_("Missing mandatory descriptor %s") % (dmt.get_label(),))
+                acc_value = self.entity.descriptors.get(src_id)
+                src_value = descriptors.get(src_id)
 
-            # set once descriptor
-            if dmt.set_once:
-                if src_value is not None and acc_value is not None:
-                    raise ValueError(_("Already defined set once descriptor %s") % (dmt.get_label(),))
+                merged_value = src_value if src_defined else acc_value
 
-            if conditions.exists():
-                # check condition
-                dmtc = conditions[0]
-                target_id = str(dmtc.target.id)
+                # valid the new value
+                if src_defined and src_value is not None:
+                    DescriptorFormatTypeManager.validate(dt_format, src_value, dmt)
 
-                # according to the condition if the current value is defined (src) or was defined (acc)
-                # the condition must be respected otherwise it raises an exception if a new value is defined (src)
-                src_target_defined = target_id in descriptors
+                # mandatory descriptor
+                if dmt.mandatory:
+                    if src_value is None and acc_value is None:
+                        raise ValueError(_("Missing mandatory descriptor %s") % (dmt.get_label(),))
 
-                acc_target_value = entity_descriptors.get(target_id)
-                src_target_value = descriptors.get(target_id)
-                merged_target_value = src_target_value if src_target_defined else acc_target_value
+                # set once descriptor
+                if dmt.set_once:
+                    if src_value is not None and acc_value is not None:
+                        raise ValueError(_("Already defined set once descriptor %s") % (dmt.get_label(),))
 
-                if dmtc.condition == 0:
-                    # the src_value can be defined if the target_value is not defined
-                    if merged_target_value is not None and merged_value is not None:
-                        raise ValueError(_("A conditional descriptor is defined but the condition is not true") +
-                                         " (%s)" % dmt.get_label())
+                if conditions.exists():
+                    # check condition
+                    dmtc = conditions[0]
+                    target_id = str(dmtc.target.id)
 
-                elif dmtc.condition == 1:
-                    # the src_value can be defined if the target_value is defined
-                    if merged_target_value is None and merged_value is not None:
-                        raise ValueError(_("A conditional descriptor is defined but the condition is not true") +
-                                         " (%s)" % dmt.get_label())
+                    # according to the condition if the current value is defined (src) or was defined (acc)
+                    # the condition must be respected otherwise it raises an exception if a new value is defined (src)
+                    src_target_defined = target_id in descriptors
 
-                elif dmtc.condition == 2:
-                    # the src_value can defined if the target_value is defined and is equal to the value defined by
-                    # the condition
+                    acc_target_value = self.entity.descriptors.get(target_id)
+                    src_target_value = descriptors.get(target_id)
+                    merged_target_value = src_target_value if src_target_defined else acc_target_value
 
-                    # first the target_value must be defined
-                    if merged_target_value is None and merged_value is not None:
-                        raise ValueError(_("A conditional descriptor is defined but the condition is not true") +
-                                         " (%s)" % dmt.get_label())
+                    if dmtc.condition == 0:
+                        # the src_value can be defined if the target_value is not defined
+                        if merged_target_value is not None and merged_value is not None:
+                            raise ValueError(_("A conditional descriptor is defined but the condition is not true") +
+                                             " (%s)" % dmt.get_label())
 
-                    values = json.loads(dmtc.values)
+                    elif dmtc.condition == 1:
+                        # the src_value can be defined if the target_value is defined
+                        if merged_target_value is None and merged_value is not None:
+                            raise ValueError(_("A conditional descriptor is defined but the condition is not true") +
+                                             " (%s)" % dmt.get_label())
 
-                    # and be equal to
-                    if merged_value is not None and merged_target_value is not None and merged_target_value != values[0]:
-                        raise ValueError(_("A conditional descriptor is defined but the condition is not true") +
-                                         " (%s)" % dmt.get_label())
+                    elif dmtc.condition == 2:
+                        # the src_value can defined if the target_value is defined and is equal to the value defined by
+                        # the condition
 
-                elif dmtc.condition == 3:
-                    # the src_value can defined if the target_value is defined and is different from the value defined
-                    # by the condition
+                        # first the target_value must be defined
+                        if merged_target_value is None and merged_value is not None:
+                            raise ValueError(_("A conditional descriptor is defined but the condition is not true") +
+                                             " (%s)" % dmt.get_label())
 
-                    # first the target_value must be defined
-                    if merged_target_value is None and merged_value is not None:
-                        raise ValueError(
-                            _("A conditional descriptor is defined but the condition is not true") +
-                            " (%s)" % dmt.get_label())
+                        values = json.loads(dmtc.values)
 
-                    values = json.loads(dmtc.values)
+                        # and be equal to
+                        if merged_value is not None and merged_target_value is not None and merged_target_value != values[0]:
+                            raise ValueError(_("A conditional descriptor is defined but the condition is not true") +
+                                             " (%s)" % dmt.get_label())
 
-                    # and be different from
-                    if merged_value is not None and merged_target_value is not None and merged_target_value == values[0]:
-                        raise ValueError(
-                            _("A conditional descriptor is defined but the condition is not true") +
-                            " (%s)" % dmt.get_label())
+                    elif dmtc.condition == 3:
+                        # the src_value can defined if the target_value is defined and is different from the value
+                        # defined by the condition
 
-            # use new value if defined, else reuse current
-            results[dmt.id] = src_value if src_defined else acc_value
+                        # first the target_value must be defined
+                        if merged_target_value is None and merged_value is not None:
+                            raise ValueError(
+                                _("A conditional descriptor is defined but the condition is not true") +
+                                " (%s)" % dmt.get_label())
 
-    return results
+                        values = json.loads(dmtc.values)
 
+                        # and be different from
+                        if merged_value is not None and merged_target_value is not None and merged_target_value == values[0]:
+                            raise ValueError(
+                                _("A conditional descriptor is defined but the condition is not true") +
+                                " (%s)" % dmt.get_label())
 
-def update_associations(entity, entity_descriptors, descriptor_meta_model):
-    """
-    Update the related entity between this entity and the target from values of descriptors.
-    :param entity Master entity
-    :param entity_descriptors: Entity descriptors (key:value)
-    :param descriptor_meta_model: Meta-model of descriptor, related to the givens descriptors
-    """
+                # use new value if defined, else reuse current
+                self._descriptors[dmt.id] = src_value if src_defined else acc_value
+
+                if DescriptorFormatTypeManager.has_external(dt_format):
+                    self.own_list.append((dt_format, acc_value, merged_value))
+
+    def update_associations(self):
+        """
+        Update the owner of each external descriptors
+        """
+        for dt_format, old_value, new_value in self.own_list:
+            DescriptorFormatTypeManager.own(dt_format, self.entity, old_value, new_value)
