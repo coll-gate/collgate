@@ -9,6 +9,7 @@ import stat
 import magic
 
 from django.conf import settings
+from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import SuspiciousOperation
 from django.http import HttpResponse
 from django.http import StreamingHttpResponse
@@ -29,6 +30,11 @@ logger = logging.getLogger('collgate')
 class RestMedia(RestMediaLibrary):
     regex = r'^media/$'
     suffix = 'media'
+
+
+class RestMediaUpload(RestMedia):
+    regex = r'^upload/$'
+    suffix = 'upload'
 
 
 class RestMediaUUID(RestMedia):
@@ -145,7 +151,7 @@ def download_media_content(request, uuid):
     return response
 
 
-@RestMedia.def_auth_request(Method.POST, Format.JSON)
+@RestMediaUpload.def_auth_request(Method.POST, Format.JSON)
 def upload_media(request):
     """
     Upload a media file from multi-part HTTP file request.
@@ -180,18 +186,18 @@ def upload_media(request):
     media = Media()
 
     # generate two levels of path from the uuid node
-    l1_path = '%x' % (((media.uuid.node & 0xffffff000000) >> 24) % 256)
-    l2_path = '%x' % ((media.uuid.node & 0x000000ffffff) % 256)
+    l1_path = '%02x' % (((media.uuid.node & 0xffffff000000) >> 24) % 256)
+    l2_path = '%02x' % ((media.uuid.node & 0x000000ffffff) % 256)
 
     local_path = os.path.join(l1_path, l2_path)
-    local_file_name = media.uuid
+    local_file_name = str(media.uuid)
 
     media.name = os.path.join(local_path, local_file_name)
     media.version = 1
     media.file_name = valid_name.getvalue()
 
     # default owner is the user of the upload
-    media.owner_content_type = "auth.user"
+    media.owner_content_type = ContentType.objects.get_by_natural_key("auth", "user")
     media.owner_object_id = request.user.pk
 
     # create the path if necessary
@@ -217,7 +223,7 @@ def upload_media(request):
     guessed_mime_type = magic.from_buffer(test_mime_buffer.getvalue(), mime=True)
 
     # 0660 on file
-    os.chmod(local_file_name, stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IWGRP)
+    os.chmod(abs_file_name, stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IWGRP)
 
     media.mime_type = guessed_mime_type  # up.content_type
 

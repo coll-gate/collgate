@@ -144,10 +144,15 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
             // erase if not currently uploading and already exists
             erase.on('click', $.proxy(function(e) {
                 if (this.value != null) {
+                    // @todo how to know this.value has changed since initial set value
+                    // because we allow DELETE only if this is not the initial, else
+                    // delete will only set this.value to null
+                    return;
+
                     // erase the media and set descriptor value to none
                     $.ajax({
                         type: "DELETE",
-                        url: application.baseUrl + '/medialibrary/media/' + this.value + '/',
+                        url: application.baseUrl + 'medialibrary/media/' + this.value + '/',
                         contentType: "application/json; charset=utf-8"
                     }).done(function(data) {
                         this.value = null;
@@ -159,10 +164,42 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
 
             // upload on change
             input.on('change', $.proxy(function(e) {
+                var progress = this.progress;
+
+                 // empty progress bar
+                progress.attr({value:0, max:1});
+                progress.updateProgressBar(0, 0, 0);
+
+                var formData = new FormData();
+                formData.append('file', this.el[0].files[0]); //, this.fileName.val());
+
                 $.ajax({
                     type: "POST",
-                    url: application.baseUrl + '/medialibrary/media/upload/',
-                    contentType: "application/json; charset=utf-8"
+                    url: application.baseUrl + 'medialibrary/media/upload/',
+                    encType: "multipart/form-data",
+                    data: formData,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    xhr: function() { // Custom XMLHttpRequest
+                        var xhr = $.ajaxSettings.xhr();
+
+                        // progression
+                        xhr.onprogress = function(e) {
+                            progress.updateProgressBar(0, e.total, e.loaded);
+                        }
+
+                        // progression
+                        xhr.upload.onprogress = function(e) {
+                            progress.updateProgressBar(0, e.total, e.loaded);
+                        }
+
+                        return xhr;
+                    },
+                    beforeSend: function() {
+                        // cancel upload button
+                        // cancelButton.click(xhr.abort); @todo
+                    }
                 }).done(function(data) {
                     this.value = data.uuid;
                 }).fail(function() {
@@ -171,6 +208,7 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
                 });
             }, this));
 
+            this.progress = progress;
             this.browse = browse;
             this.erase = erase;
 
