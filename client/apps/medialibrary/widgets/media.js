@@ -30,7 +30,22 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
             glyph.css(this.spanStyle);
 
             if (format.media_inline) {
-                /* todo show miniature inline + download button */
+                /* miniature + download */
+                var group = $('<div class="input-group"></div>');
+                var collection = $('<div class="media-image-collection"></div>');
+                var glyph = $('<span class="input-group-addon"><span class="glyphicon glyphicon-file"></span></span>');
+
+                collection.css('height', 'auto');
+
+                group.append(collection);
+                group.append(glyph);
+
+                parent.append(group);
+
+                this.image = null;
+                this.collection = collection;
+                this.el = group;
+                this.parent = parent;
             } else {
                 var btnGroup = $('<span class="input-group-btn"></span>');
                 btnGroup.css({
@@ -66,19 +81,35 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
                 download.attr('media-target', "").addClass('disabled');
 
                 preview.on('click', $.proxy(function(e) {
-                    var value = this.value;
+                    if (this.value) {
+                        var widget = this;
 
-                    if (value) {
+                        // get the media mime-type
                         $.ajax({
-                            url: application.baseUrl + 'medialibrary/media/' + value + '/'
-                        }).success(function (data) {
+                            type: "GET",
+                            url: application.baseUrl + 'medialibrary/media/' + this.value + '/',
+                            contentType: "application/json; charset=utf-8"
+                        }).done(function(data) {
+                            var url = application.baseUrl + 'medialibrary/media/' + data.uuid + '/download/';
+
                             // get mime-type, and if compatible with a client view show it else download it
                             if (data.mime_type.startsWith('image/')) {
-                                window.open(application.baseUrl + 'medialibrary/media/' + value + '/download/', "_blank")
+                                var img = $('<img src="' + url + '" alt="' + data.file_name + '"></img>');
+                                img.css('display', 'none');
+
+                                $('body').append(img);
+
+                                img.viewer({
+                                    transition: false
+                                }).viewer('show');
+
+                                img.on('hidden.viewer', $.proxy(function(e) {
+                                    img.viewer('destroy').remove();
+                                }, this));
                             } else {
                                 // download the document
                                 $('<form></form>')
-                                    .attr('action', application.baseUrl + 'medialibrary/media/' + value + '/download/')
+                                    .attr('action', application.baseUrl + 'medialibrary/media/' + data.uuid + '/download/')
                                     .appendTo('body').submit().remove();
                             }
                         });
@@ -98,9 +129,10 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
                 this.download = download;
 
                 this.parent = parent;
-                this.readOnly = true;
                 this.el = btnGroup;
             }
+
+            this.readOnly = true;
         } else {
             /* show upload button and progress bar */
             var group = $('<div class="input-group"></div>');
@@ -109,18 +141,10 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
             var browse = $('<span class="btn btn-default btn-file">' + gt.gettext('Browse') + '</span>');
             var erase = $('<span class="btn btn-default btn-file"><span class="glyphicon glyphicon-remove"></span></span>');
 
-            var input = $('<input type="file">');
+            var input = $('<input type="file" style="display: none;">');
             var progress = $('<span class="input-group-addon progress"><span class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="min-width: 2em;">0%</span></span>');
             var fileName = $('<input type="text" class="form-control" readonly>');
             var glyph = $('<span class="input-group-addon"><span class="glyphicon glyphicon-file"></span></span>');
-
-            input.on("change", function() {
-                var label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
-                fileName.val(label);
-            });
-
-            fileName.css({
-            });
 
             progress.css({
                 'width': '30%',
@@ -130,48 +154,30 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
                 'border-left': '0px'
             });
 
-            browse.append(input);
             btnGroup.append(browse);
             btnGroup.append(erase);
 
             group.append(btnGroup);
+            group.append(input);
             group.append(fileName);
             group.append(progress);
             group.append(glyph);
 
             parent.append(group);
 
-            // erase if not currently uploading and already exists
-            erase.on('click', $.proxy(function(e) {
-                if (this.value != null) {
-                    // @todo how to know this.value has changed since initial set value
-                    // because we allow DELETE only if this is not the initial, else
-                    // delete will only set this.value to null
-                    return;
-
-                    // erase the media and set descriptor value to none
-                    $.ajax({
-                        type: "DELETE",
-                        url: application.baseUrl + 'medialibrary/media/' + this.value + '/',
-                        contentType: "application/json; charset=utf-8"
-                    }).done(function(data) {
-                        this.value = null;
-                    }).fail(function() {
-                        $.alert.error(gt.gettext("Unable to remove the media"));
-                    });
-                }
+            // browse button open the hidden input[type=file]
+            browse.on('click', $.proxy(function(e) {
+                this.el.click();
+                return false;
             }, this));
 
-            // upload on change
-            input.on('change', $.proxy(function(e) {
-                var progress = this.progress;
-
-                 // empty progress bar
-                progress.attr({value:0, max:1});
-                progress.updateProgressBar(0, 0, 0);
+            // upload a file object.
+            var uploadFile = function(widget, file) {
+                // empty progress bar
+                widget.progress.updateProgressBar(0, 0, 0);
 
                 var formData = new FormData();
-                formData.append('file', this.el[0].files[0]); //, this.fileName.val());
+                formData.append('file', file);
 
                 $.ajax({
                     type: "POST",
@@ -181,18 +187,18 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
                     cache: false,
                     contentType: false,
                     processData: false,
-                    xhr: function() { // Custom XMLHttpRequest
+                    xhr: function() {
                         var xhr = $.ajaxSettings.xhr();
 
                         // progression
                         xhr.onprogress = function(e) {
-                            progress.updateProgressBar(0, e.total, e.loaded);
-                        }
+                            widget.progress.updateProgressBar(0, e.total, e.loaded);
+                        };
 
                         // progression
                         xhr.upload.onprogress = function(e) {
-                            progress.updateProgressBar(0, e.total, e.loaded);
-                        }
+                            widget.progress.updateProgressBar(0, e.total, e.loaded);
+                        };
 
                         return xhr;
                     },
@@ -201,16 +207,95 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
                         // cancelButton.click(xhr.abort); @todo
                     }
                 }).done(function(data) {
-                    this.value = data.uuid;
+                    widget.value = data.uuid;
+                    widget.media = data;
+
+                    if (widget.erase.hasClass('disabled')) {
+                        widget.erase.removeClass('disabled');
+                    }
                 }).fail(function() {
-                    this.value = null;
+                    widget.value = null;
                     $.alert.error(gt.gettext("Error during file upload"));
                 });
+            };
+
+            // upload on change
+            input.on('change', $.proxy(function(e) {
+                var file = this.el[0].files[0];
+                this.fileName.val(file.name);
+
+                uploadFile(this, this.el[0].files[0]);
             }, this));
 
+            // manage the drop on the input
+            fileName.on('drop', $.proxy(function(e) {
+                if (e.originalEvent.stopPropagation) {
+                   e.originalEvent.stopPropagation();
+                }
+
+                this.fileName.prop('readonly', true);
+
+                // jquery returns event in originalEvent
+                var file = e.originalEvent.dataTransfer.files[0];
+                this.fileName.attr('value', file.name);
+
+                uploadFile(this, file);
+
+                return false;
+            }, this));
+
+            fileName.on('dragenter', $.proxy(function(e) {
+                if (e.originalEvent.stopPropagation) {
+                   e.originalEvent.stopPropagation();
+                }
+
+                this.fileName.prop('readonly', false);
+
+                return false;
+            }, this));
+
+            fileName.on('dragleave', $.proxy(function(e) {
+                if (e.originalEvent.stopPropagation) {
+                   e.originalEvent.stopPropagation();
+                }
+
+                this.fileName.prop('readonly', true);
+
+                return false;
+            }, this));
+
+            // erase if not currently uploading and already exists
+            erase.on('click', $.proxy(function(e) {
+                if (this.initial === this.value) {
+                    // just clear the descriptor value, the media will be deleted at describable save
+                    this.fileName.val("");
+                    this.value = null;
+                } else if (this.value != null) {
+                    var widget = this;
+
+                    // erase the last uploaded media and set descriptor value to null
+                    $.ajax({
+                        type: "DELETE",
+                        url: application.baseUrl + 'medialibrary/media/' + this.value + '/',
+                        contentType: "application/json; charset=utf-8"
+                    }).done(function(data) {
+                        widget.fileName.val("");
+                        widget.value = null;
+                    }).fail(function() {
+                        $.alert.error(gt.gettext("Unable to remove the media"));
+                    });
+                }
+
+                this.progress.updateProgressBar(0, 0, 0);
+
+            }, this));
+
+
+            this.fileName = fileName;
             this.progress = progress;
             this.browse = browse;
             this.erase = erase;
+            this.initial = null;
 
             this.parent = parent;
             this.el = input;
@@ -220,9 +305,14 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
     destroy: function() {
         if (this.el && this.parent) {
             if (this.readOnly) {
-                this.el.parent().remove();
+                if (this.image) {
+                    this.image.viewer('destroy');
+                    this.el.remove();
+                } else {
+                    this.el.parent().remove();
+                }
             } else {
-                /*this.el.remove(); @todo */
+                this.el.parent().remove();
             }
         }
     },
@@ -282,12 +372,52 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
             if (definesValues) {
                 this.value = defaultValues[0];
 
-                if (this.preview.hasClass('disabled')) {
-                    this.preview.removeClass('disabled');
-                }
+                // mean inline mode for image
+                if (this.collection) {
+                     var widget = this;
 
-                if (this.download.hasClass('disabled')) {
-                    this.download.removeClass('disabled');
+                    // get the media file name
+                    $.ajax({
+                        type: "GET",
+                        url: application.baseUrl + 'medialibrary/media/' + this.value + '/',
+                        contentType: "application/json; charset=utf-8"
+                    }).done(function(data) {
+                        widget.media = data;
+
+                        var url = application.baseUrl + 'medialibrary/media/' + data.uuid + '/download/';
+                        var img = $('<img class="media-image" src="' + url + '" alt="' + data.file_name + '"></img>');
+
+                        // center the miniature
+                        img.css({
+                            'height': '100px',
+                            'margin-left': '43.5%'
+                        });
+
+                        var download = $('<span class="media-download contextual btn btn-default"><span class="glyphicon glyphicon-download"></span></span>');
+                        download.on('click', $.proxy(function(e) {
+                            // download the document
+                            $('<form></form>')
+                                .attr('action', application.baseUrl + 'medialibrary/media/' + this.value + '/download/')
+                                .appendTo('body').submit().remove();
+                        }, widget));
+
+                        widget.collection.append(img);
+                        widget.collection.append(download);
+
+                        img.viewer({
+                            transition: false
+                        });
+
+                        widget.image = img;
+                    });
+                } else {
+                    if (this.preview.hasClass('disabled')) {
+                        this.preview.removeClass('disabled');
+                    }
+
+                    if (this.download.hasClass('disabled')) {
+                        this.download.removeClass('disabled');
+                    }
                 }
             } else {
                 this.value = null;
@@ -302,13 +432,25 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
             }
         } else {
             if (definesValues) {
-                this.value = defaultValues[0];
+                this.initial = this.value = defaultValues[0];
 
                 if (this.erase.hasClass('disabled')) {
                     this.erase.removeClass('disabled');
                 }
+
+                var widget = this;
+
+                // get the media file name
+                $.ajax({
+                    type: "GET",
+                    url: application.baseUrl + 'medialibrary/media/' + this.value + '/',
+                    contentType: "application/json; charset=utf-8"
+                }).done(function(data) {
+                    widget.fileName.val(data.file_name);
+                    widget.media = data;
+                });
             } else {
-                this.value = null;
+                this.initial = this.value = null;
 
                 if (!this.erase.hasClass('disabled')) {
                     this.erase.addClass('disabled');

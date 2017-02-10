@@ -93,7 +93,7 @@ def delete_media(request, uuid):
     media = get_object_or_404(Media, uuid=uuid)
 
     # check user permission on the media
-    if media.owner_content_type != "auth.user" or media.owner_object_id != request.user.pk:
+    if ".".join(media.owner_content_type.natural_key()) != "auth.user" or media.owner_object_id != request.user.pk:
         raise PermissionDenied(_("Your are not the owner of the media"))
 
     try:
@@ -111,7 +111,7 @@ def delete_media(request, uuid):
     return HttpResponseRest(request, {})
 
 
-@RestMediaUUIDDownload.def_auth_request(Method.GET, Format.HTML)
+@RestMediaUUIDDownload.def_auth_request(Method.GET, Format.ANY)
 def download_media_content(request, uuid):
     """
     Download the content of a file using its UUID.
@@ -195,6 +195,7 @@ def upload_media(request):
     media.name = os.path.join(local_path, local_file_name)
     media.version = 1
     media.file_name = valid_name.getvalue()
+    media.file_size = up.size
 
     # default owner is the user of the upload
     media.owner_content_type = ContentType.objects.get_by_natural_key("auth", "user")
