@@ -92,24 +92,44 @@ _.extend(MediaCollection.prototype, DescriptorFormatType.prototype, {
         return [];
     },
 
-    checkCondition: function(condition, values) {
-        if (this.values.length != values.length) {
+    compare: function(a, b) {
+        if (!Array.isArray(a) || !Array.isArray(b)) {
             return false;
         }
 
-        for (var i = 0; i < this.values.length; ++i) {
-            switch (condition) {
-                case 0:
-                    return this.values[i] === "";
-                case 1:
-                    return this.values[i] !== "";
-                case 2:
-                    return this.values[i] === values[i];
-                case 3:
-                    return this.values[i] !== values[i];
-                default:
-                    return false;
+        if (a.length != b.length) {
+            return false;
+        }
+
+        var found = false;
+
+        for (var i = 0; i < a.length; ++i) {
+            found = false;
+            for (var j = 0; j < b.length; ++j) {
+                if (a[i] === b[j]) {
+                    found = true;
+                    break;
+                }
             }
+
+            if (!found) {
+                return false;
+            }
+        }
+    },
+
+    checkCondition: function(condition, values) {
+        switch (condition) {
+            case 0:
+                return this.values == null || this.values.length == 0;
+            case 1:
+                return this.values != null && this.values.length > 0;
+            case 2:
+                return this.compare(this.values, values);
+            case 3:
+                return !this.compare(this.values, values);
+            default:
+                return false;
         }
     },
 

@@ -3,7 +3,7 @@
 # Copyright (c) 2016 INRA UMR1095 GDEC
 
 """
-Specific developement settings.
+Specific demo settings.
 """
 
 import os
@@ -13,8 +13,8 @@ from .base import *
 DEBUG = True
 
 ADMINS = (
-    ('admin_fscherma', 'frederic.scherma@clermont.inra.fr'),
-    ('admin_nguilhot', 'nicolas.guilhot@clermont.inra.fr'),
+    ('admin_fscherma', 'frederic.scherma@inra.fr'),
+    ('admin_nguilhot', 'nicolas.guilhot@inra.fr'),
 )
 
 MANAGERS = ADMINS
@@ -31,7 +31,7 @@ DATABASES = {
     }
 }
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '147.99.146.242']
+ALLOWED_HOSTS = ['147.99.146.242', 'localhost', '127.0.0.1']
 INTERNAL_IPS = ['localhost', '127.0.0.1']
 
 # session cookie path
@@ -121,7 +121,7 @@ LOGGING = {
         'file': {
             'level': 'INFO',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(BASE_DIR, '..', 'logs', 'collgate.log'),
+            'filename': os.path.join(BASE_DIR, 'logs', 'collgate.log'),
             'formatter': 'standard',
             'maxBytes': 1024*1024*16,  # 16MB
             'backupCount': 10,
@@ -151,7 +151,7 @@ LOGGING = {
     }
 }
 
-DEFAULT_FROM_EMAIL = "frederic.scherma@clermont.inra.fr"
+DEFAULT_FROM_EMAIL = "frederic.scherma@inra.fr"
 EMAIL_HOST = "smtp.clermont.inra.fr"
 EMAIL_PORT = 25
 EMAIL_SUBJECT_PREFIX = "Coll-Gate IS"

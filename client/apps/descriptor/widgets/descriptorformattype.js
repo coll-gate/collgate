@@ -9,7 +9,7 @@
  */
 
 var DescriptorFormatType = function() {
-    this.name ="";          // format type name
+    this.name = "";         // format type name
     this.group = "";        // related group name
 
     this.readOnly = false;  // true mean the widget is read only
@@ -68,7 +68,16 @@ DescriptorFormatType.prototype = {
 
     values: function() {
         /* return the formatted values */
-        return [""];
+        return null;
+    },
+
+    compare: function(a, b) {
+        if (typeof a !== typeof b) {
+            return false;
+        }
+
+        /* compare two values and return true if they are equals */
+        return a === b;
     },
 
     checkCondition: function (condition, value) {

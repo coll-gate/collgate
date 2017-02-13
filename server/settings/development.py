@@ -3,7 +3,7 @@
 # Copyright (c) 2016 INRA UMR1095 GDEC
 
 """
-Specific developement settings.
+Specific development settings.
 """
 
 import os

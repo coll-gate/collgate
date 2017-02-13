@@ -3,7 +3,7 @@
 # Copyright (c) 2016 INRA UMR1095 GDEC
 
 """
-Specific developement settings.
+Specific staging settings.
 """
 
 import os
@@ -120,7 +120,7 @@ LOGGING = {
         'file': {
             'level': 'INFO',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs', 'collgate.log'),
+            'filename': os.path.join(BASE_DIR, '..', '..', 'logs', 'collgate.log'),
             'formatter': 'standard',
             'maxBytes': 1024*1024*16,  # 16MB
             'backupCount': 10,
