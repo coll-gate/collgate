@@ -182,12 +182,11 @@ var View = ItemView.extend({
                 }
 
                 var write = true;
-                if (descriptorModelType.set_once && currValue != undefined) {
+                if (descriptorModelType.set_once && currValue != null) {
                     write = false;
                 }
 
-                // @todo is sufficient for compare any array, object ?
-                if (values === currValue) {
+                if (descriptorModelType.widget.compare(values, currValue)) {
                     write = false;
                 }
 

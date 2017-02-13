@@ -56,13 +56,60 @@ class DescriptorsBuilder(object):
 
     @property
     def descriptors(self):
+        """
+        Descriptors dict accessor.
+        :return: A dict of updated descriptors values
+        """
         return self._descriptors
 
     def clear(self, descriptor_meta_model):
-        pass
-        # @todo
+        """
+        Clear (unset) any values of descriptors. It does not take care of mandatory or set_once attributes.
+        The descriptors dict of the builder returns an empty dict. It does not also take care of the conditions because
+        there is no new values. And it make the list of descriptors to be released by a next call of
+        update_associations.
+
+        Very important, any previously owned entities must be released by a call to update_associations.
+
+        :param descriptor_meta_model:
+        """
+        dps = DescriptorPanel.objects.filter(descriptor_meta_model=descriptor_meta_model).order_by('position')
+        dps.select_related('descriptor_model')
+
+        for panel in dps:
+            descriptor_model = panel.descriptor_model
+
+            for dmt in descriptor_model.descriptor_model_types.all().order_by('position').select_related(
+                    'descriptor_type'):
+                descriptor_type = dmt.descriptor_type
+
+                # values are loaded on demand (displaying the panel or opening the dropdown)
+                dt_format = json.loads(descriptor_type.format)
+
+                src_id = str(dmt.id)
+
+                acc_value = self.entity.descriptors.get(src_id)
+
+                if DescriptorFormatTypeManager.has_external(dt_format):
+                    self.own_list.append((dt_format, acc_value, None))
+
+        # no more values
+        self._descriptors = {}
 
     def check_and_update(self, descriptor_meta_model, descriptors):
+        """
+        For any descriptors (model-type) of the meta-model, check the new values given by the descriptors parameter,
+        check the mandatory, the set_once and the condition. It also make the list of descriptors to be updated by
+        a next call of update_associations.
+
+        The descriptors values are then available in the property descriptors of the builder.
+
+        Very important, it is necessary to make a call to update_associations in way to release any previously used
+        externals entities, and to own the newly associated.
+
+        :param descriptor_meta_model: Descriptor meta model
+        :param descriptors: New descriptors values
+        """
         dps = DescriptorPanel.objects.filter(descriptor_meta_model=descriptor_meta_model).order_by('position')
         dps.select_related('descriptor_model')
 
@@ -161,12 +208,14 @@ class DescriptorsBuilder(object):
                 # use new value if defined, else reuse current
                 self._descriptors[dmt.id] = src_value if src_defined else acc_value
 
+                # make the list of descriptors that need to perform a call to own
                 if DescriptorFormatTypeManager.has_external(dt_format):
                     self.own_list.append((dt_format, acc_value, merged_value))
 
     def update_associations(self):
         """
-        Update the owner of each external descriptors
+        Update the owner of each external descriptor. It must be called after each clear or check_and_update in way
+        to update the owner of each previously associated entity.
         """
         for dt_format, old_value, new_value in self.own_list:
             DescriptorFormatTypeManager.own(dt_format, self.entity, old_value, new_value)
