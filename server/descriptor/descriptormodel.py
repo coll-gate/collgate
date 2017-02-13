@@ -630,15 +630,7 @@ def get_condition_for_descriptor_model_type(request, id, tid):
         "properties": {
             "target": {"type": "integer"},
             "condition": {"type": "integer", "minValue": 0, "maxValue": 3},
-            "values": {
-                "type": "array",
-                "minItems": 0,
-                "maxItems": 64,
-                "items": {
-                    "type": ["boolean", "string", "number", "null"]
-                },
-                "required": False
-            },
+            "values": {"type": "any", "required": False},
         }
     },
     perms={
@@ -670,8 +662,8 @@ def create_condition_for_descriptor_model_type(request, id, tid):
     # validate the values[0]
     format = json.loads(target.descriptor_type.format)
 
-    for value in values:
-        DescriptorFormatTypeManager.validate(format, value, target)
+    if condition == DescriptorCondition.EQUAL or condition == DescriptorCondition.NOT_EQUAL:
+        DescriptorFormatTypeManager.validate(format, values, target)
 
     dmtc = DescriptorModelTypeCondition()
 
@@ -699,15 +691,7 @@ def create_condition_for_descriptor_model_type(request, id, tid):
         "properties": {
             "target": {"type": "integer"},
             "condition": {"type": "integer", "minValue": 0, "maxValue": 3},
-            "values": {
-                "type": "array",
-                "minItems": 0,
-                "maxItems": 64,
-                "items": {
-                    "type": ["boolean", "string", "number", "null"]
-                },
-                "required": False
-            },
+            "values": {"type": "any", "required": False},
         }
     },
     perms={
@@ -736,8 +720,10 @@ def modify_condition_for_descriptor_model_type(request, id, tid):
         # validate the values
         format = json.loads(target.descriptor_type.format)
 
-        for value in values:
-            DescriptorFormatTypeManager.validate(format, value, target)
+        condition = DescriptorCondition(request.data['condition'])
+
+        if condition == DescriptorCondition.EQUAL or condition == DescriptorCondition.NOT_EQUAL:
+            DescriptorFormatTypeManager.validate(format, values, target)
 
         condition = DescriptorCondition(request.data['condition'])
 

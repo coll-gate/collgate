@@ -370,7 +370,7 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
 
         if (this.readOnly) {
             if (definesValues) {
-                this.value = defaultValues[0];
+                this.value = defaultValues;
 
                 // mean inline mode for image
                 if (this.collection) {
@@ -432,7 +432,7 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
             }
         } else {
             if (definesValues) {
-                this.initial = this.value = defaultValues[0];
+                this.initial = this.value = defaultValues;
 
                 if (this.erase.hasClass('disabled')) {
                     this.erase.removeClass('disabled');
@@ -462,9 +462,9 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
     values: function() {
         if (this.el && this.parent) {
             if (this.readOnly) {
-                return [this.value];
+                return this.value;
             } else {
-                return [this.value];
+                return this.value;
             }
         }
 
@@ -474,13 +474,13 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
     checkCondition: function(condition, values) {
         switch (condition) {
             case 0:
-                return this.values()[0] === "";
+                return this.values() == null;
             case 1:
-                return this.values()[0] !== "";
+                return this.values() != null;
             case 2:
-                return this.values()[0] === values[0];
+                return this.values() === values;
             case 3:
-                return this.values()[0] !== values[0];
+                return this.values() !== values;
             default:
                 return false;
         }

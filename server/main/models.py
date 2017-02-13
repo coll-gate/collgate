@@ -59,7 +59,7 @@ class Settings(models.Model):
     """
 
     param_name = models.CharField(max_length=127)
-    value = models.CharField(max_length=127)
+    value = models.CharField(max_length=1024)
 
 
 class Languages(ChoiceEnum):

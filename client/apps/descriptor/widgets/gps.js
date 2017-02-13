@@ -79,33 +79,33 @@ _.extend(GpsType.prototype, DescriptorFormatType.prototype, {
 
         if (this.readOnly) {
             if (definesValues) {
-                this.el.val(defaultValues[0]);
+                this.el.val(defaultValues);
             }
         } else {
             if (definesValues) {
-                this.el.val(defaultValues[0]);
+                this.el.val(defaultValues);
             }
         }
     },
 
     values: function() {
         if (this.el && this.parent) {
-            return [this.el.val()];
+            return this.el.val();
         }
 
-        return [null];
+        return null;
     },
 
     checkCondition: function (condition, values) {
         switch (condition) {
             case 0:
-                return this.values()[0] === "";
+                return this.values() === "";
             case 1:
-                return this.values()[0] !== "";
+                return this.values() !== "";
             case 2:
-                return this.values()[0] === values[0];
+                return this.values() === values;
             case 3:
-                return this.values()[0] !== values[0];
+                return this.values() !== values;
             default:
                 return false;
         }

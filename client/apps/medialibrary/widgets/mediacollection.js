@@ -67,10 +67,14 @@ _.extend(MediaCollection.prototype, DescriptorFormatType.prototype, {
 
         if (this.readOnly) {
             if (definesValues) {
+                this.values = defaultValues;
+
                 /* @todo */
             }
         } else {
             if (definesValues) {
+                this.initials = this.values = defaultValues;
+
                 /* @todo */
             }
         }
@@ -85,21 +89,27 @@ _.extend(MediaCollection.prototype, DescriptorFormatType.prototype, {
             }
         }
 
-        return [null];
+        return [];
     },
 
     checkCondition: function(condition, values) {
-        switch (condition) {
-            case 0:
-                return this.values()[0] === "";
-            case 1:
-                return this.values()[0] !== "";
-            case 2:
-                return this.values()[0] === values[0];
-            case 3:
-                return this.values()[0] !== values[0];
-            default:
-                return false;
+        if (this.values.length != values.length) {
+            return false;
+        }
+
+        for (var i = 0; i < this.values.length; ++i) {
+            switch (condition) {
+                case 0:
+                    return this.values[i] === "";
+                case 1:
+                    return this.values[i] !== "";
+                case 2:
+                    return this.values[i] === values[i];
+                case 3:
+                    return this.values[i] !== values[i];
+                default:
+                    return false;
+            }
         }
     },
 

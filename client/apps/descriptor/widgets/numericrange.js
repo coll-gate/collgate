@@ -86,11 +86,11 @@ _.extend(NumericRange.prototype, DescriptorFormatType.prototype, {
 
         if (this.readOnly) {
             if (definesValues) {
-                this.el.val(defaultValues[0]);
+                this.el.val(defaultValues);
             }
         } else {
             if (definesValues) {
-                this.el.val(defaultValues[0]);
+                this.el.val(defaultValues);
             }
         }
     },
@@ -98,22 +98,22 @@ _.extend(NumericRange.prototype, DescriptorFormatType.prototype, {
     values: function() {
         if (this.el && this.parent) {
             var value = this.el.val();
-            return [value !== "" ? value : null];
+            return value !== "" ? value : null;
         }
 
-        return [null];
+        return null;
     },
 
     checkCondition: function (condition, values) {
         switch (condition) {
             case 0:
-                return this.values()[0] === "";
+                return this.values() == null;
             case 1:
-                return this.values()[0] !== "";
+                return this.values() != null;
             case 2:
-                return this.values()[0] === values[0];
+                return this.values() === values;
             case 3:
-                return this.values()[0] !== values[0];
+                return this.values() !== values;
             default:
                 return false;
         }

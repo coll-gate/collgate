@@ -595,7 +595,7 @@ var View = Marionette.ItemView.extend({
                     if (data.condition == 2 || data.condition == 3) {
                         data.values = this.descriptorType.widget.values();
                     } else {
-                        data.values = [];
+                        data.values = null;
                     }
 
                     // depending if the condition previously existed: post or put.

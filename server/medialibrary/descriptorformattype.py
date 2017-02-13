@@ -169,5 +169,40 @@ class DescriptorFormatTypeMediaCollection(DescriptorFormatType):
         return None
 
     def own(self, entity, old_value, new_value):
-        # @todo as media but with a list
-        pass
+        # as set to simplify comparisons
+        old_values = set(old_value) if old_value is not None else set()
+        new_values = set(new_value) if new_value is not None else set()
+
+        # compare
+        if old_values == new_values:
+            return
+
+        # delete un-kept old
+        for value in old_values - new_values:
+            if value is not None:
+                try:
+                    old_media = Media.objects.get(uuid=value)
+                except Media.DoesNotExist:
+                    return _("The descriptor old_value must refers to an existing media")
+
+                # delete the related file
+                abs_filename = os.path.join(localsettings.storage_path, old_media.name)
+
+                if os.path.exists(abs_filename):
+                    os.remove(abs_filename)
+
+                # and the model
+                old_media.delete()
+
+        # associate new
+        for value in new_values - old_values:
+            if value is not None:
+                try:
+                    new_media = Media.objects.get(uuid=value)
+                except Media.DoesNotExist:
+                    return _("The descriptor new_value must refers to an existing media")
+
+                new_media.owner_content_type = entity.content_type
+                new_media.owner_object_id = entity.pk
+
+                new_media.save()

@@ -58,13 +58,13 @@ var View = ItemView.extend({
 
             // default value or current descriptor value
             if (exists) {
-                defaultValues = [model.get('descriptors')[descriptorModelType.id]];
-                definesValues = defaultValues[0] != null && defaultValues[0] != undefined;
+                defaultValues = model.get('descriptors')[descriptorModelType.id];
+                definesValues = defaultValues != null && defaultValues != undefined;
             } else {
                 // @todo default value from descriptor type
                 switch (format.type) {
                     case "boolean":
-                        defaultValues = [false];
+                        defaultValues = false;
                         definesValues = true;
                         break;
                     default:
@@ -169,14 +169,14 @@ var View = ItemView.extend({
                 var mandatory = descriptorModelType.mandatory;
 
                 var currValue = this.model.get('descriptors')[descriptorModelType.id];
-                var values = [null];
+                var values = null;
 
                 // display of the tr
                 if (descriptorModelType.widget && descriptorModelType.widget.parent.parent().css('display') !== "none") {
                     values = descriptorModelType.widget.values();
                 }
 
-                if (mandatory && values[0] === null) {
+                if (mandatory && values == null) {
                     $.alert.error(gt.gettext("Field " + descriptorModelType.label + " is required"));
                     return null;
                 }
@@ -186,12 +186,13 @@ var View = ItemView.extend({
                     write = false;
                 }
 
-                if (values[0] == currValue) {
+                // @todo is sufficient for compare any array, object ?
+                if (values === currValue) {
                     write = false;
                 }
 
                 if (write) {
-                    descriptors[descriptorModelType.id] = values[0];
+                    descriptors[descriptorModelType.id] = values;
                 }
             }
         }

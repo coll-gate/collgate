@@ -26,7 +26,7 @@ var DescriptorFormatType = function() {
 DescriptorFormatType.prototype = {
     // return true if the there is one or more defaults values
     isValueDefined: function (definesValues, defaultValues) {
-        return !!definesValues && !!defaultValues && defaultValues[0] != null;
+        return !!definesValues && !!defaultValues && defaultValues != null;
     },
 
     // create a simple input widget within an input-group and with a specified glyphicon (bootstrap)

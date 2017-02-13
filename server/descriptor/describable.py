@@ -136,7 +136,7 @@ class DescriptorsBuilder(object):
                         values = json.loads(dmtc.values)
 
                         # and be equal to
-                        if merged_value is not None and merged_target_value is not None and merged_target_value != values[0]:
+                        if merged_value is not None and merged_target_value is not None and merged_target_value != values:
                             raise ValueError(_("A conditional descriptor is defined but the condition is not true") +
                                              " (%s)" % dmt.get_label())
 
@@ -153,7 +153,7 @@ class DescriptorsBuilder(object):
                         values = json.loads(dmtc.values)
 
                         # and be different from
-                        if merged_value is not None and merged_target_value is not None and merged_target_value == values[0]:
+                        if merged_value is not None and merged_target_value is not None and merged_target_value == values:
                             raise ValueError(
                                 _("A conditional descriptor is defined but the condition is not true") +
                                 " (%s)" % dmt.get_label())

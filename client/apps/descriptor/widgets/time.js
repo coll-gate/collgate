@@ -111,11 +111,11 @@ _.extend(TimeType.prototype, DescriptorFormatType.prototype, {
         if (this.readOnly) {
             if (definesValues) {
                 // HH:mm:ss
-                this.el.val(defaultValues[0]);
+                this.el.val(defaultValues);
             }
         } else {
             if (definesValues) {
-                var date = moment(defaultValues[0], "HH:mm:ss");
+                var date = moment(defaultValues, "HH:mm:ss");
                 this.el.data('DateTimePicker').date(date);
             }
         }
@@ -124,31 +124,32 @@ _.extend(TimeType.prototype, DescriptorFormatType.prototype, {
     values: function() {
         if (this.el && this.parent) {
             if (this.readOnly) {
-                return [this.el.val()];
+                var value = this.el.val();
+                return value !== "" ? value : null;
             } else {
                 var date = this.el.data('DateTimePicker').date();
                 if (date != null) {
                     // format to HH:mm:ss time
-                    return [date.format("HH:mm:ss")];  // .MS
+                    return date.format("HH:mm:ss");  // .MS
                 } else {
-                    return [null];
+                    return null;
                 }
             }
         }
 
-        return [null];
+        return null;
     },
 
     checkCondition: function (condition, values) {
         switch (condition) {
             case 0:
-                return this.values()[0] === "";
+                return this.values() == null;
             case 1:
-                return this.values()[0] !== "";
+                return this.values() != null;
             case 2:
-                return this.values()[0] === values[0];
+                return this.values() === values;
             case 3:
-                return this.values()[0] !== values[0];
+                return this.values() !== values;
             default:
                 return false;
         }

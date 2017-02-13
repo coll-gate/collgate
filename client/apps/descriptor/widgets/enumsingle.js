@@ -198,11 +198,11 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
             var type = this;
 
             if (definesValues) {
-                this.el.attr('value', defaultValues[0]);
+                this.el.attr('value', defaultValues);
 
                 $.ajax({
                     type: "GET",
-                    url: url + 'value/' + defaultValues[0] + '/display/',
+                    url: url + 'value/' + defaultValues + '/display/',
                     dataType: 'json'
                 }).done(function (data) {
                     type.el.val(data.label);
@@ -270,12 +270,12 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
                     };
 
                     // defines temporary value (before waiting)
-                    this.el.attr('value', defaultValues[0]);
+                    this.el.attr('value', defaultValues);
 
                     // autoselect the initial value
                     $.ajax({
                         type: "GET",
-                        url: url + 'value/' + defaultValues[0] + '/display/',
+                        url: url + 'value/' + defaultValues + '/display/',
                         dataType: 'json'
                     }).done(function (data) {
                         initials.push({id: data.id, text: data.label});
@@ -290,10 +290,10 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
                     });
                 } else {
                     // defines temporary value (before waiting)
-                    this.el.attr('value', defaultValues[0]);
+                    this.el.attr('value', defaultValues);
 
                     $.when(this.promise).done(function (data) {
-                        type.el.val(defaultValues[0]).trigger('change');
+                        type.el.val(defaultValues).trigger('change');
                         type.el.selectpicker('refresh');
 
                         // remove temporary vale
@@ -307,29 +307,29 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
     values: function() {
         if (this.el && this.parent) {
             if (this.readOnly) {
-                return [this.el.attr('value')];
+                return this.el.attr('value');
             } else {
                 if (this.el.attr('value') !== undefined) {
-                    return [this.el.attr('value')];
+                    return this.el.attr('value');
                 } else {
-                    return [this.el.val()];
+                    return this.el.val();
                 }
             }
         }
 
-        return [""];
+        return "";
     },
 
     checkCondition: function (condition, values) {
         switch (condition) {
             case 0:
-                return this.values()[0] === "";
+                return this.values() === "";
             case 1:
-                return this.values()[0] !== "";
+                return this.values() !== "";
             case 2:
-                return this.values()[0] === values[0];
+                return this.values() === values;
             case 3:
-                return this.values()[0] !== values[0];
+                return this.values() !== values;
             default:
                 return false;
         }

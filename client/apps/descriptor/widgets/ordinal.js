@@ -125,14 +125,14 @@ _.extend(Ordinal.prototype, DescriptorFormatType.prototype, {
 
         if (this.readOnly) {
             if (definesValues) {
-                this.el.val(defaultValues[0]);
+                this.el.val(defaultValues);
             }
         } else {
             if (definesValues) {
                 if (this.isInput) {
-                    this.el.val(defaultValues[0]);
+                    this.el.val(defaultValues);
                 } else {
-                    this.el.val(defaultValues[0].toString()).trigger('change');
+                    this.el.val(defaultValues.toString()).trigger('change');
                     this.el.selectpicker('refresh');
                 }
             }
@@ -143,25 +143,25 @@ _.extend(Ordinal.prototype, DescriptorFormatType.prototype, {
         if (this.el && this.parent) {
             if (this.el.val() !== "") {
                 var value = parseInt(this.el.val());
-                return [isNaN(value) ? null : value];
+                return isNaN(value) ? null : value;
             } else {
-                return [null];
+                return null;
             }
         }
 
-        return [null]
+        return null;
     },
 
     checkCondition: function (condition, values) {
         switch (condition) {
             case 0:
-                return this.values()[0] === null;
+                return this.values() == null;
             case 1:
-                return this.values()[0] !== null;
+                return this.values() != null;
             case 2:
-                return this.values()[0] === values[0];
+                return this.values() === values;
             case 3:
-                return this.values()[0] !== values[0];
+                return this.values() !== values;
             default:
                 return false;
         }
