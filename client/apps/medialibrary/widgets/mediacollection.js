@@ -46,6 +46,10 @@ _.extend(MediaCollection.prototype, DescriptorFormatType.prototype, {
         }
     },
 
+    cancel: function() {
+        /* @todo */
+    },
+
     enable: function() {
         if (this.el) {
             this.el.prop("disabled", false).selectpicker('refresh');

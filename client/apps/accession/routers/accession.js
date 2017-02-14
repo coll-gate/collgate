@@ -11,15 +11,8 @@
 var Marionette = require('backbone.marionette');
 
 var AccessionModel = require('../models/accession');
-// var BatchModel = require('../models/batch');
-
 var AccessionCollection = require('../collections/accession');
-// var BatchCollection = require('../collections/batch');
-
 var AccessionListView = require('../views/accessionlist');
-// var BatchListView = require('../views/batchlist');
-// var AccessionItemView = require('../views/accessionitem');
-// var BatchItemView = require('../views/batchitem');
 
 var DefaultLayout = require('../../main/views/defaultlayout');
 var ScrollingMoreView = require('../../main/views/scrollingmore');
@@ -29,11 +22,7 @@ var AccessionLayout = require('../views/accessionlayout');
 var Router = Marionette.AppRouter.extend({
     routes : {
         "app/accession/accession/": "getAccessionList",
-        "app/accession/accession/:id/": "getAccession",
-        "app/accession/accession/:id/batch/": "getBatchList",
-        "app/accession/accession/:id/batch/:bid": "getBatch",
-        "app/accession/accession/:id/batch/:bid/sample/": "getSampleList",
-        "app/accession/accession/:id/batch/:bid/sample/:sid/": "getSample",
+        "app/accession/accession/:id/": "getAccession"
     },
 
     getAccessionList : function() {
@@ -64,23 +53,7 @@ var Router = Marionette.AppRouter.extend({
             defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Accession"), model: accession}));
             defaultLayout.getRegion('content').show(accessionLayout);
         });
-    },
-
-    getBatchList : function(id) {
-        alert("Le gras c'est la vie !");
-    },
-
-    getBatch : function(id) {
-        alert("Pourquoi pas ?");
-    },
-
-    getSampleList : function(id) {
-        alert("Cette fois-ci, on part avec les femmes ! HAHAAAHA !!!!");
-    },
-
-    getSample : function(id) {
-        alert("Ça vous ennuie si je vomis ?");
-    },
+    }
 });
 
 module.exports = Router;
