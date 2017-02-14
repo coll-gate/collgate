@@ -137,6 +137,16 @@ var View = ItemView.extend({
         }
     },
 
+    onDestroy: function() {
+        // destroy any widgets
+        for (var pi = 0; pi < this.descriptorMetaModelLayout.panels.length; ++pi) {
+            for (var i = 0; i < this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types.length; ++i) {
+                var descriptorModelType = this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
+                descriptorModelType.widget.destroy();
+            }
+        }
+    },
+
     findDescriptorModelTypeForConditionTarget: function(target) {
         var pi = target.attr('panel-index');
         var i = target.attr('index');
@@ -199,7 +209,19 @@ var View = ItemView.extend({
         return descriptors;
     },
 
+    cancel: function() {
+        // destroy any widgets
+        for (var pi = 0; pi < this.descriptorMetaModelLayout.panels.length; ++pi) {
+            for (var i = 0; i < this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types.length; ++i) {
+                var descriptorModelType = this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
+                descriptorModelType.widget.cancel();
+            }
+        }
+    },
+
     onCancel: function() {
+        this.cancel();
+
         // non optimized default behavior reload url
         Backbone.history.loadUrl();
     },

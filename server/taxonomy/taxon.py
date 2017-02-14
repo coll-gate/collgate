@@ -388,10 +388,10 @@ def patch_taxon(request, id):
                     # clean previous descriptors and owns
                     descriptors_builder = DescriptorsBuilder(taxon)
 
-                    descriptors_builder.check_and_update(taxon.descriptor_meta_model, {})
+                    descriptors_builder.clear(taxon.descriptor_meta_model)
 
-                    taxon.descriptors = {}
                     taxon.descriptor_meta_model = None
+                    taxon.descriptors = {}
 
                     descriptors_builder.update_associations()
 
@@ -404,10 +404,10 @@ def patch_taxon(request, id):
                         # clean previous descriptors and owns
                         descriptors_builder = DescriptorsBuilder(taxon)
 
-                        descriptors_builder.check_and_update(taxon.descriptor_meta_model, {})
+                        descriptors_builder.clear(taxon.descriptor_meta_model)
 
-                        taxon.descriptors = {}
                         taxon.descriptor_meta_model = None
+                        taxon.descriptors = {}
 
                         descriptors_builder.update_associations()
 

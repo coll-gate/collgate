@@ -287,7 +287,6 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
                 }
 
                 this.progress.updateProgressBar(0, 0, 0);
-
             }, this));
 
 
@@ -313,6 +312,26 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
                 }
             } else {
                 this.el.parent().remove();
+            }
+        }
+    },
+
+    cancel: function() {
+        if (this.el && this.parent) {
+            if (!this.readOnly && this.value && this.value != this.initial) {
+                var widget = this;
+
+                // erase the last uploaded media and set descriptor value to null
+                $.ajax({
+                    type: "DELETE",
+                    url: application.baseUrl + 'medialibrary/media/' + this.value + '/',
+                    contentType: "application/json; charset=utf-8"
+                }).done(function(data) {
+                    widget.fileName.val("");
+                    widget.value = null;
+                });
+
+                this.progress.updateProgressBar(0, 0, 0);
             }
         }
     },
@@ -422,12 +441,24 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
             } else {
                 this.value = null;
 
-                if (!this.preview.hasClass('disabled')) {
-                    this.preview.addClass('disabled');
-                }
+                if (this.collection) {
+                    var placeholder = $('<span class="glyphicon glyphicon-ban-circle"></span>');
 
-                if (!this.download.hasClass('disabled')) {
-                    this.download.addClass('disabled');
+                    // center the placeholder
+                    placeholder.css({
+                        'margin-left': '43.5%',
+                        'padding': '3px'
+                    });
+
+                    this.collection.append(placeholder);
+                } else {
+                    if (!this.preview.hasClass('disabled')) {
+                        this.preview.addClass('disabled');
+                    }
+
+                    if (!this.download.hasClass('disabled')) {
+                        this.download.addClass('disabled');
+                       }
                 }
             }
         } else {

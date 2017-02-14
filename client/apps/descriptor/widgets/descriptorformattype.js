@@ -54,6 +54,12 @@ DescriptorFormatType.prototype = {
         /* destroy the widget if created */
     },
 
+    cancel: function() {
+        /* for widgets that performs global or server operation, and must clean such operations before destroying the
+         *  widget, it must then implement the way to remove those such resources.
+         */
+    },
+
     enable: function() {
         /* enable the widget */
     },

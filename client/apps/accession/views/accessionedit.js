@@ -12,6 +12,9 @@ var DescribableEdit = require('../../descriptor/views/describableedit');
 
 var View = DescribableEdit.extend({
     onCancel: function() {
+        // cancel global widget modifications
+        this.cancel();
+
         // non existing accession, simply reload previous content (url has not changed)
         if (this.model.isNew()) {
             Backbone.history.loadUrl();

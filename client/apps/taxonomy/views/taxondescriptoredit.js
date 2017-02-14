@@ -55,6 +55,9 @@ var View = DescribableEdit.extend({
     },
 
     onCancel: function() {
+        // cancel global widget modifications
+        this.cancel();
+
         // does not reload models, just redo the views
         var view = this;
         var model = this.model;
