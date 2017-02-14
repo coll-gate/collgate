@@ -82,13 +82,10 @@ var View = DescribableDetails.extend({
         // contextual panel
         var contextLayout = application.getView().getRegion('right').currentView;
 
-        var actions = [];
-
-        actions.push('apply');
-        actions.push('cancel');
+        var actions = ['apply', 'cancel'];
 
         var TaxonDescriptorsContextView = require('../views/taxondescriptorscontext');
-        var contextView = new TaxonDescriptorsContextView({actions: actions})
+        var contextView = new TaxonDescriptorsContextView({actions: actions});
         contextLayout.getRegion('content').show(contextView);
 
         contextView.on("describable:cancel", function() {

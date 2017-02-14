@@ -1,6 +1,6 @@
 /**
- * @file accessionedit.js
- * @brief Accession entity item edit view
+ * @file accessiondescriptoredit.js
+ * @brief Accession descriptor item edit view
  * @author Frederic SCHERMA
  * @date 2016-12-15
  * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
@@ -11,6 +11,21 @@
 var DescribableEdit = require('../../descriptor/views/describableedit');
 
 var View = DescribableEdit.extend({
+    setContextualPanel: function (taxonDescriptorView) {
+        // contextual panel
+        var contextLayout = application.getView().getRegion('right').currentView;
+
+        var actions = ['modify'];
+
+        var AccessionDescriptorsContextView = require('./accessiondescriptorscontext');
+        var contextView = new AccessionDescriptorsContextView({actions: actions})
+        contextLayout.getRegion('content').show(contextView);
+
+        contextView.on("describable:modify", function() {
+            taxonDescriptorView.onModify();
+        });
+    },
+
     onCancel: function() {
         // cancel global widget modifications
         this.cancel();
@@ -28,12 +43,14 @@ var View = DescribableEdit.extend({
         // update the layout content
         var accessionLayout = application.view().getRegion('content').currentView;
 
-        var AccessionDetailsView = require('../views/accessiondetails');
-        var accessionDetailsView = new AccessionDetailsView({
+        var AccessionDescriptorView = require('../views/accessiondescriptor');
+        var accessionDescriptorView = new AccessionDescriptorView({
             model: this.model,
             descriptorMetaModelLayout: view.descriptorMetaModelLayout});
 
-        accessionLayout.getRegion('descriptors').show(accessionDetailsView);
+        accessionLayout.getRegion('descriptors').show(accessionDescriptorView);
+
+        this.setContextualPanel(accessionDescriptorView);
     },
 
     onApply: function () {
@@ -51,12 +68,14 @@ var View = DescribableEdit.extend({
             var accessionLayout = application.view().getRegion('content').currentView;
 
             // update the layout content
-            var AccessionDetailsView = require('../views/accessiondetails');
-            var accessionDetailsView = new AccessionDetailsView({
+            var AccessionDescriptorView = require('../views/accessiondescriptor');
+            var accessionDescriptorView = new AccessionDescriptorView({
                 model: model,
                 descriptorMetaModelLayout: view.descriptorMetaModelLayout});
 
-            accessionLayout.getRegion('descriptors').show(accessionDetailsView);
+            accessionLayout.getRegion('descriptors').show(accessionDescriptorView);
+
+            view.setContextualPanel(accessionDescriptorView);
         });
     }
 });

@@ -13,17 +13,13 @@ var Marionette = require('backbone.marionette');
 var TaxonModel = require('../../taxonomy/models/taxon');
 var AccessionModel = require('../models/accession');
 
-//var AccessionCollection = require('../collections/accession');
-
-//var AccessionListView = require('../views/accessionlist');
-
 var DefaultLayout = require('../../main/views/defaultlayout');
 var TitleView = require('../../main/views/titleview');
 var Dialog = require('../../main/views/dialog');
 var AccessionLayout = require('../views/accessionlayout');
 
 var EntityPathView = require('../../taxonomy/views/entitypath');
-var AccessionEditView = require('../views/accessionedit');
+var AccessionDescriptorEditView = require('../views/accessiondescriptoredit');
 
 
 var Controller = Marionette.Object.extend({
@@ -224,7 +220,7 @@ var Controller = Marionette.Object.extend({
                             url: application.baseUrl + 'descriptor/meta-model/' + metaModel + '/layout/',
                             dataType: 'json',
                         }).done(function(data) {
-                            var view = new AccessionEditView({model: model, descriptorMetaModelLayout: data});
+                            var view = new AccessionDescriptorEditView({model: model, descriptorMetaModelLayout: data});
                             accessionLayout.getRegion('descriptors').show(view);
                         });
                     }

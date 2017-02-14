@@ -51,10 +51,10 @@ var TaxonRouter = Marionette.AppRouter.extend({
         application.show(defaultLayout);
 
         var taxonLayout = new TaxonLayout({model: taxon});
-        defaultLayout.getRegion('content').show(taxonLayout);
 
         taxon.fetch().then(function() {
             defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Taxon details"), model: taxon}));
+            defaultLayout.getRegion('content').show(taxonLayout);
         });
     },
 });

@@ -87,7 +87,7 @@ var Layout = Marionette.LayoutView.extend({
         var TaxonSynonymsView = require('../views/taxonsynonyms');
         this.getRegion('synonyms').show(new TaxonSynonymsView({model: this.model}));
 
-        // default descriptors tab
+        // descriptors tab
         var TaxonDescriptorCreateView = require('../views/taxondescriptorcreate');
         var taxonDescriptorCreateView = new TaxonDescriptorCreateView({model: this.model});
         this.getRegion('descriptors').show(taxonDescriptorCreateView);
@@ -129,8 +129,8 @@ var Layout = Marionette.LayoutView.extend({
         this.activeTab = tab;
 
         var region = this.getRegion(tab);
-        if (region && region.currentView.onShowTab) {
-            this.getRegion('descriptors').currentView.onShowTab();
+        if (region && region.currentView && region.currentView.onShowTab) {
+            region.currentView.onShowTab();
         }
     },
 
@@ -138,8 +138,8 @@ var Layout = Marionette.LayoutView.extend({
         var tab = e.target.getAttribute('aria-controls');
 
         var region = this.getRegion(tab);
-        if (region && region.currentView.onHideTab) {
-            this.getRegion('descriptors').currentView.onHideTab();
+        if (region && region.currentView && region.currentView.onHideTab) {
+            region.currentView.onHideTab();
         }
 
         application.main.defaultRightView();
