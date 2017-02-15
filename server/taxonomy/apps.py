@@ -30,8 +30,8 @@ class CollGateTaxonomy(ApplicationMain):
         taxonomy_module.include_urls((
             'base',
             'taxon',
-            'taxonsynonym',
-            'addtaxon')
+            'taxonsynonym'
+            )
         )
 
         # defines the list of entities models that uses of a taxon as parent

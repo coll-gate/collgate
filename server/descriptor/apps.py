@@ -45,8 +45,7 @@ class CollGateDescriptor(ApplicationMain):
             'describable',
             'descriptor',
             'descriptormodel',
-            'descriptormetamodel',
-            'descriptorpanel',
+            'descriptormetamodel'
             )
         )
 
