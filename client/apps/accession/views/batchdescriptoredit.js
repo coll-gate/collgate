@@ -1,9 +1,9 @@
 /**
- * @file accessiondescriptoredit.js
- * @brief Accession descriptor item edit view
+ * @file batchdescriptoredit.js
+ * @brief Batch descriptor item edit view
  * @author Frederic SCHERMA
- * @date 2016-12-15
- * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+ * @date 2017-02-15
+ * @copyright Copyright (c) 2017 INRA UMR1095 GDEC
  * @license @todo
  * @details
  */
@@ -17,8 +17,8 @@ var View = DescribableEdit.extend({
 
         var actions = ['modify'];
 
-        var AccessionDescriptorContextView = require('./accessiondescriptorcontext');
-        var contextView = new AccessionDescriptorContextView({actions: actions})
+        var BatchDescriptorContextView = require('./batchdescriptorcontext');
+        var contextView = new BatchDescriptorContextView({actions: actions})
         contextLayout.getRegion('content').show(contextView);
 
         contextView.on("describable:modify", function() {
@@ -41,16 +41,16 @@ var View = DescribableEdit.extend({
         var name = this.model.get('name');
 
         // update the layout content
-        var accessionLayout = application.view().getRegion('content').currentView;
+        var batchLayout = application.view().getRegion('content').currentView;
 
-        var AccessionDescriptorView = require('../views/accessiondescriptor');
-        var accessionDescriptorView = new AccessionDescriptorView({
+        var BatchDescriptorView = require('../views/batchdescriptor');
+        var batchDescriptorView = new BatchDescriptorView({
             model: this.model,
             descriptorMetaModelLayout: view.descriptorMetaModelLayout});
 
-        accessionLayout.getRegion('descriptors').show(accessionDescriptorView);
+        batchLayout.getRegion('descriptors').show(batchDescriptorView);
 
-        this.setContextualPanel(accessionDescriptorView);
+        this.setContextualPanel(batchDescriptorView);
     },
 
     onApply: function () {
@@ -64,18 +64,18 @@ var View = DescribableEdit.extend({
         }
 
         this.model.save({descriptors: descriptors}, {wait: true, patch: !model.isNew()}).then(function () {
-            //Backbone.history.navigate('app/accession/accession/' + model.get('id') + '/', {trigger: true, replace: true});
-            var accessionLayout = application.view().getRegion('content').currentView;
+            //Backbone.history.navigate('app/accession/batch/' + model.get('id') + '/', {trigger: true, replace: true});
+            var batchLayout = application.view().getRegion('content').currentView;
 
             // update the layout content
-            var AccessionDescriptorView = require('../views/accessiondescriptor');
-            var accessionDescriptorView = new AccessionDescriptorView({
+            var BatchDescriptorView = require('../views/batchdescriptor');
+            var batchDescriptorView = new BatchDescriptorView({
                 model: model,
                 descriptorMetaModelLayout: view.descriptorMetaModelLayout});
 
-            accessionLayout.getRegion('descriptors').show(accessionDescriptorView);
+            batchLayout.getRegion('descriptors').show(batchDescriptorView);
 
-            view.setContextualPanel(accessionDescriptorView);
+            view.setContextualPanel(batchDescriptorView);
         });
     }
 });

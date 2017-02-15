@@ -43,27 +43,27 @@ msgid "Are you sure you want to delete any descriptors for this taxon ?"
 msgstr ""
 "Etes-vous sûr de vouloir supprimer tous les descripteurs pour ce taxon ?"
 
-#: ../../../views/taxondescriptorscontext.js:21
+#: ../../../views/taxondescriptorcontext.js:21
 msgid "Defines descriptors"
 msgstr "Définir les descripteurs"
 
-#: ../../../views/taxondescriptorscontext.js:22
+#: ../../../views/taxondescriptorcontext.js:22
 msgid "Modify descriptors"
 msgstr "Modifiers les descripteurs"
 
-#: ../../../views/taxondescriptorscontext.js:23
+#: ../../../views/taxondescriptorcontext.js:23
 msgid "Replace all descriptors"
 msgstr "Remplacer tous les descripteurs"
 
-#: ../../../views/taxondescriptorscontext.js:24
+#: ../../../views/taxondescriptorcontext.js:24
 msgid "Delete all descriptors"
 msgstr "Supprimer tous les descripteurs"
 
-#: ../../../views/taxondescriptorscontext.js:25
+#: ../../../views/taxondescriptorcontext.js:25
 msgid "Apply modifications"
 msgstr "Appliquer les modifications"
 
-#: ../../../views/taxondescriptorscontext.js:26
+#: ../../../views/taxondescriptorcontext.js:26
 msgid "Cancel modifications"
 msgstr "Annuler les modifications"
 

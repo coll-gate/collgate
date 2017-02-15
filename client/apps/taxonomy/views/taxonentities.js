@@ -24,8 +24,6 @@ var View = ScrollView.extend({
         View.__super__.initialize.apply(this);
 
         this.listenTo(this.collection, 'reset', this.render, this);
-        this.listenTo($('window'), 'load', this.resize, this);
-        this.listenTo($('window'), 'resize', this.resize, this);
     }
 });
 

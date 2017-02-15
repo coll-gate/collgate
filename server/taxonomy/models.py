@@ -45,6 +45,8 @@ class Taxon(Entity):
     rank = models.IntegerField(choices=TaxonRank.choices())
 
     parent = models.ForeignKey('Taxon', null=True, related_name="children")
+
+    # list of parents ordered from lower to direct one. Any cases can be contained into this string list
     parent_list = models.CharField(
         max_length=1024, blank=True, default="", validators=[validate_comma_separated_integer_list])
 
@@ -64,7 +66,7 @@ class Taxon(Entity):
             'rank': self.rank,
             'parent': self.parent_id,
             'parent_list': self.parent_list,
-            'descriptor_meta_model': self.descriptor_meta_model,
+            'descriptor_meta_model': self.descriptor_meta_model_id,
             'descriptors': self.descriptors
         }
 
@@ -76,20 +78,22 @@ class Taxon(Entity):
                 result['rank'] = self.rank
 
             if 'parent' in self.updated_fields or 'parent_list' in self.updated_fields:
-                result['parent'] = self.parent
+                result['parent'] = self.parent_id
                 result['parent_list'] = self.parent_list
 
             if 'descriptor_meta_model' in self.updated_fields:
-                result['descriptor_meta_model'] = self.descriptor_meta_model
+                result['descriptor_meta_model'] = self.descriptor_meta_model_id
 
             if 'descriptors' in self.updated_fields:
                 result['descriptors'] = self.descriptors
+
+            return result
         else:
             return {
                 'rank': self.rank,
                 'parent': self.parent_id,
                 'parent_list': self.parent_list,
-                'descriptor_meta_model': self.descriptor_meta_model,
+                'descriptor_meta_model': self.descriptor_meta_model_id,
                 'descriptors': self.descriptors
             }
 

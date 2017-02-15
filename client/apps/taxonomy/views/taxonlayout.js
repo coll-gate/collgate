@@ -35,10 +35,10 @@ var Layout = Marionette.LayoutView.extend({
     initialize: function(model, options) {
         Layout.__super__.initialize.apply(this, arguments);
 
-        this.listenTo(this.model, 'change:descriptor_meta_model', this.onTaxonDescriptorMetaModelChange, this);
+        this.listenTo(this.model, 'change:descriptor_meta_model', this.onDescriptorMetaModelChange, this);
     },
 
-    onTaxonDescriptorMetaModelChange: function(model, value) {
+    onDescriptorMetaModelChange: function(model, value) {
         if (value == null) {
             var TaxonDescriptorCreateView = require('../views/taxondescriptorcreate');
             var taxonDescriptorCreateView = new TaxonDescriptorCreateView({model: model});

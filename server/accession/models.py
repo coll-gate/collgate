@@ -56,13 +56,26 @@ class Accession(DescribableEntity):
 
     def audit_create(self, user):
         return {
+            'parent': self.parent_id,
+            'descriptor_meta_model': self.descriptor_meta_model_id,
             'descriptors': self.descriptors
         }
 
     def audit_update(self, user):
-        return {
-            'descriptors': self.descriptors
-        }
+        if hasattr(self, 'updated_fields'):
+            result = {'updated_fields': self.updated_fields}
+
+            if 'parent' in self.updated_fields:
+                result['parent'] = self.parent_id
+
+            if 'descriptors' in self.updated_fields:
+                result['descriptors'] = self.descriptors
+
+            return result
+        else:
+            return {
+                'descriptors': self.descriptors
+            }
 
     def audit_delete(self, user):
         return {}
@@ -80,13 +93,23 @@ class Batch(DescribableEntity):
 
     def audit_create(self, user):
         return {
+            'accession': self.accession_id,
+            'descriptor_meta_model': self.descriptor_meta_model_id,
             'descriptors': self.descriptors
         }
 
     def audit_update(self, user):
-        return {
-            'descriptors': self.descriptors
-        }
+        if hasattr(self, 'updated_fields'):
+            result = {'updated_fields': self.updated_fields}
+
+            if 'descriptors' in self.updated_fields:
+                result['descriptors'] = self.descriptors
+
+            return result
+        else:
+            return {
+                'descriptors': self.descriptors
+            }
 
     def audit_delete(self, user):
         return {}
@@ -97,7 +120,6 @@ class Sample(DescribableEntity):
     Sample during lot processing.
     """
 
-    name = models.CharField(unique=True, max_length=255, db_index=True)
     batch = models.ForeignKey('Batch', related_name='samples')
 
     class Meta:
@@ -105,13 +127,23 @@ class Sample(DescribableEntity):
 
     def audit_create(self, user):
         return {
+            'batch': self.batch_id,
+            'descriptor_meta_model': self.descriptor_meta_model_id,
             'descriptors': self.descriptors
         }
 
     def audit_update(self, user):
-        return {
-            'descriptors': self.descriptors
-        }
+        if hasattr(self, 'updated_fields'):
+            result = {'updated_fields': self.updated_fields}
+
+            if 'descriptors' in self.updated_fields:
+                result['descriptors'] = self.descriptors
+
+            return result
+        else:
+            return {
+                'descriptors': self.descriptors
+            }
 
     def audit_delete(self, user):
         return {}

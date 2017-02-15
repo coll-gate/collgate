@@ -42,7 +42,7 @@ var Layout = Marionette.LayoutView.extend({
 
         this.activeTab = "descriptors";
 
-        this.listenTo(this.model, 'change:descriptor_meta_model', this.onAccessionDescriptorMetaModelChange, this);
+        this.listenTo(this.model, 'change:descriptor_meta_model', this.onDescriptorMetaModelChange, this);
     },
 
     disableSynonymsTab: function () {
@@ -53,7 +53,7 @@ var Layout = Marionette.LayoutView.extend({
         this.ui.batches_tab.parent().addClass('disabled');
     },
 
-    onAccessionDescriptorMetaModelChange: function(model, value) {
+    onDescriptorMetaModelChange: function(model, value) {
         if (value == null) {
             this.getRegion('descriptors').empty();
         } else {
@@ -82,6 +82,9 @@ var Layout = Marionette.LayoutView.extend({
 
     onRender: function() {
         var accessionLayout = this;
+
+        this.ui.tabs.on("shown.bs.tab", $.proxy(this.onShowTab, this));
+        this.ui.tabs.on("hide.bs.tab", $.proxy(this.onHideTab, this));
 
         // details view
         var taxon = new TaxonModel({id: this.model.get('parent')});

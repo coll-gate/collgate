@@ -31,8 +31,8 @@ var View = DescribableDetails.extend({
             actions.push('delete');
         }
 
-        var TaxonDescriptorsContextView = require('./taxondescriptorscontext');
-        var contextView = new TaxonDescriptorsContextView({actions: actions});
+        var TaxonDescriptorContextView = require('./taxondescriptorcontext');
+        var contextView = new TaxonDescriptorContextView({actions: actions});
 
         contextLayout.getRegion('title').show(new TitleView({title: gt.gettext("Descriptors")}));
         contextLayout.getRegion('content').show(contextView);
@@ -84,8 +84,8 @@ var View = DescribableDetails.extend({
 
         var actions = ['apply', 'cancel'];
 
-        var TaxonDescriptorsContextView = require('../views/taxondescriptorscontext');
-        var contextView = new TaxonDescriptorsContextView({actions: actions});
+        var TaxonDescriptorContextView = require('../views/taxondescriptorcontext');
+        var contextView = new TaxonDescriptorContextView({actions: actions});
         contextLayout.getRegion('content').show(contextView);
 
         contextView.on("describable:cancel", function() {

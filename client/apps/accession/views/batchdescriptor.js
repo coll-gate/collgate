@@ -1,15 +1,15 @@
 /**
- * @file accessiondescriptor.js
- * @brief Accession descriptor item view
+ * @file batchdescriptor.js
+ * @brief Batch descriptor item view
  * @author Frederic SCHERMA
- * @date 2016-12-19
- * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+ * @date 2017-02-15
+ * @copyright Copyright (c) 2017 INRA UMR1095 GDEC
  * @license @todo
  * @details
  */
 
 var DescribableDetails = require('../../descriptor/views/describabledetails');
-var AccessionDescriptorEditView = require('../views/accessiondescriptoredit');
+var BatchDescriptorEditView = require('../views/batchdescriptoredit');
 
 var View = DescribableDetails.extend({
     onShowTab: function() {
@@ -23,8 +23,8 @@ var View = DescribableDetails.extend({
 
         var actions = ['modify'];
 
-        var AccessionDescriptorContextView = require('./accessiondescriptorcontext');
-        var contextView = new AccessionDescriptorContextView({actions: actions});
+        var BatchDescriptorContextView = require('./batchdescriptorcontext');
+        var contextView = new BatchDescriptorContextView({actions: actions});
 
         contextLayout.getRegion('title').show(new TitleView({title: gt.gettext("Descriptors")}));
         contextLayout.getRegion('content').show(contextView);
@@ -43,18 +43,18 @@ var View = DescribableDetails.extend({
         var name = this.model.get('name');
 
         // update the layout content
-        var accessionLayout = application.view().getRegion('content').currentView;
+        var batchLayout = application.view().getRegion('content').currentView;
 
-        var view = new AccessionDescriptorEditView({model: this.model, descriptorMetaModelLayout: this.descriptorMetaModelLayout});
-        accessionLayout.getRegion('descriptors').show(view);
+        var view = new BatchDescriptorEditView({model: this.model, descriptorMetaModelLayout: this.descriptorMetaModelLayout});
+        batchLayout.getRegion('descriptors').show(view);
 
         // contextual panel
         var contextLayout = application.getView().getRegion('right').currentView;
 
         var actions = ['apply', 'cancel'];
 
-        var AccessionDescriptorContextView = require('../views/accessiondescriptorcontext');
-        var contextView = new AccessionDescriptorContextView({actions: actions});
+        var BatchDescriptorContextView = require('../views/batchdescriptorcontext');
+        var contextView = new BatchDescriptorContextView({actions: actions});
         contextLayout.getRegion('content').show(contextView);
 
         contextView.on("describable:cancel", function() {

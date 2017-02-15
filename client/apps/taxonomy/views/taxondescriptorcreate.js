@@ -116,8 +116,8 @@ var View = Marionette.ItemView.extend({
 
         actions.push('add');
 
-        var TaxonDescriptorsContextView = require('../views/taxondescriptorscontext');
-        var contextView = new TaxonDescriptorsContextView({actions: actions});
+        var TaxonDescriptorContextView = require('../views/taxondescriptorcontext');
+        var contextView = new TaxonDescriptorContextView({actions: actions});
 
         var TitleView = require('../../main/views/titleview');
         contextLayout.getRegion('title').show(new TitleView({title: gt.gettext("Descriptors")}));

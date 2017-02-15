@@ -23,8 +23,8 @@ var View = DescribableEdit.extend({
         actions.push('replace');
         actions.push('delete');
 
-        var TaxonDescriptorsContextView = require('./taxondescriptorscontext');
-        var contextView = new TaxonDescriptorsContextView({actions: actions})
+        var TaxonDescriptorContextView = require('./taxondescriptorcontext');
+        var contextView = new TaxonDescriptorContextView({actions: actions})
         contextLayout.getRegion('content').show(contextView);
 
         contextView.on("describable:modify", function() {
@@ -77,7 +77,7 @@ var View = DescribableEdit.extend({
     },
 
     onApply: function () {
-        // does not reload  models, save and redo the views
+        // does not reload models, save and redo the views
         var view = this;
         var model = this.model;
 
