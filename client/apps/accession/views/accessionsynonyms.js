@@ -72,7 +72,7 @@ var View = Marionette.ItemView.extend({
 
             $.ajax({
                 type: "GET",
-                url: application.baseUrl + 'accession/accession/search/',
+                url: application.baseUrl + 'accession/accession/synonym/search/',
                 dataType: 'json',
                 data: {filters: JSON.stringify(filters)},
                 cache: false,
@@ -188,7 +188,7 @@ var View = Marionette.ItemView.extend({
                         dataType: 'json',
                         data: JSON.stringify({name: name}),
                         success: function (data) {
-                            view.remove();
+                            view.destroy();
                             model.fetch({reset: true});
                         },
                         error: function() {

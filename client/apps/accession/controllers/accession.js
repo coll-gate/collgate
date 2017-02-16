@@ -124,7 +124,7 @@ var Controller = Marionette.Object.extend({
 
                         $.ajax({
                             type: "GET",
-                            url: application.baseUrl + 'accession/accession/search/',
+                            url: application.baseUrl + 'accession/accession/synonym/search/',
                             dataType: 'json',
                             contentType: 'application/json; charset=utf8',
                             data: {filters: JSON.stringify(filters)},
@@ -135,7 +135,7 @@ var Controller = Marionette.Object.extend({
                                         var t = data.items[i];
 
                                         if (t.value.toUpperCase() == this.el.val().toUpperCase()) {
-                                            $(this.el).validateField('failed', gt.gettext('Taxon name already in usage'));
+                                            $(this.el).validateField('failed', gt.gettext('Synonym of accession already used'));
                                             break;
                                         }
                                     }
@@ -194,7 +194,7 @@ var Controller = Marionette.Object.extend({
                             name: name,
                             parent: parent,
                             descriptor_meta_model: metaModel,
-                            language: this.ui.language.val(),
+                            language: this.ui.language.val()
                         });
 
                         view.destroy();
@@ -218,7 +218,7 @@ var Controller = Marionette.Object.extend({
                         $.ajax({
                             method: "GET",
                             url: application.baseUrl + 'descriptor/meta-model/' + metaModel + '/layout/',
-                            dataType: 'json',
+                            dataType: 'json'
                         }).done(function(data) {
                             var view = new AccessionDescriptorEditView({model: model, descriptorMetaModelLayout: data});
                             accessionLayout.getRegion('descriptors').show(view);

@@ -6,23 +6,14 @@
 coll-gate accession batch rest handler
 """
 
-from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import SuspiciousOperation
-from django.db import IntegrityError
-from django.db import transaction
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 
-from descriptor.describable import DescriptorsBuilder
-from descriptor.models import DescriptorMetaModel
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
-from main.models import Languages, EntityStatus
 from permission.utils import get_permissions_for
-from taxonomy.models import Taxon
 
-from .models import Accession, Batch
-from .base import RestAccession
+from .models import Accession
 from .accession import RestAccessionId
 
 from django.utils.translation import ugettext_lazy as _
@@ -74,12 +65,12 @@ def accession_batches_list(request, acc_id):
 
     if len(items_list) > 0:
         # prev cursor (asc order)
-        entity = items_list[0]
-        prev_cursor = "%s/%s" % (entity['name'], entity['id'])
+        obj = items_list[0]
+        prev_cursor = "%s/%i" % (obj['name'], obj['id'])
 
         # next cursor (asc order)
-        entity = items_list[-1]
-        next_cursor = "%s/%s" % (entity['name'], entity['id'])
+        obj = items_list[-1]
+        next_cursor = "%s/%i" % (obj['name'], obj['id'])
     else:
         prev_cursor = None
         next_cursor = None
@@ -94,3 +85,52 @@ def accession_batches_list(request, acc_id):
 
     return HttpResponseRest(request, results)
 
+
+@RestAccessionIdBatchSearch.def_auth_request(Method.GET, Format.JSON, ('filters',))
+def search_batches_for_accession(request, acc_id):
+    """
+    Quick search for batches with a exact or partial name.
+    """
+    filters = json.loads(request.GET['filters'])
+    page = int_arg(request.GET.get('page', 1))
+
+    # @todo cursor (not pagination)
+    qs = None
+
+    name_method = filters.get('method', 'ieq')
+    if 'meta_model' in filters['fields']:
+        meta_model = int_arg(filters['meta_model'])
+
+        if name_method == 'ieq':
+            qs = AccessionSynonym.objects.filter(Q(name__iexact=filters['name']))
+        elif name_method == 'icontains':
+            qs = AccessionSynonym.objects.filter(Q(name__icontains=filters['name']))
+
+        qs = qs.filter(Q(descriptor_meta_model_id=meta_model))
+    elif 'name' in filters['fields']:
+        if name_method == 'ieq':
+            qs = AccessionSynonym.objects.filter(name__iexact=filters['name'])
+        elif name_method == 'icontains':
+            qs = AccessionSynonym.objects.filter(name__icontains=filters['name'])
+
+    # qs = qs.select_related('synonyms')
+
+    # group by synonyms on labels
+    accessions = {}
+
+    for s in qs:
+        for acc in s.accessions.all():
+            accession = accessions.get(acc.id)
+            if accession:
+                accession['label'] += ', ' + s.name
+            else:
+                accessions[acc.id] = {'id': str(acc.id), 'label': s.name, 'value': acc.name}
+
+    accessions_list = list(accessions.values())
+
+    response = {
+        'items': accessions_list,
+        'page': page
+    }
+
+    return HttpResponseRest(request, response)

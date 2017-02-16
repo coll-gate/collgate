@@ -288,11 +288,11 @@ def list_descriptor_model_types_for_model(request, des_id):
     if len(items_list) > 0:
         # prev cursor (asc order)
         obj = items_list[0]
-        prev_cursor = "%i/%s" % (obj['position'], obj['id'])
+        prev_cursor = "%i/%i" % (obj['position'], obj['id'])
 
         # next cursor (asc order)
-        dm = items_list[-1]
-        next_cursor = "%i/%s" % (obj['position'], obj['id'])
+        obj = items_list[-1]
+        next_cursor = "%i/%i" % (obj['position'], obj['id'])
     else:
         prev_cursor = None
         next_cursor = None

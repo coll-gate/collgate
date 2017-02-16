@@ -12,12 +12,11 @@ from django.db import transaction
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 
-from accession.accessionsynonym import is_synonym_type
 from descriptor.describable import DescriptorsBuilder
 from descriptor.models import DescriptorMetaModel
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
-from main.models import Languages, EntityStatus
+from main.models import Languages
 from permission.utils import get_permissions_for
 from taxonomy.models import Taxon
 
@@ -155,7 +154,7 @@ def accession_list(request):
     else:
         accessions = Accession.objects.all()
 
-    accessions = accessions.select_related('parent').order_by('name')[:limit]
+    accessions = accessions.select_related('parent').prefetch_related('synonyms').order_by('name')[:limit]
 
     accession_list = []
 
@@ -172,7 +171,7 @@ def accession_list(request):
         for synonym in accession.synonyms.all().order_by('type', 'language'):
             a['synonyms'].append({
                 'id': synonym.id,
-                'name': synonym.name,
+                'name': synonym.synonym,
                 'type': synonym.type,
                 'language': synonym.language
             })
@@ -240,48 +239,71 @@ def search_accession(request):
     Quick search for an accession with a exact or partial name and meta model of descriptor.
     """
     filters = json.loads(request.GET['filters'])
-    page = int_arg(request.GET.get('page', 1))
 
-    # @todo cursor (not pagination)
-    qs = None
+    results_per_page = int_arg(request.GET.get('more', 30))
+    cursor = request.GET.get('cursor')
+    limit = results_per_page
+
+    if cursor:
+        cursor_name, cursor_id = cursor.rsplit('/', 1)
+        qs = AccessionSynonym.objects.filter(Q(synonym__gt=cursor_name))
+    else:
+        qs = AccessionSynonym.objects.all()
 
     name_method = filters.get('method', 'ieq')
     if 'meta_model' in filters['fields']:
         meta_model = int_arg(filters['meta_model'])
 
         if name_method == 'ieq':
-            qs = AccessionSynonym.objects.filter(Q(name__iexact=filters['name']))
+            # single result query (replace)
+            qs = AccessionSynonym.objects.filter(Q(synonym__iexact=filters['name']))
         elif name_method == 'icontains':
-            qs = AccessionSynonym.objects.filter(Q(name__icontains=filters['name']))
+            qs = qs.filter(Q(synonym__icontains=filters['name']))
 
         qs = qs.filter(Q(descriptor_meta_model_id=meta_model))
     elif 'name' in filters['fields']:
         if name_method == 'ieq':
-            qs = AccessionSynonym.objects.filter(name__iexact=filters['name'])
+            # single result query (replace)
+            qs = AccessionSynonym.objects.filter(synonym__iexact=filters['name'])
         elif name_method == 'icontains':
-            qs = AccessionSynonym.objects.filter(name__icontains=filters['name'])
+            qs = qs.filter(synonym__icontains=filters['name'])
 
-    # qs = qs.select_related('synonyms')
+    qs = qs.prefetch_related('accession').order_by('name')[:limit]
 
-    # group by synonyms on labels
-    accessions = {}
+    items_list = []
 
-    for s in qs:
-        for acc in s.accessions.all():
-            accession = accessions.get(acc.id)
-            if accession:
-                accession['label'] += ', ' + s.name
-            else:
-                accessions[acc.id] = {'id': str(acc.id), 'label': s.name, 'value': acc.name}
+    for synonym in qs:
+        label = "%s (%s)" % (synonym.synonym, synonym.accession.name) if synonym.synonym != synonym.accession.name else synonym.synonym
 
-    accessions_list = list(accessions.values())
+        a = {
+            'id': synonym.accession.id,
+            'label': label,
+            'value': synonym.accession.name
+        }
 
-    response = {
-        'items': accessions_list,
-        'page': page
+        items_list.append(a)
+
+    if len(items_list) > 0:
+        # prev cursor (asc order)
+        obj = items_list[0]
+        prev_cursor = "%s/%i" % (obj['value'], obj['id'])
+
+        # next cursor (asc order)
+        obj = items_list[-1]
+        next_cursor = "%s/%i" % (obj['value'], obj['id'])
+    else:
+        prev_cursor = None
+        next_cursor = None
+
+    results = {
+        'perms': [],
+        'items': items_list,
+        'prev': prev_cursor,
+        'cursor': cursor,
+        'next': next_cursor,
     }
 
-    return HttpResponseRest(request, response)
+    return HttpResponseRest(request, results)
 
 
 @RestAccessionId.def_auth_request(Method.PATCH, Format.JSON, content={
@@ -374,15 +396,19 @@ def accession_add_synonym(request, acc_id):
     synonym = {
         'type': request.data['type'],
         'name': request.data['name'],
-        'language': request.data['language'],
+        'language': request.data['language']
     }
 
     # check that type is in the values of descriptor
-    if not is_synonym_type(synonym['type']):
+    if not AccessionSynonym.is_synonym_type(synonym['type']):
         raise SuspiciousOperation(_("Unsupported type of synonym"))
 
     accession_synonym = AccessionSynonym(
-        name=synonym['name'], language=synonym['language'], type=synonym['type'])
+        accession=accession,
+        name=synonym['name'],
+        synonym=synonym['name'],
+        language=synonym['language'],
+        type=synonym['type'])
 
     accession_synonym.save()
 
@@ -414,16 +440,16 @@ def accession_change_synonym(request, acc_id, syn_id):
     try:
         with transaction.atomic():
             # rename the accession if the synonym name is the accession name
-            if accession.name == synonym.name:
+            if accession.name == synonym.synonym:
                 accession.name = name
                 accession.save()
 
-            synonym.name = name
+            synonym.synonym = name
             synonym.save()
 
             result = {
                 'id': synonym.id,
-                'name': synonym.name
+                'name': synonym.synonym
             }
     except IntegrityError as e:
         logger.log(repr(e))
