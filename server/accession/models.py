@@ -54,6 +54,12 @@ class Accession(DescribableEntity):
     class Meta:
         verbose_name = _("accession")
 
+        permissions = (
+            ("get_accession", "Can get an accession"),
+            ("list_accession", "Can list accessions"),
+            ("search_accession", "Can search for accessions")
+        )
+
     def audit_create(self, user):
         return {
             'parent': self.parent_id,
@@ -86,10 +92,16 @@ class Batch(DescribableEntity):
     Lot for an accession.
     """
 
-    accession = models.ForeignKey('Accession', related_name='bundles')
+    accession = models.ForeignKey('Accession', related_name='batches')
 
     class Meta:
         verbose_name = _("batch")
+
+        permissions = (
+            ("get_batch", "Can get a batch"),
+            ("list_batch", "Can list batch"),
+            ("search_batch", "Can search for batches")
+        )
 
     def audit_create(self, user):
         return {

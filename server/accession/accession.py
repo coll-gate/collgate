@@ -38,7 +38,7 @@ class RestAccessionSearch(RestAccessionAccession):
 
 
 class RestAccessionId(RestAccessionAccession):
-    regex = r'^(?P<id>[0-9]+)/$'
+    regex = r'^(?P<acc_id>[0-9]+)/$'
     suffix = 'id'
 
 
@@ -48,7 +48,7 @@ class RestAccessionIdSynonym(RestAccessionId):
 
 
 class RestAccessionIdSynonymId(RestAccessionIdSynonym):
-    regex = r'^(?P<sid>[0-9]+)/$'
+    regex = r'^(?P<syn_id>[0-9]+)/$'
     suffix = 'id'
 
 
@@ -150,7 +150,7 @@ def accession_list(request):
     # synonyms = AccessionSynonym.objects.all()
 
     if cursor:
-        cursor_name, cursor_id = cursor.split('/')
+        cursor_name, cursor_id = cursor.rsplit('/', 1)
         accessions = Accession.objects.filter(Q(name__gt=cursor_name))
     else:
         accessions = Accession.objects.all()
@@ -203,11 +203,11 @@ def accession_list(request):
 
 
 @RestAccessionId.def_auth_request(Method.GET, Format.JSON)
-def get_accession_details_json(request, id):
+def get_accession_details_json(request, acc_id):
     """
     Get the details of an accession.
     """
-    accession = Accession.objects.get(id=int_arg(id))
+    accession = Accession.objects.get(id=int(acc_id))
 
     # check permission on this object @todo
     perms = get_permissions_for(request.user, accession.content_type.app_label, accession.content_type.model, accession.pk)
@@ -295,9 +295,8 @@ def search_accession(request):
     perms={
         'accession.change_accession': _("You are not allowed to modify an accession"),
     })
-def patch_accession(request, id):
-    acc_id = int(id)
-    accession = get_object_or_404(Accession, id=acc_id)
+def patch_accession(request, acc_id):
+    accession = get_object_or_404(Accession, id=int(acc_id))
 
     entity_status = request.data.get("entity_status")
     descriptors = request.data.get("descriptors")
@@ -346,9 +345,8 @@ def patch_accession(request, id):
 @RestAccessionId.def_auth_request(Method.DELETE, Format.JSON, perms={
     'accession.delete_accession': _("You are not allowed to delete an accession"),
 })
-def delete_accession(request, id):
-    acc_id = int(id)
-    accession = get_object_or_404(Accession, id=acc_id)
+def delete_accession(request, acc_id):
+    accession = get_object_or_404(Accession, id=int(acc_id))
 
     accession.synonyms.clear()
     accession.delete()
@@ -370,9 +368,8 @@ def delete_accession(request, id):
         'accession.add_accessionsynonym': _("You are not allowed to add a synonym of accession"),
     }
 )
-def accession_add_synonym(request, id):
-    aid = int_arg(id)
-    accession = get_object_or_404(Accession, id=aid)
+def accession_add_synonym(request, acc_id):
+    accession = get_object_or_404(Accession, id=int(acc_id))
 
     synonym = {
         'type': request.data['type'],
@@ -408,12 +405,9 @@ def accession_add_synonym(request, id):
         'accession.change_accessionsynonym': _("You are not allowed to modify a synonym of accession"),
     }
 )
-def accession_change_synonym(request, id, sid):
-    aid = int(id)
-    sid = int(sid)
-
-    accession = get_object_or_404(Accession, id=aid)
-    synonym = accession.synonyms.get(id=sid)
+def accession_change_synonym(request, acc_id, syn_id):
+    accession = get_object_or_404(Accession, id=int(acc_id))
+    synonym = accession.synonyms.get(id=int(syn_id))
 
     name = request.data['name']
 
@@ -445,12 +439,9 @@ def accession_change_synonym(request, id, sid):
         'accession.delete_accessionsynonym': _("You are not allowed to delete a synonym of accession"),
     }
 )
-def accession_remove_synonym(request, id, sid):
-    aid = int(id)
-    sid = int(sid)
-
-    accession = get_object_or_404(Accession, id=aid)
-    synonym = accession.synonyms.get(id=sid)
+def accession_remove_synonym(request, acc_id, syn_id):
+    accession = get_object_or_404(Accession, id=int(acc_id))
+    synonym = accession.synonyms.get(id=int(syn_id))
 
     if synonym.type == 'IN_001:0000001':
         raise SuspiciousOperation(_("It is not possible to remove a primary synonym"))

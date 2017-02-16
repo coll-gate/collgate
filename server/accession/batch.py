@@ -38,6 +38,5 @@ class RestBatchSearch(RestBatch):
 
 
 class RestBatchId(RestBatch):
-    regex = r'^(?P<id>[0-9]+)/$'
+    regex = r'^(?P<bat_id>[0-9]+)/$'
     suffix = 'id'
-

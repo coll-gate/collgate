@@ -52,7 +52,7 @@ def search_audit_for_username(request):
     user = get_object_or_404(User, username=request.GET['username'])
 
     if cursor:
-        cursor_time, cursor_id = cursor.split('/')
+        cursor_time, cursor_id = cursor.rsplit('/', 1)
         qs = Audit.objects.filter(Q(user=user), Q(timestamp__lte=cursor_time) & Q(timestamp__lt=cursor_time) | (Q(timestamp=cursor_time) & Q(id__lt=cursor_id)))
     else:
         qs = Audit.objects.filter(user=user)
@@ -128,7 +128,7 @@ def search_audit_for_entity(request):
     # audits = qs.order_by('-timestamp')[offset:limit]
 
     if cursor:
-        cursor_time, cursor_id = cursor.split('/')
+        cursor_time, cursor_id = cursor.rsplit('/', 1)
         qs = Audit.objects.filter(Q(content_type=content_type),
                                   Q(object_id=object_id),
                                   Q(timestamp__lte=cursor_time) & Q(timestamp__lt=cursor_time) | (Q(timestamp=cursor_time) & Q(id__lt=cursor_id)))

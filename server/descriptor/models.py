@@ -161,16 +161,16 @@ class DescriptorType(Entity):
                 like {'name', 'value'} with value can be a dict.
         :rtype: tuple
         """
-        format = json.loads(self.format)
+        format_type = json.loads(self.format)
         lang = translation.get_language()
-        trans = format.get('trans', False)
+        trans = format_type.get('trans', False)
 
         prev_cursor = None
         next_cursor = None
         values_list = []
 
         # map fields name with columns
-        fields = format.get('fields')
+        fields = format_type.get('fields')
         if fields:
             if len(fields) >= 1 and sort_by == fields[0]:
                 sort_by = "value0"
@@ -179,7 +179,7 @@ class DescriptorType(Entity):
 
         # id is code
         if sort_by == "code":
-            sort_by == "id"
+            sort_by = "id"
 
         # internally stored values
         if self.values:
@@ -196,7 +196,7 @@ class DescriptorType(Entity):
                 # sort by id (code)
                 # name are unique so its a trivial case
                 if reverse:
-                    cursor_code = str(cursor.split('/')[0]) if cursor else "ZZ_9999:99999999"
+                    cursor_code = str(cursor.rsplit('/', 1)[0]) if cursor else "ZZ_9999:99999999"
 
                     for k, v in values.items():
                         if k < cursor_code:
@@ -208,7 +208,7 @@ class DescriptorType(Entity):
                                 'value1': v.get('value1', None),
                             })
                 else:
-                    cursor_code = str(cursor.split('/')[0]) if cursor else ""
+                    cursor_code = str(cursor.rsplit('/', 1)[0]) if cursor else ""
 
                     for k, v in values.items():
                         if k > cursor_code:
@@ -227,7 +227,7 @@ class DescriptorType(Entity):
                 # blank value are not allowed.
                 # null values are supported.
                 # duplicated values are supported by string concatenation of ordinal+code during sorting.
-                cursor_ordinal, cursor_code = cursor.split('/') if cursor else (None, None)
+                cursor_ordinal, cursor_code = cursor.rsplit('/', 1) if cursor else (None, None)
 
                 if cursor_code is None:
                     cursor_code = ""
@@ -347,7 +347,7 @@ class DescriptorType(Entity):
                 # blank value are not allowed.
                 # null values are supported.
                 # duplicated values are supported by string concatenation of value+code during sorting.
-                cursor_value, cursor_code = cursor.split('/') if cursor else (None, None)
+                cursor_value, cursor_code = cursor.rsplit('/', 1) if cursor else (None, None)
 
                 if cursor_code is None:
                     cursor_code = ""
@@ -455,7 +455,7 @@ class DescriptorType(Entity):
 
                 def sort_method(v):
                     if v[sort_by]:
-                        return v[sort_by]+v['id']
+                        return v[sort_by] + v['id']
                     else:
                         return v['id']
 
@@ -472,7 +472,7 @@ class DescriptorType(Entity):
                 qs = self.values_set.all()
 
             if sort_by == 'id':
-                cursor_code = str(cursor.split('/')[0]) if cursor else None
+                cursor_code = str(cursor.rsplit('/', 1)[0]) if cursor else None
 
                 # code is unique (per language)
                 if reverse:
@@ -486,7 +486,7 @@ class DescriptorType(Entity):
 
                     qs = qs.order_by('code')
             elif sort_by == 'ordinal':
-                cursor_ordinal, cursor_code = cursor.split('/') if cursor else (None, None)
+                cursor_ordinal, cursor_code = cursor.rsplit('/', 1) if cursor else (None, None)
 
                 if cursor_ordinal:
                     cursor_ordinal = int(cursor_ordinal)
@@ -503,7 +503,7 @@ class DescriptorType(Entity):
 
                     qs = qs.order_by('ordinal', 'code')
             elif sort_by == 'value0':
-                cursor_value0, cursor_code = cursor.split('/') if cursor else (None, None)
+                cursor_value0, cursor_code = cursor.rsplit('/', 1) if cursor else (None, None)
 
                 # value0 can be non unique
                 if reverse:
@@ -519,7 +519,7 @@ class DescriptorType(Entity):
 
                     qs = qs.order_by('value0', 'code')
             elif sort_by == 'value1':
-                cursor_value1, cursor_code = cursor.split('/') if cursor else (None, None)
+                cursor_value1, cursor_code = cursor.rsplit('/', 1) if cursor else (None, None)
 
                 # value1 can be non unique
                 if reverse:
@@ -566,9 +566,9 @@ class DescriptorType(Entity):
         """
         Get the ordinal, value0, value1, and parent code for a given value code
         """
-        format = json.loads(self.format)
+        format_type = json.loads(self.format)
         lang = translation.get_language()
-        trans = format.get('trans', False)
+        trans = format_type.get('trans', False)
 
         if self.values:
             if trans:
@@ -598,14 +598,17 @@ class DescriptorType(Entity):
         Search for values starting by value1, value2 or ordinal according to the
         descriptor code and the current language. Always in ASC order.
 
-        :param value:
+        :param str field_value: Value of the field to search
+        :param str field_name: Name of the field to search for
+        :param: str cursor: Cursor position of the last previous result
+        :param: int limit: Number max of results
         :return: The list of values with name starting with field_value on field_name.
         """
-        format = json.loads(self.format)
+        format_type = json.loads(self.format)
         lang = translation.get_language()
-        trans = format.get('trans', False)
+        trans = format_type.get('trans', False)
 
-        cursor_value, cursor_code = cursor.split('/') if cursor else (None, None)
+        cursor_value, cursor_code = cursor.rsplit('/', 1) if cursor else (None, None)
 
         values_list = []
 

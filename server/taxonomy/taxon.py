@@ -37,7 +37,7 @@ class RestTaxonSearch(RestTaxon):
 
 
 class RestTaxonId(RestTaxon):
-    regex = r'^(?P<id>[0-9]+)/$'
+    regex = r'^(?P<tax_id>[0-9]+)/$'
     suffix = 'id'
 
 
@@ -47,7 +47,7 @@ class RestTaxonIdSynonym(RestTaxonId):
 
 
 class RestTaxonIdSynonymId(RestTaxonIdSynonym):
-    regex = r'^(?P<sid>[0-9]+)/$'
+    regex = r'^(?P<syn_id>[0-9]+)/$'
     suffix = 'id'
 
 
@@ -148,7 +148,7 @@ def get_taxon_list(request):
         filters = json.loads(request.GET['filters'])
 
         if cursor:
-            cursor_name, cursor_id = cursor.split('/')
+            cursor_name, cursor_id = cursor.rsplit('/', 1)
             qs = Taxon.objects.filter(Q(name__gt=cursor_name))
         else:
             qs = Taxon.objects
@@ -167,7 +167,7 @@ def get_taxon_list(request):
         tqs = qs.prefetch_related('synonyms').order_by('name')[:limit]
     else:
         if cursor:
-            cursor_name, cursor_id = cursor.split('/')
+            cursor_name, cursor_id = cursor.rsplit('/', 1)
             qs = Taxon.objects.filter(Q(name__gt=cursor_name))
         else:
             qs = Taxon.objects.all()
@@ -219,8 +219,8 @@ def get_taxon_list(request):
 
 
 @RestTaxonId.def_auth_request(Method.GET, Format.JSON)
-def get_taxon_details_json(request, id):
-    taxon = Taxon.objects.get(id=int_arg(id))
+def get_taxon_details_json(request, tax_id):
+    taxon = Taxon.objects.get(id=int(tax_id))
 
     parents = []
     next_parent = taxon.parent
@@ -331,10 +331,8 @@ def search_taxon(request):
         'taxonomy.change_taxon': _("You are not allowed to modify a taxon"),
     }
 )
-def patch_taxon(request, id):
-    tid = int(id)
-
-    taxon = get_object_or_404(Taxon, id=tid)
+def patch_taxon(request, tax_id):
+    taxon = get_object_or_404(Taxon, id=int(tax_id))
 
     result = {}
 
@@ -452,9 +450,8 @@ def patch_taxon(request, id):
 @RestTaxonId.def_auth_request(Method.DELETE, Format.JSON, perms={
     'taxonomy.delete_taxon': _("You are not allowed to remove a taxon"),
 })
-def delete_taxon(request, id):
-    tid = int(id)
-    taxon = get_object_or_404(Taxon, id=tid)
+def delete_taxon(request, tax_id):
+    taxon = get_object_or_404(Taxon, id=int(tax_id))
 
     # check if some entities uses it before remove
     if taxon.in_usage():
@@ -483,9 +480,8 @@ def delete_taxon(request, id):
         'taxonomy.add_taxonsynonym': _("You are not allowed to add a synonym to a taxon"),
     }
 )
-def taxon_add_synonym(request, id):
-    taxon_id = int_arg(id)
-    taxon = get_object_or_404(Taxon, id=taxon_id)
+def taxon_add_synonym(request, tax_id):
+    taxon = get_object_or_404(Taxon, id=int(tax_id))
 
     synonym = {
         'type': int(request.data['type']),
@@ -510,11 +506,8 @@ def taxon_add_synonym(request, id):
         'taxonomy.change_taxonsynonym': _("You are not allowed to modify a synonym to a taxon"),
     }
 )
-def taxon_change_synonym(request, id, sid):
-    tid = int(id)
-    sid = int(sid)
-
-    synonym = get_object_or_404(TaxonSynonym, Q(id=sid), Q(taxon=tid))
+def taxon_change_synonym(request, tax_id, syn_id):
+    synonym = get_object_or_404(TaxonSynonym, Q(id=int(syn_id)), Q(taxon=int(tax_id)))
 
     name = request.data['name']
 
@@ -550,11 +543,8 @@ def taxon_change_synonym(request, id, sid):
         'taxonomy.delete_taxonsynonym': _("You are not allowed to delete a synonym from a taxon"),
     }
 )
-def taxon_remove_synonym(request, id, sid):
-    tid = int(id)
-    sid = int(sid)
-
-    synonym = get_object_or_404(TaxonSynonym, Q(id=sid), Q(taxon=tid))
+def taxon_remove_synonym(request, tax_id, syn_id):
+    synonym = get_object_or_404(TaxonSynonym, Q(id=int(syn_id)), Q(taxon=int(tax_id)))
 
     if synonym.type == TaxonSynonymType.PRIMARY.value:
         raise SuspiciousOperation(_("It is not possible to remove a primary synonym"))
@@ -582,7 +572,7 @@ def rank(request):
 
 
 @RestTaxonIdChildren.def_auth_request(Method.GET, Format.JSON)
-def get_taxon_children(request, id):
+def get_taxon_children(request, tax_id):
     """
     Return the list of direct children for the given taxon.
     """
@@ -590,11 +580,10 @@ def get_taxon_children(request, id):
     cursor = request.GET.get('cursor')
     limit = results_per_page
 
-    tid = int(id)
-    taxon = get_object_or_404(Taxon, id=tid)
+    taxon = get_object_or_404(Taxon, id=int(tax_id))
 
     if cursor:
-        cursor_name, cursor_id = cursor.split('/')
+        cursor_name, cursor_id = cursor.rsplit('/', 1)
         qs = taxon.children.filter(Q(name__gt=cursor_name))
     else:
         qs = taxon.children.all()
@@ -647,7 +636,7 @@ def get_taxon_children(request, id):
 
 
 @RestTaxonIdEntities.def_auth_request(Method.GET, Format.JSON)
-def get_taxon_entities(request, id):
+def get_taxon_entities(request, tax_id):
     """
     Return the list of entities relating the given taxon.
     """
@@ -655,13 +644,12 @@ def get_taxon_entities(request, id):
     cursor = request.GET.get('cursor')
     limit = results_per_page
 
-    tid = int(id)
-    taxon = get_object_or_404(Taxon, id=tid)
+    taxon = get_object_or_404(Taxon, id=int(tax_id))
 
     if cursor:
-        cursor_content_type, cursor_name, cursor_id = cursor.split('/')
+        cursor_name, cursor_content_type, cursor_id = cursor.rsplit('/', 2)
     else:
-        cursor_content_type = cursor_name = cursor_id = None
+        cursor_name = cursor_content_type = cursor_id = None
 
     items = []
 
@@ -710,11 +698,11 @@ def get_taxon_entities(request, id):
     if len(items) > 0:
         # prev cursor (asc order)
         item = items[0]
-        prev_cursor = "%s/%s/%s" % (item['content_type'], item['name'], item['id'])
+        prev_cursor = "%s/%s/%s" % (item['name'], item['content_type'], item['id'])
 
         # next cursor (asc order)
         item = items[-1]
-        next_cursor = "%s/%s/%s" % (item['content_type'], item['name'], item['id'])
+        next_cursor = "%s/%s/%s" % (item['name'], item['content_type'], item['id'])
     else:
         prev_cursor = None
         next_cursor = None

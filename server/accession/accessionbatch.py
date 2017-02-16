@@ -38,3 +38,59 @@ class RestAccessionIdBatchSearch(RestAccessionIdBatch):
     suffix = 'search'
 
 
+@RestAccessionIdBatch.def_auth_request(Method.GET, Format.JSON,
+    perms={
+        'accession.get_accession': _("You are not allowed to get an accession"),
+        'accession.list_batch': _("You are not allowed to list batches for an accession")
+    }
+)
+def accession_batches_list(request, acc_id):
+    results_per_page = int_arg(request.GET.get('more', 30))
+    cursor = request.GET.get('cursor')
+    limit = results_per_page
+
+    accession = get_object_or_404(Accession, id=int(acc_id))
+
+    if cursor:
+        cursor_name, cursor_id = cursor.rsplit('/', 1)
+        batches = accession.batches.filter(Q(name__gt=cursor_name))
+    else:
+        batches = accession.batches.all()
+
+    batches = batches.order_by('name')[:limit]
+
+    items_list = []
+
+    for batch in batches:
+        b = {
+            'id': batch.pk,
+            'name': batch.name,
+            'accession': accession.id,
+            'descriptor_meta_model': batch.descriptor_meta_model.id,
+            'descriptors': batch.descriptors
+        }
+
+        items_list.append(b)
+
+    if len(items_list) > 0:
+        # prev cursor (asc order)
+        entity = items_list[0]
+        prev_cursor = "%s/%s" % (entity['name'], entity['id'])
+
+        # next cursor (asc order)
+        entity = items_list[-1]
+        next_cursor = "%s/%s" % (entity['name'], entity['id'])
+    else:
+        prev_cursor = None
+        next_cursor = None
+
+    results = {
+        'perms': [],
+        'items': items_list,
+        'prev': prev_cursor,
+        'cursor': cursor,
+        'next': next_cursor,
+    }
+
+    return HttpResponseRest(request, results)
+

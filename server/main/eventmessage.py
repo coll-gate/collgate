@@ -26,7 +26,7 @@ class RestEventMessage(RestMain):
 
 
 class RestEventMessageId(RestEventMessage):
-    regex = r'^(?P<id>[0-9]+)/$'
+    regex = r'^(?P<evt_id>[0-9]+)/$'
     suffix = 'id'
 
 
@@ -38,7 +38,7 @@ def get_event_messages(request):
     limit = results_per_page
 
     if cursor:
-        cursor_time, cursor_id = cursor.split('/')
+        cursor_time, cursor_id = cursor.rsplit('/', 1)
         qs = EventMessage.objects.filter(Q(timestamp__lte=cursor_time) & Q(timestamp__lt=cursor_time) | (
             Q(timestamp=cursor_time) & Q(id__lt=cursor_id)))
     else:
@@ -93,10 +93,8 @@ def get_event_messages(request):
 @RestEventMessageId.def_auth_request(Method.DELETE, Format.JSON, perms={
     'main.delete_eventmessage': _("You are not allowed to delete an event message"),
 })
-def delete_event_message(request, id):
-    emid = int(id)
-
-    event_message = get_object_or_404(EventMessage, id=emid)
+def delete_event_message(request, evt_id):
+    event_message = get_object_or_404(EventMessage, id=int(evt_id))
     event_message.delete()
 
     return HttpResponseRest(request, {})
