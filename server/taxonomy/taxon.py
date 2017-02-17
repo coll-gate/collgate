@@ -9,6 +9,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import SuspiciousOperation
 from django.db import IntegrityError
 from django.db import transaction
+from django.db.models import Prefetch
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 
@@ -163,8 +164,6 @@ def get_taxon_list(request):
 
         if rank:
             qs = qs.filter(Q(rank=rank))
-
-        tqs = qs.prefetch_related('synonyms').order_by('name')[:limit]
     else:
         if cursor:
             cursor_name, cursor_id = cursor.rsplit('/', 1)
@@ -172,20 +171,24 @@ def get_taxon_list(request):
         else:
             qs = Taxon.objects.all()
 
-        tqs = qs.prefetch_related('synonyms').order_by('name')[:limit]
+    qs = qs.prefetch_related(
+        Prefetch(
+            "synonyms",
+            queryset=TaxonSynonym.objects.all().order_by('type', 'language'))
+    ).order_by('name')[:limit]
 
-    taxons_list = []
-    for taxon in tqs:
+    items_list = []
+    for taxon in qs:
         t = {
             'id': taxon.pk,
             'name': taxon.name,
-            'parent': taxon.parent,
+            'parent': taxon.parent_id,
             'rank': taxon.rank,
             'parent_list': [int(x) for x in taxon.parent_list.rstrip(',').split(',')] if taxon.parent_list else [],
             'synonyms': []
         }
 
-        for synonym in taxon.synonyms.all().order_by('type', 'language'):
+        for synonym in taxon.synonyms.all():
             t['synonyms'].append({
                 'id': synonym.id,
                 'name': synonym.name,
@@ -193,15 +196,15 @@ def get_taxon_list(request):
                 'language': synonym.language
             })
 
-        taxons_list.append(t)
+            items_list.append(t)
 
-    if len(taxons_list) > 0:
+    if len(items_list) > 0:
         # prev cursor (asc order)
-        taxon = taxons_list[0]
+        taxon = items_list[0]
         prev_cursor = "%s/%s" % (taxon['name'], taxon['id'])
 
         # next cursor (asc order)
-        taxon = taxons_list[-1]
+        taxon = items_list[-1]
         next_cursor = "%s/%s" % (taxon['name'], taxon['id'])
     else:
         prev_cursor = None
@@ -209,7 +212,7 @@ def get_taxon_list(request):
 
     results = {
         'perms': [],
-        'items': taxons_list,
+        'items': items_list,
         'prev': prev_cursor,
         'cursor': cursor,
         'next': next_cursor,
@@ -222,17 +225,17 @@ def get_taxon_list(request):
 def get_taxon_details_json(request, tax_id):
     taxon = Taxon.objects.get(id=int(tax_id))
 
+    # query for parents
     parents = []
-    next_parent = taxon.parent
-    break_count = 0
-    while break_count < 10 and next_parent is not None:
-        parents.append({
-            'id': next_parent.id,
-            'name': next_parent.name,
-            'rank': next_parent.rank,
-            'parent': next_parent.parent_id
+    parents_taxon = Taxon.objects.filter(id__in=[int(x) for x in taxon.parent_list.split(',') if x != ''])
+
+    for parent in parents_taxon:
+        parents.insert(0, {
+            'id': parent.id,
+            'name': parent.name,
+            'rank': parent.rank,
+            'parent': parent.parent_id
         })
-        next_parent = next_parent.parent
 
     result = {
         'id': taxon.id,
@@ -242,7 +245,7 @@ def get_taxon_details_json(request, tax_id):
         'parent_list': [int(x) for x in taxon.parent_list.rstrip(',').split(',')] if taxon.parent_list else [],
         'parent_details': parents,
         'synonyms': [],
-        'descriptor_meta_model': taxon.descriptor_meta_model.id if taxon.descriptor_meta_model is not None else None,
+        'descriptor_meta_model': taxon.descriptor_meta_model_id,
         'descriptors': taxon.descriptors,
     }
 
@@ -588,7 +591,10 @@ def get_taxon_children(request, tax_id):
     else:
         qs = taxon.children.all()
 
-    qs = qs.prefetch_related('synonyms').order_by('name')[:limit]
+    qs = qs.prefetch_related(Prefetch(
+            "synonyms",
+            queryset=TaxonSynonym.objects.all().order_by('type', 'language'))
+    ).order_by('name')[:limit]
 
     children = []
 
@@ -602,7 +608,7 @@ def get_taxon_children(request, tax_id):
             'synonyms': [],
         }
 
-        for synonym in child.synonyms.all().order_by('type', 'language'):
+        for synonym in child.synonyms.all():
             t['synonyms'].append({
                 'id': synonym.id,
                 'name': synonym.name,
@@ -658,6 +664,9 @@ def get_taxon_entities(request, tax_id):
 
     rest = limit
 
+    # content type local cache
+    content_types = {}
+
     # we do a manual union for the different set of content_type
     for entity in children_entities:
         field_name = entity._meta.model_name + '_set'
@@ -684,9 +693,13 @@ def get_taxon_entities(request, tax_id):
             rest -= qs.count()
 
             for item in qs:
+                content_type = content_types.get(item.content_type_id)
+                if content_type is None:
+                    content_type = content_types[item.content_type_id] = '.'.join(item.content_type.natural_key())
+
                 t = {
                     'id': item.id,
-                    'content_type': '.'.join(item.content_type.natural_key()),
+                    'content_type': content_type,
                     'name': item.name
                 }
 

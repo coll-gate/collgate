@@ -286,8 +286,7 @@ def get_descriptor_meta_model_layout(request, dmm_id):
     """
     dmm = get_object_or_404(DescriptorMetaModel, id=int(dmm_id))
 
-    dps = DescriptorPanel.objects.filter(descriptor_meta_model=dmm).order_by('position')
-    dps.select_related('descriptor_model')
+    dps = DescriptorPanel.objects.select_related('descriptor_model').filter(descriptor_meta_model=dmm).order_by('position')
 
     panels = []
 
@@ -300,7 +299,7 @@ def get_descriptor_meta_model_layout(request, dmm_id):
             descriptor_type = dmt.descriptor_type
 
             # values are loaded on demand (displaying the panel or opening the dropdown)
-            format = json.loads(descriptor_type.format)
+            format_type = json.loads(descriptor_type.format)
 
             conditions = DescriptorModelTypeCondition.objects.filter(descriptor_model_type_id=dmt.id)
 
@@ -310,7 +309,7 @@ def get_descriptor_meta_model_layout(request, dmm_id):
                 condition = {
                     'defined': True,
                     'condition': dmtc.condition,
-                    'target': dmtc.target.id,
+                    'target': dmtc.target_id,
                     'values': json.loads(dmtc.values)
                 }
             else:
@@ -332,7 +331,7 @@ def get_descriptor_meta_model_layout(request, dmm_id):
                     'id': descriptor_type.id,
                     'group': descriptor_type.group_id,
                     'code': descriptor_type.code,
-                    'format': format
+                    'format': format_type
                 }
             })
 

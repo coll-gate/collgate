@@ -9,6 +9,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import SuspiciousOperation
 from django.db import IntegrityError
 from django.db import transaction
+from django.db.models import Prefetch
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 
@@ -134,19 +135,13 @@ def create_accession(request):
     return HttpResponseRest(request, response)
 
 
-@RestAccessionAccession.def_auth_request(Method.GET, Format.JSON,
-    perms={
-        'accession.list_accession': _("You are not allowed to list the accessions")
-    }
-)
-def accession_list(request):
+@RestAccessionAccession.def_auth_request(Method.GET, Format.JSON, perms={
+    'accession.list_accession': _("You are not allowed to list the accessions")
+})
+def get_accession_list(request):
     results_per_page = int_arg(request.GET.get('more', 30))
     cursor = request.GET.get('cursor')
     limit = results_per_page
-
-    # @todo filters
-    # @todo name search based on synonyms
-    # synonyms = AccessionSynonym.objects.all()
 
     if cursor:
         cursor_name, cursor_id = cursor.rsplit('/', 1)
@@ -154,7 +149,12 @@ def accession_list(request):
     else:
         accessions = Accession.objects.all()
 
-    accessions = accessions.select_related('parent').prefetch_related('synonyms').order_by('name')[:limit]
+    # Prefetch permit to have only 2 requests (clause order_by done directly, not per accession.synonyms)
+    accessions = accessions.select_related('parent').prefetch_related(
+        Prefetch(
+            "synonyms",
+            queryset=AccessionSynonym.objects.all().order_by('type', 'language'))
+    ).order_by('name')[:limit]
 
     accession_list = []
 
@@ -162,13 +162,13 @@ def accession_list(request):
         a = {
             'id': accession.pk,
             'name': accession.name,
-            'parent': accession.parent.id,
-            'descriptor_meta_model': accession.descriptor_meta_model.id,
+            'parent': accession.parent_id,
+            'descriptor_meta_model': accession.descriptor_meta_model_id,
             'descriptors': accession.descriptors,
             'synonyms': []
         }
 
-        for synonym in accession.synonyms.all().order_by('type', 'language'):
+        for synonym in accession.synonyms.all():
             a['synonyms'].append({
                 'id': synonym.id,
                 'name': synonym.synonym,
@@ -225,7 +225,7 @@ def get_accession_details_json(request, acc_id):
     for s in accession.synonyms.all().order_by('type', 'language'):
         result['synonyms'].append({
             'id': s.id,
-            'name': s.name,
+            'name': s.synonym,
             'type': s.type,
             'language': s.language,
         })
@@ -237,6 +237,13 @@ def get_accession_details_json(request, acc_id):
 def search_accession(request):
     """
     Quick search for an accession with a exact or partial name and meta model of descriptor.
+    It is possible to have multiple results for a same accession because of the multiples synonyms.
+
+    The filters can be :
+        - name: value to look for the name field.
+        - method: for the name 'ieq' or 'icontains' for insensitive case equality or %like% respectively.
+        - meta_model: id of the descriptor meta-model to look for.
+        - fields: list of fields to look for.
     """
     filters = json.loads(request.GET['filters'])
 
@@ -246,39 +253,47 @@ def search_accession(request):
 
     if cursor:
         cursor_name, cursor_id = cursor.rsplit('/', 1)
-        qs = AccessionSynonym.objects.filter(Q(synonym__gt=cursor_name))
+        qs = Accession.objects.filter(Q(synonyms__synonym__gt=cursor_name))
     else:
-        qs = AccessionSynonym.objects.all()
+        qs = Accession.objects.all()
 
     name_method = filters.get('method', 'ieq')
     if 'meta_model' in filters['fields']:
         meta_model = int_arg(filters['meta_model'])
 
         if name_method == 'ieq':
-            # single result query (replace)
-            qs = AccessionSynonym.objects.filter(Q(synonym__iexact=filters['name']))
+            qs = qs.filter(Q(synonyms__synonym__iexact=filters['name']))
         elif name_method == 'icontains':
-            qs = qs.filter(Q(synonym__icontains=filters['name']))
+            qs = qs.filter(Q(synonyms__synonym__icontains=filters['name']))
 
         qs = qs.filter(Q(descriptor_meta_model_id=meta_model))
     elif 'name' in filters['fields']:
         if name_method == 'ieq':
             # single result query (replace)
-            qs = AccessionSynonym.objects.filter(synonym__iexact=filters['name'])
+            qs = qs.filter(synonyms__synonym__iexact=filters['name'])
         elif name_method == 'icontains':
-            qs = qs.filter(synonym__icontains=filters['name'])
+            qs = qs.filter(synonyms__synonym__icontains=filters['name'])
 
-    qs = qs.prefetch_related('accession').order_by('name')[:limit]
+    qs = qs.prefetch_related(
+        Prefetch(
+            "synonyms",
+            queryset=AccessionSynonym.objects.exclude(type='IN_001:0000001').order_by('type', 'language'))
+    )
+
+    qs = qs.order_by('name').distinct()[:limit]
 
     items_list = []
 
-    for synonym in qs:
-        label = "%s (%s)" % (synonym.synonym, synonym.accession.name) if synonym.synonym != synonym.accession.name else synonym.synonym
+    for accession in qs:
+        label = accession.name
+
+        for synonym in accession.synonyms.all():
+            label += ', ' + synonym.synonym
 
         a = {
-            'id': synonym.accession.id,
+            'id': accession.id,
             'label': label,
-            'value': synonym.accession.name
+            'value': accession.name
         }
 
         items_list.append(a)
@@ -405,7 +420,7 @@ def accession_add_synonym(request, acc_id):
 
     accession_synonym = AccessionSynonym(
         accession=accession,
-        name=synonym['name'],
+        name="%s_%s" % (accession.name, synonym['name']),
         synonym=synonym['name'],
         language=synonym['language'],
         type=synonym['type'])

@@ -134,9 +134,14 @@ LOGGING = {
             'level': 'INFO',
             'propagate': True,
         },
+        'django.db': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
         'django.request': {
             'handlers': ['mail_admins', 'console'],
-            'level': 'WARNING',
+            'level': 'INFO',
             'propagate': True,
         },
         'collgate': {

@@ -71,7 +71,7 @@ def search_accession_synonyms(request):
 
     if cursor:
         cursor_name, cursor_id = cursor.rsplit('/', 1)
-        qs = AccessionSynonym.objects.filter(Q(name__gt=cursor_name))
+        qs = AccessionSynonym.objects.filter(Q(synonym__gt=cursor_name))
     else:
         qs = AccessionSynonym.objects.all()
 
@@ -79,19 +79,19 @@ def search_accession_synonyms(request):
     if 'name' in filters['fields']:
         if name_method == 'ieq':
             # single result query (replace)
-            qs = AccessionSynonym.objects.filter(name__iexact=filters['name'])
+            qs = AccessionSynonym.objects.filter(synonym__iexact=filters['name'])
         elif name_method == 'icontains':
-            qs = qs.filter(name__icontains=filters['name'])
+            qs = qs.filter(synonym__icontains=filters['name'])
 
-    qs = qs.order_by('name')[:limit]
+    qs = qs.order_by('synonym')[:limit]
 
     items_list = []
 
     for synonym in qs:
         s = {
             'id': synonym.id,
-            'label': synonym.name,
-            'value': synonym.name
+            'label': synonym.synonym,
+            'value': synonym.synonym
         }
 
         items_list.append(s)
