@@ -59,7 +59,10 @@ class Accession(DescribableEntity):
                 result['parent'] = self.parent_id
 
             if 'descriptors' in self.updated_fields:
-                result['descriptors'] = self.descriptors
+                if hasattr(self, 'descriptors_diff'):
+                    result['descriptors'] = self.descriptors_diff
+                else:
+                    result['descriptors'] = self.descriptors
 
             return result
         else:
@@ -131,7 +134,10 @@ class Batch(DescribableEntity):
             result = {'updated_fields': self.updated_fields}
 
             if 'descriptors' in self.updated_fields:
-                result['descriptors'] = self.descriptors
+                if hasattr(self, 'descriptors_diff'):
+                    result['descriptors'] = self.descriptors_diff
+                else:
+                    result['descriptors'] = self.descriptors
 
             return result
         else:
@@ -165,7 +171,10 @@ class Sample(DescribableEntity):
             result = {'updated_fields': self.updated_fields}
 
             if 'descriptors' in self.updated_fields:
-                result['descriptors'] = self.descriptors
+                if hasattr(self, 'descriptors_diff'):
+                    result['descriptors'] = self.descriptors_diff
+                else:
+                    result['descriptors'] = self.descriptors
 
             return result
         else:

@@ -5,7 +5,7 @@
 """
 Views related to the accession synonym model.
 """
-from django.core.exceptions import ObjectDoesNotExist
+
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.views.decorators.cache import cache_page
@@ -62,6 +62,11 @@ def synonym_type(request):
 def search_accession_synonyms(request):
     """
     Quick search for an accession synonym with a exact or partial name.
+
+    filters :
+        - method : name filter method : 'ieq', 'icontains'
+        - fields : requested field : 'name', 'type'
+        - name : value for name field
     """
     filters = json.loads(request.GET['filters'])
 
@@ -78,8 +83,7 @@ def search_accession_synonyms(request):
     name_method = filters.get('method', 'ieq')
     if 'name' in filters['fields']:
         if name_method == 'ieq':
-            # single result query (replace)
-            qs = AccessionSynonym.objects.filter(synonym__iexact=filters['name'])
+            qs = qs.filter(synonym__iexact=filters['name'])
         elif name_method == 'icontains':
             qs = qs.filter(synonym__icontains=filters['name'])
 
@@ -91,7 +95,9 @@ def search_accession_synonyms(request):
         s = {
             'id': synonym.id,
             'label': synonym.synonym,
-            'value': synonym.synonym
+            'value': synonym.name,
+            'type': synonym.type,
+            'accession': synonym.accession_id
         }
 
         items_list.append(s)

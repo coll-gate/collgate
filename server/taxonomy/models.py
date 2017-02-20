@@ -85,7 +85,10 @@ class Taxon(Entity):
                 result['descriptor_meta_model'] = self.descriptor_meta_model_id
 
             if 'descriptors' in self.updated_fields:
-                result['descriptors'] = self.descriptors
+                if hasattr(self, 'descriptors_diff'):
+                    result['descriptors'] = self.descriptors_diff
+                else:
+                    result['descriptors'] = self.descriptors
 
             return result
         else:

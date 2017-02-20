@@ -422,7 +422,6 @@ def patch_taxon(request, tax_id):
                     result['descriptor_meta_model'] = dmm.id
                     result['descriptors'] = {}
 
-                # @todo details for the audit
                 taxon.update_field(['descriptor_meta_model', 'descriptors'])
 
             # update descriptors
@@ -438,7 +437,7 @@ def patch_taxon(request, tax_id):
 
                 result['descriptors'] = taxon.descriptors
 
-                # @todo details for the audit
+                taxon.descriptors_diff = descriptors
                 taxon.update_field('descriptors')
 
             taxon.save()

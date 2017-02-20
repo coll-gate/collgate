@@ -368,7 +368,7 @@ def patch_accession(request, acc_id):
 
                 descriptors_builder.update_associations()
 
-                # @todo details for the audit
+                accession.descriptors_diff = descriptors
                 accession.update_field('descriptors')
 
             accession.save()
@@ -408,30 +408,40 @@ def delete_accession(request, acc_id):
 def accession_add_synonym(request, acc_id):
     accession = get_object_or_404(Accession, id=int(acc_id))
 
-    synonym = {
+    result = {
         'type': request.data['type'],
         'name': request.data['name'],
         'language': request.data['language']
     }
 
     # check that type is in the values of descriptor
-    if not AccessionSynonym.is_synonym_type(synonym['type']):
+    if not AccessionSynonym.is_synonym_type(result['type']):
         raise SuspiciousOperation(_("Unsupported type of synonym"))
+
+    # check if a similar synonyms exists into the accession or as primary name for another accession
+    synonyms = AccessionSynonym.objects.filter(synonym__iexact=result['name'])
+
+    for synonym in synonyms:
+        if synonym.type == 'IN_001:0000001':
+            raise SuspiciousOperation(_("Synonym already used as a primary name"))
+
+        if synonym.accession_id == int(acc_id):
+            raise SuspiciousOperation(_("Synonym already used into this accession"))
 
     accession_synonym = AccessionSynonym(
         accession=accession,
-        name="%s_%s" % (accession.name, synonym['name']),
-        synonym=synonym['name'],
-        language=synonym['language'],
-        type=synonym['type'])
+        name="%s_%s" % (accession.name, result['name']),
+        synonym=result['name'],
+        language=result['language'],
+        type=result['type'])
 
     accession_synonym.save()
 
     accession.synonyms.add(accession_synonym)
 
-    synonym['id'] = accession_synonym.id
+    result['id'] = accession_synonym.id
 
-    return HttpResponseRest(request, synonym)
+    return HttpResponseRest(request, result)
 
 
 @RestAccessionIdSynonymId.def_auth_request(
@@ -451,6 +461,16 @@ def accession_change_synonym(request, acc_id, syn_id):
     synonym = accession.synonyms.get(id=int(syn_id))
 
     name = request.data['name']
+
+    # check if a similar synonyms exists into the accession or as primary name for another accession
+    synonyms = AccessionSynonym.objects.filter(synonym__iexact=name)
+
+    for synonym in synonyms:
+        if synonym.type == 'IN_001:0000001':
+            raise SuspiciousOperation(_("Synonym already used as a primary name"))
+
+        if synonym.accession_id == acc_id:
+            raise SuspiciousOperation(_("Synonym already used into this accession"))
 
     try:
         with transaction.atomic():

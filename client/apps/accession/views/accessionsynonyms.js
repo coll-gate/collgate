@@ -64,6 +64,8 @@ var View = Marionette.ItemView.extend({
 
     onSynonymNameInput: function () {
         if (this.validateName()) {
+            var view = this;
+
             var filters = {
                 fields: ["name"],
                 method: "ieq",
@@ -76,19 +78,23 @@ var View = Marionette.ItemView.extend({
                 dataType: 'json',
                 data: {filters: JSON.stringify(filters)},
                 cache: false,
-                el: this.ui.synonym_name,
                 success: function(data) {
                     if (data.items.length > 0) {
                         for (var i in data.items) {
                             var t = data.items[i];
 
-                            if (t.label.toUpperCase() == this.el.val().toUpperCase()) {
-                                $(this.el).validateField('failed', gt.gettext('Synonym of accession already used'));
-                                break;
+                            // invalid if primary exists with the same name or if exists into the same accession
+                            if (t.label.toUpperCase() == view.ui.synonym_name.val().toUpperCase()) {
+                                if ((t.accession == view.model.get('id')) || (t.type == "IN_001:0000001")) {
+                                    view.ui.synonym_name.validateField(
+                                        'failed', gt.gettext('Synonym of accession already used'));
+
+                                    break;
+                                }
                             }
                         }
                     } else {
-                        $(this.el).validateField('ok');
+                        view.ui.synonym_name.validateField('ok');
                     }
                 }
             });
