@@ -51,7 +51,7 @@ var Controller = Marionette.Object.extend({
 
                 events: {
                     'click @ui.validate': 'onContinue',
-                    'input @ui.name': 'onNameInput',
+                    'input @ui.name': 'onNameInput'
                 },
 
                 onRender: function () {
@@ -69,20 +69,21 @@ var Controller = Marionette.Object.extend({
                             data: function (params) {
                                 params.term || (params.term = '');
 
-                                var filters = {
-                                    method: 'icontains',
-                                    fields: ['name'],
-                                    'name': params.term
-                                };
-
                                 return {
-                                    page: params.page,
-                                    filters: JSON.stringify(filters),
+                                    filters: JSON.stringify({
+                                        method: 'icontains',
+                                        fields: ['name'],
+                                        'name': params.term
+                                    }),
+                                    cursor: params.next
                                 };
                             },
                             processResults: function (data, params) {
-                                // no pagination
-                                params.page = params.page || 1;
+                                params.next = null;
+
+                                if (data.items.length >= 30) {
+                                    params.next = data.next || null;
+                                }
 
                                 var results = [];
 
@@ -96,14 +97,14 @@ var Controller = Marionette.Object.extend({
                                 return {
                                     results: results,
                                     pagination: {
-                                        more: (params.page * 30) < data.total_count
+                                        more: params.next != null
                                     }
                                 };
                             },
                             cache: true
                         },
                         minimumInputLength: 3,
-                        placeholder: gt.gettext("Enter a taxon name. 3 characters at least for auto-completion"),
+                        placeholder: gt.gettext("Enter a taxon name. 3 characters at least for auto-completion")
                     });
                 },
 
@@ -204,9 +205,9 @@ var Controller = Marionette.Object.extend({
 
                         defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Accession"), model: model}));
 
-                        var accessionLayout = new AccessionLayout();
+                        var accessionLayout = new AccessionLayout({model: model});
                         defaultLayout.getRegion('content').show(accessionLayout);
-
+/*
                         accessionLayout.disableSynonymsTab();
                         accessionLayout.disableBatchesTab();
 
@@ -220,9 +221,12 @@ var Controller = Marionette.Object.extend({
                             url: application.baseUrl + 'descriptor/meta-model/' + metaModel + '/layout/',
                             dataType: 'json'
                         }).done(function(data) {
-                            var view = new AccessionDescriptorEditView({model: model, descriptorMetaModelLayout: data});
-                            accessionLayout.getRegion('descriptors').show(view);
-                        });
+                            var accessionDescriptorView = new AccessionDescriptorEditView({model: model, descriptorMetaModelLayout: data});
+                            accessionLayout.getRegion('descriptors').show(accessionDescriptorView);
+
+                            // manually called
+                            accessionDescriptorView.onShowTab();
+                        });*/
                     }
                 }
             });

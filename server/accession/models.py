@@ -79,6 +79,9 @@ class AccessionSynonym(Entity):
     Table specific to accession to defines the synonyms.
     """
 
+    # primary type as constant
+    TYPE_PRIMARY = "IN_001:0000001"
+
     # related accession
     accession = models.ForeignKey(Accession, related_name="synonyms")
 
@@ -89,14 +92,14 @@ class AccessionSynonym(Entity):
     language = models.CharField(max_length=8, choices=Languages.choices(), default=Languages.EN.value)
 
     # type of synonym is related to the type of descriptor IN_001 that is an 'enum_single'.
-    type = models.CharField(max_length=64, default='IN_001:0000001')
+    type = models.CharField(max_length=64, default=TYPE_PRIMARY)
 
     class Meta:
         verbose_name = _("accession synonym")
 
     @classmethod
     def is_synonym_type(cls, synonym_type):
-        descriptor_type = DescriptorType.objects.get(code='IN_001')
+        descriptor_type = DescriptorType.objects.get(code=AccessionSynonym.TYPE_PRIMARY)
 
         try:
             descriptor_type.get_value(synonym_type)
@@ -104,6 +107,13 @@ class AccessionSynonym(Entity):
             return False
 
         return True
+
+    def is_primary(self):
+        """
+        Is a primary type of synonym.
+        :return: True if primary
+        """
+        return self.type == AccessionSynonym.TYPE_PRIMARY
 
 
 class Batch(DescribableEntity):

@@ -6,17 +6,21 @@
 Views related to the accession synonym model.
 """
 
+from django.core.exceptions import SuspiciousOperation
+from django.db import IntegrityError
+from django.db import transaction
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.views.decorators.cache import cache_page
+from django.utils.translation import ugettext_lazy as _
 
-from accession.models import AccessionSynonym
+from accession.models import AccessionSynonym, Accession
 from descriptor.models import DescriptorType
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
 
 from .base import RestAccession
-from .accession import RestAccessionAccession
+from .accession import RestAccessionAccession, RestAccessionId
 
 
 class RestAccessionSynonymType(RestAccession):
@@ -32,6 +36,16 @@ class RestAccessionSynonym(RestAccessionAccession):
 class RestAccessionSynonymSearch(RestAccessionSynonym):
     regex = r'^search/$'
     suffix = 'search'
+
+
+class RestAccessionIdSynonym(RestAccessionId):
+    regex = r'^synonym/$'
+    suffix = 'synonym'
+
+
+class RestAccessionIdSynonymId(RestAccessionIdSynonym):
+    regex = r'^(?P<syn_id>[0-9]+)/$'
+    suffix = 'id'
 
 
 @cache_page(60*60*24)
@@ -123,3 +137,124 @@ def search_accession_synonyms(request):
     }
 
     return HttpResponseRest(request, results)
+
+
+@RestAccessionIdSynonym.def_auth_request(
+    Method.POST, Format.JSON, content={
+        "type": "object",
+        "properties": {
+            "type": {"type:": "string", 'minLength': 14, 'maxLength': 14},
+            "language": {"type:": "string", 'minLength': 2, 'maxLength': 5},
+            "name": {"type": "string", 'minLength': 3, 'maxLength': 64}
+        },
+    },
+    perms={
+        'accession.change_accession': _("You are not allowed to modify an accession"),
+        'accession.add_accessionsynonym': _("You are not allowed to add a synonym of accession"),
+    }
+)
+def accession_add_synonym(request, acc_id):
+    accession = get_object_or_404(Accession, id=int(acc_id))
+
+    result = {
+        'type': request.data['type'],
+        'name': request.data['name'],
+        'language': request.data['language']
+    }
+
+    # check that type is in the values of descriptor
+    if not AccessionSynonym.is_synonym_type(result['type']):
+        raise SuspiciousOperation(_("Unsupported type of synonym"))
+
+    # check if a similar synonyms exists into the accession or as primary name for another accession
+    synonyms = AccessionSynonym.objects.filter(synonym__iexact=result['name'])
+
+    for synonym in synonyms:
+        if synonym.is_primary():
+            raise SuspiciousOperation(_("Synonym already used as a primary name"))
+
+        if synonym.accession_id == int(acc_id):
+            raise SuspiciousOperation(_("Synonym already used into this accession"))
+
+    accession_synonym = AccessionSynonym(
+        accession=accession,
+        name="%s_%s" % (accession.name, result['name']),
+        synonym=result['name'],
+        language=result['language'],
+        type=result['type'])
+
+    accession_synonym.save()
+
+    accession.synonyms.add(accession_synonym)
+
+    result['id'] = accession_synonym.id
+
+    return HttpResponseRest(request, result)
+
+
+@RestAccessionIdSynonymId.def_auth_request(
+    Method.PUT, Format.JSON, content={
+        "type": "object",
+        "properties": {
+            "name": {"type": "string", 'minLength': 3, 'maxLength': 128}
+        },
+    },
+    perms={
+        'accession.change_accession': _("You are not allowed to modify an accession"),
+        'accession.change_accessionsynonym': _("You are not allowed to modify a synonym of accession"),
+    }
+)
+def accession_change_synonym(request, acc_id, syn_id):
+    accession = get_object_or_404(Accession, id=int(acc_id))
+    accession_synonym = accession.synonyms.get(id=int(syn_id))
+
+    name = request.data['name']
+
+    # check if a similar synonyms exists into the accession or as primary name for another accession
+    synonyms = AccessionSynonym.objects.filter(synonym__iexact=name)
+
+    for synonym in synonyms:
+        if synonym.is_primary():
+            raise SuspiciousOperation(_("Synonym already used as a primary name"))
+
+        if synonym.accession_id == acc_id:
+            raise SuspiciousOperation(_("Synonym already used into this accession"))
+
+    try:
+        with transaction.atomic():
+            # rename the accession if the synonym name is the accession name
+            if accession.name == accession_synonym.synonym:
+                accession.name = name
+                accession.save()
+
+            accession_synonym.synonym = name
+            accession_synonym.save()
+
+            result = {
+                'id': accession_synonym.id,
+                'name': accession_synonym.synonym
+            }
+    except IntegrityError as e:
+        logger.log(repr(e))
+        raise SuspiciousOperation(_("Unable to rename a synonym of an accession"))
+
+    return HttpResponseRest(request, result)
+
+
+@RestAccessionIdSynonymId.def_auth_request(
+    Method.DELETE, Format.JSON,
+    perms={
+        'accession.change_accession': _("You are not allowed to modify an accession"),
+        'accession.delete_accessionsynonym': _("You are not allowed to delete a synonym of accession"),
+    }
+)
+def accession_remove_synonym(request, acc_id, syn_id):
+    accession = get_object_or_404(Accession, id=int(acc_id))
+    synonym = accession.synonyms.get(id=int(syn_id))
+
+    if synonym.is_primary():
+        raise SuspiciousOperation(_("It is not possible to remove a primary synonym"))
+
+    synonym.delete()
+
+    return HttpResponseRest(request, {})

@@ -91,6 +91,8 @@ def search_batches_for_accession(request, acc_id):
     """
     Quick search for batches with a exact or partial name.
     """
+    accession = get_object_or_404(Accession, id=int(acc_id))
+
     filters = json.loads(request.GET['filters'])
     page = int_arg(request.GET.get('page', 1))
 

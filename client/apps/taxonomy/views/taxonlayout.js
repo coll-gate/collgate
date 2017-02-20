@@ -32,8 +32,25 @@ var Layout = Marionette.LayoutView.extend({
         active_pane: 'div.tab-pane.active'
     },
 
+    childEvents: {
+        'dom:refresh': function(child) {
+            var tab = this.ui.active_pane.attr('name');
+            var region = this.getRegion(tab);
+            console.log(tab, region, region.currentView, child);
+
+            // update child of current tab
+            if (region && child && region.currentView == child) {
+                if (region.currentView.onShowTab) {
+                    region.currentView.onShowTab(this);
+                }
+            }
+        }
+    },
+
     initialize: function(model, options) {
         Layout.__super__.initialize.apply(this, arguments);
+
+        this.activeTab = "synonyms";
 
         this.listenTo(this.model, 'change:descriptor_meta_model', this.onDescriptorMetaModelChange, this);
     },
@@ -44,11 +61,6 @@ var Layout = Marionette.LayoutView.extend({
             var taxonDescriptorCreateView = new TaxonDescriptorCreateView({model: model});
 
             this.getRegion('descriptors').show(taxonDescriptorCreateView);
-
-            // manually called
-            if (this.activeTab === 'descriptors') {
-                taxonDescriptorCreateView.onShowTab();
-            }
         } else {
             var taxonLayout = this;
 
@@ -64,11 +76,6 @@ var Layout = Marionette.LayoutView.extend({
                     descriptorMetaModelLayout: data
                 });
                 taxonLayout.getRegion('descriptors').show(taxonDescriptorView);
-
-                // manually called
-                if (taxonLayout.activeTab === 'descriptors') {
-                    taxonDescriptorView.onShowTab();
-                }
             });
         }
     },
@@ -130,7 +137,7 @@ var Layout = Marionette.LayoutView.extend({
 
         var region = this.getRegion(tab);
         if (region && region.currentView && region.currentView.onShowTab) {
-            region.currentView.onShowTab();
+            region.currentView.onShowTab(this);
         }
     },
 
@@ -139,7 +146,7 @@ var Layout = Marionette.LayoutView.extend({
 
         var region = this.getRegion(tab);
         if (region && region.currentView && region.currentView.onHideTab) {
-            region.currentView.onHideTab();
+            region.currentView.onHideTab(this);
         }
 
         application.main.defaultRightView();

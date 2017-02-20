@@ -123,7 +123,7 @@ var View = Marionette.ItemView.extend({
 
     onRemoveSynonym: function (e) {
         var synonym = $(e.target.parentNode.parentNode);
-        var synonymId = $(e.target).data('synonym-id');
+        var synonym_id = $(e.target).data('synonym-id');
 
         var type = synonym.find("[name='type']").attr('value');
         var name = synonym.find("[name='name']").text();
@@ -132,7 +132,7 @@ var View = Marionette.ItemView.extend({
         $.ajax({
             view: this,
             type: "DELETE",
-            url: this.model.url() + 'synonym/' + synonymId + '/',
+            url: this.model.url() + 'synonym/' + synonym_id + '/',
             contentType: "application/json; charset=utf-8",
             success: function(data) {
                 this.view.model.fetch({reset: true});
@@ -149,11 +149,11 @@ var View = Marionette.ItemView.extend({
             },
 
             ui: {
-                name: "#accession_synonym_name",
+                synonym_name: "#accession_synonym_name",
             },
 
             events: {
-                'input @ui.name': 'onNameInput',
+                'input @ui.synonym_name': 'onNameInput',
             },
 
             initialize: function (options) {
@@ -161,21 +161,61 @@ var View = Marionette.ItemView.extend({
             },
 
             onNameInput: function () {
-                this.validateName();
+                if (this.validateName()) {
+                    var view = this;
+
+                    var filters = {
+                        fields: ["name"],
+                        method: "ieq",
+                        name: this.ui.synonym_name.val()
+                    };
+
+                    $.ajax({
+                        type: "GET",
+                        url: application.baseUrl + 'accession/accession/synonym/search/',
+                        dataType: 'json',
+                        data: {filters: JSON.stringify(filters)},
+                        cache: false,
+                        success: function(data) {
+                            if (data.items.length > 0) {
+                                for (var i in data.items) {
+                                    var t = data.items[i];
+
+                                    // invalid if primary exists with the same name or if exists into the same accession
+                                    if (t.label.toUpperCase() == view.ui.synonym_name.val().toUpperCase()) {
+                                        // same accession, same synonym => valid
+                                        if ((t.accession == view.model.get('id')) && (t.id == view.getOption('synonym_id'))) {
+                                            view.ui.synonym_name.validateField('ok');
+                                            break;
+                                        }
+
+                                        if ((t.accession == view.model.get('id')) || (t.type == "IN_001:0000001")) {
+                                            view.ui.synonym_name.validateField(
+                                                'failed', gt.gettext('Synonym of accession already used'));
+                                            break;
+                                        }
+                                    }
+                                }
+                            } else {
+                                view.ui.synonym_name.validateField('ok');
+                            }
+                        }
+                    });
+                }
             },
 
             validateName: function() {
-                var v = this.ui.name.val();
+                var v = this.ui.synonym_name.val();
 
                 if (v.length < 3) {
-                    $(this.ui.name).validateField('failed', gt.gettext('3 characters min'));
+                    $(this.ui.synonym_name).validateField('failed', gt.gettext('3 characters min'));
                     return false;
                 } else if (v.length > 64) {
-                    $(this.ui.name).validateField('failed', gt.gettext('64 characters max'));
+                    $(this.ui.synonym_name).validateField('failed', gt.gettext('64 characters max'));
                     return false;
                 }
 
-                $(this.ui.name).validateField('ok');
+                $(this.ui.synonym_name).validateField('ok');
 
                 return true;
             },
@@ -183,30 +223,27 @@ var View = Marionette.ItemView.extend({
             onApply: function() {
                 var view = this;
                 var model = this.getOption('model');
-                var synonymId = this.getOption('synonymId');
-                var name = this.ui.name.val();
+                var synonym_id = this.getOption('synonym_id');
+                var name = this.ui.synonym_name.val();
 
-                if (this.validateName()) {
+                if (!this.ui.synonym_name.hasClass('invalid')) {
                     $.ajax({
                         type: "PUT",
-                        url: this.model.url() + 'synonym/' + synonymId + '/',
+                        url: view.model.url() + 'synonym/' + synonym_id + '/',
                         contentType: "application/json; charset=utf-8",
                         dataType: 'json',
-                        data: JSON.stringify({name: name}),
-                        success: function (data) {
-                            view.destroy();
-                            model.fetch({reset: true});
-                        },
-                        error: function() {
-                            $.alert.error(gt.gettext("Unable to rename the synonym !"));
-                        }
+                        data: JSON.stringify({name: name})
+                    }).done(function() {
+                        model.fetch({reset: true});
+                    }).always(function() {
+                        view.destroy();
                     });
                 }
-            },
+            }
         });
 
         var synonym = $(e.target.parentNode.parentNode);
-        var synonymId = $(e.target).data('synonym-id');
+        var synonym_id = $(e.target).data('synonym-id');
 
         var type = synonym.find("[name='type']").attr('value');
         var name = synonym.find("[name='name']").text();
@@ -214,14 +251,14 @@ var View = Marionette.ItemView.extend({
 
         var changeSynonym = new ChangeSynonym({
             model: this.model,
-            synonymId: synonymId,
-            name: e.target.innerHTML,
+            synonym_id: synonym_id,
+            name: name,
             type: type,
             language: language
         });
 
         changeSynonym.render();
-        changeSynonym.ui.name.val(e.target.innerHTML);
+        changeSynonym.ui.synonym_name.val(e.target.innerHTML);
     }
 });
 

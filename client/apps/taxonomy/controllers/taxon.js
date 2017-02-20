@@ -57,21 +57,22 @@ var TaxonController = Marionette.Object.extend({
                         data: function (params) {
                             params.term || (params.term = '');
 
-                            var filters = {
-                                method: 'icontains',
-                                fields: ['name', 'rank'],
-                                'name': params.term,
-                                'rank': parseInt($("#taxon_rank").val())
-                            };
-
                             return {
-                                page: params.page,
-                                filters: JSON.stringify(filters),
+                                filters: JSON.stringify({
+                                    method: 'icontains',
+                                    fields: ['name', 'rank'],
+                                    'name': params.term,
+                                    'rank': parseInt($("#taxon_rank").val())
+                                }),
+                                cursor: params.next
                             };
                         },
                         processResults: function (data, params) {
-                            // no pagination
-                            params.page = params.page || 1;
+                            params.next = null;
+
+                            if (data.items.length >= 30) {
+                                params.next = data.next || null;
+                            }
 
                             var results = [];
 
@@ -85,7 +86,7 @@ var TaxonController = Marionette.Object.extend({
                             return {
                                 results: results,
                                 pagination: {
-                                    more: (params.page * 30) < data.total_count
+                                    more: params.next != null
                                 }
                             };
                         },

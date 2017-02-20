@@ -9,11 +9,9 @@
  */
 
 var Marionette = require('backbone.marionette');
-
 var TaxonModel = require('../../taxonomy/models/taxon');
-
 var EntityPathView = require('../../taxonomy/views/entitypath');
-var AccessionDescriptorView = require('../views/accessiondescriptor');
+var AccessionDescriptorEditView = require('../views/accessiondescriptoredit');
 
 
 var Layout = Marionette.LayoutView.extend({
@@ -35,6 +33,20 @@ var Layout = Marionette.LayoutView.extend({
         'descriptors': "div.tab-pane[name=descriptors]",
         'synonyms': "div.tab-pane[name=synonyms]",
         'batches': "div.tab-pane[name=batches]"
+    },
+
+    childEvents: {
+        'dom:refresh': function(child) {
+            var tab = this.ui.active_pane.attr('name');
+            var region = this.getRegion(tab);
+
+            // update child of current tab
+            if (region && child && region.currentView == child) {
+                if (region.currentView.onShowTab) {
+                    region.currentView.onShowTab(this);
+                }
+            }
+        }
     },
 
     initialize: function(model, options) {
@@ -71,11 +83,6 @@ var Layout = Marionette.LayoutView.extend({
                     descriptorMetaModelLayout: data
                 });
                 accessionLayout.getRegion('descriptors').show(accessionDescriptorView);
-
-                // manually called
-                if (accessionLayout.activeTab === 'descriptors') {
-                    accessionDescriptorView.onShowTab();
-                }
             });
         }
     },
@@ -87,14 +94,39 @@ var Layout = Marionette.LayoutView.extend({
         this.ui.tabs.on("hide.bs.tab", $.proxy(this.onHideTab, this));
 
         // details view
-        var taxon = new TaxonModel({id: this.model.get('parent')});
-        taxon.fetch().then(function() {
-            accessionLayout.getRegion('details').show(new EntityPathView({model: accessionLayout.model, taxon: taxon}));
-        });
+        if (!this.model.isNew()) {
+            var taxon = new TaxonModel({id: this.model.get('parent')});
+            taxon.fetch().then(function () {
+                accessionLayout.getRegion('details').show(new EntityPathView({
+                    model: accessionLayout.model,
+                    taxon: taxon
+                }));
+            });
 
-        // synonyms tab
-        var AccessionSynonymsView = require('../views/accessionsynonyms');
-        accessionLayout.getRegion('synonyms').show(new AccessionSynonymsView({model: this.model}));
+            // synonyms tab
+            var AccessionSynonymsView = require('../views/accessionsynonyms');
+            accessionLayout.getRegion('synonyms').show(new AccessionSynonymsView({model: this.model}));
+        } else {
+            var taxon = new TaxonModel({id: this.model.get('parent')});
+            taxon.fetch().then(function() {
+                accessionLayout.getRegion('details').show(new EntityPathView({
+                    model: accessionLayout.model, taxon: taxon, noLink: true}));
+            });
+
+            $.ajax({
+                method: "GET",
+                url: application.baseUrl + 'descriptor/meta-model/' + this.model.get('descriptor_meta_model') + '/layout/',
+                dataType: 'json'
+            }).done(function(data) {
+                var accessionDescriptorView = new AccessionDescriptorEditView({
+                    model: accessionLayout.model, descriptorMetaModelLayout: data});
+
+                accessionLayout.getRegion('descriptors').show(accessionDescriptorView);
+            });
+
+            this.disableSynonymsTab();
+            this.disableBatchesTab();
+        }
     },
 
     onShowTab: function(e) {
@@ -104,7 +136,7 @@ var Layout = Marionette.LayoutView.extend({
 
         var region = this.getRegion(tab);
         if (region && region.currentView && region.currentView.onShowTab) {
-            region.currentView.onShowTab();
+            region.currentView.onShowTab(this);
         }
     },
 
@@ -113,7 +145,7 @@ var Layout = Marionette.LayoutView.extend({
 
         var region = this.getRegion(tab);
         if (region && region.currentView && region.currentView.onHideTab) {
-            region.currentView.onHideTab();
+            region.currentView.onHideTab(this);
         }
 
         application.main.defaultRightView();

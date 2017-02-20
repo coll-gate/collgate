@@ -152,7 +152,7 @@ def get_taxon_list(request):
             cursor_name, cursor_id = cursor.rsplit('/', 1)
             qs = Taxon.objects.filter(Q(name__gt=cursor_name))
         else:
-            qs = Taxon.objects
+            qs = Taxon.objects.all()
 
         name = filters.get('name', '')
         rank = filters.get('rank')
@@ -266,59 +266,85 @@ def search_taxon(request):
     Quick search for a taxon with a exact or partial name and a rank.
     """
     filters = json.loads(request.GET['filters'])
-    page = int_arg(request.GET.get('page', 1))
 
-    # @todo cursor (not pagination)
-    qs = None
+    results_per_page = int_arg(request.GET.get('more', 30))
+    cursor = request.GET.get('cursor')
+    limit = results_per_page
+
+    if cursor:
+        cursor_name, cursor_id = cursor.rsplit('/', 1)
+        qs = Taxon.objects.filter(Q(synonyms__name__gt=cursor_name))
+    else:
+        qs = Taxon.objects.all()
 
     name_method = filters.get('method', 'ieq')
+
+    if 'name' in filters['fields']:
+        if name_method == 'ieq':
+            qs = qs.filter(name__iexact=filters['name'])
+        elif name_method == 'icontains':
+            qs = qs.filter(name__icontains=filters['name'])
 
     if 'rank' in filters['fields']:
         rank = int_arg(filters['rank'])
         rank_method = filters.get('rank_method', 'lt')
 
-        if name_method == 'ieq':
-            qs = TaxonSynonym.objects.filter(Q(name__iexact=filters['name']))
-        elif name_method == 'icontains':
-            qs = TaxonSynonym.objects.filter(Q(name__icontains=filters['name']))
-
         if rank_method == 'eq':
-            qs = qs.filter(Q(taxon__rank=rank))
+            qs = qs.filter(Q(synonyms__rank=rank))
         elif rank_method == 'lt':
-            qs = qs.filter(Q(taxon__rank__lt=rank))
+            qs = qs.filter(Q(synonyms__rank__lt=rank))
         elif rank_method == 'lte':
-            qs = qs.filter(Q(taxon__rank__lte=rank))
+            qs = qs.filter(Q(synonyms__rank__lte=rank))
         elif rank_method == 'gt':
-            qs = qs.filter(Q(taxon__rank__gt=rank))
+            qs = qs.filter(Q(synonyms__rank__gt=rank))
         elif rank_method == 'gte':
-            qs = qs.filter(Q(taxon__rank__gte=rank))
+            qs = qs.filter(Q(synonyms__rank__gte=rank))
 
-    elif 'name' in filters['fields']:
-        if name_method == 'ieq':
-            qs = TaxonSynonym.objects.filter(name__iexact=filters['name'])
-        elif name_method == 'icontains':
-            qs = TaxonSynonym.objects.filter(name__icontains=filters['name'])
+    qs = qs.prefetch_related(
+        Prefetch(
+            "synonyms",
+            queryset=TaxonSynonym.objects.exclude(type=TaxonSynonymType.PRIMARY.value).order_by('type', 'language'))
+    )
 
-    qs = qs.select_related('taxon')
+    qs = qs.order_by('name').distinct()[:limit]
 
-    # group by synonyms on labels
-    taxons = {}
+    items_list = []
 
-    for s in qs:
-        taxon = taxons.get(s.taxon_id)
-        if taxon:
-            taxon['label'] += ', ' + s.name
-        else:
-            taxons[s.taxon_id] = {'id': str(s.taxon_id), 'label': s.name, 'value': s.taxon.name}
+    for taxon in qs:
+        label = taxon.name
 
-    taxons_list = list(taxons.values())
+        for synonym in taxon.synonyms.all():
+            label += ', ' + synonym.name
 
-    response = {
-        'items': taxons_list,
-        'page': page
+        a = {
+            'id': taxon.id,
+            'label': label,
+            'value': taxon.name
+        }
+
+        items_list.append(a)
+
+    if len(items_list) > 0:
+        # prev cursor (asc order)
+        obj = items_list[0]
+        prev_cursor = "%s/%i" % (obj['value'], obj['id'])
+
+        # next cursor (asc order)
+        obj = items_list[-1]
+        next_cursor = "%s/%i" % (obj['value'], obj['id'])
+    else:
+        prev_cursor = None
+        next_cursor = None
+
+    results = {
+        'perms': [],
+        'items': items_list,
+        'prev': prev_cursor,
+        'cursor': cursor,
+        'next': next_cursor,
     }
 
-    return HttpResponseRest(request, response)
+    return HttpResponseRest(request, results)
 
 
 @RestTaxonId.def_auth_request(

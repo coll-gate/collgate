@@ -11,21 +11,6 @@
 var DescribableEdit = require('../../descriptor/views/describableedit');
 
 var View = DescribableEdit.extend({
-    setContextualPanel: function (descriptorView) {
-        // contextual panel
-        var contextLayout = application.getView().getRegion('right').currentView;
-
-        var actions = ['modify'];
-
-        var AccessionDescriptorContextView = require('./accessiondescriptorcontext');
-        var contextView = new AccessionDescriptorContextView({actions: actions})
-        contextLayout.getRegion('content').show(contextView);
-
-        contextView.on("describable:modify", function() {
-            descriptorView.onModify();
-        });
-    },
-
     onCancel: function() {
         // cancel global widget modifications
         this.cancel();
@@ -49,8 +34,6 @@ var View = DescribableEdit.extend({
             descriptorMetaModelLayout: view.descriptorMetaModelLayout});
 
         accessionLayout.getRegion('descriptors').show(accessionDescriptorView);
-
-        this.setContextualPanel(accessionDescriptorView);
     },
 
     onApply: function () {
@@ -74,9 +57,40 @@ var View = DescribableEdit.extend({
                 descriptorMetaModelLayout: view.descriptorMetaModelLayout});
 
             accessionLayout.getRegion('descriptors').show(accessionDescriptorView);
-
-            view.setContextualPanel(accessionDescriptorView);
         });
+    },
+
+    onShowTab: function() {
+        var view = this;
+
+        // contextual panel
+        var contextLayout = application.getView().getRegion('right').currentView;
+        if (!contextLayout) {
+            var DefaultLayout = require('../../main/views/defaultlayout');
+            contextLayout = new DefaultLayout();
+            application.getView().getRegion('right').show(contextLayout);
+        }
+
+        var TitleView = require('../../main/views/titleview');
+        contextLayout.getRegion('title').show(new TitleView({title: gt.gettext("Descriptors")}));
+
+        var actions = ['apply', 'cancel'];
+
+        var AccessionDescriptorContextView = require('../views/accessiondescriptorcontext');
+        var contextView = new AccessionDescriptorContextView({actions: actions});
+        contextLayout.getRegion('content').show(contextView);
+
+        contextView.on("describable:cancel", function() {
+            view.onCancel();
+        });
+
+        contextView.on("describable:apply", function() {
+            view.onApply();
+        });
+    },
+
+    onHideTab: function() {
+        application.main.defaultRightView();
     }
 });
 
