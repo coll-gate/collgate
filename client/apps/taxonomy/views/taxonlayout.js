@@ -19,6 +19,11 @@ var Layout = Marionette.LayoutView.extend({
         style: "height: 100%;"
     },
 
+    ui: {
+        tabs: 'a[data-toggle="tab"]',
+        active_pane: 'div.tab-pane.active'
+    },
+
     regions: {
         'details': "div[name=details]",
         'synonyms': "div.tab-pane[name=synonyms]",
@@ -27,16 +32,11 @@ var Layout = Marionette.LayoutView.extend({
         'entities': "div.tab-pane[name=entities]"
     },
 
-    ui: {
-        tabs: 'a[data-toggle="tab"]',
-        active_pane: 'div.tab-pane.active'
-    },
-
     childEvents: {
         'dom:refresh': function(child) {
-            var tab = this.ui.active_pane.attr('name');
+            var tab = this.$el.find('div.tab-pane.active').attr('name');
+            // var tab = this.ui.active_pane.attr('name');
             var region = this.getRegion(tab);
-            console.log(tab, region, region.currentView, child);
 
             // update child of current tab
             if (region && child && region.currentView == child) {

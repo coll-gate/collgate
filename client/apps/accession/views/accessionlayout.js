@@ -37,7 +37,8 @@ var Layout = Marionette.LayoutView.extend({
 
     childEvents: {
         'dom:refresh': function(child) {
-            var tab = this.ui.active_pane.attr('name');
+            var tab = this.$el.find('div.tab-pane.active').attr('name');
+            //var tab = this.ui.active_pane.attr('name');
             var region = this.getRegion(tab);
 
             // update child of current tab
