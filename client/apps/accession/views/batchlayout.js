@@ -26,7 +26,7 @@ var Layout = Marionette.LayoutView.extend({
 
     ui: {
         tabs: 'a[data-toggle="tab"]',
-        active_pane: 'div.tab-pane.active',
+        initial_pane: 'div.tab-pane.active',
         descriptors_tab: 'a[aria-controls=descriptors]',
         batches_tab: 'a[aria-controls=batches]'
     },
@@ -37,11 +37,24 @@ var Layout = Marionette.LayoutView.extend({
         'batches': "div.tab-pane[name=batches]"
     },
 
+    childEvents: {
+        'dom:refresh': function(child) {
+            var tab = this.$el.find('div.tab-pane.active').attr('name');
+            var region = this.getRegion(tab);
+
+            // update child of current tab
+            if (region && child && region.currentView == child) {
+                if (region.currentView.onShowTab) {
+                    region.currentView.onShowTab(this);
+                }
+            }
+        }
+    },
+
     initialize: function(model, options) {
         Layout.__super__.initialize.apply(this, arguments);
 
-        this.activeTab = "descriptors";
-
+        this.activeTab = undefined;
         this.listenTo(this.model, 'change:descriptor_meta_model', this.onDescriptorMetaModelChange, this);
     },
 
@@ -78,6 +91,8 @@ var Layout = Marionette.LayoutView.extend({
 
     onRender: function() {
         var batchLayout = this;
+
+        this.activeTab = this.ui.initial_pane.attr('name');
 
         this.ui.tabs.on("shown.bs.tab", $.proxy(this.onShowTab, this));
         this.ui.tabs.on("hide.bs.tab", $.proxy(this.onHideTab, this));

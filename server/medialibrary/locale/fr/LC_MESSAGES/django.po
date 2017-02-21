@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-27 11:42+0100\n"
+"POT-Creation-Date: 2017-02-21 11:10+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,49 +18,101 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: descriptorformattype.py:22 descriptorformattype.py:35
+#: descriptorformattype.py:27 descriptorformattype.py:40
 msgid "Media"
 msgstr "Média"
 
-#: descriptorformattype.py:43 descriptorformattype.py:94
-msgid "The descriptor value must be an integer"
+#: descriptorformattype.py:47
+#, fuzzy
+#| msgid "The descriptor value must be an integer"
+msgid "The descriptor value must be a string"
 msgstr "La valeur du descripteur doit être un entier"
 
-#: descriptorformattype.py:70 descriptorformattype.py:122
+#: descriptorformattype.py:51 descriptorformattype.py:141
+#, fuzzy
+#| msgid "The descriptor value must be an integer"
+msgid "The descriptor value must match with the UUID format"
+msgstr "La valeur du descripteur doit être un entier"
+
+#: descriptorformattype.py:57 descriptorformattype.py:146
+#, fuzzy
+#| msgid "The descriptor value must be an integer"
+msgid "The descriptor value must refers to an existing media"
+msgstr "La valeur du descripteur doit être un entier"
+
+#: descriptorformattype.py:77 descriptorformattype.py:167
 msgid ""
 "Media type must be archives, images, documents or spreadsheets (media_types)"
 msgstr ""
-"Le type de média doit être archives, images, documents ou spreadsheets (media_types)"
+"Le type de média doit être archives, images, documents ou spreadsheets "
+"(media_types)"
 
-#: descriptorformattype.py:85
+#: descriptorformattype.py:91 descriptorformattype.py:186
+#, fuzzy
+#| msgid "The descriptor value must be an integer"
+msgid "The descriptor old_value must refers to an existing media"
+msgstr "La valeur du descripteur doit être un entier"
+
+#: descriptorformattype.py:107 descriptorformattype.py:203
+#, fuzzy
+#| msgid "The descriptor value must be an integer"
+msgid "The descriptor new_value must refers to an existing media"
+msgstr "La valeur du descripteur doit être un entier"
+
+#: descriptorformattype.py:125
 msgid "Media collection"
 msgstr "Collection de média"
 
-#: media.py:83 media.py:114 media.py:208
-msgid "Media library destination folder misconfiguration"
-msgstr "Répertoire de destination de la média librairie mal configuré"
+#: descriptorformattype.py:132
+#, fuzzy
+#| msgid "The descriptor value must be an integer"
+msgid "The descriptor value must be an array of string"
+msgstr "La valeur du descripteur doit être un entier"
 
-#: media.py:117 media.py:211
+#: descriptorformattype.py:136
+#, python-format
+msgid "The number of medias must be lesser or equal than %i"
+msgstr ""
+
+#: media.py:65 media.py:97 media.py:126 media.py:271
+msgid "Your are not the owner of the media"
+msgstr ""
+
+#: media.py:72 media.py:133
+msgid "No permissions to the owner entity"
+msgstr ""
+
+#: media.py:109
+msgid "Unable to delete the media"
+msgstr ""
+
+#: media.py:161 media.py:253
 msgid "No file specified"
 msgstr "Pas de fichier spécifié"
 
-#: media.py:123 media.py:217
+#: media.py:167 media.py:259
 #, python-format
 msgid "Upload file size limit is set to %i bytes"
 msgstr "La taille limite d'un fichier téléchargé est définie à %i octets"
 
-#: media.py:128 media.py:222
+#: media.py:172 media.py:264
 msgid "Undetermined uploaded file type"
 msgstr "Type de fichier téléchargé indéterminé"
 
-#: media.py:230
+#: media.py:279
+msgid "No change permission to the owner entity"
+msgstr ""
+
+#: media.py:286
 msgid "Trying to update a non-existing file"
 msgstr "Tentative de mise-à-jour d'un fichier inexistant"
 
-#: models.py:21
-msgid "media collection"
-msgstr "collection de médias"
-
-#: models.py:47
+#: models.py:42
 msgid "media"
 msgstr "média"
+
+#~ msgid "Media library destination folder misconfiguration"
+#~ msgstr "Répertoire de destination de la média librairie mal configuré"
+
+#~ msgid "media collection"
+#~ msgstr "collection de médias"

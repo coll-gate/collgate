@@ -21,7 +21,7 @@ var Layout = Marionette.LayoutView.extend({
 
     ui: {
         tabs: 'a[data-toggle="tab"]',
-        active_pane: 'div.tab-pane.active'
+        initial_pane: 'div.tab-pane.active'
     },
 
     regions: {
@@ -35,7 +35,6 @@ var Layout = Marionette.LayoutView.extend({
     childEvents: {
         'dom:refresh': function(child) {
             var tab = this.$el.find('div.tab-pane.active').attr('name');
-            // var tab = this.ui.active_pane.attr('name');
             var region = this.getRegion(tab);
 
             // update child of current tab
@@ -50,8 +49,7 @@ var Layout = Marionette.LayoutView.extend({
     initialize: function(model, options) {
         Layout.__super__.initialize.apply(this, arguments);
 
-        this.activeTab = "synonyms";
-
+        this.activeTab = undefined;
         this.listenTo(this.model, 'change:descriptor_meta_model', this.onDescriptorMetaModelChange, this);
     },
 
@@ -82,6 +80,8 @@ var Layout = Marionette.LayoutView.extend({
 
     onRender: function() {
         var taxonLayout = this;
+
+        this.activeTab = this.ui.initial_pane.attr('name');
 
         this.ui.tabs.on("shown.bs.tab", $.proxy(this.onShowTab, this));
         this.ui.tabs.on("hide.bs.tab", $.proxy(this.onHideTab, this));

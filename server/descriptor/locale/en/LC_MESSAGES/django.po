@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-27 11:42+0100\n"
+"POT-Creation-Date: 2017-02-21 11:10+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,34 +17,34 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: apps.py:77
+#: apps.py:76
 msgid "Administration"
 msgstr ""
 
-#: apps.py:82
+#: apps.py:81
 msgid "List groups of descriptors"
 msgstr ""
 
-#: apps.py:85
+#: apps.py:84
 msgid "List models of descriptor"
 msgstr ""
 
-#: apps.py:88
+#: apps.py:87
 msgid "List meta-models of descriptor"
 msgstr ""
 
-#: describable.py:82
+#: describable.py:142
 #, python-format
 msgid "Missing mandatory descriptor %s"
 msgstr ""
 
-#: describable.py:87
+#: describable.py:147
 #, python-format
 msgid "Already defined set once descriptor %s"
 msgstr ""
 
-#: describable.py:105 describable.py:111 describable.py:120 describable.py:127
-#: describable.py:137 describable.py:145
+#: describable.py:165 describable.py:171 describable.py:180 describable.py:187
+#: describable.py:197 describable.py:205
 msgid "A conditional descriptor is defined but the condition is not true"
 msgstr ""
 
@@ -56,249 +56,249 @@ msgstr ""
 msgid "You are not allowed to delete a group of descriptors"
 msgstr ""
 
-#: descriptor.py:184
+#: descriptor.py:183
 msgid "Only an empty group of descriptors can be deleted"
 msgstr ""
 
-#: descriptor.py:199
+#: descriptor.py:198
 msgid "You are not allowed to modify a group of descriptors"
 msgstr ""
 
-#: descriptor.py:212
+#: descriptor.py:210
 msgid "Name of group of descriptor already in usage"
 msgstr ""
 
-#: descriptor.py:215
+#: descriptor.py:213
 msgid "It is not permit to modify this group of type of descriptors"
 msgstr ""
 
-#: descriptor.py:416 descriptor.py:460 descriptor.py:501
+#: descriptor.py:407 descriptor.py:450 descriptor.py:488
 msgid "You are not allowed to modify a group of types of descriptors"
 msgstr ""
 
-#: descriptor.py:417
+#: descriptor.py:408
 msgid "You are not allowed to create a type of descriptor"
 msgstr ""
 
-#: descriptor.py:461
+#: descriptor.py:451
 msgid "You are not allowed to delete a type of descriptor"
 msgstr ""
 
-#: descriptor.py:472
+#: descriptor.py:459
 msgid "Only an empty of values type of descriptor can be deleted"
 msgstr ""
 
-#: descriptor.py:475
+#: descriptor.py:462
 msgid "Only unused types of descriptor can be deleted"
 msgstr ""
 
-#: descriptor.py:502 descriptor.py:663 descriptor.py:741 descriptor.py:824
-#: descriptor.py:990
+#: descriptor.py:489 descriptor.py:642 descriptor.py:714 descriptor.py:794
+#: descriptor.py:948
 msgid "You are not allowed to modify a type of descriptor"
 msgstr ""
 
-#: descriptor.py:519
+#: descriptor.py:503
 msgid "It is not permit to modify this type of descriptor"
 msgstr ""
 
-#: descriptor.py:664
+#: descriptor.py:643
 msgid "You are not allowed to create a value of descriptor"
 msgstr ""
 
-#: descriptor.py:742 descriptor.py:991
+#: descriptor.py:715 descriptor.py:949
 msgid "You are not allowed to modify a value of type of descriptor"
 msgstr ""
 
-#: descriptor.py:759
+#: descriptor.py:729
 msgid "There is no values for this type of descriptor"
 msgstr ""
 
-#: descriptor.py:766
+#: descriptor.py:736
 msgid "Ordinal field is only defined for enumeration with ordinal"
 msgstr ""
 
-#: descriptor.py:769
+#: descriptor.py:739
 msgid "Second value field is only defined for enumeration of pairs"
 msgstr ""
 
-#: descriptor.py:825
+#: descriptor.py:795
 msgid "You are not allowed to remove a value of type of descriptor"
 msgstr ""
 
-#: descriptor.py:841
+#: descriptor.py:808
 msgid "There is some data using the type of descriptor"
 msgstr ""
 
-#: descriptor.py:899 descriptor.py:1071 descriptor.py:1141
+#: descriptor.py:860 descriptor.py:1023 descriptor.py:1091
 msgid "This type of descriptor does not contains a list"
 msgstr ""
 
-#: descriptor.py:950 descriptor.py:1002
+#: descriptor.py:908 descriptor.py:957
 msgid "Field name must be value0 or value1"
 msgstr ""
 
-#: descriptor.py:1012 descriptormetamodel.py:728 descriptormetamodel.py:793
-#: descriptormodel.py:582
+#: descriptor.py:967 descriptormetamodel.py:699 descriptormetamodel.py:758
+#: descriptormodel.py:560
 msgid "Unsupported language identifier"
 msgstr ""
 
-#: descriptor.py:1075
+#: descriptor.py:1027
 msgid "List of values are not available for drop-down"
 msgstr ""
 
-#: descriptorformattype.py:137
+#: descriptorformattype.py:189
 msgid "Single value"
 msgstr ""
 
-#: descriptorformattype.py:146
+#: descriptorformattype.py:198
 msgid "List of values"
 msgstr ""
 
-#: descriptorformattype.py:159
+#: descriptorformattype.py:211
 msgid "Single enumeration"
 msgstr ""
 
-#: descriptorformattype.py:167 descriptorformattype.py:219
-#: descriptorformattype.py:273 descriptorformattype.py:583
+#: descriptorformattype.py:219 descriptorformattype.py:271
+#: descriptorformattype.py:325 descriptorformattype.py:635
 msgid "The descriptor value must be a string"
 msgstr ""
 
-#: descriptorformattype.py:173 descriptorformattype.py:225
-#: descriptorformattype.py:279
+#: descriptorformattype.py:225 descriptorformattype.py:277
+#: descriptorformattype.py:331
 msgid "The descriptor value must exists"
 msgstr ""
 
-#: descriptorformattype.py:211
+#: descriptorformattype.py:263
 msgid "Pair enumeration"
 msgstr ""
 
-#: descriptorformattype.py:265
+#: descriptorformattype.py:317
 msgid "Ordinal with text"
 msgstr ""
 
-#: descriptorformattype.py:312
+#: descriptorformattype.py:364
 msgid "Range limits are [-127, 127]"
 msgstr ""
 
-#: descriptorformattype.py:327
+#: descriptorformattype.py:379
 msgid "Boolean"
 msgstr ""
 
-#: descriptorformattype.py:333
+#: descriptorformattype.py:385
 msgid "The descriptor value must be a boolean"
 msgstr ""
 
-#: descriptorformattype.py:351
+#: descriptorformattype.py:403
 msgid "Numeric"
 msgstr ""
 
-#: descriptorformattype.py:357
+#: descriptorformattype.py:409
 msgid "The descriptor value must be a decimal string"
 msgstr ""
 
-#: descriptorformattype.py:363 descriptorformattype.py:412
-#: descriptorformattype.py:418
+#: descriptorformattype.py:415 descriptorformattype.py:464
+#: descriptorformattype.py:470
 msgid "The descriptor value must be a decimal"
 msgstr ""
 
-#: descriptorformattype.py:367
+#: descriptorformattype.py:419
 msgid "The descriptor value must be a decimal with a precision of "
 msgstr ""
 
-#: descriptorformattype.py:390 descriptorformattype.py:455
-#: descriptorformattype.py:521
+#: descriptorformattype.py:442 descriptorformattype.py:507
+#: descriptorformattype.py:573
 msgid ""
 "Custom unit can only be defined is unit is set to custom (unit, custom_unit)"
 msgstr ""
 
-#: descriptorformattype.py:405
+#: descriptorformattype.py:457
 msgid "Numeric range"
 msgstr ""
 
-#: descriptorformattype.py:422
+#: descriptorformattype.py:474
 msgid "The descriptor value must be a decimal with a precision of"
 msgstr ""
 
-#: descriptorformattype.py:428
+#: descriptorformattype.py:480
 msgid "The descriptor value must be a decimal between"
 msgstr ""
 
-#: descriptorformattype.py:461 descriptorformattype.py:467
+#: descriptorformattype.py:513 descriptorformattype.py:519
 msgid "Range min must be a decimal"
 msgstr ""
 
-#: descriptorformattype.py:470 descriptorformattype.py:536
+#: descriptorformattype.py:522 descriptorformattype.py:588
 msgid "Range min must be lesser than range max"
 msgstr ""
 
-#: descriptorformattype.py:485
+#: descriptorformattype.py:537
 msgid "Ordinal"
 msgstr ""
 
-#: descriptorformattype.py:491 descriptorformattype.py:712
+#: descriptorformattype.py:543 descriptorformattype.py:764
 msgid "The descriptor value must be an integer"
 msgstr ""
 
-#: descriptorformattype.py:495
+#: descriptorformattype.py:547
 msgid "The descriptor value must be an integer between "
 msgstr ""
 
-#: descriptorformattype.py:527 descriptorformattype.py:533
+#: descriptorformattype.py:579 descriptorformattype.py:585
 msgid "Range min must be an integer"
 msgstr ""
 
-#: descriptorformattype.py:551
+#: descriptorformattype.py:603
 msgid "GPS coordinate"
 msgstr ""
 
-#: descriptorformattype.py:575
+#: descriptorformattype.py:627
 msgid "Text"
 msgstr ""
 
-#: descriptorformattype.py:587
+#: descriptorformattype.py:639
 msgid ""
 "The descriptor value must be a string with a maximum length of 1024 "
 "characters"
 msgstr ""
 
-#: descriptorformattype.py:593
+#: descriptorformattype.py:645
 msgid "The descriptor value must be a string matching the defined format"
 msgstr ""
 
-#: descriptorformattype.py:632
+#: descriptorformattype.py:684
 msgid "Date"
 msgstr ""
 
-#: descriptorformattype.py:637
+#: descriptorformattype.py:689
 msgid "The descriptor value must be a date string (YYYYMMDD)"
 msgstr ""
 
-#: descriptorformattype.py:658
+#: descriptorformattype.py:710
 msgctxt "concept"
 msgid "Time"
 msgstr ""
 
-#: descriptorformattype.py:663
+#: descriptorformattype.py:715
 msgid "The descriptor value must be a time string (HH:MM:SS)"
 msgstr ""
 
-#: descriptorformattype.py:684
+#: descriptorformattype.py:736
 msgid "Date+time"
 msgstr ""
 
-#: descriptorformattype.py:689
+#: descriptorformattype.py:741
 msgid "The descriptor value must be a datetime string (ISO 8601)"
 msgstr ""
 
-#: descriptorformattype.py:707
+#: descriptorformattype.py:759
 msgid "Entity"
 msgstr ""
 
-#: descriptorformattype.py:720
+#: descriptorformattype.py:772
 msgid "The descriptor value must refers to an existing entity"
 msgstr ""
 
-#: descriptorformattype.py:744
+#: descriptorformattype.py:796
 msgid "Invalid describable entity model type name"
 msgstr ""
 
@@ -306,116 +306,116 @@ msgstr ""
 msgid "You are not allowed to create a meta-model of descriptor"
 msgstr ""
 
-#: descriptormetamodel.py:207
+#: descriptormetamodel.py:205
 msgid "You are not allowed to remove a meta-model of descriptor"
 msgstr ""
 
-#: descriptormetamodel.py:216
+#: descriptormetamodel.py:212
 msgid ""
 "It is not possible to remove a meta-model of descriptor that contains models "
 "of descriptor"
 msgstr ""
 
-#: descriptormetamodel.py:219
+#: descriptormetamodel.py:215
 msgid "There is some data using the meta-model of descriptor"
 msgstr ""
 
-#: descriptormetamodel.py:234 descriptormetamodel.py:264
-#: descriptormetamodel.py:477 descriptormetamodel.py:558
-#: descriptormetamodel.py:623 descriptormetamodel.py:651
-#: descriptormetamodel.py:710 descriptormetamodel.py:773
+#: descriptormetamodel.py:230 descriptormetamodel.py:258
+#: descriptormetamodel.py:464 descriptormetamodel.py:541
+#: descriptormetamodel.py:604 descriptormetamodel.py:629
+#: descriptormetamodel.py:683 descriptormetamodel.py:741
 msgid "You are not allowed to modify a meta-model of descriptor"
 msgstr ""
 
-#: descriptormetamodel.py:478
+#: descriptormetamodel.py:465
 msgid "You are not allowed to create a panel of descriptor"
 msgstr ""
 
-#: descriptormetamodel.py:494
+#: descriptormetamodel.py:480
 msgid ""
 "A panel of descriptor for this model already exists into this meta-model of "
 "descriptor"
 msgstr ""
 
-#: descriptormetamodel.py:559 descriptormetamodel.py:624
-#: descriptormetamodel.py:774
+#: descriptormetamodel.py:542 descriptormetamodel.py:605
+#: descriptormetamodel.py:742
 msgid "You are not allowed to modify a panel of descriptor"
 msgstr ""
 
-#: descriptormetamodel.py:652
+#: descriptormetamodel.py:630
 msgid "You are not allowed to remove a panel of descriptor"
 msgstr ""
 
-#: descriptormetamodel.py:662
+#: descriptormetamodel.py:637
 msgid "There is some entities attached to this panel"
 msgstr ""
 
-#: descriptormodel.py:144
+#: descriptormodel.py:143
 msgid "You are not allowed to create a model of descriptor"
 msgstr ""
 
-#: descriptormodel.py:149
+#: descriptormodel.py:148
 msgid "A model of descriptor with a similar name already exists"
 msgstr ""
 
-#: descriptormodel.py:183 descriptormodel.py:328 descriptormodel.py:396
-#: descriptormodel.py:457 descriptormodel.py:500 descriptormodel.py:562
-#: descriptormodel.py:645 descriptormodel.py:714 descriptormodel.py:765
+#: descriptormodel.py:182 descriptormodel.py:322 descriptormodel.py:388
+#: descriptormodel.py:447 descriptormodel.py:487 descriptormodel.py:543
+#: descriptormodel.py:612 descriptormodel.py:671 descriptormodel.py:722
 msgid "You are not allowed to modify a model of descriptor"
 msgstr ""
 
-#: descriptormodel.py:207
+#: descriptormodel.py:204
 msgid "You are not allowed to remove a model of descriptor"
 msgstr ""
 
-#: descriptormodel.py:216
+#: descriptormodel.py:211
 msgid "Only empty models of descriptor can be removed"
 msgstr ""
 
-#: descriptormodel.py:219
+#: descriptormodel.py:214
 msgid "Only unused models of descriptor can be removed"
 msgstr ""
 
-#: descriptormodel.py:329
+#: descriptormodel.py:323
 msgid "You are not allowed to create a type of model of descriptor"
 msgstr ""
 
-#: descriptormodel.py:397 descriptormodel.py:458 descriptormodel.py:563
-#: descriptormodel.py:646 descriptormodel.py:715 descriptormodel.py:766
+#: descriptormodel.py:389 descriptormodel.py:448 descriptormodel.py:544
+#: descriptormodel.py:613 descriptormodel.py:672 descriptormodel.py:723
 msgid "You are not allowed to modify a type of model of descriptor"
 msgstr ""
 
-#: descriptormodel.py:477 descriptormodel.py:515
+#: descriptormodel.py:464 descriptormodel.py:499
 msgid "There is some data using the model of descriptor"
 msgstr ""
 
-#: descriptormodel.py:486
+#: descriptormodel.py:473
 msgid ""
 "A required type of model of descriptor cannot have a condition. You must "
 "delete the condition before to set the required state"
 msgstr ""
 
-#: descriptormodel.py:501
+#: descriptormodel.py:488
 msgid "You are not allowed to remove a type of model of descriptor"
 msgstr ""
 
-#: descriptormodel.py:661
+#: descriptormodel.py:626
 msgid ""
 "It is not possible to define a condition on a required type of model of "
 "descriptor"
 msgstr ""
 
-#: descriptormodel.py:665
+#: descriptormodel.py:630
 msgid ""
 "Cyclic condition detected. You cannot define this condition or you must "
 "remove the condition on the target"
 msgstr ""
 
-#: descriptormodel.py:716
+#: descriptormodel.py:673
 msgid "You are not allowed to modify a condition of a model of descriptor"
 msgstr ""
 
-#: descriptormodel.py:767
+#: descriptormodel.py:724
 msgid "You are not allowed to delete a condition of a model of descriptor"
 msgstr ""
 
@@ -427,42 +427,42 @@ msgstr ""
 msgid "descriptor type"
 msgstr ""
 
-#: models.py:780
+#: models.py:783
 msgid "descriptor value"
 msgstr ""
 
-#: models.py:818
+#: models.py:821
 msgid "descriptor panel"
 msgstr ""
 
-#: models.py:867
+#: models.py:870
 msgid "descriptor model type"
 msgstr ""
 
-#: models.py:904
+#: models.py:907
 msgid "descriptor model"
 msgstr ""
 
-#: models.py:954
+#: models.py:957
 msgid "descriptor meta model"
 msgstr ""
 
-#: models.py:999
+#: models.py:1002
 msgid "Undefined"
 msgstr ""
 
-#: models.py:1000
+#: models.py:1003
 msgid "Defined"
 msgstr ""
 
-#: models.py:1001
+#: models.py:1004
 msgid "Equal to"
 msgstr ""
 
-#: models.py:1002
+#: models.py:1005
 msgid "Different from"
 msgstr ""
 
-#: models.py:1025
+#: models.py:1028
 msgid "descriptor model type condition"
 msgstr ""

@@ -15,18 +15,20 @@ var View = DescribableDetails.extend({
     onShowTab: function() {
         var view = this;
 
-        var DefaultLayout = require('../../main/views/defaultlayout');
-        var TitleView = require('../../main/views/titleview');
+        var contextLayout = application.getView().getRegion('right').currentView;
+        if (!contextLayout) {
+            var DefaultLayout = require('../../main/views/defaultlayout');
+            contextLayout = new DefaultLayout();
+            application.getView().getRegion('right').show(contextLayout);
+        }
 
-        var contextLayout = new DefaultLayout();
-        application.getView().getRegion('right').show(contextLayout);
+        var TitleView = require('../../main/views/titleview');
+        contextLayout.getRegion('title').show(new TitleView({title: gt.gettext("Descriptors")}));
 
         var actions = ['modify'];
 
         var BatchDescriptorContextView = require('./batchdescriptorcontext');
         var contextView = new BatchDescriptorContextView({actions: actions});
-
-        contextLayout.getRegion('title').show(new TitleView({title: gt.gettext("Descriptors")}));
         contextLayout.getRegion('content').show(contextView);
 
         contextView.on("describable:modify", function () {
@@ -47,23 +49,6 @@ var View = DescribableDetails.extend({
 
         var view = new BatchDescriptorEditView({model: this.model, descriptorMetaModelLayout: this.descriptorMetaModelLayout});
         batchLayout.getRegion('descriptors').show(view);
-
-        // contextual panel
-        var contextLayout = application.getView().getRegion('right').currentView;
-
-        var actions = ['apply', 'cancel'];
-
-        var BatchDescriptorContextView = require('../views/batchdescriptorcontext');
-        var contextView = new BatchDescriptorContextView({actions: actions});
-        contextLayout.getRegion('content').show(contextView);
-
-        contextView.on("describable:cancel", function() {
-            view.onCancel();
-        });
-
-        contextView.on("describable:apply", function() {
-            view.onApply();
-        });
     }
 });
 

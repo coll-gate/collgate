@@ -30,14 +30,17 @@ class TaxonSynonymType(ChoiceEnum):
 class TaxonRank(ChoiceEnum):
 
     FAMILY = IntegerChoice(60, _("Family"))
-    SUB_FAMILY = IntegerChoice(61, _("Sub-family"))
+    SUB_FAMILY = IntegerChoice(61, _("Subfamily"))
+    TRIBE = IntegerChoice(65, _("Tribe"))
+    SUB_TRIBE = IntegerChoice(66, _("Subtribe"))
     GENUS = IntegerChoice(70, _("Genus"))
-    SUB_GENUS = IntegerChoice(71, _("Sub-genus"))
+    SUB_GENUS = IntegerChoice(71, _("Subgenus"))
     SECTION = IntegerChoice(72, _("Section"))
-    SUB_SECTION = IntegerChoice(73, _("Sub-section"))
+    SUB_SECTION = IntegerChoice(73, _("Subsection"))
     SPECIE = IntegerChoice(80, _("Specie"))
-    SUB_SPECIE = IntegerChoice(81, _("Sub-specie"))
+    SUB_SPECIE = IntegerChoice(81, _("Subspecie"))
     VARIETY = IntegerChoice(82, _("Variety"))
+    SUB_VARIETY = IntegerChoice(83, _("Subvariety"))
 
 
 class Taxon(Entity):
