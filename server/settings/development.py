@@ -86,6 +86,8 @@ INSTALLED_APPS = (
     'medialibrary',
     'taxonomy',
     'accession',
+    'geonames',
+    'geolocation'
 )
 
 LOGGING = {
