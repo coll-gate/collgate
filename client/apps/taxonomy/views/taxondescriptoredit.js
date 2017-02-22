@@ -11,36 +11,10 @@
 var DescribableEdit = require('../../descriptor/views/describableedit');
 
 var View = DescribableEdit.extend({
-    setContextualPanel: function (taxonDescriptorView) {
-        // contextual panel
-        var contextLayout = application.getView().getRegion('right').currentView;
-
-        var actions = [];
-
-        actions.push('modify');
-        actions.push('replace');
-        actions.push('delete');
-
-        var TaxonDescriptorsContextView = require('./taxondescriptorscontext');
-        var contextView = new TaxonDescriptorsContextView({actions: actions})
-        contextLayout.getRegion('content').show(contextView);
-
-        contextView.on("describable:modify", function() {
-            taxonDescriptorView.onModify();
-        });
-
-        contextView.on("descriptormetamodel:replace", function() {
-            // this will update the model and so on the view
-            alert("not yet implemented");
-        });
-
-        contextView.on("descriptormetamodel:delete", function() {
-            // this will update the model and so on the view
-            alert("not yet implemented");
-        });
-    },
-
     onCancel: function() {
+        // cancel global widget modifications
+        this.cancel();
+
         // does not reload models, just redo the views
         var view = this;
         var model = this.model;
@@ -55,12 +29,10 @@ var View = DescribableEdit.extend({
             descriptorMetaModelLayout: view.descriptorMetaModelLayout});
 
         taxonLayout.getRegion('descriptors').show(taxonDescriptorView);
-
-        this.setContextualPanel(taxonDescriptorView);
     },
 
     onApply: function () {
-        // does not reload  models, save and redo the views
+        // does not reload models, save and redo the views
         var view = this;
         var model = this.model;
 
@@ -79,9 +51,40 @@ var View = DescribableEdit.extend({
                 descriptorMetaModelLayout: view.descriptorMetaModelLayout});
 
             taxonLayout.getRegion('descriptors').show(taxonDescriptorView);
-
-            view.setContextualPanel(taxonDescriptorView);
         });
+    },
+
+    onShowTab: function() {
+        var view = this;
+
+        // contextual panel
+        var contextLayout = application.getView().getRegion('right').currentView;
+        if (!contextLayout) {
+            var DefaultLayout = require('../../main/views/defaultlayout');
+            contextLayout = new DefaultLayout();
+            application.getView().getRegion('right').show(contextLayout);
+        }
+
+        var TitleView = require('../../main/views/titleview');
+        contextLayout.getRegion('title').show(new TitleView({title: gt.gettext("Descriptors")}));
+
+        var actions = ['apply', 'cancel'];
+
+        var TaxonDescriptorContextView = require('../views/taxondescriptorcontext');
+        var contextView = new TaxonDescriptorContextView({actions: actions});
+        contextLayout.getRegion('content').show(contextView);
+
+        contextView.on("describable:cancel", function() {
+            view.onCancel();
+        });
+
+        contextView.on("describable:apply", function() {
+            view.onApply();
+        });
+    },
+
+    onHideTab: function() {
+        application.main.defaultRightView();
     }
 });
 

@@ -15,11 +15,15 @@ var View = DescribableDetails.extend({
     onShowTab: function() {
         var view = this;
 
-        var DefaultLayout = require('../../main/views/defaultlayout');
-        var TitleView = require('../../main/views/titleview');
+        var contextLayout = application.getView().getRegion('right').currentView;
+        if (!contextLayout) {
+            var DefaultLayout = require('../../main/views/defaultlayout');
+            contextLayout = new DefaultLayout();
+            application.getView().getRegion('right').show(contextLayout);
+        }
 
-        var contextLayout = new DefaultLayout();
-        application.getView().getRegion('right').show(contextLayout);
+        var TitleView = require('../../main/views/titleview');
+        contextLayout.getRegion('title').show(new TitleView({title: gt.gettext("Descriptors")}));
 
         var actions = [];
 
@@ -31,10 +35,8 @@ var View = DescribableDetails.extend({
             actions.push('delete');
         }
 
-        var TaxonDescriptorsContextView = require('./taxondescriptorscontext');
-        var contextView = new TaxonDescriptorsContextView({actions: actions});
-
-        contextLayout.getRegion('title').show(new TitleView({title: gt.gettext("Descriptors")}));
+        var TaxonDescriptorContextView = require('./taxondescriptorcontext');
+        var contextView = new TaxonDescriptorContextView({actions: actions});
         contextLayout.getRegion('content').show(contextView);
 
         contextView.on("describable:modify", function () {
@@ -43,12 +45,24 @@ var View = DescribableDetails.extend({
 
         contextView.on("descriptormetamodel:replace", function () {
             // this will update the model and so on the view
-            alert("not yet implemented");
+            var TaxonDescriptorCreateView = require('./taxondescriptorcreate');
+            var taxonDescriptorCreateView = new TaxonDescriptorCreateView({model: view.model});
+
+            taxonDescriptorCreateView.onDefine();
         });
 
         contextView.on("descriptormetamodel:delete", function () {
-            // this will update the model and so on the view
-            alert("not yet implemented");
+            var ConfirmDialog = require('../../main/views/confirmdialog');
+            var confirmDialog = new ConfirmDialog({
+                title: gt.gettext('Delete descriptors'),
+                label: gt.gettext('Are you sure you want to delete any descriptors for this taxon ?')
+            });
+            confirmDialog.render();
+
+            confirmDialog.on('dialog:confirm', function() {
+                // this will update the model and so on the view
+                view.model.save({descriptor_meta_model: null}, {patch: true, trigger: true});
+            });
         });
     },
 
@@ -64,28 +78,9 @@ var View = DescribableDetails.extend({
         // update the descriptor part of the taxon layout
         var taxonLayout = application.view().getRegion('content').currentView;
 
-        var view = new TaxonDescriptorEditView({model: this.model, descriptorMetaModelLayout: this.descriptorMetaModelLayout});
+        var view = new TaxonDescriptorEditView({
+            model: this.model, descriptorMetaModelLayout: this.descriptorMetaModelLayout});
         taxonLayout.getRegion('descriptors').show(view);
-
-        // contextual panel
-        var contextLayout = application.getView().getRegion('right').currentView;
-
-        var actions = [];
-
-        actions.push('apply');
-        actions.push('cancel');
-
-        var TaxonDescriptorsContextView = require('../views/taxondescriptorscontext');
-        var contextView = new TaxonDescriptorsContextView({actions: actions})
-        contextLayout.getRegion('content').show(contextView);
-
-        contextView.on("describable:cancel", function() {
-            view.onCancel();
-        });
-
-        contextView.on("describable:apply", function() {
-            view.onApply();
-        });
     }
 });
 

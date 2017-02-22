@@ -17,6 +17,10 @@ var View = Marionette.ItemView.extend({
     className: 'object taxon',
     template: require('../templates/taxondetails.html'),
 
+    attributes: {
+        style: "height: 25px; overflow-y: auto;"
+    },
+
     ui: {
         "view_taxon": ".view-taxon",
         "taxon_rank": ".taxon-ranks",

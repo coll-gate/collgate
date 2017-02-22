@@ -61,6 +61,9 @@ AccessionModule.prototype = {
         var AccessionRouter = require('./routers/accession');
         this.routers.accession = new AccessionRouter();
 
+        var BatchRouter = require('./routers/batch');
+        this.routers.batch = new BatchRouter();
+
         Logger.timeEnd("Init accession module");
     },
 

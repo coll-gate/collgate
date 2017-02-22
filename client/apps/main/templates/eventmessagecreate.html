@@ -1,0 +1,28 @@
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title"><%= gt.gettext("Defines the message for each language") %></h4>
+        </div>
+        <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
+            <form class="messages"><%
+                var languages = application.main.collections.uilanguages;
+
+                for (var i = 0; i < languages.models.length; ++i) {
+                    var lang_id = languages.at(i).get('id');
+                    var lang_label = languages.at(i).get('label');
+                    var autofocus = (i == 0) ? 'autofocus=""' : "";
+                %>
+                    <div class="form-group">
+                        <label class="control-label"><%= gt.gettext(lang_label) %></label>
+                        <input class="form-control" type="text" language="<%= lang_id %>" value="" maxlength="256"<%= autofocus %> autocomplete="off" style="width:100%;">
+                    </div>
+                <% } %>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= gt.gettext("Cancel") %></button>
+            <button type="button" class="btn btn-success apply"><%= gt.gettext("Create") %></button>
+        </div>
+    </div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->

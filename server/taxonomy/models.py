@@ -30,14 +30,17 @@ class TaxonSynonymType(ChoiceEnum):
 class TaxonRank(ChoiceEnum):
 
     FAMILY = IntegerChoice(60, _("Family"))
-    SUB_FAMILY = IntegerChoice(61, _("Sub-family"))
+    SUB_FAMILY = IntegerChoice(61, _("Subfamily"))
+    TRIBE = IntegerChoice(65, _("Tribe"))
+    SUB_TRIBE = IntegerChoice(66, _("Subtribe"))
     GENUS = IntegerChoice(70, _("Genus"))
-    SUB_GENUS = IntegerChoice(71, _("Sub-genus"))
+    SUB_GENUS = IntegerChoice(71, _("Subgenus"))
     SECTION = IntegerChoice(72, _("Section"))
-    SUB_SECTION = IntegerChoice(73, _("Sub-section"))
+    SUB_SECTION = IntegerChoice(73, _("Subsection"))
     SPECIE = IntegerChoice(80, _("Specie"))
-    SUB_SPECIE = IntegerChoice(81, _("Sub-specie"))
+    SUB_SPECIE = IntegerChoice(81, _("Subspecie"))
     VARIETY = IntegerChoice(82, _("Variety"))
+    SUB_VARIETY = IntegerChoice(83, _("Subvariety"))
 
 
 class Taxon(Entity):
@@ -45,6 +48,8 @@ class Taxon(Entity):
     rank = models.IntegerField(choices=TaxonRank.choices())
 
     parent = models.ForeignKey('Taxon', null=True, related_name="children")
+
+    # list of parents ordered from lower to direct one. Any cases can be contained into this string list
     parent_list = models.CharField(
         max_length=1024, blank=True, default="", validators=[validate_comma_separated_integer_list])
 
@@ -63,7 +68,9 @@ class Taxon(Entity):
         return {
             'rank': self.rank,
             'parent': self.parent_id,
-            'parent_list': self.parent_list
+            'parent_list': self.parent_list,
+            'descriptor_meta_model': self.descriptor_meta_model_id,
+            'descriptors': self.descriptors
         }
 
     def audit_update(self, user):
@@ -72,14 +79,28 @@ class Taxon(Entity):
 
             if 'rank' in self.updated_fields:
                 result['rank'] = self.rank
+
             if 'parent' in self.updated_fields or 'parent_list' in self.updated_fields:
-                result['parent'] = self.parent
+                result['parent'] = self.parent_id
                 result['parent_list'] = self.parent_list
+
+            if 'descriptor_meta_model' in self.updated_fields:
+                result['descriptor_meta_model'] = self.descriptor_meta_model_id
+
+            if 'descriptors' in self.updated_fields:
+                if hasattr(self, 'descriptors_diff'):
+                    result['descriptors'] = self.descriptors_diff
+                else:
+                    result['descriptors'] = self.descriptors
+
+            return result
         else:
             return {
                 'rank': self.rank,
                 'parent': self.parent_id,
-                'parent_list': self.parent_list
+                'parent_list': self.parent_list,
+                'descriptor_meta_model': self.descriptor_meta_model_id,
+                'descriptors': self.descriptors
             }
 
     def audit_delete(self, user):
@@ -122,6 +143,7 @@ class TaxonSynonym(Entity):
 
             if 'language' in self.updated_fields:
                 result['language'] = self.language
+
             if 'type' in self.updated_fields:
                 result['type'] = self.type
         else:

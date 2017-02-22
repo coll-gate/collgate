@@ -3,7 +3,7 @@
 # Copyright (c) 2016 INRA UMR1095 GDEC
 
 """
-Specific developement settings.
+Specific development settings.
 """
 
 import os
@@ -124,7 +124,7 @@ LOGGING = {
         'file': {
             'level': 'INFO',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(BASE_DIR, '..', 'logs', 'collgate.log'),
+            'filename': os.path.join(BASE_DIR, 'logs', 'collgate.log'),
             'formatter': 'standard',
             'maxBytes': 1024*1024*16,  # 16MB
             'backupCount': 10,
@@ -136,9 +136,14 @@ LOGGING = {
             'level': 'INFO',
             'propagate': True,
         },
+        'django.db': {
+            'handlers': ['console'],
+            'level': 'WARNING',
+            'propagate': False,
+        },
         'django.request': {
             'handlers': ['mail_admins', 'console'],
-            'level': 'WARNING',
+            'level': 'INFO',
             'propagate': True,
         },
         'collgate': {

@@ -44,6 +44,9 @@ class DescriptorFormatType(object):
         # list of related field into format.*.
         self.format_fields = ["type"]
 
+        # set to true if the content of the value is external.
+        self.external = False
+
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         """
         Validate the value according the format.
@@ -61,6 +64,19 @@ class DescriptorFormatType(object):
         :return: None if the check is done, else a string with the error detail
         """
         return None
+
+    def own(self, entity, old_value, new_value):
+        """
+        First it compares the old and the new value, if they differs then it delete the external entity pointed
+        by the old value, and associate entity to the new entity pointed by the new value.
+
+        The values can be object or array, it is related to the type of the format.
+
+        :param entity: Owner entity
+        :param old_value: Old target entity id (to be removed)
+        :param new_value: New target entity id (to be defined)
+        """
+        pass
 
 
 class DescriptorFormatTypeManager(object):
@@ -82,6 +98,13 @@ class DescriptorFormatTypeManager(object):
                 raise ImproperlyConfigured("Descriptor format type not already defined (%s)" % dft.name)
 
             cls.descriptor_format_types[dft.name] = dft
+
+    @classmethod
+    def values(cls):
+        """
+        Return the list of any registered descriptor format types.
+        """
+        return list(cls.descriptor_format_types.values())
 
     @classmethod
     def validate(cls, descriptor_type_format, value, descriptor_model_type):
@@ -121,11 +144,40 @@ class DescriptorFormatTypeManager(object):
             raise ValueError(str(res))
 
     @classmethod
-    def values(cls):
+    def has_external(cls, descriptor_type_format):
         """
-        Return the list of any registered descriptor format types.
+        Returns true if the descriptor format type uses of an external data model.
+        :param descriptor_type_format: Format of the type of descriptor as python dict
+        :except ValueError with descriptor of the problem
         """
-        return list(cls.descriptor_format_types.values())
+        format_type = descriptor_type_format['type']
+
+        dft = cls.descriptor_format_types.get(format_type)
+        if dft is None:
+            raise ValueError("Unsupported descriptor format type %s" % format_type)
+
+        return dft.external
+
+    @classmethod
+    def own(cls, descriptor_type_format, entity, old_value, new_value):
+        """
+        First it compares the old and the new value, if they differs then it delete the external entity pointed
+        by the old value, and associate entity to the new entity pointed by the new value.
+
+        The values can be object or array, it is related to the type of the format.
+
+        :param descriptor_type_format: Format of the type of descriptor as python dict
+        :param entity: Owner entity
+        :param old_value: Old target entity id (to be removed)
+        :param new_value: New target entity id (to be defined)
+        """
+        format_type = descriptor_type_format['type']
+
+        dft = cls.descriptor_format_types.get(format_type)
+        if dft is None:
+            raise ValueError("Unsupported descriptor format type %s" % format_type)
+
+        dft.own(entity, old_value, new_value)
 
 
 class DescriptorFormatTypeGroupSingle(DescriptorFormatTypeGroup):

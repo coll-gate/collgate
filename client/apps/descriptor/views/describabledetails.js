@@ -55,11 +55,11 @@ var View = ItemView.extend({
             var descriptorType = descriptorModelType.descriptor_type;
             var format = descriptorType.format;
 
-            var values = [model.get('descriptors')[descriptorModelType.id]];
+            var values = model.get('descriptors')[descriptorModelType.id];
 
             var widget = application.descriptor.widgets.newElement(format.type);
             if (widget) {
-                widget.create(format, el.children('td.descriptor-value'), true, true, descriptorType.group, descriptorType.id);
+                widget.create(format, el.children('td.descriptor-value'), true, descriptorType.group, descriptorType.id);
                 widget.set(format, true, values, descriptorType.group, descriptorType.id);
             }
 
@@ -96,7 +96,17 @@ var View = ItemView.extend({
             }
         }
     },
-    
+
+    onDestroy: function() {
+        // destroy any widgets
+        for (var pi = 0; pi < this.descriptorMetaModelLayout.panels.length; ++pi) {
+            for (var i = 0; i < this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types.length; ++i) {
+                var descriptorModelType = this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
+                descriptorModelType.widget.destroy();
+            }
+        }
+    },
+
     onModify: function () {
 
     }

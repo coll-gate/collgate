@@ -16,11 +16,10 @@ var View = ScrollView.extend({
     className: "taxon-list",
     childView: TaxonView,
 
-    initialize: function(options) {
-        options || (options = {});
-        this.listenTo(this.collection, 'reset', this.render, this);
-
+    initialize: function() {
         View.__super__.initialize.apply(this);
+
+        this.listenTo(this.collection, 'reset', this.render, this);
     }
 });
 

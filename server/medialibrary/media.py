@@ -9,6 +9,7 @@ import stat
 import magic
 
 from django.conf import settings
+from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import SuspiciousOperation
 from django.http import HttpResponse
 from django.http import StreamingHttpResponse
@@ -17,21 +18,23 @@ from django.utils.translation import ugettext_lazy as _
 
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
-from igdectk.common.helpers import get_setting
-
 from medialibrary.models import Media
+from permission.utils import get_permissions_for
 
+from . import localsettings
 from .base import RestMediaLibrary
 
 logger = logging.getLogger('collgate')
-
-# chunk size in bytes (to download a file)
-CHUNK_SIZE = 65536
 
 
 class RestMedia(RestMediaLibrary):
     regex = r'^media/$'
     suffix = 'media'
+
+
+class RestMediaUpload(RestMedia):
+    regex = r'^upload/$'
+    suffix = 'upload'
 
 
 class RestMediaUUID(RestMedia):
@@ -52,18 +55,63 @@ class RestMediaUUIDDownload(RestMediaUUID):
 @RestMediaUUID.def_auth_request(Method.GET, Format.JSON)
 def get_media(request, uuid):
     """
-
-    :param request:
-    :param uuid:
-    :return:
+    Returns the media details (mime-type, file name, size...) but not the file content.
     """
+    media = get_object_or_404(Media, uuid=uuid)
 
-    result = {}
+    # check user permission on the media
+    if media.owner_content_type == "auth.user":
+        if media.owner_object_id != request.user.pk:
+            raise PermissionDenied(_('Your are not the owner of the media'))
+    else:
+        perms = get_permissions_for(request.user,
+                                    media.owner_content_type.app_label,
+                                    media.owner_content_type.model,
+                                    media.owner_object_id)
+        if len(perms) == 0:
+            raise PermissionDenied(_('No permissions to the owner entity'))
+
+    result = {
+        'id': media.pk,
+        'uuid': media.uuid,
+        'name': media.name,
+        'created_date': media.created_date,
+        'modified_date': media.modified_date,
+        'file_name': media.file_name,
+        'file_size': media.file_size,
+        'mime_type': media.mime_type
+    }
 
     return HttpResponseRest(request, result)
 
 
-@RestMediaUUIDDownload.def_auth_request(Method.GET, Format.HTML)
+@RestMediaUUID.def_auth_request(Method.DELETE, Format.JSON)
+def delete_media(request, uuid):
+    """
+    Delete an existing media if the actual owner is the user of the upload.
+    """
+    media = get_object_or_404(Media, uuid=uuid)
+
+    # check user permission on the media
+    if ".".join(media.owner_content_type.natural_key()) != "auth.user" or media.owner_object_id != request.user.pk:
+        raise PermissionDenied(_("Your are not the owner of the media"))
+
+    try:
+        # delete the related file
+        abs_filename = os.path.join(localsettings.storage_path, media.name)
+
+        if os.path.exists(abs_filename):
+            os.remove(abs_filename)
+
+        # and the model
+        media.delete()
+    except:
+        raise SuspiciousOperation(_("Unable to delete the media"))
+
+    return HttpResponseRest(request, {})
+
+
+@RestMediaUUIDDownload.def_auth_request(Method.GET, Format.ANY)
 def download_media_content(request, uuid):
     """
     Download the content of a file using its UUID.
@@ -72,17 +120,20 @@ def download_media_content(request, uuid):
     """
     media = get_object_or_404(Media, uuid=uuid)
 
-    storage_location = get_setting('medialibrary', 'storage_location')
+    # check user permission on the media
+    if media.owner_content_type == "auth.user":
+        if media.owner_object_id != request.user.pk:
+            raise PermissionDenied(_('Your are not the owner of the media'))
+    else:
+        perms = get_permissions_for(request.user,
+                                    media.owner_content_type.app_label,
+                                    media.owner_content_type.model,
+                                    media.owner_object_id)
+        if len(perms) == 0:
+            raise PermissionDenied(_('No permissions to the owner entity'))
 
     if settings.DEBUG:
-        storage_path = get_setting('medialibrary', 'storage_path')
-        if not os.path.isabs(storage_path):
-            storage_path = os.path.abspath(storage_path)
-
-        if not os.path.isdir(storage_path):
-            raise SuspiciousOperation(_("Media library destination folder misconfiguration"))
-
-        abs_filename = os.path.join(storage_path, media.name)
+        abs_filename = os.path.join(localsettings.storage_path, media.name)
         local_file = open(abs_filename, "rb")
 
         # response = HttpResponse(content_type=media.mime_type)
@@ -95,34 +146,27 @@ def download_media_content(request, uuid):
     else:
         response = HttpResponse(content_type=media.mime_type)
         response['Content-Disposition'] = 'attachment; filename="' + media.file_name + '"'
-        response['X-Accel-Redirect'] = "{0}/{1}".format(storage_location, media.name)
+        response['X-Accel-Redirect'] = "{0}/{1}".format(localsettings.storage_location, media.name)
 
     return response
 
 
-@RestMedia.def_auth_request(Method.POST, Format.JSON)
-def upload_media(request, uuid):
+@RestMediaUpload.def_auth_request(Method.POST, Format.JSON)
+def upload_media(request):
     """
     Upload a media file from multi-part HTTP file request.
     @see https://docs.djangoproject.com/fr/1.10/ref/files/uploads/#custom-upload-handlers
     """
-    storage_path = get_setting('medialibrary', 'storage_path')
-    if not os.path.isabs(storage_path):
-        storage_path = os.path.abspath(storage_path)
-
-    if not os.path.isdir(storage_path):
-        raise SuspiciousOperation(_("Media library destination folder misconfiguration"))
-
     if not request.FILES:
         raise SuspiciousOperation(_("No file specified"))
 
     up = request.FILES['file']
 
     # check file size
-    if up.size > get_setting('medialibrary', 'max_file_size'):
-        SuspiciousOperation(_("Upload file size limit is set to %i bytes") % get_setting('medialibrary', 'max_file_size'))
+    if up.size > localsettings.max_file_size:
+        SuspiciousOperation(_("Upload file size limit is set to %i bytes") % localsettings.max_file_size)
 
-    # simple check mimetypes using the file extension (can process a test using libmagic)
+    # simple check mime-types using the file extension (can process a test using libmagic)
     guessed_mime_type = mimetypes.guess_type(up.name)[0]
     if guessed_mime_type is None:
         SuspiciousOperation(_("Undetermined uploaded file type"))
@@ -142,19 +186,24 @@ def upload_media(request, uuid):
     media = Media()
 
     # generate two levels of path from the uuid node
-    l1_path = '%x' % (((media.uuid.node & 0xffffff000000) >> 24) % 256)
-    l2_path = '%x' % ((media.uuid.node & 0x000000ffffff) % 256)
+    l1_path = '%02x' % (((media.uuid.node & 0xffffff000000) >> 24) % 256)
+    l2_path = '%02x' % ((media.uuid.node & 0x000000ffffff) % 256)
 
     local_path = os.path.join(l1_path, l2_path)
-    local_file_name = media.uuid
+    local_file_name = str(media.uuid)
 
     media.name = os.path.join(local_path, local_file_name)
     media.version = 1
     media.file_name = valid_name.getvalue()
+    media.file_size = up.size
+
+    # default owner is the user of the upload
+    media.owner_content_type = ContentType.objects.get_by_natural_key("auth", "user")
+    media.owner_object_id = request.user.pk
 
     # create the path if necessary
-    abs_path = os.path.join(storage_path, local_path)
-    if not os.direxists(abs_path):
+    abs_path = os.path.join(localsettings.storage_path, local_path)
+    if not os.path.exists(abs_path):
         os.makedirs(abs_path, 0o770)
 
     abs_file_name = os.path.join(abs_path, local_file_name)
@@ -175,7 +224,7 @@ def upload_media(request, uuid):
     guessed_mime_type = magic.from_buffer(test_mime_buffer.getvalue(), mime=True)
 
     # 0660 on file
-    os.chmod(local_file_name, stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IWGRP)
+    os.chmod(abs_file_name, stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IWGRP)
 
     media.mime_type = guessed_mime_type  # up.content_type
 
@@ -200,31 +249,38 @@ def update_upload_media(request, uuid):
     """
     Upload a media file from multi-part HTTP file request.
     """
-    storage_path = get_setting('medialibrary', 'storage_path')
-    if not os.path.isabs(storage_path):
-        storage_path = os.path.abspath(storage_path)
-
-    if not os.path.isdir(storage_path):
-        raise SuspiciousOperation(_("Media library destination folder misconfiguration"))
-
     if not request.FILES:
         raise SuspiciousOperation(_("No file specified"))
 
     up = request.FILES['file']
 
     # check file size
-    if up.size > get_setting('medialibrary', 'max_file_size'):
-        SuspiciousOperation(_("Upload file size limit is set to %i bytes") % get_setting('medialibrary', 'max_file_size'))
+    if up.size > localsettings.max_file_size:
+        SuspiciousOperation(_("Upload file size limit is set to %i bytes") % localsettings.max_file_size)
 
-    # simple check mimetypes using the file extension (can process a test using libmagic)
+    # simple check mime-types using the file extension (can process a test using libmagic)
     guessed_mime_type = mimetypes.guess_type(up.name)[0]
     if guessed_mime_type is None:
         SuspiciousOperation(_("Undetermined uploaded file type"))
 
     media = get_object_or_404(Media, uuid=uuid)
+
+    # check user permission on the media
+    if media.owner_content_type == "auth.user":
+        if media.owner_object_id != request.user.pk:
+            raise PermissionDenied(_('Your are not the owner of the media'))
+    else:
+        perms = get_permissions_for(request.user,
+                                    media.owner_content_type.app_label,
+                                    media.owner_content_type.model,
+                                    media.owner_object_id)
+
+        if '%s.change_%s' % (media.owner_content_type.app_label, media.owner_content_type.model) not in perms:
+            raise PermissionDenied(_('No change permission to the owner entity'))
+
     version = media.version + 1
 
-    abs_file_name = os.path.join(storage_path, media.name)
+    abs_file_name = os.path.join(localsettings.storage_path, media.name)
 
     if not os.path.isfile(abs_file_name):
         SuspiciousOperation(_("Trying to update a non-existing file"))

@@ -25,6 +25,10 @@ var View = Marionette.ItemView.extend({
     taxon: {name: '', rank: 0, parent_details: []},
     noLink: false,
 
+    attributes: {
+        style: "height: 25px; overflow-y: auto;"
+    },
+
     ui: {
         view_taxon: ".view-taxon",
         taxon_rank: ".taxon-ranks",

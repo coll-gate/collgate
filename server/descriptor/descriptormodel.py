@@ -36,7 +36,7 @@ class RestDescriptorModelSearch(RestDescriptorModel):
 
 
 class RestDescriptorModelId(RestDescriptorModel):
-    regex = r'^(?P<id>[0-9]+)/$'
+    regex = r'^(?P<des_id>[0-9]+)/$'
     suffix = 'id'
 
 
@@ -51,7 +51,7 @@ class RestDescriptorModelIdType(RestDescriptorModelId):
 
 
 class RestDescriptorModelIdTypeId(RestDescriptorModelIdType):
-    regex = r'^(?P<tid>[0-9]+)/$'
+    regex = r'^(?P<typ_id>[0-9]+)/$'
     suffix = 'id'
 
 
@@ -75,7 +75,7 @@ def get_descriptor_models(request):
     limit = results_per_page
 
     if cursor:
-        cursor_name, cursor_id = cursor.split('/')
+        cursor_name, cursor_id = cursor.rsplit('/', 1)
         qs = DescriptorModel.objects.filter(Q(name__gt=cursor_name))
     else:
         qs = DescriptorModel.objects.all()
@@ -117,9 +117,8 @@ def get_descriptor_models(request):
 
 
 @RestDescriptorModelId.def_auth_request(Method.GET, Format.JSON)
-def get_descriptor_model(request, id):
-    dm_id = int(id)
-    dm = get_object_or_404(DescriptorModel, id=dm_id)
+def get_descriptor_model(request, des_id):
+    dm = get_object_or_404(DescriptorModel, id=int(des_id))
 
     result = {
         'id': dm.id,
@@ -182,10 +181,8 @@ def create_descriptor_model(request):
     },
     perms={'descriptor.change_descriptormodel': _('You are not allowed to modify a model of descriptor')},
     staff=True)
-def update_descriptor_model(request, id):
-    dm_id = int(id)
-
-    model = get_object_or_404(DescriptorModel, id=dm_id)
+def update_descriptor_model(request, des_id):
+    model = get_object_or_404(DescriptorModel, id=int(des_id))
 
     name = request.data['name']
     verbose_name = request.data.get('verbose_name', '')
@@ -207,10 +204,8 @@ def update_descriptor_model(request, id):
         'descriptor.delete_descriptormodel': _('You are not allowed to remove a model of descriptor')
     },
     staff=True)
-def remove_descriptor_model(request, id):
-    dm_id = int(id)
-
-    model = get_object_or_404(DescriptorModel, id=dm_id)
+def remove_descriptor_model(request, des_id):
+    model = get_object_or_404(DescriptorModel, id=int(des_id))
 
     if model.descriptor_model_types.all().exists():
         raise SuspiciousOperation(_("Only empty models of descriptor can be removed"))
@@ -256,7 +251,7 @@ def search_descriptor_models(request):
 
 
 @RestDescriptorModelIdType.def_auth_request(Method.GET, Format.JSON, staff=True)
-def list_descriptor_model_types_for_model(request, id):
+def list_descriptor_model_types_for_model(request, des_id):
     """
     Returns a list of type of descriptors ordered by name for a given model of descriptor.
     """
@@ -264,11 +259,10 @@ def list_descriptor_model_types_for_model(request, id):
     cursor = request.GET.get('cursor')
     limit = results_per_page
 
-    dm_id = int(id)
-    dm = get_object_or_404(DescriptorModel, id=dm_id)
+    dm = get_object_or_404(DescriptorModel, id=int(des_id))
 
     if cursor:
-        cursor_position, cursor_id = cursor.split('/')
+        cursor_position, cursor_id = cursor.rsplit('/', 1)
         qs = dm.descriptor_model_types.filter(Q(position__gt=cursor_position))
     else:
         qs = dm.descriptor_model_types.all()
@@ -294,11 +288,11 @@ def list_descriptor_model_types_for_model(request, id):
     if len(items_list) > 0:
         # prev cursor (asc order)
         obj = items_list[0]
-        prev_cursor = "%i/%s" % (obj['position'], obj['id'])
+        prev_cursor = "%i/%i" % (obj['position'], obj['id'])
 
         # next cursor (asc order)
-        dm = items_list[-1]
-        next_cursor = "%i/%s" % (obj['position'], obj['id'])
+        obj = items_list[-1]
+        next_cursor = "%i/%i" % (obj['position'], obj['id'])
     else:
         prev_cursor = None
         next_cursor = None
@@ -329,9 +323,7 @@ def list_descriptor_model_types_for_model(request, id):
         'descriptor.add_descriptormodeltype': _('You are not allowed to create a type of model of descriptor'),
     },
     staff=True)
-def create_descriptor_model_type_for_type(request, id):
-    dm_id = int(id)
-
+def create_descriptor_model_type_for_type(request, des_id):
     dt_code = request.data['descriptor_type_code']
 
     lang = translation.get_language()
@@ -340,14 +332,14 @@ def create_descriptor_model_type_for_type(request, id):
     set_once = bool(request.data['set_once'])
     position = int(request.data['position'])
 
-    dm = get_object_or_404(DescriptorModel, id=dm_id)
+    dm = get_object_or_404(DescriptorModel, id=int(des_id))
     dt = get_object_or_404(DescriptorType, code=dt_code)
 
     dmt = dm.descriptor_model_types.all().order_by(Length('name').desc(), '-name')[:1]
     if dmt.exists():
-        name = "%i_%i" % (dm_id, int(dmt[0].name.split('_')[1])+1)
+        name = "%i_%i" % (dm.id, int(dmt[0].name.split('_')[1])+1)
     else:
-        name = "%i_%i" % (dm_id, 1)
+        name = "%i_%i" % (dm.id, 1)
 
     dmt = DescriptorModelType()
 
@@ -397,17 +389,15 @@ def create_descriptor_model_type_for_type(request, id):
         'descriptor.change_descriptormodeltype': _('You are not allowed to modify a type of model of descriptor'),
     },
     staff=True)
-def reorder_descriptor_types_for_model(request, id):
+def reorder_descriptor_types_for_model(request, des_id):
     """
     Reorder the types of models of descriptors according to the new position of one of the elements.
     """
-    dm_id = int(id)
-
     dmt_id = int(request.data['descriptor_model_type_id'])
     position = int(request.data['position'])
 
-    dm = get_object_or_404(DescriptorModel, id=dm_id)
-    dmt_ref = get_object_or_404(DescriptorModelType, id=dmt_id, descriptor_model__id=dm_id)
+    dm = get_object_or_404(DescriptorModel, id=int(des_id))
+    dmt_ref = get_object_or_404(DescriptorModelType, id=dmt_id, descriptor_model=dm)
 
     dmt_list = []
 
@@ -458,19 +448,16 @@ def reorder_descriptor_types_for_model(request, id):
          'descriptor.change_descriptormodeltype': _('You are not allowed to modify a type of model of descriptor'),
     },
     staff=True)
-def patch_descriptor_model_type_for_model(request, id, tid):
+def patch_descriptor_model_type_for_model(request, des_id, typ_id):
     """
     Change the 'label', 'mandatory' or 'set_once' of a type of model of descriptor.
     To changes the position uses the order method of the collection.
     """
-    dm_id = int(id)
-    dmt_id = int(tid)
-
     mandatory = request.data.get('mandatory')
     set_once = request.data.get('set_once')
     label = request.data.get('label')
 
-    dmt = get_object_or_404(DescriptorModelType, id=dmt_id, descriptor_model__id=dm_id)
+    dmt = get_object_or_404(DescriptorModelType, id=int(typ_id), descriptor_model_id=int(des_id))
 
     # cannot change the mandatory field once there is some data
     if dmt.descriptor_model.in_usage() and (mandatory is not None):
@@ -501,20 +488,17 @@ def patch_descriptor_model_type_for_model(request, id, tid):
          'descriptor.delete_descriptormodeltype': _('You are not allowed to remove a type of model of descriptor'),
     },
     staff=True)
-def delete_descriptor_model_type_for_model(request, id, tid):
+def delete_descriptor_model_type_for_model(request, des_id, typ_id):
     """
     If possible delete a descriptor model type from de descriptor model.
     It is not possible if there is data using the model of descriptor or the status is valid.
     """
-    dm_id = int(id)
-    dmt_id = int(tid)
-
-    dm = get_object_or_404(DescriptorModel, id=dm_id)
+    dm = get_object_or_404(DescriptorModel, id=int(des_id))
 
     if dm.in_usage():
         raise SuspiciousOperation(_("There is some data using the model of descriptor"))
 
-    dmt = get_object_or_404(DescriptorModelType, id=dmt_id, descriptor_model__id=dm_id)
+    dmt = get_object_or_404(DescriptorModelType, id=int(typ_id), descriptor_model=dm)
 
     position = dmt.position
     dmt.delete()
@@ -529,14 +513,11 @@ def delete_descriptor_model_type_for_model(request, id, tid):
 
 
 @RestDescriptorModelIdTypeIdLabel.def_auth_request(Method.GET, Format.JSON)
-def get_all_labels_of_descriptor_model_type(request, id, tid):
+def get_all_labels_of_descriptor_model_type(request, des_id, typ_id):
     """
     Returns labels for each language related to the user interface.
     """
-    dm_id = int(id)
-    dmt_id = int(tid)
-
-    dmt = get_object_or_404(DescriptorModelType, id=dmt_id, descriptor_model__id=dm_id)
+    dmt = get_object_or_404(DescriptorModelType, id=int(typ_id), descriptor_model_id=int(des_id))
 
     label_dict = json.loads(dmt.label)
 
@@ -563,15 +544,12 @@ def get_all_labels_of_descriptor_model_type(request, id, tid):
         'descriptor.change_descriptormodeltype': _('You are not allowed to modify a type of model of descriptor'),
     },
     staff=True)
-def change_all_labels_of_descriptor_model_type(request, id, tid):
+def change_all_labels_of_descriptor_model_type(request, des_id, typ_id):
     """
     Changes all the label, for each language related to the user interface.
     Returns only the local label.
     """
-    dm_id = int(id)
-    dmt_id = int(tid)
-
-    dmt = get_object_or_404(DescriptorModelType, id=dmt_id, descriptor_model__id=dm_id)
+    dmt = get_object_or_404(DescriptorModelType, id=int(typ_id), descriptor_model_id=int(des_id))
 
     labels = request.data
 
@@ -594,14 +572,11 @@ def change_all_labels_of_descriptor_model_type(request, id, tid):
 
 
 @RestDescriptorModelIdTypeIdCondition.def_auth_request(Method.GET, Format.JSON)
-def get_condition_for_descriptor_model_type(request, id, tid):
+def get_condition_for_descriptor_model_type(request, des_id, typ_id):
     """
     Get if it exists, the condition related to the display of a descriptor model type.
     """
-    dm_id = int(id)
-    dmt_id = int(tid)
-
-    conditions = DescriptorModelTypeCondition.objects.filter(descriptor_model_type_id=dmt_id)
+    conditions = DescriptorModelTypeCondition.objects.filter(descriptor_model_type_id=int(typ_id))
     condition = None
 
     if conditions.exists():
@@ -630,15 +605,7 @@ def get_condition_for_descriptor_model_type(request, id, tid):
         "properties": {
             "target": {"type": "integer"},
             "condition": {"type": "integer", "minValue": 0, "maxValue": 3},
-            "values": {
-                "type": "array",
-                "minItems": 0,
-                "maxItems": 64,
-                "items": {
-                    "type": ["boolean", "string", "number", "null"]
-                },
-                "required": False
-            },
+            "values": {"type": "any", "required": False},
         }
     },
     perms={
@@ -646,16 +613,14 @@ def get_condition_for_descriptor_model_type(request, id, tid):
         'descriptor.change_descriptormodeltype': _('You are not allowed to modify a type of model of descriptor'),
     },
     staff=True)
-def create_condition_for_descriptor_model_type(request, id, tid):
+def create_condition_for_descriptor_model_type(request, des_id, typ_id):
     """
     Create the unique condition (for now) of the descriptor model type.
     """
-    dm_id = int(id)
-    dmt_id = int(tid)
     target_id = int(request.data['target'])
 
-    dmt = get_object_or_404(DescriptorModelType, id=dmt_id, descriptor_model__id=dm_id)
-    target = get_object_or_404(DescriptorModelType, id=target_id, descriptor_model__id=dm_id)
+    dmt = get_object_or_404(DescriptorModelType, id=int(typ_id), descriptor_model_id=int(des_id))
+    target = get_object_or_404(DescriptorModelType, id=target_id, descriptor_model_id=int(des_id))
 
     if dmt.mandatory:
         raise SuspiciousOperation(_("It is not possible to define a condition on a required type of model of descriptor"))
@@ -668,10 +633,10 @@ def create_condition_for_descriptor_model_type(request, id, tid):
     values = request.data['values']
 
     # validate the values[0]
-    format = json.loads(target.descriptor_type.format)
+    format_type = json.loads(target.descriptor_type.format)
 
-    for value in values:
-        DescriptorFormatTypeManager.validate(format, value, target)
+    if condition == DescriptorCondition.EQUAL or condition == DescriptorCondition.NOT_EQUAL:
+        DescriptorFormatTypeManager.validate(format_type, values, target)
 
     dmtc = DescriptorModelTypeCondition()
 
@@ -699,15 +664,7 @@ def create_condition_for_descriptor_model_type(request, id, tid):
         "properties": {
             "target": {"type": "integer"},
             "condition": {"type": "integer", "minValue": 0, "maxValue": 3},
-            "values": {
-                "type": "array",
-                "minItems": 0,
-                "maxItems": 64,
-                "items": {
-                    "type": ["boolean", "string", "number", "null"]
-                },
-                "required": False
-            },
+            "values": {"type": "any", "required": False},
         }
     },
     perms={
@@ -716,17 +673,15 @@ def create_condition_for_descriptor_model_type(request, id, tid):
         'descriptor.change_descriptormodeltypecondition': _('You are not allowed to modify a condition of a model of descriptor'),
     },
     staff=True)
-def modify_condition_for_descriptor_model_type(request, id, tid):
+def modify_condition_for_descriptor_model_type(request, des_id, typ_id):
     """
     Update the unique condition (for now) of the descriptor model type.
     """
-    dm_id = int(id)
-    dmt_id = int(tid)
     target_id = int(request.data['target'])
 
-    target = get_object_or_404(DescriptorModelType, id=target_id, descriptor_model__id=dm_id)
+    target = get_object_or_404(DescriptorModelType, id=target_id, descriptor_model_id=int(des_id))
 
-    conditions = DescriptorModelTypeCondition.objects.filter(descriptor_model_type_id=dmt_id)
+    conditions = DescriptorModelTypeCondition.objects.filter(descriptor_model_type_id=int(typ_id))
     dmtc = None
 
     if conditions.exists():
@@ -734,10 +689,12 @@ def modify_condition_for_descriptor_model_type(request, id, tid):
         values = request.data['values']
 
         # validate the values
-        format = json.loads(target.descriptor_type.format)
+        format_type = json.loads(target.descriptor_type.format)
 
-        for value in values:
-            DescriptorFormatTypeManager.validate(format, value, target)
+        condition = DescriptorCondition(request.data['condition'])
+
+        if condition == DescriptorCondition.EQUAL or condition == DescriptorCondition.NOT_EQUAL:
+            DescriptorFormatTypeManager.validate(format_type, values, target)
 
         condition = DescriptorCondition(request.data['condition'])
 
@@ -767,14 +724,11 @@ def modify_condition_for_descriptor_model_type(request, id, tid):
         'descriptor.delete_descriptormodeltypecondition': _('You are not allowed to delete a condition of a model of descriptor'),
     },
     staff=True)
-def delete_condition_for_descriptor_model_type(request, id, tid):
+def delete_condition_for_descriptor_model_type(request, des_id, typ_id):
     """
     Delete the unique condition (for now) of the descriptor model type.
     """
-    dm_id = int(id)
-    dmt_id = int(tid)
-
-    conditions = DescriptorModelTypeCondition.objects.filter(descriptor_model_type_id=dmt_id)
+    conditions = DescriptorModelTypeCondition.objects.filter(descriptor_model_type_id=int(typ_id))
 
     if conditions.exists():
         conditions[0].delete()

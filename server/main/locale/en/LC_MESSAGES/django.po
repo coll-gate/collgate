@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-27 11:42+0100\n"
+"POT-Creation-Date: 2017-02-21 11:10+0100\n"
 "PO-Revision-Date: 2016-02-01 11:53+0100\n"
 "Last-Translator: Frederic SCHERMA <frederic.scherma@clermont.inra.fr>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,16 +18,28 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: apps.py:45
+#: apps.py:46
 msgid "Help"
 msgstr ""
 
-#: apps.py:47
+#: apps.py:48
 msgid "Manual index"
 msgstr ""
 
-#: apps.py:50
+#: apps.py:51
 msgid "About HOGR..."
+msgstr ""
+
+#: eventmessage.py:94
+msgid "You are not allowed to delete an event message"
+msgstr ""
+
+#: eventmessage.py:109
+msgid "You are not allowed to create an event message"
+msgstr ""
+
+#: eventmessage.py:121
+msgid "Unsupported language identifier"
 msgstr ""
 
 #: home.py:33
@@ -38,44 +50,44 @@ msgstr ""
 msgid "Please, you must enable your cookies."
 msgstr ""
 
-#: models.py:67
+#: models.py:70
 msgid "Latin"
 msgstr ""
 
-#: models.py:68 models.py:77
+#: models.py:71 models.py:80
 msgid "English"
 msgstr ""
 
-#: models.py:69 models.py:78
+#: models.py:72 models.py:81
 msgid "French"
 msgstr ""
 
-#: models.py:107
+#: models.py:110
 msgid "Pending"
 msgstr ""
 
-#: models.py:108
+#: models.py:111
 msgid "Valid"
 msgstr ""
 
-#: models.py:109
+#: models.py:112
 msgid "Archived"
 msgstr ""
 
-#: models.py:110
+#: models.py:113
 msgid "Removed"
 msgstr ""
 
-#: models.py:201
+#: models.py:235
 msgid ""
 "It is not allowed to change the status of an entity from valid to pending"
 msgstr ""
 
-#: models.py:204
+#: models.py:238
 msgid "It is not allowed to change the status of a removed entity"
 msgstr ""
 
-#: models.py:207
+#: models.py:241
 msgid "It is not allowed to change the status of an archived entity"
 msgstr ""
 
@@ -95,22 +107,22 @@ msgstr ""
 msgid "Logged out"
 msgstr ""
 
-#: templates/main/index.html:79
+#: templates/main/index.html:71
 msgid "Username"
 msgstr ""
 
-#: templates/main/index.html:82
+#: templates/main/index.html:74
 msgid "Password"
 msgstr ""
 
-#: templates/main/index.html:84
+#: templates/main/index.html:76
 msgid "Sign in"
 msgstr ""
 
-#: templates/main/index.html:99
+#: templates/main/index.html:91
 msgid "Edit information"
 msgstr "Edit information"
 
-#: templates/main/index.html:105
+#: templates/main/index.html:97
 msgid "Logout"
 msgstr "Logout"

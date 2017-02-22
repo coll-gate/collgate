@@ -1,0 +1,32 @@
+/**
+ * @file medialibrary.css
+ * @brief Media library module CSS
+ * @author Frederic SCHERMA
+ * @date 2017-02-10
+ * @copyright Copyright (c) 2017 INRA UMR1095 GDEC
+ * @license @todo
+ * @details
+ */
+
+span.media-download.contextual {
+    padding: 4px;
+    width: 24px;
+    height: 24px;
+    display: none;
+}
+
+img.media-image:hover ~ span.media-download.contextual, span.media-download.contextual:hover {
+    display: inline;
+    position: relative;
+    top: -38px;
+    left: -24px;
+}
+
+div.media-image-collection {
+    padding: 3px 12px;
+    margin: 0px;
+    border: 1px solid #ccc;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+    background-color : #eee;
+}

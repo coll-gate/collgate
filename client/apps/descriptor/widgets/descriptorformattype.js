@@ -9,10 +9,9 @@
  */
 
 var DescriptorFormatType = function() {
-    this.name ="";          // format type name
+    this.name = "";         // format type name
     this.group = "";        // related group name
 
-    this.owned = false;     // true mean the element is owned, and must be destroyed
     this.readOnly = false;  // true mean the widget is read only
     this.parent = null;     // direct parent
     this.el = null;         // element itself
@@ -27,7 +26,7 @@ var DescriptorFormatType = function() {
 DescriptorFormatType.prototype = {
     // return true if the there is one or more defaults values
     isValueDefined: function (definesValues, defaultValues) {
-        return !!definesValues && !!defaultValues && defaultValues[0] != null;
+        return !!definesValues && !!defaultValues && defaultValues != null;
     },
 
     // create a simple input widget within an input-group and with a specified glyphicon (bootstrap)
@@ -52,7 +51,13 @@ DescriptorFormatType.prototype = {
     },
 
     destroy: function() {
-        /* destroy the widget if owned */
+        /* destroy the widget if created */
+    },
+
+    cancel: function() {
+        /* for widgets that performs global or server operation, and must clean such operations before destroying the
+         *  widget, it must then implement the way to remove those such resources.
+         */
     },
 
     enable: function() {
@@ -69,7 +74,16 @@ DescriptorFormatType.prototype = {
 
     values: function() {
         /* return the formatted values */
-        return [""];
+        return null;
+    },
+
+    compare: function(a, b) {
+        if (typeof a !== typeof b) {
+            return false;
+        }
+
+        /* compare two values and return true if they are equals */
+        return a === b;
     },
 
     checkCondition: function (condition, value) {

@@ -19,20 +19,11 @@ var Entity = function() {
 };
 
 _.extend(Entity.prototype, DescriptorFormatType.prototype, {
-    create: function(format, parent, readOnly, create) {
+    create: function(format, parent, readOnly) {
         readOnly || (readOnly = false);
-        create || (create = true);
-
-        this.owned = create;
 
         if (readOnly) {
-            var input = null;
-
-            if (create) {
-                input = this._createStdInput(parent, "glyphicon-share");
-            } else {
-                input = parent.children('input');
-            }
+            var input = this._createStdInput(parent, "glyphicon-share");
 
             this.parent = parent;
             this.readOnly = true;
@@ -108,7 +99,7 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
     },
 
     destroy: function() {
-        if (this.el && this.parent && this.owned) {
+        if (this.el && this.parent) {
             if (this.readOnly) {
                 this.el.parent().remove();
             } else {
@@ -145,7 +136,7 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
             if (definesValues) {
                 $.ajax({
                     type: "GET",
-                    url: url + defaultValues[0] + '/',
+                    url: url + defaultValues + '/',
                     dataType: 'json'
                 }).done(function (data) {
                     type.el.val(data.name);
@@ -218,7 +209,7 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
                 // autoselect the initial value
                 $.ajax({
                     type: "GET",
-                    url: url + defaultValues[0] + '/',
+                    url: url + defaultValues + '/',
                     dataType: 'json'
                 }).done(function (data) {
                     initials.push({id: data.id, text: data.name});
@@ -236,25 +227,25 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
         if (this.el && this.parent) {
             if (this.el.val() !== "") {
                 var value = parseInt(this.el.val());
-                return [isNaN(value) ? null : value];
+                return isNaN(value) ? null : value;
             } else {
-                return [null];
+                return null;
             }
         }
 
-        return [null];
+        return null;
     },
 
     checkCondition: function (condition, values) {
         switch (condition) {
             case 0:
-                return this.values()[0] === null;
+                return this.values() === null;
             case 1:
-                return this.values()[0] !== null;
+                return this.values() !== null;
             case 2:
-                return this.values()[0] === values[0];
+                return this.values() === values;
             case 3:
-                return this.values()[0] !== values[0];
+                return this.values() !== values;
             default:
                 return false;
         }

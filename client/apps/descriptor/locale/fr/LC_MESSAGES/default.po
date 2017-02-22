@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-27 11:42+0100\n"
+"POT-Creation-Date: 2017-02-01 18:38+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,14 +18,14 @@ msgstr ""
 
 #: ../../../widgets/boolean.js:48 ../../../widgets/boolean.js:99
 #: ../../../templates/widgets/enumordinal.html:7
-#: ../../../templates/widgets/enumpair.html:11
+#: ../../../templates/widgets/enumpair.html:7
 #: ../../../templates/widgets/enumsingle.html:7
 msgid "Yes"
 msgstr "Oui"
 
 #: ../../../widgets/boolean.js:56 ../../../widgets/boolean.js:99
 #: ../../../templates/widgets/enumordinal.html:8
-#: ../../../templates/widgets/enumpair.html:12
+#: ../../../templates/widgets/enumpair.html:8
 #: ../../../templates/widgets/enumsingle.html:8
 msgid "No"
 msgstr "Non"
@@ -58,27 +58,27 @@ msgstr "Des types de descripteur existent pour ce groupe"
 
 #: ../../../views/descriptorgroup.js:89 ../../../views/descriptorgroupadd.js:45
 #: ../../../views/descriptorgrouptypeadd.js:51
-#: ../../../views/descriptormetamodeladd.js:131
+#: ../../../views/descriptormetamodeladd.js:132
 #: ../../../views/descriptormetamodeldetail.js:41
 #: ../../../views/descriptormodeladd.js:45
 #: ../../../views/descriptormodeldetail.js:43
-#: ../../../views/descriptortypedetailslayout.js:77
+#: ../../../views/descriptortypedetailslayout.js:74
 msgid "Invalid characters (alphanumeric, _ and - only)"
 msgstr "Caractères invalides (alphanumérique, _ et - seulement)"
 
 #: ../../../views/descriptorgroup.js:92 ../../../views/descriptorgroupadd.js:48
 #: ../../../views/descriptorgrouptypeadd.js:54
-#: ../../../views/descriptormetamodeladd.js:101
-#: ../../../views/descriptormetamodeladd.js:134
+#: ../../../views/descriptormetamodeladd.js:102
+#: ../../../views/descriptormetamodeladd.js:135
 #: ../../../views/descriptormetamodeldetail.js:43
 #: ../../../views/descriptormodeladd.js:48
 #: ../../../views/descriptormodeldetail.js:45
 #: ../../../views/descriptormodeltype.js:160
-#: ../../../views/descriptormodeltypelist.js:151
+#: ../../../views/descriptormodeltypelist.js:150
 #: ../../../views/descriptorpanel.js:175 ../../../views/descriptorpanel.js:357
 #: ../../../views/descriptorpanel.js:374
-#: ../../../views/descriptorpanellist.js:134
-#: ../../../views/descriptortypedetailslayout.js:79
+#: ../../../views/descriptorpanellist.js:133
+#: ../../../views/descriptortypedetailslayout.js:76
 #: ../../../views/descriptorvalue.js:116
 #: ../../../views/descriptorvalueordinal.js:105
 #: ../../../views/descriptorvaluepair.js:115
@@ -123,17 +123,17 @@ msgstr "64 caractères maximum"
 msgid "Successfully labeled !"
 msgstr "Label définit avec succès !"
 
-#: ../../../views/descriptormetamodeladd.js:91
+#: ../../../views/descriptormetamodeladd.js:92
 msgid "Unable to create the meta-model of descriptor !"
 msgstr "Impossible de créer le méta-modèle de descripteur !"
 
-#: ../../../views/descriptormetamodeladd.js:159
+#: ../../../views/descriptormetamodeladd.js:160
 msgid "Descriptor meta-model name already in usage"
 msgstr "Nom de méta-modèle de descripteur déjà utilisé"
 
 #: ../../../views/descriptormetamodeldetail.js:59
 #: ../../../views/descriptormodeldetail.js:63
-#: ../../../views/descriptortypedetailslayout.js:108
+#: ../../../views/descriptortypedetailslayout.js:105
 msgid "Done"
 msgstr "Fait"
 
@@ -142,34 +142,34 @@ msgid "Name for model of descriptor already in usage"
 msgstr "Ce nom de modèle de descripteur est déjà utilisé"
 
 #: ../../../views/descriptormodeltype.js:199
-#: ../../../views/descriptormodeltypelist.js:190
+#: ../../../views/descriptormodeltypelist.js:189
 msgid "Unable to create the type of model of descriptor !"
 msgstr "Impossible de créer le type de modèle de descripteur !"
 
 #: ../../../views/descriptormodeltype.js:293
-#: ../../../views/descriptormodeltypelist.js:249
+#: ../../../views/descriptormodeltypelist.js:248
 msgid "Unable to reorder the types of model of descriptor"
 msgstr "Impossible de réordonner les types de modèle de descripteur"
 
-#: ../../../views/descriptormodeltype.js:530
-#: ../../../views/descriptormodeltype.js:533
+#: ../../../views/descriptormodeltype.js:531
+#: ../../../views/descriptormodeltype.js:534
 #: ../../../templates/describabledetails.html:27
 #: ../../../templates/describableedit.html:27
 #: ../../../templates/descriptorvaluelist.html:17
 msgid "Value"
 msgstr "Valeur"
 
-#: ../../../views/descriptormodeltype.js:571
+#: ../../../views/descriptormodeltype.js:572
 msgid "Successfully removed !"
 msgstr "Retiré avec succé !"
 
-#: ../../../views/descriptormodeltype.js:609
-#: ../../../views/descriptormodeltype.js:621
+#: ../../../views/descriptormodeltype.js:610
+#: ../../../views/descriptormodeltype.js:622
 msgid "Successfully defined !"
 msgstr "Définie avec succé !"
 
 #: ../../../views/descriptorpanel.js:308
-#: ../../../views/descriptorpanellist.js:232
+#: ../../../views/descriptorpanellist.js:231
 msgid "Unable to reorder the panels of descriptor"
 msgstr "Impossible de réordonner les panels de descripters"
 
@@ -770,7 +770,7 @@ msgstr "Créer un modèle de descripteur"
 #: ../../../templates/descriptorvalueordinallist.html:16
 #: ../../../templates/descriptorvaluepairlist.html:16
 #: ../../../templates/widgets/enumordinal.html:38
-#: ../../../templates/widgets/enumpair.html:40
+#: ../../../templates/widgets/enumpair.html:36
 #: ../../../templates/widgets/enumsingle.html:26
 msgid "Code"
 msgstr "Code"
@@ -834,13 +834,13 @@ msgid "Model of the entity"
 msgstr "Modèle de l'entité"
 
 #: ../../../templates/widgets/enumordinal.html:5
-#: ../../../templates/widgets/enumpair.html:9
+#: ../../../templates/widgets/enumpair.html:5
 #: ../../../templates/widgets/enumsingle.html:5
 msgid "Translation"
 msgstr "Traduction"
 
 #: ../../../templates/widgets/enumordinal.html:14
-#: ../../../templates/widgets/enumpair.html:22
+#: ../../../templates/widgets/enumpair.html:18
 #: ../../../templates/widgets/enumsingle.html:14
 msgid "Field name (value0)"
 msgstr "Nom du champs (valeur0)"
@@ -858,7 +858,7 @@ msgid "Maximal range value"
 msgstr "Valeur maximale"
 
 #: ../../../templates/widgets/enumordinal.html:36
-#: ../../../templates/widgets/enumpair.html:38
+#: ../../../templates/widgets/enumpair.html:34
 #: ../../../templates/widgets/enumsingle.html:24
 msgid "Sort by field"
 msgstr "Trier par champs"
@@ -866,7 +866,7 @@ msgstr "Trier par champs"
 #: ../../../templates/widgets/enumordinal.html:40
 #: ../../../templates/widgets/enumordinal.html:48
 #: ../../../templates/widgets/enumordinal.html:70
-#: ../../../templates/widgets/enumpair.html:41
+#: ../../../templates/widgets/enumpair.html:37
 #: ../../../templates/widgets/enumpair.html:52
 #: ../../../templates/widgets/enumpair.html:76
 #: ../../../templates/widgets/enumsingle.html:27
@@ -874,7 +874,7 @@ msgid "Value0"
 msgstr "Valeur0"
 
 #: ../../../templates/widgets/enumordinal.html:46
-#: ../../../templates/widgets/enumpair.html:48
+#: ../../../templates/widgets/enumpair.html:44
 msgid "Displayed fields"
 msgstr "Champs affichés"
 
@@ -905,7 +905,17 @@ msgstr "Autocomplete (liste importante)"
 msgid "Autocomplete search field"
 msgstr "Champ de recherche autocomplete"
 
-#: ../../../templates/widgets/enumpair.html:2
+#: ../../../templates/widgets/enumpair.html:24
+msgid "Field name (value1)"
+msgstr "Nom du champs (valeur1)"
+
+#: ../../../templates/widgets/enumpair.html:38
+#: ../../../templates/widgets/enumpair.html:53
+#: ../../../templates/widgets/enumpair.html:77
+msgid "Value1"
+msgstr "Valeur1"
+
+#: ../../../templates/widgets/enumpair.html:47
 msgid ""
 "Controls how is displayed the field. Hierarchy mode is a special usage for "
 "pseudo hierarchy, for which values are roughly shifted to give an illusion "
@@ -919,16 +929,6 @@ msgstr ""
 "décalage dépend du niveau déclaré dans valeur0 tandis que valeur1 contient "
 "le label. La première valeur contient quelque-chose comme 1 or 2 or 1.1, "
 "1.2, 1.1.1..."
-
-#: ../../../templates/widgets/enumpair.html:28
-msgid "Field name (value1)"
-msgstr "Nom du champs (valeur1)"
-
-#: ../../../templates/widgets/enumpair.html:42
-#: ../../../templates/widgets/enumpair.html:53
-#: ../../../templates/widgets/enumpair.html:77
-msgid "Value1"
-msgstr "Valeur1"
 
 #: ../../../templates/widgets/enumpair.html:54
 msgid "Value0 - Value1"
@@ -958,4 +958,3 @@ msgstr "Précision de la décimale"
 #: ../../../templates/widgets/string.html:2
 msgid "Regular expression"
 msgstr "Expression régulière"
-

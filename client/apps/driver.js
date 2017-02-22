@@ -106,10 +106,10 @@ application = new Marionette.Application({
                 } else {
                     if (typeof(xhr.responseText) !== "undefined") {
                         if (xhr.getResponseHeader('Content-Type') === "application/json") {
-                            var data = JSON.parse(xhr.responseText);
-                            //if ((xhr.status >= 400 && xhr.status <= 599) && data && (typeof(data.cause) === "string")) {
-                            //    $.alert.error(gettext(data.cause));
-                            //}
+                            // var data = JSON.parse(xhr.responseText);
+                            // if ((xhr.status >= 400 && xhr.status <= 599) && data && (typeof(data.cause) === "string")) {
+                            //     $.alert.error(data.cause);
+                            // }
                         }
                     }
                     dfd.reject.apply(xhr, arguments);
@@ -132,6 +132,17 @@ application = new Marionette.Application({
         this.baseUrl = '/coll-gate/';
 
         /**
+         * Update the width and left position of the messenger div.
+         */
+        this.updateMessengerDisplay = function() {
+            var width = $("div.root-content").width();
+            var position = $("div.root-content").position();
+            var left = position ? position.left : 15;
+
+            $("#messenger").css('width', width).css('left', left);
+        };
+
+        /**
          * @brief Set the display layout of the 3 columns of content (bootstrap layout grid system).
          * @param mode Must be a string with numeric between 1..10 and split by dashes -. The sums of
          * the columns must not exceed 12.
@@ -145,13 +156,21 @@ application = new Marionette.Application({
             var m = mode.split('-');
             if (m.length == 3) {
                 var panels = [
-                    $("#left_details"),
-                    $("#main_content"),
-                    $("#right_content")
+                    $("div.root-left-bar"),
+                    $("div.root-content"),
+                    $("div.root-right-bar")
                 ];
 
                 for (var i = 0; i < panels.length; ++i) {
-                    panels[i].removeClass();
+                    var classes = panels[i].attr('class').split(' ');
+                    var classList = [];
+
+                    for (var j = 0; j < classes.length; ++j) {
+                        if (classes[j].startsWith('col-')) {
+                            panels[i].removeClass(classes[j]);
+                        }
+                    }
+
                     if (m[i] && m[i] > 0) {
                         panels[i].addClass("col-md-" + m[i]);
                         panels[i].css("display", "block");
@@ -161,6 +180,8 @@ application = new Marionette.Application({
                         panels[i].css("display", "none");
                     }
                 }
+
+                this.updateMessengerDisplay();
             }
         };
 
@@ -194,7 +215,7 @@ application = new Marionette.Application({
         session.modules || (session.modules = ['main']);
 
         // alert display component
-        $.alert({container: '#main_content'/*'div.panel-body'*/, className: 'alert'});
+        $.alert({container: '#messenger'/*'div.root-content'*/, className: 'alert'});
         $.alert.update();
 
         // require and initialize each modules
@@ -241,7 +262,10 @@ application = new Marionette.Application({
             }
         }
 
-        // Starts the URL handling framework and automatically route as possible
+        // update the messenger display properties
+        this.updateMessengerDisplay();
+
+        // starts the URL handling framework and automatically route as possible
         Backbone.history.start({pushState: true, silent: false, root: '/coll-gate'});
 
         // add alerted initiated by django server side

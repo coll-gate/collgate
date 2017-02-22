@@ -1,6 +1,6 @@
 /**
- * @file taxondetailscontext.js
- * @brief Taxon details context menu
+ * @file taxondescriptorcontext.js
+ * @brief Taxon descriptor context menu
  * @author Frederic SCHERMA
  * @date 2017-01-30
  * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
@@ -12,7 +12,7 @@ var Marionette = require('backbone.marionette');
 
 var View = Marionette.LayoutView.extend({
     tagName: 'div',
-    template: require('../templates/taxondescriptorscontext.html'),
+    template: require('../templates/taxondescriptorcontext.html'),
     className: "context taxon",
     templateHelpers/*templateContext*/: function () {
         return {

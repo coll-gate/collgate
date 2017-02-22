@@ -13,21 +13,13 @@ var Marionette = require('backbone.marionette');
 var TwoRowsLayout = Marionette.LayoutView.extend({
     template: require("../templates/tworowslayout.html"),
     attributes: {
-        // style: "height: 95%;"
+        style: "height: 100%;"
     },
 
     regions: {
-        'top-content': ".top-content",
-        'top-bottom': ".top-bottom",
-        'bottom-content': ".bottom-content",
-        'bottom-bottom': ".bottom-bottom",
-    },
-
-    onBeforeShow: function() {
-    },
-
-    onBeforeDestroy: function () {
-    },
+        'up': "div.row-up",
+        'down': "div.row-down"
+    }
 });
 
 module.exports = TwoRowsLayout;

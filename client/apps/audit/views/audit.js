@@ -40,7 +40,7 @@ var View = Marionette.ItemView.extend({
     },
 
     showEntity: function () {
-        alert("Not yet implemented");
+        alert("Balancez-leur les radasses et qu'ils s'en aillent au diable !");
     }
 });
 

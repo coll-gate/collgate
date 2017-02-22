@@ -21,7 +21,7 @@ var View = Marionette.ItemView.extend({
     },
 
     events: {
-        'click @ui.defines': 'onDefines',
+        'click @ui.defines': 'onDefine'
     },
 
     initialize: function(options) {
@@ -30,7 +30,7 @@ var View = Marionette.ItemView.extend({
     onRender: function() {
     },
 
-    onDefines: function(e) {
+    onDefine: function(e) {
         var model = this.model;
 
         $.ajax({
@@ -116,15 +116,15 @@ var View = Marionette.ItemView.extend({
 
         actions.push('add');
 
-        var TaxonDescriptorsContextView = require('../views/taxondescriptorscontext');
-        var contextView = new TaxonDescriptorsContextView({actions: actions});
+        var TaxonDescriptorContextView = require('../views/taxondescriptorcontext');
+        var contextView = new TaxonDescriptorContextView({actions: actions});
 
         var TitleView = require('../../main/views/titleview');
         contextLayout.getRegion('title').show(new TitleView({title: gt.gettext("Descriptors")}));
         contextLayout.getRegion('content').show(contextView);
 
         contextView.on("descriptormetamodel:add", function() {
-            view.onDefines();
+            view.onDefine();
         });
     }
 });

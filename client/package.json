@@ -4,7 +4,7 @@
   "description": "Collection of Genetics Resources",
   "main": "./apps/driver.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "./node_modules/.bin/ava --verbose",
     "dev": "./node_modules/.bin/webpack-dev-server",
     "browserify": "./node_modules/browserify/bin/cmd.js -t node-underscorify apps/driver.js -o static/js/app.js",
     "build": "./node_modules/.bin/webpack",
@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "file:///mnt/nas-crouel/sercom/Informatique/repositories/ohgr.git"
+    "url": "file:///mnt/nas-crouel/sercom/Informatique/repositories/collgate.git"
   },
   "author": "Frédéric SCHERMA, Nicolas GUILHOT",
   "license": "ISC",
@@ -21,9 +21,10 @@
     "backbone.babysitter": "^0.1.11",
     "backbone.marionette": "^2.4.5",
     "backbone.wreqr": "^1.3.6",
-    "eonasdan-bootstrap-datetimepicker": "^4.17.43",
+    "eonasdan-bootstrap-datetimepicker": "^4.17.46",
     "i18next": "^3.2.0",
     "i18next-conv": "^2.6.1",
+    "imageviewer": "^0.5.1",
     "jquery": "^2.2.3",
     "js-logger": "^1.3.0",
     "make-gettext": "0.0.6",
@@ -32,6 +33,7 @@
     "underscore": "^1.8.3"
   },
   "devDependencies": {
+    "ava": "^0.18.0",
     "binary-loader": "0.0.1",
     "buffer-loader": "0.0.1",
     "css-loader": "^0.23.1",
@@ -49,5 +51,18 @@
     "underscore-loader": "^0.1.0",
     "webpack": "^1.12.14",
     "webpack-dev-server": "^1.14.1"
+  },
+  "ava": {
+    "files": [
+      "test/*.js"
+    ],
+    "source": [
+      "**/*.{js,jsx}",
+      "!build/**/*",
+      "!apps/**/*"
+    ],
+    "match": [],
+    "concurrency": 5,
+    "failFast": true
   }
 }

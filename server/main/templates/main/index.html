@@ -46,7 +46,7 @@
 {% jquery igdectk.validator_js %}
 
 <div class="navbar navbar-inverse navbar-static-top" role="navigation">
-    <div class="container">
+    <div class="container-fluid navbar-container">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
                 <span class="sr-only">Toggle navigation</span>
@@ -119,7 +119,9 @@
     </div>
 </div>
 
-<div id="root" class="container content">
+<div id="messenger"></div>
+
+<div id="root" class="container">
     {% block root %}
     {% endblock %}
 </div> <!-- /container -->
@@ -250,16 +252,38 @@ if (session.languageDirection == "rtl") {
         // history navigation
         //
 
+        $(document).ajaxStart(function(event, jqXHR, settings) {
+            window.ajax = true;
+
+            $("#nav_back").prop('disabled', true);
+            $("#nav_fwd").prop('disabled', true);
+            $("#nav_refresh").prop('disabled', true);
+        });
+
+        $(document).ajaxStop(function(event, jqXHR, settings) {
+            window.ajax = false;
+
+            $("#nav_back").prop('disabled', false);
+            $("#nav_fwd").prop('disabled', false);
+            $("#nav_refresh").prop('disabled', false);
+        });
+
         $("#nav_back").click(function(e) {
-            Backbone.history.history.back();
+            if (!window.ajax) {
+                Backbone.history.history.back();
+            }
         });
 
         $("#nav_fwd").click(function(e) {
-            Backbone.history.history.forward();
+            if (!window.ajax) {
+                Backbone.history.history.forward();
+            }
         });
 
         $("#nav_refresh").click(function(e) {
-            Backbone.history.loadUrl();
+            if (!window.ajax) {
+                Backbone.history.loadUrl();
+            }
         });
 
         //

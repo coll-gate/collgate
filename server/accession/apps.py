@@ -31,7 +31,8 @@ class CollGateAccession(ApplicationMain):
             'base',
             'accessionsynonym',
             'accession',
-            'accessioncreate',
+            'accessionbatch',
+            'batch'
             )
         )
 
@@ -55,15 +56,22 @@ class CollGateAccession(ApplicationMain):
 
         # accession menu
         menu_accession = ModuleMenu('accession', _('Accession'), auth=AUTH_USER)
+
         menu_accession.add_entry(
             MenuEntry('create-accession', _('Create accession'), "~accession/accession/create",
                       icon=Glyph.GRAIN, order=1))
         menu_accession.add_entry(
             MenuEntry('create-batch', _('Create batch'), "~accession/batch/create",
                       icon=Glyph.LEAF, order=2))
+
         menu_accession.add_entry(MenuSeparator(100))
         menu_accession.add_entry(
             MenuEntry('list-accession', _('List accessions'), "#accession/accession/", icon=Glyph.LIST, order=101))
+
+        menu_accession.add_entry(MenuSeparator(200))
+        menu_accession.add_entry(
+            MenuEntry('search-accession', _('Search accessions'), "#accession/accession/search/",
+                      icon=Glyph.SEARCH, order=201))
 
         accession_module.add_menu(menu_accession)
 

@@ -19,20 +19,11 @@ var DateTimeType = function() {
 };
 
 _.extend(DateTimeType.prototype, DescriptorFormatType.prototype, {
-    create: function(format, parent, readOnly, create) {
+    create: function(format, parent, readOnly) {
         readOnly || (readOnly = false);
-        create || (create = true);
-
-        this.owned = create;
 
         if (readOnly) {
-            var input = null;
-
-            if (create) {
-                input = this._createStdInput(parent, "glyphicon-calendar");
-            } else {
-                input = parent.children('input');
-            }
+            var input = this._createStdInput(parent, "glyphicon-calendar");
 
             this.parent = parent;
             this.readOnly = true;
@@ -88,7 +79,7 @@ _.extend(DateTimeType.prototype, DescriptorFormatType.prototype, {
     },
 
     destroy: function() {
-        if (this.el && this.parent && this.owned) {
+        if (this.el && this.parent) {
             if (this.readOnly) {
                 this.el.parent().remove();
             } else {
@@ -119,12 +110,12 @@ _.extend(DateTimeType.prototype, DescriptorFormatType.prototype, {
 
         if (this.readOnly) {
             if (definesValues) {
-                var date = moment(defaultValues[0]);
+                var date = moment(defaultValues);
                 this.el.val(date.format($.datepicker._defaults.dateFormat.toUpperCase() + ' HH:mm:ss'));
             }
         } else {
             if (definesValues) {
-                var date = moment(defaultValues[0]);
+                var date = moment(defaultValues);
                 this.el.data('DateTimePicker').date(date);
             }
         }
@@ -133,32 +124,33 @@ _.extend(DateTimeType.prototype, DescriptorFormatType.prototype, {
     values: function() {
         if (this.el && this.parent) {
             if (this.readOnly) {
-                return [this.el.val()];
+                var value = this.el.val();
+                return value !== "" ? value : null;
             } else {
                 // format to YYYYMMDD date
                 var date = this.el.data('DateTimePicker').date();
                 if (date != null) {
                     // format to iso datetime
-                    return [date.format()];
+                    return date.format();
                 } else {
-                    return [null];
+                    return null;
                 }
             }
         }
 
-        return [null];
+        return null;
     },
 
     checkCondition: function (condition, values) {
         switch (condition) {
             case 0:
-                return this.values()[0] === "";
+                return this.values() == null;
             case 1:
-                return this.values()[0] !== "";
+                return this.values() != null;
             case 2:
-                return this.values()[0] === values[0];
+                return this.values() === values;
             case 3:
-                return this.values()[0] !== values[0];
+                return this.values() !== values;
             default:
                 return false;
         }

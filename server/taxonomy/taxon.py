@@ -7,10 +7,13 @@ coll-gate taxonomy taxon rest handlers
 """
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import SuspiciousOperation
+from django.db import IntegrityError
+from django.db import transaction
+from django.db.models import Prefetch
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 
-from descriptor.describable import check_and_defines_descriptors
+from descriptor.describable import DescriptorsBuilder
 from descriptor.models import DescriptorMetaModel
 from main.models import Languages
 from permission.utils import get_permissions_for
@@ -35,7 +38,7 @@ class RestTaxonSearch(RestTaxon):
 
 
 class RestTaxonId(RestTaxon):
-    regex = r'^(?P<id>[0-9]+)/$'
+    regex = r'^(?P<tax_id>[0-9]+)/$'
     suffix = 'id'
 
 
@@ -45,7 +48,7 @@ class RestTaxonIdSynonym(RestTaxonId):
 
 
 class RestTaxonIdSynonymId(RestTaxonIdSynonym):
-    regex = r'^(?P<sid>[0-9]+)/$'
+    regex = r'^(?P<syn_id>[0-9]+)/$'
     suffix = 'id'
 
 
@@ -146,10 +149,10 @@ def get_taxon_list(request):
         filters = json.loads(request.GET['filters'])
 
         if cursor:
-            cursor_name, cursor_id = cursor.split('/')
+            cursor_name, cursor_id = cursor.rsplit('/', 1)
             qs = Taxon.objects.filter(Q(name__gt=cursor_name))
         else:
-            qs = Taxon.objects
+            qs = Taxon.objects.all()
 
         name = filters.get('name', '')
         rank = filters.get('rank')
@@ -161,29 +164,31 @@ def get_taxon_list(request):
 
         if rank:
             qs = qs.filter(Q(rank=rank))
-
-        tqs = qs.prefetch_related('synonyms').order_by('name')[:limit]
     else:
         if cursor:
-            cursor_name, cursor_id = cursor.split('/')
+            cursor_name, cursor_id = cursor.rsplit('/', 1)
             qs = Taxon.objects.filter(Q(name__gt=cursor_name))
         else:
             qs = Taxon.objects.all()
 
-        tqs = qs.prefetch_related('synonyms').order_by('name')[:limit]
+    qs = qs.prefetch_related(
+        Prefetch(
+            "synonyms",
+            queryset=TaxonSynonym.objects.all().order_by('type', 'language'))
+    ).order_by('name')[:limit]
 
-    taxons_list = []
-    for taxon in tqs:
+    items_list = []
+    for taxon in qs:
         t = {
             'id': taxon.pk,
             'name': taxon.name,
-            'parent': taxon.parent,
+            'parent': taxon.parent_id,
             'rank': taxon.rank,
             'parent_list': [int(x) for x in taxon.parent_list.rstrip(',').split(',')] if taxon.parent_list else [],
             'synonyms': []
         }
 
-        for synonym in taxon.synonyms.all().order_by('type', 'language'):
+        for synonym in taxon.synonyms.all():
             t['synonyms'].append({
                 'id': synonym.id,
                 'name': synonym.name,
@@ -191,15 +196,15 @@ def get_taxon_list(request):
                 'language': synonym.language
             })
 
-        taxons_list.append(t)
+            items_list.append(t)
 
-    if len(taxons_list) > 0:
+    if len(items_list) > 0:
         # prev cursor (asc order)
-        taxon = taxons_list[0]
+        taxon = items_list[0]
         prev_cursor = "%s/%s" % (taxon['name'], taxon['id'])
 
         # next cursor (asc order)
-        taxon = taxons_list[-1]
+        taxon = items_list[-1]
         next_cursor = "%s/%s" % (taxon['name'], taxon['id'])
     else:
         prev_cursor = None
@@ -207,7 +212,7 @@ def get_taxon_list(request):
 
     results = {
         'perms': [],
-        'items': taxons_list,
+        'items': items_list,
         'prev': prev_cursor,
         'cursor': cursor,
         'next': next_cursor,
@@ -217,20 +222,20 @@ def get_taxon_list(request):
 
 
 @RestTaxonId.def_auth_request(Method.GET, Format.JSON)
-def get_taxon_details_json(request, id):
-    taxon = Taxon.objects.get(id=int_arg(id))
+def get_taxon_details_json(request, tax_id):
+    taxon = Taxon.objects.get(id=int(tax_id))
 
+    # query for parents
     parents = []
-    next_parent = taxon.parent
-    break_count = 0
-    while break_count < 10 and next_parent is not None:
-        parents.append({
-            'id': next_parent.id,
-            'name': next_parent.name,
-            'rank': next_parent.rank,
-            'parent': next_parent.parent_id
+    parents_taxon = Taxon.objects.filter(id__in=[int(x) for x in taxon.parent_list.split(',') if x != ''])
+
+    for parent in parents_taxon:
+        parents.insert(0, {
+            'id': parent.id,
+            'name': parent.name,
+            'rank': parent.rank,
+            'parent': parent.parent_id
         })
-        next_parent = next_parent.parent
 
     result = {
         'id': taxon.id,
@@ -240,7 +245,7 @@ def get_taxon_details_json(request, id):
         'parent_list': [int(x) for x in taxon.parent_list.rstrip(',').split(',')] if taxon.parent_list else [],
         'parent_details': parents,
         'synonyms': [],
-        'descriptor_meta_model': taxon.descriptor_meta_model.id if taxon.descriptor_meta_model is not None else None,
+        'descriptor_meta_model': taxon.descriptor_meta_model_id,
         'descriptors': taxon.descriptors,
     }
 
@@ -261,59 +266,85 @@ def search_taxon(request):
     Quick search for a taxon with a exact or partial name and a rank.
     """
     filters = json.loads(request.GET['filters'])
-    page = int_arg(request.GET.get('page', 1))
 
-    # @todo cursor (not pagination)
-    qs = None
+    results_per_page = int_arg(request.GET.get('more', 30))
+    cursor = request.GET.get('cursor')
+    limit = results_per_page
 
-    name_method = filters.get('method', 'ieq')
+    if cursor:
+        cursor_name, cursor_id = cursor.rsplit('/', 1)
+        qs = Taxon.objects.filter(Q(synonyms__name__gt=cursor_name))
+    else:
+        qs = Taxon.objects.all()
+
+    if 'name' in filters['fields']:
+        name_method = filters.get('method', 'ieq')
+
+        if name_method == 'ieq':
+            qs = qs.filter(name__iexact=filters['name'])
+        elif name_method == 'icontains':
+            qs = qs.filter(name__icontains=filters['name'])
 
     if 'rank' in filters['fields']:
         rank = int_arg(filters['rank'])
         rank_method = filters.get('rank_method', 'lt')
 
-        if name_method == 'ieq':
-            qs = TaxonSynonym.objects.filter(Q(name__iexact=filters['name']))
-        elif name_method == 'icontains':
-            qs = TaxonSynonym.objects.filter(Q(name__icontains=filters['name']))
-
         if rank_method == 'eq':
-            qs = qs.filter(Q(taxon__rank=rank))
+            qs = qs.filter(Q(rank=rank))
         elif rank_method == 'lt':
-            qs = qs.filter(Q(taxon__rank__lt=rank))
+            qs = qs.filter(Q(rank__lt=rank))
         elif rank_method == 'lte':
-            qs = qs.filter(Q(taxon__rank__lte=rank))
+            qs = qs.filter(Q(rank__lte=rank))
         elif rank_method == 'gt':
-            qs = qs.filter(Q(taxon__rank__gt=rank))
+            qs = qs.filter(Q(rank__gt=rank))
         elif rank_method == 'gte':
-            qs = qs.filter(Q(taxon__rank__gte=rank))
+            qs = qs.filter(Q(rank__gte=rank))
 
-    elif 'name' in filters['fields']:
-        if name_method == 'ieq':
-            qs = TaxonSynonym.objects.filter(name__iexact=filters['name'])
-        elif name_method == 'icontains':
-            qs = TaxonSynonym.objects.filter(name__icontains=filters['name'])
+    qs = qs.prefetch_related(
+        Prefetch(
+            "synonyms",
+            queryset=TaxonSynonym.objects.exclude(type=TaxonSynonymType.PRIMARY.value).order_by('type', 'language'))
+    )
 
-    qs = qs.select_related('taxon')
+    qs = qs.order_by('name').distinct()[:limit]
 
-    # group by synonyms on labels
-    taxons = {}
+    items_list = []
 
-    for s in qs:
-        taxon = taxons.get(s.taxon_id)
-        if taxon:
-            taxon['label'] += ', ' + s.name
-        else:
-            taxons[s.taxon_id] = {'id': str(s.taxon_id), 'label': s.name, 'value': s.taxon.name}
+    for taxon in qs:
+        label = taxon.name
 
-    taxons_list = list(taxons.values())
+        for synonym in taxon.synonyms.all():
+            label += ', ' + synonym.name
 
-    response = {
-        'items': taxons_list,
-        'page': page
+        a = {
+            'id': taxon.id,
+            'label': label,
+            'value': taxon.name
+        }
+
+        items_list.append(a)
+
+    if len(items_list) > 0:
+        # prev cursor (asc order)
+        obj = items_list[0]
+        prev_cursor = "%s/%i" % (obj['value'], obj['id'])
+
+        # next cursor (asc order)
+        obj = items_list[-1]
+        next_cursor = "%s/%i" % (obj['value'], obj['id'])
+    else:
+        prev_cursor = None
+        next_cursor = None
+
+    results = {
+        'perms': [],
+        'items': items_list,
+        'prev': prev_cursor,
+        'cursor': cursor,
+        'next': next_cursor,
     }
 
-    return HttpResponseRest(request, response)
+    return HttpResponseRest(request, results)
 
 
 @RestTaxonId.def_auth_request(
@@ -321,7 +352,7 @@ def search_taxon(request):
         "type": "object",
         "properties": {
             "parent": {"type": ["number", "null"], 'required': False},
-            "descriptor_meta_model": {"type": "integer", 'required': False},
+            "descriptor_meta_model": {"type": ["integer", "null"], 'required': False},
             "descriptors": {"type": "object", 'required': False}
         },
     },
@@ -329,10 +360,8 @@ def search_taxon(request):
         'taxonomy.change_taxon': _("You are not allowed to modify a taxon"),
     }
 )
-def patch_taxon(request, id):
-    tid = int(id)
-
-    taxon = get_object_or_404(Taxon, id=tid)
+def patch_taxon(request, tax_id):
+    taxon = get_object_or_404(Taxon, id=int(tax_id))
 
     result = {}
 
@@ -357,60 +386,91 @@ def patch_taxon(request, id):
             # make parent list
             Taxonomy.update_parents(taxon, parent)
 
+            # query for parents
             parents = []
-            next_parent = taxon.parent
-            break_count = 0
-            while break_count < 10 and next_parent is not None:
-                parents.append({
-                    'id': next_parent.id,
-                    'name': next_parent.name,
-                    'rank': next_parent.rank,
-                    'parent': next_parent.parent_id
+            parents_taxon = Taxon.objects.filter(id__in=[int(x) for x in taxon.parent_list.split(',') if x != ''])
+
+            for parent in parents_taxon:
+                parents.insert(0, {
+                    'id': parent.id,
+                    'name': parent.name,
+                    'rank': parent.rank,
+                    'parent': parent.parent_id
                 })
-                next_parent = next_parent.parent
 
             result['parent'] = parent.id
             result['parent_list'] = parents
             result['parent_details'] = parents
 
-    if 'descriptor_meta_model' in request.data:
-        dmm_id = request.data["descriptor_meta_model"]
+        taxon.update_field(['parent', 'parent_list'])
 
-        # changing of meta model erase all previous descriptors values
-        if dmm_id is None:
-            taxon.descriptor_meta_model = None
-            taxon.descriptors = {}
+    try:
+        with transaction.atomic():
+            # update meta-model of descriptors and descriptors
+            if 'descriptor_meta_model' in request.data:
+                dmm_id = request.data["descriptor_meta_model"]
 
-            result['descriptor_meta_model'] = None
-            result['descriptors'] = {}
-        else:
-            content_type = get_object_or_404(ContentType, app_label="taxonomy", model="taxon")
-            dmm = get_object_or_404(DescriptorMetaModel, id=dmm_id, target=content_type)
+                # changing of meta model erase all previous descriptors values
+                if dmm_id is None and taxon.descriptor_meta_model is not None:
+                    # clean previous descriptors and owns
+                    descriptors_builder = DescriptorsBuilder(taxon)
 
-            # dmm is different
-            if taxon.descriptor_meta_model is None or (
-                taxon.descriptor_meta_model is not None and taxon.descriptor_meta_model.id != dmm_id):
+                    descriptors_builder.clear(taxon.descriptor_meta_model)
 
-                taxon.descriptor_meta_model = dmm
-                taxon.descriptors = {}
+                    taxon.descriptor_meta_model = None
+                    taxon.descriptors = {}
 
-                result['descriptor_meta_model'] = dmm
-                result['descriptors'] = {}
+                    descriptors_builder.update_associations()
 
-    if 'descriptors' in request.data:
-        descriptors = request.data["descriptors"]
+                    result['descriptor_meta_model'] = None
+                    result['descriptors'] = {}
 
-        # reset any values
-        if descriptors is None:
-            taxon.descriptors = {}
-        else:
+                elif dmm_id is not None:
+                    # existing descriptors and new meta-model is different : first clean previous descriptors
+                    if taxon.descriptor_meta_model is not None and taxon.descriptor_meta_model.pk != dmm_id:
+                        # clean previous descriptors and owns
+                        descriptors_builder = DescriptorsBuilder(taxon)
+
+                        descriptors_builder.clear(taxon.descriptor_meta_model)
+
+                        taxon.descriptor_meta_model = None
+                        taxon.descriptors = {}
+
+                        descriptors_builder.update_associations()
+
+                    # and set the new one
+                    content_type = get_object_or_404(ContentType, app_label="taxonomy", model="taxon")
+                    dmm = get_object_or_404(DescriptorMetaModel, id=dmm_id, target=content_type)
+
+                    taxon.descriptor_meta_model = dmm
+                    taxon.descriptors = {}
+
+                    result['descriptor_meta_model'] = dmm.id
+                    result['descriptors'] = {}
+
+                taxon.update_field(['descriptor_meta_model', 'descriptors'])
+
             # update descriptors
-            taxon.descriptors = check_and_defines_descriptors(
-                taxon.descriptors, taxon.descriptor_meta_model, descriptors)
+            if 'descriptors' in request.data:
+                descriptors = request.data["descriptors"]
 
-        result['descriptors'] = taxon.descriptors
+                descriptors_builder = DescriptorsBuilder(taxon)
 
-    taxon.save()
+                descriptors_builder.check_and_update(taxon.descriptor_meta_model, descriptors)
+                taxon.descriptors = descriptors_builder.descriptors
+
+                descriptors_builder.update_associations()
+
+                result['descriptors'] = taxon.descriptors
+
+                taxon.descriptors_diff = descriptors
+                taxon.update_field('descriptors')
+
+            taxon.save()
+
+    except IntegrityError as e:
+        logger.log(repr(e))
+        raise SuspiciousOperation(_("Unable to update a taxon"))
 
     return HttpResponseRest(request, result)
 
@@ -418,9 +478,8 @@ def patch_taxon(request, id):
 @RestTaxonId.def_auth_request(Method.DELETE, Format.JSON, perms={
     'taxonomy.delete_taxon': _("You are not allowed to remove a taxon"),
 })
-def delete_taxon(request, id):
-    tid = int(id)
-    taxon = get_object_or_404(Taxon, id=tid)
+def delete_taxon(request, tax_id):
+    taxon = get_object_or_404(Taxon, id=int(tax_id))
 
     # check if some entities uses it before remove
     if taxon.in_usage():
@@ -449,9 +508,8 @@ def delete_taxon(request, id):
         'taxonomy.add_taxonsynonym': _("You are not allowed to add a synonym to a taxon"),
     }
 )
-def taxon_add_synonym(request, id):
-    taxon_id = int_arg(id)
-    taxon = get_object_or_404(Taxon, id=taxon_id)
+def taxon_add_synonym(request, tax_id):
+    taxon = get_object_or_404(Taxon, id=int(tax_id))
 
     synonym = {
         'type': int(request.data['type']),
@@ -476,26 +534,32 @@ def taxon_add_synonym(request, id):
         'taxonomy.change_taxonsynonym': _("You are not allowed to modify a synonym to a taxon"),
     }
 )
-def taxon_change_synonym(request, id, sid):
-    tid = int(id)
-    sid = int(sid)
-
-    synonym = get_object_or_404(TaxonSynonym, Q(id=sid), Q(taxon=tid))
+def taxon_change_synonym(request, tax_id, syn_id):
+    synonym = get_object_or_404(TaxonSynonym, Q(id=int(syn_id)), Q(taxon=int(tax_id)))
 
     name = request.data['name']
 
-    # rename the taxon if the synonym name is the taxon name
-    if synonym.taxon.name == synonym.name:
-        synonym.taxon.name = name
-        synonym.taxon.save()
+    try:
+        with transaction.atomic():
+            # rename the taxon if the synonym name is the taxon name
+            if synonym.taxon.name == synonym.name:
+                synonym.taxon.name = name
+                synonym.taxon.update_field('name')
 
-    synonym.name = name
-    synonym.save()
+                synonym.taxon.save()
 
-    result = {
-        'id': synonym.id,
-        'name': synonym.name
-    }
+            synonym.name = name
+            synonym.update_field('name')
+
+            synonym.save()
+
+            result = {
+                'id': synonym.id,
+                'name': synonym.name
+            }
+    except IntegrityError as e:
+        logger.log(repr(e))
+        raise SuspiciousOperation(_("Unable to rename a synonym of a taxon"))
 
     return HttpResponseRest(request, result)
 
@@ -507,11 +571,8 @@ def taxon_change_synonym(request, id, sid):
         'taxonomy.delete_taxonsynonym': _("You are not allowed to delete a synonym from a taxon"),
     }
 )
-def taxon_remove_synonym(request, id, sid):
-    tid = int(id)
-    sid = int(sid)
-
-    synonym = get_object_or_404(TaxonSynonym, Q(id=sid), Q(taxon=tid))
+def taxon_remove_synonym(request, tax_id, syn_id):
+    synonym = get_object_or_404(TaxonSynonym, Q(id=int(syn_id)), Q(taxon=int(tax_id)))
 
     if synonym.type == TaxonSynonymType.PRIMARY.value:
         raise SuspiciousOperation(_("It is not possible to remove a primary synonym"))
@@ -522,7 +583,7 @@ def taxon_remove_synonym(request, id, sid):
 
 
 @RestTaxonomyRank.def_request(Method.GET, Format.JSON)
-def rank(request):
+def get_rank_list(request):
     """
     Get the list of taxon rank in JSON
     """
@@ -539,7 +600,7 @@ def rank(request):
 
 
 @RestTaxonIdChildren.def_auth_request(Method.GET, Format.JSON)
-def get_taxon_children(request, id):
+def get_taxon_children(request, tax_id):
     """
     Return the list of direct children for the given taxon.
     """
@@ -547,16 +608,18 @@ def get_taxon_children(request, id):
     cursor = request.GET.get('cursor')
     limit = results_per_page
 
-    tid = int(id)
-    taxon = get_object_or_404(Taxon, id=tid)
+    taxon = get_object_or_404(Taxon, id=int(tax_id))
 
     if cursor:
-        cursor_name, cursor_id = cursor.split('/')
+        cursor_name, cursor_id = cursor.rsplit('/', 1)
         qs = taxon.children.filter(Q(name__gt=cursor_name))
     else:
         qs = taxon.children.all()
 
-    qs = qs.prefetch_related('synonyms').order_by('name')[:limit]
+    qs = qs.prefetch_related(Prefetch(
+            "synonyms",
+            queryset=TaxonSynonym.objects.all().order_by('type', 'language'))
+    ).order_by('name')[:limit]
 
     children = []
 
@@ -570,7 +633,7 @@ def get_taxon_children(request, id):
             'synonyms': [],
         }
 
-        for synonym in child.synonyms.all().order_by('type', 'language'):
+        for synonym in child.synonyms.all():
             t['synonyms'].append({
                 'id': synonym.id,
                 'name': synonym.name,
@@ -604,7 +667,7 @@ def get_taxon_children(request, id):
 
 
 @RestTaxonIdEntities.def_auth_request(Method.GET, Format.JSON)
-def get_taxon_entities(request, id):
+def get_taxon_entities(request, tax_id):
     """
     Return the list of entities relating the given taxon.
     """
@@ -612,13 +675,12 @@ def get_taxon_entities(request, id):
     cursor = request.GET.get('cursor')
     limit = results_per_page
 
-    tid = int(id)
-    taxon = get_object_or_404(Taxon, id=tid)
+    taxon = get_object_or_404(Taxon, id=int(tax_id))
 
     if cursor:
-        cursor_content_type, cursor_name, cursor_id = cursor.split('/')
+        cursor_name, cursor_content_type, cursor_id = cursor.rsplit('/', 2)
     else:
-        cursor_content_type = cursor_name = cursor_id = None
+        cursor_name = cursor_content_type = cursor_id = None
 
     items = []
 
@@ -626,6 +688,9 @@ def get_taxon_entities(request, id):
     children_entities = apps.get_app_config('taxonomy').children_entities
 
     rest = limit
+
+    # content type local cache
+    content_types = {}
 
     # we do a manual union for the different set of content_type
     for entity in children_entities:
@@ -653,9 +718,13 @@ def get_taxon_entities(request, id):
             rest -= qs.count()
 
             for item in qs:
+                content_type = content_types.get(item.content_type_id)
+                if content_type is None:
+                    content_type = content_types[item.content_type_id] = '.'.join(item.content_type.natural_key())
+
                 t = {
                     'id': item.id,
-                    'content_type': '.'.join(item.content_type.natural_key()),
+                    'content_type': content_type,
                     'name': item.name
                 }
 
@@ -667,11 +736,11 @@ def get_taxon_entities(request, id):
     if len(items) > 0:
         # prev cursor (asc order)
         item = items[0]
-        prev_cursor = "%s/%s/%s" % (item['content_type'], item['name'], item['id'])
+        prev_cursor = "%s/%s/%s" % (item['name'], item['content_type'], item['id'])
 
         # next cursor (asc order)
         item = items[-1]
-        next_cursor = "%s/%s/%s" % (item['content_type'], item['name'], item['id'])
+        next_cursor = "%s/%s/%s" % (item['name'], item['content_type'], item['id'])
     else:
         prev_cursor = None
         next_cursor = None

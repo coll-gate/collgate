@@ -11,28 +11,19 @@
 var DescriptorFormatType = require('./descriptorformattype');
 var Marionette = require('backbone.marionette');
 
-var Boolean = function() {
+var BooleanType = function() {
     DescriptorFormatType.call(this);
 
     this.name = "boolean";
     this.group = "single";
 };
 
-_.extend(Boolean.prototype, DescriptorFormatType.prototype, {
-    create: function(format, parent, readOnly, create) {
+_.extend(BooleanType.prototype, DescriptorFormatType.prototype, {
+    create: function(format, parent, readOnly) {
         readOnly || (readOnly = false);
-        create || (create = true);
-
-        this.owned = create;
 
         if (readOnly) {
-            var input = null;
-
-            if (create) {
-                input = this._createStdInput(parent, "glyphicon-check");
-            } else {
-                input = parent.children('input');
-            }
+            var input = this._createStdInput(parent, "glyphicon-check");
 
             this.parent = parent;
             this.readOnly = true;
@@ -65,7 +56,7 @@ _.extend(Boolean.prototype, DescriptorFormatType.prototype, {
     },
 
     destroy: function() {
-        if (this.el && this.parent && this.owned) {
+        if (this.el && this.parent) {
             if (this.readOnly) {
                 this.el.parent().remove();
             } else {
@@ -96,9 +87,9 @@ _.extend(Boolean.prototype, DescriptorFormatType.prototype, {
 
         if (this.readOnly) {
             if (definesValues) {
-                this.el.val(defaultValues[0] ? gt.gettext('Yes') : gt.gettext('No')).attr('value', defaultValues[0]);
+                this.el.val(defaultValues ? gt.gettext('Yes') : gt.gettext('No')).attr('value', defaultValues);
 
-                if (defaultValues[0]) {
+                if (defaultValues) {
                     this.el.parent().children('span').children('span').addClass('glyphicon-check');
                 } else {
                     this.el.parent().children('span').children('span').addClass('glyphicon-unchecked');
@@ -106,7 +97,7 @@ _.extend(Boolean.prototype, DescriptorFormatType.prototype, {
             }
         } else {
             if (definesValues) {
-                this.el.val(defaultValues[0] ? "true" : "false").trigger('change');
+                this.el.val(defaultValues ? "true" : "false").trigger('change');
             }
 
             this.el.selectpicker('refresh');
@@ -116,13 +107,13 @@ _.extend(Boolean.prototype, DescriptorFormatType.prototype, {
     values: function() {
         if (this.el && this.parent) {
             if (this.readOnly) {
-                return [this.el.attr("value") === "true"];
+                return this.el.attr("value") === "true";
             } else {
-                return [this.el.val() === "true"];
+                return this.el.val() === "true";
             }
         }
 
-        return [false];
+        return false;
     },
 
     checkCondition: function(condition, values) {
@@ -132,9 +123,9 @@ _.extend(Boolean.prototype, DescriptorFormatType.prototype, {
             case 1:
                 return true;   // a boolean is always defined
             case 2:
-                return this.values()[0] === values[0];
+                return this.values() === values;
             case 3:
-                return this.values()[0] !== values[0];
+                return this.values() !== values;
             default:
                 return false;
         }
@@ -169,7 +160,7 @@ _.extend(Boolean.prototype, DescriptorFormatType.prototype, {
     }
 });
 
-Boolean.DescriptorTypeDetailsView = Marionette.ItemView.extend({
+BooleanType.DescriptorTypeDetailsView = Marionette.ItemView.extend({
     className: 'descriptor-type-details-format',
     template: "<div></div>",
 
@@ -186,4 +177,4 @@ Boolean.DescriptorTypeDetailsView = Marionette.ItemView.extend({
     }
 });
 
-module.exports = Boolean;
+module.exports = BooleanType;

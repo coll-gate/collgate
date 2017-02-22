@@ -58,13 +58,13 @@ var View = ItemView.extend({
 
             // default value or current descriptor value
             if (exists) {
-                defaultValues = [model.get('descriptors')[descriptorModelType.id]];
-                definesValues = defaultValues[0] != null && defaultValues[0] != undefined;
+                defaultValues = model.get('descriptors')[descriptorModelType.id];
+                definesValues = defaultValues != null && defaultValues != undefined;
             } else {
                 // @todo default value from descriptor type
                 switch (format.type) {
                     case "boolean":
-                        defaultValues = [false];
+                        defaultValues = false;
                         definesValues = true;
                         break;
                     default:
@@ -74,7 +74,7 @@ var View = ItemView.extend({
 
             var widget = application.descriptor.widgets.newElement(format.type);
             if (widget) {
-                widget.create(format, el.children('td.descriptor-value'), false, true, descriptorType.group, descriptorType.id);
+                widget.create(format, el.children('td.descriptor-value'), false, descriptorType.group, descriptorType.id);
                 widget.set(format, definesValues, defaultValues, descriptorType.group, descriptorType.id);
 
                 if (descriptorModelType.set_once && exists) {
@@ -137,6 +137,16 @@ var View = ItemView.extend({
         }
     },
 
+    onDestroy: function() {
+        // destroy any widgets
+        for (var pi = 0; pi < this.descriptorMetaModelLayout.panels.length; ++pi) {
+            for (var i = 0; i < this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types.length; ++i) {
+                var descriptorModelType = this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
+                descriptorModelType.widget.destroy();
+            }
+        }
+    },
+
     findDescriptorModelTypeForConditionTarget: function(target) {
         var pi = target.attr('panel-index');
         var i = target.attr('index');
@@ -169,29 +179,29 @@ var View = ItemView.extend({
                 var mandatory = descriptorModelType.mandatory;
 
                 var currValue = this.model.get('descriptors')[descriptorModelType.id];
-                var values = [null];
+                var values = null;
 
                 // display of the tr
                 if (descriptorModelType.widget && descriptorModelType.widget.parent.parent().css('display') !== "none") {
                     values = descriptorModelType.widget.values();
                 }
 
-                if (mandatory && values[0] === null) {
+                if (mandatory && values == null) {
                     $.alert.error(gt.gettext("Field " + descriptorModelType.label + " is required"));
                     return null;
                 }
 
                 var write = true;
-                if (descriptorModelType.set_once && currValue != undefined) {
+                if (descriptorModelType.set_once && currValue != null) {
                     write = false;
                 }
 
-                if (values[0] == currValue) {
+                if (descriptorModelType.widget.compare(values, currValue)) {
                     write = false;
                 }
 
                 if (write) {
-                    descriptors[descriptorModelType.id] = values[0];
+                    descriptors[descriptorModelType.id] = values;
                 }
             }
         }
@@ -199,7 +209,19 @@ var View = ItemView.extend({
         return descriptors;
     },
 
+    cancel: function() {
+        // destroy any widgets
+        for (var pi = 0; pi < this.descriptorMetaModelLayout.panels.length; ++pi) {
+            for (var i = 0; i < this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types.length; ++i) {
+                var descriptorModelType = this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
+                descriptorModelType.widget.cancel();
+            }
+        }
+    },
+
     onCancel: function() {
+        this.cancel();
+
         // non optimized default behavior reload url
         Backbone.history.loadUrl();
     },

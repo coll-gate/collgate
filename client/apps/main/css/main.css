@@ -8,41 +8,60 @@
  * @details
  */
 
-div.events {
-    padding: 5px;
-    border: solid 1px #96a052;
-    border-radius: 5px;
-    box-shadow: 0px 0px 10px #A0BD2E;
+div.root-left-bar {
 }
 
-#main_content {
+div.root-content {
     height: 100%;
+}
+
+div.root-right-bar {
 }
 
 div.column {
     height: 100%;
-    margin: 0
+    margin: 0;
 }
 
 div.left, div.right {
     padding-left: 5px;
     padding-right: 5px;
-    height: 100%;
+    height: calc(100% - 2px);
 }
 
-div.left {
-    border-right: 1px solid #d8d8d8;
+/** based on bootstrap min-width */
+@media (min-width: 992px) {
+    div.column-left, div.column-right {
+        width: calc(50% - 1px);
+    }
+
+    div.row-up, div.row-down {
+        height: 50%;
+    }
 }
 
-div.panel.panel-default {
+div.column-spacer {
+    width: 0px;
+    height: calc(100% - 2px);
+    border-left: 1px solid #d8d8d8;
+    padding: 0px;
+}
+
+div.panel/*.panel-default*/ {
     display: flex;
     flex-flow: column;
     height: 100%;
     margin: 0px;
 }
 
+div.insider-panel div.panel-heading {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    height: 30px;
+}
+
 div.panel div.panel-heading {
-    height: 45px;
+    /*height: 45px;*/
     flex: 0 1 auto;
 }
 
@@ -51,30 +70,25 @@ div.panel div.panel-body {
     overflow-x: hidden;
     flex: 1 1 auto;
     height: 100%;
+    padding: 10px;
 }
 
-div.right-up {
-    height: 52.5%;
+div.layout-bottom {
+    height: 30px;
+}
+
+div.right-up, div.right-down {
+    height: calc(50% - 1px);
+}
+
+div.row-spacer {
+    height: 3px;
     border-bottom: 1px solid #d8d8d8;
 }
 
-div.right-down {
-    height: 47.5%;
-}
-
-div.left-content, div.right-content {
+div.left-content, div.right-content, div.right-up-content, div.right-down-content {
     overflow-y: auto;
-    height: 100%;
-}
-
-div.right-up-content {
-    overflow-y: auto;
-    height: 90%;
-}
-
-div.right-down-content {
-    overflow-y: auto;
-    height: 100%;
+    height: calc(100% - 20px - 5px);
 }
 
 div.panel div.panel-bottom {
@@ -82,23 +96,27 @@ div.panel div.panel-bottom {
     flex: 0 1 auto;
 }
 
-div.left-bottom, div.right-bottom, div.right-up-bottom, div.right-down-bottom {
-    height: auto;
-}
-
 div.panel div.panel-body-bottom {
     height: auto;
     flex: 0 1 auto;
 }
 
-.event {
+/*.event-message {
     font-family: "DejaVu Serif";
     font-size: 12px;
     padding: 5px;
+}*/
+
+.event-message + .event-message {
+    border-top: solid 1px #A0BD2E;
 }
 
-.event + .event {
-    border-top: solid 1px #A0BD2E;
+div.event-message > span.remove-event-message {
+    display: none;
+}
+
+div.event-message:hover > span.remove-event-message {
+    display: inline-block;
 }
 
 .panel-heading .accordion-toggle:after {
@@ -213,15 +231,23 @@ span[name='label']:not(:empty) ~ span.label-placeholder {
     color: grey;
 }
 
+/** panel according toggle symbol */
 .panel-heading .accordion-toggle.collapsed:after {
     content: "\e080";
 }
 
+/** put bold and italic each mandatory field */
 .mandatory-field {
     font-weight: bold;
     font-style: italic;
 }
 
+/** add a * after each mandatory field */
 .mandatory-field:after {
     content: '*';
+}
+
+/** disable a href when li tab has class disabled */
+li.disabled > a[role=tab] {
+    pointer-events: none;
 }

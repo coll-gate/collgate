@@ -10,6 +10,11 @@
 
 var Marionette = require('backbone.marionette');
 
+require("./css/medialibrary.css");
+
+require("imageviewer");
+require("imageviewer/dist/viewer.min.css");
+
 var MediaLibraryModule = function() {
     this.name = "medialibrary";
 };

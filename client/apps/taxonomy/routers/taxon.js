@@ -11,17 +11,9 @@
 var Marionette = require('backbone.marionette');
 var TaxonModel = require('../models/taxon');
 
-var TaxonChildrenCollection = require('../collections/taxonchildren');
-var TaxonEntitiesCollection = require('../collections/taxonentities');
-
 var TaxonListView = require('../views/taxonlist');
-var TaxonSynonymsView = require('../views/taxonsynonyms');
-var TaxonDetailsView = require('../views/taxondetails');
 var TaxonListFilterView = require('../views/taxonlistfilter');
-var TaxonChildrenView = require('../views/taxonchildren');
-var TaxonEntitiesView = require('../views/taxonentities');
-var TaxonDescriptorView = require('../views/taxondescriptor');
-var TaxonDescriptorCreateView = require('../views/taxondescriptorcreate');
+
 var TaxonLayout = require('../views/taxonlayout');
 
 var DefaultLayout = require('../../main/views/defaultlayout');
@@ -31,9 +23,32 @@ var ScrollingMoreView = require('../../main/views/scrollingmore');
 var TaxonRouter = Marionette.AppRouter.extend({
     routes : {
         "app/taxonomy/taxon/": "getTaxonList",
-        "app/taxonomy/taxon/:id/": "getTaxon",
+        "app/taxonomy/taxon/:id/": "getTaxon"
+    },
+/*
+    constructor: function() {
+        var args = Array.prototype.slice.call(arguments);
+        Marionette.AppRouter.apply(this, args);
+
+        // set up the onRoute processing, from the existing route event
+        this.on("route", this._processOnRoute, this);
     },
 
+    // process the route event and trigger the onRoute method call, if it exists
+    _processOnRoute: function(routeName, routeArgs) {
+        // find the path that matched
+        var routePath = _.invert(this.appRoutes)[routeName];
+
+        // make sure an onRoute is there, and call it
+        if (_.isFunction(this.onRoute)) {
+            this.onRoute(routeName, routePath, routeArgs);
+        }
+    },
+
+    onRoute: function(route, name, args) {
+        console.log('route');
+    },
+*/
     getTaxonList : function() {
         var collection = application.taxonomy.collections.taxons;
 
@@ -59,50 +74,19 @@ var TaxonRouter = Marionette.AppRouter.extend({
         application.show(defaultLayout);
 
         var taxonLayout = new TaxonLayout({model: taxon});
-        defaultLayout.getRegion('content').show(taxonLayout);
 
-        taxon.fetch().then(function() {
+        taxon.fetch().then(function () {
             defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Taxon details"), model: taxon}));
-            taxonLayout.getRegion('details').show(new TaxonDetailsView({model: taxon}));
-            taxonLayout.getRegion('synonyms').show(new TaxonSynonymsView({model: taxon}));
-
-            // get the layout before creating the view
-            if (taxon.get('descriptor_meta_model') != null) {
-                $.ajax({
-                    method: "GET",
-                    url: application.baseUrl + 'descriptor/meta-model/' + taxon.get('descriptor_meta_model') + '/layout/',
-                    dataType: 'json',
-                }).done(function (data) {
-                    var taxonDescriptorView = new TaxonDescriptorView({
-                        model: taxon,
-                        descriptorMetaModelLayout: data
-                    });
-                    taxonLayout.getRegion('descriptors').show(taxonDescriptorView);
-                });
-            } else {
-                var taxonDescriptorCreateView = new TaxonDescriptorCreateView({model: taxon});
-                taxonLayout.getRegion('descriptors').show(taxonDescriptorCreateView);
-            }
+            defaultLayout.getRegion('content').show(taxonLayout);
         });
+        /*
+        taxon.on("sync", function() {
+            defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Taxon details"), model: taxon}));
+            defaultLayout.getRegion('content').show(taxonLayout);
+        });*/
 
-        var taxonChildren = new TaxonChildrenCollection([], {model_id: id});
-
-        taxonChildren.fetch().then(function() {
-            var taxonChildrenView = new TaxonChildrenView({collection: taxonChildren, model: taxon});
-
-            taxonLayout.getRegion('children-content').show(taxonChildrenView);
-            taxonLayout.getRegion('children-bottom').show(new ScrollingMoreView({targetView: taxonChildrenView}));
-        });
-
-        var taxonEntities = new TaxonEntitiesCollection([], {model_id: id});
-
-        taxonEntities.fetch().then(function() {
-            var taxonEntitiesView = new TaxonEntitiesView({collection: taxonEntities, model: taxon});
-
-            taxonLayout.getRegion('entities-content').show(taxonEntitiesView);
-            taxonLayout.getRegion('entities-bottom').show(new ScrollingMoreView({targetView: taxonEntitiesView}));
-        });
-    },
+        taxon.fetch();
+    }
 });
 
 module.exports = TaxonRouter;

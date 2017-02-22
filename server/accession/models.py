@@ -6,27 +6,14 @@
 coll-gate accession module models.
 """
 
+from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 
 from main.models import Languages, Entity
-from descriptor.models import DescribableEntity
+from descriptor.models import DescribableEntity, DescriptorType
 
 from taxonomy.models import Taxon
-
-
-class AccessionSynonym(Entity):
-    """
-    Table specific to accession to defines the synonyms.
-    """
-
-    language = models.CharField(max_length=8, choices=Languages.choices(), default=Languages.EN.value)
-
-    # Type of synonym is related to the type of descriptor IN_001 that is an 'enum_single'.
-    type = models.CharField(max_length=64, default='IN_001:0000001')
-
-    class Meta:
-        verbose_name = _("accession synonym")
 
 
 class Asset(Entity):
@@ -48,24 +35,85 @@ class Accession(DescribableEntity):
     # inherit of a taxon rank
     parent = models.ForeignKey(Taxon)
 
-    # Can have many synonyms, and some synonyms can sometimes be shared by multiples accessions.
-    synonyms = models.ManyToManyField(AccessionSynonym, related_name='accessions')
-
     class Meta:
         verbose_name = _("accession")
 
+        permissions = (
+            ("get_accession", "Can get an accession"),
+            ("list_accession", "Can list accessions"),
+            ("search_accession", "Can search for accessions")
+        )
+
     def audit_create(self, user):
         return {
+            'parent': self.parent_id,
+            'descriptor_meta_model': self.descriptor_meta_model_id,
             'descriptors': self.descriptors
         }
 
     def audit_update(self, user):
-        return {
-            'descriptors': self.descriptors
-        }
+        if hasattr(self, 'updated_fields'):
+            result = {'updated_fields': self.updated_fields}
+
+            if 'parent' in self.updated_fields:
+                result['parent'] = self.parent_id
+
+            if 'descriptors' in self.updated_fields:
+                if hasattr(self, 'descriptors_diff'):
+                    result['descriptors'] = self.descriptors_diff
+                else:
+                    result['descriptors'] = self.descriptors
+
+            return result
+        else:
+            return {
+                'descriptors': self.descriptors
+            }
 
     def audit_delete(self, user):
         return {}
+
+
+class AccessionSynonym(Entity):
+    """
+    Table specific to accession to defines the synonyms.
+    """
+
+    # primary type as constant
+    TYPE_PRIMARY = "IN_001:0000001"
+
+    # related accession
+    accession = models.ForeignKey(Accession, related_name="synonyms")
+
+    # synonym name
+    synonym = models.CharField(max_length=255, db_index=True)
+
+    # language code
+    language = models.CharField(max_length=8, choices=Languages.choices(), default=Languages.EN.value)
+
+    # type of synonym is related to the type of descriptor IN_001 that is an 'enum_single'.
+    type = models.CharField(max_length=64, default=TYPE_PRIMARY)
+
+    class Meta:
+        verbose_name = _("accession synonym")
+
+    @classmethod
+    def is_synonym_type(cls, synonym_type):
+        descriptor_type = DescriptorType.objects.get(code=AccessionSynonym.TYPE_PRIMARY)
+
+        try:
+            descriptor_type.get_value(synonym_type)
+        except ObjectDoesNotExist:
+            return False
+
+        return True
+
+    def is_primary(self):
+        """
+        Is a primary type of synonym.
+        :return: True if primary
+        """
+        return self.type == AccessionSynonym.TYPE_PRIMARY
 
 
 class Batch(DescribableEntity):
@@ -73,20 +121,39 @@ class Batch(DescribableEntity):
     Lot for an accession.
     """
 
-    accession = models.ForeignKey('Accession', related_name='bundles')
+    accession = models.ForeignKey('Accession', related_name='batches')
 
     class Meta:
         verbose_name = _("batch")
 
+        permissions = (
+            ("get_batch", "Can get a batch"),
+            ("list_batch", "Can list batch"),
+            ("search_batch", "Can search for batches")
+        )
+
     def audit_create(self, user):
         return {
+            'accession': self.accession_id,
+            'descriptor_meta_model': self.descriptor_meta_model_id,
             'descriptors': self.descriptors
         }
 
     def audit_update(self, user):
-        return {
-            'descriptors': self.descriptors
-        }
+        if hasattr(self, 'updated_fields'):
+            result = {'updated_fields': self.updated_fields}
+
+            if 'descriptors' in self.updated_fields:
+                if hasattr(self, 'descriptors_diff'):
+                    result['descriptors'] = self.descriptors_diff
+                else:
+                    result['descriptors'] = self.descriptors
+
+            return result
+        else:
+            return {
+                'descriptors': self.descriptors
+            }
 
     def audit_delete(self, user):
         return {}
@@ -97,7 +164,6 @@ class Sample(DescribableEntity):
     Sample during lot processing.
     """
 
-    name = models.CharField(unique=True, max_length=255, db_index=True)
     batch = models.ForeignKey('Batch', related_name='samples')
 
     class Meta:
@@ -105,13 +171,26 @@ class Sample(DescribableEntity):
 
     def audit_create(self, user):
         return {
+            'batch': self.batch_id,
+            'descriptor_meta_model': self.descriptor_meta_model_id,
             'descriptors': self.descriptors
         }
 
     def audit_update(self, user):
-        return {
-            'descriptors': self.descriptors
-        }
+        if hasattr(self, 'updated_fields'):
+            result = {'updated_fields': self.updated_fields}
+
+            if 'descriptors' in self.updated_fields:
+                if hasattr(self, 'descriptors_diff'):
+                    result['descriptors'] = self.descriptors_diff
+                else:
+                    result['descriptors'] = self.descriptors
+
+            return result
+        else:
+            return {
+                'descriptors': self.descriptors
+            }
 
     def audit_delete(self, user):
         return {}

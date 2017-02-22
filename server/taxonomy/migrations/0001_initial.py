@@ -29,7 +29,7 @@ class Migration(migrations.Migration):
                 ('modified_date', models.DateTimeField(auto_now=True)),
                 ('name', models.CharField(db_index=True, max_length=255, unique=True)),
                 ('uuid', models.UUIDField(db_index=True, default=uuid.uuid4, editable=False, unique=True)),
-                ('rank', models.IntegerField(choices=[(60, 'Family'), (61, 'Sub-family'), (70, 'Genus'), (71, 'Sub-genus'), (72, 'Section'), (73, 'Sub-section'), (80, 'Specie'), (81, 'Sub-specie'), (82, 'Variety')])),
+                ('rank', models.IntegerField(choices=[(60, 'Family'), (61, 'Subfamily'), (65, 'Tribe'), (66, 'Subtribe'), (70, 'Genus'), (71, 'Subgenus'), (72, 'Section'), (73, 'Subsection'), (80, 'Specie'), (81, 'Subspecie'), (82, 'Variety'), (83, 'Subvariety')])),
                 ('parent_list', models.CharField(blank=True, default='', max_length=1024, validators=[django.core.validators.RegexValidator(re.compile('^\\d+(?:\\,\\d+)*\\Z', 32), code='invalid', message='Enter only digits separated by commas.')])),
                 ('descriptors', django.contrib.postgres.fields.jsonb.JSONField(default={})),
                 ('content_type', models.ForeignKey(editable=False, on_delete=django.db.models.deletion.CASCADE, to='contenttypes.ContentType')),

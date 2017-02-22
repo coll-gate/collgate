@@ -18,11 +18,8 @@ var Ordinal = function() {
 };
 
 _.extend(Ordinal.prototype, DescriptorFormatType.prototype, {
-    create: function(format, parent, readOnly, create) {
+    create: function(format, parent, readOnly) {
         readOnly || (readOnly = false);
-        create || (create = true);
-
-        this.owned = create;
 
         if ((format.range[1] - format.range[0] + 1) <= 256) {
             this.isInput = false;
@@ -31,13 +28,7 @@ _.extend(Ordinal.prototype, DescriptorFormatType.prototype, {
         }
 
         if (readOnly) {
-            var input = null;
-
-            if (create) {
-                input = this._createStdInput(parent, "glyphicon-option-vertical");
-            } else {
-                input = parent.children('input');
-            }
+            var input = this._createStdInput(parent, "glyphicon-option-vertical");
 
             this.parent = parent;
             this.readOnly = true;
@@ -91,7 +82,7 @@ _.extend(Ordinal.prototype, DescriptorFormatType.prototype, {
     },
 
     destroy: function() {
-        if (this.el && this.parent && this.owned) {
+        if (this.el && this.parent) {
             if (this.readOnly) {
                 this.el.parent().remove();
             } else {
@@ -134,14 +125,14 @@ _.extend(Ordinal.prototype, DescriptorFormatType.prototype, {
 
         if (this.readOnly) {
             if (definesValues) {
-                this.el.val(defaultValues[0]);
+                this.el.val(defaultValues);
             }
         } else {
             if (definesValues) {
                 if (this.isInput) {
-                    this.el.val(defaultValues[0]);
+                    this.el.val(defaultValues);
                 } else {
-                    this.el.val(defaultValues[0].toString()).trigger('change');
+                    this.el.val(defaultValues.toString()).trigger('change');
                     this.el.selectpicker('refresh');
                 }
             }
@@ -152,25 +143,25 @@ _.extend(Ordinal.prototype, DescriptorFormatType.prototype, {
         if (this.el && this.parent) {
             if (this.el.val() !== "") {
                 var value = parseInt(this.el.val());
-                return [isNaN(value) ? null : value];
+                return isNaN(value) ? null : value;
             } else {
-                return [null];
+                return null;
             }
         }
 
-        return [null]
+        return null;
     },
 
     checkCondition: function (condition, values) {
         switch (condition) {
             case 0:
-                return this.values()[0] === null;
+                return this.values() == null;
             case 1:
-                return this.values()[0] !== null;
+                return this.values() != null;
             case 2:
-                return this.values()[0] === values[0];
+                return this.values() === values;
             case 3:
-                return this.values()[0] !== values[0];
+                return this.values() !== values;
             default:
                 return false;
         }

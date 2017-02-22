@@ -13,17 +13,13 @@ var Marionette = require('backbone.marionette');
 var TaxonModel = require('../../taxonomy/models/taxon');
 var AccessionModel = require('../models/accession');
 
-//var AccessionCollection = require('../collections/accession');
-
-//var AccessionListView = require('../views/accessionlist');
-
 var DefaultLayout = require('../../main/views/defaultlayout');
 var TitleView = require('../../main/views/titleview');
 var Dialog = require('../../main/views/dialog');
 var AccessionLayout = require('../views/accessionlayout');
 
 var EntityPathView = require('../../taxonomy/views/entitypath');
-var AccessionEditView = require('../views/accessionedit');
+var AccessionDescriptorEditView = require('../views/accessiondescriptoredit');
 
 
 var Controller = Marionette.Object.extend({
@@ -55,7 +51,7 @@ var Controller = Marionette.Object.extend({
 
                 events: {
                     'click @ui.validate': 'onContinue',
-                    'input @ui.name': 'onNameInput',
+                    'input @ui.name': 'onNameInput'
                 },
 
                 onRender: function () {
@@ -73,20 +69,21 @@ var Controller = Marionette.Object.extend({
                             data: function (params) {
                                 params.term || (params.term = '');
 
-                                var filters = {
-                                    method: 'icontains',
-                                    fields: ['name'],
-                                    'name': params.term
-                                };
-
                                 return {
-                                    page: params.page,
-                                    filters: JSON.stringify(filters),
+                                    filters: JSON.stringify({
+                                        method: 'icontains',
+                                        fields: ['name'],
+                                        'name': params.term
+                                    }),
+                                    cursor: params.next
                                 };
                             },
                             processResults: function (data, params) {
-                                // no pagination
-                                params.page = params.page || 1;
+                                params.next = null;
+
+                                if (data.items.length >= 30) {
+                                    params.next = data.next || null;
+                                }
 
                                 var results = [];
 
@@ -100,14 +97,14 @@ var Controller = Marionette.Object.extend({
                                 return {
                                     results: results,
                                     pagination: {
-                                        more: (params.page * 30) < data.total_count
+                                        more: params.next != null
                                     }
                                 };
                             },
                             cache: true
                         },
                         minimumInputLength: 3,
-                        placeholder: gt.gettext("Enter a taxon name. 3 characters at least for auto-completion"),
+                        placeholder: gt.gettext("Enter a taxon name. 3 characters at least for auto-completion")
                     });
                 },
 
@@ -128,7 +125,7 @@ var Controller = Marionette.Object.extend({
 
                         $.ajax({
                             type: "GET",
-                            url: application.baseUrl + 'accession/accession/search/',
+                            url: application.baseUrl + 'accession/accession/synonym/search/',
                             dataType: 'json',
                             contentType: 'application/json; charset=utf8',
                             data: {filters: JSON.stringify(filters)},
@@ -139,7 +136,7 @@ var Controller = Marionette.Object.extend({
                                         var t = data.items[i];
 
                                         if (t.value.toUpperCase() == this.el.val().toUpperCase()) {
-                                            $(this.el).validateField('failed', gt.gettext('Taxon name already in usage'));
+                                            $(this.el).validateField('failed', gt.gettext('Synonym of accession already used'));
                                             break;
                                         }
                                     }
@@ -198,7 +195,7 @@ var Controller = Marionette.Object.extend({
                             name: name,
                             parent: parent,
                             descriptor_meta_model: metaModel,
-                            language: this.ui.language.val(),
+                            language: this.ui.language.val()
                         });
 
                         view.destroy();
@@ -208,9 +205,9 @@ var Controller = Marionette.Object.extend({
 
                         defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Accession"), model: model}));
 
-                        var accessionLayout = new AccessionLayout();
+                        var accessionLayout = new AccessionLayout({model: model});
                         defaultLayout.getRegion('content').show(accessionLayout);
-
+/*
                         accessionLayout.disableSynonymsTab();
                         accessionLayout.disableBatchesTab();
 
@@ -222,11 +219,14 @@ var Controller = Marionette.Object.extend({
                         $.ajax({
                             method: "GET",
                             url: application.baseUrl + 'descriptor/meta-model/' + metaModel + '/layout/',
-                            dataType: 'json',
+                            dataType: 'json'
                         }).done(function(data) {
-                            var view = new AccessionEditView({model: model, descriptorMetaModelLayout: data});
-                            accessionLayout.getRegion('descriptors').show(view);
-                        });
+                            var accessionDescriptorView = new AccessionDescriptorEditView({model: model, descriptorMetaModelLayout: data});
+                            accessionLayout.getRegion('descriptors').show(accessionDescriptorView);
+
+                            // manually called
+                            accessionDescriptorView.onShowTab();
+                        });*/
                     }
                 }
             });
