@@ -20,7 +20,7 @@ var Router = Marionette.AppRouter.extend({
         "app/home/": "home",
         "app/main/about/": "about",
         "app/main/help/": "help",
-        "app/*actions": "default",
+        "app/*actions": "default"
     },
 
     default: function(p) {

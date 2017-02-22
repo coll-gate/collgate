@@ -277,9 +277,9 @@ def search_taxon(request):
     else:
         qs = Taxon.objects.all()
 
-    name_method = filters.get('method', 'ieq')
-
     if 'name' in filters['fields']:
+        name_method = filters.get('method', 'ieq')
+
         if name_method == 'ieq':
             qs = qs.filter(name__iexact=filters['name'])
         elif name_method == 'icontains':
@@ -290,15 +290,15 @@ def search_taxon(request):
         rank_method = filters.get('rank_method', 'lt')
 
         if rank_method == 'eq':
-            qs = qs.filter(Q(synonyms__rank=rank))
+            qs = qs.filter(Q(rank=rank))
         elif rank_method == 'lt':
-            qs = qs.filter(Q(synonyms__rank__lt=rank))
+            qs = qs.filter(Q(rank__lt=rank))
         elif rank_method == 'lte':
-            qs = qs.filter(Q(synonyms__rank__lte=rank))
+            qs = qs.filter(Q(rank__lte=rank))
         elif rank_method == 'gt':
-            qs = qs.filter(Q(synonyms__rank__gt=rank))
+            qs = qs.filter(Q(rank__gt=rank))
         elif rank_method == 'gte':
-            qs = qs.filter(Q(synonyms__rank__gte=rank))
+            qs = qs.filter(Q(rank__gte=rank))
 
     qs = qs.prefetch_related(
         Prefetch(
@@ -386,17 +386,17 @@ def patch_taxon(request, tax_id):
             # make parent list
             Taxonomy.update_parents(taxon, parent)
 
+            # query for parents
             parents = []
-            next_parent = taxon.parent
-            break_count = 0
-            while break_count < 10 and next_parent is not None:
-                parents.append({
-                    'id': next_parent.id,
-                    'name': next_parent.name,
-                    'rank': next_parent.rank,
-                    'parent': next_parent.parent_id
+            parents_taxon = Taxon.objects.filter(id__in=[int(x) for x in taxon.parent_list.split(',') if x != ''])
+
+            for parent in parents_taxon:
+                parents.insert(0, {
+                    'id': parent.id,
+                    'name': parent.name,
+                    'rank': parent.rank,
+                    'parent': parent.parent_id
                 })
-                next_parent = next_parent.parent
 
             result['parent'] = parent.id
             result['parent_list'] = parents
@@ -583,7 +583,7 @@ def taxon_remove_synonym(request, tax_id, syn_id):
 
 
 @RestTaxonomyRank.def_request(Method.GET, Format.JSON)
-def rank(request):
+def get_rank_list(request):
     """
     Get the list of taxon rank in JSON
     """

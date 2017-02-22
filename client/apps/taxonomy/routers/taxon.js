@@ -23,9 +23,32 @@ var ScrollingMoreView = require('../../main/views/scrollingmore');
 var TaxonRouter = Marionette.AppRouter.extend({
     routes : {
         "app/taxonomy/taxon/": "getTaxonList",
-        "app/taxonomy/taxon/:id/": "getTaxon",
+        "app/taxonomy/taxon/:id/": "getTaxon"
+    },
+/*
+    constructor: function() {
+        var args = Array.prototype.slice.call(arguments);
+        Marionette.AppRouter.apply(this, args);
+
+        // set up the onRoute processing, from the existing route event
+        this.on("route", this._processOnRoute, this);
     },
 
+    // process the route event and trigger the onRoute method call, if it exists
+    _processOnRoute: function(routeName, routeArgs) {
+        // find the path that matched
+        var routePath = _.invert(this.appRoutes)[routeName];
+
+        // make sure an onRoute is there, and call it
+        if (_.isFunction(this.onRoute)) {
+            this.onRoute(routeName, routePath, routeArgs);
+        }
+    },
+
+    onRoute: function(route, name, args) {
+        console.log('route');
+    },
+*/
     getTaxonList : function() {
         var collection = application.taxonomy.collections.taxons;
 
@@ -52,11 +75,18 @@ var TaxonRouter = Marionette.AppRouter.extend({
 
         var taxonLayout = new TaxonLayout({model: taxon});
 
-        taxon.fetch().then(function() {
+        taxon.fetch().then(function () {
             defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Taxon details"), model: taxon}));
             defaultLayout.getRegion('content').show(taxonLayout);
         });
-    },
+        /*
+        taxon.on("sync", function() {
+            defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Taxon details"), model: taxon}));
+            defaultLayout.getRegion('content').show(taxonLayout);
+        });*/
+
+        taxon.fetch();
+    }
 });
 
 module.exports = TaxonRouter;

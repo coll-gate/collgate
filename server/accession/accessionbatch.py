@@ -29,18 +29,22 @@ class RestAccessionIdBatchSearch(RestAccessionIdBatch):
     suffix = 'search'
 
 
-@RestAccessionIdBatch.def_auth_request(Method.GET, Format.JSON,
-    perms={
-        'accession.get_accession': _("You are not allowed to get an accession"),
-        'accession.list_batch': _("You are not allowed to list batches for an accession")
-    }
-)
+@RestAccessionIdBatch.def_auth_request(Method.GET, Format.JSON, perms={
+    'accession.get_accession': _("You are not allowed to get an accession"),
+    'accession.list_batch': _("You are not allowed to list batches for an accession")
+})
 def accession_batches_list(request, acc_id):
     results_per_page = int_arg(request.GET.get('more', 30))
     cursor = request.GET.get('cursor')
     limit = results_per_page
 
     accession = get_object_or_404(Accession, id=int(acc_id))
+
+    # check permission on accession object
+    perms = get_permissions_for(request.user, accession.content_type.app_label, accession.content_type.model,
+                                accession.pk)
+    if 'accession.get_accession' not in perms:
+        raise PermissionDenied(_('Invalid permission to access to this accession'))
 
     if cursor:
         cursor_name, cursor_id = cursor.rsplit('/', 1)
@@ -57,7 +61,7 @@ def accession_batches_list(request, acc_id):
             'id': batch.pk,
             'name': batch.name,
             'accession': accession.id,
-            'descriptor_meta_model': batch.descriptor_meta_model.id,
+            'descriptor_meta_model': batch.descriptor_meta_model_id,
             'descriptors': batch.descriptors
         }
 
@@ -86,53 +90,75 @@ def accession_batches_list(request, acc_id):
     return HttpResponseRest(request, results)
 
 
-@RestAccessionIdBatchSearch.def_auth_request(Method.GET, Format.JSON, ('filters',))
+@RestAccessionIdBatchSearch.def_auth_request(Method.GET, Format.JSON, ('filters',), perms={
+    'accession.get_accession': _("You are not allowed to get an accession"),
+    'accession.search_batch': _("You are not allowed to list batches for an accession")
+})
 def search_batches_for_accession(request, acc_id):
     """
     Quick search for batches with a exact or partial name.
     """
+    filters = json.loads(request.GET['filters'])
+
+    results_per_page = int_arg(request.GET.get('more', 30))
+    cursor = request.GET.get('cursor')
+    limit = results_per_page
+
     accession = get_object_or_404(Accession, id=int(acc_id))
 
-    filters = json.loads(request.GET['filters'])
-    page = int_arg(request.GET.get('page', 1))
+    # check permission on accession object
+    perms = get_permissions_for(request.user, accession.content_type.app_label, accession.content_type.model,
+                                accession.pk)
+    if 'accession.get_accession' not in perms:
+        raise PermissionDenied(_('Invalid permission to access to this accession'))
 
-    # @todo cursor (not pagination)
-    qs = None
+    if cursor:
+        cursor_name, cursor_id = cursor.rsplit('/', 1)
+        batches = accession.batches.filter(Q(name__gt=cursor_name))
+    else:
+        batches = accession.batches.all()
 
-    name_method = filters.get('method', 'ieq')
-    if 'meta_model' in filters['fields']:
-        meta_model = int_arg(filters['meta_model'])
+    if 'name' in filters['fields']:
+        name_method = filters.get('method', 'ieq')
 
         if name_method == 'ieq':
-            qs = AccessionSynonym.objects.filter(Q(name__iexact=filters['name']))
+            batches = batches.filter(name__iexact=filters['name'])
         elif name_method == 'icontains':
-            qs = AccessionSynonym.objects.filter(Q(name__icontains=filters['name']))
+            batches = batches.filter(name__icontains=filters['name'])
 
-        qs = qs.filter(Q(descriptor_meta_model_id=meta_model))
-    elif 'name' in filters['fields']:
-        if name_method == 'ieq':
-            qs = AccessionSynonym.objects.filter(name__iexact=filters['name'])
-        elif name_method == 'icontains':
-            qs = AccessionSynonym.objects.filter(name__icontains=filters['name'])
+    batches = batches.order_by('name')[:limit]
 
-    # qs = qs.select_related('synonyms')
+    items_list = []
 
-    # group by synonyms on labels
-    accessions = {}
+    for batch in batches:
+        b = {
+            'id': batch.pk,
+            'name': batch.name,
+            'accession': accession.id,
+            'descriptor_meta_model': batch.descriptor_meta_model_id,
+            'descriptors': batch.descriptors
+        }
 
-    for s in qs:
-        for acc in s.accessions.all():
-            accession = accessions.get(acc.id)
-            if accession:
-                accession['label'] += ', ' + s.name
-            else:
-                accessions[acc.id] = {'id': str(acc.id), 'label': s.name, 'value': acc.name}
+        items_list.append(b)
 
-    accessions_list = list(accessions.values())
+    if len(items_list) > 0:
+        # prev cursor (asc order)
+        obj = items_list[0]
+        prev_cursor = "%s/%i" % (obj['name'], obj['id'])
 
-    response = {
-        'items': accessions_list,
-        'page': page
+        # next cursor (asc order)
+        obj = items_list[-1]
+        next_cursor = "%s/%i" % (obj['name'], obj['id'])
+    else:
+        prev_cursor = None
+        next_cursor = None
+
+    results = {
+        'perms': [],
+        'items': items_list,
+        'prev': prev_cursor,
+        'cursor': cursor,
+        'next': next_cursor,
     }
 
-    return HttpResponseRest(request, response)
+    return HttpResponseRest(request, results)

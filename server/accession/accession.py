@@ -192,16 +192,19 @@ def get_accession_list(request):
     return HttpResponseRest(request, results)
 
 
-@RestAccessionId.def_auth_request(Method.GET, Format.JSON)
+@RestAccessionId.def_auth_request(Method.GET, Format.JSON, perms={
+    'accession.get_accession': _("You are not allowed to get an accession")
+})
 def get_accession_details_json(request, acc_id):
     """
     Get the details of an accession.
     """
     accession = Accession.objects.get(id=int(acc_id))
 
-    # check permission on this object @todo
-    perms = get_permissions_for(request.user, accession.content_type.app_label, accession.content_type.model, accession.pk)
-    if len(perms) == 0:
+    # check permission on this object
+    perms = get_permissions_for(request.user, accession.content_type.app_label, accession.content_type.model,
+                                accession.pk)
+    if 'accession.get_accession' not in perms:
         raise PermissionDenied(_('Invalid permission to access to this accession'))
 
     result = {
@@ -224,7 +227,9 @@ def get_accession_details_json(request, acc_id):
     return HttpResponseRest(request, result)
 
 
-@RestAccessionSearch.def_auth_request(Method.GET, Format.JSON, ('filters',))
+@RestAccessionSearch.def_auth_request(Method.GET, Format.JSON, ('filters',), perms={
+    'accession.search_accession': _("You are not allowed to search on accessions")
+})
 def search_accession(request):
     """
     Quick search for an accession with a exact or partial name and meta model of descriptor.

@@ -40,3 +40,26 @@ class RestBatchSearch(RestBatch):
 class RestBatchId(RestBatch):
     regex = r'^(?P<bat_id>[0-9]+)/$'
     suffix = 'id'
+
+
+@RestBatchId.def_auth_request(Method.GET, Format.JSON)
+def get_batch_details_json(request, bat_id):
+    """
+    Get the details of a batch.
+    """
+    batch = Batch.objects.get(id=int(bat_id))
+
+    # check permission on this object
+    perms = get_permissions_for(request.user, batch.content_type.app_label, batch.content_type.model, batch.pk)
+    if 'accession.get_batch' not in perms:
+        raise PermissionDenied(_('Invalid permission to access to this batch'))
+
+    result = {
+        'id': batch.id,
+        'name': batch.name,
+        'accession': batch.accession_id,
+        'descriptor_meta_model': batch.descriptor_meta_model_id,
+        'descriptors': batch.descriptors
+    }
+
+    return HttpResponseRest(request, result)
