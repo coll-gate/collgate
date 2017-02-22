@@ -3,14 +3,15 @@
 # Copyright (c) 2016 INRA UMR1095 GDEC
 
 """
-coll-gate taxonomy settings
+coll-gate geolocation settings
 """
 
 # Default settings of the application
 APP_DB_DEFAULT_SETTINGS = {
+    'geolocation_manager': '"geonames.geolocationmanager.GeolocationManager"',
 }
 
-APP_VERBOSE_NAME = "Coll-Gate :: Taxonomy"
+APP_VERBOSE_NAME = "Coll-Gate :: Geolocation"
 
 APP_SETTINGS_MODEL = 'main.models.Settings'
 

@@ -29,6 +29,9 @@ class AlternateName(models.Model):
     language = models.CharField(max_length=2, null=False)
     alternate_name = models.TextField(null=True, blank=True, default='')
 
+    def __str__(self):
+        return "(%s, %s)" % (self.language, self.alternate_name)
+
 
 class Country(Base):
     """
@@ -40,6 +43,9 @@ class Country(Base):
     code3 = models.CharField(max_length=3, null=True, blank=True, unique=True)
     continent = models.CharField(max_length=2, db_index=True)
     phone = models.CharField(max_length=20, null=True, blank=True)
+
+    def __str__(self):
+        return str(self.geoname_id) + ' ' + self.name
 
 
 class Region(Base):
@@ -61,6 +67,9 @@ class City(Base):
     population = models.BigIntegerField(null=True, blank=True, db_index=True)
     feature_code = models.CharField(max_length=10, null=True, blank=True, db_index=True)
 
+    def __str__(self):
+        return str(self.geoname_id) + ' ' + self.name
+
 class Point(models.Model):
     """
     Geolocation point model
@@ -70,3 +79,20 @@ class Point(models.Model):
 
     country = models.ForeignKey(Country, null=True)
     city = models.ForeignKey(City, null=True)
+
+
+class State(models.Model):
+    """
+    Application state model
+    """
+    # TYPES = (
+    #     (0, 'Source'),
+    # )
+    #
+    # param_name = models.CharField(max_length=1024, null=False, unique=True, blank=False)
+    # param_type = models.IntegerField(choices=TYPES, null=False, blank=False)
+    # value = models.CharField(max_length=1024, null=True, blank=True)
+
+    source = models.CharField(max_length=1024, null=False, blank=False, unique=True)
+    last_modified = models.DateTimeField(null=False, blank=False)
+    size = models.BigIntegerField(null=True, blank=True)

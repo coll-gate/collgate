@@ -4,6 +4,4 @@ ORDER = [
     'descriptorsgroups',
     'descriptorstypes',
     'accessionsynonymtypes',
-    'countries',
-    'cities',
 ]

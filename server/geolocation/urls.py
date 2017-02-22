@@ -3,7 +3,7 @@
 # Copyright (c) 2016 INRA UMR1095 GDEC
 
 """
-coll-gate accession module url entry point.
+coll-gate geolocation module url entry point.
 """
 
 from django.conf.urls import include, url
