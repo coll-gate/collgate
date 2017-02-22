@@ -12,7 +12,7 @@ var Marionette = require('backbone.marionette');
 
 var View = Marionette.LayoutView.extend({
     tagName: 'div',
-    template: require('../templates/batchdescriptorscontext.html'),
+    template: require('../templates/batchdescriptorcontext.html'),
     className: "context batch",
     templateHelpers/*templateContext*/: function () {
         return {

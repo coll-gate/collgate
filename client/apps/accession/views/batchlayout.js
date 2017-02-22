@@ -9,12 +9,11 @@
  */
 
 var Marionette = require('backbone.marionette');
-
 var AccessionModel = require('../models/accession');
-var BatchModel = require('../models/batch');
 
+var ScrollingMoreView = require('../../main/views/scrollingmore');
+var ContentBottomLayout = require('../../main/views/contentbottomlayout');
 var BatchPathView = require('../views/batchpath');
-var BatchDescriptorView = require('../views/batchdescriptor');
 
 
 var Layout = Marionette.LayoutView.extend({
@@ -28,13 +27,15 @@ var Layout = Marionette.LayoutView.extend({
         tabs: 'a[data-toggle="tab"]',
         initial_pane: 'div.tab-pane.active',
         descriptors_tab: 'a[aria-controls=descriptors]',
-        batches_tab: 'a[aria-controls=batches]'
+        batches_tab: 'a[aria-controls=batches]',
+        actions_tab: 'a[aria-controls=actions]'
     },
 
     regions: {
         'details': "div[name=details]",
         'descriptors': "div.tab-pane[name=descriptors]",
-        'batches': "div.tab-pane[name=batches]"
+        'batches': "div.tab-pane[name=batches]",
+        'actions': "div.tab-pane[name=actions]"
     },
 
     childEvents: {
@@ -97,14 +98,26 @@ var Layout = Marionette.LayoutView.extend({
         this.ui.tabs.on("shown.bs.tab", $.proxy(this.onShowTab, this));
         this.ui.tabs.on("hide.bs.tab", $.proxy(this.onHideTab, this));
 
-        // details view @todo
+        // details view
         var accession = new AccessionModel({id: this.model.get('accession')});
         accession.fetch().then(function() {
-            batchLayout.getRegion('details').show(new BatchPathView({model: batchLayout.model, taxon: taxon}));
+            batchLayout.getRegion('details').show(new BatchPathView({model: batchLayout.model, accession: accession}));
         });
 
         // batches tab
-        // @todo
+        var BatchCollection = require('../collections/batch');
+        var accessionBatches = new BatchCollection([], {batch_id: this.model.get('id')});
+
+        accessionBatches.fetch().then(function() {
+            var BatchListView = require('../views/batchlist');
+            var batchListView  = new BatchListView({collection: accessionBatches, model: batchLayout.model});
+
+            var contentBottomLayout = new ContentBottomLayout();
+            batchLayout.getRegion('batches').show(contentBottomLayout);
+
+            contentBottomLayout.getRegion('content').show(batchListView);
+            contentBottomLayout.getRegion('bottom').show(new ScrollingMoreView({targetView: batchListView}));
+        });
     },
 
     onShowTab: function(e) {

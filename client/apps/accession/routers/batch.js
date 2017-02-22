@@ -17,12 +17,12 @@ var BatchListView = require('../views/batchlist');
 var DefaultLayout = require('../../main/views/defaultlayout');
 var ScrollingMoreView = require('../../main/views/scrollingmore');
 var TitleView = require('../../main/views/titleview');
-var BatchLayout = require('../views/accessionlayout');
+var BatchLayout = require('../views/batchlayout');
 
 var Router = Marionette.AppRouter.extend({
     routes : {
         "app/accession/accession/:id/batch/": "getAccessionBatchList",
-        "app/accession/batch/:id": "getBatch"
+        "app/accession/batch/:id/": "getBatch"
     },
 
     getAccessionBatchList : function(id) {

@@ -60,7 +60,7 @@ def accession_batches_list(request, acc_id):
         b = {
             'id': batch.pk,
             'name': batch.name,
-            'accession': accession.id,
+            'accession': batch.accession_id,
             'descriptor_meta_model': batch.descriptor_meta_model_id,
             'descriptors': batch.descriptors
         }

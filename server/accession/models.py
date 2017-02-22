@@ -121,7 +121,11 @@ class Batch(DescribableEntity):
     Lot for an accession.
     """
 
+    # parent accession
     accession = models.ForeignKey('Accession', related_name='batches')
+
+    # direct parent batches
+    batches = models.ManyToManyField('Batch', related_name='children')
 
     class Meta:
         verbose_name = _("batch")

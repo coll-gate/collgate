@@ -21,7 +21,7 @@ var View = ScrollView.extend({
         View.__super__.initialize.apply(this);
 
         this.listenTo(this.collection, 'reset', this.render, this);
-    },
+    }
 });
 
 module.exports = View;

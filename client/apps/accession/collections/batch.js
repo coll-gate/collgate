@@ -11,10 +11,25 @@
 var BatchModel = require('../models/batch');
 
 var Collection = Backbone.Collection.extend({
-    // url: application.baseUrl + 'accession/batch/', comes from accession or from search or panel @todo
+    url: function() {
+        if (this.accession_id) {
+            return application.baseUrl + 'accession/accession/' + this.accession_id + '/batch/';
+        } else if (this.batch_id) {
+            return application.baseUrl + 'accession/batch/' + this.batch_id + '/batch/';
+        } else {
+            return application.baseUrl + 'accession/accession/batch/';
+        }
+    },
     model: BatchModel,
 
     comparator: 'name',
+
+    initialize: function(models, options) {
+        options || (options = {});
+
+        this.accession_id = options.accession_id;
+        this.batch_id = options.batch_id;
+    },
 
     parse: function(data) {
         this.prev = data.prev;

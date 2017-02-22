@@ -10,6 +10,9 @@
 
 var Marionette = require('backbone.marionette');
 var TaxonModel = require('../../taxonomy/models/taxon');
+
+var ScrollingMoreView = require('../../main/views/scrollingmore');
+var ContentBottomLayout = require('../../main/views/contentbottomlayout');
 var EntityPathView = require('../../taxonomy/views/entitypath');
 var AccessionDescriptorEditView = require('../views/accessiondescriptoredit');
 
@@ -25,14 +28,16 @@ var Layout = Marionette.LayoutView.extend({
         tabs: 'a[data-toggle="tab"]',
         initial_pane: 'div.tab-pane.active',
         synonyms_tab: 'a[aria-controls=synonyms]',
-        batches_tab: 'a[aria-controls=batches]'
+        batches_tab: 'a[aria-controls=batches]',
+        actions_tab: 'a[aria-controls=actions]'
     },
 
     regions: {
         'details': "div[name=details]",
         'descriptors': "div.tab-pane[name=descriptors]",
         'synonyms': "div.tab-pane[name=synonyms]",
-        'batches': "div.tab-pane[name=batches]"
+        'batches': "div.tab-pane[name=batches]",
+        'actions': "div.tab-pane[name=actions]"
     },
 
     childEvents: {
@@ -62,6 +67,10 @@ var Layout = Marionette.LayoutView.extend({
 
     disableBatchesTab: function () {
         this.ui.batches_tab.parent().addClass('disabled');
+    },
+
+    disableActionTab: function () {
+        this.ui.actions_tab.parent().addClass('disabled');
     },
 
     onDescriptorMetaModelChange: function(model, value) {
@@ -96,6 +105,7 @@ var Layout = Marionette.LayoutView.extend({
 
         // details view
         if (!this.model.isNew()) {
+            //
             var taxon = new TaxonModel({id: this.model.get('parent')});
             taxon.fetch().then(function () {
                 accessionLayout.getRegion('details').show(new EntityPathView({
@@ -107,13 +117,30 @@ var Layout = Marionette.LayoutView.extend({
             // synonyms tab
             var AccessionSynonymsView = require('../views/accessionsynonyms');
             accessionLayout.getRegion('synonyms').show(new AccessionSynonymsView({model: this.model}));
+
+            // batches tab
+            var BatchCollection = require('../collections/batch');
+            var accessionBatches = new BatchCollection([], {accession_id: this.model.get('id')});
+
+            accessionBatches.fetch().then(function() {
+                var BatchListView = require('../views/batchlist');
+                var batchListView  = new BatchListView({collection: accessionBatches, model: accessionLayout.model});
+
+                var contentBottomLayout = new ContentBottomLayout();
+                accessionLayout.getRegion('batches').show(contentBottomLayout);
+
+                contentBottomLayout.getRegion('content').show(batchListView);
+                contentBottomLayout.getRegion('bottom').show(new ScrollingMoreView({targetView: batchListView}));
+            });
         } else {
+            // details
             var taxon = new TaxonModel({id: this.model.get('parent')});
             taxon.fetch().then(function() {
                 accessionLayout.getRegion('details').show(new EntityPathView({
                     model: accessionLayout.model, taxon: taxon, noLink: true}));
             });
 
+            // descriptors edit tab
             $.ajax({
                 method: "GET",
                 url: application.baseUrl + 'descriptor/meta-model/' + this.model.get('descriptor_meta_model') + '/layout/',
@@ -127,6 +154,7 @@ var Layout = Marionette.LayoutView.extend({
 
             this.disableSynonymsTab();
             this.disableBatchesTab();
+            this.disableActionTab();
         }
     },
 

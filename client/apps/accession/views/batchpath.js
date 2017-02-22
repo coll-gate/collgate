@@ -48,7 +48,7 @@ var View = Marionette.ItemView.extend({
         }
     },
 
-    onViewTaxon: function(e) {
+    onViewAccession: function(e) {
         if (this.getOption('noLink')) {
             return;
         }
