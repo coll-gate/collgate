@@ -5,6 +5,7 @@
 """
 coll-gate taxonomy taxon rest handlers
 """
+
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import SuspiciousOperation
 from django.db import IntegrityError
@@ -12,19 +13,19 @@ from django.db import transaction
 from django.db.models import Prefetch
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
+from django.utils.translation import ugettext_lazy as _
 
 from descriptor.describable import DescriptorsBuilder
 from descriptor.models import DescriptorMetaModel
 from main.models import Languages
 from permission.utils import get_permissions_for
-from .base import RestTaxonomy
 
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
+
 from .controller import Taxonomy
 from .models import Taxon, TaxonRank, TaxonSynonym, TaxonSynonymType
-
-from django.utils.translation import ugettext_lazy as _
+from .base import RestTaxonomy
 
 
 class RestTaxon(RestTaxonomy):
@@ -50,11 +51,6 @@ class RestTaxonIdSynonym(RestTaxonId):
 class RestTaxonIdSynonymId(RestTaxonIdSynonym):
     regex = r'^(?P<syn_id>[0-9]+)/$'
     suffix = 'id'
-
-
-class RestTaxonSynonym(RestTaxon):
-    regex = r'^synonym/$'
-    suffix = 'synonym'
 
 
 class RestTaxonomyRank(RestTaxonomy):
@@ -281,9 +277,9 @@ def search_taxon(request):
         name_method = filters.get('method', 'ieq')
 
         if name_method == 'ieq':
-            qs = qs.filter(name__iexact=filters['name'])
+            qs = qs.filter(synonyms__name__iexact=filters['name'])
         elif name_method == 'icontains':
-            qs = qs.filter(name__icontains=filters['name'])
+            qs = qs.filter(synonyms__name__icontains=filters['name'])
 
     if 'rank' in filters['fields']:
         rank = int_arg(filters['rank'])

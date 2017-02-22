@@ -79,11 +79,6 @@ var TaxonRouter = Marionette.AppRouter.extend({
             defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Taxon details"), model: taxon}));
             defaultLayout.getRegion('content').show(taxonLayout);
         });
-        /*
-        taxon.on("sync", function() {
-            defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Taxon details"), model: taxon}));
-            defaultLayout.getRegion('content').show(taxonLayout);
-        });*/
 
         taxon.fetch();
     }

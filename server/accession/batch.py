@@ -63,3 +63,14 @@ def get_batch_details_json(request, bat_id):
     }
 
     return HttpResponseRest(request, result)
+
+
+@RestBatchId.def_auth_request(Method.DELETE, Format.JSON, perms={
+    'batch.delete_batch': _("You are not allowed to delete a batch"),
+})
+def delete_batch(request, bat_id):
+    batch = get_object_or_404(Batch, id=int(bat_id))
+
+    batch.delete()
+
+    return HttpResponseRest(request, {})

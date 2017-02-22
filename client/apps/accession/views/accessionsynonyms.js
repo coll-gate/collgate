@@ -242,7 +242,7 @@ var View = Marionette.ItemView.extend({
             }
         });
 
-        var synonym = $(e.target.parentNode.parentNode);
+        var synonym = $(e.target.parentNode);
         var synonym_id = $(e.target).data('synonym-id');
 
         var type = synonym.find("[name='type']").attr('value');
@@ -258,7 +258,7 @@ var View = Marionette.ItemView.extend({
         });
 
         changeSynonym.render();
-        changeSynonym.ui.synonym_name.val(e.target.innerHTML);
+        changeSynonym.ui.synonym_name.val(name);
     }
 });
 
