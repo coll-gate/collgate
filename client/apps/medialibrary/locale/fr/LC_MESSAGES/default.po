@@ -19,23 +19,23 @@ msgstr ""
 
 #: ../../../widgets/media.js:57
 msgid "Preview"
-msgstr ""
+msgstr "Prévisualiser"
 
 #: ../../../widgets/media.js:66
 msgid "Download"
-msgstr ""
+msgstr "Télécharger"
 
 #: ../../../widgets/media.js:141
 msgid "Browse"
-msgstr ""
+msgstr "Sélectionner"
 
 #: ../../../widgets/media.js:218
 msgid "Error during file upload"
-msgstr ""
+msgstr "Erreur durant le téléchagement du fichier"
 
 #: ../../../widgets/media.js:285
 msgid "Unable to remove the media"
-msgstr ""
+msgstr "Impossible de supprimer le média"
 
 #: ../../../templates/widgets/media.html:2
 #: ../../../templates/widgets/mediacollection.html:2
@@ -65,17 +65,17 @@ msgstr "Tableaux (xls, xlsx, ods, csv)"
 #: ../../../templates/widgets/media.html:11
 #: ../../../templates/widgets/mediacollection.html:17
 msgid "Inline images"
-msgstr ""
+msgstr "Images en-ligne"
 
 #: ../../../templates/widgets/media.html:13
 #: ../../../templates/widgets/mediacollection.html:19
 msgid "Yes"
-msgstr ""
+msgstr "Oui"
 
 #: ../../../templates/widgets/media.html:14
 #: ../../../templates/widgets/mediacollection.html:20
 msgid "No"
-msgstr ""
+msgstr "Non"
 
 #: ../../../templates/widgets/mediacollection.html:13
 msgid "Max items number"

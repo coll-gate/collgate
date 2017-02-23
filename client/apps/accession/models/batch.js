@@ -41,7 +41,7 @@ var Model = Backbone.Model.extend({
         if (hasError) {
           return errors;
         }
-    },
+    }
 });
 
 module.exports = Model;

@@ -8,8 +8,6 @@
  * @details
  */
 
-var Marionette = require('backbone.marionette');
-
 var AccessionModule = function() {
     this.name = "accession";
 };
@@ -44,7 +42,15 @@ AccessionModule.prototype = {
 
         this.views.accessionSynonymTypes = new SelectOption({
             className: 'accession-synonym-type',
-            collection: this.collections.accessionSynonymTypes,
+            collection: this.collections.accessionSynonymTypes
+        });
+
+        var BatchActionTypeCollection = require('./collections/batchactiontype');
+        this.collections.batchActionTypes = new BatchActionTypeCollection();
+
+        this.views.batchActionTypes = new SelectOption({
+            className: 'batch-action-type',
+            collection: this.collections.batchActionTypes
         });
 
         //

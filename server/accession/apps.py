@@ -30,6 +30,7 @@ class CollGateAccession(ApplicationMain):
         accession_module.include_urls((
             'base',
             'accessionsynonym',
+            'batchaction',
             'accession',
             'accessionbatch',
             'batch'
