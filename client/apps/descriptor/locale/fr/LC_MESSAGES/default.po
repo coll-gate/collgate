@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-01 18:38+0100\n"
+"POT-Creation-Date: 2017-02-23 15:33+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,39 +16,39 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../../widgets/boolean.js:48 ../../../widgets/boolean.js:99
+#: ../../../widgets/boolean.js:39 ../../../widgets/boolean.js:90
 #: ../../../templates/widgets/enumordinal.html:7
 #: ../../../templates/widgets/enumpair.html:7
 #: ../../../templates/widgets/enumsingle.html:7
 msgid "Yes"
 msgstr "Oui"
 
-#: ../../../widgets/boolean.js:56 ../../../widgets/boolean.js:99
+#: ../../../widgets/boolean.js:47 ../../../widgets/boolean.js:90
 #: ../../../templates/widgets/enumordinal.html:8
 #: ../../../templates/widgets/enumpair.html:8
 #: ../../../templates/widgets/enumsingle.html:8
 msgid "No"
 msgstr "Non"
 
-#: ../../../widgets/entity.js:99 ../../../widgets/entity.js:215
-#: ../../../widgets/enumsingle.js:104 ../../../widgets/enumsingle.js:277
+#: ../../../widgets/entity.js:90 ../../../widgets/entity.js:206
+#: ../../../widgets/enumsingle.js:96 ../../../widgets/enumsingle.js:269
 msgid "Enter a value. 3 characters at least for auto-completion"
 msgstr ""
 "Saisissez une valeur. Au moins 3 caractères pour avoir l'auto-complétion"
 
-#: ../../../widgets/numeric.js:227
+#: ../../../widgets/numeric.js:219
 msgid "32 character max"
 msgstr "32 characters maximum"
 
-#: ../../../widgets/string.js:64 ../../../widgets/string.js:80
+#: ../../../widgets/string.js:55 ../../../widgets/string.js:71
 msgid "1024 characters max"
 msgstr "1024 caractères maximum"
 
-#: ../../../widgets/string.js:66
+#: ../../../widgets/string.js:57
 msgid "Invalid format"
 msgstr "Format invalide"
 
-#: ../../../views/describableedit.js:180
+#: ../../../views/describableedit.js:190
 msgid "Field "
 msgstr "Champ "
 
@@ -62,7 +62,7 @@ msgstr "Des types de descripteur existent pour ce groupe"
 #: ../../../views/descriptormetamodeldetail.js:41
 #: ../../../views/descriptormodeladd.js:45
 #: ../../../views/descriptormodeldetail.js:43
-#: ../../../views/descriptortypedetailslayout.js:74
+#: ../../../views/descriptortypedetailslayout.js:73
 msgid "Invalid characters (alphanumeric, _ and - only)"
 msgstr "Caractères invalides (alphanumérique, _ et - seulement)"
 
@@ -78,7 +78,7 @@ msgstr "Caractères invalides (alphanumérique, _ et - seulement)"
 #: ../../../views/descriptorpanel.js:175 ../../../views/descriptorpanel.js:357
 #: ../../../views/descriptorpanel.js:374
 #: ../../../views/descriptorpanellist.js:133
-#: ../../../views/descriptortypedetailslayout.js:76
+#: ../../../views/descriptortypedetailslayout.js:75
 #: ../../../views/descriptorvalue.js:116
 #: ../../../views/descriptorvalueordinal.js:105
 #: ../../../views/descriptorvaluepair.js:115
@@ -133,7 +133,7 @@ msgstr "Nom de méta-modèle de descripteur déjà utilisé"
 
 #: ../../../views/descriptormetamodeldetail.js:59
 #: ../../../views/descriptormodeldetail.js:63
-#: ../../../views/descriptortypedetailslayout.js:105
+#: ../../../views/descriptortypedetailslayout.js:104
 msgid "Done"
 msgstr "Fait"
 

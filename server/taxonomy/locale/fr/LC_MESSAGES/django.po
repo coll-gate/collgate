@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-21 11:10+0100\n"
+"POT-Creation-Date: 2017-02-23 15:41+0100\n"
 "PO-Revision-Date:  2016-02-03 11:38+0100\n"
 "Last-Translator: Frederic SCHERMA <frederic.scherma@clermont.inra.fr>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -126,60 +126,60 @@ msgstr "taxon"
 msgid "taxon synonym"
 msgstr "synonyme de taxon"
 
-#: taxon.py:95
+#: taxon.py:91
 msgid "You are not allowed to create a taxon"
 msgstr "Vous n'êtes pas autorisé à créer un taxon"
 
-#: taxon.py:113
+#: taxon.py:109
 msgid "The language is not supported"
 msgstr "La langue n'est pas supportée"
 
-#: taxon.py:360 taxon.py:507 taxon.py:533 taxon.py:570
+#: taxon.py:356 taxon.py:503 taxon.py:529 taxon.py:566
 msgid "You are not allowed to modify a taxon"
 msgstr "Vous n'êtes pas autorisé à modifier un taxon"
 
-#: taxon.py:384
+#: taxon.py:380
 msgid "The rank of the parent must be lowest than the taxon itself"
 msgstr "Le rang du parent doit être inférieur au taxon lui même"
 
-#: taxon.py:473
+#: taxon.py:469
 #, fuzzy
 #| msgid "You are not allowed to create a taxon"
-msgid "Unable to update a taxon"
+msgid "Unable to update the taxon"
 msgstr "Vous n'êtes pas autorisé à créer un taxon"
 
-#: taxon.py:479
+#: taxon.py:475
 msgid "You are not allowed to remove a taxon"
 msgstr "Vous n'êtes pas autorisé à supprimer un taxon"
 
-#: taxon.py:486
+#: taxon.py:482
 msgid "This taxon is referred by one or more entities. It cannot be deleted."
 msgstr ""
 "Ce taxon est reférencé par une ou plusieurs entités. Il ne peut pas être "
 "supprimé."
 
-#: taxon.py:490
+#: taxon.py:486
 msgid "This taxon has sub-ranks. It cannot be deleted."
 msgstr "Ce taxon à des sous-rangs. Il ne peut pas être supprimé."
 
-#: taxon.py:508
+#: taxon.py:504
 msgid "You are not allowed to add a synonym to a taxon"
 msgstr "Vous n'êtes pas autorisé à créer un taxon"
 
-#: taxon.py:534
+#: taxon.py:530
 msgid "You are not allowed to modify a synonym to a taxon"
 msgstr "Vous n'êtes pas autorisé à modifier un synonym d'un taxon"
 
-#: taxon.py:562
+#: taxon.py:558
 #, fuzzy
 #| msgid "You are not allowed to add a synonym to a taxon"
 msgid "Unable to rename a synonym of a taxon"
 msgstr "Vous n'êtes pas autorisé à créer un taxon"
 
-#: taxon.py:571
+#: taxon.py:567
 msgid "You are not allowed to delete a synonym from a taxon"
 msgstr "Vous n'êtes pas autorisé à créer un taxon"
 
-#: taxon.py:578
+#: taxon.py:574
 msgid "It is not possible to remove a primary synonym"
 msgstr "Il n'est pas possible de retirer un synonyme principal"

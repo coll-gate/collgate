@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-06 11:19+0100\n"
+"POT-Creation-Date: 2017-02-23 15:33+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: ../../../views/entitypath.js:142 ../../../views/taxondetails.js:116
-#: ../../../controllers/taxon.js:95
+#: ../../../controllers/taxon.js:96
 msgid "Enter a taxon name. 3 characters at least for auto-completion"
 msgstr ""
 
@@ -26,19 +26,18 @@ msgstr ""
 msgid "Successfully removed !"
 msgstr ""
 
-#: ../../../views/taxondescriptor.js:37
+#: ../../../views/taxondescriptor.js:26
 #: ../../../views/taxondescriptorcreate.js:123
+#: ../../../views/taxondescriptoredit.js:69
 #: ../../../templates/taxonlayout.html:6
 msgid "Descriptors"
 msgstr ""
 
-#: ../../../views/taxondescriptor.js:55
-#: ../../../views/taxondescriptoredit.js:45
+#: ../../../views/taxondescriptor.js:57
 msgid "Delete descriptors"
 msgstr ""
 
-#: ../../../views/taxondescriptor.js:56
-#: ../../../views/taxondescriptoredit.js:46
+#: ../../../views/taxondescriptor.js:58
 msgid "Are you sure you want to delete any descriptors for this taxon ?"
 msgstr ""
 
@@ -71,44 +70,44 @@ msgid "Invalid characters (alphanumeric, _ and - only)"
 msgstr ""
 
 #: ../../../views/taxonlistfilter.js:58 ../../../views/taxonsynonyms.js:58
-#: ../../../views/taxonsynonyms.js:169 ../../../controllers/taxon.js:226
+#: ../../../views/taxonsynonyms.js:206 ../../../controllers/taxon.js:227
 msgid "3 characters min"
 msgstr ""
 
-#: ../../../views/taxonsynonyms.js:55 ../../../views/taxonsynonyms.js:172
-#: ../../../controllers/taxon.js:223
+#: ../../../views/taxonsynonyms.js:55 ../../../views/taxonsynonyms.js:209
+#: ../../../controllers/taxon.js:224
 msgid "64 characters max"
 msgstr ""
 
-#: ../../../views/taxonsynonyms.js:86
+#: ../../../views/taxonsynonyms.js:86 ../../../views/taxonsynonyms.js:190
 msgid "Synonym of taxon already used"
 msgstr ""
 
-#: ../../../views/taxonsynonyms.js:201
+#: ../../../views/taxonsynonyms.js:238
 msgid "Unable to rename the synonym !"
 msgstr ""
 
-#: ../../../routers/taxon.js:35
+#: ../../../routers/taxon.js:58
 msgid "List of taxons"
 msgstr ""
 
-#: ../../../routers/taxon.js:57
+#: ../../../routers/taxon.js:79
 msgid "Taxon details"
 msgstr ""
 
-#: ../../../controllers/taxon.js:207
+#: ../../../controllers/taxon.js:208
 msgid "Taxon name already in usage"
 msgstr ""
 
-#: ../../../controllers/taxon.js:244
+#: ../../../controllers/taxon.js:245
 msgid "Family rank cannot have a parent taxon"
 msgstr ""
 
-#: ../../../controllers/taxon.js:249
+#: ../../../controllers/taxon.js:250
 msgid "This rank must have a parent taxon"
 msgstr ""
 
-#: ../../../controllers/taxon.js:277
+#: ../../../controllers/taxon.js:278
 msgid "Taxon successfully created !"
 msgstr ""
 

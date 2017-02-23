@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-06 11:19+0100\n"
+"POT-Creation-Date: 2017-02-23 15:33+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,43 +16,69 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+#: ../../../views/accessiondescriptor.js:26
+#: ../../../views/accessiondescriptoredit.js:75
+#: ../../../views/batchdescriptor.js:26
+#: ../../../views/batchdescriptoredit.js:75
+#: ../../../templates/accessionlayout.html:6
+#: ../../../templates/batchlayout.html:5
+msgid "Descriptors"
+msgstr "Descripteurs"
+
+#: ../../../views/accessiondescriptorcontext.js:21
+#: ../../../views/batchdescriptorcontext.js:21
+msgid "Modify descriptors"
+msgstr "Modifier les descripteurs"
+
+#: ../../../views/accessiondescriptorcontext.js:22
+#: ../../../views/batchdescriptorcontext.js:22
+msgid "Apply modifications"
+msgstr "Appliquer les modifications"
+
+#: ../../../views/accessiondescriptorcontext.js:23
+#: ../../../views/batchdescriptorcontext.js:23
+msgid "Cancel modifications"
+msgstr "Annuler les modificiations"
+
 #: ../../../views/accessionsynonyms.js:55
-#: ../../../views/accessionsynonyms.js:168
-#: ../../../controllers/accession.js:158
+#: ../../../views/accessionsynonyms.js:214
+#: ../../../controllers/accession.js:155
 msgid "64 characters max"
 msgstr "64 caractères maximum"
 
 #: ../../../views/accessionsynonyms.js:58
-#: ../../../views/accessionsynonyms.js:165
-#: ../../../controllers/accession.js:161
+#: ../../../views/accessionsynonyms.js:211
+#: ../../../controllers/accession.js:158
 msgid "3 characters min"
 msgstr "3 caractères minimum"
 
-#: ../../../views/accessionsynonyms.js:86
+#: ../../../views/accessionsynonyms.js:90
+#: ../../../views/accessionsynonyms.js:194
+#: ../../../controllers/accession.js:139
 msgid "Synonym of accession already used"
 msgstr "Synonyme d'accession déjà utilisé"
 
-#: ../../../views/accessionsynonyms.js:195
-msgid "Unable to rename the synonym !"
-msgstr "Impossible de renommer le synonyme !"
-
-#: ../../../routers/accession.js:49
+#: ../../../routers/accession.js:34
 msgid "List of accessions"
 msgstr "Liste des accessions"
 
-#: ../../../routers/accession.js:73 ../../../controllers/accession.js:209
+#: ../../../routers/accession.js:53 ../../../controllers/accession.js:206
 msgid "Accession"
 msgstr "Accession"
 
-#: ../../../controllers/accession.js:110
+#: ../../../routers/batch.js:34
+msgid "List of batches for the accession"
+msgstr "Liste des lots pour l'accession"
+
+#: ../../../routers/batch.js:53
+msgid "Batch"
+msgstr "Lot"
+
+#: ../../../controllers/accession.js:107
 msgid "Enter a taxon name. 3 characters at least for auto-completion"
 msgstr "Saisissez un nom de taxon. A moins 3 caractère pour l'auto-complétion"
 
-#: ../../../controllers/accession.js:142
-msgid "Taxon name already in usage"
-msgstr "Nom de taxon existant"
-
-#: ../../../controllers/accession.js:177
+#: ../../../controllers/accession.js:174
 msgid "The parent must be defined"
 msgstr "Le parent doit être défini"
 
@@ -63,6 +89,7 @@ msgstr "Renomer un synonyme d'accession"
 #: ../../../templates/accessionchangesynonym.html:10
 #: ../../../templates/accessionlist.html:5
 #: ../../../templates/accessionsynonyms.html:6
+#: ../../../templates/batchlist.html:5
 msgid "Name"
 msgstr "Nom"
 
@@ -104,30 +131,38 @@ msgstr "Continuer"
 msgid "Synonyms"
 msgstr "Synonymes"
 
-#: ../../../templates/accessionlayout.html:6
-msgid "Descriptors"
-msgstr "Descripteurs"
-
 #: ../../../templates/accessionlayout.html:7
+#: ../../../templates/batchlayout.html:6
 msgid "Batches"
 msgstr "Lots"
+
+#: ../../../templates/accessionlayout.html:8
+#: ../../../templates/batchlayout.html:7
+msgid "Actions"
+msgstr "Actions"
 
 #: ../../../templates/accessionlist.html:6
 msgid "Parent"
 msgstr "Parent"
 
-#: ../../../templates/accessionlist.html:7
+#: ../../../templates/accessionlist.html:7 ../../../templates/batchlist.html:6
 msgid "Xxx"
 msgstr "Xxx"
 
-#: ../../../templates/accessionlist.html:8
+#: ../../../templates/accessionlist.html:8 ../../../templates/batchlist.html:7
 msgid "Yyy"
 msgstr "Yyy"
 
-#: ../../../templates/accessionlist.html:9
+#: ../../../templates/accessionlist.html:9 ../../../templates/batchlist.html:8
 msgid "Zzz"
 msgstr "Zzz"
 
 #: ../../../templates/accessionsynonyms.html:5
 msgid "Type"
 msgstr "Type"
+
+#~ msgid "Unable to rename the synonym !"
+#~ msgstr "Impossible de renommer le synonyme !"
+
+#~ msgid "Taxon name already in usage"
+#~ msgstr "Nom de taxon existant"

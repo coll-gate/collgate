@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-27 11:42+0100\n"
+"POT-Creation-Date: 2017-02-23 15:33+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,6 +16,26 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#: ../../../widgets/media.js:57
+msgid "Preview"
+msgstr ""
+
+#: ../../../widgets/media.js:66
+msgid "Download"
+msgstr ""
+
+#: ../../../widgets/media.js:141
+msgid "Browse"
+msgstr ""
+
+#: ../../../widgets/media.js:218
+msgid "Error during file upload"
+msgstr ""
+
+#: ../../../widgets/media.js:285
+msgid "Unable to remove the media"
+msgstr ""
 
 #: ../../../templates/widgets/media.html:2
 #: ../../../templates/widgets/mediacollection.html:2
@@ -42,6 +62,21 @@ msgstr "Documents (doc, docx, ppt, pptx, odt, odp, pdf, ps)"
 msgid "Spreadsheets (xls, xlsx, ods, csv)"
 msgstr "Tableaux (xls, xlsx, ods, csv)"
 
-#: ../../../templates/widgets/mediacollection.html:11
+#: ../../../templates/widgets/media.html:11
+#: ../../../templates/widgets/mediacollection.html:17
+msgid "Inline images"
+msgstr ""
+
+#: ../../../templates/widgets/media.html:13
+#: ../../../templates/widgets/mediacollection.html:19
+msgid "Yes"
+msgstr ""
+
+#: ../../../templates/widgets/media.html:14
+#: ../../../templates/widgets/mediacollection.html:20
+msgid "No"
+msgstr ""
+
+#: ../../../templates/widgets/mediacollection.html:13
 msgid "Max items number"
 msgstr "Nombre max d'items"

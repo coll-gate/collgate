@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-21 11:10+0100\n"
+"POT-Creation-Date: 2017-02-23 15:41+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,40 +34,46 @@ msgstr "Le nom de l'accession est déjà utilisé"
 msgid "The language is not supported"
 msgstr "La langue n'est pas supportée"
 
-#: accession.py:108 accession.py:367
-#, fuzzy
-#| msgid "You are not allowed to create an accession"
+#: accession.py:108
 msgid "Unable to create the accession"
-msgstr "Vous n'êtes pas autorisé à créer une accession"
+msgstr "Impossible de créer l'accession"
 
 #: accession.py:130
 msgid "You are not allowed to list the accessions"
 msgstr "Vous n'êtes pas autorisé à lister les accessions"
 
-#: accession.py:205
-msgid "Invalid permission to access to this accession"
-msgstr ""
+#: accession.py:196 accessionbatch.py:33 accessionbatch.py:94 batch.py:207
+msgid "You are not allowed to get an accession"
+msgstr "Vous n'êtes pas autorisé à récupérer une accession"
 
-#: accession.py:323 accessionsynonym.py:152 accessionsynonym.py:203
+#: accession.py:208 accessionbatch.py:47 accessionbatch.py:113 batch.py:224
+msgid "Invalid permission to access to this accession"
+msgstr "Permissions invalides pour accéder à cette accession"
+
+#: accession.py:231
+#, fuzzy
+#| msgid "You are not allowed to get an accession"
+msgid "You are not allowed to search on accessions"
+msgstr "Vous n'êtes pas autorisé à récupérer une accession"
+
+#: accession.py:328 accessionsynonym.py:152 accessionsynonym.py:203
 #: accessionsynonym.py:247
 msgid "You are not allowed to modify an accession"
 msgstr "Vous n'êtes pas autorisé à modifier une accession"
 
-#: accession.py:373
+#: accession.py:372
+#, fuzzy
+#| msgid "Unable to create the accession"
+msgid "Unable to update the accession"
+msgstr "Impossible de créer l'accession"
+
+#: accession.py:378
 msgid "You are not allowed to delete an accession"
 msgstr "Vous n'êtes pas autorisé à supprimer une accession"
 
-#: accessionbatch.py:34
-#, fuzzy
-#| msgid "You are not allowed to create an accession"
-msgid "You are not allowed to get an accession"
-msgstr "Vous n'êtes pas autorisé à créer une accession"
-
-#: accessionbatch.py:35
-#, fuzzy
-#| msgid "You are not allowed to list the accessions"
+#: accessionbatch.py:34 accessionbatch.py:95 batch.py:208
 msgid "You are not allowed to list batches for an accession"
-msgstr "Vous n'êtes pas autorisé à lister les accessions"
+msgstr "Vous n'êtes pas autorisé à lister les lots pour une accession"
 
 #: accessionsynonym.py:153
 msgid "You are not allowed to add a synonym of accession"
@@ -78,24 +84,20 @@ msgid "Unsupported type of synonym"
 msgstr "Type de synonyme non supporté"
 
 #: accessionsynonym.py:174 accessionsynonym.py:218
-#, fuzzy
-#| msgid "The name of the accession is already used as a primary synonym"
 msgid "Synonym already used as a primary name"
-msgstr "Le nom de l'accession est déjà utilisé comme nom principal"
+msgstr "Synonym déjà utilisé comme nom primaire"
 
 #: accessionsynonym.py:177 accessionsynonym.py:221
 msgid "Synonym already used into this accession"
-msgstr ""
+msgstr "Synonym déjà défini dans cette accession"
 
 #: accessionsynonym.py:204
 msgid "You are not allowed to modify a synonym of accession"
 msgstr "Vous n'êtes pas autorisé à modifier un synonym d'accession"
 
 #: accessionsynonym.py:239
-#, fuzzy
-#| msgid "You are not allowed to add a synonym of accession"
 msgid "Unable to rename a synonym of an accession"
-msgstr "Vous n'êtes pas autorisé à rajouter un synonyme sur une accession"
+msgstr "Impossible de renommer un synonyme d'une accession"
 
 #: accessionsynonym.py:248
 msgid "You are not allowed to delete a synonym of accession"
@@ -122,10 +124,56 @@ msgid "List accessions"
 msgstr "Liste des accessions"
 
 #: apps.py:73
-#, fuzzy
-#| msgid "Create accession"
 msgid "Search accessions"
-msgstr "Créer une accession"
+msgstr "Recherche d'accessions"
+
+#: batch.py:60
+#, fuzzy
+#| msgid "Invalid permission to access to this accession"
+msgid "Invalid permission to access to this batch"
+msgstr "Permissions invalides pour accéder à cette accession"
+
+#: batch.py:82
+#, fuzzy
+#| msgid "You are not allowed to create an accession"
+msgid "You are not allowed to create a batch"
+msgstr "Vous n'êtes pas autorisé à créer une accession"
+
+#: batch.py:94
+#, fuzzy
+#| msgid "The name of the accession is already used"
+msgid "The name of the batch is already used"
+msgstr "Le nom de l'accession est déjà utilisé"
+
+#: batch.py:124
+#, fuzzy
+#| msgid "Unable to create the accession"
+msgid "Unable to create the batch"
+msgstr "Impossible de créer l'accession"
+
+#: batch.py:146
+#, fuzzy
+#| msgid "You are not allowed to modify an accession"
+msgid "You are not allowed to modify a batch"
+msgstr "Vous n'êtes pas autorisé à modifier une accession"
+
+#: batch.py:158
+#, fuzzy
+#| msgid "Invalid permission to access to this accession"
+msgid "Invalid permission to modify this accession"
+msgstr "Permissions invalides pour accéder à cette accession"
+
+#: batch.py:190
+#, fuzzy
+#| msgid "Unable to create the accession"
+msgid "Unable to update the batch"
+msgstr "Impossible de créer l'accession"
+
+#: batch.py:196
+#, fuzzy
+#| msgid "You are not allowed to delete an accession"
+msgid "You are not allowed to delete a batch"
+msgstr "Vous n'êtes pas autorisé à supprimer une accession"
 
 #: controller.py:47
 msgid "Empty synonym data"
@@ -133,28 +181,64 @@ msgstr "Données de synonyme incomplètes"
 
 #: controller.py:50
 msgid "Undefined synonym name or primary synonym"
-msgstr "Nom de synonyme ou principal indéfinit"
+msgstr "Nom de synonyme ou principal indéfini"
 
 #: controller.py:53
 msgid "Undefined synonym language"
 msgstr "Langue du synonyme indéfinie"
 
-#: models.py:27
+#: models.py:28
 msgid "panel"
 msgstr "collection"
 
-#: models.py:39
+#: models.py:40
 msgid "accession"
 msgstr "accession"
 
-#: models.py:98
+#: models.py:99
 msgid "accession synonym"
 msgstr "synonyme d'accession"
 
-#: models.py:127
+#: models.py:132
 msgid "batch"
 msgstr "lot"
 
-#: models.py:170
+#: models.py:175
 msgid "sample"
 msgstr "échantillon"
+
+#: models.py:209
+msgid "Introduction"
+msgstr ""
+
+#: models.py:210
+msgid "Multiplication"
+msgstr ""
+
+#: models.py:211
+msgid "Regeneration"
+msgstr ""
+
+#: models.py:212
+msgid "Test"
+msgstr ""
+
+#: models.py:213
+msgid "Clean-up"
+msgstr ""
+
+#: models.py:214
+#, fuzzy
+#| msgid "sample"
+msgid "Sample"
+msgstr "échantillon"
+
+#: models.py:215
+#, fuzzy
+#| msgid "batch"
+msgid "Dispatch"
+msgstr "lot"
+
+#: models.py:216
+msgid "Elimination"
+msgstr ""

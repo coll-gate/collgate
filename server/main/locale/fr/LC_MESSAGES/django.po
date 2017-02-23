@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-21 11:10+0100\n"
+"POT-Creation-Date: 2017-02-23 15:41+0100\n"
 "PO-Revision-Date: 2016-02-01 11:53+0100\n"
 "Last-Translator: Frederic SCHERMA <frederic.scherma@clermont.inra.fr>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -50,45 +50,45 @@ msgstr "Vous n'êtes pas identifié."
 msgid "Please, you must enable your cookies."
 msgstr "Merci d'activer la gestion des cookies."
 
-#: models.py:70
+#: models.py:69
 msgid "Latin"
 msgstr "Latin"
 
-#: models.py:71 models.py:80
+#: models.py:70 models.py:79
 msgid "English"
 msgstr "Anglais"
 
-#: models.py:72 models.py:81
+#: models.py:71 models.py:80
 msgid "French"
 msgstr "Français"
 
-#: models.py:110
+#: models.py:88
 msgid "Pending"
 msgstr "Attente"
 
-#: models.py:111
+#: models.py:89
 msgid "Valid"
 msgstr "Valide"
 
-#: models.py:112
+#: models.py:90
 msgid "Archived"
 msgstr "Archivé"
 
-#: models.py:113
+#: models.py:91
 msgid "Removed"
 msgstr "Supprimé"
 
-#: models.py:235
+#: models.py:213
 msgid ""
 "It is not allowed to change the status of an entity from valid to pending"
 msgstr ""
 "Il n'est pas permiet de changer le status d'une entité de valide à en-attente"
 
-#: models.py:238
+#: models.py:216
 msgid "It is not allowed to change the status of a removed entity"
 msgstr "Il n'est pas permiet de changer le status d'une entité retirée"
 
-#: models.py:241
+#: models.py:219
 msgid "It is not allowed to change the status of an archived entity"
 msgstr "Il n'est pas permiet de changer le status d'une entité archivée"
 
