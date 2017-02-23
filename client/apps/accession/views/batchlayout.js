@@ -27,6 +27,7 @@ var Layout = Marionette.LayoutView.extend({
         tabs: 'a[data-toggle="tab"]',
         initial_pane: 'div.tab-pane.active',
         descriptors_tab: 'a[aria-controls=descriptors]',
+        parent_tab: 'a[aria-controls=parents]',
         batches_tab: 'a[aria-controls=batches]',
         actions_tab: 'a[aria-controls=actions]'
     },
@@ -34,6 +35,7 @@ var Layout = Marionette.LayoutView.extend({
     regions: {
         'details': "div[name=details]",
         'descriptors': "div.tab-pane[name=descriptors]",
+        'parents': "div.tab-pane[name=parents]",
         'batches': "div.tab-pane[name=batches]",
         'actions': "div.tab-pane[name=actions]"
     },
@@ -104,13 +106,27 @@ var Layout = Marionette.LayoutView.extend({
             batchLayout.getRegion('details').show(new BatchPathView({model: batchLayout.model, accession: accession}));
         });
 
-        // batches tab
+        // parents batches tab
         var BatchCollection = require('../collections/batch');
-        var accessionBatches = new BatchCollection([], {batch_id: this.model.get('id')});
+        var parentBatches = new BatchCollection([], {batch_id: this.model.get('id'), batch_type: 'parents'});
 
-        accessionBatches.fetch().then(function() {
+        parentBatches.fetch().then(function() {
             var BatchListView = require('../views/batchlist');
-            var batchListView  = new BatchListView({collection: accessionBatches, model: batchLayout.model});
+            var batchListView  = new BatchListView({collection: parentBatches, model: batchLayout.model});
+
+            var contentBottomLayout = new ContentBottomLayout();
+            batchLayout.getRegion('parents').show(contentBottomLayout);
+
+            contentBottomLayout.getRegion('content').show(batchListView);
+            contentBottomLayout.getRegion('bottom').show(new ScrollingMoreView({targetView: batchListView}));
+        });
+
+        // children batches tab
+        var childrenBatches = new BatchCollection([], {batch_id: this.model.get('id'), batch_type: 'children'});
+
+        childrenBatches.fetch().then(function() {
+            var BatchListView = require('../views/batchlist');
+            var batchListView  = new BatchListView({collection: childrenBatches, model: batchLayout.model});
 
             var contentBottomLayout = new ContentBottomLayout();
             batchLayout.getRegion('batches').show(contentBottomLayout);

@@ -15,7 +15,11 @@ var Collection = Backbone.Collection.extend({
         if (this.accession_id) {
             return application.baseUrl + 'accession/accession/' + this.accession_id + '/batch/';
         } else if (this.batch_id) {
-            return application.baseUrl + 'accession/batch/' + this.batch_id + '/batch/';
+            if (this.batch_type === "parents") {
+                return application.baseUrl + 'accession/batch/' + this.batch_id + '/parent/';
+            } else {
+                return application.baseUrl + 'accession/batch/' + this.batch_id + '/batch/';
+            }
         } else {
             return application.baseUrl + 'accession/accession/batch/';
         }
@@ -27,6 +31,7 @@ var Collection = Backbone.Collection.extend({
     initialize: function(models, options) {
         options || (options = {});
 
+        this.batch_type = options.batch_type || '';
         this.accession_id = options.accession_id;
         this.batch_id = options.batch_id;
     },
