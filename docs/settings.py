@@ -18,7 +18,7 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    ('admin', 'frederic.scherma@clermont.inra.fr'),
+    ('admin', 'frederic.scherma@inra.fr'),
 )
 
 MANAGERS = ADMINS

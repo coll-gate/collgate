@@ -57,8 +57,8 @@ class RestAccessionId(RestAccessionAccession):
 )
 def create_accession(request):
     name = request.data['name']
-    dmm_id = request.data['descriptor_meta_model']
-    parent_id = request.data['parent']
+    dmm_id = int_arg(request.data['descriptor_meta_model'])
+    parent_id = int_arg(request.data['parent'])
     descriptors = request.data['descriptors']
     language = request.data['language']
 
@@ -369,7 +369,7 @@ def patch_accession(request, acc_id):
             accession.save()
     except IntegrityError as e:
         logger.error(repr(e))
-        raise SuspiciousOperation(_("Unable to create the accession"))
+        raise SuspiciousOperation(_("Unable to update the accession"))
 
     return HttpResponseRest(request, result)
 

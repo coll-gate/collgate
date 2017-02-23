@@ -466,7 +466,7 @@ def patch_taxon(request, tax_id):
 
     except IntegrityError as e:
         logger.log(repr(e))
-        raise SuspiciousOperation(_("Unable to update a taxon"))
+        raise SuspiciousOperation(_("Unable to update the taxon"))
 
     return HttpResponseRest(request, result)
 

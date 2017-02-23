@@ -8,15 +8,15 @@
 .idea
 __pycache__
 /build/
-/logs/
 /static/
-/server/venv/
 /docs/_build/
 /client/npm-debug.log
 /client/apps/**/locale/**/LC_MESSAGES/default.json
 /client/build/
 /client/node_modules/
+/server/logs/collgate.log
 /server/main/static/main/js/app.js
 /server/main/static/main/js/app.min.js
 /server/main/static/main/js/app.min.js.map
 /server/media
+/server/venv/

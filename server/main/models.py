@@ -13,7 +13,6 @@ from django.core.validators import RegexValidator
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
-from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 
 from igdectk.common.models import ChoiceEnum, IntegerChoice, StringChoice
@@ -79,27 +78,6 @@ class InterfaceLanguages(ChoiceEnum):
 
     EN = StringChoice('en', _('English'))
     FR = StringChoice('fr', _('French'))
-
-
-class Action(models.Model):
-    """
-    An action defines a process of changes (suite of CRUD operations).
-    It is related to the ContentType model and refers to many others
-    ContentType.
-    It is used to describes a process that refers changes to more than
-    a single object.
-    It is also related by the permissions manager, and by the audit mechanism.
-    """
-    app_label = models.CharField(max_length=100)
-    codename = models.CharField(max_length=100)
-
-    models = models.ManyToManyField(ContentType)
-
-    class Meta:
-        index_together = (("app_label", "codename"), )
-        unique_together = (("app_label", "codename"),)
-
-        default_permissions = list()
 
 
 class EntityStatus(ChoiceEnum):

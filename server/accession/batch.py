@@ -70,6 +70,128 @@ def get_batch_details_json(request, bat_id):
     return HttpResponseRest(request, result)
 
 
+@RestBatch.def_auth_request(Method.POST, Format.JSON, content={
+        "type": "object",
+        "properties": {
+            "name": {"type": "string", 'minLength': 3, 'maxLength': 128},
+            "descriptor_meta_model": {"type": "number"},
+            "accession": {"type": "number"},
+            "descriptors": {"type": "object"}
+        },
+    }, perms={
+        'accession.add_accession': _("You are not allowed to create a batch")
+    }
+)
+def create_batch(request):
+    # @todo name generator
+    name = request.data['name']
+    dmm_id = int_arg(request.data['descriptor_meta_model'])
+    accession_id = int_arg(request.data['parent'])
+    descriptors = request.data['descriptors']
+
+    # check uniqueness of the name
+    if Batch.objects.filter(name=name).exists():
+        raise SuspiciousOperation(_("The name of the batch is already used"))
+
+    content_type = get_object_or_404(ContentType, app_label="accession", model="batch")
+    dmm = get_object_or_404(DescriptorMetaModel, id=dmm_id, target=content_type)
+
+    parent_batch_list = []
+
+    try:
+        with transaction.atomic():
+            # common properties
+            batch = Batch()
+            batch.name = name
+            batch.descriptor_meta_model = dmm
+
+            # parent accession
+            accession = get_object_or_404(Accession, id=accession_id)
+            batch.accession = accession
+
+            # descriptors
+            descriptors_builder = DescriptorsBuilder(batch)
+
+            descriptors_builder.check_and_update(dmm, descriptors)
+            batch.descriptors = descriptors_builder.descriptors
+
+            batch.save()
+
+            # update owner on external descriptors
+            descriptors_builder.update_associations()
+    except IntegrityError as e:
+        logger.error(repr(e))
+        raise SuspiciousOperation(_("Unable to create the batch"))
+
+    response = {
+        'id': batch.pk,
+        'name': batch.name,
+        'descriptor_meta_model': dmm.id,
+        'accession': accession.id,
+        'batches': parent_batch_list,
+        'descriptors': descriptors
+    }
+
+    return HttpResponseRest(request, response)
+
+
+@RestBatchId.def_auth_request(Method.PATCH, Format.JSON, content={
+        "type": "object",
+        "properties": {
+            "entity_status": {"type": "integer", "minimum": 0, "maximum": 3, "required": False},
+            "descriptors": {"type": "object", "required": False},
+        },
+    },
+    perms={
+        'accession.change_batch': _("You are not allowed to modify a batch"),
+    })
+def patch_batch(request, bat_id):
+    batch = get_object_or_404(Batch, id=int(bat_id))
+
+    # check permission on accession object
+    perms = get_permissions_for(
+        request.user,
+        batch.accession.content_type.app_label,
+        batch.accession.content_type.model,
+        batch.accession.pk)
+    if 'accession.change_accession' not in perms:
+        raise PermissionDenied(_('Invalid permission to modify this accession'))
+
+    entity_status = request.data.get("entity_status")
+    descriptors = request.data.get("descriptors")
+
+    result = {
+        'id': batch.id
+    }
+
+    try:
+        with transaction.atomic():
+            if entity_status is not None and batch.entity_status != entity_status:
+                batch.set_status(entity_status)
+                result['entity_status'] = entity_status
+
+            if descriptors is not None:
+                # update descriptors
+                descriptors_builder = DescriptorsBuilder(batch)
+
+                descriptors_builder.check_and_update(batch.descriptor_meta_model, descriptors)
+
+                batch.descriptors = descriptors_builder.descriptors
+                result['descriptors'] = batch.descriptors
+
+                descriptors_builder.update_associations()
+
+                batch.descriptors_diff = descriptors
+                batch.update_field('descriptors')
+
+                batch.save()
+    except IntegrityError as e:
+        logger.error(repr(e))
+        raise SuspiciousOperation(_("Unable to update the batch"))
+
+    return HttpResponseRest(request, result)
+
+
 @RestBatchId.def_auth_request(Method.DELETE, Format.JSON, perms={
     'batch.delete_batch': _("You are not allowed to delete a batch"),
 })

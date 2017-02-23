@@ -5,14 +5,15 @@
 """
 coll-gate accession module models.
 """
-
+from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 
+from igdectk.common.models import ChoiceEnum, IntegerChoice
+
 from main.models import Languages, Entity
 from descriptor.models import DescribableEntity, DescriptorType
-
 from taxonomy.models import Taxon
 
 
@@ -198,3 +199,49 @@ class Sample(DescribableEntity):
 
     def audit_delete(self, user):
         return {}
+
+
+class BatchActionType(ChoiceEnum):
+    """
+    Type of batch-action.
+    """
+
+    INTRODUCTION = IntegerChoice(0, _('Introduction'))
+    MULTIPLICATION = IntegerChoice(1, _('Multiplication'))
+    REGENERATION = IntegerChoice(2, _('Regeneration'))
+    TEST = IntegerChoice(3, _('Test'))
+    CLEANUP = IntegerChoice(4, _('Clean-up'))
+    SAMPLE = IntegerChoice(5, _('Sample'))
+    DISPATCH = IntegerChoice(6, _('Dispatch'))
+    ELIMINATION = IntegerChoice(7, _('Elimination'))
+
+
+class BatchAction(models.Model):
+    """
+    A batch-action defines a process of creation or update of one or more output batches and a list of input batches
+    altered or not modified, plus the relating accession.
+    """
+
+    # actor of the action
+    user = models.ForeignKey(User)
+
+    # date of the action
+    created_date = models.DateTimeField(auto_now_add=True)
+
+    # action type
+    type = models.IntegerField(
+        choices=BatchActionType.choices(), default=BatchActionType.INTRODUCTION.value, db_index=True)
+
+    # related parent accession
+    accession = models.ForeignKey(Accession, db_index=True)
+
+    # list of initials batches used as parent for the creation of target batches
+    input_batches = models.ManyToManyField(Batch, related_name='+')
+
+    # list of created or updated batches
+    output_batches = models.ManyToManyField(Batch, related_name='+')
+
+    class Meta:
+        index_together = (("accession", "type"),)
+
+        default_permissions = list()
