@@ -110,9 +110,6 @@ def search_audit_for_username(request):
 @RestAuditSearch.def_auth_request(Method.GET, Format.JSON, parameters=('app_label', 'model', 'object_id'), staff=True)
 def search_audit_for_entity(request):
     results_per_page = int_arg(request.GET.get('more', 30))
-    # page = int_arg(request.GET.get('page', 1))
-    # offset = (page - 1) * results_per_page
-    # limit = offset + results_per_page
 
     app_label = request.GET['app_label']
     model = request.GET['model']
@@ -124,9 +121,6 @@ def search_audit_for_entity(request):
     cursor = request.GET.get('cursor')
     limit = results_per_page
 
-    # qs = Audit.objects.filter(content_type=content_type, object_id=object_id)[offset:limit]
-    # audits = qs.order_by('-timestamp')[offset:limit]
-
     if cursor:
         cursor_time, cursor_id = cursor.rsplit('/', 1)
         qs = Audit.objects.filter(Q(content_type=content_type),
@@ -136,8 +130,6 @@ def search_audit_for_entity(request):
         qs = Audit.objects.filter(content_type=content_type, object_id=object_id)
 
     audits = qs.order_by('-timestamp').order_by('-id')[:limit]
-
-    # total_count = qs.count()
 
     audit_list = []
 
@@ -174,10 +166,7 @@ def search_audit_for_entity(request):
         'prev': prev_cursor,
         'cursor': cursor,
         'next': next_cursor,
-        'total_count': None,  # total_count,
-        # 'prev': page-1 if offset > 0 else None,
-        # 'page': page,
-        # 'next': page+1 if offset + results_per_page < total_count else None
+        'total_count': None
     }
 
     return HttpResponseRest(request, results)

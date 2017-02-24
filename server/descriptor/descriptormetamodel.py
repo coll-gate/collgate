@@ -129,9 +129,9 @@ def list_descriptor_meta_models(request):
     Method.POST, Format.JSON, content={
         "type": "object",
         "properties": {
-            "name": {"type": "string", 'minLength': 3, 'maxLength': 32},
-            "label": {"type": "string", 'minLength': 3, 'maxLength': 64},
-            "target": {"type": "string", 'minLength': 1, 'maxLength': 128},
+            "name": DescriptorMetaModel.NAME_VALIDATOR,
+            "label": DescriptorMetaModel.LABEL_VALIDATOR,
+            "target": DescriptorMetaModel.CONTENT_TYPE_VALIDATOR,
             "description": {"type": "string", 'minLength': 0, 'maxLength': 1024, 'blank': True}
         },
     },
@@ -146,8 +146,8 @@ def create_descriptor_meta_model(request):
 
     dmm = DescriptorMetaModel()
 
-    dmm.name = request.data['name'].strip()
-    dmm.set_label(lang, request.data['label'].strip())
+    dmm.name = request.data['name']
+    dmm.set_label(lang, request.data['label'])
     dmm.description = request.data['description'].strip()
     dmm.target = content_type
 
@@ -223,7 +223,7 @@ def delete_descriptor_meta_model(request, dmm_id):
     Method.PUT, Format.JSON, content={
         "type": "object",
         "properties": {
-            "name": {"type": "string", 'minLength': 3, 'maxLength': 32},
+            "name": DescriptorMetaModel.NAME_VALIDATOR,
             "description": {"type": "string", 'minLength': 0, 'maxLength': 1024, 'blank': True},
         },
     },
@@ -232,7 +232,7 @@ def delete_descriptor_meta_model(request, dmm_id):
 def modify_descriptor_meta_model(request, dmm_id):
     dmm = get_object_or_404(DescriptorMetaModel, id=int(dmm_id))
 
-    dmm.name = request.data['name'].strip()
+    dmm.name = request.data['name']
     dmm.description = request.data['description'].strip()
 
     dmm.save()
@@ -252,7 +252,7 @@ def modify_descriptor_meta_model(request, dmm_id):
     Method.PATCH, Format.JSON, content={
         "type": "object",
         "properties": {
-            "label": {"type": "string", 'minLength': 3, 'maxLength': 64, 'required': False},
+            "label": DescriptorMetaModel.LABEL_VALIDATOR_OPTIONAL
         },
     },
     perms={'descriptor.change_descriptormetamodel': _('You are not allowed to modify a meta-model of descriptor')},
@@ -264,7 +264,7 @@ def patch_descriptor_meta_model(request, dmm_id):
 
     if label is not None:
         lang = translation.get_language()
-        dmm.set_label(lang, label.strip())
+        dmm.set_label(lang, label)
 
     dmm.save()
 
@@ -455,7 +455,7 @@ def list_descriptor_panels_for_meta_model(request, dmm_id):
     Method.POST, Format.JSON, content={
         "type": "object",
         "properties": {
-            "label": {"type": "string", 'minLength': 3, 'maxLength': 64},
+            "label": DescriptorPanel.LABEL_VALIDATOR,
             "position": {"type": "number"},
             "descriptor_model": {"type": "number"},
         },
@@ -482,7 +482,7 @@ def create_descriptor_panel_for_meta_model(request, dmm_id):
     dp = DescriptorPanel()
 
     dp.name = "%i_%i" % (dmm.id, dm.id)
-    dp.set_label(lang, request.data['label'].strip())
+    dp.set_label(lang, request.data['label'])
     dp.position = position
     dp.descriptor_meta_model = dmm
     dp.descriptor_model = dm
@@ -596,9 +596,9 @@ def reorder_descriptor_panels_for_model(request, dmm_id):
     Method.PATCH, Format.JSON, content={
         "type": "object",
         "properties": {
-            "name": {"type": "string", 'minLength': 3, 'maxLength': 32, 'required': False},
-            "label": {"type": "string", 'minLength': 3, 'maxLength': 64, 'required': False},
-        },
+            "name": DescriptorPanel.NAME_VALIDATOR_OPTIONAL,
+            "label": DescriptorPanel.LABEL_VALIDATOR_OPTIONAL
+        }
     },
     perms={
         'descriptor.change_descriptormetamodel': _('You are not allowed to modify a meta-model of descriptor'),
@@ -612,10 +612,10 @@ def modify_descriptor_panel_for_meta_model(request, dmm_id, pan_id):
     panel = get_object_or_404(DescriptorPanel, id=int(pan_id), descriptor_meta_model_id=int(dmm_id))
 
     if name is not None:
-        panel.name = name.strip()
+        panel.name = name
     if label is not None:
         lang = translation.get_language()
-        panel.set_label(lang, label.strip())
+        panel.set_label(lang, label)
 
     panel.full_clean()
     panel.save()

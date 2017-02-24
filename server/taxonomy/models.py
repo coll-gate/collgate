@@ -45,6 +45,9 @@ class TaxonRank(ChoiceEnum):
 
 class Taxon(Entity):
 
+    # rank validator
+    RANK_VALIDATOR = {"type": "number", 'minimum': 0, 'maximum': 100}
+
     rank = models.IntegerField(choices=TaxonRank.choices())
 
     parent = models.ForeignKey('Taxon', null=True, related_name="children")
@@ -121,6 +124,9 @@ class Taxon(Entity):
 
 
 class TaxonSynonym(Entity):
+
+    # name validator, used with content validation, to avoid any whitespace before and after
+    NAME_VALIDATOR = {"type": "string", "minLength": 3, "maxLength": 128, "pattern": r"^\S+.+\S+$"}
 
     language = models.CharField(max_length=2, choices=Languages.choices())
     type = models.IntegerField(choices=TaxonSynonymType.choices())

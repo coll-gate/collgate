@@ -105,17 +105,57 @@ class Entity(models.Model):
     any other modular features.
     """
 
+    # simple name pattern with alphanumeric characters plus _ and - with a least a length of 3
     NAME_RE = re.compile(r'^[a-zA-Z0-9_-]{3,}$', re.IGNORECASE)
+
+    # content type natural key pattern : <application_name>.<model_name>
     CONTENT_TYPE_RE = re.compile(r'^[a-z]{3,}\.[a-z]{3,}$')
 
+    # default name validator
+    NAME_VALIDATOR = {"type": "string", "minLength": 3, "maxLength": 32, "pattern": "^[a-zA-Z0-9\-\_]+$"}
+
+    # default name validator optional
+    NAME_VALIDATOR_OPTIONAL = {
+        "type": "string", "minLength": 3, "maxLength": 32, "pattern": "^[a-zA-Z0-9\-\_]+$", "required": False}
+
+    # language type validator
+    LANGUAGE_VALIDATOR = {"type:": "string", "minLength": 2, "maxLength": 5, "pattern": r"^[a-zA-Z-]{2,5}$"}
+
+    # content type validator
+    CONTENT_TYPE_VALIDATOR = {"type": "string", "minLength": 3, "maxLength": 64, "pattern": r"^[a-z]{3,}\.[a-z]{3,}$"}
+
+    # permission string validator
+    PERMISSION_VALIDATOR = {"type": "string", "minLength": 3, "maxLength": 64,  "pattern": r"^\S+[a-z-_]+\S+$"}
+
+    # entity status validator
+    ENTITY_STATUS_VALIDATOR = {"type": "integer", "minimum": 0, "maximum": 3}
+
+    # entity status validator
+    ENTITY_STATUS_VALIDATOR_OPTIONAL = {"type": "integer", "minimum": 0, "maximum": 3, "required": False}
+
+    # label validator
+    LABEL_VALIDATOR = {"type": "string", "minLength": 1, "maxLength": 128, "pattern": r"^\S+.+\S+$"}
+
+    # label validator optional
+    LABEL_VALIDATOR_OPTIONAL = {
+        "type": "string", "minLength": 1, "maxLength": 128, "pattern": r"^\S+.+\S+$", "required": False}
+
+    # content type of the entity
     content_type = models.ForeignKey(ContentType, editable=False)
+
+    # status of the entity
     entity_status = models.IntegerField(
         null=False, blank=False, choices=EntityStatus.choices(), default=EntityStatus.VALID.value)
 
+    # insert date
     created_date = models.DateTimeField(auto_now_add=True)
+    # last update date
     modified_date = models.DateTimeField(auto_now=True)
 
+    # unique name
     name = models.CharField(unique=True, max_length=255, db_index=True)
+
+    # object identifier
     uuid = models.UUIDField(db_index=True, default=uuid.uuid4, editable=False, unique=True)
 
     objects = EntityManager()

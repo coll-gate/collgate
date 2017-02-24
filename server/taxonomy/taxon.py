@@ -71,8 +71,8 @@ class RestTaxonIdEntities(RestTaxonId):
 @RestTaxon.def_auth_request(Method.POST, Format.JSON, content={
     "type": "object",
     "properties": {
-        "name": {"type": "string", 'minLength': 3, 'maxLength': 128},
-        "rank": {"type": "number", 'minimum': 0, 'maximum': 100},
+        "name": TaxonSynonym.NAME_VALIDATOR,
+        "rank": Taxon.RANK_VALIDATOR,
         "parent": {"type": "number", 'minimum': 0},
         "synonyms": {
             "type": "array",
@@ -80,9 +80,9 @@ class RestTaxonIdEntities(RestTaxonId):
                 {
                     "type": "object",
                     "properties": {
-                        "name": {"type": "string", 'minLength': 3, 'maxLength': 128},
-                        "language": {"type": "string", 'minLength': 2, 'maxLength': 2},
-                        "type": {"type": "number"},
+                        "name": TaxonSynonym.NAME_VALIDATOR,
+                        "language": TaxonSynonym.LANGUAGE_VALIDATOR,
+                        "type": {"type": "number"}
                     }
                 }
             ]
@@ -109,7 +109,7 @@ def create_taxon(request):
         raise SuspiciousOperation(_("The language is not supported"))
 
     taxon = Taxonomy.create_taxon(
-        taxon_params['name'].strip(),
+        taxon_params['name'],
         rank_id,
         parent,
         language)
@@ -495,8 +495,8 @@ def delete_taxon(request, tax_id):
         "type": "object",
         "properties": {
             "type": {"type:": "number"},
-            "language": {"type:": "string", 'minLength': 2, 'maxLength': 5},
-            "name": {"type": "string", 'minLength': 3, 'maxLength': 128}
+            "language": TaxonSynonym.LANGUAGE_VALIDATOR,
+            "name": TaxonSynonym.NAME_VALIDATOR
         },
     },
     perms={
@@ -509,7 +509,7 @@ def taxon_add_synonym(request, tax_id):
 
     synonym = {
         'type': int(request.data['type']),
-        'name': request.data['name'].strip(),
+        'name': request.data['name'],
         'language': str(request.data['language']),
     }
 
@@ -522,7 +522,7 @@ def taxon_add_synonym(request, tax_id):
     Method.PUT, Format.JSON, content={
         "type": "object",
         "properties": {
-            "name": {"type": "string", 'minLength': 3, 'maxLength': 128}
+            "name": TaxonSynonym.NAME_VALIDATOR
         },
     },
     perms={
@@ -533,7 +533,7 @@ def taxon_add_synonym(request, tax_id):
 def taxon_change_synonym(request, tax_id, syn_id):
     synonym = get_object_or_404(TaxonSynonym, Q(id=int(syn_id)), Q(taxon=int(tax_id)))
 
-    name = request.data['name'].strip()
+    name = request.data['name']
 
     try:
         with transaction.atomic():

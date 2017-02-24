@@ -243,7 +243,7 @@ var View = Marionette.ItemView.extend({
         var synonym_id = $(e.target).data('synonym-id');
 
         var type = synonym.find("[name='type']").attr('value');
-        var name = synonym.find("[name='name']").text().trim();
+        var name = synonym.find("[name='name']").text();
         var language = synonym.find("[name='language']").attr('value');
 
         var changeSynonym = new ChangeSynonym({

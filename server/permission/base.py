@@ -19,6 +19,7 @@ from guardian.models import UserObjectPermission, GroupObjectPermission
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
 from igdectk.module.manager import module_manager
+from main.models import Entity
 
 from .filters import GroupFilter, UserFilter
 from .utils import get_permissions_for
@@ -82,6 +83,10 @@ class RestPermissionGroupIdUserName(RestPermissionGroupIdUser):
 class RestPermissionGroupNamePermission(RestPermissionGroupId):
     regex = r'^permission/$'
     suffix = 'permission'
+
+
+# Group name validator
+GROUP_NAME_VALIDATOR = {"type": "string", "minLength": 3, "maxLength": 64, "pattern": "^[a-zA-Z0-9\-\_]+$"}
 
 
 @RestPermissionType.def_request(Method.GET, Format.JSON)
@@ -225,7 +230,7 @@ def get_groups_list(request):
 @RestPermissionGroup.def_auth_request(Method.POST, Format.JSON, staff=True, content={
     "type": "object",
     "properties": {
-        "name": {"type": "string", "minLength": 3, "maxLength": 64, "pattern": "^[a-zA-Z0-9\-\_]+$"},
+        "name": GROUP_NAME_VALIDATOR
     },
 })
 def add_group(request):
@@ -279,7 +284,7 @@ def delete_group(request, grp_id):
     Method.PATCH, Format.JSON, content={
         "type": "object",
         "properties": {
-            "name": {"type": "string", "minLength": 3, "maxLength": 64, "pattern": "^[a-zA-Z0-9\-\_]+$"},
+            "name": GROUP_NAME_VALIDATOR
         },
     },
     staff=True)
@@ -463,8 +468,8 @@ def patch_user(request, username):
     Method.POST, Format.JSON, content={
         "type": "object",
         "properties": {
-            "permission": {"type": "string", 'minLength': 3, 'maxLength': 32},
-            "content_type": {"type": "string", 'minLength': 3, 'maxLength': 64},
+            "permission": Entity.PERMISSION_VALIDATOR,
+            "content_type": Entity.CONTENT_TYPE_VALIDATOR,
             "object": {"type": "integer", 'required': False},
         },
     },
@@ -500,8 +505,8 @@ def add_user_permission(request, username):
         "properties": {
             "action": {"type": "string", "pattern": "^(add|remove)$"},
             "target": {"type": "string", "pattern": "^permission$"},
-            "permission": {"type": "string", 'minLength': 3, 'maxLength': 32},
-            "content_type": {"type": "string", 'minLength': 3, 'maxLength': 64},
+            "permission": Entity.PERMISSION_VALIDATOR,
+            "content_type": Entity.CONTENT_TYPE_VALIDATOR,
             "object": {"type": "integer", 'required': False},
         },
     },
@@ -603,8 +608,8 @@ def get_group_permissions(request, grp_id):
     Method.POST, Format.JSON, content={
         "type": "object",
         "properties": {
-            "permission": {"type": "string", 'minLength': 3, 'maxLength': 32},
-            "content_type": {"type": "string", 'minLength': 3, 'maxLength': 64},
+            "permission": Entity.PERMISSION_VALIDATOR,
+            "content_type": Entity.CONTENT_TYPE_VALIDATOR,
             "object": {"type": "integer", 'required': False},
         },
     },
@@ -639,8 +644,8 @@ def add_group_permission(request, grp_id):
         "properties": {
             "action": {"type": "string", "pattern": "^(add|remove)$"},
             "target": {"type": "string", "pattern": "^permission$"},
-            "permission": {"type": "string", 'minLength': 3, 'maxLength': 32},
-            "content_type": {"type": "string", 'minLength': 3, 'maxLength': 64},
+            "permission": Entity.PERMISSION_VALIDATOR,
+            "content_type": Entity.CONTENT_TYPE_VALIDATOR,
             "object": {"type": "integer", 'required': False},
         },
     },
@@ -684,7 +689,7 @@ def delete_group_permission(request, grp_id):
 @RestPermissionGroupIdUser.def_auth_request(Method.POST, Format.JSON, content={
         "type": "object",
         "properties": {
-            "username": {"type": "string", 'minLength': 3, 'maxLength': 64},
+            "username": {"type": "string", 'minLength': 3, 'maxLength': 150},
         },
     },
     perms={'auth.change_group': _("You are not allowed to add a user into a group")},

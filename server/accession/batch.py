@@ -77,7 +77,7 @@ def get_batch_details_json(request, bat_id):
 @RestBatch.def_auth_request(Method.POST, Format.JSON, content={
         "type": "object",
         "properties": {
-            "name": {"type": "string", 'minLength': 3, 'maxLength': 128},
+            "name": Batch.NAME_VALIDATOR,
             "descriptor_meta_model": {"type": "number"},
             "accession": {"type": "number"},
             "descriptors": {"type": "object"}
@@ -88,7 +88,7 @@ def get_batch_details_json(request, bat_id):
 )
 def create_batch(request):
     # @todo name generator
-    name = request.data['name'].strip()
+    name = request.data['name']
     dmm_id = int_arg(request.data['descriptor_meta_model'])
     accession_id = int_arg(request.data['parent'])
     descriptors = request.data['descriptors']
@@ -142,7 +142,7 @@ def create_batch(request):
 @RestBatchId.def_auth_request(Method.PATCH, Format.JSON, content={
         "type": "object",
         "properties": {
-            "entity_status": {"type": "integer", "minimum": 0, "maximum": 3, "required": False},
+            "entity_status": Batch.ENTITY_STATUS_VALIDATOR_OPTIONAL,
             "descriptors": {"type": "object", "required": False},
         },
     },

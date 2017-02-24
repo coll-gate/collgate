@@ -135,9 +135,9 @@ def get_descriptor_model(request, des_id):
     Method.POST, Format.JSON, content={
         "type": "object",
         "properties": {
-            "name": {"type": "string", 'minLength': 3, 'maxLength': 32},
+            "name": DescriptorModel.NAME_VALIDATOR,
             "verbose_name": {"type": "string", 'maxLength': 255, "required": False, "blank": True},
-            "description": {"type": "string", 'maxLength': 1024, "required": False, "blank": True},
+            "description": {"type": "string", 'maxLength': 1024, "required": False, "blank": True}
         },
     },
     perms={'descriptor.add_descriptormodel': _('You are not allowed to create a model of descriptor')},
@@ -148,7 +148,7 @@ def create_descriptor_model(request):
         raise SuspiciousOperation(_('A model of descriptor with a similar name already exists'))
 
     # create descriptor model
-    dm = DescriptorModel(name=request.data['name'].strip())
+    dm = DescriptorModel(name=request.data['name'])
 
     verbose_name = request.data.get('verbose_name')
     if verbose_name:
@@ -174,9 +174,9 @@ def create_descriptor_model(request):
     Method.PUT, Format.JSON, content={
         "type": "object",
         "properties": {
-            "name": {"type": "string", 'minLength': 3, 'maxLength': 32},
+            "name": DescriptorModel.NAME_VALIDATOR,
             "verbose_name": {"type": "string", 'maxLength': 255, "required": False, "blank": True},
-            "description": {"type": "string", 'maxLength': 1024, "required": False, "blank": True},
+            "description": {"type": "string", 'maxLength': 1024, "required": False, "blank": True}
         },
     },
     perms={'descriptor.change_descriptormodel': _('You are not allowed to modify a model of descriptor')},
@@ -184,7 +184,7 @@ def create_descriptor_model(request):
 def update_descriptor_model(request, des_id):
     model = get_object_or_404(DescriptorModel, id=int(des_id))
 
-    name = request.data['name'].strip()
+    name = request.data['name']
     verbose_name = request.data.get('verbose_name', '').strip()
     description = request.data.get('description', '').strip()
 
@@ -311,7 +311,7 @@ def list_descriptor_model_types_for_model(request, des_id):
 @RestDescriptorModelIdType.def_auth_request(Method.POST, Format.JSON, content={
         "type": "object",
         "properties": {
-            "label": {"type": "string", 'maxLength': 64},
+            "label": DescriptorModelType.LABEL_VALIDATOR,
             "mandatory": {"type": "boolean"},
             "set_once": {"type": "boolean"},
             "position": {"type": "number"},
@@ -345,7 +345,7 @@ def create_descriptor_model_type_for_type(request, des_id):
 
     dmt.name = name
     dmt.descriptor_model = dm
-    dmt.set_label(lang, request.data['label'].strip())
+    dmt.set_label(lang, request.data['label'])
     dmt.mandatory = mandatory
     dmt.set_once = set_once
     dmt.position = position
@@ -440,7 +440,7 @@ def reorder_descriptor_types_for_model(request, des_id):
         "properties": {
             "mandatory": {"type": "boolean", "required": False},
             "set_once": {"type": "boolean", "required": False},
-            "label": {"type": "string", 'maxLength': 64, "required": False},
+            "label": DescriptorModelType.LABEL_VALIDATOR_OPTIONAL
         },
     },
     perms={
@@ -465,7 +465,7 @@ def patch_descriptor_model_type_for_model(request, des_id, typ_id):
 
     if label is not None:
         lang = translation.get_language()
-        dmt.set_label(lang, label.strip())
+        dmt.set_label(lang, label)
 
     if mandatory is not None:
         # mandatory is incompatible with a condition
@@ -534,10 +534,7 @@ def get_all_labels_of_descriptor_model_type(request, des_id, typ_id):
 @RestDescriptorModelIdTypeIdLabel.def_auth_request(
     Method.PUT, Format.JSON, content={
         "type": "object",
-        "additionalProperties": {
-            "type": "string",
-            "maxLength": 64  # @todo regexp to avoid whitespace before and after
-        }
+        "additionalProperties": DescriptorModelType.LABEL_VALIDATOR
     },
     perms={
         'descriptor.change_descriptormodel': _('You are not allowed to modify a model of descriptor'),
@@ -577,7 +574,6 @@ def get_condition_for_descriptor_model_type(request, des_id, typ_id):
     Get if it exists, the condition related to the display of a descriptor model type.
     """
     conditions = DescriptorModelTypeCondition.objects.filter(descriptor_model_type_id=int(typ_id))
-    condition = None
 
     if conditions.exists():
         dmtc = conditions[0]
@@ -605,7 +601,7 @@ def get_condition_for_descriptor_model_type(request, des_id, typ_id):
         "properties": {
             "target": {"type": "integer"},
             "condition": {"type": "integer", "minValue": 0, "maxValue": 3},
-            "values": {"type": "any", "required": False},
+            "values": {"type": "any", "required": False}
         }
     },
     perms={
@@ -664,7 +660,7 @@ def create_condition_for_descriptor_model_type(request, des_id, typ_id):
         "properties": {
             "target": {"type": "integer"},
             "condition": {"type": "integer", "minValue": 0, "maxValue": 3},
-            "values": {"type": "any", "required": False},
+            "values": {"type": "any", "required": False}
         }
     },
     perms={

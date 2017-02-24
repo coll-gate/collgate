@@ -143,9 +143,9 @@ def search_accession_synonyms(request):
     Method.POST, Format.JSON, content={
         "type": "object",
         "properties": {
-            "type": {"type:": "string", 'minLength': 14, 'maxLength': 14},
-            "language": {"type:": "string", 'minLength': 2, 'maxLength': 5},
-            "name": {"type": "string", 'minLength': 3, 'maxLength': 64}
+            "type": AccessionSynonym.TYPE_VALIDATOR,
+            "language": AccessionSynonym.LANGUAGE_VALIDATOR,
+            "name": AccessionSynonym.NAME_VALIDATOR
         },
     },
     perms={
@@ -158,7 +158,7 @@ def accession_add_synonym(request, acc_id):
 
     result = {
         'type': request.data['type'],
-        'name': request.data['name'].strip(),
+        'name': request.data['name'],
         'language': request.data['language']
     }
 
@@ -196,7 +196,7 @@ def accession_add_synonym(request, acc_id):
     Method.PUT, Format.JSON, content={
         "type": "object",
         "properties": {
-            "name": {"type": "string", 'minLength': 3, 'maxLength': 128}
+            "name": AccessionSynonym.NAME_VALIDATOR
         },
     },
     perms={
@@ -208,7 +208,7 @@ def accession_change_synonym(request, acc_id, syn_id):
     accession = get_object_or_404(Accession, id=int(acc_id))
     accession_synonym = accession.synonyms.get(id=int(syn_id))
 
-    name = request.data['name'].strip()
+    name = request.data['name']
 
     # check if a similar synonyms exists into the accession or as primary name for another accession
     synonyms = AccessionSynonym.objects.filter(synonym__iexact=name)

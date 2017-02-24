@@ -144,7 +144,7 @@ def get_descriptor_groups(request):
     Method.POST, Format.JSON, content={
         "type": "object",
         "properties": {
-            "name": {"type": "string", 'minLength': 3, 'maxLength': 32}
+            "name": DescriptorGroup.NAME_VALIDATOR
         },
     },
     perms={'descriptor.add_descriptorgroup': _('You are not allowed to create a group of descriptors')},
@@ -154,7 +154,7 @@ def create_descriptor_group(request):
     group_params = request.data
 
     group = DescriptorGroup.objects.create(
-        name=group_params['name'].strip(),
+        name=group_params['name'],
         can_delete=True,
         can_modify=True)
 
@@ -191,7 +191,7 @@ def delete_descriptor_group(request, grp_id):
     Method.PATCH, Format.JSON, content={
         "type": "object",
         "properties": {
-            "name": {"type": "string", 'minLength': 3, 'maxLength': 32}
+            "name": DescriptorGroup.NAME_VALIDATOR
         },
     },
     perms={
@@ -201,7 +201,7 @@ def delete_descriptor_group(request, grp_id):
 )
 def patch_descriptor_group(request, grp_id):
     group = get_object_or_404(DescriptorGroup, id=int(grp_id))
-    group_name = request.data['name'].strip()
+    group_name = request.data['name']
 
     if group_name == group.name:
         return HttpResponseRest(request, {})
@@ -400,7 +400,7 @@ def get_descriptor_type_for_group(request, grp_id, typ_id):
     Method.POST, Format.JSON, content={
         "type": "object",
         "properties": {
-            "name": {"type": "string", 'minLength': 3, 'maxLength': 32}
+            "name": DescriptorType.NAME_VALIDATOR
         },
     },
     perms={
@@ -424,7 +424,7 @@ def create_descriptor_type(request, grp_id):
     code = 'ID_%03i' % suffix
 
     descr_type = DescriptorType.objects.create(
-        name=descr_type_params['name'].strip(),
+        name=descr_type_params['name'],
         code=code,
         group=group,
         can_delete=True,
@@ -470,7 +470,7 @@ def delete_descriptor_type_for_group(request, grp_id, typ_id):
     Method.PUT, Format.JSON, content={
         "type": "object",
         "properties": {
-            "name": {"type": "string", 'minLength': 3, 'maxLength': 32},
+            "name": DescriptorType.NAME_VALIDATOR,
             "code": {"type": "string", 'minLength': 3, 'maxLength': 32},
             "description": {"type": "string", 'maxLength': 1024, 'blank': True},
             "format": {
@@ -514,7 +514,7 @@ def update_descriptor_type(request, grp_id, typ_id):
     if not format_type['type'].startswith('enum_') and org_format['type'].startswith('enum_'):
         # overwrite values
         descr_type.values = ""
-        descr_type.values_set.clear()
+        descr_type.values_set.all().delete()
 
     # single enumeration
     if format_type['type'] == 'enum_single':
@@ -568,7 +568,7 @@ def update_descriptor_type(request, grp_id, typ_id):
 
             descr_type.values = json.dumps(values)
 
-    descr_type.name = descr_type_params['name'].strip()
+    descr_type.name = descr_type_params['name']
     descr_type.format = json.dumps(format_type)
     descr_type.description = description
 

@@ -45,25 +45,25 @@ class RestAccessionId(RestAccessionAccession):
 @RestAccessionAccession.def_auth_request(Method.POST, Format.JSON, content={
         "type": "object",
         "properties": {
-            "name": {"type": "string", 'minLength': 3, 'maxLength': 128},
+            "name": AccessionSynonym.NAME_VALIDATOR,
             "descriptor_meta_model": {"type": "number"},
             "parent": {"type": "number"},
             "descriptors": {"type": "object"},
-            "language": {"type": "string", 'minLength': 2, 'maxLength': 5},
+            "language": AccessionSynonym.LANGUAGE_VALIDATOR
         },
     }, perms={
         'accession.add_accession': _("You are not allowed to create an accession")
     }
 )
 def create_accession(request):
-    name = request.data['name'].strip()
+    name = request.data['name']
     dmm_id = int_arg(request.data['descriptor_meta_model'])
     parent_id = int_arg(request.data['parent'])
     descriptors = request.data['descriptors']
     language = request.data['language']
 
     # check uniqueness of the name
-    if AccessionSynonym.objects.filter(name=name, type='IN_001:0000001').exists():
+    if AccessionSynonym.objects.filter(name=name, type=AccessionSynonym.TYPE_PRIMARY).exists():
         raise SuspiciousOperation(_("The name of the accession is already used as a primary synonym"))
 
     if Accession.objects.filter(name=name).exists():
@@ -320,7 +320,7 @@ def search_accession(request):
         "type": "object",
         "properties": {
             "parent": {"type": "integer", "required": False},
-            "entity_status": {"type": "integer", "minimum": 0, "maximum": 3, "required": False},
+            "entity_status": Accession.ENTITY_STATUS_VALIDATOR_OPTIONAL,
             "descriptors": {"type": "object", "required": False},
         },
     },

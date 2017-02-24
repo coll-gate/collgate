@@ -80,6 +80,12 @@ class AccessionSynonym(Entity):
     Table specific to accession to defines the synonyms.
     """
 
+    # name validator, used with content validation, to avoid any whitespace before and after
+    NAME_VALIDATOR = {"type": "string", "minLength": 3, "maxLength": 128, "pattern": r"^\S+.+\S+$"}
+
+    # accession synonym type validator
+    TYPE_VALIDATOR = {"type:": "string", 'minLength': 14, 'maxLength': 32, "pattern": r"^IN_001:[0-9]{7,}$"}
+
     # Descriptor type code
     TYPE_CODE = "IN_001"
 
@@ -122,8 +128,11 @@ class AccessionSynonym(Entity):
 
 class Batch(DescribableEntity):
     """
-    Lot for an accession.
+    Batch for an accession.
     """
+
+    # name validator, used with content validation, to avoid any whitespace before and after
+    NAME_VALIDATOR = {"type": "string", "minLength": 3, "maxLength": 128, "pattern": r"^\S+.+\S+$"}
 
     # parent accession
     accession = models.ForeignKey('Accession', related_name='batches')
@@ -171,6 +180,9 @@ class Sample(DescribableEntity):
     """
     Sample during lot processing.
     """
+
+    # name validator, used with content validation, to avoid any whitespace before and after
+    NAME_VALIDATOR = {"type": "string", "minLength": 3, "maxLength": 128, "pattern": r"^\S+.+\S+$"}
 
     batch = models.ForeignKey('Batch', related_name='samples')
 
