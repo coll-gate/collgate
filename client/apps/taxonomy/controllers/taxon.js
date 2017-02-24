@@ -61,7 +61,7 @@ var TaxonController = Marionette.Object.extend({
                                 filters: JSON.stringify({
                                     method: 'icontains',
                                     fields: ['name', 'rank'],
-                                    'name': params.term,
+                                    'name': params.term.trim(),
                                     'rank': parseInt($("#taxon_rank").val())
                                 }),
                                 cursor: params.next
@@ -186,16 +186,18 @@ var TaxonController = Marionette.Object.extend({
             },
 
             onNameInput: function () {
+                var name = this.ui.name.val().trim();
+
                 if (this.validateName()) {
                     var filters = {
                         method: 'ieq',
                         fields: ['name'],
-                        'name': this.ui.name.val()
+                        'name': name
                     };
 
                     $.ajax({
                         type: "GET",
-                        url: application.baseUrl + 'taxonomy/taxon/search/',
+                        url: application.baseUrl + 'taxonomy/taxon/synonym/search/',
                         dataType: 'json',
                         data: {filters: JSON.stringify(filters)},
                         el: this.ui.name,
@@ -204,7 +206,7 @@ var TaxonController = Marionette.Object.extend({
                                 for (var i in data.items) {
                                     var t = data.items[i];
 
-                                    if (t.value.toUpperCase() == this.el.val().toUpperCase()) {
+                                    if (t.value.toUpperCase() == name.toUpperCase()) {
                                         $(this.el).validateField('failed', gt.gettext('Taxon name already in usage'));
                                         break;
                                     }
@@ -218,7 +220,7 @@ var TaxonController = Marionette.Object.extend({
             },
 
             validateName: function() {
-                var v = this.ui.name.val();
+                var v = this.ui.name.val().trim();
 
                 if (v.length > 64) {
                     $(this.ui.name).validateField('failed', gt.gettext("64 characters max"));
@@ -260,10 +262,11 @@ var TaxonController = Marionette.Object.extend({
 
             onCreate: function() {
                 var view = this;
+                var name = this.ui.name.val().trim();
 
                 if (this.validate()) {
                     application.taxonomy.collections.taxons.create({
-                        name: this.ui.name.val(),
+                        name: name,
                         rank: parseInt(this.ui.rank.val()),
                         parent: parseInt($(this.ui.parent).val() || '0'),
                         synonyms: [{
@@ -284,7 +287,7 @@ var TaxonController = Marionette.Object.extend({
 
         var createTaxonView = new CreateTaxonView();
         createTaxonView.render();
-    },
+    }
 });
 
 module.exports = TaxonController;

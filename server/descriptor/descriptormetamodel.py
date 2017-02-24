@@ -146,9 +146,9 @@ def create_descriptor_meta_model(request):
 
     dmm = DescriptorMetaModel()
 
-    dmm.name = request.data['name']
-    dmm.set_label(lang, request.data['label'])
-    dmm.description = request.data['description']
+    dmm.name = request.data['name'].strip()
+    dmm.set_label(lang, request.data['label'].strip())
+    dmm.description = request.data['description'].strip()
     dmm.target = content_type
 
     dmm.full_clean()
@@ -232,8 +232,8 @@ def delete_descriptor_meta_model(request, dmm_id):
 def modify_descriptor_meta_model(request, dmm_id):
     dmm = get_object_or_404(DescriptorMetaModel, id=int(dmm_id))
 
-    dmm.name = request.data['name']
-    dmm.description = request.data['description']
+    dmm.name = request.data['name'].strip()
+    dmm.description = request.data['description'].strip()
 
     dmm.save()
 
@@ -252,7 +252,7 @@ def modify_descriptor_meta_model(request, dmm_id):
     Method.PATCH, Format.JSON, content={
         "type": "object",
         "properties": {
-            "label": {"type": "string", 'minLength': 3, 'maxLength': 32, 'required': False},
+            "label": {"type": "string", 'minLength': 3, 'maxLength': 64, 'required': False},
         },
     },
     perms={'descriptor.change_descriptormetamodel': _('You are not allowed to modify a meta-model of descriptor')},
@@ -264,7 +264,7 @@ def patch_descriptor_meta_model(request, dmm_id):
 
     if label is not None:
         lang = translation.get_language()
-        dmm.set_label(lang, label)
+        dmm.set_label(lang, label.strip())
 
     dmm.save()
 
@@ -482,7 +482,7 @@ def create_descriptor_panel_for_meta_model(request, dmm_id):
     dp = DescriptorPanel()
 
     dp.name = "%i_%i" % (dmm.id, dm.id)
-    dp.set_label(lang, request.data['label'])
+    dp.set_label(lang, request.data['label'].strip())
     dp.position = position
     dp.descriptor_meta_model = dmm
     dp.descriptor_model = dm
@@ -597,7 +597,7 @@ def reorder_descriptor_panels_for_model(request, dmm_id):
         "type": "object",
         "properties": {
             "name": {"type": "string", 'minLength': 3, 'maxLength': 32, 'required': False},
-            "label": {"type": "string", 'minLength': 3, 'maxLength': 32, 'required': False},
+            "label": {"type": "string", 'minLength': 3, 'maxLength': 64, 'required': False},
         },
     },
     perms={
@@ -612,10 +612,10 @@ def modify_descriptor_panel_for_meta_model(request, dmm_id, pan_id):
     panel = get_object_or_404(DescriptorPanel, id=int(pan_id), descriptor_meta_model_id=int(dmm_id))
 
     if name is not None:
-        panel.name = name
+        panel.name = name.strip()
     if label is not None:
         lang = translation.get_language()
-        panel.set_label(lang, label)
+        panel.set_label(lang, label.strip())
 
     panel.full_clean()
     panel.save()
@@ -676,7 +676,7 @@ def get_all_labels_of_descriptor_meta_model(request, dmm_id):
         "type": "object",
         "additionalProperties": {
             "type": "string",
-            "maxLength": 64
+            "maxLength": 64  # @todo regexp to avoid whitespace before and after
         }
     },
     perms={
@@ -734,7 +734,7 @@ def get_all_labels_of_descriptor_meta_model(request, dmm_id, pan_id):
         "type": "object",
         "additionalProperties": {
             "type": "string",
-            "maxLength": 64
+            "maxLength": 64  # @todo regexp to avoid whitespace before and after
         }
     },
     perms={

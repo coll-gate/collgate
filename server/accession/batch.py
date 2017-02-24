@@ -88,7 +88,7 @@ def get_batch_details_json(request, bat_id):
 )
 def create_batch(request):
     # @todo name generator
-    name = request.data['name']
+    name = request.data['name'].strip()
     dmm_id = int_arg(request.data['descriptor_meta_model'])
     accession_id = int_arg(request.data['parent'])
     descriptors = request.data['descriptors']

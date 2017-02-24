@@ -10,16 +10,12 @@
 
 var Marionette = require('backbone.marionette');
 
-var TaxonModel = require('../../taxonomy/models/taxon');
 var AccessionModel = require('../models/accession');
 
 var DefaultLayout = require('../../main/views/defaultlayout');
 var TitleView = require('../../main/views/titleview');
 var Dialog = require('../../main/views/dialog');
 var AccessionLayout = require('../views/accessionlayout');
-
-var EntityPathView = require('../../taxonomy/views/entitypath');
-var AccessionDescriptorEditView = require('../views/accessiondescriptoredit');
 
 
 var Controller = Marionette.Object.extend({
@@ -28,11 +24,11 @@ var Controller = Marionette.Object.extend({
         $.ajax({
             type: "GET",
             url: application.baseUrl + 'descriptor/meta-model/for-describable/' + 'accession.accession/',
-            dataType: 'json',
+            dataType: 'json'
         }).done(function(data) {
             var CreateAccessionView = Dialog.extend({
                 attributes: {
-                    'id': 'dlg_create_accession',
+                    'id': 'dlg_create_accession'
                 },
                 template: require('../templates/accessioncreate.html'),
                 templateHelpers/*templateContext*/: function () {
@@ -73,7 +69,7 @@ var Controller = Marionette.Object.extend({
                                     filters: JSON.stringify({
                                         method: 'icontains',
                                         fields: ['name'],
-                                        'name': params.term
+                                        'name': params.term.trim()
                                     }),
                                     cursor: params.next
                                 };
@@ -116,11 +112,13 @@ var Controller = Marionette.Object.extend({
                 },
 
                 onNameInput: function () {
+                    var name = this.ui.name.val().trim();
+
                     if (this.validateName()) {
                         var filters = {
                             method: 'ieq',
                             fields: ['name'],
-                            'name': this.ui.name.val()
+                            'name': name
                         };
 
                         $.ajax({
@@ -135,7 +133,7 @@ var Controller = Marionette.Object.extend({
                                     for (var i in data.items) {
                                         var t = data.items[i];
 
-                                        if (t.value.toUpperCase() == this.el.val().toUpperCase()) {
+                                        if (t.label.toUpperCase() == name.toUpperCase()) {
                                             $(this.el).validateField('failed', gt.gettext('Synonym of accession already used'));
                                             break;
                                         }
@@ -149,7 +147,7 @@ var Controller = Marionette.Object.extend({
                 },
 
                 validateName: function() {
-                    var v = this.ui.name.val();
+                    var v = this.ui.name.val().trim();
 
                     if (v.length > 64) {
                         $(this.ui.name).validateField('failed', gt.gettext("64 characters max"));
@@ -186,7 +184,7 @@ var Controller = Marionette.Object.extend({
                     var view = this;
 
                     if (this.validate()) {
-                        var name = this.ui.name.val();
+                        var name = this.ui.name.val().trim();
                         var parent = parseInt(this.ui.parent.val());
                         var metaModel = parseInt(this.ui.meta_model.val());
 

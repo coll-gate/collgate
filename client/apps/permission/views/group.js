@@ -9,9 +9,8 @@
  */
 
 var Marionette = require('backbone.marionette');
-var PermissionGroupModel = require('../models/group');
-
 var Dialog = require('../../main/views/dialog');
+
 
 var View = Marionette.ItemView.extend({
     tagName: 'tr',
@@ -59,15 +58,15 @@ var View = Marionette.ItemView.extend({
             template: require('../templates/groupchangename.html'),
 
             attributes: {
-                id: "dlg_change_name",
+                id: "dlg_change_name"
             },
 
             ui: {
-                name: "#name",
+                name: "#name"
             },
 
             events: {
-                'input @ui.name': 'onNameInput',
+                'input @ui.name': 'onNameInput'
             },
 
             initialize: function (options) {
@@ -101,18 +100,18 @@ var View = Marionette.ItemView.extend({
 
                 if (this.validateName()) {
                     model.save({name: name}, {patch: true, wait:true});
-                    this.remove();
+                    this.destroy();
                 }
             },
         });
 
         var changeName = new ChangeName({
-            model: this.model,
+            model: this.model
         });
 
         changeName.render();
         changeName.ui.name.val(this.model.get('name'));
-    },
+    }
 });
 
 module.exports = View;

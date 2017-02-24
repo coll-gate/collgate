@@ -49,7 +49,7 @@ var View = Marionette.ItemView.extend({
     },
 
     validateName: function() {
-        var v = this.ui.synonym_name.val();
+        var v = this.ui.synonym_name.val().trim();
 
         if (v.length > 64) {
             $(this.ui.synonym_name).validateField('failed', gt.gettext("64 characters max"));
@@ -65,11 +65,12 @@ var View = Marionette.ItemView.extend({
     onSynonymNameInput: function () {
         if (this.validateName()) {
             var view = this;
+            var name = this.ui.synonym_name.val().trim();
 
             var filters = {
                 fields: ["name"],
                 method: "ieq",
-                name: this.ui.synonym_name.val()
+                name: name
             };
 
             $.ajax({
@@ -84,7 +85,7 @@ var View = Marionette.ItemView.extend({
                             var t = data.items[i];
 
                             // invalid if primary exists with the same name or if exists into the same accession
-                            if (t.label.toUpperCase() == view.ui.synonym_name.val().toUpperCase()) {
+                            if (t.label.toUpperCase() == name.toUpperCase()) {
                                 if ((t.accession == view.model.get('id')) || (t.type == "IN_001:0000001")) {
                                     view.ui.synonym_name.validateField(
                                         'failed', gt.gettext('Synonym of accession already used'));
@@ -104,7 +105,7 @@ var View = Marionette.ItemView.extend({
     onAddSynonym: function () {
         if (this.validateName() && !this.ui.synonym_name.hasClass('invalid')) {
             var type = this.ui.accession_synonym_type.val();
-            var name = this.ui.synonym_name.val();
+            var name = this.ui.synonym_name.val().trim();
             var language = this.ui.synonym_language.val();
 
             $.ajax({
@@ -125,10 +126,6 @@ var View = Marionette.ItemView.extend({
         var synonym = $(e.target.parentNode.parentNode);
         var synonym_id = $(e.target).data('synonym-id');
 
-        var type = synonym.find("[name='type']").attr('value');
-        var name = synonym.find("[name='name']").text();
-        var language = synonym.find("[name='language']").attr('value');
-
         $.ajax({
             view: this,
             type: "DELETE",
@@ -145,15 +142,15 @@ var View = Marionette.ItemView.extend({
             template: require('../templates/accessionchangesynonym.html'),
 
             attributes: {
-                id: "dlg_change_synonym",
+                id: "dlg_change_synonym"
             },
 
             ui: {
-                synonym_name: "#accession_synonym_name",
+                synonym_name: "#accession_synonym_name"
             },
 
             events: {
-                'input @ui.synonym_name': 'onNameInput',
+                'input @ui.synonym_name': 'onNameInput'
             },
 
             initialize: function (options) {
@@ -163,11 +160,12 @@ var View = Marionette.ItemView.extend({
             onNameInput: function () {
                 if (this.validateName()) {
                     var view = this;
+                    var name = this.ui.synonym_name.val().trim();
 
                     var filters = {
                         fields: ["name"],
                         method: "ieq",
-                        name: this.ui.synonym_name.val()
+                        name: name
                     };
 
                     $.ajax({
@@ -182,7 +180,7 @@ var View = Marionette.ItemView.extend({
                                     var t = data.items[i];
 
                                     // invalid if primary exists with the same name or if exists into the same accession
-                                    if (t.label.toUpperCase() == view.ui.synonym_name.val().toUpperCase()) {
+                                    if (t.label.toUpperCase() == name.toUpperCase()) {
                                         // same accession, same synonym => valid
                                         if ((t.accession == view.model.get('id')) && (t.id == view.getOption('synonym_id'))) {
                                             view.ui.synonym_name.validateField('ok');
@@ -205,7 +203,7 @@ var View = Marionette.ItemView.extend({
             },
 
             validateName: function() {
-                var v = this.ui.synonym_name.val();
+                var v = this.ui.synonym_name.val().trim();
 
                 if (v.length < 3) {
                     $(this.ui.synonym_name).validateField('failed', gt.gettext('3 characters min'));
@@ -213,18 +211,17 @@ var View = Marionette.ItemView.extend({
                 } else if (v.length > 64) {
                     $(this.ui.synonym_name).validateField('failed', gt.gettext('64 characters max'));
                     return false;
+                } else {
+                    $(this.ui.synonym_name).validateField('ok');
+                    return true;
                 }
-
-                $(this.ui.synonym_name).validateField('ok');
-
-                return true;
             },
 
             onApply: function() {
                 var view = this;
                 var model = this.getOption('model');
                 var synonym_id = this.getOption('synonym_id');
-                var name = this.ui.synonym_name.val();
+                var name = this.ui.synonym_name.val().trim();
 
                 if (!this.ui.synonym_name.hasClass('invalid')) {
                     $.ajax({
@@ -246,7 +243,7 @@ var View = Marionette.ItemView.extend({
         var synonym_id = $(e.target).data('synonym-id');
 
         var type = synonym.find("[name='type']").attr('value');
-        var name = synonym.find("[name='name']").text();
+        var name = synonym.find("[name='name']").text().trim();
         var language = synonym.find("[name='language']").attr('value');
 
         var changeSynonym = new ChangeSynonym({

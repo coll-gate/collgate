@@ -154,7 +154,7 @@ def create_descriptor_group(request):
     group_params = request.data
 
     group = DescriptorGroup.objects.create(
-        name=group_params['name'],
+        name=group_params['name'].strip(),
         can_delete=True,
         can_modify=True)
 
@@ -201,7 +201,7 @@ def delete_descriptor_group(request, grp_id):
 )
 def patch_descriptor_group(request, grp_id):
     group = get_object_or_404(DescriptorGroup, id=int(grp_id))
-    group_name = request.data['name']
+    group_name = request.data['name'].strip()
 
     if group_name == group.name:
         return HttpResponseRest(request, {})
@@ -424,7 +424,7 @@ def create_descriptor_type(request, grp_id):
     code = 'ID_%03i' % suffix
 
     descr_type = DescriptorType.objects.create(
-        name=descr_type_params['name'],
+        name=descr_type_params['name'].strip(),
         code=code,
         group=group,
         can_delete=True,
@@ -568,7 +568,7 @@ def update_descriptor_type(request, grp_id, typ_id):
 
             descr_type.values = json.dumps(values)
 
-    descr_type.name = descr_type_params['name']
+    descr_type.name = descr_type_params['name'].strip()
     descr_type.format = json.dumps(format_type)
     descr_type.description = description
 
@@ -894,6 +894,8 @@ def get_display_value_for_descriptor_type(request, grp_id, typ_id, val_id):
             'label': value[3],
             'offset': shift_size
         }
+    else:
+        result = {}
 
     return HttpResponseRest(request, result)
 

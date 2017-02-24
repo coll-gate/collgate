@@ -225,7 +225,7 @@ def get_groups_list(request):
 @RestPermissionGroup.def_auth_request(Method.POST, Format.JSON, staff=True, content={
     "type": "object",
     "properties": {
-        "name": {"type": "string", "minLength": 3, "maxLength": 64},
+        "name": {"type": "string", "minLength": 3, "maxLength": 64, "pattern": "^[a-zA-Z0-9\-\_]+$"},
     },
 })
 def add_group(request):
@@ -279,7 +279,7 @@ def delete_group(request, grp_id):
     Method.PATCH, Format.JSON, content={
         "type": "object",
         "properties": {
-            "name": {"type": "string", "minLength": 3, "maxLength": 64},
+            "name": {"type": "string", "minLength": 3, "maxLength": 64, "pattern": "^[a-zA-Z0-9\-\_]+$"},
         },
     },
     staff=True)

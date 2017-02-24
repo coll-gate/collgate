@@ -80,6 +80,9 @@ class AccessionSynonym(Entity):
     Table specific to accession to defines the synonyms.
     """
 
+    # Descriptor type code
+    TYPE_CODE = "IN_001"
+
     # primary type as constant
     TYPE_PRIMARY = "IN_001:0000001"
 
@@ -100,7 +103,7 @@ class AccessionSynonym(Entity):
 
     @classmethod
     def is_synonym_type(cls, synonym_type):
-        descriptor_type = DescriptorType.objects.get(code=AccessionSynonym.TYPE_PRIMARY)
+        descriptor_type = DescriptorType.objects.get(code=AccessionSynonym.TYPE_CODE)
 
         try:
             descriptor_type.get_value(synonym_type)

@@ -56,7 +56,7 @@ class RestAccessionId(RestAccessionAccession):
     }
 )
 def create_accession(request):
-    name = request.data['name']
+    name = request.data['name'].strip()
     dmm_id = int_arg(request.data['descriptor_meta_model'])
     parent_id = int_arg(request.data['parent'])
     descriptors = request.data['descriptors']
@@ -228,7 +228,7 @@ def get_accession_details_json(request, acc_id):
 
 
 @RestAccessionSearch.def_auth_request(Method.GET, Format.JSON, ('filters',), perms={
-    'accession.search_accession': _("You are not allowed to search on accessions")
+    'accession.search_accession': _("You are not allowed to search accessions")
 })
 def search_accession(request):
     """

@@ -158,7 +158,7 @@ def accession_add_synonym(request, acc_id):
 
     result = {
         'type': request.data['type'],
-        'name': request.data['name'],
+        'name': request.data['name'].strip(),
         'language': request.data['language']
     }
 
@@ -208,7 +208,7 @@ def accession_change_synonym(request, acc_id, syn_id):
     accession = get_object_or_404(Accession, id=int(acc_id))
     accession_synonym = accession.synonyms.get(id=int(syn_id))
 
-    name = request.data['name']
+    name = request.data['name'].strip()
 
     # check if a similar synonyms exists into the accession or as primary name for another accession
     synonyms = AccessionSynonym.objects.filter(synonym__iexact=name)

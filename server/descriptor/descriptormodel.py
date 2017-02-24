@@ -148,7 +148,7 @@ def create_descriptor_model(request):
         raise SuspiciousOperation(_('A model of descriptor with a similar name already exists'))
 
     # create descriptor model
-    dm = DescriptorModel(name=request.data['name'])
+    dm = DescriptorModel(name=request.data['name'].strip())
 
     verbose_name = request.data.get('verbose_name')
     if verbose_name:
@@ -184,9 +184,9 @@ def create_descriptor_model(request):
 def update_descriptor_model(request, des_id):
     model = get_object_or_404(DescriptorModel, id=int(des_id))
 
-    name = request.data['name']
-    verbose_name = request.data.get('verbose_name', '')
-    description = request.data.get('description', '')
+    name = request.data['name'].strip()
+    verbose_name = request.data.get('verbose_name', '').strip()
+    description = request.data.get('description', '').strip()
 
     model.name = name
     model.verbose_name = verbose_name
@@ -345,7 +345,7 @@ def create_descriptor_model_type_for_type(request, des_id):
 
     dmt.name = name
     dmt.descriptor_model = dm
-    dmt.set_label(lang, request.data['label'])
+    dmt.set_label(lang, request.data['label'].strip())
     dmt.mandatory = mandatory
     dmt.set_once = set_once
     dmt.position = position
@@ -465,7 +465,7 @@ def patch_descriptor_model_type_for_model(request, des_id, typ_id):
 
     if label is not None:
         lang = translation.get_language()
-        dmt.set_label(lang, label)
+        dmt.set_label(lang, label.strip())
 
     if mandatory is not None:
         # mandatory is incompatible with a condition
@@ -536,7 +536,7 @@ def get_all_labels_of_descriptor_model_type(request, des_id, typ_id):
         "type": "object",
         "additionalProperties": {
             "type": "string",
-            "maxLength": 64
+            "maxLength": 64  # @todo regexp to avoid whitespace before and after
         }
     },
     perms={

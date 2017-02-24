@@ -18,12 +18,12 @@ var View = Marionette.ItemView.extend({
     ui: {
         filter_btn: 'button.taxon-filter',
         taxon_rank: 'select.taxon-rank',
-        taxon_name: 'input.taxon-name',
+        taxon_name: 'input.taxon-name'
     },
 
     events: {
         'click @ui.filter_btn': 'onFilter',
-        'input @ui.taxon_name': 'onTaxonNameInput',
+        'input @ui.taxon_name': 'onTaxonNameInput'
     },
 
     initialize: function(options) {
@@ -38,26 +38,22 @@ var View = Marionette.ItemView.extend({
     onFilter: function () {
         if (this.validateTaxonName()) {
             this.collection.filters = {
-                name: this.ui.taxon_name.val(),
+                name: this.ui.taxon_name.val().trim(),
                 rank: $(this.ui.taxon_rank).val(),
                 method: "icontains"
-            }
+            };
 
             this.collection.fetch({reset: true});
         }
     },
 
     validateTaxonName: function() {
-        var v = this.ui.taxon_name.val();
-        var re = /^[a-zA-Z0-9_\-]+$/i;
+        var v = this.ui.taxon_name.val().trim();
 
-        if (v.length > 0 && !re.test(v)) {
-            $(this.ui.taxon_name).validateField('failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
-            return false;
-        } else if (v.length > 0 && v.length < 3) {
+        if (v.length > 0 && v.length < 3) {
             $(this.ui.taxon_name).validateField('failed', gt.gettext('3 characters min'));
             return false;
-        } else if (v.length == 0) {
+        } else if (this.ui.taxon_name.val().length == 0) {
             $(this.ui.taxon_name).cleanField();
             return true;
         } else {
@@ -67,8 +63,8 @@ var View = Marionette.ItemView.extend({
     },
 
     onTaxonNameInput: function () {
-        this.validateTaxonName();
-    },
+        return this.validateTaxonName();
+    }
 });
 
 module.exports = View;
