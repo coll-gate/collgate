@@ -1,21 +1,19 @@
 /**
  * @file init.js
- * @brief Audit module init entry point
+ * @brief Organisation module init entry point
  * @author Frederic SCHERMA
- * @date 2016-06-24
+ * @date 2017-02-27
  * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
  * @license @todo
  * @details
  */
 
-var Marionette = require('backbone.marionette');
-
-var AuditModule = function() {
-    this.name = "audit";
+var OrganisationModule = function() {
+    this.name = "organisation";
 };
 
-AuditModule.prototype = {
-    initialize: function (app, options) {
+OrganisationModule.prototype = {
+    initialize: function(app, options) {
         this.models = {};
         this.collections = {};
         this.views = {};
@@ -32,27 +30,30 @@ AuditModule.prototype = {
         }
 
         //
+        // collections
+        //
+
+
+        //
         // controllers
         //
 
-        var AuditController = require('./controllers/audit');
-        this.controllers.audit = new AuditController();
 
         //
         // routers
         //
 
-        var AuditRouter = require('./routers/audit');
-        this.routers.audit = new AuditRouter();
+        //var OrganisationRouter = require('./routers/organisation');
+        //this.routers.organisation = new OrganisationRouter();
     },
 
-    start: function (options) {
+    start: function(options) {
         // nothing to do
     },
 
-    stop: function (options) {
+    stop: function(options) {
 
     }
 };
 
-module.exports = AuditModule;
+module.exports = OrganisationModule;

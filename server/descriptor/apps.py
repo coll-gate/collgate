@@ -76,16 +76,16 @@ class CollGateDescriptor(ApplicationMain):
         menu_descriptor = ModuleMenu('administration', _('Administration'), order=999, auth=AUTH_STAFF)
 
         # descriptor related menus
-        menu_descriptor.add_entry(MenuSeparator(200))
+        menu_descriptor.add_entry(MenuSeparator(300))
         menu_descriptor.add_entry(
             MenuEntry('list-descriptor-group', _('List groups of descriptors'), "#descriptor/group/",
-                      icon=Glyph.TH_LIST, order=201, auth=AUTH_STAFF))
+                      icon=Glyph.TH_LIST, order=301, auth=AUTH_STAFF))
         menu_descriptor.add_entry(
             MenuEntry('list-descriptor-model', _('List models of descriptor'), "#descriptor/model/",
-                      icon=Glyph.TH, order=202, auth=AUTH_STAFF))
+                      icon=Glyph.TH, order=302, auth=AUTH_STAFF))
         menu_descriptor.add_entry(
             MenuEntry('list-descriptor-meta-model', _('List meta-models of descriptor'), "#descriptor/meta-model/",
-                      icon=Glyph.TH_LARGE, order=203, auth=AUTH_STAFF))
+                      icon=Glyph.TH_LARGE, order=303, auth=AUTH_STAFF))
         descriptor_module.add_menu(menu_descriptor)
 
         module_manager.register_menu(descriptor_module)

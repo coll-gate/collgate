@@ -34,4 +34,4 @@ def fixture():
         results[lang] = types
 
     if descriptor is not None and results is not None:
-        DescriptorType.objects.filter(name=descriptor['name']).update(values=json.dumps(results))
+        DescriptorType.objects.filter(code=descriptor['code']).update(values=json.dumps(results))

@@ -234,7 +234,9 @@ application = new Marionette.Application({
 
             if (this[module].initialize) {
                 try {
+                    Logger.time("Init " + module + " module");
                     this[module].initialize(this, {});
+                    Logger.timeEnd("Init " + module + " module");
                 } catch (e) {
                     var msg = gt.gettext("Module initialization failed") + " : " + module + ". " +
                               gt.gettext("Please contact your administrator.");
@@ -252,7 +254,9 @@ application = new Marionette.Application({
 
             if (this[module].start) {
                 try {
+                    Logger.time("Start " + module + " module");
                     this[module].start({});
+                    Logger.timeEnd("Start " + module + " module");
                 } catch (e) {
                     var msg = gt.gettext("Module startup failed") + " : " + module + ". " +
                               gt.gettext("Please contact your administrator.");

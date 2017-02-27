@@ -14,8 +14,6 @@ var AccessionModule = function() {
 
 AccessionModule.prototype = {
     initialize: function(app, options) {
-        Logger.time("Init accession module");
-
         this.models = {};
         this.collections = {};
         this.views = {};
@@ -27,7 +25,7 @@ AccessionModule.prototype = {
             try {
                 i18next.addResources(session.language, 'default', require('./locale/' + session.language + '/LC_MESSAGES/default.json'));
             } catch (e) {
-                console.warning("No translation found for the current language. Fallback to english language");
+                console.warn("No translation found for the current language. Fallback to english language");
             }
         }
 
@@ -69,16 +67,10 @@ AccessionModule.prototype = {
 
         var BatchRouter = require('./routers/batch');
         this.routers.batch = new BatchRouter();
-
-        Logger.timeEnd("Init accession module");
     },
 
     start: function(options) {
-        Logger.time("Start accession module");
-
         // nothing to do
-
-        Logger.timeEnd("Start accession module");
     },
 
     stop: function(options) {

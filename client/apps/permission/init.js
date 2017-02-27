@@ -16,8 +16,6 @@ var PermissionModule = function() {
 
 PermissionModule.prototype = {
     initialize: function(app, options) {
-        Logger.time("Init permission module");
-
         this.models = {};
         this.collections = {};
         this.views = {};
@@ -29,7 +27,7 @@ PermissionModule.prototype = {
             try {
                 i18next.addResources(session.language, 'default', require('./locale/' + session.language + '/LC_MESSAGES/default.json'));
             } catch (e) {
-                console.warning("No translation found for the current language. Fallback to english language");
+                console.warn("No translation found for the current language. Fallback to english language");
             }
         }
 
@@ -53,16 +51,10 @@ PermissionModule.prototype = {
 
         var PermissionRouter = require('./routers/permission');
         this.routers.permission = new PermissionRouter();
-
-        Logger.timeEnd("Init permission module");
     },
 
     start: function(options) {
-        Logger.time("Start permission module");
-
         // nothing to do
-
-        Logger.timeEnd("Start permission module");
     },
 
     stop: function(options) {

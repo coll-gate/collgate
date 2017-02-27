@@ -21,8 +21,6 @@ var MediaLibraryModule = function() {
 
 MediaLibraryModule.prototype = {
     initialize: function(app, options) {
-        Logger.time("Init medialibrary module");
-
         this.models = {};
         this.collections = {};
         this.views = {};
@@ -34,7 +32,7 @@ MediaLibraryModule.prototype = {
             try {
                 i18next.addResources(session.language, 'default', require('./locale/' + session.language + '/LC_MESSAGES/default.json'));
             } catch (e) {
-                console.warning("No translation found for the current language. Fallback to english language");
+                console.warn("No translation found for the current language. Fallback to english language");
             }
         }
 
@@ -59,16 +57,10 @@ MediaLibraryModule.prototype = {
 
         //var MediaLibraryRouter = require('./routers/medialibrary');
         //this.routers.medialibrary = new MediaLibraryRouter();
-
-        Logger.timeEnd("Init medialibrary module");
     },
 
     start: function(options) {
-        Logger.time("Start medialibrary module");
-
         // nothing to do
-
-        Logger.timeEnd("Start medialibrary module");
     },
 
     stop: function(options) {

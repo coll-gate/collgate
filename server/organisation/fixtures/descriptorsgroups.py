@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Setup the groups of descriptors.
+Setup the groups of organisation.
 """
 
 import sys
@@ -9,9 +9,9 @@ import sys
 from descriptor.models import DescriptorGroup
 
 GROUPS = {
-    'general': {
+    'organisation': {
         'id': None,
-        'name': 'general',
+        'name': 'organisation',
         'can_delete': False,
         'can_modify': False,
     },
@@ -19,7 +19,7 @@ GROUPS = {
 
 
 def fixture():
-    sys.stdout.write(" + Create descriptors types groups...\n")
+    sys.stdout.write(" + Create organisation types groups...\n")
 
     for k, v in GROUPS.items():
         group_name = v['name']

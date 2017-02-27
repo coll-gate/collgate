@@ -16,8 +16,6 @@ var TaxonomyModule = function() {
 
 TaxonomyModule.prototype = {
     initialize: function(app, options) {
-        Logger.time("Init taxonomy module");
-
         this.models = {};
         this.collections = {};
         this.views = {};
@@ -29,7 +27,7 @@ TaxonomyModule.prototype = {
             try {
                 i18next.addResources(session.language, 'default', require('./locale/' + session.language + '/LC_MESSAGES/default.json'));
             } catch (e) {
-                console.warning("No translation found for the current language. Fallback to english language");
+                console.warn("No translation found for the current language. Fallback to english language");
             }
         }
 
@@ -71,16 +69,10 @@ TaxonomyModule.prototype = {
 
         var TaxonCollection = require('./collections/taxon');
         this.collections.taxons = new TaxonCollection();
-
-        Logger.timeEnd("Init taxonomy module");
     },
 
     start: function(options) {
-        Logger.time("Start taxonomy module");
-
         // nothing to do
-
-        Logger.timeEnd("Start taxonomy module");
     },
 
     stop: function(options) {

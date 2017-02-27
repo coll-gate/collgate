@@ -21,6 +21,7 @@ DESCRIPTORS = {
         'format': {
             'type': 'enum_single',
             'format': 'category',
+            'fields': ['name'],
             'trans': True,
             'list_type': 'dropdown',
             'display_fields': 'value0',
@@ -30,7 +31,7 @@ DESCRIPTORS = {
     'country': {
         'id': None,
         'name': 'country',
-        'code': 'IN_002',
+        'code': 'CO_705',
         'group': 'general',
         'can_delete': False,
         'can_modify': False,
@@ -73,18 +74,9 @@ def fixture():
     for descriptor_name, descriptor_data in DESCRIPTORS.items():
         sys.stdout.write(" + Descriptor %s\n" % descriptor_name)
 
-        src_format = descriptor_data.get('format', {})
+        type_format = descriptor_data.get('format', {})
 
-        type_format = {
-            'type': src_format.get('type', 'string'),
-            'format': src_format.get('format', 'category'),
-            'unit': src_format.get('unit', 'custom'),
-            'precision': src_format.get('precision', '0.0'),
-            'fields': src_format.get('fields', []),
-            'trans': src_format.get('trans', False)
-        }
-
-        descriptor, created = DescriptorType.objects.get_or_create(name=descriptor_name, defaults={
+        descriptor, created = DescriptorType.objects.update_or_create(name=descriptor_name, defaults={
             'code': descriptor_data.get('code', ''),
             'description': descriptor_data.get('description', ''),
             'group_id': GROUPS.get(descriptor_data.get('group', 'general'))['id'],

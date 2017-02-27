@@ -18,8 +18,6 @@ var MainModule = function() {
 
 MainModule.prototype = {
     initialize : function(app, options) {
-        Logger.time("Init main module");
-
         //var deferred = $.Deferred();
         //this.loaded = deferred.promise();
 
@@ -33,7 +31,7 @@ MainModule.prototype = {
             try {
                 i18next.addResources(session.language, 'default', require('./locale/' + session.language + '/LC_MESSAGES/default.json'));
             } catch (e) {
-                console.warning("No translation found for the current language. Fallback to english language");
+                console.warn("No translation found for the current language. Fallback to english language");
             }
         }
 
@@ -91,13 +89,9 @@ MainModule.prototype = {
 
         var ProfileRouter = require('./routers/profile');
         this.routers.profile = new ProfileRouter();
-
-        Logger.timeEnd("Init main module");
     },
 
     start: function(options) {
-        Logger.time("Start main module");
-
         // main view
         var MainView = require('./views/main');
         var mainView = new MainView();
@@ -105,8 +99,6 @@ MainModule.prototype = {
 
         var LeftBarView = require('./views/leftbar');
         mainView.getRegion('left').show(new LeftBarView());
-
-        Logger.timeEnd("Start main module");
     },
 
     stop: function(options) {

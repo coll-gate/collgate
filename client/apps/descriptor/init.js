@@ -16,8 +16,6 @@ var DescriptorModule = function() {
 
 DescriptorModule.prototype = {
     initialize: function(app, options) {
-        Logger.time("Init descriptor module");
-
         this.models = {};
         this.collections = {};
         this.views = {};
@@ -29,7 +27,7 @@ DescriptorModule.prototype = {
             try {
                 i18next.addResources(session.language, 'default', require('./locale/' + session.language + '/LC_MESSAGES/default.json'));
             } catch (e) {
-                console.warning("No translation found for the current language. Fallback to english language");
+                console.warn("No translation found for the current language. Fallback to english language");
             }
         }
 
@@ -117,16 +115,10 @@ DescriptorModule.prototype = {
 
         var DescriptorGroupCollection = require('./collections/descriptorgroup');
         this.collections.descriptorGroup = new DescriptorGroupCollection();
-
-        Logger.timeEnd("Init descriptor module");
     },
 
     start: function(options) {
-        Logger.time("Start descriptor module");
-
         // nothing to do
-        
-        Logger.timeEnd("Start descriptor module");
     },
 
     stop: function(options) {
