@@ -116,7 +116,7 @@ var Renderer = Marionette.Object.extend({
             if (widget) {
                 s.selectpicker({
                     style: 'btn-default',
-                    container: 'body',
+                    container: 'body'
                 });
             }
 
@@ -136,7 +136,7 @@ var Renderer = Marionette.Object.extend({
                 if (widget) {
                     s.selectpicker({
                         style: 'btn-default',
-                        container: 'body',
+                        container: 'body'
                     });
                 }
 

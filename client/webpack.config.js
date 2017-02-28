@@ -1,116 +1,118 @@
 var webpack = require('webpack');
 var path = require('path');
 
-var defaults = {
-    entry: './apps/driver.js',
-    externals: {
-        'jquery': '$',
-    },
-    module: {
-        preLoaders: [
-            /*{
-                test: /\.js$/,
-                exclude: /node_modules/,
-                loader: 'jshint-loader'
-            }*/
-        ],
-        loaders: [
-            {
-                test: /\.mo$/,
-                loader: 'buffer'  // binary returns string and not Buffer
-            },
-            {
-                test: /\.po$/,
-                loader: 'raw'
-            },
-            {
-                test: /\.json$/,
-                loader: 'json-loader',
-            },
-            {
-                test: /\.html$/,
-                //loader: 'underscore-template-loader!html-minifier'
-                loader: 'underscore-loader!html-minifier'
-            },
-            {
-                test: /\.css$/,
-                loader: 'style-loader!css-loader'
-            }
-        ]
-    },
-    'html-minifier-loader': {},
-    'html-minify-loader': {
-        dom: {  // options of !(htmlparser2)[https://github.com/fb55/htmlparser2]
-            lowerCaseAttributeNames: false,      // do not call .toLowerCase for each attribute name (issue with gettext parameters else)
-        }
-    },
+module.exports = function(env) {
 
-    underscoreTemplateLoader: {
-        engine: 'underscore',
-        engineFull: null,
-        minify: true,
-        minifierOptions: {
-            ignoreCustomFragments: [ /<%[\s\S]*?%>/, /<\?[\s\S]*?\?>/ ],
-            removeComments: true,
-            collapseWhitespace: true,
-            conservativeCollapse: true
+    var defaults = {
+        entry: './apps/driver.js',
+        externals: {
+            'jquery': '$'
         },
-        templateOptions: {}
-    },
-    'uglify-loader': {
-        mangle: false,
-    },
-    macros: {
-        /* */
-    },
-    output: {
-        path: __dirname + '/build',
-        filename: 'app.js',
-        publicPath: '/build'
-    },
-    plugins: [
-        new webpack.ProvidePlugin({_: 'underscore'}),
-    ],
-    resolve: {
-        modulesDirectories: [__dirname + '/node_modules'],
-        root: __dirname + '/app'
-    },
-    resolveLoader: {
-        root: __dirname + '/node_modules'
-    },
-};
-
-minimized = process.argv.indexOf('--minimized') !== -1,
-plugins = [];
-
-if (minimized) {
-    defaults.module.loaders.push({
-        test: /\.js$/,
-        //exclude: /.app.js/,
-        loader: 'uglify',
-    });
-
-    defaults.devtool ="source-map";
-    defaults.plugins.push(new webpack.optimize.UglifyJsPlugin({
-        minimize: true,
-        compress: {
-            warnings: false
+        module: {
+            rules: [
+                {
+                    test: /\.mo$/,
+                    use: [{loader: 'buffer-loader'}]  // binary returns string and not Buffer
+                },
+                {
+                    test: /\.po$/,
+                    use: [{loader: 'raw-loader'}]
+                },
+                {
+                    test: /\.json$/,
+                    use: [{loader: 'json-loader'}]
+                },
+                {
+                    test: /\.html$/,
+                    use: [
+                        {
+                            loader: 'underscore-loader',
+                            options: {
+                                engine: 'underscore',
+                                engineFull: null,
+                                minify: true,
+                                minifierOptions: {
+                                    ignoreCustomFragments: [/<%[\s\S]*?%>/, /<\?[\s\S]*?\?>/],
+                                    removeComments: true,
+                                    collapseWhitespace: true,
+                                    conservativeCollapse: true
+                                },
+                                templateOptions: {}
+                            }
+                        },
+                        {
+                            loader: 'html-minifier-loader'
+                        }
+                    ]
+                },
+                {
+                    test: /\.css$/,
+                    use: [
+                        {
+                            loader: 'style-loader'
+                        },
+                        {
+                            loader: 'css-loader',
+                            options: {
+                                minimize: true
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        output: {
+            path: path.join(__dirname, 'build'),
+            filename: 'app.js',
+            publicPath: '/build'
+        },
+        plugins: [
+            new webpack.ProvidePlugin({_: 'underscore'})
+        ],
+        resolve: {
+            modules: [
+                path.join(__dirname, "app"),
+                path.join(__dirname, "node_modules")
+            ]
         }
-    }));
-    defaults.output.filename = 'app.min.js';
-} else {
-    defaults.devtool ="source-map";
-    defaults.debug = true;
-
-    defaults.devServer = {
-        contentBase: __dirname + '/apps',
-        hot: true,
-        inline: true
     };
 
-    defaults.plugins.push(
-        new webpack.HotModuleReplacementPlugin()
-    );
-}
+    if (env && env.minimized) {
+        defaults.module.rules.push({
+            test: /\.js$/,
+            //exclude: /.app.js/,
+            use: [
+                {
+                    loader: 'uglify-loader',
+                    options: {
+                        mangle: false
+                    }
+                }
+            ]
+        });
 
-module.exports = defaults;
+        defaults.devtool = "source-map";
+        defaults.plugins.push(new webpack.optimize.UglifyJsPlugin({
+            sourceMap: true,
+            minimize: true,
+            compress: {
+                warnings: false
+            }
+        }));
+        defaults.output.filename = 'app.min.js';
+    } else {
+        defaults.devtool = "source-map";
+        defaults.devServer = {
+            contentBase: path.join(__dirname, 'apps'),
+            hot: true,
+            inline: true
+        };
+
+        defaults.plugins.push(
+            new webpack.LoaderOptionsPlugin({debug: true}),
+            new webpack.HotModuleReplacementPlugin()
+        );
+    }
+
+    return defaults;
+};

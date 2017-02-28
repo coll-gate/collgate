@@ -11,6 +11,8 @@
 var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
 
+underscore = require("underscore");
+
 i18next = require('i18next');
 Logger = require('js-logger');
 
