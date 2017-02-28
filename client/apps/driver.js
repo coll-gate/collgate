@@ -231,6 +231,7 @@ application = new Marionette.Application({
                 var msg = gt.gettext("Missing client module") + " : " + module + ". " +
                           gt.gettext("Please contact your administrator.");
 
+                console.error(e);
                 $.alert.error(msg);
             }
 
@@ -243,6 +244,7 @@ application = new Marionette.Application({
                     var msg = gt.gettext("Module initialization failed") + " : " + module + ". " +
                               gt.gettext("Please contact your administrator.");
 
+                    console.error(e);
                     $.alert.error(msg);
                 }
             }
@@ -263,6 +265,7 @@ application = new Marionette.Application({
                     var msg = gt.gettext("Module startup failed") + " : " + module + ". " +
                               gt.gettext("Please contact your administrator.");
 
+                    console.error(e);
                     window.alert(msg);
                 }
             }

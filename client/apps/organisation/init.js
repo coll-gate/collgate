@@ -43,8 +43,8 @@ OrganisationModule.prototype = {
         // routers
         //
 
-        //var OrganisationRouter = require('./routers/organisation');
-        //this.routers.organisation = new OrganisationRouter();
+        var OrganisationRouter = require('./routers/organisation');
+        this.routers.organisation = new OrganisationRouter();
     },
 
     start: function(options) {

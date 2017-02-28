@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-23 15:33+0100\n"
+"POT-Creation-Date: 2017-02-28 17:27+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -65,25 +65,21 @@ msgstr ""
 msgid "Cancel modifications"
 msgstr ""
 
-#: ../../../views/taxonlistfilter.js:55
-msgid "Invalid characters (alphanumeric, _ and - only)"
-msgstr ""
-
-#: ../../../views/taxonlistfilter.js:58 ../../../views/taxonsynonyms.js:58
-#: ../../../views/taxonsynonyms.js:206 ../../../controllers/taxon.js:227
+#: ../../../views/taxonlistfilter.js:54 ../../../views/taxonsynonyms.js:58
+#: ../../../views/taxonsynonyms.js:205 ../../../controllers/taxon.js:229
 msgid "3 characters min"
 msgstr ""
 
-#: ../../../views/taxonsynonyms.js:55 ../../../views/taxonsynonyms.js:209
-#: ../../../controllers/taxon.js:224
+#: ../../../views/taxonsynonyms.js:55 ../../../views/taxonsynonyms.js:208
+#: ../../../controllers/taxon.js:226
 msgid "64 characters max"
 msgstr ""
 
-#: ../../../views/taxonsynonyms.js:86 ../../../views/taxonsynonyms.js:190
+#: ../../../views/taxonsynonyms.js:88 ../../../views/taxonsynonyms.js:189
 msgid "Synonym of taxon already used"
 msgstr ""
 
-#: ../../../views/taxonsynonyms.js:238
+#: ../../../views/taxonsynonyms.js:236
 msgid "Unable to rename the synonym !"
 msgstr ""
 
@@ -95,19 +91,19 @@ msgstr ""
 msgid "Taxon details"
 msgstr ""
 
-#: ../../../controllers/taxon.js:208
+#: ../../../controllers/taxon.js:210
 msgid "Taxon name already in usage"
 msgstr ""
 
-#: ../../../controllers/taxon.js:245
+#: ../../../controllers/taxon.js:247
 msgid "Family rank cannot have a parent taxon"
 msgstr ""
 
-#: ../../../controllers/taxon.js:250
+#: ../../../controllers/taxon.js:252
 msgid "This rank must have a parent taxon"
 msgstr ""
 
-#: ../../../controllers/taxon.js:278
+#: ../../../controllers/taxon.js:281
 msgid "Taxon successfully created !"
 msgstr ""
 

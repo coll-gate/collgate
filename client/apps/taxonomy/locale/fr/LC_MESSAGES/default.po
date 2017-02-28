@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-23 15:33+0100\n"
+"POT-Creation-Date: 2017-02-28 17:27+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -66,25 +66,21 @@ msgstr "Appliquer les modifications"
 msgid "Cancel modifications"
 msgstr "Annuler les modifications"
 
-#: ../../../views/taxonlistfilter.js:55
-msgid "Invalid characters (alphanumeric, _ and - only)"
-msgstr "Caractères invalides (alphanumérique, _ et - seulement)"
-
-#: ../../../views/taxonlistfilter.js:58 ../../../views/taxonsynonyms.js:58
-#: ../../../views/taxonsynonyms.js:206 ../../../controllers/taxon.js:227
+#: ../../../views/taxonlistfilter.js:54 ../../../views/taxonsynonyms.js:58
+#: ../../../views/taxonsynonyms.js:205 ../../../controllers/taxon.js:229
 msgid "3 characters min"
 msgstr "3 caractères minimum"
 
-#: ../../../views/taxonsynonyms.js:55 ../../../views/taxonsynonyms.js:209
-#: ../../../controllers/taxon.js:224
+#: ../../../views/taxonsynonyms.js:55 ../../../views/taxonsynonyms.js:208
+#: ../../../controllers/taxon.js:226
 msgid "64 characters max"
 msgstr "64 caractères maximum"
 
-#: ../../../views/taxonsynonyms.js:86 ../../../views/taxonsynonyms.js:190
+#: ../../../views/taxonsynonyms.js:88 ../../../views/taxonsynonyms.js:189
 msgid "Synonym of taxon already used"
 msgstr "Synonyme de taxon existant"
 
-#: ../../../views/taxonsynonyms.js:238
+#: ../../../views/taxonsynonyms.js:236
 msgid "Unable to rename the synonym !"
 msgstr "Impossible de renommer le synonyme !"
 
@@ -96,19 +92,19 @@ msgstr "Liste des taxons"
 msgid "Taxon details"
 msgstr "Détails du taxon"
 
-#: ../../../controllers/taxon.js:208
+#: ../../../controllers/taxon.js:210
 msgid "Taxon name already in usage"
 msgstr "Ce nom de taxon est déjà utilisé"
 
-#: ../../../controllers/taxon.js:245
+#: ../../../controllers/taxon.js:247
 msgid "Family rank cannot have a parent taxon"
 msgstr "Le rang taxinomique famille ne peut pas avoir de parent"
 
-#: ../../../controllers/taxon.js:250
+#: ../../../controllers/taxon.js:252
 msgid "This rank must have a parent taxon"
 msgstr "Ce rang taxinomique doit avoir un parent"
 
-#: ../../../controllers/taxon.js:278
+#: ../../../controllers/taxon.js:281
 msgid "Taxon successfully created !"
 msgstr "Taxon créé avec succès !"
 
@@ -200,3 +196,6 @@ msgstr "Sous-niveaux"
 #: ../../../templates/taxonlayout.html:8
 msgid "Entities"
 msgstr "Entités"
+
+#~ msgid "Invalid characters (alphanumeric, _ and - only)"
+#~ msgstr "Caractères invalides (alphanumérique, _ et - seulement)"
