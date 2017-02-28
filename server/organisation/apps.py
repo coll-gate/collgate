@@ -29,6 +29,17 @@ class CollGateOrganisation(ApplicationMain):
             )
         )
 
+        # add the describable entities models
+        from .models import Organisation, Establishment
+
+        # descriptor_module
+        from django.apps import apps
+        descriptor_app = apps.get_app_config('descriptor')
+        descriptor_app.describable_entities += [
+            Organisation,
+            Establishment
+        ]
+
         # keep descriptor meta-model for organisation and establishment.
         # @todo
 

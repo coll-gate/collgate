@@ -58,16 +58,16 @@ class Migration(migrations.Migration):
                 'abstract': False,
             },
         ),
-        migrations.CreateModel(
-            name='Point',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('latitude', models.DecimalField(blank=True, decimal_places=5, max_digits=8, null=True)),
-                ('longitude', models.DecimalField(blank=True, decimal_places=5, max_digits=8, null=True)),
-                ('city', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='geonames.City')),
-                ('country', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='geonames.Country')),
-            ],
-        ),
+        # migrations.CreateModel(
+        #     name='Point',
+        #     fields=[
+        #         ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+        #         ('latitude', models.DecimalField(blank=True, decimal_places=5, max_digits=8, null=True)),
+        #         ('longitude', models.DecimalField(blank=True, decimal_places=5, max_digits=8, null=True)),
+        #         ('city', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='geonames.City')),
+        #         ('country', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='geonames.Country')),
+        #     ],
+        # ),
         migrations.CreateModel(
             name='Region',
             fields=[

@@ -1,6 +1,6 @@
 # -*- coding: utf-8; -*-
 #
-# Copyright (c) 2016 INRA UMR1095 GDEC
+# Copyright (c) 2017 INRA UMR1095 GDEC
 
 """
 coll-gate geonames module main
@@ -8,14 +8,22 @@ coll-gate geonames module main
 
 from igdectk.common.apphelpers import ApplicationMain
 from igdectk.module.module import Module
+from igdectk.module.manager import module_manager
+
+from geolocation.apps import CollGateGeolocation
 
 
 class CollGateGeonames(ApplicationMain):
     name = '.'.join(__name__.split('.')[0:-1])
 
     def ready(self):
-
         super().ready()
+
+        # ignore list from content types
+        audit_module = module_manager.get_module('audit')
+        audit_module.ignored_content_types += [
+            'geonames.'
+        ]
 
         from audit.models import register_models
         register_models(CollGateGeolocation.name)
@@ -23,6 +31,5 @@ class CollGateGeonames(ApplicationMain):
         # create a geonames module
         geolocation_module = Module('geonames', base_url='coll-gate')
         geolocation_module.include_urls((
-            'base'
             )
         )
