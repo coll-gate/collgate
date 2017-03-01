@@ -1,3 +1,7 @@
+/*!
+ * Coll-Gate IS - Copyright (c) 2016-2017 INRA UMR1095 GDEC
+ * 
+ */
 /******/ (function(modules) { // webpackBootstrap
 /******/ 	function hotDisposeChunk(chunkId) {
 /******/ 		delete installedChunks[chunkId];

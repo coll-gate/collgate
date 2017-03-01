@@ -1,5 +1,6 @@
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 
+var fs = require("fs");
 var webpack = require('webpack');
 var path = require('path');
 
@@ -80,42 +81,33 @@ module.exports = function(env) {
     };
 
     if (env && env.minimized) {
-        /*defaults.module.rules.push({
-            test: /\.js$/,
-            exclude: /.app.min.js/,
-            use: [
-                {
-                    loader: 'uglify-loader',
-                    options: {
-                        mangle: false
-                    }
-                }
-            ]
-        });*/
-
-        //defaults.devtool = "source-map";
         defaults.plugins.push(
+            new webpack.BannerPlugin(fs.readFileSync('../LICENSE', 'utf8')),
             new webpack.LoaderOptionsPlugin({debug: false}),
             new UglifyJSPlugin({
                 mangle: {
                     except: ['$super', '$', 'exports', 'require']
                 },
+                comments: /Coll-Gate IS /,
                 sourceMap: false,  // true, not for release
                 minimize: true,
                 compress: {
                     warnings: false
                 }
-        }));
+            }));
         defaults.output.filename = 'app.min.js';
     } else {
         defaults.devtool = "source-map";
         defaults.devServer = {
+            port: 8080,
             contentBase: path.join(__dirname, 'apps'),
             hot: true,
-            inline: true
+            inline: true,
+            clientLogLevel: "info"
         };
 
         defaults.plugins.push(
+            new webpack.BannerPlugin(fs.readFileSync('../LICENSE', 'utf8')),
             new webpack.LoaderOptionsPlugin({debug: true}),
             new webpack.HotModuleReplacementPlugin()
         );

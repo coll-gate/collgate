@@ -42,7 +42,7 @@
     "make-gettext": "0.0.6",
     "raw-loader": "^0.5.1",
     "style-loader": "^0.13.2",
-    "uglify-loader": "^1.4.0",
+    "uglify-js": "^2.8.3",
     "uglifyjs-webpack-plugin": "^0.2.1",
     "underscore-loader": "^2.0.0",
     "webpack": "^2.2.1",
