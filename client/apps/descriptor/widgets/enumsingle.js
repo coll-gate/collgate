@@ -317,15 +317,15 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
             }
         }
 
-        return "";
+        return null;
     },
 
     checkCondition: function (condition, values) {
         switch (condition) {
             case 0:
-                return this.values() === "";
+                return this.values() == null;
             case 1:
-                return this.values() !== "";
+                return this.values() != null;
             case 2:
                 return this.values() === values;
             case 3:

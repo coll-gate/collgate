@@ -16,7 +16,7 @@ DESCRIPTORS = {
     'organisations_types': {
         'id': None,
         'name': 'organisations_types',
-        'code': 'IN_002',
+        'code': 'OR_001',
         'group': 'organisation',
         'can_delete': False,
         'can_modify': True,
