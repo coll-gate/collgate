@@ -43,6 +43,7 @@
     "raw-loader": "^0.5.1",
     "style-loader": "^0.13.2",
     "uglify-loader": "^1.4.0",
+    "uglifyjs-webpack-plugin": "^0.2.1",
     "underscore-loader": "^2.0.0",
     "webpack": "^2.2.1",
     "webpack-dev-server": "^2.4.1"

@@ -1,3 +1,5 @@
+const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
+
 var webpack = require('webpack');
 var path = require('path');
 
@@ -78,9 +80,9 @@ module.exports = function(env) {
     };
 
     if (env && env.minimized) {
-        defaults.module.rules.push({
+        /*defaults.module.rules.push({
             test: /\.js$/,
-            //exclude: /.app.js/,
+            exclude: /.app.min.js/,
             use: [
                 {
                     loader: 'uglify-loader',
@@ -89,15 +91,20 @@ module.exports = function(env) {
                     }
                 }
             ]
-        });
+        });*/
 
-        defaults.devtool = "source-map";
-        defaults.plugins.push(new webpack.optimize.UglifyJsPlugin({
-            sourceMap: true,
-            minimize: true,
-            compress: {
-                warnings: false
-            }
+        //defaults.devtool = "source-map";
+        defaults.plugins.push(
+            new webpack.LoaderOptionsPlugin({debug: false}),
+            new UglifyJSPlugin({
+                mangle: {
+                    except: ['$super', '$', 'exports', 'require']
+                },
+                sourceMap: false,  // true, not for release
+                minimize: true,
+                compress: {
+                    warnings: false
+                }
         }));
         defaults.output.filename = 'app.min.js';
     } else {

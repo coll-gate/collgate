@@ -59,7 +59,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "14959b0b95c66ac3a969"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "f1a0936aa5ea6229bcc9"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotMainModule = true; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
@@ -706,7 +706,7 @@
 /******/ 	__webpack_require__.h = function() { return hotCurrentHash; };
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return hotCreateRequire(486)(__webpack_require__.s = 486);
+/******/ 	return hotCreateRequire(494)(__webpack_require__.s = 494);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -725,7 +725,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// MarionetteJS 
 (function(root, factory) {
 
   if (true) {
-    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(5), __webpack_require__(2), __webpack_require__(346), __webpack_require__(345)], __WEBPACK_AMD_DEFINE_RESULT__ = function(Backbone, _) {
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(3), __webpack_require__(2), __webpack_require__(352), __webpack_require__(351)], __WEBPACK_AMD_DEFINE_RESULT__ = function(Backbone, _) {
       return (root.Marionette = root.Mn = factory(root, Backbone, _));
     }.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -6046,7 +6046,7 @@ function loadLocale(name) {
             module && module.exports) {
         try {
             oldLocale = globalLocale._abbr;
-            __webpack_require__(372)("./" + name);
+            __webpack_require__(380)("./" + name);
             // because defineLocale currently also sets the global locale, we
             // want to undo that for lazy loaded locales
             getSetGlobalLocale(oldLocale);
@@ -8534,7 +8534,7 @@ return hooks;
 
 })));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(485)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(493)(module)))
 
 /***/ }),
 /* 2 */
@@ -10093,251 +10093,6 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//     Underscor
 
 /***/ }),
 /* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* WEBPACK VAR INJECTION */(function(_) {/**
- * @file dialog.js
- * @brief Dialog helper view.
- * @author Frederic SCHERMA
- * @date 2016-10-21
- * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
- * @license @todo
- * @details
- */
-
-var Marionette = __webpack_require__(0);
-
-var View = Marionette.ItemView.extend({
-    tagName: "div",
-    attributes: {
-        'id': 'dlg_default',
-        'class': 'modal',
-        'tabindex': -1
-    },
-
-    ui: {
-        cancel: "button.cancel",
-        apply: "button.apply"
-    },
-
-    events: {
-        'click @ui.cancel': 'onCancel',
-        'click @ui.apply': 'onApply',
-        'keydown': 'escapeKey',
-    },
-
-    constructor: function() {
-        var prototype = this.constructor.prototype;
-
-        this.events = {};
-        this.defaultOptions = {};
-        this.ui = {};
-        this.attributes = {};
-        this.className = "";
-
-        while (prototype) {
-            if (prototype.hasOwnProperty("events")) {
-                _.defaults(this.events, prototype.events);
-            }
-            if (prototype.hasOwnProperty("defaultOptions")) {
-                _.defaults(this.defaultOptions, prototype.defaultOptions);
-            }
-            if (prototype.hasOwnProperty("ui")) {
-                _.defaults(this.ui, prototype.ui);
-            }
-            if (prototype.hasOwnProperty("attributes")) {
-                _.defaults(this.attributes, prototype.attributes);
-            }
-            if (prototype.hasOwnProperty("className")) {
-                this.className += " " + prototype.className;
-            }
-            prototype = prototype.constructor.__super__;
-        }
-
-        Marionette.View.apply(this, arguments);
-    },
-
-    initialize: function (options) {
-        View.__super__.initialize.apply(this);
-    },
-
-    onRender: function () {
-        // display the bootstrap modal
-        $(this.el).modal();
-
-        // interest on this even when the user click on the backdrop
-        $(this.el).on('hidden.bs.modal', $.proxy(function() {
-            this.destroy();
-        }, this));
-
-        // autofocus is processed now on the first input having the autofocus attribute
-        $(this.el).find(':input[autofocus]').focus();
-    },
-
-    onBeforeDestroy: function() {
-        // unbind the event before remove the bs.modal to avoid a double destroy call
-        $(this.el).off('hidden.bs.modal');
-        $(this.el).modal('hide').data('bs.modal', null);
-    },
-
-    onCancel: function () {
-        this.destroy();
-    },
-
-    escapeKey: function(e) {
-        var code = e.keyCode || e.which;
-
-        // escape key cancel
-        if (code == 27) {
-            this.destroy();
-        }
-
-        // enter on num-pad enter
-        if (code == 13) {
-            // click apply
-            this.triggerMethod('apply');
-
-            // avoid reload page
-            return false;
-        }
-    }
-});
-
-module.exports = View;
-
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* WEBPACK VAR INJECTION */(function(_) {/**
- * @file scrollview.js
- * @brief Base view for scrollable view with a cursor collection
- * @author Frederic SCHERMA
- * @date 2016-10-07
- * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
- * @license @todo
- * @details
- */
-
-var Marionette = __webpack_require__(0);
-
-var View = Marionette.CompositeView.extend({
-    rowHeight: 1+8+20+8,
-    scrollViewInitialized: false,
-
-    attributes: {
-    },
-
-    ui: {
-        table: 'table.table',
-        header: 'table.table thead'
-    },
-
-    events: {
-    },
-
-    constructor: function() {
-        var prototype = this.constructor.prototype;
-
-        this.events = {};
-        this.defaultOptions = {};
-        this.ui = {};
-        this.attributes = {};
-        this.className = "";
-
-        while (prototype) {
-            if (prototype.hasOwnProperty("events")) {
-                _.defaults(this.events, prototype.events);
-            }
-            if (prototype.hasOwnProperty("defaultOptions")) {
-                _.defaults(this.defaultOptions, prototype.defaultOptions);
-            }
-            if (prototype.hasOwnProperty("ui")) {
-                _.defaults(this.ui, prototype.ui);
-            }
-            if (prototype.hasOwnProperty("attributes")) {
-                _.defaults(this.attributes, prototype.attributes);
-            }
-            if (prototype.hasOwnProperty("className")) {
-                this.className += " " + prototype.className;
-            }
-            prototype = prototype.constructor.__super__;
-        }
-
-        Marionette.CompositeView.apply(this, arguments);
-    },
-
-    initialize: function (options) {
-        View.__super__.initialize.apply(this);
-    },
-
-    onDomRefresh: function() {
-        // we can only init here because we need to known the parent container
-        if (!this.scrollViewInitialized) {
-            // pagination on scrolling using the direct parent as scroll container
-            $(this.$el.parent()).scroll($.proxy(function (e) { this.scroll(e); }, this));
-            // and sticky header on table
-            $(this.ui.table).stickyTableHeaders({scrollableArea: this.$el.parent()});
-
-            this.scrollViewInitialized = true;
-        }
-    },
-
-    capacity: function() {
-        return Math.max(1, Math.floor(this.$el.parent().prop('clientHeight') / this.rowHeight) - 1);
-    },
-
-    moreResults: function(more, scroll) {
-        scroll || (scroll=false);
-        more || (more=20);
-
-        var view = this;
-
-        if (more == -1) {
-            more = this.capacity();
-        }
-
-        if ((this.collection != null) && (this.collection.next != null)) {
-            this.collection.fetch({update: true, remove: false, data: {
-                cursor: this.collection.next,
-                sort_by: this.collection.sort_by,
-                more: more
-            }}).done(function() {
-                // resync the sticky table header during scrolling
-                $(view.ui.table).stickyTableHeaders({scrollableArea: view.$el.parent()});
-
-                if (scroll) {
-                    var scrollEl = view.$el.parent();
-
-                    var height = scrollEl.prop('scrollHeight');
-                    var clientHeight = scrollEl.prop('clientHeight');
-                    scrollEl.scrollTop(height - clientHeight - view.rowHeight);
-                }
-            });
-        }
-    },
-
-    scroll: function(e) {
-        if (e.target.scrollTop > 1) {
-            $(this.ui.table).children('thead').addClass("sticky");
-        } else{
-            $(this.ui.table).children('thead').removeClass("sticky");
-        }
-
-        if (e.target.scrollHeight-e.target.clientHeight == e.target.scrollTop) {
-            this.moreResults();
-        }
-    },
-});
-
-module.exports = View;
-
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
-
-/***/ }),
-/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//     Backbone.js 1.3.3
@@ -12262,10 +12017,10 @@ module.exports = View;
   return Backbone;
 });
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(484)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(492)))
 
 /***/ }),
-/* 6 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -12281,7 +12036,7 @@ module.exports = View;
 var Marionette = __webpack_require__(0);
 
 var DefaultLayout = Marionette.LayoutView.extend({
-    template: __webpack_require__(444),
+    template: __webpack_require__(452),
     attributes: {
         style: "height: 100%;"
     },
@@ -12310,6 +12065,251 @@ var DefaultLayout = Marionette.LayoutView.extend({
 
 module.exports = DefaultLayout;
 
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(_) {/**
+ * @file dialog.js
+ * @brief Dialog helper view.
+ * @author Frederic SCHERMA
+ * @date 2016-10-21
+ * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+ * @license @todo
+ * @details
+ */
+
+var Marionette = __webpack_require__(0);
+
+var View = Marionette.ItemView.extend({
+    tagName: "div",
+    attributes: {
+        'id': 'dlg_default',
+        'class': 'modal',
+        'tabindex': -1
+    },
+
+    ui: {
+        cancel: "button.cancel",
+        apply: "button.apply"
+    },
+
+    events: {
+        'click @ui.cancel': 'onCancel',
+        'click @ui.apply': 'onApply',
+        'keydown': 'escapeKey',
+    },
+
+    constructor: function() {
+        var prototype = this.constructor.prototype;
+
+        this.events = {};
+        this.defaultOptions = {};
+        this.ui = {};
+        this.attributes = {};
+        this.className = "";
+
+        while (prototype) {
+            if (prototype.hasOwnProperty("events")) {
+                _.defaults(this.events, prototype.events);
+            }
+            if (prototype.hasOwnProperty("defaultOptions")) {
+                _.defaults(this.defaultOptions, prototype.defaultOptions);
+            }
+            if (prototype.hasOwnProperty("ui")) {
+                _.defaults(this.ui, prototype.ui);
+            }
+            if (prototype.hasOwnProperty("attributes")) {
+                _.defaults(this.attributes, prototype.attributes);
+            }
+            if (prototype.hasOwnProperty("className")) {
+                this.className += " " + prototype.className;
+            }
+            prototype = prototype.constructor.__super__;
+        }
+
+        Marionette.View.apply(this, arguments);
+    },
+
+    initialize: function (options) {
+        View.__super__.initialize.apply(this);
+    },
+
+    onRender: function () {
+        // display the bootstrap modal
+        $(this.el).modal();
+
+        // interest on this even when the user click on the backdrop
+        $(this.el).on('hidden.bs.modal', $.proxy(function() {
+            this.destroy();
+        }, this));
+
+        // autofocus is processed now on the first input having the autofocus attribute
+        $(this.el).find(':input[autofocus]').focus();
+    },
+
+    onBeforeDestroy: function() {
+        // unbind the event before remove the bs.modal to avoid a double destroy call
+        $(this.el).off('hidden.bs.modal');
+        $(this.el).modal('hide').data('bs.modal', null);
+    },
+
+    onCancel: function () {
+        this.destroy();
+    },
+
+    escapeKey: function(e) {
+        var code = e.keyCode || e.which;
+
+        // escape key cancel
+        if (code == 27) {
+            this.destroy();
+        }
+
+        // enter on num-pad enter
+        if (code == 13) {
+            // click apply
+            this.triggerMethod('apply');
+
+            // avoid reload page
+            return false;
+        }
+    }
+});
+
+module.exports = View;
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(_) {/**
+ * @file scrollview.js
+ * @brief Base view for scrollable view with a cursor collection
+ * @author Frederic SCHERMA
+ * @date 2016-10-07
+ * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+ * @license @todo
+ * @details
+ */
+
+var Marionette = __webpack_require__(0);
+
+var View = Marionette.CompositeView.extend({
+    rowHeight: 1+8+20+8,
+    scrollViewInitialized: false,
+
+    attributes: {
+    },
+
+    ui: {
+        table: 'table.table',
+        header: 'table.table thead'
+    },
+
+    events: {
+    },
+
+    constructor: function() {
+        var prototype = this.constructor.prototype;
+
+        this.events = {};
+        this.defaultOptions = {};
+        this.ui = {};
+        this.attributes = {};
+        this.className = "";
+
+        while (prototype) {
+            if (prototype.hasOwnProperty("events")) {
+                _.defaults(this.events, prototype.events);
+            }
+            if (prototype.hasOwnProperty("defaultOptions")) {
+                _.defaults(this.defaultOptions, prototype.defaultOptions);
+            }
+            if (prototype.hasOwnProperty("ui")) {
+                _.defaults(this.ui, prototype.ui);
+            }
+            if (prototype.hasOwnProperty("attributes")) {
+                _.defaults(this.attributes, prototype.attributes);
+            }
+            if (prototype.hasOwnProperty("className")) {
+                this.className += " " + prototype.className;
+            }
+            prototype = prototype.constructor.__super__;
+        }
+
+        Marionette.CompositeView.apply(this, arguments);
+    },
+
+    initialize: function (options) {
+        View.__super__.initialize.apply(this);
+    },
+
+    onDomRefresh: function() {
+        // we can only init here because we need to known the parent container
+        if (!this.scrollViewInitialized) {
+            // pagination on scrolling using the direct parent as scroll container
+            $(this.$el.parent()).scroll($.proxy(function (e) { this.scroll(e); }, this));
+            // and sticky header on table
+            $(this.ui.table).stickyTableHeaders({scrollableArea: this.$el.parent()});
+
+            this.scrollViewInitialized = true;
+        }
+    },
+
+    capacity: function() {
+        return Math.max(1, Math.floor(this.$el.parent().prop('clientHeight') / this.rowHeight) - 1);
+    },
+
+    moreResults: function(more, scroll) {
+        scroll || (scroll=false);
+        more || (more=20);
+
+        var view = this;
+
+        if (more == -1) {
+            more = this.capacity();
+        }
+
+        if ((this.collection != null) && (this.collection.next != null)) {
+            this.collection.fetch({update: true, remove: false, data: {
+                cursor: this.collection.next,
+                sort_by: this.collection.sort_by,
+                more: more
+            }}).done(function() {
+                // resync the sticky table header during scrolling
+                $(view.ui.table).stickyTableHeaders({scrollableArea: view.$el.parent()});
+
+                if (scroll) {
+                    var scrollEl = view.$el.parent();
+
+                    var height = scrollEl.prop('scrollHeight');
+                    var clientHeight = scrollEl.prop('clientHeight');
+                    scrollEl.scrollTop(height - clientHeight - view.rowHeight);
+                }
+            });
+        }
+    },
+
+    scroll: function(e) {
+        if (e.target.scrollTop > 1) {
+            $(this.ui.table).children('thead').addClass("sticky");
+        } else{
+            $(this.ui.table).children('thead').removeClass("sticky");
+        }
+
+        if (e.target.scrollHeight-e.target.clientHeight == e.target.scrollTop) {
+            this.moreResults();
+        }
+    },
+});
+
+module.exports = View;
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
 /* 7 */
@@ -12545,7 +12545,7 @@ module.exports = View;
  * @details
  */
 
-var Backbone = __webpack_require__(5);
+var Backbone = __webpack_require__(3);
 
 var Taxon = Backbone.Model.extend({ 
     url: function() {
@@ -12768,7 +12768,7 @@ exports.default = new Logger();
  * @details
  */
 
-var Backbone = __webpack_require__(5);
+var Backbone = __webpack_require__(3);
 
 var Model = Backbone.Model.extend({
     url: function() {
@@ -12846,7 +12846,7 @@ module.exports = Model;
  * @details
  */
 
-var Backbone = __webpack_require__(5);
+var Backbone = __webpack_require__(3);
 
 var Model = Backbone.Model.extend({
     url: function() {
@@ -12909,7 +12909,7 @@ module.exports = Model;
  * @details
  */
 
-var Backbone = __webpack_require__(5);
+var Backbone = __webpack_require__(3);
 
 var Model = Backbone.Model.extend({
     url: function() {
@@ -12959,7 +12959,7 @@ module.exports = Model;
  * @details
  */
 
-var Backbone = __webpack_require__(5);
+var Backbone = __webpack_require__(3);
 
 var Model = Backbone.Model.extend({
     url: function() {
@@ -13009,7 +13009,7 @@ module.exports = Model;
  * @details
  */
 
-var Backbone = __webpack_require__(5);
+var Backbone = __webpack_require__(3);
 
 var Model = Backbone.Model.extend({
     url: function() {
@@ -13062,7 +13062,7 @@ module.exports = Model;
  * @details
  */
 
-var Backbone = __webpack_require__(5);
+var Backbone = __webpack_require__(3);
 
 var Model = Backbone.Model.extend({
     url: function() {
@@ -13116,7 +13116,7 @@ module.exports = Model;
 var Marionette = __webpack_require__(0);
 
 var Renderer = Marionette.Object.extend({
-    template: __webpack_require__(455),
+    template: __webpack_require__(463),
     tagName: 'select',
 
     initialize: function(options) {
@@ -13768,11 +13768,11 @@ function updateLink(linkElement, obj) {
  * @details
  */
 
-var BatchView = __webpack_require__(216);
-var ScrollView = __webpack_require__(4);
+var BatchView = __webpack_require__(217);
+var ScrollView = __webpack_require__(6);
 
 var View = ScrollView.extend({
-    template: __webpack_require__(386),
+    template: __webpack_require__(394),
     className: "batch-list",
     childView: BatchView,
     childViewContainer: 'tbody.batch-list',
@@ -14196,7 +14196,7 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
 
 EnumSingle.DescriptorTypeDetailsView = Marionette.ItemView.extend({
     className: 'descriptor-type-details-format',
-    template: __webpack_require__(435),
+    template: __webpack_require__(443),
 
     ui: {
         format_trans: "#format_trans",
@@ -14403,7 +14403,7 @@ _.extend(Numeric.prototype, DescriptorFormatType.prototype, {
 
 Numeric.DescriptorTypeDetailsView = Marionette.ItemView.extend({
     className: 'descriptor-type-details-format',
-    template: __webpack_require__(436),
+    template: __webpack_require__(444),
 
     ui: {
         'format_unit': '#format_unit',
@@ -14496,7 +14496,7 @@ module.exports = Numeric;
  */
 
 var DescribableDetails = __webpack_require__(34);
-var TaxonDescriptorEditView = __webpack_require__(338);
+var TaxonDescriptorEditView = __webpack_require__(344);
 
 var View = DescribableDetails.extend({
     onShowTab: function() {
@@ -14504,7 +14504,7 @@ var View = DescribableDetails.extend({
 
         var contextLayout = application.getView().getRegion('right').currentView;
         if (!contextLayout) {
-            var DefaultLayout = __webpack_require__(6);
+            var DefaultLayout = __webpack_require__(4);
             contextLayout = new DefaultLayout();
             application.getView().getRegion('right').show(contextLayout);
         }
@@ -14522,7 +14522,7 @@ var View = DescribableDetails.extend({
             actions.push('delete');
         }
 
-        var TaxonDescriptorContextView = __webpack_require__(42);
+        var TaxonDescriptorContextView = __webpack_require__(43);
         var contextView = new TaxonDescriptorContextView({actions: actions});
         contextLayout.getRegion('content').show(contextView);
 
@@ -14532,14 +14532,14 @@ var View = DescribableDetails.extend({
 
         contextView.on("descriptormetamodel:replace", function () {
             // this will update the model and so on the view
-            var TaxonDescriptorCreateView = __webpack_require__(43);
+            var TaxonDescriptorCreateView = __webpack_require__(44);
             var taxonDescriptorCreateView = new TaxonDescriptorCreateView({model: view.model});
 
             taxonDescriptorCreateView.onDefine();
         });
 
         contextView.on("descriptormetamodel:delete", function () {
-            var ConfirmDialog = __webpack_require__(290);
+            var ConfirmDialog = __webpack_require__(291);
             var confirmDialog = new ConfirmDialog({
                 title: gt.gettext('Delete descriptors'),
                 label: gt.gettext('Are you sure you want to delete any descriptors for this taxon ?')
@@ -14679,7 +14679,7 @@ module.exports = $;
  * @details
  */
 
-var BatchModel = __webpack_require__(49);
+var BatchModel = __webpack_require__(50);
 
 var Collection = Backbone.Collection.extend({
     url: function() {
@@ -14751,7 +14751,7 @@ module.exports = Collection;
  */
 
 var DescribableDetails = __webpack_require__(34);
-var AccessionDescriptorEditView = __webpack_require__(51);
+var AccessionDescriptorEditView = __webpack_require__(52);
 
 var View = DescribableDetails.extend({
     onShowTab: function() {
@@ -14759,7 +14759,7 @@ var View = DescribableDetails.extend({
 
         var contextLayout = application.getView().getRegion('right').currentView;
         if (!contextLayout) {
-            var DefaultLayout = __webpack_require__(6);
+            var DefaultLayout = __webpack_require__(4);
             contextLayout = new DefaultLayout();
             application.getView().getRegion('right').show(contextLayout);
         }
@@ -14769,7 +14769,7 @@ var View = DescribableDetails.extend({
 
         var actions = ['modify'];
 
-        var AccessionDescriptorContextView = __webpack_require__(50);
+        var AccessionDescriptorContextView = __webpack_require__(51);
         var contextView = new AccessionDescriptorContextView({actions: actions});
         contextLayout.getRegion('content').show(contextView);
 
@@ -14811,7 +14811,7 @@ module.exports = View;
  */
 
 var DescribableDetails = __webpack_require__(34);
-var BatchDescriptorEditView = __webpack_require__(217);
+var BatchDescriptorEditView = __webpack_require__(218);
 
 var View = DescribableDetails.extend({
     onShowTab: function() {
@@ -14819,7 +14819,7 @@ var View = DescribableDetails.extend({
 
         var contextLayout = application.getView().getRegion('right').currentView;
         if (!contextLayout) {
-            var DefaultLayout = __webpack_require__(6);
+            var DefaultLayout = __webpack_require__(4);
             contextLayout = new DefaultLayout();
             application.getView().getRegion('right').show(contextLayout);
         }
@@ -14829,7 +14829,7 @@ var View = DescribableDetails.extend({
 
         var actions = ['modify'];
 
-        var BatchDescriptorContextView = __webpack_require__(53);
+        var BatchDescriptorContextView = __webpack_require__(54);
         var contextView = new BatchDescriptorContextView({actions: actions});
         contextLayout.getRegion('content').show(contextView);
 
@@ -14870,7 +14870,7 @@ module.exports = View;
  * @details
  */
 
-var Backbone = __webpack_require__(5);
+var Backbone = __webpack_require__(3);
 
 var Model = Backbone.Model.extend({
     url: function() {
@@ -14934,11 +14934,11 @@ module.exports = Model;
  * @details
  */
 
-var ItemView = __webpack_require__(73);
+var ItemView = __webpack_require__(74);
 
 var View = ItemView.extend({
     tagName: 'div',
-    template: __webpack_require__(392),
+    template: __webpack_require__(400),
     templateHelpers/*templateContext*/: function () {
         return {
             panels: this.descriptorMetaModelLayout.panels,
@@ -15055,11 +15055,11 @@ module.exports = View;
  * @details
  */
 
-var ItemView = __webpack_require__(73);
+var ItemView = __webpack_require__(74);
 
 var View = ItemView.extend({
     tagName: 'div',
-    template: __webpack_require__(393),
+    template: __webpack_require__(401),
     templateHelpers/*templateContext*/: function () {
         return {
             panels: this.descriptorMetaModelLayout.panels,
@@ -15347,7 +15347,7 @@ module.exports = DescriptorFormatTypeManager;
 var Marionette = __webpack_require__(0);
 
 var View = Marionette.LayoutView.extend({
-    template: __webpack_require__(443),
+    template: __webpack_require__(451),
 
     attributes: {
         style: "height: 100%;"
@@ -15367,6 +15367,38 @@ module.exports = View;
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
+ * @file organisation.js
+ * @brief Organisation model
+ * @author Frederic SCHERMA
+ * @date 2017-02-28
+ * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+ * @license @todo
+ * @details
+ */
+
+var Backbone = __webpack_require__(3);
+
+var Model = Backbone.Model.extend({
+    url: function() {
+        if (this.isNew())
+            return application.baseUrl + 'organisation/organisation/';
+        else
+            return application.baseUrl + 'organisation/organisation/' + this.get('id') + '/';
+    },
+
+    defaults: {
+        id: null
+    }
+});
+
+module.exports = Model;
+
+
+/***/ }),
+/* 39 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/**
  * @file group.js
  * @brief Group model
  * @author Frederic SCHERMA
@@ -15376,7 +15408,7 @@ module.exports = View;
  * @details
  */
 
-var Backbone = __webpack_require__(5);
+var Backbone = __webpack_require__(3);
 
 var Model = Backbone.Model.extend({
     url: function() {
@@ -15416,7 +15448,7 @@ module.exports = Model;
 
 
 /***/ }),
-/* 39 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -15429,7 +15461,7 @@ module.exports = Model;
  * @details
  */
 
-var Backbone = __webpack_require__(5);
+var Backbone = __webpack_require__(3);
 
 var Model = Backbone.Model.extend({
     url: function() {
@@ -15469,7 +15501,7 @@ module.exports = Model;
 
 
 /***/ }),
-/* 40 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -15482,7 +15514,7 @@ module.exports = Model;
  * @details
  */
 
-var Backbone = __webpack_require__(5);
+var Backbone = __webpack_require__(3);
 
 var Permission = Backbone.Model.extend({
     defaults: {
@@ -15524,7 +15556,7 @@ module.exports = Permission;
 
 
 /***/ }),
-/* 41 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -15537,7 +15569,7 @@ module.exports = Permission;
  * @details
  */
 
-var Backbone = __webpack_require__(5);
+var Backbone = __webpack_require__(3);
 
 var Model = Backbone.Model.extend({
     url: function() { return application.baseUrl + 'permission/user/' + this.get('username') + '/'; },
@@ -15587,7 +15619,7 @@ module.exports = Model;
 
 
 /***/ }),
-/* 42 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -15604,7 +15636,7 @@ var Marionette = __webpack_require__(0);
 
 var View = Marionette.LayoutView.extend({
     tagName: 'div',
-    template: __webpack_require__(475),
+    template: __webpack_require__(483),
     className: "context taxon",
     templateHelpers/*templateContext*/: function () {
         return {
@@ -15647,7 +15679,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 43 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -15661,12 +15693,12 @@ module.exports = View;
  */
 
 var Marionette = __webpack_require__(0);
-var Dialog = __webpack_require__(3);
+var Dialog = __webpack_require__(5);
 var TaxonDescriptorView = __webpack_require__(26);
 
 var View = Marionette.ItemView.extend({
     tagName: 'div',
-    template: __webpack_require__(476),
+    template: __webpack_require__(484),
 
     ui: {
         defines: 'button.defines'
@@ -15694,7 +15726,7 @@ var View = Marionette.ItemView.extend({
                 attributes: {
                     'id': 'dlg_create_descriptor',
                 },
-                template: __webpack_require__(477),
+                template: __webpack_require__(485),
                 templateHelpers/*templateContext*/: function () {
                     return {
                         meta_models: data,
@@ -15760,7 +15792,7 @@ var View = Marionette.ItemView.extend({
     onShowTab: function() {
         var view = this;
 
-        var DefaultLayout = __webpack_require__(6);
+        var DefaultLayout = __webpack_require__(4);
         var contextLayout = new DefaultLayout();
         application.getView().getRegion('right').show(contextLayout);
 
@@ -15768,7 +15800,7 @@ var View = Marionette.ItemView.extend({
 
         actions.push('add');
 
-        var TaxonDescriptorContextView = __webpack_require__(42);
+        var TaxonDescriptorContextView = __webpack_require__(43);
         var contextView = new TaxonDescriptorContextView({actions: actions});
 
         var TitleView = __webpack_require__(7);
@@ -15785,7 +15817,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 44 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(19)();
@@ -15799,7 +15831,7 @@ exports.push([module.i, "div.root-content{height:100%}div.column{height:100%;mar
 
 
 /***/ }),
-/* 45 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(19)();
@@ -15813,7 +15845,7 @@ exports.push([module.i, "span.media-download.contextual{padding:4px;width:24px;h
 
 
 /***/ }),
-/* 46 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(19)();
@@ -15827,7 +15859,7 @@ exports.push([module.i, "/*!\n * Datetimepicker for Bootstrap 3\n * version : 4.
 
 
 /***/ }),
-/* 47 */
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(19)();
@@ -15841,7 +15873,7 @@ exports.push([module.i, "/*!\n * Viewer v0.5.1\n * https://github.com/fengyuanch
 
 
 /***/ }),
-/* 48 */
+/* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(19)();
@@ -15855,7 +15887,7 @@ exports.push([module.i, ".select2-container{box-sizing:border-box;display:inline
 
 
 /***/ }),
-/* 49 */
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -15868,7 +15900,7 @@ exports.push([module.i, ".select2-container{box-sizing:border-box;display:inline
  * @details
  */
 
-var Backbone = __webpack_require__(5);
+var Backbone = __webpack_require__(3);
 
 var Model = Backbone.Model.extend({
     url: function() {
@@ -15908,7 +15940,7 @@ module.exports = Model;
 
 
 /***/ }),
-/* 50 */
+/* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -15925,7 +15957,7 @@ var Marionette = __webpack_require__(0);
 
 var View = Marionette.LayoutView.extend({
     tagName: 'div',
-    template: __webpack_require__(379),
+    template: __webpack_require__(387),
     className: "context accession",
     templateHelpers/*templateContext*/: function () {
         return {
@@ -15959,7 +15991,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 51 */
+/* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -16030,7 +16062,7 @@ var View = DescribableEdit.extend({
         // contextual panel
         var contextLayout = application.getView().getRegion('right').currentView;
         if (!contextLayout) {
-            var DefaultLayout = __webpack_require__(6);
+            var DefaultLayout = __webpack_require__(4);
             contextLayout = new DefaultLayout();
             application.getView().getRegion('right').show(contextLayout);
         }
@@ -16040,7 +16072,7 @@ var View = DescribableEdit.extend({
 
         var actions = ['apply', 'cancel'];
 
-        var AccessionDescriptorContextView = __webpack_require__(50);
+        var AccessionDescriptorContextView = __webpack_require__(51);
         var contextView = new AccessionDescriptorContextView({actions: actions});
         contextLayout.getRegion('content').show(contextView);
 
@@ -16062,7 +16094,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 52 */
+/* 53 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -16080,12 +16112,12 @@ var TaxonModel = __webpack_require__(10);
 
 var ScrollingMoreView = __webpack_require__(9);
 var ContentBottomLayout = __webpack_require__(37);
-var EntityPathView = __webpack_require__(336);
-var AccessionDescriptorEditView = __webpack_require__(51);
+var EntityPathView = __webpack_require__(342);
+var AccessionDescriptorEditView = __webpack_require__(52);
 
 
 var Layout = Marionette.LayoutView.extend({
-    template: __webpack_require__(380),
+    template: __webpack_require__(388),
 
     attributes: {
         style: "height: 100%;"
@@ -16182,7 +16214,7 @@ var Layout = Marionette.LayoutView.extend({
             });
 
             // synonyms tab
-            var AccessionSynonymsView = __webpack_require__(215);
+            var AccessionSynonymsView = __webpack_require__(216);
             accessionLayout.getRegion('synonyms').show(new AccessionSynonymsView({model: this.model}));
 
             // batches tab
@@ -16256,7 +16288,7 @@ module.exports = Layout;
 
 
 /***/ }),
-/* 53 */
+/* 54 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -16273,7 +16305,7 @@ var Marionette = __webpack_require__(0);
 
 var View = Marionette.LayoutView.extend({
     tagName: 'div',
-    template: __webpack_require__(384),
+    template: __webpack_require__(392),
     className: "context batch",
     templateHelpers/*templateContext*/: function () {
         return {
@@ -16307,7 +16339,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 54 */
+/* 55 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -16320,7 +16352,7 @@ module.exports = View;
  * @details
  */
 
-var AuditModel = __webpack_require__(55);
+var AuditModel = __webpack_require__(56);
 
 var Collection = Backbone.Collection.extend({
     url: function() {
@@ -16373,7 +16405,7 @@ module.exports = Collection;
 
 
 /***/ }),
-/* 55 */
+/* 56 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -16386,7 +16418,7 @@ module.exports = Collection;
  * @details
  */
 
-var Backbone = __webpack_require__(5);
+var Backbone = __webpack_require__(3);
 
 var Model = Backbone.Model.extend({
     defaults: {
@@ -16424,7 +16456,7 @@ module.exports = Model;
 
 
 /***/ }),
-/* 56 */
+/* 57 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -16438,11 +16470,11 @@ module.exports = Model;
  */
 
 var Marionette = __webpack_require__(0);
-var AuditView = __webpack_require__(224);
-var ScrollView = __webpack_require__(4);
+var AuditView = __webpack_require__(225);
+var ScrollView = __webpack_require__(6);
 
 var View = ScrollView.extend({
-    template: __webpack_require__(391),
+    template: __webpack_require__(399),
     childView: AuditView,
     childViewContainer: 'tbody.audit-list',
 
@@ -16458,7 +16490,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 57 */
+/* 58 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -16490,7 +16522,7 @@ module.exports = Collection;
 
 
 /***/ }),
-/* 58 */
+/* 59 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -16524,7 +16556,7 @@ module.exports = Collection;
 
 
 /***/ }),
-/* 59 */
+/* 60 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -16564,7 +16596,7 @@ module.exports = Collection;
 
 
 /***/ }),
-/* 60 */
+/* 61 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -16577,7 +16609,7 @@ module.exports = Collection;
  * @details
  */
 
-var Backbone = __webpack_require__(5);
+var Backbone = __webpack_require__(3);
 
 var Model = Backbone.Model.extend({
     url: function() {
@@ -16642,7 +16674,7 @@ module.exports = Model;
 
 
 /***/ }),
-/* 61 */
+/* 62 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -16656,13 +16688,13 @@ module.exports = Model;
  */
 
 var Marionette = __webpack_require__(0);
-var ScrollView = __webpack_require__(4);
+var ScrollView = __webpack_require__(6);
 
 var DescriptorTypeModel = __webpack_require__(12);
-var DescriptorTypeAltView = __webpack_require__(263);
+var DescriptorTypeAltView = __webpack_require__(264);
 
 var View = ScrollView.extend({
-    template: __webpack_require__(424),
+    template: __webpack_require__(432),
     childView: DescriptorTypeAltView,
     childViewContainer: 'tbody.descriptor-type-list',
 
@@ -16686,7 +16718,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 62 */
+/* 63 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {/**
@@ -16872,7 +16904,7 @@ module.exports = BooleanType;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 63 */
+/* 64 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {/**
@@ -17084,7 +17116,7 @@ module.exports = DateType;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 64 */
+/* 65 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {/**
@@ -17291,7 +17323,7 @@ module.exports = DateTimeType;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 65 */
+/* 66 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {/**
@@ -17551,7 +17583,7 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
 
 Entity.DescriptorTypeDetailsView = Marionette.ItemView.extend({
     className: 'descriptor-type-details-format',
-    template: __webpack_require__(432),
+    template: __webpack_require__(440),
 
     ui: {
         format_model: '#format_model'
@@ -17578,7 +17610,7 @@ module.exports = Entity;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 66 */
+/* 67 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {/**
@@ -17606,7 +17638,7 @@ _.extend(EnumOrdinal.prototype, EnumSingle.prototype, {
 
 EnumOrdinal.DescriptorTypeDetailsView = Marionette.ItemView.extend({
     className: 'descriptor-type-details-format',
-    template: __webpack_require__(433),
+    template: __webpack_require__(441),
 
     ui: {
         format_trans: "#format_trans",
@@ -17716,7 +17748,7 @@ module.exports = EnumOrdinal;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 67 */
+/* 68 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {/**
@@ -17732,7 +17764,7 @@ module.exports = EnumOrdinal;
 var EnumSingle = __webpack_require__(24);
 var Marionette = __webpack_require__(0);
 
-var Popover = __webpack_require__(274);
+var Popover = __webpack_require__(275);
 
 var EnumPair = function() {
     EnumSingle.call(this);
@@ -17746,7 +17778,7 @@ _.extend(EnumPair.prototype, EnumSingle.prototype, {
 
 EnumPair.DescriptorTypeDetailsView = Marionette.ItemView.extend({
     className: 'descriptor-type-details-format',
-    template: __webpack_require__(434),
+    template: __webpack_require__(442),
 
     ui: {
         helper_display_fields: '#helper_display_fields',
@@ -17851,7 +17883,7 @@ module.exports = EnumPair;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 68 */
+/* 69 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {/**
@@ -18001,7 +18033,7 @@ module.exports = GpsType;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 69 */
+/* 70 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {/**
@@ -18157,7 +18189,7 @@ _.extend(NumericRange.prototype, DescriptorFormatType.prototype, {
 var Numeric = __webpack_require__(25);
 
 NumericRange.DescriptorTypeDetailsView = Numeric.DescriptorTypeDetailsView.extend({
-    template: __webpack_require__(437),
+    template: __webpack_require__(445),
 
     ui: {
         'format_unit': '#format_unit',
@@ -18205,7 +18237,7 @@ module.exports = NumericRange;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 70 */
+/* 71 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {/**
@@ -18414,7 +18446,7 @@ _.extend(Ordinal.prototype, DescriptorFormatType.prototype, {
 var Numeric = __webpack_require__(25);
 
 Ordinal.DescriptorTypeDetailsView = Numeric.DescriptorTypeDetailsView.extend({
-    template: __webpack_require__(438),
+    template: __webpack_require__(446),
 
     ui: {
         'format_unit': '#format_unit',
@@ -18470,7 +18502,7 @@ module.exports = Ordinal;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 71 */
+/* 72 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {/**
@@ -18680,7 +18712,7 @@ _.extend(StringType.prototype, DescriptorFormatType.prototype, {
 
 StringType.DescriptorTypeDetailsView = Marionette.ItemView.extend({
     className: 'descriptor-type-details-format',
-    template: __webpack_require__(439),
+    template: __webpack_require__(447),
 
     ui: {
         'format_regexp': '#format_regexp'
@@ -18707,7 +18739,7 @@ module.exports = StringType;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 72 */
+/* 73 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {/**
@@ -18913,7 +18945,7 @@ module.exports = TimeType;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 73 */
+/* 74 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {/**
@@ -18970,7 +19002,7 @@ module.exports = View;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 74 */
+/* 75 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -18986,7 +19018,7 @@ module.exports = View;
 var Marionette = __webpack_require__(0);
 
 var View = Marionette.LayoutView.extend({
-    template: __webpack_require__(451),
+    template: __webpack_require__(459),
 
     initialize: function(options) {
     },
@@ -18999,7 +19031,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 75 */
+/* 76 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {/**
@@ -19552,7 +19584,7 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
 
 Media.DescriptorTypeDetailsView = Marionette.ItemView.extend({
     className: 'descriptor-type-details-format',
-    template: __webpack_require__(457),
+    template: __webpack_require__(465),
 
     ui: {
         format_media_types: '#format_media_types',
@@ -19596,7 +19628,7 @@ module.exports = Media;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 76 */
+/* 77 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {/**
@@ -19769,7 +19801,7 @@ _.extend(MediaCollection.prototype, DescriptorFormatType.prototype, {
 
 MediaCollection.DescriptorTypeDetailsView = Marionette.ItemView.extend({
     className: 'descriptor-type-details-format',
-    template: __webpack_require__(458),
+    template: __webpack_require__(466),
 
     ui: {
         format_media_types: '#format_media_types',
@@ -19821,7 +19853,7 @@ module.exports = MediaCollection;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 77 */
+/* 78 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -19871,7 +19903,7 @@ module.exports = TaxonCollection;
 
 
 /***/ }),
-/* 78 */
+/* 79 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -19889,7 +19921,7 @@ var TaxonModel = __webpack_require__(10);
 
 var TaxonItemView = Marionette.ItemView.extend({
     tagName: 'div',
-    template: __webpack_require__(472),
+    template: __webpack_require__(480),
     className: "object taxon",
 
     ui: {
@@ -19931,7 +19963,7 @@ module.exports = TaxonItemView;
 
 
 /***/ }),
-/* 79 */
+/* 80 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -19944,8 +19976,8 @@ module.exports = TaxonItemView;
  * @details
  */
 
-var TaxonView = __webpack_require__(78);
-var ScrollView = __webpack_require__(4);
+var TaxonView = __webpack_require__(79);
+var ScrollView = __webpack_require__(6);
 
 var View = ScrollView.extend({
     template: "<div></div>",
@@ -19963,7 +19995,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 80 */
+/* 81 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20123,7 +20155,7 @@ function appendBackwardsAPI(i18n) {
 }
 
 /***/ }),
-/* 81 */
+/* 82 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20151,7 +20183,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 82 */
+/* 83 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -20229,7 +20261,7 @@ return af;
 
 
 /***/ }),
-/* 83 */
+/* 84 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -20293,7 +20325,7 @@ return arDz;
 
 
 /***/ }),
-/* 84 */
+/* 85 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -20424,7 +20456,7 @@ return arLy;
 
 
 /***/ }),
-/* 85 */
+/* 86 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -20489,7 +20521,7 @@ return arMa;
 
 
 /***/ }),
-/* 86 */
+/* 87 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -20599,7 +20631,7 @@ return arSa;
 
 
 /***/ }),
-/* 87 */
+/* 88 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -20663,7 +20695,7 @@ return arTn;
 
 
 /***/ }),
-/* 88 */
+/* 89 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -20810,7 +20842,7 @@ return ar;
 
 
 /***/ }),
-/* 89 */
+/* 90 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -20920,7 +20952,7 @@ return az;
 
 
 /***/ }),
-/* 90 */
+/* 91 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -21059,7 +21091,7 @@ return be;
 
 
 /***/ }),
-/* 91 */
+/* 92 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -21154,7 +21186,7 @@ return bg;
 
 
 /***/ }),
-/* 92 */
+/* 93 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -21278,7 +21310,7 @@ return bn;
 
 
 /***/ }),
-/* 93 */
+/* 94 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -21402,7 +21434,7 @@ return bo;
 
 
 /***/ }),
-/* 94 */
+/* 95 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -21515,7 +21547,7 @@ return br;
 
 
 /***/ }),
-/* 95 */
+/* 96 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -21663,7 +21695,7 @@ return bs;
 
 
 /***/ }),
-/* 96 */
+/* 97 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -21749,7 +21781,7 @@ return ca;
 
 
 /***/ }),
-/* 97 */
+/* 98 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -21926,7 +21958,7 @@ return cs;
 
 
 /***/ }),
-/* 98 */
+/* 99 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -21994,7 +22026,7 @@ return cv;
 
 
 /***/ }),
-/* 99 */
+/* 100 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -22080,7 +22112,7 @@ return cy;
 
 
 /***/ }),
-/* 100 */
+/* 101 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -22145,7 +22177,7 @@ return da;
 
 
 /***/ }),
-/* 101 */
+/* 102 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -22229,7 +22261,7 @@ return deAt;
 
 
 /***/ }),
-/* 102 */
+/* 103 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -22312,7 +22344,7 @@ return de;
 
 
 /***/ }),
-/* 103 */
+/* 104 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -22417,7 +22449,7 @@ return dv;
 
 
 /***/ }),
-/* 104 */
+/* 105 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -22520,7 +22552,7 @@ return el;
 
 
 /***/ }),
-/* 105 */
+/* 106 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -22592,7 +22624,7 @@ return enAu;
 
 
 /***/ }),
-/* 106 */
+/* 107 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -22660,7 +22692,7 @@ return enCa;
 
 
 /***/ }),
-/* 107 */
+/* 108 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -22732,7 +22764,7 @@ return enGb;
 
 
 /***/ }),
-/* 108 */
+/* 109 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -22804,7 +22836,7 @@ return enIe;
 
 
 /***/ }),
-/* 109 */
+/* 110 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -22876,7 +22908,7 @@ return enNz;
 
 
 /***/ }),
-/* 110 */
+/* 111 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -22954,7 +22986,7 @@ return eo;
 
 
 /***/ }),
-/* 111 */
+/* 112 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -23039,7 +23071,7 @@ return esDo;
 
 
 /***/ }),
-/* 112 */
+/* 113 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -23125,7 +23157,7 @@ return es;
 
 
 /***/ }),
-/* 113 */
+/* 114 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -23210,7 +23242,7 @@ return et;
 
 
 /***/ }),
-/* 114 */
+/* 115 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -23281,7 +23313,7 @@ return eu;
 
 
 /***/ }),
-/* 115 */
+/* 116 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -23393,7 +23425,7 @@ return fa;
 
 
 /***/ }),
-/* 116 */
+/* 117 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -23505,7 +23537,7 @@ return fi;
 
 
 /***/ }),
-/* 117 */
+/* 118 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -23570,7 +23602,7 @@ return fo;
 
 
 /***/ }),
-/* 118 */
+/* 119 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -23635,7 +23667,7 @@ return frCa;
 
 
 /***/ }),
-/* 119 */
+/* 120 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -23704,7 +23736,7 @@ return frCh;
 
 
 /***/ }),
-/* 120 */
+/* 121 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -23773,7 +23805,7 @@ return fr;
 
 
 /***/ }),
-/* 121 */
+/* 122 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -23851,7 +23883,7 @@ return fy;
 
 
 /***/ }),
-/* 122 */
+/* 123 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -23932,7 +23964,7 @@ return gd;
 
 
 /***/ }),
-/* 123 */
+/* 124 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -24014,7 +24046,7 @@ return gl;
 
 
 /***/ }),
-/* 124 */
+/* 125 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -24118,7 +24150,7 @@ return he;
 
 
 /***/ }),
-/* 125 */
+/* 126 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -24247,7 +24279,7 @@ return hi;
 
 
 /***/ }),
-/* 126 */
+/* 127 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -24397,7 +24429,7 @@ return hr;
 
 
 /***/ }),
-/* 127 */
+/* 128 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -24511,7 +24543,7 @@ return hu;
 
 
 /***/ }),
-/* 128 */
+/* 129 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -24611,7 +24643,7 @@ return hyAm;
 
 
 /***/ }),
-/* 129 */
+/* 130 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -24699,7 +24731,7 @@ return id;
 
 
 /***/ }),
-/* 130 */
+/* 131 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -24831,7 +24863,7 @@ return is;
 
 
 /***/ }),
-/* 131 */
+/* 132 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -24906,7 +24938,7 @@ return it;
 
 
 /***/ }),
-/* 132 */
+/* 133 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -24987,7 +25019,7 @@ return ja;
 
 
 /***/ }),
-/* 133 */
+/* 134 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -25075,7 +25107,7 @@ return jv;
 
 
 /***/ }),
-/* 134 */
+/* 135 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -25169,7 +25201,7 @@ return ka;
 
 
 /***/ }),
-/* 135 */
+/* 136 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -25261,7 +25293,7 @@ return kk;
 
 
 /***/ }),
-/* 136 */
+/* 137 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -25324,7 +25356,7 @@ return km;
 
 
 /***/ }),
-/* 137 */
+/* 138 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -25394,7 +25426,7 @@ return ko;
 
 
 /***/ }),
-/* 138 */
+/* 139 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -25487,7 +25519,7 @@ return ky;
 
 
 /***/ }),
-/* 139 */
+/* 140 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -25629,7 +25661,7 @@ return lb;
 
 
 /***/ }),
-/* 140 */
+/* 141 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -25704,7 +25736,7 @@ return lo;
 
 
 /***/ }),
-/* 141 */
+/* 142 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -25826,7 +25858,7 @@ return lt;
 
 
 /***/ }),
-/* 142 */
+/* 143 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -25928,7 +25960,7 @@ return lv;
 
 
 /***/ }),
-/* 143 */
+/* 144 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -26044,7 +26076,7 @@ return me;
 
 
 /***/ }),
-/* 144 */
+/* 145 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -26113,7 +26145,7 @@ return mi;
 
 
 /***/ }),
-/* 145 */
+/* 146 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -26208,7 +26240,7 @@ return mk;
 
 
 /***/ }),
-/* 146 */
+/* 147 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -26294,7 +26326,7 @@ return ml;
 
 
 /***/ }),
-/* 147 */
+/* 148 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -26458,7 +26490,7 @@ return mr;
 
 
 /***/ }),
-/* 148 */
+/* 149 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -26546,7 +26578,7 @@ return msMy;
 
 
 /***/ }),
-/* 149 */
+/* 150 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -26633,7 +26665,7 @@ return ms;
 
 
 /***/ }),
-/* 150 */
+/* 151 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -26734,7 +26766,7 @@ return my;
 
 
 /***/ }),
-/* 151 */
+/* 152 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -26802,7 +26834,7 @@ return nb;
 
 
 /***/ }),
-/* 152 */
+/* 153 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -26930,7 +26962,7 @@ return ne;
 
 
 /***/ }),
-/* 153 */
+/* 154 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -27021,7 +27053,7 @@ return nlBe;
 
 
 /***/ }),
-/* 154 */
+/* 155 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -27112,7 +27144,7 @@ return nl;
 
 
 /***/ }),
-/* 155 */
+/* 156 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -27177,7 +27209,7 @@ return nn;
 
 
 /***/ }),
-/* 156 */
+/* 157 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -27306,7 +27338,7 @@ return paIn;
 
 
 /***/ }),
-/* 157 */
+/* 158 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -27416,7 +27448,7 @@ return pl;
 
 
 /***/ }),
-/* 158 */
+/* 159 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -27482,7 +27514,7 @@ return ptBr;
 
 
 /***/ }),
-/* 159 */
+/* 160 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -27552,7 +27584,7 @@ return pt;
 
 
 /***/ }),
-/* 160 */
+/* 161 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -27632,7 +27664,7 @@ return ro;
 
 
 /***/ }),
-/* 161 */
+/* 162 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -27820,7 +27852,7 @@ return ru;
 
 
 /***/ }),
-/* 162 */
+/* 163 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -27886,7 +27918,7 @@ return se;
 
 
 /***/ }),
-/* 163 */
+/* 164 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -27962,7 +27994,7 @@ return si;
 
 
 /***/ }),
-/* 164 */
+/* 165 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -28117,7 +28149,7 @@ return sk;
 
 
 /***/ }),
-/* 165 */
+/* 166 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -28284,7 +28316,7 @@ return sl;
 
 
 /***/ }),
-/* 166 */
+/* 167 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -28359,7 +28391,7 @@ return sq;
 
 
 /***/ }),
-/* 167 */
+/* 168 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -28474,7 +28506,7 @@ return srCyrl;
 
 
 /***/ }),
-/* 168 */
+/* 169 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -28589,7 +28621,7 @@ return sr;
 
 
 /***/ }),
-/* 169 */
+/* 170 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -28683,7 +28715,7 @@ return ss;
 
 
 /***/ }),
-/* 170 */
+/* 171 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -28757,7 +28789,7 @@ return sv;
 
 
 /***/ }),
-/* 171 */
+/* 172 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -28821,7 +28853,7 @@ return sw;
 
 
 /***/ }),
-/* 172 */
+/* 173 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -28956,7 +28988,7 @@ return ta;
 
 
 /***/ }),
-/* 173 */
+/* 174 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -29050,7 +29082,7 @@ return te;
 
 
 /***/ }),
-/* 174 */
+/* 175 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -29123,7 +29155,7 @@ return tet;
 
 
 /***/ }),
-/* 175 */
+/* 176 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -29195,7 +29227,7 @@ return th;
 
 
 /***/ }),
-/* 176 */
+/* 177 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -29262,7 +29294,7 @@ return tlPh;
 
 
 /***/ }),
-/* 177 */
+/* 178 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -29387,7 +29419,7 @@ return tlh;
 
 
 /***/ }),
-/* 178 */
+/* 179 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -29482,7 +29514,7 @@ return tr;
 
 
 /***/ }),
-/* 179 */
+/* 180 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -29578,7 +29610,7 @@ return tzl;
 
 
 /***/ }),
-/* 180 */
+/* 181 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -29641,7 +29673,7 @@ return tzmLatn;
 
 
 /***/ }),
-/* 181 */
+/* 182 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -29704,7 +29736,7 @@ return tzm;
 
 
 /***/ }),
-/* 182 */
+/* 183 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -29855,7 +29887,7 @@ return uk;
 
 
 /***/ }),
-/* 183 */
+/* 184 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -29918,7 +29950,7 @@ return uz;
 
 
 /***/ }),
-/* 184 */
+/* 185 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -30002,7 +30034,7 @@ return vi;
 
 
 /***/ }),
-/* 185 */
+/* 186 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -30075,7 +30107,7 @@ return xPseudo;
 
 
 /***/ }),
-/* 186 */
+/* 187 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -30140,7 +30172,7 @@ return yo;
 
 
 /***/ }),
-/* 187 */
+/* 188 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -30272,7 +30304,7 @@ return zhCn;
 
 
 /***/ }),
-/* 188 */
+/* 189 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -30382,7 +30414,7 @@ return zhHk;
 
 
 /***/ }),
-/* 189 */
+/* 190 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -30491,7 +30523,7 @@ return zhTw;
 
 
 /***/ }),
-/* 190 */
+/* 191 */
 /***/ (function(module, exports) {
 
 underscore
@@ -30521,7 +30553,7 @@ original source:
 
 
 /***/ }),
-/* 191 */
+/* 192 */
 /***/ (function(module, exports) {
 
 underscore
@@ -30551,7 +30583,7 @@ original source:
 
 
 /***/ }),
-/* 192 */
+/* 193 */
 /***/ (function(module, exports) {
 
 underscore
@@ -30581,18 +30613,18 @@ original source:
 
 
 /***/ }),
-/* 193 */
+/* 194 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
-	"./accession/init": 207,
-	"./audit/init": 221,
-	"./descriptor/init": 233,
-	"./main/init": 279,
-	"./medialibrary/init": 300,
-	"./organisation/init": 303,
-	"./permission/init": 310,
-	"./taxonomy/init": 330
+	"./accession/init": 208,
+	"./audit/init": 222,
+	"./descriptor/init": 234,
+	"./main/init": 280,
+	"./medialibrary/init": 301,
+	"./organisation/init": 306,
+	"./permission/init": 316,
+	"./taxonomy/init": 336
 };
 function webpackContext(req) {
 	return __webpack_require__(webpackContextResolve(req));
@@ -30608,11 +30640,11 @@ webpackContext.keys = function webpackContextKeys() {
 };
 webpackContext.resolve = webpackContextResolve;
 module.exports = webpackContext;
-webpackContext.id = 193;
+webpackContext.id = 194;
 
 
 /***/ }),
-/* 194 */
+/* 195 */
 /***/ (function(module, exports) {
 
 /********************************************************************
@@ -31409,7 +31441,7 @@ webpackContext.id = 193;
 /*eslint-enable */
 
 /***/ }),
-/* 195 */
+/* 196 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!function(a){"use strict";if(true)!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(29),__webpack_require__(1)], __WEBPACK_AMD_DEFINE_FACTORY__ = (a),
@@ -31419,14 +31451,14 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 return d.keepInvalid=a,l},l.datepickerInput=function(a){if(0===arguments.length)return d.datepickerInput;if("string"!=typeof a)throw new TypeError("datepickerInput() expects a string parameter");return d.datepickerInput=a,l},l.parseInputDate=function(a){if(0===arguments.length)return d.parseInputDate;if("function"!=typeof a)throw new TypeError("parseInputDate() sholud be as function");return d.parseInputDate=a,l},l.disabledTimeIntervals=function(b){if(0===arguments.length)return d.disabledTimeIntervals?a.extend({},d.disabledTimeIntervals):d.disabledTimeIntervals;if(!b)return d.disabledTimeIntervals=!1,_(),l;if(!(b instanceof Array))throw new TypeError("disabledTimeIntervals() expects an array parameter");return d.disabledTimeIntervals=b,_(),l},l.disabledHours=function(b){if(0===arguments.length)return d.disabledHours?a.extend({},d.disabledHours):d.disabledHours;if(!b)return d.disabledHours=!1,_(),l;if(!(b instanceof Array))throw new TypeError("disabledHours() expects an array parameter");if(d.disabledHours=oa(b),d.enabledHours=!1,d.useCurrent&&!d.keepInvalid){for(var c=0;!R(e,"h");){if(e.add(1,"h"),24===c)throw"Tried 24 times to find a valid date";c++}aa(e)}return _(),l},l.enabledHours=function(b){if(0===arguments.length)return d.enabledHours?a.extend({},d.enabledHours):d.enabledHours;if(!b)return d.enabledHours=!1,_(),l;if(!(b instanceof Array))throw new TypeError("enabledHours() expects an array parameter");if(d.enabledHours=oa(b),d.disabledHours=!1,d.useCurrent&&!d.keepInvalid){for(var c=0;!R(e,"h");){if(e.add(1,"h"),24===c)throw"Tried 24 times to find a valid date";c++}aa(e)}return _(),l},l.viewDate=function(a){if(0===arguments.length)return f.clone();if(!a)return f=e.clone(),l;if(!("string"==typeof a||b.isMoment(a)||a instanceof Date))throw new TypeError("viewDate() parameter must be one of [string, moment or Date]");return f=da(a),K(),l},c.is("input"))g=c;else if(g=c.find(d.datepickerInput),0===g.length)g=c.find("input");else if(!g.is("input"))throw new Error('CSS class "'+d.datepickerInput+'" cannot be applied to non input element');if(c.hasClass("input-group")&&(n=0===c.find(".datepickerbutton").length?c.find(".input-group-addon"):c.find(".datepickerbutton")),!d.inline&&!g.is("input"))throw new Error("Could not initialize DateTimePicker without an input element");return e=y(),f=e.clone(),a.extend(!0,d,H()),l.options(d),pa(),la(),g.prop("disabled")&&l.disable(),g.is("input")&&0!==g.val().trim().length?aa(da(g.val().trim())):d.defaultDate&&void 0===g.attr("placeholder")&&aa(d.defaultDate),d.inline&&ga(),l};return a.fn.datetimepicker=function(b){b=b||{};var d,e=Array.prototype.slice.call(arguments,1),f=!0,g=["destroy","hide","show","toggle"];if("object"==typeof b)return this.each(function(){var d,e=a(this);e.data("DateTimePicker")||(d=a.extend(!0,{},a.fn.datetimepicker.defaults,b),e.data("DateTimePicker",c(e,d)))});if("string"==typeof b)return this.each(function(){var c=a(this),g=c.data("DateTimePicker");if(!g)throw new Error('bootstrap-datetimepicker("'+b+'") method was called on an element that is not using DateTimePicker');d=g[b].apply(g,e),f=d===g}),f||a.inArray(b,g)>-1?this:d;throw new TypeError("Invalid arguments for DateTimePicker: "+b)},a.fn.datetimepicker.defaults={timeZone:"",format:!1,dayViewHeaderFormat:"MMMM YYYY",extraFormats:!1,stepping:1,minDate:!1,maxDate:!1,useCurrent:!0,collapse:!0,locale:b.locale(),defaultDate:!1,disabledDates:!1,enabledDates:!1,icons:{time:"glyphicon glyphicon-time",date:"glyphicon glyphicon-calendar",up:"glyphicon glyphicon-chevron-up",down:"glyphicon glyphicon-chevron-down",previous:"glyphicon glyphicon-chevron-left",next:"glyphicon glyphicon-chevron-right",today:"glyphicon glyphicon-screenshot",clear:"glyphicon glyphicon-trash",close:"glyphicon glyphicon-remove"},tooltips:{today:"Go to today",clear:"Clear selection",close:"Close the picker",selectMonth:"Select Month",prevMonth:"Previous Month",nextMonth:"Next Month",selectYear:"Select Year",prevYear:"Previous Year",nextYear:"Next Year",selectDecade:"Select Decade",prevDecade:"Previous Decade",nextDecade:"Next Decade",prevCentury:"Previous Century",nextCentury:"Next Century",pickHour:"Pick Hour",incrementHour:"Increment Hour",decrementHour:"Decrement Hour",pickMinute:"Pick Minute",incrementMinute:"Increment Minute",decrementMinute:"Decrement Minute",pickSecond:"Pick Second",incrementSecond:"Increment Second",decrementSecond:"Decrement Second",togglePeriod:"Toggle Period",selectTime:"Select Time"},useStrict:!1,sideBySide:!1,daysOfWeekDisabled:!1,calendarWeeks:!1,viewMode:"days",toolbarPlacement:"default",showTodayButton:!1,showClear:!1,showClose:!1,widgetPositioning:{horizontal:"auto",vertical:"auto"},widgetParent:null,ignoreReadonly:!1,keepOpen:!1,focusOnShow:!0,inline:!1,keepInvalid:!1,datepickerInput:".datepickerinput",keyBinds:{up:function(a){if(a){var b=this.date()||this.getMoment();a.find(".datepicker").is(":visible")?this.date(b.clone().subtract(7,"d")):this.date(b.clone().add(this.stepping(),"m"))}},down:function(a){if(!a)return void this.show();var b=this.date()||this.getMoment();a.find(".datepicker").is(":visible")?this.date(b.clone().add(7,"d")):this.date(b.clone().subtract(this.stepping(),"m"))},"control up":function(a){if(a){var b=this.date()||this.getMoment();a.find(".datepicker").is(":visible")?this.date(b.clone().subtract(1,"y")):this.date(b.clone().add(1,"h"))}},"control down":function(a){if(a){var b=this.date()||this.getMoment();a.find(".datepicker").is(":visible")?this.date(b.clone().add(1,"y")):this.date(b.clone().subtract(1,"h"))}},left:function(a){if(a){var b=this.date()||this.getMoment();a.find(".datepicker").is(":visible")&&this.date(b.clone().subtract(1,"d"))}},right:function(a){if(a){var b=this.date()||this.getMoment();a.find(".datepicker").is(":visible")&&this.date(b.clone().add(1,"d"))}},pageUp:function(a){if(a){var b=this.date()||this.getMoment();a.find(".datepicker").is(":visible")&&this.date(b.clone().subtract(1,"M"))}},pageDown:function(a){if(a){var b=this.date()||this.getMoment();a.find(".datepicker").is(":visible")&&this.date(b.clone().add(1,"M"))}},enter:function(){this.hide()},escape:function(){this.hide()},"control space":function(a){a&&a.find(".timepicker").is(":visible")&&a.find('.btn[data-action="togglePeriod"]').click()},t:function(){this.date(this.getMoment())},delete:function(){this.clear()}},debug:!1,allowInputToggle:!1,disabledTimeIntervals:!1,disabledHours:!1,enabledHours:!1,viewDate:!1},a.fn.datetimepicker});
 
 /***/ }),
-/* 196 */
+/* 197 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(356).default;
+module.exports = __webpack_require__(362).default;
 
 
 /***/ }),
-/* 197 */
+/* 198 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -31693,7 +31725,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 
 
 /***/ }),
-/* 198 */
+/* 199 */
 /***/ (function(module, exports) {
 
 /*! Select2 4.0.3 | https://github.com/select2/select2/blob/master/LICENSE.md */
@@ -31701,7 +31733,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 (function(){if(jQuery&&jQuery.fn&&jQuery.fn.select2&&jQuery.fn.select2.amd)var e=jQuery.fn.select2.amd;return e.define("select2/i18n/fr",[],function(){return{errorLoading:function(){return"Les résultats ne peuvent pas être chargés."},inputTooLong:function(e){var t=e.input.length-e.maximum,n="Supprimez "+t+" caractère";return t!==1&&(n+="s"),n},inputTooShort:function(e){var t=e.minimum-e.input.length,n="Saisissez "+t+" caractère";return t!==1&&(n+="s"),n},loadingMore:function(){return"Chargement de résultats supplémentaires…"},maximumSelected:function(e){var t="Vous pouvez seulement sélectionner "+e.maximum+" élément";return e.maximum!==1&&(t+="s"),t},noResults:function(){return"Aucun résultat trouvé"},searching:function(){return"Recherche en cours…"}}}),{define:e.define,require:e.require}})();
 
 /***/ }),
-/* 199 */
+/* 200 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var require;var require;/*!
@@ -37435,7 +37467,7 @@ S2.define('jquery.select2',[
 
 
 /***/ }),
-/* 200 */
+/* 201 */
 /***/ (function(module, exports) {
 
 /*! Copyright (c) 2011 by Jonas Mosbech - https://github.com/jmosbech/StickyTableHeaders
@@ -37757,39 +37789,13 @@ S2.define('jquery.select2',[
 
 
 /***/ }),
-/* 201 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(46);
-if(typeof content === 'string') content = [[module.i, content, '']];
-// add the styles to the DOM
-var update = __webpack_require__(22)(content, {});
-if(content.locals) module.exports = content.locals;
-// Hot Module Replacement
-if(true) {
-	// When the styles change, update the <style> tags
-	if(!content.locals) {
-		module.hot.accept(46, function() {
-			var newContent = __webpack_require__(46);
-			if(typeof newContent === 'string') newContent = [[module.i, newContent, '']];
-			update(newContent);
-		});
-	}
-	// When the module is disposed, remove the <style> tags
-	module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
 /* 202 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(48);
+var content = __webpack_require__(47);
 if(typeof content === 'string') content = [[module.i, content, '']];
 // add the styles to the DOM
 var update = __webpack_require__(22)(content, {});
@@ -37798,8 +37804,8 @@ if(content.locals) module.exports = content.locals;
 if(true) {
 	// When the styles change, update the <style> tags
 	if(!content.locals) {
-		module.hot.accept(48, function() {
-			var newContent = __webpack_require__(48);
+		module.hot.accept(47, function() {
+			var newContent = __webpack_require__(47);
 			if(typeof newContent === 'string') newContent = [[module.i, newContent, '']];
 			update(newContent);
 		});
@@ -37810,6 +37816,32 @@ if(true) {
 
 /***/ }),
 /* 203 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(49);
+if(typeof content === 'string') content = [[module.i, content, '']];
+// add the styles to the DOM
+var update = __webpack_require__(22)(content, {});
+if(content.locals) module.exports = content.locals;
+// Hot Module Replacement
+if(true) {
+	// When the styles change, update the <style> tags
+	if(!content.locals) {
+		module.hot.accept(49, function() {
+			var newContent = __webpack_require__(49);
+			if(typeof newContent === 'string') newContent = [[module.i, newContent, '']];
+			update(newContent);
+		});
+	}
+	// When the module is disposed, remove the <style> tags
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 204 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -37860,7 +37892,7 @@ module.exports = Collection;
 
 
 /***/ }),
-/* 204 */
+/* 205 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -37873,7 +37905,7 @@ module.exports = Collection;
  * @details
  */
 
-var AccessionSynonymTypeModel = __webpack_require__(209);
+var AccessionSynonymTypeModel = __webpack_require__(210);
 
 var Collection = Backbone.Collection.extend({
     url: application.baseUrl + 'accession/accession-synonym-type/',
@@ -37900,7 +37932,7 @@ module.exports = Collection;
 
 
 /***/ }),
-/* 205 */
+/* 206 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -37913,7 +37945,7 @@ module.exports = Collection;
  * @details
  */
 
-var BatchActionTypeModel = __webpack_require__(210);
+var BatchActionTypeModel = __webpack_require__(211);
 
 var Collection = Backbone.Collection.extend({
     url: application.baseUrl + 'accession/batch-action-type/',
@@ -37940,7 +37972,7 @@ module.exports = Collection;
 
 
 /***/ }),
-/* 206 */
+/* 207 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -37957,10 +37989,10 @@ var Marionette = __webpack_require__(0);
 
 var AccessionModel = __webpack_require__(16);
 
-var DefaultLayout = __webpack_require__(6);
+var DefaultLayout = __webpack_require__(4);
 var TitleView = __webpack_require__(7);
-var Dialog = __webpack_require__(3);
-var AccessionLayout = __webpack_require__(52);
+var Dialog = __webpack_require__(5);
+var AccessionLayout = __webpack_require__(53);
 
 
 var Controller = Marionette.Object.extend({
@@ -37975,7 +38007,7 @@ var Controller = Marionette.Object.extend({
                 attributes: {
                     'id': 'dlg_create_accession'
                 },
-                template: __webpack_require__(378),
+                template: __webpack_require__(386),
                 templateHelpers/*templateContext*/: function () {
                     return {
                         meta_models: data,
@@ -38183,7 +38215,7 @@ var Controller = Marionette.Object.extend({
 module.exports = Controller;
 
 /***/ }),
-/* 207 */
+/* 208 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -38211,7 +38243,7 @@ AccessionModule.prototype = {
         // i18n if not english
         if (session.language !== "en") {
             try {
-                i18next.addResources(session.language, 'default', __webpack_require__(208)("./" + session.language + '/LC_MESSAGES/default.json'));
+                i18next.addResources(session.language, 'default', __webpack_require__(209)("./" + session.language + '/LC_MESSAGES/default.json'));
             } catch (e) {
                 console.warn("No translation found for the current language. Fallback to english language");
             }
@@ -38223,7 +38255,7 @@ AccessionModule.prototype = {
 
         var SelectOption = __webpack_require__(18);
 
-        var AccessionSynonymTypeCollection = __webpack_require__(204);
+        var AccessionSynonymTypeCollection = __webpack_require__(205);
         this.collections.accessionSynonymTypes = new AccessionSynonymTypeCollection();
 
         this.views.accessionSynonymTypes = new SelectOption({
@@ -38231,7 +38263,7 @@ AccessionModule.prototype = {
             collection: this.collections.accessionSynonymTypes
         });
 
-        var BatchActionTypeCollection = __webpack_require__(205);
+        var BatchActionTypeCollection = __webpack_require__(206);
         this.collections.batchActionTypes = new BatchActionTypeCollection();
 
         this.views.batchActionTypes = new SelectOption({
@@ -38243,17 +38275,17 @@ AccessionModule.prototype = {
         // controllers
         //
 
-        var AccessionController = __webpack_require__(206);
+        var AccessionController = __webpack_require__(207);
         this.controllers.accession = new AccessionController();
 
         //
         // routers
         //
 
-        var AccessionRouter = __webpack_require__(211);
+        var AccessionRouter = __webpack_require__(212);
         this.routers.accession = new AccessionRouter();
 
-        var BatchRouter = __webpack_require__(212);
+        var BatchRouter = __webpack_require__(213);
         this.routers.batch = new BatchRouter();
     },
 
@@ -38270,12 +38302,12 @@ module.exports = AccessionModule;
 
 
 /***/ }),
-/* 208 */
+/* 209 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
-	"./en/LC_MESSAGES/default.json": 358,
-	"./fr/LC_MESSAGES/default.json": 359
+	"./en/LC_MESSAGES/default.json": 364,
+	"./fr/LC_MESSAGES/default.json": 365
 };
 function webpackContext(req) {
 	return __webpack_require__(webpackContextResolve(req));
@@ -38291,11 +38323,11 @@ webpackContext.keys = function webpackContextKeys() {
 };
 webpackContext.resolve = webpackContextResolve;
 module.exports = webpackContext;
-webpackContext.id = 208;
+webpackContext.id = 209;
 
 
 /***/ }),
-/* 209 */
+/* 210 */
 /***/ (function(module, exports) {
 
 /**
@@ -38322,7 +38354,7 @@ module.exports = Backbone.Model.extend({
 
 
 /***/ }),
-/* 210 */
+/* 211 */
 /***/ (function(module, exports) {
 
 /**
@@ -38349,7 +38381,7 @@ module.exports = Backbone.Model.extend({
 
 
 /***/ }),
-/* 211 */
+/* 212 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -38365,13 +38397,13 @@ module.exports = Backbone.Model.extend({
 var Marionette = __webpack_require__(0);
 
 var AccessionModel = __webpack_require__(16);
-var AccessionCollection = __webpack_require__(203);
-var AccessionListView = __webpack_require__(214);
+var AccessionCollection = __webpack_require__(204);
+var AccessionListView = __webpack_require__(215);
 
-var DefaultLayout = __webpack_require__(6);
+var DefaultLayout = __webpack_require__(4);
 var ScrollingMoreView = __webpack_require__(9);
 var TitleView = __webpack_require__(7);
-var AccessionLayout = __webpack_require__(52);
+var AccessionLayout = __webpack_require__(53);
 
 var Router = Marionette.AppRouter.extend({
     routes : {
@@ -38414,7 +38446,7 @@ module.exports = Router;
 
 
 /***/ }),
-/* 212 */
+/* 213 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -38429,14 +38461,14 @@ module.exports = Router;
 
 var Marionette = __webpack_require__(0);
 
-var BatchModel = __webpack_require__(49);
+var BatchModel = __webpack_require__(50);
 var BatchCollection = __webpack_require__(30);
 var BatchListView = __webpack_require__(23);
 
-var DefaultLayout = __webpack_require__(6);
+var DefaultLayout = __webpack_require__(4);
 var ScrollingMoreView = __webpack_require__(9);
 var TitleView = __webpack_require__(7);
-var BatchLayout = __webpack_require__(218);
+var BatchLayout = __webpack_require__(219);
 
 var Router = Marionette.AppRouter.extend({
     routes : {
@@ -38479,7 +38511,7 @@ module.exports = Router;
 
 
 /***/ }),
-/* 213 */
+/* 214 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -38500,7 +38532,7 @@ var View = Marionette.ItemView.extend({
     attributes: {
         'scope': 'row',
     },
-    template: __webpack_require__(376),
+    template: __webpack_require__(384),
 
     ui: {
         details: 'td.view-accession-details',
@@ -38536,7 +38568,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 214 */
+/* 215 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -38550,11 +38582,11 @@ module.exports = View;
  */
 
 var Marionette = __webpack_require__(0);
-var AccessionView = __webpack_require__(213);
-var ScrollView = __webpack_require__(4);
+var AccessionView = __webpack_require__(214);
+var ScrollView = __webpack_require__(6);
 
 var View = ScrollView.extend({
-    template: __webpack_require__(381),
+    template: __webpack_require__(389),
     childView: AccessionView,
     childViewContainer: 'tbody.accession-list',
 
@@ -38569,7 +38601,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 215 */
+/* 216 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -38583,12 +38615,12 @@ module.exports = View;
  */
 
 var Marionette = __webpack_require__(0);
-var Dialog = __webpack_require__(3);
+var Dialog = __webpack_require__(5);
 
 var View = Marionette.ItemView.extend({
     tagName: 'div',
     className: 'accession-synonyms',
-    template: __webpack_require__(382),
+    template: __webpack_require__(390),
 
     ui: {
         "synonym_name": ".synonym-name",
@@ -38713,7 +38745,7 @@ var View = Marionette.ItemView.extend({
 
     onRenameSynonym: function(e) {
         var ChangeSynonym = Dialog.extend({
-            template: __webpack_require__(377),
+            template: __webpack_require__(385),
 
             attributes: {
                 id: "dlg_change_synonym"
@@ -38837,7 +38869,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 216 */
+/* 217 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -38858,7 +38890,7 @@ var View = Marionette.ItemView.extend({
     attributes: {
         'scope': 'row',
     },
-    template: __webpack_require__(383),
+    template: __webpack_require__(391),
 
     ui: {
         details: 'td.view-batch-details',
@@ -38890,7 +38922,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 217 */
+/* 218 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -38961,7 +38993,7 @@ var View = DescribableEdit.extend({
         // contextual panel
         var contextLayout = application.getView().getRegion('right').currentView;
         if (!contextLayout) {
-            var DefaultLayout = __webpack_require__(6);
+            var DefaultLayout = __webpack_require__(4);
             contextLayout = new DefaultLayout();
             application.getView().getRegion('right').show(contextLayout);
         }
@@ -38971,7 +39003,7 @@ var View = DescribableEdit.extend({
 
         var actions = ['apply', 'cancel'];
 
-        var BatchDescriptorContextView = __webpack_require__(53);
+        var BatchDescriptorContextView = __webpack_require__(54);
         var contextView = new BatchDescriptorContextView({actions: actions});
         contextLayout.getRegion('content').show(contextView);
 
@@ -38993,7 +39025,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 218 */
+/* 219 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -39011,11 +39043,11 @@ var AccessionModel = __webpack_require__(16);
 
 var ScrollingMoreView = __webpack_require__(9);
 var ContentBottomLayout = __webpack_require__(37);
-var BatchPathView = __webpack_require__(219);
+var BatchPathView = __webpack_require__(220);
 
 
 var Layout = Marionette.LayoutView.extend({
-    template: __webpack_require__(385),
+    template: __webpack_require__(393),
 
     attributes: {
         style: "height: 100%;"
@@ -39165,7 +39197,7 @@ module.exports = Layout;
 
 
 /***/ }),
-/* 219 */
+/* 220 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -39184,7 +39216,7 @@ var AccessionModel = __webpack_require__(16);
 
 var View = Marionette.ItemView.extend({
     tagName: 'div',
-    template: __webpack_require__(387),
+    template: __webpack_require__(395),
     templateHelpers/*templateContext*/: function () {
         return {
             accession: this.accession
@@ -39232,7 +39264,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 220 */
+/* 221 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -39246,14 +39278,14 @@ module.exports = View;
  */
 
 var Marionette = __webpack_require__(0);
-var AuditCollection = __webpack_require__(54);
-var AuditListView = __webpack_require__(56);
+var AuditCollection = __webpack_require__(55);
+var AuditListView = __webpack_require__(57);
 
-var DefaultLayout = __webpack_require__(6);
+var DefaultLayout = __webpack_require__(4);
 
 var TitleView = __webpack_require__(7);
 var ScrollingMoreView = __webpack_require__(9);
-var Dialog = __webpack_require__(3);
+var Dialog = __webpack_require__(5);
 
 var Controller = Marionette.Object.extend({
 
@@ -39262,7 +39294,7 @@ var Controller = Marionette.Object.extend({
             attributes: {
                 'id': 'dlg_audit_by_username',
             },
-            template: __webpack_require__(390),
+            template: __webpack_require__(398),
 
             ui: {
                 search: "button.search",
@@ -39372,7 +39404,7 @@ var Controller = Marionette.Object.extend({
             attributes: {
                 'id': 'dlg_audit_by_entity',
             },
-            template: __webpack_require__(389),
+            template: __webpack_require__(397),
 
             ui: {
                 search: "button.search",
@@ -39523,7 +39555,7 @@ module.exports = Controller;
 
 
 /***/ }),
-/* 221 */
+/* 222 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -39553,7 +39585,7 @@ AuditModule.prototype = {
         // i18n if not english
         if (session.language !== "en") {
             try {
-                i18next.addResources(session.language, 'default', __webpack_require__(222)("./" + session.language + '/LC_MESSAGES/default.json'));
+                i18next.addResources(session.language, 'default', __webpack_require__(223)("./" + session.language + '/LC_MESSAGES/default.json'));
             } catch (e) {
                 console.warn("No translation found for the current language. Fallback to english language");
             }
@@ -39563,14 +39595,14 @@ AuditModule.prototype = {
         // controllers
         //
 
-        var AuditController = __webpack_require__(220);
+        var AuditController = __webpack_require__(221);
         this.controllers.audit = new AuditController();
 
         //
         // routers
         //
 
-        var AuditRouter = __webpack_require__(223);
+        var AuditRouter = __webpack_require__(224);
         this.routers.audit = new AuditRouter();
     },
 
@@ -39587,12 +39619,12 @@ module.exports = AuditModule;
 
 
 /***/ }),
-/* 222 */
+/* 223 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
-	"./en/LC_MESSAGES/default.json": 360,
-	"./fr/LC_MESSAGES/default.json": 361
+	"./en/LC_MESSAGES/default.json": 366,
+	"./fr/LC_MESSAGES/default.json": 367
 };
 function webpackContext(req) {
 	return __webpack_require__(webpackContextResolve(req));
@@ -39608,11 +39640,11 @@ webpackContext.keys = function webpackContextKeys() {
 };
 webpackContext.resolve = webpackContextResolve;
 module.exports = webpackContext;
-webpackContext.id = 222;
+webpackContext.id = 223;
 
 
 /***/ }),
-/* 223 */
+/* 224 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -39626,9 +39658,9 @@ webpackContext.id = 222;
  */
 
 var Marionette = __webpack_require__(0);
-var AuditCollection = __webpack_require__(54);
-var AuditListView = __webpack_require__(56);
-var DefaultLayout = __webpack_require__(6);
+var AuditCollection = __webpack_require__(55);
+var AuditListView = __webpack_require__(57);
+var DefaultLayout = __webpack_require__(4);
 var TitleView = __webpack_require__(7);
 var ScrollingMoreView = __webpack_require__(9);
 
@@ -39654,7 +39686,7 @@ module.exports = Router;
 
 
 /***/ }),
-/* 224 */
+/* 225 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -39668,7 +39700,7 @@ module.exports = Router;
  */
 
 var Marionette = __webpack_require__(0);
-var AuditModel = __webpack_require__(55);
+var AuditModel = __webpack_require__(56);
 
 var View = Marionette.ItemView.extend({
     tagName: 'tr',
@@ -39676,7 +39708,7 @@ var View = Marionette.ItemView.extend({
     attributes: {
         'scope': 'row',
     },
-    template: __webpack_require__(388),
+    template: __webpack_require__(396),
 
     ui: {
         show: 'span.show-entity',
@@ -39707,7 +39739,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 225 */
+/* 226 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -39720,7 +39752,7 @@ module.exports = View;
  * @details
  */
 
-var ConditionModel = __webpack_require__(235);
+var ConditionModel = __webpack_require__(236);
 
 var Collection = Backbone.Collection.extend({
     url: application.baseUrl + 'descriptor/condition',
@@ -39743,7 +39775,7 @@ module.exports = Collection;
 
 
 /***/ }),
-/* 226 */
+/* 227 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -39756,7 +39788,7 @@ module.exports = Collection;
  * @details
  */
 
-var DescribableModel = __webpack_require__(236);
+var DescribableModel = __webpack_require__(237);
 
 var Collection = Backbone.Collection.extend({
     url: application.baseUrl + 'descriptor/describable',
@@ -39779,7 +39811,7 @@ module.exports = Collection;
 
 
 /***/ }),
-/* 227 */
+/* 228 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -39813,7 +39845,7 @@ module.exports = Collection;
 
 
 /***/ }),
-/* 228 */
+/* 229 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -39826,7 +39858,7 @@ module.exports = Collection;
  * @details
  */
 
-var DescriptorModelTypeModel = __webpack_require__(60);
+var DescriptorModelTypeModel = __webpack_require__(61);
 
 var Collection = Backbone.Collection.extend({
     url: function() {
@@ -39855,7 +39887,7 @@ module.exports = Collection;
 
 
 /***/ }),
-/* 229 */
+/* 230 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -39897,7 +39929,7 @@ module.exports = Collection;
 
 
 /***/ }),
-/* 230 */
+/* 231 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -39957,7 +39989,7 @@ module.exports = Collection;
 
 
 /***/ }),
-/* 231 */
+/* 232 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -39970,7 +40002,7 @@ module.exports = Collection;
  * @details
  */
 
-var FormatTypeModel = __webpack_require__(237);
+var FormatTypeModel = __webpack_require__(238);
 
 var Collection = Backbone.Collection.extend({
     url: application.baseUrl + 'descriptor/format/type/',
@@ -40059,7 +40091,7 @@ module.exports = Collection;
 
 
 /***/ }),
-/* 232 */
+/* 233 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -40072,7 +40104,7 @@ module.exports = Collection;
  * @details
  */
 
-var FormatUnitModel = __webpack_require__(238);
+var FormatUnitModel = __webpack_require__(239);
 
 var Collection = Backbone.Collection.extend({
     url: application.baseUrl + 'descriptor/format/unit/',
@@ -40228,7 +40260,7 @@ module.exports = Collection;
 
 
 /***/ }),
-/* 233 */
+/* 234 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -40258,7 +40290,7 @@ DescriptorModule.prototype = {
         // i18n if not english
         if (session.language !== "en") {
             try {
-                i18next.addResources(session.language, 'default', __webpack_require__(234)("./" + session.language + '/LC_MESSAGES/default.json'));
+                i18next.addResources(session.language, 'default', __webpack_require__(235)("./" + session.language + '/LC_MESSAGES/default.json'));
             } catch (e) {
                 console.warn("No translation found for the current language. Fallback to english language");
             }
@@ -40270,7 +40302,7 @@ DescriptorModule.prototype = {
 
         var SelectOption = __webpack_require__(18);
 
-        var DescribableCollection = __webpack_require__(226);
+        var DescribableCollection = __webpack_require__(227);
         this.collections.describables = new DescribableCollection();
 
         this.views.describables = new SelectOption({
@@ -40278,7 +40310,7 @@ DescriptorModule.prototype = {
             collection: this.collections.describables,
         });
 
-        var ConditionCollection = __webpack_require__(225);
+        var ConditionCollection = __webpack_require__(226);
         this.collections.conditions = new ConditionCollection();
 
         this.views.conditions = new SelectOption({
@@ -40286,7 +40318,7 @@ DescriptorModule.prototype = {
             collection: this.collections.conditions,
         });
 
-        var FormatTypeCollection = __webpack_require__(231);
+        var FormatTypeCollection = __webpack_require__(232);
         this.collections.formatTypes = new FormatTypeCollection();
 
         this.views.formatTypes = new SelectOption({
@@ -40295,7 +40327,7 @@ DescriptorModule.prototype = {
             collection: this.collections.formatTypes,
         });
 
-        var FormatUnitCollection = __webpack_require__(232);
+        var FormatUnitCollection = __webpack_require__(233);
         this.collections.formatUnits = new FormatUnitCollection();
 
         this.views.formatUnits = new SelectOption({
@@ -40330,23 +40362,23 @@ DescriptorModule.prototype = {
 
         for (var i = 0; i < widgets.length; ++i) {
             var moduleName = widgets[i].replace('_', '').toLowerCase();
-            this.widgets.registerElement(widgets[i], __webpack_require__(273)("./" + moduleName));
+            this.widgets.registerElement(widgets[i], __webpack_require__(274)("./" + moduleName));
         }
 
         //
         // routers
         //
 
-        var DescriptorRouter = __webpack_require__(239);
+        var DescriptorRouter = __webpack_require__(240);
         this.routers.descriptor = new DescriptorRouter();
 
-        var DescriptorModelRouter = __webpack_require__(241);
+        var DescriptorModelRouter = __webpack_require__(242);
         this.routers.descriptorModel = new DescriptorModelRouter();
 
-        var DescriptorMetaModelRouter = __webpack_require__(240);
+        var DescriptorMetaModelRouter = __webpack_require__(241);
         this.routers.descriptorMetaModel = new DescriptorMetaModelRouter();
 
-        var DescriptorGroupCollection = __webpack_require__(57);
+        var DescriptorGroupCollection = __webpack_require__(58);
         this.collections.descriptorGroup = new DescriptorGroupCollection();
     },
 
@@ -40363,12 +40395,12 @@ module.exports = DescriptorModule;
 
 
 /***/ }),
-/* 234 */
+/* 235 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
-	"./en/LC_MESSAGES/default.json": 362,
-	"./fr/LC_MESSAGES/default.json": 363
+	"./en/LC_MESSAGES/default.json": 368,
+	"./fr/LC_MESSAGES/default.json": 369
 };
 function webpackContext(req) {
 	return __webpack_require__(webpackContextResolve(req));
@@ -40384,11 +40416,11 @@ webpackContext.keys = function webpackContextKeys() {
 };
 webpackContext.resolve = webpackContextResolve;
 module.exports = webpackContext;
-webpackContext.id = 234;
+webpackContext.id = 235;
 
 
 /***/ }),
-/* 235 */
+/* 236 */
 /***/ (function(module, exports) {
 
 /**
@@ -40414,7 +40446,7 @@ module.exports = Backbone.Model.extend({
 
 
 /***/ }),
-/* 236 */
+/* 237 */
 /***/ (function(module, exports) {
 
 /**
@@ -40440,7 +40472,7 @@ module.exports = Backbone.Model.extend({
 
 
 /***/ }),
-/* 237 */
+/* 238 */
 /***/ (function(module, exports) {
 
 /**
@@ -40468,7 +40500,7 @@ module.exports = Backbone.Model.extend({
 
 
 /***/ }),
-/* 238 */
+/* 239 */
 /***/ (function(module, exports) {
 
 /**
@@ -40496,7 +40528,7 @@ module.exports = Backbone.Model.extend({
 
 
 /***/ }),
-/* 239 */
+/* 240 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -40512,23 +40544,23 @@ module.exports = Backbone.Model.extend({
 var Marionette = __webpack_require__(0);
 var DescriptorGroupModel = __webpack_require__(14);
 var DescriptorTypeModel = __webpack_require__(12);
-var DescriptorTypeCollection = __webpack_require__(59);
-var DescriptorValueCollection = __webpack_require__(230);
-var DescriptorGroupListView = __webpack_require__(245);
-var DescriptorTypeListView = __webpack_require__(265);
+var DescriptorTypeCollection = __webpack_require__(60);
+var DescriptorValueCollection = __webpack_require__(231);
+var DescriptorGroupListView = __webpack_require__(246);
+var DescriptorTypeListView = __webpack_require__(266);
 
-var DescriptorValueListView = __webpack_require__(268);
-var DescriptorValuePairListView = __webpack_require__(272);
-var DescriptorValueOrdinalListView = __webpack_require__(270);
-var DescriptorValueAddView = __webpack_require__(267);
+var DescriptorValueListView = __webpack_require__(269);
+var DescriptorValuePairListView = __webpack_require__(273);
+var DescriptorValueOrdinalListView = __webpack_require__(271);
+var DescriptorValueAddView = __webpack_require__(268);
 
-var DescriptorTypeDetailsLayout = __webpack_require__(264);
-var DefaultLayout = __webpack_require__(6);
+var DescriptorTypeDetailsLayout = __webpack_require__(265);
+var DefaultLayout = __webpack_require__(4);
 var TitleView = __webpack_require__(7);
 var ScrollingMoreView = __webpack_require__(9);
 
-var DescriptorGroupAddView = __webpack_require__(243);
-var DescriptorGroupTypeAddView = __webpack_require__(247);
+var DescriptorGroupAddView = __webpack_require__(244);
+var DescriptorGroupTypeAddView = __webpack_require__(248);
 
 var Router = Marionette.AppRouter.extend({
     routes : {
@@ -40648,7 +40680,7 @@ module.exports = Router;
 
 
 /***/ }),
-/* 240 */
+/* 241 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -40665,19 +40697,19 @@ var Marionette = __webpack_require__(0);
 
 var DescriptorMetaModelModel = __webpack_require__(17);
 
-var DescriptorModelCollection = __webpack_require__(58);
-var DescriptorMetaModelCollection = __webpack_require__(227);
-var DescriptorPanelCollection = __webpack_require__(229);
+var DescriptorModelCollection = __webpack_require__(59);
+var DescriptorMetaModelCollection = __webpack_require__(228);
+var DescriptorPanelCollection = __webpack_require__(230);
 
-var DescriptorMetaModelAddView = __webpack_require__(249);
-var DescriptorMetaModelDetailView = __webpack_require__(250);
-var DescriptorMetaModelListView = __webpack_require__(251);
-var DescriptorPanelListView = __webpack_require__(261);
+var DescriptorMetaModelAddView = __webpack_require__(250);
+var DescriptorMetaModelDetailView = __webpack_require__(251);
+var DescriptorMetaModelListView = __webpack_require__(252);
+var DescriptorPanelListView = __webpack_require__(262);
 
-var DescriptorModelListAltView = __webpack_require__(257);
+var DescriptorModelListAltView = __webpack_require__(258);
 
-var DefaultLayout = __webpack_require__(6);
-var TwoColumnsLayout = __webpack_require__(299);
+var DefaultLayout = __webpack_require__(4);
+var TwoColumnsLayout = __webpack_require__(300);
 var TitleView = __webpack_require__(7);
 var ScrollingMoreView = __webpack_require__(9);
 
@@ -40754,7 +40786,7 @@ module.exports = Router;
 
 
 /***/ }),
-/* 241 */
+/* 242 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -40770,20 +40802,20 @@ module.exports = Router;
 var Marionette = __webpack_require__(0);
 
 var DescriptorModelModel = __webpack_require__(15);
-var DescriptorModelCollection = __webpack_require__(58);
-var DescriptorGroupCollection = __webpack_require__(57);
-var DescriptorModelTypeCollection = __webpack_require__(228);
+var DescriptorModelCollection = __webpack_require__(59);
+var DescriptorGroupCollection = __webpack_require__(58);
+var DescriptorModelTypeCollection = __webpack_require__(229);
 
-var DescriptorModelAddView = __webpack_require__(253);
-var DescriptorModelDetailView = __webpack_require__(255);
-var DescriptorModelListView = __webpack_require__(256);
-var DescriptorModelTypeListView = __webpack_require__(259);
+var DescriptorModelAddView = __webpack_require__(254);
+var DescriptorModelDetailView = __webpack_require__(256);
+var DescriptorModelListView = __webpack_require__(257);
+var DescriptorModelTypeListView = __webpack_require__(260);
 
-var DescriptorGroupListAltView = __webpack_require__(246);
-var DescriptorTypeListAltView = __webpack_require__(61);
+var DescriptorGroupListAltView = __webpack_require__(247);
+var DescriptorTypeListAltView = __webpack_require__(62);
 
-var DefaultLayout = __webpack_require__(6);
-var LeftOneRightTwoLayout = __webpack_require__(296);
+var DefaultLayout = __webpack_require__(4);
+var LeftOneRightTwoLayout = __webpack_require__(297);
 var TitleView = __webpack_require__(7);
 var ScrollingMoreView = __webpack_require__(9);
 
@@ -40864,7 +40896,7 @@ module.exports = Router;
 
 
 /***/ }),
-/* 242 */
+/* 243 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -40880,12 +40912,12 @@ module.exports = Router;
 var Marionette = __webpack_require__(0);
 var DescriptorGroupModel = __webpack_require__(14);
 
-var Dialog = __webpack_require__(3);
+var Dialog = __webpack_require__(5);
 
 var View = Marionette.ItemView.extend({
     tagName: 'tr',
     className: 'element object descriptor-group',
-    template: __webpack_require__(394),
+    template: __webpack_require__(402),
 
     ui: {
         delete_descriptor_group: 'span.delete-descriptor-group',
@@ -40928,7 +40960,7 @@ var View = Marionette.ItemView.extend({
         }
 
         var ChangeName = Dialog.extend({
-            template: __webpack_require__(397),
+            template: __webpack_require__(405),
 
             attributes: {
                 id: "dlg_change_name",
@@ -40991,7 +41023,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 243 */
+/* 244 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -41009,7 +41041,7 @@ var Marionette = __webpack_require__(0);
 var View = Marionette.ItemView.extend({
     tagName: 'div',
     className: 'group-add',
-    template: __webpack_require__(395),
+    template: __webpack_require__(403),
 
     ui: {
         add_group_btn: 'span.add-group',
@@ -41083,7 +41115,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 244 */
+/* 245 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -41099,14 +41131,14 @@ module.exports = View;
 var Marionette = __webpack_require__(0);
 var DescriptorGroupModel = __webpack_require__(14);
 
-var DescriptorTypeCollection = __webpack_require__(59);
-var DescriptorTypeListAltView = __webpack_require__(61);
+var DescriptorTypeCollection = __webpack_require__(60);
+var DescriptorTypeListAltView = __webpack_require__(62);
 var ScrollingMoreView = __webpack_require__(9);
 
 var View = Marionette.ItemView.extend({
     tagName: 'tr',
     className: 'element object descriptor-group-alt',
-    template: __webpack_require__(396),
+    template: __webpack_require__(404),
 
     events: {
         'click': 'viewDescriptorTypes'
@@ -41136,7 +41168,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 245 */
+/* 246 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -41151,11 +41183,11 @@ module.exports = View;
 
 var Marionette = __webpack_require__(0);
 var DescriptorGroupModel = __webpack_require__(14);
-var DescriptorGroupView = __webpack_require__(242);
-var ScrollView = __webpack_require__(4);
+var DescriptorGroupView = __webpack_require__(243);
+var ScrollView = __webpack_require__(6);
 
 var View = ScrollView.extend({
-    template: __webpack_require__(398),
+    template: __webpack_require__(406),
     childView: DescriptorGroupView,
     childViewContainer: 'tbody.descriptor-group-list',
 
@@ -41172,7 +41204,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 246 */
+/* 247 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -41187,12 +41219,12 @@ module.exports = View;
 
 var Marionette = __webpack_require__(0);
 var DescriptorGroupModel = __webpack_require__(14);
-var DescriptorGroupAltView = __webpack_require__(244);
+var DescriptorGroupAltView = __webpack_require__(245);
 
-var ScrollView = __webpack_require__(4);
+var ScrollView = __webpack_require__(6);
 
 var View = ScrollView.extend({
-    template: __webpack_require__(399),
+    template: __webpack_require__(407),
     childView: DescriptorGroupAltView,
     childViewContainer: 'tbody.descriptor-group-list',
 
@@ -41215,7 +41247,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 247 */
+/* 248 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -41233,7 +41265,7 @@ var Marionette = __webpack_require__(0);
 var View = Marionette.ItemView.extend({
     tagName: 'div',
     className: 'type-add',
-    template: __webpack_require__(400),
+    template: __webpack_require__(408),
 
     ui: {
         add_type_btn: 'span.add-type',
@@ -41314,7 +41346,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 248 */
+/* 249 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -41329,13 +41361,13 @@ module.exports = View;
 
 var Marionette = __webpack_require__(0);
 
-var Dialog = __webpack_require__(3);
+var Dialog = __webpack_require__(5);
 var DescriptorMetaModelModel = __webpack_require__(17);
 
 var View = Marionette.ItemView.extend({
     tagName: 'tr',
     className: 'element object descriptor-meta-model',
-    template: __webpack_require__(401),
+    template: __webpack_require__(409),
 
     ui: {
         delete_descriptor_meta_model: 'span.delete-descriptor-meta-model',
@@ -41392,7 +41424,7 @@ var View = Marionette.ItemView.extend({
             var labels = data;
 
             var ChangeLabel = Dialog.extend({
-                template: __webpack_require__(403),
+                template: __webpack_require__(411),
                 templateHelpers/*templateContext*/: function () {
                     return {
                         labels: labels,
@@ -41484,7 +41516,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 249 */
+/* 250 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -41499,12 +41531,12 @@ module.exports = View;
 
 var Marionette = __webpack_require__(0);
 
-var Dialog = __webpack_require__(3);
+var Dialog = __webpack_require__(5);
 
 var View = Marionette.ItemView.extend({
     tagName: 'div',
     className: 'descriptor-meta-model-add',
-    template: __webpack_require__(402),
+    template: __webpack_require__(410),
 
     ui: {
         add: 'span.add-descriptor-meta-model',
@@ -41523,7 +41555,7 @@ var View = Marionette.ItemView.extend({
 
     addDescriptorMetaModel: function () {
         var DescriptorModelCreate = Dialog.extend({
-           template: __webpack_require__(404),
+           template: __webpack_require__(412),
 
             attributes: {
                 id: "dlg_create_descriptor_model",
@@ -41663,7 +41695,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 250 */
+/* 251 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -41681,7 +41713,7 @@ var DescriptorMetaModelModel = __webpack_require__(17);
 
 var View = Marionette.ItemView.extend({
     className: 'object descriptor-meta-model-detail',
-    template: __webpack_require__(405),
+    template: __webpack_require__(413),
 
     ui: {
         name: '#descriptor_meta_model_name',
@@ -41732,7 +41764,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 251 */
+/* 252 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -41747,12 +41779,12 @@ module.exports = View;
 
 var Marionette = __webpack_require__(0);
 var DescriptorMetaModelModel = __webpack_require__(17);
-var DescriptorMetaModelView = __webpack_require__(248);
+var DescriptorMetaModelView = __webpack_require__(249);
 
-var ScrollView = __webpack_require__(4);
+var ScrollView = __webpack_require__(6);
 
 var View = ScrollView.extend({
-    template: __webpack_require__(406),
+    template: __webpack_require__(414),
     childView: DescriptorMetaModelView,
     childViewContainer: 'tbody.descriptor-meta-model-list',
 
@@ -41767,7 +41799,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 252 */
+/* 253 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -41786,7 +41818,7 @@ var DescriptorModelModel = __webpack_require__(15);
 var View = Marionette.ItemView.extend({
     tagName: 'tr',
     className: 'element object descriptor-model',
-    template: __webpack_require__(407),
+    template: __webpack_require__(415),
 
     ui: {
         delete_descriptor_model: 'span.delete-descriptor-model',
@@ -41830,7 +41862,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 253 */
+/* 254 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -41848,7 +41880,7 @@ var Marionette = __webpack_require__(0);
 var View = Marionette.ItemView.extend({
     tagName: 'div',
     className: 'descriptor-model-add',
-    template: __webpack_require__(408),
+    template: __webpack_require__(416),
 
     ui: {
         add_descriptor_model_btn: 'span.add-descriptor-model',
@@ -41922,7 +41954,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 254 */
+/* 255 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -41941,7 +41973,7 @@ var DescriptorModelModel = __webpack_require__(15);
 var View = Marionette.ItemView.extend({
     tagName: 'tr',
     className: 'element object descriptor-model',
-    template: __webpack_require__(409),
+    template: __webpack_require__(417),
 
     attributes: {
         draggable: true,
@@ -41977,7 +42009,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 255 */
+/* 256 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -41995,7 +42027,7 @@ var DescriptorModelModel = __webpack_require__(15);
 
 var View = Marionette.ItemView.extend({
     className: 'object descriptor-model-detail',
-    template: __webpack_require__(410),
+    template: __webpack_require__(418),
 
     ui: {
         name: '#descriptor_model_name',
@@ -42050,7 +42082,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 256 */
+/* 257 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -42065,46 +42097,12 @@ module.exports = View;
 
 var Marionette = __webpack_require__(0);
 var DescriptorModelModel = __webpack_require__(15);
-var DescriptorModelView = __webpack_require__(252);
+var DescriptorModelView = __webpack_require__(253);
 
-var ScrollView = __webpack_require__(4);
-
-var View = ScrollView.extend({
-    template: __webpack_require__(411),
-    childView: DescriptorModelView,
-    childViewContainer: 'tbody.descriptor-model-list',
-
-    initialize: function() {
-        this.listenTo(this.collection, 'reset', this.render, this);
-
-        View.__super__.initialize.apply(this);
-    },
-});
-
-module.exports = View;
-
-
-/***/ }),
-/* 257 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/**
- * @file descriptormodellistalt.js
- * @brief Alternative list of model of descriptors view
- * @author Frederic SCHERMA
- * @date 2016-10-26
- * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
- * @license @todo
- * @details
- */
-
-var Marionette = __webpack_require__(0);
-var DescriptorModelView = __webpack_require__(254);
-
-var ScrollView = __webpack_require__(4);
+var ScrollView = __webpack_require__(6);
 
 var View = ScrollView.extend({
-    template: __webpack_require__(412),
+    template: __webpack_require__(419),
     childView: DescriptorModelView,
     childViewContainer: 'tbody.descriptor-model-list',
 
@@ -42123,6 +42121,40 @@ module.exports = View;
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
+ * @file descriptormodellistalt.js
+ * @brief Alternative list of model of descriptors view
+ * @author Frederic SCHERMA
+ * @date 2016-10-26
+ * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+ * @license @todo
+ * @details
+ */
+
+var Marionette = __webpack_require__(0);
+var DescriptorModelView = __webpack_require__(255);
+
+var ScrollView = __webpack_require__(6);
+
+var View = ScrollView.extend({
+    template: __webpack_require__(420),
+    childView: DescriptorModelView,
+    childViewContainer: 'tbody.descriptor-model-list',
+
+    initialize: function() {
+        this.listenTo(this.collection, 'reset', this.render, this);
+
+        View.__super__.initialize.apply(this);
+    },
+});
+
+module.exports = View;
+
+
+/***/ }),
+/* 259 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/**
  * @file descriptormodeltype.js
  * @brief Type of descriptor item view
  * @author Frederic SCHERMA
@@ -42133,7 +42165,7 @@ module.exports = View;
  */
 
 var Marionette = __webpack_require__(0);
-var Dialog = __webpack_require__(3);
+var Dialog = __webpack_require__(5);
 
 var DescriptorTypeModel = __webpack_require__(12);
 
@@ -42141,7 +42173,7 @@ var DescriptorTypeModel = __webpack_require__(12);
 var View = Marionette.ItemView.extend({
     tagName: 'tr',
     className: 'element object descriptor-model-type',
-    template: __webpack_require__(413),
+    template: __webpack_require__(421),
 
     attributes: {
         draggable: true
@@ -42255,7 +42287,7 @@ var View = Marionette.ItemView.extend({
             this.$el.css('border-bottom', 'initial');
 
             var DefinesLabel = Dialog.extend({
-                template: __webpack_require__(190),
+                template: __webpack_require__(191),
 
                 attributes: {
                     id: "dlg_define_label"
@@ -42432,7 +42464,7 @@ var View = Marionette.ItemView.extend({
             var labels = data;
 
             var ChangeLabel = Dialog.extend({
-                template: __webpack_require__(414),
+                template: __webpack_require__(422),
                 templateHelpers/*templateContext*/: function () {
                     return {
                         labels: labels
@@ -42556,7 +42588,7 @@ var View = Marionette.ItemView.extend({
             var condition = data;
 
             var ChangeCondition = Dialog.extend({
-                template: __webpack_require__(415),
+                template: __webpack_require__(423),
                 templateHelpers/*templateContext*/: function () {
                     return {
                         targets: model.collection.models,
@@ -42761,7 +42793,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 259 */
+/* 260 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -42775,14 +42807,14 @@ module.exports = View;
  */
 
 var Marionette = __webpack_require__(0);
-var ScrollView = __webpack_require__(4);
-var Dialog = __webpack_require__(3);
+var ScrollView = __webpack_require__(6);
+var Dialog = __webpack_require__(5);
 
-var DescriptorModelTypeModel = __webpack_require__(60);
-var DescriptorModelTypeView = __webpack_require__(258);
+var DescriptorModelTypeModel = __webpack_require__(61);
+var DescriptorModelTypeView = __webpack_require__(259);
 
 var View = ScrollView.extend({
-    template: __webpack_require__(416),
+    template: __webpack_require__(424),
     childView: DescriptorModelTypeView,
     childViewContainer: 'tbody.descriptor-model-type-list',
 
@@ -42887,7 +42919,7 @@ var View = ScrollView.extend({
             var code = elt.model.get('code');
 
             var DefinesLabel = Dialog.extend({
-                template: __webpack_require__(190),
+                template: __webpack_require__(191),
 
                 attributes: {
                     id: "dlg_define_label",
@@ -43022,7 +43054,7 @@ var View = ScrollView.extend({
 module.exports = View;
 
 /***/ }),
-/* 260 */
+/* 261 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -43036,14 +43068,14 @@ module.exports = View;
  */
 
 var Marionette = __webpack_require__(0);
-var Dialog = __webpack_require__(3);
+var Dialog = __webpack_require__(5);
 var DescriptorPanelModel = __webpack_require__(33);
 
 
 var View = Marionette.ItemView.extend({
     tagName: 'div',
     className: 'object descriptor-panel',
-    template: __webpack_require__(417),
+    template: __webpack_require__(425),
 
     attributes: {
         draggable: true,
@@ -43173,7 +43205,7 @@ var View = Marionette.ItemView.extend({
             this.ui.bottom_placeholder.css('display', 'none');
 
             var DefinesLabel = Dialog.extend({
-                template: __webpack_require__(191),
+                template: __webpack_require__(192),
 
                 attributes: {
                     id: "dlg_create_panel",
@@ -43350,7 +43382,7 @@ var View = Marionette.ItemView.extend({
             var labels = data;
 
             var ChangeLabel = Dialog.extend({
-                template: __webpack_require__(418),
+                template: __webpack_require__(426),
                 templateHelpers/*templateContext*/: function () {
                     return {
                         labels: labels,
@@ -43527,7 +43559,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 261 */
+/* 262 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -43541,14 +43573,14 @@ module.exports = View;
  */
 
 var Marionette = __webpack_require__(0);
-var ScrollView = __webpack_require__(4);
-var Dialog = __webpack_require__(3);
+var ScrollView = __webpack_require__(6);
+var Dialog = __webpack_require__(5);
 
 var DescriptorPanelModel = __webpack_require__(33);
-var DescriptorPanelView = __webpack_require__(260);
+var DescriptorPanelView = __webpack_require__(261);
 
 var View = ScrollView.extend({
-    template: __webpack_require__(419),
+    template: __webpack_require__(427),
     childView: DescriptorPanelView,
     childViewContainer: 'div.descriptor-panel-list',
 
@@ -43636,7 +43668,7 @@ var View = ScrollView.extend({
 
         if (elt.$el.hasClass('descriptor-model')) {
             var DefinesLabel = Dialog.extend({
-                template: __webpack_require__(191),
+                template: __webpack_require__(192),
 
                 attributes: {
                     id: "dlg_create_panel",
@@ -43771,7 +43803,7 @@ var View = ScrollView.extend({
 module.exports = View;
 
 /***/ }),
-/* 262 */
+/* 263 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -43790,7 +43822,7 @@ var DescriptorTypeModel = __webpack_require__(12);
 var View = Marionette.ItemView.extend({
     tagName: 'tr',
     className: 'element object descriptor-type',
-    template: __webpack_require__(420),
+    template: __webpack_require__(428),
 
     ui: {
         delete_descriptor_type: 'span.delete-descriptor-type',
@@ -43836,7 +43868,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 263 */
+/* 264 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -43855,7 +43887,7 @@ var DescriptorTypeModel = __webpack_require__(12);
 var View = Marionette.ItemView.extend({
     tagName: 'tr',
     className: 'element object descriptor-type',
-    template: __webpack_require__(421),
+    template: __webpack_require__(429),
 
     attributes: {
         draggable: true,
@@ -43888,7 +43920,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 264 */
+/* 265 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -43904,7 +43936,7 @@ module.exports = View;
 var Marionette = __webpack_require__(0);
 
 var Layout = Marionette.LayoutView.extend({
-    template: __webpack_require__(422),
+    template: __webpack_require__(430),
 
     ui: {
         name: '#descriptor_type_name',
@@ -44003,7 +44035,7 @@ module.exports = Layout;
 
 
 /***/ }),
-/* 265 */
+/* 266 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -44017,13 +44049,13 @@ module.exports = Layout;
  */
 
 var Marionette = __webpack_require__(0);
-var ScrollView = __webpack_require__(4);
+var ScrollView = __webpack_require__(6);
 
 var DescriptorTypeModel = __webpack_require__(12);
-var DescriptorTypeView = __webpack_require__(262);
+var DescriptorTypeView = __webpack_require__(263);
 
 var View = ScrollView.extend({
-    template: __webpack_require__(423),
+    template: __webpack_require__(431),
     childView: DescriptorTypeView,
     childViewContainer: 'tbody.descriptor-type-list',
 
@@ -44040,7 +44072,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 266 */
+/* 267 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -44056,12 +44088,12 @@ module.exports = View;
 var Marionette = __webpack_require__(0);
 var DescriptorValueModel = __webpack_require__(13);
 
-var Dialog = __webpack_require__(3);
+var Dialog = __webpack_require__(5);
 
 var View = Marionette.ItemView.extend({
     tagName: 'tr',
     className: 'element object descriptor-value',
-    template: __webpack_require__(425),
+    template: __webpack_require__(433),
     templateHelpers/*templateContext*/: function() {
         var ctx = this.model;
         ctx.format = this.model.collection.format;
@@ -44273,7 +44305,7 @@ var View = Marionette.ItemView.extend({
 module.exports = View;
 
 /***/ }),
-/* 267 */
+/* 268 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -44291,7 +44323,7 @@ var Marionette = __webpack_require__(0);
 var View = Marionette.ItemView.extend({
     tagName: 'div',
     className: 'type-add',
-    template: __webpack_require__(426),
+    template: __webpack_require__(434),
 
     ui: {
         add_value_btn: 'span.add-descriptor-value',
@@ -44341,7 +44373,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 268 */
+/* 269 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -44356,11 +44388,11 @@ module.exports = View;
 
 var Marionette = __webpack_require__(0);
 var DescriptorValueModel = __webpack_require__(13);
-var DescriptorValueView = __webpack_require__(266);
-var ScrollView = __webpack_require__(4);
+var DescriptorValueView = __webpack_require__(267);
+var ScrollView = __webpack_require__(6);
 
 var View = ScrollView.extend({
-    template: __webpack_require__(427),
+    template: __webpack_require__(435),
     childView: DescriptorValueView,
     childViewContainer: 'tbody.descriptor-value-list',
 
@@ -44439,7 +44471,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 269 */
+/* 270 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -44455,12 +44487,12 @@ module.exports = View;
 var Marionette = __webpack_require__(0);
 var DescriptorValueModel = __webpack_require__(13);
 
-var Dialog = __webpack_require__(3);
+var Dialog = __webpack_require__(5);
 
 var View = Marionette.ItemView.extend({
     tagName: 'tr',
     className: 'element object descriptor-value',
-    template: __webpack_require__(428),
+    template: __webpack_require__(436),
     templateHelpers/*templateContext*/: function() {
         var ctx = this.model;
         ctx.format = this.model.collection.format;
@@ -44661,7 +44693,7 @@ var View = Marionette.ItemView.extend({
 module.exports = View;
 
 /***/ }),
-/* 270 */
+/* 271 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -44676,11 +44708,11 @@ module.exports = View;
 
 var Marionette = __webpack_require__(0);
 var DescriptorValueModel = __webpack_require__(13);
-var DescriptorValueOrdinalView = __webpack_require__(269);
-var ScrollView = __webpack_require__(4);
+var DescriptorValueOrdinalView = __webpack_require__(270);
+var ScrollView = __webpack_require__(6);
 
 var View = ScrollView.extend({
-    template: __webpack_require__(429),
+    template: __webpack_require__(437),
     childView: DescriptorValueOrdinalView,
     childViewContainer: 'tbody.descriptor-value-list',
 
@@ -44763,7 +44795,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 271 */
+/* 272 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -44779,12 +44811,12 @@ module.exports = View;
 var Marionette = __webpack_require__(0);
 var DescriptorValueModel = __webpack_require__(13);
 
-var Dialog = __webpack_require__(3);
+var Dialog = __webpack_require__(5);
 
 var View = Marionette.ItemView.extend({
     tagName: 'tr',
     className: 'element object descriptor-value',
-    template: __webpack_require__(430),
+    template: __webpack_require__(438),
     templateHelpers/*templateContext*/: function() {
         var ctx = this.model;
         ctx.format = this.model.collection.format;
@@ -45167,7 +45199,7 @@ var View = Marionette.ItemView.extend({
 module.exports = View;
 
 /***/ }),
-/* 272 */
+/* 273 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -45182,11 +45214,11 @@ module.exports = View;
 
 var Marionette = __webpack_require__(0);
 var DescriptorValueModel = __webpack_require__(13);
-var DescriptorValuePairView = __webpack_require__(271);
-var ScrollView = __webpack_require__(4);
+var DescriptorValuePairView = __webpack_require__(272);
+var ScrollView = __webpack_require__(6);
 
 var View = ScrollView.extend({
-    template: __webpack_require__(431),
+    template: __webpack_require__(439),
     childView: DescriptorValuePairView,
     childViewContainer: 'tbody.descriptor-value-list',
 
@@ -45269,40 +45301,40 @@ module.exports = View;
 
 
 /***/ }),
-/* 273 */
+/* 274 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
-	"./boolean": 62,
-	"./boolean.js": 62,
-	"./date": 63,
-	"./date.js": 63,
-	"./datetime": 64,
-	"./datetime.js": 64,
+	"./boolean": 63,
+	"./boolean.js": 63,
+	"./date": 64,
+	"./date.js": 64,
+	"./datetime": 65,
+	"./datetime.js": 65,
 	"./descriptorformattype": 8,
 	"./descriptorformattype.js": 8,
 	"./descriptorformattypemanager": 36,
 	"./descriptorformattypemanager.js": 36,
-	"./entity": 65,
-	"./entity.js": 65,
-	"./enumordinal": 66,
-	"./enumordinal.js": 66,
-	"./enumpair": 67,
-	"./enumpair.js": 67,
+	"./entity": 66,
+	"./entity.js": 66,
+	"./enumordinal": 67,
+	"./enumordinal.js": 67,
+	"./enumpair": 68,
+	"./enumpair.js": 68,
 	"./enumsingle": 24,
 	"./enumsingle.js": 24,
-	"./gps": 68,
-	"./gps.js": 68,
+	"./gps": 69,
+	"./gps.js": 69,
 	"./numeric": 25,
 	"./numeric.js": 25,
-	"./numericrange": 69,
-	"./numericrange.js": 69,
-	"./ordinal": 70,
-	"./ordinal.js": 70,
-	"./string": 71,
-	"./string.js": 71,
-	"./time": 72,
-	"./time.js": 72
+	"./numericrange": 70,
+	"./numericrange.js": 70,
+	"./ordinal": 71,
+	"./ordinal.js": 71,
+	"./string": 72,
+	"./string.js": 72,
+	"./time": 73,
+	"./time.js": 73
 };
 function webpackContext(req) {
 	return __webpack_require__(webpackContextResolve(req));
@@ -45318,11 +45350,11 @@ webpackContext.keys = function webpackContextKeys() {
 };
 webpackContext.resolve = webpackContextResolve;
 module.exports = webpackContext;
-webpackContext.id = 273;
+webpackContext.id = 274;
 
 
 /***/ }),
-/* 274 */
+/* 275 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -45420,7 +45452,7 @@ module.exports = Popover;
 
 
 /***/ }),
-/* 275 */
+/* 276 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -45433,7 +45465,7 @@ module.exports = Popover;
  * @details
  */
 
-var ContentTypeModel = __webpack_require__(281);
+var ContentTypeModel = __webpack_require__(282);
 
 var Collection = Backbone.Collection.extend({
     url: application.baseUrl + 'main/content-type',
@@ -45482,7 +45514,7 @@ module.exports = Collection;
 
 
 /***/ }),
-/* 276 */
+/* 277 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -45495,7 +45527,7 @@ module.exports = Collection;
  * @details
  */
 
-var EventMessageModel = __webpack_require__(282);
+var EventMessageModel = __webpack_require__(283);
 
 var Collection = Backbone.Collection.extend({
     url: application.baseUrl + 'main/event-message/',
@@ -45533,7 +45565,7 @@ module.exports = Collection;
 
 
 /***/ }),
-/* 277 */
+/* 278 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -45546,7 +45578,7 @@ module.exports = Collection;
  * @details
  */
 
-var LanguageModel = __webpack_require__(283);
+var LanguageModel = __webpack_require__(284);
 
 var LanguageCollection = Backbone.Collection.extend({
     url: application.baseUrl + 'main/language',
@@ -45576,7 +45608,7 @@ module.exports = LanguageCollection;
 
 
 /***/ }),
-/* 278 */
+/* 279 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -45589,7 +45621,7 @@ module.exports = LanguageCollection;
  * @details
  */
 
-var InterfaceLanguageModel = __webpack_require__(285);
+var InterfaceLanguageModel = __webpack_require__(286);
 
 var Collection = Backbone.Collection.extend({
     url: application.baseUrl + 'main/ui/language',
@@ -45614,7 +45646,7 @@ module.exports = Collection;
 
 
 /***/ }),
-/* 279 */
+/* 280 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -45629,7 +45661,7 @@ module.exports = Collection;
 
 var Marionette = __webpack_require__(0);
 
-__webpack_require__(373);
+__webpack_require__(381);
 
 var MainModule = function() {
     this.name = "main";
@@ -45648,7 +45680,7 @@ MainModule.prototype = {
         // i18n if not english
         if (session.language !== "en") {
             try {
-                i18next.addResources(session.language, 'default', __webpack_require__(280)("./" + session.language + '/LC_MESSAGES/default.json'));
+                i18next.addResources(session.language, 'default', __webpack_require__(281)("./" + session.language + '/LC_MESSAGES/default.json'));
             } catch (e) {
                 console.warn("No translation found for the current language. Fallback to english language");
             }
@@ -45672,7 +45704,7 @@ MainModule.prototype = {
 
         var SelectOption = __webpack_require__(18);
 
-        var LanguageCollection = __webpack_require__(277);
+        var LanguageCollection = __webpack_require__(278);
         this.collections.languages = new LanguageCollection();
 
         this.views.languages = new SelectOption({
@@ -45680,7 +45712,7 @@ MainModule.prototype = {
             collection: this.collections.languages
         });
 
-        var InterfaceLanguageCollection = __webpack_require__(278);
+        var InterfaceLanguageCollection = __webpack_require__(279);
         this.collections.uilanguages = new InterfaceLanguageCollection();
 
         this.views.uilanguages = new SelectOption({
@@ -45688,7 +45720,7 @@ MainModule.prototype = {
             collection: this.collections.uilanguages
         });
 
-        var ContentTypeCollection = __webpack_require__(275);
+        var ContentTypeCollection = __webpack_require__(276);
         this.collections.contentTypes = new ContentTypeCollection();
 
         this.views.contentTypes = new SelectOption({
@@ -45696,27 +45728,27 @@ MainModule.prototype = {
             collection: this.collections.contentTypes
         });
 
-        var EventMessageCollection = __webpack_require__(276);
+        var EventMessageCollection = __webpack_require__(277);
         this.collections.eventMessages = new EventMessageCollection();
 
         //
         // routers
         //
 
-        var MainRouter = __webpack_require__(286);
+        var MainRouter = __webpack_require__(287);
         this.routers.main = new MainRouter();
 
-        var ProfileRouter = __webpack_require__(287);
+        var ProfileRouter = __webpack_require__(288);
         this.routers.profile = new ProfileRouter();
     },
 
     start: function(options) {
         // main view
-        var MainView = __webpack_require__(297);
+        var MainView = __webpack_require__(298);
         var mainView = new MainView();
         application.showView(mainView);
 
-        var LeftBarView = __webpack_require__(74);
+        var LeftBarView = __webpack_require__(75);
         mainView.getRegion('left').show(new LeftBarView());
     },
 
@@ -45727,7 +45759,7 @@ MainModule.prototype = {
     defaultLeftView: function() {
         var mainView = application.getView();
 
-        var LeftBarView = __webpack_require__(74);
+        var LeftBarView = __webpack_require__(75);
         mainView.getRegion('left').show(new LeftBarView());
     },
 
@@ -45741,12 +45773,12 @@ module.exports = MainModule;
 
 
 /***/ }),
-/* 280 */
+/* 281 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
-	"./en/LC_MESSAGES/default.json": 364,
-	"./fr/LC_MESSAGES/default.json": 365
+	"./en/LC_MESSAGES/default.json": 370,
+	"./fr/LC_MESSAGES/default.json": 371
 };
 function webpackContext(req) {
 	return __webpack_require__(webpackContextResolve(req));
@@ -45762,11 +45794,11 @@ webpackContext.keys = function webpackContextKeys() {
 };
 webpackContext.resolve = webpackContextResolve;
 module.exports = webpackContext;
-webpackContext.id = 280;
+webpackContext.id = 281;
 
 
 /***/ }),
-/* 281 */
+/* 282 */
 /***/ (function(module, exports) {
 
 /**
@@ -45794,7 +45826,7 @@ module.exports = Backbone.Model.extend({
 
 
 /***/ }),
-/* 282 */
+/* 283 */
 /***/ (function(module, exports) {
 
 /**
@@ -45826,7 +45858,7 @@ module.exports = Model;
 
 
 /***/ }),
-/* 283 */
+/* 284 */
 /***/ (function(module, exports) {
 
 /**
@@ -45852,7 +45884,7 @@ module.exports = Backbone.Model.extend({
 
 
 /***/ }),
-/* 284 */
+/* 285 */
 /***/ (function(module, exports) {
 
 /**
@@ -45883,7 +45915,7 @@ module.exports = Backbone.Model.extend({
 
 
 /***/ }),
-/* 285 */
+/* 286 */
 /***/ (function(module, exports) {
 
 /**
@@ -45909,7 +45941,7 @@ module.exports = Backbone.Model.extend({
 
 
 /***/ }),
-/* 286 */
+/* 287 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -45923,10 +45955,10 @@ module.exports = Backbone.Model.extend({
  */
 
 var Marionette = __webpack_require__(0);
-var AboutView = __webpack_require__(288);
-var HelpIndexView = __webpack_require__(295);
-var DefaultLayout = __webpack_require__(6);
-var QuarterLayout = __webpack_require__(298);
+var AboutView = __webpack_require__(289);
+var HelpIndexView = __webpack_require__(296);
+var DefaultLayout = __webpack_require__(4);
+var QuarterLayout = __webpack_require__(299);
 var TitleView = __webpack_require__(7);
 
 var Router = Marionette.AppRouter.extend({
@@ -45946,7 +45978,7 @@ var Router = Marionette.AppRouter.extend({
             tagName: 'div',
             className: 'home',
             attributes: { style: "height: 100%; padding: 5px;"},
-            template: __webpack_require__(450)
+            template: __webpack_require__(458)
         });
 
         var defaultLayout = new DefaultLayout({});
@@ -45960,10 +45992,10 @@ var Router = Marionette.AppRouter.extend({
         quarterLayout.getRegion('top-left').show(new HomeView());
 
         if (session.user.isAuth) {
-            var EventMessagePanelView = __webpack_require__(294);
+            var EventMessagePanelView = __webpack_require__(295);
             quarterLayout.getRegion('top-right').show(new EventMessagePanelView());
 
-            var ActionPanelView = __webpack_require__(289);
+            var ActionPanelView = __webpack_require__(290);
             quarterLayout.getRegion('bottom-left').show(new ActionPanelView());
         }
     },
@@ -45989,7 +46021,7 @@ module.exports = Router;
 
 
 /***/ }),
-/* 287 */
+/* 288 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -46003,10 +46035,10 @@ module.exports = Router;
  */
 
 var Marionette = __webpack_require__(0);
-var EditProfileView = __webpack_require__(291);
-var DefaultLayout = __webpack_require__(6);
+var EditProfileView = __webpack_require__(292);
+var DefaultLayout = __webpack_require__(4);
 var TitleView = __webpack_require__(7);
-var ProfileModel = __webpack_require__(284);
+var ProfileModel = __webpack_require__(285);
 
 var ProfileRouter = Marionette.AppRouter.extend({
     routes : {
@@ -46044,7 +46076,7 @@ module.exports = ProfileRouter;
 
 
 /***/ }),
-/* 288 */
+/* 289 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -46062,7 +46094,7 @@ var Marionette = __webpack_require__(0);
 var View = Marionette.LayoutView.extend({
     tagName: 'div',
     className: 'about',
-    template: __webpack_require__(440),
+    template: __webpack_require__(448),
 
     ui: {
     },
@@ -46081,7 +46113,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 289 */
+/* 290 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -46098,7 +46130,7 @@ var Marionette = __webpack_require__(0);
 
 var View = Marionette.LayoutView.extend({
     className: "action-panel",
-    template: __webpack_require__(441),
+    template: __webpack_require__(449),
 
     attributes: {
         'style': 'height: 100%; padding: 5px;'
@@ -46137,7 +46169,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 290 */
+/* 291 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -46150,7 +46182,7 @@ module.exports = View;
  * @details
  */
 
-var Dialog = __webpack_require__(3);
+var Dialog = __webpack_require__(5);
 
 /**
  * Use the dialog:confirm event of the this dialog to trigger the confirm action.
@@ -46159,7 +46191,7 @@ var View = Dialog.extend({
     attributes: {
         'id': 'dlg_confirm',
     },
-    template: __webpack_require__(442),
+    template: __webpack_require__(450),
     templateHelpers/*templateContext*/: function () {
         return {
             title: this.title,
@@ -46202,7 +46234,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 291 */
+/* 292 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -46220,7 +46252,7 @@ var Marionette = __webpack_require__(0);
 var View = Marionette.ItemView.extend({
     tagName: 'div',
     className: 'profile-edit',
-    template: __webpack_require__(445),
+    template: __webpack_require__(453),
 
     ui: {
         username: '#username',
@@ -46251,7 +46283,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 292 */
+/* 293 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -46268,7 +46300,7 @@ var Marionette = __webpack_require__(0);
 
 var View = Marionette.ItemView.extend({
     tagName: 'div',
-    template: __webpack_require__(446),
+    template: __webpack_require__(454),
     className: "object event-message",
 
     ui: {
@@ -46293,7 +46325,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 293 */
+/* 294 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -46307,7 +46339,7 @@ module.exports = View;
  */
 
 var Marionette = __webpack_require__(0);
-var EventMessageView = __webpack_require__(292);
+var EventMessageView = __webpack_require__(293);
 
 var View = Marionette.CollectionView.extend({
     className: "event-message-list",
@@ -46318,7 +46350,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 294 */
+/* 295 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -46332,11 +46364,11 @@ module.exports = View;
  */
 
 var Marionette = __webpack_require__(0);
-var Dialog = __webpack_require__(3);
+var Dialog = __webpack_require__(5);
 
 var View = Marionette.LayoutView.extend({
     className: "event-message-panel",
-    template: __webpack_require__(448),
+    template: __webpack_require__(456),
 
     attributes: {
         'style': 'height: 100%; padding: 5px;'
@@ -46361,7 +46393,7 @@ var View = Marionette.LayoutView.extend({
 
     onRender: function() {
         var view = this;
-        var EventMessageListView = __webpack_require__(293);
+        var EventMessageListView = __webpack_require__(294);
 
         application.main.collections.eventMessages.fetch().then(function() {
             view.getRegion('content').show(new EventMessageListView({collection: application.main.collections.eventMessages}));
@@ -46370,7 +46402,7 @@ var View = Marionette.LayoutView.extend({
 
     onAddEventMessage: function() {
         var CreateEventMessage = Dialog.extend({
-            template: __webpack_require__(447),
+            template: __webpack_require__(455),
 
             attributes: {
                 id: "dlg_create_event_message",
@@ -46459,7 +46491,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 295 */
+/* 296 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -46477,7 +46509,7 @@ var Marionette = __webpack_require__(0);
 var View = Marionette.LayoutView.extend({
     tagName: 'div',
     className: 'help-index',
-    template: __webpack_require__(449),
+    template: __webpack_require__(457),
 
     ui: {
     },
@@ -46496,7 +46528,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 296 */
+/* 297 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -46512,7 +46544,7 @@ module.exports = View;
 var Marionette = __webpack_require__(0);
 
 var TwoColumnsLayout = Marionette.LayoutView.extend({
-    template: __webpack_require__(452),
+    template: __webpack_require__(460),
     attributes: {
         style: "height: 100%;"
     },
@@ -46531,7 +46563,7 @@ module.exports = TwoColumnsLayout;
 
 
 /***/ }),
-/* 297 */
+/* 298 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -46547,7 +46579,7 @@ module.exports = TwoColumnsLayout;
 var Marionette = __webpack_require__(0);
 
 var MainLayout = Marionette.LayoutView.extend({
-    template: __webpack_require__(453),
+    template: __webpack_require__(461),
     className: "column",
 
     regions: {
@@ -46576,7 +46608,7 @@ module.exports = MainLayout;
 
 
 /***/ }),
-/* 298 */
+/* 299 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -46592,7 +46624,7 @@ module.exports = MainLayout;
 var Marionette = __webpack_require__(0);
 
 var View = Marionette.LayoutView.extend({
-    template: __webpack_require__(454),
+    template: __webpack_require__(462),
     attributes: {
         style: "height: 100%;"
     },
@@ -46609,7 +46641,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 299 */
+/* 300 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -46625,7 +46657,7 @@ module.exports = View;
 var Marionette = __webpack_require__(0);
 
 var TwoColumnsLayout = Marionette.LayoutView.extend({
-    template: __webpack_require__(456),
+    template: __webpack_require__(464),
     attributes: {
         style: "height: 100%;"
     },
@@ -46642,7 +46674,7 @@ module.exports = TwoColumnsLayout;
 
 
 /***/ }),
-/* 300 */
+/* 301 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -46657,10 +46689,10 @@ module.exports = TwoColumnsLayout;
 
 var Marionette = __webpack_require__(0);
 
-__webpack_require__(374);
+__webpack_require__(382);
 
-__webpack_require__(357);
-__webpack_require__(375);
+__webpack_require__(363);
+__webpack_require__(383);
 
 var MediaLibraryModule = function() {
     this.name = "medialibrary";
@@ -46677,7 +46709,7 @@ MediaLibraryModule.prototype = {
         // i18n if not english
         if (session.language !== "en") {
             try {
-                i18next.addResources(session.language, 'default', __webpack_require__(301)("./" + session.language + '/LC_MESSAGES/default.json'));
+                i18next.addResources(session.language, 'default', __webpack_require__(302)("./" + session.language + '/LC_MESSAGES/default.json'));
             } catch (e) {
                 console.warn("No translation found for the current language. Fallback to english language");
             }
@@ -46695,7 +46727,7 @@ MediaLibraryModule.prototype = {
 
         for (var i = 0; i < widgets.length; ++i) {
             var moduleName = widgets[i].replace('_', '').toLowerCase();
-            application.descriptor.widgets.registerElement(widgets[i], __webpack_require__(302)("./" + moduleName));
+            application.descriptor.widgets.registerElement(widgets[i], __webpack_require__(303)("./" + moduleName));
         }
 
         //
@@ -46718,39 +46750,12 @@ module.exports = MediaLibraryModule;
 
 
 /***/ }),
-/* 301 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var map = {
-	"./en/LC_MESSAGES/default.json": 366,
-	"./fr/LC_MESSAGES/default.json": 367
-};
-function webpackContext(req) {
-	return __webpack_require__(webpackContextResolve(req));
-};
-function webpackContextResolve(req) {
-	var id = map[req];
-	if(!(id + 1)) // check for number
-		throw new Error("Cannot find module '" + req + "'.");
-	return id;
-};
-webpackContext.keys = function webpackContextKeys() {
-	return Object.keys(map);
-};
-webpackContext.resolve = webpackContextResolve;
-module.exports = webpackContext;
-webpackContext.id = 301;
-
-
-/***/ }),
 /* 302 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
-	"./media": 75,
-	"./media.js": 75,
-	"./mediacollection": 76,
-	"./mediacollection.js": 76
+	"./en/LC_MESSAGES/default.json": 372,
+	"./fr/LC_MESSAGES/default.json": 373
 };
 function webpackContext(req) {
 	return __webpack_require__(webpackContextResolve(req));
@@ -46771,6 +46776,135 @@ webpackContext.id = 302;
 
 /***/ }),
 /* 303 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var map = {
+	"./media": 76,
+	"./media.js": 76,
+	"./mediacollection": 77,
+	"./mediacollection.js": 77
+};
+function webpackContext(req) {
+	return __webpack_require__(webpackContextResolve(req));
+};
+function webpackContextResolve(req) {
+	var id = map[req];
+	if(!(id + 1)) // check for number
+		throw new Error("Cannot find module '" + req + "'.");
+	return id;
+};
+webpackContext.keys = function webpackContextKeys() {
+	return Object.keys(map);
+};
+webpackContext.resolve = webpackContextResolve;
+module.exports = webpackContext;
+webpackContext.id = 303;
+
+
+/***/ }),
+/* 304 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/**
+ * @file establishment.js
+ * @brief Establishment collection
+ * @author Frederic SCHERMA
+ * @date 2017-02-28
+ * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+ * @license @todo
+ * @details
+ */
+
+var EstablishmentModel = __webpack_require__(38);
+
+var Collection = Backbone.Collection.extend({
+    url: application.baseUrl + 'organisation/establishment/',
+    model: EstablishmentModel,
+
+    comparator: 'name',
+
+    parse: function(data) {
+        this.prev = data.prev;
+        this.cursor = data.cursor;
+        this.next = data.next;
+        this.perms = data.perms;
+
+        return data.items;
+    },
+
+    fetch: function(options) {
+        options || (options = {});
+        var data = (options.data || {});
+
+        options.data = data;
+
+        this.cursor = options.data.cursor;
+        this.sort_by = options.data.sort_by;
+
+        if (this.filters) {
+            options.data.filters = JSON.stringify(this.filters)
+        }
+
+        return Backbone.Collection.prototype.fetch.call(this, options);
+    }
+});
+
+module.exports = Collection;
+
+
+/***/ }),
+/* 305 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/**
+ * @file organisation.js
+ * @brief Organisation collection
+ * @author Frederic SCHERMA
+ * @date 2017-02-28
+ * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+ * @license @todo
+ * @details
+ */
+
+var OrganisationModel = __webpack_require__(38);
+
+var Collection = Backbone.Collection.extend({
+    url: application.baseUrl + 'organisation/organisation/',
+    model: OrganisationModel,
+
+    comparator: 'name',
+
+    parse: function(data) {
+        this.prev = data.prev;
+        this.cursor = data.cursor;
+        this.next = data.next;
+        this.perms = data.perms;
+
+        return data.items;
+    },
+
+    fetch: function(options) {
+        options || (options = {});
+        var data = (options.data || {});
+
+        options.data = data;
+
+        this.cursor = options.data.cursor;
+        this.sort_by = options.data.sort_by;
+
+        if (this.filters) {
+            options.data.filters = JSON.stringify(this.filters)
+        }
+
+        return Backbone.Collection.prototype.fetch.call(this, options);
+    }
+});
+
+module.exports = Collection;
+
+
+/***/ }),
+/* 306 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -46798,7 +46932,7 @@ OrganisationModule.prototype = {
         // i18n if not english
         if (session.language !== "en") {
             try {
-                i18next.addResources(session.language, 'default', !(function webpackMissingModule() { var e = new Error("Cannot find module \"./locale\""); e.code = 'MODULE_NOT_FOUND';; throw e; }()));
+                i18next.addResources(session.language, 'default', __webpack_require__(307)("./" + session.language + '/LC_MESSAGES/default.json'));
             } catch (e) {
                 console.warn("No translation found for the current language. Fallback to english language");
             }
@@ -46818,8 +46952,8 @@ OrganisationModule.prototype = {
         // routers
         //
 
-        //var OrganisationRouter = require('./routers/organisation');
-        //this.routers.organisation = new OrganisationRouter();
+        var OrganisationRouter = __webpack_require__(310);
+        this.routers.organisation = new OrganisationRouter();
     },
 
     start: function(options) {
@@ -46835,20 +46969,143 @@ module.exports = OrganisationModule;
 
 
 /***/ }),
-/* 304 */
-/***/ (function(module, exports) {
+/* 307 */
+/***/ (function(module, exports, __webpack_require__) {
 
-function webpackEmptyContext(req) {
-	throw new Error("Cannot find module '" + req + "'.");
-}
-webpackEmptyContext.keys = function() { return []; };
-webpackEmptyContext.resolve = webpackEmptyContext;
-module.exports = webpackEmptyContext;
-webpackEmptyContext.id = 304;
+var map = {
+	"./en/LC_MESSAGES/default.json": 374,
+	"./fr/LC_MESSAGES/default.json": 375
+};
+function webpackContext(req) {
+	return __webpack_require__(webpackContextResolve(req));
+};
+function webpackContextResolve(req) {
+	var id = map[req];
+	if(!(id + 1)) // check for number
+		throw new Error("Cannot find module '" + req + "'.");
+	return id;
+};
+webpackContext.keys = function webpackContextKeys() {
+	return Object.keys(map);
+};
+webpackContext.resolve = webpackContextResolve;
+module.exports = webpackContext;
+webpackContext.id = 307;
 
 
 /***/ }),
-/* 305 */
+/* 308 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/**
+ * @file establishment.js
+ * @brief Establishment model
+ * @author Frederic SCHERMA
+ * @date 2017-02-28
+ * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+ * @license @todo
+ * @details
+ */
+
+var Backbone = __webpack_require__(3);
+
+var Model = Backbone.Model.extend({
+    url: function() {
+        if (this.isNew())
+            return application.baseUrl + 'organisation/establishment/';
+        else
+            return application.baseUrl + 'organisation/establishment/' + this.get('id') + '/';
+    },
+
+    defaults: {
+        id: null
+    }
+});
+
+module.exports = Model;
+
+
+/***/ }),
+/* 309 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/**
+ * @file grc.js
+ * @brief GRC model
+ * @author Frederic SCHERMA
+ * @date 2017-02-28
+ * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+ * @license @todo
+ * @details
+ */
+
+var Backbone = __webpack_require__(3);
+
+var Model = Backbone.Model.extend({
+    url: application.baseUrl + 'organisation/grc/',
+
+    defaults: {
+        id: null
+    }
+});
+
+module.exports = Model;
+
+
+/***/ }),
+/* 310 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/**
+ * @file organisation.js
+ * @brief Organisation router
+ * @author Frederic SCHERMA
+ * @date 2017-02-28
+ * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+ * @license @todo
+ * @details
+ */
+
+var Marionette = __webpack_require__(0);
+
+var GRCModel = __webpack_require__(309);
+var OrganisationModel = __webpack_require__(38);
+var EshtablishmentModel = __webpack_require__(308);
+
+var OrganisationCollection = __webpack_require__(305);
+var EstablishmentCollection = __webpack_require__(304);
+
+// var OrganisationListView = require('../views/organisationlist');
+
+var DefaultLayout = __webpack_require__(4);
+var ScrollingMoreView = __webpack_require__(9);
+var TitleView = __webpack_require__(7);
+
+var Router = Marionette.AppRouter.extend({
+    routes : {
+        "app/organisation/grc/": "getGRC",
+        "app/organisation/organisation/": "getOrganisationList",
+        "app/organisation/organisation/:id/": "getOrganisation"
+    },
+
+    getGRC: function () {
+        $.alert.error("Not yet !");
+    },
+
+    getOrganisationList : function() {
+        $.alert.error("Not yet !");
+    },
+
+    getOrganisation : function(id) {
+        $.alert.error("Not yet !");
+    }
+});
+
+module.exports = Router;
+
+
+/***/ }),
+/* 311 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -46861,7 +47118,7 @@ webpackEmptyContext.id = 304;
  * @details
  */
 
-var PermissionGroupModel = __webpack_require__(38);
+var PermissionGroupModel = __webpack_require__(39);
 
 var Collection = Backbone.Collection.extend({
     url: function() { return application.baseUrl + 'permission/group/'; },
@@ -46883,7 +47140,7 @@ module.exports = Collection;
 
 
 /***/ }),
-/* 306 */
+/* 312 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -46896,7 +47153,7 @@ module.exports = Collection;
  * @details
  */
 
-var PermissionGroupUserModel = __webpack_require__(39);
+var PermissionGroupUserModel = __webpack_require__(40);
 
 var Collection = Backbone.Collection.extend({
     url: function() { return application.baseUrl + 'permission/group/' + this.group_id + '/user/'; },
@@ -46921,7 +47178,7 @@ module.exports = Collection;
 
 
 /***/ }),
-/* 307 */
+/* 313 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -46934,7 +47191,7 @@ module.exports = Collection;
  * @details
  */
 
-var PermissionModel = __webpack_require__(40);
+var PermissionModel = __webpack_require__(41);
 
 var PermissionCollection = Backbone.Collection.extend({
     url: function() {
@@ -46962,7 +47219,7 @@ module.exports = PermissionCollection;
 
 
 /***/ }),
-/* 308 */
+/* 314 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -46975,7 +47232,7 @@ module.exports = PermissionCollection;
  * @details
  */
 
-var PermissionTypeModel = __webpack_require__(312);
+var PermissionTypeModel = __webpack_require__(318);
 
 var Collection = Backbone.Collection.extend({
     url: application.baseUrl + 'permission/type/',
@@ -47033,7 +47290,7 @@ module.exports = Collection;
 
 
 /***/ }),
-/* 309 */
+/* 315 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -47046,7 +47303,7 @@ module.exports = Collection;
  * @details
  */
 
-var PermissionUserModel = __webpack_require__(41);
+var PermissionUserModel = __webpack_require__(42);
 
 var Collection = Backbone.Collection.extend({
     url: function() {
@@ -47080,7 +47337,7 @@ module.exports = Collection;
 
 
 /***/ }),
-/* 310 */
+/* 316 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -47110,7 +47367,7 @@ PermissionModule.prototype = {
         // i18n if not english
         if (session.language !== "en") {
             try {
-                i18next.addResources(session.language, 'default', __webpack_require__(311)("./" + session.language + '/LC_MESSAGES/default.json'));
+                i18next.addResources(session.language, 'default', __webpack_require__(317)("./" + session.language + '/LC_MESSAGES/default.json'));
             } catch (e) {
                 console.warn("No translation found for the current language. Fallback to english language");
             }
@@ -47122,7 +47379,7 @@ PermissionModule.prototype = {
 
         var SelectOption = __webpack_require__(18);
 
-        var PermissionTypeCollection = __webpack_require__(308);
+        var PermissionTypeCollection = __webpack_require__(314);
         this.collections.permissionType = new PermissionTypeCollection();
 
         this.views.permissionType = new SelectOption({
@@ -47134,7 +47391,7 @@ PermissionModule.prototype = {
         // routers
         //
 
-        var PermissionRouter = __webpack_require__(313);
+        var PermissionRouter = __webpack_require__(319);
         this.routers.permission = new PermissionRouter();
     },
 
@@ -47150,12 +47407,12 @@ module.exports = PermissionModule;
 
 
 /***/ }),
-/* 311 */
+/* 317 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
-	"./en/LC_MESSAGES/default.json": 368,
-	"./fr/LC_MESSAGES/default.json": 369
+	"./en/LC_MESSAGES/default.json": 376,
+	"./fr/LC_MESSAGES/default.json": 377
 };
 function webpackContext(req) {
 	return __webpack_require__(webpackContextResolve(req));
@@ -47171,11 +47428,11 @@ webpackContext.keys = function webpackContextKeys() {
 };
 webpackContext.resolve = webpackContextResolve;
 module.exports = webpackContext;
-webpackContext.id = 311;
+webpackContext.id = 317;
 
 
 /***/ }),
-/* 312 */
+/* 318 */
 /***/ (function(module, exports) {
 
 /**
@@ -47202,7 +47459,7 @@ module.exports = Backbone.Model.extend({
 
 
 /***/ }),
-/* 313 */
+/* 319 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -47217,22 +47474,22 @@ module.exports = Backbone.Model.extend({
 
 var Marionette = __webpack_require__(0);
 
-var PermissionCollection = __webpack_require__(307);
-var PermissionUserCollection = __webpack_require__(309);
-var PermissionGroupCollection = __webpack_require__(305);
-var PermissionGroupUserCollection = __webpack_require__(306);
+var PermissionCollection = __webpack_require__(313);
+var PermissionUserCollection = __webpack_require__(315);
+var PermissionGroupCollection = __webpack_require__(311);
+var PermissionGroupUserCollection = __webpack_require__(312);
 
-var PermissionListView = __webpack_require__(322);
-var PermissionAddView = __webpack_require__(315);
-var PermissionUserListView = __webpack_require__(324);
-var PermissionGroupListView = __webpack_require__(318);
-var PermissionGroupUserListView = __webpack_require__(320);
-var PermissionGroupAddUserView = __webpack_require__(316);
-var PermissionAddGroupView = __webpack_require__(314);
+var PermissionListView = __webpack_require__(328);
+var PermissionAddView = __webpack_require__(321);
+var PermissionUserListView = __webpack_require__(330);
+var PermissionGroupListView = __webpack_require__(324);
+var PermissionGroupUserListView = __webpack_require__(326);
+var PermissionGroupAddUserView = __webpack_require__(322);
+var PermissionAddGroupView = __webpack_require__(320);
 
-var GroupModel = __webpack_require__(38);
+var GroupModel = __webpack_require__(39);
 
-var DefaultLayout = __webpack_require__(6);
+var DefaultLayout = __webpack_require__(4);
 var TitleView = __webpack_require__(7);
 var ScrollingMoreView = __webpack_require__(9);
 
@@ -47358,7 +47615,7 @@ module.exports = PermissionRouter;
 
 
 /***/ }),
-/* 314 */
+/* 320 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -47376,7 +47633,7 @@ var Marionette = __webpack_require__(0);
 var View = Marionette.ItemView.extend({
     tagName: 'div',
     className: 'group-add',
-    template: __webpack_require__(459),
+    template: __webpack_require__(467),
 
     ui: {
         add_group_btn: 'span.add-group',
@@ -47450,7 +47707,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 315 */
+/* 321 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -47468,7 +47725,7 @@ var Marionette = __webpack_require__(0);
 var View = Marionette.ItemView.extend({
     tagName: 'div',
     className: 'permission-add',
-    template: __webpack_require__(460),
+    template: __webpack_require__(468),
 
     ui: {
         add_permission: ".add-permission",
@@ -47532,7 +47789,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 316 */
+/* 322 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -47550,7 +47807,7 @@ var Marionette = __webpack_require__(0);
 var View = Marionette.ItemView.extend({
     tagName: 'div',
     className: 'user-add',
-    template: __webpack_require__(461),
+    template: __webpack_require__(469),
 
     ui: {
         add_user: ".add-user",
@@ -47634,7 +47891,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 317 */
+/* 323 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -47648,13 +47905,13 @@ module.exports = View;
  */
 
 var Marionette = __webpack_require__(0);
-var Dialog = __webpack_require__(3);
+var Dialog = __webpack_require__(5);
 
 
 var View = Marionette.ItemView.extend({
     tagName: 'tr',
     className: 'element object group',
-    template: __webpack_require__(462),
+    template: __webpack_require__(470),
 
     ui: {
         delete_group: 'span.delete-group',
@@ -47694,7 +47951,7 @@ var View = Marionette.ItemView.extend({
 
     onRenameGroup: function(e) {
         var ChangeName = Dialog.extend({
-            template: __webpack_require__(463),
+            template: __webpack_require__(471),
 
             attributes: {
                 id: "dlg_change_name"
@@ -47757,7 +48014,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 318 */
+/* 324 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -47771,12 +48028,12 @@ module.exports = View;
  */
 
 var Marionette = __webpack_require__(0);
-var PermissionGroupModel = __webpack_require__(38);
-var PermissionGroupView = __webpack_require__(317);
-var ScrollView = __webpack_require__(4);
+var PermissionGroupModel = __webpack_require__(39);
+var PermissionGroupView = __webpack_require__(323);
+var ScrollView = __webpack_require__(6);
 
 var View = ScrollView.extend({
-    template: __webpack_require__(464),
+    template: __webpack_require__(472),
     childView: PermissionGroupView,
     childViewContainer: 'tbody.permission-group-list',
 
@@ -47791,7 +48048,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 319 */
+/* 325 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -47805,12 +48062,12 @@ module.exports = View;
  */
 
 var Marionette = __webpack_require__(0);
-var PermissionGroupUserModel = __webpack_require__(39);
+var PermissionGroupUserModel = __webpack_require__(40);
 
 var View = Marionette.ItemView.extend({
     tagName: 'tr',
     className: 'element object user',
-    template: __webpack_require__(465),
+    template: __webpack_require__(473),
 
     ui: {
         remove_user: 'span.remove-user',
@@ -47846,7 +48103,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 320 */
+/* 326 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -47860,12 +48117,12 @@ module.exports = View;
  */
 
 var Marionette = __webpack_require__(0);
-var PermissionGroupUserModel = __webpack_require__(39);
-var PermissionGroupUserView = __webpack_require__(319);
-var ScrollView = __webpack_require__(4);
+var PermissionGroupUserModel = __webpack_require__(40);
+var PermissionGroupUserView = __webpack_require__(325);
+var ScrollView = __webpack_require__(6);
 
 var View = ScrollView.extend({
-    template: __webpack_require__(466),
+    template: __webpack_require__(474),
     childView: PermissionGroupUserView,
     childViewContainer: 'tbody.group-user-list',
 
@@ -47880,7 +48137,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 321 */
+/* 327 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -47894,11 +48151,11 @@ module.exports = View;
  */
 
 var Marionette = __webpack_require__(0);
-var PermissionModel = __webpack_require__(40);
+var PermissionModel = __webpack_require__(41);
 
 var View = Marionette.ItemView.extend({
     tagName: 'div',
-    template: __webpack_require__(467),
+    template: __webpack_require__(475),
 
     ui: {
         "remove_permission": ".remove-permission",
@@ -47920,7 +48177,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 322 */
+/* 328 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -47934,11 +48191,11 @@ module.exports = View;
  */
 
 var Marionette = __webpack_require__(0);
-var PermissionModel = __webpack_require__(40);
-var PermissionView = __webpack_require__(321);
+var PermissionModel = __webpack_require__(41);
+var PermissionView = __webpack_require__(327);
 
 var PermissionListView = Marionette.CompositeView.extend({
-    template: __webpack_require__(468),
+    template: __webpack_require__(476),
     childViewContainer: ".permission-list",
     childView: PermissionView,
 
@@ -47992,7 +48249,7 @@ module.exports = PermissionListView;
 
 
 /***/ }),
-/* 323 */
+/* 329 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -48006,12 +48263,12 @@ module.exports = PermissionListView;
  */
 
 var Marionette = __webpack_require__(0);
-var PermissionUserModel = __webpack_require__(41);
+var PermissionUserModel = __webpack_require__(42);
 
 var View = Marionette.ItemView.extend({
     tagName: 'tr',
     className: 'element object user',
-    template: __webpack_require__(469),
+    template: __webpack_require__(477),
 
     ui: {
         enable_user: 'span.enable-user',
@@ -48099,7 +48356,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 324 */
+/* 330 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -48113,12 +48370,12 @@ module.exports = View;
  */
 
 var Marionette = __webpack_require__(0);
-var PermissionUserModel = __webpack_require__(41);
-var PermissionUserView = __webpack_require__(323);
-var ScrollView = __webpack_require__(4);
+var PermissionUserModel = __webpack_require__(42);
+var PermissionUserView = __webpack_require__(329);
+var ScrollView = __webpack_require__(6);
 
 var View = ScrollView.extend({
-    template: __webpack_require__(470),
+    template: __webpack_require__(478),
     childView: PermissionUserView,
     childViewContainer: 'tbody.permission-user-list',
 
@@ -48133,7 +48390,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 325 */
+/* 331 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -48190,7 +48447,7 @@ module.exports = Collection;
 
 
 /***/ }),
-/* 326 */
+/* 332 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -48203,7 +48460,7 @@ module.exports = Collection;
  * @details
  */
 
-var TaxonEntityModel = __webpack_require__(332);
+var TaxonEntityModel = __webpack_require__(338);
 
 var Collection = Backbone.Collection.extend({
     url: function() {
@@ -48247,7 +48504,7 @@ module.exports = Collection;
 
 
 /***/ }),
-/* 327 */
+/* 333 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -48260,7 +48517,7 @@ module.exports = Collection;
  * @details
  */
 
-var TaxonRankModel = __webpack_require__(333);
+var TaxonRankModel = __webpack_require__(339);
 
 var TaxonRankCollection = Backbone.Collection.extend({
     url: application.baseUrl + 'taxonomy/rank/',
@@ -48287,7 +48544,7 @@ module.exports = TaxonRankCollection;
 
 
 /***/ }),
-/* 328 */
+/* 334 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -48300,7 +48557,7 @@ module.exports = TaxonRankCollection;
  * @details
  */
 
-var TaxonSynonymTypeModel = __webpack_require__(334);
+var TaxonSynonymTypeModel = __webpack_require__(340);
 
 var Collection = Backbone.Collection.extend({
     url: application.baseUrl + 'taxonomy/taxon-synonym-type/',
@@ -48327,7 +48584,7 @@ module.exports = Collection;
 
 
 /***/ }),
-/* 329 */
+/* 335 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -48342,11 +48599,11 @@ module.exports = Collection;
 
 var Marionette = __webpack_require__(0);
 var TaxonModel = __webpack_require__(10);
-var TaxonCollection = __webpack_require__(77);
-var TaxonListView = __webpack_require__(79);
-var DefaultLayout = __webpack_require__(6);
+var TaxonCollection = __webpack_require__(78);
+var TaxonListView = __webpack_require__(80);
+var DefaultLayout = __webpack_require__(4);
 var TitleView = __webpack_require__(7);
-var Dialog = __webpack_require__(3);
+var Dialog = __webpack_require__(5);
 
 var TaxonController = Marionette.Object.extend({
 
@@ -48355,7 +48612,7 @@ var TaxonController = Marionette.Object.extend({
             attributes: {
                 'id': 'dlg_create_taxon',
             },
-            template: __webpack_require__(474),
+            template: __webpack_require__(482),
 
             ui: {
                 create: "button.create",
@@ -48626,7 +48883,7 @@ module.exports = TaxonController;
 
 
 /***/ }),
-/* 330 */
+/* 336 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -48656,7 +48913,7 @@ TaxonomyModule.prototype = {
         // i18n if not english
         if (session.language !== "en") {
             try {
-                i18next.addResources(session.language, 'default', __webpack_require__(331)("./" + session.language + '/LC_MESSAGES/default.json'));
+                i18next.addResources(session.language, 'default', __webpack_require__(337)("./" + session.language + '/LC_MESSAGES/default.json'));
             } catch (e) {
                 console.warn("No translation found for the current language. Fallback to english language");
             }
@@ -48668,7 +48925,7 @@ TaxonomyModule.prototype = {
 
         var SelectOption = __webpack_require__(18);
 
-        var TaxonRankCollection = __webpack_require__(327);
+        var TaxonRankCollection = __webpack_require__(333);
         this.collections.taxonRanks = new TaxonRankCollection();
 
         this.views.taxonRanks = new SelectOption({
@@ -48676,7 +48933,7 @@ TaxonomyModule.prototype = {
             collection: this.collections.taxonRanks
         });
 
-        var TaxonSynonymTypeCollection = __webpack_require__(328);
+        var TaxonSynonymTypeCollection = __webpack_require__(334);
         this.collections.taxonSynonymTypes = new TaxonSynonymTypeCollection();
 
         this.views.taxonSynonymTypes = new SelectOption({
@@ -48688,17 +48945,17 @@ TaxonomyModule.prototype = {
         // controllers
         //
 
-        var TaxonController = __webpack_require__(329);
+        var TaxonController = __webpack_require__(335);
         this.controllers.taxon = new TaxonController();
 
         //
         // routers
         //
 
-        var TaxonRouter = __webpack_require__(335);
+        var TaxonRouter = __webpack_require__(341);
         this.routers.taxon = new TaxonRouter();
 
-        var TaxonCollection = __webpack_require__(77);
+        var TaxonCollection = __webpack_require__(78);
         this.collections.taxons = new TaxonCollection();
     },
 
@@ -48715,12 +48972,12 @@ module.exports = TaxonomyModule;
 
 
 /***/ }),
-/* 331 */
+/* 337 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
-	"./en/LC_MESSAGES/default.json": 370,
-	"./fr/LC_MESSAGES/default.json": 371
+	"./en/LC_MESSAGES/default.json": 378,
+	"./fr/LC_MESSAGES/default.json": 379
 };
 function webpackContext(req) {
 	return __webpack_require__(webpackContextResolve(req));
@@ -48736,11 +48993,11 @@ webpackContext.keys = function webpackContextKeys() {
 };
 webpackContext.resolve = webpackContextResolve;
 module.exports = webpackContext;
-webpackContext.id = 331;
+webpackContext.id = 337;
 
 
 /***/ }),
-/* 332 */
+/* 338 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -48753,7 +49010,7 @@ webpackContext.id = 331;
  * @details
  */
 
-var Backbone = __webpack_require__(5);
+var Backbone = __webpack_require__(3);
 
 var Model = Backbone.Model.extend({
     defaults: {
@@ -48771,7 +49028,7 @@ module.exports = Model;
 
 
 /***/ }),
-/* 333 */
+/* 339 */
 /***/ (function(module, exports) {
 
 /**
@@ -48798,7 +49055,7 @@ module.exports = Backbone.Model.extend({
 
 
 /***/ }),
-/* 334 */
+/* 340 */
 /***/ (function(module, exports) {
 
 /**
@@ -48825,7 +49082,7 @@ module.exports = Backbone.Model.extend({
 
 
 /***/ }),
-/* 335 */
+/* 341 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -48841,12 +49098,12 @@ module.exports = Backbone.Model.extend({
 var Marionette = __webpack_require__(0);
 var TaxonModel = __webpack_require__(10);
 
-var TaxonListView = __webpack_require__(79);
-var TaxonListFilterView = __webpack_require__(343);
+var TaxonListView = __webpack_require__(80);
+var TaxonListFilterView = __webpack_require__(349);
 
-var TaxonLayout = __webpack_require__(342);
+var TaxonLayout = __webpack_require__(348);
 
-var DefaultLayout = __webpack_require__(6);
+var DefaultLayout = __webpack_require__(4);
 var TitleView = __webpack_require__(7);
 var ScrollingMoreView = __webpack_require__(9);
 
@@ -48918,7 +49175,7 @@ module.exports = TaxonRouter;
 
 
 /***/ }),
-/* 336 */
+/* 342 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -48932,13 +49189,13 @@ module.exports = TaxonRouter;
  */
 
 var Marionette = __webpack_require__(0);
-var Dialog = __webpack_require__(3);
+var Dialog = __webpack_require__(5);
 
 var TaxonModel = __webpack_require__(10);
 
 var View = Marionette.ItemView.extend({
     tagName: 'div',
-    template: __webpack_require__(471),
+    template: __webpack_require__(479),
     templateHelpers/*templateContext*/: function () {
         return {
             taxon: this.taxon
@@ -48999,7 +49256,7 @@ var View = Marionette.ItemView.extend({
 
     onChangeParent: function() {
         var ChangeParent = Dialog.extend({
-            template: __webpack_require__(192),
+            template: __webpack_require__(193),
 
             attributes: {
                 id: "dlg_change_parent",
@@ -49102,7 +49359,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 337 */
+/* 343 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -49117,9 +49374,9 @@ module.exports = View;
 
 var Marionette = __webpack_require__(0);
 var TaxonModel = __webpack_require__(10);
-var TaxonView = __webpack_require__(78);
+var TaxonView = __webpack_require__(79);
 
-var ScrollView = __webpack_require__(4);
+var ScrollView = __webpack_require__(6);
 
 
 var View = ScrollView.extend({
@@ -49142,7 +49399,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 338 */
+/* 344 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -49207,7 +49464,7 @@ var View = DescribableEdit.extend({
         // contextual panel
         var contextLayout = application.getView().getRegion('right').currentView;
         if (!contextLayout) {
-            var DefaultLayout = __webpack_require__(6);
+            var DefaultLayout = __webpack_require__(4);
             contextLayout = new DefaultLayout();
             application.getView().getRegion('right').show(contextLayout);
         }
@@ -49217,7 +49474,7 @@ var View = DescribableEdit.extend({
 
         var actions = ['apply', 'cancel'];
 
-        var TaxonDescriptorContextView = __webpack_require__(42);
+        var TaxonDescriptorContextView = __webpack_require__(43);
         var contextView = new TaxonDescriptorContextView({actions: actions});
         contextLayout.getRegion('content').show(contextView);
 
@@ -49239,7 +49496,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 339 */
+/* 345 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -49254,12 +49511,12 @@ module.exports = View;
 
 var Marionette = __webpack_require__(0);
 
-var Dialog = __webpack_require__(3);
+var Dialog = __webpack_require__(5);
 
 var View = Marionette.ItemView.extend({
     tagName: 'div',
     className: 'object taxon',
-    template: __webpack_require__(478),
+    template: __webpack_require__(486),
 
     attributes: {
         style: "height: 25px; overflow-y: auto;"
@@ -49294,7 +49551,7 @@ var View = Marionette.ItemView.extend({
 
     onChangeParent: function () {
         var ChangeParent = Dialog.extend({
-            template: __webpack_require__(192),
+            template: __webpack_require__(193),
 
             attributes: {
                 id: "dlg_change_parent",
@@ -49393,7 +49650,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 340 */
+/* 346 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -49406,12 +49663,12 @@ module.exports = View;
  * @details
  */
 
-var TaxonEntityView = __webpack_require__(341);
-var ScrollView = __webpack_require__(4);
+var TaxonEntityView = __webpack_require__(347);
+var ScrollView = __webpack_require__(6);
 
 
 var View = ScrollView.extend({
-    template: __webpack_require__(479),
+    template: __webpack_require__(487),
     className: "taxon-entity-list",
     childView: TaxonEntityView,
     childViewContainer: 'tbody.entities-list',
@@ -49429,7 +49686,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 341 */
+/* 347 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -49446,7 +49703,7 @@ var Marionette = __webpack_require__(0);
 
 var View = Marionette.ItemView.extend({
     tagName: 'tr',
-    template: __webpack_require__(480),
+    template: __webpack_require__(488),
     className: "element",
     taxon: null,
 
@@ -49480,7 +49737,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 342 */
+/* 348 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -49498,7 +49755,7 @@ var ScrollingMoreView = __webpack_require__(9);
 var ContentBottomLayout = __webpack_require__(37);
 
 var Layout = Marionette.LayoutView.extend({
-    template: __webpack_require__(481),
+    template: __webpack_require__(489),
 
     attributes: {
         style: "height: 100%;"
@@ -49540,7 +49797,7 @@ var Layout = Marionette.LayoutView.extend({
 
     onDescriptorMetaModelChange: function(model, value) {
         if (value == null) {
-            var TaxonDescriptorCreateView = __webpack_require__(43);
+            var TaxonDescriptorCreateView = __webpack_require__(44);
             var taxonDescriptorCreateView = new TaxonDescriptorCreateView({model: model});
 
             this.getRegion('descriptors').show(taxonDescriptorCreateView);
@@ -49572,24 +49829,24 @@ var Layout = Marionette.LayoutView.extend({
         this.ui.tabs.on("hide.bs.tab", $.proxy(this.onHideTab, this));
 
         // details views
-        var TaxonDetailsView = __webpack_require__(339);
+        var TaxonDetailsView = __webpack_require__(345);
         this.getRegion('details').show(new TaxonDetailsView({model: this.model}));
 
         // synonyms tab
-        var TaxonSynonymsView = __webpack_require__(344);
+        var TaxonSynonymsView = __webpack_require__(350);
         this.getRegion('synonyms').show(new TaxonSynonymsView({model: this.model}));
 
         // descriptors tab
-        var TaxonDescriptorCreateView = __webpack_require__(43);
+        var TaxonDescriptorCreateView = __webpack_require__(44);
         var taxonDescriptorCreateView = new TaxonDescriptorCreateView({model: this.model});
         this.getRegion('descriptors').show(taxonDescriptorCreateView);
 
         // direct taxon sub-levels tab
-        var TaxonChildrenCollection = __webpack_require__(325);
+        var TaxonChildrenCollection = __webpack_require__(331);
         var taxonChildren = new TaxonChildrenCollection([], {model_id: this.model.id});
 
         taxonChildren.fetch().then(function() {
-            var TaxonChildrenView = __webpack_require__(337);
+            var TaxonChildrenView = __webpack_require__(343);
             var taxonChildrenView = new TaxonChildrenView({collection: taxonChildren, model: taxonLayout.model});
 
             var contentBottomLayout = new ContentBottomLayout();
@@ -49600,11 +49857,11 @@ var Layout = Marionette.LayoutView.extend({
         });
 
         // entities relating this taxon tab
-        var TaxonEntitiesCollection = __webpack_require__(326);
+        var TaxonEntitiesCollection = __webpack_require__(332);
         var taxonEntities = new TaxonEntitiesCollection([], {model_id: this.model.id});
 
         taxonEntities.fetch().then(function() {
-            var TaxonEntitiesView = __webpack_require__(340);
+            var TaxonEntitiesView = __webpack_require__(346);
             var taxonEntitiesView = new TaxonEntitiesView({collection: taxonEntities, model: taxonLayout.model});
 
             var contentBottomLayout = new ContentBottomLayout();
@@ -49646,7 +49903,7 @@ module.exports = Layout;
 
 
 /***/ }),
-/* 343 */
+/* 349 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -49664,7 +49921,7 @@ var Marionette = __webpack_require__(0);
 var View = Marionette.ItemView.extend({
     tagName: 'div',
     className: 'taxon-filter',
-    template: __webpack_require__(482),
+    template: __webpack_require__(490),
 
     ui: {
         filter_btn: 'button.taxon-filter',
@@ -49722,7 +49979,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 344 */
+/* 350 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -49736,12 +49993,12 @@ module.exports = View;
  */
 
 var Marionette = __webpack_require__(0);
-var Dialog = __webpack_require__(3);
+var Dialog = __webpack_require__(5);
 
 var View = Marionette.ItemView.extend({
     tagName: 'div',
     className: 'taxon-synonyms',
-    template: __webpack_require__(483),
+    template: __webpack_require__(491),
 
     ui: {
         "synonym_name": ".synonym-name",
@@ -49865,7 +50122,7 @@ var View = Marionette.ItemView.extend({
 
     onRenameSynonym: function(e) {
         var ChangeSynonym = Dialog.extend({
-            template: __webpack_require__(473),
+            template: __webpack_require__(481),
 
             attributes: {
                 id: "dlg_change_synonym",
@@ -49991,7 +50248,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 345 */
+/* 351 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Backbone.BabySitter
@@ -50006,7 +50263,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Backbone.Baby
 (function(root, factory) {
 
   if (true) {
-    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(5), __webpack_require__(2)], __WEBPACK_AMD_DEFINE_RESULT__ = function(Backbone, _) {
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(3), __webpack_require__(2)], __WEBPACK_AMD_DEFINE_RESULT__ = function(Backbone, _) {
       return factory(Backbone, _);
     }.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -50188,7 +50445,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Backbone.Baby
 
 
 /***/ }),
-/* 346 */
+/* 352 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Backbone.Wreqr (Backbone.Marionette)
@@ -50204,7 +50461,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Backbone.Wreq
 (function(root, factory) {
 
   if (true) {
-    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(5), __webpack_require__(2)], __WEBPACK_AMD_DEFINE_RESULT__ = function(Backbone, _) {
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(3), __webpack_require__(2)], __WEBPACK_AMD_DEFINE_RESULT__ = function(Backbone, _) {
       return factory(Backbone, _);
     }.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -50630,7 +50887,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Backbone.Wreq
 
 
 /***/ }),
-/* 347 */
+/* 353 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -50953,7 +51210,7 @@ var Connector = function (_EventEmitter) {
 exports.default = Connector;
 
 /***/ }),
-/* 348 */
+/* 354 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -51047,7 +51304,7 @@ var Connector = function (_EventEmitter) {
 exports.default = Connector;
 
 /***/ }),
-/* 349 */
+/* 355 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -51224,7 +51481,7 @@ var Interpolator = function () {
 exports.default = Interpolator;
 
 /***/ }),
-/* 350 */
+/* 356 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -51374,7 +51631,7 @@ var LanguageUtil = function () {
 exports.default = LanguageUtil;
 
 /***/ }),
-/* 351 */
+/* 357 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -51579,7 +51836,7 @@ var PluralResolver = function () {
 exports.default = PluralResolver;
 
 /***/ }),
-/* 352 */
+/* 358 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -51742,7 +51999,7 @@ var ResourceStore = function (_EventEmitter) {
 exports.default = ResourceStore;
 
 /***/ }),
-/* 353 */
+/* 359 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -51764,11 +52021,11 @@ var _EventEmitter2 = __webpack_require__(20);
 
 var _EventEmitter3 = _interopRequireDefault(_EventEmitter2);
 
-var _postProcessor = __webpack_require__(81);
+var _postProcessor = __webpack_require__(82);
 
 var _postProcessor2 = _interopRequireDefault(_postProcessor);
 
-var _v = __webpack_require__(80);
+var _v = __webpack_require__(81);
 
 var compat = _interopRequireWildcard(_v);
 
@@ -52055,7 +52312,7 @@ var Translator = function (_EventEmitter) {
 exports.default = Translator;
 
 /***/ }),
-/* 354 */
+/* 360 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -52137,7 +52394,7 @@ function transformOptions(options) {
 }
 
 /***/ }),
-/* 355 */
+/* 361 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -52159,41 +52416,41 @@ var _EventEmitter2 = __webpack_require__(20);
 
 var _EventEmitter3 = _interopRequireDefault(_EventEmitter2);
 
-var _ResourceStore = __webpack_require__(352);
+var _ResourceStore = __webpack_require__(358);
 
 var _ResourceStore2 = _interopRequireDefault(_ResourceStore);
 
-var _Translator = __webpack_require__(353);
+var _Translator = __webpack_require__(359);
 
 var _Translator2 = _interopRequireDefault(_Translator);
 
-var _LanguageUtils = __webpack_require__(350);
+var _LanguageUtils = __webpack_require__(356);
 
 var _LanguageUtils2 = _interopRequireDefault(_LanguageUtils);
 
-var _PluralResolver = __webpack_require__(351);
+var _PluralResolver = __webpack_require__(357);
 
 var _PluralResolver2 = _interopRequireDefault(_PluralResolver);
 
-var _Interpolator = __webpack_require__(349);
+var _Interpolator = __webpack_require__(355);
 
 var _Interpolator2 = _interopRequireDefault(_Interpolator);
 
-var _BackendConnector = __webpack_require__(347);
+var _BackendConnector = __webpack_require__(353);
 
 var _BackendConnector2 = _interopRequireDefault(_BackendConnector);
 
-var _CacheConnector = __webpack_require__(348);
+var _CacheConnector = __webpack_require__(354);
 
 var _CacheConnector2 = _interopRequireDefault(_CacheConnector);
 
-var _defaults2 = __webpack_require__(354);
+var _defaults2 = __webpack_require__(360);
 
-var _postProcessor = __webpack_require__(81);
+var _postProcessor = __webpack_require__(82);
 
 var _postProcessor2 = _interopRequireDefault(_postProcessor);
 
-var _v = __webpack_require__(80);
+var _v = __webpack_require__(81);
 
 var compat = _interopRequireWildcard(_v);
 
@@ -52544,7 +52801,7 @@ var I18n = function (_EventEmitter) {
 exports.default = new I18n();
 
 /***/ }),
-/* 356 */
+/* 362 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -52554,7 +52811,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _i18next = __webpack_require__(355);
+var _i18next = __webpack_require__(361);
 
 var _i18next2 = _interopRequireDefault(_i18next);
 
@@ -52563,7 +52820,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 exports.default = _i18next2.default;
 
 /***/ }),
-/* 357 */
+/* 363 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -54502,7 +54759,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 
 /***/ }),
-/* 358 */
+/* 364 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -54513,6 +54770,7 @@ module.exports = {
 	"64 characters max": "",
 	"3 characters min": "",
 	"Synonym of accession already used": "",
+	"Invalid characters (alphanumeric, _ and - only)": "",
 	"List of accessions": "",
 	"Accession": "",
 	"List of batches for the accession": "",
@@ -54536,11 +54794,12 @@ module.exports = {
 	"Xxx": "",
 	"Yyy": "",
 	"Zzz": "",
-	"Type": ""
+	"Type": "",
+	"Parents": ""
 };
 
 /***/ }),
-/* 359 */
+/* 365 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -54551,6 +54810,7 @@ module.exports = {
 	"64 characters max": "64 caractères maximum",
 	"3 characters min": "3 caractères minimum",
 	"Synonym of accession already used": "Synonyme d'accession déjà utilisé",
+	"Invalid characters (alphanumeric, _ and - only)": "",
 	"List of accessions": "Liste des accessions",
 	"Accession": "Accession",
 	"List of batches for the accession": "Liste des lots pour l'accession",
@@ -54574,11 +54834,12 @@ module.exports = {
 	"Xxx": "Xxx",
 	"Yyy": "Yyy",
 	"Zzz": "Zzz",
-	"Type": "Type"
+	"Type": "Type",
+	"Parents": ""
 };
 
 /***/ }),
-/* 360 */
+/* 366 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -54602,7 +54863,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 361 */
+/* 367 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -54626,7 +54887,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 362 */
+/* 368 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -54825,7 +55086,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 363 */
+/* 369 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -55024,7 +55285,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 364 */
+/* 370 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -55049,7 +55310,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 365 */
+/* 371 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -55074,7 +55335,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 366 */
+/* 372 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -55095,7 +55356,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 367 */
+/* 373 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -55116,7 +55377,19 @@ module.exports = {
 };
 
 /***/ }),
-/* 368 */
+/* 374 */
+/***/ (function(module, exports) {
+
+module.exports = {};
+
+/***/ }),
+/* 375 */
+/***/ (function(module, exports) {
+
+module.exports = {};
+
+/***/ }),
+/* 376 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -55147,7 +55420,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 369 */
+/* 377 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -55178,7 +55451,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 370 */
+/* 378 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -55193,7 +55466,6 @@ module.exports = {
 	"Delete all descriptors": "",
 	"Apply modifications": "",
 	"Cancel modifications": "",
-	"Invalid characters (alphanumeric, _ and - only)": "",
 	"3 characters min": "",
 	"64 characters max": "",
 	"Synonym of taxon already used": "",
@@ -55227,7 +55499,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 371 */
+/* 379 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -55242,7 +55514,6 @@ module.exports = {
 	"Delete all descriptors": "Supprimer tous les descripteurs",
 	"Apply modifications": "Appliquer les modifications",
 	"Cancel modifications": "Annuler les modifications",
-	"Invalid characters (alphanumeric, _ and - only)": "Caractères invalides (alphanumérique, _ et - seulement)",
 	"3 characters min": "3 caractères minimum",
 	"64 characters max": "64 caractères maximum",
 	"Synonym of taxon already used": "Synonyme de taxon existant",
@@ -55276,226 +55547,226 @@ module.exports = {
 };
 
 /***/ }),
-/* 372 */
+/* 380 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
-	"./af": 82,
-	"./af.js": 82,
-	"./ar": 88,
-	"./ar-dz": 83,
-	"./ar-dz.js": 83,
-	"./ar-ly": 84,
-	"./ar-ly.js": 84,
-	"./ar-ma": 85,
-	"./ar-ma.js": 85,
-	"./ar-sa": 86,
-	"./ar-sa.js": 86,
-	"./ar-tn": 87,
-	"./ar-tn.js": 87,
-	"./ar.js": 88,
-	"./az": 89,
-	"./az.js": 89,
-	"./be": 90,
-	"./be.js": 90,
-	"./bg": 91,
-	"./bg.js": 91,
-	"./bn": 92,
-	"./bn.js": 92,
-	"./bo": 93,
-	"./bo.js": 93,
-	"./br": 94,
-	"./br.js": 94,
-	"./bs": 95,
-	"./bs.js": 95,
-	"./ca": 96,
-	"./ca.js": 96,
-	"./cs": 97,
-	"./cs.js": 97,
-	"./cv": 98,
-	"./cv.js": 98,
-	"./cy": 99,
-	"./cy.js": 99,
-	"./da": 100,
-	"./da.js": 100,
-	"./de": 102,
-	"./de-at": 101,
-	"./de-at.js": 101,
-	"./de.js": 102,
-	"./dv": 103,
-	"./dv.js": 103,
-	"./el": 104,
-	"./el.js": 104,
-	"./en-au": 105,
-	"./en-au.js": 105,
-	"./en-ca": 106,
-	"./en-ca.js": 106,
-	"./en-gb": 107,
-	"./en-gb.js": 107,
-	"./en-ie": 108,
-	"./en-ie.js": 108,
-	"./en-nz": 109,
-	"./en-nz.js": 109,
-	"./eo": 110,
-	"./eo.js": 110,
-	"./es": 112,
-	"./es-do": 111,
-	"./es-do.js": 111,
-	"./es.js": 112,
-	"./et": 113,
-	"./et.js": 113,
-	"./eu": 114,
-	"./eu.js": 114,
-	"./fa": 115,
-	"./fa.js": 115,
-	"./fi": 116,
-	"./fi.js": 116,
-	"./fo": 117,
-	"./fo.js": 117,
-	"./fr": 120,
-	"./fr-ca": 118,
-	"./fr-ca.js": 118,
-	"./fr-ch": 119,
-	"./fr-ch.js": 119,
-	"./fr.js": 120,
-	"./fy": 121,
-	"./fy.js": 121,
-	"./gd": 122,
-	"./gd.js": 122,
-	"./gl": 123,
-	"./gl.js": 123,
-	"./he": 124,
-	"./he.js": 124,
-	"./hi": 125,
-	"./hi.js": 125,
-	"./hr": 126,
-	"./hr.js": 126,
-	"./hu": 127,
-	"./hu.js": 127,
-	"./hy-am": 128,
-	"./hy-am.js": 128,
-	"./id": 129,
-	"./id.js": 129,
-	"./is": 130,
-	"./is.js": 130,
-	"./it": 131,
-	"./it.js": 131,
-	"./ja": 132,
-	"./ja.js": 132,
-	"./jv": 133,
-	"./jv.js": 133,
-	"./ka": 134,
-	"./ka.js": 134,
-	"./kk": 135,
-	"./kk.js": 135,
-	"./km": 136,
-	"./km.js": 136,
-	"./ko": 137,
-	"./ko.js": 137,
-	"./ky": 138,
-	"./ky.js": 138,
-	"./lb": 139,
-	"./lb.js": 139,
-	"./lo": 140,
-	"./lo.js": 140,
-	"./lt": 141,
-	"./lt.js": 141,
-	"./lv": 142,
-	"./lv.js": 142,
-	"./me": 143,
-	"./me.js": 143,
-	"./mi": 144,
-	"./mi.js": 144,
-	"./mk": 145,
-	"./mk.js": 145,
-	"./ml": 146,
-	"./ml.js": 146,
-	"./mr": 147,
-	"./mr.js": 147,
-	"./ms": 149,
-	"./ms-my": 148,
-	"./ms-my.js": 148,
-	"./ms.js": 149,
-	"./my": 150,
-	"./my.js": 150,
-	"./nb": 151,
-	"./nb.js": 151,
-	"./ne": 152,
-	"./ne.js": 152,
-	"./nl": 154,
-	"./nl-be": 153,
-	"./nl-be.js": 153,
-	"./nl.js": 154,
-	"./nn": 155,
-	"./nn.js": 155,
-	"./pa-in": 156,
-	"./pa-in.js": 156,
-	"./pl": 157,
-	"./pl.js": 157,
-	"./pt": 159,
-	"./pt-br": 158,
-	"./pt-br.js": 158,
-	"./pt.js": 159,
-	"./ro": 160,
-	"./ro.js": 160,
-	"./ru": 161,
-	"./ru.js": 161,
-	"./se": 162,
-	"./se.js": 162,
-	"./si": 163,
-	"./si.js": 163,
-	"./sk": 164,
-	"./sk.js": 164,
-	"./sl": 165,
-	"./sl.js": 165,
-	"./sq": 166,
-	"./sq.js": 166,
-	"./sr": 168,
-	"./sr-cyrl": 167,
-	"./sr-cyrl.js": 167,
-	"./sr.js": 168,
-	"./ss": 169,
-	"./ss.js": 169,
-	"./sv": 170,
-	"./sv.js": 170,
-	"./sw": 171,
-	"./sw.js": 171,
-	"./ta": 172,
-	"./ta.js": 172,
-	"./te": 173,
-	"./te.js": 173,
-	"./tet": 174,
-	"./tet.js": 174,
-	"./th": 175,
-	"./th.js": 175,
-	"./tl-ph": 176,
-	"./tl-ph.js": 176,
-	"./tlh": 177,
-	"./tlh.js": 177,
-	"./tr": 178,
-	"./tr.js": 178,
-	"./tzl": 179,
-	"./tzl.js": 179,
-	"./tzm": 181,
-	"./tzm-latn": 180,
-	"./tzm-latn.js": 180,
-	"./tzm.js": 181,
-	"./uk": 182,
-	"./uk.js": 182,
-	"./uz": 183,
-	"./uz.js": 183,
-	"./vi": 184,
-	"./vi.js": 184,
-	"./x-pseudo": 185,
-	"./x-pseudo.js": 185,
-	"./yo": 186,
-	"./yo.js": 186,
-	"./zh-cn": 187,
-	"./zh-cn.js": 187,
-	"./zh-hk": 188,
-	"./zh-hk.js": 188,
-	"./zh-tw": 189,
-	"./zh-tw.js": 189
+	"./af": 83,
+	"./af.js": 83,
+	"./ar": 89,
+	"./ar-dz": 84,
+	"./ar-dz.js": 84,
+	"./ar-ly": 85,
+	"./ar-ly.js": 85,
+	"./ar-ma": 86,
+	"./ar-ma.js": 86,
+	"./ar-sa": 87,
+	"./ar-sa.js": 87,
+	"./ar-tn": 88,
+	"./ar-tn.js": 88,
+	"./ar.js": 89,
+	"./az": 90,
+	"./az.js": 90,
+	"./be": 91,
+	"./be.js": 91,
+	"./bg": 92,
+	"./bg.js": 92,
+	"./bn": 93,
+	"./bn.js": 93,
+	"./bo": 94,
+	"./bo.js": 94,
+	"./br": 95,
+	"./br.js": 95,
+	"./bs": 96,
+	"./bs.js": 96,
+	"./ca": 97,
+	"./ca.js": 97,
+	"./cs": 98,
+	"./cs.js": 98,
+	"./cv": 99,
+	"./cv.js": 99,
+	"./cy": 100,
+	"./cy.js": 100,
+	"./da": 101,
+	"./da.js": 101,
+	"./de": 103,
+	"./de-at": 102,
+	"./de-at.js": 102,
+	"./de.js": 103,
+	"./dv": 104,
+	"./dv.js": 104,
+	"./el": 105,
+	"./el.js": 105,
+	"./en-au": 106,
+	"./en-au.js": 106,
+	"./en-ca": 107,
+	"./en-ca.js": 107,
+	"./en-gb": 108,
+	"./en-gb.js": 108,
+	"./en-ie": 109,
+	"./en-ie.js": 109,
+	"./en-nz": 110,
+	"./en-nz.js": 110,
+	"./eo": 111,
+	"./eo.js": 111,
+	"./es": 113,
+	"./es-do": 112,
+	"./es-do.js": 112,
+	"./es.js": 113,
+	"./et": 114,
+	"./et.js": 114,
+	"./eu": 115,
+	"./eu.js": 115,
+	"./fa": 116,
+	"./fa.js": 116,
+	"./fi": 117,
+	"./fi.js": 117,
+	"./fo": 118,
+	"./fo.js": 118,
+	"./fr": 121,
+	"./fr-ca": 119,
+	"./fr-ca.js": 119,
+	"./fr-ch": 120,
+	"./fr-ch.js": 120,
+	"./fr.js": 121,
+	"./fy": 122,
+	"./fy.js": 122,
+	"./gd": 123,
+	"./gd.js": 123,
+	"./gl": 124,
+	"./gl.js": 124,
+	"./he": 125,
+	"./he.js": 125,
+	"./hi": 126,
+	"./hi.js": 126,
+	"./hr": 127,
+	"./hr.js": 127,
+	"./hu": 128,
+	"./hu.js": 128,
+	"./hy-am": 129,
+	"./hy-am.js": 129,
+	"./id": 130,
+	"./id.js": 130,
+	"./is": 131,
+	"./is.js": 131,
+	"./it": 132,
+	"./it.js": 132,
+	"./ja": 133,
+	"./ja.js": 133,
+	"./jv": 134,
+	"./jv.js": 134,
+	"./ka": 135,
+	"./ka.js": 135,
+	"./kk": 136,
+	"./kk.js": 136,
+	"./km": 137,
+	"./km.js": 137,
+	"./ko": 138,
+	"./ko.js": 138,
+	"./ky": 139,
+	"./ky.js": 139,
+	"./lb": 140,
+	"./lb.js": 140,
+	"./lo": 141,
+	"./lo.js": 141,
+	"./lt": 142,
+	"./lt.js": 142,
+	"./lv": 143,
+	"./lv.js": 143,
+	"./me": 144,
+	"./me.js": 144,
+	"./mi": 145,
+	"./mi.js": 145,
+	"./mk": 146,
+	"./mk.js": 146,
+	"./ml": 147,
+	"./ml.js": 147,
+	"./mr": 148,
+	"./mr.js": 148,
+	"./ms": 150,
+	"./ms-my": 149,
+	"./ms-my.js": 149,
+	"./ms.js": 150,
+	"./my": 151,
+	"./my.js": 151,
+	"./nb": 152,
+	"./nb.js": 152,
+	"./ne": 153,
+	"./ne.js": 153,
+	"./nl": 155,
+	"./nl-be": 154,
+	"./nl-be.js": 154,
+	"./nl.js": 155,
+	"./nn": 156,
+	"./nn.js": 156,
+	"./pa-in": 157,
+	"./pa-in.js": 157,
+	"./pl": 158,
+	"./pl.js": 158,
+	"./pt": 160,
+	"./pt-br": 159,
+	"./pt-br.js": 159,
+	"./pt.js": 160,
+	"./ro": 161,
+	"./ro.js": 161,
+	"./ru": 162,
+	"./ru.js": 162,
+	"./se": 163,
+	"./se.js": 163,
+	"./si": 164,
+	"./si.js": 164,
+	"./sk": 165,
+	"./sk.js": 165,
+	"./sl": 166,
+	"./sl.js": 166,
+	"./sq": 167,
+	"./sq.js": 167,
+	"./sr": 169,
+	"./sr-cyrl": 168,
+	"./sr-cyrl.js": 168,
+	"./sr.js": 169,
+	"./ss": 170,
+	"./ss.js": 170,
+	"./sv": 171,
+	"./sv.js": 171,
+	"./sw": 172,
+	"./sw.js": 172,
+	"./ta": 173,
+	"./ta.js": 173,
+	"./te": 174,
+	"./te.js": 174,
+	"./tet": 175,
+	"./tet.js": 175,
+	"./th": 176,
+	"./th.js": 176,
+	"./tl-ph": 177,
+	"./tl-ph.js": 177,
+	"./tlh": 178,
+	"./tlh.js": 178,
+	"./tr": 179,
+	"./tr.js": 179,
+	"./tzl": 180,
+	"./tzl.js": 180,
+	"./tzm": 182,
+	"./tzm-latn": 181,
+	"./tzm-latn.js": 181,
+	"./tzm.js": 182,
+	"./uk": 183,
+	"./uk.js": 183,
+	"./uz": 184,
+	"./uz.js": 184,
+	"./vi": 185,
+	"./vi.js": 185,
+	"./x-pseudo": 186,
+	"./x-pseudo.js": 186,
+	"./yo": 187,
+	"./yo.js": 187,
+	"./zh-cn": 188,
+	"./zh-cn.js": 188,
+	"./zh-hk": 189,
+	"./zh-hk.js": 189,
+	"./zh-tw": 190,
+	"./zh-tw.js": 190
 };
 function webpackContext(req) {
 	return __webpack_require__(webpackContextResolve(req));
@@ -55511,37 +55782,11 @@ webpackContext.keys = function webpackContextKeys() {
 };
 webpackContext.resolve = webpackContextResolve;
 module.exports = webpackContext;
-webpackContext.id = 372;
+webpackContext.id = 380;
 
 
 /***/ }),
-/* 373 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(44);
-if(typeof content === 'string') content = [[module.i, content, '']];
-// add the styles to the DOM
-var update = __webpack_require__(22)(content, {});
-if(content.locals) module.exports = content.locals;
-// Hot Module Replacement
-if(true) {
-	// When the styles change, update the <style> tags
-	if(!content.locals) {
-		module.hot.accept(44, function() {
-			var newContent = __webpack_require__(44);
-			if(typeof newContent === 'string') newContent = [[module.i, newContent, '']];
-			update(newContent);
-		});
-	}
-	// When the module is disposed, remove the <style> tags
-	module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 374 */
+/* 381 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
@@ -55567,13 +55812,13 @@ if(true) {
 }
 
 /***/ }),
-/* 375 */
+/* 382 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(47);
+var content = __webpack_require__(46);
 if(typeof content === 'string') content = [[module.i, content, '']];
 // add the styles to the DOM
 var update = __webpack_require__(22)(content, {});
@@ -55582,8 +55827,8 @@ if(content.locals) module.exports = content.locals;
 if(true) {
 	// When the styles change, update the <style> tags
 	if(!content.locals) {
-		module.hot.accept(47, function() {
-			var newContent = __webpack_require__(47);
+		module.hot.accept(46, function() {
+			var newContent = __webpack_require__(46);
 			if(typeof newContent === 'string') newContent = [[module.i, newContent, '']];
 			update(newContent);
 		});
@@ -55593,7 +55838,33 @@ if(true) {
 }
 
 /***/ }),
-/* 376 */
+/* 383 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(48);
+if(typeof content === 'string') content = [[module.i, content, '']];
+// add the styles to the DOM
+var update = __webpack_require__(22)(content, {});
+if(content.locals) module.exports = content.locals;
+// Hot Module Replacement
+if(true) {
+	// When the styles change, update the <style> tags
+	if(!content.locals) {
+		module.hot.accept(48, function() {
+			var newContent = __webpack_require__(48);
+			if(typeof newContent === 'string') newContent = [[module.i, newContent, '']];
+			update(newContent);
+		});
+	}
+	// When the module is disposed, remove the <style> tags
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 384 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -55625,7 +55896,7 @@ original source:
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 377 */
+/* 385 */
 /***/ (function(module, exports) {
 
 underscore
@@ -55655,7 +55926,7 @@ original source:
 
 
 /***/ }),
-/* 378 */
+/* 386 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -55701,7 +55972,7 @@ original source:
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 379 */
+/* 387 */
 /***/ (function(module, exports) {
 
 underscore
@@ -55734,7 +56005,7 @@ original source:
 
 
 /***/ }),
-/* 380 */
+/* 388 */
 /***/ (function(module, exports) {
 
 underscore
@@ -55764,7 +56035,7 @@ original source:
 
 
 /***/ }),
-/* 381 */
+/* 389 */
 /***/ (function(module, exports) {
 
 underscore
@@ -55796,7 +56067,7 @@ original source:
 
 
 /***/ }),
-/* 382 */
+/* 390 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -55844,7 +56115,7 @@ original source:
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 383 */
+/* 391 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -55869,7 +56140,7 @@ original source:
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 384 */
+/* 392 */
 /***/ (function(module, exports) {
 
 underscore
@@ -55902,7 +56173,7 @@ original source:
 
 
 /***/ }),
-/* 385 */
+/* 393 */
 /***/ (function(module, exports) {
 
 underscore
@@ -55932,7 +56203,7 @@ original source:
 
 
 /***/ }),
-/* 386 */
+/* 394 */
 /***/ (function(module, exports) {
 
 underscore
@@ -55962,7 +56233,7 @@ original source:
 
 
 /***/ }),
-/* 387 */
+/* 395 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -55991,7 +56262,7 @@ original source:
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 388 */
+/* 396 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -56073,7 +56344,7 @@ original source:
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 389 */
+/* 397 */
 /***/ (function(module, exports) {
 
 underscore
@@ -56105,7 +56376,7 @@ original source:
 
 
 /***/ }),
-/* 390 */
+/* 398 */
 /***/ (function(module, exports) {
 
 underscore
@@ -56135,7 +56406,7 @@ original source:
 
 
 /***/ }),
-/* 391 */
+/* 399 */
 /***/ (function(module, exports) {
 
 underscore
@@ -56169,7 +56440,7 @@ original source:
 
 
 /***/ }),
-/* 392 */
+/* 400 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -56269,7 +56540,7 @@ original source:
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 393 */
+/* 401 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -56373,7 +56644,7 @@ original source:
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 394 */
+/* 402 */
 /***/ (function(module, exports) {
 
 underscore
@@ -56403,7 +56674,7 @@ original source:
 
 
 /***/ }),
-/* 395 */
+/* 403 */
 /***/ (function(module, exports) {
 
 underscore
@@ -56425,7 +56696,7 @@ original source:
 
 
 /***/ }),
-/* 396 */
+/* 404 */
 /***/ (function(module, exports) {
 
 underscore
@@ -56455,7 +56726,7 @@ original source:
 
 
 /***/ }),
-/* 397 */
+/* 405 */
 /***/ (function(module, exports) {
 
 underscore
@@ -56485,7 +56756,7 @@ original source:
 
 
 /***/ }),
-/* 398 */
+/* 406 */
 /***/ (function(module, exports) {
 
 underscore
@@ -56511,7 +56782,7 @@ original source:
 
 
 /***/ }),
-/* 399 */
+/* 407 */
 /***/ (function(module, exports) {
 
 underscore
@@ -56537,7 +56808,7 @@ original source:
 
 
 /***/ }),
-/* 400 */
+/* 408 */
 /***/ (function(module, exports) {
 
 underscore
@@ -56559,7 +56830,7 @@ original source:
 
 
 /***/ }),
-/* 401 */
+/* 409 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -56596,7 +56867,7 @@ original source:
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 402 */
+/* 410 */
 /***/ (function(module, exports) {
 
 underscore
@@ -56618,7 +56889,7 @@ original source:
 
 
 /***/ }),
-/* 403 */
+/* 411 */
 /***/ (function(module, exports) {
 
 underscore
@@ -56675,7 +56946,7 @@ original source:
 
 
 /***/ }),
-/* 404 */
+/* 412 */
 /***/ (function(module, exports) {
 
 underscore
@@ -56709,7 +56980,7 @@ original source:
 
 
 /***/ }),
-/* 405 */
+/* 413 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -56742,7 +57013,7 @@ original source:
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 406 */
+/* 414 */
 /***/ (function(module, exports) {
 
 underscore
@@ -56774,7 +57045,7 @@ original source:
 
 
 /***/ }),
-/* 407 */
+/* 415 */
 /***/ (function(module, exports) {
 
 underscore
@@ -56806,7 +57077,7 @@ original source:
 
 
 /***/ }),
-/* 408 */
+/* 416 */
 /***/ (function(module, exports) {
 
 underscore
@@ -56828,7 +57099,7 @@ original source:
 
 
 /***/ }),
-/* 409 */
+/* 417 */
 /***/ (function(module, exports) {
 
 underscore
@@ -56858,7 +57129,7 @@ original source:
 
 
 /***/ }),
-/* 410 */
+/* 418 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -56895,7 +57166,7 @@ original source:
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 411 */
+/* 419 */
 /***/ (function(module, exports) {
 
 underscore
@@ -56925,7 +57196,7 @@ original source:
 
 
 /***/ }),
-/* 412 */
+/* 420 */
 /***/ (function(module, exports) {
 
 underscore
@@ -56955,7 +57226,7 @@ original source:
 
 
 /***/ }),
-/* 413 */
+/* 421 */
 /***/ (function(module, exports) {
 
 underscore
@@ -56994,7 +57265,7 @@ original source:
 
 
 /***/ }),
-/* 414 */
+/* 422 */
 /***/ (function(module, exports) {
 
 underscore
@@ -57051,7 +57322,7 @@ original source:
 
 
 /***/ }),
-/* 415 */
+/* 423 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -57099,7 +57370,7 @@ original source:
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 416 */
+/* 424 */
 /***/ (function(module, exports) {
 
 underscore
@@ -57131,7 +57402,7 @@ original source:
 
 
 /***/ }),
-/* 417 */
+/* 425 */
 /***/ (function(module, exports) {
 
 underscore
@@ -57161,7 +57432,7 @@ original source:
 
 
 /***/ }),
-/* 418 */
+/* 426 */
 /***/ (function(module, exports) {
 
 underscore
@@ -57216,7 +57487,7 @@ original source:
 
 
 /***/ }),
-/* 419 */
+/* 427 */
 /***/ (function(module, exports) {
 
 underscore
@@ -57240,7 +57511,7 @@ original source:
 
 
 /***/ }),
-/* 420 */
+/* 428 */
 /***/ (function(module, exports) {
 
 underscore
@@ -57283,7 +57554,7 @@ original source:
 
 
 /***/ }),
-/* 421 */
+/* 429 */
 /***/ (function(module, exports) {
 
 underscore
@@ -57324,7 +57595,7 @@ original source:
 
 
 /***/ }),
-/* 422 */
+/* 430 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -57363,7 +57634,7 @@ original source:
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 423 */
+/* 431 */
 /***/ (function(module, exports) {
 
 underscore
@@ -57393,7 +57664,7 @@ original source:
 
 
 /***/ }),
-/* 424 */
+/* 432 */
 /***/ (function(module, exports) {
 
 underscore
@@ -57423,7 +57694,7 @@ original source:
 
 
 /***/ }),
-/* 425 */
+/* 433 */
 /***/ (function(module, exports) {
 
 underscore
@@ -57456,7 +57727,7 @@ original source:
 
 
 /***/ }),
-/* 426 */
+/* 434 */
 /***/ (function(module, exports) {
 
 underscore
@@ -57478,7 +57749,7 @@ original source:
 
 
 /***/ }),
-/* 427 */
+/* 435 */
 /***/ (function(module, exports) {
 
 underscore
@@ -57504,7 +57775,7 @@ original source:
 
 
 /***/ }),
-/* 428 */
+/* 436 */
 /***/ (function(module, exports) {
 
 underscore
@@ -57532,7 +57803,7 @@ original source:
 
 
 /***/ }),
-/* 429 */
+/* 437 */
 /***/ (function(module, exports) {
 
 underscore
@@ -57560,7 +57831,7 @@ original source:
 
 
 /***/ }),
-/* 430 */
+/* 438 */
 /***/ (function(module, exports) {
 
 underscore
@@ -57595,7 +57866,7 @@ original source:
 
 
 /***/ }),
-/* 431 */
+/* 439 */
 /***/ (function(module, exports) {
 
 underscore
@@ -57623,7 +57894,7 @@ original source:
 
 
 /***/ }),
-/* 432 */
+/* 440 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -57648,7 +57919,7 @@ original source:
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 433 */
+/* 441 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -57709,7 +57980,7 @@ original source:
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 434 */
+/* 442 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -57774,7 +58045,7 @@ original source:
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 435 */
+/* 443 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -57817,7 +58088,7 @@ original source:
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 436 */
+/* 444 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -57846,7 +58117,7 @@ original source:
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 437 */
+/* 445 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -57879,7 +58150,7 @@ original source:
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 438 */
+/* 446 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -57910,7 +58181,7 @@ original source:
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 439 */
+/* 447 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -57935,7 +58206,7 @@ original source:
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 440 */
+/* 448 */
 /***/ (function(module, exports) {
 
 underscore
@@ -57957,7 +58228,7 @@ original source:
 
 
 /***/ }),
-/* 441 */
+/* 449 */
 /***/ (function(module, exports) {
 
 underscore
@@ -57981,7 +58252,7 @@ original source:
 
 
 /***/ }),
-/* 442 */
+/* 450 */
 /***/ (function(module, exports) {
 
 underscore
@@ -58011,7 +58282,7 @@ original source:
 
 
 /***/ }),
-/* 443 */
+/* 451 */
 /***/ (function(module, exports) {
 
 underscore
@@ -58033,7 +58304,7 @@ original source:
 
 
 /***/ }),
-/* 444 */
+/* 452 */
 /***/ (function(module, exports) {
 
 underscore
@@ -58055,7 +58326,7 @@ original source:
 
 
 /***/ }),
-/* 445 */
+/* 453 */
 /***/ (function(module, exports) {
 
 underscore
@@ -58085,7 +58356,7 @@ original source:
 
 
 /***/ }),
-/* 446 */
+/* 454 */
 /***/ (function(module, exports) {
 
 underscore
@@ -58111,7 +58382,7 @@ original source:
 
 
 /***/ }),
-/* 447 */
+/* 455 */
 /***/ (function(module, exports) {
 
 underscore
@@ -58164,7 +58435,7 @@ original source:
 
 
 /***/ }),
-/* 448 */
+/* 456 */
 /***/ (function(module, exports) {
 
 underscore
@@ -58188,7 +58459,7 @@ original source:
 
 
 /***/ }),
-/* 449 */
+/* 457 */
 /***/ (function(module, exports) {
 
 underscore
@@ -58210,7 +58481,7 @@ original source:
 
 
 /***/ }),
-/* 450 */
+/* 458 */
 /***/ (function(module, exports) {
 
 underscore
@@ -58236,7 +58507,7 @@ original source:
 
 
 /***/ }),
-/* 451 */
+/* 459 */
 /***/ (function(module, exports) {
 
 underscore
@@ -58260,7 +58531,7 @@ original source:
 
 
 /***/ }),
-/* 452 */
+/* 460 */
 /***/ (function(module, exports) {
 
 underscore
@@ -58282,7 +58553,7 @@ original source:
 
 
 /***/ }),
-/* 453 */
+/* 461 */
 /***/ (function(module, exports) {
 
 underscore
@@ -58304,7 +58575,7 @@ original source:
 
 
 /***/ }),
-/* 454 */
+/* 462 */
 /***/ (function(module, exports) {
 
 underscore
@@ -58326,7 +58597,7 @@ original source:
 
 
 /***/ }),
-/* 455 */
+/* 463 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -58374,7 +58645,7 @@ original source:
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 456 */
+/* 464 */
 /***/ (function(module, exports) {
 
 underscore
@@ -58396,7 +58667,7 @@ original source:
 
 
 /***/ }),
-/* 457 */
+/* 465 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -58435,7 +58706,7 @@ original source:
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 458 */
+/* 466 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -58476,7 +58747,7 @@ original source:
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 459 */
+/* 467 */
 /***/ (function(module, exports) {
 
 underscore
@@ -58498,7 +58769,7 @@ original source:
 
 
 /***/ }),
-/* 460 */
+/* 468 */
 /***/ (function(module, exports) {
 
 underscore
@@ -58520,7 +58791,7 @@ original source:
 
 
 /***/ }),
-/* 461 */
+/* 469 */
 /***/ (function(module, exports) {
 
 underscore
@@ -58542,7 +58813,7 @@ original source:
 
 
 /***/ }),
-/* 462 */
+/* 470 */
 /***/ (function(module, exports) {
 
 underscore
@@ -58576,7 +58847,7 @@ original source:
 
 
 /***/ }),
-/* 463 */
+/* 471 */
 /***/ (function(module, exports) {
 
 underscore
@@ -58606,7 +58877,7 @@ original source:
 
 
 /***/ }),
-/* 464 */
+/* 472 */
 /***/ (function(module, exports) {
 
 underscore
@@ -58634,7 +58905,7 @@ original source:
 
 
 /***/ }),
-/* 465 */
+/* 473 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -58665,7 +58936,7 @@ original source:
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 466 */
+/* 474 */
 /***/ (function(module, exports) {
 
 underscore
@@ -58693,7 +58964,7 @@ original source:
 
 
 /***/ }),
-/* 467 */
+/* 475 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -58755,7 +59026,7 @@ original source:
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 468 */
+/* 476 */
 /***/ (function(module, exports) {
 
 underscore
@@ -58777,7 +59048,7 @@ original source:
 
 
 /***/ }),
-/* 469 */
+/* 477 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -58831,7 +59102,7 @@ original source:
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 470 */
+/* 478 */
 /***/ (function(module, exports) {
 
 underscore
@@ -58867,7 +59138,7 @@ original source:
 
 
 /***/ }),
-/* 471 */
+/* 479 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -58909,7 +59180,7 @@ original source:
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 472 */
+/* 480 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -58951,7 +59222,7 @@ original source:
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 473 */
+/* 481 */
 /***/ (function(module, exports) {
 
 underscore
@@ -58981,7 +59252,7 @@ original source:
 
 
 /***/ }),
-/* 474 */
+/* 482 */
 /***/ (function(module, exports) {
 
 underscore
@@ -59017,7 +59288,7 @@ original source:
 
 
 /***/ }),
-/* 475 */
+/* 483 */
 /***/ (function(module, exports) {
 
 underscore
@@ -59050,7 +59321,7 @@ original source:
 
 
 /***/ }),
-/* 476 */
+/* 484 */
 /***/ (function(module, exports) {
 
 underscore
@@ -59076,7 +59347,7 @@ original source:
 
 
 /***/ }),
-/* 477 */
+/* 485 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -59116,7 +59387,7 @@ original source:
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 478 */
+/* 486 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -59156,7 +59427,7 @@ original source:
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 479 */
+/* 487 */
 /***/ (function(module, exports) {
 
 underscore
@@ -59182,7 +59453,7 @@ original source:
 
 
 /***/ }),
-/* 480 */
+/* 488 */
 /***/ (function(module, exports) {
 
 underscore
@@ -59212,7 +59483,7 @@ original source:
 
 
 /***/ }),
-/* 481 */
+/* 489 */
 /***/ (function(module, exports) {
 
 underscore
@@ -59242,7 +59513,7 @@ original source:
 
 
 /***/ }),
-/* 482 */
+/* 490 */
 /***/ (function(module, exports) {
 
 underscore
@@ -59264,7 +59535,7 @@ original source:
 
 
 /***/ }),
-/* 483 */
+/* 491 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -59312,7 +59583,7 @@ original source:
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 484 */
+/* 492 */
 /***/ (function(module, exports) {
 
 var g;
@@ -59339,7 +59610,7 @@ module.exports = g;
 
 
 /***/ }),
-/* 485 */
+/* 493 */
 /***/ (function(module, exports) {
 
 module.exports = function(module) {
@@ -59367,7 +59638,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 486 */
+/* 494 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {/**
@@ -59380,27 +59651,27 @@ module.exports = function(module) {
  * @details
  */
 
-var Backbone = __webpack_require__(5);
+var Backbone = __webpack_require__(3);
 var Marionette = __webpack_require__(0);
 
 underscore = __webpack_require__(2);
 
-i18next = __webpack_require__(196);
-Logger = __webpack_require__(197);
+i18next = __webpack_require__(197);
+Logger = __webpack_require__(198);
 
 // select2 as jquery plugin ($.select2)
-__webpack_require__(199);
-__webpack_require__(202);
+__webpack_require__(200);
+__webpack_require__(203);
 
 // alphanum validator ($.alphanum)
-__webpack_require__(194);
+__webpack_require__(195);
 
 // make table header fixed position ($.stickyTableHeaders)
-__webpack_require__(200);
+__webpack_require__(201);
 
 // datetime picker ($.datetimepicker)
-__webpack_require__(195);
-__webpack_require__(201);
+__webpack_require__(196);
+__webpack_require__(202);
 
 // moment
 moment = __webpack_require__(1);
@@ -59576,7 +59847,7 @@ application = new Marionette.Application({
 
         // select2
         if (session.language === "fr") {
-            __webpack_require__(198);
+            __webpack_require__(199);
         } else {  // default to english
         }
 
@@ -59597,12 +59868,13 @@ application = new Marionette.Application({
             var module = session.modules[i];
 
             try {
-                var Module = __webpack_require__(193)("./" + module + '/init');
+                var Module = __webpack_require__(194)("./" + module + '/init');
                 this[module] = new Module();
             } catch (e) {
                 var msg = gt.gettext("Missing client module") + " : " + module + ". " +
                           gt.gettext("Please contact your administrator.");
 
+                console.error(e);
                 $.alert.error(msg);
             }
 
@@ -59615,6 +59887,7 @@ application = new Marionette.Application({
                     var msg = gt.gettext("Module initialization failed") + " : " + module + ". " +
                               gt.gettext("Please contact your administrator.");
 
+                    console.error(e);
                     $.alert.error(msg);
                 }
             }
@@ -59635,6 +59908,7 @@ application = new Marionette.Application({
                     var msg = gt.gettext("Module startup failed") + " : " + module + ". " +
                               gt.gettext("Please contact your administrator.");
 
+                    console.error(e);
                     window.alert(msg);
                 }
             }
