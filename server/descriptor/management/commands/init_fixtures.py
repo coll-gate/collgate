@@ -37,7 +37,7 @@ class Command(BaseCommand):
             # avoid audit during fixture processing
             unregister_models(module.name)
 
-        from .fixtures import manager
+        from descriptor.fixtures import manager
         fixture_manager = manager.FixtureManager()
 
         for module in module_manager.modules:

@@ -10,12 +10,11 @@ from __future__ import unicode_literals, absolute_import, division
 
 import json
 import sys
-import importlib
-import colorama
+
 from django.contrib.contenttypes.models import ContentType
 
-from descriptor.models import DescriptorGroup, DescriptorType, DescriptorModel, DescriptorModelType, DescriptorMetaModel, \
-    DescriptorPanel
+from ..models import DescriptorGroup, DescriptorType, DescriptorModel, DescriptorModelType,\
+    DescriptorMetaModel, DescriptorPanel
 
 
 class FixtureManager:
