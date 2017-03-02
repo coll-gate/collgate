@@ -11,6 +11,8 @@ from igdectk.module.module import Module
 
 from importlib import import_module
 
+from igdectk.module.manager import module_manager
+
 from . import instance
 
 
@@ -26,7 +28,7 @@ class CollGateGeolocation(ApplicationMain):
 
         package_name, module_name, class_name = self.get_setting('geolocation_manager').split('.')
 
-        module = import_module(self.name +'.'+ package_name + '.' + module_name)
+        module = import_module(self.name + '.' + package_name + '.' + module_name)
 
         self.geolocation_manager = module.GeolocationManager()
 
@@ -40,3 +42,5 @@ class CollGateGeolocation(ApplicationMain):
             'geolocation_views'
             )
         )
+
+        module_manager.register_module(geolocation_module)

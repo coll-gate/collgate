@@ -2,18 +2,9 @@
 #
 # Copyright (c) 2017 INRA UMR1095 GDEC
 
-
 """
 Setup the value for the organisation meta-models and types of models of descriptors.
 """
-import json
-import sys
-
-from django.contrib.contenttypes.models import ContentType
-
-from descriptor.models import DescriptorMetaModel, DescriptorPanel
-from .descriptorsmodels import MODELS
-
 
 META_MODELS = {
     'organisation': {
@@ -47,41 +38,5 @@ META_MODELS = {
 }
 
 
-def fixture():
-    sys.stdout.write(" + Create organisation meta-models...\n")
-
-    for k, v in META_MODELS.items():
-        meta_model_name = v['name']
-
-        content_type = ContentType.objects.get_by_natural_key(*v['target'].split('.'))
-
-        meta_model, created = DescriptorMetaModel.objects.update_or_create(
-            name=meta_model_name,
-            defaults={
-                'label': json.dumps(v['label']),
-                'description': v['description'],
-                'target': content_type}
-        )
-
-        position = 0
-
-        for panel in v['panels']:
-            descriptor_model = MODELS[panel['descriptor_model_name']]
-
-            panel_name = "%i_%i" % (meta_model.id, descriptor_model['id'])
-
-            panel_model, created = DescriptorPanel.objects.update_or_create(
-                name=panel_name,
-                defaults={
-                    'descriptor_meta_model': meta_model,
-                    'descriptor_model_id': descriptor_model['id'],
-                    'label': json.dumps(panel['label']),
-                    'position': position
-                }
-            )
-
-            panel['id'] = panel_model.id
-            position += 1
-
-        # keep id for others fixtures
-        v['id'] = meta_model.id
+def fixture(fixture_manager):
+    fixture_manager.create_or_update_meta_models(META_MODELS)

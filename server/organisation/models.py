@@ -19,10 +19,10 @@ class Organisation(DescribableEntity):
     """
 
     # Descriptor type code
-    TYPE_CODE = "IN_002"
+    TYPE_CODE = "OR_001"
 
     # undefined type as constant
-    TYPE_UNDEFINED = "IN_002:0000001"
+    TYPE_UNDEFINED = "OR_001:0000001"
 
     # type of organisation is related to the type of descriptor IN_002 that is an 'enum_single'.
     type = models.CharField(max_length=16, default=TYPE_UNDEFINED)

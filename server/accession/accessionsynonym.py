@@ -58,7 +58,7 @@ def synonym_type(request):
     synonym_types = []
 
     # stored in a type of descriptor
-    descriptor_type = get_object_or_404(DescriptorType, code='IN_001')
+    descriptor_type = get_object_or_404(DescriptorType, code=AccessionSynonym.TYPE_CODE)
 
     cursor_prev, cursor_next, values = descriptor_type.get_values(sort_by='id')
 

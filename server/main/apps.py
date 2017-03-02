@@ -51,4 +51,4 @@ class CollGateMain(ApplicationMain):
             MenuEntry('about', _('About HOGR...'), "#main/about/", Glyph.INFO_SIGN, 101))
         main_module.add_menu(menu_help)
 
-        module_manager.register_menu(main_module)
+        module_manager.register_module(main_module)

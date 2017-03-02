@@ -84,13 +84,13 @@ class AccessionSynonym(Entity):
     NAME_VALIDATOR = {"type": "string", "minLength": 3, "maxLength": 128, "pattern": r"^\S+.+\S+$"}
 
     # accession synonym type validator
-    TYPE_VALIDATOR = {"type:": "string", 'minLength': 14, 'maxLength': 32, "pattern": r"^IN_001:[0-9]{7,}$"}
+    TYPE_VALIDATOR = {"type:": "string", 'minLength': 14, 'maxLength': 32, "pattern": r"^AC_001:[0-9]{7,}$"}
 
     # Descriptor type code
-    TYPE_CODE = "IN_001"
+    TYPE_CODE = "AC_001"
 
     # primary type as constant
-    TYPE_PRIMARY = "IN_001:0000001"
+    TYPE_PRIMARY = "AC_001:0000001"
 
     # related accession
     accession = models.ForeignKey(Accession, related_name="synonyms")
@@ -101,7 +101,7 @@ class AccessionSynonym(Entity):
     # language code
     language = models.CharField(max_length=8, choices=Languages.choices(), default=Languages.EN.value)
 
-    # type of synonym is related to the type of descriptor IN_001 that is an 'enum_single'.
+    # type of synonym is related to the type of descriptor TYPE_CODE that is an 'enum_single'.
     type = models.CharField(max_length=64, default=TYPE_PRIMARY)
 
     class Meta:

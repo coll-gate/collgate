@@ -1,21 +1,19 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2016 INRA UMR1095 GDEC
+# Copyright (c) 2017 INRA UMR1095 GDEC
 
 """
-Setup the groups of descriptors.
+Setup the groups of geolocation.
 """
+
+import sys
+
+from descriptor.models import DescriptorGroup
 
 GROUPS = {
     'common': {
         'id': None,
         'name': 'common',
-        'can_delete': False,
-        'can_modify': False,
-    },
-    'accession': {
-        'id': None,
-        'name': 'accession',
         'can_delete': False,
         'can_modify': False,
     },

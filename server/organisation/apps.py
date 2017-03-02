@@ -55,4 +55,4 @@ class CollGateOrganisation(ApplicationMain):
                       order=2))
         organisation_module.add_menu(menu_organisation)
 
-        module_manager.register_menu(organisation_module)
+        module_manager.register_module(organisation_module)

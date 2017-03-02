@@ -67,4 +67,4 @@ class CollGateMediaLibrary(ApplicationMain):
         from descriptor.descriptorformattype import DescriptorFormatTypeManager
         DescriptorFormatTypeManager.register(self.format_types)
 
-        module_manager.register_menu(media_library_module)
+        module_manager.register_module(media_library_module)

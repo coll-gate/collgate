@@ -44,7 +44,7 @@ var View = Marionette.ItemView.extend({
         application.main.views.languages.htmlFromValue(this.el);
         application.accession.views.accessionSynonymTypes.htmlFromValue(this.el);
 
-        this.ui.accession_synonym_type.find('option[value="IN_001:0000001"]').remove();
+        this.ui.accession_synonym_type.find('option[value="AC_001:0000001"]').remove();
         $(this.ui.accession_synonym_type).selectpicker('refresh');
     },
 
@@ -86,7 +86,7 @@ var View = Marionette.ItemView.extend({
 
                             // invalid if primary exists with the same name or if exists into the same accession
                             if (t.label.toUpperCase() == name.toUpperCase()) {
-                                if ((t.accession == view.model.get('id')) || (t.type == "IN_001:0000001")) {
+                                if ((t.accession == view.model.get('id')) || (t.type == "AC_001:0000001")) {
                                     view.ui.synonym_name.validateField(
                                         'failed', gt.gettext('Synonym of accession already used'));
 
@@ -187,7 +187,7 @@ var View = Marionette.ItemView.extend({
                                             break;
                                         }
 
-                                        if ((t.accession == view.model.get('id')) || (t.type == "IN_001:0000001")) {
+                                        if ((t.accession == view.model.get('id')) || (t.type == "AC_001:0000001")) {
                                             view.ui.synonym_name.validateField(
                                                 'failed', gt.gettext('Synonym of accession already used'));
                                             break;

@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
+#
+# Copyright (c) 2016 INRA UMR1095 GDEC
 
 """
 Setup the value for the country descriptors.
 """
+
 import json
 import sys
 import os.path
@@ -11,8 +14,8 @@ from descriptor.models import DescriptorType
 from .descriptorstypes import DESCRIPTORS
 
 
-def fixture():
-    sys.stdout.write(" + Create descriptors values for accession_synonym_types...\n")
+def fixture(fixture_manager):
+    sys.stdout.write("   + Create descriptors values for accession_synonym_types...\n")
 
     # load JSON data
     handler = open(os.path.join('accession', 'fixtures', 'accessionsynonymtypes.json'), 'rU')
@@ -20,18 +23,18 @@ def fixture():
     handler.close()
 
     descriptor = DESCRIPTORS.get('accession_synonym_types')
-    results = {}
+    descriptor_values = {}
 
     # curate data
-    for lang, subdata in data.items():
-        types = {}
+    for lang, values in data.items():
+        values_dict = {}
 
-        for code, type in subdata.items():
-            types[code] = {
-                'value0': type['name']
+        for code, value in values.items():
+            values_dict[code] = {
+                'value0': value['name']
             }
 
-        results[lang] = types
+        descriptor_values[lang] = values_dict
 
-    if descriptor is not None and results is not None:
-        DescriptorType.objects.filter(code=descriptor['code']).update(values=json.dumps(results))
+    if descriptor is not None and descriptor_values is not None:
+        DescriptorType.objects.filter(name=descriptor['name']).update(values=json.dumps(descriptor_values))
