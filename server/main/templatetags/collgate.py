@@ -50,7 +50,7 @@ class TemplateAppValue(Node):
             ret_val = '.'.join([str(x) for x in appsettings.APP_VERSION])
         elif arg_repr == "modules":
             from igdectk.module.manager import module_manager
-            ret_val = [module.name for module in module_manager.modules]
+            ret_val = [module.name for module in module_manager.modules if module.has_client()]
         elif arg_repr == "development":
             ret_val = hasattr(settings, 'WEBPACK')
         elif arg_repr == "webpack_host":

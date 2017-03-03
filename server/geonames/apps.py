@@ -34,4 +34,7 @@ class CollGateGeonames(ApplicationMain):
             )
         )
 
+        # no client counterpart
+        geonames_module.client_export = False
+
         module_manager.register_module(geonames_module)

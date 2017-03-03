@@ -235,7 +235,7 @@ application = new Marionette.Application({
                 $.alert.error(msg);
             }
 
-            if (this[module].initialize) {
+            if (this[module] && this[module].initialize) {
                 try {
                     Logger.time("Init " + module + " module");
                     this[module].initialize(this, {});
@@ -256,7 +256,7 @@ application = new Marionette.Application({
         for (var i = 0; i < session.modules.length; ++i) {
             var module = session.modules[i];
 
-            if (this[module].start) {
+            if (this[module] && this[module].start) {
                 try {
                     Logger.time("Start " + module + " module");
                     this[module].start({});
