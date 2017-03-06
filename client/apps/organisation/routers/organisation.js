@@ -17,7 +17,7 @@ var EshtablishmentModel = require('../models/establishment');
 var OrganisationCollection = require('../collections/organisation');
 var EstablishmentCollection = require('../collections/establishment');
 
-// var OrganisationListView = require('../views/organisationlist');
+var OrganisationListView = require('../views/organisationlist');
 
 var DefaultLayout = require('../../main/views/defaultlayout');
 var ScrollingMoreView = require('../../main/views/scrollingmore');
@@ -31,7 +31,36 @@ var Router = Marionette.AppRouter.extend({
     },
 
     getGRC: function () {
-        $.alert.error("Not yet !");
+        var grc = new GRCModel();
+
+        var defaultLayout = new DefaultLayout();
+        application.show(defaultLayout);
+
+        var GRCDetailsView = require('../views/grcdetails');
+        var grcDetails = new GRCDetailsView({model: grc});
+
+        grc.fetch().then(function () {
+            defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("GRC details"), model: grc}));
+            defaultLayout.getRegion('content').show(grcDetails);
+        });
+    },
+
+    getGRCOrganisationList : function() {
+        var collection = new OrganisationCollection([], {grc: true});
+
+        var defaultLayout = new DefaultLayout({});
+        application.show(defaultLayout);
+
+        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of GRC partners")}));
+
+        collection.fetch().then(function () {
+            var taxonListView = new OrganisationListView({collection : collection});
+
+            defaultLayout.getRegion('content').show(taxonListView);
+            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: taxonListView}));
+        });
+
+        defaultLayout.getRegion('bottom').show(new TaxonListFilterView({collection: collection}));
     },
 
     getOrganisationList : function() {

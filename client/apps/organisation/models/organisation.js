@@ -19,7 +19,10 @@ var Model = Backbone.Model.extend({
     },
 
     defaults: {
-        id: null
+        id: null,
+        name: "",
+        type: "",
+        grc: null
     }
 });
 

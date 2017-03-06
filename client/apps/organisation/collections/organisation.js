@@ -11,10 +11,22 @@
 var OrganisationModel = require('../models/organisation');
 
 var Collection = Backbone.Collection.extend({
-    url: application.baseUrl + 'organisation/organisation/',
-    model: OrganisationModel,
+    url: function() {
+        if (this.grc) {
+            return application.baseUrl + 'organisation/grc/organisation/';
+        } else {
+            return application.baseUrl + 'organisation/organisation/';
+        }
+    },
+    model : OrganisationModel,
 
     comparator: 'name',
+
+    initialize: function(models, options) {
+        options || (options = {});
+
+        this.grc = options.grc;
+    },
 
     parse: function(data) {
         this.prev = data.prev;

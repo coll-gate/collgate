@@ -30,7 +30,7 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
             this.el = input;
         } else {
             var select = $('<select style="width: 100%;"></select>');
-            parent.append(select);
+            this.group = this._createInputGroup(parent, "glyphicon-share", select);
 
             // init the autocomplete
             var url = application.baseUrl + format.model.replace('.', '/') + '/';
@@ -104,7 +104,7 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
                 this.el.parent().remove();
             } else {
                 this.el.select2('destroy');
-                this.el.remove();
+                this.group.remove();
             }
         }
     },

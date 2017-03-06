@@ -16,9 +16,14 @@ var View = Marionette.ItemView.extend({
     template: require('../templates/grcdetails.html'),
 
     ui: {
+        'name': 'input[name=name]',
+        'identifier': 'input[name=identifier]',
+        'description': 'textarea[name=description]',
+        'save': '#grc_save'
     },
 
     events: {
+        'click @ui.save': 'updateDetails'
     },
 
     initialize: function() {
@@ -26,6 +31,18 @@ var View = Marionette.ItemView.extend({
     },
 
     onRender: function() {
+    },
+
+    updateDetails: function() {
+        this.model.save({
+            name: this.ui.name.val(),
+            identifier: this.ui.identifier.val(),
+            description: this.ui.description.val()
+        }, {
+            success: function() {
+                $.alert.success(gt.gettext("Done"));
+            }
+        });
     }
 });
 

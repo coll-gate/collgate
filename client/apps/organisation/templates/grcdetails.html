@@ -1,0 +1,25 @@
+<div class="grc">
+    <div class="row">
+        <div class="form-group col-lg-5">
+            <label for="grc_name"><%= gt.gettext("Name") %></label>
+            <input id="grc_name" name="name" class="form-control" value="<%= name %>">
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group col-lg-5">
+            <label for="grc_identifier"><%= gt.gettext("Identifier") %></label>
+            <input id="grc_identifier" name="identifier" class="form-control" value="<%= identifier %>">
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group col-lg-5">
+            <label for="grc_description"><%= gt.gettext("Description") %></label>
+            <textarea id="grc_description" name="description" class="form-control" maxlength="4096"><%= description %></textarea>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group col-lg-2">
+            <button id="grc_save" class="form-control btn btn-success">Update</button>
+        </div>
+    </div>
+</div>

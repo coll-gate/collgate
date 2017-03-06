@@ -30,6 +30,39 @@ class Organisation(DescribableEntity):
     class Meta:
         verbose_name = _("Organisation")
 
+    def audit_create(self, user):
+        return {
+            'type': self.type,
+            'descriptor_meta_model': self.descriptor_meta_model_id,
+            'descriptors': self.descriptors
+        }
+
+    def audit_update(self, user):
+        if hasattr(self, 'updated_fields'):
+            result = {'updated_fields': self.updated_fields}
+
+            if 'type' in self.updated_fields:
+                result['type'] = self.type
+
+            if 'descriptors' in self.updated_fields:
+                if hasattr(self, 'descriptors_diff'):
+                    result['descriptors'] = self.descriptors_diff
+                else:
+                    result['descriptors'] = self.descriptors
+
+            return result
+        else:
+            return {
+                'type': self.type,
+                'descriptors': self.descriptors
+            }
+
+    def audit_delete(self, user):
+        return {}
+
+    def in_usage(self):
+        return self.establishments.all().exists()
+
 
 class Establishment(DescribableEntity):
     """
@@ -43,17 +76,46 @@ class Establishment(DescribableEntity):
     class Meta:
         verbose_name = _("Establishment")
 
+    def audit_create(self, user):
+        return {
+            'descriptor_meta_model': self.descriptor_meta_model_id,
+            'descriptors': self.descriptors
+        }
+
+    def audit_update(self, user):
+        if hasattr(self, 'updated_fields'):
+            result = {'updated_fields': self.updated_fields}
+
+            if 'descriptors' in self.updated_fields:
+                if hasattr(self, 'descriptors_diff'):
+                    result['descriptors'] = self.descriptors_diff
+                else:
+                    result['descriptors'] = self.descriptors
+
+            return result
+        else:
+            return {
+                'descriptors': self.descriptors
+            }
+
+    def audit_delete(self, user):
+        return {}
+
 
 class GRC(models.Model):
     """
     Genetic resource center entity. Only one is configured for the application instance.
     """
 
-    # identifier code or the GRC (@see code view of the FAO http://www.fao.org/wiews)
-    identifier = models.CharField(max_length=256, default="undefined", blank=False)
+    NAME_VALIDATOR = {"type": "string", "minLength": 1, "maxLength": 256, "pattern": r"^\S+.+\S+$"}
+
+    IDENTIFIER_VALIDATOR = {"type": "string", "minLength": 1, "maxLength": 256, "pattern": r"^\S+.+\S+$"}
 
     # name of the GRC
     name = models.CharField(max_length=256, default="Undefined GRC", blank=False)
+
+    # identifier code or the GRC (@see code view of the FAO http://www.fao.org/wiews)
+    identifier = models.CharField(max_length=256, default="undefined", blank=False)
 
     # general description
     description = models.TextField(default="", blank=True, null=False)
@@ -63,6 +125,5 @@ class GRC(models.Model):
 
     class Meta:
         verbose_name = _("Genetic Resource Center")
-
 
 # @todo Contact for an establishment

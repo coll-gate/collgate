@@ -14,7 +14,10 @@ var Model = Backbone.Model.extend({
     url: application.baseUrl + 'organisation/grc/',
 
     defaults: {
-        id: null
+        id: null,
+        identifier: "",
+        name: "",
+        description: ""
     }
 });
 

@@ -29,7 +29,13 @@ DescriptorFormatType.prototype = {
         return !!definesValues && !!defaultValues && defaultValues != null;
     },
 
-    // create a simple input widget within an input-group and with a specified glyphicon (bootstrap)
+    /**
+     * Create a simple input widget within an input-group and with a specified glyphicon (bootstrap).
+     * @param parent Parent element
+     * @param glyphicon Name of the glyphicon (bootstrap)
+     * @returns {*|jQuery|HTMLElement} input
+     * @private
+     */
     _createStdInput: function(parent, glyphicon) {
         var group = $('<div class="input-group"></div>');
         var glyph = $('<span class="input-group-addon"><span class="glyphicon ' + glyphicon + '"></span></span>');
@@ -44,6 +50,29 @@ DescriptorFormatType.prototype = {
         parent.append(group);
 
         return input;
+    },
+
+    /**
+     * Create a simple input-group and with a specified glyphicon (bootstrap), set the specific input.
+     * @param parent Parent element
+     * @param glyphicon Name of the glyphicon (bootstrap)
+     * @param input Input element to bind into the group
+     * @return {*|jQuery|HTMLElement} The created group
+     */
+    _createInputGroup: function(parent, glyphicon, input) {
+        var group = $('<div class="input-group"></div>');
+        var glyph = $('<span class="input-group-addon"><span class="glyphicon ' + glyphicon + '"></span></span>');
+        glyph.css(this.spanStyle);
+
+        input.addClass('form-control');
+        // input.css(this.inputStyle);
+
+        group.append(input);
+        group.append(glyph);
+
+        parent.append(group);
+
+        return group;
     },
 
     create: function(format, parent, readOnly) {

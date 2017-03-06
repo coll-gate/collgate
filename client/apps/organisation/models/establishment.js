@@ -19,7 +19,9 @@ var Model = Backbone.Model.extend({
     },
 
     defaults: {
-        id: null
+        id: null,
+        name: "",
+        organisation: null
     }
 });
 

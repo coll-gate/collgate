@@ -251,3 +251,13 @@ span[name='label']:not(:empty) ~ span.label-placeholder {
 li.disabled > a[role=tab] {
     pointer-events: none;
 }
+
+/** cancel round right border when select is on an input-group */
+.input-group span.select2.select2-container > span.selection > span {
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
+
+/*.input-group .btn-default {
+    background-image: none;
+}*/

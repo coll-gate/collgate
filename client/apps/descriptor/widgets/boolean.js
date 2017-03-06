@@ -30,7 +30,7 @@ _.extend(BooleanType.prototype, DescriptorFormatType.prototype, {
             this.el = input;
         } else {
             var select = $('<select data-width="100%"></select>');
-            parent.append(select);
+            this.group = this._createInputGroup(parent, "glyphicon-check", select);
 
             // true
             var option = $("<option></option>");
@@ -61,7 +61,7 @@ _.extend(BooleanType.prototype, DescriptorFormatType.prototype, {
                 this.el.parent().remove();
             } else {
                 this.el.selectpicker('destroy');
-                this.el.remove();
+                this.group.remove();
             }
         }
     },
