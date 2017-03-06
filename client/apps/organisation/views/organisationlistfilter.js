@@ -1,0 +1,69 @@
+/**
+ * @file organisationlistfilter.js
+ * @brief Filter the list of organisation
+ * @author Frederic SCHERMA
+ * @date 2017-03-06
+ * @copyright Copyright (c) 2017 INRA UMR1095 GDEC
+ * @license @todo
+ * @details
+ */
+
+var Marionette = require('backbone.marionette');
+
+var View = Marionette.ItemView.extend({
+    tagName: 'div',
+    className: 'organisation-filter',
+    template: require('../templates/organisationlistfilter.html'),
+
+    ui: {
+        filter_btn: 'button.organisation-filter',
+        organisation_type: 'select.organisation-type',
+        organisation_name: 'input.organisation-name'
+    },
+
+    events: {
+        'click @ui.filter_btn': 'onFilter',
+        'input @ui.organisation_name': 'onOrganisationNameInput'
+    },
+
+    initialize: function(options) {
+        options || (options = {});
+        this.collection = options.collection;
+    },
+
+    onRender: function() {
+        application.organisation.views.organisationTypes.drawSelect(this.ui.organisation_type, true, true);
+    },
+
+    onFilter: function () {
+        if (this.validateOrganisationName()) {
+            this.collection.filters = {
+                name: this.ui.organisation_name.val().trim(),
+                method: "icontains"
+            };
+
+            this.collection.fetch({reset: true});
+        }
+    },
+
+    validateOrganisationName: function() {
+        var v = this.ui.organisation_name.val().trim();
+
+        if (v.length > 0 && v.length < 3) {
+            $(this.ui.organisation_name).validateField('failed', gt.gettext('3 characters min'));
+            return false;
+        } else if (this.ui.organisation_name.val().length == 0) {
+            $(this.ui.organisation_name).cleanField();
+            return true;
+        } else {
+            $(this.ui.organisation_name).validateField('ok');
+            return true;
+        }
+    },
+
+    onOrganisationNameInput: function () {
+        return this.validateOrganisationName();
+    }
+});
+
+module.exports = View;

@@ -3,7 +3,7 @@
  * @brief Organisation router
  * @author Frederic SCHERMA
  * @date 2017-02-28
- * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+ * @copyright Copyright (c) 2017 INRA UMR1095 GDEC
  * @license @todo
  * @details
  */
@@ -12,12 +12,11 @@ var Marionette = require('backbone.marionette');
 
 var GRCModel = require('../models/grc');
 var OrganisationModel = require('../models/organisation');
-var EshtablishmentModel = require('../models/establishment');
 
 var OrganisationCollection = require('../collections/organisation');
-var EstablishmentCollection = require('../collections/establishment');
 
 var OrganisationListView = require('../views/organisationlist');
+var OrganisationListFilterView = require('../views/organisationlistfilter');
 
 var DefaultLayout = require('../../main/views/defaultlayout');
 var ScrollingMoreView = require('../../main/views/scrollingmore');
@@ -26,6 +25,7 @@ var TitleView = require('../../main/views/titleview');
 var Router = Marionette.AppRouter.extend({
     routes : {
         "app/organisation/grc/": "getGRC",
+        "app/organisation/grc/organisation/": "getGRCOrganisationList",
         "app/organisation/organisation/": "getOrganisationList",
         "app/organisation/organisation/:id/": "getOrganisation"
     },
@@ -54,17 +54,31 @@ var Router = Marionette.AppRouter.extend({
         defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of GRC partners")}));
 
         collection.fetch().then(function () {
-            var taxonListView = new OrganisationListView({collection : collection});
+            var organisationListView = new OrganisationListView({collection : collection});
 
-            defaultLayout.getRegion('content').show(taxonListView);
-            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: taxonListView}));
+            defaultLayout.getRegion('content').show(organisationListView);
+            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: organisationListView}));
         });
 
-        defaultLayout.getRegion('bottom').show(new TaxonListFilterView({collection: collection}));
+        defaultLayout.getRegion('bottom').show(new OrganisationListFilterView({collection: collection}));
     },
 
     getOrganisationList : function() {
-        $.alert.error("Not yet !");
+        var collection = new OrganisationCollection([]);
+
+        var defaultLayout = new DefaultLayout({});
+        application.show(defaultLayout);
+
+        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of organisations")}));
+
+        collection.fetch().then(function () {
+            var organisationListView = new OrganisationListView({collection : collection});
+
+            defaultLayout.getRegion('content').show(organisationListView);
+            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: organisationListView}));
+        });
+
+        defaultLayout.getRegion('bottom').show(new OrganisationListFilterView({collection: collection}));
     },
 
     getOrganisation : function(id) {

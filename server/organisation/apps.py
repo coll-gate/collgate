@@ -27,6 +27,7 @@ class CollGateOrganisation(ApplicationMain):
         organisation_module = Module('organisation', base_url='coll-gate')
         organisation_module.include_urls((
             'base',
+            'organisationtype',
             'grc',
             'organisation',
             'establishment'
