@@ -99,11 +99,18 @@ def get_grc_organisation_list(request):
         filters = json.loads(request.GET['filters'])
 
         name = filters.get('name', '')
+        organisation_type = filters.get('type')
 
         if filters.get('method', 'icontains') == 'icontains':
             qs = qs.filter(Q(name__icontains=name))
         else:
-            qs = qs.filter(Q(name__iexact=name)).filter(Q(name__iexact=name))
+            qs = qs.filter(Q(name__iexact=name))
+
+        if organisation_type:
+            if filters.get('type_method', 'eq') == 'eq':
+                qs = qs.filter(Q(type=organisation_type))
+            else:
+                qs = qs.exclude(Q(type=organisation_type))
 
     qs = qs.order_by('name')[:limit]
 
@@ -112,7 +119,9 @@ def get_grc_organisation_list(request):
         t = {
             'id': organisation.pk,
             'name': organisation.name,
-            'num_establishment': organisation.establishments.count()
+            'type': organisation.type,
+            'descriptors': organisation.descriptors,
+            'num_establishments': organisation.establishments.count()
         }
 
         items_list.append(t)

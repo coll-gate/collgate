@@ -11,7 +11,7 @@
 var Marionette = require('backbone.marionette');
 
 var View = Marionette.ItemView.extend({
-    tagName: 'div',
+    tagName: 'tr',
     template: require('../templates/organisation.html'),
     className: "object organisation",
 

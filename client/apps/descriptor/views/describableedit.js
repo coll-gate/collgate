@@ -143,7 +143,9 @@ var View = ItemView.extend({
         for (var pi = 0; pi < this.descriptorMetaModelLayout.panels.length; ++pi) {
             for (var i = 0; i < this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types.length; ++i) {
                 var descriptorModelType = this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
-                descriptorModelType.widget.destroy();
+                if (descriptorModelType.widget) {
+                    descriptorModelType.widget.destroy();
+                }
             }
         }
     },
@@ -197,7 +199,7 @@ var View = ItemView.extend({
                     write = false;
                 }
 
-                if (descriptorModelType.widget.compare(values, currValue)) {
+                if (descriptorModelType.widget && descriptorModelType.widget.compare(values, currValue)) {
                     write = false;
                 }
 
@@ -215,7 +217,9 @@ var View = ItemView.extend({
         for (var pi = 0; pi < this.descriptorMetaModelLayout.panels.length; ++pi) {
             for (var i = 0; i < this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types.length; ++i) {
                 var descriptorModelType = this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
-                descriptorModelType.widget.cancel();
+                if (descriptorModelType.widget) {
+                    descriptorModelType.widget.cancel();
+                }
             }
         }
     },

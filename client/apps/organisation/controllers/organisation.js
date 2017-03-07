@@ -1,21 +1,21 @@
 /**
- * @file accession.js
- * @brief Accession controller
+ * @file organisation.js
+ * @brief Organisation controller
  * @author Frederic SCHERMA
- * @date 2016-12-07
- * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+ * @date 2017-03-07
+ * @copyright Copyright (c) 2017 INRA UMR1095 GDEC
  * @license @todo
  * @details
  */
 
 var Marionette = require('backbone.marionette');
 
-var AccessionModel = require('../models/accession');
+var OrganisationModel = require('../models/organisation');
 
 var DefaultLayout = require('../../main/views/defaultlayout');
 var TitleView = require('../../main/views/titleview');
 var Dialog = require('../../main/views/dialog');
-var AccessionLayout = require('../views/accessionlayout');
+var OrganisationLayout = require('../views/organisationlayout');
 
 
 var Controller = Marionette.Object.extend({
@@ -23,38 +23,31 @@ var Controller = Marionette.Object.extend({
     create: function() {
         $.ajax({
             type: "GET",
-            url: application.baseUrl + 'descriptor/meta-model/for-describable/' + 'accession.accession/',
+            url: application.baseUrl + 'descriptor/meta-model/for-describable/' + 'organisation.organisation/',
             dataType: 'json'
         }).done(function(data) {
-            var CreateAccessionView = Dialog.extend({
+            var CreateOrganisationView = Dialog.extend({
                 attributes: {
-                    'id': 'dlg_create_accession'
+                    'id': 'dlg_create_organisation'
                 },
-                template: require('../templates/accessioncreate.html'),
-                templateHelpers/*templateContext*/: function () {
-                    return {
-                        meta_models: data
-                    };
-                },
+                template: require('../templates/organisationcreate.html'),
 
                 ui: {
-                    validate: "button.continue",
-                    name: "#accession_name",
-                    language: "#accession_language",
-                    meta_model: "#meta_model",
-                    parent: "#accession_parent"
+                    create: "button.create",
+                    grc: "#organisation_grc",
+                    name: "#organisation_name",
+                    type: "#organisation_type"
                 },
 
                 events: {
-                    'click @ui.validate': 'onContinue',
+                    'click @ui.create': 'onCreate',
                     'input @ui.name': 'onNameInput'
                 },
 
                 onRender: function () {
-                    CreateAccessionView.__super__.onRender.apply(this);
+                    CreateOrganisationView.__super__.onRender.apply(this);
 
-                    application.main.views.languages.drawSelect(this.ui.language);
-                    this.ui.meta_model.selectpicker({});
+                    application.organisation.views.organisationTypes.drawSelect(this.ui.type);
 
                     $(this.ui.parent).select2({
                         dropdownParent: $(this.el),
@@ -68,8 +61,9 @@ var Controller = Marionette.Object.extend({
                                 return {
                                     filters: JSON.stringify({
                                         method: 'icontains',
-                                        fields: ['name'],
-                                        'name': params.term.trim()
+                                        fields: ['name', 'rank'],
+                                        'name': params.term.trim(),
+                                        'rank': parseInt($("#taxon_rank").val())
                                     }),
                                     cursor: params.next
                                 };
@@ -100,15 +94,14 @@ var Controller = Marionette.Object.extend({
                             cache: true
                         },
                         minimumInputLength: 3,
-                        placeholder: gt.gettext("Enter a taxon name. 3 characters at least for auto-completion")
+                        placeholder: gt.gettext("Enter a taxon name. 3 characters at least for auto-completion"),
                     });
                 },
 
-                onBeforeDestroy: function() {
-                    this.ui.language.selectpicker('destroy');
-                    this.ui.meta_model.selectpicker('destroy');
+                onBeforeDestroy: function () {
+                    this.ui.type.selectpicker('destroy');
 
-                    CreateAccessionView.__super__.onBeforeDestroy.apply(this);
+                    CreateOrganisationView.__super__.onBeforeDestroy.apply(this);
                 },
 
                 onNameInput: function () {
@@ -123,18 +116,17 @@ var Controller = Marionette.Object.extend({
 
                         $.ajax({
                             type: "GET",
-                            url: application.baseUrl + 'accession/accession/synonym/search/',
+                            url: application.baseUrl + 'organisation/organisation/search/',
                             dataType: 'json',
-                            contentType: 'application/json; charset=utf8',
                             data: {filters: JSON.stringify(filters)},
                             el: this.ui.name,
-                            success: function(data) {
+                            success: function (data) {
                                 if (data.items.length > 0) {
                                     for (var i in data.items) {
                                         var t = data.items[i];
 
-                                        if (t.label.toUpperCase() == name.toUpperCase()) {
-                                            $(this.el).validateField('failed', gt.gettext('Synonym of accession already used'));
+                                        if (t.value.toUpperCase() == name.toUpperCase()) {
+                                            $(this.el).validateField('failed', gt.gettext('Organisation name already in usage'));
                                             break;
                                         }
                                     }
@@ -146,7 +138,7 @@ var Controller = Marionette.Object.extend({
                     }
                 },
 
-                validateName: function() {
+                validateName: function () {
                     var v = this.ui.name.val().trim();
 
                     if (v.length > 64) {
@@ -160,59 +152,48 @@ var Controller = Marionette.Object.extend({
                     return true;
                 },
 
-                validate: function() {
+                validate: function () {
                     var valid = this.validateName();
 
-                    var parentId = 0;
-
-                    if (this.ui.parent.val())
-                        parentId = parseInt(this.ui.parent.val());
-
-                    if (parentId == 0) {
-                        $.alert.error(gt.gettext("The parent must be defined"));
-                        valid = false;
-                    }
-
-                    if (this.ui.name.hasClass('invalid') || this.ui.parent.hasClass('invalid')) {
+                    if (this.ui.name.hasClass('invalid') || this.ui.type.hasClass('invalid')) {
                         valid = false;
                     }
 
                     return valid;
                 },
 
-                onContinue: function() {
-                    var view = this;
+                onCreate: function () {
+                    var name = this.ui.name.val().trim();
+                    var to_grc = this.ui.grc.val() === "grc-partner";
 
                     if (this.validate()) {
-                        var name = this.ui.name.val().trim();
-                        var parent = parseInt(this.ui.parent.val());
-                        var metaModel = parseInt(this.ui.meta_model.val());
-
-                        // create a new local model and open an edit view with this model
-                        var model = new AccessionModel({
+                        var model = new OrganisationModel({
+                            descriptor_meta_model: data[0].id,
                             name: name,
-                            parent: parent,
-                            descriptor_meta_model: metaModel,
-                            language: this.ui.language.val()
+                            type: this.ui.type.val(),
+                            grc: to_grc
                         });
 
-                        view.destroy();
+                        this.destroy();
 
                         var defaultLayout = new DefaultLayout();
                         application.show(defaultLayout);
 
-                        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Accession"), model: model}));
+                        defaultLayout.getRegion('title').show(new TitleView({
+                            title: gt.gettext("Organisation"),
+                            model: model
+                        }));
 
-                        var accessionLayout = new AccessionLayout({model: model});
-                        defaultLayout.getRegion('content').show(accessionLayout);
+                        var organisationLayout = new OrganisationLayout({model: model});
+                        defaultLayout.getRegion('content').show(organisationLayout);
                     }
                 }
             });
 
-            var createAccessionView = new CreateAccessionView();
-            createAccessionView.render();
+            var dialog = new CreateOrganisationView();
+            dialog.render();
         });
-    },
+    }
 });
 
 module.exports = Controller;

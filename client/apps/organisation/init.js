@@ -44,6 +44,13 @@ OrganisationModule.prototype = {
         });
 
         //
+        // controllers
+        //
+
+        var OrganisationController = require('./controllers/organisation');
+        this.controllers.organisation = new OrganisationController();
+
+        //
         // routers
         //
 

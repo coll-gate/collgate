@@ -58,7 +58,6 @@ class CollGateOrganisation(ApplicationMain):
 
         # keep descriptor meta-model for organisation and establishment.
         from descriptor.models import DescriptorMetaModel
-        from . import localsettings
 
         if not DescriptorMetaModel.objects.filter(name="organisation").exists():
             raise ImproperlyConfigured(
@@ -67,9 +66,6 @@ class CollGateOrganisation(ApplicationMain):
         if not DescriptorMetaModel.objects.filter(name="establishment").exists():
             raise ImproperlyConfigured(
                 "Missing organisation establishment meta-model. Be sure to have installed fixtures")
-
-        localsettings.organisation_descriptor_meta_model_id = DescriptorMetaModel.objects.get(name="organisation").id
-        localsettings.establishment_descriptor_meta_model_id = DescriptorMetaModel.objects.get(name="establishment").id
 
         # organisation menu
         menu_organisation = ModuleMenu('administration', _('Administration'), order=999, auth=AUTH_STAFF)
@@ -87,6 +83,12 @@ class CollGateOrganisation(ApplicationMain):
                       "#organisation/organisation/",
                       icon=Glyph.MAP_MARKER,
                       order=3))
+        menu_organisation.add_entry(
+            MenuEntry('create-organisation',
+                      _('Create an organisation or a partner'),
+                      "~organisation/organisation/create/",
+                      icon=Glyph.PLUS_SIGN,
+                      order=4))
 
         organisation_module.add_menu(menu_organisation)
 

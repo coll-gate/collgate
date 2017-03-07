@@ -22,7 +22,9 @@ var Model = Backbone.Model.extend({
         id: null,
         name: "",
         type: "",
-        grc: null
+        grc: null,
+        descriptor_meta_model: null,
+        descriptors: {}
     }
 });
 

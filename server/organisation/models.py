@@ -5,11 +5,11 @@
 """
 coll-gate organisation models.
 """
-
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from descriptor.models import DescribableEntity
+from descriptor.models import DescribableEntity, DescriptorType
 
 
 class Organisation(DescribableEntity):
@@ -17,6 +17,16 @@ class Organisation(DescribableEntity):
     Organisation entity for management level.
     The descriptor meta-model is defined to the unique name "organisation".
     """
+
+    # name validator, used with content validation, to avoid any whitespace before and after
+    NAME_VALIDATOR = {"type": "string", "minLength": 3, "maxLength": 128, "pattern": r"^\S+.+\S+$"}
+
+    # organisation type validator
+    TYPE_VALIDATOR = {"type:": "string", 'minLength': 14, 'maxLength': 32, "pattern": r"^OR_001:[0-9]{7,}$"}
+
+    # organisation type validator optional
+    TYPE_VALIDATOR_OPTIONAL = {
+        "type:": "string", 'minLength': 14, 'maxLength': 32, "pattern": r"^OR_001:[0-9]{7,}$", "required": False}
 
     # Descriptor type code
     TYPE_CODE = "OR_001"
@@ -63,12 +73,26 @@ class Organisation(DescribableEntity):
     def in_usage(self):
         return self.establishments.all().exists()
 
+    @classmethod
+    def is_type(cls, organisation_type):
+        descriptor_type = DescriptorType.objects.get(code=cls.TYPE_CODE)
+
+        try:
+            descriptor_type.get_value(organisation_type)
+        except ObjectDoesNotExist:
+            return False
+
+        return True
+
 
 class Establishment(DescribableEntity):
     """
     Location for an organisation.
     The descriptor meta-model is defined to the unique name "establishment".
     """
+
+    # name validator, used with content validation, to avoid any whitespace before and after
+    NAME_VALIDATOR = {"type": "string", "minLength": 3, "maxLength": 128, "pattern": r"^\S+.+\S+$"}
 
     # related organisation
     organisation = models.ForeignKey(Organisation, on_delete=models.CASCADE, related_name="establishments")
@@ -102,6 +126,11 @@ class Establishment(DescribableEntity):
         return {}
 
 
+class GRCManager(models.Manager):
+    def get_unique_grc(self):
+        return self.all()[0]
+
+
 class GRC(models.Model):
     """
     Genetic resource center entity. Only one is configured for the application instance.
@@ -125,5 +154,7 @@ class GRC(models.Model):
 
     class Meta:
         verbose_name = _("Genetic Resource Center")
+
+    objects = GRCManager()
 
 # @todo Contact for an establishment

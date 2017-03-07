@@ -1,24 +1,24 @@
 /**
- * @file accessionlayout.js
- * @brief Optimized layout for accession details
+ * @file organisationlayout.js
+ * @brief Optimized layout for organisation details
  * @author Frederic SCHERMA
- * @date 2017-01-16
+ * @date 2017-03-07
  * @copyright Copyright (c) 2017 INRA UMR1095 GDEC
  * @license @todo
  * @details
  */
 
 var Marionette = require('backbone.marionette');
-var TaxonModel = require('../../taxonomy/models/taxon');
 
+var TitleView = require('../../main/views/titleview');
 var ScrollingMoreView = require('../../main/views/scrollingmore');
 var ContentBottomLayout = require('../../main/views/contentbottomlayout');
-var EntityPathView = require('../../taxonomy/views/entitypath');
-var AccessionDescriptorEditView = require('../views/accessiondescriptoredit');
+var OrganisationDetailsView = require('../views/organisationdetails');
+var DescriptorEditView = require('../views/descriptoredit');
 
 
 var Layout = Marionette.LayoutView.extend({
-    template: require("../templates/accessionlayout.html"),
+    template: require("../templates/organisationlayout.html"),
 
     attributes: {
         style: "height: 100%;"
@@ -27,17 +27,14 @@ var Layout = Marionette.LayoutView.extend({
     ui: {
         tabs: 'a[data-toggle="tab"]',
         initial_pane: 'div.tab-pane.active',
-        synonyms_tab: 'a[aria-controls=synonyms]',
-        batches_tab: 'a[aria-controls=batches]',
-        actions_tab: 'a[aria-controls=actions]'
+        establishments_tab: 'a[aria-controls=establishments]'
     },
 
     regions: {
         'details': "div[name=details]",
         'descriptors': "div.tab-pane[name=descriptors]",
-        'synonyms': "div.tab-pane[name=synonyms]",
-        'batches': "div.tab-pane[name=batches]",
-        'actions': "div.tab-pane[name=actions]"
+        'establishments': 'div.tab-pane[name=establishments]',
+        'entities': "div.tab-pane[name=entities]"
     },
 
     childEvents: {
@@ -61,23 +58,11 @@ var Layout = Marionette.LayoutView.extend({
         this.listenTo(this.model, 'change:descriptor_meta_model', this.onDescriptorMetaModelChange, this);
     },
 
-    disableSynonymsTab: function () {
-        this.ui.synonyms_tab.parent().addClass('disabled');
-    },
-
-    disableBatchesTab: function () {
-        this.ui.batches_tab.parent().addClass('disabled');
-    },
-
-    disableActionTab: function () {
-        this.ui.actions_tab.parent().addClass('disabled');
-    },
-
     onDescriptorMetaModelChange: function(model, value) {
         if (value == null) {
             this.getRegion('descriptors').empty();
         } else {
-            var accessionLayout = this;
+            var organisationLayout = this;
 
             // get the layout before creating the view
             $.ajax({
@@ -85,18 +70,22 @@ var Layout = Marionette.LayoutView.extend({
                 url: application.baseUrl + 'descriptor/meta-model/' + value + '/layout/',
                 dataType: 'json'
             }).done(function (data) {
-                var AccessionDescriptorView = require('../views/accessiondescriptor');
-                var accessionDescriptorView = new AccessionDescriptorView({
+                var DescriptorView = require('../views/descriptor');
+                var descriptorView = new DescriptorView({
                     model: model,
                     descriptorMetaModelLayout: data
                 });
-                accessionLayout.getRegion('descriptors').show(accessionDescriptorView);
+                organisationLayout.getRegion('descriptors').show(descriptorView);
             });
         }
     },
 
+    disableEstablishmentTab: function () {
+        this.ui.establishments_tab.parent().addClass('disabled');
+    },
+
     onRender: function() {
-        var accessionLayout = this;
+        var organisationLayout = this;
 
         this.activeTab = this.ui.initial_pane.attr('name');
 
@@ -105,45 +94,30 @@ var Layout = Marionette.LayoutView.extend({
 
         // details view
         if (!this.model.isNew()) {
-            // taxon parent
-            var taxon = new TaxonModel({id: this.model.get('parent')});
-            taxon.fetch().then(function () {
-                accessionLayout.getRegion('details').show(new EntityPathView({
-                    model: accessionLayout.model,
-                    taxon: taxon
-                }));
-            });
+            // details view
+            organisationLayout.getRegion('details').show(new OrganisationDetailsView({model: this.model}));
 
-            // synonyms tab
-            var AccessionSynonymsView = require('../views/accessionsynonyms');
-            accessionLayout.getRegion('synonyms').show(new AccessionSynonymsView({model: this.model}));
+            // establishments tab
+            /*var EstablishmentCollection = require('../collections/establishment');
+            var establishments = new EstablishmentCollection([], {organisation_id: this.model.get('id')});
 
-            // batches tab
-            var BatchCollection = require('../collections/batch');
-            var accessionBatches = new BatchCollection([], {accession_id: this.model.get('id')});
-
-            accessionBatches.fetch().then(function() {
-                var BatchListView = require('../views/batchlist');
-                var batchListView  = new BatchListView({collection: accessionBatches, model: accessionLayout.model});
+            establishments.fetch().then(function() {
+                var EstablishmentListView = require('../views/establishmentlist');
+                var establishmentListView  = new EstablishmentListView({collection: establishments, model: organisationLayout.model});
 
                 var contentBottomLayout = new ContentBottomLayout();
-                accessionLayout.getRegion('batches').show(contentBottomLayout);
+                organisationLayout.getRegion('establishments').show(contentBottomLayout);
 
-                contentBottomLayout.getRegion('content').show(batchListView);
-                contentBottomLayout.getRegion('bottom').show(new ScrollingMoreView({targetView: batchListView}));
-            });
+                // @todo could need a filter area
+                contentBottomLayout.getRegion('content').show(establishmentListView);
+                contentBottomLayout.getRegion('bottom').show(new ScrollingMoreView({targetView: establishmentListView}));
+            });*/
 
             // if necessary enable tabs
-            this.ui.synonyms_tab.parent().removeClass('disabled');
-            this.ui.batches_tab.parent().removeClass('disabled');
-            this.ui.actions_tab.parent().removeClass('disabled');
+            this.ui.establishments_tab.parent().removeClass('disabled');
         } else {
             // details
-            var taxon = new TaxonModel({id: this.model.get('parent')});
-            taxon.fetch().then(function() {
-                accessionLayout.getRegion('details').show(new EntityPathView({
-                    model: accessionLayout.model, taxon: taxon, noLink: true}));
-            });
+            organisationLayout.getRegion('details').show(new OrganisationDetailsView({model: this.model}));
 
             // descriptors edit tab
             $.ajax({
@@ -151,16 +125,14 @@ var Layout = Marionette.LayoutView.extend({
                 url: application.baseUrl + 'descriptor/meta-model/' + this.model.get('descriptor_meta_model') + '/layout/',
                 dataType: 'json'
             }).done(function(data) {
-                var accessionDescriptorView = new AccessionDescriptorEditView({
-                    model: accessionLayout.model, descriptorMetaModelLayout: data});
+                var descriptorView = new DescriptorEditView({
+                    model: organisationLayout.model, descriptorMetaModelLayout: data});
 
-                accessionLayout.getRegion('descriptors').show(accessionDescriptorView);
+                organisationLayout.getRegion('descriptors').show(descriptorView);
             });
 
             // not available tabs
-            this.disableSynonymsTab();
-            this.disableBatchesTab();
-            this.disableActionTab();
+            this.disableEstablishmentTab();
         }
     },
 

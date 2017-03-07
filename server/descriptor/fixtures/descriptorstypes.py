@@ -56,7 +56,7 @@ DESCRIPTORS = {
         'description': 'Defines a ZIP code string with a maximum of 16 characters.',
         'format': {
             'type': 'string',
-            'regexp': '^.[0-9]{0,16}$'
+            'regexp': '^[0-9]{0,16}$'
         }
     }
 }

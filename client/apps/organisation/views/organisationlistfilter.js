@@ -39,6 +39,7 @@ var View = Marionette.ItemView.extend({
         if (this.validateOrganisationName()) {
             this.collection.filters = {
                 name: this.ui.organisation_name.val().trim(),
+                type: this.ui.organisation_type.val(),
                 method: "icontains"
             };
 
