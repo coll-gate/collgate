@@ -17,6 +17,7 @@ var OrganisationCollection = require('../collections/organisation');
 
 var OrganisationListView = require('../views/organisationlist');
 var OrganisationListFilterView = require('../views/organisationlistfilter');
+var OrganisationLayout = require('../views/organisationlayout');
 
 var DefaultLayout = require('../../main/views/defaultlayout');
 var ScrollingMoreView = require('../../main/views/scrollingmore');
@@ -82,7 +83,17 @@ var Router = Marionette.AppRouter.extend({
     },
 
     getOrganisation : function(id) {
-        $.alert.error("Not yet !");
+        var organisation = new OrganisationModel({id: id});
+
+        var defaultLayout = new DefaultLayout();
+        application.show(defaultLayout);
+
+        var organisationLayout = new OrganisationLayout({model: organisation});
+
+        organisation.fetch().then(function() {
+            defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Organisation"), model: organisation}));
+            defaultLayout.getRegion('content').show(organisationLayout);
+        });
     }
 });
 

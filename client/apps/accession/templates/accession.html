@@ -10,7 +10,8 @@
 
 <th><span class="remove-accession action glyphicon glyphicon-minus-sign"></span></th>
 <td class="action view-accession-details"><%- name %></td>
-<td class="action view-parent-details"><abbr class="parent taxon-rank" title="" value="<%- parent.rank %>" object-id="<% parent.id %>"><%- parent.name %></abbr></td>
-<td>Xxx</td>
-<td>Yyy</td>
-<td>Zzz</td>
+<td class="action view-parent-details"><abbr class="parent taxon-rank" title="" value="<%- parent_details.rank %>" object-id="<% parent %>"><%- parent_details.name %></abbr></td>
+<% for (var i = 0; i < columns.length; ++i) { %>
+    <% var column = columns[i]; %>
+    <td name="<%= column.name %>" descriptor-id="<%= column.id %>"><%= descriptors[column.name] %></td>
+<% } %>

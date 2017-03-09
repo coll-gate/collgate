@@ -4,9 +4,10 @@
             <th><span class="glyphicon glyphicon-asterisk"></span></th>
             <th><%= gt.gettext("Name") %></th>
             <th><%= gt.gettext("Parent") %></th>
-            <th><%= gt.gettext("Xxx") %></th>
-            <th><%= gt.gettext("Yyy") %></th>
-            <th><%= gt.gettext("Zzz") %></th>
+            <% for (var i = 0; i < columns.length; ++i) { %>
+                <% var column = columns[i]; %>
+                <th name="<%= column.id %>"><%= column.label %></th>
+            <% } %>
         </tr>
     </thead>
     <tbody class="accession-list">

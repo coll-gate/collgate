@@ -98,7 +98,7 @@ var Layout = Marionette.LayoutView.extend({
             organisationLayout.getRegion('details').show(new OrganisationDetailsView({model: this.model}));
 
             // establishments tab
-            /*var EstablishmentCollection = require('../collections/establishment');
+            var EstablishmentCollection = require('../collections/establishment');
             var establishments = new EstablishmentCollection([], {organisation_id: this.model.get('id')});
 
             establishments.fetch().then(function() {
@@ -108,10 +108,13 @@ var Layout = Marionette.LayoutView.extend({
                 var contentBottomLayout = new ContentBottomLayout();
                 organisationLayout.getRegion('establishments').show(contentBottomLayout);
 
-                // @todo could need a filter area
                 contentBottomLayout.getRegion('content').show(establishmentListView);
                 contentBottomLayout.getRegion('bottom').show(new ScrollingMoreView({targetView: establishmentListView}));
-            });*/
+
+                // how and where ?
+                // var EstablishmentListFilterView = require('./establishmentlistfilter');
+                // contentBottomLayout.getRegion('footer').show(new EstablishmentListFilterView({collection: establishments}));
+            });
 
             // if necessary enable tabs
             this.ui.establishments_tab.parent().removeClass('disabled');

@@ -11,10 +11,24 @@
 var EstablishmentModel = require('../models/organisation');
 
 var Collection = Backbone.Collection.extend({
-    url: application.baseUrl + 'organisation/establishment/',
+    url: function () {
+        if (this.organisation_id) {
+            return application.baseUrl + 'organisation/organisation/' + this.organisation_id + '/establishment/';
+        } else {
+            return application.baseUrl + 'organisation/establishment/';
+        }
+    },
     model: EstablishmentModel,
 
     comparator: 'name',
+
+    initialize: function(models, options) {
+        options || (options = {});
+
+        if (options.organisation_id) {
+            this.organisation_id = options.organisation_id;
+        }
+    },
 
     parse: function(data) {
         this.prev = data.prev;

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-28 17:27+0100\n"
+"POT-Creation-Date: 2017-03-09 14:25+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -149,25 +149,22 @@ msgstr "Actions"
 msgid "Parent"
 msgstr "Parent"
 
-#: ../../../templates/accessionlist.html:7 ../../../templates/batchlist.html:6
-msgid "Xxx"
-msgstr "Xxx"
-
-#: ../../../templates/accessionlist.html:8 ../../../templates/batchlist.html:7
-msgid "Yyy"
-msgstr "Yyy"
-
-#: ../../../templates/accessionlist.html:9 ../../../templates/batchlist.html:8
-msgid "Zzz"
-msgstr "Zzz"
-
 #: ../../../templates/accessionsynonyms.html:5
 msgid "Type"
 msgstr "Type"
 
 #: ../../../templates/batchlayout.html:6
 msgid "Parents"
-msgstr ""
+msgstr "Parents"
+
+#~ msgid "Xxx"
+#~ msgstr "Xxx"
+
+#~ msgid "Yyy"
+#~ msgstr "Yyy"
+
+#~ msgid "Zzz"
+#~ msgstr "Zzz"
 
 #~ msgid "Unable to rename the synonym !"
 #~ msgstr "Impossible de renommer le synonyme !"

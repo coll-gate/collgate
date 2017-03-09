@@ -156,7 +156,12 @@ def get_accession_list(request):
             'parent': accession.parent_id,
             'descriptor_meta_model': accession.descriptor_meta_model_id,
             'descriptors': accession.descriptors,
-            'synonyms': []
+            'synonyms': [],
+            'parent_details': {
+                'id': accession.parent.id,
+                'name': accession.parent.name,
+                'rank': accession.parent.rank,
+            }
         }
 
         for synonym in accession.synonyms.all():

@@ -59,7 +59,7 @@ var View = ItemView.extend({
 
             // default value or current descriptor value
             if (exists) {
-                defaultValues = model.get('descriptors')[descriptorModelType.id];
+                defaultValues = model.get('descriptors')[descriptorModelType.name];
                 definesValues = defaultValues != null && defaultValues != undefined;
             } else {
                 // @todo default value from descriptor type
@@ -181,7 +181,7 @@ var View = ItemView.extend({
 
                 var mandatory = descriptorModelType.mandatory;
 
-                var currValue = this.model.get('descriptors')[descriptorModelType.id];
+                var currValue = this.model.get('descriptors')[descriptorModelType.name];
                 var values = null;
 
                 // display of the tr
@@ -204,7 +204,7 @@ var View = ItemView.extend({
                 }
 
                 if (write) {
-                    descriptors[descriptorModelType.id] = values;
+                    descriptors[descriptorModelType.name] = values;
                 }
             }
         }

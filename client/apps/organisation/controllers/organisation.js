@@ -48,54 +48,6 @@ var Controller = Marionette.Object.extend({
                     CreateOrganisationView.__super__.onRender.apply(this);
 
                     application.organisation.views.organisationTypes.drawSelect(this.ui.type);
-
-                    $(this.ui.parent).select2({
-                        dropdownParent: $(this.el),
-                        ajax: {
-                            url: application.baseUrl + "taxonomy/taxon/search/",
-                            dataType: 'json',
-                            delay: 250,
-                            data: function (params) {
-                                params.term || (params.term = '');
-
-                                return {
-                                    filters: JSON.stringify({
-                                        method: 'icontains',
-                                        fields: ['name', 'rank'],
-                                        'name': params.term.trim(),
-                                        'rank': parseInt($("#taxon_rank").val())
-                                    }),
-                                    cursor: params.next
-                                };
-                            },
-                            processResults: function (data, params) {
-                                params.next = null;
-
-                                if (data.items.length >= 30) {
-                                    params.next = data.next || null;
-                                }
-
-                                var results = [];
-
-                                for (var i = 0; i < data.items.length; ++i) {
-                                    results.push({
-                                        id: data.items[i].id,
-                                        text: data.items[i].label
-                                    });
-                                }
-
-                                return {
-                                    results: results,
-                                    pagination: {
-                                        more: params.next != null
-                                    }
-                                };
-                            },
-                            cache: true
-                        },
-                        minimumInputLength: 3,
-                        placeholder: gt.gettext("Enter a taxon name. 3 characters at least for auto-completion"),
-                    });
                 },
 
                 onBeforeDestroy: function () {

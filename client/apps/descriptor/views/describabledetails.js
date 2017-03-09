@@ -55,7 +55,7 @@ var View = ItemView.extend({
             var descriptorType = descriptorModelType.descriptor_type;
             var format = descriptorType.format;
 
-            var values = model.get('descriptors')[descriptorModelType.id];
+            var values = model.get('descriptors')[descriptorModelType.name];
 
             var widget = application.descriptor.widgets.newElement(format.type);
             if (widget) {

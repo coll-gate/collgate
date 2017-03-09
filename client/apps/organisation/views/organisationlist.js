@@ -16,10 +16,28 @@ var View = ScrollView.extend({
     childView: OrganisationView,
     childViewContainer: 'tbody.organisation-list',
 
-    initialize: function() {
-        this.listenTo(this.collection, 'reset', this.render, this);
+    templateHelpers/*templateContext*/: function () {
+        return {
+            columns: this.getOption('columns')
+        }
+    },
 
+    childViewOptions: function () {
+        return {
+            columns: this.getOption('columns')
+        }
+    },
+
+    initialize: function(options) {
         View.__super__.initialize.apply(this);
+
+        options || (options = {});
+        options.columns = [
+            {id: 170, name: 'organisation_acronym', label: 'Acronym'},
+            {id: 171, name: 'organisation_code', label: 'Code'}
+        ];
+
+        this.listenTo(this.collection, 'reset', this.render, this);
     }
 });
 

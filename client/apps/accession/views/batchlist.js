@@ -17,8 +17,24 @@ var View = ScrollView.extend({
     childView: BatchView,
     childViewContainer: 'tbody.batch-list',
 
-    initialize: function() {
+    templateHelpers/*templateContext*/: function () {
+        return {
+            columns: this.getOption('columns')
+        }
+    },
+
+    childViewOptions: function () {
+        return {
+            columns: this.getOption('columns')
+        }
+    },
+
+    initialize: function(options) {
         View.__super__.initialize.apply(this);
+
+        options || (options = {});
+        options.columns = [
+        ];
 
         this.listenTo(this.collection, 'reset', this.render, this);
     }

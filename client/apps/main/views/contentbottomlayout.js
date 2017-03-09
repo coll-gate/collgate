@@ -19,7 +19,7 @@ var View = Marionette.LayoutView.extend({
 
     regions: {
         'content': "div.content",
-        'bottom': "div.layout-bottom",
+        'bottom': "div.layout-bottom"
     }
 });
 

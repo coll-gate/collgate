@@ -14,9 +14,14 @@ var View = Marionette.ItemView.extend({
     tagName: 'tr',
     template: require('../templates/organisation.html'),
     className: "object organisation",
+    templateHelpers/*templateContext*/: function () {
+        return {
+            columns: this.getOption('columns')
+        }
+    },
 
     ui: {
-        "organisation": "span.organisation",
+        "organisation": "td.view-organisation",
         "remove_organisation": ".remove-organisation"
     },
 
@@ -30,7 +35,7 @@ var View = Marionette.ItemView.extend({
     },
 
     onRender: function() {
-    //    application.organisation.views.organisationTypes.htmlFromValue(this.el);
+        application.organisation.views.organisationTypes.htmlFromValue(this.el);
     },
 
     onOrganisationDetails: function() {

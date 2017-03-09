@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-23 15:33+0100\n"
+"POT-Creation-Date: 2017-03-09 14:25+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -48,7 +48,7 @@ msgstr "1024 caractères maximum"
 msgid "Invalid format"
 msgstr "Format invalide"
 
-#: ../../../views/describableedit.js:190
+#: ../../../views/describableedit.js:193
 msgid "Field "
 msgstr "Champ "
 
@@ -155,7 +155,6 @@ msgstr "Impossible de réordonner les types de modèle de descripteur"
 #: ../../../views/descriptormodeltype.js:534
 #: ../../../templates/describabledetails.html:27
 #: ../../../templates/describableedit.html:27
-#: ../../../templates/descriptorvaluelist.html:17
 msgid "Value"
 msgstr "Valeur"
 
@@ -829,6 +828,26 @@ msgstr "Changer la valeur pour un champs d'un type de descripteur"
 msgid "Value for any languages"
 msgstr "Valeur pour toutes les langues"
 
+#: ../../../templates/descriptorvaluelist.html:17
+#: ../../../templates/descriptorvalueordinallist.html:18
+#: ../../../templates/descriptorvaluepairlist.html:17
+#: ../../../templates/widgets/enumordinal.html:40
+#: ../../../templates/widgets/enumordinal.html:48
+#: ../../../templates/widgets/enumordinal.html:70
+#: ../../../templates/widgets/enumpair.html:37
+#: ../../../templates/widgets/enumpair.html:52
+#: ../../../templates/widgets/enumpair.html:76
+#: ../../../templates/widgets/enumsingle.html:27
+msgid "Value0"
+msgstr "Valeur0"
+
+#: ../../../templates/descriptorvaluepairlist.html:18
+#: ../../../templates/widgets/enumpair.html:38
+#: ../../../templates/widgets/enumpair.html:53
+#: ../../../templates/widgets/enumpair.html:77
+msgid "Value1"
+msgstr "Valeur1"
+
 #: ../../../templates/widgets/entity.html:2
 msgid "Model of the entity"
 msgstr "Modèle de l'entité"
@@ -862,16 +881,6 @@ msgstr "Valeur maximale"
 #: ../../../templates/widgets/enumsingle.html:24
 msgid "Sort by field"
 msgstr "Trier par champs"
-
-#: ../../../templates/widgets/enumordinal.html:40
-#: ../../../templates/widgets/enumordinal.html:48
-#: ../../../templates/widgets/enumordinal.html:70
-#: ../../../templates/widgets/enumpair.html:37
-#: ../../../templates/widgets/enumpair.html:52
-#: ../../../templates/widgets/enumpair.html:76
-#: ../../../templates/widgets/enumsingle.html:27
-msgid "Value0"
-msgstr "Valeur0"
 
 #: ../../../templates/widgets/enumordinal.html:46
 #: ../../../templates/widgets/enumpair.html:44
@@ -908,12 +917,6 @@ msgstr "Champ de recherche autocomplete"
 #: ../../../templates/widgets/enumpair.html:24
 msgid "Field name (value1)"
 msgstr "Nom du champs (valeur1)"
-
-#: ../../../templates/widgets/enumpair.html:38
-#: ../../../templates/widgets/enumpair.html:53
-#: ../../../templates/widgets/enumpair.html:77
-msgid "Value1"
-msgstr "Valeur1"
 
 #: ../../../templates/widgets/enumpair.html:47
 msgid ""

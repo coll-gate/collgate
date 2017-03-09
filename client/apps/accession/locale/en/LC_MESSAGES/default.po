@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-28 17:27+0100\n"
+"POT-Creation-Date: 2017-03-09 14:25+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -148,18 +148,6 @@ msgstr ""
 
 #: ../../../templates/accessionlist.html:6
 msgid "Parent"
-msgstr ""
-
-#: ../../../templates/accessionlist.html:7 ../../../templates/batchlist.html:6
-msgid "Xxx"
-msgstr ""
-
-#: ../../../templates/accessionlist.html:8 ../../../templates/batchlist.html:7
-msgid "Yyy"
-msgstr ""
-
-#: ../../../templates/accessionlist.html:9 ../../../templates/batchlist.html:8
-msgid "Zzz"
 msgstr ""
 
 #: ../../../templates/accessionsynonyms.html:5

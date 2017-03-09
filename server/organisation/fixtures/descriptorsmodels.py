@@ -15,7 +15,7 @@ MODELS = {
         'types': [
             {
                 'id': None,
-                'name': None,
+                'name': 'organisation_acronym',
                 'descriptor_type_name': 'acronym_1',
                 'label': {'en': 'Acronym', 'fr': 'Acronyme'},
                 'mandatory': False,
@@ -23,7 +23,7 @@ MODELS = {
             },
             {
                 'id': None,
-                'name': None,
+                'name': 'organisation_code',
                 'descriptor_type_name': 'code_16',
                 'label': {'en': 'Organisation code', 'fr': 'Code organisation'},
                 'mandatory': False,
@@ -31,7 +31,7 @@ MODELS = {
             },
             {
                 'id': None,
-                'name': None,
+                'name': 'organisation_address',
                 'descriptor_type_name': 'address',
                 'label': {'en': 'Address', 'fr': 'Adresse'},
                 'mandatory': False,
@@ -39,7 +39,7 @@ MODELS = {
             },
             {
                 'id': None,
-                'name': None,
+                'name': 'organisation_zipcode',
                 'descriptor_type_name': 'zipcode',
                 'label': {'en': 'ZIP code', 'fr': 'Code postal'},
                 'mandatory': False,
@@ -47,7 +47,7 @@ MODELS = {
             },
             {
                 'id': None,
-                'name': None,
+                'name': 'organisation_geolocation',
                 'descriptor_type_name': 'geolocation',
                 'label': {'en': 'Location', 'fr': 'Localisation'},
                 'mandatory': False,

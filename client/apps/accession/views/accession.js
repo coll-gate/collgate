@@ -18,6 +18,12 @@ var View = Marionette.ItemView.extend({
     },
     template: require('../templates/accession.html'),
 
+    templateHelpers/*templateContext*/: function () {
+        return {
+            columns: this.getOption('columns')
+        }
+    },
+
     ui: {
         details: 'td.view-accession-details',
         parent: 'td.view-parent-details'

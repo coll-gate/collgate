@@ -17,11 +17,27 @@ var View = ScrollView.extend({
     childView: AccessionView,
     childViewContainer: 'tbody.accession-list',
 
-    initialize: function() {
-        this.listenTo(this.collection, 'reset', this.render, this);
-
-        View.__super__.initialize.apply(this);
+    templateHelpers/*templateContext*/: function () {
+        return {
+            columns: this.getOption('columns')
+        }
     },
+
+    childViewOptions: function () {
+        return {
+            columns: this.getOption('columns')
+        }
+    },
+
+    initialize: function(options) {
+        View.__super__.initialize.apply(this);
+
+        options || (options = {});
+        options.columns = [
+        ];
+
+        this.listenTo(this.collection, 'reset', this.render, this);
+    }
 });
 
 module.exports = View;

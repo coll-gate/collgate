@@ -86,9 +86,9 @@ class DescriptorsBuilder(object):
                 # values are loaded on demand (displaying the panel or opening the dropdown)
                 dt_format = json.loads(descriptor_type.format)
 
-                src_id = str(dmt.id)
+                src_name = str(dmt.name)
 
-                acc_value = self.entity.descriptors.get(src_id)
+                acc_value = self.entity.descriptors.get(src_name)
 
                 if DescriptorFormatTypeManager.has_external(dt_format):
                     self.own_list.append((dt_format, acc_value, None))
@@ -123,12 +123,12 @@ class DescriptorsBuilder(object):
                 dt_format = json.loads(descriptor_type.format)
 
                 conditions = DescriptorModelTypeCondition.objects.filter(descriptor_model_type_id=dmt.id)
-                src_id = str(dmt.id)
+                src_name = dmt.name
 
-                src_defined = src_id in descriptors
+                src_defined = src_name in descriptors
 
-                acc_value = self.entity.descriptors.get(src_id)
-                src_value = descriptors.get(src_id)
+                acc_value = self.entity.descriptors.get(src_name)
+                src_value = descriptors.get(src_name)
 
                 merged_value = src_value if src_defined else acc_value
 
@@ -149,14 +149,14 @@ class DescriptorsBuilder(object):
                 if conditions.exists():
                     # check condition
                     dmtc = conditions[0]
-                    target_id = str(dmtc.target.id)
+                    target_name = dmtc.target.name
 
                     # according to the condition if the current value is defined (src) or was defined (acc)
                     # the condition must be respected otherwise it raises an exception if a new value is defined (src)
-                    src_target_defined = target_id in descriptors
+                    src_target_defined = target_name in descriptors
 
-                    acc_target_value = self.entity.descriptors.get(target_id)
-                    src_target_value = descriptors.get(target_id)
+                    acc_target_value = self.entity.descriptors.get(target_name)
+                    src_target_value = descriptors.get(target_name)
                     merged_target_value = src_target_value if src_target_defined else acc_target_value
 
                     if dmtc.condition == 0:
@@ -206,7 +206,7 @@ class DescriptorsBuilder(object):
                                 " (%s)" % dmt.get_label())
 
                 # use new value if defined, else reuse current
-                self._descriptors[dmt.id] = src_value if src_defined else acc_value
+                self._descriptors[dmt.name] = src_value if src_defined else acc_value
 
                 # make the list of descriptors that need to perform a call to own
                 if DescriptorFormatTypeManager.has_external(dt_format):

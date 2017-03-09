@@ -8,10 +8,7 @@
  * @details
  */
 
-var Marionette = require('backbone.marionette');
-var DescriptorGroupModel = require('../models/descriptorgroup');
 var DescriptorGroupAltView = require('../views/descriptorgroupalt');
-
 var ScrollView = require('../../main/views/scroll');
 
 var View = ScrollView.extend({
@@ -21,14 +18,12 @@ var View = ScrollView.extend({
 
     childViewOptions: function () {
         return {
-            layout: this.getOption('layout'),
+            layout: this.getOption('layout')
         }
     },
 
     initialize: function(options) {
         this.listenTo(this.collection, 'reset', this.render, this);
-        //this.listenTo(this.collection, 'add', this.render, this);
-        //this.listenTo(this.collection, 'remove', this.render, this);
 
         View.__super__.initialize.apply(this);
     }

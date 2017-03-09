@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-23 15:33+0100\n"
+"POT-Creation-Date: 2017-03-09 14:25+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -48,7 +48,7 @@ msgstr ""
 msgid "Invalid format"
 msgstr ""
 
-#: ../../../views/describableedit.js:190
+#: ../../../views/describableedit.js:193
 msgid "Field "
 msgstr ""
 
@@ -153,7 +153,6 @@ msgstr ""
 #: ../../../views/descriptormodeltype.js:534
 #: ../../../templates/describabledetails.html:27
 #: ../../../templates/describableedit.html:27
-#: ../../../templates/descriptorvaluelist.html:17
 msgid "Value"
 msgstr ""
 
@@ -827,6 +826,26 @@ msgstr ""
 msgid "Value for any languages"
 msgstr ""
 
+#: ../../../templates/descriptorvaluelist.html:17
+#: ../../../templates/descriptorvalueordinallist.html:18
+#: ../../../templates/descriptorvaluepairlist.html:17
+#: ../../../templates/widgets/enumordinal.html:40
+#: ../../../templates/widgets/enumordinal.html:48
+#: ../../../templates/widgets/enumordinal.html:70
+#: ../../../templates/widgets/enumpair.html:37
+#: ../../../templates/widgets/enumpair.html:52
+#: ../../../templates/widgets/enumpair.html:76
+#: ../../../templates/widgets/enumsingle.html:27
+msgid "Value0"
+msgstr ""
+
+#: ../../../templates/descriptorvaluepairlist.html:18
+#: ../../../templates/widgets/enumpair.html:38
+#: ../../../templates/widgets/enumpair.html:53
+#: ../../../templates/widgets/enumpair.html:77
+msgid "Value1"
+msgstr ""
+
 #: ../../../templates/widgets/entity.html:2
 msgid "Model of the entity"
 msgstr ""
@@ -859,16 +878,6 @@ msgstr ""
 #: ../../../templates/widgets/enumpair.html:34
 #: ../../../templates/widgets/enumsingle.html:24
 msgid "Sort by field"
-msgstr ""
-
-#: ../../../templates/widgets/enumordinal.html:40
-#: ../../../templates/widgets/enumordinal.html:48
-#: ../../../templates/widgets/enumordinal.html:70
-#: ../../../templates/widgets/enumpair.html:37
-#: ../../../templates/widgets/enumpair.html:52
-#: ../../../templates/widgets/enumpair.html:76
-#: ../../../templates/widgets/enumsingle.html:27
-msgid "Value0"
 msgstr ""
 
 #: ../../../templates/widgets/enumordinal.html:46
@@ -905,12 +914,6 @@ msgstr ""
 
 #: ../../../templates/widgets/enumpair.html:24
 msgid "Field name (value1)"
-msgstr ""
-
-#: ../../../templates/widgets/enumpair.html:38
-#: ../../../templates/widgets/enumpair.html:53
-#: ../../../templates/widgets/enumpair.html:77
-msgid "Value1"
 msgstr ""
 
 #: ../../../templates/widgets/enumpair.html:47

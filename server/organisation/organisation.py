@@ -111,27 +111,60 @@ def get_organisation_list(request):
     """
     List all organisations.
     """
-
     results_per_page = int_arg(request.GET.get('more', 30))
     cursor = request.GET.get('cursor')
     limit = results_per_page
 
-    if cursor:
-        cursor_name, cursor_id = cursor.rsplit('/', 1)
-        qs = Organisation.objects.filter(Q(name__gt=cursor_name))
+    filters = request.GET.get('filters')
+
+    if filters:
+        filters = json.loads(filters)
+
+    results = filter_organisation(filters, cursor, limit, False)
+    return HttpResponseRest(request, results)
+
+
+def filter_organisation(filters, cursor, limit, grc_only):
+    """
+    Filter organisation according to some parameters.
+
+    :param cursor: Cursor string of the last query or None
+    :param limit: Limit number of results
+    :param filters: Filter dict parameters or None
+    :param grc_only:
+    :return:
+    """
+    if grc_only:
+        organisations = GRC.objects.all()[0].organisations
+
+        if cursor:
+            cursor_name, cursor_id = cursor.rsplit('/', 1)
+            qs = organisations.filter(Q(name__gt=cursor_name))
+        else:
+            qs = organisations.all()
     else:
-        qs = Organisation.objects.all()
+        if cursor:
+            cursor_name, cursor_id = cursor.rsplit('/', 1)
+            qs = Organisation.objects.filter(Q(name__gt=cursor_name))
+        else:
+            qs = Organisation.objects.all()
 
-    if request.GET.get('filters'):
-        filters = json.loads(request.GET['filters'])
-
-        name = filters.get('name', '')
+    if filters:
+        name = filters.get('name')
+        name_acronym = filters.get('name_acronym')
         organisation_type = filters.get('type')
 
-        if filters.get('method', 'icontains') == 'icontains':
-            qs = qs.filter(Q(name__icontains=name))
-        else:
-            qs = qs.filter(Q(name__iexact=name))
+        if name:
+            if filters.get('method', 'icontains') == 'icontains':
+                qs = qs.filter(Q(name__icontains=name))
+            else:
+                qs = qs.filter(Q(name__iexact=name))
+
+        if name_acronym:
+            if filters.get('method', 'icontains') == 'icontains':
+                qs = qs.filter(Q(name__icontains=name_acronym) | Q(descriptors__organisation_acronym=name_acronym))
+            else:
+                qs = qs.filter(Q(name__iexact=name_acronym) | Q(descriptors__organisation_acronym=name_acronym))
 
         if organisation_type:
             if filters.get('type_method', 'eq') == 'eq':
@@ -148,6 +181,7 @@ def get_organisation_list(request):
             'name': organisation.name,
             'type': organisation.type,
             'descriptors': organisation.descriptors,
+            'descriptor_meta_model': organisation.descriptor_meta_model_id,
             'num_establishments': organisation.establishments.count()
         }
 
@@ -173,7 +207,7 @@ def get_organisation_list(request):
         'next': next_cursor,
     }
 
-    return HttpResponseRest(request, results)
+    return results
 
 
 @RestOrganisationSearch.def_auth_request(Method.GET, Format.JSON, ('filters',))
@@ -246,6 +280,21 @@ def search_organisation(request):
     }
 
     return HttpResponseRest(request, results)
+
+
+@RestOrganisationId.def_auth_request(Method.GET, Format.JSON)
+def get_organisation_details(request, org_id):
+    organisation = Organisation.objects.get(id=int(org_id))
+
+    result = {
+        'id': organisation.id,
+        'name': organisation.name,
+        'type': organisation.type,
+        'descriptor_meta_model': organisation.descriptor_meta_model_id,
+        'descriptors': organisation.descriptors
+    }
+
+    return HttpResponseRest(request, result)
 
 
 @RestOrganisationId.def_auth_request(Method.PATCH, Format.JSON, content={

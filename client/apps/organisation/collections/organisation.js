@@ -3,7 +3,7 @@
  * @brief Organisation collection
  * @author Frederic SCHERMA
  * @date 2017-02-28
- * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+ * @copyright Copyright (c) 2017 INRA UMR1095 GDEC
  * @license @todo
  * @details
  */
@@ -18,14 +18,13 @@ var Collection = Backbone.Collection.extend({
             return application.baseUrl + 'organisation/organisation/';
         }
     },
-    model : OrganisationModel,
+    model: OrganisationModel,
 
     comparator: 'name',
 
     initialize: function(models, options) {
         options || (options = {});
-
-        this.grc = options.grc;
+        this.grc = options.grc || false;
     },
 
     parse: function(data) {

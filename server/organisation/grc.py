@@ -12,6 +12,7 @@ from django.utils.translation import ugettext_lazy as _
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
 from organisation.models import GRC
+from organisation.organisation import filter_organisation
 from .base import RestOrganisationModule
 
 
@@ -82,68 +83,14 @@ def get_grc_organisation_list(request):
     """
     List of organisations related to the GRC.
     """
-
     results_per_page = int_arg(request.GET.get('more', 30))
     cursor = request.GET.get('cursor')
     limit = results_per_page
 
-    organisations = GRC.objects.all()[0].organisations
+    filters = request.GET.get('filters')
 
-    if cursor:
-        cursor_name, cursor_id = cursor.rsplit('/', 1)
-        qs = organisations.filter(Q(name__gt=cursor_name))
-    else:
-        qs = organisations.all()
+    if filters:
+        filters = json.loads(filters)
 
-    if request.GET.get('filters'):
-        filters = json.loads(request.GET['filters'])
-
-        name = filters.get('name', '')
-        organisation_type = filters.get('type')
-
-        if filters.get('method', 'icontains') == 'icontains':
-            qs = qs.filter(Q(name__icontains=name))
-        else:
-            qs = qs.filter(Q(name__iexact=name))
-
-        if organisation_type:
-            if filters.get('type_method', 'eq') == 'eq':
-                qs = qs.filter(Q(type=organisation_type))
-            else:
-                qs = qs.exclude(Q(type=organisation_type))
-
-    qs = qs.order_by('name')[:limit]
-
-    items_list = []
-    for organisation in qs:
-        t = {
-            'id': organisation.pk,
-            'name': organisation.name,
-            'type': organisation.type,
-            'descriptors': organisation.descriptors,
-            'num_establishments': organisation.establishments.count()
-        }
-
-        items_list.append(t)
-
-    if len(items_list) > 0:
-        # prev cursor (asc order)
-        item = items_list[0]
-        prev_cursor = "%s/%s" % (item['name'], item['id'])
-
-        # next cursor (asc order)
-        item = items_list[-1]
-        next_cursor = "%s/%s" % (item['name'], item['id'])
-    else:
-        prev_cursor = None
-        next_cursor = None
-
-    results = {
-        'perms': [],
-        'items': items_list,
-        'prev': prev_cursor,
-        'cursor': cursor,
-        'next': next_cursor,
-    }
-
+    results = filter_organisation(filters, cursor, limit, True)
     return HttpResponseRest(request, results)

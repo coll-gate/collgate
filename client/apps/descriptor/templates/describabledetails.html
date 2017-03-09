@@ -32,7 +32,7 @@
                                 <% _.each(panel.descriptor_model.descriptor_model_types, function(descriptor_model_type) { %>
                                     <% var format = descriptor_model_type.descriptor_type.format; %>
                                     <% var mandatory = descriptor_model_type.mandatory ? "mandatory-field" : ""; %>
-                                    <tr class="descriptor" panel-index="<%= pi %>" index="<%= i %>" descriptor-model-type="<%= descriptor_model_type.id %>" name="<%= descriptor_model_type.descriptor_type.code %>">
+                                    <tr class="descriptor" panel-index="<%= pi %>" index="<%= i %>" descriptor-model-type="<%= descriptor_model_type.id %>" code="<%= descriptor_model_type.descriptor_type.code %>">
                                         <td class="descriptor-name" style="padding-top: 5px; padding-bottom: 3px;">
                                             <%= descriptor_model_type.label %>
                                             <span class="descriptor-type-unit">

@@ -135,30 +135,30 @@ class FixtureManager:
             # lookup table
             self.set_descriptor_model(descriptor_model_name, descriptor_model.id)
 
-            count = 1
             position = 0
 
-            for mode_type_data in descriptor_model_data['types']:
-                model_type_name = "%i_%i" % (descriptor_model.id, count)
+            for model_type_data in descriptor_model_data['types']:
+                model_type_name = model_type_data.get('name')
+                if model_type_data is None:
+                    model_type_name = "%s_%s" % (descriptor_model_data['name'], model_type_data['descriptor_type_name'])
 
-                descriptor_type_id = self.get_descriptor_type_id(mode_type_data['descriptor_type_name'])
+                descriptor_type_id = self.get_descriptor_type_id(model_type_data['descriptor_type_name'])
 
                 descriptor_model_type, created = DescriptorModelType.objects.update_or_create(
                     name=model_type_name, defaults={
                         'descriptor_model': descriptor_model,
-                        'label': json.dumps(mode_type_data.get('label', {})),
-                        'mandatory': mode_type_data.get('mandatory', False),
-                        'set_once': mode_type_data.get('set_once', False),
+                        'label': json.dumps(model_type_data.get('label', {})),
+                        'mandatory': model_type_data.get('mandatory', False),
+                        'set_once': model_type_data.get('set_once', False),
                         'position': position,
                         'descriptor_type_id': descriptor_type_id
                     }
                 )
 
                 # keep id and generated name for others fixtures
-                mode_type_data['id'] = descriptor_model_type.id
-                mode_type_data['name'] = model_type_name
+                model_type_data['id'] = descriptor_model_type.id
+                model_type_data['name'] = model_type_name
 
-                count += 1
                 position += 1
 
     def create_or_update_meta_models(self, descriptor_meta_models):
