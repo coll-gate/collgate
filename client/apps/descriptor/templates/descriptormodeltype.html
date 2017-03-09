@@ -9,16 +9,21 @@
 -->
 
 <th><span class="delete-descriptor-model-type action glyphicon glyphicon-minus-sign"></span></th>
-<td name="descriptor_type_code"><%= descriptor_type_code %></td>
+<td name="descriptor-type-code">
+    <abbr title="<%= descriptor_type_groups.get(descriptor_type_group).get('name') + '.' + descriptor_type_name %>"><%= descriptor_type_code %></abbr>
+</td>
+<td name="name" class="action rename-descriptor-model-type">
+    <abbr class="action label label-default glyphicon glyphicon-option-horizontal" title="<%= name %>"><span></span></abbr>
+</td>
 <td name="label" class="action"><%= label %></td>
 <% if (mandatory) { %>
-    <td name="mandatory"><span class="action glyphicon glyphicon-ok left-margin"></span></td>
+    <td style="text-align:center;" name="mandatory"><span class="action glyphicon glyphicon-ok"></span></td>
 <% } else { %>
-    <td name="mandatory"><span class="action glyphicon glyphicon-remove left-margin"></span></td>
+    <td style="text-align:center; "name="mandatory"><span class="action glyphicon glyphicon-remove"></span></td>
 <% } %>
 <% if (set_once) { %>
-    <td name="set_once"><span class="action glyphicon glyphicon-ok left-margin"></span></td>
+    <td style="text-align:center;" name="set_once"><span class="action glyphicon glyphicon-ok"></span></td>
 <% } else { %>
-    <td name="set_once"><span class="action glyphicon glyphicon-remove left-margin"></span></td>
+    <td style="text-align:center;" name="set_once"><span class="action glyphicon glyphicon-remove"></span></td>
 <% } %>
-<td name="condition"><span class="action glyphicon glyphicon-wrench left-margin"></span></td>
+<td style="text-align:center;" name="condition"><span class="action glyphicon glyphicon-wrench"></span></td>

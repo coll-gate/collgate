@@ -121,7 +121,7 @@ msgstr "64 caractères maximum"
 #: ../../../views/descriptormodeltype.js:385
 #: ../../../views/descriptorpanel.js:406
 msgid "Successfully labeled !"
-msgstr "Label définit avec succès !"
+msgstr "Etiquette définie avec succès !"
 
 #: ../../../views/descriptormetamodeladd.js:92
 msgid "Unable to create the meta-model of descriptor !"
@@ -679,7 +679,7 @@ msgstr "Groupe de descripteurs"
 
 #: ../../../templates/descriptormetamodelchangelabel.html:5
 msgid "Change the label for the meta-model of descriptor"
-msgstr "Changer le label du méta-modèle de descripteur"
+msgstr "Changer l'étiquette du méta-modèle de descripteur"
 
 #: ../../../templates/descriptormetamodelcreate.html:5
 msgid "Create a meta-model of descriptor"
@@ -693,7 +693,7 @@ msgstr "Entité cible"
 #: ../../../templates/descriptormodeltypecreate.html:10
 #: ../../../templates/descriptorpanelcreate.html:10
 msgid "Label for the current language"
-msgstr "Label pour le langage courant"
+msgstr "Etiquette pour le langage courant"
 
 #: ../../../templates/descriptormetamodelcreate.html:19
 #: ../../../templates/descriptormetamodeldetail.html:17
@@ -720,7 +720,7 @@ msgstr "Mettre à jour"
 #: ../../../templates/descriptormetamodellist.html:17
 #: ../../../templates/descriptormodeltypelist.html:17
 msgid "Label"
-msgstr "Label"
+msgstr "Etiquette"
 
 #: ../../../templates/descriptormetamodellist.html:18
 #: ../../../templates/descriptormodeltypecondition.html:10
@@ -743,7 +743,7 @@ msgstr "Nom complet"
 
 #: ../../../templates/descriptormodeltypechangelabel.html:5
 msgid "Change the label for the type of model of descriptor"
-msgstr "Changer le label du type de modèle de descripteur"
+msgstr "Changer l'étiquette du type de modèle de descripteur"
 
 #: ../../../templates/descriptormodeltypecondition.html:5
 msgid "Condition of the type of model of descriptor"
@@ -784,11 +784,11 @@ msgstr "Définie une fois"
 
 #: ../../../templates/descriptorpanel.html:15
 msgid "Undefined label"
-msgstr "Label indéfini"
+msgstr "Etiquette indéfini"
 
 #: ../../../templates/descriptorpanelchangelabel.html:5
 msgid "Change the label for the panel of descriptor"
-msgstr "Changer le label du panel de descripteur"
+msgstr "Changer l'étiquette du panel de descripteur"
 
 #: ../../../templates/descriptorpanelcreate.html:5
 msgid "Create a panel of descriptor"
@@ -930,7 +930,7 @@ msgstr ""
 "de générer une pseudo-hiérarchie, pour laquelle les valeurs sont "
 "sensiblement décalé afin de donner une impression de parent/enfant. Le "
 "décalage dépend du niveau déclaré dans valeur0 tandis que valeur1 contient "
-"le label. La première valeur contient quelque-chose comme 1 or 2 or 1.1, "
+"l'étiquette. La première valeur contient quelque-chose comme 1 or 2 or 1.1, "
 "1.2, 1.1.1..."
 
 #: ../../../templates/widgets/enumpair.html:54

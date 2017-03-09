@@ -19,6 +19,12 @@ var View = Marionette.ItemView.extend({
     className: 'element object descriptor-model-type',
     template: require('../templates/descriptormodeltype.html'),
 
+    templateHelpers/*templateContext*/: function () {
+        return {
+            descriptor_type_groups: this.getOption('descriptor_type_groups')
+        }
+    },
+
     attributes: {
         draggable: true
     },

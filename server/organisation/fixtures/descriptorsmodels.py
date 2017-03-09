@@ -61,6 +61,30 @@ MODELS = {
         'verbose_name': 'Establishment',
         'description': 'Model for an establishment of organisation.',
         'types': [
+            {
+                'id': None,
+                'name': 'establishment_address',
+                'descriptor_type_name': 'address',
+                'label': {'en': 'Address', 'fr': 'Adresse'},
+                'mandatory': False,
+                'set_once': False
+            },
+            {
+                'id': None,
+                'name': 'establishment_zipcode',
+                'descriptor_type_name': 'zipcode',
+                'label': {'en': 'ZIP code', 'fr': 'Code postal'},
+                'mandatory': False,
+                'set_once': False
+            },
+            {
+                'id': None,
+                'name': 'establishment_geolocation',
+                'descriptor_type_name': 'geolocation',
+                'label': {'en': 'Location', 'fr': 'Localisation'},
+                'mandatory': False,
+                'set_once': False
+            }
         ]
     }
 }

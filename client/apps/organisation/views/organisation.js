@@ -14,6 +14,7 @@ var View = Marionette.ItemView.extend({
     tagName: 'tr',
     template: require('../templates/organisation.html'),
     className: "object organisation",
+
     templateHelpers/*templateContext*/: function () {
         return {
             columns: this.getOption('columns')

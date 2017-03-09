@@ -20,8 +20,16 @@ var View = ScrollView.extend({
     childView: DescriptorModelTypeView,
     childViewContainer: 'tbody.descriptor-model-type-list',
 
-    initialize: function() {
+    childViewOptions: function () {
+        return {
+            descriptor_type_groups: this.getOption('descriptor_type_groups')
+        }
+    },
+
+    initialize: function(options) {
         View.__super__.initialize.apply(this);
+
+        options || (options = {});
 
         this.listenTo(this.collection, 'reset', this.render, this);
 
