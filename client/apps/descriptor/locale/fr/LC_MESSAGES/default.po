@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-09 14:25+0100\n"
+"POT-Creation-Date: 2017-03-10 11:55+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -52,29 +52,35 @@ msgstr "Format invalide"
 msgid "Field "
 msgstr "Champ "
 
-#: ../../../views/descriptorgroup.js:52
+#: ../../../views/descriptorgroup.js:50
 msgid "Some types of descriptor exists for this group"
 msgstr "Des types de descripteur existent pour ce groupe"
 
-#: ../../../views/descriptorgroup.js:89 ../../../views/descriptorgroupadd.js:45
+#: ../../../views/descriptorgroup.js:87 ../../../views/descriptorgroupadd.js:45
 #: ../../../views/descriptorgrouptypeadd.js:51
 #: ../../../views/descriptormetamodeladd.js:132
 #: ../../../views/descriptormetamodeldetail.js:41
 #: ../../../views/descriptormodeladd.js:45
 #: ../../../views/descriptormodeldetail.js:43
+#: ../../../views/descriptormodeltype.js:188
+#: ../../../views/descriptormodeltype.js:364
+#: ../../../views/descriptormodeltypelist.js:178
 #: ../../../views/descriptortypedetailslayout.js:73
 msgid "Invalid characters (alphanumeric, _ and - only)"
 msgstr "Caractères invalides (alphanumérique, _ et - seulement)"
 
-#: ../../../views/descriptorgroup.js:92 ../../../views/descriptorgroupadd.js:48
+#: ../../../views/descriptorgroup.js:90 ../../../views/descriptorgroupadd.js:48
 #: ../../../views/descriptorgrouptypeadd.js:54
 #: ../../../views/descriptormetamodeladd.js:102
 #: ../../../views/descriptormetamodeladd.js:135
 #: ../../../views/descriptormetamodeldetail.js:43
 #: ../../../views/descriptormodeladd.js:48
 #: ../../../views/descriptormodeldetail.js:45
-#: ../../../views/descriptormodeltype.js:160
-#: ../../../views/descriptormodeltypelist.js:150
+#: ../../../views/descriptormodeltype.js:170
+#: ../../../views/descriptormodeltype.js:191
+#: ../../../views/descriptormodeltype.js:367
+#: ../../../views/descriptormodeltypelist.js:160
+#: ../../../views/descriptormodeltypelist.js:181
 #: ../../../views/descriptorpanel.js:175 ../../../views/descriptorpanel.js:357
 #: ../../../views/descriptorpanel.js:374
 #: ../../../views/descriptorpanellist.js:133
@@ -104,8 +110,8 @@ msgstr ""
 
 #: ../../../views/descriptormetamodel.js:107
 #: ../../../views/descriptormetamodel.js:121
-#: ../../../views/descriptormodeltype.js:342
-#: ../../../views/descriptormodeltype.js:356
+#: ../../../views/descriptormodeltype.js:439
+#: ../../../views/descriptormodeltype.js:453
 #: ../../../views/descriptorpanel.js:360 ../../../views/descriptorpanel.js:377
 #: ../../../views/descriptorvalue.js:102 ../../../views/descriptorvalue.js:119
 #: ../../../views/descriptorvalueordinal.js:91
@@ -118,7 +124,7 @@ msgid "64 characters max"
 msgstr "64 caractères maximum"
 
 #: ../../../views/descriptormetamodel.js:150
-#: ../../../views/descriptormodeltype.js:385
+#: ../../../views/descriptormodeltype.js:482
 #: ../../../views/descriptorpanel.js:406
 msgid "Successfully labeled !"
 msgstr "Etiquette définie avec succès !"
@@ -141,29 +147,29 @@ msgstr "Fait"
 msgid "Name for model of descriptor already in usage"
 msgstr "Ce nom de modèle de descripteur est déjà utilisé"
 
-#: ../../../views/descriptormodeltype.js:199
-#: ../../../views/descriptormodeltypelist.js:189
+#: ../../../views/descriptormodeltype.js:230
+#: ../../../views/descriptormodeltypelist.js:220
 msgid "Unable to create the type of model of descriptor !"
 msgstr "Impossible de créer le type de modèle de descripteur !"
 
-#: ../../../views/descriptormodeltype.js:293
-#: ../../../views/descriptormodeltypelist.js:248
+#: ../../../views/descriptormodeltype.js:324
+#: ../../../views/descriptormodeltypelist.js:279
 msgid "Unable to reorder the types of model of descriptor"
 msgstr "Impossible de réordonner les types de modèle de descripteur"
 
-#: ../../../views/descriptormodeltype.js:531
-#: ../../../views/descriptormodeltype.js:534
+#: ../../../views/descriptormodeltype.js:628
+#: ../../../views/descriptormodeltype.js:631
 #: ../../../templates/describabledetails.html:27
 #: ../../../templates/describableedit.html:27
 msgid "Value"
 msgstr "Valeur"
 
-#: ../../../views/descriptormodeltype.js:572
+#: ../../../views/descriptormodeltype.js:669
 msgid "Successfully removed !"
 msgstr "Retiré avec succé !"
 
-#: ../../../views/descriptormodeltype.js:610
-#: ../../../views/descriptormodeltype.js:622
+#: ../../../views/descriptormodeltype.js:707
+#: ../../../views/descriptormodeltype.js:719
 msgid "Successfully defined !"
 msgstr "Définie avec succé !"
 
@@ -244,7 +250,7 @@ msgstr "Liste des models de descripteur"
 msgid "Details for the model of descriptor"
 msgstr "Détails pour le modèle de descripteur"
 
-#: ../../../routers/descriptormodel.js:76
+#: ../../../routers/descriptormodel.js:74
 msgid "List of types of models of descriptor"
 msgstr "Liste des types de modèles de descripteur"
 
@@ -626,12 +632,13 @@ msgid "Modify"
 msgstr "Modifier"
 
 #: ../../../templates/describableedit.html:61
-#: ../../../templates/descriptorgroupchangename.html:16
+#: ../../../templates/descriptorgrouprename.html:16
 #: ../../../templates/descriptormetamodelchangelabel.html:25
 #: ../../../templates/descriptormetamodelcreate.html:25
 #: ../../../templates/descriptormodeltypechangelabel.html:25
 #: ../../../templates/descriptormodeltypecondition.html:30
-#: ../../../templates/descriptormodeltypecreate.html:16
+#: ../../../templates/descriptormodeltypecreate.html:20
+#: ../../../templates/descriptormodeltyperename.html:16
 #: ../../../templates/descriptorpanelchangelabel.html:24
 #: ../../../templates/descriptorpanelcreate.html:16
 #: ../../../templates/descriptorvaluechangefield.html:16
@@ -640,12 +647,13 @@ msgid "Cancel"
 msgstr "Annuler"
 
 #: ../../../templates/describableedit.html:62
-#: ../../../templates/descriptorgroupchangename.html:17
+#: ../../../templates/descriptorgrouprename.html:17
 #: ../../../templates/descriptormetamodelchangelabel.html:26
 #: ../../../templates/descriptormetamodelcreate.html:26
 #: ../../../templates/descriptormodeltypechangelabel.html:26
 #: ../../../templates/descriptormodeltypecondition.html:31
-#: ../../../templates/descriptormodeltypecreate.html:17
+#: ../../../templates/descriptormodeltypecreate.html:21
+#: ../../../templates/descriptormodeltyperename.html:17
 #: ../../../templates/descriptorpanelchangelabel.html:25
 #: ../../../templates/descriptorpanelcreate.html:17
 #: ../../../templates/descriptorvaluechangefield.html:17
@@ -653,15 +661,13 @@ msgstr "Annuler"
 msgid "Apply"
 msgstr "Appliquer"
 
-#: ../../../templates/descriptorgroupchangename.html:5
-msgid "Change the name of the group of descriptors"
-msgstr "Changer le nom du groupe de descripteur"
-
-#: ../../../templates/descriptorgroupchangename.html:10
 #: ../../../templates/descriptorgrouplist.html:16
+#: ../../../templates/descriptorgrouprename.html:10
 #: ../../../templates/descriptormetamodellist.html:16
 #: ../../../templates/descriptormodellist.html:16
 #: ../../../templates/descriptormodellistalt.html:15
+#: ../../../templates/descriptormodeltypelist.html:17
+#: ../../../templates/descriptormodeltyperename.html:10
 #: ../../../templates/descriptortypelist.html:16
 msgid "Name"
 msgstr "Nom"
@@ -677,6 +683,10 @@ msgstr "Nombre de types de descripteur"
 msgid "Group of descriptors"
 msgstr "Groupe de descripteurs"
 
+#: ../../../templates/descriptorgrouprename.html:5
+msgid "Rename the group of descriptors"
+msgstr "Renommer le groupe de descripteur"
+
 #: ../../../templates/descriptormetamodelchangelabel.html:5
 msgid "Change the label for the meta-model of descriptor"
 msgstr "Changer l'étiquette du méta-modèle de descripteur"
@@ -690,7 +700,7 @@ msgid "Target entity"
 msgstr "Entité cible"
 
 #: ../../../templates/descriptormetamodelcreate.html:15
-#: ../../../templates/descriptormodeltypecreate.html:10
+#: ../../../templates/descriptormodeltypecreate.html:14
 #: ../../../templates/descriptorpanelcreate.html:10
 msgid "Label for the current language"
 msgstr "Etiquette pour le langage courant"
@@ -718,7 +728,7 @@ msgid "Update"
 msgstr "Mettre à jour"
 
 #: ../../../templates/descriptormetamodellist.html:17
-#: ../../../templates/descriptormodeltypelist.html:17
+#: ../../../templates/descriptormodeltypelist.html:18
 msgid "Label"
 msgstr "Etiquette"
 
@@ -750,7 +760,6 @@ msgid "Condition of the type of model of descriptor"
 msgstr "Condition du type de modèle de descripteur"
 
 #: ../../../templates/descriptormodeltypecondition.html:21
-#: ../../../templates/descriptormodeltypelist.html:20
 msgid "Condition"
 msgstr "Condition"
 
@@ -759,8 +768,12 @@ msgid "Remove condition"
 msgstr "Supprimer la condition"
 
 #: ../../../templates/descriptormodeltypecreate.html:5
-msgid "Create a model of descriptor"
-msgstr "Créer un modèle de descripteur"
+msgid "Add a type of model of descriptor"
+msgstr "Ajouter un type de model de descripteur"
+
+#: ../../../templates/descriptormodeltypecreate.html:10
+msgid "Unique name"
+msgstr "Nom unique"
 
 #: ../../../templates/descriptormodeltypelist.html:16
 #: ../../../templates/descriptortypelist.html:17
@@ -774,13 +787,9 @@ msgstr "Créer un modèle de descripteur"
 msgid "Code"
 msgstr "Code"
 
-#: ../../../templates/descriptormodeltypelist.html:18
-msgid "Required"
-msgstr "Obligatoire"
-
-#: ../../../templates/descriptormodeltypelist.html:19
-msgid "Set Once"
-msgstr "Définie une fois"
+#: ../../../templates/descriptormodeltyperename.html:5
+msgid "Rename the type of model of descriptors"
+msgstr "Renommer le type de model de descriptors"
 
 #: ../../../templates/descriptorpanel.html:15
 msgid "Undefined label"
@@ -961,3 +970,12 @@ msgstr "Précision de la décimale"
 #: ../../../templates/widgets/string.html:2
 msgid "Regular expression"
 msgstr "Expression régulière"
+
+#~ msgid "Create a model of descriptor"
+#~ msgstr "Créer un modèle de descripteur"
+
+#~ msgid "Required"
+#~ msgstr "Obligatoire"
+
+#~ msgid "Set Once"
+#~ msgstr "Définie une fois"

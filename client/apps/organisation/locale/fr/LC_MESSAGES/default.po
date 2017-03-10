@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-09 14:25+0100\n"
+"POT-Creation-Date: 2017-03-10 11:55+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,18 +34,19 @@ msgstr "Appliquer les modifications"
 msgid "Cancel modifications"
 msgstr "Annuler les modifications"
 
-#: ../../../views/grcdetails.js:43
-msgid "Done"
-msgstr "Fait"
-
-#: ../../../views/organisation.js:47
+#: ../../../views/establishment.js:46 ../../../views/organisation.js:48
 msgid "Successfully removed !"
 msgstr "Retiré avec succès !"
 
+#: ../../../views/establishmentlistfilter.js:51
 #: ../../../views/organisationlistfilter.js:54
-#: ../../../controllers/organisation.js:148
+#: ../../../controllers/organisation.js:100
 msgid "3 characters min"
 msgstr "3 caractères minimum"
+
+#: ../../../views/grcdetails.js:43
+msgid "Done"
+msgstr "Fait"
 
 #: ../../../routers/organisation.js:44
 msgid "GRC details"
@@ -59,19 +60,21 @@ msgstr "Liste des partenaires du CRB"
 msgid "List of organisations"
 msgstr "Liste des organisations"
 
-#: ../../../routers/organisation.js:94 ../../../controllers/organisation.js:183
+#: ../../../routers/organisation.js:94 ../../../controllers/organisation.js:135
+#: ../../../templates/establishmentlist.html:17
 #: ../../../templates/organisationcreate.html:21
 msgid "Organisation"
 msgstr "Organisation"
 
-#: ../../../controllers/organisation.js:129
+#: ../../../controllers/organisation.js:81
 msgid "Organisation name already in usage"
 msgstr "Nom d'organisation déjà utilisé"
 
-#: ../../../controllers/organisation.js:145
+#: ../../../controllers/organisation.js:97
 msgid "64 characters max"
 msgstr "64 caractères maximum"
 
+#: ../../../templates/establishmentlist.html:16
 #: ../../../templates/grcdetails.html:4
 #: ../../../templates/organisationlist.html:16
 msgid "Name"

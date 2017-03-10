@@ -31,6 +31,7 @@ var View = Marionette.ItemView.extend({
 
     ui: {
         'delete_descriptor_model_type': 'span.delete-descriptor-model-type',
+        'name': 'td[name="name"]',
         'label': 'td[name="label"]',
         'mandatory': 'td[name="mandatory"]',
         'set_once': 'td[name="set_once"]',
@@ -45,6 +46,7 @@ var View = Marionette.ItemView.extend({
         'dragleave': 'dragLeave',
         'drop': 'drop',
         'click @ui.delete_descriptor_model_type': 'deleteDescriptorModelType',
+        'click @ui.name': 'rename',
         'click @ui.label': 'editLabel',
         'click @ui.mandatory': 'toggleMandatory',
         'click @ui.set_once': 'toggleSetOnce',
@@ -144,10 +146,12 @@ var View = Marionette.ItemView.extend({
                 },
 
                 ui: {
-                    label: "#label"
+                    name: "#descriptor_model_type_name",
+                    label: "#descriptor_model_type_label"
                 },
 
                 events: {
+                    'input @ui.name': 'onNameInput',
                     'input @ui.label': 'onLabelInput'
                 },
 
@@ -172,13 +176,34 @@ var View = Marionette.ItemView.extend({
                     return true;
                 },
 
+                onNameInput: function () {
+                    this.validateName();
+                },
+
+                validateName: function() {
+                    var v = this.ui.name.val();
+                    var re = /^[a-zA-Z0-9_\-]+$/i;
+
+                    if (v.length > 0 && !re.test(v)) {
+                        $(this.ui.name).validateField('failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
+                        return false;
+                    } else if (v.length < 3) {
+                        $(this.ui.name).validateField('failed', gt.gettext('3 characters min'));
+                        return false;
+                    }
+
+                    $(this.ui.name).validateField('ok');
+
+                    return true;
+                },
+
                 onApply: function() {
                     var view = this;
                     var collection = this.getOption('collection');
                     var position = this.getOption('position');
                     var code = this.getOption('code');
 
-                    if (this.validateLabel()) {
+                    if (this.validateName() && this.validateLabel()) {
                         var to_rshift = [];
 
                         // server will r-shift position of any model upward this new
@@ -194,6 +219,7 @@ var View = Marionette.ItemView.extend({
 
                         collection.create({
                             descriptor_type_code: code,
+                            name: this.ui.name.val(),
                             label: this.ui.label.val(),
                             position: position
                         }, {
@@ -301,6 +327,72 @@ var View = Marionette.ItemView.extend({
         }
 
         return false;
+    },
+
+    rename: function() {
+        if (!session.user.isSuperUser || !session.user.isStaff) {
+            return;
+        }
+
+        var ChangeName = Dialog.extend({
+            template: require('../templates/descriptormodeltyperename.html'),
+
+            attributes: {
+                id: "dlg_change_name"
+            },
+
+            ui: {
+                name: "#descriptor_model_type_name"
+            },
+
+            events: {
+                'input @ui.name': 'onNameInput'
+            },
+
+            initialize: function (options) {
+                ChangeName.__super__.initialize.apply(this);
+            },
+
+            onNameInput: function () {
+                this.validateName();
+            },
+
+            validateName: function() {
+                var v = this.ui.name.val();
+                var re = /^[a-zA-Z0-9_\-]+$/i;
+
+                if (v.length > 0 && !re.test(v)) {
+                    $(this.ui.name).validateField('failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
+                    return false;
+                } else if (v.length < 3) {
+                    $(this.ui.name).validateField('failed', gt.gettext('3 characters min'));
+                    return false;
+                }
+
+                $(this.ui.name).validateField('ok');
+
+                return true;
+            },
+
+            onApply: function() {
+                var name = this.ui.name.val();
+                var model = this.getOption('model');
+
+                if (this.validateName()) {
+                    model.save({name: name}, {patch: true, wait:true, success: function() {
+                        $.alert.success('Done');
+                    }});
+                    this.destroy();
+                }
+            }
+        });
+
+        var changeName = new ChangeName({
+            model: this.model
+        });
+
+        changeName.render();
+        changeName.ui.name.val(this.model.get('name'));
     },
 
     editLabel: function() {

@@ -132,15 +132,17 @@ var View = ScrollView.extend({
                 template: require('../templates/descriptormodeltypecreate.html'),
 
                 attributes: {
-                    id: "dlg_define_label",
+                    id: "dlg_define_label"
                 },
 
                 ui: {
-                    label: "#label",
+                    name: "#descriptor_model_type_name",
+                    label: "#descriptor_model_type_label"
                 },
 
                 events: {
-                    'input @ui.label': 'onLabelInput',
+                    'input @ui.name': 'onNameInput',
+                    'input @ui.label': 'onLabelInput'
                 },
 
                 initialize: function (options) {
@@ -164,13 +166,34 @@ var View = ScrollView.extend({
                     return true;
                 },
 
+                onNameInput: function () {
+                    this.validateName();
+                },
+
+                validateName: function() {
+                    var v = this.ui.name.val();
+                    var re = /^[a-zA-Z0-9_\-]+$/i;
+
+                    if (v.length > 0 && !re.test(v)) {
+                        $(this.ui.name).validateField('failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
+                        return false;
+                    } else if (v.length < 3) {
+                        $(this.ui.name).validateField('failed', gt.gettext('3 characters min'));
+                        return false;
+                    }
+
+                    $(this.ui.name).validateField('ok');
+
+                    return true;
+                },
+
                 onApply: function() {
                     var view = this;
                     var collection = this.getOption('collection');
                     var position = this.getOption('position');
                     var code = this.getOption('code');
 
-                    if (this.validateLabel()) {
+                    if (this.validateName() && this.validateLabel()) {
                         var to_rshift = [];
 
                         // server will r-shift position of any model upward this new
@@ -186,6 +209,7 @@ var View = ScrollView.extend({
 
                         collection.create({
                             descriptor_type_code: code,
+                            name: this.ui.name.val(),
                             label: this.ui.label.val(),
                             position: position
                         }, {

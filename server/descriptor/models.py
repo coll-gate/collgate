@@ -847,6 +847,14 @@ class DescriptorModelType(Entity):
     its descriptors. And it makes the relation between him and the model of descriptor.
     """
 
+    # default name validator optional
+    NAME_VALIDATOR = {
+        "type": "string", "minLength": 3, "maxLength": 64, "pattern": "^[a-zA-Z0-9\-\_]+$"}
+
+    # default name validator optional
+    NAME_VALIDATOR_OPTIONAL = {
+        "type": "string", "minLength": 3, "maxLength": 64, "pattern": "^[a-zA-Z0-9\-\_]+$", "required": False}
+
     # Label of the type of descriptor.
     # It is i18nized used JSON dict with language code as key and label as value (string:string).
     label = models.TextField(default="{}")

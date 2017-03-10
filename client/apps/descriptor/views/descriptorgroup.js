@@ -9,8 +9,6 @@
  */
 
 var Marionette = require('backbone.marionette');
-var DescriptorGroupModel = require('../models/descriptorgroup');
-
 var Dialog = require('../../main/views/dialog');
 
 var View = Marionette.ItemView.extend({
@@ -59,18 +57,18 @@ var View = Marionette.ItemView.extend({
         }
 
         var ChangeName = Dialog.extend({
-            template: require('../templates/descriptorgroupchangename.html'),
+            template: require('../templates/descriptorgrouprename.html'),
 
             attributes: {
-                id: "dlg_change_name",
+                id: "dlg_change_name"
             },
 
             ui: {
-                name: "#name",
+                name: "#descriptor_group_name"
             },
 
             events: {
-                'input @ui.name': 'onNameInput',
+                'input @ui.name': 'onNameInput'
             },
 
             initialize: function (options) {
@@ -103,19 +101,21 @@ var View = Marionette.ItemView.extend({
                 var model = this.getOption('model');
 
                 if (this.validateName()) {
-                    model.save({name: name}, {patch: true, wait:true});
+                    model.save({name: name}, {patch: true, wait: true, success: function() {
+                        $.alert.success('Done');
+                    }});
                     this.destroy();
                 }
             }
         });
 
         var changeName = new ChangeName({
-            model: this.model,
+            model: this.model
         });
 
         changeName.render();
         changeName.ui.name.val(this.model.get('name'));
-    },
+    }
 });
 
 module.exports = View;

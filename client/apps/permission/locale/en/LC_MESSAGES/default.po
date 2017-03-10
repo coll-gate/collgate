@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-28 17:27+0100\n"
+"POT-Creation-Date: 2017-03-10 11:55+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -53,21 +53,9 @@ msgstr ""
 msgid "List of users for group"
 msgstr ""
 
-#: ../../../templates/groupchangename.html:5
-msgid "Rename the group of users"
-msgstr ""
-
-#: ../../../templates/groupchangename.html:10
-#: ../../../templates/grouplist.html:16 ../../../templates/permission.html:24
+#: ../../../templates/grouplist.html:16 ../../../templates/grouprename.html:10
+#: ../../../templates/permission.html:24
 msgid "Name"
-msgstr ""
-
-#: ../../../templates/groupchangename.html:16
-msgid "Cancel"
-msgstr ""
-
-#: ../../../templates/groupchangename.html:17
-msgid "Apply"
 msgstr ""
 
 #: ../../../templates/grouplist.html:17
@@ -76,6 +64,18 @@ msgstr ""
 
 #: ../../../templates/grouplist.html:18 ../../../templates/userlist.html:21
 msgid "Number of permissions"
+msgstr ""
+
+#: ../../../templates/grouprename.html:5
+msgid "Rename the group of users"
+msgstr ""
+
+#: ../../../templates/grouprename.html:16
+msgid "Cancel"
+msgstr ""
+
+#: ../../../templates/grouprename.html:17
+msgid "Apply"
 msgstr ""
 
 #: ../../../templates/groupuserlist.html:16 ../../../templates/userlist.html:18

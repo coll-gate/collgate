@@ -261,3 +261,17 @@ li.disabled > a[role=tab] {
 /*.input-group .btn-default {
     background-image: none;
 }*/
+
+.label.action:hover, .badge.action:hover,
+td.action:hover > .badge, th.action:hover > .badge,
+td.action:hover > .label, th.action:hover > .label {
+    background-color: #999;
+}
+
+.glyphicon.action:hover, td.action:hover > .glyphicon, th.action:hover > .glyphicon {
+    opacity: 0.3;
+}
+
+th.action:hover, td.action:hover, span.action:not(.glyphicon):hover {
+    text-decoration: underline;
+}

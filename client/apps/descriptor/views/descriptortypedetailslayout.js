@@ -99,7 +99,7 @@ var Layout = Marionette.LayoutView.extend({
             name: name,
             code: code,
             format: format,
-            description: description,
+            description: description
         }, {wait: true}).done(function() {
             $.alert.success(gt.gettext("Done"));
         });
