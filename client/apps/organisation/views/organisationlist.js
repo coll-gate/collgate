@@ -33,8 +33,8 @@ var View = ScrollView.extend({
 
         options || (options = {});
         options.columns = [
-            {id: 170, name: 'organisation_acronym', label: 'Acronym'},
-            {id: 171, name: 'organisation_code', label: 'Code'}
+            {id: -1, name: 'organisation_acronym', label: 'Acronym'},
+            {id: -1, name: 'organisation_code', label: 'Code'}
         ];
 
         this.listenTo(this.collection, 'reset', this.render, this);

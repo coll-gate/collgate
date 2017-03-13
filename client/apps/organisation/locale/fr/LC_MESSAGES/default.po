@@ -120,4 +120,4 @@ msgstr "Créer"
 #: ../../../templates/organisationlayout.html:6
 #: ../../../templates/organisationlist.html:22
 msgid "Establishments"
-msgstr "Implantations"
+msgstr "Sites"

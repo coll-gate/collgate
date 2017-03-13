@@ -249,7 +249,7 @@ def search_organisation(request):
     items_list = []
 
     for organisation in qs:
-        label = "%s (%s)" % (organisation.name, organisation.descriptors['acronym'])
+        label = "%s (%s)" % (organisation.name, organisation.descriptors['organisation_acronym'])
 
         a = {
             'id': organisation.id,

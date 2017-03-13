@@ -88,14 +88,17 @@ def search_accession_synonyms(request):
     cursor = request.GET.get('cursor')
     limit = results_per_page
 
+    # @todo problem pour le cursor, on doit peut etre utilise id+synonym car doublon de synonym possibles
+    # et pas bon sur le cursor (value) (pareil que sur taxonsynonym)
     if cursor:
         cursor_name, cursor_id = cursor.rsplit('/', 1)
         qs = AccessionSynonym.objects.filter(Q(synonym__gt=cursor_name))
     else:
         qs = AccessionSynonym.objects.all()
 
-    name_method = filters.get('method', 'ieq')
     if 'name' in filters['fields']:
+        name_method = filters.get('method', 'ieq')
+
         if name_method == 'ieq':
             qs = qs.filter(synonym__iexact=filters['name'])
         elif name_method == 'icontains':

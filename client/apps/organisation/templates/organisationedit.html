@@ -2,20 +2,13 @@
     <div class="modal-content">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h4 class="modal-title"><%= gt.gettext("Create an organisation or a partner") %></h4>
+            <h4 class="modal-title"><%= gt.gettext("Update an organisation or a partner") %></h4>
         </div>
         <div class="modal-body">
             <form>
                 <div class="form-group">
                     <label class="control-label" for="organisation_name"><%= gt.gettext("Name (must be unique)") %></label>
                     <input class="form-control name" id="organisation_name" type="text" name="name" value="" maxlength="64" autofocus="" autocomplete="off" style="width:100%;">
-                </div>
-                <div class="form-group">
-                    <label class="control-label" for="organisation_grc"><%= gt.gettext("Partner or organisation") %></label>
-                    <select class="form-control" id="organisation_grc" name="organisation-grc">
-                        <option value="grc-partner"><%= gt.gettext("GRC partner") %></option>
-                        <option value="organisation"><%= gt.gettext("Organisation") %></option>
-                    </select>
                 </div>
                 <div class="form-group">
                     <label class="control-label" for="organisation_type"><%= gt.gettext("Type") %></label>
@@ -25,7 +18,7 @@
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= gt.gettext("Cancel") %></button>
-            <button type="button" class="btn btn-success create"><%= gt.gettext("Create") %></button>
+            <button type="button" class="btn btn-success apply"><%= gt.gettext("Apply") %></button>
         </div>
     </div><!-- /.modal-content -->
 </div><!-- /.modal-dialog -->

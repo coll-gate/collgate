@@ -72,7 +72,13 @@ class Taxonomy(object):
         taxon.save()
 
         # first name a primary synonym
-        primary = TaxonSynonym(taxon_id=taxon.id, name=name, type=TaxonSynonymType.PRIMARY.value, language=language)
+        primary = TaxonSynonym(
+            taxon_id=taxon.id,
+            name="%s_%s" % (name, name),
+            synonym=name,
+            type=TaxonSynonymType.PRIMARY.value,
+            language=language)
+
         primary.save()
 
         return taxon
@@ -139,11 +145,13 @@ class Taxonomy(object):
             if TaxonSynonym.objects.filter(taxon=taxon, type=TaxonSynonymType.PRIMARY.value).exists():
                 raise SuspiciousOperation(_('A primary name for the taxon already exists'))
 
+        # @todo fix it
         if TaxonSynonym.objects.filter(name=synonym['name']).exists():
             raise PermissionDenied(_('Taxon synonym already exists'))
 
         synonym = TaxonSynonym(taxon=taxon,
-                               name=synonym['name'],
+                               name="%s_%s" % (taxon.name, synonym['name']),
+                               synonym=synonym['name'],
                                type=synonym['type'],
                                language=synonym['language'])
         synonym.save()

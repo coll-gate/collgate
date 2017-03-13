@@ -127,7 +127,8 @@ def create_taxon(request):
 
     for s in taxon.synonyms.all():
         response['synonyms'].append({
-            'name': s.name,
+            'id': s.id,
+            'name': s.synonym,
             'type': s.type,
             'language': s.language,
         })
@@ -154,9 +155,9 @@ def get_taxon_list(request):
         rank = filters.get('rank')
 
         if filters.get('method', 'icontains') == 'icontains':
-            qs = qs.filter(Q(synonyms__name__icontains=name))
+            qs = qs.filter(Q(synonyms__synonym__icontains=name))
         else:
-            qs = qs.filter(Q(name__iexact=name)).filter(Q(synonyms__name__iexact=name))
+            qs = qs.filter(Q(name__iexact=name)).filter(Q(synonyms__synonym__iexact=name))
 
         if rank:
             qs = qs.filter(Q(rank=rank))
@@ -187,7 +188,7 @@ def get_taxon_list(request):
         for synonym in taxon.synonyms.all():
             t['synonyms'].append({
                 'id': synonym.id,
-                'name': synonym.name,
+                'name': synonym.synonym,
                 'type': synonym.type,
                 'language': synonym.language
             })
@@ -248,7 +249,7 @@ def get_taxon_details_json(request, tax_id):
     for s in taxon.synonyms.all().order_by('type', 'language'):
         result['synonyms'].append({
             'id': s.id,
-            'name': s.name,
+            'name': s.synonym,
             'type': s.type,
             'language': s.language,
         })
@@ -269,7 +270,7 @@ def search_taxon(request):
 
     if cursor:
         cursor_name, cursor_id = cursor.rsplit('/', 1)
-        qs = Taxon.objects.filter(Q(synonyms__name__gt=cursor_name))
+        qs = Taxon.objects.filter(Q(synonyms__synonym__gt=cursor_name))
     else:
         qs = Taxon.objects.all()
 
@@ -277,9 +278,9 @@ def search_taxon(request):
         name_method = filters.get('method', 'ieq')
 
         if name_method == 'ieq':
-            qs = qs.filter(synonyms__name__iexact=filters['name'])
+            qs = qs.filter(synonyms__synonym__iexact=filters['name'])
         elif name_method == 'icontains':
-            qs = qs.filter(synonyms__name__icontains=filters['name'])
+            qs = qs.filter(synonyms__synonym__icontains=filters['name'])
 
     if 'rank' in filters['fields']:
         rank = int_arg(filters['rank'])
@@ -310,7 +311,7 @@ def search_taxon(request):
         label = taxon.name
 
         for synonym in taxon.synonyms.all():
-            label += ', ' + synonym.name
+            label += ', ' + synonym.synonym
 
         a = {
             'id': taxon.id,
@@ -533,6 +534,7 @@ def taxon_add_synonym(request, tax_id):
 def taxon_change_synonym(request, tax_id, syn_id):
     synonym = get_object_or_404(TaxonSynonym, Q(id=int(syn_id)), Q(taxon=int(tax_id)))
 
+    # @todo fix name/synonym
     name = request.data['name']
 
     try:
@@ -632,7 +634,7 @@ def get_taxon_children(request, tax_id):
         for synonym in child.synonyms.all():
             t['synonyms'].append({
                 'id': synonym.id,
-                'name': synonym.name,
+                'name': synonym.synonym,
                 'type': synonym.type,
                 'language': synonym.language
             })

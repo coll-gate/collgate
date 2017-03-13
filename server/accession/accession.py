@@ -99,7 +99,11 @@ def create_accession(request):
 
             # principal synonym
             primary = AccessionSynonym(
-                name=name, accession=accession, type=AccessionSynonym.TYPE_PRIMARY, language=language)
+                name="%s_%s" % (name, name),
+                accession=accession,
+                synonym=name,
+                type=AccessionSynonym.TYPE_PRIMARY,
+                language=language)
             primary.save()
 
             accession.synonyms.add(primary)

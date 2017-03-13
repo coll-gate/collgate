@@ -10,6 +10,8 @@
 
 var Marionette = require('backbone.marionette');
 
+var Dialog = require('../../main/views/dialog');
+
 var View = Marionette.ItemView.extend({
     tagName: "div",
     template: require('../templates/organisationdetails.html'),
@@ -36,7 +38,129 @@ var View = Marionette.ItemView.extend({
     },
 
     onChangeType: function () {
-        alert("@todo");
+        var EditOrganisation = Dialog.extend({
+            template: require('../templates/organisationedit.html'),
+
+            attributes: {
+                id: "dlg_edit_organisation"
+            },
+
+            ui: {
+                name: "#organisation_name",
+                type: "#organisation_type"
+            },
+
+            events: {
+                'click @ui.apply': 'onApply',
+                'input @ui.name': 'onNameInput'
+            },
+
+            initialize: function (options) {
+                EditOrganisation.__super__.initialize.apply(this);
+            },
+
+            onRender: function () {
+                EditOrganisation.__super__.onRender.apply(this);
+
+                application.organisation.views.organisationTypes.drawSelect(this.ui.type);
+
+                this.ui.name.val(this.getOption('model').get('name'));
+                this.ui.type.selectpicker('val', this.getOption('model').get('type'));
+            },
+
+            onBeforeDestroy: function () {
+                this.ui.type.selectpicker('destroy');
+
+                EditOrganisation.__super__.onBeforeDestroy.apply(this);
+            },
+
+            onNameInput: function () {
+                var name = this.ui.name.val().trim();
+                var organisation_id = this.model.get('id');
+
+                if (this.validateName()) {
+                    var filters = {
+                        method: 'ieq',
+                        fields: ['name'],
+                        'name': name
+                    };
+
+                    $.ajax({
+                        type: "GET",
+                        url: application.baseUrl + 'organisation/organisation/search/',
+                        dataType: 'json',
+                        data: {filters: JSON.stringify(filters)},
+                        el: this.ui.name,
+                        success: function (data) {
+                            if (data.items.length > 0) {
+                                for (var i in data.items) {
+                                    var t = data.items[i];
+
+                                    if (t.value.toUpperCase() == name.toUpperCase() && t.id != organisation_id) {
+                                        $(this.el).validateField('failed', gt.gettext('Organisation name already in usage'));
+                                        break;
+                                    }
+                                }
+                            } else {
+                                $(this.el).validateField('ok');
+                            }
+                        }
+                    });
+                }
+            },
+
+            validateName: function () {
+                var v = this.ui.name.val().trim();
+
+                if (v.length > 64) {
+                    $(this.ui.name).validateField('failed', gt.gettext("64 characters max"));
+                    return false;
+                } else if (v.length < 3) {
+                    $(this.ui.name).validateField('failed', gt.gettext('3 characters min'));
+                    return false;
+                }
+
+                return true;
+            },
+
+            validate: function () {
+                var valid = this.validateName();
+
+                if (this.ui.name.hasClass('invalid') || this.ui.type.hasClass('invalid')) {
+                    valid = false;
+                }
+
+                return valid;
+            },
+
+            onApply: function() {
+                var model = this.getOption('model');
+                var name = this.ui.name.val().trim();
+                var type = this.ui.type.val();
+
+                var data = {};
+
+                if (name != model.get('name')) {
+                    data.name = name;
+                }
+
+                if (type != model.get('type')) {
+                    data.type = type;
+                }
+
+                model.save(data, {patch: true, wait: true, success: function () {
+                    $.alert.success(gt.gettext('Done'));
+                }});
+
+                this.destroy();
+            }
+        });
+
+        var editOrganisation = new EditOrganisation({
+            model: this.model
+        });
+
+        editOrganisation.render();
     }
 });
 

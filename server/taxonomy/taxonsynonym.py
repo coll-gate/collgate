@@ -60,9 +60,11 @@ def search_taxon_synonym(request):
     cursor = request.GET.get('cursor')
     limit = results_per_page
 
+    # @todo problem pour le cursor, on doit peut etre utilise id+synonym car doublon de synonym possibles
+    # et pas bon sur le cursor (value) (pareil que sur accessionsynonym)
     if cursor:
         cursor_name, cursor_id = cursor.rsplit('/', 1)
-        qs = TaxonSynonym.objects.filter(Q(name__gt=cursor_name))
+        qs = TaxonSynonym.objects.filter(Q(synonym__gt=cursor_name))
     else:
         qs = TaxonSynonym.objects.all()
 
@@ -70,9 +72,9 @@ def search_taxon_synonym(request):
         name_method = filters.get('method', 'ieq')
 
         if name_method == 'ieq':
-            qs = qs.filter(name__iexact=filters['name'])
+            qs = qs.filter(synonym__iexact=filters['name'])
         elif name_method == 'icontains':
-            qs = qs.filter(name__icontains=filters['name'])
+            qs = qs.filter(synonym__icontains=filters['name'])
 
     qs = qs.order_by('name')[:limit]
 
@@ -81,7 +83,7 @@ def search_taxon_synonym(request):
     for synonym in qs:
         s = {
             'id': synonym.id,
-            'label': synonym.name,
+            'label': synonym.synonym,
             'value': synonym.name,
             'type': synonym.type,
             'taxon': synonym.taxon_id

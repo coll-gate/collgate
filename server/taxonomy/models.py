@@ -5,6 +5,7 @@
 """
 coll-gate taxonomy module models.
 """
+
 from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.core.validators import validate_comma_separated_integer_list
@@ -128,10 +129,17 @@ class TaxonSynonym(Entity):
     # name validator, used with content validation, to avoid any whitespace before and after
     NAME_VALIDATOR = {"type": "string", "minLength": 3, "maxLength": 128, "pattern": r"^\S+.+\S+$"}
 
-    language = models.CharField(max_length=2, choices=Languages.choices())
-    type = models.IntegerField(choices=TaxonSynonymType.choices())
+    # related taxon
+    taxon = models.ForeignKey(Taxon, related_name="synonyms")
 
-    taxon = models.ForeignKey(Taxon, related_name='synonyms')
+    # synonym name
+    synonym = models.CharField(max_length=255, db_index=True)
+
+    # language code
+    language = models.CharField(max_length=2, choices=Languages.choices())
+
+    # type of synonym is related to TaxonSynonymType values
+    type = models.IntegerField(choices=TaxonSynonymType.choices())
 
     class Meta:
         verbose_name = _("taxon synonym")
@@ -160,3 +168,10 @@ class TaxonSynonym(Entity):
 
     def audit_delete(self, user):
         return {}
+
+    def is_primary(self):
+        """
+        Is a primary type of synonym.
+        :return: True if primary
+        """
+        return self.type == TaxonSynonymType.PRIMARY.value
