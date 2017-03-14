@@ -212,7 +212,7 @@ var Controller = Marionette.Object.extend({
             var createAccessionView = new CreateAccessionView();
             createAccessionView.render();
         });
-    },
+    }
 });
 
 module.exports = Controller;

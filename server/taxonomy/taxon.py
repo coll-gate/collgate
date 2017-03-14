@@ -154,6 +154,7 @@ def get_taxon_list(request):
         name = filters.get('name', '')
         rank = filters.get('rank')
 
+        # name search based on synonyms
         if filters.get('method', 'icontains') == 'icontains':
             qs = qs.filter(Q(synonyms__synonym__icontains=name))
         else:
@@ -270,7 +271,7 @@ def search_taxon(request):
 
     if cursor:
         cursor_name, cursor_id = cursor.rsplit('/', 1)
-        qs = Taxon.objects.filter(Q(synonyms__synonym__gt=cursor_name))
+        qs = Taxon.objects.filter(Q(name__gt=cursor_name))
     else:
         qs = Taxon.objects.all()
 

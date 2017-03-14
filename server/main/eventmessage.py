@@ -39,7 +39,7 @@ def get_event_messages(request):
 
     if cursor:
         cursor_time, cursor_id = cursor.rsplit('/', 1)
-        qs = EventMessage.objects.filter(Q(timestamp__lte=cursor_time) & Q(timestamp__lt=cursor_time) | (
+        qs = EventMessage.objects.filter(Q(timestamp__lt=cursor_time) | (
             Q(timestamp=cursor_time) & Q(id__lt=cursor_id)))
     else:
         qs = EventMessage.objects.all()

@@ -508,13 +508,13 @@ class DescriptorType(Entity):
                 # value0 can be non unique
                 if reverse:
                     if cursor_value0:
-                        qs = qs.filter(Q(value0__lte=cursor_value0) & Q(value0__lt=cursor_value0) | (
+                        qs = qs.filter(Q(value0__lt=cursor_value0) | (
                                        Q(value0=cursor_value0) & Q(code__gt=cursor_code)))
 
                     qs = qs.order_by('-value0', 'code')
                 else:
                     if cursor_value0:
-                        qs = qs.filter(Q(value0__gte=cursor_value0) & Q(value0__gt=cursor_value0) | (
+                        qs = qs.filter(Q(value0__gt=cursor_value0) | (
                                        Q(value0=cursor_value0) & Q(code__gt=cursor_code)))
 
                     qs = qs.order_by('value0', 'code')
@@ -524,14 +524,14 @@ class DescriptorType(Entity):
                 # value1 can be non unique
                 if reverse:
                     if cursor_value1:
-                        qs = qs.filter(Q(value1__lte=cursor_value1) & Q(value1__lt=cursor_value1) | (
+                        qs = qs.filter(Q(value1__lt=cursor_value1) | (
                                        Q(value1=cursor_value1) & Q(code__gt=cursor_code)))
 
                     qs = qs.order_by('-value1', 'code')
                 else:
                     if cursor_value1:
-                        qs = qs.filter(Q(value1__gte=cursor_value1) & Q(value1__gt=cursor_value1) | (
-                            Q(value1=cursor_value1) & Q(code__gt=cursor_code)))
+                        qs = qs.filter(Q(value1__gt=cursor_value1) | (
+                                       Q(value1=cursor_value1) & Q(code__gt=cursor_code)))
 
                     qs = qs.order_by('value1', 'code')
 
@@ -705,14 +705,14 @@ class DescriptorType(Entity):
             elif field_name == "value0":
                 qs = qs.filter(value0__istartswith=field_value)
                 if cursor_value is not None:
-                    qs = qs.filter(Q(value0__gte=cursor_value) & Q(value0__gt=cursor_value) | (
+                    qs = qs.filter(Q(value0__gt=cursor_value) | (
                                    Q(value0=cursor_value) & Q(code__gt=cursor_code)))
 
                 qs = qs.order_by('value0', 'code')
             elif field_name == "value1":
                 qs = qs.filter(value1__istartswith=field_value)
                 if cursor_value is not None:
-                    qs = qs.filter(Q(value1__gte=cursor_value) & Q(value1__gt=cursor_value) | (
+                    qs = qs.filter(Q(value1__gt=cursor_value) | (
                                    Q(value1=cursor_value) & Q(code__gt=cursor_code)))
 
                 qs = qs.order_by('value1', 'code')

@@ -258,7 +258,7 @@ def search_accession(request):
 
     if cursor:
         cursor_name, cursor_id = cursor.rsplit('/', 1)
-        qs = Accession.objects.filter(Q(synonyms__synonym__gt=cursor_name))
+        qs = Accession.objects.filter(Q(name__gt=cursor_name))
     else:
         qs = Accession.objects.all()
 

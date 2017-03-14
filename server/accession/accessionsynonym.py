@@ -88,11 +88,11 @@ def search_accession_synonyms(request):
     cursor = request.GET.get('cursor')
     limit = results_per_page
 
-    # @todo problem pour le cursor, on doit peut etre utilise id+synonym car doublon de synonym possibles
-    # et pas bon sur le cursor (value) (pareil que sur taxonsynonym)
     if cursor:
-        cursor_name, cursor_id = cursor.rsplit('/', 1)
-        qs = AccessionSynonym.objects.filter(Q(synonym__gt=cursor_name))
+        cursor_synonym, cursor_id = cursor.rsplit('/', 1)
+
+        qs = AccessionSynonym.objects.filter(Q(synonym__gt=cursor_synonym) | (
+            Q(synonym=cursor_synonym) & Q(id__gt=cursor_id)))
     else:
         qs = AccessionSynonym.objects.all()
 
@@ -104,7 +104,7 @@ def search_accession_synonyms(request):
         elif name_method == 'icontains':
             qs = qs.filter(synonym__icontains=filters['name'])
 
-    qs = qs.order_by('synonym')[:limit]
+    qs = qs.order_by('synonym', 'id')[:limit]
 
     items_list = []
 
@@ -122,11 +122,11 @@ def search_accession_synonyms(request):
     if len(items_list) > 0:
         # prev cursor (asc order)
         obj = items_list[0]
-        prev_cursor = "%s/%i" % (obj['value'], obj['id'])
+        prev_cursor = "%s/%i" % (obj['label'], obj['id'])
 
         # next cursor (asc order)
         obj = items_list[-1]
-        next_cursor = "%s/%i" % (obj['value'], obj['id'])
+        next_cursor = "%s/%i" % (obj['label'], obj['id'])
     else:
         prev_cursor = None
         next_cursor = None
