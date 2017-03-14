@@ -44,7 +44,7 @@ class Taxonomy(object):
         Create a new taxon with a unique name. The level must be
         greater than its parent level.
         :param name: Unique taxon name.
-        :param rank: Taxon rank greater than parent rank.
+        :param rank_id: Taxon rank greater than parent rank.
         :param parent: None or valid Taxon instance.
         :param language: Language code of the primary synonym created with name
         :return: None or new Taxon instance.
@@ -91,7 +91,7 @@ class Taxonomy(object):
         :return: None or valid Taxon instance.
         """
         try:
-            return Taxon.objects.filter(name=name)[0]
+            return Taxon.objects.get(name=name)
         except Taxon.DoesNotExist:
             return None
         except Taxon.MultipleObjectsReturned:
@@ -107,7 +107,7 @@ class Taxonomy(object):
         return Taxon.objects.filter(name__icontains=name_part)
 
     @classmethod
-    def list_taxons_by_parent(cls, parent):
+    def list_taxon_by_parent(cls, parent):
         """
         List all taxon having parent has direct parent.
         :param parent: Valid parent or None for root
@@ -116,7 +116,7 @@ class Taxonomy(object):
         return Taxon.objects.filter(parent=parent)
 
     @classmethod
-    def list_taxons_having_parent(cls, parent):
+    def list_taxon_having_parent(cls, parent):
         """
         List all taxon having parent as direct or indirect parent.
         :param parent: Valid parent, None for root, or an array of parent
@@ -141,13 +141,25 @@ class Taxonomy(object):
         if not synonym['language']:
             raise SuspiciousOperation(_('Undefined synonym language'))
 
-        if synonym['type'] == TaxonSynonymType.PRIMARY.value:
-            if TaxonSynonym.objects.filter(taxon=taxon, type=TaxonSynonymType.PRIMARY.value).exists():
-                raise SuspiciousOperation(_('A primary name for the taxon already exists'))
+        # check that type is in the values of descriptor
+        if not TaxonSynonym.is_synonym_type(synonym['type']):
+            raise SuspiciousOperation(_("Unsupported type of synonym"))
 
-        # @todo fix it
-        if TaxonSynonym.objects.filter(name=synonym['name']).exists():
-            raise PermissionDenied(_('Taxon synonym already exists'))
+        # check if a similar synonyms exists into the taxon or as primary name for another taxon
+        synonyms = TaxonSynonym.objects.filter(synonym__iexact=synonym['name'])
+
+        for synonym in synonyms:
+            # at least one usage, not compatible with primary synonym
+            if synonym['type'] == TaxonSynonymType.PRIMARY.value:
+                raise SuspiciousOperation(_("The primary name could not be used by another synonym of taxon"))
+
+            # already used by another taxon as primary name
+            if synonym.is_primary():
+                raise SuspiciousOperation(_("Synonym already used as a primary name"))
+
+            # already used by this taxon
+            if synonym.taxon_id == taxon.id:
+                raise SuspiciousOperation(_("Synonym already used into this taxon"))
 
         synonym = TaxonSynonym(taxon=taxon,
                                name="%s_%s" % (taxon.name, synonym['name']),

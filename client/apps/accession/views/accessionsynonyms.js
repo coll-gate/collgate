@@ -90,13 +90,14 @@ var View = Marionette.ItemView.extend({
                                     view.ui.synonym_name.validateField(
                                         'failed', gt.gettext('Synonym of accession already used'));
 
-                                    break;
+                                    return;
                                 }
                             }
                         }
-                    } else {
-                        view.ui.synonym_name.validateField('ok');
                     }
+
+                    // validate
+                    view.ui.synonym_name.validateField('ok');
                 }
             });
         }
@@ -179,14 +180,21 @@ var View = Marionette.ItemView.extend({
                                 for (var i in data.items) {
                                     var t = data.items[i];
 
-                                    // invalid if primary exists with the same name or if exists into the same accession
                                     if (t.label.toUpperCase() == name.toUpperCase()) {
-                                        // same accession, same synonym => valid
+                                        // valid if same accession and same synonym
                                         if ((t.accession == view.model.get('id')) && (t.id == view.getOption('synonym_id'))) {
                                             view.ui.synonym_name.validateField('ok');
                                             break;
                                         }
 
+                                        // invalid if same name and modifying a primary synonym
+                                        if (view.getOption('type') == "AC_001:0000001") {
+                                            view.ui.synonym_name.validateField(
+                                                'failed', gt.gettext('Primary synonym must be unique'));
+                                            break;
+                                        }
+
+                                        // invalid if primary exists with the same name or if exists into the same accession
                                         if ((t.accession == view.model.get('id')) || (t.type == "AC_001:0000001")) {
                                             view.ui.synonym_name.validateField(
                                                 'failed', gt.gettext('Synonym of accession already used'));

@@ -175,3 +175,12 @@ class TaxonSynonym(Entity):
         :return: True if primary
         """
         return self.type == TaxonSynonymType.PRIMARY.value
+
+    @classmethod
+    def is_synonym_type(cls, synonym_type):
+        try:
+            TaxonSynonymType(synonym_type)
+        except ValueError:
+            return False
+
+        return True

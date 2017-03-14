@@ -173,9 +173,15 @@ def accession_add_synonym(request, acc_id):
     synonyms = AccessionSynonym.objects.filter(synonym__iexact=result['name'])
 
     for synonym in synonyms:
+        # at least one usage, not compatible with primary synonym
+        if result['type'] == AccessionSynonym.TYPE_PRIMARY and synonym.accession_id != int(acc_id):
+            raise SuspiciousOperation(_("The primary name could not be used by another synonym of accession"))
+
+        # already used by another accession as primary name
         if synonym.is_primary():
             raise SuspiciousOperation(_("Synonym already used as a primary name"))
 
+        # already used by this accession
         if synonym.accession_id == int(acc_id):
             raise SuspiciousOperation(_("Synonym already used into this accession"))
 
@@ -213,13 +219,23 @@ def accession_change_synonym(request, acc_id, syn_id):
 
     name = request.data['name']
 
+    # no changes
+    if name == accession.name:
+        return HttpResponseRest(request, {})
+
     # check if a similar synonyms exists into the accession or as primary name for another accession
-    synonyms = AccessionSynonym.objects.filter(synonym__iexact=name)
+    synonyms = AccessionSynonym.objects.filter(synonym__iexact=name).exclude(id=int(syn_id))
 
     for synonym in synonyms:
+        # at least one usage, not compatible with primary synonym
+        if accession_synonym.type == AccessionSynonym.TYPE_PRIMARY:
+            raise SuspiciousOperation(_("The primary name could not be used by another synonym of accession"))
+
+        # already used by another taxon as primary name
         if synonym.is_primary():
             raise SuspiciousOperation(_("Synonym already used as a primary name"))
 
+        # already used by this accession
         if synonym.accession_id == acc_id:
             raise SuspiciousOperation(_("Synonym already used into this accession"))
 
@@ -230,6 +246,7 @@ def accession_change_synonym(request, acc_id, syn_id):
                 accession.name = name
                 accession.save()
 
+            accession_synonym.name = "%s_%s" % (accession.name, name)
             accession_synonym.synonym = name
             accession_synonym.save()
 
