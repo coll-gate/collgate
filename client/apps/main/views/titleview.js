@@ -16,7 +16,7 @@ var TitleView = Marionette.ItemView.extend({
 
     ui: {
         title: 'span[name="title"]',
-        object: 'span[name="object"]',
+        object: 'span[name="object"]'
     },
 
     initialize: function(options) {
@@ -34,7 +34,13 @@ var TitleView = Marionette.ItemView.extend({
             if (!this.ui.object.is(":visible")) {
                 this.ui.object.show();
             }
-            this.ui.object.html(this.model.get('name'));
+
+            // with or without extra code
+            if (this.model.has('code')) {
+                this.ui.object.html(this.model.get('name') + ' (' + this.model.get('code') + ')');
+            } else {
+                this.ui.object.html(this.model.get('name'));
+            }
         } else if (this.getOption('object')) {
             if (!this.ui.object.is(":visible")) {
                 this.ui.object.show();
@@ -43,7 +49,7 @@ var TitleView = Marionette.ItemView.extend({
         } else {
             this.ui.object.hide();
         }
-    },
+    }
 });
 
 module.exports = TitleView;

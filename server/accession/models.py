@@ -22,16 +22,29 @@ class Asset(Entity):
     Defines a collection of accessions, with particular permissions on it.
     """
 
+    # unique name of the asset
+    name = models.CharField(unique=True, max_length=255, db_index=True)
+
+    # related accession
     accessions = models.ManyToManyField('Accession', related_name='assets')
 
     class Meta:
         verbose_name = _("panel")
+
+    def natural_name(self):
+        return self.name
 
 
 class Accession(DescribableEntity):
     """
     Accession entity defines a physical or virtual accession.
     """
+
+    # non-unique primary name of the accession
+    name = models.CharField(max_length=255, db_index=True)
+
+    # unique GRC code of the accession
+    code = models.CharField(unique=True, max_length=255, db_index=True)
 
     # inherit of a taxon rank
     parent = models.ForeignKey(Taxon)
@@ -45,8 +58,13 @@ class Accession(DescribableEntity):
             ("search_accession", "Can search for accessions")
         )
 
+    def natural_name(self):
+        return self.name
+
     def audit_create(self, user):
         return {
+            'name': self.name,
+            'code': self.code,
             'parent': self.parent_id,
             'descriptor_meta_model': self.descriptor_meta_model_id,
             'descriptors': self.descriptors
@@ -55,6 +73,12 @@ class Accession(DescribableEntity):
     def audit_update(self, user):
         if hasattr(self, 'updated_fields'):
             result = {'updated_fields': self.updated_fields}
+
+            if 'code' in self.updated_fields:
+                result['code'] = self.code
+
+            if 'name' in self.updated_fields:
+                result['name'] = self.name
 
             if 'parent' in self.updated_fields:
                 result['parent'] = self.parent_id
@@ -68,6 +92,9 @@ class Accession(DescribableEntity):
             return result
         else:
             return {
+                'name': self.name,
+                'code': self.code,
+                'parent': self.parent_id,
                 'descriptors': self.descriptors
             }
 
@@ -83,33 +110,42 @@ class AccessionSynonym(Entity):
     # name validator, used with content validation, to avoid any whitespace before and after
     NAME_VALIDATOR = {"type": "string", "minLength": 3, "maxLength": 128, "pattern": r"^\S+.+\S+$"}
 
+    # code validator, used with content validation, to avoid any whitespace before and after
+    CODE_VALIDATOR = {"type": "string", "minLength": 3, "maxLength": 128, "pattern": r"^\S+.+\S+$"}
+
     # accession synonym type validator
     TYPE_VALIDATOR = {"type:": "string", 'minLength': 14, 'maxLength': 32, "pattern": r"^AC_001:[0-9]{7,}$"}
 
-    # Descriptor type code
-    TYPE_CODE = "AC_001"
+    # static : Descriptor type code
+    DESCRIPTOR_TYPE_CODE = "AC_001"
 
-    # primary type as constant
-    TYPE_PRIMARY = "AC_001:0000001"
+    # static : unique code type as constant
+    TYPE_GRC_CODE = "AC_001:0000001"
+
+    # static : primary name type as constant
+    TYPE_PRIMARY = "AC_001:0000002"
+
+    # static : synonym name type as constant
+    TYPE_SYNONYM = "AC_001:0000003"
 
     # related accession
     accession = models.ForeignKey(Accession, related_name="synonyms")
 
-    # synonym name
-    synonym = models.CharField(max_length=255, db_index=True)
+    # synonym display name
+    name = models.CharField(max_length=255, db_index=True)
 
     # language code
     language = models.CharField(max_length=8, choices=Languages.choices(), default=Languages.EN.value)
 
     # type of synonym is related to the type of descriptor TYPE_CODE that is an 'enum_single'.
-    type = models.CharField(max_length=64, default=TYPE_PRIMARY)
+    type = models.CharField(max_length=64, default=TYPE_SYNONYM)
 
     class Meta:
         verbose_name = _("accession synonym")
 
     @classmethod
     def is_synonym_type(cls, synonym_type):
-        descriptor_type = DescriptorType.objects.get(code=AccessionSynonym.TYPE_CODE)
+        descriptor_type = DescriptorType.objects.get(code=AccessionSynonym.DESCRIPTOR_TYPE_CODE)
 
         try:
             descriptor_type.get_value(synonym_type)
@@ -118,12 +154,54 @@ class AccessionSynonym(Entity):
 
         return True
 
+    def is_grc_code(self):
+        """
+        Is a GRC code type of synonym.
+        :return: True if GRC code
+        """
+        return self.type == AccessionSynonym.TYPE_GRC_CODE
+
     def is_primary(self):
         """
-        Is a primary type of synonym.
-        :return: True if primary
+        Is a primary name type of synonym.
+        :return: True if primary name
         """
         return self.type == AccessionSynonym.TYPE_PRIMARY
+
+    def natural_name(self):
+        return self.name
+
+    def audit_create(self, user):
+        return {
+            'accession': self.accession_id,
+            'name': self.name,
+            'type': self.type,
+            'language': self.language
+        }
+
+    def audit_update(self, user):
+        if hasattr(self, 'updated_fields'):
+            result = {'updated_fields': self.updated_fields}
+
+            if 'name' in self.updated_fields:
+                result['name'] = self.name
+
+            if 'type' in self.updated_fields:
+                result['type'] = self.type
+
+            if 'language' in self.updated_fields:
+                result['language'] = self.language
+
+            return result
+        else:
+            return {
+                'name': self.name,
+                'type': self.type,
+                'language': self.language,
+            }
+
+    def audit_delete(self, user):
+        return {}
 
 
 class Batch(DescribableEntity):
@@ -133,6 +211,9 @@ class Batch(DescribableEntity):
 
     # name validator, used with content validation, to avoid any whitespace before and after
     NAME_VALIDATOR = {"type": "string", "minLength": 3, "maxLength": 128, "pattern": r"^\S+.+\S+$"}
+
+    # unique name of the batch
+    name = models.CharField(unique=True, max_length=255, db_index=True)
 
     # parent accession
     accession = models.ForeignKey('Accession', related_name='batches')
@@ -149,8 +230,12 @@ class Batch(DescribableEntity):
             ("search_batch", "Can search for batches")
         )
 
+    def natural_name(self):
+        return self.name
+
     def audit_create(self, user):
         return {
+            'name': self.name,
             'accession': self.accession_id,
             'descriptor_meta_model': self.descriptor_meta_model_id,
             'descriptors': self.descriptors
@@ -159,6 +244,9 @@ class Batch(DescribableEntity):
     def audit_update(self, user):
         if hasattr(self, 'updated_fields'):
             result = {'updated_fields': self.updated_fields}
+
+            if 'name' in self.updated_fields:
+                result['name'] = self.name
 
             if 'descriptors' in self.updated_fields:
                 if hasattr(self, 'descriptors_diff'):
@@ -169,6 +257,7 @@ class Batch(DescribableEntity):
             return result
         else:
             return {
+                'name': self.name,
                 'descriptors': self.descriptors
             }
 
@@ -184,13 +273,21 @@ class Sample(DescribableEntity):
     # name validator, used with content validation, to avoid any whitespace before and after
     NAME_VALIDATOR = {"type": "string", "minLength": 3, "maxLength": 128, "pattern": r"^\S+.+\S+$"}
 
+    # unique name of sample
+    name = models.CharField(unique=True, max_length=255, db_index=True)
+
+    # related batch
     batch = models.ForeignKey('Batch', related_name='samples')
 
     class Meta:
         verbose_name = _("sample")
 
+    def natural_name(self):
+        return self.name
+
     def audit_create(self, user):
         return {
+            'name': self.name,
             'batch': self.batch_id,
             'descriptor_meta_model': self.descriptor_meta_model_id,
             'descriptors': self.descriptors
@@ -199,6 +296,9 @@ class Sample(DescribableEntity):
     def audit_update(self, user):
         if hasattr(self, 'updated_fields'):
             result = {'updated_fields': self.updated_fields}
+
+            if 'name' in self.updated_fields:
+                result['name'] = self.name
 
             if 'descriptors' in self.updated_fields:
                 if hasattr(self, 'descriptors_diff'):
@@ -209,6 +309,7 @@ class Sample(DescribableEntity):
             return result
         else:
             return {
+                'name': self.name,
                 'descriptors': self.descriptors
             }
 

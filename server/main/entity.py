@@ -41,7 +41,7 @@ def get_entity(request):
     results = {
         'id': entity.id,
         'uuid': str(entity.uuid),
-        'name': entity.name,
+        'name': entity.natural_name(),
         'content_type': "%s.%s" % (app_label, model),
         'created_date': entity.created_date,
         'modified_date': entity.modified_date,
@@ -58,7 +58,7 @@ def search_entity(request):
     or by its UUID (not implemented).
     """
     filters = json.loads(request.GET['filters'])
-    page = int_arg(request.GET.get('page', 1))
+    # page = int_arg(request.GET.get('page', 1))
 
     app_label = filters.get('app_label')
     model = filters.get('model')
@@ -72,6 +72,7 @@ def search_entity(request):
         raise SuspiciousOperation("Not yet implemented")
     if app_label and model and object_name:
         content_type = ContentType.objects.get_by_natural_key(app_label, model)
+        # @todo find_natural_name...
         entities = content_type.get_all_objects_for_this_type(name__icontains=object_name)
 
     entities_list = []
@@ -80,7 +81,7 @@ def search_entity(request):
         entities_list.append({
             'id': entity.id,
             'content_type': entity.content_type,
-            'name': entity.name,
+            'name': entity.natural_name(),
             'uuid': entity.uuid
         })
 

@@ -44,8 +44,10 @@ var View = Marionette.ItemView.extend({
         application.main.views.languages.htmlFromValue(this.el);
         application.accession.views.accessionSynonymTypes.htmlFromValue(this.el);
 
+        // remove GRC code and Primary Name
         this.ui.accession_synonym_type.find('option[value="AC_001:0000001"]').remove();
-        $(this.ui.accession_synonym_type).selectpicker('refresh');
+        this.ui.accession_synonym_type.find('option[value="AC_001:0000002"]').remove();
+        this.ui.accession_synonym_type.selectpicker('refresh');
     },
 
     validateName: function() {
@@ -84,12 +86,15 @@ var View = Marionette.ItemView.extend({
                         for (var i in data.items) {
                             var t = data.items[i];
 
-                            // invalid if primary exists with the same name or if exists into the same accession
+                            // invalid if GRC code exists with the same name or if exists into the same accession
                             if (t.label.toUpperCase() == name.toUpperCase()) {
-                                if ((t.accession == view.model.get('id')) || (t.type == "AC_001:0000001")) {
+                                if (t.type == "AC_001:0000001") {
                                     view.ui.synonym_name.validateField(
-                                        'failed', gt.gettext('Synonym of accession already used'));
-
+                                        'failed', gt.gettext('It is not possible to use a GRC code of accession as synonym'));
+                                    return;
+                                } else if (t.accession == view.model.get('id')) {
+                                    view.ui.synonym_name.validateField(
+                                        'failed', gt.gettext('Synonym of accession already defined into this accession'));
                                     return;
                                 }
                             }
@@ -185,19 +190,20 @@ var View = Marionette.ItemView.extend({
                                         if ((t.accession == view.model.get('id')) && (t.id == view.getOption('synonym_id'))) {
                                             view.ui.synonym_name.validateField('ok');
                                             break;
-                                        }
-
-                                        // invalid if same name and modifying a primary synonym
-                                        if (view.getOption('type') == "AC_001:0000001") {
+                                        } else if (view.getOption('type') == "AC_001:0000001") {
+                                            // invalid if same name and modifying a GRC code synonym
                                             view.ui.synonym_name.validateField(
-                                                'failed', gt.gettext('Primary synonym must be unique'));
+                                                'failed', gt.gettext('Accession GRC code must be unique'));
                                             break;
-                                        }
-
-                                        // invalid if primary exists with the same name or if exists into the same accession
-                                        if ((t.accession == view.model.get('id')) || (t.type == "AC_001:0000001")) {
+                                        } else if (t.type == "AC_001:0000001") {
+                                            // invalid if GRC code exists with the same name
                                             view.ui.synonym_name.validateField(
-                                                'failed', gt.gettext('Synonym of accession already used'));
+                                                'failed', gt.gettext('It is not possible to use a GRC code of accession as synonym'));
+                                            break;
+                                        } else if (t.accession == view.model.get('id')) {
+                                            // invalid if exists into the same accession
+                                            view.ui.synonym_name.validateField(
+                                                'failed', gt.gettext('Synonym of accession already defined into this accession'));
                                             break;
                                         }
                                     }

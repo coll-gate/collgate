@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-09 14:25+0100\n"
+"POT-Creation-Date: 2017-03-15 17:27+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -41,22 +41,30 @@ msgstr ""
 msgid "Cancel modifications"
 msgstr ""
 
-#: ../../../views/accessionsynonyms.js:55
-#: ../../../views/accessionsynonyms.js:212
+#: ../../../views/accessionsynonyms.js:57
+#: ../../../views/accessionsynonyms.js:226
 #: ../../../controllers/accession.js:153
 msgid "64 characters max"
 msgstr ""
 
-#: ../../../views/accessionsynonyms.js:58
-#: ../../../views/accessionsynonyms.js:209 ../../../views/batchbottom.js:57
+#: ../../../views/accessionsynonyms.js:60
+#: ../../../views/accessionsynonyms.js:223 ../../../views/batchbottom.js:57
 #: ../../../controllers/accession.js:156
 msgid "3 characters min"
 msgstr ""
 
-#: ../../../views/accessionsynonyms.js:91
-#: ../../../views/accessionsynonyms.js:192
-#: ../../../controllers/accession.js:137
-msgid "Synonym of accession already used"
+#: ../../../views/accessionsynonyms.js:93
+#: ../../../views/accessionsynonyms.js:201
+msgid "It is not possible to use a GRC code of accession as synonym"
+msgstr ""
+
+#: ../../../views/accessionsynonyms.js:97
+#: ../../../views/accessionsynonyms.js:206
+msgid "Synonym of accession already defined into this accession"
+msgstr ""
+
+#: ../../../views/accessionsynonyms.js:196
+msgid "Accession GRC code must be unique"
 msgstr ""
 
 #: ../../../views/batchbottom.js:54
@@ -83,6 +91,10 @@ msgstr ""
 msgid "Enter a taxon name. 3 characters at least for auto-completion"
 msgstr ""
 
+#: ../../../controllers/accession.js:137
+msgid "Synonym of accession already used"
+msgstr ""
+
 #: ../../../controllers/accession.js:172
 msgid "The parent must be defined"
 msgstr ""
@@ -92,7 +104,7 @@ msgid "Rename a synonym of accession"
 msgstr ""
 
 #: ../../../templates/accessionchangesynonym.html:10
-#: ../../../templates/accessionlist.html:5
+#: ../../../templates/accessionlist.html:6
 #: ../../../templates/accessionsynonyms.html:6
 #: ../../../templates/batchlist.html:5
 msgid "Name"
@@ -146,7 +158,11 @@ msgstr ""
 msgid "Actions"
 msgstr ""
 
-#: ../../../templates/accessionlist.html:6
+#: ../../../templates/accessionlist.html:5
+msgid "Code"
+msgstr ""
+
+#: ../../../templates/accessionlist.html:7
 msgid "Parent"
 msgstr ""
 

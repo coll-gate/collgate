@@ -23,7 +23,6 @@ var Model = Backbone.Model.extend({
 
     defaults: {
         id: null,
-        name: '',
         label: '',
         descriptor_model: null,
         descriptor_model_name: '',
@@ -52,7 +51,7 @@ var Model = Backbone.Model.extend({
         if (hasError) {
           return errors;
         }
-    },
+    }
 });
 
 module.exports = Model;

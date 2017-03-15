@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-28 17:27+0100\n"
+"POT-Creation-Date: 2017-03-15 14:07+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -67,20 +67,24 @@ msgid "Cancel modifications"
 msgstr "Annuler les modifications"
 
 #: ../../../views/taxonlistfilter.js:54 ../../../views/taxonsynonyms.js:58
-#: ../../../views/taxonsynonyms.js:205 ../../../controllers/taxon.js:229
+#: ../../../views/taxonsynonyms.js:221 ../../../controllers/taxon.js:230
 msgid "3 characters min"
 msgstr "3 caractères minimum"
 
-#: ../../../views/taxonsynonyms.js:55 ../../../views/taxonsynonyms.js:208
-#: ../../../controllers/taxon.js:226
+#: ../../../views/taxonsynonyms.js:55 ../../../views/taxonsynonyms.js:224
+#: ../../../controllers/taxon.js:227
 msgid "64 characters max"
 msgstr "64 caractères maximum"
 
-#: ../../../views/taxonsynonyms.js:88 ../../../views/taxonsynonyms.js:189
+#: ../../../views/taxonsynonyms.js:91 ../../../views/taxonsynonyms.js:204
 msgid "Synonym of taxon already used"
 msgstr "Synonyme de taxon existant"
 
-#: ../../../views/taxonsynonyms.js:236
+#: ../../../views/taxonsynonyms.js:197
+msgid "Primary synonym must be unique"
+msgstr "Le synonyme principale doit être unique"
+
+#: ../../../views/taxonsynonyms.js:252
 msgid "Unable to rename the synonym !"
 msgstr "Impossible de renommer le synonyme !"
 
@@ -92,19 +96,19 @@ msgstr "Liste des taxons"
 msgid "Taxon details"
 msgstr "Détails du taxon"
 
-#: ../../../controllers/taxon.js:210
+#: ../../../controllers/taxon.js:211
 msgid "Taxon name already in usage"
 msgstr "Ce nom de taxon est déjà utilisé"
 
-#: ../../../controllers/taxon.js:247
+#: ../../../controllers/taxon.js:248
 msgid "Family rank cannot have a parent taxon"
 msgstr "Le rang taxinomique famille ne peut pas avoir de parent"
 
-#: ../../../controllers/taxon.js:252
+#: ../../../controllers/taxon.js:253
 msgid "This rank must have a parent taxon"
 msgstr "Ce rang taxinomique doit avoir un parent"
 
-#: ../../../controllers/taxon.js:281
+#: ../../../controllers/taxon.js:282
 msgid "Taxon successfully created !"
 msgstr "Taxon créé avec succès !"
 

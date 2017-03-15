@@ -5,6 +5,7 @@
 """
 coll-gate descriptor module models.
 """
+
 import json
 
 from django.contrib.contenttypes.models import ContentType
@@ -54,8 +55,12 @@ class DescriptorGroup(Entity):
     Category of a type of descriptor.
     """
 
+    # unique group name
+    name = models.CharField(unique=True, max_length=255, db_index=True)
+
     # Is this group of descriptors can be deleted when it is empty
     can_delete = models.BooleanField(default=True)
+
     # Is this group of descriptors can be modified (rename, add/remove descriptors)
     # by an authorized staff people
     can_modify = models.BooleanField(default=True)
@@ -63,11 +68,48 @@ class DescriptorGroup(Entity):
     class Meta:
         verbose_name = _("descriptor group")
 
+    def natural_name(self):
+        return self.name
+
+    def audit_create(self, user):
+        return {
+            'name': self.name,
+            'can_delete': self.can_delete,
+            'can_modify': self.can_modify
+        }
+
+    def audit_update(self, user):
+        if hasattr(self, 'updated_fields'):
+            result = {'updated_fields': self.updated_fields}
+
+            if 'name' in self.updated_fields:
+                result['name'] = self.name
+
+            if 'can_delete' in self.updated_fields:
+                result['can_delete'] = self.can_delete
+
+            if 'can_modify' in self.updated_fields:
+                result['can_modify'] = self.can_modify
+
+            return result
+        else:
+            return {
+                'name': self.name,
+                'can_delete': self.can_delete,
+                'can_modify': self.can_modify
+            }
+
+    def audit_delete(self, user):
+        return {}
+
 
 class DescriptorType(Entity):
     """
     Type of descriptor for a model.
     """
+
+    # unique name of type of descriptor
+    name = models.CharField(unique=True, max_length=255, db_index=True)
 
     # code can be a Crop Ontology ('CO_XYZ') code (see http://www.cropontology.org/ontology)
     # and http://www.cropontology.org/get-ontology/CO_[0-9]{3,} to get a JSON version.
@@ -92,6 +134,68 @@ class DescriptorType(Entity):
     # Is this descriptor can be modified (rename, add/remove/modify its values)
     # by an authorised staff people
     can_modify = models.BooleanField(default=True)
+
+    class Meta:
+        verbose_name = _("descriptor type")
+
+    def natural_name(self):
+        return self.name
+
+    def audit_create(self, user):
+        return {
+            'name': self.name,
+            'code': self.code,
+            'group': self.group_id,
+            'description': self.description,
+            'values': self.values,
+            'format': self.format,
+            'can_delete': self.can_delete,
+            'can_modify': self.can_modify
+        }
+
+    def audit_update(self, user):
+        if hasattr(self, 'updated_fields'):
+            result = {'updated_fields': self.updated_fields}
+
+            if 'name' in self.updated_fields:
+                result['name'] = self.name
+
+            if 'code' in self.updated_fields:
+                result['code'] = self.code
+
+            if 'group' in self.updated_fields:
+                result['group'] = self.group_id
+
+            if 'description' in self.updated_fields:
+                result['description'] = self.description
+
+            if 'values' in self.updated_fields:
+                result['values'] = self.values
+
+            if 'format' in self.updated_fields:
+                result['format'] = self.format
+
+            if 'can_delete' in self.updated_fields:
+                result['can_delete'] = self.can_delete
+
+            if 'can_delete' in self.updated_fields:
+                result['can_delete'] = self.can_delete
+
+            return result
+        else:
+            return {
+                'name': self.name,
+                'code': self.code,
+                'group': self.group_id,
+                'description': self.description,
+                'values': self.values,
+                'format': self.format,
+                'can_delete': self.can_delete,
+                'can_modify': self.can_modify
+            }
+
+    def audit_delete(self, user):
+        return {}
 
     def count_num_values(self):
         """
@@ -119,9 +223,6 @@ class DescriptorType(Entity):
                 count = self.values_set.all().count()
 
         return count
-
-    class Meta:
-        verbose_name = _("descriptor type")
 
     def has_values(self):
         """
@@ -755,11 +856,11 @@ class DescriptorValue(Entity):
     The field name represent the code of the value according to its type.
     """
 
-    # A value is dedicated for a descriptor and an language
-    language = models.CharField(max_length=8, choices=Languages.choices(), default=Languages.EN.value)
-
     # Descriptor value code (unique with language)
     code = models.CharField(max_length=64)
+
+    # A value is dedicated for a descriptor and an language
+    language = models.CharField(max_length=8, choices=Languages.choices(), default=Languages.EN.value)
 
     # Related type of descriptor.
     descriptor = models.ForeignKey(DescriptorType, related_name='values_set')
@@ -794,6 +895,48 @@ class DescriptorValue(Entity):
             ('descriptor', 'language', 'value1'),   # index for value1
         )
 
+    def natural_name(self):
+        return "%s (%s)" % (self.code, self.language)
+
+    def audit_create(self, user):
+        return {
+            'code': self.code,
+            'language': self.language,
+            'descriptor': self.descriptor_id,
+            'parent': self.parent,
+            'ordinal': self.ordinal,
+            'value0': self.value0,
+            'value1': self.value1
+        }
+
+    def audit_update(self, user):
+        if hasattr(self, 'updated_fields'):
+            result = {'updated_fields': self.updated_fields}
+
+            if 'parent' in self.updated_fields:
+                result['parent'] = self.parent
+
+            if 'ordinal' in self.updated_fields:
+                result['ordinal'] = self.ordinal
+
+            if 'value0' in self.updated_fields:
+                result['value0'] = self.value0
+
+            if 'value1' in self.updated_fields:
+                result['value1'] = self.value1
+
+            return result
+        else:
+            return {
+                'parent': self.parent,
+                'ordinal': self.ordinal,
+                'value0': self.value0,
+                'value1': self.value1
+            }
+
+    def audit_delete(self, user):
+        return {}
+
 
 class DescriptorPanel(Entity):
     """
@@ -819,6 +962,37 @@ class DescriptorPanel(Entity):
 
     class Meta:
         verbose_name = _("descriptor panel")
+
+    def natural_name(self):
+        return self.get_label()
+
+    def audit_create(self, user):
+        return {
+            'descriptor_meta_model': self.descriptor_meta_model_id,
+            'descriptor_model': self.descriptor_model_id,
+            'label': self.label,
+            'position': self.position
+        }
+
+    def audit_update(self, user):
+        if hasattr(self, 'updated_fields'):
+            result = {'updated_fields': self.updated_fields}
+
+            if 'label' in self.updated_fields:
+                result['label'] = self.label
+
+            if 'position' in self.updated_fields:
+                result['position'] = self.position
+
+            return result
+        else:
+            return {
+                'label': self.label,
+                'position': self.position
+            }
+
+    def audit_delete(self, user):
+        return {}
 
     def get_label(self):
         """
@@ -855,6 +1029,9 @@ class DescriptorModelType(Entity):
     NAME_VALIDATOR_OPTIONAL = {
         "type": "string", "minLength": 3, "maxLength": 64, "pattern": "^[a-zA-Z0-9\-\_]+$", "required": False}
 
+    # unique name of type of model of descriptor used for descriptors identification
+    name = models.CharField(unique=True, max_length=255, db_index=True)
+
     # Label of the type of descriptor.
     # It is i18nized used JSON dict with language code as key and label as value (string:string).
     label = models.TextField(default="{}")
@@ -876,6 +1053,52 @@ class DescriptorModelType(Entity):
 
     class Meta:
         verbose_name = _("descriptor model type")
+
+    def natural_name(self):
+        return self.name
+
+    def audit_create(self, user):
+        return {
+            'name': self.name,
+            'label': self.label,
+            'descriptor_model': self.descriptor_model_id,
+            'descriptor_type': self.descriptor_type_id,
+            'mandatory': self.mandatory,
+            'set_once': self.set_once,
+            'position': self.position
+        }
+
+    def audit_update(self, user):
+        if hasattr(self, 'updated_fields'):
+            result = {'updated_fields': self.updated_fields}
+
+            if 'name' in self.updated_fields:
+                result['name'] = self.name
+
+            if 'label' in self.updated_fields:
+                result['label'] = self.label
+
+            if 'mandatory' in self.updated_fields:
+                result['mandatory'] = self.mandatory
+
+            if 'set_once' in self.updated_fields:
+                result['set_once'] = self.set_once
+
+            if 'position' in self.updated_fields:
+                result['position'] = self.position
+
+            return result
+        else:
+            return {
+                'name': self.name,
+                'label': self.label,
+                'mandatory': self.mandatory,
+                'set_once': self.set_once,
+                'position': self.position
+            }
+
+    def audit_delete(self, user):
+        return {}
 
     def get_label(self):
         """
@@ -904,6 +1127,9 @@ class DescriptorModel(Entity):
     Many entities can share the same model of descriptors.
     """
 
+    # unique name of model of descriptor
+    name = models.CharField(unique=True, max_length=255, db_index=True)
+
     # Verbose name describing the model of descriptor. There is no translation for this
     # name because it is used internally by staff.
     verbose_name = models.CharField(max_length=255, default="")
@@ -913,6 +1139,40 @@ class DescriptorModel(Entity):
 
     class Meta:
         verbose_name = _("descriptor model")
+
+    def natural_name(self):
+        return self.name
+
+    def audit_create(self, user):
+        return {
+            'name': self.name,
+            'verbose_name': self.verbose_name,
+            'description': self.description
+        }
+
+    def audit_update(self, user):
+        if hasattr(self, 'updated_fields'):
+            result = {'updated_fields': self.updated_fields}
+
+            if 'name' in self.updated_fields:
+                result['name'] = self.name
+
+            if 'verbose_name' in self.updated_fields:
+                result['verbose_name'] = self.verbose_name
+
+            if 'description' in self.updated_fields:
+                result['description'] = self.description
+
+            return result
+        else:
+            return {
+                'name': self.name,
+                'verbose_name': self.verbose_name,
+                'description': self.description
+            }
+
+    def audit_delete(self, user):
+        return {}
 
     def in_usage(self):
         """
@@ -945,6 +1205,9 @@ class DescriptorMetaModel(Entity):
     and how they are displayed.
     """
 
+    # unique name of meta-model of descriptor
+    name = models.CharField(unique=True, max_length=255, db_index=True)
+
     # Target entity type (generally a describable entity).
     target = models.ForeignKey(ContentType, editable=False, related_name='descriptor_meta_models')
 
@@ -963,6 +1226,9 @@ class DescriptorMetaModel(Entity):
 
     class Meta:
         verbose_name = _("descriptor meta model")
+
+    def natural_name(self):
+        return self.name
 
     def get_label(self):
         """
@@ -1000,6 +1266,42 @@ class DescriptorMetaModel(Entity):
             return False
 
         return False
+
+    def audit_create(self, user):
+        return {
+            'name': self.name,
+            'target': self.target_id,
+            'label': self.label,
+            'description': self.description
+        }
+
+    def audit_update(self, user):
+        if hasattr(self, 'updated_fields'):
+            result = {'updated_fields': self.updated_fields}
+
+            if 'name' in self.updated_fields:
+                result['name'] = self.name
+
+            if 'target' in self.updated_fields:
+                result['target'] = self.target_id
+
+            if 'label' in self.updated_fields:
+                result['label'] = self.label
+
+            if 'description' in self.updated_fields:
+                result['description'] = self.description
+
+            return result
+        else:
+            return {
+                'name': self.name,
+                'target': self.target_id,
+                'label': self.label,
+                'description': self.description
+            }
+
+    def audit_delete(self, user):
+        return {}
 
 
 class DescriptorCondition(ChoiceEnum):

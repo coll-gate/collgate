@@ -626,11 +626,13 @@ def create_condition_for_descriptor_model_type(request, des_id, typ_id):
     target = get_object_or_404(DescriptorModelType, id=target_id, descriptor_model_id=int(des_id))
 
     if dmt.mandatory:
-        raise SuspiciousOperation(_("It is not possible to define a condition on a required type of model of descriptor"))
+        raise SuspiciousOperation(_(
+            "It is not possible to define a condition on a required type of model of descriptor"))
 
     # check if there is a cyclic condition
     if target.conditions.filter(target=dmt).exists():
-        raise SuspiciousOperation(_("Cyclic condition detected. You cannot define this condition or you must remove the condition on the target"))
+        raise SuspiciousOperation(_(
+            "Cyclic condition detected. You cannot define this condition or you must remove the condition on the target"))
 
     condition = DescriptorCondition(request.data['condition'])
     values = request.data['values']
@@ -643,7 +645,6 @@ def create_condition_for_descriptor_model_type(request, des_id, typ_id):
 
     dmtc = DescriptorModelTypeCondition()
 
-    dmtc.name = "%s_%03i" % (dmt.id, 1)
     dmtc.descriptor_model_type = dmt
     dmtc.condition = condition.value
     dmtc.target = target

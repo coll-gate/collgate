@@ -5,6 +5,7 @@
 """
 coll-gate organisation models.
 """
+
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
@@ -34,14 +35,21 @@ class Organisation(DescribableEntity):
     # undefined type as constant
     TYPE_UNDEFINED = "OR_001:0000001"
 
+    # unique name of the organisation
+    name = models.CharField(unique=True, max_length=255, db_index=True)
+
     # type of organisation is related to the type of descriptor IN_002 that is an 'enum_single'.
     type = models.CharField(max_length=16, default=TYPE_UNDEFINED)
 
     class Meta:
         verbose_name = _("Organisation")
 
+    def natural_name(self):
+        return self.name
+
     def audit_create(self, user):
         return {
+            'name': self.name,
             'type': self.type,
             'descriptor_meta_model': self.descriptor_meta_model_id,
             'descriptors': self.descriptors
@@ -50,6 +58,9 @@ class Organisation(DescribableEntity):
     def audit_update(self, user):
         if hasattr(self, 'updated_fields'):
             result = {'updated_fields': self.updated_fields}
+
+            if 'name' in self.updated_fields:
+                result['name'] = self.name
 
             if 'type' in self.updated_fields:
                 result['type'] = self.type
@@ -63,6 +74,7 @@ class Organisation(DescribableEntity):
             return result
         else:
             return {
+                'name': self.name,
                 'type': self.type,
                 'descriptors': self.descriptors
             }
@@ -94,14 +106,21 @@ class Establishment(DescribableEntity):
     # name validator, used with content validation, to avoid any whitespace before and after
     NAME_VALIDATOR = {"type": "string", "minLength": 3, "maxLength": 128, "pattern": r"^\S+.+\S+$"}
 
+    # unique name of establishment
+    name = models.CharField(unique=True, max_length=255, db_index=True)
+
     # related organisation
     organisation = models.ForeignKey(Organisation, on_delete=models.CASCADE, related_name="establishments")
 
     class Meta:
         verbose_name = _("Establishment")
 
+    def natural_name(self):
+        return self.name
+
     def audit_create(self, user):
         return {
+            'name': self.name,
             'descriptor_meta_model': self.descriptor_meta_model_id,
             'descriptors': self.descriptors
         }
@@ -109,6 +128,9 @@ class Establishment(DescribableEntity):
     def audit_update(self, user):
         if hasattr(self, 'updated_fields'):
             result = {'updated_fields': self.updated_fields}
+
+            if 'name' in self.updated_fields:
+                result['name'] = self.name
 
             if 'descriptors' in self.updated_fields:
                 if hasattr(self, 'descriptors_diff'):
@@ -119,6 +141,7 @@ class Establishment(DescribableEntity):
             return result
         else:
             return {
+                'name': self.name,
                 'descriptors': self.descriptors
             }
 

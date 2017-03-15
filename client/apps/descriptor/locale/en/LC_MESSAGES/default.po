@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-10 11:55+0100\n"
+"POT-Creation-Date: 2017-03-15 14:07+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -63,7 +63,7 @@ msgstr ""
 #: ../../../views/descriptormodeladd.js:45
 #: ../../../views/descriptormodeldetail.js:43
 #: ../../../views/descriptormodeltype.js:188
-#: ../../../views/descriptormodeltype.js:364
+#: ../../../views/descriptormodeltype.js:365
 #: ../../../views/descriptormodeltypelist.js:178
 #: ../../../views/descriptortypedetailslayout.js:73
 msgid "Invalid characters (alphanumeric, _ and - only)"
@@ -78,7 +78,7 @@ msgstr ""
 #: ../../../views/descriptormodeldetail.js:45
 #: ../../../views/descriptormodeltype.js:170
 #: ../../../views/descriptormodeltype.js:191
-#: ../../../views/descriptormodeltype.js:367
+#: ../../../views/descriptormodeltype.js:368
 #: ../../../views/descriptormodeltypelist.js:160
 #: ../../../views/descriptormodeltypelist.js:181
 #: ../../../views/descriptorpanel.js:175 ../../../views/descriptorpanel.js:357
@@ -108,8 +108,8 @@ msgstr ""
 
 #: ../../../views/descriptormetamodel.js:107
 #: ../../../views/descriptormetamodel.js:121
-#: ../../../views/descriptormodeltype.js:439
-#: ../../../views/descriptormodeltype.js:453
+#: ../../../views/descriptormodeltype.js:440
+#: ../../../views/descriptormodeltype.js:454
 #: ../../../views/descriptorpanel.js:360 ../../../views/descriptorpanel.js:377
 #: ../../../views/descriptorvalue.js:102 ../../../views/descriptorvalue.js:119
 #: ../../../views/descriptorvalueordinal.js:91
@@ -122,7 +122,7 @@ msgid "64 characters max"
 msgstr ""
 
 #: ../../../views/descriptormetamodel.js:150
-#: ../../../views/descriptormodeltype.js:482
+#: ../../../views/descriptormodeltype.js:483
 #: ../../../views/descriptorpanel.js:406
 msgid "Successfully labeled !"
 msgstr ""
@@ -145,29 +145,29 @@ msgstr ""
 msgid "Name for model of descriptor already in usage"
 msgstr ""
 
-#: ../../../views/descriptormodeltype.js:230
-#: ../../../views/descriptormodeltypelist.js:220
+#: ../../../views/descriptormodeltype.js:231
+#: ../../../views/descriptormodeltypelist.js:221
 msgid "Unable to create the type of model of descriptor !"
 msgstr ""
 
-#: ../../../views/descriptormodeltype.js:324
-#: ../../../views/descriptormodeltypelist.js:279
+#: ../../../views/descriptormodeltype.js:325
+#: ../../../views/descriptormodeltypelist.js:280
 msgid "Unable to reorder the types of model of descriptor"
 msgstr ""
 
-#: ../../../views/descriptormodeltype.js:628
-#: ../../../views/descriptormodeltype.js:631
+#: ../../../views/descriptormodeltype.js:629
+#: ../../../views/descriptormodeltype.js:632
 #: ../../../templates/describabledetails.html:27
 #: ../../../templates/describableedit.html:27
 msgid "Value"
 msgstr ""
 
-#: ../../../views/descriptormodeltype.js:669
+#: ../../../views/descriptormodeltype.js:670
 msgid "Successfully removed !"
 msgstr ""
 
-#: ../../../views/descriptormodeltype.js:707
-#: ../../../views/descriptormodeltype.js:719
+#: ../../../views/descriptormodeltype.js:708
+#: ../../../views/descriptormodeltype.js:720
 msgid "Successfully defined !"
 msgstr ""
 

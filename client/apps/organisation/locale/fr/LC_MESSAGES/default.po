@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-10 11:55+0100\n"
+"POT-Creation-Date: 2017-03-15 14:07+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -39,14 +39,25 @@ msgid "Successfully removed !"
 msgstr "Retiré avec succès !"
 
 #: ../../../views/establishmentlistfilter.js:51
+#: ../../../views/organisationdetails.js:119
 #: ../../../views/organisationlistfilter.js:54
 #: ../../../controllers/organisation.js:100
 msgid "3 characters min"
 msgstr "3 caractères minimum"
 
-#: ../../../views/grcdetails.js:43
+#: ../../../views/grcdetails.js:43 ../../../views/organisationdetails.js:152
 msgid "Done"
 msgstr "Fait"
+
+#: ../../../views/organisationdetails.js:100
+#: ../../../controllers/organisation.js:81
+msgid "Organisation name already in usage"
+msgstr "Nom d'organisation déjà utilisé"
+
+#: ../../../views/organisationdetails.js:116
+#: ../../../controllers/organisation.js:97
+msgid "64 characters max"
+msgstr "64 caractères maximum"
 
 #: ../../../routers/organisation.js:44
 msgid "GRC details"
@@ -62,17 +73,9 @@ msgstr "Liste des organisations"
 
 #: ../../../routers/organisation.js:94 ../../../controllers/organisation.js:135
 #: ../../../templates/establishmentlist.html:17
-#: ../../../templates/organisationcreate.html:21
+#: ../../../templates/organisationcreate.html:17
 msgid "Organisation"
 msgstr "Organisation"
-
-#: ../../../controllers/organisation.js:81
-msgid "Organisation name already in usage"
-msgstr "Nom d'organisation déjà utilisé"
-
-#: ../../../controllers/organisation.js:97
-msgid "64 characters max"
-msgstr "64 caractères maximum"
 
 #: ../../../templates/establishmentlist.html:16
 #: ../../../templates/grcdetails.html:4
@@ -92,30 +95,41 @@ msgstr "Description"
 msgid "Create an organisation or a partner"
 msgstr "Créer une organisation ou un partenaire"
 
-#: ../../../templates/organisationcreate.html:12
+#: ../../../templates/organisationcreate.html:10
+#: ../../../templates/organisationedit.html:10
 msgid "Name (must be unique)"
 msgstr "Nom (doit être unique)"
 
-#: ../../../templates/organisationcreate.html:18
+#: ../../../templates/organisationcreate.html:14
 msgid "Partner or organisation"
 msgstr "Partenaire ou organisation"
 
-#: ../../../templates/organisationcreate.html:20
+#: ../../../templates/organisationcreate.html:16
 msgid "GRC partner"
 msgstr "Partenaire de CRB"
 
-#: ../../../templates/organisationcreate.html:27
+#: ../../../templates/organisationcreate.html:21
+#: ../../../templates/organisationedit.html:14
 #: ../../../templates/organisationlist.html:17
 msgid "Type"
 msgstr "Type"
 
-#: ../../../templates/organisationcreate.html:33
+#: ../../../templates/organisationcreate.html:27
+#: ../../../templates/organisationedit.html:20
 msgid "Cancel"
 msgstr "Annuler"
 
-#: ../../../templates/organisationcreate.html:34
+#: ../../../templates/organisationcreate.html:28
 msgid "Create"
 msgstr "Créer"
+
+#: ../../../templates/organisationedit.html:5
+msgid "Update an organisation or a partner"
+msgstr ""
+
+#: ../../../templates/organisationedit.html:21
+msgid "Apply"
+msgstr ""
 
 #: ../../../templates/organisationlayout.html:6
 #: ../../../templates/organisationlist.html:22

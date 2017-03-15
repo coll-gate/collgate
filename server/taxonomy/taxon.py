@@ -118,7 +118,7 @@ def create_taxon(request):
     for s in taxon.synonyms.all():
         response['synonyms'].append({
             'id': s.id,
-            'name': s.synonym,
+            'name': s.name,
             'type': s.type,
             'language': s.language,
         })
@@ -146,9 +146,9 @@ def get_taxon_list(request):
 
         # name search based on synonyms
         if filters.get('method', 'icontains') == 'icontains':
-            qs = qs.filter(Q(synonyms__synonym__icontains=name))
+            qs = qs.filter(Q(synonyms__name__icontains=name))
         else:
-            qs = qs.filter(Q(name__iexact=name)).filter(Q(synonyms__synonym__iexact=name))
+            qs = qs.filter(Q(name__iexact=name)).filter(Q(synonyms__name__iexact=name))
 
         if rank:
             qs = qs.filter(Q(rank=rank))
@@ -179,7 +179,7 @@ def get_taxon_list(request):
         for synonym in taxon.synonyms.all():
             t['synonyms'].append({
                 'id': synonym.id,
-                'name': synonym.synonym,
+                'name': synonym.name,
                 'type': synonym.type,
                 'language': synonym.language
             })
@@ -240,7 +240,7 @@ def get_taxon_details_json(request, tax_id):
     for s in taxon.synonyms.all().order_by('type', 'language'):
         result['synonyms'].append({
             'id': s.id,
-            'name': s.synonym,
+            'name': s.name,
             'type': s.type,
             'language': s.language,
         })
@@ -269,9 +269,9 @@ def search_taxon(request):
         name_method = filters.get('method', 'ieq')
 
         if name_method == 'ieq':
-            qs = qs.filter(synonyms__synonym__iexact=filters['name'])
+            qs = qs.filter(synonyms__name__iexact=filters['name'])
         elif name_method == 'icontains':
-            qs = qs.filter(synonyms__synonym__icontains=filters['name'])
+            qs = qs.filter(synonyms__name__icontains=filters['name'])
 
     if 'rank' in filters['fields']:
         rank = int_arg(filters['rank'])
@@ -302,7 +302,7 @@ def search_taxon(request):
         label = taxon.name
 
         for synonym in taxon.synonyms.all():
-            label += ', ' + synonym.synonym
+            label += ', ' + synonym.name
 
         a = {
             'id': taxon.id,
@@ -536,7 +536,7 @@ def get_taxon_children(request, tax_id):
         for synonym in child.synonyms.all():
             t['synonyms'].append({
                 'id': synonym.id,
-                'name': synonym.synonym,
+                'name': synonym.name,
                 'type': synonym.type,
                 'language': synonym.language
             })

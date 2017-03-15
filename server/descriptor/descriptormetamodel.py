@@ -338,7 +338,6 @@ def get_descriptor_meta_model_layout(request, dmm_id):
         panels.append({
             'id': panel.id,
             'position': panel.position,
-            'name': panel.name,
             'label': panel.get_label(),
             'descriptor_model': {
                 'id': descriptor_model.id,
@@ -420,7 +419,6 @@ def list_descriptor_panels_for_meta_model(request, dmm_id):
     for panel in descriptor_models:
         panels_list.append({
             'id': panel.id,
-            'name': panel.name,
             'label': panel.get_label(),
             'position': panel.position,
             'descriptor_model': panel.descriptor_model.id,
@@ -481,7 +479,6 @@ def create_descriptor_panel_for_meta_model(request, dmm_id):
 
     dp = DescriptorPanel()
 
-    dp.name = "%i_%i" % (dmm.id, dm.id)
     dp.set_label(lang, request.data['label'])
     dp.position = position
     dp.descriptor_meta_model = dmm
@@ -502,7 +499,6 @@ def create_descriptor_panel_for_meta_model(request, dmm_id):
 
     result = {
         'id': dp.id,
-        'name': dp.name,
         'label': dp.get_label(),
         'position': dp.position,
         'descriptor_model': dm.id,
@@ -519,7 +515,6 @@ def get_descriptor_panel_for_meta_model(request, dmm_id, pan_id):
 
     result = {
         'id': panel.id,
-        'name': panel.name,
         'label': panel.get_label(),
         'position': panel.position,
         'descriptor_model': panel.descriptor_model.id,
@@ -596,7 +591,6 @@ def reorder_descriptor_panels_for_model(request, dmm_id):
     Method.PATCH, Format.JSON, content={
         "type": "object",
         "properties": {
-            "name": DescriptorPanel.NAME_VALIDATOR_OPTIONAL,
             "label": DescriptorPanel.LABEL_VALIDATOR_OPTIONAL
         }
     },
@@ -606,13 +600,10 @@ def reorder_descriptor_panels_for_model(request, dmm_id):
     },
     staff=True)
 def modify_descriptor_panel_for_meta_model(request, dmm_id, pan_id):
-    name = request.data.get('name')
     label = request.data.get('label')
 
     panel = get_object_or_404(DescriptorPanel, id=int(pan_id), descriptor_meta_model_id=int(dmm_id))
 
-    if name is not None:
-        panel.name = name
     if label is not None:
         lang = translation.get_language()
         panel.set_label(lang, label)

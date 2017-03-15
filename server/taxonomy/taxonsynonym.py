@@ -77,9 +77,9 @@ def search_taxon_synonym(request):
     limit = results_per_page
 
     if cursor:
-        cursor_synonym, cursor_id = cursor.rsplit('/', 1)
-        qs = TaxonSynonym.objects.filter(Q(synonym__gt=cursor_synonym) | (
-            Q(synonym=cursor_synonym) & Q(id__gt=cursor_id)))
+        cursor_name, cursor_id = cursor.rsplit('/', 1)
+        qs = TaxonSynonym.objects.filter(Q(name__gt=cursor_name) | (
+            Q(name=cursor_name) & Q(id__gt=cursor_id)))
     else:
         qs = TaxonSynonym.objects.all()
 
@@ -87,9 +87,9 @@ def search_taxon_synonym(request):
         name_method = filters.get('method', 'ieq')
 
         if name_method == 'ieq':
-            qs = qs.filter(synonym__iexact=filters['name'])
+            qs = qs.filter(name__iexact=filters['name'])
         elif name_method == 'icontains':
-            qs = qs.filter(synonym__icontains=filters['name'])
+            qs = qs.filter(name__icontains=filters['name'])
 
     qs = qs.order_by('name', 'id')[:limit]
 
@@ -98,8 +98,8 @@ def search_taxon_synonym(request):
     for synonym in qs:
         s = {
             'id': synonym.id,
-            'label': synonym.synonym,
-            'value': synonym.name,
+            'value': synonym.id,
+            'label': synonym.name,
             'type': synonym.type,
             'taxon': synonym.taxon_id
         }
@@ -159,7 +159,7 @@ def taxon_add_synonym(request, tax_id):
         raise SuspiciousOperation(_("Unsupported type of synonym"))
 
     # check if a similar synonyms exists into the taxon or as primary name for another taxon
-    synonyms = TaxonSynonym.objects.filter(synonym__iexact=result['name'])
+    synonyms = TaxonSynonym.objects.filter(name__iexact=result['name'])
 
     for synonym in synonyms:
         # at least one usage, not compatible with primary synonym
@@ -176,8 +176,7 @@ def taxon_add_synonym(request, tax_id):
 
     taxon_synonym = TaxonSynonym(
         taxon=taxon,
-        name="%s_%s" % (taxon.name, result['name']),
-        synonym=result['name'],
+        name=result['name'],
         language=result['language'],
         type=result['type'])
 
@@ -209,11 +208,11 @@ def taxon_change_synonym(request, tax_id, syn_id):
     name = request.data['name']
 
     # no changes
-    if name == taxon.name:
+    if name == taxon_synonym.name:
         return HttpResponseRest(request, {})
 
     # check if a similar synonyms exists into the taxon or as primary name for another taxon
-    synonyms = TaxonSynonym.objects.filter(synonym__iexact=name).exclude(id=int(syn_id))
+    synonyms = TaxonSynonym.objects.filter(name__iexact=name).exclude(id=int(syn_id))
 
     for synonym in synonyms:
         # at least one usage, not compatible with primary synonym
@@ -231,17 +230,16 @@ def taxon_change_synonym(request, tax_id, syn_id):
     try:
         with transaction.atomic():
             # rename the taxon if the synonym name is the taxon name
-            if taxon.name == taxon_synonym.synonym:
+            if taxon.name == taxon_synonym.name:
                 taxon.name = name
                 taxon.save()
 
-            taxon_synonym.name = "%s_%s" % (taxon.name, name)
-            taxon_synonym.synonym = name
+            taxon_synonym.name = name
             taxon_synonym.save()
 
             result = {
                 'id': taxon_synonym.id,
-                'name': taxon_synonym.synonym
+                'name': taxon_synonym.name
             }
     except IntegrityError as e:
         logger.log(repr(e))
