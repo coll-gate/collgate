@@ -36,6 +36,10 @@ class Asset(Entity):
     def natural_name(self):
         return self.name
 
+    @classmethod
+    def make_search_by_name(cls, term):
+        return Q(name__istartswith=term)
+
 
 class Accession(DescribableEntity):
     """
@@ -179,6 +183,10 @@ class AccessionSynonym(Entity):
     def natural_name(self):
         return self.name
 
+    @classmethod
+    def make_search_by_name(cls, term):
+        return Q(name__istartswith=term)
+
     def audit_create(self, user):
         return {
             'accession': self.accession_id,
@@ -243,6 +251,10 @@ class Batch(DescribableEntity):
     def natural_name(self):
         return self.name
 
+    @classmethod
+    def make_search_by_name(cls, term):
+        return Q(name__istartswith=term)
+
     def audit_create(self, user):
         return {
             'name': self.name,
@@ -296,6 +308,10 @@ class Sample(DescribableEntity):
 
     def natural_name(self):
         return self.name
+
+    @classmethod
+    def make_search_by_name(cls, term):
+        return Q(name__istartswith=term)
 
     def audit_create(self, user):
         return {

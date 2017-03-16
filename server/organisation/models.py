@@ -8,6 +8,7 @@ coll-gate organisation models.
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
+from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 
 from descriptor.models import DescribableEntity, DescriptorType
@@ -45,7 +46,11 @@ class Organisation(DescribableEntity):
         verbose_name = _("Organisation")
 
     def natural_name(self):
-        return self.name
+        return self.descriptors["organisation_acronym"]
+
+    @classmethod
+    def make_search_by_name(cls, term):
+        return Q(name__istartswith=term) | Q(descriptors__organisation_acronym=term)
 
     def audit_create(self, user):
         return {
@@ -119,6 +124,10 @@ class Establishment(DescribableEntity):
 
     def natural_name(self):
         return self.name
+
+    @classmethod
+    def make_search_by_name(cls, term):
+        return Q(name__istartswith=term)
 
     def audit_create(self, user):
         return {

@@ -71,6 +71,10 @@ class DescriptorGroup(Entity):
     def natural_name(self):
         return self.name
 
+    @classmethod
+    def make_search_by_name(cls, term):
+        return Q(name__istartswith=term)
+
     def audit_create(self, user):
         return {
             'name': self.name,
@@ -142,6 +146,10 @@ class DescriptorType(Entity):
 
     def natural_name(self):
         return self.name
+
+    @classmethod
+    def make_search_by_name(cls, term):
+        return Q(name__istartswith=term) | Q(code__istartswith=term)
 
     def audit_create(self, user):
         return {
@@ -902,6 +910,10 @@ class DescriptorValue(Entity):
     def natural_name(self):
         return "%s (%s)" % (self.code, self.language)
 
+    @classmethod
+    def make_search_by_name(cls, term):
+        return Q(code__istartswith=term)
+
     def audit_create(self, user):
         return {
             'code': self.code,
@@ -971,6 +983,11 @@ class DescriptorPanel(Entity):
 
     def natural_name(self):
         return self.get_label()
+
+    @classmethod
+    def make_search_by_name(cls, term):
+        lang = translation.get_language()
+        return Q(label__icontains='"%s": %s' % (lang, json.dumps(term).rstrip('"')))
 
     def audit_create(self, user):
         return {
@@ -1065,6 +1082,10 @@ class DescriptorModelType(Entity):
     def natural_name(self):
         return self.name
 
+    @classmethod
+    def make_search_by_name(cls, term):
+        return Q(name__istartswith=term)
+
     def audit_create(self, user):
         return {
             'name': self.name,
@@ -1152,6 +1173,10 @@ class DescriptorModel(Entity):
 
     def natural_name(self):
         return self.name
+
+    @classmethod
+    def make_search_by_name(cls, term):
+        return Q(name__istartswith=term)
 
     def audit_create(self, user):
         return {
@@ -1241,6 +1266,10 @@ class DescriptorMetaModel(Entity):
 
     def natural_name(self):
         return self.name
+
+    @classmethod
+    def make_search_by_name(cls, term):
+        return Q(name__istartswith=term)
 
     def get_label(self):
         """

@@ -186,8 +186,6 @@ class FixtureManager:
                     descriptor_meta_model=descriptor_meta_model,
                     descriptor_model_id=descriptor_model_id,
                     defaults={
-                        'descriptor_meta_model': descriptor_meta_model,
-                        'descriptor_model_id': descriptor_model_id,
                         'label': json.dumps(panel['label']),
                         'position': position
                     }

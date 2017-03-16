@@ -32,7 +32,5 @@ def fixture(fixture_manager):
             for code, value in values.items():
                 DescriptorValue.objects.update_or_create(code=code, language=lang, defaults={
                     'descriptor_id': descriptor_type_id,
-                    'code': code,
-                    'language': lang,
                     'value0': value
                 })
