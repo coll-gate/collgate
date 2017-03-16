@@ -170,11 +170,40 @@ class Command(BaseCommand):
             return False
 
         try:
+            if bool(items[IAlternate.isHistoric]):
+                return False
+        except:
+            pass
+
+        try:
+            if bool(items[IAlternate.isColloquial]):
+                return False
+        except:
+            pass
+
+
+        try:
+            is_preferred = bool(items[IAlternate.isPreferred])
+        except:
+            is_preferred = False
+
+        try:
+            is_short = bool(items[IAlternate.isShort])
+        except:
+            is_short = False
+
+
+        try:
             city = City.objects.get(geoname_id=items[IAlternate.geonameid])
-            alt_name, value = AlternateName.objects.get_or_create(
+            alt_name, value = AlternateName.objects.update_or_create(
                 language=items[IAlternate.language],
-                alternate_name=items[IAlternate.name]
+                alternate_name=items[IAlternate.name],
+                defaults={
+                    'is_preferred_name' : is_preferred,
+                    'is_short_name'     : is_short
+                }
             )
+
             if not value:
                 city.alt_names.add(alt_name)
                 if not self.progress_enabled:
@@ -187,9 +216,13 @@ class Command(BaseCommand):
 
         try:
             country = Country.objects.get(geoname_id=items[IAlternate.geonameid])
-            alt_name, value = AlternateName.objects.get_or_create(
+            alt_name, value = AlternateName.objects.update_or_create(
                 language=items[IAlternate.language],
-                alternate_name=items[IAlternate.name]
+                alternate_name=items[IAlternate.name],
+                defaults={
+                    'is_preferred_name' : is_preferred,
+                    'is_short_name'     : is_short
+                }
             )
             if not value:
                 country.alt_names.add(alt_name)

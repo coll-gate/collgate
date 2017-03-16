@@ -38,9 +38,11 @@ DATA_DIR = getattr(settings, 'GEONAMES_DATA_DIR',
 INCLUDE_CITY_TYPES = getattr(
     settings,
     'GEONAMES_INCLUDE_CITY_TYPES',
-    ['PPL', 'PPLA', 'PPLA2', 'PPLA3', 'PPLA4', 'PPLC',
+    ['PPL', 'PPLA', 'PPLA2', 'PPLA3', 'PPLA', 'PPLC',
      'PPLF', 'PPLG', 'PPLL', 'PPLR', 'PPLS', 'STLMT']
 )
+
+USERNAME = getattr(settings, 'GEONAMES_USERNAME', 'demo')
 
 class ICountry:
     """

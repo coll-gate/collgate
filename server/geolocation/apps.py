@@ -10,6 +10,7 @@ from igdectk.common.apphelpers import ApplicationMain
 from igdectk.module.module import Module
 
 from importlib import import_module
+from igdectk.module.manager import module_manager
 
 from . import instance
 
@@ -17,6 +18,12 @@ from . import instance
 class CollGateGeolocation(ApplicationMain):
     name = '.'.join(__name__.split('.')[0:-1])
     geolocation_manager = None
+
+    def __init__(self, app_name, app_module):
+        super(CollGateGeolocation, self).__init__(app_name, app_module)
+
+        # different types of format for type of descriptors for this module
+        self.format_types = []
 
     def ready(self):
 
@@ -30,9 +37,6 @@ class CollGateGeolocation(ApplicationMain):
 
         self.geolocation_manager = module.GeolocationManager()
 
-        from audit.models import register_models
-        register_models(CollGateGeolocation.name)
-
         # create a geolocation module
         geolocation_module = Module('geolocation', base_url='coll-gate')
         geolocation_module.include_urls((
@@ -40,3 +44,17 @@ class CollGateGeolocation(ApplicationMain):
             'geolocation_views'
             )
         )
+
+        # registers media types of formats
+        from . import descriptorformattype
+
+        self.format_types += [
+            descriptorformattype.DescriptorFormatTypeGeolocation(),
+            descriptorformattype.DescriptorFormatTypeCountry(),
+            descriptorformattype.DescriptorFormatTypeCity(),
+        ]
+
+        from descriptor.descriptorformattype import DescriptorFormatTypeManager
+        DescriptorFormatTypeManager.register(self.format_types)
+
+        module_manager.register_menu(geolocation_module)

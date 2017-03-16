@@ -11,7 +11,9 @@ from igdectk.rest.response import HttpResponseRest
 
 from geolocation import instance
 from .base import RestGeolocation
-from django.apps import apps
+# from django.utils import translation
+from django.utils.translation import ugettext_lazy as _, get_language
+from unidecode import unidecode
 
 
 class Cursor(object):
@@ -71,6 +73,9 @@ class RestGeolocationCitySearch(RestGeolocationCity):
     regex = r'^search/$'
     suffix = 'search'
 
+class RestGeolocationCitySearchOnline(RestGeolocationCity):
+    regex = r'^live-search/$'
+    suffix = 'live-search'
 
 @RestGeolocationCountrySearch.def_request(Method.GET, Format.JSON)
 def search_country(request):
@@ -80,7 +85,7 @@ def search_country(request):
 
     term = request.GET.get('term')
 
-    lang = request.GET.get('lang', 'en')
+    lang = get_language()
     results_per_page = int_arg(request.GET.get('more', 30))
     str_cursor = request.GET.get('cursor')
     limit = results_per_page
@@ -99,23 +104,25 @@ def search_country(request):
 
     for country in countries:
         c = {
-            'cou_id': country['cou_id'],
+            'id': country['cou_id'],
             'name': country['name'],
             'code3': country['code3'],
             'lat': country['lat'],
             'long': country['long'],
-            'display_names': country['alt_name']
+            'display_names': country['alt_name'],
+            'preferred_names': country['preferred_name'],
+            'short_names': country['short_name']
         }
         country_list.append(c)
 
     if len(country_list) > 0:
         # prev cursor (asc order)
         entity = country_list[0]
-        prev_cursor = "%s/%s" % (entity['name'], entity['cou_id'])
+        prev_cursor = "%s/%s" % (entity['name'], entity['id'])
 
         # next cursor (asc order)
         entity = country_list[-1]
-        next_cursor = "%s/%s" % (entity['name'], entity['cou_id'])
+        next_cursor = "%s/%s" % (entity['name'], entity['id'])
     else:
         prev_cursor = None
         next_cursor = None
@@ -136,7 +143,7 @@ def country_list(request):
     Return a list of country in JSON format
     """
     term = request.GET.get('term')
-    lang = request.GET.get('lang', 'en')
+    lang = get_language()
     results_per_page = int_arg(request.GET.get('more', 30))
     str_cursor = request.GET.get('cursor')
     limit = results_per_page
@@ -156,23 +163,25 @@ def country_list(request):
 
     for country in countries:
         c = {
-            'cou_id': country['cou_id'],
+            'id': country['cou_id'],
             'name': country['name'],
             'code3': country['code3'],
             'lat': country['lat'],
             'long': country['long'],
-            'display_names': country['alt_name']
+            'display_names': country['alt_name'],
+            'preferred_names' : country['preferred_name'],
+            'short_names': country['short_name']
         }
         country_list.append(c)
 
     if len(country_list) > 0:
         # prev cursor (asc order)
         entity = country_list[0]
-        prev_cursor = "%s/%s" % (entity['name'], entity['cou_id'])
+        prev_cursor = "%s/%s" % (entity['name'], entity['id'])
 
         # next cursor (asc order)
         entity = country_list[-1]
-        next_cursor = "%s/%s" % (entity['name'], entity['cou_id'])
+        next_cursor = "%s/%s" % (entity['name'], entity['id'])
     else:
         prev_cursor = None
         next_cursor = None
@@ -189,18 +198,20 @@ def country_list(request):
 
 @RestGeolocationCountryId.def_request(Method.GET, Format.JSON)
 def country(request, cou_id):
-    lang = request.GET.get('lang', 'en')
+    lang = get_language()
     manager = instance.geolocation_app.geolocation_manager
 
     country = manager.get_country(id=int(cou_id), lang=lang)
 
     result = {
-        'cou_id'         : country['cou_id'],
+        'id'         : country['cou_id'],
         'name'           : country['name'],
         'code3'          : country['code3'],
         'lat'            : country['lat'],
         'long'           : country['long'],
-        'display_names'  : country['alt_name']
+        'display_names'  : country['alt_name'],
+        'preferred_names': country['preferred_name'],
+        'short_names': country['short_name']
     }
 
     return HttpResponseRest(request, result)
@@ -249,7 +260,7 @@ def search_city(request):
 
     term = request.GET.get('term')
 
-    lang = request.GET.get('lang', 'en')
+    lang = get_language()
     results_per_page = int_arg(request.GET.get('more', 30))
     str_cursor = request.GET.get('cursor')
     limit = results_per_page
@@ -267,24 +278,38 @@ def search_city(request):
     city_list = []
 
     for city in cities:
+
+        country = manager.get_country(id=city['cou_id'], lang=lang)
+
         c = {
-            'cit_id': city['cit_id'],
+            'id': city['cit_id'],
             'name': city['name'],
             'lat': city['lat'],
             'long': city['long'],
             'display_names': city['alt_name'],
-            'cou_id': city['cou_id']
+            'country': {
+                'id': country['cou_id'],
+                'name': country['name'],
+                'code3': country['code3'],
+                'lat': country['lat'],
+                'long': country['long'],
+                'display_names': country['alt_name'],
+                'preferred_names': country['preferred_name'],
+                'short_names': country['short_name']
+            },
+            'preferred_names': city['preferred_name'],
+            'short_names': city['short_name']
         }
         city_list.append(c)
 
     if len(city_list) > 0:
         # prev cursor (asc order)
         entity = city_list[0]
-        prev_cursor = "%s/%s" % (entity['name'], entity['cit_id'])
+        prev_cursor = "%s/%s" % (entity['name'], entity['id'])
 
         # next cursor (asc order)
         entity = city_list[-1]
-        next_cursor = "%s/%s" % (entity['name'], entity['cit_id'])
+        next_cursor = "%s/%s" % (entity['name'], entity['id'])
     else:
         prev_cursor = None
         next_cursor = None
@@ -299,21 +324,124 @@ def search_city(request):
 
     return HttpResponseRest(request, results)
 
+@RestGeolocationCitySearchOnline.def_request(Method.GET, Format.JSON)
+def search_city_online(request):
+    """
+    Quick search for a city on webservice
+    """
+
+    term = request.GET.get('term')
+
+    lang = get_language()
+    results_per_page = int_arg(request.GET.get('more', 30))
+    # str_cursor = request.GET.get('cursor')
+    limit = results_per_page
+
+    manager = instance.geolocation_app.geolocation_manager
+
+    cities = manager.search_cities_online(limit=limit, lang=lang, term=term)
+
+    city_list = []
+
+    for city in cities:
+
+        # country = manager.get_country(id=city['cou_id'], lang=lang)
+
+        c = {
+            'geoname_id': city['geoname_id'],
+            'name': city['name'],
+            'lat': city['lat'],
+            'long': city['long'],
+            'display_names': city['alt_name'],
+            'country': {
+                'geoname_id': city['country_geoname_id'],
+                'name': city['country_name'],
+            },
+            'preferred_names': city['preferred_name'],
+            'short_names': city['short_name']
+        }
+        city_list.append(c)
+
+    prev_cursor = None
+    next_cursor = None
+
+    results = {
+        'perms': [],
+        'items': city_list,
+        'prev': prev_cursor,
+        'cursor': None,
+        'next': next_cursor,
+    }
+
+    return HttpResponseRest(request, results)
+
 
 @RestGeolocationCityId.def_request(Method.GET, Format.JSON)
 def city(request, cit_id):
-    lang = request.GET.get('lang', 'en')
+    lang = get_language()
     manager = instance.geolocation_app.geolocation_manager
 
     city = manager.get_city(id=int(cit_id), lang=lang)
+    country = manager.get_country(id=city['cou_id'], lang=lang)
 
     result = {
-        'cit_id'         : city['cit_id'],
-        'name'           : city['name'],
-        'lat'            : city['lat'],
-        'long'           : city['long'],
-        'display_names'  : city['alt_name'],
-        'country_id'     : city['cou_id']
+          'id': city['cit_id'],
+            'name': city['name'],
+            'lat': city['lat'],
+            'long': city['long'],
+            'display_names': city['alt_name'],
+            'country': {
+                'id': country['cou_id'],
+                'name': country['name'],
+                'code3': country['code3'],
+                'lat': country['lat'],
+                'long': country['long'],
+                'display_names': country['alt_name'],
+                'preferred_names': country['preferred_name'],
+                'short_names': country['short_name']
+            },
+            'preferred_names': city['preferred_name'],
+            'short_names': city['short_name']
     }
 
     return HttpResponseRest(request, result)
+
+@RestGeolocationCity.def_auth_request(Method.POST, Format.JSON, content={
+        "type": "object",
+        "properties": {
+            "external_id": {"type": "number"}
+        }
+    }, perms={
+        'geolocation.add_city': _("You are not allowed to add a city")
+    }
+)
+def add_city(request):
+    external_id = int_arg(request.data['external_id'])
+    lang = get_language()
+
+    manager = instance.geolocation_app.geolocation_manager
+
+    mgr_result = manager.create_city(external_id, lang)
+    country = manager.get_country(id=mgr_result['cou_id'], lang=lang)
+
+    response = {
+        'id': mgr_result['cit_id'],
+        'name': mgr_result['name'],
+        'lat': mgr_result['lat'],
+        'long': mgr_result['long'],
+        'display_names': mgr_result['alt_name'],
+        'country': {
+            'id': country['cou_id'],
+            'name': country['name'],
+            'code3': country['code3'],
+            'lat': country['lat'],
+            'long': country['long'],
+            'display_names': country['alt_name'],
+            'preferred_names': country['preferred_name'],
+            'short_names': country['short_name']
+        },
+        'preferred_names': mgr_result['preferred_name'],
+        'short_names': mgr_result['short_name']
+    }
+
+    return HttpResponseRest(request, response)

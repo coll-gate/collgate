@@ -31,10 +31,14 @@ class AlternateName(models.Model):
 
     language = models.CharField(max_length=2, null=False)
     alternate_name = models.TextField(null=True, blank=True, default='')
+    is_preferred_name = models.BooleanField(default=False)
+    is_short_name = models.BooleanField(default=False)
 
     def __str__(self):
-        return "(%s, %s)" % (self.language, self.alternate_name)
-
+        return "(%s, %s, preferred : %s, short : %s)" % (self.language,
+                                                       self.alternate_name,
+                                                       self.is_preferred_name,
+                                                       self.is_short_name)
 
 class Country(Base):
     """
