@@ -40,13 +40,17 @@ class GeolocationManager(GeolocationInterface):
 
         url = self.geonames_url + 'searchJSON'
         values = {
-            'name_startsWith': term,
             'maxRow': limit,
             'lang': lang,
             'FeatureClass': 'P',
             'username': self.geonames_username,
             'style' : 'FULL'
         }
+
+        if len(term) <=2:
+            values['name_equals'] = term
+        else:
+            values['name_startsWith'] = term
 
         data = urlencode(values)
         data = data.encode('ascii')
@@ -167,7 +171,10 @@ class GeolocationManager(GeolocationInterface):
             qs = City.objects.all()
 
         if term is not None:
-            qs = qs.filter(Q(alt_names__alternate_name__istartswith=term) | Q(name__istartswith=term))
+            if len(term) <= 2:
+                qs = qs.filter(Q(alt_names__alternate_name=term) | Q(name=term))
+            else:
+                qs = qs.filter(Q(alt_names__alternate_name__istartswith=term) | Q(name__istartswith=term))
 
         tqs = qs.distinct().order_by('name', 'id')[:limit]
 

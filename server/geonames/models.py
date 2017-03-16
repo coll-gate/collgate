@@ -30,7 +30,7 @@ class AlternateName(models.Model):
     """
 
     language = models.CharField(max_length=2, null=False)
-    alternate_name = models.TextField(null=True, blank=True, default='')
+    alternate_name = models.CharField(max_length=255, null=True, blank=True, default='')
     is_preferred_name = models.BooleanField(default=False)
     is_short_name = models.BooleanField(default=False)
 

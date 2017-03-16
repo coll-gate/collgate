@@ -596,7 +596,7 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
                     dropdownParent: container,
                     ajax: selectAjax(false),
                     allowClear: true,
-                    minimumInputLength: 3,
+                    minimumInputLength: 1,
                     templateResult: formatOption,
                     placeholder: gt.gettext("Enter a value. 3 characters at least for auto-completion")
                 };
