@@ -18,6 +18,12 @@ var View = Marionette.ItemView.extend({
     },
     template: require('../templates/batch.html'),
 
+    templateHelpers/*templateContext*/: function () {
+        return {
+            columns: this.getOption('columns')
+        }
+    },
+
     ui: {
         details: 'td.view-batch-details',
         accession: 'td.view-accession-details'

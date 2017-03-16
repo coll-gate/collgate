@@ -21,6 +21,6 @@ from igdectk.rest.response import HttpResponseRest
 from igdectk.module.manager import module_manager
 
 
-class RestOrganisation(RestHandler):
+class RestOrganisationModule(RestHandler):
     regex = r'^organisation/$'
     name = 'organisation'

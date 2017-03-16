@@ -667,7 +667,6 @@ def create_descriptor_values_for_type(request, grp_id, typ_id):
             dv.descriptor = descr_type
 
             dv.language = lang[0]
-            dv.name = '%s:%s' % (code, lang[0])
             dv.code = code
             dv.parent = request.data.get('parent')
             dv.ordinal = request.data.get('ordinal')
@@ -680,7 +679,6 @@ def create_descriptor_values_for_type(request, grp_id, typ_id):
 
         dv.descriptor = descr_type
 
-        dv.name = '%s:%s' % (code, 'en')
         dv.code = code
         dv.parent = request.data.get('parent')
         dv.ordinal = request.data.get('ordinal')

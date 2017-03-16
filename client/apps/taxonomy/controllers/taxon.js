@@ -31,13 +31,13 @@ var TaxonController = Marionette.Object.extend({
                 name: "#taxon_name",
                 rank: "#taxon_rank",
                 parent: "#taxon_parent",
-                parent_group: ".taxon-parent-group",
+                parent_group: ".taxon-parent-group"
             },
 
             events: {
                 'click @ui.create': 'onCreate',
                 'input @ui.name': 'onNameInput',
-                'change @ui.rank': 'onChangeRank',
+                'change @ui.rank': 'onChangeRank'
             },
 
             onRender: function () {
@@ -199,6 +199,7 @@ var TaxonController = Marionette.Object.extend({
                         type: "GET",
                         url: application.baseUrl + 'taxonomy/taxon/synonym/search/',
                         dataType: 'json',
+                        contentType: 'application/json; charset=utf8',
                         data: {filters: JSON.stringify(filters)},
                         el: this.ui.name,
                         success: function(data) {
@@ -206,7 +207,7 @@ var TaxonController = Marionette.Object.extend({
                                 for (var i in data.items) {
                                     var t = data.items[i];
 
-                                    if (t.value.toUpperCase() == name.toUpperCase()) {
+                                    if (t.label.toUpperCase() == name.toUpperCase()) {
                                         $(this.el).validateField('failed', gt.gettext('Taxon name already in usage'));
                                         break;
                                     }

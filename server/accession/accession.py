@@ -46,6 +46,7 @@ class RestAccessionId(RestAccessionAccession):
         "type": "object",
         "properties": {
             "name": AccessionSynonym.NAME_VALIDATOR,
+            "code": AccessionSynonym.CODE_VALIDATOR,
             "descriptor_meta_model": {"type": "number"},
             "parent": {"type": "number"},
             "descriptors": {"type": "object"},
@@ -57,17 +58,19 @@ class RestAccessionId(RestAccessionAccession):
 )
 def create_accession(request):
     name = request.data['name']
+    code = request.data['code']
     dmm_id = int_arg(request.data['descriptor_meta_model'])
     parent_id = int_arg(request.data['parent'])
     descriptors = request.data['descriptors']
     language = request.data['language']
 
-    # check uniqueness of the name
-    if AccessionSynonym.objects.filter(name=name, type=AccessionSynonym.TYPE_PRIMARY).exists():
-        raise SuspiciousOperation(_("The name of the accession is already used as a primary synonym"))
+    # check uniqueness of the code for any type of synonym
+    if AccessionSynonym.objects.filter(name=code).exists():
+        raise SuspiciousOperation(_("The code of the accession is already used as a synonym name"))
 
-    if Accession.objects.filter(name=name).exists():
-        raise SuspiciousOperation(_("The name of the accession is already used"))
+    # check uniqueness of the code
+    if Accession.objects.filter(code=code).exists():
+        raise SuspiciousOperation(_("The code of the accession is already used"))
 
     if language not in [lang.value for lang in Languages]:
         raise SuspiciousOperation(_("The language is not supported"))
@@ -80,6 +83,7 @@ def create_accession(request):
             # common properties
             accession = Accession()
             accession.name = name
+            accession.code = code
             accession.descriptor_meta_model = dmm
 
             # parent taxon or variety
@@ -97,12 +101,24 @@ def create_accession(request):
             # update owner on external descriptors
             descriptors_builder.update_associations()
 
-            # principal synonym
-            primary = AccessionSynonym(
-                name=name, accession=accession, type=AccessionSynonym.TYPE_PRIMARY, language=language)
-            primary.save()
+            # initial synonym GRC code
+            grc_code = AccessionSynonym(
+                accession=accession,
+                name=name,
+                type=AccessionSynonym.TYPE_GRC_CODE,
+                language='en')
+            grc_code.save()
 
-            accession.synonyms.add(primary)
+            # primary synonym if defined
+            primary_name = AccessionSynonym(
+                accession=accession,
+                name=name,
+                type=AccessionSynonym.TYPE_PRIMARY,
+                language=language)
+            primary_name.save()
+
+            accession.synonyms.add(grc_code)
+            accession.synonyms.add(primary_name)
     except IntegrityError as e:
         logger.error(repr(e))
         raise SuspiciousOperation(_("Unable to create the accession"))
@@ -110,15 +126,22 @@ def create_accession(request):
     response = {
         'id': accession.pk,
         'name': accession.name,
+        'code': accession.code,
         'descriptor_meta_model': dmm.id,
         'parent': parent.id,
         'descriptors': descriptors,
         'synonyms': [
             {
-                'id': primary.id,
-                'name': primary.name,
-                'type': primary.type,
-                'language': primary.language
+                'id': grc_code.id,
+                'name': grc_code.name,
+                'type': grc_code.type,
+                'language': grc_code.language
+            },
+            {
+                'id': primary_name.id,
+                'name': primary_name.name,
+                'type': primary_name.type,
+                'language': primary_name.language
             }
         ]
     }
@@ -153,16 +176,22 @@ def get_accession_list(request):
         a = {
             'id': accession.pk,
             'name': accession.name,
+            'code': accession.code,
             'parent': accession.parent_id,
             'descriptor_meta_model': accession.descriptor_meta_model_id,
             'descriptors': accession.descriptors,
-            'synonyms': []
+            'synonyms': [],
+            'parent_details': {
+                'id': accession.parent.id,
+                'name': accession.parent.name,
+                'rank': accession.parent.rank,
+            }
         }
 
         for synonym in accession.synonyms.all():
             a['synonyms'].append({
                 'id': synonym.id,
-                'name': synonym.synonym,
+                'name': synonym.name,
                 'type': synonym.type,
                 'language': synonym.language
             })
@@ -210,6 +239,7 @@ def get_accession_details_json(request, acc_id):
     result = {
         'id': accession.id,
         'name': accession.name,
+        'code': accession.code,
         'parent': accession.parent.id,
         'synonyms': [],
         'descriptor_meta_model': accession.descriptor_meta_model.id,
@@ -219,7 +249,7 @@ def get_accession_details_json(request, acc_id):
     for s in accession.synonyms.all().order_by('type', 'language'):
         result['synonyms'].append({
             'id': s.id,
-            'name': s.synonym,
+            'name': s.name,
             'type': s.type,
             'language': s.language,
         })
@@ -249,7 +279,7 @@ def search_accession(request):
 
     if cursor:
         cursor_name, cursor_id = cursor.rsplit('/', 1)
-        qs = Accession.objects.filter(Q(synonyms__synonym__gt=cursor_name))
+        qs = Accession.objects.filter(Q(name__gt=cursor_name))
     else:
         qs = Accession.objects.all()
 
@@ -258,21 +288,21 @@ def search_accession(request):
         meta_model = int_arg(filters['meta_model'])
 
         if name_method == 'ieq':
-            qs = qs.filter(Q(synonyms__synonym__iexact=filters['name']))
+            qs = qs.filter(Q(synonyms__name__iexact=filters['name']))
         elif name_method == 'icontains':
-            qs = qs.filter(Q(synonyms__synonym__icontains=filters['name']))
+            qs = qs.filter(Q(synonyms__name__icontains=filters['name']))
 
         qs = qs.filter(Q(descriptor_meta_model_id=meta_model))
     elif 'name' in filters['fields']:
         if name_method == 'ieq':
-            qs = qs.filter(synonyms__synonym__iexact=filters['name'])
+            qs = qs.filter(synonyms__name__iexact=filters['name'])
         elif name_method == 'icontains':
-            qs = qs.filter(synonyms__synonym__icontains=filters['name'])
+            qs = qs.filter(synonyms__name__icontains=filters['name'])
 
     qs = qs.prefetch_related(
         Prefetch(
             "synonyms",
-            queryset=AccessionSynonym.objects.exclude(type=AccessionSynonym.TYPE_PRIMARY).order_by('type', 'language'))
+            queryset=AccessionSynonym.objects.exclude(type=AccessionSynonym.TYPE_GRC_CODE).order_by('type', 'language'))
     )
 
     qs = qs.order_by('name').distinct()[:limit]
@@ -283,12 +313,12 @@ def search_accession(request):
         label = accession.name
 
         for synonym in accession.synonyms.all():
-            label += ', ' + synonym.synonym
+            label += ', ' + synonym.name
 
         a = {
             'id': accession.id,
             'label': label,
-            'value': accession.name
+            'value': accession.code
         }
 
         items_list.append(a)

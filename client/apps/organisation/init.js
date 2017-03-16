@@ -33,18 +33,32 @@ OrganisationModule.prototype = {
         // collections
         //
 
+        var SelectOption = require('../main/renderers/selectoption');
+
+        var OrganisationTypeCollection = require('./collections/organisationtype');
+        this.collections.organisationTypes = new OrganisationTypeCollection();
+
+        this.views.organisationTypes = new SelectOption({
+            className: 'organisation-type',
+            collection: this.collections.organisationTypes
+        });
 
         //
         // controllers
         //
 
+        var OrganisationController = require('./controllers/organisation');
+        this.controllers.organisation = new OrganisationController();
 
         //
         // routers
         //
 
-        //var OrganisationRouter = require('./routers/organisation');
-        //this.routers.organisation = new OrganisationRouter();
+        var OrganisationRouter = require('./routers/organisation');
+        this.routers.organisation = new OrganisationRouter();
+
+        var EstablishmentRouter = require('./routers/establishment');
+        this.routers.establishment = new EstablishmentRouter();
     },
 
     start: function(options) {

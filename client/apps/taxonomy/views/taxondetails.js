@@ -29,7 +29,7 @@ var View = Marionette.ItemView.extend({
 
     events: {
         'click @ui.view_taxon': 'onViewTaxon',
-        'click @ui.change_parent': 'onChangeParent',
+        'click @ui.change_parent': 'onChangeParent'
     },
 
     initialize: function() {
@@ -53,11 +53,11 @@ var View = Marionette.ItemView.extend({
             template: require('../templates/taxonchangeparent.html'),
 
             attributes: {
-                id: "dlg_change_parent",
+                id: "dlg_change_parent"
             },
 
             ui: {
-                parent: "#taxon_parent",
+                parent: "#taxon_parent"
             },
 
             initialize: function (options) {
@@ -134,7 +134,7 @@ var View = Marionette.ItemView.extend({
                 model.save({parent: parent}, {patch: true, wait: true});
 
                 this.destroy();
-            },
+            }
         });
 
         var changeParent = new ChangeParent({

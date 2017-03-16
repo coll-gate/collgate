@@ -21,14 +21,14 @@ var View = Marionette.ItemView.extend({
         delete_group: 'span.delete-group',
         change_name: 'td.change-name',
         view_permissions: 'td.view-permissions',
-        view_users: 'td.view-users',
+        view_users: 'td.view-users'
     },
 
     events: {
         'click @ui.delete_group': 'deleteGroup',
         'click @ui.change_name': 'onRenameGroup',
         'click @ui.view_permissions': 'viewPermissions',
-        'click @ui.view_users': 'viewUsers',
+        'click @ui.view_users': 'viewUsers'
     },
 
     initialize: function() {
@@ -55,14 +55,14 @@ var View = Marionette.ItemView.extend({
 
     onRenameGroup: function(e) {
         var ChangeName = Dialog.extend({
-            template: require('../templates/groupchangename.html'),
+            template: require('../templates/grouprename.html'),
 
             attributes: {
                 id: "dlg_change_name"
             },
 
             ui: {
-                name: "#name"
+                name: "#group_name"
             },
 
             events: {
@@ -99,7 +99,9 @@ var View = Marionette.ItemView.extend({
                 var model = this.getOption('model');
 
                 if (this.validateName()) {
-                    model.save({name: name}, {patch: true, wait:true});
+                    model.save({name: name}, {patch: true, wait:true, success: function() {
+                        $.alert.success('Done');
+                    }});
                     this.destroy();
                 }
             },

@@ -19,6 +19,9 @@ class Media(Entity):
     Name contains the local file path + name that is unique.
     """
 
+    # unique name of media
+    name = models.CharField(unique=True, max_length=255, db_index=True)
+
     # content type of the owner
     owner_content_type = models.ForeignKey(ContentType, related_name='+')
 
@@ -40,3 +43,6 @@ class Media(Entity):
 
     class Meta:
         verbose_name = _("media")
+
+    def natural_name(self):
+        return self.name

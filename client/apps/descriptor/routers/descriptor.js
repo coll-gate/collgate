@@ -140,7 +140,7 @@ var Router = Marionette.AppRouter.extend({
                 }
             });
         });
-    },
+    }
 });
 
 module.exports = Router;

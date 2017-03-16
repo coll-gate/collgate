@@ -43,16 +43,6 @@ class RestTaxonId(RestTaxon):
     suffix = 'id'
 
 
-class RestTaxonIdSynonym(RestTaxonId):
-    regex = r'^synonym/$'
-    suffix = 'synonym'
-
-
-class RestTaxonIdSynonymId(RestTaxonIdSynonym):
-    regex = r'^(?P<syn_id>[0-9]+)/$'
-    suffix = 'id'
-
-
 class RestTaxonomyRank(RestTaxonomy):
     regex = r'^rank/$'
     suffix = 'rank'
@@ -127,6 +117,7 @@ def create_taxon(request):
 
     for s in taxon.synonyms.all():
         response['synonyms'].append({
+            'id': s.id,
             'name': s.name,
             'type': s.type,
             'language': s.language,
@@ -153,6 +144,7 @@ def get_taxon_list(request):
         name = filters.get('name', '')
         rank = filters.get('rank')
 
+        # name search based on synonyms
         if filters.get('method', 'icontains') == 'icontains':
             qs = qs.filter(Q(synonyms__name__icontains=name))
         else:
@@ -269,7 +261,7 @@ def search_taxon(request):
 
     if cursor:
         cursor_name, cursor_id = cursor.rsplit('/', 1)
-        qs = Taxon.objects.filter(Q(synonyms__name__gt=cursor_name))
+        qs = Taxon.objects.filter(Q(name__gt=cursor_name))
     else:
         qs = Taxon.objects.all()
 
@@ -486,94 +478,6 @@ def delete_taxon(request, tax_id):
         raise SuspiciousOperation(_("This taxon has sub-ranks. It cannot be deleted."))
 
     taxon.delete()
-
-    return HttpResponseRest(request, {})
-
-
-@RestTaxonIdSynonym.def_auth_request(
-    Method.POST, Format.JSON, content={
-        "type": "object",
-        "properties": {
-            "type": {"type:": "number"},
-            "language": TaxonSynonym.LANGUAGE_VALIDATOR,
-            "name": TaxonSynonym.NAME_VALIDATOR
-        },
-    },
-    perms={
-        'taxonomy.change_taxon': _("You are not allowed to modify a taxon"),
-        'taxonomy.add_taxonsynonym': _("You are not allowed to add a synonym to a taxon"),
-    }
-)
-def taxon_add_synonym(request, tax_id):
-    taxon = get_object_or_404(Taxon, id=int(tax_id))
-
-    synonym = {
-        'type': int(request.data['type']),
-        'name': request.data['name'],
-        'language': str(request.data['language']),
-    }
-
-    Taxonomy.add_synonym(taxon, synonym)
-
-    return HttpResponseRest(request, {})
-
-
-@RestTaxonIdSynonymId.def_auth_request(
-    Method.PUT, Format.JSON, content={
-        "type": "object",
-        "properties": {
-            "name": TaxonSynonym.NAME_VALIDATOR
-        },
-    },
-    perms={
-        'taxonomy.change_taxon': _("You are not allowed to modify a taxon"),
-        'taxonomy.change_taxonsynonym': _("You are not allowed to modify a synonym to a taxon"),
-    }
-)
-def taxon_change_synonym(request, tax_id, syn_id):
-    synonym = get_object_or_404(TaxonSynonym, Q(id=int(syn_id)), Q(taxon=int(tax_id)))
-
-    name = request.data['name']
-
-    try:
-        with transaction.atomic():
-            # rename the taxon if the synonym name is the taxon name
-            if synonym.taxon.name == synonym.name:
-                synonym.taxon.name = name
-                synonym.taxon.update_field('name')
-
-                synonym.taxon.save()
-
-            synonym.name = name
-            synonym.update_field('name')
-
-            synonym.save()
-
-            result = {
-                'id': synonym.id,
-                'name': synonym.name
-            }
-    except IntegrityError as e:
-        logger.log(repr(e))
-        raise SuspiciousOperation(_("Unable to rename a synonym of a taxon"))
-
-    return HttpResponseRest(request, result)
-
-
-@RestTaxonIdSynonymId.def_auth_request(
-    Method.DELETE, Format.JSON,
-    perms={
-        'taxonomy.change_taxon': _("You are not allowed to modify a taxon"),
-        'taxonomy.delete_taxonsynonym': _("You are not allowed to delete a synonym from a taxon"),
-    }
-)
-def taxon_remove_synonym(request, tax_id, syn_id):
-    synonym = get_object_or_404(TaxonSynonym, Q(id=int(syn_id)), Q(taxon=int(tax_id)))
-
-    if synonym.type == TaxonSynonymType.PRIMARY.value:
-        raise SuspiciousOperation(_("It is not possible to remove a primary synonym"))
-
-    synonym.delete()
 
     return HttpResponseRest(request, {})
 

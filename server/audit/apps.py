@@ -43,4 +43,4 @@ class CollGateAudit(ApplicationMain):
         menu_audit.add_entry(MenuEntry('audit-entity', _('Tracability for an entity'), "~audit/audit/searchByEntity", icon=Glyph.BOOK, order=2))
         audit_module.add_menu(menu_audit)
 
-        module_manager.register_menu(audit_module)
+        module_manager.register_module(audit_module)

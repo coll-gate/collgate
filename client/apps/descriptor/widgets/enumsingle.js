@@ -40,7 +40,7 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
                 this.autocomplete = true;
 
                 var select = $('<select style="width: 100%;"></select>');
-                parent.append(select);
+                this.group = this._createInputGroup(parent, "glyphicon-list", select);
 
                 // init the autocomplete
                 var url = application.baseUrl + 'descriptor/group/' + descriptorTypeGroup + '/type/' + descriptorTypeId + '/';
@@ -104,7 +104,7 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
                 this.autocomplete = false;
 
                 var select = $('<select data-width="100%"></select>');
-                parent.append(select);
+                this.group = this._createInputGroup(parent, "glyphicon-list", select);
 
                 select.selectpicker({container: 'body', style: 'btn-default'});
 
@@ -160,7 +160,7 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
                 } else {
                     this.el.selectpicker('destroy');
                 }
-                this.el.remove();
+                this.group.remove();
             }
         }
     },
@@ -317,15 +317,15 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
             }
         }
 
-        return "";
+        return null;
     },
 
     checkCondition: function (condition, values) {
         switch (condition) {
             case 0:
-                return this.values() === "";
+                return this.values() == null;
             case 1:
-                return this.values() !== "";
+                return this.values() != null;
             case 2:
                 return this.values() === values;
             case 3:

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-24 10:12+0100\n"
+"POT-Creation-Date: 2017-03-15 17:30+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -37,142 +37,154 @@ msgstr ""
 msgid "The rank of the parent must be lesser than the new taxon"
 msgstr ""
 
-#: controller.py:130
+#: controller.py:136
 msgid "Empty synonym data"
 msgstr ""
 
-#: controller.py:133
+#: controller.py:139
 msgid "Undefined synonym name"
 msgstr ""
 
-#: controller.py:136
+#: controller.py:142
 msgid "Undefined synonym language"
 msgstr ""
 
-#: controller.py:140
-msgid "A primary name for the taxon already exists"
+#: controller.py:146 taxonsynonym.py:159
+msgid "Unsupported type of synonym"
 msgstr ""
 
-#: controller.py:143
-msgid "Taxon synonym already exists"
+#: controller.py:154 taxonsynonym.py:167 taxonsynonym.py:220
+msgid "The primary name could not be used by another synonym of taxon"
 msgstr ""
 
-#: models.py:25
-msgid "Primary"
+#: controller.py:158 taxonsynonym.py:171 taxonsynonym.py:224
+msgid "Synonym already used as a primary name"
+msgstr ""
+
+#: controller.py:162 taxonsynonym.py:175 taxonsynonym.py:228
+msgid "Synonym already used into this taxon"
 msgstr ""
 
 #: models.py:26
-msgid "Synonym"
+msgid "Primary"
 msgstr ""
 
 #: models.py:27
+msgid "Synonym"
+msgstr ""
+
+#: models.py:28
 msgid "Code"
 msgstr ""
 
-#: models.py:32
+#: models.py:33
 msgid "Family"
 msgstr ""
 
-#: models.py:33
+#: models.py:34
 msgid "Subfamily"
 msgstr ""
 
-#: models.py:34
+#: models.py:35
 msgid "Tribe"
 msgstr ""
 
-#: models.py:35
+#: models.py:36
 msgid "Subtribe"
 msgstr ""
 
-#: models.py:36
+#: models.py:37
 msgid "Genus"
 msgstr ""
 
-#: models.py:37
+#: models.py:38
 msgid "Subgenus"
 msgstr ""
 
-#: models.py:38
+#: models.py:39
 msgid "Section"
 msgstr ""
 
-#: models.py:39
+#: models.py:40
 msgid "Subsection"
 msgstr ""
 
-#: models.py:40
+#: models.py:41
 msgid "Specie"
 msgstr ""
 
-#: models.py:41
+#: models.py:42
 msgid "Subspecie"
 msgstr ""
 
-#: models.py:42
+#: models.py:43
 msgid "Variety"
 msgstr ""
 
-#: models.py:43
+#: models.py:44
 msgid "Subvariety"
 msgstr ""
 
-#: models.py:65
+#: models.py:45
+msgid "Cultivar"
+msgstr ""
+
+#: models.py:82
 msgid "taxon"
 msgstr ""
 
-#: models.py:131
+#: models.py:158
 msgid "taxon synonym"
 msgstr ""
 
-#: taxon.py:91
+#: taxon.py:81
 msgid "You are not allowed to create a taxon"
 msgstr ""
 
-#: taxon.py:109
+#: taxon.py:99
 msgid "The language is not supported"
 msgstr ""
 
-#: taxon.py:356 taxon.py:503 taxon.py:529 taxon.py:566
+#: taxon.py:348 taxonsynonym.py:142 taxonsynonym.py:200 taxonsynonym.py:254
 msgid "You are not allowed to modify a taxon"
 msgstr ""
 
-#: taxon.py:380
+#: taxon.py:372
 msgid "The rank of the parent must be lowest than the taxon itself"
 msgstr ""
 
-#: taxon.py:469
+#: taxon.py:461
 msgid "Unable to update the taxon"
 msgstr ""
 
-#: taxon.py:475
+#: taxon.py:467
 msgid "You are not allowed to remove a taxon"
 msgstr ""
 
-#: taxon.py:482
+#: taxon.py:474
 msgid "This taxon is referred by one or more entities. It cannot be deleted."
 msgstr ""
 
-#: taxon.py:486
+#: taxon.py:478
 msgid "This taxon has sub-ranks. It cannot be deleted."
 msgstr ""
 
-#: taxon.py:504
+#: taxonsynonym.py:143
 msgid "You are not allowed to add a synonym to a taxon"
 msgstr ""
 
-#: taxon.py:530
+#: taxonsynonym.py:201
 msgid "You are not allowed to modify a synonym to a taxon"
 msgstr ""
 
-#: taxon.py:558
+#: taxonsynonym.py:246
 msgid "Unable to rename a synonym of a taxon"
 msgstr ""
 
-#: taxon.py:567
+#: taxonsynonym.py:255
 msgid "You are not allowed to delete a synonym from a taxon"
 msgstr ""
 
-#: taxon.py:574
+#: taxonsynonym.py:262
 msgid "It is not possible to remove a primary synonym"
 msgstr ""

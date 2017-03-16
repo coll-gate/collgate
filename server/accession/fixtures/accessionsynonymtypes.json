@@ -1,24 +1,30 @@
 {
   "en": {
-    "IN_001:0000001": {
-      "name": "Primary"
+    "AC_001:0000001": {
+      "name": "GRC code"
     },
-    "IN_001:0000002": {
+    "AC_001:0000002": {
+      "name": "Primary name"
+    },
+    "AC_001:0000003": {
       "name": "Synonym"
     },
-    "IN_001:0000003": {
-      "name": "Code"
+    "AC_001:0000004": {
+      "name": "GEVES code"
     }
   },
   "fr": {
-    "IN_001:0000001": {
-      "name": "Primaire"
+    "AC_001:0000001": {
+      "name": "Code CRB"
     },
-    "IN_001:0000002": {
+    "AC_001:0000002": {
+      "name": "Nom principal"
+    },
+    "AC_001:0000003": {
       "name": "Synonyme"
     },
-    "IN_001:0000003": {
-      "name": "Code"
+    "AC_001:0000004": {
+      "name": "Code GEVES"
     }
   }
 }

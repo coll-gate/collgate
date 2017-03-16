@@ -11,6 +11,8 @@
 var Backbone = require('backbone');
 var Marionette = require('backbone.marionette');
 
+underscore = require("underscore");
+
 i18next = require('i18next');
 Logger = require('js-logger');
 
@@ -229,10 +231,11 @@ application = new Marionette.Application({
                 var msg = gt.gettext("Missing client module") + " : " + module + ". " +
                           gt.gettext("Please contact your administrator.");
 
+                console.error(e);
                 $.alert.error(msg);
             }
 
-            if (this[module].initialize) {
+            if (this[module] && this[module].initialize) {
                 try {
                     Logger.time("Init " + module + " module");
                     this[module].initialize(this, {});
@@ -241,6 +244,7 @@ application = new Marionette.Application({
                     var msg = gt.gettext("Module initialization failed") + " : " + module + ". " +
                               gt.gettext("Please contact your administrator.");
 
+                    console.error(e);
                     $.alert.error(msg);
                 }
             }
@@ -252,7 +256,7 @@ application = new Marionette.Application({
         for (var i = 0; i < session.modules.length; ++i) {
             var module = session.modules[i];
 
-            if (this[module].start) {
+            if (this[module] && this[module].start) {
                 try {
                     Logger.time("Start " + module + " module");
                     this[module].start({});
@@ -261,6 +265,7 @@ application = new Marionette.Application({
                     var msg = gt.gettext("Module startup failed") + " : " + module + ". " +
                               gt.gettext("Please contact your administrator.");
 
+                    console.error(e);
                     window.alert(msg);
                 }
             }

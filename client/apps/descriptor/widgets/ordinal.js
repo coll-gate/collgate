@@ -35,14 +35,8 @@ _.extend(Ordinal.prototype, DescriptorFormatType.prototype, {
             this.el = input;
         } else {
             if (this.isInput) {
-                var group = $('<div class="input-group"></div>');
-                var input = $('<input class="form-control" width="100%">');
-                var glyph = $('<span class="input-group-addon"><span class="glyphicon glyphicon-option-vertical"></span></span>');
-
-                group.append(input);
-                group.append(glyph);
-
-                parent.append(group);
+                var input = $('<input" width="100%">');
+                this.group = this._createInputGroup(parent, "glyphicon-option-vertical", input);
 
                 input.numeric({
                     allowPlus: false,
@@ -62,7 +56,7 @@ _.extend(Ordinal.prototype, DescriptorFormatType.prototype, {
             } else {
                 // ordinal with at max 256 values as a dropdown
                 var select = $('<select data-width="100%"></select>');
-                parent.append(select);
+                this.group = this._createInputGroup(parent, "glyphicon-option-vertical", select);
 
                 for (var i = format.range[0]; i <= format.range[1]; ++i) {
                     var option = $("<option></option>");
@@ -90,7 +84,7 @@ _.extend(Ordinal.prototype, DescriptorFormatType.prototype, {
                     this.el.parent().remove();
                 } else {
                     this.el.selectpicker('destroy');
-                    this.el.remove();
+                    this.group.remove();
                 }
             }
         }

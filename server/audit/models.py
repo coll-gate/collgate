@@ -5,6 +5,7 @@
 """
 coll-gate application models.
 """
+
 import json
 
 from django.contrib.contenttypes.models import ContentType
@@ -241,9 +242,6 @@ def entity_post_save(sender, instance, created, **kwargs):
     if hasattr(instance, 'entity_status'):
         fields['entity_status'] = instance.entity_status
 
-    # always add the name of the instance
-    fields['name'] = instance.name
-
     content_type = ContentType.objects.get_for_model(sender)
     Audit.objects.create_audit(user, content_type, instance.pk, a_type, fields)
 
@@ -260,9 +258,6 @@ def entity_post_delete(sender, instance, **kwargs):
     # None means ignore audit
     if fields is None:
         return
-
-    # always add the name of the instance
-    fields['name'] = instance.name
 
     content_type = ContentType.objects.get_for_model(sender)
     Audit.objects.create_audit(user, content_type, instance.pk, AuditType.DELETE, fields)

@@ -29,7 +29,12 @@ class CollGateGeonames(ApplicationMain):
         register_models(CollGateGeolocation.name)
 
         # create a geonames module
-        geolocation_module = Module('geonames', base_url='coll-gate')
-        geolocation_module.include_urls((
+        geonames_module = Module('geonames', base_url='coll-gate')
+        geonames_module.include_urls((
             )
         )
+
+        # no client counterpart
+        geonames_module.client_export = False
+
+        module_manager.register_module(geonames_module)

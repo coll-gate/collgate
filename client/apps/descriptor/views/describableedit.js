@@ -36,7 +36,8 @@ var View = ItemView.extend({
 
         this.descriptorMetaModelLayout = options.descriptorMetaModelLayout;
 
-        this.listenTo(this.model, 'change:descriptors', this.render, this);
+        // no need to follow changes during edition
+        // this.listenTo(this.model, 'change:descriptors', this.render, this);
     },
 
     onRender: function() {
@@ -58,7 +59,7 @@ var View = ItemView.extend({
 
             // default value or current descriptor value
             if (exists) {
-                defaultValues = model.get('descriptors')[descriptorModelType.id];
+                defaultValues = model.get('descriptors')[descriptorModelType.name];
                 definesValues = defaultValues != null && defaultValues != undefined;
             } else {
                 // @todo default value from descriptor type
@@ -142,7 +143,9 @@ var View = ItemView.extend({
         for (var pi = 0; pi < this.descriptorMetaModelLayout.panels.length; ++pi) {
             for (var i = 0; i < this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types.length; ++i) {
                 var descriptorModelType = this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
-                descriptorModelType.widget.destroy();
+                if (descriptorModelType.widget) {
+                    descriptorModelType.widget.destroy();
+                }
             }
         }
     },
@@ -178,7 +181,7 @@ var View = ItemView.extend({
 
                 var mandatory = descriptorModelType.mandatory;
 
-                var currValue = this.model.get('descriptors')[descriptorModelType.id];
+                var currValue = this.model.get('descriptors')[descriptorModelType.name];
                 var values = null;
 
                 // display of the tr
@@ -196,12 +199,12 @@ var View = ItemView.extend({
                     write = false;
                 }
 
-                if (descriptorModelType.widget.compare(values, currValue)) {
+                if (descriptorModelType.widget && descriptorModelType.widget.compare(values, currValue)) {
                     write = false;
                 }
 
                 if (write) {
-                    descriptors[descriptorModelType.id] = values;
+                    descriptors[descriptorModelType.name] = values;
                 }
             }
         }
@@ -214,7 +217,9 @@ var View = ItemView.extend({
         for (var pi = 0; pi < this.descriptorMetaModelLayout.panels.length; ++pi) {
             for (var i = 0; i < this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types.length; ++i) {
                 var descriptorModelType = this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
-                descriptorModelType.widget.cancel();
+                if (descriptorModelType.widget) {
+                    descriptorModelType.widget.cancel();
+                }
             }
         }
     },

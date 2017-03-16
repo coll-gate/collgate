@@ -105,7 +105,7 @@ var Layout = Marionette.LayoutView.extend({
 
         // details view
         if (!this.model.isNew()) {
-            //
+            // taxon parent
             var taxon = new TaxonModel({id: this.model.get('parent')});
             taxon.fetch().then(function () {
                 accessionLayout.getRegion('details').show(new EntityPathView({
@@ -132,6 +132,11 @@ var Layout = Marionette.LayoutView.extend({
                 contentBottomLayout.getRegion('content').show(batchListView);
                 contentBottomLayout.getRegion('bottom').show(new ScrollingMoreView({targetView: batchListView}));
             });
+
+            // if necessary enable tabs
+            this.ui.synonyms_tab.parent().removeClass('disabled');
+            this.ui.batches_tab.parent().removeClass('disabled');
+            this.ui.actions_tab.parent().removeClass('disabled');
         } else {
             // details
             var taxon = new TaxonModel({id: this.model.get('parent')});
@@ -152,6 +157,7 @@ var Layout = Marionette.LayoutView.extend({
                 accessionLayout.getRegion('descriptors').show(accessionDescriptorView);
             });
 
+            // not available tabs
             this.disableSynonymsTab();
             this.disableBatchesTab();
             this.disableActionTab();

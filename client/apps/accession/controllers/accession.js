@@ -33,7 +33,7 @@ var Controller = Marionette.Object.extend({
                 template: require('../templates/accessioncreate.html'),
                 templateHelpers/*templateContext*/: function () {
                     return {
-                        meta_models: data,
+                        meta_models: data
                     };
                 },
 
@@ -205,26 +205,6 @@ var Controller = Marionette.Object.extend({
 
                         var accessionLayout = new AccessionLayout({model: model});
                         defaultLayout.getRegion('content').show(accessionLayout);
-/*
-                        accessionLayout.disableSynonymsTab();
-                        accessionLayout.disableBatchesTab();
-
-                        var taxon = new TaxonModel({id: parent});
-                        taxon.fetch().then(function() {
-                            accessionLayout.getRegion('details').show(new EntityPathView({model: model, taxon: taxon, noLink: true}));
-                        });
-
-                        $.ajax({
-                            method: "GET",
-                            url: application.baseUrl + 'descriptor/meta-model/' + metaModel + '/layout/',
-                            dataType: 'json'
-                        }).done(function(data) {
-                            var accessionDescriptorView = new AccessionDescriptorEditView({model: model, descriptorMetaModelLayout: data});
-                            accessionLayout.getRegion('descriptors').show(accessionDescriptorView);
-
-                            // manually called
-                            accessionDescriptorView.onShowTab();
-                        });*/
                     }
                 }
             });
@@ -232,7 +212,7 @@ var Controller = Marionette.Object.extend({
             var createAccessionView = new CreateAccessionView();
             createAccessionView.render();
         });
-    },
+    }
 });
 
 module.exports = Controller;

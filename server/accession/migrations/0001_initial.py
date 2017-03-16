@@ -42,7 +42,7 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(db_index=True, max_length=255, unique=True)),
                 ('uuid', models.UUIDField(db_index=True, default=uuid.uuid4, editable=False, unique=True)),
                 ('language', models.CharField(choices=[('la', 'Latin'), ('en', 'English'), ('fr', 'French')], default='en', max_length=8)),
-                ('type', models.CharField(default='IN_001:0000001', max_length=64)),
+                ('type', models.CharField(default='AC_001:0000001', max_length=64)),
             ],
             options={
                 'verbose_name': 'accession synonym',

@@ -64,6 +64,7 @@ var View = Marionette.ItemView.extend({
 
     onSynonymNameInput: function () {
         if (this.validateName()) {
+            var view = this;
             var name = this.ui.synonym_name.val().trim();
 
             var filters = {
@@ -78,20 +79,25 @@ var View = Marionette.ItemView.extend({
                 dataType: 'json',
                 data: {filters: JSON.stringify(filters)},
                 cache: false,
-                el: this.ui.synonym_name,
                 success: function(data) {
                     if (data.items.length > 0) {
                         for (var i in data.items) {
                             var t = data.items[i];
 
+                            // invalid if primary exists with the same name or if exists into the same taxon
                             if (t.label.toUpperCase() == name.toUpperCase()) {
-                                $(this.el).validateField('failed', gt.gettext('Synonym of taxon already used'));
-                                break;
+                                if ((t.taxon == view.model.get('id')) || (t.type == 0)) {
+                                    view.ui.synonym_name.validateField(
+                                        'failed', gt.gettext('Synonym of taxon already used'));
+
+                                    return;
+                                }
                             }
                         }
-                    } else {
-                        $(this.el).validateField('ok');
                     }
+
+                    // validate
+                    view.ui.synonym_name.validateField('ok');
                 }
             });
         }
@@ -141,15 +147,15 @@ var View = Marionette.ItemView.extend({
             template: require('../templates/taxonchangesynonym.html'),
 
             attributes: {
-                id: "dlg_change_synonym",
+                id: "dlg_change_synonym"
             },
 
             ui: {
-                synonym_name: "#taxon_synonym_name",
+                synonym_name: "#taxon_synonym_name"
             },
 
             events: {
-                'input @ui.synonym_name': 'onSynonymNameInput',
+                'input @ui.synonym_name': 'onSynonymNameInput'
             },
 
             initialize: function (options) {
@@ -173,25 +179,35 @@ var View = Marionette.ItemView.extend({
                         dataType: 'json',
                         data: {filters: JSON.stringify(filters)},
                         cache: false,
-                        el: this.ui.synonym_name,
                         success: function(data) {
                             if (data.items.length > 0) {
                                 for (var i in data.items) {
                                     var t = data.items[i];
 
                                     if (t.label.toUpperCase() == name.toUpperCase()) {
-                                        // same taxon, same synonym => valid
+                                        // valid if same taxon and same synonym
                                         if ((t.taxon == view.model.get('id')) && (t.id == view.getOption('synonym_id'))) {
                                             view.ui.synonym_name.validateField('ok');
                                             break;
                                         }
 
-                                        $(this.el).validateField('failed', gt.gettext('Synonym of taxon already used'));
-                                        break;
+                                        // invalid if same name and modifying a primary synonym
+                                        if (view.getOption('type') == 0) {
+                                            view.ui.synonym_name.validateField(
+                                                'failed', gt.gettext('Primary synonym must be unique'));
+                                            break;
+                                        }
+
+                                        // invalid if primary exists with the same name or if exists into the same taxon
+                                        if ((t.taxon == view.model.get('id')) || (t.type == 0)) {
+                                            view.ui.synonym_name.validateField(
+                                                'failed', gt.gettext('Synonym of taxon already used'));
+                                            break;
+                                        }
                                     }
                                 }
                             } else {
-                                $(this.el).validateField('ok');
+                                view.ui.synonym_name.validateField('ok');
                             }
                         }
                     });
@@ -219,7 +235,7 @@ var View = Marionette.ItemView.extend({
                 var synonym_id = this.getOption('synonym_id');
                 var name = this.ui.synonym_name.val().trim();
 
-                if (this.validateName()) {
+                if (!this.ui.synonym_name.hasClass('invalid')) {
                     $.ajax({
                         type: "PUT",
                         url: view.model.url() + 'synonym/' + synonym_id + '/',

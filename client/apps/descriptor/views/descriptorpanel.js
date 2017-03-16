@@ -19,14 +19,14 @@ var View = Marionette.ItemView.extend({
     template: require('../templates/descriptorpanel.html'),
 
     attributes: {
-        draggable: true,
+        draggable: true
     },
 
     ui: {
         'delete_descriptor_panel': 'span.delete-descriptor-panel',
         'label': 'span.change-label',
         'top_placeholder': 'div.top-placeholder',
-        'bottom_placeholder': 'div.bottom-placeholder',
+        'bottom_placeholder': 'div.bottom-placeholder'
     },
 
     events: {
@@ -37,7 +37,7 @@ var View = Marionette.ItemView.extend({
         'dragleave': 'dragLeave',
         'drop': 'drop',
         'click @ui.delete_descriptor_panel': 'deleteDescriptorPanel',
-        'click @ui.label': 'editLabel',
+        'click @ui.label': 'editLabel'
     },
 
     initialize: function() {
@@ -149,15 +149,15 @@ var View = Marionette.ItemView.extend({
                 template: require('../templates/descriptorpanelcreate.html'),
 
                 attributes: {
-                    id: "dlg_create_panel",
+                    id: "dlg_create_panel"
                 },
 
                 ui: {
-                    label: "#label",
+                    label: "#label"
                 },
 
                 events: {
-                    'input @ui.label': 'onLabelInput',
+                    'input @ui.label': 'onLabelInput'
                 },
 
                 initialize: function (options) {
@@ -318,7 +318,7 @@ var View = Marionette.ItemView.extend({
         $.ajax({
             type: "GET",
             url: this.model.url() + 'label/',
-            dataType: 'json',
+            dataType: 'json'
         }).done(function (data) {
             var labels = data;
 
@@ -326,20 +326,20 @@ var View = Marionette.ItemView.extend({
                 template: require('../templates/descriptorpanelchangelabel.html'),
                 templateHelpers/*templateContext*/: function () {
                     return {
-                        labels: labels,
+                        labels: labels
                     };
                 },
 
                 attributes: {
-                    id: "dlg_change_labels",
+                    id: "dlg_change_labels"
                 },
 
                 ui: {
-                    label: "#descriptor_panel_labels input",
+                    label: "#descriptor_panel_labels input"
                 },
 
                 events: {
-                    'input @ui.label': 'onLabelInput',
+                    'input @ui.label': 'onLabelInput'
                 },
 
                 initialize: function (options) {
@@ -408,7 +408,7 @@ var View = Marionette.ItemView.extend({
                             view.destroy();
                         });
                     }
-                },
+                }
             });
 
             var changeLabel = new ChangeLabel({model: model});

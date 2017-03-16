@@ -10,6 +10,7 @@
 
 <th><input type="checkbox" class="select-batch"></th>
 <td class="action view-batch-details"><%- name %></td>
-<td>Xxx</td>
-<td>Yyy</td>
-<td>Zzz</td>
+<% for (var i = 0; i < columns.length; ++i) { %>
+    <% var column = columns[i]; %>
+    <td name="<%= column.name %>" descriptor-id="<%= column.id %>"><%= descriptors[column.name] %></td>
+<% } %>

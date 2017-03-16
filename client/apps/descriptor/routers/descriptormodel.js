@@ -68,8 +68,6 @@ var Router = Marionette.AppRouter.extend({
     },
 
     getDescriptorModelTypeListForModel: function(id) {
-        var modelTypeCollection = new DescriptorModelTypeCollection([], {model_id: id});
-
         var defaultLayout = new DefaultLayout({});
         application.show(defaultLayout);
 
@@ -78,14 +76,18 @@ var Router = Marionette.AppRouter.extend({
         var leftOneRightTwoLayout = new LeftOneRightTwoLayout({});
         defaultLayout.getRegion('content').show(leftOneRightTwoLayout);
 
-        modelTypeCollection.fetch().then(function () {
-            var descriptorTypeModelList = new DescriptorModelTypeListView({collection : modelTypeCollection});
+        var modelTypeCollection = new DescriptorModelTypeCollection([], {model_id: id});
+        var groupCollection = new DescriptorGroupCollection();
+
+        // need groups for model type so wait for the two collections to be done
+        $.when(modelTypeCollection.fetch(), groupCollection.fetch()).done(function() {
+            var descriptorTypeModelList = new DescriptorModelTypeListView({
+                collection : modelTypeCollection,
+                descriptor_type_groups: groupCollection});
+
             leftOneRightTwoLayout.getRegion('left-content').show(descriptorTypeModelList);
             leftOneRightTwoLayout.getRegion('left-bottom').show(new ScrollingMoreView({targetView: descriptorTypeModelList}));
-        });
 
-        var groupCollection = new DescriptorGroupCollection();
-        groupCollection.fetch().then(function () {
             var descriptorGroupList = new DescriptorGroupListAltView({
                 collection: groupCollection,
                 layout: leftOneRightTwoLayout
@@ -98,7 +100,7 @@ var Router = Marionette.AppRouter.extend({
         var descriptorTypeList = new DescriptorTypeListAltView({});
         leftOneRightTwoLayout.getRegion('right-down-content').show(descriptorTypeList);
         leftOneRightTwoLayout.getRegion('right-down-bottom').show(new ScrollingMoreView({targetView: descriptorTypeList}));
-    },
+    }
 });
 
 module.exports = Router;

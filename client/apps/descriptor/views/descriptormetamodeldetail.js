@@ -55,7 +55,7 @@ var View = Marionette.ItemView.extend({
 
         this.model.save({
             name: name,
-            description: description,
+            description: description
         }, {wait: true}).done(function() { $.alert.success(gt.gettext("Done")); });
     }
 });

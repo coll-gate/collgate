@@ -1,0 +1,27 @@
+<!--
+ - @file establishmentlist.html
+ - @brief Template for a list of establishment (model)
+ - @author Frederic SCHERMA
+ - @date 2017-03-09
+ - @copyright Copyright (c) 2017 INRA UMR1095 GDEC
+ - @license @todo
+ - @details
+-->
+
+<div class="object establishment-list" object-type="establishment-list" style="width:100%;">
+    <table class="table table-striped">
+        <thead class="sticky-header">
+            <tr>
+                <th><span class="glyphicon glyphicon-asterisk"></span></th>
+                <th><%= gt.gettext("Name") %></th>
+                <th><%= gt.gettext("Organisation") %></th>
+                <% for (var i = 0; i < columns.length; ++i) { %>
+                    <% var column = columns[i]; %>
+                    <th name="<%= column.id %>"><%= column.label %></th>
+                <% } %>
+            </tr>
+        </thead>
+        <tbody class="establishment-list">
+        </tbody>
+    </table>
+</div>

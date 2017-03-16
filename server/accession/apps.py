@@ -76,4 +76,4 @@ class CollGateAccession(ApplicationMain):
 
         accession_module.add_menu(menu_accession)
 
-        module_manager.register_menu(accession_module)
+        module_manager.register_module(accession_module)

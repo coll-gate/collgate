@@ -8,10 +8,7 @@
  * @details
  */
 
-var Marionette = require('backbone.marionette');
 var ScrollView = require('../../main/views/scroll');
-
-var DescriptorTypeModel = require('../models/descriptortype');
 var DescriptorTypeView = require('../views/descriptortype');
 
 var View = ScrollView.extend({

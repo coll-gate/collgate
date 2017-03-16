@@ -1,0 +1,137 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-03-15 14:07+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../../views/descriptor.js:26 ../../../views/descriptoredit.js:74
+#: ../../../templates/organisationlayout.html:5
+msgid "Descriptors"
+msgstr ""
+
+#: ../../../views/descriptorcontext.js:21
+msgid "Modify descriptors"
+msgstr ""
+
+#: ../../../views/descriptorcontext.js:22
+msgid "Apply modifications"
+msgstr ""
+
+#: ../../../views/descriptorcontext.js:23
+msgid "Cancel modifications"
+msgstr ""
+
+#: ../../../views/establishment.js:46 ../../../views/organisation.js:48
+msgid "Successfully removed !"
+msgstr ""
+
+#: ../../../views/establishmentlistfilter.js:51
+#: ../../../views/organisationdetails.js:119
+#: ../../../views/organisationlistfilter.js:54
+#: ../../../controllers/organisation.js:100
+msgid "3 characters min"
+msgstr ""
+
+#: ../../../views/grcdetails.js:43 ../../../views/organisationdetails.js:152
+msgid "Done"
+msgstr ""
+
+#: ../../../views/organisationdetails.js:100
+#: ../../../controllers/organisation.js:81
+msgid "Organisation name already in usage"
+msgstr ""
+
+#: ../../../views/organisationdetails.js:116
+#: ../../../controllers/organisation.js:97
+msgid "64 characters max"
+msgstr ""
+
+#: ../../../routers/organisation.js:44
+msgid "GRC details"
+msgstr ""
+
+#: ../../../routers/organisation.js:55
+msgid "List of GRC partners"
+msgstr ""
+
+#: ../../../routers/organisation.js:73
+msgid "List of organisations"
+msgstr ""
+
+#: ../../../routers/organisation.js:94 ../../../controllers/organisation.js:135
+#: ../../../templates/establishmentlist.html:17
+#: ../../../templates/organisationcreate.html:17
+msgid "Organisation"
+msgstr ""
+
+#: ../../../templates/establishmentlist.html:16
+#: ../../../templates/grcdetails.html:4
+#: ../../../templates/organisationlist.html:16
+msgid "Name"
+msgstr ""
+
+#: ../../../templates/grcdetails.html:10
+msgid "Identifier"
+msgstr ""
+
+#: ../../../templates/grcdetails.html:16
+msgid "Description"
+msgstr ""
+
+#: ../../../templates/organisationcreate.html:5
+msgid "Create an organisation or a partner"
+msgstr ""
+
+#: ../../../templates/organisationcreate.html:10
+#: ../../../templates/organisationedit.html:10
+msgid "Name (must be unique)"
+msgstr ""
+
+#: ../../../templates/organisationcreate.html:14
+msgid "Partner or organisation"
+msgstr ""
+
+#: ../../../templates/organisationcreate.html:16
+msgid "GRC partner"
+msgstr ""
+
+#: ../../../templates/organisationcreate.html:21
+#: ../../../templates/organisationedit.html:14
+#: ../../../templates/organisationlist.html:17
+msgid "Type"
+msgstr ""
+
+#: ../../../templates/organisationcreate.html:27
+#: ../../../templates/organisationedit.html:20
+msgid "Cancel"
+msgstr ""
+
+#: ../../../templates/organisationcreate.html:28
+msgid "Create"
+msgstr ""
+
+#: ../../../templates/organisationedit.html:5
+msgid "Update an organisation or a partner"
+msgstr ""
+
+#: ../../../templates/organisationedit.html:21
+msgid "Apply"
+msgstr ""
+
+#: ../../../templates/organisationlayout.html:6
+#: ../../../templates/organisationlist.html:22
+msgid "Establishments"
+msgstr ""

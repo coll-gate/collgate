@@ -2,13 +2,13 @@
     <div class="modal-content">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h4 class="modal-title"><%= gt.gettext("Change the name of the group of descriptors") %></h4>
+            <h4 class="modal-title"><%= gt.gettext("Rename the type of model of descriptors") %></h4>
         </div>
         <div class="modal-body">
             <form>
                 <div class="form-group">
-                    <label class="control-label" for="label"><%= gt.gettext("Name") %></label>
-                    <input class="form-control" id="name" type="text" name="name" value="" maxlength="32" autofocus="" autocomplete="off" style="width:100%;">
+                    <label class="control-label" for="descriptor_model_type_name"><%= gt.gettext("Name") %></label>
+                    <input class="form-control" id="descriptor_model_type_name" type="text" name="name" value="" maxlength="64" autofocus="" autocomplete="off" style="width:100%;">
                 </div>
             </form>
         </div>

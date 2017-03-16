@@ -20,6 +20,7 @@ var Model = Backbone.Model.extend({
 
     defaults: {
         id: null,
+        code: '',
         name: '',
         parent: undefined,
         descriptor_meta_model: undefined,

@@ -92,17 +92,20 @@ class EntityStatus(ChoiceEnum):
 
 
 class EntityManager(models.Manager):
-    # Est ce que django-polymorphic serait util ? car il apporte un iterator,
-    # et une optimisation via union sur les QuerySet, et aussi un cast automatique
+    """
+    Entity manager overriding.
+    """
 
-    def get_by_uuid(self, uuid):
-        return self.get(uuid=uuid)
+    def get_by_uuid(self, entity_uuid):
+        """
+        Get an entity by its UUID.
+        """
+        return self.get(uuid=entity_uuid)
 
 
 class Entity(models.Model):
     """
-    Base model for any object that must support audit, history, or
-    any other modular features.
+    Base model for any object that must support audit, history, or any other modular features.
     """
 
     # simple name pattern with alphanumeric characters plus _ and - with a least a length of 3
@@ -152,10 +155,7 @@ class Entity(models.Model):
     # last update date
     modified_date = models.DateTimeField(auto_now=True)
 
-    # unique name
-    name = models.CharField(unique=True, max_length=255, db_index=True)
-
-    # object identifier
+    # unique object identifier
     uuid = models.UUIDField(db_index=True, default=uuid.uuid4, editable=False, unique=True)
 
     objects = EntityManager()
@@ -259,6 +259,13 @@ class Entity(models.Model):
             raise SuspiciousOperation(_("It is not allowed to change the status of an archived entity"))
 
         self.entity_status = entity_status
+
+    def natural_name(self):
+        """
+        Return the most natural name for defining the specialised entity. By default return the uuid as name.
+        :return: A string name
+        """
+        return self.uuid
 
 
 class EventMessage(models.Model):

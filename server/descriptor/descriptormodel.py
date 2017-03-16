@@ -311,6 +311,7 @@ def list_descriptor_model_types_for_model(request, des_id):
 @RestDescriptorModelIdType.def_auth_request(Method.POST, Format.JSON, content={
         "type": "object",
         "properties": {
+            "name": DescriptorModelType.NAME_VALIDATOR,
             "label": DescriptorModelType.LABEL_VALIDATOR,
             "mandatory": {"type": "boolean"},
             "set_once": {"type": "boolean"},
@@ -328,6 +329,7 @@ def create_descriptor_model_type_for_type(request, des_id):
 
     lang = translation.get_language()
 
+    name = request.data['name']
     mandatory = bool(request.data['mandatory'])
     set_once = bool(request.data['set_once'])
     position = int(request.data['position'])
@@ -335,11 +337,8 @@ def create_descriptor_model_type_for_type(request, des_id):
     dm = get_object_or_404(DescriptorModel, id=int(des_id))
     dt = get_object_or_404(DescriptorType, code=dt_code)
 
-    dmt = dm.descriptor_model_types.all().order_by(Length('name').desc(), '-name')[:1]
-    if dmt.exists():
-        name = "%i_%i" % (dm.id, int(dmt[0].name.split('_')[1])+1)
-    else:
-        name = "%i_%i" % (dm.id, 1)
+    if DescriptorModelType.objects.filter(name=name).exists():
+        SuspiciousOperation(_("The name of descriptor model type already exists"))
 
     dmt = DescriptorModelType()
 
@@ -438,6 +437,7 @@ def reorder_descriptor_types_for_model(request, des_id):
 @RestDescriptorModelIdTypeId.def_auth_request(Method.PATCH, Format.JSON, content={
         "type": "object",
         "properties": {
+            "name": DescriptorModelType.NAME_VALIDATOR_OPTIONAL,
             "mandatory": {"type": "boolean", "required": False},
             "set_once": {"type": "boolean", "required": False},
             "label": DescriptorModelType.LABEL_VALIDATOR_OPTIONAL
@@ -453,6 +453,7 @@ def patch_descriptor_model_type_for_model(request, des_id, typ_id):
     Change the 'label', 'mandatory' or 'set_once' of a type of model of descriptor.
     To changes the position uses the order method of the collection.
     """
+    name = request.data.get('name')
     mandatory = request.data.get('mandatory')
     set_once = request.data.get('set_once')
     label = request.data.get('label')
@@ -460,8 +461,14 @@ def patch_descriptor_model_type_for_model(request, des_id, typ_id):
     dmt = get_object_or_404(DescriptorModelType, id=int(typ_id), descriptor_model_id=int(des_id))
 
     # cannot change the mandatory field once there is some data
-    if dmt.descriptor_model.in_usage() and (mandatory is not None):
+    if dmt.descriptor_model.in_usage() and (mandatory is not None or name is not None):
         raise SuspiciousOperation(_("There is some data using the model of descriptor"))
+
+    if name is not None:
+        if name != dmt.name and DescriptorModelType.objects.filter(name=name).exists():
+            raise SuspiciousOperation(_("The name of descriptor model type already exists"))
+
+        dmt.name = name
 
     if label is not None:
         lang = translation.get_language()
@@ -619,11 +626,13 @@ def create_condition_for_descriptor_model_type(request, des_id, typ_id):
     target = get_object_or_404(DescriptorModelType, id=target_id, descriptor_model_id=int(des_id))
 
     if dmt.mandatory:
-        raise SuspiciousOperation(_("It is not possible to define a condition on a required type of model of descriptor"))
+        raise SuspiciousOperation(_(
+            "It is not possible to define a condition on a required type of model of descriptor"))
 
     # check if there is a cyclic condition
     if target.conditions.filter(target=dmt).exists():
-        raise SuspiciousOperation(_("Cyclic condition detected. You cannot define this condition or you must remove the condition on the target"))
+        raise SuspiciousOperation(_(
+            "Cyclic condition detected. You cannot define this condition or you must remove the condition on the target"))
 
     condition = DescriptorCondition(request.data['condition'])
     values = request.data['values']
@@ -636,7 +645,6 @@ def create_condition_for_descriptor_model_type(request, des_id, typ_id):
 
     dmtc = DescriptorModelTypeCondition()
 
-    dmtc.name = "%s_%03i" % (dmt.id, 1)
     dmtc.descriptor_model_type = dmt
     dmtc.condition = condition.value
     dmtc.target = target

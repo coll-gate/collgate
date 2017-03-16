@@ -88,4 +88,4 @@ class CollGateDescriptor(ApplicationMain):
                       icon=Glyph.TH_LARGE, order=303, auth=AUTH_STAFF))
         descriptor_module.add_menu(menu_descriptor)
 
-        module_manager.register_menu(descriptor_module)
+        module_manager.register_module(descriptor_module)

@@ -22,7 +22,7 @@ var TaxonItemView = Marionette.ItemView.extend({
         "synonym_name": ".synonym-name",
         "synonym_language": ".synonym-languages",
         "taxon_synonym_type": ".taxon-synonym-types",
-        "taxon_rank": ".taxon-ranks",
+        "taxon_rank": ".taxon-ranks"
     },
 
     events: {

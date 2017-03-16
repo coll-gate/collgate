@@ -1,33 +1,26 @@
 # -*- coding: utf-8 -*-
+#
+# Copyright (c) 2016 INRA UMR1095 GDEC
 
 """
 Setup the groups of descriptors.
 """
 
-import sys
-
-from descriptor.models import DescriptorGroup
-
 GROUPS = {
-    'general': {
+    'common': {
         'id': None,
-        'name': 'general',
+        'name': 'common',
+        'can_delete': False,
+        'can_modify': False,
+    },
+    'accession': {
+        'id': None,
+        'name': 'accession',
         'can_delete': False,
         'can_modify': False,
     },
 }
 
 
-def fixture():
-    sys.stdout.write(" + Create descriptors types groups...\n")
-
-    for k, v in GROUPS.items():
-        group_name = v['name']
-
-        group, created = DescriptorGroup.objects.update_or_create(name=group_name, defaults={
-            'can_delete': v.get('can_delete', False),
-            'can_modify': v.get('can_modify', False)
-        })
-
-        # keep id for others fixtures
-        GROUPS[group_name]['id'] = group.id
+def fixture(fixture_manager):
+    fixture_manager.create_or_update_groups(GROUPS)

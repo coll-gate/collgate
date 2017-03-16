@@ -56,4 +56,4 @@ class CollGateTaxonomy(ApplicationMain):
             MenuEntry('list-taxon', _('List taxons'), "#taxonomy/taxon/", icon=Glyph.LIST, order=101))
         taxonomy_module.add_menu(menu_taxonomy)
 
-        module_manager.register_menu(taxonomy_module)
+        module_manager.register_module(taxonomy_module)

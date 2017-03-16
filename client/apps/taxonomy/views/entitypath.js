@@ -37,7 +37,7 @@ var View = Marionette.ItemView.extend({
 
     events: {
         'click @ui.view_taxon': 'onViewTaxon',
-        'click @ui.change_parent': 'onChangeParent',
+        'click @ui.change_parent': 'onChangeParent'
     },
 
     initialize: function(options) {
@@ -58,7 +58,7 @@ var View = Marionette.ItemView.extend({
     },
 
     onRender: function() {
-        application.taxonomy.views.taxonRanks.htmlFromValue(this.el);
+        application.taxonomy.views.taxonRanks.attributeFromValue(this.el, 'title');
 
         if (this.getOption('noLink')) {
             this.ui.view_taxon.removeClass('action');
@@ -79,11 +79,11 @@ var View = Marionette.ItemView.extend({
             template: require('../templates/taxonchangeparent.html'),
 
             attributes: {
-                id: "dlg_change_parent",
+                id: "dlg_change_parent"
             },
 
             ui: {
-                parent: "#taxon_parent",
+                parent: "#taxon_parent"
             },
 
             initialize: function (options) {
