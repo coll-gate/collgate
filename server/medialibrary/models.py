@@ -8,6 +8,7 @@ coll-gate medialibrary models.
 
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 
 from main.models import Entity
@@ -46,3 +47,7 @@ class Media(Entity):
 
     def natural_name(self):
         return self.name
+
+    @classmethod
+    def make_search_by_name(cls, term):
+        return Q(name__istartswith=term) | Q(file_name__istartswith=term)

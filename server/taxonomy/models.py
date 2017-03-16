@@ -9,6 +9,7 @@ coll-gate taxonomy module models.
 from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.core.validators import validate_comma_separated_integer_list
+from django.db.models import Q
 
 from django.utils.translation import ugettext_lazy as _
 
@@ -83,6 +84,10 @@ class Taxon(Entity):
 
     def natural_name(self):
         return self.name
+
+    @classmethod
+    def make_search_by_name(cls, term):
+        return Q(name__istartswith=term)
 
     def audit_create(self, user):
         return {
@@ -169,6 +174,10 @@ class TaxonSynonym(Entity):
 
     def natural_name(self):
         return self.name
+
+    @classmethod
+    def make_search_by_name(cls, term):
+        return Q(name__istartswith=term)
 
     def audit_create(self, user):
         return {

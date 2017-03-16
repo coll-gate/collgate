@@ -5,6 +5,7 @@
 """
 coll-gate organisation module main
 """
+import sys
 
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.translation import ugettext_lazy as _
@@ -45,28 +46,6 @@ class CollGateOrganisation(ApplicationMain):
             Establishment
         ]
 
-        # check if there is a unique GRC model instance
-        from organisation.models import GRC
-        num_grcs = len(GRC.objects.all())
-        if num_grcs == 0:
-            self.logger.info("Missing GRC configuration. Create a unique GRC model instance.")
-            grc = GRC()
-            grc.save()
-
-        if num_grcs > 1:
-            raise ImproperlyConfigured("Invalid GRC configuration. Only a unique GRC could be configured.")
-
-        # keep descriptor meta-model for organisation and establishment.
-        from descriptor.models import DescriptorMetaModel
-
-        if not DescriptorMetaModel.objects.filter(name="organisation").exists():
-            raise ImproperlyConfigured(
-                "Missing organisation descriptor meta-model. Be sure to have installed fixtures")
-
-        if not DescriptorMetaModel.objects.filter(name="establishment").exists():
-            raise ImproperlyConfigured(
-                "Missing organisation establishment meta-model. Be sure to have installed fixtures")
-
         # organisation menu
         menu_organisation = ModuleMenu('administration', _('Administration'), order=999, auth=AUTH_STAFF)
         menu_organisation.add_entry(
@@ -93,3 +72,29 @@ class CollGateOrganisation(ApplicationMain):
         organisation_module.add_menu(menu_organisation)
 
         module_manager.register_module(organisation_module)
+
+        if "init_fixtures" not in sys.argv and "migrate" not in sys.argv and "makemigrations" not in sys.argv:
+            self.post_ready()
+
+    def post_ready(self):
+        # check if there is a unique GRC model instance
+        from organisation.models import GRC
+        num_grcs = len(GRC.objects.all())
+        if num_grcs == 0:
+            self.logger.info("Missing GRC configuration. Create a unique GRC model instance.")
+            grc = GRC()
+            grc.save()
+
+        if num_grcs > 1:
+            raise ImproperlyConfigured("Invalid GRC configuration. Only a unique GRC could be configured.")
+
+        # keep descriptor meta-model for organisation and establishment.
+        from descriptor.models import DescriptorMetaModel
+
+        if not DescriptorMetaModel.objects.filter(name="organisation").exists():
+            raise ImproperlyConfigured(
+                "Missing organisation descriptor meta-model. Be sure to have installed fixtures")
+
+        if not DescriptorMetaModel.objects.filter(name="establishment").exists():
+            raise ImproperlyConfigured(
+                "Missing organisation establishment meta-model. Be sure to have installed fixtures")
