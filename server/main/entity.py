@@ -5,8 +5,10 @@
 """
 Rest handlers.
 """
+
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import SuspiciousOperation
+from django.db.models import Q
 
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
@@ -29,6 +31,8 @@ def get_entity(request):
     """
     Retrieve an entity (generic details) from an app_label, model and object identifier.
     In others words from its content type and its uniquer identifier.
+
+    @note Returned name if the natural name (it can be a name field or a code, the display label...).
     """
     app_label = request.GET['app_label']
     model = request.GET['model']
@@ -68,12 +72,12 @@ def search_entity(request):
     entities = None
 
     if uuid:
-        entities = None
-        raise SuspiciousOperation("Not yet implemented")
+        content_type = ContentType.objects.get_by_natural_key(app_label, model)
+        entities = content_type.get_all_objects_for_this_type(Q(uuid__startswith=uuid))
     if app_label and model and object_name:
         content_type = ContentType.objects.get_by_natural_key(app_label, model)
-        # @todo find_natural_name...
-        entities = content_type.get_all_objects_for_this_type(name__icontains=object_name)
+        q = content_type.model_class().make_search_by_name(object_name)
+        entities = content_type.model_class().objects.filter(q)
 
     entities_list = []
 

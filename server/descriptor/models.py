@@ -100,7 +100,9 @@ class DescriptorGroup(Entity):
             }
 
     def audit_delete(self, user):
-        return {}
+        return {
+            'name': self.name
+        }
 
 
 class DescriptorType(Entity):
@@ -195,7 +197,9 @@ class DescriptorType(Entity):
             }
 
     def audit_delete(self, user):
-        return {}
+        return {
+            'name': self.name
+        }
 
     def count_num_values(self):
         """
@@ -935,7 +939,9 @@ class DescriptorValue(Entity):
             }
 
     def audit_delete(self, user):
-        return {}
+        return {
+            'code': self.code
+        }
 
 
 class DescriptorPanel(Entity):
@@ -992,7 +998,9 @@ class DescriptorPanel(Entity):
             }
 
     def audit_delete(self, user):
-        return {}
+        return {
+            'label': self.label
+        }
 
     def get_label(self):
         """
@@ -1098,7 +1106,9 @@ class DescriptorModelType(Entity):
             }
 
     def audit_delete(self, user):
-        return {}
+        return {
+            'name': self.name
+        }
 
     def get_label(self):
         """
@@ -1172,7 +1182,9 @@ class DescriptorModel(Entity):
             }
 
     def audit_delete(self, user):
-        return {}
+        return {
+            'name': self.name
+        }
 
     def in_usage(self):
         """
@@ -1301,7 +1313,9 @@ class DescriptorMetaModel(Entity):
             }
 
     def audit_delete(self, user):
-        return {}
+        return {
+            'name': self.name
+        }
 
 
 class DescriptorCondition(ChoiceEnum):

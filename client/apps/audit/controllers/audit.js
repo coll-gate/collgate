@@ -23,21 +23,21 @@ var Controller = Marionette.Object.extend({
     searchByUserName: function () {
         var ModalView = Dialog.extend({
             attributes: {
-                'id': 'dlg_audit_by_username',
+                'id': 'dlg_audit_by_username'
             },
             template: require('../templates/auditbyusername.html'),
 
             ui: {
                 search: "button.search",
-                username: "#username",
+                username: "#username"
             },
 
             events: {
-                'input @ui.username': 'onUserNameInput',
+                'input @ui.username': 'onUserNameInput'
             },
 
             triggers: {
-                'click @ui.search': 'view:search',
+                'click @ui.search': 'view:search'
             },
 
             initialize: function () {
@@ -59,12 +59,12 @@ var Controller = Marionette.Object.extend({
                             var filters = {
                                 method: 'icontains',
                                 fields: '*',
-                                '*': params.term.split(' ').filter(function (t) { return t.length > 2; }),
+                                '*': params.term.split(' ').filter(function (t) { return t.length > 2; })
                             };
 
                             return {
                                 page: params.page,
-                                filters: JSON.stringify(filters),
+                                filters: JSON.stringify(filters)
                             };
                         },
                         processResults: function (data, params) {
@@ -90,7 +90,7 @@ var Controller = Marionette.Object.extend({
                         cache: true
                     },
                     minimumInputLength: 3,
-                    placeholder: gt.gettext("Select a username"),
+                    placeholder: gt.gettext("Select a username")
                 }).select2('open');
             },
 
@@ -133,7 +133,7 @@ var Controller = Marionette.Object.extend({
     searchByEntity: function (uuid) {
             var ModalView = Dialog.extend({
             attributes: {
-                'id': 'dlg_audit_by_entity',
+                'id': 'dlg_audit_by_entity'
             },
             template: require('../templates/auditbyentity.html'),
 
@@ -144,11 +144,11 @@ var Controller = Marionette.Object.extend({
             },
 
             events: {
-                'input @ui.entity': 'onEntityInput',
+                'input @ui.entity': 'onEntityInput'
             },
 
             triggers: {
-                'click @ui.search': 'view:search',
+                'click @ui.search': 'view:search'
             },
 
             onRender: function () {
@@ -190,7 +190,7 @@ var Controller = Marionette.Object.extend({
 
                             return {
                                 page: params.page,
-                                filters: JSON.stringify(filters),
+                                filters: JSON.stringify(filters)
                             };
                         },
                         processResults: function (data, params) {
@@ -216,7 +216,7 @@ var Controller = Marionette.Object.extend({
                         cache: true
                     },
                     minimumInputLength: 3,
-                    placeholder: gt.gettext("Select an entity UUID or name"),
+                    placeholder: gt.gettext("Select an entity UUID or name")
                 }).select2('open');
             },
 

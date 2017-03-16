@@ -5,6 +5,7 @@
 """
 coll-gate application models.
 """
+
 import re
 import uuid as uuid
 
@@ -13,6 +14,7 @@ from django.core.validators import RegexValidator
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
+from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 
 from igdectk.common.models import ChoiceEnum, IntegerChoice, StringChoice
@@ -266,6 +268,15 @@ class Entity(models.Model):
         :return: A string name
         """
         return self.uuid
+
+    @classmethod
+    def make_search_by_name(cls, term):
+        """
+        Return a query object for the most common name related to the model.
+        :param term: String term to search for
+        :return: A query object
+        """
+        return Q(uuid__startswith=term)
 
 
 class EventMessage(models.Model):

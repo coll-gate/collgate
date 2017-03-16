@@ -182,10 +182,9 @@ class FixtureManager:
             for panel in v['panels']:
                 descriptor_model_id = self.get_descriptor_model_id(panel['descriptor_model_name'])
 
-                panel_name = "%i_%i" % (descriptor_meta_model.id, descriptor_model_id)
-
                 panel_model, created = DescriptorPanel.objects.update_or_create(
-                    name=panel_name,
+                    descriptor_meta_model=descriptor_meta_model,
+                    descriptor_model_id=descriptor_model_id,
                     defaults={
                         'descriptor_meta_model': descriptor_meta_model,
                         'descriptor_model_id': descriptor_model_id,

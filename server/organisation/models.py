@@ -80,7 +80,9 @@ class Organisation(DescribableEntity):
             }
 
     def audit_delete(self, user):
-        return {}
+        return {
+            'name': self.name
+        }
 
     def in_usage(self):
         return self.establishments.all().exists()
@@ -146,7 +148,9 @@ class Establishment(DescribableEntity):
             }
 
     def audit_delete(self, user):
-        return {}
+        return {
+            'name': self.name
+        }
 
 
 class GRCManager(models.Manager):

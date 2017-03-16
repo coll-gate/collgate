@@ -30,10 +30,9 @@ def fixture(fixture_manager):
         # insert/update data
         for lang, values in data.items():
             for code, value in values.items():
-                DescriptorValue.objects.update_or_create(name="%s:%s" % (code, lang), defaults={
+                DescriptorValue.objects.update_or_create(code=code, language=lang, defaults={
                     'descriptor_id': descriptor_type_id,
-                    'name': "%s:%s" % (code, lang),
-                    'language': lang,
                     'code': code,
+                    'language': lang,
                     'value0': value
                 })

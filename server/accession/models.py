@@ -5,8 +5,10 @@
 """
 coll-gate accession module models.
 """
+
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 
@@ -61,6 +63,10 @@ class Accession(DescribableEntity):
     def natural_name(self):
         return self.name
 
+    @classmethod
+    def make_search_by_name(cls, term):
+        return Q(name__istartswith=term)
+
     def audit_create(self, user):
         return {
             'name': self.name,
@@ -99,7 +105,9 @@ class Accession(DescribableEntity):
             }
 
     def audit_delete(self, user):
-        return {}
+        return {
+            'name': self.name
+        }
 
 
 class AccessionSynonym(Entity):
@@ -201,7 +209,9 @@ class AccessionSynonym(Entity):
             }
 
     def audit_delete(self, user):
-        return {}
+        return {
+            'name': self.name
+        }
 
 
 class Batch(DescribableEntity):
@@ -262,7 +272,9 @@ class Batch(DescribableEntity):
             }
 
     def audit_delete(self, user):
-        return {}
+        return {
+            'name': self.name
+        }
 
 
 class Sample(DescribableEntity):
@@ -314,7 +326,9 @@ class Sample(DescribableEntity):
             }
 
     def audit_delete(self, user):
-        return {}
+        return {
+            'name': self.name
+        }
 
 
 class BatchActionType(ChoiceEnum):
