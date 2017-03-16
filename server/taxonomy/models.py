@@ -129,7 +129,9 @@ class Taxon(Entity):
             }
 
     def audit_delete(self, user):
-        return {}
+        return {
+            'name': self.name
+        }
 
     def in_usage(self):
         from django.apps import apps
@@ -196,7 +198,9 @@ class TaxonSynonym(Entity):
             }
 
     def audit_delete(self, user):
-        return {}
+        return {
+            'name': self.name
+        }
 
     def is_primary(self):
         """

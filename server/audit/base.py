@@ -5,6 +5,7 @@
 """
 coll-gate permission REST API
 """
+
 import operator
 
 from django.contrib.auth.models import Permission, User, Group
@@ -44,8 +45,11 @@ def search_audit_for_username(request):
     """
     Search audits entry for a specific username and ordered by timestamp.
     Infinite pagination with cursor returned by next and desc order on timestamp.
+
+    @note This request potentially can do a lot of query in worsts cases such as querying the name directly from
+    the entity itself, and more if the natural_get accessor need to perform some extra queries.
     """
-    results_per_page = int_arg(request.GET.get('more', 30))
+    results_per_page = min(int_arg(request.GET.get('more', 30)), 100)
     cursor = request.GET.get('cursor')
     limit = results_per_page
 
@@ -53,7 +57,8 @@ def search_audit_for_username(request):
 
     if cursor:
         cursor_time, cursor_id = cursor.rsplit('/', 1)
-        qs = Audit.objects.filter(Q(user=user), Q(timestamp__lt=cursor_time) | (Q(timestamp=cursor_time) & Q(id__lt=cursor_id)))
+        qs = Audit.objects.filter(Q(user=user),
+                                  Q(timestamp__lt=cursor_time) | (Q(timestamp=cursor_time) & Q(id__lt=cursor_id)))
     else:
         qs = Audit.objects.filter(user=user)
 
@@ -62,17 +67,23 @@ def search_audit_for_username(request):
     audit_list = []
 
     for audit in audits:
-        fields = json.loads(audit.fields)
+        entity_name = ""
 
-        # name in fields, if not query the entity
-        if 'name' in fields:
-            entity_name = fields['name']
-        else:
-            try:
-                entity = audit.content_type.get_object_for_this_type(id=audit.object_id)
-                entity_name = entity.name
-            except ObjectDoesNotExist:
-                entity_name = ""
+        try:
+            entity = audit.content_type.get_object_for_this_type(id=audit.object_id)
+            entity_name = entity.natural_name()
+        except ObjectDoesNotExist:
+            fields = json.loads(audit.fields)
+
+            # get name in fields if the entity no longer exists, those are the common fields for name
+            if 'name' in fields:
+                entity_name = fields['name']
+            elif 'code' in fields:
+                entity_name = fields['code']
+            elif 'verbose_name' in fields:
+                entity_name = fields['verbose_name']
+            elif 'label' in fields:
+                entity_name = fields['label']
 
         audit_list.append({
             'id': audit.id,
@@ -109,6 +120,10 @@ def search_audit_for_username(request):
 
 @RestAuditSearch.def_auth_request(Method.GET, Format.JSON, parameters=('app_label', 'model', 'object_id'), staff=True)
 def search_audit_for_entity(request):
+    """
+    Search audit entries related to a specific entity according to its content type and unique id.
+    @note Entity.natural_name() could in some cases make an extra query.
+    """
     results_per_page = int_arg(request.GET.get('more', 30))
 
     app_label = request.GET['app_label']
@@ -142,7 +157,7 @@ def search_audit_for_entity(request):
             'type': audit.type,
             'content_type': '.'.join(audit.content_type.natural_key()),
             'object_id': entity.id,
-            'object_name': entity.name,
+            'object_name': entity.natural_name(),
             'fields': json.loads(audit.fields)
         })
 
