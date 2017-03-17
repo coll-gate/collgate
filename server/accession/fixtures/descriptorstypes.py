@@ -24,44 +24,7 @@ DESCRIPTORS = {
             'display_fields': 'value0',
             'sortby_field': 'value0'
         }
-    },
-    'country': {  # @todo remove me
-        'id': None,
-        'name': 'country',
-        'code': 'CO_705',
-        'group': 'common',
-        'can_delete': False,
-        'can_modify': False,
-        'description': 'List of countries with code',
-        'format': {
-            'type': 'enum_pair',
-            'format': 'category',
-            'fields': ['name', 'iso'],
-            'trans': True,
-            'list_type': 'dropdown',
-            'display_fields': 'value0',
-            'sortby_field': 'value0'
-        },
-        'lookup': {}
-    },
-    'city': {  # @todo remove me
-        'id': None,
-        'name': 'city',
-        'code': 'IN_003',
-        'group': 'common',
-        'can_delete': False,
-        'can_modify': False,
-        'description': 'List of cities with location',
-        'format': {
-            'type': 'enum_pair',
-            'format': 'category',
-            'fields': ['name', 'coord'],
-            'trans': True,
-            'list_type': 'autocomplete',
-            'display_fields': 'value0',
-            'sortby_field': 'value0'
-        }
-    },
+    }
 }
 
 

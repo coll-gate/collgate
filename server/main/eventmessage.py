@@ -104,7 +104,7 @@ def delete_event_message(request, evt_id):
     "type": "object",
     "additionalProperties": {
         "type": "string",
-        "maxLength": 256
+        "maxLength": 255
     }
 }, perms={'main.add_eventmessage': _('You are not allowed to create an event message')}
 )

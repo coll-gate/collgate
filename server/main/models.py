@@ -292,4 +292,4 @@ class EventMessage(models.Model):
 
     # message in a JSON text field with an object where key are language code and value
     # are message in locale
-    message = models.TextField()
+    message = models.CharField(max_length=255)

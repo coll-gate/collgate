@@ -23,8 +23,8 @@ var View = Marionette.ItemView.extend({
 
     ui: {
         "view_taxon": ".view-taxon",
-        "taxon_rank": ".taxon-ranks",
-        "change_parent": "span.change-parent"
+        "change_parent": "span.change-parent",
+        "taxon_rank": ".taxon-rank[name=taxon-rank]"
     },
 
     events: {
@@ -39,7 +39,8 @@ var View = Marionette.ItemView.extend({
     onRender: function() {
         application.main.views.languages.htmlFromValue(this.el);
         application.taxonomy.views.taxonSynonymTypes.htmlFromValue(this.el);
-        application.taxonomy.views.taxonRanks.htmlFromValue(this.el);
+        application.taxonomy.views.taxonRanks.elHtmlFromValue(this.ui.taxon_rank);
+        application.taxonomy.views.taxonRanks.attributeFromValue(this.el, 'title');
     },
 
     onViewTaxon: function(e) {

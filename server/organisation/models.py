@@ -177,12 +177,12 @@ class GRC(models.Model):
     IDENTIFIER_VALIDATOR = {"type": "string", "minLength": 1, "maxLength": 256, "pattern": r"^\S+.+\S+$"}
 
     # name of the GRC
-    name = models.CharField(max_length=256, default="Undefined GRC", blank=False)
+    name = models.CharField(max_length=255, default="Undefined GRC", blank=False)
 
     # identifier code or the GRC (@see code view of the FAO http://www.fao.org/wiews)
-    identifier = models.CharField(max_length=256, default="undefined", blank=False)
+    identifier = models.CharField(max_length=255, default="undefined", blank=False)
 
-    # general description
+    # general description (JSON stored dict with multiple languages codes)
     description = models.TextField(default="", blank=True, null=False)
 
     # list of managers organisations

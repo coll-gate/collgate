@@ -24,6 +24,30 @@ DESCRIPTORS = {
         'format': {
             'type': 'geolocation'
         }
+    },
+    'country': {
+        'id': None,
+        'name': 'country',
+        'code': 'GE_002',
+        'group': 'common',
+        'can_delete': False,
+        'can_modify': False,
+        'description': 'Defines a country location.',
+        'format': {
+            'type': 'country'
+        }
+    },
+    'city': {
+        'id': None,
+        'name': 'city',
+        'code': 'GE_003',
+        'group': 'common',
+        'can_delete': False,
+        'can_modify': False,
+        'description': 'Defines a city location.',
+        'format': {
+            'type': 'city'
+        }
     }
 }
 
