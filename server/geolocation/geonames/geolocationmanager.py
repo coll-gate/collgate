@@ -42,9 +42,10 @@ class GeolocationManager(GeolocationInterface):
         values = {
             'maxRow': limit,
             'lang': lang,
-            'FeatureClass': 'P',
+            'featureClass': 'P',
             'username': self.geonames_username,
-            'style' : 'FULL'
+            'style' : 'FULL',
+            'featureCode': []
         }
 
         if len(term) <=2:
@@ -52,9 +53,11 @@ class GeolocationManager(GeolocationInterface):
         else:
             values['name_startsWith'] = term
 
-        data = urlencode(values)
-        data = data.encode('ascii')
+        for fcode in INCLUDE_CITY_TYPES:
+            values['featureCode'].append(str(fcode))
 
+        data = urlencode(values, doseq=True)
+        data = data.encode('ascii')
         r = urlopen(url, data)
         data = json.loads(r.read().decode(r.info().get_param('charset') or 'utf-8'))
 

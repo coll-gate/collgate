@@ -109,8 +109,7 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
 
                                 results.push({
                                     id: data.items[i].geoname_id,
-                                    text: display,
-                                    geoname_id: data.items[i].geoname_id
+                                    text: display
                                 });
 
                             }
@@ -190,7 +189,7 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
                         if (params.next == null) {
                             results.push({
                                 id: 'more',
-                                text: 'Extended search'
+                                text: 'Extended Search'
                             });
                         }
 
@@ -211,11 +210,12 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
                 dropdownParent: container,
                 ajax: selectAjax(false),
                 allowClear: true,
-                minimumInputLength: 3,
+                minimumInputLength: 1,
                 templateResult: formatOption,
                 placeholder: gt.gettext("Enter a value. 3 characters at least for auto-completion")
             };
 
+            var default_option = null;
 
             initSelect2 = function(ajx_mode, reset_mode) {
                 live_mode = ajx_mode || false;
@@ -232,7 +232,7 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
                         params.data = initials;
                         params.ajax = selectAjax(false);
                         select.select2(params);
-                        select.val(default_option.id).trigger('change.select2');
+                        select.val(default_option).trigger('change.select2');
                     } else {
                         params.ajax = selectAjax(false);
                         select.select2(params);
@@ -458,10 +458,6 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
                                 }
 
                                 var results = [];
-
-                                // if(default_option) {
-                                //     results.push(default_option);
-                                // }
 
                                 for (var i = 0; i < data.items.length; ++i) {
 
