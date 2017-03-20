@@ -24,6 +24,7 @@ class Command(BaseCommand):
     help = "Install fixtures for each application."
 
     def handle(self, *args, **options):
+
         colorama.init()
 
         sys.stdout.write(colorama.Fore.RED + "+ Begin transaction...\n" + colorama.Style.RESET_ALL)

@@ -5,10 +5,12 @@
 """
 coll-gate medialibrary models.
 """
+import json
 
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.db.models import Q
+from django.utils import translation
 from django.utils.translation import ugettext_lazy as _
 
 from main.models import Entity
@@ -42,11 +44,41 @@ class Media(Entity):
     # file size in bytes
     file_size = models.PositiveIntegerField(default=0)
 
+    # document label (JSON stored dict with multiple languages codes)
+    label = models.TextField(default="{}", blank=False, null=False)
+
+    # general description (JSON stored dict with multiple languages codes)
+    description = models.TextField(default="{}", blank=False, null=False)
+
+    # copyright text (organisation, authors names...)
+    copyright = models.CharField(max_length=1024, default="", blank=True)
+
+    # year of the document (mostly photo taken year)
+    year = models.IntegerField(null=True, default=None)
+
     class Meta:
         verbose_name = _("media")
 
     def natural_name(self):
         return self.name
+
+    def get_label(self):
+        """
+        Get the label for this panel in the current regional.
+        """
+        data = json.loads(self.label)
+        lang = translation.get_language()
+
+        return data.get(lang, "")
+
+    def get_description(self):
+        """
+        Get the label for this panel in the current regional.
+        """
+        data = json.loads(self.description)
+        lang = translation.get_language()
+
+        return data.get(lang, "")
 
     @classmethod
     def make_search_by_name(cls, term):

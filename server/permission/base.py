@@ -9,6 +9,7 @@ coll-gate permission REST API
 from django.contrib.auth.models import Permission, User, Group
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import SuspiciousOperation
+from django.db import transaction
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
@@ -19,7 +20,7 @@ from guardian.models import UserObjectPermission, GroupObjectPermission
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
 from igdectk.module.manager import module_manager
-from main.models import Entity
+from main.models import Entity, Profile
 
 from .filters import GroupFilter, UserFilter
 from .utils import get_permissions_for
@@ -112,7 +113,7 @@ def get_permission_types(request):
             ignore_list.extend(module.ignored_permission_types)
 
     types = []
-    add = False
+
     for perm in Permission.objects.all().select_related('content_type'):
         pid = "%s.%s.%s" % (perm.content_type.app_label, perm.content_type.model, perm.codename)
         add = True
@@ -442,6 +443,7 @@ def get_user_permissions(request, username):
         "is_superuser": {"type": "boolean", "required": False},
     },
 })
+@transaction.atomic
 def patch_user(request, username):
     user = get_object_or_404(User, username=username)
     update = False
@@ -449,6 +451,12 @@ def patch_user(request, username):
     if 'is_active' in request.data:
         update = True
         user.is_active = request.data['is_active']
+
+        # update the pending state if necessary
+        profile = get_object_or_404(Profile, user=user)
+        if user.is_active and profile.pending:
+            profile.pending = False
+            profile.save()
 
     if 'is_staff' in request.data:
         update = True

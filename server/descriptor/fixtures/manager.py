@@ -9,12 +9,13 @@ Install the initials asset of data for each application that needs it.
 from __future__ import unicode_literals, absolute_import, division
 
 import json
+import os
 import sys
 
 from django.contrib.contenttypes.models import ContentType
 
 from ..models import DescriptorGroup, DescriptorType, DescriptorModel, DescriptorModelType,\
-    DescriptorMetaModel, DescriptorPanel
+    DescriptorMetaModel, DescriptorPanel, DescriptorValue
 
 
 class FixtureManager:
@@ -63,6 +64,13 @@ class FixtureManager:
 
     def get_descriptor_meta_model_id(self, name):
         return self.descriptor_meta_models.get(name, {'id': None})['id']
+
+    def load_json(self, module_name, file_name):
+        handler = open(os.path.join(module_name, 'fixtures', file_name), 'rU')
+        data = json.loads(handler.read())
+        handler.close()
+
+        return data
 
     def create_or_update_groups(self, groups):
         sys.stdout.write("   + Create descriptors types groups...\n")
@@ -199,3 +207,86 @@ class FixtureManager:
 
             # lookup table
             self.set_descriptor_meta_model(meta_model_name, descriptor_meta_model.id)
+
+    def create_or_update_values(self, descriptor_type_name, data, trans=False, inline=False):
+        sys.stdout.write("   + Create descriptors values for %s...\n" % descriptor_type_name)
+
+        descriptor = self.descriptor_types.get(descriptor_type_name)
+
+        if inline:
+            descriptor_values = {}
+
+            if trans:
+                for lang, values in data.items():
+                    values_dict = {}
+
+                    for code, value in values.items():
+                        result = {
+                            'value0': value['value0']
+                        }
+
+                        tmp = value.get('value1')
+                        if tmp:
+                            result['value1'] = tmp
+
+                        tmp = value.get('ordinal')
+                        if tmp:
+                            result['ordinal'] = tmp
+
+                        tmp = value.get('parent')
+                        if tmp:
+                            result['parent'] = tmp
+
+                        values_dict[code] = result
+
+                    descriptor_values[lang] = values_dict
+            else:
+                values_dict = {}
+
+                for code, value in data.items():
+                    result = {
+                        'value0': value['value0']
+                    }
+
+                    tmp = value.get('value1')
+                    if tmp:
+                        result['value1'] = tmp
+
+                    tmp = value.get('ordinal')
+                    if tmp:
+                        result['ordinal'] = tmp
+
+                    tmp = value.get('parent')
+                    if tmp:
+                        result['parent'] = tmp
+
+                    values_dict[code] = result
+
+                descriptor_values = values_dict
+
+            if descriptor is not None and descriptor_values is not None:
+                DescriptorType.objects.filter(name=descriptor['name']).update(values=json.dumps(descriptor_values))
+        else:
+            if trans:
+                for lang, values in data.items():
+                    for code, value in values.items():
+                        DescriptorValue.objects.update_or_create(code=code, language=lang, defaults={
+                            'descriptor_id': descriptor['id'],
+                            'parent': value.get('parent'),
+                            'ordinal': value.get('ordinal'),
+                            'value0': value.get('value0'),
+                            'value1': value.get('value1'),
+                        })
+            else:
+                for code, value in data.items():
+                    DescriptorValue.objects.update_or_create(code=code, language='en', defaults={
+                        'descriptor_id': descriptor['id'],
+                        'parent': value.get('parent'),
+                        'ordinal': value.get('ordinal'),
+                        'value0': value.get('value0'),
+                        'value1': value.get('value1'),
+                    })
+
+            # empty any previous inline values
+            if descriptor is not None:
+                DescriptorType.objects.filter(name=descriptor['name']).update(values="")

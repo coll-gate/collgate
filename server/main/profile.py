@@ -36,8 +36,13 @@ class RestProfileLogout(RestProfile):
     suffix = 'logout'
 
 
+class RestProfileSettings(RestProfile):
+    regex = r'^settings/$'
+    name = 'settings'
+
+
 @RestProfileSignIn.def_request(Method.POST, Format.HTML)
-def profile_signin(request):
+def profile_sign_in(request):
     """
     Login with username and password
     """
@@ -50,19 +55,32 @@ def profile_signin(request):
 
     user = authenticate(username=username, password=password)
     if user:
-        if user.is_active:
+        # check profile before attempt to login
+        profile, created = Profile.objects.get_or_create(user=user, defaults={
+            'pending': not user.is_superuser
+        })
+
+        # first time connection mean pending state excepted for super-users
+        if created and profile.pending:
+            user.is_active = False
+            user.save()
+
+        if profile.pending:
+            messages.add_message(
+                request, messages.INFO, _(
+                    'Your account is pending for activation. Please be patient or contact an administrator.'))
+
+        elif user.is_active:
             login(request, user)
             messages.add_message(
                 request, messages.INFO, _('Successfully logged'))
 
             # expires in 12h
             request.session.set_expiry(12*60*60)
-
-            # profile
-            profile = Profile.objects.get_or_create(user=user)
         else:
             messages.add_message(
-                request, messages.ERROR, _('Unable to login'))
+                request, messages.ERROR, _(
+                    'Your account is closed. Please contact an administrator to re-activate it.'))
     else:
         messages.add_message(
             request, messages.ERROR, _('Invalid username or password'))
@@ -89,6 +107,7 @@ def get_self_profile(request):
     Get current session profile details
     """
     user = get_object_or_404(User, id=request.user.id)
+    profile = get_object_or_404(Profile, user=user)
 
     result = {
         'id': user.id,
@@ -98,7 +117,9 @@ def get_self_profile(request):
         'email': user.email,
         'is_active': user.is_active,
         'is_staff': user.is_staff,
-        'is_superuser': user.is_superuser
+        'is_superuser': user.is_superuser,
+        'organisation': profile.organisation,
+        'settings': json.loads(profile.settings)
     }
 
     return HttpResponseRest(request, result)
@@ -121,5 +142,30 @@ def update_self_profile(request):
     user.last_name = request.data['last_name']
 
     user.save()
+
+    return HttpResponseRest(request, {})
+
+
+@RestProfileSettings.def_auth_request(Method.PATCH, Format.JSON, content={
+    "type": "object",
+    "properties": {
+        "name": {"type": "string", "minLength": 3, "maxLength": 64, "pattern": "^[a-zA-Z\_][a-zA-Z0-9\-\_]+$"},
+        "setting": {"type": "object"},
+    }
+})
+def update_self_settings(request):
+    """
+    Get current session profile details
+    """
+    profile = get_object_or_404(Profile, user=request.user)
+
+    # name of the setting
+    setting_name = request.data['name']
+
+    # validate setting data
+    setting = json.loads(request.data['setting'])
+
+    profile.settings[setting_name] = json.dumps(setting)
+    profile.save()
 
     return HttpResponseRest(request, {})

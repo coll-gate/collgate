@@ -187,6 +187,27 @@ application = new Marionette.Application({
             }
         };
 
+        /**
+         * Update locally and on server a specific user setting object.
+         * @param setting_name Name of the setting object to modify.
+         * @param content Content that replace the older.
+         */
+        this.updateUserSetting = function(setting_name, content) {
+            session.user.settings[setting_name] = content;
+
+            if (session.user.isAuth) {
+                $.ajax({
+                    type: "PATCH",
+                    url: application.baseUrl + 'main/profile/settings/',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: 'json',
+                    data: JSON.stringify({name: setting_name, content: content}),
+                    success: function (data) {
+                    }
+                });
+            }
+        };
+
         // i18n
         i18next.init({
             initImmediate: false,  // avoid setTimeout

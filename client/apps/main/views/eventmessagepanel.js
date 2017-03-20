@@ -50,15 +50,15 @@ var View = Marionette.LayoutView.extend({
             template: require('../templates/eventmessagecreate.html'),
 
             attributes: {
-                id: "dlg_create_event_message",
+                id: "dlg_create_event_message"
             },
 
             ui: {
-                message: "form.messages input",
+                message: "form.messages input"
             },
 
             events: {
-                'input @ui.message': 'onMessageInput',
+                'input @ui.message': 'onMessageInput'
             },
 
             initialize: function (options) {
