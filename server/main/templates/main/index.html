@@ -159,7 +159,8 @@ session.user = {
     id: 0,
     isAuth: false,
     isSuperUser: false,
-    isStaff: false
+    isStaff: false,
+    settings: {}
 };
 
 {% if user.is_authenticated %}
@@ -167,6 +168,7 @@ session.user.id = {{ user.id }};
 session.user.isAuth = true;
 session.user.isSuperUser = {{ user.is_superuser|yesno:"true,false" }};
 session.user.isStaff = {{ user.is_staff|yesno:"true,false" }};
+session.user.settings = {{ profile_settings }};
 {% endif %}
 
 // LTR or RTL language

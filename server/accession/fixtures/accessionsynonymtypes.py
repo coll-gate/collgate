@@ -6,35 +6,11 @@
 Setup the value for the country descriptors.
 """
 
-import json
-import sys
-import os.path
-
-from descriptor.models import DescriptorType
-from .descriptorstypes import DESCRIPTORS
+# from .descriptorstypes import DESCRIPTORS
 
 
 def fixture(fixture_manager):
-    sys.stdout.write("   + Create descriptors values for accession_synonym_types...\n")
+    data = fixture_manager.load_json('accession', 'accessionsynonymtypes.json')
 
-    # load JSON data
-    handler = open(os.path.join('accession', 'fixtures', 'accessionsynonymtypes.json'), 'rU')
-    data = json.loads(handler.read())
-    handler.close()
-
-    descriptor = DESCRIPTORS.get('accession_synonym_types')
-    descriptor_values = {}
-
-    # curate data
-    for lang, values in data.items():
-        values_dict = {}
-
-        for code, value in values.items():
-            values_dict[code] = {
-                'value0': value['name']
-            }
-
-        descriptor_values[lang] = values_dict
-
-    if descriptor is not None and descriptor_values is not None:
-        DescriptorType.objects.filter(name=descriptor['name']).update(values=json.dumps(descriptor_values))
+    # descriptor = DESCRIPTORS.get('accession_synonym_types')
+    fixture_manager.create_or_update_values('accession_synonym_types', data, trans=True, inline=True)

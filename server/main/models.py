@@ -5,7 +5,6 @@
 """
 coll-gate application models.
 """
-
 import re
 import uuid as uuid
 
@@ -25,29 +24,16 @@ class Profile(models.Model):
     Additional information about a user.
     """
 
-    STATE_CREATED = 0
-    STATE_INITIALISED = 1
-    STATE_INFORMED = 2
-    STATE_VERIFIED = 3
-    STATE_CLOSED = 4
-
-    PROFILE_STATES = (
-        (0, STATE_CREATED),
-        (1, STATE_INITIALISED),
-        (2, STATE_INFORMED),
-        (3, STATE_VERIFIED),
-        (4, STATE_CLOSED)
-    )
-
-    # related user
+    # related user model
     user = models.OneToOneField(User)
 
-    # state of the account (to be checked during authentication)
-    state = models.IntegerField(default=STATE_CREATED, choices=PROFILE_STATES)
+    # newly created profile are in pending state
+    pending = models.BooleanField(default=True)
 
-    # information about the company where the user is located
-    company = models.CharField(max_length=127)
+    # information about the organisation where the user is located
+    organisation = models.CharField(max_length=127)
 
+    # comment from an administrator about this user profile
     admin_status = models.CharField(max_length=512)
 
     # user saved settings as JSON object
@@ -56,7 +42,7 @@ class Profile(models.Model):
 
 class Settings(models.Model):
     """
-    IgdecTk application setting table.
+    IGdecTk application setting table.
     """
 
     param_name = models.CharField(max_length=127)
@@ -290,6 +276,5 @@ class EventMessage(models.Model):
     # creation date
     created_date = models.DateTimeField(auto_now_add=True)
 
-    # message in a JSON text field with an object where key are language code and value
-    # are message in locale
-    message = models.CharField(max_length=255)
+    # message in a JSON text field with an object where key are language code and value are message in locale
+    message = models.CharField(max_length=4096)
