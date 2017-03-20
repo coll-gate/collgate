@@ -29,7 +29,7 @@ GeolocationModule.prototype = {
             try {
                 i18next.addResources(session.language, 'default', require('./locale/' + session.language + '/LC_MESSAGES/default.json'));
             } catch (e) {
-                console.warning("No translation found for the current language. Fallback to english language");
+                console.warn("No translation found for the current language. Fallback to english language");
             }
         }
 
@@ -41,7 +41,6 @@ GeolocationModule.prototype = {
         var widgets = [
             'country',
             'city'
-
         ];
 
         for (var i = 0; i < widgets.length; ++i) {

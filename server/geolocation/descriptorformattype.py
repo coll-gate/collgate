@@ -11,6 +11,7 @@ from django.utils.translation import ugettext_lazy as _
 from descriptor.descriptorformattype import DescriptorFormatTypeGroup, DescriptorFormatType
 from geolocation import instance
 
+
 class DescriptorFormatTypeGroupGeolocation(DescriptorFormatTypeGroup):
     """
     Group of geolocation descriptors.
@@ -39,7 +40,6 @@ class DescriptorFormatTypeGeolocation(DescriptorFormatType):
             "country",
         ]
 
-
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         return instance.geolocation_app.geolocation_manager.format_type_validator(value)
 
@@ -62,6 +62,7 @@ class DescriptorFormatTypeGeolocation(DescriptorFormatType):
 
         return None
 
+
 class DescriptorFormatTypeCountry(DescriptorFormatType):
     """
     Specialisation for a country value.
@@ -76,7 +77,6 @@ class DescriptorFormatTypeCountry(DescriptorFormatType):
         self.format_fields = [
             "country"
         ]
-
 
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         return instance.geolocation_app.geolocation_manager.country_format_type_validator(value)
@@ -96,6 +96,7 @@ class DescriptorFormatTypeCountry(DescriptorFormatType):
 
         return None
 
+
 class DescriptorFormatTypeCity(DescriptorFormatType):
     """
     Specialisation for a city value.
@@ -110,7 +111,6 @@ class DescriptorFormatTypeCity(DescriptorFormatType):
         self.format_fields = [
             "city"
         ]
-
 
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         return instance.geolocation_app.geolocation_manager.city_format_type_validator(value)

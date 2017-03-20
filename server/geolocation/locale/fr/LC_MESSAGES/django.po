@@ -1,0 +1,55 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-03-20 14:18+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: descriptorformattype.py:21 descriptorformattype.py:34
+msgid "Geolocation"
+msgstr "Géo-localisation"
+
+#: descriptorformattype.py:76
+msgid "Country"
+msgstr "Pays"
+
+#: descriptorformattype.py:110
+msgid "City"
+msgstr "Ville"
+
+#: geolocation_views.py:380
+msgid "You are not allowed to add a city"
+msgstr "Vous n'êtes pas autorisé à ajouter une ville"
+
+#: geonames/geolocationmanager.py:33
+msgid "the descriptor value must be a referenced country"
+msgstr "La valeur du déscripteur doit faire réference à un pays enregistré"
+
+#: geonames/geolocationmanager.py:39
+msgid "the descriptor value must be a referenced city"
+msgstr "La valeur du descripteur doit faire réference à une ville enregistrée"
+
+#: geonames/geolocationmanager.py:267
+msgid "The geonames feature code is not supported"
+msgstr "Le geonames featureCode n'est pas supporté"
+
+#: geonames/geolocationmanager.py:272
+msgid "The country of this city is not referenced"
+msgstr "Le pays de cette ville n'est pas enregistré"
+
+#: geonames/geolocationmanager.py:291
+msgid "Unable to create the city"
+msgstr "Impossible de créer la ville"

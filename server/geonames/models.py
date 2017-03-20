@@ -35,10 +35,9 @@ class AlternateName(models.Model):
     is_short_name = models.BooleanField(default=False)
 
     def __str__(self):
-        return "(%s, %s, preferred : %s, short : %s)" % (self.language,
-                                                       self.alternate_name,
-                                                       self.is_preferred_name,
-                                                       self.is_short_name)
+        return "(%s, %s, preferred : %s, short : %s)" % (self.language, self.alternate_name,
+                                                         self.is_preferred_name, self.is_short_name)
+
 
 class Country(Base):
     """
@@ -84,7 +83,7 @@ class City(Base):
 # class Point(models.Model):
 #     """
 #     Geolocation point model
-#     """
+#     """*
 #
 #     latitude = models.DecimalField(max_digits=8, decimal_places=5, null=True, blank=True)
 #     longitude = models.DecimalField(max_digits=8, decimal_places=5, null=True, blank=True)

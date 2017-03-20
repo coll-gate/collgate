@@ -12,23 +12,20 @@ from __future__ import unicode_literals
 
 import logging
 import os
-
 import email.utils as eut
-
-try:
-    from urllib.request import urlopen
-    from urllib.parse import urlparse
-except ImportError:
-    from urllib import urlopen
-    from urlparse import urlparse
+from urllib.request import urlopen
+from urllib.parse import urlparse
 
 from .exceptions import SourceFileDoesNotExist
 from geonames.models import State
 
 
 class Downloader(object):
-
     """Geonames data downloader class."""
+
+    def __init__(self):
+        self.src_size = None
+        self.src_last_modified = None
 
     def download(self, source, destination, force=False):
         """Download source file/url to destination."""
@@ -39,7 +36,7 @@ class Downloader(object):
             logger.warning('Download source matches destination file')
             return None, None
 
-        if not self.needs_downloading(source, destination, force):
+        if not self.needs_downloading(source, force):
             logger.warning(
                 'Assuming local download is up to date for %s', source)
             return None, None
@@ -52,7 +49,8 @@ class Downloader(object):
 
         return self.src_size, self.src_last_modified
 
-    def source_matches_destination(self, source, destination):
+    @staticmethod
+    def source_matches_destination(source, destination):
         """Return True if source and destination point to the same file."""
         parsed_source = urlparse(source)
         if parsed_source.scheme == 'file':
@@ -65,17 +63,8 @@ class Downloader(object):
                 return True
         return False
 
-
-    def needs_downloading(self, source, destination, force):
+    def needs_downloading(self, source, force):
         """Return True if source should be downloaded to destination."""
-
-        if force:
-            return True
-
-        try:
-            state = State.objects.get(source=source)
-        except:
-            return True
 
         src_file = urlopen(source)
         self.src_size = int(src_file.headers['content-length'])
@@ -83,7 +72,14 @@ class Downloader(object):
             src_file.headers['last-modified']
         )
 
-        state = State.objects.get(source=source)
+        if force:
+            return True
+
+        try:
+            state = State.objects.get(source=source)
+        except State.DoesNotExist:
+            return True
+
         db_src_time = state.last_modified
         db_src_size = state.size
 

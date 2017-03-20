@@ -9,19 +9,21 @@ coll-gate geolocation manager for cities light
 from django.db.models import Q
 from geolocation.geolocationinterface import GeolocationInterface
 from geonames.models import Country, City, AlternateName
-from geonames.appsettings import USERNAME, INCLUDE_CITY_TYPES, TRANSLATION_LANGUAGES
+from geonames.appsettings import TRANSLATION_LANGUAGES
+from geonames import instance
 from urllib.request import urlopen
 from urllib.parse import urlencode
-import json
+
 from django.core.exceptions import SuspiciousOperation
 from django.utils.translation import ugettext_lazy as _
 from igdectk.rest.handler import *
-from django.db import transaction
+from django.db import transaction, Error
+
 
 class GeolocationManager(GeolocationInterface):
-
     def __init__(self):
-        self.geonames_username = USERNAME
+        self.geonames_username = instance.geonames_username
+        self.geonames_allowed_city_types = instance.geonames_include_city_types
         self.geonames_url = 'http://api.geonames.org/'
 
     def country_format_type_validator(self, value):
@@ -38,44 +40,50 @@ class GeolocationManager(GeolocationInterface):
 
     def search_cities_online(self, limit, lang, term=None):
 
-        url = self.geonames_url + 'searchJSON'
+        web_service_url = self.geonames_url + 'searchJSON'
         values = {
             'maxRow': limit,
             'lang': lang,
             'featureClass': 'P',
             'username': self.geonames_username,
-            'style' : 'FULL',
+            'style': 'FULL',
             'featureCode': []
         }
 
-        if len(term) <=2:
+        if len(term) <= 2:
             values['name_equals'] = term
         else:
             values['name_startsWith'] = term
 
-        for fcode in INCLUDE_CITY_TYPES:
+        for fcode in self.geonames_allowed_city_types:
             values['featureCode'].append(str(fcode))
 
-        data = urlencode(values, doseq=True)
-        data = data.encode('ascii')
-        r = urlopen(url, data)
+        get_data = urlencode(values, doseq=True)
+        get_data = get_data.encode('ascii')
+
+        r = urlopen(web_service_url, get_data)
         data = json.loads(r.read().decode(r.info().get_param('charset') or 'utf-8'))
 
         results = []
 
-        for city in data['geonames']:
+        if data.get('status', False):
+            raise Exception(data.get('status').get('message'))
+
+        for city in data.get('geonames'):
+
             alt_name = []
             preferred = []
             short = []
 
-            if 'alternateNames' in city:
-                for name in city['alternateNames']:
-                    if name['lang'] != lang:
+            if city.get('alternateNames', False):
+                for name in city.get('alternateNames'):
+
+                    if name.get('lang') != lang:
                         continue
 
-                    if 'isPreferredName' in name and name['isPreferredName']:
+                    if name.get('isPreferredName', False):
                         preferred.append(name['name'])
-                    if 'isShortName' in name and name['isShortName']:
+                    if name.get('isShortName'):
                         short.append(name['name'])
                     else:
                         alt_name.append(name['name'])
@@ -83,8 +91,8 @@ class GeolocationManager(GeolocationInterface):
             result = {
                 'geoname_id': city['geonameId'],
                 'name': city['name'],
-                'lat': city['lat'],
-                'long': city['lng'],
+                'lat': city.get('lat'),
+                'long': city.get('lng'),
                 'country_geoname_id': city['countryId'],
                 'country_name': city['countryName'],
                 'alt_name': ','.join(alt_name),
@@ -94,7 +102,6 @@ class GeolocationManager(GeolocationInterface):
             results.append(result)
 
         return results
-
 
     def get_countries(self, cursor, limit, lang, term=None):
 
@@ -108,7 +115,7 @@ class GeolocationManager(GeolocationInterface):
 
         tqs = qs.distinct().order_by('name', 'id')[:limit]
 
-        results= []
+        results = []
         for country in tqs:
             alt_name = []
             preferred = []
@@ -122,14 +129,14 @@ class GeolocationManager(GeolocationInterface):
                     alt_name.append(name.alternate_name)
 
             result = {
-                'cou_id'     : country.pk,
-                'geoname_id' : country.geoname_id,
-                'name'       : country.name,
-                'code2'      : country.code2,
-                'code3'      : country.code3,
-                'lat'        : country.latitude,
-                'long'       : country.longitude,
-                'alt_name'   : ', '.join(alt_name),
+                'cou_id': country.pk,
+                'geoname_id': country.geoname_id,
+                'name': country.name,
+                'code2': country.code2,
+                'code3': country.code3,
+                'lat': country.latitude,
+                'long': country.longitude,
+                'alt_name': ', '.join(alt_name),
                 'preferred_name': ', '.join(preferred),
                 'short_name': ', '.join(short)
             }
@@ -137,9 +144,9 @@ class GeolocationManager(GeolocationInterface):
 
         return results
 
-    def get_country(self, id, lang):
+    def get_country(self, country_id, lang):
 
-        c = Country.objects.get(id=id)
+        c = Country.objects.get(id=country_id)
         alt_name = []
         preferred = []
         short = []
@@ -152,14 +159,14 @@ class GeolocationManager(GeolocationInterface):
                 alt_name.append(name.alternate_name)
 
         result = {
-            'cou_id'     : c.pk,
-            'geoname_id' : c.geoname_id,
-            'name'       : c.name,
-            'code2'      : c.code2,
-            'code3'      : c.code3,
-            'lat'        : c.latitude,
-            'long'       : c.longitude,
-            'alt_name'   : ', '.join(alt_name),
+            'cou_id': c.pk,
+            'geoname_id': c.geoname_id,
+            'name': c.name,
+            'code2': c.code2,
+            'code3': c.code3,
+            'lat': c.latitude,
+            'long': c.longitude,
+            'alt_name': ', '.join(alt_name),
             'preferred_name': ', '.join(preferred),
             'short_name': ', '.join(short)
         }
@@ -175,13 +182,13 @@ class GeolocationManager(GeolocationInterface):
 
         if term is not None:
             if len(term) <= 2:
-                qs = qs.filter(Q(alt_names__alternate_name=term) | Q(name=term))
+                qs = qs.filter(Q(alt_names__alternate_name__iexact=term) | Q(name__iexact=term))
             else:
                 qs = qs.filter(Q(alt_names__alternate_name__istartswith=term) | Q(name__istartswith=term))
 
         tqs = qs.distinct().order_by('name', 'id')[:limit]
 
-        results= []
+        results = []
         for city in tqs:
             alt_name = []
             preferred = []
@@ -195,13 +202,13 @@ class GeolocationManager(GeolocationInterface):
                     alt_name.append(name.alternate_name)
 
             result = {
-                'cit_id'     : city.pk,
-                'geoname_id' : city.geoname_id,
-                'name'       : city.name,
-                'lat'        : city.latitude,
-                'long'       : city.longitude,
-                'alt_name'   : ','.join(alt_name),
-                'cou_id' : city.country_id,
+                'cit_id': city.pk,
+                'geoname_id': city.geoname_id,
+                'name': city.name,
+                'lat': city.latitude,
+                'long': city.longitude,
+                'alt_name': ','.join(alt_name),
+                'cou_id': city.country_id,
                 'preferred_name': ', '.join(preferred),
                 'short_name': ', '.join(short)
             }
@@ -209,9 +216,9 @@ class GeolocationManager(GeolocationInterface):
 
         return results
 
-    def get_city(self, id, lang):
+    def get_city(self, city_id, lang):
 
-        c = City.objects.get(id=id)
+        c = City.objects.get(id=city_id)
         alt_name = []
         preferred = []
         short = []
@@ -224,13 +231,13 @@ class GeolocationManager(GeolocationInterface):
                 alt_name.append(name.alternate_name)
 
         result = {
-            'cit_id'     : c.pk,
-            'geoname_id' : c.geoname_id,
-            'name'       : c.name,
-            'lat'        : c.latitude,
-            'long'       : c.longitude,
-            'alt_name'   : ','.join(alt_name),
-            'cou_id' : c.country_id,
+            'cit_id': c.pk,
+            'geoname_id': c.geoname_id,
+            'name': c.name,
+            'lat': c.latitude,
+            'long': c.longitude,
+            'alt_name': ','.join(alt_name),
+            'cou_id': c.country_id,
             'preferred_name': ', '.join(preferred),
             'short_name': ', '.join(short)
         }
@@ -240,7 +247,7 @@ class GeolocationManager(GeolocationInterface):
     @transaction.atomic
     def create_city(self, geoname_id, lang):
 
-        url = self.geonames_url + 'getJSON'
+        web_service_url = self.geonames_url + 'getJSON'
         values = {
             'geonameId': geoname_id,
             'username': self.geonames_username,
@@ -250,30 +257,29 @@ class GeolocationManager(GeolocationInterface):
         data = urlencode(values)
         data = data.encode('ascii')
 
-        r = urlopen(url, data)
+        r = urlopen(web_service_url, data)
         data = json.loads(r.read().decode(r.info().get_param('charset') or 'utf-8'))
 
+        if data.get('status', False):
+            raise Exception(data.get('status').get('message'))
 
-        if data['fcode'] not in INCLUDE_CITY_TYPES:
-            raise SuspiciousOperation(_("The geonmes feature code is not supported"))
+        if data.get('fcode') not in self.geonames_allowed_city_types:
+            raise SuspiciousOperation(_("The geonames feature code is not supported"))
 
         try:
-            country = Country.objects.get(geoname_id=int_arg(data['countryId']))
-        except:
+            country = Country.objects.get(geoname_id=int_arg(data.get('countryId')))
+        except Error:
             raise SuspiciousOperation(_("The country of this city is not referenced"))
 
-        try:
-            lat = float(data['lat'])
-            long = float(data['lng'])
-            population = int_arg(data['population'])
-        except:
-            raise SuspiciousOperation(_("The geolocation data are not supported"))
+        lat = float(data.get('lat'))
+        long = float(data.get('lng'))
+        population = int_arg(data.get('population'))
 
         try:
             city, value = City.objects.get_or_create(
-                geoname_id = int_arg(geoname_id),
-                country_id = country.id,
-                defaults = {
+                geoname_id=int_arg(geoname_id),
+                country_id=country.id,
+                defaults={
                     'name': data['name'],
                     'latitude': lat,
                     'longitude': long,
@@ -281,41 +287,30 @@ class GeolocationManager(GeolocationInterface):
                     'feature_code': data['fcode']
                 }
             )
-        except:
-            raise SuspiciousOperation(_("Unable to create the city"))
+        except Error:
+            raise Exception(_("Unable to create the city"))
 
+        if value and data.get('alternateNames'):
 
-        if value and 'alternateNames' in data:
+            for city_alt_name in data.get('alternateNames'):
 
-            for city_alt_name in data['alternateNames']:
-
-                try:
-                    if city_alt_name['lang'] not in TRANSLATION_LANGUAGES:
-                        continue
-                except:
+                if city_alt_name.get('lang') not in TRANSLATION_LANGUAGES:
                     continue
 
-                try:
-                    is_preferred = bool(city_alt_name['isPreferredName'])
-                except:
-                    is_preferred = False
-
-                try:
-                    is_short = bool(city_alt_name['isShortName'])
-                except:
-                    is_short = False
+                is_preferred = city_alt_name.get('isPreferredName', False) is 'true'
+                is_short = city_alt_name.get('isShortName', False) is 'true'
 
                 try:
                     alt_name = AlternateName.objects.create(
                         language=city_alt_name['lang'],
-                        alternate_name=city_alt_name['name'],
+                        alternate_name=city_alt_name.get('name'),
                         is_preferred_name=is_preferred,
                         is_short_name=is_short
                     )
 
                     city.alt_names.add(alt_name)
 
-                except:
+                except Error:
                     continue
 
         city = City.objects.get(id=city.id)
@@ -329,7 +324,6 @@ class GeolocationManager(GeolocationInterface):
                 short.append(name.alternate_name)
             else:
                 alt_names.append(name.alternate_name)
-
 
         result = {
             'cit_id': city.id,

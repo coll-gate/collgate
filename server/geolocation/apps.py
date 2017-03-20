@@ -33,7 +33,7 @@ class CollGateGeolocation(ApplicationMain):
 
         package_name, module_name, class_name = self.get_setting('geolocation_manager').split('.')
 
-        module = import_module(self.name +'.'+ package_name + '.' + module_name)
+        module = import_module(self.name + '.' + package_name + '.' + module_name)
 
         self.geolocation_manager = module.GeolocationManager()
 
