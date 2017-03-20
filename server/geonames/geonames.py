@@ -34,30 +34,28 @@ class Geonames(object):
         destination_file_name = source.split('/')[-1]
         self.file_path = os.path.join(DATA_DIR, destination_file_name)
 
-        try:
-            self.size, self.last_modified = self.download(
-                url=source,
-                path=self.file_path,
-                force=force
-            )
+        self.size, self.last_modified = self.download(
+            url=source,
+            path=self.file_path,
+            force=force
+        )
 
-            if not self.size:
-                self.need_run = False
-                return
+        if not self.size:
+            self.need_run = False
+            return
 
-        except:
-            if not os.path.exists(self.file_path):
-                raise FileNotFoundError
+        if not os.path.exists(self.file_path):
+            raise FileNotFoundError
 
-            self.size = os.stat(self.file_path).st_size
-            self.last_modified = timezone.localtime(
-                timezone.make_aware(timezone.datetime.utcfromtimestamp(os.path.getmtime(self.file_path)))
-            )
+        self.size = os.stat(self.file_path).st_size
+        self.last_modified = timezone.localtime(
+            timezone.make_aware(timezone.datetime.utcfromtimestamp(os.path.getmtime(self.file_path)))
+        )
 
-            if not self._need_load_file(self.source) and force:
-                self.need_run = False
-                print('Data are up to date for %s' % self.source)
-                return
+        if not self._need_load_file(self.source) and force:
+            self.need_run = False
+            print('Data are up to date for %s' % self.source)
+            return
 
         self.need_run = True
 
@@ -75,7 +73,8 @@ class Geonames(object):
         self.file_path = os.path.join(
             DATA_DIR, destination_file_name)
 
-    def download(self, url, path, force=False):
+    @staticmethod
+    def download(url, path, force=False):
         """
         Download the source file if is not up to date or if the force param is true
         :param url: url of the source file
@@ -112,7 +111,6 @@ class Geonames(object):
             file = open(self.file_path, 'r')
         else:
             file = open(self.file_path, encoding='utf-8', mode='r')
-        line = True
 
         for line in file:
             if not six.PY3:
@@ -150,7 +148,7 @@ class Geonames(object):
 
         res = State.objects.update_or_create(
             source=self.source,
-            defaults={'last_modified': self.last_modified , 'size': self.size }
+            defaults={'last_modified': self.last_modified, 'size': self.size}
         )
         return res
 
@@ -158,12 +156,10 @@ class Geonames(object):
         """
         Deletes source file from filesystem
         """
-        try:
-            os.remove(self.file_path)
-            if self.source.split('.')[-1] == 'zip':
-                os.remove(self.file_path.replace('txt', 'zip'))
-        except:
-            return False
+
+        os.remove(self.file_path)
+        if self.source.split('.')[-1] == 'zip':
+            os.remove(self.file_path.replace('txt', 'zip'))
 
         return True
 
@@ -176,10 +172,9 @@ class Geonames(object):
 
         try:
             state = State.objects.get(source=source)
-        except:
+        except State.DoesNotExist:
             return True
 
-        state = State.objects.get(source=source)
         db_src_time = timezone.localtime(state.last_modified)
         db_src_size = state.size
 

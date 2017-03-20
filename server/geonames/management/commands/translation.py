@@ -11,7 +11,9 @@ from geonames.geonames import Geonames
 from django.db import transaction
 
 import progressbar
-import resource, sys, os
+import resource
+import sys
+import os
 from django.utils import timezone
 from colorama import Fore, Style
 
@@ -27,6 +29,15 @@ class Command(BaseCommand):
     help = """Download all files in GEONAMES_TRANSLATION_SOURCES if they were updated or if
     --force option was used.
     And Import translation data if they were downloaded."""
+
+    def __init__(self):
+        super(Command, self).__init__()
+        self.progress_enabled = False
+        self.progress_widgets = None
+        self.progress = 0
+        self.force = False
+        self.export = False
+        self.delete = False
 
     def add_arguments(self, parser):
         # Named (optional) arguments
@@ -46,18 +57,18 @@ class Command(BaseCommand):
         )
         parser.add_argument(
             '-e', '--export',
-            dest = 'export',
+            dest='export',
             action='store',
             default=False,
             nargs='?',
-            help = 'Export files with matching data only. Absolute path to export file'
+            help='Export files with matching data only. Absolute path to export file'
         )
         parser.add_argument(
             '-d', '--delete',
-            dest = 'delete',
+            dest='delete',
             action='store_true',
             default=False,
-            help = 'Delete local source files after importation'
+            help='Delete local source files after importation'
         )
 
     def progress_init(self):
@@ -112,16 +123,15 @@ class Command(BaseCommand):
         self.export = options.get('export')
         self.force = options.get('force')
 
-        if self.export == None:
+        if self.export is None:
             self.export = '%s/alt_name_light_%s.txt' % (DATA_DIR,
                                                         timezone.now().isoformat('_')
-                                                        .replace(':','-')
-                                                        .replace('.','-'))
+                                                        .replace(':', '-')
+                                                        .replace('.', '-'))
 
         self.delete = options.get('delete')
 
         self.progress_init()
-
 
         if self.export:
             file_path = self.export
@@ -131,8 +141,7 @@ class Command(BaseCommand):
             else:
                 print('Creating %s' % file_path)
 
-            export_file =  open(file_path, 'a')
-
+            export_file = open(file_path, 'a')
 
         for source in TRANSLATION_SOURCES:
 
@@ -163,7 +172,6 @@ class Command(BaseCommand):
 
             geonames.finish(delete=self.delete)
 
-
     def translation_import(self, items):
 
         if items[IAlternate.language] not in TRANSLATION_LANGUAGES:
@@ -172,26 +180,24 @@ class Command(BaseCommand):
         try:
             if bool(items[IAlternate.isHistoric]):
                 return False
-        except:
+        except IndexError:
             pass
 
         try:
             if bool(items[IAlternate.isColloquial]):
                 return False
-        except:
+        except IndexError:
             pass
-
 
         try:
             is_preferred = bool(items[IAlternate.isPreferred])
-        except:
+        except IndexError:
             is_preferred = False
 
         try:
             is_short = bool(items[IAlternate.isShort])
-        except:
+        except IndexError:
             is_short = False
-
 
         try:
             city = City.objects.get(geoname_id=items[IAlternate.geonameid])
@@ -199,8 +205,8 @@ class Command(BaseCommand):
                 language=items[IAlternate.language],
                 alternate_name=items[IAlternate.name],
                 defaults={
-                    'is_preferred_name' : is_preferred,
-                    'is_short_name'     : is_short
+                    'is_preferred_name': is_preferred,
+                    'is_short_name': is_short
                 }
             )
 
@@ -211,7 +217,9 @@ class Command(BaseCommand):
 
             return True
 
-        except:
+        except City.DoesNotExist:
+            pass
+        except AlternateName.DoseNotExist:
             pass
 
         try:
@@ -220,8 +228,8 @@ class Command(BaseCommand):
                 language=items[IAlternate.language],
                 alternate_name=items[IAlternate.name],
                 defaults={
-                    'is_preferred_name' : is_preferred,
-                    'is_short_name'     : is_short
+                    'is_preferred_name': is_preferred,
+                    'is_short_name': is_short
                 }
             )
             if not value:
@@ -231,7 +239,9 @@ class Command(BaseCommand):
 
             return True
 
-        except:
+        except Country.DoesNotExist:
+            pass
+        except AlternateName.DoseNotExist:
             pass
 
         return False

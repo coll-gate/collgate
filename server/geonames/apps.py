@@ -11,13 +11,27 @@ from igdectk.module.module import Module
 from igdectk.module.manager import module_manager
 
 from geolocation.apps import CollGateGeolocation
+from . import instance
 
 
 class CollGateGeonames(ApplicationMain):
     name = '.'.join(__name__.split('.')[0:-1])
 
+    def __init__(self, app_name, app_module):
+        super(CollGateGeonames, self).__init__(app_name, app_module)
+        self.geonames_username = None
+        self.geonames_include_city_types = None
+
     def ready(self):
         super().ready()
+
+        instance.geonames_app = self
+
+        self.geonames_username = self.get_setting('geonames_username')
+        self.geonames_include_city_types = self.get_setting('geonames_include_city_types')
+
+        instance.geonames_include_city_types = self.geonames_include_city_types
+        instance.geonames_username = self.geonames_username
 
         # ignore list from content types
         audit_module = module_manager.get_module('audit')

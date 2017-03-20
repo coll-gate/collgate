@@ -11,7 +11,9 @@ from geonames.geonames import Geonames
 from django.db import transaction
 
 import progressbar
-import resource, sys, os
+import resource
+import sys
+import os
 from django.utils import timezone
 from colorama import Fore, Style
 
@@ -22,10 +24,20 @@ class MemoryUsageWidget(progressbar.widgets.WidgetBase):
             return '%s kB' % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
         return '?? kB'
 
+
 class Command(BaseCommand):
     help = """Download all files in GEONAMES_COUNTRY_SOURCES if they were updated or if
     --force option was used.
     And Import country data if they were downloaded."""
+
+    def __init__(self):
+        super(Command, self).__init__()
+        self.progress_enabled = False
+        self.progress_widgets = None
+        self.progress = 0
+        self.force = False
+        self.export = False
+        self.delete = False
 
     def add_arguments(self, parser):
         # Named (optional) arguments
@@ -45,18 +57,18 @@ class Command(BaseCommand):
         )
         parser.add_argument(
             '-e', '--export',
-            dest = 'export',
+            dest='export',
             action='store',
             default=False,
             nargs='?',
-            help = 'Export files with matching data only. Absolute path to export file'
+            help='Export files with matching data only. Absolute path to export file'
         )
         parser.add_argument(
             '-d', '--delete',
-            dest = 'delete',
+            dest='delete',
             action='store_true',
             default=False,
-            help = 'Delete local source files after importation'
+            help='Delete local source files after importation'
         )
 
     def progress_init(self):
@@ -111,11 +123,11 @@ class Command(BaseCommand):
         self.export = options.get('export')
         self.force = options.get('force')
 
-        if self.export == None:
+        if self.export is None:
             self.export = '%s/country_light_%s.txt' % (DATA_DIR,
-                                                        timezone.now().isoformat('_')
-                                                        .replace(':', '-')
-                                                        .replace('.', '-'))
+                                                       timezone.now().isoformat('_')
+                                                       .replace(':', '-')
+                                                       .replace('.', '-'))
 
         self.delete = options.get('delete')
 
@@ -129,7 +141,7 @@ class Command(BaseCommand):
             else:
                 print('Creating %s' % file_path)
 
-            export_file =  open(file_path, 'a')
+            export_file = open(file_path, 'a')
 
         for source in COUNTRY_SOURCES:
 
@@ -161,24 +173,24 @@ class Command(BaseCommand):
             geonames.finish(delete=self.delete)
 
     def country_import(self, items):
-
         x, v = Country.objects.update_or_create(
-            geoname_id = items[ICountry.geonameid],
-            defaults= {
-                'code2' : items[ICountry.code],
-                'name' : items[ICountry.name],
-                'phone' : items[ICountry.phone].replace('+', ''),
-                'code3' : items[ICountry.code3],
-                'continent' : items[ICountry.continent]
+            geoname_id=items[ICountry.geonameid],
+            defaults={
+                'code2': items[ICountry.code],
+                'name': items[ICountry.name],
+                'phone': items[ICountry.phone].replace('+', ''),
+                'code3': items[ICountry.code3],
+                'continent': items[ICountry.continent]
             }
         )
 
         if not self.progress_enabled:
-            print(self.display_added_country(v,x))
+            print(self.display_added_country(v, x))
 
         return True
 
-    def display_added_country(self, added, country):
+    @staticmethod
+    def display_added_country(added, country):
 
         if not added:
             display_status = Fore.RED

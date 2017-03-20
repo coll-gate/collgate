@@ -11,6 +11,9 @@ from django.conf import settings
 
 # Default settings of the application
 APP_DB_DEFAULT_SETTINGS = {
+    'geonames_username': '"demo"',
+    'geonames_include_city_types': ['PPL', 'PPLA', 'PPLA2', 'PPLA3', 'PPLA', 'PPLC',
+                                    'PPLF', 'PPLG', 'PPLL', 'PPLR', 'PPLS', 'STLMT']
 }
 
 APP_VERBOSE_NAME = "Coll-Gate :: Geolocation"
@@ -22,27 +25,20 @@ HTTP_TEMPLATE_STRING = "main/%s.html"  # lookup into the main module
 
 APP_VERSION = (0, 1, 0)
 
-
 COUNTRY_SOURCES = getattr(settings, 'GEONAMES_COUNTRY_SOURCES',
-    ['http://download.geonames.org/export/dump/countryInfo.txt'])
+                          ['http://download.geonames.org/export/dump/countryInfo.txt'])
 CITY_SOURCES = getattr(settings, 'GEONAMES_CITY_SOURCES',
-    ['http://download.geonames.org/export/dump/cities15000.zip'])
+                       ['http://download.geonames.org/export/dump/cities15000.zip'])
 TRANSLATION_SOURCES = getattr(settings, 'GEONAMES_TRANSLATION_SOURCES',
-    ['http://download.geonames.org/export/dump/alternateNames.zip'])
-TRANSLATION_LANGUAGES = getattr(settings, 'GEONAMES_TRANSLATION_LANGUAGES',
-    ['en', 'fr'])
+                              ['http://download.geonames.org/export/dump/alternateNames.zip'])
+
+TRANSLATION_LANGUAGES = []
+for lang in getattr(settings, 'LANGUAGES', (('en', 'English'),)):
+    TRANSLATION_LANGUAGES.append(lang[0])
 
 DATA_DIR = getattr(settings, 'GEONAMES_DATA_DIR',
-    os.path.normpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data')))
+                   os.path.normpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data')))
 
-INCLUDE_CITY_TYPES = getattr(
-    settings,
-    'GEONAMES_INCLUDE_CITY_TYPES',
-    ['PPL', 'PPLA', 'PPLA2', 'PPLA3', 'PPLA', 'PPLC',
-     'PPLF', 'PPLG', 'PPLL', 'PPLR', 'PPLS', 'STLMT']
-)
-
-USERNAME = getattr(settings, 'GEONAMES_USERNAME', 'demo')
 
 class ICountry:
     """
@@ -67,6 +63,7 @@ class ICountry:
     geonameid = 16
     neighbours = 17
     equivalentFips = 18
+
 
 class IRegion:
     """

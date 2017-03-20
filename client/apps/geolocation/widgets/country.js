@@ -1,5 +1,11 @@
 /**
- * Created by mboulnemour on 23/02/17.
+ * @file country.js
+ * @brief Geolocation country widget
+ * @author Medhi BOULNEMOUR
+ * @date 2017-02-23
+ * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+ * @license @todo
+ * @details
  */
 
 var DescriptorFormatType = require('../../descriptor/widgets/descriptorformattype');
@@ -17,7 +23,6 @@ _.extend(CountryType.prototype, DescriptorFormatType.prototype, {
         readOnly || (readOnly = false);
 
         if (readOnly) {
-
             var input = this._createStdInput(parent, "glyphicon-map-marker");
 
             this.parent = parent;
@@ -27,6 +32,7 @@ _.extend(CountryType.prototype, DescriptorFormatType.prototype, {
         } else {
             var select = $('<select style="width: 100%;"></select>');
             parent.append(select);
+            this.group = this._createInputGroup(parent, "glyphicon-map-marker", select);
 
             // init the autocomplete
             var url = application.baseUrl + 'geolocation/country/search';
@@ -63,17 +69,16 @@ _.extend(CountryType.prototype, DescriptorFormatType.prototype, {
 
                         for (var i = 0; i < data.items.length; ++i) {
 
+                            var display = '';
+
                             if (data.items[i].preferred_names) {
-                                display = data.items[i].preferred_names
-                            }
-                            else if (data.items[i].short_names) {
-                                display = data.items[i].short_names
-                            }
-                            else if (data.items[i].display_names) {
-                                display = data.items[i].display_names
-                            }
-                            else {
-                                display = data.items[i].name
+                                display = data.items[i].preferred_names;
+                            } else if (data.items[i].short_names) {
+                                display = data.items[i].short_names;
+                            } else if (data.items[i].display_names) {
+                                display = data.items[i].display_names;
+                            } else {
+                                display = data.items[i].name;
                             }
 
                             results.push({
@@ -136,29 +141,32 @@ _.extend(CountryType.prototype, DescriptorFormatType.prototype, {
         var type = this;
 
         if (this.readOnly && defaultValues) {
+            // defines value as attribute
+            this.el.attr('value', defaultValues);
+
             $.ajax({
                 type: "GET",
                 url: application.baseUrl + 'geolocation/country/' + defaultValues + '/',
                 dataType: 'json'
             }).done(function (data) {
+                var display = '';
 
                 if (data.preferred_names) {
-                    display = data.preferred_names
-                }
-                else if (data.short_names) {
-                    display = data.short_names
-                }
-                else if (data.display_names) {
-                    display = data.display_names
-                }
-                else {
-                    display = data.name
+                    display = data.preferred_names;
+                } else if (data.short_names) {
+                    display = data.short_names;
+                } else if (data.display_names) {
+                    display = data.display_names;
+                } else {
+                    display = data.name;
                 }
 
                 type.el.val(display);
             });
         } else {
             if (definesValues) {
+                // defines value as attribute
+                this.el.attr('value', defaultValues);
 
                 // need to re-init the select2 widget
                 this.el.select2('destroy');
@@ -197,18 +205,16 @@ _.extend(CountryType.prototype, DescriptorFormatType.prototype, {
                             var results = [];
 
                             for (var i = 0; i < data.items.length; ++i) {
+                                var display = '';
 
                                 if (data.items[i].preferred_names) {
-                                    display = data.items[i].preferred_names
-                                }
-                                else if (data.items[i].short_names) {
-                                    display = data.items[i].short_names
-                                }
-                                else if (data.items[i].display_names) {
-                                    display = data.items[i].display_names
-                                }
-                                else {
-                                    display = data.items[i].name
+                                    display = data.items[i].preferred_names;
+                                } else if (data.items[i].short_names) {
+                                    display = data.items[i].short_names;
+                                } else if (data.items[i].display_names) {
+                                    display = data.items[i].display_names;
+                                } else {
+                                    display = data.items[i].name;
                                 }
 
                                 results.push({
@@ -231,34 +237,31 @@ _.extend(CountryType.prototype, DescriptorFormatType.prototype, {
                     placeholder: gt.gettext("Enter a value. 3 characters at least for auto-completion")
                 };
 
-
-
                 // autoselect the initial value
                 $.ajax({
                     type: "GET",
                     url: url + defaultValues + '/',
                     dataType: 'json'
                 }).done(function (data) {
+                    var display = '';
 
                     if (data.preferred_names) {
-                        display = data.preferred_names
-                    }
-                    else if (data.short_names) {
-                        display = data.short_names
-                    }
-                    else if (data.display_names) {
-                        display = data.display_names
-                    }
-                    else {
-                        display = data.name
+                        display = data.preferred_names;
+                    } else if (data.short_names) {
+                        display = data.short_names;
+                    } else if (data.display_names) {
+                        display = data.display_names;
+                    } else {
+                        display = data.name;
                     }
 
                     initials.push({id: data.id, text: display});
-
                     params.data = initials;
-
                     type.el.select2(params);
                     type.el.val(defaultValues).trigger('change');
+
+                    // remove temporary value
+                    type.el.removeAttr('value');
                 });
 
 
@@ -268,14 +271,23 @@ _.extend(CountryType.prototype, DescriptorFormatType.prototype, {
 
     values: function() {
         if (this.el && this.parent) {
-            if (this.el.val() !== "") {
-                var value = parseInt(this.el.val());
+            if (this.readOnly) {
+                var value = parseInt(this.el.attr('value'));
                 return isNaN(value) ? null : value;
             } else {
-                return null;
+                if (this.el.attr('value') !== undefined) {
+                    var value = parseInt(this.el.attr('value'));
+                    return isNaN(value) ? null : value;
+                } else {
+                    if (this.el.val() !== "") {
+                        var value = parseInt(this.el.val());
+                        return isNaN(value) ? null : value;
+                    } else {
+                        return null;
+                    }
+                }
             }
         }
-
         return null;
     },
 
@@ -292,8 +304,69 @@ _.extend(CountryType.prototype, DescriptorFormatType.prototype, {
             default:
                 return false;
         }
-    }
+    },
 
+    bindConditionListener: function(listeners, condition, values) {
+        if (this.el && this.parent && !this.readOnly) {
+            if (!this.bound) {
+                this.el.on("select2:select", $.proxy(this.onValueChanged, this));
+                this.el.on("select2:unselect", $.proxy(this.onValueUnselected, this));
+
+                this.bound = true;
+            }
+
+            this.conditionType = condition;
+            this.conditionValues = values;
+            this.listeners = listeners || [];
+        }
+    },
+
+    onValueChanged: function(e) {
+        var display = this.checkCondition(this.conditionType, this.conditionValues);
+
+        // show or hide the parent element
+        if (display) {
+            for (var i = 0; i < this.listeners.length; ++i) {
+                this.listeners[i].parent.parent().show(true);
+            }
+        } else {
+            for (var i = 0; i < this.listeners.length; ++i) {
+                this.listeners[i].parent.parent().hide(true);
+            }
+        }
+    },
+
+    onValueUnselected: function(e) {
+        var display = false;
+
+        switch (this.conditionType) {
+            case 0:
+                display = true;
+                break;
+            case 1:
+                display = false;
+                break;
+            case 2:
+                display = false;
+                break;
+            case 3:
+                display = false;
+                break;
+            default:
+                break;
+        }
+
+        // show or hide the parent element
+        if (display) {
+            for (var i = 0; i < this.listeners.length; ++i) {
+                this.listeners[i].parent.parent().show(true);
+            }
+        } else {
+            for (var i = 0; i < this.listeners.length; ++i) {
+                this.listeners[i].parent.parent().hide(true);
+            }
+        }
+    }
 });
 
 module.exports = CountryType;

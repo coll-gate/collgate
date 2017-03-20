@@ -6,12 +6,15 @@ Install City
 
 from django.db import transaction
 from django.core.management import BaseCommand
-from geonames.appsettings import CITY_SOURCES, IGeoname, DATA_DIR, INCLUDE_CITY_TYPES
+from geonames.appsettings import CITY_SOURCES, IGeoname, DATA_DIR
+from geonames import instance
 from geonames.models import City, Country
 from geonames.geonames import Geonames
 
 import progressbar
-import resource, sys, os
+import resource
+import sys
+import os
 from django.utils import timezone
 from colorama import Fore, Style
 
@@ -27,6 +30,15 @@ class Command(BaseCommand):
     help = """Download all files in GEONAMES_CITY_SOURCES if they were updated or if
     --force option was used.
     And Import city data if they were downloaded."""
+
+    def __init__(self):
+        super(Command, self).__init__()
+        self.progress_enabled = False
+        self.progress_widgets = None
+        self.progress = 0
+        self.force = False
+        self.export = False
+        self.delete = False
 
     def add_arguments(self, parser):
         # Named (optional) arguments
@@ -46,18 +58,18 @@ class Command(BaseCommand):
         )
         parser.add_argument(
             '-e', '--export',
-            dest = 'export',
+            dest='export',
             action='store',
             default=False,
             nargs='?',
-            help = 'Export files with matching data only. Absolute path to export file'
+            help='Export files with matching data only. Absolute path to export file'
         )
         parser.add_argument(
             '-d', '--delete',
-            dest = 'delete',
+            dest='delete',
             action='store_true',
             default=False,
-            help = 'Delete local source files after importation'
+            help='Delete local source files after importation'
         )
 
     def progress_init(self):
@@ -112,11 +124,11 @@ class Command(BaseCommand):
         self.export = options.get('export')
         self.force = options.get('force')
 
-        if self.export == None:
+        if self.export is None:
             self.export = '%s/city_light_%s.txt' % (DATA_DIR,
-                                                        timezone.now().isoformat('_')
-                                                        .replace(':', '-')
-                                                        .replace('.', '-'))
+                                                    timezone.now().isoformat('_')
+                                                    .replace(':', '-')
+                                                    .replace('.', '-'))
 
         self.delete = options.get('delete')
 
@@ -130,7 +142,7 @@ class Command(BaseCommand):
             else:
                 print('Creating %s' % file_path)
 
-            export_file =  open(file_path, 'a')
+            export_file = open(file_path, 'a')
 
         for source in CITY_SOURCES:
 
@@ -168,13 +180,8 @@ class Command(BaseCommand):
         :return: (bool)
         """
 
-        if not items[IGeoname.featureCode] in INCLUDE_CITY_TYPES:
+        if not items[IGeoname.featureCode] in instance.geonames_include_city_types:
             return False
-
-        try:
-            country_id = self._get_country_id(items[IGeoname.countryCode])
-        except Country.DoesNotExist:
-            raise
 
         try:
             kwargs = dict(name=items[IGeoname.name],
@@ -225,9 +232,9 @@ class Command(BaseCommand):
             return True
 
     def _get_country_id(self, code2):
-        '''
+        """
         Simple lazy identity map for code2->country
-        '''
+        """
         if not hasattr(self, '_country_codes'):
             self._country_codes = {}
 
