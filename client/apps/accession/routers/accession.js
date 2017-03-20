@@ -47,10 +47,10 @@ var Router = Marionette.AppRouter.extend({
         var defaultLayout = new DefaultLayout();
         application.show(defaultLayout);
 
-        var accessionLayout = new AccessionLayout({model: accession});
-
         accession.fetch().then(function() {
             defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Accession"), model: accession}));
+
+            var accessionLayout = new AccessionLayout({model: accession});
             defaultLayout.getRegion('content').show(accessionLayout);
         });
     }

@@ -254,7 +254,7 @@ def accession_change_synonym(request, acc_id, syn_id):
             # or if is the primary name
             elif accession_synonym.is_primary():
                 accession.name = name
-                accession.updated_fields('name')
+                accession.update_field('name')
                 accession.save()
 
             accession_synonym.name = name

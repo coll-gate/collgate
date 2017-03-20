@@ -104,7 +104,7 @@ def create_accession(request):
             # initial synonym GRC code
             grc_code = AccessionSynonym(
                 accession=accession,
-                name=name,
+                name=code,
                 type=AccessionSynonym.TYPE_GRC_CODE,
                 language='en')
             grc_code.save()
@@ -298,6 +298,11 @@ def search_accession(request):
             qs = qs.filter(synonyms__name__iexact=filters['name'])
         elif name_method == 'icontains':
             qs = qs.filter(synonyms__name__icontains=filters['name'])
+    elif 'code' in filters['fields']:
+        if name_method == 'ieq':
+            qs = qs.filter(code__iexact=filters['code'])
+        elif name_method == 'icontains':
+            qs = qs.filter(code__icontains=filters['code'])
 
     qs = qs.prefetch_related(
         Prefetch(

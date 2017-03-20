@@ -39,6 +39,7 @@ var Controller = Marionette.Object.extend({
 
                 ui: {
                     validate: "button.continue",
+                    code: "#accession_code",
                     name: "#accession_name",
                     language: "#accession_language",
                     meta_model: "#meta_model",
@@ -47,6 +48,7 @@ var Controller = Marionette.Object.extend({
 
                 events: {
                     'click @ui.validate': 'onContinue',
+                    'input @ui.code': 'onCodeInput',
                     'input @ui.name': 'onNameInput'
                 },
 
@@ -111,6 +113,39 @@ var Controller = Marionette.Object.extend({
                     CreateAccessionView.__super__.onBeforeDestroy.apply(this);
                 },
 
+                onCodeInput: function () {
+                    var code = this.ui.code.val().trim();
+
+                    if (this.validateCode()) {
+                        var filters = {
+                            method: 'ieq',
+                            fields: ['code'],
+                            'code': code
+                        };
+
+                        $.ajax({
+                            type: "GET",
+                            url: application.baseUrl + 'accession/accession/search/',
+                            dataType: 'json',
+                            contentType: 'application/json; charset=utf8',
+                            data: {filters: JSON.stringify(filters)},
+                            el: this.ui.code,
+                            success: function(data) {
+                                for (var i in data.items) {
+                                    var t = data.items[i];
+
+                                    if (t.value.toUpperCase() == code.toUpperCase()) {
+                                        $(this.el).validateField('failed', gt.gettext('Code of accession already used'));
+                                        return;
+                                    }
+                                }
+
+                                $(this.el).validateField('ok');
+                            }
+                        });
+                    }
+                },
+
                 onNameInput: function () {
                     var name = this.ui.name.val().trim();
 
@@ -129,28 +164,40 @@ var Controller = Marionette.Object.extend({
                             data: {filters: JSON.stringify(filters)},
                             el: this.ui.name,
                             success: function(data) {
-                                if (data.items.length > 0) {
-                                    for (var i in data.items) {
-                                        var t = data.items[i];
+                                for (var i in data.items) {
+                                    var t = data.items[i];
 
-                                        if (t.label.toUpperCase() == name.toUpperCase()) {
-                                            $(this.el).validateField('failed', gt.gettext('Synonym of accession already used'));
-                                            break;
-                                        }
+                                    if (t.type === "AC_001:0000001" && t.label.toUpperCase() == name.toUpperCase()) {
+                                        $(this.el).validateField('failed', gt.gettext('Synonym used as accession code'));
+                                        return;
                                     }
-                                } else {
-                                    $(this.el).validateField('ok');
                                 }
+
+                                $(this.el).validateField('ok');
                             }
                         });
                     }
                 },
 
+                validateCode: function() {
+                    var v = this.ui.code.val().trim();
+
+                    if (v.length > 128) {
+                        $(this.ui.code).validateField('failed', gt.gettext("128 characters max"));
+                        return false;
+                    } else if (v.length < 3) {
+                        $(this.ui.code).validateField('failed', gt.gettext('3 characters min'));
+                        return false;
+                    }
+
+                    return true;
+                },
+
                 validateName: function() {
                     var v = this.ui.name.val().trim();
 
-                    if (v.length > 64) {
-                        $(this.ui.name).validateField('failed', gt.gettext("64 characters max"));
+                    if (v.length > 128) {
+                        $(this.ui.name).validateField('failed', gt.gettext("128 characters max"));
                         return false;
                     } else if (v.length < 3) {
                         $(this.ui.name).validateField('failed', gt.gettext('3 characters min'));
@@ -173,7 +220,9 @@ var Controller = Marionette.Object.extend({
                         valid = false;
                     }
 
-                    if (this.ui.name.hasClass('invalid') || this.ui.parent.hasClass('invalid')) {
+                     if (this.ui.code.hasClass('invalid') ||
+                         this.ui.name.hasClass('invalid') ||
+                         this.ui.parent.hasClass('invalid')) {
                         valid = false;
                     }
 
@@ -184,12 +233,14 @@ var Controller = Marionette.Object.extend({
                     var view = this;
 
                     if (this.validate()) {
+                        var code = this.ui.code.val().trim();
                         var name = this.ui.name.val().trim();
                         var parent = parseInt(this.ui.parent.val());
                         var metaModel = parseInt(this.ui.meta_model.val());
 
                         // create a new local model and open an edit view with this model
                         var model = new AccessionModel({
+                            code: code,
                             name: name,
                             parent: parent,
                             descriptor_meta_model: metaModel,

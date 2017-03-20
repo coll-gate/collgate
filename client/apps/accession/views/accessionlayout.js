@@ -58,7 +58,9 @@ var Layout = Marionette.LayoutView.extend({
         Layout.__super__.initialize.apply(this, arguments);
 
         this.activeTab = undefined;
+
         this.listenTo(this.model, 'change:descriptor_meta_model', this.onDescriptorMetaModelChange, this);
+        // this.listenTo(this.model, 'change', this.onRender, this);
     },
 
     disableSynonymsTab: function () {
@@ -71,6 +73,12 @@ var Layout = Marionette.LayoutView.extend({
 
     disableActionTab: function () {
         this.ui.actions_tab.parent().addClass('disabled');
+    },
+
+    enableTabs: function() {
+        this.ui.synonyms_tab.parent().removeClass('disabled');
+        this.ui.batches_tab.parent().removeClass('disabled');
+        this.ui.actions_tab.parent().removeClass('disabled');
     },
 
     onDescriptorMetaModelChange: function(model, value) {
@@ -97,11 +105,6 @@ var Layout = Marionette.LayoutView.extend({
 
     onRender: function() {
         var accessionLayout = this;
-
-        this.activeTab = this.ui.initial_pane.attr('name');
-
-        this.ui.tabs.on("shown.bs.tab", $.proxy(this.onShowTab, this));
-        this.ui.tabs.on("hide.bs.tab", $.proxy(this.onHideTab, this));
 
         // details view
         if (!this.model.isNew()) {
@@ -133,10 +136,8 @@ var Layout = Marionette.LayoutView.extend({
                 contentBottomLayout.getRegion('bottom').show(new ScrollingMoreView({targetView: batchListView}));
             });
 
-            // if necessary enable tabs
-            this.ui.synonyms_tab.parent().removeClass('disabled');
-            this.ui.batches_tab.parent().removeClass('disabled');
-            this.ui.actions_tab.parent().removeClass('disabled');
+            this.onDescriptorMetaModelChange(this.model, this.model.get('descriptor_meta_model'));
+            this.enableTabs();
         } else {
             // details
             var taxon = new TaxonModel({id: this.model.get('parent')});
@@ -162,6 +163,13 @@ var Layout = Marionette.LayoutView.extend({
             this.disableBatchesTab();
             this.disableActionTab();
         }
+    },
+
+    onBeforeAttach: function() {
+        this.activeTab = this.ui.initial_pane.attr('name');
+
+        this.ui.tabs.on("shown.bs.tab", $.proxy(this.onShowTab, this));
+        this.ui.tabs.on("hide.bs.tab", $.proxy(this.onHideTab, this));
     },
 
     onShowTab: function(e) {
