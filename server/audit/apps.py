@@ -5,6 +5,8 @@
 """
 coll-gate audit application main
 """
+import os
+import sys
 
 from django.utils.translation import ugettext_lazy as _
 
@@ -19,8 +21,46 @@ from igdectk.bootstrap.glyphs import Glyph
 class CollGateAudit(ApplicationMain):
     name = '.'.join(__name__.split('.')[0:-1])
 
+    def get_global_settings(self):
+        from django.conf import settings
+        from django.contrib.auth import get_user_model
+
+        from . import localsettings
+        from . import appsettings
+
+        # default comes from appsettings
+        localsettings.migration_audit = appsettings.AUDIT_MIGRATION['AUDIT']
+        localsettings.migration_username = appsettings.AUDIT_MIGRATION['USERNAME']
+
+        # project setting can overrides
+        if hasattr(settings, 'AUDIT_MIGRATION'):
+            localsettings.migration_audit = settings.AUDIT_MIGRATION.get('AUDIT', True)
+            localsettings.migration_username = settings.AUDIT_MIGRATION.get('USERNAME', 'root')
+
+        # if environment variable is defined, override previous settings
+        var = os.environ.get('COLLGATE_MIGRATION_AUDIT')
+        if var and var == '1':
+            localsettings.migration_audit = True
+
+        var = os.environ.get('COLLGATE_MIGRATION_AUDIT_USERNAME')
+        if var and var != '':
+            localsettings.migration_username = var
+
+        if localsettings.migration_audit:
+            UserModel = get_user_model()
+            localsettings.migration_user = UserModel.objects.get(username=localsettings.migration_username)
+
     def ready(self):
         super().ready()
+
+        from . import localsettings
+
+        if "init_fixtures" in sys.argv or "data_migration" in sys.argv:
+            # migration mode is defined for init_fixture or data_migration commands
+            localsettings.migration_mode = True
+
+            # checkout global settings
+            self.get_global_settings()
 
         audit_module = Module('audit', base_url='coll-gate')
         audit_module.include_urls((

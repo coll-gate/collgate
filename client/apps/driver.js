@@ -190,10 +190,10 @@ application = new Marionette.Application({
         /**
          * Update locally and on server a specific user setting object.
          * @param setting_name Name of the setting object to modify.
-         * @param content Content that replace the older.
+         * @param setting Content that replace the older.
          */
-        this.updateUserSetting = function(setting_name, content) {
-            session.user.settings[setting_name] = content;
+        this.updateUserSetting = function(setting_name, setting) {
+            session.user.settings[setting_name] = setting;
 
             if (session.user.isAuth) {
                 $.ajax({
@@ -201,10 +201,39 @@ application = new Marionette.Application({
                     url: application.baseUrl + 'main/profile/settings/',
                     contentType: "application/json; charset=utf-8",
                     dataType: 'json',
-                    data: JSON.stringify({name: setting_name, content: content}),
+                    data: JSON.stringify({name: setting_name, setting: setting}),
                     success: function (data) {
                     }
                 });
+            }
+        };
+
+        /**
+         * Get the value of a specific setting.
+         * @param setting_name Setting object name.
+         * @returns {*} Content of the setting (string, object, integer...)
+         */
+        this.getUserSetting = function(setting_name) {
+            return session.user.settings[setting_name];
+        };
+
+        /**
+         * Defines the default values of a specific setting if not existing.
+         * @param setting_name Setting object name.
+         * @param default_setting Default values.
+         */
+        this.setDefaultUserSetting = function(setting_name, default_setting) {
+            var setting = session.user.settings[setting_name];
+            if (setting == undefined) {
+                // undefined key
+                session.user.settings[setting_name] = default_setting;
+            } else {
+                for (var obj in default_setting) {
+                    // undefined sub-key
+                    if (!obj in setting) {
+                        setting[obj] = default_setting[obj];
+                    }
+                }
             }
         };
 
@@ -293,7 +322,8 @@ application = new Marionette.Application({
         }
 
         // update the messenger display properties
-        this.updateMessengerDisplay();
+        this.setDisplay(this.getUserSetting('ui')['display_mode']);
+        // this.updateMessengerDisplay();
 
         // starts the URL handling framework and automatically route as possible
         Backbone.history.start({pushState: true, silent: false, root: '/coll-gate'});

@@ -21,6 +21,7 @@ from main.models import IntegerChoice
 from igdectk.rest.restmiddleware import RestMiddleware
 
 from main.models import Entity
+from . import localsettings
 
 
 class AuditManager(models.Manager):
@@ -86,8 +87,8 @@ class AuditManager(models.Manager):
 
         :param user: User model
         :param content_type: ContentType model or string like "appname.modelname"
-        :param object: Valid object identifier
-        :param type: One of the models.AuditType integer value
+        :param object_id: Valid object identifier
+        :param audit_type: One of the models.AuditType integer value
         :param fields: A list of modified field name or empty list
         :return:
         """
@@ -180,9 +181,14 @@ class Audit(models.Model):
 
 
 def get_current_request_params():
-    # get current request parameters
-    return RestMiddleware.current_user(), RestMiddleware.current_remote_addr()
-    # # hack to get the user of the request
+    # in migration mode user and remote address comes from local settings
+    if localsettings.migration_mode and localsettings.migration_audit:
+        return localsettings.migration_user, "127.0.0.1"
+    else:
+        # else the user and the remote address comes from the state of the middleware
+        return RestMiddleware.current_user(), RestMiddleware.current_remote_addr()
+
+    # hack to get the user of the request (this is another solution to get it directly from the call-stack
     # import inspect
     #
     # for frame_record in inspect.stack():
@@ -198,6 +204,10 @@ def get_current_request_params():
 
 @receiver(models.signals.post_save, sender=Entity)
 def entity_post_save(sender, instance, created, **kwargs):
+    # if audit globally disabled
+    if not localsettings.migration_audit:
+        return
+
     user, remote_addr = get_current_request_params()
 
     if created:
@@ -248,6 +258,10 @@ def entity_post_save(sender, instance, created, **kwargs):
 
 @receiver(models.signals.post_delete, sender=Entity)
 def entity_post_delete(sender, instance, **kwargs):
+    # if audit globally disabled
+    if not localsettings.migration_audit:
+        return
+
     user, remote_addr = get_current_request_params()
 
     if hasattr(sender, 'audit_delete'):
@@ -265,6 +279,10 @@ def entity_post_delete(sender, instance, **kwargs):
 
 @receiver(models.signals.m2m_changed, sender=Entity)
 def entity_m2m_changed(sender, instance, action, reverse, model, **kwargs):
+    # if audit globally disabled
+    if not localsettings.migration_audit:
+        return
+
     user, remote_addr = get_current_request_params()
 
     if hasattr(sender, 'audit_m2m'):

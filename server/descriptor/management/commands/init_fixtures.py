@@ -5,7 +5,6 @@
 """
 Install the initials asset of data for each application that needs it.
 """
-
 from __future__ import unicode_literals, absolute_import, division
 
 import sys
@@ -23,20 +22,54 @@ from audit.models import unregister_models
 class Command(BaseCommand):
     help = "Install fixtures for each application."
 
+    def add_arguments(self, parser):
+        # Audit
+        parser.add_argument(
+            '-a', '--audit',
+            action='store_true',
+            dest='audit',
+            default=False,
+            help='Perform audit operations',
+        )
+        # Audit username
+        parser.add_argument(
+            '-u', '--user',
+            dest='username',
+            default='root',
+            help='Defines the username used for audit operations'
+        )
+
     def handle(self, *args, **options):
+
+        from audit import localsettings
+
+        if options.get('audit'):
+            localsettings.override_settings(True, options.get('username'))
+        else:
+            localsettings.override_settings(False, None)
 
         colorama.init()
 
-        sys.stdout.write(colorama.Fore.RED + "+ Begin transaction...\n" + colorama.Style.RESET_ALL)
+        if localsettings.migration_audit:
+            sys.stdout.write(
+                colorama.Fore.CYAN + ("+ Process fixtures using audit username %s" % localsettings.migration_user.username) +
+                colorama.Style.RESET_ALL + '\n')
+        else:
+            sys.stdout.write(colorama.Fore.CYAN + "+ Process fixtures without using audit" + colorama.Style.RESET_ALL + '\n')
+
+        sys.stdout.write(colorama.Fore.RED + "+ Begin transaction..." + colorama.Style.RESET_ALL + '\n')
         connection = transaction.get_connection()
 
         connection.set_autocommit(False)
 
         error = False
 
-        for module in module_manager.modules:
-            # avoid audit during fixture processing
-            unregister_models(module.name)
+        # disable audit if not asked
+        from audit import localsettings
+        if not localsettings.migration_audit:
+            for module in module_manager.modules:
+                # avoid audit during fixture processing
+                unregister_models(module.name)
 
         from descriptor.fixtures import manager
         fixture_manager = manager.FixtureManager()

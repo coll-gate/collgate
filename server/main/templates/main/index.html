@@ -168,7 +168,7 @@ session.user.id = {{ user.id }};
 session.user.isAuth = true;
 session.user.isSuperUser = {{ user.is_superuser|yesno:"true,false" }};
 session.user.isStaff = {{ user.is_staff|yesno:"true,false" }};
-session.user.settings = {{ profile_settings }};
+session.user.settings = {{ profile_settings|safe }};
 {% endif %}
 
 // LTR or RTL language
@@ -195,7 +195,7 @@ function addCss(code) {
 }
 
 if (session.languageDirection == "rtl") {
-    // this fixs RTL support for bootstrap select
+    // this fix RTL support for bootstrap select
     addCss(".bootstrap-select.btn-group .btn .caret { position: absolute; top: 50%; left: 12px; margin-top: -2px; vertical-align: middle; }");
     addCss(".bootstrap-select.btn-group .btn .filter-option { display: inline-block; overflow: hidden; width: 100%; text-align: right; }");
 }
@@ -235,10 +235,18 @@ if (session.languageDirection == "rtl") {
         });
 
         $('#languages').on("select2:select", function(e) {
+            var language = $('#languages').val() || 'en';
+
+            // update and save user setting
+            var ui = application.getUserSetting('ui');
+            ui.preferred_language = language;
+
+            application.updateUserSetting('ui', ui);
+
             $.ajax({
                 type: "POST",
                 url: application.baseUrl + "i18n/setlang/",
-                data: {language: $('#languages').val()},
+                data: {language: $('#languages').val()}
             }).done(function(data) {
                 // reload the application
                 // Backbone.history.loadUrl() only reload the view (not sufficient compared to assign)
@@ -338,20 +346,28 @@ if (session.languageDirection == "rtl") {
             }
         });
 
+        // toggle display mode and save user setting
         $("#toggle_display").on("click", function(e) {
-            if (!$(this).attr("display-mode")) {
-                $(this).attr("display-mode", "2-8-2");
+            var mode = $(this).attr("display-mode") || application.getUserSetting("ui")['display_mode'] || "2-8-2";
+            var newMode = undefined;
+
+            if (mode == "2-8-2") {
+                newMode = "0-10-2";
+            } else if (mode == "0-10-2") {
+                newMode = "0-12-0";
+            } else if (mode == "0-12-0") {
+                newMode = "2-8-2";
             }
 
-            if ($(this).attr("display-mode") == "2-8-2") {
-                application.setDisplay("0-10-2");
-                $(this).attr("display-mode", "0-10-2");
-            } else if ($(this).attr("display-mode") == "0-10-2") {
-                application.setDisplay("0-12-0");
-                $(this).attr("display-mode", "0-12-0");
-            } else if ($(this).attr("display-mode") == "0-12-0") {
-                application.setDisplay("2-8-2");
-                $(this).attr("display-mode", "2-8-2");
+            if (mode != newMode && newMode != undefined) {
+                application.setDisplay(newMode);
+                $(this).attr("display-mode", newMode);
+
+                // update and save user setting
+                var ui = application.getUserSetting('ui');
+                ui.display_mode = newMode;
+
+                application.updateUserSetting('ui', ui);
             }
         });
     });

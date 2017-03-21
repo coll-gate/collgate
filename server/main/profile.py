@@ -149,8 +149,8 @@ def update_self_profile(request):
 @RestProfileSettings.def_auth_request(Method.PATCH, Format.JSON, content={
     "type": "object",
     "properties": {
-        "name": {"type": "string", "minLength": 3, "maxLength": 64, "pattern": "^[a-zA-Z\_][a-zA-Z0-9\-\_]+$"},
-        "setting": {"type": "object"},
+        "name": {"type": "string", "minLength": 2, "maxLength": 64, "pattern": "^[a-zA-Z\_][a-zA-Z0-9\-\_]+$"},
+        "setting": {"type": "any"}
     }
 })
 def update_self_settings(request):
@@ -162,10 +162,12 @@ def update_self_settings(request):
     # name of the setting
     setting_name = request.data['name']
 
-    # validate setting data
-    setting = json.loads(request.data['setting'])
+    setting = request.data['setting']
 
-    profile.settings[setting_name] = json.dumps(setting)
+    current_settings = json.loads(profile.settings)
+    current_settings[setting_name] = setting
+    profile.settings = json.dumps(current_settings)
+
     profile.save()
 
     return HttpResponseRest(request, {})

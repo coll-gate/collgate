@@ -48,6 +48,15 @@ MainModule.prototype = {
         }*/
 
         //
+        // defaults settings
+        //
+
+        app.setDefaultUserSetting('ui', {
+            display_mode: '2-8-2',
+            preferred_language: 'en'
+        });
+
+        //
         // collections
         //
 

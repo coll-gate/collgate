@@ -18,3 +18,8 @@ APP_SETTINGS_MODEL = 'main.models.Settings'
 HTTP_TEMPLATE_STRING = "main/%s.html"
 
 APP_VERSION = (0, 1, 0)
+
+AUDIT_MIGRATION = {
+    'AUDIT': True,          # correspond to environment variable COLLGATE_MIGRATION_AUDIT
+    'USERNAME': "root"      # correspond to environment variable COLLGATE_MIGRATION_AUDIT_USERNAME
+}
