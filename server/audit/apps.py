@@ -55,8 +55,8 @@ class CollGateAudit(ApplicationMain):
 
         from . import localsettings
 
-        if "init_fixtures" in sys.argv or "data_migration" in sys.argv:
-            # migration mode is defined for init_fixture or data_migration commands
+        if "init_fixtures" in sys.argv or "data_migrate" in sys.argv:
+            # migration mode is defined for init_fixture or data_migrate commands
             localsettings.migration_mode = True
 
             # checkout global settings

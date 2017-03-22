@@ -3,7 +3,7 @@
 # Copyright (c) 2017 INRA UMR1095 GDEC
 
 """
-Install the initials asset of data for each application that needs it.
+Process to a migration of GRC content partial or complete, initial or punctual.
 """
 from __future__ import unicode_literals, absolute_import, division
 
@@ -20,7 +20,7 @@ from audit.models import unregister_models
 
 
 class Command(BaseCommand):
-    help = "Install fixtures for each application."
+    help = "Process to a migration of GRC content partial or complete, initial or punctual."
 
     def add_arguments(self, parser):
         # Simulate (not transaction commit)
@@ -29,7 +29,14 @@ class Command(BaseCommand):
             action='store_true',
             dest='simulate',
             default=False,
-            help='Simulate the fixtures initialisation. Does not proceed to a transaction commit.'
+            help='Simulate the data migration. Does not proceed to a transaction commit.'
+        )
+        # Migration module
+        parser.add_argument(
+            '-m', '--migration',
+            dest='migration',
+            default=None,
+            help='Defines the starting module of the migration.'
         )
         # Audit
         parser.add_argument(
@@ -60,10 +67,10 @@ class Command(BaseCommand):
 
         if localsettings.migration_audit:
             sys.stdout.write(
-                colorama.Fore.CYAN + ("+ Process fixtures using audit username %s" % localsettings.migration_user.username) +
+                colorama.Fore.CYAN + ("+ Process data migration using audit username %s" % localsettings.migration_user.username) +
                 colorama.Style.RESET_ALL + '\n')
         else:
-            sys.stdout.write(colorama.Fore.CYAN + "+ Process fixtures without using audit" + colorama.Style.RESET_ALL + '\n')
+            sys.stdout.write(colorama.Fore.CYAN + "+ Process data migration without using audit" + colorama.Style.RESET_ALL + '\n')
 
         if options.get('simulate'):
             sys.stdout.write(colorama.Fore.RED + "+ Begin transaction in simulation mode (no commit)..." + colorama.Style.RESET_ALL + '\n')
@@ -71,12 +78,11 @@ class Command(BaseCommand):
             sys.stdout.write(colorama.Fore.RED + "+ Begin transaction..." + colorama.Style.RESET_ALL + '\n')
 
         connection = transaction.get_connection()
-
         connection.set_autocommit(False)
 
         error = False
 
-        # disable audit if not asked
+        # disable audit if not asked, by removing any models signals
         from audit import localsettings
         if not localsettings.migration_audit:
             for module in module_manager.modules:
@@ -86,31 +92,18 @@ class Command(BaseCommand):
         from descriptor.fixtures import manager
         fixture_manager = manager.FixtureManager()
 
-        for module in module_manager.modules:
-            sys.stdout.write(colorama.Fore.RESET + " - Lookups for fixtures in module '%s'\n" % module.name)
+        try:
+            lib = importlib.import_module(options.get('migration'), 'DataMigration')
+        except TypeError or ImportError:
+            sys.stdout.write(colorama.Fore.RED + "+ Error during importation of data migration script..." + colorama.Style.RESET_ALL + '\n')
+            error = True
 
-            try:
-                lib = importlib.import_module(module.name + ".fixtures", 'ORDER')
+        dataMigration = lib.DataMigration(fixture_manager)
 
-                if len(lib.ORDER) > 0:
-                    sys.stdout.write(colorama.Fore.BLUE + " > Founds fixtures for the module '%s'\n" % module.name)
-
-                for fixture in lib.ORDER:
-                    try:
-                        # try to found a fixture function
-                        foo = importlib.import_module(module.name + ".fixtures." + fixture, 'fixture')
-
-                        sys.stdout.write(colorama.Fore.GREEN + "  - Execute fixture '%s':" % fixture + colorama.Style.RESET_ALL + '\n')
-                        # process the current fixture
-                        foo.fixture(fixture_manager)
-
-                        sys.stdout.write(colorama.Fore.GREEN + "  - Done fixture '%s':" % fixture + colorama.Style.RESET_ALL + '\n')
-                    except BaseException as e:
-                        sys.stderr.write(colorama.Fore.WHITE + colorama.Back.RED + "{0}".format(e) + colorama.Style.RESET_ALL + '\n')
-                        error = True
-
-            except BaseException:
-                continue
+        try:
+            dataMigration.migrate()
+        except Exception as e:
+            error = True
 
         if error:
             sys.stdout.write(colorama.Back.RED + "! Rollback transaction..." + colorama.Style.RESET_ALL + '\n')
