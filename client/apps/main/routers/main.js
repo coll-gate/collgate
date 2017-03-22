@@ -20,6 +20,7 @@ var Router = Marionette.AppRouter.extend({
         "app/home/": "home",
         "app/main/about/": "about",
         "app/main/help/": "help",
+        "app/main/config/": "config",
         "app/*actions": "default"
     },
 
@@ -68,6 +69,23 @@ var Router = Marionette.AppRouter.extend({
 
         defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Help...")}));
         defaultLayout.getRegion('content').show(new HelpIndexView());
+    },
+
+    config: function() {
+        var ConfigCollection = require('../collections/config');
+        var collection = new ConfigCollection();
+
+        var defaultLayout = new DefaultLayout({});
+        application.show(defaultLayout);
+
+        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Configuration state")}));
+
+        collection.fetch().then(function () {
+            var ConfigListView = require('../views/configlist');
+            var configListView = new ConfigListView({collection : collection});
+
+            defaultLayout.getRegion('content').show(configListView);
+        });
     }
 });
 

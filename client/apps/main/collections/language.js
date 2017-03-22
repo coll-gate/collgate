@@ -11,7 +11,7 @@
 var LanguageModel = require('../models/language');
 
 var LanguageCollection = Backbone.Collection.extend({
-    url: application.baseUrl + 'main/language',
+    url: application.baseUrl + 'main/language/',
     model: LanguageModel,
 
     parse: function(data) {
@@ -20,7 +20,7 @@ var LanguageCollection = Backbone.Collection.extend({
 
     default: [
         {id: 'en', value: 'en', label: gt.gettext("English")},
-        {id: 'fr', value: 'fr', label: gt.gettext("French")},
+        {id: 'fr', value: 'fr', label: gt.gettext("French")}
     ],
 
     findLabel: function(value) {

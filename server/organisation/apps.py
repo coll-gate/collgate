@@ -16,6 +16,7 @@ from igdectk.module.manager import module_manager
 from igdectk.module.menu import MenuEntry, MenuSeparator
 from igdectk.module.module import Module, ModuleMenu
 from igdectk.bootstrap.glyphs import Glyph
+from main.config import Configuration, configuration
 
 
 class CollGateOrganisation(ApplicationMain):
@@ -80,21 +81,42 @@ class CollGateOrganisation(ApplicationMain):
         # check if there is a unique GRC model instance
         from organisation.models import GRC
         num_grcs = len(GRC.objects.all())
+
         if num_grcs == 0:
-            self.logger.info("Missing GRC configuration. Create a unique GRC model instance.")
+            self.logger.info("Missing GRC configuration. Create a unique GRC model instance. Need configuration.")
             grc = GRC()
             grc.save()
 
-        if num_grcs > 1:
-            raise Warning("Invalid GRC configuration. Only a unique GRC could be configured.")
+            configuration.partial("GRC instance", "GRC instance created. Need configuration.")
+        elif num_grcs > 1:
+            configuration.wrong(
+                "organisation",
+                "GRC instance",
+                "Invalid GRC configuration. Only a unique GRC could be configured.")
+        else:
+            configuration.validate("organisation", "GRC instance", "GRC instance detected.")
 
         # keep descriptor meta-model for organisation and establishment.
         from descriptor.models import DescriptorMetaModel
 
         if not DescriptorMetaModel.objects.filter(name="organisation").exists():
-            raise Warning(
-                "Missing organisation descriptor meta-model. Be sure to have installed fixtures")
+            configuration.wrong(
+                "organisation",
+                "Organisation descriptor meta-model",
+                "Missing organisation descriptor meta-model. Be sure to have installed fixtures.")
+        else:
+            configuration.validate(
+                "organisation",
+                "Organisation descriptor meta-model",
+                "Organisation descriptor meta-model detected.")
 
         if not DescriptorMetaModel.objects.filter(name="establishment").exists():
-            raise Warning(
-                "Missing organisation establishment meta-model. Be sure to have installed fixtures")
+            configuration.wrong(
+                "organisation",
+                "Establishment descriptor meta-model",
+                "Missing establishment descriptor meta-model. Be sure to have installed fixtures.")
+        else:
+            configuration.validate(
+                "organisation",
+                "Establishment descriptor meta-model",
+                "Establishment descriptor meta-model detected.")

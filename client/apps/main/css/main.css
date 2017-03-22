@@ -275,3 +275,12 @@ td.action:hover > .label, th.action:hover > .label {
 th.action:hover, td.action:hover, span.action:not(.glyphicon):hover {
     text-decoration: underline;
 }
+
+span.config-id {
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
+
+div.config-value-box {
+    border-top-left-radius: 0px;
+}

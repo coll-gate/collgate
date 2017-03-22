@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-15 17:30+0100\n"
+"POT-Creation-Date: 2017-03-22 12:09+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -55,16 +55,16 @@ msgstr ""
 msgid "You are not allowed to search accessions"
 msgstr ""
 
-#: accession.py:358 accessionsynonym.py:155 accessionsynonym.py:217
-#: accessionsynonym.py:275
+#: accession.py:363 accessionsynonym.py:155 accessionsynonym.py:217
+#: accessionsynonym.py:277
 msgid "You are not allowed to modify an accession"
 msgstr ""
 
-#: accession.py:402
+#: accession.py:407
 msgid "Unable to update the accession"
 msgstr ""
 
-#: accession.py:408
+#: accession.py:413
 msgid "You are not allowed to delete an accession"
 msgstr ""
 
@@ -113,20 +113,20 @@ msgstr ""
 msgid "Synonym already used as a GRC code of accession"
 msgstr ""
 
-#: accessionsynonym.py:267
+#: accessionsynonym.py:269
 msgid "Unable to rename a synonym of an accession"
 msgstr ""
 
-#: accessionsynonym.py:276
+#: accessionsynonym.py:278
 msgid "You are not allowed to delete a synonym of accession"
 msgstr ""
 
-#: accessionsynonym.py:284
+#: accessionsynonym.py:286
 msgid "It is not possible to remove a GRC code name"
 msgstr ""
 
-#: accessionsynonym.py:287
-msgid "It is not possible to remove a primary synonym"
+#: accessionsynonym.py:289
+msgid "It is not possible to remove a primary name"
 msgstr ""
 
 #: apps.py:59
@@ -197,54 +197,54 @@ msgstr ""
 msgid "Undefined synonym language"
 msgstr ""
 
-#: models.py:32
+#: models.py:34
 msgid "panel"
 msgstr ""
 
-#: models.py:50
+#: models.py:59
 msgid "accession"
 msgstr ""
 
-#: models.py:127
+#: models.py:156
 msgid "accession synonym"
 msgstr ""
 
-#: models.py:173
+#: models.py:243
 msgid "batch"
 msgstr ""
 
-#: models.py:223
+#: models.py:307
 msgid "sample"
 msgstr ""
 
-#: models.py:257
+#: models.py:355
 msgid "Introduction"
 msgstr ""
 
-#: models.py:258
+#: models.py:356
 msgid "Multiplication"
 msgstr ""
 
-#: models.py:259
+#: models.py:357
 msgid "Regeneration"
 msgstr ""
 
-#: models.py:260
+#: models.py:358
 msgid "Test"
 msgstr ""
 
-#: models.py:261
+#: models.py:359
 msgid "Clean-up"
 msgstr ""
 
-#: models.py:262
+#: models.py:360
 msgid "Sample"
 msgstr ""
 
-#: models.py:263
+#: models.py:361
 msgid "Dispatch"
 msgstr ""
 
-#: models.py:264
+#: models.py:362
 msgid "Elimination"
 msgstr ""

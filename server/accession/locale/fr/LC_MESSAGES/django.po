@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-15 17:30+0100\n"
+"POT-Creation-Date: 2017-03-22 12:09+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -56,16 +56,16 @@ msgstr "Permissions invalides pour accéder à cette accession"
 msgid "You are not allowed to search accessions"
 msgstr "Vous n'êtes pas autorisé à rechercher des accessions"
 
-#: accession.py:358 accessionsynonym.py:155 accessionsynonym.py:217
-#: accessionsynonym.py:275
+#: accession.py:363 accessionsynonym.py:155 accessionsynonym.py:217
+#: accessionsynonym.py:277
 msgid "You are not allowed to modify an accession"
 msgstr "Vous n'êtes pas autorisé à modifier une accession"
 
-#: accession.py:402
+#: accession.py:407
 msgid "Unable to update the accession"
 msgstr "Impossible de modifier l'accession"
 
-#: accession.py:408
+#: accession.py:413
 msgid "You are not allowed to delete an accession"
 msgstr "Vous n'êtes pas autorisé à supprimer une accession"
 
@@ -109,25 +109,26 @@ msgstr "Vous n'êtes pas autorisé à modifier un synonym d'accession"
 msgid ""
 "The GRC code of accession could not be used by another synonym of accession"
 msgstr ""
-"Le code CRB de l'accession ne peut pas être utilisé par un autre synonyme d'accession"
+"Le code CRB de l'accession ne peut pas être utilisé par un autre synonyme "
+"d'accession"
 
 #: accessionsynonym.py:241
 msgid "Synonym already used as a GRC code of accession"
 msgstr "Synonyme déjà utilisé en tant que code CRB d'accession"
 
-#: accessionsynonym.py:267
+#: accessionsynonym.py:269
 msgid "Unable to rename a synonym of an accession"
 msgstr "Impossible de renommer un synonyme d'une accession"
 
-#: accessionsynonym.py:276
+#: accessionsynonym.py:278
 msgid "You are not allowed to delete a synonym of accession"
 msgstr "Vous n'êtes pas autorisé à supprimer un synonomy d'une accession"
 
-#: accessionsynonym.py:284
+#: accessionsynonym.py:286
 msgid "It is not possible to remove a GRC code name"
 msgstr "Il n'est pas possible de retirer un code CRB"
 
-#: accessionsynonym.py:287
+#: accessionsynonym.py:289
 msgid "It is not possible to remove a primary name"
 msgstr "Il n'est pas possible de retirer un nom principal"
 
@@ -199,54 +200,54 @@ msgstr "Nom de synonyme ou principal indéfini"
 msgid "Undefined synonym language"
 msgstr "Langue du synonyme indéfinie"
 
-#: models.py:32
+#: models.py:34
 msgid "panel"
 msgstr "collection"
 
-#: models.py:50
+#: models.py:59
 msgid "accession"
 msgstr "accession"
 
-#: models.py:127
+#: models.py:156
 msgid "accession synonym"
 msgstr "synonyme d'accession"
 
-#: models.py:173
+#: models.py:243
 msgid "batch"
 msgstr "lot"
 
-#: models.py:223
+#: models.py:307
 msgid "sample"
 msgstr "échantillon"
 
-#: models.py:257
+#: models.py:355
 msgid "Introduction"
 msgstr "Introduction"
 
-#: models.py:258
+#: models.py:356
 msgid "Multiplication"
 msgstr "Multiplication"
 
-#: models.py:259
+#: models.py:357
 msgid "Regeneration"
 msgstr "Regénération"
 
-#: models.py:260
+#: models.py:358
 msgid "Test"
 msgstr "Test"
 
-#: models.py:261
+#: models.py:359
 msgid "Clean-up"
 msgstr "Assainissement"
 
-#: models.py:262
+#: models.py:360
 msgid "Sample"
 msgstr "Echantillon"
 
-#: models.py:263
+#: models.py:361
 msgid "Dispatch"
 msgstr "Expédition"
 
-#: models.py:264
+#: models.py:362
 msgid "Elimination"
 msgstr "Elimination"

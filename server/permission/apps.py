@@ -34,7 +34,7 @@ class CollGatePermission(ApplicationMain):
 
         menu_permission.add_entry(MenuSeparator(100))
         menu_permission.add_entry(
-            MenuEntry('user-permission', _('Manage users'), "#permission/user/", icon=Glyph.CONSOLE, order=101))
+            MenuEntry('user-permission', _('Manage users'), "#permission/user/", icon=Glyph.USER, order=101))
         menu_permission.add_entry(
             MenuEntry('group-permission', _('Manage groups'), "#permission/group/", icon=Glyph.FOLDER_CLOSE, order=102))
         permission_module.add_menu(menu_permission)

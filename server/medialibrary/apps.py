@@ -13,6 +13,7 @@ from django.core.exceptions import ImproperlyConfigured
 from igdectk.common.apphelpers import ApplicationMain
 from igdectk.module.manager import module_manager
 from igdectk.module.module import Module
+from main.config import configuration
 
 from . import localsettings
 
@@ -37,16 +38,29 @@ class CollGateMediaLibrary(ApplicationMain):
             localsettings.storage_path = storage_path
 
         if not os.path.isdir(localsettings.storage_path):
-            raise Warning("Media library destination folder misconfiguration")
+            configuration.wrong(
+                "medialibrary",
+                "Media-library destination path", "Media library destination folder does not exists.")
+        else:
+            configuration.validate(
+                "medialibrary",
+                "Media-library destination path",
+                "Media library destination folder founds at %s." % localsettings.storage_path)
 
         localsettings.storage_location = self.get_setting('storage_location')
         localsettings.max_file_size = self.get_setting('max_file_size')
 
         if not isinstance(localsettings.max_file_size, int):
-            raise ImproperlyConfigured("Max file size must be an integer")
+            configuration.wrong("medialibrary", "Media-library max file size", "Max file size must be an integer.")
 
         if localsettings.max_file_size <= 1024:
-            raise ImproperlyConfigured("Max file size must be greater than 1024")
+            configuration.wrong("medialibrary",
+                                "Media-library max file size",
+                                "Max file size must be greater than 1024 bytes.")
+        else:
+            configuration.validate("medialibrary",
+                                   "Media-library max file size",
+                                   "Max file size is %i bytes." % localsettings.max_file_size)
 
         # create a module medialibrary
         media_library_module = Module('medialibrary', base_url='coll-gate')

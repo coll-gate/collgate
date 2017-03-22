@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-15 14:07+0100\n"
+"POT-Creation-Date: 2017-03-22 12:08+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../../views/entitypath.js:142 ../../../views/taxondetails.js:116
+#: ../../../views/entitypath.js:142 ../../../views/taxondetails.js:117
 #: ../../../controllers/taxon.js:96
 msgid "Enter a taxon name. 3 characters at least for auto-completion"
 msgstr "Saisissez un nom de taxon. 3 caractères minimum pour l'auto-complétion"

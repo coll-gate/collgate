@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-15 17:30+0100\n"
+"POT-Creation-Date: 2017-03-22 12:09+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -450,50 +450,50 @@ msgstr ""
 "Vous n'êtes pas autorisé à supprimer une condition sur ce modèle de "
 "descripteur"
 
-#: models.py:68
+#: models.py:69
 msgid "descriptor group"
 msgstr "groupe de descripteur"
 
-#: models.py:131
+#: models.py:145
 msgid "descriptor type"
 msgstr "type de descripteur"
 
-#: models.py:790
+#: models.py:896
 msgid "descriptor value"
 msgstr "valeur de descripteur"
 
-#: models.py:828
+#: models.py:982
 msgid "descriptor panel"
 msgstr "panel de descripteur"
 
-#: models.py:888
+#: models.py:1080
 msgid "descriptor model type"
 msgstr "type de modèle de descripteur"
 
-#: models.py:928
+#: models.py:1172
 msgid "descriptor model"
 msgstr "modèle de descripteur"
 
-#: models.py:981
+#: models.py:1265
 msgid "descriptor meta model"
 msgstr "méta-modèle de descripteur"
 
-#: models.py:1026
+#: models.py:1355
 msgid "Undefined"
 msgstr "Undéfini"
 
-#: models.py:1027
+#: models.py:1356
 msgid "Defined"
 msgstr "Défini"
 
-#: models.py:1028
+#: models.py:1357
 msgid "Equal to"
 msgstr "Egale à"
 
-#: models.py:1029
+#: models.py:1358
 msgid "Different from"
 msgstr "Différent de"
 
-#: models.py:1052
+#: models.py:1381
 msgid "descriptor model type condition"
 msgstr "condition de modèle de descripteur"

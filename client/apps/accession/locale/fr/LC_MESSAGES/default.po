@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-15 17:27+0100\n"
+"POT-Creation-Date: 2017-03-22 12:08+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: ../../../views/accessiondescriptor.js:26
-#: ../../../views/accessiondescriptoredit.js:75
+#: ../../../views/accessiondescriptoredit.js:81
 #: ../../../views/batchdescriptor.js:26
 #: ../../../views/batchdescriptoredit.js:75
 #: ../../../templates/accessionlayout.html:6
@@ -42,20 +42,21 @@ msgstr "Annuler les modificiations"
 
 #: ../../../views/accessionsynonyms.js:57
 #: ../../../views/accessionsynonyms.js:226
-#: ../../../controllers/accession.js:153
 msgid "64 characters max"
 msgstr "64 caractères maximum"
 
 #: ../../../views/accessionsynonyms.js:60
 #: ../../../views/accessionsynonyms.js:223 ../../../views/batchbottom.js:57
-#: ../../../controllers/accession.js:156
+#: ../../../controllers/accession.js:189 ../../../controllers/accession.js:203
 msgid "3 characters min"
 msgstr "3 caractères minimum"
 
 #: ../../../views/accessionsynonyms.js:93
 #: ../../../views/accessionsynonyms.js:201
 msgid "It is not possible to use a GRC code of accession as synonym"
-msgstr "Il n'est pas possible d'utiliser un code de CRB d'accession en tant que synonyme"
+msgstr ""
+"Il n'est pas possible d'utiliser un code de CRB d'accession en tant que "
+"synonyme"
 
 #: ../../../views/accessionsynonyms.js:97
 #: ../../../views/accessionsynonyms.js:206
@@ -74,7 +75,7 @@ msgstr "Caractères invalides (alphanumeric, _ et - seulement)"
 msgid "List of accessions"
 msgstr "Liste des accessions"
 
-#: ../../../routers/accession.js:53 ../../../controllers/accession.js:204
+#: ../../../routers/accession.js:51 ../../../controllers/accession.js:255
 msgid "Accession"
 msgstr "Accession"
 
@@ -86,15 +87,23 @@ msgstr "Liste des lots pour l'accession"
 msgid "Batch"
 msgstr "Lot"
 
-#: ../../../controllers/accession.js:103
+#: ../../../controllers/accession.js:105
 msgid "Enter a taxon name. 3 characters at least for auto-completion"
 msgstr "Saisissez un nom de taxon. A moins 3 caractère pour l'auto-complétion"
 
-#: ../../../controllers/accession.js:137
-msgid "Synonym of accession already used"
-msgstr "Synonyme d'accession déjà utilisé"
+#: ../../../controllers/accession.js:138
+msgid "Code of accession already used"
+msgstr ""
 
-#: ../../../controllers/accession.js:172
+#: ../../../controllers/accession.js:171
+msgid "Synonym used as accession code"
+msgstr ""
+
+#: ../../../controllers/accession.js:186 ../../../controllers/accession.js:200
+msgid "128 characters max"
+msgstr ""
+
+#: ../../../controllers/accession.js:219
 msgid "The parent must be defined"
 msgstr "Le parent doit être défini"
 
@@ -110,7 +119,7 @@ msgid "Name"
 msgstr "Nom"
 
 #: ../../../templates/accessionchangesynonym.html:16
-#: ../../../templates/accessioncreate.html:38
+#: ../../../templates/accessioncreate.html:44
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -127,19 +136,23 @@ msgid "Template"
 msgstr "Modèle"
 
 #: ../../../templates/accessioncreate.html:20
-msgid "Principal name of the accession (must be unique)"
-msgstr "Nom principal de l'accession (doit être unique)"
+msgid "Code of the accession (must be unique)"
+msgstr ""
 
 #: ../../../templates/accessioncreate.html:26
+msgid "Principal name of the accession"
+msgstr ""
+
+#: ../../../templates/accessioncreate.html:32
 #: ../../../templates/accessionsynonyms.html:7
 msgid "Language"
 msgstr "Langue"
 
-#: ../../../templates/accessioncreate.html:32
+#: ../../../templates/accessioncreate.html:38
 msgid "Taxon (specie, variety...)"
 msgstr "Taxon (espèce, variété...)"
 
-#: ../../../templates/accessioncreate.html:39
+#: ../../../templates/accessioncreate.html:45
 msgid "Continue"
 msgstr "Continuer"
 
@@ -172,6 +185,12 @@ msgstr "Type"
 #: ../../../templates/batchlayout.html:6
 msgid "Parents"
 msgstr "Parents"
+
+#~ msgid "Synonym of accession already used"
+#~ msgstr "Synonyme d'accession déjà utilisé"
+
+#~ msgid "Principal name of the accession (must be unique)"
+#~ msgstr "Nom principal de l'accession (doit être unique)"
 
 #~ msgid "Xxx"
 #~ msgstr "Xxx"

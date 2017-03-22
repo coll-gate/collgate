@@ -5,7 +5,7 @@
 """
 coll-gate accession module main
 """
-
+import sys
 from django.utils.translation import ugettext_lazy as _
 
 from igdectk.common.apphelpers import ApplicationMain
@@ -14,6 +14,7 @@ from igdectk.module.manager import module_manager
 from igdectk.module.menu import MenuEntry, MenuSeparator
 from igdectk.module.module import Module, ModuleMenu
 from igdectk.bootstrap.glyphs import Glyph
+from main.config import configuration
 
 
 class CollGateAccession(ApplicationMain):
@@ -77,3 +78,19 @@ class CollGateAccession(ApplicationMain):
         accession_module.add_menu(menu_accession)
 
         module_manager.register_module(accession_module)
+
+        if "init_fixtures" not in sys.argv and "migrate" not in sys.argv and "makemigrations" not in sys.argv:
+            self.post_ready()
+
+    def post_ready(self):
+        from descriptor.models import DescriptorType
+
+        if not DescriptorType.objects.filter(name="accession_synonym_types").exists():
+            configuration.wrong(
+                "accession",
+                "accession_synonym_types descriptor type",
+                "Missing accession_synonym_types descriptor type. Be sure to have installed fixtures.")
+        else:
+            configuration.validate("accession",
+                                   "accession_synonym_types descriptor type",
+                                   "accession_synonym_types descriptor type detected.")

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-15 17:30+0100\n"
+"POT-Creation-Date: 2017-03-22 12:09+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: French <LL@li.org>\n"
@@ -18,50 +18,50 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: apps.py:41
+#: apps.py:81
 msgid "Tracability"
 msgstr "Traçabilité"
 
-#: apps.py:42
+#: apps.py:82
 msgid "Tracability for a user"
 msgstr "Traçabilité pour un utilisateur"
 
-#: apps.py:43
+#: apps.py:83
 msgid "Tracability for an entity"
 msgstr "Traçabilité pour une entité"
 
-#: models.py:51 models.py:72 models.py:98
+#: models.py:53 models.py:74 models.py:100
 msgid "Invalid content type or application name"
 msgstr "Type de contenu ou nom d'application invalide"
 
-#: models.py:54 models.py:75 models.py:101
+#: models.py:56 models.py:77 models.py:103
 msgid "Invalid object identifier"
 msgstr "Identifiant d'objet invalide"
 
-#: models.py:78 models.py:104
+#: models.py:80 models.py:106
 msgid "Invalid user"
 msgstr "Utilisateur invalide"
 
-#: models.py:140
+#: models.py:142
 msgid "Create"
 msgstr "Créer"
 
-#: models.py:141
+#: models.py:143
 msgid "Update"
 msgstr "Mettre-à-jour"
 
-#: models.py:142
+#: models.py:144
 msgid "Delete"
 msgstr "Supprimer"
 
-#: models.py:144
+#: models.py:146
 msgid "Remove"
 msgstr "Retirer"
 
-#: models.py:145
+#: models.py:147
 msgid "Action"
 msgstr "Action"
 
-#: models.py:147
+#: models.py:149
 msgid "M2M change"
 msgstr "Changement sur M2M"
