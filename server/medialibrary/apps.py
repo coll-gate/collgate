@@ -37,7 +37,7 @@ class CollGateMediaLibrary(ApplicationMain):
             localsettings.storage_path = storage_path
 
         if not os.path.isdir(localsettings.storage_path):
-            raise ImproperlyConfigured("Media library destination folder misconfiguration")
+            raise Warning("Media library destination folder misconfiguration")
 
         localsettings.storage_location = self.get_setting('storage_location')
         localsettings.max_file_size = self.get_setting('max_file_size')

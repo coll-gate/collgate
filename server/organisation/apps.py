@@ -86,15 +86,15 @@ class CollGateOrganisation(ApplicationMain):
             grc.save()
 
         if num_grcs > 1:
-            raise ImproperlyConfigured("Invalid GRC configuration. Only a unique GRC could be configured.")
+            raise Warning("Invalid GRC configuration. Only a unique GRC could be configured.")
 
         # keep descriptor meta-model for organisation and establishment.
         from descriptor.models import DescriptorMetaModel
 
         if not DescriptorMetaModel.objects.filter(name="organisation").exists():
-            raise ImproperlyConfigured(
+            raise Warning(
                 "Missing organisation descriptor meta-model. Be sure to have installed fixtures")
 
         if not DescriptorMetaModel.objects.filter(name="establishment").exists():
-            raise ImproperlyConfigured(
+            raise Warning(
                 "Missing organisation establishment meta-model. Be sure to have installed fixtures")
