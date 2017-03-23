@@ -157,14 +157,31 @@ def get_accession_list(request):
     cursor = request.GET.get('cursor')
     limit = results_per_page
 
-    if cursor:
-        cursor_name, cursor_id = cursor.rsplit('/', 1)
-        accessions = Accession.objects.filter(Q(name__gt=cursor_name))
+    if request.GET.get('filters'):
+        filters = json.loads(request.GET['filters'])
+
+        if cursor:
+            cursor_name, cursor_id = cursor.rsplit('/', 1)
+            qs = Accession.objects.filter(Q(name__gt=cursor_name))
+        else:
+            qs = Accession.objects.all()
+
+        name = filters.get('name', '')
+
+        # name search based on synonyms
+        if filters.get('method', 'icontains') == 'icontains':
+            qs = qs.filter(Q(synonyms__name__icontains=name))
+        else:
+            qs = qs.filter(Q(name__iexact=name)).filter(Q(synonyms__name__iexact=name))
     else:
-        accessions = Accession.objects.all()
+        if cursor:
+            cursor_name, cursor_id = cursor.rsplit('/', 1)
+            qs = Accession.objects.filter(Q(name__gt=cursor_name))
+        else:
+            qs = Accession.objects.all()
 
     # Prefetch permit to have only 2 requests (clause order_by done directly, not per accession.synonyms)
-    accessions = accessions.select_related('parent').prefetch_related(
+    qs = qs.select_related('parent').prefetch_related(
         Prefetch(
             "synonyms",
             queryset=AccessionSynonym.objects.all().order_by('type', 'language'))
@@ -172,7 +189,7 @@ def get_accession_list(request):
 
     accession_list = []
 
-    for accession in accessions:
+    for accession in qs:
         a = {
             'id': accession.pk,
             'name': accession.name,

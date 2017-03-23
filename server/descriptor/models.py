@@ -240,7 +240,7 @@ class DescriptorType(Entity):
         """
         Check if there is some values for this descriptor for any languages
 
-        :return: True if there is somes values
+        :return: True if there is some values
         :rtype: Boolean
         """
         if self.values:
@@ -1150,6 +1150,47 @@ class DescriptorModelType(Entity):
         data = json.loads(self.label)
         data[lang] = label
         self.label = json.dumps(data)
+
+    def create_index(self, describable, unique=False, using_gin=False, db='default'):
+        """
+        Create a new (GIN) index on a field of JSONB descriptors of the given describable model.
+        :param describable:
+        :param unique:
+        :param using_gin:
+        :param db:
+        """
+        table = describable._meta.db_table
+        index = "%s_descriptors_%s_key" % (table, self.name)
+
+        if unique:
+            if using_gin:
+                sql = """CREATE UNIQUE INDEX %s ON %s USING GIN ((descriptors->'%s'));""" % (index, table, self.name)
+            else:
+                sql = """CREATE UNIQUE INDEX %s ON %s ((descriptors->'%s'));""" % (index, table, self.name)
+        else:
+            if using_gin:
+                sql = """CREATE INDEX %s ON %s USING GIN ((descriptors->'%s'));""" % (index, table, self.name)
+            else:
+                sql = """CREATE INDEX %s ON %s ((descriptors->'%s'));""" % (index, table, self.name)
+
+        connection = connections[db]
+        with connection.cursor() as cursor:
+            cursor.execute(sql)
+
+    def drop_index(self, describable, db='default'):
+        """
+        Drop an existing index of a field of JSONB descriptors of the given describable model.
+        :param describable:
+        :param db:
+        """
+        table = describable._meta.db_table
+        index = "%s_descriptors_%s_key" % (table, self.name)
+
+        sql = """DROP INDEX IF EXISTS %s""" % index
+
+        connection = connections[db]
+        with connection.cursor() as cursor:
+            cursor.execute(sql)
 
 
 class DescriptorModel(Entity):

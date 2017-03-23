@@ -124,18 +124,19 @@ _.extend(StringType.prototype, DescriptorFormatType.prototype, {
 
     values: function() {
         if (this.el && this.parent) {
-            return this.el.val();
+            var value = this.el.val();
+            return value !== "" ? value : null;
         }
 
-        return "";
+        return null;
     },
 
     checkCondition: function (condition, values) {
         switch (condition) {
             case 0:
-                return this.values() === "";
+                return this.values() == null;  // === "";
             case 1:
-                return this.values() !== "";
+                return this.values() != null;  // !== "";
             case 2:
                 return this.values() === values;
             case 3:

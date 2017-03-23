@@ -93,8 +93,8 @@ var Controller = Marionette.Object.extend({
                 validateName: function () {
                     var v = this.ui.name.val().trim();
 
-                    if (v.length > 64) {
-                        $(this.ui.name).validateField('failed', gt.gettext("64 characters max"));
+                    if (v.length > 255) {
+                        $(this.ui.name).validateField('failed', gt.gettext("255 characters max"));
                         return false;
                     } else if (v.length < 3) {
                         $(this.ui.name).validateField('failed', gt.gettext('3 characters min'));
