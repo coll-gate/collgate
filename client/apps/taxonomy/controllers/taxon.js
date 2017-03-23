@@ -21,7 +21,7 @@ var TaxonController = Marionette.Object.extend({
     create: function() {
         var CreateTaxonView = Dialog.extend({
             attributes: {
-                'id': 'dlg_create_taxon',
+                'id': 'dlg_create_taxon'
             },
             template: require('../templates/taxoncreate.html'),
 

@@ -6,6 +6,7 @@
 coll-gate taxonomy module controller
 """
 from django.core.exceptions import SuspiciousOperation, PermissionDenied
+from django.db import transaction
 from django.utils import translation
 
 from main.models import Languages
@@ -39,6 +40,7 @@ class Taxonomy(object):
                 break
 
     @classmethod
+    @transaction.atomic
     def create_taxon(cls, name, rank_id, parent, language):
         """
         Create a new taxon with a unique name. The level must be
@@ -74,8 +76,7 @@ class Taxonomy(object):
         # first name a primary synonym
         primary = TaxonSynonym(
             taxon_id=taxon.id,
-            name="%s_%s" % (name, name),
-            synonym=name,
+            name=name,
             type=TaxonSynonymType.PRIMARY.value,
             language=language)
 

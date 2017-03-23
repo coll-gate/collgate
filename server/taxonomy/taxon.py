@@ -108,7 +108,7 @@ def create_taxon(request):
         'id': taxon.id,
         'name': taxon.name,
         'rank': taxon.rank,
-        'parent': taxon.parent.id,
+        'parent': taxon.parent.id if parent_id > 0 else None,
         'parent_list': [int(x) for x in taxon.parent_list.rstrip(',').split(',')] if taxon.parent_list else [],
         'synonyms': [],
         'descriptor_meta_model': None,

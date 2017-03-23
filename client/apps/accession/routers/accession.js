@@ -13,6 +13,7 @@ var Marionette = require('backbone.marionette');
 var AccessionModel = require('../models/accession');
 var AccessionCollection = require('../collections/accession');
 var AccessionListView = require('../views/accessionlist');
+var AccessionListFooterView = require('../views/accessionlistfooter');
 
 var DefaultLayout = require('../../main/views/defaultlayout');
 var ScrollingMoreView = require('../../main/views/scrollingmore');
@@ -39,6 +40,8 @@ var Router = Marionette.AppRouter.extend({
             defaultLayout.getRegion('content').show(accessionListView);
             defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: accessionListView}));
         });
+
+        defaultLayout.getRegion('bottom').show(new AccessionListFooterView({collection: collection}));
     },
 
     getAccession : function(id) {
