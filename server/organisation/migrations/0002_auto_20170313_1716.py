@@ -15,6 +15,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='organisation',
             name='type',
-            field=models.CharField(default='OR_001:0000001', max_length=16),
+            field=models.CharField(default='ORG_TYPE:01', max_length=16),
         ),
     ]

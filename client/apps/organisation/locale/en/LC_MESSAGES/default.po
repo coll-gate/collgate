@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-15 14:07+0100\n"
+"POT-Creation-Date: 2017-03-24 15:21+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../../views/descriptor.js:26 ../../../views/descriptoredit.js:74
+#: ../../../views/descriptor.js:26 ../../../views/descriptoredit.js:76
 #: ../../../templates/organisationlayout.html:5
 msgid "Descriptors"
 msgstr ""
@@ -45,7 +45,7 @@ msgstr ""
 msgid "3 characters min"
 msgstr ""
 
-#: ../../../views/grcdetails.js:43 ../../../views/organisationdetails.js:152
+#: ../../../views/grcdetails.js:43
 msgid "Done"
 msgstr ""
 
@@ -55,7 +55,6 @@ msgid "Organisation name already in usage"
 msgstr ""
 
 #: ../../../views/organisationdetails.js:116
-#: ../../../controllers/organisation.js:97
 msgid "64 characters max"
 msgstr ""
 
@@ -75,6 +74,10 @@ msgstr ""
 #: ../../../templates/establishmentlist.html:17
 #: ../../../templates/organisationcreate.html:17
 msgid "Organisation"
+msgstr ""
+
+#: ../../../controllers/organisation.js:97
+msgid "255 characters max"
 msgstr ""
 
 #: ../../../templates/establishmentlist.html:16

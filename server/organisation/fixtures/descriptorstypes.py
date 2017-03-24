@@ -10,14 +10,13 @@ DESCRIPTORS = {
     'organisations_types': {
         'id': None,
         'name': 'organisations_types',
-        'code': 'OR_001',
+        'code': 'ORG_TYPE',
         'group': 'organisation',
         'can_delete': False,
         'can_modify': True,
         'description': 'List of types of organisations for an organisation',
         'format': {
             'type': 'enum_single',
-            'format': 'category',
             'trans': True,
             'fields': ('type',),
             'list_type': 'dropdown',

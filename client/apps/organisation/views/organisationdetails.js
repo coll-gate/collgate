@@ -157,7 +157,6 @@ var View = Marionette.ItemView.extend({
                         model.set('type', type);
                     }
                 } else {
-                    model.save({parent: parent}, {patch: true, wait: true});
                     model.save(data, {patch: true, wait: true});
                 }
 

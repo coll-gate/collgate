@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-22 12:08+0100\n"
+"POT-Creation-Date: 2017-03-24 15:21+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: ../../../views/accessiondescriptor.js:26
-#: ../../../views/accessiondescriptoredit.js:81
+#: ../../../views/accessiondescriptoredit.js:76
 #: ../../../views/batchdescriptor.js:26
 #: ../../../views/batchdescriptoredit.js:75
 #: ../../../templates/accessionlayout.html:6
@@ -40,16 +40,17 @@ msgstr "Appliquer les modifications"
 msgid "Cancel modifications"
 msgstr "Annuler les modificiations"
 
-#: ../../../views/accessionsynonyms.js:57
-#: ../../../views/accessionsynonyms.js:226
-msgid "64 characters max"
-msgstr "64 caractères maximum"
-
+#: ../../../views/accessionlistfooter.js:53
 #: ../../../views/accessionsynonyms.js:60
 #: ../../../views/accessionsynonyms.js:223 ../../../views/batchbottom.js:57
 #: ../../../controllers/accession.js:189 ../../../controllers/accession.js:203
 msgid "3 characters min"
 msgstr "3 caractères minimum"
+
+#: ../../../views/accessionsynonyms.js:57
+#: ../../../views/accessionsynonyms.js:226
+msgid "64 characters max"
+msgstr "64 caractères maximum"
 
 #: ../../../views/accessionsynonyms.js:93
 #: ../../../views/accessionsynonyms.js:201
@@ -71,11 +72,11 @@ msgstr "Le code CRB de l'accession doit être unique"
 msgid "Invalid characters (alphanumeric, _ and - only)"
 msgstr "Caractères invalides (alphanumeric, _ et - seulement)"
 
-#: ../../../routers/accession.js:34
+#: ../../../routers/accession.js:35
 msgid "List of accessions"
 msgstr "Liste des accessions"
 
-#: ../../../routers/accession.js:51 ../../../controllers/accession.js:255
+#: ../../../routers/accession.js:54 ../../../controllers/accession.js:256
 msgid "Accession"
 msgstr "Accession"
 

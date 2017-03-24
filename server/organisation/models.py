@@ -24,17 +24,17 @@ class Organisation(DescribableEntity):
     NAME_VALIDATOR = {"type": "string", "minLength": 3, "maxLength": 255, "pattern": r"^\S+.+\S+$"}
 
     # organisation type validator
-    TYPE_VALIDATOR = {"type:": "string", 'minLength': 14, 'maxLength': 32, "pattern": r"^OR_001:[0-9]{7,}$"}
+    TYPE_VALIDATOR = {"type:": "string", 'minLength': 10, 'maxLength': 18, "pattern": r"^ORG_TYPE:[0-9]{1,9}$"}
 
     # organisation type validator optional
     TYPE_VALIDATOR_OPTIONAL = {
-        "type:": "string", 'minLength': 14, 'maxLength': 32, "pattern": r"^OR_001:[0-9]{7,}$", "required": False}
+        "type:": "string", 'minLength': 10, 'maxLength': 18, "pattern": r"^ORG_TYPE:[0-9]{1,9}$", "required": False}
 
     # Descriptor type code
-    TYPE_CODE = "OR_001"
+    TYPE_CODE = "ORG_TYPE"
 
     # undefined type as constant
-    TYPE_UNDEFINED = "OR_001:0000001"
+    TYPE_UNDEFINED = "ORG_TYPE:01"
 
     # unique name of the organisation
     name = models.CharField(unique=True, max_length=255, db_index=True)
@@ -111,7 +111,7 @@ class Establishment(DescribableEntity):
     """
 
     # name validator, used with content validation, to avoid any whitespace before and after
-    NAME_VALIDATOR = {"type": "string", "minLength": 3, "maxLength": 128, "pattern": r"^\S+.+\S+$"}
+    NAME_VALIDATOR = {"type": "string", "minLength": 3, "maxLength": 255, "pattern": r"^\S+.+\S+$"}
 
     # unique name of establishment
     name = models.CharField(unique=True, max_length=255, db_index=True)
@@ -172,9 +172,9 @@ class GRC(models.Model):
     Genetic resource center entity. Only one is configured for the application instance.
     """
 
-    NAME_VALIDATOR = {"type": "string", "minLength": 1, "maxLength": 256, "pattern": r"^\S+.+\S+$"}
+    NAME_VALIDATOR = {"type": "string", "minLength": 1, "maxLength": 255, "pattern": r"^\S+.+\S+$"}
 
-    IDENTIFIER_VALIDATOR = {"type": "string", "minLength": 1, "maxLength": 256, "pattern": r"^\S+.+\S+$"}
+    IDENTIFIER_VALIDATOR = {"type": "string", "minLength": 1, "maxLength": 255, "pattern": r"^\S+.+\S+$"}
 
     # name of the GRC
     name = models.CharField(max_length=255, default="Undefined GRC", blank=False)

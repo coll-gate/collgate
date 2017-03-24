@@ -37,6 +37,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='accessionsynonym',
             name='type',
-            field=models.CharField(default='AC_001:0000003', max_length=64),
+            field=models.CharField(default='ACC_SYN:03', max_length=64),
         ),
     ]

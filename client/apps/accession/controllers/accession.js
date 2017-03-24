@@ -167,7 +167,7 @@ var Controller = Marionette.Object.extend({
                                 for (var i in data.items) {
                                     var t = data.items[i];
 
-                                    if (t.type === "AC_001:0000001" && t.label.toUpperCase() == name.toUpperCase()) {
+                                    if (t.type === "ACC_SYN:01" && t.label.toUpperCase() == name.toUpperCase()) {
                                         $(this.el).validateField('failed', gt.gettext('Synonym used as accession code'));
                                         return;
                                     }

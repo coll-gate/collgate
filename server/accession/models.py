@@ -126,19 +126,19 @@ class AccessionSynonym(Entity):
     CODE_VALIDATOR = {"type": "string", "minLength": 3, "maxLength": 128, "pattern": r"^\S+.+\S+$"}
 
     # accession synonym type validator
-    TYPE_VALIDATOR = {"type:": "string", 'minLength': 14, 'maxLength': 32, "pattern": r"^AC_001:[0-9]{7,}$"}
+    TYPE_VALIDATOR = {"type:": "string", 'minLength': 9, 'maxLength': 17, "pattern": r"^ACC_SYN:[0-9]{1,9}$"}
 
     # static : Descriptor type code
-    DESCRIPTOR_TYPE_CODE = "AC_001"
+    DESCRIPTOR_TYPE_CODE = "ACC_SYN"
 
     # static : unique code type as constant
-    TYPE_GRC_CODE = "AC_001:0000001"
+    TYPE_GRC_CODE = "ACC_SYN:01"
 
     # static : primary name type as constant
-    TYPE_PRIMARY = "AC_001:0000002"
+    TYPE_PRIMARY = "ACC_SYN:02"
 
     # static : synonym name type as constant
-    TYPE_SYNONYM = "AC_001:0000003"
+    TYPE_SYNONYM = "ACC_SYN:03"
 
     # related accession
     accession = models.ForeignKey(Accession, related_name="synonyms")

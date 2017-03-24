@@ -45,8 +45,8 @@ var View = Marionette.ItemView.extend({
         application.accession.views.accessionSynonymTypes.htmlFromValue(this.el);
 
         // remove GRC code and Primary Name
-        this.ui.accession_synonym_type.find('option[value="AC_001:0000001"]').remove();
-        this.ui.accession_synonym_type.find('option[value="AC_001:0000002"]').remove();
+        this.ui.accession_synonym_type.find('option[value="ACC_SYN:01"]').remove();
+        this.ui.accession_synonym_type.find('option[value="ACC_SYN:02"]').remove();
         this.ui.accession_synonym_type.selectpicker('refresh');
     },
 
@@ -88,7 +88,7 @@ var View = Marionette.ItemView.extend({
 
                             // invalid if GRC code exists with the same name or if exists into the same accession
                             if (t.label.toUpperCase() == name.toUpperCase()) {
-                                if (t.type == "AC_001:0000001") {
+                                if (t.type == "ACC_SYN:01") {
                                     view.ui.synonym_name.validateField(
                                         'failed', gt.gettext('It is not possible to use a GRC code of accession as synonym'));
                                     return;
@@ -190,12 +190,12 @@ var View = Marionette.ItemView.extend({
                                         if ((t.accession == view.model.get('id')) && (t.id == view.getOption('synonym_id'))) {
                                             view.ui.synonym_name.validateField('ok');
                                             break;
-                                        } else if (view.getOption('type') == "AC_001:0000001") {
+                                        } else if (view.getOption('type') == "ACC_SYN:01") {
                                             // invalid if same name and modifying a GRC code synonym
                                             view.ui.synonym_name.validateField(
                                                 'failed', gt.gettext('Accession GRC code must be unique'));
                                             break;
-                                        } else if (t.type == "AC_001:0000001") {
+                                        } else if (t.type == "ACC_SYN:01") {
                                             // invalid if GRC code exists with the same name
                                             view.ui.synonym_name.validateField(
                                                 'failed', gt.gettext('It is not possible to use a GRC code of accession as synonym'));

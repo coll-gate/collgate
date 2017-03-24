@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-03 14:34+0100\n"
+"POT-Creation-Date: 2017-03-24 15:21+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -30,16 +30,20 @@ msgstr ""
 msgid "Successfully inserted !"
 msgstr ""
 
-#: ../../../routers/main.js:41
+#: ../../../routers/main.js:42
 msgid "Home"
 msgstr ""
 
-#: ../../../routers/main.js:61
+#: ../../../routers/main.js:62
 msgid "About..."
 msgstr ""
 
-#: ../../../routers/main.js:69
+#: ../../../routers/main.js:70
 msgid "Help..."
+msgstr ""
+
+#: ../../../routers/main.js:81
+msgid "Configuration state"
 msgstr ""
 
 #: ../../../routers/profile.js:39
@@ -56,6 +60,22 @@ msgstr ""
 
 #: ../../../templates/actionpanel.html:3
 msgid "Last actions"
+msgstr ""
+
+#: ../../../templates/config.html:6
+msgid "Configured"
+msgstr ""
+
+#: ../../../templates/config.html:11
+msgid "Improperly configured"
+msgstr ""
+
+#: ../../../templates/config.html:16
+msgid "Partially configured"
+msgstr ""
+
+#: ../../../templates/config.html:21
+msgid "Undefined"
 msgstr ""
 
 #: ../../../templates/confirmdialog.html:11

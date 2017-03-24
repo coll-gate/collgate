@@ -19,6 +19,12 @@ GROUPS = {
         'can_delete': False,
         'can_modify': False,
     },
+    'MCPD': {
+        'id': None,
+        'name': 'MCPD',
+        'can_delete': False,
+        'can_modify': False,
+    }
 }
 
 
