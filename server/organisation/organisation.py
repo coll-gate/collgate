@@ -14,7 +14,7 @@ from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 
 from descriptor.describable import DescriptorsBuilder
-from descriptor.models import DescriptorMetaModel
+from descriptor.models import DescriptorMetaModel, DescriptorModelType
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
 from organisation.models import Organisation, GRC
@@ -91,8 +91,7 @@ def create_organisation(request):
                 grc.organisations.add(organisation)
 
     except IntegrityError as e:
-        logger.error(repr(e))
-        raise SuspiciousOperation(_("Unable to create the organisation"))
+        DescriptorModelType.integrity_except(Organisation, e)
 
     response = {
         'id': organisation.id,
@@ -347,8 +346,7 @@ def patch_organisation(request, org_id):
 
             organisation.save()
     except IntegrityError as e:
-        logger.error(repr(e))
-        raise SuspiciousOperation(_("Unable to update the organisation"))
+        DescriptorModelType.integrity_except(Organisation, e)
 
     return HttpResponseRest(request, result)
 

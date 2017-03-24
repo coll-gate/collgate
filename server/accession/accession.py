@@ -16,7 +16,7 @@ from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 
 from descriptor.describable import DescriptorsBuilder
-from descriptor.models import DescriptorMetaModel
+from descriptor.models import DescriptorMetaModel, DescriptorModelType
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
 from main.models import Languages
@@ -120,8 +120,7 @@ def create_accession(request):
             accession.synonyms.add(grc_code)
             accession.synonyms.add(primary_name)
     except IntegrityError as e:
-        logger.error(repr(e))
-        raise SuspiciousOperation(_("Unable to create the accession"))
+        DescriptorModelType.integrity_except(Accession, e)
 
     response = {
         'id': accession.pk,
@@ -420,8 +419,7 @@ def patch_accession(request, acc_id):
 
             accession.save()
     except IntegrityError as e:
-        logger.error(repr(e))
-        raise SuspiciousOperation(_("Unable to update the accession"))
+        DescriptorModelType.integrity_except(Accession, e)
 
     return HttpResponseRest(request, result)
 

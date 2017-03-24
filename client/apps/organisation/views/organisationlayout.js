@@ -56,6 +56,15 @@ var Layout = Marionette.LayoutView.extend({
 
         this.activeTab = undefined;
         this.listenTo(this.model, 'change:descriptor_meta_model', this.onDescriptorMetaModelChange, this);
+        this.listenTo(this.model, 'change:id', this.onOrganisationCreate, this);
+    },
+
+    onOrganisationCreate: function(model, value) {
+        // re-render once created
+        this.render();
+
+        // and update history
+        Backbone.history.navigate('app/organisation/organisation/' + this.model.get('id') + '/', {/*trigger: true,*/ replace: false});
     },
 
     onDescriptorMetaModelChange: function(model, value) {
@@ -86,11 +95,6 @@ var Layout = Marionette.LayoutView.extend({
 
     onRender: function() {
         var organisationLayout = this;
-
-        this.activeTab = this.ui.initial_pane.attr('name');
-
-        this.ui.tabs.on("shown.bs.tab", $.proxy(this.onShowTab, this));
-        this.ui.tabs.on("hide.bs.tab", $.proxy(this.onHideTab, this));
 
         // details view
         if (!this.model.isNew()) {
@@ -137,6 +141,13 @@ var Layout = Marionette.LayoutView.extend({
             // not available tabs
             this.disableEstablishmentTab();
         }
+    },
+
+    onBeforeAttach: function() {
+        this.activeTab = this.ui.initial_pane.attr('name');
+
+        this.ui.tabs.on("shown.bs.tab", $.proxy(this.onShowTab, this));
+        this.ui.tabs.on("hide.bs.tab", $.proxy(this.onHideTab, this));
     },
 
     onShowTab: function(e) {

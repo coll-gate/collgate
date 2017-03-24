@@ -10,6 +10,7 @@ import json
 
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.postgres.fields import JSONField
+from django.core.exceptions import SuspiciousOperation
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.utils import translation
@@ -1191,6 +1192,28 @@ class DescriptorModelType(Entity):
         connection = connections[db]
         with connection.cursor() as cursor:
             cursor.execute(sql)
+
+    @classmethod
+    def integrity_except(cls, model_class, exception):
+        """
+        Parse and interpret the integrity exception during describable save.
+        :param model_class: Model class of the describable
+        :param exception: IntegrityError exception instance
+        :raise SuspiciousOperation with a human readable error.
+        """
+        # logger.error(repr(exception))
+
+        # duplicate constraint
+        if exception.args[0].startswith('duplicate key value violates unique constraint'):
+            field = exception.args[0].split("'")[1]
+            try:
+                dmt = DescriptorModelType.objects.get(name=field)
+            except DescriptorModelType.DoesNotExist:
+                raise SuspiciousOperation(_("Unable to update the %s" % str(model_class._meta.verbose_name)))
+
+            raise SuspiciousOperation(_("The value of the descriptor %s must be unique." % dmt.get_label()))
+
+        raise SuspiciousOperation(_("Unable to save the %s" % str(model_class._meta.verbose_name)))
 
 
 class DescriptorModel(Entity):
