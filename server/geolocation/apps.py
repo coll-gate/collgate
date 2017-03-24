@@ -13,6 +13,7 @@ from importlib import import_module
 from igdectk.module.manager import module_manager
 
 from . import instance
+from main.config import configuration
 
 
 class CollGateGeolocation(ApplicationMain):
@@ -33,9 +34,18 @@ class CollGateGeolocation(ApplicationMain):
 
         package_name, module_name, class_name = self.get_setting('geolocation_manager').split('.')
 
-        module = import_module(self.name + '.' + package_name + '.' + module_name)
+        try:
+            module = import_module(self.name + '.' + package_name + '.' + module_name)
+            configuration.validate('geolocation',
+                                   'geolocation_manager',
+                                   "Geolocation external module importation validated")
 
-        self.geolocation_manager = module.GeolocationManager()
+            self.geolocation_manager = module.GeolocationManager()
+
+        except ImportError:
+            configuration.wrong('geolocation',
+                                'geolocation_manager',
+                                "Geolocation external module importation error")
 
         # create a geolocation module
         geolocation_module = Module('geolocation', base_url='coll-gate')
