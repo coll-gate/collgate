@@ -148,9 +148,18 @@ var View = Marionette.ItemView.extend({
                     data.type = type;
                 }
 
-                model.save(data, {patch: true, wait: true, success: function () {
-                    $.alert.success(gt.gettext('Done'));
-                }});
+                if (model.isNew()) {
+                    if (name != model.get('name')) {
+                        model.set('name', name);
+                    }
+
+                    if (type != model.get('type')) {
+                        model.set('type', type);
+                    }
+                } else {
+                    model.save({parent: parent}, {patch: true, wait: true});
+                    model.save(data, {patch: true, wait: true});
+                }
 
                 this.destroy();
             }

@@ -46,7 +46,9 @@ var View = DescribableEdit.extend({
             return;
         }
 
-        this.model.save({descriptors: descriptors}, {wait: true, patch: !model.isNew()}).then(function () {
+        var isNew = this.model.isNew();
+
+        this.model.save({descriptors: descriptors}, {wait: true, patch: !isNew}).then(function () {
             var layout = application.view().getRegion('content').currentView;
 
             // update the layout content

@@ -10,6 +10,7 @@ import json
 
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.postgres.fields import JSONField
+from django.core.exceptions import SuspiciousOperation
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.utils import translation
@@ -240,7 +241,7 @@ class DescriptorType(Entity):
         """
         Check if there is some values for this descriptor for any languages
 
-        :return: True if there is somes values
+        :return: True if there is some values
         :rtype: Boolean
         """
         if self.values:
@@ -1150,6 +1151,69 @@ class DescriptorModelType(Entity):
         data = json.loads(self.label)
         data[lang] = label
         self.label = json.dumps(data)
+
+    def create_index(self, describable, unique=False, using_gin=False, db='default'):
+        """
+        Create a new (GIN) index on a field of JSONB descriptors of the given describable model.
+        :param describable:
+        :param unique:
+        :param using_gin:
+        :param db:
+        """
+        table = describable._meta.db_table
+        index = "%s_descriptors_%s_key" % (table, self.name)
+
+        if unique:
+            if using_gin:
+                sql = """CREATE UNIQUE INDEX %s ON %s USING GIN ((descriptors->'%s'));""" % (index, table, self.name)
+            else:
+                sql = """CREATE UNIQUE INDEX %s ON %s ((descriptors->'%s'));""" % (index, table, self.name)
+        else:
+            if using_gin:
+                sql = """CREATE INDEX %s ON %s USING GIN ((descriptors->'%s'));""" % (index, table, self.name)
+            else:
+                sql = """CREATE INDEX %s ON %s ((descriptors->'%s'));""" % (index, table, self.name)
+
+        connection = connections[db]
+        with connection.cursor() as cursor:
+            cursor.execute(sql)
+
+    def drop_index(self, describable, db='default'):
+        """
+        Drop an existing index of a field of JSONB descriptors of the given describable model.
+        :param describable:
+        :param db:
+        """
+        table = describable._meta.db_table
+        index = "%s_descriptors_%s_key" % (table, self.name)
+
+        sql = """DROP INDEX IF EXISTS %s""" % index
+
+        connection = connections[db]
+        with connection.cursor() as cursor:
+            cursor.execute(sql)
+
+    @classmethod
+    def integrity_except(cls, model_class, exception):
+        """
+        Parse and interpret the integrity exception during describable save.
+        :param model_class: Model class of the describable
+        :param exception: IntegrityError exception instance
+        :raise SuspiciousOperation with a human readable error.
+        """
+        # logger.error(repr(exception))
+
+        # duplicate constraint
+        if exception.args[0].startswith('duplicate key value violates unique constraint'):
+            field = exception.args[0].split("'")[1]
+            try:
+                dmt = DescriptorModelType.objects.get(name=field)
+            except DescriptorModelType.DoesNotExist:
+                raise SuspiciousOperation(_("Unable to update the %s" % str(model_class._meta.verbose_name)))
+
+            raise SuspiciousOperation(_("The value of the descriptor %s must be unique." % dmt.get_label()))
+
+        raise SuspiciousOperation(_("Unable to save the %s" % str(model_class._meta.verbose_name)))
 
 
 class DescriptorModel(Entity):

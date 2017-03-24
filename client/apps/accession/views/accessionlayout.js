@@ -60,7 +60,15 @@ var Layout = Marionette.LayoutView.extend({
         this.activeTab = undefined;
 
         this.listenTo(this.model, 'change:descriptor_meta_model', this.onDescriptorMetaModelChange, this);
-        // this.listenTo(this.model, 'change', this.onRender, this);
+        this.listenTo(this.model, 'change:id', this.onAccessionCreate, this);
+    },
+
+    onAccessionCreate: function(model, value) {
+        // re-render once created
+        this.render();
+
+        // and update history
+        Backbone.history.navigate('app/accession/accession/' + this.model.get('id') + '/', {/*trigger: true,*/ replace: false});
     },
 
     disableSynonymsTab: function () {

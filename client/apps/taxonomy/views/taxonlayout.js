@@ -81,11 +81,6 @@ var Layout = Marionette.LayoutView.extend({
     onRender: function() {
         var taxonLayout = this;
 
-        this.activeTab = this.ui.initial_pane.attr('name');
-
-        this.ui.tabs.on("shown.bs.tab", $.proxy(this.onShowTab, this));
-        this.ui.tabs.on("hide.bs.tab", $.proxy(this.onHideTab, this));
-
         // details views
         var TaxonDetailsView = require('../views/taxondetails');
         this.getRegion('details').show(new TaxonDetailsView({model: this.model}));
@@ -128,6 +123,13 @@ var Layout = Marionette.LayoutView.extend({
             contentBottomLayout.getRegion('content').show(taxonEntitiesView);
             contentBottomLayout.getRegion('bottom').show(new ScrollingMoreView({targetView: taxonEntitiesView}));
         });
+    },
+
+    onBeforeAttach: function() {
+        this.activeTab = this.ui.initial_pane.attr('name');
+
+        this.ui.tabs.on("shown.bs.tab", $.proxy(this.onShowTab, this));
+        this.ui.tabs.on("hide.bs.tab", $.proxy(this.onHideTab, this));
     },
 
     onShowTab: function(e) {

@@ -16,15 +16,15 @@ var View = Marionette.ItemView.extend({
     template: require('../templates/accessionlistfooter.html'),
 
     ui: {
-        // filter_btn: 'button.accession-filter',
-        // accession_name: 'input.accession-name'
-        // accession_advanced_search: 'button.accession-advanced-search',
-        // accession_columns_config: 'button.accession-columns-config'
+        filter_btn: 'button.accession-filter',
+        accession_name: 'input.accession-name',
+        accession_advanced_search: 'button.accession-advanced-search',
+        accession_columns_config: 'button.accession-columns-config'
     },
 
     events: {
-        // 'click @ui.filter_btn': 'onFilter',
-        // 'input @ui.accession_name': 'onAccessionNameInput'
+        'click @ui.filter_btn': 'onFilter',
+        'input @ui.accession_name': 'onAccessionNameInput'
     },
 
     initialize: function(options) {

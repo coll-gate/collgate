@@ -16,7 +16,7 @@ from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 
 from descriptor.describable import DescriptorsBuilder
-from descriptor.models import DescriptorMetaModel
+from descriptor.models import DescriptorMetaModel, DescriptorModelType
 from main.models import Languages
 from permission.utils import get_permissions_for
 
@@ -457,8 +457,7 @@ def patch_taxon(request, tax_id):
             taxon.save()
 
     except IntegrityError as e:
-        logger.log(repr(e))
-        raise SuspiciousOperation(_("Unable to update the taxon"))
+        DescriptorModelType.integrity_except(Taxon, e)
 
     return HttpResponseRest(request, result)
 

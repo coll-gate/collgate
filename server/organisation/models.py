@@ -21,7 +21,7 @@ class Organisation(DescribableEntity):
     """
 
     # name validator, used with content validation, to avoid any whitespace before and after
-    NAME_VALIDATOR = {"type": "string", "minLength": 3, "maxLength": 128, "pattern": r"^\S+.+\S+$"}
+    NAME_VALIDATOR = {"type": "string", "minLength": 3, "maxLength": 255, "pattern": r"^\S+.+\S+$"}
 
     # organisation type validator
     TYPE_VALIDATOR = {"type:": "string", 'minLength': 14, 'maxLength': 32, "pattern": r"^OR_001:[0-9]{7,}$"}
