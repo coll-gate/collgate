@@ -160,3 +160,18 @@ EMAIL_PORT = 25  # 465
 EMAIL_HOST_USER = "fscherma"
 EMAIL_HOST_PASSWORD = ""
 #EMAIL_USE_SSL = True
+
+
+APPLICATIONS = {
+    'geonames': {
+        'DB_DEFAULT_SETTINGS': {
+            'geonames_username': '"demo"'
+        }
+    },
+    'medialibrary': {
+        'DB_DEFAULT_SETTINGS': {
+            'storage_location': '"/coll-gate/media"',
+            'storage_path': '"/var/lib/collgate/media"'
+        }
+    }
+}
