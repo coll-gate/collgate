@@ -1,0 +1,174 @@
+{
+  "en": {
+    "MCPD_SAMPSTAT:100": {
+      "value0": "1",
+      "value1": "Wild"
+    },
+    "MCPD_SAMPSTAT:110": {
+      "value0": "1.1",
+      "value1": "Natural"
+    },
+    "MCPD_SAMPSTAT:120": {
+      "value0": "1.2",
+      "value1": "Semi-natural/wild"
+    },
+    "MCPD_SAMPSTAT:130": {
+      "value0": "1.3",
+      "value1": "Semi-natural/sown"
+    },
+    "MCPD_SAMPSTAT:200": {
+      "value0": "2",
+      "value1": "Weedy"
+    },
+    "MCPD_SAMPSTAT:300": {
+      "value0": "3",
+      "value1": "Traditional cultivar/landrace"
+    },
+    "MCPD_SAMPSTAT:400": {
+      "value0": "4",
+      "value1": "Breeding/research material"
+    },
+    "MCPD_SAMPSTAT:410": {
+      "value0": "4.1",
+      "value1": "Breeder's line"
+    },
+    "MCPD_SAMPSTAT:411": {
+      "value0": "4.1.1",
+      "value1": "Synthetic population"
+    },
+    "MCPD_SAMPSTAT:412": {
+      "value0": "4.1.2",
+      "value1": "Hybrid"
+    },
+    "MCPD_SAMPSTAT:413": {
+      "value0": "4.1.3",
+      "value1": "Founder stock/base population"
+    },
+    "MCPD_SAMPSTAT:414": {
+      "value0": "4.1.4",
+      "value1": "Inbred line (parent of hybrid cultivar)"
+    },
+    "MCPD_SAMPSTAT:415": {
+      "value0": "4.1.5",
+      "value1": "Segregating population"
+    },
+    "MCPD_SAMPSTAT:416": {
+      "value0": "4.1.6",
+      "value1": "Clonal selection"
+    },
+    "MCPD_SAMPSTAT:420": {
+      "value0": "4.2",
+      "value1": "Genetic stock"
+    },
+    "MCPD_SAMPSTAT:421": {
+      "value0": "4.2.1",
+      "value1": "Mutant (e.g. induced/insertion mutants, tilling populations)"
+    },
+    "MCPD_SAMPSTAT:422": {
+      "value0": "4.2.2",
+      "value1": "Cytogenetic stocks (e.g. chromosome addition/substitution, aneuploids, amphiploids)"
+    },
+    "MCPD_SAMPSTAT:423": {
+      "value0": "4.2.3",
+      "value1": "Other genetic stocks (e.g. mapping populations)"
+    },
+    "MCPD_SAMPSTAT:500": {
+      "value0": "5",
+      "value1": "Advanced or improved cultivar (conventional breeding methods)"
+    },
+    "MCPD_SAMPSTAT:600": {
+      "value0": "6",
+      "value1": "GMO (by genetic engineering)"
+    },
+    "MCPD_SAMPSTAT:999": {
+      "value0": "999",
+      "value1": "Other (Elaborate in REMARKS field)"
+    }
+},
+  "fr": {
+    "MCPD_SAMPSTAT:100": {
+      "value0": "1",
+      "value1": "Sauvage"
+    },
+    "MCPD_SAMPSTAT:110": {
+      "value0": "1.1",
+      "value1": "Spontané"
+    },
+    "MCPD_SAMPSTAT:120": {
+      "value0": "1.2",
+      "value1": "Semi-spontané/sauvage"
+    },
+    "MCPD_SAMPSTAT:130": {
+      "value0": "1.3",
+      "value1": "Semi-spontané/semé"
+    },
+    "MCPD_SAMPSTAT:200": {
+      "value0": "2",
+      "value1": "Envahi de mauvaises herbes"
+    },
+    "MCPD_SAMPSTAT:300": {
+      "value0": "3",
+      "value1": "Cultivar traditionnel/variété indigène"
+    },
+    "MCPD_SAMPSTAT:400": {
+      "value0": "4",
+      "value1": "Matériel de sélection/recherche"
+    },
+    "MCPD_SAMPSTAT:410": {
+      "value0": "4.1",
+      "value1": "Lignée de sélectionneur"
+    },
+    "MCPD_SAMPSTAT:411": {
+      "value0": "4.1.1",
+      "value1": "Population synthétique"
+    },
+    "MCPD_SAMPSTAT:412": {
+      "value0": "4.1.2",
+      "value1": "Hybride"
+    },
+    "MCPD_SAMPSTAT:413": {
+      "value0": "4.1.3",
+      "value1": "Stock fondateur/population de base"
+    },
+    "MCPD_SAMPSTAT:414": {
+      "value0": "4.1.4",
+      "value1": "Lignée consanguine (parent de cultivar hybride)"
+    },
+    "MCPD_SAMPSTAT:415": {
+      "value0": "4.1.5",
+      "value1": "Population ségrégant"
+    },
+    "MCPD_SAMPSTAT:416": {
+      "value0": "4.1.6",
+      "value1": "Sélection clonale"
+    },
+    "MCPD_SAMPSTAT:420": {
+      "value0": "4.2",
+      "value1": "Stock génétique"
+    },
+    "MCPD_SAMPSTAT:421": {
+      "value0": "4.2.1",
+      "value1": "Mutant (exemple: mutation par induction/insertion, populations pour ‘TILLING’)"
+    },
+    "MCPD_SAMPSTAT:422": {
+      "value0": "4.2.2",
+      "value1": "Stocks cytogénétiques (exemple: ajout/substitution de chromosomes, aneuploïdes, amphiploïdes)"
+    },
+    "MCPD_SAMPSTAT:423": {
+      "value0": "4.2.3",
+      "value1": "Autres stocks génétiques (exemple: cartographie des populations)"
+    },
+    "MCPD_SAMPSTAT:500": {
+      "value0": "5",
+      "value1": "Cultivar avancé ou amélioré (méthodes de sélection conventionnelles)"
+    },
+    "MCPD_SAMPSTAT:600": {
+      "value0": "6",
+      "value1": "OGM (par génie génétique)"
+    },
+    "MCPD_SAMPSTAT:999": {
+      "value0": "999",
+      "value1": "Autre (préciser dans le champ Remarques)"
+    }
+  }
+}
