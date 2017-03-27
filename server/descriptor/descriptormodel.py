@@ -440,6 +440,7 @@ def reorder_descriptor_types_for_model(request, des_id):
             "name": DescriptorModelType.NAME_VALIDATOR_OPTIONAL,
             "mandatory": {"type": "boolean", "required": False},
             "set_once": {"type": "boolean", "required": False},
+            "index": {"type": "string", "enum": ["unique-btree", "btree", "gist", "gin"], "required": False},
             "label": DescriptorModelType.LABEL_VALIDATOR_OPTIONAL
         },
     },
