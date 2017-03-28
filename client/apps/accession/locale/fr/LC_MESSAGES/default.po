@@ -94,15 +94,15 @@ msgstr "Saisissez un nom de taxon. A moins 3 caractère pour l'auto-complétion"
 
 #: ../../../controllers/accession.js:138
 msgid "Code of accession already used"
-msgstr ""
+msgstr "Code d'accession déjà utilisé"
 
 #: ../../../controllers/accession.js:171
 msgid "Synonym used as accession code"
-msgstr ""
+msgstr "Synonyme utilisé comme code d'accession"
 
 #: ../../../controllers/accession.js:186 ../../../controllers/accession.js:200
 msgid "128 characters max"
-msgstr ""
+msgstr "128 caractères maximum"
 
 #: ../../../controllers/accession.js:219
 msgid "The parent must be defined"
@@ -138,11 +138,11 @@ msgstr "Modèle"
 
 #: ../../../templates/accessioncreate.html:20
 msgid "Code of the accession (must be unique)"
-msgstr ""
+msgstr "Code de l'accession (doit être unique)"
 
 #: ../../../templates/accessioncreate.html:26
 msgid "Principal name of the accession"
-msgstr ""
+msgstr "Nom principal de l'accession"
 
 #: ../../../templates/accessioncreate.html:32
 #: ../../../templates/accessionsynonyms.html:7

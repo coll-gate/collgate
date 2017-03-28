@@ -54,16 +54,48 @@ class FixtureManager:
         }
 
     def get_descriptor_group_id(self, name):
-        return self.descriptor_groups.get(name, {'id': None})['id']
+        # local search first
+        group_id = self.descriptor_groups.get(name, {'id': None})['id']
+        if group_id is None:
+            try:
+                group_id = DescriptorGroup.objects.get(name=name).id
+            except DescriptorGroup.DoesNotExist:
+                return None
+
+        return group_id
 
     def get_descriptor_type_id(self, name):
-        return self.descriptor_types.get(name, {'id': None})['id']
+        # local search first
+        type_id = self.descriptor_types.get(name, {'id': None})['id']
+        if type_id is None:
+            try:
+                type_id = DescriptorModelType.objects.get(name=name).id
+            except DescriptorModelType.DoesNotExist:
+                return None
+
+        return type_id
 
     def get_descriptor_model_id(self, name):
-        return self.descriptor_models.get(name, {'id': None})['id']
+        # local search first
+        model_id = self.descriptor_models.get(name, {'id': None})['id']
+        if model_id is None:
+            try:
+                model_id = DescriptorModel.objects.get(name=name).id
+            except DescriptorModel.DoesNotExist:
+                return None
+
+        return model_id
 
     def get_descriptor_meta_model_id(self, name):
-        return self.descriptor_meta_models.get(name, {'id': None})['id']
+        # local search first
+        meta_model_id = self.descriptor_meta_models.get(name, {'id': None})['id']
+        if meta_model_id is None:
+            try:
+                meta_model_id = DescriptorMetaModel.objects.get(name=name).id
+            except DescriptorMetaModel.DoesNotExist:
+                return None
+
+        return meta_model_id
 
     def load_json(self, module_name, file_name):
         handler = open(os.path.join(module_name, 'fixtures', file_name), 'rU')

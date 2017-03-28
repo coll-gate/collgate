@@ -676,8 +676,8 @@ msgstr "Nom"
 #: ../../../templates/descriptorgrouplistalt.html:16
 #: ../../../templates/descriptormodellist.html:18
 #: ../../../templates/descriptormodellistalt.html:17
-msgid "Number of types of descriptor"
-msgstr "Nombre de types de descripteur"
+msgid "Types of descriptor"
+msgstr "Types de descripteur"
 
 #: ../../../templates/descriptorgrouplistalt.html:15
 msgid "Group of descriptors"

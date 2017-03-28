@@ -6,9 +6,6 @@
 Setup the value for the country descriptors.
 """
 
-# from .descriptorstypes import DESCRIPTORS
-
-
 def fixture(fixture_manager):
     data = fixture_manager.load_json('accession', 'accessionsynonymtypes.json')
 

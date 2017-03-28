@@ -1049,11 +1049,11 @@ class DescriptorModelType(Entity):
 
     # default name validator optional
     NAME_VALIDATOR = {
-        "type": "string", "minLength": 3, "maxLength": 64, "pattern": "^[a-zA-Z0-9\-\_]+$"}
+        "type": "string", "minLength": 3, "maxLength": 64, "pattern": "^[a-zA-Z0-9\-\_\.]+$"}
 
     # default name validator optional
     NAME_VALIDATOR_OPTIONAL = {
-        "type": "string", "minLength": 3, "maxLength": 64, "pattern": "^[a-zA-Z0-9\-\_]+$", "required": False}
+        "type": "string", "minLength": 3, "maxLength": 64, "pattern": "^[a-zA-Z0-9\-\_\.]+$", "required": False}
 
     # unique name of type of model of descriptor used for descriptors identification
     name = models.CharField(unique=True, max_length=255, db_index=True)

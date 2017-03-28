@@ -674,7 +674,7 @@ msgstr ""
 #: ../../../templates/descriptorgrouplistalt.html:16
 #: ../../../templates/descriptormodellist.html:18
 #: ../../../templates/descriptormodellistalt.html:17
-msgid "Number of types of descriptor"
+msgid "Types of descriptor"
 msgstr ""
 
 #: ../../../templates/descriptorgrouplistalt.html:15

@@ -10,5 +10,6 @@ ORDER = [
     'descriptorsgroups',
     'descriptorstypes',
     'accessionsynonymtypes',
-    'mcpdtypes'
+    'mcpdtypes',
+    'descriptorsmodels'
 ]

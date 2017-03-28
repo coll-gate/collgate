@@ -76,7 +76,7 @@ class RestDescriptorModelIdTypeIdValueDisplaySearch(RestDescriptorModelIdTypeIdV
 
 
 class RestDescriptorGroupIdTypeIdValueId(RestDescriptorGroupIdTypeIdValue):
-    regex = r'^(?P<val_id>[a-zA-Z0-9:_]+)/$'
+    regex = r'^(?P<val_id>[a-zA-Z0-9:_\.]+)/$'
     suffix = 'id'
 
 
