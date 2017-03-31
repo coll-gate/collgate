@@ -212,7 +212,7 @@ def filter_organisation(filters, cursor, limit, grc_only):
 @RestOrganisationSearch.def_auth_request(Method.GET, Format.JSON, ('filters',))
 def search_organisation(request):
     """
-    Quick search for an organisation with a exact or partial name and a rank.
+    Quick search for an organisation with a exact or partial name and a type.
     """
     filters = json.loads(request.GET['filters'])
 

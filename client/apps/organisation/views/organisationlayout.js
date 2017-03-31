@@ -10,9 +10,8 @@
 
 var Marionette = require('backbone.marionette');
 
-var TitleView = require('../../main/views/titleview');
 var ScrollingMoreView = require('../../main/views/scrollingmore');
-var ContentBottomLayout = require('../../main/views/contentbottomlayout');
+var ContentBottomFooterLayout = require('../../main/views/contentbottomfooterlayout');
 var OrganisationDetailsView = require('../views/organisationdetails');
 var DescriptorEditView = require('../views/descriptoredit');
 
@@ -56,7 +55,10 @@ var Layout = Marionette.LayoutView.extend({
 
         this.activeTab = undefined;
         this.listenTo(this.model, 'change:descriptor_meta_model', this.onDescriptorMetaModelChange, this);
-        this.listenTo(this.model, 'change:id', this.onOrganisationCreate, this);
+
+        if (this.model.isNew()) {
+            this.listenTo(this.model, 'change:id', this.onOrganisationCreate, this);
+        }
     },
 
     onOrganisationCreate: function(model, value) {
@@ -109,15 +111,17 @@ var Layout = Marionette.LayoutView.extend({
                 var EstablishmentListView = require('../views/establishmentlist');
                 var establishmentListView  = new EstablishmentListView({collection: establishments, model: organisationLayout.model});
 
-                var contentBottomLayout = new ContentBottomLayout();
-                organisationLayout.getRegion('establishments').show(contentBottomLayout);
+                var contentBottomFooterLayout = new ContentBottomFooterLayout();
+                organisationLayout.getRegion('establishments').show(contentBottomFooterLayout);
 
-                contentBottomLayout.getRegion('content').show(establishmentListView);
-                contentBottomLayout.getRegion('bottom').show(new ScrollingMoreView({targetView: establishmentListView}));
+                contentBottomFooterLayout.getRegion('content').show(establishmentListView);
+                contentBottomFooterLayout.getRegion('bottom').show(new ScrollingMoreView({targetView: establishmentListView}));
 
-                // how and where ?
-                // var EstablishmentListFilterView = require('./establishmentlistfilter');
-                // contentBottomLayout.getRegion('footer').show(new EstablishmentListFilterView({collection: establishments}));
+                var EstablishmentListFilterView = require('./establishmentlistfilter');
+                contentBottomFooterLayout.getRegion('footer').show(new EstablishmentListFilterView({
+                    organisation: organisationLayout.model,
+                    collection: establishments
+                }));
             });
 
             // if necessary enable tabs

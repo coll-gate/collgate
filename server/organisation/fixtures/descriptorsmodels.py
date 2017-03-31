@@ -84,6 +84,14 @@ MODELS = {
                 'label': {'en': 'Location', 'fr': 'Localisation'},
                 'mandatory': False,
                 'set_once': False
+            },
+            {
+                'id': None,
+                'name': 'establishment_code',
+                'descriptor_type_name': 'code_16',
+                'label': {'en': 'Code', 'fr': 'Code'},
+                'mandatory': False,
+                'set_once': False
             }
         ]
     }

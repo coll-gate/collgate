@@ -73,8 +73,12 @@ div.panel div.panel-body {
     padding: 10px;
 }
 
+.help-block {
+    margin-bottom: 0px;
+}
+
 div.layout-bottom {
-    height: 30px;
+    height: auto;  /* 30px; now uses of auto height and flex display */
 }
 
 div.right-up, div.right-down {
@@ -84,6 +88,10 @@ div.right-up, div.right-down {
 div.row-spacer {
     height: 3px;
     border-bottom: 1px solid #d8d8d8;
+}
+
+.form-group-margin-sm {
+    margin-bottom: 0px;
 }
 
 div.left-content, div.right-content, div.right-up-content, div.right-down-content {

@@ -60,7 +60,10 @@ var Layout = Marionette.LayoutView.extend({
         this.activeTab = undefined;
 
         this.listenTo(this.model, 'change:descriptor_meta_model', this.onDescriptorMetaModelChange, this);
-        this.listenTo(this.model, 'change:id', this.onAccessionCreate, this);
+
+        if (this.model.isNew()) {
+            this.listenTo(this.model, 'change:id', this.onAccessionCreate, this);
+        }
     },
 
     onAccessionCreate: function(model, value) {

@@ -22,7 +22,7 @@ var TwoColumnsLayout = Marionette.LayoutView.extend({
         'right-up-content': ".right-up-content",
         'right-up-bottom': ".right-up-bottom",
         'right-down-content': ".right-down-content",
-        'right-down-bottom': ".right-down-bottom",
+        'right-down-bottom': ".right-down-bottom"
     }
 });
 
