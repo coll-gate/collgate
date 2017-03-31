@@ -64,12 +64,6 @@ class CollGateGeonames(ApplicationMain):
         instance.geonames_include_city_types = self.geonames_include_city_types
         instance.geonames_username = self.geonames_username
 
-        # ignore list from content types
-        audit_module = module_manager.get_module('audit')
-        audit_module.ignored_content_types += [
-            'geonames.'
-        ]
-
         from audit.models import register_models
         register_models(CollGateGeolocation.name)
 
@@ -78,6 +72,16 @@ class CollGateGeonames(ApplicationMain):
         geonames_module.include_urls((
             )
         )
+
+        # ignore geonames from content types
+        geonames_module.ignored_content_types = [
+            'geonames.'
+        ]
+
+        # ignore geonames from permission types
+        geonames_module.ignored_permission_types = [
+            'geonames.'
+        ]
 
         # no client counterpart
         geonames_module.client_export = False
