@@ -48,7 +48,12 @@ class CollGateAudit(ApplicationMain):
 
         if localsettings.migration_audit:
             UserModel = get_user_model()
-            localsettings.migration_user = UserModel.objects.get(username=localsettings.migration_username)
+            try:
+                localsettings.migration_user = UserModel.objects.get(username=localsettings.migration_username)
+            except UserModel.DoesNotExist:
+                # user not found, disable user for audit
+                localsettings.migration_user = None
+                localsettings.migration_audit = False
 
     def ready(self):
         super().ready()

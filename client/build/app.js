@@ -63,7 +63,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "f1a0936aa5ea6229bcc9"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "caad2033788ba93dcd82"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotMainModule = true; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
@@ -710,7 +710,7 @@
 /******/ 	__webpack_require__.h = function() { return hotCurrentHash; };
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return hotCreateRequire(494)(__webpack_require__.s = 494);
+/******/ 	return hotCreateRequire(535)(__webpack_require__.s = 535);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -729,7 +729,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// MarionetteJS 
 (function(root, factory) {
 
   if (true) {
-    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(3), __webpack_require__(2), __webpack_require__(352), __webpack_require__(351)], __WEBPACK_AMD_DEFINE_RESULT__ = function(Backbone, _) {
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(5), __webpack_require__(2), __webpack_require__(378), __webpack_require__(377)], __WEBPACK_AMD_DEFINE_RESULT__ = function(Backbone, _) {
       return (root.Marionette = root.Mn = factory(root, Backbone, _));
     }.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -6050,7 +6050,7 @@ function loadLocale(name) {
             module && module.exports) {
         try {
             oldLocale = globalLocale._abbr;
-            __webpack_require__(380)("./" + name);
+            __webpack_require__(408)("./" + name);
             // because defineLocale currently also sets the global locale, we
             // want to undo that for lazy loaded locales
             getSetGlobalLocale(oldLocale);
@@ -8538,7 +8538,7 @@ return hooks;
 
 })));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(493)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(202)(module)))
 
 /***/ }),
 /* 2 */
@@ -10099,6 +10099,115 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//     Underscor
 /* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
+/* WEBPACK VAR INJECTION */(function(_) {/**
+ * @file titleview.js
+ * @brief Default layout title view for 'defaultlayout'
+ * @author Frederic SCHERMA
+ * @date 2016-04-22
+ * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+ * @license @todo
+ * @details
+ */
+
+var Marionette = __webpack_require__(0);
+
+var TitleView = Marionette.ItemView.extend({
+    tagName: "span",
+    template: _.template('<span name="title"></span><span class="heading" name="object"></span>'),
+
+    ui: {
+        title: 'span[name="title"]',
+        object: 'span[name="object"]'
+    },
+
+    initialize: function(options) {
+        options || (options = {title: "", object: null});
+
+        this.listenTo(this.model, 'change', this.render, this);
+
+        TitleView.__super__.initialize.apply(this);
+    },
+
+    onRender: function() {
+        this.ui.title.html(this.getOption('title'));
+
+        if (this.model && this.model.has('name')) {
+            if (!this.ui.object.is(":visible")) {
+                this.ui.object.show();
+            }
+
+            // with or without extra code
+            if (this.model.has('code')) {
+                this.ui.object.html(this.model.get('name') + ' (' + this.model.get('code') + ')');
+            } else {
+                this.ui.object.html(this.model.get('name'));
+            }
+        } else if (this.getOption('object')) {
+            if (!this.ui.object.is(":visible")) {
+                this.ui.object.show();
+            }
+            this.ui.object.html(this.getOption('object'));
+        } else {
+            this.ui.object.hide();
+        }
+    }
+});
+
+module.exports = TitleView;
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/**
+ * @file defaultlayout.js
+ * @brief Default layout with one Bootstrap panel
+ * @author Frederic SCHERMA
+ * @date 2016-04-22
+ * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+ * @license @todo
+ * @details
+ */
+
+var Marionette = __webpack_require__(0);
+
+var DefaultLayout = Marionette.LayoutView.extend({
+    template: __webpack_require__(483),
+    attributes: {
+        style: "height: 100%;"
+    },
+
+    regions: {
+        'title': ".panel-title",
+        'content': ".panel-body",
+        'content-bottom': ".panel-body-bottom",
+        'bottom': ".panel-bottom",
+    },
+
+    initialize: function() {
+    },
+
+    onRender: function() {
+    },
+
+    onBeforeShow: function() {
+    },
+
+    onBeforeDestroy: function () {
+        // reset to default global display mode
+        //application.setDisplay("2-8-2");
+    },
+});
+
+module.exports = DefaultLayout;
+
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
 /* WEBPACK VAR INJECTION */(function(global) {var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//     Backbone.js 1.3.3
 
 //     (c) 2010-2016 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
@@ -10115,7 +10224,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//     Underscor
 
   // Set up Backbone appropriately for the environment. Start with AMD.
   if (true) {
-    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(2), __webpack_require__(29), exports], __WEBPACK_AMD_DEFINE_RESULT__ = function(_, $, exports) {
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(2), __webpack_require__(33), exports], __WEBPACK_AMD_DEFINE_RESULT__ = function(_, $, exports) {
       // Export global even in AMD case in case this script is loaded with
       // others that may still expect a global Backbone.
       root.Backbone = factory(root, exports, _, $);
@@ -12021,57 +12130,10 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//     Underscor
   return Backbone;
 });
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(492)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(534)))
 
 /***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/**
- * @file defaultlayout.js
- * @brief Default layout with one Bootstrap panel
- * @author Frederic SCHERMA
- * @date 2016-04-22
- * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
- * @license @todo
- * @details
- */
-
-var Marionette = __webpack_require__(0);
-
-var DefaultLayout = Marionette.LayoutView.extend({
-    template: __webpack_require__(452),
-    attributes: {
-        style: "height: 100%;"
-    },
-
-    regions: {
-        'title': ".panel-title",
-        'content': ".panel-body",
-        'content-bottom': ".panel-body-bottom",
-        'bottom': ".panel-bottom",
-    },
-
-    initialize: function() {
-    },
-
-    onRender: function() {
-    },
-
-    onBeforeShow: function() {
-    },
-
-    onBeforeDestroy: function () {
-        // reset to default global display mode
-        //application.setDisplay("2-8-2");
-    },
-});
-
-module.exports = DefaultLayout;
-
-
-/***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {/**
@@ -12187,7 +12249,7 @@ module.exports = View;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {/**
@@ -12316,62 +12378,6 @@ module.exports = View;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 7 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* WEBPACK VAR INJECTION */(function(_) {/**
- * @file titleview.js
- * @brief Default layout title view for 'defaultlayout'
- * @author Frederic SCHERMA
- * @date 2016-04-22
- * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
- * @license @todo
- * @details
- */
-
-var Marionette = __webpack_require__(0);
-
-var TitleView = Marionette.ItemView.extend({
-    tagName: "span",
-    template: _.template('<span name="title"></span><span class="heading" name="object"></span>'),
-
-    ui: {
-        title: 'span[name="title"]',
-        object: 'span[name="object"]',
-    },
-
-    initialize: function(options) {
-        options || (options = {title: "", object: null});
-
-        this.listenTo(this.model, 'change', this.render, this);
-
-        TitleView.__super__.initialize.apply(this);
-    },
-
-    onRender: function() {
-        this.ui.title.html(this.getOption('title'));
-
-        if (this.model && this.model.has('name')) {
-            if (!this.ui.object.is(":visible")) {
-                this.ui.object.show();
-            }
-            this.ui.object.html(this.model.get('name'));
-        } else if (this.getOption('object')) {
-            if (!this.ui.object.is(":visible")) {
-                this.ui.object.show();
-            }
-            this.ui.object.html(this.getOption('object'));
-        } else {
-            this.ui.object.hide();
-        }
-    },
-});
-
-module.exports = TitleView;
-
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
-
-/***/ }),
 /* 8 */
 /***/ (function(module, exports) {
 
@@ -12406,7 +12412,13 @@ DescriptorFormatType.prototype = {
         return !!definesValues && !!defaultValues && defaultValues != null;
     },
 
-    // create a simple input widget within an input-group and with a specified glyphicon (bootstrap)
+    /**
+     * Create a simple input widget within an input-group and with a specified glyphicon (bootstrap).
+     * @param parent Parent element
+     * @param glyphicon Name of the glyphicon (bootstrap)
+     * @returns {*|jQuery|HTMLElement} input
+     * @private
+     */
     _createStdInput: function(parent, glyphicon) {
         var group = $('<div class="input-group"></div>');
         var glyph = $('<span class="input-group-addon"><span class="glyphicon ' + glyphicon + '"></span></span>');
@@ -12421,6 +12433,29 @@ DescriptorFormatType.prototype = {
         parent.append(group);
 
         return input;
+    },
+
+    /**
+     * Create a simple input-group and with a specified glyphicon (bootstrap), set the specific input.
+     * @param parent Parent element
+     * @param glyphicon Name of the glyphicon (bootstrap)
+     * @param input Input element to bind into the group
+     * @return {*|jQuery|HTMLElement} The created group
+     */
+    _createInputGroup: function(parent, glyphicon, input) {
+        var group = $('<div class="input-group"></div>');
+        var glyph = $('<span class="input-group-addon"><span class="glyphicon ' + glyphicon + '"></span></span>');
+        glyph.css(this.spanStyle);
+
+        input.addClass('form-control');
+        // input.css(this.inputStyle);
+
+        group.append(input);
+        group.append(glyph);
+
+        parent.append(group);
+
+        return group;
     },
 
     create: function(format, parent, readOnly) {
@@ -12549,7 +12584,7 @@ module.exports = View;
  * @details
  */
 
-var Backbone = __webpack_require__(3);
+var Backbone = __webpack_require__(5);
 
 var Taxon = Backbone.Model.extend({ 
     url: function() {
@@ -12763,6 +12798,119 @@ exports.default = new Logger();
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
+ * @file descriptorvalue.js
+ * @brief Value for a type of descriptor model
+ * @author Frederic SCHERMA
+ * @date 2016-07-21
+ * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+ * @license @todo
+ * @details
+ */
+
+var Backbone = __webpack_require__(5);
+
+var Model = Backbone.Model.extend({
+    url: function() {
+        if (this.isNew())
+            return application.baseUrl + 'descriptor/group/' + this.group_id + '/type/' + this.type_id + '/value/';
+        else
+            return application.baseUrl + 'descriptor/group/' + this.group_id + '/type/' + this.type_id + '/value/' + this.id + '/';
+    },
+
+    defaults: {
+        id: null,
+        parent: null,
+        ordinal: null,
+        value0: null,
+        value1: null,
+    },
+
+    initialize: function(attributes, options) {
+        Model.__super__.initialize.apply(this, arguments);
+
+        options || (options = {});
+        this.group_id = options.group_id;
+        this.type_id = options.type_id;
+
+        if (options.collection) {
+            this.type_id = options.collection.type_id;
+            this.group_id = options.collection.group_id;
+        }
+    },
+
+    parse: function(data) {
+        //this.perms = data.perms;
+        return data;
+    },
+
+    validate: function(attrs) {
+        var errors = {};
+        var hasError = false;
+
+        if (hasError) {
+          return errors;
+        }
+    },
+});
+
+module.exports = Model;
+
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/**
+ * @file descriptormodel.js
+ * @brief Model of descriptor
+ * @author Frederic SCHERMA
+ * @date 2016-09-19
+ * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+ * @license @todo
+ * @details
+ */
+
+var Backbone = __webpack_require__(5);
+
+var Model = Backbone.Model.extend({
+    url: function() {
+        if (this.isNew())
+            return application.baseUrl + 'descriptor/model/';
+        else
+            return application.baseUrl + 'descriptor/model/' + this.get('id') + '/';
+    },
+
+    defaults: {
+        id: null,
+        name: '',
+        verbose_name: '',
+        description: '',
+        num_descriptor_types: 0,
+    },
+
+    parse: function(data) {
+        //this.perms = data.perms;
+        return data;
+    },
+
+    validate: function(attrs) {
+        var errors = {};
+        var hasError = false;
+
+        if (hasError) {
+          return errors;
+        }
+    },
+});
+
+module.exports = Model;
+
+
+/***/ }),
+/* 14 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/**
  * @file descriptortype.js
  * @brief Type of descriptor model
  * @author Frederic SCHERMA
@@ -12772,7 +12920,7 @@ exports.default = new Logger();
  * @details
  */
 
-var Backbone = __webpack_require__(3);
+var Backbone = __webpack_require__(5);
 
 var Model = Backbone.Model.extend({
     url: function() {
@@ -12837,166 +12985,245 @@ module.exports = Model;
 
 
 /***/ }),
-/* 13 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/**
- * @file descriptorvalue.js
- * @brief Value for a type of descriptor model
- * @author Frederic SCHERMA
- * @date 2016-07-21
- * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
- * @license @todo
- * @details
- */
-
-var Backbone = __webpack_require__(3);
-
-var Model = Backbone.Model.extend({
-    url: function() {
-        if (this.isNew())
-            return application.baseUrl + 'descriptor/group/' + this.group_id + '/type/' + this.type_id + '/value/';
-        else
-            return application.baseUrl + 'descriptor/group/' + this.group_id + '/type/' + this.type_id + '/value/' + this.id + '/';
-    },
-
-    defaults: {
-        id: null,
-        parent: null,
-        ordinal: null,
-        value0: null,
-        value1: null,
-    },
-
-    initialize: function(attributes, options) {
-        Model.__super__.initialize.apply(this, arguments);
-
-        options || (options = {});
-        this.group_id = options.group_id;
-        this.type_id = options.type_id;
-
-        if (options.collection) {
-            this.type_id = options.collection.type_id;
-            this.group_id = options.collection.group_id;
-        }
-    },
-
-    parse: function(data) {
-        //this.perms = data.perms;
-        return data;
-    },
-
-    validate: function(attrs) {
-        var errors = {};
-        var hasError = false;
-
-        if (hasError) {
-          return errors;
-        }
-    },
-});
-
-module.exports = Model;
-
-
-/***/ }),
-/* 14 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/**
- * @file descriptorgroup.js
- * @brief Group of descriptors model
- * @author Frederic SCHERMA
- * @date 2016-07-20
- * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
- * @license @todo
- * @details
- */
-
-var Backbone = __webpack_require__(3);
-
-var Model = Backbone.Model.extend({
-    url: function() {
-        if (this.isNew())
-            return application.baseUrl + 'descriptor/group/';
-        else
-            return application.baseUrl + 'descriptor/group/' + this.get('id') + '/';
-    },
-
-    defaults: {
-        id: null,
-        name: '',
-        num_descriptor_types: 0,
-        can_delete: false,
-        can_modify: false
-    },
-
-    parse: function(data) {
-        //this.perms = data.perms;
-        return data;
-    },
-
-    validate: function(attrs) {
-        var errors = {};
-        var hasError = false;
-
-        if (hasError) {
-          return errors;
-        }
-    },
-});
-
-module.exports = Model;
-
-
-/***/ }),
 /* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
- * @file descriptormodel.js
- * @brief Model of descriptor
+ * @file selectoption.js
+ * @brief Renderer for single value based on collection, and for select widgets.
  * @author Frederic SCHERMA
- * @date 2016-09-19
+ * @date 2016-05-20
  * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
  * @license @todo
  * @details
  */
 
-var Backbone = __webpack_require__(3);
+var Marionette = __webpack_require__(0);
 
-var Model = Backbone.Model.extend({
-    url: function() {
-        if (this.isNew())
-            return application.baseUrl + 'descriptor/model/';
-        else
-            return application.baseUrl + 'descriptor/model/' + this.get('id') + '/';
-    },
+var Renderer = Marionette.Object.extend({
+    template: __webpack_require__(494),
+    tagName: 'select',
 
-    defaults: {
-        id: null,
-        name: '',
-        verbose_name: '',
-        description: '',
-        num_descriptor_types: 0,
-    },
+    initialize: function(options) {
+        Marionette.Object.prototype.initialize.apply(this, options);
 
-    parse: function(data) {
-        //this.perms = data.perms;
-        return data;
-    },
+        this.className = options.className;
+        this.collection = options.collection;
 
-    validate: function(attrs) {
-        var errors = {};
-        var hasError = false;
+        // static list can use the sync option
+        if (!!options.sync) {
+            this.render();
+        } else {
+            this.collection.fetch();  // lazy loading
 
-        if (hasError) {
-          return errors;
+            this.collection.on("sync", this.render, this);  // render the template once got
+            this.collection.on("change", this.render, this);
+            this.collection.on("reset", this.render, this);
         }
     },
+
+    render: function() {
+        this.html = Marionette.Renderer.render(this.template, {items: this.collection.toJSON()});
+    },
+
+    /**
+     * For a given jquery selector replace the HTML content of each element by the label corresponding to the value
+     * defined into each element node.
+     * @param el Selector with element to process
+     * @param idOrValue Default look for value into the value attribute, but you can specify another one
+     */
+    elHtmlFromValue: function(el, idOrValue) {
+        var self = this;
+        idOrValue || (idOrValue = 'value');
+
+        if (this.collection.size() > 0) {
+            var value = el.attr("value");
+
+            var model = self.collection.find(function(model) {
+                return model.get(idOrValue) == value;
+            });
+
+            el.html(model ? model.get('label') : "");
+        } else {
+            this.collection.on("sync", function () {
+                var value = el.attr("value");
+
+                var model = self.collection.find(function(model) {
+                    return model.get(idOrValue) == value;
+                });
+
+                el.html(model ? model.get('label') : "");
+            }, this);
+        }
+    },
+
+    /**
+     * Given a parent, for any children (direct or not) that having the class name related to this select option model,
+     * it replaces the HTML content of each element by the label corresponding to the value
+     * defined into each element node.
+     * @param parent Parent selector of children to process
+     * @param idOrValue Default look for value into the value attribute, but you can specify another one
+     */
+    htmlFromValue: function(parent, idOrValue) {
+        var self = this;
+        idOrValue || (idOrValue = 'value');
+
+        if (this.collection.size() > 0) {
+            $(parent).find('.' + self.className).each(function (idx, el) {
+                var _el = $(el);
+                var value = _el.attr("value");
+
+                var model = self.collection.find(function(model) {
+                    return model.get(idOrValue) == value;
+                });
+
+                _el.html(model ? model.get('label') : "");
+            });
+        } else {
+            this.collection.on("sync", function () {
+                $(parent).find('.' + self.className).each(function (idx, el) {
+                    var _el = $(el);
+                    var value = _el.attr("value");
+
+                    var model = self.collection.find(function(model) {
+                        return model.get(idOrValue) == value;
+                    });
+
+                    _el.html(model ? model.get('label') : "");
+                });
+            }, this);
+        }
+    },
+
+    /**
+     * For a given jquery selector, for each element, replace the a content of a specified attribute by the label
+     * corresponding to the value defined into each element node.
+     * @param el Selector with element to process
+     * @param attribute Name of the attribute to defines the label
+     * @param idOrValue Default look for value into the value attribute, but you can specify another one
+     */
+    elAttributeFromValue: function(el, attribute, idOrValue) {
+        var self = this;
+        idOrValue || (idOrValue = 'value');
+
+        if (this.collection.size() > 0) {
+            var value = el.attr("value");
+
+            var model = self.collection.find(function(model) {
+                return model.get(idOrValue) == value;
+            });
+
+            el.attr(attribute, model ? model.get('label') : "");
+        } else {
+            this.collection.on("sync", function () {
+                var value = el.attr("value");
+
+                var model = self.collection.find(function(model) {
+                    return model.get(idOrValue) == value;
+                });
+
+                el.attr(attribute, model ? model.get('label') : "");
+            }, this);
+        }
+    },
+
+    /**
+     * Given a parent, for any children (direct or not) that having the class name related to this select option model,
+     * it replaces the a content of a specified attribute by the label corresponding to the value defined into each
+     * element node.
+     * @param parent Parent selector of children to process
+     * @param attribute Name of the attribute to defines the label
+     * @param idOrValue Default look for value into the value attribute, but you can specify another one
+     */
+    attributeFromValue: function(parent, attribute, idOrValue) {
+        var self = this;
+        idOrValue || (idOrValue = 'value');
+
+        if (this.collection.size() > 0) {
+            $(parent).find('.' + self.className).each(function (idx, el) {
+                var _el = $(el);
+                var value = _el.attr("value");
+
+                var model = self.collection.find(function(model) {
+                    return model.get(idOrValue) == value;
+                });
+
+                _el.attr(attribute, model ? model.get('label') : "");
+            });
+        } else {
+            this.collection.on("sync", function () {
+                $(parent).find('.' + self.className).each(function (idx, el) {
+                    var _el = $(el);
+                    var value = _el.attr("value");
+
+                    var model = self.collection.find(function(model) {
+                        return model.get(idOrValue) == value;
+                    });
+
+                    _el.attr(attribute, model ? model.get('label') : "");
+                });
+            }, this);
+        }
+    },
+
+    /**
+     * Draw the options for a given select element. Each value is found from the related collection.
+     * @param sel Select element selector
+     * @param widget If true create a bootstrap select picker in front of this select
+     * @param emptyValue If true prepend an empty choice value
+     * @param initialValue If defined set the current value to its
+     */
+    drawSelect: function(sel, widget, emptyValue, initialValue) {
+        widget != undefined || (widget = true);
+        emptyValue != undefined || (emptyValue = false);
+
+        var self = this;
+
+        if (this.collection.size() > 0) {
+            var s = $(sel);
+            if (emptyValue) {
+                var emptyOption = "<option value=''></option>";
+                s.html(emptyOption + self.html);
+            } else {
+                s.html(self.html);
+            }
+
+            if (widget) {
+                s.selectpicker({
+                    style: 'btn-default',
+                    container: 'body'
+                });
+            }
+
+            if (initialValue) {
+                s.selectpicker('val', initialValue);
+            }
+        } else {
+            this.collection.on("sync", function () {
+                var s = $(sel);
+                if (emptyValue) {
+                    var emptyOption = "<option value=''></option>";
+                    s.html(emptyOption + self.html);
+                } else {
+                    s.html(self.html);
+                }
+
+                if (widget) {
+                    s.selectpicker({
+                        style: 'btn-default',
+                        container: 'body'
+                    });
+                }
+
+                if (initialValue) {
+                    s.selectpicker('val', initialValue);
+                }
+            }, this);
+        }
+    }
 });
 
-module.exports = Model;
+module.exports = Renderer;
 
 
 /***/ }),
@@ -13013,7 +13240,7 @@ module.exports = Model;
  * @details
  */
 
-var Backbone = __webpack_require__(3);
+var Backbone = __webpack_require__(5);
 
 var Model = Backbone.Model.extend({
     url: function() {
@@ -13025,6 +13252,7 @@ var Model = Backbone.Model.extend({
 
     defaults: {
         id: null,
+        code: '',
         name: '',
         parent: undefined,
         descriptor_meta_model: undefined,
@@ -13066,7 +13294,7 @@ module.exports = Model;
  * @details
  */
 
-var Backbone = __webpack_require__(3);
+var Backbone = __webpack_require__(5);
 
 var Model = Backbone.Model.extend({
     url: function() {
@@ -13105,163 +13333,6 @@ module.exports = Model;
 
 /***/ }),
 /* 18 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/**
- * @file selectoption.js
- * @brief Renderer for single value based on collection, and for select widgets.
- * @author Frederic SCHERMA
- * @date 2016-05-20
- * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
- * @license @todo
- * @details
- */
-
-var Marionette = __webpack_require__(0);
-
-var Renderer = Marionette.Object.extend({
-    template: __webpack_require__(463),
-    tagName: 'select',
-
-    initialize: function(options) {
-        Marionette.Object.prototype.initialize.apply(this, options);
-
-        this.className = options.className;
-        this.collection = options.collection;
-
-        // static list can use the sync option
-        if (!!options.sync) {
-            this.render();
-        } else {
-            this.collection.fetch();  // lazy loading
-
-            this.collection.on("sync", this.render, this);  // render the template once got
-            this.collection.on("change", this.render, this);
-            this.collection.on("reset", this.render, this);
-        }
-    },
-
-    render: function() {
-        this.html = Marionette.Renderer.render(this.template, {items: this.collection.toJSON()});
-    },
-
-    htmlFromValue: function(parent, idOrValue) {
-        var self = this;
-        idOrValue || (idOrValue = 'value');
-
-        if (this.collection.size() > 0) {
-            $(parent).find('.' + self.className).each(function (idx, el) {
-                var _el = $(el);
-                var value = _el.attr("value");
-
-                var model = self.collection.find(function(model) {
-                    return model.get(idOrValue) == value;
-                });
-
-                _el.html(model ? model.get('label') : "");
-            });
-        } else {
-            this.collection.on("sync", function () {
-                $(parent).find('.' + self.className).each(function (idx, el) {
-                    var _el = $(el);
-                    var value = _el.attr("value");
-
-                    var model = self.collection.find(function(model) {
-                        return model.get(idOrValue) == value;
-                    });
-
-                    _el.html(model ? model.get('label') : "");
-                });
-            }, this);
-        }
-    },
-
-    attributeFromValue: function(parent, attribute, idOrValue) {
-        var self = this;
-        idOrValue || (idOrValue = 'value');
-
-        if (this.collection.size() > 0) {
-            $(parent).find('.' + self.className).each(function (idx, el) {
-                var _el = $(el);
-                var value = _el.attr("value");
-
-                var model = self.collection.find(function(model) {
-                    return model.get(idOrValue) == value;
-                });
-
-                _el.attr(attribute, model ? model.get('label') : "");
-            });
-        } else {
-            this.collection.on("sync", function () {
-                $(parent).find('.' + self.className).each(function (idx, el) {
-                    var _el = $(el);
-                    var value = _el.attr("value");
-
-                    var model = self.collection.find(function(model) {
-                        return model.get(idOrValue) == value;
-                    });
-
-                    _el.attr(attribute, model ? model.get('label') : "");
-                });
-            }, this);
-        }
-    },
-
-    drawSelect: function(sel, widget, emptyValue, initialValue) {
-        widget != undefined || (widget = true);
-        emptyValue != undefined || (emptyValue = false);
-
-        var self = this;
-
-        if (this.collection.size() > 0) {
-            var s = $(sel);
-            if (emptyValue) {
-                var emptyOption = "<option value=''></option>"
-                s.html(emptyOption + self.html);
-            } else {
-                s.html(self.html);
-            }
-
-            if (widget) {
-                s.selectpicker({
-                    style: 'btn-default',
-                    container: 'body'
-                });
-            }
-
-            if (initialValue) {
-                s.selectpicker('val', initialValue);
-            }
-        } else {
-            this.collection.on("sync", function () {
-                var s = $(sel);
-                if (emptyValue) {
-                    var emptyOption = "<option value=''></option>"
-                    s.html(emptyOption + self.html);
-                } else {
-                    s.html(self.html);
-                }
-
-                if (widget) {
-                    s.selectpicker({
-                        style: 'btn-default',
-                        container: 'body'
-                    });
-                }
-
-                if (initialValue) {
-                    s.selectpicker('val', initialValue);
-                }
-            }, this);
-        }
-    }
-});
-
-module.exports = Renderer;
-
-
-/***/ }),
-/* 19 */
 /***/ (function(module, exports) {
 
 /*
@@ -13317,7 +13388,7 @@ module.exports = function() {
 
 
 /***/ }),
-/* 20 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13390,7 +13461,7 @@ var EventEmitter = function () {
 exports.default = EventEmitter;
 
 /***/ }),
-/* 21 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13507,7 +13578,7 @@ function escape(data) {
 }
 
 /***/ }),
-/* 22 */
+/* 21 */
 /***/ (function(module, exports) {
 
 /*
@@ -13759,7 +13830,7 @@ function updateLink(linkElement, obj) {
 
 
 /***/ }),
-/* 23 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -13772,17 +13843,33 @@ function updateLink(linkElement, obj) {
  * @details
  */
 
-var BatchView = __webpack_require__(217);
-var ScrollView = __webpack_require__(6);
+var BatchView = __webpack_require__(227);
+var ScrollView = __webpack_require__(7);
 
 var View = ScrollView.extend({
-    template: __webpack_require__(394),
+    template: __webpack_require__(423),
     className: "batch-list",
     childView: BatchView,
     childViewContainer: 'tbody.batch-list',
 
-    initialize: function() {
+    templateHelpers/*templateContext*/: function () {
+        return {
+            columns: this.getOption('columns')
+        }
+    },
+
+    childViewOptions: function () {
+        return {
+            columns: this.getOption('columns')
+        }
+    },
+
+    initialize: function(options) {
         View.__super__.initialize.apply(this);
+
+        options || (options = {});
+        options.columns = [
+        ];
 
         this.listenTo(this.collection, 'reset', this.render, this);
     }
@@ -13792,7 +13879,433 @@ module.exports = View;
 
 
 /***/ }),
+/* 23 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/**
+ * @file descriptorgroup.js
+ * @brief Group of descriptors model
+ * @author Frederic SCHERMA
+ * @date 2016-07-20
+ * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+ * @license @todo
+ * @details
+ */
+
+var Backbone = __webpack_require__(5);
+
+var Model = Backbone.Model.extend({
+    url: function() {
+        if (this.isNew())
+            return application.baseUrl + 'descriptor/group/';
+        else
+            return application.baseUrl + 'descriptor/group/' + this.get('id') + '/';
+    },
+
+    defaults: {
+        id: null,
+        name: '',
+        num_descriptor_types: 0,
+        can_delete: false,
+        can_modify: false
+    },
+
+    parse: function(data) {
+        //this.perms = data.perms;
+        return data;
+    },
+
+    validate: function(attrs) {
+        var errors = {};
+        var hasError = false;
+
+        if (hasError) {
+          return errors;
+        }
+    },
+});
+
+module.exports = Model;
+
+
+/***/ }),
 /* 24 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/**
+ * @file describabledetails.js
+ * @brief Describable entity details item view
+ * @author Frederic SCHERMA
+ * @date 2016-12-20
+ * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+ * @license @todo
+ * @details
+ */
+
+var ItemView = __webpack_require__(78);
+
+var View = ItemView.extend({
+    tagName: 'div',
+    template: __webpack_require__(429),
+    templateHelpers/*templateContext*/: function () {
+        return {
+            panels: this.descriptorMetaModelLayout.panels,
+            target: this.descriptorMetaModelLayout.target
+        };
+    },
+
+    ui: {
+        "descriptor": "tr.descriptor",
+        "modify": "button.modify"
+    },
+
+    triggers: {
+
+    },
+
+    events: {
+        "click @ui.modify": "onModify"
+    },
+
+    initialize: function(options) {
+        View.__super__.initialize.apply(this);
+
+        this.descriptorMetaModelLayout = options.descriptorMetaModelLayout;
+
+        this.listenTo(this.model, 'change:descriptors', this.render, this);
+    },
+
+    onRender: function() {
+        var view = this;
+        var model = this.model;
+        var descriptors = model.get('descriptors');
+
+        $.each(this.ui.descriptor, function(index) {
+            var el = $(this);
+
+            var pi = el.attr('panel-index');
+            var i = el.attr('index');
+            var descriptorModelType = view.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
+            var descriptorType = descriptorModelType.descriptor_type;
+            var format = descriptorType.format;
+
+            var values = model.get('descriptors')[descriptorModelType.name];
+
+            var widget = application.descriptor.widgets.newElement(format.type);
+            if (widget) {
+                widget.create(format, el.children('td.descriptor-value'), true, descriptorType.group, descriptorType.id);
+                widget.set(format, true, values, descriptorType.group, descriptorType.id);
+            }
+
+            // save the descriptor format type widget instance
+            descriptorModelType.widget = widget;
+        });
+    },
+
+    onDomRefresh: function() {
+        for (var pi = 0; pi < this.descriptorMetaModelLayout.panels.length; ++pi) {
+            for (var i = 0; i < this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types.length; ++i) {
+                var descriptorModelType = this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
+                var condition = descriptorModelType.condition;
+
+                if (condition.defined) {
+                    // search the target descriptor type for the condition
+                    var target = this.$el.find("tr.descriptor[descriptor-model-type=" + condition.target + "]");
+                    var targetDescriptorModelType = this.descriptorMetaModelLayout.panels[target.attr('panel-index')].descriptor_model.descriptor_model_types[target.attr('index')];
+
+                    // initial state of the condition
+                    var display = true;
+
+                    if (targetDescriptorModelType.widget) {
+                        display = targetDescriptorModelType.widget.checkCondition(condition.condition, condition.values);
+                    }
+
+                    if (!display) {
+                        // hide at tr level
+                        if (descriptorModelType.widget) {
+                            descriptorModelType.widget.parent.parent().hide(false);
+                        }
+                    }
+                }
+            }
+        }
+    },
+
+    onDestroy: function() {
+        // destroy any widgets
+        for (var pi = 0; pi < this.descriptorMetaModelLayout.panels.length; ++pi) {
+            for (var i = 0; i < this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types.length; ++i) {
+                var descriptorModelType = this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
+                descriptorModelType.widget.destroy();
+            }
+        }
+    },
+
+    onModify: function () {
+
+    }
+});
+
+module.exports = View;
+
+
+/***/ }),
+/* 25 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/**
+ * @file describableedit.js
+ * @brief Describable entity item edit view
+ * @author Frederic SCHERMA
+ * @date 2016-12-15
+ * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+ * @license @todo
+ * @details
+ */
+
+var ItemView = __webpack_require__(78);
+
+var View = ItemView.extend({
+    tagName: 'div',
+    template: __webpack_require__(430),
+    templateHelpers/*templateContext*/: function () {
+        return {
+            panels: this.descriptorMetaModelLayout.panels,
+            target: this.descriptorMetaModelLayout.target
+        };
+    },
+
+    ui: {
+        "descriptor": "tr.descriptor",
+        "cancel": "button.cancel",
+        "apply": "button.apply"
+    },
+
+    events: {
+        "click @ui.cancel": "onCancel",
+        "click @ui.apply": "onApply",
+    },
+
+    initialize: function(options) {
+        View.__super__.initialize.apply(this);
+
+        this.descriptorMetaModelLayout = options.descriptorMetaModelLayout;
+
+        // no need to follow changes during edition
+        // this.listenTo(this.model, 'change:descriptors', this.render, this);
+    },
+
+    onRender: function() {
+        var view = this;
+        var model = this.model;
+        var exists = !model.isNew();
+
+        $.each(this.ui.descriptor, function(index) {
+            var el = $(this);
+
+            var pi = el.attr('panel-index');
+            var i = el.attr('index');
+            var descriptorModelType = view.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
+            var descriptorType = descriptorModelType.descriptor_type;
+            var format = descriptorType.format;
+
+            var definesValues = false;
+            var defaultValues = null;
+
+            // default value or current descriptor value
+            if (exists) {
+                defaultValues = model.get('descriptors')[descriptorModelType.name];
+                definesValues = defaultValues != null && defaultValues != undefined;
+            } else {
+                // @todo default value from descriptor type
+                switch (format.type) {
+                    case "boolean":
+                        defaultValues = false;
+                        definesValues = true;
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            var widget = application.descriptor.widgets.newElement(format.type);
+            if (widget) {
+                widget.create(format, el.children('td.descriptor-value'), false, descriptorType.group, descriptorType.id);
+                widget.set(format, definesValues, defaultValues, descriptorType.group, descriptorType.id);
+
+                if (descriptorModelType.set_once && exists) {
+                    widget.disable();
+                }
+            }
+
+            // save the descriptor format type widget instance
+            descriptorModelType.widget = widget;
+        });
+    },
+
+    onDomRefresh: function() {
+        var descriptors = {};
+
+        // firstly make a list for each descriptor of which descriptors need them for a condition
+        for (var pi = 0; pi < this.descriptorMetaModelLayout.panels.length; ++pi) {
+            for (var i = 0; i < this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types.length; ++i) {
+                var descriptorModelType = this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
+                var condition = descriptorModelType.condition;
+
+                // if given set initials values for the widget
+                if (this.model.isNew()) {
+                    // @todo
+                }
+
+                if (condition.defined) {
+                    /* @todo optimize with model not dom */
+                    var target = this.$el.find("tr.descriptor[descriptor-model-type=" + condition.target + "]");
+                    var targetDescriptorModelType = this.descriptorMetaModelLayout.panels[target.attr('panel-index')].descriptor_model.descriptor_model_types[target.attr('index')];
+
+                    if (targetDescriptorModelType.widget && descriptorModelType.widget) {
+                        if (targetDescriptorModelType.id in descriptors) {
+                            descriptors[targetDescriptorModelType.id].listeners.push(descriptorModelType.widget);
+                        } else {
+                            descriptors[targetDescriptorModelType.id] = {
+                                widget: targetDescriptorModelType.widget,
+                                conditionType: condition.condition,
+                                conditionValue: condition.values,
+                                listeners: [descriptorModelType.widget]
+                            };
+                        }
+
+                        // initial state of the condition
+                        var display = targetDescriptorModelType.widget.checkCondition(condition.condition, condition.values);
+
+                        if (!display) {
+                            // hide at tr level
+                            descriptorModelType.widget.parent.parent().hide(false);
+                        }
+                    }
+                }
+            }
+        }
+
+        // once lists are done attach them to their widgets and bind the change event
+        for (var k in descriptors) {
+            var descriptor = descriptors[k];
+            descriptor.widget.bindConditionListener(descriptor.listeners, descriptor.conditionType, descriptor.conditionValue);
+        }
+    },
+
+    onDestroy: function() {
+        // destroy any widgets
+        for (var pi = 0; pi < this.descriptorMetaModelLayout.panels.length; ++pi) {
+            for (var i = 0; i < this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types.length; ++i) {
+                var descriptorModelType = this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
+                if (descriptorModelType.widget) {
+                    descriptorModelType.widget.destroy();
+                }
+            }
+        }
+    },
+
+    findDescriptorModelTypeForConditionTarget: function(target) {
+        var pi = target.attr('panel-index');
+        var i = target.attr('index');
+        var targetDescriptorModelType = this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
+
+        // find el from target
+        var descriptorModelTypes = this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types;
+        for (var i = 0; i < descriptorModelTypes.length; ++i) {
+            if (descriptorModelTypes[i].condition.target === targetDescriptorModelType.id) {
+                var descriptorModelType = descriptorModelTypes[i];
+
+                return {
+                    targetDescriptorModelType: targetDescriptorModelType,
+                    descriptorModelType: descriptorModelType,
+                    el: this.$el.find("tr.descriptor[descriptor-model-type=" + descriptorModelType.id + "]")
+                }
+            }
+        }
+
+        return null;
+    },
+
+    prepareDescriptors: function () {
+        var descriptors = {};
+
+        for (var pi = 0; pi < this.descriptorMetaModelLayout.panels.length; ++pi) {
+            for (var i = 0; i < this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types.length; ++i) {
+                var descriptorModelType = this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
+
+                var mandatory = descriptorModelType.mandatory;
+
+                var currValue = this.model.get('descriptors')[descriptorModelType.name];
+                var values = null;
+
+                // display of the tr
+                if (descriptorModelType.widget && descriptorModelType.widget.parent.parent().css('display') !== "none") {
+                    values = descriptorModelType.widget.values();
+                }
+
+                if (mandatory && values == null) {
+                    $.alert.error(gt.gettext("Field " + descriptorModelType.label + " is required"));
+                    return null;
+                }
+
+                var write = true;
+                if (descriptorModelType.set_once && currValue != null) {
+                    write = false;
+                }
+
+                if (descriptorModelType.widget && descriptorModelType.widget.compare(values, currValue)) {
+                    write = false;
+                }
+
+                if (write) {
+                    descriptors[descriptorModelType.name] = values;
+                }
+            }
+        }
+
+        return descriptors;
+    },
+
+    cancel: function() {
+        // destroy any widgets
+        for (var pi = 0; pi < this.descriptorMetaModelLayout.panels.length; ++pi) {
+            for (var i = 0; i < this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types.length; ++i) {
+                var descriptorModelType = this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
+                if (descriptorModelType.widget) {
+                    descriptorModelType.widget.cancel();
+                }
+            }
+        }
+    },
+
+    onCancel: function() {
+        this.cancel();
+
+        // non optimized default behavior reload url
+        Backbone.history.loadUrl();
+    },
+
+    onApply: function() {
+        // non optimized default behavior, load after save
+        var model = this.model;
+
+        var descriptors = this.prepareDescriptors();
+        if (descriptors === null) {
+            return;
+        }
+
+        this.model.save({descriptors: descriptors}, {wait: true, patch: !model.isNew()}).then(function () {
+            Backbone.history.loadUrl();
+        });
+    }
+});
+
+module.exports = View;
+
+
+/***/ }),
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {/**
@@ -13837,7 +14350,7 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
                 this.autocomplete = true;
 
                 var select = $('<select style="width: 100%;"></select>');
-                parent.append(select);
+                this.group = this._createInputGroup(parent, "glyphicon-list", select);
 
                 // init the autocomplete
                 var url = application.baseUrl + 'descriptor/group/' + descriptorTypeGroup + '/type/' + descriptorTypeId + '/';
@@ -13901,7 +14414,7 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
                 this.autocomplete = false;
 
                 var select = $('<select data-width="100%"></select>');
-                parent.append(select);
+                this.group = this._createInputGroup(parent, "glyphicon-list", select);
 
                 select.selectpicker({container: 'body', style: 'btn-default'});
 
@@ -13957,7 +14470,7 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
                 } else {
                     this.el.selectpicker('destroy');
                 }
-                this.el.remove();
+                this.group.remove();
             }
         }
     },
@@ -14114,15 +14627,15 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
             }
         }
 
-        return "";
+        return null;
     },
 
     checkCondition: function (condition, values) {
         switch (condition) {
             case 0:
-                return this.values() === "";
+                return this.values() == null;
             case 1:
-                return this.values() !== "";
+                return this.values() != null;
             case 2:
                 return this.values() === values;
             case 3:
@@ -14200,7 +14713,7 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
 
 EnumSingle.DescriptorTypeDetailsView = Marionette.ItemView.extend({
     className: 'descriptor-type-details-format',
-    template: __webpack_require__(443),
+    template: __webpack_require__(473),
 
     ui: {
         format_trans: "#format_trans",
@@ -14251,7 +14764,7 @@ module.exports = EnumSingle;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 25 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {/**
@@ -14407,7 +14920,7 @@ _.extend(Numeric.prototype, DescriptorFormatType.prototype, {
 
 Numeric.DescriptorTypeDetailsView = Marionette.ItemView.extend({
     className: 'descriptor-type-details-format',
-    template: __webpack_require__(444),
+    template: __webpack_require__(474),
 
     ui: {
         'format_unit': '#format_unit',
@@ -14486,7 +14999,76 @@ module.exports = Numeric;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 26 */
+/* 28 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/**
+ * @file contentbottom.js
+ * @brief Two rows content+bottom layout
+ * @author Frederic SCHERMA
+ * @date 2017-02-01
+ * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+ * @license @todo
+ * @details
+ */
+
+var Marionette = __webpack_require__(0);
+
+var View = Marionette.LayoutView.extend({
+    template: __webpack_require__(482),
+
+    attributes: {
+        style: "height: 100%;"
+    },
+
+    regions: {
+        'content': "div.content",
+        'bottom': "div.layout-bottom"
+    }
+});
+
+module.exports = View;
+
+
+/***/ }),
+/* 29 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/**
+ * @file organisation.js
+ * @brief Organisation model
+ * @author Frederic SCHERMA
+ * @date 2017-02-28
+ * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+ * @license @todo
+ * @details
+ */
+
+var Backbone = __webpack_require__(5);
+
+var Model = Backbone.Model.extend({
+    url: function() {
+        if (this.isNew())
+            return application.baseUrl + 'organisation/organisation/';
+        else
+            return application.baseUrl + 'organisation/organisation/' + this.get('id') + '/';
+    },
+
+    defaults: {
+        id: null,
+        name: "",
+        type: "",
+        grc: null,
+        descriptor_meta_model: null,
+        descriptors: {}
+    }
+});
+
+module.exports = Model;
+
+
+/***/ }),
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -14499,8 +15081,8 @@ module.exports = Numeric;
  * @details
  */
 
-var DescribableDetails = __webpack_require__(34);
-var TaxonDescriptorEditView = __webpack_require__(344);
+var DescribableDetails = __webpack_require__(24);
+var TaxonDescriptorEditView = __webpack_require__(370);
 
 var View = DescribableDetails.extend({
     onShowTab: function() {
@@ -14513,7 +15095,7 @@ var View = DescribableDetails.extend({
             application.getView().getRegion('right').show(contextLayout);
         }
 
-        var TitleView = __webpack_require__(7);
+        var TitleView = __webpack_require__(3);
         contextLayout.getRegion('title').show(new TitleView({title: gt.gettext("Descriptors")}));
 
         var actions = [];
@@ -14526,7 +15108,7 @@ var View = DescribableDetails.extend({
             actions.push('delete');
         }
 
-        var TaxonDescriptorContextView = __webpack_require__(43);
+        var TaxonDescriptorContextView = __webpack_require__(44);
         var contextView = new TaxonDescriptorContextView({actions: actions});
         contextLayout.getRegion('content').show(contextView);
 
@@ -14536,14 +15118,14 @@ var View = DescribableDetails.extend({
 
         contextView.on("descriptormetamodel:replace", function () {
             // this will update the model and so on the view
-            var TaxonDescriptorCreateView = __webpack_require__(44);
+            var TaxonDescriptorCreateView = __webpack_require__(45);
             var taxonDescriptorCreateView = new TaxonDescriptorCreateView({model: view.model});
 
             taxonDescriptorCreateView.onDefine();
         });
 
         contextView.on("descriptormetamodel:delete", function () {
-            var ConfirmDialog = __webpack_require__(291);
+            var ConfirmDialog = __webpack_require__(307);
             var confirmDialog = new ConfirmDialog({
                 title: gt.gettext('Delete descriptors'),
                 label: gt.gettext('Are you sure you want to delete any descriptors for this taxon ?')
@@ -14579,7 +15161,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 27 */
+/* 31 */
 /***/ (function(module, exports) {
 
 underscore
@@ -14609,7 +15191,7 @@ original source:
 
 
 /***/ }),
-/* 28 */
+/* 32 */
 /***/ (function(module, exports) {
 
 underscore
@@ -14664,13 +15246,13 @@ original source:
 
 
 /***/ }),
-/* 29 */
+/* 33 */
 /***/ (function(module, exports) {
 
 module.exports = $;
 
 /***/ }),
-/* 30 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -14683,7 +15265,7 @@ module.exports = $;
  * @details
  */
 
-var BatchModel = __webpack_require__(50);
+var BatchModel = __webpack_require__(51);
 
 var Collection = Backbone.Collection.extend({
     url: function() {
@@ -14741,7 +15323,7 @@ module.exports = Collection;
 
 
 /***/ }),
-/* 31 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -14754,8 +15336,8 @@ module.exports = Collection;
  * @details
  */
 
-var DescribableDetails = __webpack_require__(34);
-var AccessionDescriptorEditView = __webpack_require__(52);
+var DescribableDetails = __webpack_require__(24);
+var AccessionDescriptorEditView = __webpack_require__(53);
 
 var View = DescribableDetails.extend({
     onShowTab: function() {
@@ -14768,12 +15350,12 @@ var View = DescribableDetails.extend({
             application.getView().getRegion('right').show(contextLayout);
         }
 
-        var TitleView = __webpack_require__(7);
+        var TitleView = __webpack_require__(3);
         contextLayout.getRegion('title').show(new TitleView({title: gt.gettext("Descriptors")}));
 
         var actions = ['modify'];
 
-        var AccessionDescriptorContextView = __webpack_require__(51);
+        var AccessionDescriptorContextView = __webpack_require__(52);
         var contextView = new AccessionDescriptorContextView({actions: actions});
         contextLayout.getRegion('content').show(contextView);
 
@@ -14801,7 +15383,7 @@ var View = DescribableDetails.extend({
 module.exports = View;
 
 /***/ }),
-/* 32 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -14814,8 +15396,8 @@ module.exports = View;
  * @details
  */
 
-var DescribableDetails = __webpack_require__(34);
-var BatchDescriptorEditView = __webpack_require__(218);
+var DescribableDetails = __webpack_require__(24);
+var BatchDescriptorEditView = __webpack_require__(228);
 
 var View = DescribableDetails.extend({
     onShowTab: function() {
@@ -14828,12 +15410,12 @@ var View = DescribableDetails.extend({
             application.getView().getRegion('right').show(contextLayout);
         }
 
-        var TitleView = __webpack_require__(7);
+        var TitleView = __webpack_require__(3);
         contextLayout.getRegion('title').show(new TitleView({title: gt.gettext("Descriptors")}));
 
         var actions = ['modify'];
 
-        var BatchDescriptorContextView = __webpack_require__(54);
+        var BatchDescriptorContextView = __webpack_require__(55);
         var contextView = new BatchDescriptorContextView({actions: actions});
         contextLayout.getRegion('content').show(contextView);
 
@@ -14861,7 +15443,7 @@ var View = DescribableDetails.extend({
 module.exports = View;
 
 /***/ }),
-/* 33 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -14874,7 +15456,7 @@ module.exports = View;
  * @details
  */
 
-var Backbone = __webpack_require__(3);
+var Backbone = __webpack_require__(5);
 
 var Model = Backbone.Model.extend({
     url: function() {
@@ -14889,7 +15471,6 @@ var Model = Backbone.Model.extend({
 
     defaults: {
         id: null,
-        name: '',
         label: '',
         descriptor_model: null,
         descriptor_model_name: '',
@@ -14918,385 +15499,14 @@ var Model = Backbone.Model.extend({
         if (hasError) {
           return errors;
         }
-    },
+    }
 });
 
 module.exports = Model;
 
 
 /***/ }),
-/* 34 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/**
- * @file describabledetails.js
- * @brief Describable entity details item view
- * @author Frederic SCHERMA
- * @date 2016-12-20
- * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
- * @license @todo
- * @details
- */
-
-var ItemView = __webpack_require__(74);
-
-var View = ItemView.extend({
-    tagName: 'div',
-    template: __webpack_require__(400),
-    templateHelpers/*templateContext*/: function () {
-        return {
-            panels: this.descriptorMetaModelLayout.panels,
-            target: this.descriptorMetaModelLayout.target
-        };
-    },
-
-    ui: {
-        "descriptor": "tr.descriptor",
-        "modify": "button.modify"
-    },
-
-    triggers: {
-
-    },
-
-    events: {
-        "click @ui.modify": "onModify"
-    },
-
-    initialize: function(options) {
-        View.__super__.initialize.apply(this);
-
-        this.descriptorMetaModelLayout = options.descriptorMetaModelLayout;
-
-        this.listenTo(this.model, 'change:descriptors', this.render, this);
-    },
-
-    onRender: function() {
-        var view = this;
-        var model = this.model;
-        var descriptors = model.get('descriptors');
-
-        $.each(this.ui.descriptor, function(index) {
-            var el = $(this);
-
-            var pi = el.attr('panel-index');
-            var i = el.attr('index');
-            var descriptorModelType = view.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
-            var descriptorType = descriptorModelType.descriptor_type;
-            var format = descriptorType.format;
-
-            var values = model.get('descriptors')[descriptorModelType.id];
-
-            var widget = application.descriptor.widgets.newElement(format.type);
-            if (widget) {
-                widget.create(format, el.children('td.descriptor-value'), true, descriptorType.group, descriptorType.id);
-                widget.set(format, true, values, descriptorType.group, descriptorType.id);
-            }
-
-            // save the descriptor format type widget instance
-            descriptorModelType.widget = widget;
-        });
-    },
-
-    onDomRefresh: function() {
-        for (var pi = 0; pi < this.descriptorMetaModelLayout.panels.length; ++pi) {
-            for (var i = 0; i < this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types.length; ++i) {
-                var descriptorModelType = this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
-                var condition = descriptorModelType.condition;
-
-                if (condition.defined) {
-                    // search the target descriptor type for the condition
-                    var target = this.$el.find("tr.descriptor[descriptor-model-type=" + condition.target + "]");
-                    var targetDescriptorModelType = this.descriptorMetaModelLayout.panels[target.attr('panel-index')].descriptor_model.descriptor_model_types[target.attr('index')];
-
-                    // initial state of the condition
-                    var display = true;
-
-                    if (targetDescriptorModelType.widget) {
-                        display = targetDescriptorModelType.widget.checkCondition(condition.condition, condition.values);
-                    }
-
-                    if (!display) {
-                        // hide at tr level
-                        if (descriptorModelType.widget) {
-                            descriptorModelType.widget.parent.parent().hide(false);
-                        }
-                    }
-                }
-            }
-        }
-    },
-
-    onDestroy: function() {
-        // destroy any widgets
-        for (var pi = 0; pi < this.descriptorMetaModelLayout.panels.length; ++pi) {
-            for (var i = 0; i < this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types.length; ++i) {
-                var descriptorModelType = this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
-                descriptorModelType.widget.destroy();
-            }
-        }
-    },
-
-    onModify: function () {
-
-    }
-});
-
-module.exports = View;
-
-
-/***/ }),
-/* 35 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/**
- * @file describableedit.js
- * @brief Describable entity item edit view
- * @author Frederic SCHERMA
- * @date 2016-12-15
- * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
- * @license @todo
- * @details
- */
-
-var ItemView = __webpack_require__(74);
-
-var View = ItemView.extend({
-    tagName: 'div',
-    template: __webpack_require__(401),
-    templateHelpers/*templateContext*/: function () {
-        return {
-            panels: this.descriptorMetaModelLayout.panels,
-            target: this.descriptorMetaModelLayout.target
-        };
-    },
-
-    ui: {
-        "descriptor": "tr.descriptor",
-        "cancel": "button.cancel",
-        "apply": "button.apply"
-    },
-
-    events: {
-        "click @ui.cancel": "onCancel",
-        "click @ui.apply": "onApply",
-    },
-
-    initialize: function(options) {
-        View.__super__.initialize.apply(this);
-
-        this.descriptorMetaModelLayout = options.descriptorMetaModelLayout;
-
-        this.listenTo(this.model, 'change:descriptors', this.render, this);
-    },
-
-    onRender: function() {
-        var view = this;
-        var model = this.model;
-        var exists = !model.isNew();
-
-        $.each(this.ui.descriptor, function(index) {
-            var el = $(this);
-
-            var pi = el.attr('panel-index');
-            var i = el.attr('index');
-            var descriptorModelType = view.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
-            var descriptorType = descriptorModelType.descriptor_type;
-            var format = descriptorType.format;
-
-            var definesValues = false;
-            var defaultValues = null;
-
-            // default value or current descriptor value
-            if (exists) {
-                defaultValues = model.get('descriptors')[descriptorModelType.id];
-                definesValues = defaultValues != null && defaultValues != undefined;
-            } else {
-                // @todo default value from descriptor type
-                switch (format.type) {
-                    case "boolean":
-                        defaultValues = false;
-                        definesValues = true;
-                        break;
-                    default:
-                        break;
-                }
-            }
-
-            var widget = application.descriptor.widgets.newElement(format.type);
-            if (widget) {
-                widget.create(format, el.children('td.descriptor-value'), false, descriptorType.group, descriptorType.id);
-                widget.set(format, definesValues, defaultValues, descriptorType.group, descriptorType.id);
-
-                if (descriptorModelType.set_once && exists) {
-                    widget.disable();
-                }
-            }
-
-            // save the descriptor format type widget instance
-            descriptorModelType.widget = widget;
-        });
-    },
-
-    onDomRefresh: function() {
-        var descriptors = {};
-
-        // firstly make a list for each descriptor of which descriptors need them for a condition
-        for (var pi = 0; pi < this.descriptorMetaModelLayout.panels.length; ++pi) {
-            for (var i = 0; i < this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types.length; ++i) {
-                var descriptorModelType = this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
-                var condition = descriptorModelType.condition;
-
-                // if given set initials values for the widget
-                if (this.model.isNew()) {
-                    // @todo
-                }
-
-                if (condition.defined) {
-                    /* @todo optimize with model not dom */
-                    var target = this.$el.find("tr.descriptor[descriptor-model-type=" + condition.target + "]");
-                    var targetDescriptorModelType = this.descriptorMetaModelLayout.panels[target.attr('panel-index')].descriptor_model.descriptor_model_types[target.attr('index')];
-
-                    if (targetDescriptorModelType.widget && descriptorModelType.widget) {
-                        if (targetDescriptorModelType.id in descriptors) {
-                            descriptors[targetDescriptorModelType.id].listeners.push(descriptorModelType.widget);
-                        } else {
-                            descriptors[targetDescriptorModelType.id] = {
-                                widget: targetDescriptorModelType.widget,
-                                conditionType: condition.condition,
-                                conditionValue: condition.values,
-                                listeners: [descriptorModelType.widget]
-                            };
-                        }
-
-                        // initial state of the condition
-                        var display = targetDescriptorModelType.widget.checkCondition(condition.condition, condition.values);
-
-                        if (!display) {
-                            // hide at tr level
-                            descriptorModelType.widget.parent.parent().hide(false);
-                        }
-                    }
-                }
-            }
-        }
-
-        // once lists are done attach them to their widgets and bind the change event
-        for (var k in descriptors) {
-            var descriptor = descriptors[k];
-            descriptor.widget.bindConditionListener(descriptor.listeners, descriptor.conditionType, descriptor.conditionValue);
-        }
-    },
-
-    onDestroy: function() {
-        // destroy any widgets
-        for (var pi = 0; pi < this.descriptorMetaModelLayout.panels.length; ++pi) {
-            for (var i = 0; i < this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types.length; ++i) {
-                var descriptorModelType = this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
-                descriptorModelType.widget.destroy();
-            }
-        }
-    },
-
-    findDescriptorModelTypeForConditionTarget: function(target) {
-        var pi = target.attr('panel-index');
-        var i = target.attr('index');
-        var targetDescriptorModelType = this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
-
-        // find el from target
-        var descriptorModelTypes = this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types;
-        for (var i = 0; i < descriptorModelTypes.length; ++i) {
-            if (descriptorModelTypes[i].condition.target === targetDescriptorModelType.id) {
-                var descriptorModelType = descriptorModelTypes[i];
-
-                return {
-                    targetDescriptorModelType: targetDescriptorModelType,
-                    descriptorModelType: descriptorModelType,
-                    el: this.$el.find("tr.descriptor[descriptor-model-type=" + descriptorModelType.id + "]")
-                }
-            }
-        }
-
-        return null;
-    },
-
-    prepareDescriptors: function () {
-        var descriptors = {};
-
-        for (var pi = 0; pi < this.descriptorMetaModelLayout.panels.length; ++pi) {
-            for (var i = 0; i < this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types.length; ++i) {
-                var descriptorModelType = this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
-
-                var mandatory = descriptorModelType.mandatory;
-
-                var currValue = this.model.get('descriptors')[descriptorModelType.id];
-                var values = null;
-
-                // display of the tr
-                if (descriptorModelType.widget && descriptorModelType.widget.parent.parent().css('display') !== "none") {
-                    values = descriptorModelType.widget.values();
-                }
-
-                if (mandatory && values == null) {
-                    $.alert.error(gt.gettext("Field " + descriptorModelType.label + " is required"));
-                    return null;
-                }
-
-                var write = true;
-                if (descriptorModelType.set_once && currValue != null) {
-                    write = false;
-                }
-
-                if (descriptorModelType.widget.compare(values, currValue)) {
-                    write = false;
-                }
-
-                if (write) {
-                    descriptors[descriptorModelType.id] = values;
-                }
-            }
-        }
-
-        return descriptors;
-    },
-
-    cancel: function() {
-        // destroy any widgets
-        for (var pi = 0; pi < this.descriptorMetaModelLayout.panels.length; ++pi) {
-            for (var i = 0; i < this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types.length; ++i) {
-                var descriptorModelType = this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types[i];
-                descriptorModelType.widget.cancel();
-            }
-        }
-    },
-
-    onCancel: function() {
-        this.cancel();
-
-        // non optimized default behavior reload url
-        Backbone.history.loadUrl();
-    },
-
-    onApply: function() {
-        // non optimized default behavior, load after save
-        var model = this.model;
-
-        var descriptors = this.prepareDescriptors();
-        if (descriptors === null) {
-            return;
-        }
-
-        this.model.save({descriptors: descriptors}, {wait: true, patch: !model.isNew()}).then(function () {
-            Backbone.history.loadUrl();
-        });
-    }
-});
-
-module.exports = View;
-
-
-/***/ }),
-/* 36 */
+/* 38 */
 /***/ (function(module, exports) {
 
 /**
@@ -15335,71 +15545,67 @@ DescriptorFormatTypeManager.prototype = {
 module.exports = DescriptorFormatTypeManager;
 
 /***/ }),
-/* 37 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
- * @file contentbottom.js
- * @brief Two rows content+bottom layout
+ * @file descriptor.js
+ * @brief Organisation and establishment descriptor item view
  * @author Frederic SCHERMA
- * @date 2017-02-01
- * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+ * @date 2017-03-07
+ * @copyright Copyright (c) 2017 INRA UMR1095 GDEC
  * @license @todo
  * @details
  */
 
-var Marionette = __webpack_require__(0);
+var DescribableDetails = __webpack_require__(24);
+var DescriptorEditView = __webpack_require__(84);
 
-var View = Marionette.LayoutView.extend({
-    template: __webpack_require__(451),
+var View = DescribableDetails.extend({
+    onShowTab: function() {
+        var view = this;
 
-    attributes: {
-        style: "height: 100%;"
+        var contextLayout = application.getView().getRegion('right').currentView;
+        if (!contextLayout) {
+            var DefaultLayout = __webpack_require__(4);
+            contextLayout = new DefaultLayout();
+            application.getView().getRegion('right').show(contextLayout);
+        }
+
+        var TitleView = __webpack_require__(3);
+        contextLayout.getRegion('title').show(new TitleView({title: gt.gettext("Descriptors")}));
+
+        var actions = ['modify'];
+
+        var DescriptorContextView = __webpack_require__(83);
+        var contextView = new DescriptorContextView({actions: actions});
+        contextLayout.getRegion('content').show(contextView);
+
+        contextView.on("describable:modify", function () {
+            view.onModify();
+        });
     },
 
-    regions: {
-        'content': "div.content",
-        'bottom': "div.layout-bottom",
+    onHideTab: function() {
+        application.main.defaultRightView();
+    },
+
+    onModify: function () {
+        // does not reload models, just redo the views
+        var name = this.model.get('name');
+
+        // update the layout content
+        var layout = application.view().getRegion('content').currentView;
+
+        var view = new DescriptorEditView({model: this.model, descriptorMetaModelLayout: this.descriptorMetaModelLayout});
+        layout.getRegion('descriptors').show(view);
     }
 });
 
 module.exports = View;
 
-
 /***/ }),
-/* 38 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/**
- * @file organisation.js
- * @brief Organisation model
- * @author Frederic SCHERMA
- * @date 2017-02-28
- * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
- * @license @todo
- * @details
- */
-
-var Backbone = __webpack_require__(3);
-
-var Model = Backbone.Model.extend({
-    url: function() {
-        if (this.isNew())
-            return application.baseUrl + 'organisation/organisation/';
-        else
-            return application.baseUrl + 'organisation/organisation/' + this.get('id') + '/';
-    },
-
-    defaults: {
-        id: null
-    }
-});
-
-module.exports = Model;
-
-
-/***/ }),
-/* 39 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -15412,7 +15618,7 @@ module.exports = Model;
  * @details
  */
 
-var Backbone = __webpack_require__(3);
+var Backbone = __webpack_require__(5);
 
 var Model = Backbone.Model.extend({
     url: function() {
@@ -15452,7 +15658,7 @@ module.exports = Model;
 
 
 /***/ }),
-/* 40 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -15465,7 +15671,7 @@ module.exports = Model;
  * @details
  */
 
-var Backbone = __webpack_require__(3);
+var Backbone = __webpack_require__(5);
 
 var Model = Backbone.Model.extend({
     url: function() {
@@ -15505,7 +15711,7 @@ module.exports = Model;
 
 
 /***/ }),
-/* 41 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -15518,7 +15724,7 @@ module.exports = Model;
  * @details
  */
 
-var Backbone = __webpack_require__(3);
+var Backbone = __webpack_require__(5);
 
 var Permission = Backbone.Model.extend({
     defaults: {
@@ -15560,7 +15766,7 @@ module.exports = Permission;
 
 
 /***/ }),
-/* 42 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -15573,7 +15779,7 @@ module.exports = Permission;
  * @details
  */
 
-var Backbone = __webpack_require__(3);
+var Backbone = __webpack_require__(5);
 
 var Model = Backbone.Model.extend({
     url: function() { return application.baseUrl + 'permission/user/' + this.get('username') + '/'; },
@@ -15623,7 +15829,7 @@ module.exports = Model;
 
 
 /***/ }),
-/* 43 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -15640,7 +15846,7 @@ var Marionette = __webpack_require__(0);
 
 var View = Marionette.LayoutView.extend({
     tagName: 'div',
-    template: __webpack_require__(483),
+    template: __webpack_require__(525),
     className: "context taxon",
     templateHelpers/*templateContext*/: function () {
         return {
@@ -15683,7 +15889,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 44 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -15697,12 +15903,12 @@ module.exports = View;
  */
 
 var Marionette = __webpack_require__(0);
-var Dialog = __webpack_require__(5);
-var TaxonDescriptorView = __webpack_require__(26);
+var Dialog = __webpack_require__(6);
+var TaxonDescriptorView = __webpack_require__(30);
 
 var View = Marionette.ItemView.extend({
     tagName: 'div',
-    template: __webpack_require__(484),
+    template: __webpack_require__(526),
 
     ui: {
         defines: 'button.defines'
@@ -15730,7 +15936,7 @@ var View = Marionette.ItemView.extend({
                 attributes: {
                     'id': 'dlg_create_descriptor',
                 },
-                template: __webpack_require__(485),
+                template: __webpack_require__(527),
                 templateHelpers/*templateContext*/: function () {
                     return {
                         meta_models: data,
@@ -15804,10 +16010,10 @@ var View = Marionette.ItemView.extend({
 
         actions.push('add');
 
-        var TaxonDescriptorContextView = __webpack_require__(43);
+        var TaxonDescriptorContextView = __webpack_require__(44);
         var contextView = new TaxonDescriptorContextView({actions: actions});
 
-        var TitleView = __webpack_require__(7);
+        var TitleView = __webpack_require__(3);
         contextLayout.getRegion('title').show(new TitleView({title: gt.gettext("Descriptors")}));
         contextLayout.getRegion('content').show(contextView);
 
@@ -15821,24 +16027,24 @@ module.exports = View;
 
 
 /***/ }),
-/* 45 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(19)();
+exports = module.exports = __webpack_require__(18)();
 // imports
 
 
 // module
-exports.push([module.i, "div.root-content{height:100%}div.column{height:100%;margin:0}div.left,div.right{padding-left:5px;padding-right:5px;height:calc(100% - 2px)}@media (min-width:992px){div.column-left,div.column-right{width:calc(50% - 1px)}div.row-down,div.row-up{height:50%}}div.column-spacer{width:0;height:calc(100% - 2px);border-left:1px solid #d8d8d8;padding:0}div.panel{display:flex;flex-flow:column;height:100%;margin:0}div.insider-panel div.panel-heading{padding-top:5px;padding-bottom:5px;height:30px}div.panel div.panel-heading{flex:0 1 auto}div.panel div.panel-body{overflow-y:auto;overflow-x:hidden;flex:1 1 auto;height:100%;padding:10px}div.layout-bottom{height:30px}div.right-down,div.right-up{height:calc(50% - 1px)}div.row-spacer{height:3px;border-bottom:1px solid #d8d8d8}div.left-content,div.right-content,div.right-down-content,div.right-up-content{overflow-y:auto;height:calc(100% - 20px - 5px)}div.panel div.panel-body-bottom,div.panel div.panel-bottom{height:auto;flex:0 1 auto}.event-message+.event-message{border-top:1px solid #a0bd2e}div.event-message>span.remove-event-message{display:none}div.event-message:hover>span.remove-event-message{display:inline-block}.collapsing{-webkit-transition:none;transition:none}.action,span.url{cursor:pointer}.left-margin{margin-left:10px}.heading{background-color:#6c995a;padding:5px;margin-left:.25em;border-radius:5px}.sticky-header{background-color:#fff}.unselectable{-moz-user-select:none;-khtml-user-select:none;-webkit-user-select:none;-o-user-select:none}div.element:hover,tr.element:hover{background:#5cb85c!important}[draggable=true]{cursor:move}[draggable]{-moz-user-select:none;-khtml-user-select:none;-webkit-user-select:none;user-select:none;-khtml-user-drag:element;-webkit-user-drag:element}.draggable-over{border:2px dashed #000;border-radius:5px}span[name=label]:empty~span.label-placeholder{display:inline}span[name=label]:not(:empty)~span.label-placeholder{display:none}.panel-heading .accordion-toggle:after{font-family:Glyphicons Halflings;content:\"\\E114\";float:right;color:grey}.panel-heading .accordion-toggle.collapsed:after{content:\"\\E080\"}.mandatory-field{font-weight:700;font-style:italic}.mandatory-field:after{content:\"*\"}li.disabled>a[role=tab]{pointer-events:none}", ""]);
+exports.push([module.i, "div.root-content{height:100%}div.column{height:100%;margin:0}div.left,div.right{padding-left:5px;padding-right:5px;height:calc(100% - 2px)}@media (min-width:992px){div.column-left,div.column-right{width:calc(50% - 1px)}div.row-down,div.row-up{height:50%}}div.column-spacer{width:0;height:calc(100% - 2px);border-left:1px solid #d8d8d8;padding:0}div.panel{display:flex;flex-flow:column;height:100%;margin:0}div.insider-panel div.panel-heading{padding-top:5px;padding-bottom:5px;height:30px}div.panel div.panel-heading{flex:0 1 auto}div.panel div.panel-body{overflow-y:auto;overflow-x:hidden;flex:1 1 auto;height:100%;padding:10px}div.layout-bottom{height:30px}div.right-down,div.right-up{height:calc(50% - 1px)}div.row-spacer{height:3px;border-bottom:1px solid #d8d8d8}div.left-content,div.right-content,div.right-down-content,div.right-up-content{overflow-y:auto;height:calc(100% - 20px - 5px)}div.panel div.panel-body-bottom,div.panel div.panel-bottom{height:auto;flex:0 1 auto}.event-message+.event-message{border-top:1px solid #a0bd2e}div.event-message>span.remove-event-message{display:none}div.event-message:hover>span.remove-event-message{display:inline-block}.collapsing{-webkit-transition:none;transition:none}.action,span.url{cursor:pointer}.left-margin{margin-left:10px}.heading{background-color:#6c995a;padding:5px;margin-left:.25em;border-radius:5px}.sticky-header{background-color:#fff}.unselectable{-moz-user-select:none;-khtml-user-select:none;-webkit-user-select:none;-o-user-select:none}div.element:hover,tr.element:hover{background:#5cb85c!important}[draggable=true]{cursor:move}[draggable]{-moz-user-select:none;-khtml-user-select:none;-webkit-user-select:none;user-select:none;-khtml-user-drag:element;-webkit-user-drag:element}.draggable-over{border:2px dashed #000;border-radius:5px}span[name=label]:empty~span.label-placeholder{display:inline}span[name=label]:not(:empty)~span.label-placeholder{display:none}.panel-heading .accordion-toggle:after{font-family:Glyphicons Halflings;content:\"\\E114\";float:right;color:grey}.panel-heading .accordion-toggle.collapsed:after{content:\"\\E080\"}.mandatory-field{font-weight:700;font-style:italic}.mandatory-field:after{content:\"*\"}li.disabled>a[role=tab]{pointer-events:none}.input-group span.select2.select2-container>span.selection>span{border-top-right-radius:0;border-bottom-right-radius:0}.badge.action:hover,.label.action:hover,td.action:hover>.badge,td.action:hover>.label,th.action:hover>.badge,th.action:hover>.label{background-color:#999}.glyphicon.action:hover,td.action:hover>.glyphicon,th.action:hover>.glyphicon{opacity:.3}span.action:not(.glyphicon):hover,td.action:hover,th.action:hover{text-decoration:underline}span.config-id{border-bottom-left-radius:0;border-bottom-right-radius:0}div.config-value-box{border-top-left-radius:0}", ""]);
 
 // exports
 
 
 /***/ }),
-/* 46 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(19)();
+exports = module.exports = __webpack_require__(18)();
 // imports
 
 
@@ -15849,10 +16055,10 @@ exports.push([module.i, "span.media-download.contextual{padding:4px;width:24px;h
 
 
 /***/ }),
-/* 47 */
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(19)();
+exports = module.exports = __webpack_require__(18)();
 // imports
 
 
@@ -15863,10 +16069,10 @@ exports.push([module.i, "/*!\n * Datetimepicker for Bootstrap 3\n * version : 4.
 
 
 /***/ }),
-/* 48 */
+/* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(19)();
+exports = module.exports = __webpack_require__(18)();
 // imports
 
 
@@ -15877,10 +16083,10 @@ exports.push([module.i, "/*!\n * Viewer v0.5.1\n * https://github.com/fengyuanch
 
 
 /***/ }),
-/* 49 */
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(19)();
+exports = module.exports = __webpack_require__(18)();
 // imports
 
 
@@ -15891,7 +16097,7 @@ exports.push([module.i, ".select2-container{box-sizing:border-box;display:inline
 
 
 /***/ }),
-/* 50 */
+/* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -15904,7 +16110,7 @@ exports.push([module.i, ".select2-container{box-sizing:border-box;display:inline
  * @details
  */
 
-var Backbone = __webpack_require__(3);
+var Backbone = __webpack_require__(5);
 
 var Model = Backbone.Model.extend({
     url: function() {
@@ -15944,7 +16150,7 @@ module.exports = Model;
 
 
 /***/ }),
-/* 51 */
+/* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -15961,7 +16167,7 @@ var Marionette = __webpack_require__(0);
 
 var View = Marionette.LayoutView.extend({
     tagName: 'div',
-    template: __webpack_require__(387),
+    template: __webpack_require__(415),
     className: "context accession",
     templateHelpers/*templateContext*/: function () {
         return {
@@ -15995,7 +16201,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 52 */
+/* 53 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -16008,7 +16214,7 @@ module.exports = View;
  * @details
  */
 
-var DescribableEdit = __webpack_require__(35);
+var DescribableEdit = __webpack_require__(25);
 
 var View = DescribableEdit.extend({
     onCancel: function() {
@@ -16028,7 +16234,7 @@ var View = DescribableEdit.extend({
         // update the layout content
         var accessionLayout = application.view().getRegion('content').currentView;
 
-        var AccessionDescriptorView = __webpack_require__(31);
+        var AccessionDescriptorView = __webpack_require__(35);
         var accessionDescriptorView = new AccessionDescriptorView({
             model: this.model,
             descriptorMetaModelLayout: view.descriptorMetaModelLayout});
@@ -16046,12 +16252,13 @@ var View = DescribableEdit.extend({
             return;
         }
 
-        this.model.save({descriptors: descriptors}, {wait: true, patch: !model.isNew()}).then(function () {
-            //Backbone.history.navigate('app/accession/accession/' + model.get('id') + '/', {trigger: true, replace: true});
+        var isNew = this.model.isNew();
+
+        this.model.save({descriptors: descriptors}, {wait: true, patch: !isNew}).then(function () {
             var accessionLayout = application.view().getRegion('content').currentView;
 
             // update the layout content
-            var AccessionDescriptorView = __webpack_require__(31);
+            var AccessionDescriptorView = __webpack_require__(35);
             var accessionDescriptorView = new AccessionDescriptorView({
                 model: model,
                 descriptorMetaModelLayout: view.descriptorMetaModelLayout});
@@ -16071,12 +16278,12 @@ var View = DescribableEdit.extend({
             application.getView().getRegion('right').show(contextLayout);
         }
 
-        var TitleView = __webpack_require__(7);
+        var TitleView = __webpack_require__(3);
         contextLayout.getRegion('title').show(new TitleView({title: gt.gettext("Descriptors")}));
 
         var actions = ['apply', 'cancel'];
 
-        var AccessionDescriptorContextView = __webpack_require__(51);
+        var AccessionDescriptorContextView = __webpack_require__(52);
         var contextView = new AccessionDescriptorContextView({actions: actions});
         contextLayout.getRegion('content').show(contextView);
 
@@ -16098,7 +16305,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 53 */
+/* 54 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -16115,13 +16322,13 @@ var Marionette = __webpack_require__(0);
 var TaxonModel = __webpack_require__(10);
 
 var ScrollingMoreView = __webpack_require__(9);
-var ContentBottomLayout = __webpack_require__(37);
-var EntityPathView = __webpack_require__(342);
-var AccessionDescriptorEditView = __webpack_require__(52);
+var ContentBottomLayout = __webpack_require__(28);
+var EntityPathView = __webpack_require__(368);
+var AccessionDescriptorEditView = __webpack_require__(53);
 
 
 var Layout = Marionette.LayoutView.extend({
-    template: __webpack_require__(388),
+    template: __webpack_require__(416),
 
     attributes: {
         style: "height: 100%;"
@@ -16161,7 +16368,17 @@ var Layout = Marionette.LayoutView.extend({
         Layout.__super__.initialize.apply(this, arguments);
 
         this.activeTab = undefined;
+
         this.listenTo(this.model, 'change:descriptor_meta_model', this.onDescriptorMetaModelChange, this);
+        this.listenTo(this.model, 'change:id', this.onAccessionCreate, this);
+    },
+
+    onAccessionCreate: function(model, value) {
+        // re-render once created
+        this.render();
+
+        // and update history
+        Backbone.history.navigate('app/accession/accession/' + this.model.get('id') + '/', {/*trigger: true,*/ replace: false});
     },
 
     disableSynonymsTab: function () {
@@ -16176,6 +16393,12 @@ var Layout = Marionette.LayoutView.extend({
         this.ui.actions_tab.parent().addClass('disabled');
     },
 
+    enableTabs: function() {
+        this.ui.synonyms_tab.parent().removeClass('disabled');
+        this.ui.batches_tab.parent().removeClass('disabled');
+        this.ui.actions_tab.parent().removeClass('disabled');
+    },
+
     onDescriptorMetaModelChange: function(model, value) {
         if (value == null) {
             this.getRegion('descriptors').empty();
@@ -16188,7 +16411,7 @@ var Layout = Marionette.LayoutView.extend({
                 url: application.baseUrl + 'descriptor/meta-model/' + value + '/layout/',
                 dataType: 'json'
             }).done(function (data) {
-                var AccessionDescriptorView = __webpack_require__(31);
+                var AccessionDescriptorView = __webpack_require__(35);
                 var accessionDescriptorView = new AccessionDescriptorView({
                     model: model,
                     descriptorMetaModelLayout: data
@@ -16201,14 +16424,9 @@ var Layout = Marionette.LayoutView.extend({
     onRender: function() {
         var accessionLayout = this;
 
-        this.activeTab = this.ui.initial_pane.attr('name');
-
-        this.ui.tabs.on("shown.bs.tab", $.proxy(this.onShowTab, this));
-        this.ui.tabs.on("hide.bs.tab", $.proxy(this.onHideTab, this));
-
         // details view
         if (!this.model.isNew()) {
-            //
+            // taxon parent
             var taxon = new TaxonModel({id: this.model.get('parent')});
             taxon.fetch().then(function () {
                 accessionLayout.getRegion('details').show(new EntityPathView({
@@ -16218,15 +16436,15 @@ var Layout = Marionette.LayoutView.extend({
             });
 
             // synonyms tab
-            var AccessionSynonymsView = __webpack_require__(216);
+            var AccessionSynonymsView = __webpack_require__(226);
             accessionLayout.getRegion('synonyms').show(new AccessionSynonymsView({model: this.model}));
 
             // batches tab
-            var BatchCollection = __webpack_require__(30);
+            var BatchCollection = __webpack_require__(34);
             var accessionBatches = new BatchCollection([], {accession_id: this.model.get('id')});
 
             accessionBatches.fetch().then(function() {
-                var BatchListView = __webpack_require__(23);
+                var BatchListView = __webpack_require__(22);
                 var batchListView  = new BatchListView({collection: accessionBatches, model: accessionLayout.model});
 
                 var contentBottomLayout = new ContentBottomLayout();
@@ -16235,6 +16453,9 @@ var Layout = Marionette.LayoutView.extend({
                 contentBottomLayout.getRegion('content').show(batchListView);
                 contentBottomLayout.getRegion('bottom').show(new ScrollingMoreView({targetView: batchListView}));
             });
+
+            this.onDescriptorMetaModelChange(this.model, this.model.get('descriptor_meta_model'));
+            this.enableTabs();
         } else {
             // details
             var taxon = new TaxonModel({id: this.model.get('parent')});
@@ -16255,10 +16476,18 @@ var Layout = Marionette.LayoutView.extend({
                 accessionLayout.getRegion('descriptors').show(accessionDescriptorView);
             });
 
+            // not available tabs
             this.disableSynonymsTab();
             this.disableBatchesTab();
             this.disableActionTab();
         }
+    },
+
+    onBeforeAttach: function() {
+        this.activeTab = this.ui.initial_pane.attr('name');
+
+        this.ui.tabs.on("shown.bs.tab", $.proxy(this.onShowTab, this));
+        this.ui.tabs.on("hide.bs.tab", $.proxy(this.onHideTab, this));
     },
 
     onShowTab: function(e) {
@@ -16292,7 +16521,7 @@ module.exports = Layout;
 
 
 /***/ }),
-/* 54 */
+/* 55 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -16309,7 +16538,7 @@ var Marionette = __webpack_require__(0);
 
 var View = Marionette.LayoutView.extend({
     tagName: 'div',
-    template: __webpack_require__(392),
+    template: __webpack_require__(421),
     className: "context batch",
     templateHelpers/*templateContext*/: function () {
         return {
@@ -16343,7 +16572,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 55 */
+/* 56 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -16356,7 +16585,7 @@ module.exports = View;
  * @details
  */
 
-var AuditModel = __webpack_require__(56);
+var AuditModel = __webpack_require__(57);
 
 var Collection = Backbone.Collection.extend({
     url: function() {
@@ -16409,7 +16638,7 @@ module.exports = Collection;
 
 
 /***/ }),
-/* 56 */
+/* 57 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -16422,7 +16651,7 @@ module.exports = Collection;
  * @details
  */
 
-var Backbone = __webpack_require__(3);
+var Backbone = __webpack_require__(5);
 
 var Model = Backbone.Model.extend({
     defaults: {
@@ -16460,7 +16689,7 @@ module.exports = Model;
 
 
 /***/ }),
-/* 57 */
+/* 58 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -16474,11 +16703,11 @@ module.exports = Model;
  */
 
 var Marionette = __webpack_require__(0);
-var AuditView = __webpack_require__(225);
-var ScrollView = __webpack_require__(6);
+var AuditView = __webpack_require__(235);
+var ScrollView = __webpack_require__(7);
 
 var View = ScrollView.extend({
-    template: __webpack_require__(399),
+    template: __webpack_require__(428),
     childView: AuditView,
     childViewContainer: 'tbody.audit-list',
 
@@ -16494,7 +16723,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 58 */
+/* 59 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -16507,7 +16736,7 @@ module.exports = View;
  * @details
  */
 
-var DescriptorGroupModel = __webpack_require__(14);
+var DescriptorGroupModel = __webpack_require__(23);
 
 var Collection = Backbone.Collection.extend({
     url: application.baseUrl + 'descriptor/group/',
@@ -16526,7 +16755,7 @@ module.exports = Collection;
 
 
 /***/ }),
-/* 59 */
+/* 60 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -16539,7 +16768,7 @@ module.exports = Collection;
  * @details
  */
 
-var DescriptorModelModel = __webpack_require__(15);
+var DescriptorModelModel = __webpack_require__(13);
 
 var Collection = Backbone.Collection.extend({
     url: application.baseUrl + 'descriptor/model/',
@@ -16560,7 +16789,7 @@ module.exports = Collection;
 
 
 /***/ }),
-/* 60 */
+/* 61 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -16573,7 +16802,7 @@ module.exports = Collection;
  * @details
  */
 
-var DescriptorTypeModel = __webpack_require__(12);
+var DescriptorTypeModel = __webpack_require__(14);
 
 var Collection = Backbone.Collection.extend({
     url: function() {
@@ -16600,7 +16829,7 @@ module.exports = Collection;
 
 
 /***/ }),
-/* 61 */
+/* 62 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -16613,7 +16842,7 @@ module.exports = Collection;
  * @details
  */
 
-var Backbone = __webpack_require__(3);
+var Backbone = __webpack_require__(5);
 
 var Model = Backbone.Model.extend({
     url: function() {
@@ -16678,7 +16907,7 @@ module.exports = Model;
 
 
 /***/ }),
-/* 62 */
+/* 63 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -16692,13 +16921,13 @@ module.exports = Model;
  */
 
 var Marionette = __webpack_require__(0);
-var ScrollView = __webpack_require__(6);
+var ScrollView = __webpack_require__(7);
 
-var DescriptorTypeModel = __webpack_require__(12);
-var DescriptorTypeAltView = __webpack_require__(264);
+var DescriptorTypeModel = __webpack_require__(14);
+var DescriptorTypeAltView = __webpack_require__(274);
 
 var View = ScrollView.extend({
-    template: __webpack_require__(432),
+    template: __webpack_require__(462),
     childView: DescriptorTypeAltView,
     childViewContainer: 'tbody.descriptor-type-list',
 
@@ -16722,7 +16951,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 63 */
+/* 64 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {/**
@@ -16757,7 +16986,7 @@ _.extend(BooleanType.prototype, DescriptorFormatType.prototype, {
             this.el = input;
         } else {
             var select = $('<select data-width="100%"></select>');
-            parent.append(select);
+            this.group = this._createInputGroup(parent, "glyphicon-check", select);
 
             // true
             var option = $("<option></option>");
@@ -16788,7 +17017,7 @@ _.extend(BooleanType.prototype, DescriptorFormatType.prototype, {
                 this.el.parent().remove();
             } else {
                 this.el.selectpicker('destroy');
-                this.el.remove();
+                this.group.remove();
             }
         }
     },
@@ -16908,7 +17137,7 @@ module.exports = BooleanType;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 64 */
+/* 65 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {/**
@@ -17120,7 +17349,7 @@ module.exports = DateType;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 65 */
+/* 66 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {/**
@@ -17327,7 +17556,7 @@ module.exports = DateTimeType;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 66 */
+/* 67 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {/**
@@ -17362,7 +17591,7 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
             this.el = input;
         } else {
             var select = $('<select style="width: 100%;"></select>');
-            parent.append(select);
+            this.group = this._createInputGroup(parent, "glyphicon-share", select);
 
             // init the autocomplete
             var url = application.baseUrl + format.model.replace('.', '/') + '/';
@@ -17436,7 +17665,7 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
                 this.el.parent().remove();
             } else {
                 this.el.select2('destroy');
-                this.el.remove();
+                this.group.remove();
             }
         }
     },
@@ -17587,7 +17816,7 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
 
 Entity.DescriptorTypeDetailsView = Marionette.ItemView.extend({
     className: 'descriptor-type-details-format',
-    template: __webpack_require__(440),
+    template: __webpack_require__(470),
 
     ui: {
         format_model: '#format_model'
@@ -17614,7 +17843,7 @@ module.exports = Entity;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 67 */
+/* 68 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {/**
@@ -17627,7 +17856,7 @@ module.exports = Entity;
  * @details
  */
 
-var EnumSingle = __webpack_require__(24);
+var EnumSingle = __webpack_require__(26);
 var Marionette = __webpack_require__(0);
 
 var EnumOrdinal = function() {
@@ -17642,7 +17871,7 @@ _.extend(EnumOrdinal.prototype, EnumSingle.prototype, {
 
 EnumOrdinal.DescriptorTypeDetailsView = Marionette.ItemView.extend({
     className: 'descriptor-type-details-format',
-    template: __webpack_require__(441),
+    template: __webpack_require__(471),
 
     ui: {
         format_trans: "#format_trans",
@@ -17752,7 +17981,7 @@ module.exports = EnumOrdinal;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 68 */
+/* 69 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {/**
@@ -17765,10 +17994,10 @@ module.exports = EnumOrdinal;
  * @details
  */
 
-var EnumSingle = __webpack_require__(24);
+var EnumSingle = __webpack_require__(26);
 var Marionette = __webpack_require__(0);
 
-var Popover = __webpack_require__(275);
+var Popover = __webpack_require__(288);
 
 var EnumPair = function() {
     EnumSingle.call(this);
@@ -17782,7 +18011,7 @@ _.extend(EnumPair.prototype, EnumSingle.prototype, {
 
 EnumPair.DescriptorTypeDetailsView = Marionette.ItemView.extend({
     className: 'descriptor-type-details-format',
-    template: __webpack_require__(442),
+    template: __webpack_require__(472),
 
     ui: {
         helper_display_fields: '#helper_display_fields',
@@ -17887,7 +18116,7 @@ module.exports = EnumPair;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 69 */
+/* 70 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {/**
@@ -18037,7 +18266,7 @@ module.exports = GpsType;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 70 */
+/* 71 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {/**
@@ -18190,10 +18419,10 @@ _.extend(NumericRange.prototype, DescriptorFormatType.prototype, {
     }
 });
 
-var Numeric = __webpack_require__(25);
+var Numeric = __webpack_require__(27);
 
 NumericRange.DescriptorTypeDetailsView = Numeric.DescriptorTypeDetailsView.extend({
-    template: __webpack_require__(445),
+    template: __webpack_require__(475),
 
     ui: {
         'format_unit': '#format_unit',
@@ -18241,7 +18470,7 @@ module.exports = NumericRange;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 71 */
+/* 72 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {/**
@@ -18281,14 +18510,8 @@ _.extend(Ordinal.prototype, DescriptorFormatType.prototype, {
             this.el = input;
         } else {
             if (this.isInput) {
-                var group = $('<div class="input-group"></div>');
-                var input = $('<input class="form-control" width="100%">');
-                var glyph = $('<span class="input-group-addon"><span class="glyphicon glyphicon-option-vertical"></span></span>');
-
-                group.append(input);
-                group.append(glyph);
-
-                parent.append(group);
+                var input = $('<input" width="100%">');
+                this.group = this._createInputGroup(parent, "glyphicon-option-vertical", input);
 
                 input.numeric({
                     allowPlus: false,
@@ -18308,7 +18531,7 @@ _.extend(Ordinal.prototype, DescriptorFormatType.prototype, {
             } else {
                 // ordinal with at max 256 values as a dropdown
                 var select = $('<select data-width="100%"></select>');
-                parent.append(select);
+                this.group = this._createInputGroup(parent, "glyphicon-option-vertical", select);
 
                 for (var i = format.range[0]; i <= format.range[1]; ++i) {
                     var option = $("<option></option>");
@@ -18336,7 +18559,7 @@ _.extend(Ordinal.prototype, DescriptorFormatType.prototype, {
                     this.el.parent().remove();
                 } else {
                     this.el.selectpicker('destroy');
-                    this.el.remove();
+                    this.group.remove();
                 }
             }
         }
@@ -18447,10 +18670,10 @@ _.extend(Ordinal.prototype, DescriptorFormatType.prototype, {
     }
 });
 
-var Numeric = __webpack_require__(25);
+var Numeric = __webpack_require__(27);
 
 Ordinal.DescriptorTypeDetailsView = Numeric.DescriptorTypeDetailsView.extend({
-    template: __webpack_require__(446),
+    template: __webpack_require__(476),
 
     ui: {
         'format_unit': '#format_unit',
@@ -18506,7 +18729,7 @@ module.exports = Ordinal;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 72 */
+/* 73 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {/**
@@ -18635,18 +18858,19 @@ _.extend(StringType.prototype, DescriptorFormatType.prototype, {
 
     values: function() {
         if (this.el && this.parent) {
-            return this.el.val();
+            var value = this.el.val();
+            return value !== "" ? value : null;
         }
 
-        return "";
+        return null;
     },
 
     checkCondition: function (condition, values) {
         switch (condition) {
             case 0:
-                return this.values() === "";
+                return this.values() == null;  // === "";
             case 1:
-                return this.values() !== "";
+                return this.values() != null;  // !== "";
             case 2:
                 return this.values() === values;
             case 3:
@@ -18716,7 +18940,7 @@ _.extend(StringType.prototype, DescriptorFormatType.prototype, {
 
 StringType.DescriptorTypeDetailsView = Marionette.ItemView.extend({
     className: 'descriptor-type-details-format',
-    template: __webpack_require__(447),
+    template: __webpack_require__(477),
 
     ui: {
         'format_regexp': '#format_regexp'
@@ -18743,7 +18967,7 @@ module.exports = StringType;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 73 */
+/* 74 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {/**
@@ -18949,7 +19173,1232 @@ module.exports = TimeType;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 74 */
+/* 75 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(_) {/**
+ * @file city.js
+ * @brief Geolocation city widget
+ * @author Medhi BOULNEMOUR
+ * @date 2017-02-23
+ * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+ * @license @todo
+ * @details
+ */
+
+var DescriptorFormatType = __webpack_require__(8);
+var Marionette = __webpack_require__(0);
+
+var CityType = function () {
+    DescriptorFormatType.call(this);
+
+    this.name = "city";
+    this.group = "city";
+};
+
+_.extend(CityType.prototype, DescriptorFormatType.prototype, {
+    create: function (format, parent, readOnly) {
+        readOnly || (readOnly = false);
+
+        if (readOnly) {
+            var input = this._createStdInput(parent, "glyphicon-map-marker");
+            this.parent = parent;
+            this.readOnly = true;
+            this.el = input;
+
+        } else {
+            var select = $('<select style="width: 100%;"></select>');
+            parent.append(select);
+            this.group = this._createInputGroup(parent, "glyphicon-map-marker", select);
+
+            // init the autocomplete
+            var url = application.baseUrl + 'geolocation/';
+            var initials = [];
+
+            var container = parent.closest('div.modal-dialog').parent();
+            if (container.length == 0) {
+                container = parent.closest('div.panel');
+            }
+
+            var default_option = null;
+
+            var old_term = '';
+
+            // Change display for the special option "Extend search"
+            var formatOption = function (option) {
+                if (option.id == 'more') {
+                    return $('<span class="text-info">' + gt.gettext("Extended search...") + '</span>');
+                }
+                return option.text
+            };
+
+            var selectAjax = function (live_mode) {
+
+                if (live_mode) {
+                    return {
+                        url: url + 'city/live-search/',
+                        dataType: 'json',
+                        delay: 250,
+                        data: function (params) {
+                            params.term || (params.term = old_term);
+
+                            if (old_term != params.term) {
+                                old_term = params.term;
+                                initSelect2(false, true);
+                            }
+
+                            return {
+                                cursor: params.next,
+                                term: params.term
+                            };
+                        },
+                        processResults: function (data, params) {
+                            params.next = null;
+
+                            if (data.items.length >= 30) {
+                                params.next = data.next || null;
+                            }
+
+                            var results = [];
+
+                            for (var i = 0; i < data.items.length; ++i) {
+
+                                var country_data = data.items[i].country;
+                                var display = '';
+
+                                if (data.items[i].preferred_names) {
+                                    display = data.items[i].preferred_names;
+                                } else if (data.items[i].short_names) {
+                                    display = data.items[i].short_names;
+                                } else if (data.items[i].display_names) {
+                                    display = data.items[i].display_names;
+                                } else {
+                                    display = data.items[i].name;
+                                }
+
+                                if (country_data.preferred_names) {
+                                    display += ', ' + country_data.preferred_names;
+                                } else if (country_data.short_names) {
+                                    display += ', ' + country_data.short_names;
+                                } else if (country_data.display_names) {
+                                    display += ', ' + country_data.display_names;
+                                } else {
+                                    display += ', ' + country_data.name;
+                                }
+
+                                results.push({
+                                    id: data.items[i].geoname_id,
+                                    text: display
+                                });
+
+                            }
+
+                            return {
+                                results: results,
+                                pagination: {
+                                    more: params.next != null
+                                }
+                            };
+
+                        },
+                        cache: true
+                    }
+                }
+
+                return {
+                    url: url + 'city/search/',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        params.term || (params.term = old_term);
+
+                        old_term = params.term;
+
+                        return {
+                            cursor: params.next,
+                            term: params.term
+                        };
+                    },
+                    processResults: function (data, params) {
+                        params.next = null;
+
+                        if (data.items.length >= 30) {
+                            params.next = data.next || null;
+                        }
+
+                        var results = [];
+
+                        for (var i = 0; i < data.items.length; ++i) {
+                            var country_data = data.items[i].country;
+                            var display = '';
+
+                            if (data.items[i].preferred_names) {
+                                display = data.items[i].preferred_names;
+                            } else if (data.items[i].short_names) {
+                                display = data.items[i].short_names;
+                            } else if (data.items[i].display_names) {
+                                display = data.items[i].display_names;
+                            } else {
+                                display = data.items[i].name;
+                            }
+
+                            if (country_data.preferred_names) {
+                                display += ', ' + country_data.preferred_names;
+                            } else if (country_data.short_names) {
+                                display += ', ' + country_data.short_names;
+                            } else if (country_data.display_names) {
+                                display += ', ' + country_data.display_names;
+                            } else {
+                                display += ', ' + country_data.name;
+                            }
+
+                            results.push({
+                                id: data.items[i].id,
+                                text: display
+                            });
+
+                        }
+
+                        if (params.next == null) {
+                            results.push({
+                                id: 'more',
+                                text: 'Extended Search'
+                            });
+                        }
+
+                        return {
+                            results: results,
+                            pagination: {
+                                more: params.next != null
+                            }
+                        };
+
+                    },
+                    cache: true
+                }
+            };
+
+            var params = {
+                data: initials,
+                dropdownParent: container,
+                ajax: selectAjax(false),
+                allowClear: true,
+                minimumInputLength: 1,
+                templateResult: formatOption,
+                placeholder: gt.gettext("Enter a value.")
+            };
+
+            var initSelect2 = function (ajx_mode, reset_mode) {
+                var ajx_mode = ajx_mode || false;
+                var reset_mode = reset_mode || false;
+
+                if (select.data('select2')) {
+                    select.select2('destroy');
+                }
+                if (!ajx_mode) {
+                    if (reset_mode) {
+                        // initials.push(default_option);
+                        params.data = initials;
+                        params.ajax = selectAjax(false);
+                        select.select2(params);
+                        select.val(default_option).trigger('change.select2');
+                    } else {
+                        params.ajax = selectAjax(false);
+                        select.select2(params);
+                    }
+                    select.unbind('select2:change');
+                    select.unbind('select2:close');
+                    select.unbind('select2:select');
+
+                    select.on('select2:select', function () {
+                        if (select.select2('val') == 'more') {
+                            initSelect2(true);
+                        }
+                    });
+                }
+                else {
+                    params.ajax = selectAjax(true);
+                    select.select2(params);
+                    select.on('change.select2', function () {
+                        // Add the webservice city to the local database
+                        if (select.val()) {
+                            select.unbind('select2:close');
+                            $.ajax({
+                                type: "POST",
+                                url: url + 'city/',
+                                dataType: 'json',
+                                data: {
+                                    'external_id': select.val()
+                                }
+                            }).done(function (data) {
+                                var country_data = data.country;
+                                var display = '';
+
+                                if (data.preferred_names) {
+                                    display = data.preferred_names;
+                                } else if (data.short_names) {
+                                    display = data.short_names;
+                                } else if (data.display_names) {
+                                    display = data.display_names;
+                                } else {
+                                    display = data.name;
+                                }
+
+                                if (country_data.preferred_names) {
+                                    display += ', ' + country_data.preferred_names;
+                                } else if (country_data.short_names) {
+                                    display += ', ' + country_data.short_names;
+                                } else if (country_data.display_names) {
+                                    display += ', ' + country_data.display_names;
+                                } else {
+                                    display += ', ' + country_data.name;
+                                }
+                                initials.push({
+                                    id: data.id,
+                                    text: display
+                                });
+                                params.data = initials;
+                                params.ajax = selectAjax(false);
+                                select.select2(params);
+                                select.on('select2:select', function () {
+                                    if (select.select2('val') == 'more') {
+                                        initSelect2(true);
+                                    }
+                                });
+                                select.val(data.id).trigger('change');
+                                select.unbind('select2:change');
+                            });
+                        }
+                    });
+                    select.on('select2:close', function () {
+                        old_term = "";
+                        initSelect2(false, true);
+                    });
+                }
+                if (old_term) {
+                    var $search = select.data('select2').dropdown.$search || select.data('select2').selection.$search;
+                    select.val(null).trigger('change');
+                    $search.val(old_term).trigger('keyup');
+                }
+            };
+            initSelect2(false);
+            this.parent = parent;
+            this.el = select;
+        }
+    },
+
+    destroy: function () {
+        if (this.el && this.parent) {
+            if (this.readOnly) {
+                this.el.parent().remove();
+            } else {
+                this.el.select2('destroy');
+                this.el.remove();
+            }
+        }
+    },
+
+    enable: function () {
+        if (this.el) {
+            this.el.prop("disabled", false);
+        }
+    },
+
+    disable: function () {
+        if (this.el) {
+            this.el.prop("disabled", true);
+        }
+    },
+
+    set: function (format, definesValues, defaultValues, descriptorTypeGroup, descriptorTypeId) {
+        if (!this.el || !this.parent) {
+            return;
+        }
+
+        definesValues = this.isValueDefined(definesValues, defaultValues);
+
+        var type = this;
+
+        if (this.readOnly && defaultValues) {
+            // defines value as attribute
+            this.el.attr('value', defaultValues);
+
+            $.ajax({
+                type: "GET",
+                url: application.baseUrl + 'geolocation/city/' + defaultValues + '/',
+                dataType: 'json'
+            }).done(function (data) {
+                var country_data = data.country;
+                var display = '';
+
+                if (data.preferred_names) {
+                    display = data.preferred_names;
+                } else if (data.short_names) {
+                    display = data.short_names;
+                } else if (data.display_names) {
+                    display = data.display_names;
+                } else {
+                    display = data.name;
+                }
+
+                if (country_data.preferred_names) {
+                    display += ', ' + country_data.preferred_names;
+                } else if (country_data.short_names) {
+                    display += ', ' + country_data.short_names;
+                } else if (country_data.display_names) {
+                    display += ', ' + country_data.display_names;
+                } else {
+                    display += ', ' + country_data.name;
+                }
+
+                type.el.val(display);
+            });
+
+        } else {
+            if (definesValues) {
+                // defines value as attribute
+                this.el.attr('value', defaultValues);
+
+                var select = this.el;
+
+                // init the autocomplete
+                var url = application.baseUrl + 'geolocation/';
+                var initials = [];
+
+                var container = this.parent.closest('div.modal-dialog').parent();
+                if (container.length == 0) {
+                    container = this.parent.closest('div.panel');
+                }
+
+                var default_option = null;
+                var old_term = '';
+
+                // Change display for the special option "Extend search"
+                var formatOption = function (option) {
+                    if (option.id == 'more') {
+                        return $('<span class="text-info">' + gt.gettext("Extended search...") + '</span>');
+                    }
+                    return option.text
+                };
+
+                var selectAjax = function (live_mode) {
+                    if (live_mode) {
+                        return {
+                            url: url + 'city/live-search/',
+                            dataType: 'json',
+                            delay: 250,
+                            data: function (params) {
+                                params.term || (params.term = old_term);
+
+                                if (old_term != params.term) {
+                                    old_term = params.term;
+                                    initSelect2(false, true);
+                                }
+
+                                return {
+                                    cursor: params.next,
+                                    term: params.term
+                                };
+                            },
+                            processResults: function (data, params) {
+                                params.next = null;
+
+                                if (data.items.length >= 30) {
+                                    params.next = data.next || null;
+                                }
+
+                                var results = [];
+
+                                for (var i = 0; i < data.items.length; ++i) {
+
+                                    var country_data = data.items[i].country;
+                                    var display = '';
+
+                                    if (data.items[i].preferred_names) {
+                                        display = data.items[i].preferred_names;
+                                    } else if (data.items[i].short_names) {
+                                        display = data.items[i].short_names;
+                                    } else if (data.items[i].display_names) {
+                                        display = data.items[i].display_names;
+                                    } else {
+                                        display = data.items[i].name;
+                                    }
+
+                                    if (country_data.preferred_names) {
+                                        display += ', ' + country_data.preferred_names;
+                                    } else if (country_data.short_names) {
+                                        display += ', ' + country_data.short_names;
+                                    } else if (country_data.display_names) {
+                                        display += ', ' + country_data.display_names;
+                                    } else {
+                                        display += ', ' + country_data.name;
+                                    }
+
+                                    results.push({
+                                        id: data.items[i].geoname_id,
+                                        text: display
+                                    });
+
+                                }
+
+                                return {
+                                    results: results,
+                                    pagination: {
+                                        more: params.next != null
+                                    }
+                                };
+
+                            },
+                            cache: true
+                        }
+                    }
+                    return {
+                        url: url + 'city/search/',
+                        dataType: 'json',
+                        delay: 250,
+                        data: function (params) {
+                            params.term || (params.term = old_term);
+
+                            old_term = params.term;
+
+                            return {
+                                cursor: params.next,
+                                term: params.term
+                            };
+                        },
+                        processResults: function (data, params) {
+                            params.next = null;
+
+                            if (data.items.length >= 30) {
+                                params.next = data.next || null;
+                            }
+
+                            var results = [];
+
+                            for (var i = 0; i < data.items.length; ++i) {
+
+                                var country_data = data.items[i].country;
+                                var display = '';
+
+                                if (data.items[i].preferred_names) {
+                                    display = data.items[i].preferred_names;
+                                } else if (data.items[i].short_names) {
+                                    display = data.items[i].short_names;
+                                } else if (data.items[i].display_names) {
+                                    display = data.items[i].display_names;
+                                } else {
+                                    display = data.items[i].name;
+                                }
+
+                                if (country_data.preferred_names) {
+                                    display += ', ' + country_data.preferred_names;
+                                } else if (country_data.short_names) {
+                                    display += ', ' + country_data.short_names;
+                                } else if (country_data.display_names) {
+                                    display += ', ' + country_data.display_names;
+                                } else {
+                                    display += ', ' + country_data.name;
+                                }
+
+                                results.push({
+                                    id: data.items[i].id,
+                                    text: display
+                                });
+
+                            }
+
+                            if (params.next == null) {
+                                results.push({
+                                    id: 'more',
+                                    text: 'Extended Search'
+                                });
+                            }
+
+                            return {
+                                results: results,
+                                pagination: {
+                                    more: params.next != null
+                                }
+                            };
+
+                        },
+                        cache: true
+                    }
+                };
+
+                var params = {
+                    data: initials,
+                    dropdownParent: container,
+                    ajax: selectAjax(false),
+                    allowClear: true,
+                    minimumInputLength: 1,
+                    templateResult: formatOption,
+                    placeholder: gt.gettext("Enter a value.")
+                };
+
+                var initSelect2 = function (ajx_mode, reset_mode) {
+                    var ajx_mode = ajx_mode || false;
+                    var reset_mode = reset_mode || false;
+
+                    if (select.data('select2')) {
+                        select.select2('destroy');
+                    }
+
+                    if (!ajx_mode) {
+                        if (reset_mode) {
+                            // initials.push(default_option);
+                            params.data = initials;
+                            params.ajax = selectAjax(false);
+                            select.select2(params);
+                            select.val(default_option.id).trigger('change.select2');
+                        } else {
+                            params.ajax = selectAjax(false);
+                            select.select2(params);
+                        }
+                        select.unbind('select2:change');
+                        select.unbind('select2:close');
+                        select.unbind('select2:select');
+
+                        select.on('select2:select', function () {
+                            if (select.select2('val') == 'more') {
+                                initSelect2(true);
+                            }
+                        });
+
+                    }
+                    else {
+                        params.ajax = selectAjax(true);
+                        select.select2(params);
+                        select.on('change.select2', function () {
+                                // Add the webservice city to the local database
+
+                                if (select.val()) {
+                                    select.unbind('select2:close');
+                                    $.ajax({
+                                        type: "POST",
+                                        url: url + 'city/',
+                                        dataType: 'json',
+                                        data: {
+                                            'external_id': select.val()
+                                        }
+                                    }).done(function (data) {
+
+                                        var country_data = data.country;
+                                        var display = '';
+
+                                        if (data.preferred_names) {
+                                            display = data.preferred_names;
+                                        } else if (data.short_names) {
+                                            display = data.short_names;
+                                        } else if (data.display_names) {
+                                            display = data.display_names;
+                                        } else {
+                                            display = data.name;
+                                        }
+
+                                        if (country_data.preferred_names) {
+                                            display += ', ' + country_data.preferred_names;
+                                        } else if (country_data.short_names) {
+                                            display += ', ' + country_data.short_names;
+                                        } else if (country_data.display_names) {
+                                            display += ', ' + country_data.display_names;
+                                        } else {
+                                            display += ', ' + country_data.name;
+                                        }
+
+                                        initials.push({
+                                            id: data.id,
+                                            text: display
+                                        });
+
+                                        params.data = initials;
+                                        params.ajax = selectAjax(false);
+                                        select.select2(params);
+                                        select.on('select2:select', function () {
+                                            if (select.select2('val') == 'more') {
+                                                initSelect2(true);
+                                            }
+                                        });
+                                        select.val(data.id).trigger('change');
+                                        select.unbind('select2:change');
+                                    });
+                                }
+                            }
+                        );
+                        select.on('select2:close', function () {
+                            old_term = "";
+                            initSelect2(false, true);
+                        });
+                    }
+                    if (old_term) {
+                        var $search = select.data('select2').dropdown.$search || select.data('select2').selection.$search;
+                        select.val(null).trigger('change');
+                        $search.val(old_term).trigger('keyup');
+                    }
+                };
+
+                // autoselect the initial value
+                $.ajax({
+                    type: "GET",
+                    url: url + 'city/' + defaultValues + '/',
+                    dataType: 'json'
+                }).done(function (data) {
+                    var country_data = data.country;
+                    var display = '';
+
+                    if (data.preferred_names) {
+                        display = data.preferred_names;
+                    } else if (data.short_names) {
+                        display = data.short_names;
+                    } else if (data.display_names) {
+                        display = data.display_names;
+                    } else {
+                        display = data.name;
+                    }
+
+                    if (country_data.preferred_names) {
+                        display += ', ' + country_data.preferred_names;
+                    } else if (country_data.short_names) {
+                        display += ', ' + country_data.short_names;
+                    } else if (country_data.display_names) {
+                        display += ', ' + country_data.display_names;
+                    } else {
+                        display += ', ' + country_data.name;
+                    }
+
+                    default_option = {
+                        id: data.id,
+                        text: display
+                    };
+
+                    initials.push(default_option);
+                    params.data = initials;
+                    params.ajax = selectAjax(false);
+                    select.select2(params);
+                    select.on('select2:select', function () {
+                        if (select.select2('val') == 'more') {
+                            initSelect2(true);
+                        }
+                    });
+                    select.val(defaultValues).trigger('change.select2');
+
+                    // remove temporary value
+                    select.removeAttr('value');
+                });
+            }
+        }
+    },
+
+    values: function() {
+        if (this.el && this.parent) {
+            if (this.readOnly) {
+                var value = parseInt(this.el.attr('value'));
+                return isNaN(value) ? null : value;
+            } else {
+                if (this.el.attr('value') !== undefined) {
+                    var value = parseInt(this.el.attr('value'));
+                    return isNaN(value) ? null : value;
+                } else {
+                    if (this.el.val() !== "") {
+                        var value = parseInt(this.el.val());
+                        return isNaN(value) ? null : value;
+                    } else {
+                        return null;
+                    }
+                }
+            }
+        }
+        return null;
+    },
+
+    checkCondition: function (condition, values) {
+        switch (condition) {
+            case 0:
+                return this.values() === null;
+            case 1:
+                return this.values() !== null;
+            case 2:
+                return this.values() === values;
+            case 3:
+                return this.values() !== values;
+            default:
+                return false;
+        }
+    },
+
+    bindConditionListener: function(listeners, condition, values) {
+        if (this.el && this.parent && !this.readOnly) {
+            if (!this.bound) {
+                this.el.on("select2:select", $.proxy(this.onValueChanged, this));
+                this.el.on("select2:unselect", $.proxy(this.onValueUnselected, this));
+
+                this.bound = true;
+            }
+
+            this.conditionType = condition;
+            this.conditionValues = values;
+            this.listeners = listeners || [];
+        }
+    },
+
+    onValueChanged: function(e) {
+        var display = this.checkCondition(this.conditionType, this.conditionValues);
+
+        // show or hide the parent element
+        if (display) {
+            for (var i = 0; i < this.listeners.length; ++i) {
+                this.listeners[i].parent.parent().show(true);
+            }
+        } else {
+            for (var i = 0; i < this.listeners.length; ++i) {
+                this.listeners[i].parent.parent().hide(true);
+            }
+        }
+    },
+
+    onValueUnselected: function(e) {
+        var display = false;
+
+        switch (this.conditionType) {
+            case 0:
+                display = true;
+                break;
+            case 1:
+                display = false;
+                break;
+            case 2:
+                display = false;
+                break;
+            case 3:
+                display = false;
+                break;
+            default:
+                break;
+        }
+
+        // show or hide the parent element
+        if (display) {
+            for (var i = 0; i < this.listeners.length; ++i) {
+                this.listeners[i].parent.parent().show(true);
+            }
+        } else {
+            for (var i = 0; i < this.listeners.length; ++i) {
+                this.listeners[i].parent.parent().hide(true);
+            }
+        }
+    }
+});
+
+module.exports = CityType;
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
+
+/***/ }),
+/* 76 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(_) {/**
+ * @file country.js
+ * @brief Geolocation country widget
+ * @author Medhi BOULNEMOUR
+ * @date 2017-02-23
+ * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+ * @license @todo
+ * @details
+ */
+
+var DescriptorFormatType = __webpack_require__(8);
+var Marionette = __webpack_require__(0);
+
+var CountryType = function() {
+    DescriptorFormatType.call(this);
+
+    this.name = "country";
+    this.group = "country";
+};
+
+_.extend(CountryType.prototype, DescriptorFormatType.prototype, {
+    create: function (format, parent, readOnly) {
+        readOnly || (readOnly = false);
+
+        if (readOnly) {
+            var input = this._createStdInput(parent, "glyphicon-map-marker");
+
+            this.parent = parent;
+            this.readOnly = true;
+            this.el = input;
+
+        } else {
+            var select = $('<select style="width: 100%;"></select>');
+            parent.append(select);
+            this.group = this._createInputGroup(parent, "glyphicon-map-marker", select);
+
+            // init the autocomplete
+            var url = application.baseUrl + 'geolocation/country/search';
+            var initials = [];
+
+            var container = parent.closest('div.modal-dialog').parent();
+            if (container.length == 0) {
+                container = parent.closest('div.panel');
+            }
+
+            var params = {
+                data: initials,
+                dropdownParent: container,
+                ajax: {
+                    url: url,
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        params.term || (params.term = '');
+
+                        return {
+                            cursor: params.next,
+                            term: params.term
+                        };
+                    },
+                    processResults: function (data, params) {
+                        params.next = null;
+
+                        if (data.items.length >= 30) {
+                            params.next = data.next || null;
+                        }
+
+                        var results = [];
+
+                        for (var i = 0; i < data.items.length; ++i) {
+
+                            var display = '';
+
+                            if (data.items[i].preferred_names) {
+                                display = data.items[i].preferred_names;
+                            } else if (data.items[i].short_names) {
+                                display = data.items[i].short_names;
+                            } else if (data.items[i].display_names) {
+                                display = data.items[i].display_names;
+                            } else {
+                                display = data.items[i].name;
+                            }
+
+                            results.push({
+                                id: data.items[i].id,
+                                text: display
+                            });
+                        }
+
+                        return {
+                            results: results,
+                            pagination: {
+                                more: params.next != null
+                            }
+                        };
+                    },
+                    cache: true
+                },
+                allowClear: true,
+                minimumInputLength: 3,
+                placeholder: gt.gettext("Enter a value. 3 characters at least for auto-completion")
+            };
+
+            select.select2(params);
+
+            this.parent = parent;
+            this.el = select;
+        }
+    },
+
+    destroy: function() {
+        if (this.el && this.parent) {
+            if (this.readOnly) {
+                this.el.parent().remove();
+            } else {
+                this.el.select2('destroy');
+                this.el.remove();
+            }
+        }
+    },
+
+    enable: function() {
+        if (this.el) {
+            this.el.prop("disabled", false);
+        }
+    },
+
+    disable: function() {
+        if (this.el) {
+            this.el.prop("disabled", true);
+        }
+    },
+
+    set: function (format, definesValues, defaultValues, descriptorTypeGroup, descriptorTypeId) {
+        if (!this.el || !this.parent) {
+            return;
+        }
+
+        definesValues = this.isValueDefined(definesValues, defaultValues);
+
+        var type = this;
+
+        if (this.readOnly && defaultValues) {
+            // defines value as attribute
+            this.el.attr('value', defaultValues);
+
+            $.ajax({
+                type: "GET",
+                url: application.baseUrl + 'geolocation/country/' + defaultValues + '/',
+                dataType: 'json'
+            }).done(function (data) {
+                var display = '';
+
+                if (data.preferred_names) {
+                    display = data.preferred_names;
+                } else if (data.short_names) {
+                    display = data.short_names;
+                } else if (data.display_names) {
+                    display = data.display_names;
+                } else {
+                    display = data.name;
+                }
+
+                type.el.val(display);
+            });
+        } else {
+            if (definesValues) {
+                // defines value as attribute
+                this.el.attr('value', defaultValues);
+
+                // need to re-init the select2 widget
+                this.el.select2('destroy');
+
+                // init the autocomplete
+                var url = application.baseUrl + 'geolocation/country/';
+                var initials = [];
+
+                var container = this.parent.closest('div.modal-dialog').parent();
+                if (container.length == 0) {
+                    container = this.parent.closest('div.panel');
+                }
+
+                var params = {
+                    data: initials,
+                    dropdownParent: container,
+                    ajax: {
+                        url: url + 'search/',
+                        dataType: 'json',
+                        delay: 250,
+                        data: function (params) {
+                            params.term || (params.term = '');
+
+                            return {
+                                cursor: params.next,
+                                term: params.term
+                            };
+                        },
+                        processResults: function (data, params) {
+                            params.next = null;
+
+                            if (data.items.length >= 30) {
+                                params.next = data.next || null;
+                            }
+
+                            var results = [];
+
+                            for (var i = 0; i < data.items.length; ++i) {
+                                var display = '';
+
+                                if (data.items[i].preferred_names) {
+                                    display = data.items[i].preferred_names;
+                                } else if (data.items[i].short_names) {
+                                    display = data.items[i].short_names;
+                                } else if (data.items[i].display_names) {
+                                    display = data.items[i].display_names;
+                                } else {
+                                    display = data.items[i].name;
+                                }
+
+                                results.push({
+                                    id: data.items[i].id,
+                                    text: display
+                                });
+                            }
+
+                            return {
+                                results: results,
+                                pagination: {
+                                    more: params.next != null
+                                }
+                            };
+                        },
+                        cache: true
+                    },
+                    allowClear: true,
+                    minimumInputLength: 3,
+                    placeholder: gt.gettext("Enter a value. 3 characters at least for auto-completion")
+                };
+
+                // autoselect the initial value
+                $.ajax({
+                    type: "GET",
+                    url: url + defaultValues + '/',
+                    dataType: 'json'
+                }).done(function (data) {
+                    var display = '';
+
+                    if (data.preferred_names) {
+                        display = data.preferred_names;
+                    } else if (data.short_names) {
+                        display = data.short_names;
+                    } else if (data.display_names) {
+                        display = data.display_names;
+                    } else {
+                        display = data.name;
+                    }
+
+                    initials.push({id: data.id, text: display});
+                    params.data = initials;
+                    type.el.select2(params);
+                    type.el.val(defaultValues).trigger('change');
+
+                    // remove temporary value
+                    type.el.removeAttr('value');
+                });
+
+
+            }
+        }
+    },
+
+    values: function() {
+        if (this.el && this.parent) {
+            if (this.readOnly) {
+                var value = parseInt(this.el.attr('value'));
+                return isNaN(value) ? null : value;
+            } else {
+                if (this.el.attr('value') !== undefined) {
+                    var value = parseInt(this.el.attr('value'));
+                    return isNaN(value) ? null : value;
+                } else {
+                    if (this.el.val() !== "") {
+                        var value = parseInt(this.el.val());
+                        return isNaN(value) ? null : value;
+                    } else {
+                        return null;
+                    }
+                }
+            }
+        }
+        return null;
+    },
+
+    checkCondition: function (condition, values) {
+        switch (condition) {
+            case 0:
+                return this.values() === null;
+            case 1:
+                return this.values() !== null;
+            case 2:
+                return this.values() === values;
+            case 3:
+                return this.values() !== values;
+            default:
+                return false;
+        }
+    },
+
+    bindConditionListener: function(listeners, condition, values) {
+        if (this.el && this.parent && !this.readOnly) {
+            if (!this.bound) {
+                this.el.on("select2:select", $.proxy(this.onValueChanged, this));
+                this.el.on("select2:unselect", $.proxy(this.onValueUnselected, this));
+
+                this.bound = true;
+            }
+
+            this.conditionType = condition;
+            this.conditionValues = values;
+            this.listeners = listeners || [];
+        }
+    },
+
+    onValueChanged: function(e) {
+        var display = this.checkCondition(this.conditionType, this.conditionValues);
+
+        // show or hide the parent element
+        if (display) {
+            for (var i = 0; i < this.listeners.length; ++i) {
+                this.listeners[i].parent.parent().show(true);
+            }
+        } else {
+            for (var i = 0; i < this.listeners.length; ++i) {
+                this.listeners[i].parent.parent().hide(true);
+            }
+        }
+    },
+
+    onValueUnselected: function(e) {
+        var display = false;
+
+        switch (this.conditionType) {
+            case 0:
+                display = true;
+                break;
+            case 1:
+                display = false;
+                break;
+            case 2:
+                display = false;
+                break;
+            case 3:
+                display = false;
+                break;
+            default:
+                break;
+        }
+
+        // show or hide the parent element
+        if (display) {
+            for (var i = 0; i < this.listeners.length; ++i) {
+                this.listeners[i].parent.parent().show(true);
+            }
+        } else {
+            for (var i = 0; i < this.listeners.length; ++i) {
+                this.listeners[i].parent.parent().hide(true);
+            }
+        }
+    }
+});
+
+module.exports = CountryType;
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
+
+/***/ }),
+/* 77 */
+/***/ (function(module, exports) {
+
+/**
+ * @file config.js
+ * @brief Config model
+ * @author Frederic SCHERMA
+ * @date 2017-03-22
+ * @copyright Copyright (c) 2017 INRA UMR1095 GDEC
+ * @license @todo
+ * @details
+ */
+
+module.exports = Backbone.Model.extend({
+    url: application.baseUrl + 'main/config/:id/',
+
+    defaults: function() {
+        return {
+            id: 0,
+            module: '',
+            values: []
+        }
+    }
+});
+
+
+/***/ }),
+/* 78 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {/**
@@ -19006,7 +20455,7 @@ module.exports = View;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 75 */
+/* 79 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -19022,7 +20471,7 @@ module.exports = View;
 var Marionette = __webpack_require__(0);
 
 var View = Marionette.LayoutView.extend({
-    template: __webpack_require__(459),
+    template: __webpack_require__(490),
 
     initialize: function(options) {
     },
@@ -19035,7 +20484,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 76 */
+/* 80 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {/**
@@ -19588,7 +21037,7 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
 
 Media.DescriptorTypeDetailsView = Marionette.ItemView.extend({
     className: 'descriptor-type-details-format',
-    template: __webpack_require__(465),
+    template: __webpack_require__(496),
 
     ui: {
         format_media_types: '#format_media_types',
@@ -19632,7 +21081,7 @@ module.exports = Media;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 77 */
+/* 81 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {/**
@@ -19805,7 +21254,7 @@ _.extend(MediaCollection.prototype, DescriptorFormatType.prototype, {
 
 MediaCollection.DescriptorTypeDetailsView = Marionette.ItemView.extend({
     className: 'descriptor-type-details-format',
-    template: __webpack_require__(466),
+    template: __webpack_require__(497),
 
     ui: {
         format_media_types: '#format_media_types',
@@ -19857,7 +21306,413 @@ module.exports = MediaCollection;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 78 */
+/* 82 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/**
+ * @file establishment.js
+ * @brief Establishment collection
+ * @author Frederic SCHERMA
+ * @date 2017-02-28
+ * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+ * @license @todo
+ * @details
+ */
+
+var EstablishmentModel = __webpack_require__(29);
+
+var Collection = Backbone.Collection.extend({
+    url: function () {
+        if (this.organisation_id) {
+            return application.baseUrl + 'organisation/organisation/' + this.organisation_id + '/establishment/';
+        } else {
+            return application.baseUrl + 'organisation/establishment/';
+        }
+    },
+    model: EstablishmentModel,
+
+    comparator: 'name',
+
+    initialize: function(models, options) {
+        options || (options = {});
+
+        if (options.organisation_id) {
+            this.organisation_id = options.organisation_id;
+        }
+    },
+
+    parse: function(data) {
+        this.prev = data.prev;
+        this.cursor = data.cursor;
+        this.next = data.next;
+        this.perms = data.perms;
+
+        return data.items;
+    },
+
+    fetch: function(options) {
+        options || (options = {});
+        var data = (options.data || {});
+
+        options.data = data;
+
+        this.cursor = options.data.cursor;
+        this.sort_by = options.data.sort_by;
+
+        if (this.filters) {
+            options.data.filters = JSON.stringify(this.filters)
+        }
+
+        return Backbone.Collection.prototype.fetch.call(this, options);
+    }
+});
+
+module.exports = Collection;
+
+
+/***/ }),
+/* 83 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/**
+ * @file descriptorcontext.js
+ * @brief Organisation and establishment descriptors context menu
+ * @author Frederic SCHERMA
+ * @date 2017-02-14
+ * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+ * @license @todo
+ * @details
+ */
+
+var Marionette = __webpack_require__(0);
+
+var View = Marionette.LayoutView.extend({
+    tagName: 'div',
+    template: __webpack_require__(498),
+    className: "context accession",
+    templateHelpers/*templateContext*/: function () {
+        return {
+            actions: this.getOption('actions'),
+            options: {
+                'modify': {className: 'btn-default', label: gt.gettext('Modify descriptors')},
+                'apply': {className: 'btn-success', label: gt.gettext('Apply modifications')},
+                'cancel': {className: 'btn-default', label: gt.gettext('Cancel modifications')}
+            }
+        }
+    },
+
+    ui: {
+        'modify': 'button[name="modify"]',
+        'apply': 'button[name="apply"]',
+        'cancel': 'button[name="cancel"]'
+    },
+
+    triggers: {
+        "click @ui.modify": "describable:modify",
+        "click @ui.apply": "describable:apply",
+        "click @ui.cancel": "describable:cancel"
+    },
+
+    initialize: function(options) {
+        options || (options = {actions: []});
+    }
+});
+
+module.exports = View;
+
+
+/***/ }),
+/* 84 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/**
+ * @file descriptoredit.js
+ * @brief Organisation and establishment descriptor item edit view
+ * @author Frederic SCHERMA
+ * @date 2017-03-07
+ * @copyright Copyright (c) 2017 INRA UMR1095 GDEC
+ * @license @todo
+ * @details
+ */
+
+var DescribableEdit = __webpack_require__(25);
+
+var View = DescribableEdit.extend({
+    onCancel: function() {
+        // cancel global widget modifications
+        this.cancel();
+
+        // non existing entity, simply reload previous content (url has not changed)
+        if (this.model.isNew()) {
+            Backbone.history.loadUrl();
+            return;
+        }
+
+        // does not reload models, just redo the views
+        var view = this;
+        var name = this.model.get('name');
+
+        // update the layout content
+        var layout = application.view().getRegion('content').currentView;
+
+        var DescriptorView = __webpack_require__(39);
+        var descriptorView = new DescriptorView({
+            model: this.model,
+            descriptorMetaModelLayout: view.descriptorMetaModelLayout});
+
+        layout.getRegion('descriptors').show(descriptorView);
+    },
+
+    onApply: function () {
+        // does not reload models, save and redo the views
+        var view = this;
+        var model = this.model;
+
+        var descriptors = this.prepareDescriptors();
+        if (descriptors === null) {
+            return;
+        }
+
+        var isNew = this.model.isNew();
+
+        this.model.save({descriptors: descriptors}, {wait: true, patch: !isNew}).then(function () {
+            var layout = application.view().getRegion('content').currentView;
+
+            // update the layout content
+            var DescriptorView = __webpack_require__(39);
+            var descriptorView = new DescriptorView({
+                model: model,
+                descriptorMetaModelLayout: view.descriptorMetaModelLayout});
+
+            layout.getRegion('descriptors').show(descriptorView);
+        });
+    },
+
+    onShowTab: function() {
+        var view = this;
+
+        // contextual panel
+        var contextLayout = application.getView().getRegion('right').currentView;
+        if (!contextLayout) {
+            var DefaultLayout = __webpack_require__(4);
+            contextLayout = new DefaultLayout();
+            application.getView().getRegion('right').show(contextLayout);
+        }
+
+        var TitleView = __webpack_require__(3);
+        contextLayout.getRegion('title').show(new TitleView({title: gt.gettext("Descriptors")}));
+
+        var actions = ['apply', 'cancel'];
+
+        var DescriptorContextView = __webpack_require__(83);
+        var contextView = new DescriptorContextView({actions: actions});
+        contextLayout.getRegion('content').show(contextView);
+
+        contextView.on("describable:cancel", function() {
+            view.onCancel();
+        });
+
+        contextView.on("describable:apply", function() {
+            view.onApply();
+        });
+    },
+
+    onHideTab: function() {
+        application.main.defaultRightView();
+    }
+});
+
+module.exports = View;
+
+
+/***/ }),
+/* 85 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/**
+ * @file organisationlayout.js
+ * @brief Optimized layout for organisation details
+ * @author Frederic SCHERMA
+ * @date 2017-03-07
+ * @copyright Copyright (c) 2017 INRA UMR1095 GDEC
+ * @license @todo
+ * @details
+ */
+
+var Marionette = __webpack_require__(0);
+
+var TitleView = __webpack_require__(3);
+var ScrollingMoreView = __webpack_require__(9);
+var ContentBottomLayout = __webpack_require__(28);
+var OrganisationDetailsView = __webpack_require__(334);
+var DescriptorEditView = __webpack_require__(84);
+
+
+var Layout = Marionette.LayoutView.extend({
+    template: __webpack_require__(506),
+
+    attributes: {
+        style: "height: 100%;"
+    },
+
+    ui: {
+        tabs: 'a[data-toggle="tab"]',
+        initial_pane: 'div.tab-pane.active',
+        establishments_tab: 'a[aria-controls=establishments]'
+    },
+
+    regions: {
+        'details': "div[name=details]",
+        'descriptors': "div.tab-pane[name=descriptors]",
+        'establishments': 'div.tab-pane[name=establishments]',
+        'entities': "div.tab-pane[name=entities]"
+    },
+
+    childEvents: {
+        'dom:refresh': function(child) {
+            var tab = this.$el.find('div.tab-pane.active').attr('name');
+            var region = this.getRegion(tab);
+
+            // update child of current tab
+            if (region && child && region.currentView == child) {
+                if (region.currentView.onShowTab) {
+                    region.currentView.onShowTab(this);
+                }
+            }
+        }
+    },
+
+    initialize: function(model, options) {
+        Layout.__super__.initialize.apply(this, arguments);
+
+        this.activeTab = undefined;
+        this.listenTo(this.model, 'change:descriptor_meta_model', this.onDescriptorMetaModelChange, this);
+        this.listenTo(this.model, 'change:id', this.onOrganisationCreate, this);
+    },
+
+    onOrganisationCreate: function(model, value) {
+        // re-render once created
+        this.render();
+
+        // and update history
+        Backbone.history.navigate('app/organisation/organisation/' + this.model.get('id') + '/', {/*trigger: true,*/ replace: false});
+    },
+
+    onDescriptorMetaModelChange: function(model, value) {
+        if (value == null) {
+            this.getRegion('descriptors').empty();
+        } else {
+            var organisationLayout = this;
+
+            // get the layout before creating the view
+            $.ajax({
+                method: "GET",
+                url: application.baseUrl + 'descriptor/meta-model/' + value + '/layout/',
+                dataType: 'json'
+            }).done(function (data) {
+                var DescriptorView = __webpack_require__(39);
+                var descriptorView = new DescriptorView({
+                    model: model,
+                    descriptorMetaModelLayout: data
+                });
+                organisationLayout.getRegion('descriptors').show(descriptorView);
+            });
+        }
+    },
+
+    disableEstablishmentTab: function () {
+        this.ui.establishments_tab.parent().addClass('disabled');
+    },
+
+    onRender: function() {
+        var organisationLayout = this;
+
+        // details view
+        if (!this.model.isNew()) {
+            // details view
+            organisationLayout.getRegion('details').show(new OrganisationDetailsView({model: this.model}));
+
+            // establishments tab
+            var EstablishmentCollection = __webpack_require__(82);
+            var establishments = new EstablishmentCollection([], {organisation_id: this.model.get('id')});
+
+            establishments.fetch().then(function() {
+                var EstablishmentListView = __webpack_require__(331);
+                var establishmentListView  = new EstablishmentListView({collection: establishments, model: organisationLayout.model});
+
+                var contentBottomLayout = new ContentBottomLayout();
+                organisationLayout.getRegion('establishments').show(contentBottomLayout);
+
+                contentBottomLayout.getRegion('content').show(establishmentListView);
+                contentBottomLayout.getRegion('bottom').show(new ScrollingMoreView({targetView: establishmentListView}));
+
+                // how and where ?
+                // var EstablishmentListFilterView = require('./establishmentlistfilter');
+                // contentBottomLayout.getRegion('footer').show(new EstablishmentListFilterView({collection: establishments}));
+            });
+
+            // if necessary enable tabs
+            this.ui.establishments_tab.parent().removeClass('disabled');
+        } else {
+            // details
+            organisationLayout.getRegion('details').show(new OrganisationDetailsView({model: this.model}));
+
+            // descriptors edit tab
+            $.ajax({
+                method: "GET",
+                url: application.baseUrl + 'descriptor/meta-model/' + this.model.get('descriptor_meta_model') + '/layout/',
+                dataType: 'json'
+            }).done(function(data) {
+                var descriptorView = new DescriptorEditView({
+                    model: organisationLayout.model, descriptorMetaModelLayout: data});
+
+                organisationLayout.getRegion('descriptors').show(descriptorView);
+            });
+
+            // not available tabs
+            this.disableEstablishmentTab();
+        }
+    },
+
+    onBeforeAttach: function() {
+        this.activeTab = this.ui.initial_pane.attr('name');
+
+        this.ui.tabs.on("shown.bs.tab", $.proxy(this.onShowTab, this));
+        this.ui.tabs.on("hide.bs.tab", $.proxy(this.onHideTab, this));
+    },
+
+    onShowTab: function(e) {
+        // e.target current tab, e.relatedTarget previous tab
+        var tab = e.target.getAttribute('aria-controls');
+        this.activeTab = tab;
+
+        var region = this.getRegion(tab);
+        if (region && region.currentView && region.currentView.onShowTab) {
+            region.currentView.onShowTab(this);
+        }
+    },
+
+    onHideTab: function(e) {
+        var tab = e.target.getAttribute('aria-controls');
+
+        var region = this.getRegion(tab);
+        if (region && region.currentView && region.currentView.onHideTab) {
+            region.currentView.onHideTab(this);
+        }
+
+        application.main.defaultRightView();
+    },
+
+    onDestroy: function() {
+        application.main.defaultRightView();
+    }
+});
+
+module.exports = Layout;
+
+
+/***/ }),
+/* 86 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -19907,7 +21762,7 @@ module.exports = TaxonCollection;
 
 
 /***/ }),
-/* 79 */
+/* 87 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -19925,7 +21780,7 @@ var TaxonModel = __webpack_require__(10);
 
 var TaxonItemView = Marionette.ItemView.extend({
     tagName: 'div',
-    template: __webpack_require__(480),
+    template: __webpack_require__(522),
     className: "object taxon",
 
     ui: {
@@ -19934,7 +21789,7 @@ var TaxonItemView = Marionette.ItemView.extend({
         "synonym_name": ".synonym-name",
         "synonym_language": ".synonym-languages",
         "taxon_synonym_type": ".taxon-synonym-types",
-        "taxon_rank": ".taxon-ranks",
+        "taxon_rank": ".taxon-ranks"
     },
 
     events: {
@@ -19967,7 +21822,7 @@ module.exports = TaxonItemView;
 
 
 /***/ }),
-/* 80 */
+/* 88 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -19980,8 +21835,8 @@ module.exports = TaxonItemView;
  * @details
  */
 
-var TaxonView = __webpack_require__(79);
-var ScrollView = __webpack_require__(6);
+var TaxonView = __webpack_require__(87);
+var ScrollView = __webpack_require__(7);
 
 var View = ScrollView.extend({
     template: "<div></div>",
@@ -19999,7 +21854,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 81 */
+/* 89 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20159,7 +22014,7 @@ function appendBackwardsAPI(i18n) {
 }
 
 /***/ }),
-/* 82 */
+/* 90 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20187,7 +22042,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 83 */
+/* 91 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -20265,7 +22120,7 @@ return af;
 
 
 /***/ }),
-/* 84 */
+/* 92 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -20329,7 +22184,7 @@ return arDz;
 
 
 /***/ }),
-/* 85 */
+/* 93 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -20460,7 +22315,7 @@ return arLy;
 
 
 /***/ }),
-/* 86 */
+/* 94 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -20525,7 +22380,7 @@ return arMa;
 
 
 /***/ }),
-/* 87 */
+/* 95 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -20635,7 +22490,7 @@ return arSa;
 
 
 /***/ }),
-/* 88 */
+/* 96 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -20699,7 +22554,7 @@ return arTn;
 
 
 /***/ }),
-/* 89 */
+/* 97 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -20846,7 +22701,7 @@ return ar;
 
 
 /***/ }),
-/* 90 */
+/* 98 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -20956,7 +22811,7 @@ return az;
 
 
 /***/ }),
-/* 91 */
+/* 99 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -21095,7 +22950,7 @@ return be;
 
 
 /***/ }),
-/* 92 */
+/* 100 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -21190,7 +23045,7 @@ return bg;
 
 
 /***/ }),
-/* 93 */
+/* 101 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -21314,7 +23169,7 @@ return bn;
 
 
 /***/ }),
-/* 94 */
+/* 102 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -21438,7 +23293,7 @@ return bo;
 
 
 /***/ }),
-/* 95 */
+/* 103 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -21551,7 +23406,7 @@ return br;
 
 
 /***/ }),
-/* 96 */
+/* 104 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -21699,7 +23554,7 @@ return bs;
 
 
 /***/ }),
-/* 97 */
+/* 105 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -21785,7 +23640,7 @@ return ca;
 
 
 /***/ }),
-/* 98 */
+/* 106 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -21962,7 +23817,7 @@ return cs;
 
 
 /***/ }),
-/* 99 */
+/* 107 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -22030,7 +23885,7 @@ return cv;
 
 
 /***/ }),
-/* 100 */
+/* 108 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -22116,7 +23971,7 @@ return cy;
 
 
 /***/ }),
-/* 101 */
+/* 109 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -22181,7 +24036,7 @@ return da;
 
 
 /***/ }),
-/* 102 */
+/* 110 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -22265,7 +24120,7 @@ return deAt;
 
 
 /***/ }),
-/* 103 */
+/* 111 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -22348,7 +24203,7 @@ return de;
 
 
 /***/ }),
-/* 104 */
+/* 112 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -22453,7 +24308,7 @@ return dv;
 
 
 /***/ }),
-/* 105 */
+/* 113 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -22556,7 +24411,7 @@ return el;
 
 
 /***/ }),
-/* 106 */
+/* 114 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -22628,7 +24483,7 @@ return enAu;
 
 
 /***/ }),
-/* 107 */
+/* 115 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -22696,7 +24551,7 @@ return enCa;
 
 
 /***/ }),
-/* 108 */
+/* 116 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -22768,7 +24623,7 @@ return enGb;
 
 
 /***/ }),
-/* 109 */
+/* 117 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -22840,7 +24695,7 @@ return enIe;
 
 
 /***/ }),
-/* 110 */
+/* 118 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -22912,7 +24767,7 @@ return enNz;
 
 
 /***/ }),
-/* 111 */
+/* 119 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -22990,7 +24845,7 @@ return eo;
 
 
 /***/ }),
-/* 112 */
+/* 120 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -23075,7 +24930,7 @@ return esDo;
 
 
 /***/ }),
-/* 113 */
+/* 121 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -23161,7 +25016,7 @@ return es;
 
 
 /***/ }),
-/* 114 */
+/* 122 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -23246,7 +25101,7 @@ return et;
 
 
 /***/ }),
-/* 115 */
+/* 123 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -23317,7 +25172,7 @@ return eu;
 
 
 /***/ }),
-/* 116 */
+/* 124 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -23429,7 +25284,7 @@ return fa;
 
 
 /***/ }),
-/* 117 */
+/* 125 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -23541,7 +25396,7 @@ return fi;
 
 
 /***/ }),
-/* 118 */
+/* 126 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -23606,7 +25461,7 @@ return fo;
 
 
 /***/ }),
-/* 119 */
+/* 127 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -23671,7 +25526,7 @@ return frCa;
 
 
 /***/ }),
-/* 120 */
+/* 128 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -23740,7 +25595,7 @@ return frCh;
 
 
 /***/ }),
-/* 121 */
+/* 129 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -23809,7 +25664,7 @@ return fr;
 
 
 /***/ }),
-/* 122 */
+/* 130 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -23887,7 +25742,7 @@ return fy;
 
 
 /***/ }),
-/* 123 */
+/* 131 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -23968,7 +25823,7 @@ return gd;
 
 
 /***/ }),
-/* 124 */
+/* 132 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -24050,7 +25905,7 @@ return gl;
 
 
 /***/ }),
-/* 125 */
+/* 133 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -24154,7 +26009,7 @@ return he;
 
 
 /***/ }),
-/* 126 */
+/* 134 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -24283,7 +26138,7 @@ return hi;
 
 
 /***/ }),
-/* 127 */
+/* 135 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -24433,7 +26288,7 @@ return hr;
 
 
 /***/ }),
-/* 128 */
+/* 136 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -24547,7 +26402,7 @@ return hu;
 
 
 /***/ }),
-/* 129 */
+/* 137 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -24647,7 +26502,7 @@ return hyAm;
 
 
 /***/ }),
-/* 130 */
+/* 138 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -24735,7 +26590,7 @@ return id;
 
 
 /***/ }),
-/* 131 */
+/* 139 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -24867,7 +26722,7 @@ return is;
 
 
 /***/ }),
-/* 132 */
+/* 140 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -24942,7 +26797,7 @@ return it;
 
 
 /***/ }),
-/* 133 */
+/* 141 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -25023,7 +26878,7 @@ return ja;
 
 
 /***/ }),
-/* 134 */
+/* 142 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -25111,7 +26966,7 @@ return jv;
 
 
 /***/ }),
-/* 135 */
+/* 143 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -25205,7 +27060,7 @@ return ka;
 
 
 /***/ }),
-/* 136 */
+/* 144 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -25297,7 +27152,7 @@ return kk;
 
 
 /***/ }),
-/* 137 */
+/* 145 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -25360,7 +27215,7 @@ return km;
 
 
 /***/ }),
-/* 138 */
+/* 146 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -25430,7 +27285,7 @@ return ko;
 
 
 /***/ }),
-/* 139 */
+/* 147 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -25523,7 +27378,7 @@ return ky;
 
 
 /***/ }),
-/* 140 */
+/* 148 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -25665,7 +27520,7 @@ return lb;
 
 
 /***/ }),
-/* 141 */
+/* 149 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -25740,7 +27595,7 @@ return lo;
 
 
 /***/ }),
-/* 142 */
+/* 150 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -25862,7 +27717,7 @@ return lt;
 
 
 /***/ }),
-/* 143 */
+/* 151 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -25964,7 +27819,7 @@ return lv;
 
 
 /***/ }),
-/* 144 */
+/* 152 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -26080,7 +27935,7 @@ return me;
 
 
 /***/ }),
-/* 145 */
+/* 153 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -26149,7 +28004,7 @@ return mi;
 
 
 /***/ }),
-/* 146 */
+/* 154 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -26244,7 +28099,7 @@ return mk;
 
 
 /***/ }),
-/* 147 */
+/* 155 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -26330,7 +28185,7 @@ return ml;
 
 
 /***/ }),
-/* 148 */
+/* 156 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -26494,7 +28349,7 @@ return mr;
 
 
 /***/ }),
-/* 149 */
+/* 157 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -26582,7 +28437,7 @@ return msMy;
 
 
 /***/ }),
-/* 150 */
+/* 158 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -26669,7 +28524,7 @@ return ms;
 
 
 /***/ }),
-/* 151 */
+/* 159 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -26770,7 +28625,7 @@ return my;
 
 
 /***/ }),
-/* 152 */
+/* 160 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -26838,7 +28693,7 @@ return nb;
 
 
 /***/ }),
-/* 153 */
+/* 161 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -26966,7 +28821,7 @@ return ne;
 
 
 /***/ }),
-/* 154 */
+/* 162 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -27057,7 +28912,7 @@ return nlBe;
 
 
 /***/ }),
-/* 155 */
+/* 163 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -27148,7 +29003,7 @@ return nl;
 
 
 /***/ }),
-/* 156 */
+/* 164 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -27213,7 +29068,7 @@ return nn;
 
 
 /***/ }),
-/* 157 */
+/* 165 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -27342,7 +29197,7 @@ return paIn;
 
 
 /***/ }),
-/* 158 */
+/* 166 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -27452,7 +29307,7 @@ return pl;
 
 
 /***/ }),
-/* 159 */
+/* 167 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -27518,7 +29373,7 @@ return ptBr;
 
 
 /***/ }),
-/* 160 */
+/* 168 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -27588,7 +29443,7 @@ return pt;
 
 
 /***/ }),
-/* 161 */
+/* 169 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -27668,7 +29523,7 @@ return ro;
 
 
 /***/ }),
-/* 162 */
+/* 170 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -27856,7 +29711,7 @@ return ru;
 
 
 /***/ }),
-/* 163 */
+/* 171 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -27922,7 +29777,7 @@ return se;
 
 
 /***/ }),
-/* 164 */
+/* 172 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -27998,7 +29853,7 @@ return si;
 
 
 /***/ }),
-/* 165 */
+/* 173 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -28153,7 +30008,7 @@ return sk;
 
 
 /***/ }),
-/* 166 */
+/* 174 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -28320,7 +30175,7 @@ return sl;
 
 
 /***/ }),
-/* 167 */
+/* 175 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -28395,7 +30250,7 @@ return sq;
 
 
 /***/ }),
-/* 168 */
+/* 176 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -28510,7 +30365,7 @@ return srCyrl;
 
 
 /***/ }),
-/* 169 */
+/* 177 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -28625,7 +30480,7 @@ return sr;
 
 
 /***/ }),
-/* 170 */
+/* 178 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -28719,7 +30574,7 @@ return ss;
 
 
 /***/ }),
-/* 171 */
+/* 179 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -28793,7 +30648,7 @@ return sv;
 
 
 /***/ }),
-/* 172 */
+/* 180 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -28857,7 +30712,7 @@ return sw;
 
 
 /***/ }),
-/* 173 */
+/* 181 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -28992,7 +30847,7 @@ return ta;
 
 
 /***/ }),
-/* 174 */
+/* 182 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -29086,7 +30941,7 @@ return te;
 
 
 /***/ }),
-/* 175 */
+/* 183 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -29159,7 +31014,7 @@ return tet;
 
 
 /***/ }),
-/* 176 */
+/* 184 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -29231,7 +31086,7 @@ return th;
 
 
 /***/ }),
-/* 177 */
+/* 185 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -29298,7 +31153,7 @@ return tlPh;
 
 
 /***/ }),
-/* 178 */
+/* 186 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -29423,7 +31278,7 @@ return tlh;
 
 
 /***/ }),
-/* 179 */
+/* 187 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -29518,7 +31373,7 @@ return tr;
 
 
 /***/ }),
-/* 180 */
+/* 188 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -29614,7 +31469,7 @@ return tzl;
 
 
 /***/ }),
-/* 181 */
+/* 189 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -29677,7 +31532,7 @@ return tzmLatn;
 
 
 /***/ }),
-/* 182 */
+/* 190 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -29740,7 +31595,7 @@ return tzm;
 
 
 /***/ }),
-/* 183 */
+/* 191 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -29891,7 +31746,7 @@ return uk;
 
 
 /***/ }),
-/* 184 */
+/* 192 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -29954,7 +31809,7 @@ return uz;
 
 
 /***/ }),
-/* 185 */
+/* 193 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -30038,7 +31893,7 @@ return vi;
 
 
 /***/ }),
-/* 186 */
+/* 194 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -30111,7 +31966,7 @@ return xPseudo;
 
 
 /***/ }),
-/* 187 */
+/* 195 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -30176,7 +32031,7 @@ return yo;
 
 
 /***/ }),
-/* 188 */
+/* 196 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -30308,7 +32163,7 @@ return zhCn;
 
 
 /***/ }),
-/* 189 */
+/* 197 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -30418,7 +32273,7 @@ return zhHk;
 
 
 /***/ }),
-/* 190 */
+/* 198 */
 /***/ (function(module, exports, __webpack_require__) {
 
 //! moment.js locale configuration
@@ -30527,7 +32382,7 @@ return zhTw;
 
 
 /***/ }),
-/* 191 */
+/* 199 */
 /***/ (function(module, exports) {
 
 underscore
@@ -30536,10 +32391,12 @@ obj || (obj = {});
 var __t, __p = '';
 with (obj) {
 __p += '<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title">' +
-((__t = ( gt.gettext("Create a model of descriptor") )) == null ? '' : __t) +
-'</h4></div><div class="modal-body" style="max-height: 400px; overflow-y: auto"><form><div class="form-group"><label class="control-label" for="label">' +
+((__t = ( gt.gettext("Add a type of model of descriptor") )) == null ? '' : __t) +
+'</h4></div><div class="modal-body" style="max-height: 400px; overflow-y: auto"><form><div class="form-group"><label class="control-label" for="descriptor_model_type_name">' +
+((__t = ( gt.gettext("Unique name") )) == null ? '' : __t) +
+'</label><input class="form-control" type="text" id="descriptor_model_type_name" maxlength="64" autofocus="" autocomplete="off" style="width:100%"></div><div class="form-group"><label class="control-label" for="descriptor_model_type_label">' +
 ((__t = ( gt.gettext("Label for the current language") )) == null ? '' : __t) +
-'</label><input class="form-control" type="text" id="label" maxlength="64" autofocus="" autocomplete="off" style="width:100%"></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal">' +
+'</label><input class="form-control" type="text" id="descriptor_model_type_label" maxlength="64" autofocus="" autocomplete="off" style="width:100%"></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal">' +
 ((__t = ( gt.gettext("Cancel") )) == null ? '' : __t) +
 '</button> <button type="button" class="btn btn-success apply">' +
 ((__t = ( gt.gettext("Apply") )) == null ? '' : __t) +
@@ -30552,12 +32409,12 @@ return __p
 /*
 original source:
 
-<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title"><%= gt.gettext("Create a model of descriptor") %></h4></div><div class="modal-body" style="max-height: 400px; overflow-y: auto"><form><div class="form-group"><label class="control-label" for="label"><%= gt.gettext("Label for the current language") %></label><input class="form-control" type="text" id="label" maxlength="64" autofocus="" autocomplete="off" style="width:100%"></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= gt.gettext("Cancel") %></button> <button type="button" class="btn btn-success apply"><%= gt.gettext("Apply") %></button></div></div></div>
+<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title"><%= gt.gettext("Add a type of model of descriptor") %></h4></div><div class="modal-body" style="max-height: 400px; overflow-y: auto"><form><div class="form-group"><label class="control-label" for="descriptor_model_type_name"><%= gt.gettext("Unique name") %></label><input class="form-control" type="text" id="descriptor_model_type_name" maxlength="64" autofocus="" autocomplete="off" style="width:100%"></div><div class="form-group"><label class="control-label" for="descriptor_model_type_label"><%= gt.gettext("Label for the current language") %></label><input class="form-control" type="text" id="descriptor_model_type_label" maxlength="64" autofocus="" autocomplete="off" style="width:100%"></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= gt.gettext("Cancel") %></button> <button type="button" class="btn btn-success apply"><%= gt.gettext("Apply") %></button></div></div></div>
 */
 
 
 /***/ }),
-/* 192 */
+/* 200 */
 /***/ (function(module, exports) {
 
 underscore
@@ -30587,7 +32444,7 @@ original source:
 
 
 /***/ }),
-/* 193 */
+/* 201 */
 /***/ (function(module, exports) {
 
 underscore
@@ -30617,18 +32474,47 @@ original source:
 
 
 /***/ }),
-/* 194 */
+/* 202 */
+/***/ (function(module, exports) {
+
+module.exports = function(module) {
+	if(!module.webpackPolyfill) {
+		module.deprecate = function() {};
+		module.paths = [];
+		// module.parent = undefined by default
+		if(!module.children) module.children = [];
+		Object.defineProperty(module, "loaded", {
+			enumerable: true,
+			get: function() {
+				return module.l;
+			}
+		});
+		Object.defineProperty(module, "id", {
+			enumerable: true,
+			get: function() {
+				return module.i;
+			}
+		});
+		module.webpackPolyfill = 1;
+	}
+	return module;
+};
+
+
+/***/ }),
+/* 203 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
-	"./accession/init": 208,
-	"./audit/init": 222,
-	"./descriptor/init": 234,
-	"./main/init": 280,
-	"./medialibrary/init": 301,
-	"./organisation/init": 306,
-	"./permission/init": 316,
-	"./taxonomy/init": 336
+	"./accession/init": 217,
+	"./audit/init": 232,
+	"./descriptor/init": 244,
+	"./geolocation/init": 285,
+	"./main/init": 294,
+	"./medialibrary/init": 317,
+	"./organisation/init": 323,
+	"./permission/init": 342,
+	"./taxonomy/init": 362
 };
 function webpackContext(req) {
 	return __webpack_require__(webpackContextResolve(req));
@@ -30644,11 +32530,11 @@ webpackContext.keys = function webpackContextKeys() {
 };
 webpackContext.resolve = webpackContextResolve;
 module.exports = webpackContext;
-webpackContext.id = 194;
+webpackContext.id = 203;
 
 
 /***/ }),
-/* 195 */
+/* 204 */
 /***/ (function(module, exports) {
 
 /********************************************************************
@@ -31445,24 +33331,24 @@ webpackContext.id = 194;
 /*eslint-enable */
 
 /***/ }),
-/* 196 */
+/* 205 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!function(a){"use strict";if(true)!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(29),__webpack_require__(1)], __WEBPACK_AMD_DEFINE_FACTORY__ = (a),
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!function(a){"use strict";if(true)!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(33),__webpack_require__(1)], __WEBPACK_AMD_DEFINE_FACTORY__ = (a),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));else if("object"==typeof exports)module.exports=a(require("jquery"),require("moment"));else{if("undefined"==typeof jQuery)throw"bootstrap-datetimepicker requires jQuery to be loaded first";if("undefined"==typeof moment)throw"bootstrap-datetimepicker requires Moment.js to be loaded first";a(jQuery,moment)}}(function(a,b){"use strict";if(!b)throw new Error("bootstrap-datetimepicker requires Moment.js to be loaded first");var c=function(c,d){var e,f,g,h,i,j,k,l={},m=!0,n=!1,o=!1,p=0,q=[{clsName:"days",navFnc:"M",navStep:1},{clsName:"months",navFnc:"y",navStep:1},{clsName:"years",navFnc:"y",navStep:10},{clsName:"decades",navFnc:"y",navStep:100}],r=["days","months","years","decades"],s=["top","bottom","auto"],t=["left","right","auto"],u=["default","top","bottom"],v={up:38,38:"up",down:40,40:"down",left:37,37:"left",right:39,39:"right",tab:9,9:"tab",escape:27,27:"escape",enter:13,13:"enter",pageUp:33,33:"pageUp",pageDown:34,34:"pageDown",shift:16,16:"shift",control:17,17:"control",space:32,32:"space",t:84,84:"t",delete:46,46:"delete"},w={},x=function(){return void 0!==b.tz&&void 0!==d.timeZone&&null!==d.timeZone&&""!==d.timeZone},y=function(a){var c;return c=void 0===a||null===a?b():b.isDate(a)||b.isMoment(a)?b(a):x()?b.tz(a,j,d.useStrict,d.timeZone):b(a,j,d.useStrict),x()&&c.tz(d.timeZone),c},z=function(a){if("string"!=typeof a||a.length>1)throw new TypeError("isEnabled expects a single character string parameter");switch(a){case"y":return i.indexOf("Y")!==-1;case"M":return i.indexOf("M")!==-1;case"d":return i.toLowerCase().indexOf("d")!==-1;case"h":case"H":return i.toLowerCase().indexOf("h")!==-1;case"m":return i.indexOf("m")!==-1;case"s":return i.indexOf("s")!==-1;default:return!1}},A=function(){return z("h")||z("m")||z("s")},B=function(){return z("y")||z("M")||z("d")},C=function(){var b=a("<thead>").append(a("<tr>").append(a("<th>").addClass("prev").attr("data-action","previous").append(a("<span>").addClass(d.icons.previous))).append(a("<th>").addClass("picker-switch").attr("data-action","pickerSwitch").attr("colspan",d.calendarWeeks?"6":"5")).append(a("<th>").addClass("next").attr("data-action","next").append(a("<span>").addClass(d.icons.next)))),c=a("<tbody>").append(a("<tr>").append(a("<td>").attr("colspan",d.calendarWeeks?"8":"7")));return[a("<div>").addClass("datepicker-days").append(a("<table>").addClass("table-condensed").append(b).append(a("<tbody>"))),a("<div>").addClass("datepicker-months").append(a("<table>").addClass("table-condensed").append(b.clone()).append(c.clone())),a("<div>").addClass("datepicker-years").append(a("<table>").addClass("table-condensed").append(b.clone()).append(c.clone())),a("<div>").addClass("datepicker-decades").append(a("<table>").addClass("table-condensed").append(b.clone()).append(c.clone()))]},D=function(){var b=a("<tr>"),c=a("<tr>"),e=a("<tr>");return z("h")&&(b.append(a("<td>").append(a("<a>").attr({href:"#",tabindex:"-1",title:d.tooltips.incrementHour}).addClass("btn").attr("data-action","incrementHours").append(a("<span>").addClass(d.icons.up)))),c.append(a("<td>").append(a("<span>").addClass("timepicker-hour").attr({"data-time-component":"hours",title:d.tooltips.pickHour}).attr("data-action","showHours"))),e.append(a("<td>").append(a("<a>").attr({href:"#",tabindex:"-1",title:d.tooltips.decrementHour}).addClass("btn").attr("data-action","decrementHours").append(a("<span>").addClass(d.icons.down))))),z("m")&&(z("h")&&(b.append(a("<td>").addClass("separator")),c.append(a("<td>").addClass("separator").html(":")),e.append(a("<td>").addClass("separator"))),b.append(a("<td>").append(a("<a>").attr({href:"#",tabindex:"-1",title:d.tooltips.incrementMinute}).addClass("btn").attr("data-action","incrementMinutes").append(a("<span>").addClass(d.icons.up)))),c.append(a("<td>").append(a("<span>").addClass("timepicker-minute").attr({"data-time-component":"minutes",title:d.tooltips.pickMinute}).attr("data-action","showMinutes"))),e.append(a("<td>").append(a("<a>").attr({href:"#",tabindex:"-1",title:d.tooltips.decrementMinute}).addClass("btn").attr("data-action","decrementMinutes").append(a("<span>").addClass(d.icons.down))))),z("s")&&(z("m")&&(b.append(a("<td>").addClass("separator")),c.append(a("<td>").addClass("separator").html(":")),e.append(a("<td>").addClass("separator"))),b.append(a("<td>").append(a("<a>").attr({href:"#",tabindex:"-1",title:d.tooltips.incrementSecond}).addClass("btn").attr("data-action","incrementSeconds").append(a("<span>").addClass(d.icons.up)))),c.append(a("<td>").append(a("<span>").addClass("timepicker-second").attr({"data-time-component":"seconds",title:d.tooltips.pickSecond}).attr("data-action","showSeconds"))),e.append(a("<td>").append(a("<a>").attr({href:"#",tabindex:"-1",title:d.tooltips.decrementSecond}).addClass("btn").attr("data-action","decrementSeconds").append(a("<span>").addClass(d.icons.down))))),h||(b.append(a("<td>").addClass("separator")),c.append(a("<td>").append(a("<button>").addClass("btn btn-primary").attr({"data-action":"togglePeriod",tabindex:"-1",title:d.tooltips.togglePeriod}))),e.append(a("<td>").addClass("separator"))),a("<div>").addClass("timepicker-picker").append(a("<table>").addClass("table-condensed").append([b,c,e]))},E=function(){var b=a("<div>").addClass("timepicker-hours").append(a("<table>").addClass("table-condensed")),c=a("<div>").addClass("timepicker-minutes").append(a("<table>").addClass("table-condensed")),d=a("<div>").addClass("timepicker-seconds").append(a("<table>").addClass("table-condensed")),e=[D()];return z("h")&&e.push(b),z("m")&&e.push(c),z("s")&&e.push(d),e},F=function(){var b=[];return d.showTodayButton&&b.push(a("<td>").append(a("<a>").attr({"data-action":"today",title:d.tooltips.today}).append(a("<span>").addClass(d.icons.today)))),!d.sideBySide&&B()&&A()&&b.push(a("<td>").append(a("<a>").attr({"data-action":"togglePicker",title:d.tooltips.selectTime}).append(a("<span>").addClass(d.icons.time)))),d.showClear&&b.push(a("<td>").append(a("<a>").attr({"data-action":"clear",title:d.tooltips.clear}).append(a("<span>").addClass(d.icons.clear)))),d.showClose&&b.push(a("<td>").append(a("<a>").attr({"data-action":"close",title:d.tooltips.close}).append(a("<span>").addClass(d.icons.close)))),a("<table>").addClass("table-condensed").append(a("<tbody>").append(a("<tr>").append(b)))},G=function(){var b=a("<div>").addClass("bootstrap-datetimepicker-widget dropdown-menu"),c=a("<div>").addClass("datepicker").append(C()),e=a("<div>").addClass("timepicker").append(E()),f=a("<ul>").addClass("list-unstyled"),g=a("<li>").addClass("picker-switch"+(d.collapse?" accordion-toggle":"")).append(F());return d.inline&&b.removeClass("dropdown-menu"),h&&b.addClass("usetwentyfour"),z("s")&&!h&&b.addClass("wider"),d.sideBySide&&B()&&A()?(b.addClass("timepicker-sbs"),"top"===d.toolbarPlacement&&b.append(g),b.append(a("<div>").addClass("row").append(c.addClass("col-md-6")).append(e.addClass("col-md-6"))),"bottom"===d.toolbarPlacement&&b.append(g),b):("top"===d.toolbarPlacement&&f.append(g),B()&&f.append(a("<li>").addClass(d.collapse&&A()?"collapse in":"").append(c)),"default"===d.toolbarPlacement&&f.append(g),A()&&f.append(a("<li>").addClass(d.collapse&&B()?"collapse":"").append(e)),"bottom"===d.toolbarPlacement&&f.append(g),b.append(f))},H=function(){var b,e={};return b=c.is("input")||d.inline?c.data():c.find("input").data(),b.dateOptions&&b.dateOptions instanceof Object&&(e=a.extend(!0,e,b.dateOptions)),a.each(d,function(a){var c="date"+a.charAt(0).toUpperCase()+a.slice(1);void 0!==b[c]&&(e[a]=b[c])}),e},I=function(){var b,e=(n||c).position(),f=(n||c).offset(),g=d.widgetPositioning.vertical,h=d.widgetPositioning.horizontal;if(d.widgetParent)b=d.widgetParent.append(o);else if(c.is("input"))b=c.after(o).parent();else{if(d.inline)return void(b=c.append(o));b=c,c.children().first().after(o)}if("auto"===g&&(g=f.top+1.5*o.height()>=a(window).height()+a(window).scrollTop()&&o.height()+c.outerHeight()<f.top?"top":"bottom"),"auto"===h&&(h=b.width()<f.left+o.outerWidth()/2&&f.left+o.outerWidth()>a(window).width()?"right":"left"),"top"===g?o.addClass("top").removeClass("bottom"):o.addClass("bottom").removeClass("top"),"right"===h?o.addClass("pull-right"):o.removeClass("pull-right"),"static"===b.css("position")&&(b=b.parents().filter(function(){return"static"!==a(this).css("position")}).first()),0===b.length)throw new Error("datetimepicker component should be placed within a non-static positioned container");o.css({top:"top"===g?"auto":e.top+c.outerHeight(),bottom:"top"===g?b.outerHeight()-(b===c?0:e.top):"auto",left:"left"===h?b===c?0:e.left:"auto",right:"left"===h?"auto":b.outerWidth()-c.outerWidth()-(b===c?0:e.left)})},J=function(a){"dp.change"===a.type&&(a.date&&a.date.isSame(a.oldDate)||!a.date&&!a.oldDate)||c.trigger(a)},K=function(a){"y"===a&&(a="YYYY"),J({type:"dp.update",change:a,viewDate:f.clone()})},L=function(a){o&&(a&&(k=Math.max(p,Math.min(3,k+a))),o.find(".datepicker > div").hide().filter(".datepicker-"+q[k].clsName).show())},M=function(){var b=a("<tr>"),c=f.clone().startOf("w").startOf("d");for(d.calendarWeeks===!0&&b.append(a("<th>").addClass("cw").text("#"));c.isBefore(f.clone().endOf("w"));)b.append(a("<th>").addClass("dow").text(c.format("dd"))),c.add(1,"d");o.find(".datepicker-days thead").append(b)},N=function(a){return d.disabledDates[a.format("YYYY-MM-DD")]===!0},O=function(a){return d.enabledDates[a.format("YYYY-MM-DD")]===!0},P=function(a){return d.disabledHours[a.format("H")]===!0},Q=function(a){return d.enabledHours[a.format("H")]===!0},R=function(b,c){if(!b.isValid())return!1;if(d.disabledDates&&"d"===c&&N(b))return!1;if(d.enabledDates&&"d"===c&&!O(b))return!1;if(d.minDate&&b.isBefore(d.minDate,c))return!1;if(d.maxDate&&b.isAfter(d.maxDate,c))return!1;if(d.daysOfWeekDisabled&&"d"===c&&d.daysOfWeekDisabled.indexOf(b.day())!==-1)return!1;if(d.disabledHours&&("h"===c||"m"===c||"s"===c)&&P(b))return!1;if(d.enabledHours&&("h"===c||"m"===c||"s"===c)&&!Q(b))return!1;if(d.disabledTimeIntervals&&("h"===c||"m"===c||"s"===c)){var e=!1;if(a.each(d.disabledTimeIntervals,function(){if(b.isBetween(this[0],this[1]))return e=!0,!1}),e)return!1}return!0},S=function(){for(var b=[],c=f.clone().startOf("y").startOf("d");c.isSame(f,"y");)b.push(a("<span>").attr("data-action","selectMonth").addClass("month").text(c.format("MMM"))),c.add(1,"M");o.find(".datepicker-months td").empty().append(b)},T=function(){var b=o.find(".datepicker-months"),c=b.find("th"),g=b.find("tbody").find("span");c.eq(0).find("span").attr("title",d.tooltips.prevYear),c.eq(1).attr("title",d.tooltips.selectYear),c.eq(2).find("span").attr("title",d.tooltips.nextYear),b.find(".disabled").removeClass("disabled"),R(f.clone().subtract(1,"y"),"y")||c.eq(0).addClass("disabled"),c.eq(1).text(f.year()),R(f.clone().add(1,"y"),"y")||c.eq(2).addClass("disabled"),g.removeClass("active"),e.isSame(f,"y")&&!m&&g.eq(e.month()).addClass("active"),g.each(function(b){R(f.clone().month(b),"M")||a(this).addClass("disabled")})},U=function(){var a=o.find(".datepicker-years"),b=a.find("th"),c=f.clone().subtract(5,"y"),g=f.clone().add(6,"y"),h="";for(b.eq(0).find("span").attr("title",d.tooltips.prevDecade),b.eq(1).attr("title",d.tooltips.selectDecade),b.eq(2).find("span").attr("title",d.tooltips.nextDecade),a.find(".disabled").removeClass("disabled"),d.minDate&&d.minDate.isAfter(c,"y")&&b.eq(0).addClass("disabled"),b.eq(1).text(c.year()+"-"+g.year()),d.maxDate&&d.maxDate.isBefore(g,"y")&&b.eq(2).addClass("disabled");!c.isAfter(g,"y");)h+='<span data-action="selectYear" class="year'+(c.isSame(e,"y")&&!m?" active":"")+(R(c,"y")?"":" disabled")+'">'+c.year()+"</span>",c.add(1,"y");a.find("td").html(h)},V=function(){var a,c=o.find(".datepicker-decades"),g=c.find("th"),h=b({y:f.year()-f.year()%100-1}),i=h.clone().add(100,"y"),j=h.clone(),k=!1,l=!1,m="";for(g.eq(0).find("span").attr("title",d.tooltips.prevCentury),g.eq(2).find("span").attr("title",d.tooltips.nextCentury),c.find(".disabled").removeClass("disabled"),(h.isSame(b({y:1900}))||d.minDate&&d.minDate.isAfter(h,"y"))&&g.eq(0).addClass("disabled"),g.eq(1).text(h.year()+"-"+i.year()),(h.isSame(b({y:2e3}))||d.maxDate&&d.maxDate.isBefore(i,"y"))&&g.eq(2).addClass("disabled");!h.isAfter(i,"y");)a=h.year()+12,k=d.minDate&&d.minDate.isAfter(h,"y")&&d.minDate.year()<=a,l=d.maxDate&&d.maxDate.isAfter(h,"y")&&d.maxDate.year()<=a,m+='<span data-action="selectDecade" class="decade'+(e.isAfter(h)&&e.year()<=a?" active":"")+(R(h,"y")||k||l?"":" disabled")+'" data-selection="'+(h.year()+6)+'">'+(h.year()+1)+" - "+(h.year()+12)+"</span>",h.add(12,"y");m+="<span></span><span></span><span></span>",c.find("td").html(m),g.eq(1).text(j.year()+1+"-"+h.year())},W=function(){var b,c,g,h=o.find(".datepicker-days"),i=h.find("th"),j=[],k=[];if(B()){for(i.eq(0).find("span").attr("title",d.tooltips.prevMonth),i.eq(1).attr("title",d.tooltips.selectMonth),i.eq(2).find("span").attr("title",d.tooltips.nextMonth),h.find(".disabled").removeClass("disabled"),i.eq(1).text(f.format(d.dayViewHeaderFormat)),R(f.clone().subtract(1,"M"),"M")||i.eq(0).addClass("disabled"),R(f.clone().add(1,"M"),"M")||i.eq(2).addClass("disabled"),b=f.clone().startOf("M").startOf("w").startOf("d"),g=0;g<42;g++)0===b.weekday()&&(c=a("<tr>"),d.calendarWeeks&&c.append('<td class="cw">'+b.week()+"</td>"),j.push(c)),k=["day"],b.isBefore(f,"M")&&k.push("old"),b.isAfter(f,"M")&&k.push("new"),b.isSame(e,"d")&&!m&&k.push("active"),R(b,"d")||k.push("disabled"),b.isSame(y(),"d")&&k.push("today"),0!==b.day()&&6!==b.day()||k.push("weekend"),J({type:"dp.classify",date:b,classNames:k}),c.append('<td data-action="selectDay" data-day="'+b.format("L")+'" class="'+k.join(" ")+'">'+b.date()+"</td>"),b.add(1,"d");h.find("tbody").empty().append(j),T(),U(),V()}},X=function(){var b=o.find(".timepicker-hours table"),c=f.clone().startOf("d"),d=[],e=a("<tr>");for(f.hour()>11&&!h&&c.hour(12);c.isSame(f,"d")&&(h||f.hour()<12&&c.hour()<12||f.hour()>11);)c.hour()%4===0&&(e=a("<tr>"),d.push(e)),e.append('<td data-action="selectHour" class="hour'+(R(c,"h")?"":" disabled")+'">'+c.format(h?"HH":"hh")+"</td>"),c.add(1,"h");b.empty().append(d)},Y=function(){for(var b=o.find(".timepicker-minutes table"),c=f.clone().startOf("h"),e=[],g=a("<tr>"),h=1===d.stepping?5:d.stepping;f.isSame(c,"h");)c.minute()%(4*h)===0&&(g=a("<tr>"),e.push(g)),g.append('<td data-action="selectMinute" class="minute'+(R(c,"m")?"":" disabled")+'">'+c.format("mm")+"</td>"),c.add(h,"m");b.empty().append(e)},Z=function(){for(var b=o.find(".timepicker-seconds table"),c=f.clone().startOf("m"),d=[],e=a("<tr>");f.isSame(c,"m");)c.second()%20===0&&(e=a("<tr>"),d.push(e)),e.append('<td data-action="selectSecond" class="second'+(R(c,"s")?"":" disabled")+'">'+c.format("ss")+"</td>"),c.add(5,"s");b.empty().append(d)},$=function(){var a,b,c=o.find(".timepicker span[data-time-component]");h||(a=o.find(".timepicker [data-action=togglePeriod]"),b=e.clone().add(e.hours()>=12?-12:12,"h"),a.text(e.format("A")),R(b,"h")?a.removeClass("disabled"):a.addClass("disabled")),c.filter("[data-time-component=hours]").text(e.format(h?"HH":"hh")),c.filter("[data-time-component=minutes]").text(e.format("mm")),c.filter("[data-time-component=seconds]").text(e.format("ss")),X(),Y(),Z()},_=function(){o&&(W(),$())},aa=function(a){var b=m?null:e;if(!a)return m=!0,g.val(""),c.data("date",""),J({type:"dp.change",date:!1,oldDate:b}),void _();if(a=a.clone().locale(d.locale),x()&&a.tz(d.timeZone),1!==d.stepping)for(a.minutes(Math.round(a.minutes()/d.stepping)*d.stepping).seconds(0);d.minDate&&a.isBefore(d.minDate);)a.add(d.stepping,"minutes");R(a)?(e=a,f=e.clone(),g.val(e.format(i)),c.data("date",e.format(i)),m=!1,_(),J({type:"dp.change",date:e.clone(),oldDate:b})):(d.keepInvalid?J({type:"dp.change",date:a,oldDate:b}):g.val(m?"":e.format(i)),J({type:"dp.error",date:a,oldDate:b}))},ba=function(){var b=!1;return o?(o.find(".collapse").each(function(){var c=a(this).data("collapse");return!c||!c.transitioning||(b=!0,!1)}),b?l:(n&&n.hasClass("btn")&&n.toggleClass("active"),o.hide(),a(window).off("resize",I),o.off("click","[data-action]"),o.off("mousedown",!1),o.remove(),o=!1,J({type:"dp.hide",date:e.clone()}),g.blur(),f=e.clone(),l)):l},ca=function(){aa(null)},da=function(a){return void 0===d.parseInputDate?(!b.isMoment(a)||a instanceof Date)&&(a=y(a)):a=d.parseInputDate(a),a},ea={next:function(){var a=q[k].navFnc;f.add(q[k].navStep,a),W(),K(a)},previous:function(){var a=q[k].navFnc;f.subtract(q[k].navStep,a),W(),K(a)},pickerSwitch:function(){L(1)},selectMonth:function(b){var c=a(b.target).closest("tbody").find("span").index(a(b.target));f.month(c),k===p?(aa(e.clone().year(f.year()).month(f.month())),d.inline||ba()):(L(-1),W()),K("M")},selectYear:function(b){var c=parseInt(a(b.target).text(),10)||0;f.year(c),k===p?(aa(e.clone().year(f.year())),d.inline||ba()):(L(-1),W()),K("YYYY")},selectDecade:function(b){var c=parseInt(a(b.target).data("selection"),10)||0;f.year(c),k===p?(aa(e.clone().year(f.year())),d.inline||ba()):(L(-1),W()),K("YYYY")},selectDay:function(b){var c=f.clone();a(b.target).is(".old")&&c.subtract(1,"M"),a(b.target).is(".new")&&c.add(1,"M"),aa(c.date(parseInt(a(b.target).text(),10))),A()||d.keepOpen||d.inline||ba()},incrementHours:function(){var a=e.clone().add(1,"h");R(a,"h")&&aa(a)},incrementMinutes:function(){var a=e.clone().add(d.stepping,"m");R(a,"m")&&aa(a)},incrementSeconds:function(){var a=e.clone().add(1,"s");R(a,"s")&&aa(a)},decrementHours:function(){var a=e.clone().subtract(1,"h");R(a,"h")&&aa(a)},decrementMinutes:function(){var a=e.clone().subtract(d.stepping,"m");R(a,"m")&&aa(a)},decrementSeconds:function(){var a=e.clone().subtract(1,"s");R(a,"s")&&aa(a)},togglePeriod:function(){aa(e.clone().add(e.hours()>=12?-12:12,"h"))},togglePicker:function(b){var c,e=a(b.target),f=e.closest("ul"),g=f.find(".in"),h=f.find(".collapse:not(.in)");if(g&&g.length){if(c=g.data("collapse"),c&&c.transitioning)return;g.collapse?(g.collapse("hide"),h.collapse("show")):(g.removeClass("in"),h.addClass("in")),e.is("span")?e.toggleClass(d.icons.time+" "+d.icons.date):e.find("span").toggleClass(d.icons.time+" "+d.icons.date)}},showPicker:function(){o.find(".timepicker > div:not(.timepicker-picker)").hide(),o.find(".timepicker .timepicker-picker").show()},showHours:function(){o.find(".timepicker .timepicker-picker").hide(),o.find(".timepicker .timepicker-hours").show()},showMinutes:function(){o.find(".timepicker .timepicker-picker").hide(),o.find(".timepicker .timepicker-minutes").show()},showSeconds:function(){o.find(".timepicker .timepicker-picker").hide(),o.find(".timepicker .timepicker-seconds").show()},selectHour:function(b){var c=parseInt(a(b.target).text(),10);h||(e.hours()>=12?12!==c&&(c+=12):12===c&&(c=0)),aa(e.clone().hours(c)),ea.showPicker.call(l)},selectMinute:function(b){aa(e.clone().minutes(parseInt(a(b.target).text(),10))),ea.showPicker.call(l)},selectSecond:function(b){aa(e.clone().seconds(parseInt(a(b.target).text(),10))),ea.showPicker.call(l)},clear:ca,today:function(){var a=y();R(a,"d")&&aa(a)},close:ba},fa=function(b){return!a(b.currentTarget).is(".disabled")&&(ea[a(b.currentTarget).data("action")].apply(l,arguments),!1)},ga=function(){var b,c={year:function(a){return a.month(0).date(1).hours(0).seconds(0).minutes(0)},month:function(a){return a.date(1).hours(0).seconds(0).minutes(0)},day:function(a){return a.hours(0).seconds(0).minutes(0)},hour:function(a){return a.seconds(0).minutes(0)},minute:function(a){return a.seconds(0)}};return g.prop("disabled")||!d.ignoreReadonly&&g.prop("readonly")||o?l:(void 0!==g.val()&&0!==g.val().trim().length?aa(da(g.val().trim())):m&&d.useCurrent&&(d.inline||g.is("input")&&0===g.val().trim().length)&&(b=y(),"string"==typeof d.useCurrent&&(b=c[d.useCurrent](b)),aa(b)),o=G(),M(),S(),o.find(".timepicker-hours").hide(),o.find(".timepicker-minutes").hide(),o.find(".timepicker-seconds").hide(),_(),L(),a(window).on("resize",I),o.on("click","[data-action]",fa),o.on("mousedown",!1),n&&n.hasClass("btn")&&n.toggleClass("active"),I(),o.show(),d.focusOnShow&&!g.is(":focus")&&g.focus(),J({type:"dp.show"}),l)},ha=function(){return o?ba():ga()},ia=function(a){var b,c,e,f,g=null,h=[],i={},j=a.which,k="p";w[j]=k;for(b in w)w.hasOwnProperty(b)&&w[b]===k&&(h.push(b),parseInt(b,10)!==j&&(i[b]=!0));for(b in d.keyBinds)if(d.keyBinds.hasOwnProperty(b)&&"function"==typeof d.keyBinds[b]&&(e=b.split(" "),e.length===h.length&&v[j]===e[e.length-1])){for(f=!0,c=e.length-2;c>=0;c--)if(!(v[e[c]]in i)){f=!1;break}if(f){g=d.keyBinds[b];break}}g&&(g.call(l,o),a.stopPropagation(),a.preventDefault())},ja=function(a){w[a.which]="r",a.stopPropagation(),a.preventDefault()},ka=function(b){var c=a(b.target).val().trim(),d=c?da(c):null;return aa(d),b.stopImmediatePropagation(),!1},la=function(){g.on({change:ka,blur:d.debug?"":ba,keydown:ia,keyup:ja,focus:d.allowInputToggle?ga:""}),c.is("input")?g.on({focus:ga}):n&&(n.on("click",ha),n.on("mousedown",!1))},ma=function(){g.off({change:ka,blur:blur,keydown:ia,keyup:ja,focus:d.allowInputToggle?ba:""}),c.is("input")?g.off({focus:ga}):n&&(n.off("click",ha),n.off("mousedown",!1))},na=function(b){var c={};return a.each(b,function(){var a=da(this);a.isValid()&&(c[a.format("YYYY-MM-DD")]=!0)}),!!Object.keys(c).length&&c},oa=function(b){var c={};return a.each(b,function(){c[this]=!0}),!!Object.keys(c).length&&c},pa=function(){var a=d.format||"L LT";i=a.replace(/(\[[^\[]*\])|(\\)?(LTS|LT|LL?L?L?|l{1,4})/g,function(a){var b=e.localeData().longDateFormat(a)||a;return b.replace(/(\[[^\[]*\])|(\\)?(LTS|LT|LL?L?L?|l{1,4})/g,function(a){return e.localeData().longDateFormat(a)||a})}),j=d.extraFormats?d.extraFormats.slice():[],j.indexOf(a)<0&&j.indexOf(i)<0&&j.push(i),h=i.toLowerCase().indexOf("a")<1&&i.replace(/\[.*?\]/g,"").indexOf("h")<1,z("y")&&(p=2),z("M")&&(p=1),z("d")&&(p=0),k=Math.max(p,k),m||aa(e)};if(l.destroy=function(){ba(),ma(),c.removeData("DateTimePicker"),c.removeData("date")},l.toggle=ha,l.show=ga,l.hide=ba,l.disable=function(){return ba(),n&&n.hasClass("btn")&&n.addClass("disabled"),g.prop("disabled",!0),l},l.enable=function(){return n&&n.hasClass("btn")&&n.removeClass("disabled"),g.prop("disabled",!1),l},l.ignoreReadonly=function(a){if(0===arguments.length)return d.ignoreReadonly;if("boolean"!=typeof a)throw new TypeError("ignoreReadonly () expects a boolean parameter");return d.ignoreReadonly=a,l},l.options=function(b){if(0===arguments.length)return a.extend(!0,{},d);if(!(b instanceof Object))throw new TypeError("options() options parameter should be an object");return a.extend(!0,d,b),a.each(d,function(a,b){if(void 0===l[a])throw new TypeError("option "+a+" is not recognized!");l[a](b)}),l},l.date=function(a){if(0===arguments.length)return m?null:e.clone();if(!(null===a||"string"==typeof a||b.isMoment(a)||a instanceof Date))throw new TypeError("date() parameter must be one of [null, string, moment or Date]");return aa(null===a?null:da(a)),l},l.format=function(a){if(0===arguments.length)return d.format;if("string"!=typeof a&&("boolean"!=typeof a||a!==!1))throw new TypeError("format() expects a string or boolean:false parameter "+a);return d.format=a,i&&pa(),l},l.timeZone=function(a){if(0===arguments.length)return d.timeZone;if("string"!=typeof a)throw new TypeError("newZone() expects a string parameter");return d.timeZone=a,l},l.dayViewHeaderFormat=function(a){if(0===arguments.length)return d.dayViewHeaderFormat;if("string"!=typeof a)throw new TypeError("dayViewHeaderFormat() expects a string parameter");return d.dayViewHeaderFormat=a,l},l.extraFormats=function(a){if(0===arguments.length)return d.extraFormats;if(a!==!1&&!(a instanceof Array))throw new TypeError("extraFormats() expects an array or false parameter");return d.extraFormats=a,j&&pa(),l},l.disabledDates=function(b){if(0===arguments.length)return d.disabledDates?a.extend({},d.disabledDates):d.disabledDates;if(!b)return d.disabledDates=!1,_(),l;if(!(b instanceof Array))throw new TypeError("disabledDates() expects an array parameter");return d.disabledDates=na(b),d.enabledDates=!1,_(),l},l.enabledDates=function(b){if(0===arguments.length)return d.enabledDates?a.extend({},d.enabledDates):d.enabledDates;if(!b)return d.enabledDates=!1,_(),l;if(!(b instanceof Array))throw new TypeError("enabledDates() expects an array parameter");return d.enabledDates=na(b),d.disabledDates=!1,_(),l},l.daysOfWeekDisabled=function(a){if(0===arguments.length)return d.daysOfWeekDisabled.splice(0);if("boolean"==typeof a&&!a)return d.daysOfWeekDisabled=!1,_(),l;if(!(a instanceof Array))throw new TypeError("daysOfWeekDisabled() expects an array parameter");if(d.daysOfWeekDisabled=a.reduce(function(a,b){return b=parseInt(b,10),b>6||b<0||isNaN(b)?a:(a.indexOf(b)===-1&&a.push(b),a)},[]).sort(),d.useCurrent&&!d.keepInvalid){for(var b=0;!R(e,"d");){if(e.add(1,"d"),31===b)throw"Tried 31 times to find a valid date";b++}aa(e)}return _(),l},l.maxDate=function(a){if(0===arguments.length)return d.maxDate?d.maxDate.clone():d.maxDate;if("boolean"==typeof a&&a===!1)return d.maxDate=!1,_(),l;"string"==typeof a&&("now"!==a&&"moment"!==a||(a=y()));var b=da(a);if(!b.isValid())throw new TypeError("maxDate() Could not parse date parameter: "+a);if(d.minDate&&b.isBefore(d.minDate))throw new TypeError("maxDate() date parameter is before options.minDate: "+b.format(i));return d.maxDate=b,d.useCurrent&&!d.keepInvalid&&e.isAfter(a)&&aa(d.maxDate),f.isAfter(b)&&(f=b.clone().subtract(d.stepping,"m")),_(),l},l.minDate=function(a){if(0===arguments.length)return d.minDate?d.minDate.clone():d.minDate;if("boolean"==typeof a&&a===!1)return d.minDate=!1,_(),l;"string"==typeof a&&("now"!==a&&"moment"!==a||(a=y()));var b=da(a);if(!b.isValid())throw new TypeError("minDate() Could not parse date parameter: "+a);if(d.maxDate&&b.isAfter(d.maxDate))throw new TypeError("minDate() date parameter is after options.maxDate: "+b.format(i));return d.minDate=b,d.useCurrent&&!d.keepInvalid&&e.isBefore(a)&&aa(d.minDate),f.isBefore(b)&&(f=b.clone().add(d.stepping,"m")),_(),l},l.defaultDate=function(a){if(0===arguments.length)return d.defaultDate?d.defaultDate.clone():d.defaultDate;if(!a)return d.defaultDate=!1,l;"string"==typeof a&&(a="now"===a||"moment"===a?y():y(a));var b=da(a);if(!b.isValid())throw new TypeError("defaultDate() Could not parse date parameter: "+a);if(!R(b))throw new TypeError("defaultDate() date passed is invalid according to component setup validations");return d.defaultDate=b,(d.defaultDate&&d.inline||""===g.val().trim())&&aa(d.defaultDate),l},l.locale=function(a){if(0===arguments.length)return d.locale;if(!b.localeData(a))throw new TypeError("locale() locale "+a+" is not loaded from moment locales!");return d.locale=a,e.locale(d.locale),f.locale(d.locale),i&&pa(),o&&(ba(),ga()),l},l.stepping=function(a){return 0===arguments.length?d.stepping:(a=parseInt(a,10),(isNaN(a)||a<1)&&(a=1),d.stepping=a,l)},l.useCurrent=function(a){var b=["year","month","day","hour","minute"];if(0===arguments.length)return d.useCurrent;if("boolean"!=typeof a&&"string"!=typeof a)throw new TypeError("useCurrent() expects a boolean or string parameter");if("string"==typeof a&&b.indexOf(a.toLowerCase())===-1)throw new TypeError("useCurrent() expects a string parameter of "+b.join(", "));return d.useCurrent=a,l},l.collapse=function(a){if(0===arguments.length)return d.collapse;if("boolean"!=typeof a)throw new TypeError("collapse() expects a boolean parameter");return d.collapse===a?l:(d.collapse=a,o&&(ba(),ga()),l)},l.icons=function(b){if(0===arguments.length)return a.extend({},d.icons);if(!(b instanceof Object))throw new TypeError("icons() expects parameter to be an Object");return a.extend(d.icons,b),o&&(ba(),ga()),l},l.tooltips=function(b){if(0===arguments.length)return a.extend({},d.tooltips);if(!(b instanceof Object))throw new TypeError("tooltips() expects parameter to be an Object");return a.extend(d.tooltips,b),o&&(ba(),ga()),l},l.useStrict=function(a){if(0===arguments.length)return d.useStrict;if("boolean"!=typeof a)throw new TypeError("useStrict() expects a boolean parameter");return d.useStrict=a,l},l.sideBySide=function(a){if(0===arguments.length)return d.sideBySide;if("boolean"!=typeof a)throw new TypeError("sideBySide() expects a boolean parameter");return d.sideBySide=a,o&&(ba(),ga()),l},l.viewMode=function(a){if(0===arguments.length)return d.viewMode;if("string"!=typeof a)throw new TypeError("viewMode() expects a string parameter");if(r.indexOf(a)===-1)throw new TypeError("viewMode() parameter must be one of ("+r.join(", ")+") value");return d.viewMode=a,k=Math.max(r.indexOf(a),p),L(),l},l.toolbarPlacement=function(a){if(0===arguments.length)return d.toolbarPlacement;if("string"!=typeof a)throw new TypeError("toolbarPlacement() expects a string parameter");if(u.indexOf(a)===-1)throw new TypeError("toolbarPlacement() parameter must be one of ("+u.join(", ")+") value");return d.toolbarPlacement=a,o&&(ba(),ga()),l},l.widgetPositioning=function(b){if(0===arguments.length)return a.extend({},d.widgetPositioning);if("[object Object]"!=={}.toString.call(b))throw new TypeError("widgetPositioning() expects an object variable");if(b.horizontal){if("string"!=typeof b.horizontal)throw new TypeError("widgetPositioning() horizontal variable must be a string");if(b.horizontal=b.horizontal.toLowerCase(),t.indexOf(b.horizontal)===-1)throw new TypeError("widgetPositioning() expects horizontal parameter to be one of ("+t.join(", ")+")");d.widgetPositioning.horizontal=b.horizontal}if(b.vertical){if("string"!=typeof b.vertical)throw new TypeError("widgetPositioning() vertical variable must be a string");if(b.vertical=b.vertical.toLowerCase(),s.indexOf(b.vertical)===-1)throw new TypeError("widgetPositioning() expects vertical parameter to be one of ("+s.join(", ")+")");d.widgetPositioning.vertical=b.vertical}return _(),l},l.calendarWeeks=function(a){if(0===arguments.length)return d.calendarWeeks;if("boolean"!=typeof a)throw new TypeError("calendarWeeks() expects parameter to be a boolean value");return d.calendarWeeks=a,_(),l},l.showTodayButton=function(a){if(0===arguments.length)return d.showTodayButton;if("boolean"!=typeof a)throw new TypeError("showTodayButton() expects a boolean parameter");return d.showTodayButton=a,o&&(ba(),ga()),l},l.showClear=function(a){if(0===arguments.length)return d.showClear;if("boolean"!=typeof a)throw new TypeError("showClear() expects a boolean parameter");return d.showClear=a,o&&(ba(),ga()),l},l.widgetParent=function(b){if(0===arguments.length)return d.widgetParent;if("string"==typeof b&&(b=a(b)),null!==b&&"string"!=typeof b&&!(b instanceof a))throw new TypeError("widgetParent() expects a string or a jQuery object parameter");return d.widgetParent=b,o&&(ba(),ga()),l},l.keepOpen=function(a){if(0===arguments.length)return d.keepOpen;if("boolean"!=typeof a)throw new TypeError("keepOpen() expects a boolean parameter");return d.keepOpen=a,l},l.focusOnShow=function(a){if(0===arguments.length)return d.focusOnShow;if("boolean"!=typeof a)throw new TypeError("focusOnShow() expects a boolean parameter");return d.focusOnShow=a,l},l.inline=function(a){if(0===arguments.length)return d.inline;if("boolean"!=typeof a)throw new TypeError("inline() expects a boolean parameter");return d.inline=a,l},l.clear=function(){return ca(),l},l.keyBinds=function(a){return 0===arguments.length?d.keyBinds:(d.keyBinds=a,l)},l.getMoment=function(a){return y(a)},l.debug=function(a){if("boolean"!=typeof a)throw new TypeError("debug() expects a boolean parameter");return d.debug=a,l},l.allowInputToggle=function(a){if(0===arguments.length)return d.allowInputToggle;if("boolean"!=typeof a)throw new TypeError("allowInputToggle() expects a boolean parameter");return d.allowInputToggle=a,l},l.showClose=function(a){if(0===arguments.length)return d.showClose;if("boolean"!=typeof a)throw new TypeError("showClose() expects a boolean parameter");return d.showClose=a,l},l.keepInvalid=function(a){if(0===arguments.length)return d.keepInvalid;if("boolean"!=typeof a)throw new TypeError("keepInvalid() expects a boolean parameter");
 return d.keepInvalid=a,l},l.datepickerInput=function(a){if(0===arguments.length)return d.datepickerInput;if("string"!=typeof a)throw new TypeError("datepickerInput() expects a string parameter");return d.datepickerInput=a,l},l.parseInputDate=function(a){if(0===arguments.length)return d.parseInputDate;if("function"!=typeof a)throw new TypeError("parseInputDate() sholud be as function");return d.parseInputDate=a,l},l.disabledTimeIntervals=function(b){if(0===arguments.length)return d.disabledTimeIntervals?a.extend({},d.disabledTimeIntervals):d.disabledTimeIntervals;if(!b)return d.disabledTimeIntervals=!1,_(),l;if(!(b instanceof Array))throw new TypeError("disabledTimeIntervals() expects an array parameter");return d.disabledTimeIntervals=b,_(),l},l.disabledHours=function(b){if(0===arguments.length)return d.disabledHours?a.extend({},d.disabledHours):d.disabledHours;if(!b)return d.disabledHours=!1,_(),l;if(!(b instanceof Array))throw new TypeError("disabledHours() expects an array parameter");if(d.disabledHours=oa(b),d.enabledHours=!1,d.useCurrent&&!d.keepInvalid){for(var c=0;!R(e,"h");){if(e.add(1,"h"),24===c)throw"Tried 24 times to find a valid date";c++}aa(e)}return _(),l},l.enabledHours=function(b){if(0===arguments.length)return d.enabledHours?a.extend({},d.enabledHours):d.enabledHours;if(!b)return d.enabledHours=!1,_(),l;if(!(b instanceof Array))throw new TypeError("enabledHours() expects an array parameter");if(d.enabledHours=oa(b),d.disabledHours=!1,d.useCurrent&&!d.keepInvalid){for(var c=0;!R(e,"h");){if(e.add(1,"h"),24===c)throw"Tried 24 times to find a valid date";c++}aa(e)}return _(),l},l.viewDate=function(a){if(0===arguments.length)return f.clone();if(!a)return f=e.clone(),l;if(!("string"==typeof a||b.isMoment(a)||a instanceof Date))throw new TypeError("viewDate() parameter must be one of [string, moment or Date]");return f=da(a),K(),l},c.is("input"))g=c;else if(g=c.find(d.datepickerInput),0===g.length)g=c.find("input");else if(!g.is("input"))throw new Error('CSS class "'+d.datepickerInput+'" cannot be applied to non input element');if(c.hasClass("input-group")&&(n=0===c.find(".datepickerbutton").length?c.find(".input-group-addon"):c.find(".datepickerbutton")),!d.inline&&!g.is("input"))throw new Error("Could not initialize DateTimePicker without an input element");return e=y(),f=e.clone(),a.extend(!0,d,H()),l.options(d),pa(),la(),g.prop("disabled")&&l.disable(),g.is("input")&&0!==g.val().trim().length?aa(da(g.val().trim())):d.defaultDate&&void 0===g.attr("placeholder")&&aa(d.defaultDate),d.inline&&ga(),l};return a.fn.datetimepicker=function(b){b=b||{};var d,e=Array.prototype.slice.call(arguments,1),f=!0,g=["destroy","hide","show","toggle"];if("object"==typeof b)return this.each(function(){var d,e=a(this);e.data("DateTimePicker")||(d=a.extend(!0,{},a.fn.datetimepicker.defaults,b),e.data("DateTimePicker",c(e,d)))});if("string"==typeof b)return this.each(function(){var c=a(this),g=c.data("DateTimePicker");if(!g)throw new Error('bootstrap-datetimepicker("'+b+'") method was called on an element that is not using DateTimePicker');d=g[b].apply(g,e),f=d===g}),f||a.inArray(b,g)>-1?this:d;throw new TypeError("Invalid arguments for DateTimePicker: "+b)},a.fn.datetimepicker.defaults={timeZone:"",format:!1,dayViewHeaderFormat:"MMMM YYYY",extraFormats:!1,stepping:1,minDate:!1,maxDate:!1,useCurrent:!0,collapse:!0,locale:b.locale(),defaultDate:!1,disabledDates:!1,enabledDates:!1,icons:{time:"glyphicon glyphicon-time",date:"glyphicon glyphicon-calendar",up:"glyphicon glyphicon-chevron-up",down:"glyphicon glyphicon-chevron-down",previous:"glyphicon glyphicon-chevron-left",next:"glyphicon glyphicon-chevron-right",today:"glyphicon glyphicon-screenshot",clear:"glyphicon glyphicon-trash",close:"glyphicon glyphicon-remove"},tooltips:{today:"Go to today",clear:"Clear selection",close:"Close the picker",selectMonth:"Select Month",prevMonth:"Previous Month",nextMonth:"Next Month",selectYear:"Select Year",prevYear:"Previous Year",nextYear:"Next Year",selectDecade:"Select Decade",prevDecade:"Previous Decade",nextDecade:"Next Decade",prevCentury:"Previous Century",nextCentury:"Next Century",pickHour:"Pick Hour",incrementHour:"Increment Hour",decrementHour:"Decrement Hour",pickMinute:"Pick Minute",incrementMinute:"Increment Minute",decrementMinute:"Decrement Minute",pickSecond:"Pick Second",incrementSecond:"Increment Second",decrementSecond:"Decrement Second",togglePeriod:"Toggle Period",selectTime:"Select Time"},useStrict:!1,sideBySide:!1,daysOfWeekDisabled:!1,calendarWeeks:!1,viewMode:"days",toolbarPlacement:"default",showTodayButton:!1,showClear:!1,showClose:!1,widgetPositioning:{horizontal:"auto",vertical:"auto"},widgetParent:null,ignoreReadonly:!1,keepOpen:!1,focusOnShow:!0,inline:!1,keepInvalid:!1,datepickerInput:".datepickerinput",keyBinds:{up:function(a){if(a){var b=this.date()||this.getMoment();a.find(".datepicker").is(":visible")?this.date(b.clone().subtract(7,"d")):this.date(b.clone().add(this.stepping(),"m"))}},down:function(a){if(!a)return void this.show();var b=this.date()||this.getMoment();a.find(".datepicker").is(":visible")?this.date(b.clone().add(7,"d")):this.date(b.clone().subtract(this.stepping(),"m"))},"control up":function(a){if(a){var b=this.date()||this.getMoment();a.find(".datepicker").is(":visible")?this.date(b.clone().subtract(1,"y")):this.date(b.clone().add(1,"h"))}},"control down":function(a){if(a){var b=this.date()||this.getMoment();a.find(".datepicker").is(":visible")?this.date(b.clone().add(1,"y")):this.date(b.clone().subtract(1,"h"))}},left:function(a){if(a){var b=this.date()||this.getMoment();a.find(".datepicker").is(":visible")&&this.date(b.clone().subtract(1,"d"))}},right:function(a){if(a){var b=this.date()||this.getMoment();a.find(".datepicker").is(":visible")&&this.date(b.clone().add(1,"d"))}},pageUp:function(a){if(a){var b=this.date()||this.getMoment();a.find(".datepicker").is(":visible")&&this.date(b.clone().subtract(1,"M"))}},pageDown:function(a){if(a){var b=this.date()||this.getMoment();a.find(".datepicker").is(":visible")&&this.date(b.clone().add(1,"M"))}},enter:function(){this.hide()},escape:function(){this.hide()},"control space":function(a){a&&a.find(".timepicker").is(":visible")&&a.find('.btn[data-action="togglePeriod"]').click()},t:function(){this.date(this.getMoment())},delete:function(){this.clear()}},debug:!1,allowInputToggle:!1,disabledTimeIntervals:!1,disabledHours:!1,enabledHours:!1,viewDate:!1},a.fn.datetimepicker});
 
 /***/ }),
-/* 197 */
+/* 206 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(362).default;
+module.exports = __webpack_require__(388).default;
 
 
 /***/ }),
-/* 198 */
+/* 207 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -31729,7 +33615,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 
 
 /***/ }),
-/* 199 */
+/* 208 */
 /***/ (function(module, exports) {
 
 /*! Select2 4.0.3 | https://github.com/select2/select2/blob/master/LICENSE.md */
@@ -31737,7 +33623,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 (function(){if(jQuery&&jQuery.fn&&jQuery.fn.select2&&jQuery.fn.select2.amd)var e=jQuery.fn.select2.amd;return e.define("select2/i18n/fr",[],function(){return{errorLoading:function(){return"Les résultats ne peuvent pas être chargés."},inputTooLong:function(e){var t=e.input.length-e.maximum,n="Supprimez "+t+" caractère";return t!==1&&(n+="s"),n},inputTooShort:function(e){var t=e.minimum-e.input.length,n="Saisissez "+t+" caractère";return t!==1&&(n+="s"),n},loadingMore:function(){return"Chargement de résultats supplémentaires…"},maximumSelected:function(e){var t="Vous pouvez seulement sélectionner "+e.maximum+" élément";return e.maximum!==1&&(t+="s"),t},noResults:function(){return"Aucun résultat trouvé"},searching:function(){return"Recherche en cours…"}}}),{define:e.define,require:e.require}})();
 
 /***/ }),
-/* 200 */
+/* 209 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;var require;var require;/*!
@@ -31750,7 +33636,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 (function (factory) {
   if (true) {
     // AMD. Register as an anonymous module.
-    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(29)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(33)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -37471,7 +39357,7 @@ S2.define('jquery.select2',[
 
 
 /***/ }),
-/* 201 */
+/* 210 */
 /***/ (function(module, exports) {
 
 /*! Copyright (c) 2011 by Jonas Mosbech - https://github.com/jmosbech/StickyTableHeaders
@@ -37793,23 +39679,23 @@ S2.define('jquery.select2',[
 
 
 /***/ }),
-/* 202 */
+/* 211 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(47);
+var content = __webpack_require__(48);
 if(typeof content === 'string') content = [[module.i, content, '']];
 // add the styles to the DOM
-var update = __webpack_require__(22)(content, {});
+var update = __webpack_require__(21)(content, {});
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(true) {
 	// When the styles change, update the <style> tags
 	if(!content.locals) {
-		module.hot.accept(47, function() {
-			var newContent = __webpack_require__(47);
+		module.hot.accept(48, function() {
+			var newContent = __webpack_require__(48);
 			if(typeof newContent === 'string') newContent = [[module.i, newContent, '']];
 			update(newContent);
 		});
@@ -37819,23 +39705,23 @@ if(true) {
 }
 
 /***/ }),
-/* 203 */
+/* 212 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(49);
+var content = __webpack_require__(50);
 if(typeof content === 'string') content = [[module.i, content, '']];
 // add the styles to the DOM
-var update = __webpack_require__(22)(content, {});
+var update = __webpack_require__(21)(content, {});
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(true) {
 	// When the styles change, update the <style> tags
 	if(!content.locals) {
-		module.hot.accept(49, function() {
-			var newContent = __webpack_require__(49);
+		module.hot.accept(50, function() {
+			var newContent = __webpack_require__(50);
 			if(typeof newContent === 'string') newContent = [[module.i, newContent, '']];
 			update(newContent);
 		});
@@ -37845,7 +39731,7 @@ if(true) {
 }
 
 /***/ }),
-/* 204 */
+/* 213 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -37896,7 +39782,7 @@ module.exports = Collection;
 
 
 /***/ }),
-/* 205 */
+/* 214 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -37909,7 +39795,7 @@ module.exports = Collection;
  * @details
  */
 
-var AccessionSynonymTypeModel = __webpack_require__(210);
+var AccessionSynonymTypeModel = __webpack_require__(219);
 
 var Collection = Backbone.Collection.extend({
     url: application.baseUrl + 'accession/accession-synonym-type/',
@@ -37936,7 +39822,7 @@ module.exports = Collection;
 
 
 /***/ }),
-/* 206 */
+/* 215 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -37949,7 +39835,7 @@ module.exports = Collection;
  * @details
  */
 
-var BatchActionTypeModel = __webpack_require__(211);
+var BatchActionTypeModel = __webpack_require__(220);
 
 var Collection = Backbone.Collection.extend({
     url: application.baseUrl + 'accession/batch-action-type/',
@@ -37976,7 +39862,7 @@ module.exports = Collection;
 
 
 /***/ }),
-/* 207 */
+/* 216 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -37994,9 +39880,9 @@ var Marionette = __webpack_require__(0);
 var AccessionModel = __webpack_require__(16);
 
 var DefaultLayout = __webpack_require__(4);
-var TitleView = __webpack_require__(7);
-var Dialog = __webpack_require__(5);
-var AccessionLayout = __webpack_require__(53);
+var TitleView = __webpack_require__(3);
+var Dialog = __webpack_require__(6);
+var AccessionLayout = __webpack_require__(54);
 
 
 var Controller = Marionette.Object.extend({
@@ -38011,15 +39897,16 @@ var Controller = Marionette.Object.extend({
                 attributes: {
                     'id': 'dlg_create_accession'
                 },
-                template: __webpack_require__(386),
+                template: __webpack_require__(414),
                 templateHelpers/*templateContext*/: function () {
                     return {
-                        meta_models: data,
+                        meta_models: data
                     };
                 },
 
                 ui: {
                     validate: "button.continue",
+                    code: "#accession_code",
                     name: "#accession_name",
                     language: "#accession_language",
                     meta_model: "#meta_model",
@@ -38028,6 +39915,7 @@ var Controller = Marionette.Object.extend({
 
                 events: {
                     'click @ui.validate': 'onContinue',
+                    'input @ui.code': 'onCodeInput',
                     'input @ui.name': 'onNameInput'
                 },
 
@@ -38092,6 +39980,39 @@ var Controller = Marionette.Object.extend({
                     CreateAccessionView.__super__.onBeforeDestroy.apply(this);
                 },
 
+                onCodeInput: function () {
+                    var code = this.ui.code.val().trim();
+
+                    if (this.validateCode()) {
+                        var filters = {
+                            method: 'ieq',
+                            fields: ['code'],
+                            'code': code
+                        };
+
+                        $.ajax({
+                            type: "GET",
+                            url: application.baseUrl + 'accession/accession/search/',
+                            dataType: 'json',
+                            contentType: 'application/json; charset=utf8',
+                            data: {filters: JSON.stringify(filters)},
+                            el: this.ui.code,
+                            success: function(data) {
+                                for (var i in data.items) {
+                                    var t = data.items[i];
+
+                                    if (t.value.toUpperCase() == code.toUpperCase()) {
+                                        $(this.el).validateField('failed', gt.gettext('Code of accession already used'));
+                                        return;
+                                    }
+                                }
+
+                                $(this.el).validateField('ok');
+                            }
+                        });
+                    }
+                },
+
                 onNameInput: function () {
                     var name = this.ui.name.val().trim();
 
@@ -38110,28 +40031,40 @@ var Controller = Marionette.Object.extend({
                             data: {filters: JSON.stringify(filters)},
                             el: this.ui.name,
                             success: function(data) {
-                                if (data.items.length > 0) {
-                                    for (var i in data.items) {
-                                        var t = data.items[i];
+                                for (var i in data.items) {
+                                    var t = data.items[i];
 
-                                        if (t.label.toUpperCase() == name.toUpperCase()) {
-                                            $(this.el).validateField('failed', gt.gettext('Synonym of accession already used'));
-                                            break;
-                                        }
+                                    if (t.type === "ACC_SYN:01" && t.label.toUpperCase() == name.toUpperCase()) {
+                                        $(this.el).validateField('failed', gt.gettext('Synonym used as accession code'));
+                                        return;
                                     }
-                                } else {
-                                    $(this.el).validateField('ok');
                                 }
+
+                                $(this.el).validateField('ok');
                             }
                         });
                     }
                 },
 
+                validateCode: function() {
+                    var v = this.ui.code.val().trim();
+
+                    if (v.length > 128) {
+                        $(this.ui.code).validateField('failed', gt.gettext("128 characters max"));
+                        return false;
+                    } else if (v.length < 3) {
+                        $(this.ui.code).validateField('failed', gt.gettext('3 characters min'));
+                        return false;
+                    }
+
+                    return true;
+                },
+
                 validateName: function() {
                     var v = this.ui.name.val().trim();
 
-                    if (v.length > 64) {
-                        $(this.ui.name).validateField('failed', gt.gettext("64 characters max"));
+                    if (v.length > 128) {
+                        $(this.ui.name).validateField('failed', gt.gettext("128 characters max"));
                         return false;
                     } else if (v.length < 3) {
                         $(this.ui.name).validateField('failed', gt.gettext('3 characters min'));
@@ -38154,7 +40087,9 @@ var Controller = Marionette.Object.extend({
                         valid = false;
                     }
 
-                    if (this.ui.name.hasClass('invalid') || this.ui.parent.hasClass('invalid')) {
+                     if (this.ui.code.hasClass('invalid') ||
+                         this.ui.name.hasClass('invalid') ||
+                         this.ui.parent.hasClass('invalid')) {
                         valid = false;
                     }
 
@@ -38165,12 +40100,14 @@ var Controller = Marionette.Object.extend({
                     var view = this;
 
                     if (this.validate()) {
+                        var code = this.ui.code.val().trim();
                         var name = this.ui.name.val().trim();
                         var parent = parseInt(this.ui.parent.val());
                         var metaModel = parseInt(this.ui.meta_model.val());
 
                         // create a new local model and open an edit view with this model
                         var model = new AccessionModel({
+                            code: code,
                             name: name,
                             parent: parent,
                             descriptor_meta_model: metaModel,
@@ -38182,30 +40119,12 @@ var Controller = Marionette.Object.extend({
                         var defaultLayout = new DefaultLayout();
                         application.show(defaultLayout);
 
-                        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Accession"), model: model}));
+                        defaultLayout.getRegion('title').show(new TitleView({
+                            title: gt.gettext("Accession"),
+                            model: model}));
 
                         var accessionLayout = new AccessionLayout({model: model});
                         defaultLayout.getRegion('content').show(accessionLayout);
-/*
-                        accessionLayout.disableSynonymsTab();
-                        accessionLayout.disableBatchesTab();
-
-                        var taxon = new TaxonModel({id: parent});
-                        taxon.fetch().then(function() {
-                            accessionLayout.getRegion('details').show(new EntityPathView({model: model, taxon: taxon, noLink: true}));
-                        });
-
-                        $.ajax({
-                            method: "GET",
-                            url: application.baseUrl + 'descriptor/meta-model/' + metaModel + '/layout/',
-                            dataType: 'json'
-                        }).done(function(data) {
-                            var accessionDescriptorView = new AccessionDescriptorEditView({model: model, descriptorMetaModelLayout: data});
-                            accessionLayout.getRegion('descriptors').show(accessionDescriptorView);
-
-                            // manually called
-                            accessionDescriptorView.onShowTab();
-                        });*/
                     }
                 }
             });
@@ -38213,13 +40132,13 @@ var Controller = Marionette.Object.extend({
             var createAccessionView = new CreateAccessionView();
             createAccessionView.render();
         });
-    },
+    }
 });
 
 module.exports = Controller;
 
 /***/ }),
-/* 208 */
+/* 217 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -38247,7 +40166,7 @@ AccessionModule.prototype = {
         // i18n if not english
         if (session.language !== "en") {
             try {
-                i18next.addResources(session.language, 'default', __webpack_require__(209)("./" + session.language + '/LC_MESSAGES/default.json'));
+                i18next.addResources(session.language, 'default', __webpack_require__(218)("./" + session.language + '/LC_MESSAGES/default.json'));
             } catch (e) {
                 console.warn("No translation found for the current language. Fallback to english language");
             }
@@ -38257,9 +40176,9 @@ AccessionModule.prototype = {
         // main collections
         //
 
-        var SelectOption = __webpack_require__(18);
+        var SelectOption = __webpack_require__(15);
 
-        var AccessionSynonymTypeCollection = __webpack_require__(205);
+        var AccessionSynonymTypeCollection = __webpack_require__(214);
         this.collections.accessionSynonymTypes = new AccessionSynonymTypeCollection();
 
         this.views.accessionSynonymTypes = new SelectOption({
@@ -38267,7 +40186,7 @@ AccessionModule.prototype = {
             collection: this.collections.accessionSynonymTypes
         });
 
-        var BatchActionTypeCollection = __webpack_require__(206);
+        var BatchActionTypeCollection = __webpack_require__(215);
         this.collections.batchActionTypes = new BatchActionTypeCollection();
 
         this.views.batchActionTypes = new SelectOption({
@@ -38279,17 +40198,17 @@ AccessionModule.prototype = {
         // controllers
         //
 
-        var AccessionController = __webpack_require__(207);
+        var AccessionController = __webpack_require__(216);
         this.controllers.accession = new AccessionController();
 
         //
         // routers
         //
 
-        var AccessionRouter = __webpack_require__(212);
+        var AccessionRouter = __webpack_require__(221);
         this.routers.accession = new AccessionRouter();
 
-        var BatchRouter = __webpack_require__(213);
+        var BatchRouter = __webpack_require__(222);
         this.routers.batch = new BatchRouter();
     },
 
@@ -38306,12 +40225,12 @@ module.exports = AccessionModule;
 
 
 /***/ }),
-/* 209 */
+/* 218 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
-	"./en/LC_MESSAGES/default.json": 364,
-	"./fr/LC_MESSAGES/default.json": 365
+	"./en/LC_MESSAGES/default.json": 390,
+	"./fr/LC_MESSAGES/default.json": 391
 };
 function webpackContext(req) {
 	return __webpack_require__(webpackContextResolve(req));
@@ -38327,11 +40246,11 @@ webpackContext.keys = function webpackContextKeys() {
 };
 webpackContext.resolve = webpackContextResolve;
 module.exports = webpackContext;
-webpackContext.id = 209;
+webpackContext.id = 218;
 
 
 /***/ }),
-/* 210 */
+/* 219 */
 /***/ (function(module, exports) {
 
 /**
@@ -38358,7 +40277,7 @@ module.exports = Backbone.Model.extend({
 
 
 /***/ }),
-/* 211 */
+/* 220 */
 /***/ (function(module, exports) {
 
 /**
@@ -38385,7 +40304,7 @@ module.exports = Backbone.Model.extend({
 
 
 /***/ }),
-/* 212 */
+/* 221 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -38401,13 +40320,14 @@ module.exports = Backbone.Model.extend({
 var Marionette = __webpack_require__(0);
 
 var AccessionModel = __webpack_require__(16);
-var AccessionCollection = __webpack_require__(204);
-var AccessionListView = __webpack_require__(215);
+var AccessionCollection = __webpack_require__(213);
+var AccessionListView = __webpack_require__(224);
+var AccessionListFooterView = __webpack_require__(225);
 
 var DefaultLayout = __webpack_require__(4);
 var ScrollingMoreView = __webpack_require__(9);
-var TitleView = __webpack_require__(7);
-var AccessionLayout = __webpack_require__(53);
+var TitleView = __webpack_require__(3);
+var AccessionLayout = __webpack_require__(54);
 
 var Router = Marionette.AppRouter.extend({
     routes : {
@@ -38429,6 +40349,8 @@ var Router = Marionette.AppRouter.extend({
             defaultLayout.getRegion('content').show(accessionListView);
             defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: accessionListView}));
         });
+
+        defaultLayout.getRegion('bottom').show(new AccessionListFooterView({collection: collection}));
     },
 
     getAccession : function(id) {
@@ -38437,10 +40359,10 @@ var Router = Marionette.AppRouter.extend({
         var defaultLayout = new DefaultLayout();
         application.show(defaultLayout);
 
-        var accessionLayout = new AccessionLayout({model: accession});
-
         accession.fetch().then(function() {
             defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Accession"), model: accession}));
+
+            var accessionLayout = new AccessionLayout({model: accession});
             defaultLayout.getRegion('content').show(accessionLayout);
         });
     }
@@ -38450,7 +40372,7 @@ module.exports = Router;
 
 
 /***/ }),
-/* 213 */
+/* 222 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -38465,14 +40387,14 @@ module.exports = Router;
 
 var Marionette = __webpack_require__(0);
 
-var BatchModel = __webpack_require__(50);
-var BatchCollection = __webpack_require__(30);
-var BatchListView = __webpack_require__(23);
+var BatchModel = __webpack_require__(51);
+var BatchCollection = __webpack_require__(34);
+var BatchListView = __webpack_require__(22);
 
 var DefaultLayout = __webpack_require__(4);
 var ScrollingMoreView = __webpack_require__(9);
-var TitleView = __webpack_require__(7);
-var BatchLayout = __webpack_require__(219);
+var TitleView = __webpack_require__(3);
+var BatchLayout = __webpack_require__(229);
 
 var Router = Marionette.AppRouter.extend({
     routes : {
@@ -38515,7 +40437,7 @@ module.exports = Router;
 
 
 /***/ }),
-/* 214 */
+/* 223 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -38536,7 +40458,13 @@ var View = Marionette.ItemView.extend({
     attributes: {
         'scope': 'row',
     },
-    template: __webpack_require__(384),
+    template: __webpack_require__(412),
+
+    templateHelpers/*templateContext*/: function () {
+        return {
+            columns: this.getOption('columns')
+        }
+    },
 
     ui: {
         details: 'td.view-accession-details',
@@ -38572,7 +40500,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 215 */
+/* 224 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -38586,26 +40514,117 @@ module.exports = View;
  */
 
 var Marionette = __webpack_require__(0);
-var AccessionView = __webpack_require__(214);
-var ScrollView = __webpack_require__(6);
+var AccessionView = __webpack_require__(223);
+var ScrollView = __webpack_require__(7);
 
 var View = ScrollView.extend({
-    template: __webpack_require__(389),
+    template: __webpack_require__(417),
     childView: AccessionView,
     childViewContainer: 'tbody.accession-list',
 
-    initialize: function() {
-        this.listenTo(this.collection, 'reset', this.render, this);
-
-        View.__super__.initialize.apply(this);
+    templateHelpers/*templateContext*/: function () {
+        return {
+            columns: this.getOption('columns')
+        }
     },
+
+    childViewOptions: function () {
+        return {
+            columns: this.getOption('columns')
+        }
+    },
+
+    initialize: function(options) {
+        View.__super__.initialize.apply(this);
+
+        options || (options = {});
+        options.columns = [
+        ];
+
+        this.listenTo(this.collection, 'reset', this.render, this);
+    }
 });
 
 module.exports = View;
 
 
 /***/ }),
-/* 216 */
+/* 225 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/**
+ * @file accessionlistfooter.js
+ * @brief Filter and configuration for the list of accession
+ * @author Frederic SCHERMA
+ * @date 2017-03-22
+ * @copyright Copyright (c) 2017 INRA UMR1095 GDEC
+ * @license @todo
+ * @details
+ */
+
+var Marionette = __webpack_require__(0);
+
+var View = Marionette.ItemView.extend({
+    tagName: 'div',
+    className: 'accession-footer',
+    template: __webpack_require__(418),
+
+    ui: {
+        filter_btn: 'button.accession-filter',
+        accession_name: 'input.accession-name',
+        accession_advanced_search: 'button.accession-advanced-search',
+        accession_columns_config: 'button.accession-columns-config'
+    },
+
+    events: {
+        'click @ui.filter_btn': 'onFilter',
+        'input @ui.accession_name': 'onAccessionNameInput'
+    },
+
+    initialize: function(options) {
+        options || (options = {});
+        this.collection = options.collection;
+    },
+
+    onRender: function() {
+    },
+
+    onFilter: function () {
+        if (this.validateAccessionName()) {
+            this.collection.filters = {
+                name: this.ui.accession_name.val().trim(),
+                method: "icontains"
+            };
+
+            this.collection.fetch({reset: true});
+        }
+    },
+
+    validateAccessionName: function() {
+        var v = this.ui.accession_name.val().trim();
+
+        if (v.length > 0 && v.length < 3) {
+            $(this.ui.accession_name).validateField('failed', gt.gettext('3 characters min'));
+            return false;
+        } else if (this.ui.accession_name.val().length == 0) {
+            $(this.ui.accession_name).cleanField();
+            return true;
+        } else {
+            $(this.ui.accession_name).validateField('ok');
+            return true;
+        }
+    },
+
+    onAccessionNameInput: function () {
+        return this.validateAccessionName();
+    }
+});
+
+module.exports = View;
+
+
+/***/ }),
+/* 226 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -38619,12 +40638,12 @@ module.exports = View;
  */
 
 var Marionette = __webpack_require__(0);
-var Dialog = __webpack_require__(5);
+var Dialog = __webpack_require__(6);
 
 var View = Marionette.ItemView.extend({
     tagName: 'div',
     className: 'accession-synonyms',
-    template: __webpack_require__(390),
+    template: __webpack_require__(419),
 
     ui: {
         "synonym_name": ".synonym-name",
@@ -38654,8 +40673,10 @@ var View = Marionette.ItemView.extend({
         application.main.views.languages.htmlFromValue(this.el);
         application.accession.views.accessionSynonymTypes.htmlFromValue(this.el);
 
-        this.ui.accession_synonym_type.find('option[value="IN_001:0000001"]').remove();
-        $(this.ui.accession_synonym_type).selectpicker('refresh');
+        // remove GRC code and Primary Name
+        this.ui.accession_synonym_type.find('option[value="ACC_SYN:01"]').remove();
+        this.ui.accession_synonym_type.find('option[value="ACC_SYN:02"]').remove();
+        this.ui.accession_synonym_type.selectpicker('refresh');
     },
 
     validateName: function() {
@@ -38694,19 +40715,23 @@ var View = Marionette.ItemView.extend({
                         for (var i in data.items) {
                             var t = data.items[i];
 
-                            // invalid if primary exists with the same name or if exists into the same accession
+                            // invalid if GRC code exists with the same name or if exists into the same accession
                             if (t.label.toUpperCase() == name.toUpperCase()) {
-                                if ((t.accession == view.model.get('id')) || (t.type == "IN_001:0000001")) {
+                                if (t.type == "ACC_SYN:01") {
                                     view.ui.synonym_name.validateField(
-                                        'failed', gt.gettext('Synonym of accession already used'));
-
-                                    break;
+                                        'failed', gt.gettext('It is not possible to use a GRC code of accession as synonym'));
+                                    return;
+                                } else if (t.accession == view.model.get('id')) {
+                                    view.ui.synonym_name.validateField(
+                                        'failed', gt.gettext('Synonym of accession already defined into this accession'));
+                                    return;
                                 }
                             }
                         }
-                    } else {
-                        view.ui.synonym_name.validateField('ok');
                     }
+
+                    // validate
+                    view.ui.synonym_name.validateField('ok');
                 }
             });
         }
@@ -38749,7 +40774,7 @@ var View = Marionette.ItemView.extend({
 
     onRenameSynonym: function(e) {
         var ChangeSynonym = Dialog.extend({
-            template: __webpack_require__(385),
+            template: __webpack_require__(413),
 
             attributes: {
                 id: "dlg_change_synonym"
@@ -38789,17 +40814,25 @@ var View = Marionette.ItemView.extend({
                                 for (var i in data.items) {
                                     var t = data.items[i];
 
-                                    // invalid if primary exists with the same name or if exists into the same accession
                                     if (t.label.toUpperCase() == name.toUpperCase()) {
-                                        // same accession, same synonym => valid
+                                        // valid if same accession and same synonym
                                         if ((t.accession == view.model.get('id')) && (t.id == view.getOption('synonym_id'))) {
                                             view.ui.synonym_name.validateField('ok');
                                             break;
-                                        }
-
-                                        if ((t.accession == view.model.get('id')) || (t.type == "IN_001:0000001")) {
+                                        } else if (view.getOption('type') == "ACC_SYN:01") {
+                                            // invalid if same name and modifying a GRC code synonym
                                             view.ui.synonym_name.validateField(
-                                                'failed', gt.gettext('Synonym of accession already used'));
+                                                'failed', gt.gettext('Accession GRC code must be unique'));
+                                            break;
+                                        } else if (t.type == "ACC_SYN:01") {
+                                            // invalid if GRC code exists with the same name
+                                            view.ui.synonym_name.validateField(
+                                                'failed', gt.gettext('It is not possible to use a GRC code of accession as synonym'));
+                                            break;
+                                        } else if (t.accession == view.model.get('id')) {
+                                            // invalid if exists into the same accession
+                                            view.ui.synonym_name.validateField(
+                                                'failed', gt.gettext('Synonym of accession already defined into this accession'));
                                             break;
                                         }
                                     }
@@ -38873,7 +40906,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 217 */
+/* 227 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -38894,7 +40927,13 @@ var View = Marionette.ItemView.extend({
     attributes: {
         'scope': 'row',
     },
-    template: __webpack_require__(391),
+    template: __webpack_require__(420),
+
+    templateHelpers/*templateContext*/: function () {
+        return {
+            columns: this.getOption('columns')
+        }
+    },
 
     ui: {
         details: 'td.view-batch-details',
@@ -38926,7 +40965,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 218 */
+/* 228 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -38939,7 +40978,7 @@ module.exports = View;
  * @details
  */
 
-var DescribableEdit = __webpack_require__(35);
+var DescribableEdit = __webpack_require__(25);
 
 var View = DescribableEdit.extend({
     onCancel: function() {
@@ -38959,7 +40998,7 @@ var View = DescribableEdit.extend({
         // update the layout content
         var batchLayout = application.view().getRegion('content').currentView;
 
-        var BatchDescriptorView = __webpack_require__(32);
+        var BatchDescriptorView = __webpack_require__(36);
         var batchDescriptorView = new BatchDescriptorView({
             model: this.model,
             descriptorMetaModelLayout: view.descriptorMetaModelLayout});
@@ -38982,7 +41021,7 @@ var View = DescribableEdit.extend({
             var batchLayout = application.view().getRegion('content').currentView;
 
             // update the layout content
-            var BatchDescriptorView = __webpack_require__(32);
+            var BatchDescriptorView = __webpack_require__(36);
             var batchDescriptorView = new BatchDescriptorView({
                 model: model,
                 descriptorMetaModelLayout: view.descriptorMetaModelLayout});
@@ -39002,12 +41041,12 @@ var View = DescribableEdit.extend({
             application.getView().getRegion('right').show(contextLayout);
         }
 
-        var TitleView = __webpack_require__(7);
+        var TitleView = __webpack_require__(3);
         contextLayout.getRegion('title').show(new TitleView({title: gt.gettext("Descriptors")}));
 
         var actions = ['apply', 'cancel'];
 
-        var BatchDescriptorContextView = __webpack_require__(54);
+        var BatchDescriptorContextView = __webpack_require__(55);
         var contextView = new BatchDescriptorContextView({actions: actions});
         contextLayout.getRegion('content').show(contextView);
 
@@ -39029,7 +41068,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 219 */
+/* 229 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -39046,12 +41085,12 @@ var Marionette = __webpack_require__(0);
 var AccessionModel = __webpack_require__(16);
 
 var ScrollingMoreView = __webpack_require__(9);
-var ContentBottomLayout = __webpack_require__(37);
-var BatchPathView = __webpack_require__(220);
+var ContentBottomLayout = __webpack_require__(28);
+var BatchPathView = __webpack_require__(230);
 
 
 var Layout = Marionette.LayoutView.extend({
-    template: __webpack_require__(393),
+    template: __webpack_require__(422),
 
     attributes: {
         style: "height: 100%;"
@@ -39111,7 +41150,7 @@ var Layout = Marionette.LayoutView.extend({
                 url: application.baseUrl + 'descriptor/meta-model/' + value + '/layout/',
                 dataType: 'json'
             }).done(function (data) {
-                var BatchDescriptorView = __webpack_require__(32);
+                var BatchDescriptorView = __webpack_require__(36);
                 var batchDescriptorView = new BatchDescriptorView({
                     model: model,
                     descriptorMetaModelLayout: data
@@ -39141,11 +41180,11 @@ var Layout = Marionette.LayoutView.extend({
         });
 
         // parents batches tab
-        var BatchCollection = __webpack_require__(30);
+        var BatchCollection = __webpack_require__(34);
         var parentBatches = new BatchCollection([], {batch_id: this.model.get('id'), batch_type: 'parents'});
 
         parentBatches.fetch().then(function() {
-            var BatchListView = __webpack_require__(23);
+            var BatchListView = __webpack_require__(22);
             var batchListView  = new BatchListView({collection: parentBatches, model: batchLayout.model});
 
             var contentBottomLayout = new ContentBottomLayout();
@@ -39159,7 +41198,7 @@ var Layout = Marionette.LayoutView.extend({
         var childrenBatches = new BatchCollection([], {batch_id: this.model.get('id'), batch_type: 'children'});
 
         childrenBatches.fetch().then(function() {
-            var BatchListView = __webpack_require__(23);
+            var BatchListView = __webpack_require__(22);
             var batchListView  = new BatchListView({collection: childrenBatches, model: batchLayout.model});
 
             var contentBottomLayout = new ContentBottomLayout();
@@ -39201,7 +41240,7 @@ module.exports = Layout;
 
 
 /***/ }),
-/* 220 */
+/* 230 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -39220,7 +41259,7 @@ var AccessionModel = __webpack_require__(16);
 
 var View = Marionette.ItemView.extend({
     tagName: 'div',
-    template: __webpack_require__(395),
+    template: __webpack_require__(424),
     templateHelpers/*templateContext*/: function () {
         return {
             accession: this.accession
@@ -39268,7 +41307,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 221 */
+/* 231 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -39282,35 +41321,35 @@ module.exports = View;
  */
 
 var Marionette = __webpack_require__(0);
-var AuditCollection = __webpack_require__(55);
-var AuditListView = __webpack_require__(57);
+var AuditCollection = __webpack_require__(56);
+var AuditListView = __webpack_require__(58);
 
 var DefaultLayout = __webpack_require__(4);
 
-var TitleView = __webpack_require__(7);
+var TitleView = __webpack_require__(3);
 var ScrollingMoreView = __webpack_require__(9);
-var Dialog = __webpack_require__(5);
+var Dialog = __webpack_require__(6);
 
 var Controller = Marionette.Object.extend({
 
     searchByUserName: function () {
         var ModalView = Dialog.extend({
             attributes: {
-                'id': 'dlg_audit_by_username',
+                'id': 'dlg_audit_by_username'
             },
-            template: __webpack_require__(398),
+            template: __webpack_require__(427),
 
             ui: {
                 search: "button.search",
-                username: "#username",
+                username: "#username"
             },
 
             events: {
-                'input @ui.username': 'onUserNameInput',
+                'input @ui.username': 'onUserNameInput'
             },
 
             triggers: {
-                'click @ui.search': 'view:search',
+                'click @ui.search': 'view:search'
             },
 
             initialize: function () {
@@ -39332,12 +41371,12 @@ var Controller = Marionette.Object.extend({
                             var filters = {
                                 method: 'icontains',
                                 fields: '*',
-                                '*': params.term.split(' ').filter(function (t) { return t.length > 2; }),
+                                '*': params.term.split(' ').filter(function (t) { return t.length > 2; })
                             };
 
                             return {
                                 page: params.page,
-                                filters: JSON.stringify(filters),
+                                filters: JSON.stringify(filters)
                             };
                         },
                         processResults: function (data, params) {
@@ -39363,7 +41402,7 @@ var Controller = Marionette.Object.extend({
                         cache: true
                     },
                     minimumInputLength: 3,
-                    placeholder: gt.gettext("Select a username"),
+                    placeholder: gt.gettext("Select a username")
                 }).select2('open');
             },
 
@@ -39406,9 +41445,9 @@ var Controller = Marionette.Object.extend({
     searchByEntity: function (uuid) {
             var ModalView = Dialog.extend({
             attributes: {
-                'id': 'dlg_audit_by_entity',
+                'id': 'dlg_audit_by_entity'
             },
-            template: __webpack_require__(397),
+            template: __webpack_require__(426),
 
             ui: {
                 search: "button.search",
@@ -39417,11 +41456,11 @@ var Controller = Marionette.Object.extend({
             },
 
             events: {
-                'input @ui.entity': 'onEntityInput',
+                'input @ui.entity': 'onEntityInput'
             },
 
             triggers: {
-                'click @ui.search': 'view:search',
+                'click @ui.search': 'view:search'
             },
 
             onRender: function () {
@@ -39463,7 +41502,7 @@ var Controller = Marionette.Object.extend({
 
                             return {
                                 page: params.page,
-                                filters: JSON.stringify(filters),
+                                filters: JSON.stringify(filters)
                             };
                         },
                         processResults: function (data, params) {
@@ -39489,7 +41528,7 @@ var Controller = Marionette.Object.extend({
                         cache: true
                     },
                     minimumInputLength: 3,
-                    placeholder: gt.gettext("Select an entity UUID or name"),
+                    placeholder: gt.gettext("Select an entity UUID or name")
                 }).select2('open');
             },
 
@@ -39559,7 +41598,7 @@ module.exports = Controller;
 
 
 /***/ }),
-/* 222 */
+/* 232 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -39589,7 +41628,7 @@ AuditModule.prototype = {
         // i18n if not english
         if (session.language !== "en") {
             try {
-                i18next.addResources(session.language, 'default', __webpack_require__(223)("./" + session.language + '/LC_MESSAGES/default.json'));
+                i18next.addResources(session.language, 'default', __webpack_require__(233)("./" + session.language + '/LC_MESSAGES/default.json'));
             } catch (e) {
                 console.warn("No translation found for the current language. Fallback to english language");
             }
@@ -39599,14 +41638,14 @@ AuditModule.prototype = {
         // controllers
         //
 
-        var AuditController = __webpack_require__(221);
+        var AuditController = __webpack_require__(231);
         this.controllers.audit = new AuditController();
 
         //
         // routers
         //
 
-        var AuditRouter = __webpack_require__(224);
+        var AuditRouter = __webpack_require__(234);
         this.routers.audit = new AuditRouter();
     },
 
@@ -39623,12 +41662,12 @@ module.exports = AuditModule;
 
 
 /***/ }),
-/* 223 */
+/* 233 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
-	"./en/LC_MESSAGES/default.json": 366,
-	"./fr/LC_MESSAGES/default.json": 367
+	"./en/LC_MESSAGES/default.json": 392,
+	"./fr/LC_MESSAGES/default.json": 393
 };
 function webpackContext(req) {
 	return __webpack_require__(webpackContextResolve(req));
@@ -39644,11 +41683,11 @@ webpackContext.keys = function webpackContextKeys() {
 };
 webpackContext.resolve = webpackContextResolve;
 module.exports = webpackContext;
-webpackContext.id = 223;
+webpackContext.id = 233;
 
 
 /***/ }),
-/* 224 */
+/* 234 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -39662,10 +41701,10 @@ webpackContext.id = 223;
  */
 
 var Marionette = __webpack_require__(0);
-var AuditCollection = __webpack_require__(55);
-var AuditListView = __webpack_require__(57);
+var AuditCollection = __webpack_require__(56);
+var AuditListView = __webpack_require__(58);
 var DefaultLayout = __webpack_require__(4);
-var TitleView = __webpack_require__(7);
+var TitleView = __webpack_require__(3);
 var ScrollingMoreView = __webpack_require__(9);
 
 var Router = Marionette.AppRouter.extend({
@@ -39690,7 +41729,7 @@ module.exports = Router;
 
 
 /***/ }),
-/* 225 */
+/* 235 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -39704,7 +41743,7 @@ module.exports = Router;
  */
 
 var Marionette = __webpack_require__(0);
-var AuditModel = __webpack_require__(56);
+var AuditModel = __webpack_require__(57);
 
 var View = Marionette.ItemView.extend({
     tagName: 'tr',
@@ -39712,7 +41751,7 @@ var View = Marionette.ItemView.extend({
     attributes: {
         'scope': 'row',
     },
-    template: __webpack_require__(396),
+    template: __webpack_require__(425),
 
     ui: {
         show: 'span.show-entity',
@@ -39743,7 +41782,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 226 */
+/* 236 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -39756,7 +41795,7 @@ module.exports = View;
  * @details
  */
 
-var ConditionModel = __webpack_require__(236);
+var ConditionModel = __webpack_require__(246);
 
 var Collection = Backbone.Collection.extend({
     url: application.baseUrl + 'descriptor/condition',
@@ -39779,7 +41818,7 @@ module.exports = Collection;
 
 
 /***/ }),
-/* 227 */
+/* 237 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -39792,7 +41831,7 @@ module.exports = Collection;
  * @details
  */
 
-var DescribableModel = __webpack_require__(237);
+var DescribableModel = __webpack_require__(247);
 
 var Collection = Backbone.Collection.extend({
     url: application.baseUrl + 'descriptor/describable',
@@ -39815,7 +41854,7 @@ module.exports = Collection;
 
 
 /***/ }),
-/* 228 */
+/* 238 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -39849,7 +41888,7 @@ module.exports = Collection;
 
 
 /***/ }),
-/* 229 */
+/* 239 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -39862,7 +41901,7 @@ module.exports = Collection;
  * @details
  */
 
-var DescriptorModelTypeModel = __webpack_require__(61);
+var DescriptorModelTypeModel = __webpack_require__(62);
 
 var Collection = Backbone.Collection.extend({
     url: function() {
@@ -39891,7 +41930,7 @@ module.exports = Collection;
 
 
 /***/ }),
-/* 230 */
+/* 240 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -39904,7 +41943,7 @@ module.exports = Collection;
  * @details
  */
 
-var DescriptorPanelModel = __webpack_require__(33);
+var DescriptorPanelModel = __webpack_require__(37);
 
 var Collection = Backbone.Collection.extend({
     url: function() {
@@ -39933,7 +41972,7 @@ module.exports = Collection;
 
 
 /***/ }),
-/* 231 */
+/* 241 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -39946,7 +41985,7 @@ module.exports = Collection;
  * @details
  */
 
-var DescriptorTypeModel = __webpack_require__(13);
+var DescriptorTypeModel = __webpack_require__(12);
 
 var Collection = Backbone.Collection.extend({
     url: function() {
@@ -39993,7 +42032,7 @@ module.exports = Collection;
 
 
 /***/ }),
-/* 232 */
+/* 242 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -40006,7 +42045,7 @@ module.exports = Collection;
  * @details
  */
 
-var FormatTypeModel = __webpack_require__(238);
+var FormatTypeModel = __webpack_require__(248);
 
 var Collection = Backbone.Collection.extend({
     url: application.baseUrl + 'descriptor/format/type/',
@@ -40095,7 +42134,7 @@ module.exports = Collection;
 
 
 /***/ }),
-/* 233 */
+/* 243 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -40108,7 +42147,7 @@ module.exports = Collection;
  * @details
  */
 
-var FormatUnitModel = __webpack_require__(239);
+var FormatUnitModel = __webpack_require__(249);
 
 var Collection = Backbone.Collection.extend({
     url: application.baseUrl + 'descriptor/format/unit/',
@@ -40264,7 +42303,7 @@ module.exports = Collection;
 
 
 /***/ }),
-/* 234 */
+/* 244 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -40294,7 +42333,7 @@ DescriptorModule.prototype = {
         // i18n if not english
         if (session.language !== "en") {
             try {
-                i18next.addResources(session.language, 'default', __webpack_require__(235)("./" + session.language + '/LC_MESSAGES/default.json'));
+                i18next.addResources(session.language, 'default', __webpack_require__(245)("./" + session.language + '/LC_MESSAGES/default.json'));
             } catch (e) {
                 console.warn("No translation found for the current language. Fallback to english language");
             }
@@ -40304,9 +42343,9 @@ DescriptorModule.prototype = {
         // main collections
         //
 
-        var SelectOption = __webpack_require__(18);
+        var SelectOption = __webpack_require__(15);
 
-        var DescribableCollection = __webpack_require__(227);
+        var DescribableCollection = __webpack_require__(237);
         this.collections.describables = new DescribableCollection();
 
         this.views.describables = new SelectOption({
@@ -40314,7 +42353,7 @@ DescriptorModule.prototype = {
             collection: this.collections.describables,
         });
 
-        var ConditionCollection = __webpack_require__(226);
+        var ConditionCollection = __webpack_require__(236);
         this.collections.conditions = new ConditionCollection();
 
         this.views.conditions = new SelectOption({
@@ -40322,7 +42361,7 @@ DescriptorModule.prototype = {
             collection: this.collections.conditions,
         });
 
-        var FormatTypeCollection = __webpack_require__(232);
+        var FormatTypeCollection = __webpack_require__(242);
         this.collections.formatTypes = new FormatTypeCollection();
 
         this.views.formatTypes = new SelectOption({
@@ -40331,7 +42370,7 @@ DescriptorModule.prototype = {
             collection: this.collections.formatTypes,
         });
 
-        var FormatUnitCollection = __webpack_require__(233);
+        var FormatUnitCollection = __webpack_require__(243);
         this.collections.formatUnits = new FormatUnitCollection();
 
         this.views.formatUnits = new SelectOption({
@@ -40344,7 +42383,7 @@ DescriptorModule.prototype = {
         // descriptor format types
         //
 
-        var DescriptorFormatTypeManager = __webpack_require__(36);
+        var DescriptorFormatTypeManager = __webpack_require__(38);
         this.widgets = new DescriptorFormatTypeManager();
 
         // register the standard format type of descriptors
@@ -40366,23 +42405,23 @@ DescriptorModule.prototype = {
 
         for (var i = 0; i < widgets.length; ++i) {
             var moduleName = widgets[i].replace('_', '').toLowerCase();
-            this.widgets.registerElement(widgets[i], __webpack_require__(274)("./" + moduleName));
+            this.widgets.registerElement(widgets[i], __webpack_require__(284)("./" + moduleName));
         }
 
         //
         // routers
         //
 
-        var DescriptorRouter = __webpack_require__(240);
+        var DescriptorRouter = __webpack_require__(250);
         this.routers.descriptor = new DescriptorRouter();
 
-        var DescriptorModelRouter = __webpack_require__(242);
+        var DescriptorModelRouter = __webpack_require__(252);
         this.routers.descriptorModel = new DescriptorModelRouter();
 
-        var DescriptorMetaModelRouter = __webpack_require__(241);
+        var DescriptorMetaModelRouter = __webpack_require__(251);
         this.routers.descriptorMetaModel = new DescriptorMetaModelRouter();
 
-        var DescriptorGroupCollection = __webpack_require__(58);
+        var DescriptorGroupCollection = __webpack_require__(59);
         this.collections.descriptorGroup = new DescriptorGroupCollection();
     },
 
@@ -40399,12 +42438,12 @@ module.exports = DescriptorModule;
 
 
 /***/ }),
-/* 235 */
+/* 245 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
-	"./en/LC_MESSAGES/default.json": 368,
-	"./fr/LC_MESSAGES/default.json": 369
+	"./en/LC_MESSAGES/default.json": 394,
+	"./fr/LC_MESSAGES/default.json": 395
 };
 function webpackContext(req) {
 	return __webpack_require__(webpackContextResolve(req));
@@ -40420,11 +42459,11 @@ webpackContext.keys = function webpackContextKeys() {
 };
 webpackContext.resolve = webpackContextResolve;
 module.exports = webpackContext;
-webpackContext.id = 235;
+webpackContext.id = 245;
 
 
 /***/ }),
-/* 236 */
+/* 246 */
 /***/ (function(module, exports) {
 
 /**
@@ -40450,7 +42489,7 @@ module.exports = Backbone.Model.extend({
 
 
 /***/ }),
-/* 237 */
+/* 247 */
 /***/ (function(module, exports) {
 
 /**
@@ -40476,7 +42515,7 @@ module.exports = Backbone.Model.extend({
 
 
 /***/ }),
-/* 238 */
+/* 248 */
 /***/ (function(module, exports) {
 
 /**
@@ -40504,7 +42543,7 @@ module.exports = Backbone.Model.extend({
 
 
 /***/ }),
-/* 239 */
+/* 249 */
 /***/ (function(module, exports) {
 
 /**
@@ -40532,7 +42571,7 @@ module.exports = Backbone.Model.extend({
 
 
 /***/ }),
-/* 240 */
+/* 250 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -40546,25 +42585,25 @@ module.exports = Backbone.Model.extend({
  */
 
 var Marionette = __webpack_require__(0);
-var DescriptorGroupModel = __webpack_require__(14);
-var DescriptorTypeModel = __webpack_require__(12);
-var DescriptorTypeCollection = __webpack_require__(60);
-var DescriptorValueCollection = __webpack_require__(231);
-var DescriptorGroupListView = __webpack_require__(246);
-var DescriptorTypeListView = __webpack_require__(266);
+var DescriptorGroupModel = __webpack_require__(23);
+var DescriptorTypeModel = __webpack_require__(14);
+var DescriptorTypeCollection = __webpack_require__(61);
+var DescriptorValueCollection = __webpack_require__(241);
+var DescriptorGroupListView = __webpack_require__(256);
+var DescriptorTypeListView = __webpack_require__(276);
 
-var DescriptorValueListView = __webpack_require__(269);
-var DescriptorValuePairListView = __webpack_require__(273);
-var DescriptorValueOrdinalListView = __webpack_require__(271);
-var DescriptorValueAddView = __webpack_require__(268);
+var DescriptorValueListView = __webpack_require__(279);
+var DescriptorValuePairListView = __webpack_require__(283);
+var DescriptorValueOrdinalListView = __webpack_require__(281);
+var DescriptorValueAddView = __webpack_require__(278);
 
-var DescriptorTypeDetailsLayout = __webpack_require__(265);
+var DescriptorTypeDetailsLayout = __webpack_require__(275);
 var DefaultLayout = __webpack_require__(4);
-var TitleView = __webpack_require__(7);
+var TitleView = __webpack_require__(3);
 var ScrollingMoreView = __webpack_require__(9);
 
-var DescriptorGroupAddView = __webpack_require__(244);
-var DescriptorGroupTypeAddView = __webpack_require__(248);
+var DescriptorGroupAddView = __webpack_require__(254);
+var DescriptorGroupTypeAddView = __webpack_require__(258);
 
 var Router = Marionette.AppRouter.extend({
     routes : {
@@ -40677,14 +42716,14 @@ var Router = Marionette.AppRouter.extend({
                 }
             });
         });
-    },
+    }
 });
 
 module.exports = Router;
 
 
 /***/ }),
-/* 241 */
+/* 251 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -40701,20 +42740,20 @@ var Marionette = __webpack_require__(0);
 
 var DescriptorMetaModelModel = __webpack_require__(17);
 
-var DescriptorModelCollection = __webpack_require__(59);
-var DescriptorMetaModelCollection = __webpack_require__(228);
-var DescriptorPanelCollection = __webpack_require__(230);
+var DescriptorModelCollection = __webpack_require__(60);
+var DescriptorMetaModelCollection = __webpack_require__(238);
+var DescriptorPanelCollection = __webpack_require__(240);
 
-var DescriptorMetaModelAddView = __webpack_require__(250);
-var DescriptorMetaModelDetailView = __webpack_require__(251);
-var DescriptorMetaModelListView = __webpack_require__(252);
-var DescriptorPanelListView = __webpack_require__(262);
+var DescriptorMetaModelAddView = __webpack_require__(260);
+var DescriptorMetaModelDetailView = __webpack_require__(261);
+var DescriptorMetaModelListView = __webpack_require__(262);
+var DescriptorPanelListView = __webpack_require__(272);
 
-var DescriptorModelListAltView = __webpack_require__(258);
+var DescriptorModelListAltView = __webpack_require__(268);
 
 var DefaultLayout = __webpack_require__(4);
-var TwoColumnsLayout = __webpack_require__(300);
-var TitleView = __webpack_require__(7);
+var TwoColumnsLayout = __webpack_require__(316);
+var TitleView = __webpack_require__(3);
 var ScrollingMoreView = __webpack_require__(9);
 
 var Router = Marionette.AppRouter.extend({
@@ -40790,7 +42829,7 @@ module.exports = Router;
 
 
 /***/ }),
-/* 242 */
+/* 252 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -40805,22 +42844,22 @@ module.exports = Router;
 
 var Marionette = __webpack_require__(0);
 
-var DescriptorModelModel = __webpack_require__(15);
-var DescriptorModelCollection = __webpack_require__(59);
-var DescriptorGroupCollection = __webpack_require__(58);
-var DescriptorModelTypeCollection = __webpack_require__(229);
+var DescriptorModelModel = __webpack_require__(13);
+var DescriptorModelCollection = __webpack_require__(60);
+var DescriptorGroupCollection = __webpack_require__(59);
+var DescriptorModelTypeCollection = __webpack_require__(239);
 
-var DescriptorModelAddView = __webpack_require__(254);
-var DescriptorModelDetailView = __webpack_require__(256);
-var DescriptorModelListView = __webpack_require__(257);
-var DescriptorModelTypeListView = __webpack_require__(260);
+var DescriptorModelAddView = __webpack_require__(264);
+var DescriptorModelDetailView = __webpack_require__(266);
+var DescriptorModelListView = __webpack_require__(267);
+var DescriptorModelTypeListView = __webpack_require__(270);
 
-var DescriptorGroupListAltView = __webpack_require__(247);
-var DescriptorTypeListAltView = __webpack_require__(62);
+var DescriptorGroupListAltView = __webpack_require__(257);
+var DescriptorTypeListAltView = __webpack_require__(63);
 
 var DefaultLayout = __webpack_require__(4);
-var LeftOneRightTwoLayout = __webpack_require__(297);
-var TitleView = __webpack_require__(7);
+var LeftOneRightTwoLayout = __webpack_require__(313);
+var TitleView = __webpack_require__(3);
 var ScrollingMoreView = __webpack_require__(9);
 
 var Router = Marionette.AppRouter.extend({
@@ -40863,8 +42902,6 @@ var Router = Marionette.AppRouter.extend({
     },
 
     getDescriptorModelTypeListForModel: function(id) {
-        var modelTypeCollection = new DescriptorModelTypeCollection([], {model_id: id});
-
         var defaultLayout = new DefaultLayout({});
         application.show(defaultLayout);
 
@@ -40873,14 +42910,18 @@ var Router = Marionette.AppRouter.extend({
         var leftOneRightTwoLayout = new LeftOneRightTwoLayout({});
         defaultLayout.getRegion('content').show(leftOneRightTwoLayout);
 
-        modelTypeCollection.fetch().then(function () {
-            var descriptorTypeModelList = new DescriptorModelTypeListView({collection : modelTypeCollection});
+        var modelTypeCollection = new DescriptorModelTypeCollection([], {model_id: id});
+        var groupCollection = new DescriptorGroupCollection();
+
+        // need groups for model type so wait for the two collections to be done
+        $.when(modelTypeCollection.fetch(), groupCollection.fetch()).done(function() {
+            var descriptorTypeModelList = new DescriptorModelTypeListView({
+                collection : modelTypeCollection,
+                descriptor_type_groups: groupCollection});
+
             leftOneRightTwoLayout.getRegion('left-content').show(descriptorTypeModelList);
             leftOneRightTwoLayout.getRegion('left-bottom').show(new ScrollingMoreView({targetView: descriptorTypeModelList}));
-        });
 
-        var groupCollection = new DescriptorGroupCollection();
-        groupCollection.fetch().then(function () {
             var descriptorGroupList = new DescriptorGroupListAltView({
                 collection: groupCollection,
                 layout: leftOneRightTwoLayout
@@ -40893,14 +42934,14 @@ var Router = Marionette.AppRouter.extend({
         var descriptorTypeList = new DescriptorTypeListAltView({});
         leftOneRightTwoLayout.getRegion('right-down-content').show(descriptorTypeList);
         leftOneRightTwoLayout.getRegion('right-down-bottom').show(new ScrollingMoreView({targetView: descriptorTypeList}));
-    },
+    }
 });
 
 module.exports = Router;
 
 
 /***/ }),
-/* 243 */
+/* 253 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -40914,14 +42955,12 @@ module.exports = Router;
  */
 
 var Marionette = __webpack_require__(0);
-var DescriptorGroupModel = __webpack_require__(14);
-
-var Dialog = __webpack_require__(5);
+var Dialog = __webpack_require__(6);
 
 var View = Marionette.ItemView.extend({
     tagName: 'tr',
     className: 'element object descriptor-group',
-    template: __webpack_require__(402),
+    template: __webpack_require__(431),
 
     ui: {
         delete_descriptor_group: 'span.delete-descriptor-group',
@@ -40964,18 +43003,18 @@ var View = Marionette.ItemView.extend({
         }
 
         var ChangeName = Dialog.extend({
-            template: __webpack_require__(405),
+            template: __webpack_require__(436),
 
             attributes: {
-                id: "dlg_change_name",
+                id: "dlg_change_name"
             },
 
             ui: {
-                name: "#name",
+                name: "#descriptor_group_name"
             },
 
             events: {
-                'input @ui.name': 'onNameInput',
+                'input @ui.name': 'onNameInput'
             },
 
             initialize: function (options) {
@@ -41008,26 +43047,28 @@ var View = Marionette.ItemView.extend({
                 var model = this.getOption('model');
 
                 if (this.validateName()) {
-                    model.save({name: name}, {patch: true, wait:true});
+                    model.save({name: name}, {patch: true, wait: true, success: function() {
+                        $.alert.success('Done');
+                    }});
                     this.destroy();
                 }
             }
         });
 
         var changeName = new ChangeName({
-            model: this.model,
+            model: this.model
         });
 
         changeName.render();
         changeName.ui.name.val(this.model.get('name'));
-    },
+    }
 });
 
 module.exports = View;
 
 
 /***/ }),
-/* 244 */
+/* 254 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -41045,7 +43086,7 @@ var Marionette = __webpack_require__(0);
 var View = Marionette.ItemView.extend({
     tagName: 'div',
     className: 'group-add',
-    template: __webpack_require__(403),
+    template: __webpack_require__(432),
 
     ui: {
         add_group_btn: 'span.add-group',
@@ -41119,7 +43160,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 245 */
+/* 255 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -41133,16 +43174,16 @@ module.exports = View;
  */
 
 var Marionette = __webpack_require__(0);
-var DescriptorGroupModel = __webpack_require__(14);
+var DescriptorGroupModel = __webpack_require__(23);
 
-var DescriptorTypeCollection = __webpack_require__(60);
-var DescriptorTypeListAltView = __webpack_require__(62);
+var DescriptorTypeCollection = __webpack_require__(61);
+var DescriptorTypeListAltView = __webpack_require__(63);
 var ScrollingMoreView = __webpack_require__(9);
 
 var View = Marionette.ItemView.extend({
     tagName: 'tr',
     className: 'element object descriptor-group-alt',
-    template: __webpack_require__(404),
+    template: __webpack_require__(433),
 
     events: {
         'click': 'viewDescriptorTypes'
@@ -41172,7 +43213,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 246 */
+/* 256 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -41186,12 +43227,12 @@ module.exports = View;
  */
 
 var Marionette = __webpack_require__(0);
-var DescriptorGroupModel = __webpack_require__(14);
-var DescriptorGroupView = __webpack_require__(243);
-var ScrollView = __webpack_require__(6);
+var DescriptorGroupModel = __webpack_require__(23);
+var DescriptorGroupView = __webpack_require__(253);
+var ScrollView = __webpack_require__(7);
 
 var View = ScrollView.extend({
-    template: __webpack_require__(406),
+    template: __webpack_require__(434),
     childView: DescriptorGroupView,
     childViewContainer: 'tbody.descriptor-group-list',
 
@@ -41208,7 +43249,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 247 */
+/* 257 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -41221,27 +43262,22 @@ module.exports = View;
  * @details
  */
 
-var Marionette = __webpack_require__(0);
-var DescriptorGroupModel = __webpack_require__(14);
-var DescriptorGroupAltView = __webpack_require__(245);
-
-var ScrollView = __webpack_require__(6);
+var DescriptorGroupAltView = __webpack_require__(255);
+var ScrollView = __webpack_require__(7);
 
 var View = ScrollView.extend({
-    template: __webpack_require__(407),
+    template: __webpack_require__(435),
     childView: DescriptorGroupAltView,
     childViewContainer: 'tbody.descriptor-group-list',
 
     childViewOptions: function () {
         return {
-            layout: this.getOption('layout'),
+            layout: this.getOption('layout')
         }
     },
 
     initialize: function(options) {
         this.listenTo(this.collection, 'reset', this.render, this);
-        //this.listenTo(this.collection, 'add', this.render, this);
-        //this.listenTo(this.collection, 'remove', this.render, this);
 
         View.__super__.initialize.apply(this);
     }
@@ -41251,7 +43287,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 248 */
+/* 258 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -41269,7 +43305,7 @@ var Marionette = __webpack_require__(0);
 var View = Marionette.ItemView.extend({
     tagName: 'div',
     className: 'type-add',
-    template: __webpack_require__(408),
+    template: __webpack_require__(437),
 
     ui: {
         add_type_btn: 'span.add-type',
@@ -41350,7 +43386,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 249 */
+/* 259 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -41365,13 +43401,13 @@ module.exports = View;
 
 var Marionette = __webpack_require__(0);
 
-var Dialog = __webpack_require__(5);
+var Dialog = __webpack_require__(6);
 var DescriptorMetaModelModel = __webpack_require__(17);
 
 var View = Marionette.ItemView.extend({
     tagName: 'tr',
     className: 'element object descriptor-meta-model',
-    template: __webpack_require__(409),
+    template: __webpack_require__(438),
 
     ui: {
         delete_descriptor_meta_model: 'span.delete-descriptor-meta-model',
@@ -41428,7 +43464,7 @@ var View = Marionette.ItemView.extend({
             var labels = data;
 
             var ChangeLabel = Dialog.extend({
-                template: __webpack_require__(411),
+                template: __webpack_require__(440),
                 templateHelpers/*templateContext*/: function () {
                     return {
                         labels: labels,
@@ -41520,7 +43556,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 250 */
+/* 260 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -41535,12 +43571,12 @@ module.exports = View;
 
 var Marionette = __webpack_require__(0);
 
-var Dialog = __webpack_require__(5);
+var Dialog = __webpack_require__(6);
 
 var View = Marionette.ItemView.extend({
     tagName: 'div',
     className: 'descriptor-meta-model-add',
-    template: __webpack_require__(410),
+    template: __webpack_require__(439),
 
     ui: {
         add: 'span.add-descriptor-meta-model',
@@ -41559,7 +43595,7 @@ var View = Marionette.ItemView.extend({
 
     addDescriptorMetaModel: function () {
         var DescriptorModelCreate = Dialog.extend({
-           template: __webpack_require__(412),
+           template: __webpack_require__(441),
 
             attributes: {
                 id: "dlg_create_descriptor_model",
@@ -41699,7 +43735,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 251 */
+/* 261 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -41717,7 +43753,7 @@ var DescriptorMetaModelModel = __webpack_require__(17);
 
 var View = Marionette.ItemView.extend({
     className: 'object descriptor-meta-model-detail',
-    template: __webpack_require__(413),
+    template: __webpack_require__(442),
 
     ui: {
         name: '#descriptor_meta_model_name',
@@ -41759,7 +43795,7 @@ var View = Marionette.ItemView.extend({
 
         this.model.save({
             name: name,
-            description: description,
+            description: description
         }, {wait: true}).done(function() { $.alert.success(gt.gettext("Done")); });
     }
 });
@@ -41768,7 +43804,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 252 */
+/* 262 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -41783,12 +43819,12 @@ module.exports = View;
 
 var Marionette = __webpack_require__(0);
 var DescriptorMetaModelModel = __webpack_require__(17);
-var DescriptorMetaModelView = __webpack_require__(249);
+var DescriptorMetaModelView = __webpack_require__(259);
 
-var ScrollView = __webpack_require__(6);
+var ScrollView = __webpack_require__(7);
 
 var View = ScrollView.extend({
-    template: __webpack_require__(414),
+    template: __webpack_require__(443),
     childView: DescriptorMetaModelView,
     childViewContainer: 'tbody.descriptor-meta-model-list',
 
@@ -41803,7 +43839,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 253 */
+/* 263 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -41817,12 +43853,12 @@ module.exports = View;
  */
 
 var Marionette = __webpack_require__(0);
-var DescriptorModelModel = __webpack_require__(15);
+var DescriptorModelModel = __webpack_require__(13);
 
 var View = Marionette.ItemView.extend({
     tagName: 'tr',
     className: 'element object descriptor-model',
-    template: __webpack_require__(415),
+    template: __webpack_require__(444),
 
     ui: {
         delete_descriptor_model: 'span.delete-descriptor-model',
@@ -41866,7 +43902,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 254 */
+/* 264 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -41884,7 +43920,7 @@ var Marionette = __webpack_require__(0);
 var View = Marionette.ItemView.extend({
     tagName: 'div',
     className: 'descriptor-model-add',
-    template: __webpack_require__(416),
+    template: __webpack_require__(445),
 
     ui: {
         add_descriptor_model_btn: 'span.add-descriptor-model',
@@ -41958,7 +43994,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 255 */
+/* 265 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -41972,12 +44008,12 @@ module.exports = View;
  */
 
 var Marionette = __webpack_require__(0);
-var DescriptorModelModel = __webpack_require__(15);
+var DescriptorModelModel = __webpack_require__(13);
 
 var View = Marionette.ItemView.extend({
     tagName: 'tr',
     className: 'element object descriptor-model',
-    template: __webpack_require__(417),
+    template: __webpack_require__(446),
 
     attributes: {
         draggable: true,
@@ -42013,7 +44049,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 256 */
+/* 266 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -42027,11 +44063,11 @@ module.exports = View;
  */
 
 var Marionette = __webpack_require__(0);
-var DescriptorModelModel = __webpack_require__(15);
+var DescriptorModelModel = __webpack_require__(13);
 
 var View = Marionette.ItemView.extend({
     className: 'object descriptor-model-detail',
-    template: __webpack_require__(418),
+    template: __webpack_require__(447),
 
     ui: {
         name: '#descriptor_model_name',
@@ -42086,7 +44122,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 257 */
+/* 267 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -42100,13 +44136,13 @@ module.exports = View;
  */
 
 var Marionette = __webpack_require__(0);
-var DescriptorModelModel = __webpack_require__(15);
-var DescriptorModelView = __webpack_require__(253);
+var DescriptorModelModel = __webpack_require__(13);
+var DescriptorModelView = __webpack_require__(263);
 
-var ScrollView = __webpack_require__(6);
+var ScrollView = __webpack_require__(7);
 
 var View = ScrollView.extend({
-    template: __webpack_require__(419),
+    template: __webpack_require__(448),
     childView: DescriptorModelView,
     childViewContainer: 'tbody.descriptor-model-list',
 
@@ -42121,7 +44157,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 258 */
+/* 268 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -42135,12 +44171,12 @@ module.exports = View;
  */
 
 var Marionette = __webpack_require__(0);
-var DescriptorModelView = __webpack_require__(255);
+var DescriptorModelView = __webpack_require__(265);
 
-var ScrollView = __webpack_require__(6);
+var ScrollView = __webpack_require__(7);
 
 var View = ScrollView.extend({
-    template: __webpack_require__(420),
+    template: __webpack_require__(449),
     childView: DescriptorModelView,
     childViewContainer: 'tbody.descriptor-model-list',
 
@@ -42155,7 +44191,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 259 */
+/* 269 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -42169,15 +44205,21 @@ module.exports = View;
  */
 
 var Marionette = __webpack_require__(0);
-var Dialog = __webpack_require__(5);
+var Dialog = __webpack_require__(6);
 
-var DescriptorTypeModel = __webpack_require__(12);
+var DescriptorTypeModel = __webpack_require__(14);
 
 
 var View = Marionette.ItemView.extend({
     tagName: 'tr',
     className: 'element object descriptor-model-type',
-    template: __webpack_require__(421),
+    template: __webpack_require__(450),
+
+    templateHelpers/*templateContext*/: function () {
+        return {
+            descriptor_type_groups: this.getOption('descriptor_type_groups')
+        }
+    },
 
     attributes: {
         draggable: true
@@ -42185,6 +44227,7 @@ var View = Marionette.ItemView.extend({
 
     ui: {
         'delete_descriptor_model_type': 'span.delete-descriptor-model-type',
+        'name': 'td[name="name"]',
         'label': 'td[name="label"]',
         'mandatory': 'td[name="mandatory"]',
         'set_once': 'td[name="set_once"]',
@@ -42199,6 +44242,7 @@ var View = Marionette.ItemView.extend({
         'dragleave': 'dragLeave',
         'drop': 'drop',
         'click @ui.delete_descriptor_model_type': 'deleteDescriptorModelType',
+        'click @ui.name': 'rename',
         'click @ui.label': 'editLabel',
         'click @ui.mandatory': 'toggleMandatory',
         'click @ui.set_once': 'toggleSetOnce',
@@ -42291,17 +44335,19 @@ var View = Marionette.ItemView.extend({
             this.$el.css('border-bottom', 'initial');
 
             var DefinesLabel = Dialog.extend({
-                template: __webpack_require__(191),
+                template: __webpack_require__(199),
 
                 attributes: {
                     id: "dlg_define_label"
                 },
 
                 ui: {
-                    label: "#label"
+                    name: "#descriptor_model_type_name",
+                    label: "#descriptor_model_type_label"
                 },
 
                 events: {
+                    'input @ui.name': 'onNameInput',
                     'input @ui.label': 'onLabelInput'
                 },
 
@@ -42326,13 +44372,34 @@ var View = Marionette.ItemView.extend({
                     return true;
                 },
 
+                onNameInput: function () {
+                    this.validateName();
+                },
+
+                validateName: function() {
+                    var v = this.ui.name.val();
+                    var re = /^[a-zA-Z0-9_\-]+$/i;
+
+                    if (v.length > 0 && !re.test(v)) {
+                        $(this.ui.name).validateField('failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
+                        return false;
+                    } else if (v.length < 3) {
+                        $(this.ui.name).validateField('failed', gt.gettext('3 characters min'));
+                        return false;
+                    }
+
+                    $(this.ui.name).validateField('ok');
+
+                    return true;
+                },
+
                 onApply: function() {
                     var view = this;
                     var collection = this.getOption('collection');
                     var position = this.getOption('position');
                     var code = this.getOption('code');
 
-                    if (this.validateLabel()) {
+                    if (this.validateName() && this.validateLabel()) {
                         var to_rshift = [];
 
                         // server will r-shift position of any model upward this new
@@ -42348,6 +44415,7 @@ var View = Marionette.ItemView.extend({
 
                         collection.create({
                             descriptor_type_code: code,
+                            name: this.ui.name.val(),
                             label: this.ui.label.val(),
                             position: position
                         }, {
@@ -42457,6 +44525,72 @@ var View = Marionette.ItemView.extend({
         return false;
     },
 
+    rename: function() {
+        if (!session.user.isSuperUser || !session.user.isStaff) {
+            return;
+        }
+
+        var ChangeName = Dialog.extend({
+            template: __webpack_require__(454),
+
+            attributes: {
+                id: "dlg_change_name"
+            },
+
+            ui: {
+                name: "#descriptor_model_type_name"
+            },
+
+            events: {
+                'input @ui.name': 'onNameInput'
+            },
+
+            initialize: function (options) {
+                ChangeName.__super__.initialize.apply(this);
+            },
+
+            onNameInput: function () {
+                this.validateName();
+            },
+
+            validateName: function() {
+                var v = this.ui.name.val();
+                var re = /^[a-zA-Z0-9_\-]+$/i;
+
+                if (v.length > 0 && !re.test(v)) {
+                    $(this.ui.name).validateField('failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
+                    return false;
+                } else if (v.length < 3) {
+                    $(this.ui.name).validateField('failed', gt.gettext('3 characters min'));
+                    return false;
+                }
+
+                $(this.ui.name).validateField('ok');
+
+                return true;
+            },
+
+            onApply: function() {
+                var name = this.ui.name.val();
+                var model = this.getOption('model');
+
+                if (this.validateName()) {
+                    model.save({name: name}, {patch: true, wait:true, success: function() {
+                        $.alert.success('Done');
+                    }});
+                    this.destroy();
+                }
+            }
+        });
+
+        var changeName = new ChangeName({
+            model: this.model
+        });
+
+        changeName.render();
+        changeName.ui.name.val(this.model.get('name'));
+    },
+
     editLabel: function() {
         var model = this.model;
 
@@ -42468,7 +44602,7 @@ var View = Marionette.ItemView.extend({
             var labels = data;
 
             var ChangeLabel = Dialog.extend({
-                template: __webpack_require__(422),
+                template: __webpack_require__(451),
                 templateHelpers/*templateContext*/: function () {
                     return {
                         labels: labels
@@ -42592,7 +44726,7 @@ var View = Marionette.ItemView.extend({
             var condition = data;
 
             var ChangeCondition = Dialog.extend({
-                template: __webpack_require__(423),
+                template: __webpack_require__(452),
                 templateHelpers/*templateContext*/: function () {
                     return {
                         targets: model.collection.models,
@@ -42797,7 +44931,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 260 */
+/* 270 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -42811,19 +44945,27 @@ module.exports = View;
  */
 
 var Marionette = __webpack_require__(0);
-var ScrollView = __webpack_require__(6);
-var Dialog = __webpack_require__(5);
+var ScrollView = __webpack_require__(7);
+var Dialog = __webpack_require__(6);
 
-var DescriptorModelTypeModel = __webpack_require__(61);
-var DescriptorModelTypeView = __webpack_require__(259);
+var DescriptorModelTypeModel = __webpack_require__(62);
+var DescriptorModelTypeView = __webpack_require__(269);
 
 var View = ScrollView.extend({
-    template: __webpack_require__(424),
+    template: __webpack_require__(453),
     childView: DescriptorModelTypeView,
     childViewContainer: 'tbody.descriptor-model-type-list',
 
-    initialize: function() {
+    childViewOptions: function () {
+        return {
+            descriptor_type_groups: this.getOption('descriptor_type_groups')
+        }
+    },
+
+    initialize: function(options) {
         View.__super__.initialize.apply(this);
+
+        options || (options = {});
 
         this.listenTo(this.collection, 'reset', this.render, this);
 
@@ -42923,18 +45065,20 @@ var View = ScrollView.extend({
             var code = elt.model.get('code');
 
             var DefinesLabel = Dialog.extend({
-                template: __webpack_require__(191),
+                template: __webpack_require__(199),
 
                 attributes: {
-                    id: "dlg_define_label",
+                    id: "dlg_define_label"
                 },
 
                 ui: {
-                    label: "#label",
+                    name: "#descriptor_model_type_name",
+                    label: "#descriptor_model_type_label"
                 },
 
                 events: {
-                    'input @ui.label': 'onLabelInput',
+                    'input @ui.name': 'onNameInput',
+                    'input @ui.label': 'onLabelInput'
                 },
 
                 initialize: function (options) {
@@ -42958,13 +45102,34 @@ var View = ScrollView.extend({
                     return true;
                 },
 
+                onNameInput: function () {
+                    this.validateName();
+                },
+
+                validateName: function() {
+                    var v = this.ui.name.val();
+                    var re = /^[a-zA-Z0-9_\-]+$/i;
+
+                    if (v.length > 0 && !re.test(v)) {
+                        $(this.ui.name).validateField('failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
+                        return false;
+                    } else if (v.length < 3) {
+                        $(this.ui.name).validateField('failed', gt.gettext('3 characters min'));
+                        return false;
+                    }
+
+                    $(this.ui.name).validateField('ok');
+
+                    return true;
+                },
+
                 onApply: function() {
                     var view = this;
                     var collection = this.getOption('collection');
                     var position = this.getOption('position');
                     var code = this.getOption('code');
 
-                    if (this.validateLabel()) {
+                    if (this.validateName() && this.validateLabel()) {
                         var to_rshift = [];
 
                         // server will r-shift position of any model upward this new
@@ -42980,6 +45145,7 @@ var View = ScrollView.extend({
 
                         collection.create({
                             descriptor_type_code: code,
+                            name: this.ui.name.val(),
                             label: this.ui.label.val(),
                             position: position
                         }, {
@@ -43058,7 +45224,7 @@ var View = ScrollView.extend({
 module.exports = View;
 
 /***/ }),
-/* 261 */
+/* 271 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -43072,24 +45238,24 @@ module.exports = View;
  */
 
 var Marionette = __webpack_require__(0);
-var Dialog = __webpack_require__(5);
-var DescriptorPanelModel = __webpack_require__(33);
+var Dialog = __webpack_require__(6);
+var DescriptorPanelModel = __webpack_require__(37);
 
 
 var View = Marionette.ItemView.extend({
     tagName: 'div',
     className: 'object descriptor-panel',
-    template: __webpack_require__(425),
+    template: __webpack_require__(455),
 
     attributes: {
-        draggable: true,
+        draggable: true
     },
 
     ui: {
         'delete_descriptor_panel': 'span.delete-descriptor-panel',
         'label': 'span.change-label',
         'top_placeholder': 'div.top-placeholder',
-        'bottom_placeholder': 'div.bottom-placeholder',
+        'bottom_placeholder': 'div.bottom-placeholder'
     },
 
     events: {
@@ -43100,7 +45266,7 @@ var View = Marionette.ItemView.extend({
         'dragleave': 'dragLeave',
         'drop': 'drop',
         'click @ui.delete_descriptor_panel': 'deleteDescriptorPanel',
-        'click @ui.label': 'editLabel',
+        'click @ui.label': 'editLabel'
     },
 
     initialize: function() {
@@ -43209,18 +45375,18 @@ var View = Marionette.ItemView.extend({
             this.ui.bottom_placeholder.css('display', 'none');
 
             var DefinesLabel = Dialog.extend({
-                template: __webpack_require__(192),
+                template: __webpack_require__(200),
 
                 attributes: {
-                    id: "dlg_create_panel",
+                    id: "dlg_create_panel"
                 },
 
                 ui: {
-                    label: "#label",
+                    label: "#label"
                 },
 
                 events: {
-                    'input @ui.label': 'onLabelInput',
+                    'input @ui.label': 'onLabelInput'
                 },
 
                 initialize: function (options) {
@@ -43381,28 +45547,28 @@ var View = Marionette.ItemView.extend({
         $.ajax({
             type: "GET",
             url: this.model.url() + 'label/',
-            dataType: 'json',
+            dataType: 'json'
         }).done(function (data) {
             var labels = data;
 
             var ChangeLabel = Dialog.extend({
-                template: __webpack_require__(426),
+                template: __webpack_require__(456),
                 templateHelpers/*templateContext*/: function () {
                     return {
-                        labels: labels,
+                        labels: labels
                     };
                 },
 
                 attributes: {
-                    id: "dlg_change_labels",
+                    id: "dlg_change_labels"
                 },
 
                 ui: {
-                    label: "#descriptor_panel_labels input",
+                    label: "#descriptor_panel_labels input"
                 },
 
                 events: {
-                    'input @ui.label': 'onLabelInput',
+                    'input @ui.label': 'onLabelInput'
                 },
 
                 initialize: function (options) {
@@ -43471,7 +45637,7 @@ var View = Marionette.ItemView.extend({
                             view.destroy();
                         });
                     }
-                },
+                }
             });
 
             var changeLabel = new ChangeLabel({model: model});
@@ -43563,7 +45729,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 262 */
+/* 272 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -43577,14 +45743,14 @@ module.exports = View;
  */
 
 var Marionette = __webpack_require__(0);
-var ScrollView = __webpack_require__(6);
-var Dialog = __webpack_require__(5);
+var ScrollView = __webpack_require__(7);
+var Dialog = __webpack_require__(6);
 
-var DescriptorPanelModel = __webpack_require__(33);
-var DescriptorPanelView = __webpack_require__(261);
+var DescriptorPanelModel = __webpack_require__(37);
+var DescriptorPanelView = __webpack_require__(271);
 
 var View = ScrollView.extend({
-    template: __webpack_require__(427),
+    template: __webpack_require__(457),
     childView: DescriptorPanelView,
     childViewContainer: 'div.descriptor-panel-list',
 
@@ -43672,7 +45838,7 @@ var View = ScrollView.extend({
 
         if (elt.$el.hasClass('descriptor-model')) {
             var DefinesLabel = Dialog.extend({
-                template: __webpack_require__(192),
+                template: __webpack_require__(200),
 
                 attributes: {
                     id: "dlg_create_panel",
@@ -43807,7 +45973,7 @@ var View = ScrollView.extend({
 module.exports = View;
 
 /***/ }),
-/* 263 */
+/* 273 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -43821,12 +45987,12 @@ module.exports = View;
  */
 
 var Marionette = __webpack_require__(0);
-var DescriptorTypeModel = __webpack_require__(12);
+var DescriptorTypeModel = __webpack_require__(14);
 
 var View = Marionette.ItemView.extend({
     tagName: 'tr',
     className: 'element object descriptor-type',
-    template: __webpack_require__(428),
+    template: __webpack_require__(458),
 
     ui: {
         delete_descriptor_type: 'span.delete-descriptor-type',
@@ -43872,7 +46038,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 264 */
+/* 274 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -43886,12 +46052,12 @@ module.exports = View;
  */
 
 var Marionette = __webpack_require__(0);
-var DescriptorTypeModel = __webpack_require__(12);
+var DescriptorTypeModel = __webpack_require__(14);
 
 var View = Marionette.ItemView.extend({
     tagName: 'tr',
     className: 'element object descriptor-type',
-    template: __webpack_require__(429),
+    template: __webpack_require__(459),
 
     attributes: {
         draggable: true,
@@ -43924,7 +46090,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 265 */
+/* 275 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -43940,7 +46106,7 @@ module.exports = View;
 var Marionette = __webpack_require__(0);
 
 var Layout = Marionette.LayoutView.extend({
-    template: __webpack_require__(430),
+    template: __webpack_require__(460),
 
     ui: {
         name: '#descriptor_type_name',
@@ -44028,7 +46194,7 @@ var Layout = Marionette.LayoutView.extend({
             name: name,
             code: code,
             format: format,
-            description: description,
+            description: description
         }, {wait: true}).done(function() {
             $.alert.success(gt.gettext("Done"));
         });
@@ -44039,7 +46205,7 @@ module.exports = Layout;
 
 
 /***/ }),
-/* 266 */
+/* 276 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -44052,14 +46218,11 @@ module.exports = Layout;
  * @details
  */
 
-var Marionette = __webpack_require__(0);
-var ScrollView = __webpack_require__(6);
-
-var DescriptorTypeModel = __webpack_require__(12);
-var DescriptorTypeView = __webpack_require__(263);
+var ScrollView = __webpack_require__(7);
+var DescriptorTypeView = __webpack_require__(273);
 
 var View = ScrollView.extend({
-    template: __webpack_require__(431),
+    template: __webpack_require__(461),
     childView: DescriptorTypeView,
     childViewContainer: 'tbody.descriptor-type-list',
 
@@ -44076,7 +46239,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 267 */
+/* 277 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -44090,14 +46253,14 @@ module.exports = View;
  */
 
 var Marionette = __webpack_require__(0);
-var DescriptorValueModel = __webpack_require__(13);
+var DescriptorValueModel = __webpack_require__(12);
 
-var Dialog = __webpack_require__(5);
+var Dialog = __webpack_require__(6);
 
 var View = Marionette.ItemView.extend({
     tagName: 'tr',
     className: 'element object descriptor-value',
-    template: __webpack_require__(433),
+    template: __webpack_require__(463),
     templateHelpers/*templateContext*/: function() {
         var ctx = this.model;
         ctx.format = this.model.collection.format;
@@ -44146,7 +46309,7 @@ var View = Marionette.ItemView.extend({
                     var values = data;
 
                     var ChangeValues = Dialog.extend({
-                        template: __webpack_require__(28),
+                        template: __webpack_require__(32),
                         templateHelpers/*templateContext*/: function () {
                             return {
                                 values: values,
@@ -44239,7 +46402,7 @@ var View = Marionette.ItemView.extend({
                 });
             } else {
                 var ChangeLabel = Dialog.extend({
-                    template: __webpack_require__(27),
+                    template: __webpack_require__(31),
 
                     attributes: {
                         id: "dlg_change_value",
@@ -44309,7 +46472,7 @@ var View = Marionette.ItemView.extend({
 module.exports = View;
 
 /***/ }),
-/* 268 */
+/* 278 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -44327,7 +46490,7 @@ var Marionette = __webpack_require__(0);
 var View = Marionette.ItemView.extend({
     tagName: 'div',
     className: 'type-add',
-    template: __webpack_require__(434),
+    template: __webpack_require__(464),
 
     ui: {
         add_value_btn: 'span.add-descriptor-value',
@@ -44377,7 +46540,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 269 */
+/* 279 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -44391,12 +46554,12 @@ module.exports = View;
  */
 
 var Marionette = __webpack_require__(0);
-var DescriptorValueModel = __webpack_require__(13);
-var DescriptorValueView = __webpack_require__(267);
-var ScrollView = __webpack_require__(6);
+var DescriptorValueModel = __webpack_require__(12);
+var DescriptorValueView = __webpack_require__(277);
+var ScrollView = __webpack_require__(7);
 
 var View = ScrollView.extend({
-    template: __webpack_require__(435),
+    template: __webpack_require__(465),
     childView: DescriptorValueView,
     childViewContainer: 'tbody.descriptor-value-list',
 
@@ -44475,7 +46638,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 270 */
+/* 280 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -44489,14 +46652,14 @@ module.exports = View;
  */
 
 var Marionette = __webpack_require__(0);
-var DescriptorValueModel = __webpack_require__(13);
+var DescriptorValueModel = __webpack_require__(12);
 
-var Dialog = __webpack_require__(5);
+var Dialog = __webpack_require__(6);
 
 var View = Marionette.ItemView.extend({
     tagName: 'tr',
     className: 'element object descriptor-value',
-    template: __webpack_require__(436),
+    template: __webpack_require__(466),
     templateHelpers/*templateContext*/: function() {
         var ctx = this.model;
         ctx.format = this.model.collection.format;
@@ -44534,7 +46697,7 @@ var View = Marionette.ItemView.extend({
                     var values = data;
 
                     var ChangeValues = Dialog.extend({
-                        template: __webpack_require__(28),
+                        template: __webpack_require__(32),
                         templateHelpers/*templateContext*/: function () {
                             return {
                                 values: values,
@@ -44627,7 +46790,7 @@ var View = Marionette.ItemView.extend({
                 });
             } else {
                 var ChangeLabel = Dialog.extend({
-                    template: __webpack_require__(27),
+                    template: __webpack_require__(31),
 
                     attributes: {
                         id: "dlg_change_value",
@@ -44697,7 +46860,7 @@ var View = Marionette.ItemView.extend({
 module.exports = View;
 
 /***/ }),
-/* 271 */
+/* 281 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -44711,12 +46874,12 @@ module.exports = View;
  */
 
 var Marionette = __webpack_require__(0);
-var DescriptorValueModel = __webpack_require__(13);
-var DescriptorValueOrdinalView = __webpack_require__(270);
-var ScrollView = __webpack_require__(6);
+var DescriptorValueModel = __webpack_require__(12);
+var DescriptorValueOrdinalView = __webpack_require__(280);
+var ScrollView = __webpack_require__(7);
 
 var View = ScrollView.extend({
-    template: __webpack_require__(437),
+    template: __webpack_require__(467),
     childView: DescriptorValueOrdinalView,
     childViewContainer: 'tbody.descriptor-value-list',
 
@@ -44799,7 +46962,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 272 */
+/* 282 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -44813,14 +46976,14 @@ module.exports = View;
  */
 
 var Marionette = __webpack_require__(0);
-var DescriptorValueModel = __webpack_require__(13);
+var DescriptorValueModel = __webpack_require__(12);
 
-var Dialog = __webpack_require__(5);
+var Dialog = __webpack_require__(6);
 
 var View = Marionette.ItemView.extend({
     tagName: 'tr',
     className: 'element object descriptor-value',
-    template: __webpack_require__(438),
+    template: __webpack_require__(468),
     templateHelpers/*templateContext*/: function() {
         var ctx = this.model;
         ctx.format = this.model.collection.format;
@@ -44868,7 +47031,7 @@ var View = Marionette.ItemView.extend({
                     var values = data;
 
                     var ChangeValues = Dialog.extend({
-                        template: __webpack_require__(28),
+                        template: __webpack_require__(32),
                         templateHelpers/*templateContext*/: function () {
                             return {
                                 values: values,
@@ -44961,7 +47124,7 @@ var View = Marionette.ItemView.extend({
                 });
             } else {
                 var ChangeLabel = Dialog.extend({
-                    template: __webpack_require__(27),
+                    template: __webpack_require__(31),
 
                     attributes: {
                         id: "dlg_change_value",
@@ -45040,7 +47203,7 @@ var View = Marionette.ItemView.extend({
                     var values = data;
 
                     var ChangeValues = Dialog.extend({
-                        template: __webpack_require__(28),
+                        template: __webpack_require__(32),
                         templateHelpers/*templateContext*/: function () {
                             return {
                                 values: values,
@@ -45133,7 +47296,7 @@ var View = Marionette.ItemView.extend({
                 });
             } else {
                 var ChangeLabel = Dialog.extend({
-                    template: __webpack_require__(27),
+                    template: __webpack_require__(31),
 
                     attributes: {
                         id: "dlg_change_value",
@@ -45203,7 +47366,7 @@ var View = Marionette.ItemView.extend({
 module.exports = View;
 
 /***/ }),
-/* 273 */
+/* 283 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -45217,12 +47380,12 @@ module.exports = View;
  */
 
 var Marionette = __webpack_require__(0);
-var DescriptorValueModel = __webpack_require__(13);
-var DescriptorValuePairView = __webpack_require__(272);
-var ScrollView = __webpack_require__(6);
+var DescriptorValueModel = __webpack_require__(12);
+var DescriptorValuePairView = __webpack_require__(282);
+var ScrollView = __webpack_require__(7);
 
 var View = ScrollView.extend({
-    template: __webpack_require__(439),
+    template: __webpack_require__(469),
     childView: DescriptorValuePairView,
     childViewContainer: 'tbody.descriptor-value-list',
 
@@ -45305,40 +47468,40 @@ module.exports = View;
 
 
 /***/ }),
-/* 274 */
+/* 284 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
-	"./boolean": 63,
-	"./boolean.js": 63,
-	"./date": 64,
-	"./date.js": 64,
-	"./datetime": 65,
-	"./datetime.js": 65,
+	"./boolean": 64,
+	"./boolean.js": 64,
+	"./date": 65,
+	"./date.js": 65,
+	"./datetime": 66,
+	"./datetime.js": 66,
 	"./descriptorformattype": 8,
 	"./descriptorformattype.js": 8,
-	"./descriptorformattypemanager": 36,
-	"./descriptorformattypemanager.js": 36,
-	"./entity": 66,
-	"./entity.js": 66,
-	"./enumordinal": 67,
-	"./enumordinal.js": 67,
-	"./enumpair": 68,
-	"./enumpair.js": 68,
-	"./enumsingle": 24,
-	"./enumsingle.js": 24,
-	"./gps": 69,
-	"./gps.js": 69,
-	"./numeric": 25,
-	"./numeric.js": 25,
-	"./numericrange": 70,
-	"./numericrange.js": 70,
-	"./ordinal": 71,
-	"./ordinal.js": 71,
-	"./string": 72,
-	"./string.js": 72,
-	"./time": 73,
-	"./time.js": 73
+	"./descriptorformattypemanager": 38,
+	"./descriptorformattypemanager.js": 38,
+	"./entity": 67,
+	"./entity.js": 67,
+	"./enumordinal": 68,
+	"./enumordinal.js": 68,
+	"./enumpair": 69,
+	"./enumpair.js": 69,
+	"./enumsingle": 26,
+	"./enumsingle.js": 26,
+	"./gps": 70,
+	"./gps.js": 70,
+	"./numeric": 27,
+	"./numeric.js": 27,
+	"./numericrange": 71,
+	"./numericrange.js": 71,
+	"./ordinal": 72,
+	"./ordinal.js": 72,
+	"./string": 73,
+	"./string.js": 73,
+	"./time": 74,
+	"./time.js": 74
 };
 function webpackContext(req) {
 	return __webpack_require__(webpackContextResolve(req));
@@ -45354,11 +47517,140 @@ webpackContext.keys = function webpackContextKeys() {
 };
 webpackContext.resolve = webpackContextResolve;
 module.exports = webpackContext;
-webpackContext.id = 274;
+webpackContext.id = 284;
 
 
 /***/ }),
-/* 275 */
+/* 285 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/**
+ * @file init.js
+ * @brief Geolocation module init entry point
+ * @author Medhi BOULNEMOUR
+ * @date 2017-02-23
+ * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+ * @license @todo
+ * @details
+ */
+
+var Marionette = __webpack_require__(0);
+
+var GeolocationModule = function() {
+    this.name = "geolocation";
+};
+
+GeolocationModule.prototype = {
+    initialize: function(app, options) {
+        Logger.time("Init geolocation module");
+
+        this.models = {};
+        this.collections = {};
+        this.views = {};
+        this.routers = {};
+        this.controllers = {};
+
+        // i18n if not english
+        if (session.language !== "en") {
+            try {
+                i18next.addResources(session.language, 'default', __webpack_require__(286)("./" + session.language + '/LC_MESSAGES/default.json'));
+            } catch (e) {
+                console.warn("No translation found for the current language. Fallback to english language");
+            }
+        }
+
+        //
+        // descriptor format types
+        //
+
+        // register the format type of descriptors
+        var widgets = [
+            'country',
+            'city'
+        ];
+
+        for (var i = 0; i < widgets.length; ++i) {
+            var moduleName = widgets[i];
+            application.descriptor.widgets.registerElement(widgets[i], __webpack_require__(287)("./" + moduleName));
+        }
+
+        //
+        // routers
+        //
+
+
+        Logger.timeEnd("Init geolocation module");
+    },
+
+    start: function(options) {
+        Logger.time("Start geolocation module");
+
+        // nothing to do
+
+        Logger.timeEnd("Start geolocation module");
+    },
+
+    stop: function(options) {
+    }
+};
+
+module.exports = GeolocationModule;
+
+
+/***/ }),
+/* 286 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var map = {
+	"./en/LC_MESSAGES/default.json": 396,
+	"./fr/LC_MESSAGES/default.json": 397
+};
+function webpackContext(req) {
+	return __webpack_require__(webpackContextResolve(req));
+};
+function webpackContextResolve(req) {
+	var id = map[req];
+	if(!(id + 1)) // check for number
+		throw new Error("Cannot find module '" + req + "'.");
+	return id;
+};
+webpackContext.keys = function webpackContextKeys() {
+	return Object.keys(map);
+};
+webpackContext.resolve = webpackContextResolve;
+module.exports = webpackContext;
+webpackContext.id = 286;
+
+
+/***/ }),
+/* 287 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var map = {
+	"./city": 75,
+	"./city.js": 75,
+	"./country": 76,
+	"./country.js": 76
+};
+function webpackContext(req) {
+	return __webpack_require__(webpackContextResolve(req));
+};
+function webpackContextResolve(req) {
+	var id = map[req];
+	if(!(id + 1)) // check for number
+		throw new Error("Cannot find module '" + req + "'.");
+	return id;
+};
+webpackContext.keys = function webpackContextKeys() {
+	return Object.keys(map);
+};
+webpackContext.resolve = webpackContextResolve;
+module.exports = webpackContext;
+webpackContext.id = 287;
+
+
+/***/ }),
+/* 288 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -45456,7 +47748,31 @@ module.exports = Popover;
 
 
 /***/ }),
-/* 276 */
+/* 289 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/**
+ * @file config.js
+ * @brief Config collection
+ * @author Frederic SCHERMA
+ * @date 2017-03-22
+ * @copyright Copyright (c) 2017 INRA UMR1095 GDEC
+ * @license @todo
+ * @details
+ */
+
+var ConfigModel = __webpack_require__(77);
+
+var Collection = Backbone.Collection.extend({
+    url: application.baseUrl + 'main/config/',
+    model: ConfigModel
+});
+
+module.exports = Collection;
+
+
+/***/ }),
+/* 290 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -45469,10 +47785,10 @@ module.exports = Popover;
  * @details
  */
 
-var ContentTypeModel = __webpack_require__(282);
+var ContentTypeModel = __webpack_require__(296);
 
 var Collection = Backbone.Collection.extend({
-    url: application.baseUrl + 'main/content-type',
+    url: application.baseUrl + 'main/content-type/',
     model: ContentTypeModel,
 
     toJSON: function() {
@@ -45518,7 +47834,7 @@ module.exports = Collection;
 
 
 /***/ }),
-/* 277 */
+/* 291 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -45531,7 +47847,7 @@ module.exports = Collection;
  * @details
  */
 
-var EventMessageModel = __webpack_require__(283);
+var EventMessageModel = __webpack_require__(297);
 
 var Collection = Backbone.Collection.extend({
     url: application.baseUrl + 'main/event-message/',
@@ -45569,7 +47885,7 @@ module.exports = Collection;
 
 
 /***/ }),
-/* 278 */
+/* 292 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -45582,10 +47898,10 @@ module.exports = Collection;
  * @details
  */
 
-var LanguageModel = __webpack_require__(284);
+var LanguageModel = __webpack_require__(298);
 
 var LanguageCollection = Backbone.Collection.extend({
-    url: application.baseUrl + 'main/language',
+    url: application.baseUrl + 'main/language/',
     model: LanguageModel,
 
     parse: function(data) {
@@ -45594,7 +47910,7 @@ var LanguageCollection = Backbone.Collection.extend({
 
     default: [
         {id: 'en', value: 'en', label: gt.gettext("English")},
-        {id: 'fr', value: 'fr', label: gt.gettext("French")},
+        {id: 'fr', value: 'fr', label: gt.gettext("French")}
     ],
 
     findLabel: function(value) {
@@ -45612,7 +47928,7 @@ module.exports = LanguageCollection;
 
 
 /***/ }),
-/* 279 */
+/* 293 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -45625,10 +47941,10 @@ module.exports = LanguageCollection;
  * @details
  */
 
-var InterfaceLanguageModel = __webpack_require__(286);
+var InterfaceLanguageModel = __webpack_require__(300);
 
 var Collection = Backbone.Collection.extend({
-    url: application.baseUrl + 'main/ui/language',
+    url: application.baseUrl + 'main/ui/language/',
     model: InterfaceLanguageModel,
 
     parse: function(data) {
@@ -45637,7 +47953,7 @@ var Collection = Backbone.Collection.extend({
 
     default: [
         {id: 'en', value: 'en', label: gt.gettext("English")},
-        {id: 'fr', value: 'fr', label: gt.gettext("French")},
+        {id: 'fr', value: 'fr', label: gt.gettext("French")}
     ],
 
     findLabel: function(value) {
@@ -45650,7 +47966,7 @@ module.exports = Collection;
 
 
 /***/ }),
-/* 280 */
+/* 294 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -45665,7 +47981,7 @@ module.exports = Collection;
 
 var Marionette = __webpack_require__(0);
 
-__webpack_require__(381);
+__webpack_require__(409);
 
 var MainModule = function() {
     this.name = "main";
@@ -45684,7 +48000,7 @@ MainModule.prototype = {
         // i18n if not english
         if (session.language !== "en") {
             try {
-                i18next.addResources(session.language, 'default', __webpack_require__(281)("./" + session.language + '/LC_MESSAGES/default.json'));
+                i18next.addResources(session.language, 'default', __webpack_require__(295)("./" + session.language + '/LC_MESSAGES/default.json'));
             } catch (e) {
                 console.warn("No translation found for the current language. Fallback to english language");
             }
@@ -45703,12 +48019,21 @@ MainModule.prototype = {
         }*/
 
         //
+        // defaults settings
+        //
+
+        app.setDefaultUserSetting('ui', {
+            display_mode: '2-8-2',
+            preferred_language: 'en'
+        });
+
+        //
         // collections
         //
 
-        var SelectOption = __webpack_require__(18);
+        var SelectOption = __webpack_require__(15);
 
-        var LanguageCollection = __webpack_require__(278);
+        var LanguageCollection = __webpack_require__(292);
         this.collections.languages = new LanguageCollection();
 
         this.views.languages = new SelectOption({
@@ -45716,7 +48041,7 @@ MainModule.prototype = {
             collection: this.collections.languages
         });
 
-        var InterfaceLanguageCollection = __webpack_require__(279);
+        var InterfaceLanguageCollection = __webpack_require__(293);
         this.collections.uilanguages = new InterfaceLanguageCollection();
 
         this.views.uilanguages = new SelectOption({
@@ -45724,7 +48049,7 @@ MainModule.prototype = {
             collection: this.collections.uilanguages
         });
 
-        var ContentTypeCollection = __webpack_require__(276);
+        var ContentTypeCollection = __webpack_require__(290);
         this.collections.contentTypes = new ContentTypeCollection();
 
         this.views.contentTypes = new SelectOption({
@@ -45732,27 +48057,27 @@ MainModule.prototype = {
             collection: this.collections.contentTypes
         });
 
-        var EventMessageCollection = __webpack_require__(277);
+        var EventMessageCollection = __webpack_require__(291);
         this.collections.eventMessages = new EventMessageCollection();
 
         //
         // routers
         //
 
-        var MainRouter = __webpack_require__(287);
+        var MainRouter = __webpack_require__(301);
         this.routers.main = new MainRouter();
 
-        var ProfileRouter = __webpack_require__(288);
+        var ProfileRouter = __webpack_require__(302);
         this.routers.profile = new ProfileRouter();
     },
 
     start: function(options) {
         // main view
-        var MainView = __webpack_require__(298);
+        var MainView = __webpack_require__(314);
         var mainView = new MainView();
         application.showView(mainView);
 
-        var LeftBarView = __webpack_require__(75);
+        var LeftBarView = __webpack_require__(79);
         mainView.getRegion('left').show(new LeftBarView());
     },
 
@@ -45763,7 +48088,7 @@ MainModule.prototype = {
     defaultLeftView: function() {
         var mainView = application.getView();
 
-        var LeftBarView = __webpack_require__(75);
+        var LeftBarView = __webpack_require__(79);
         mainView.getRegion('left').show(new LeftBarView());
     },
 
@@ -45777,12 +48102,12 @@ module.exports = MainModule;
 
 
 /***/ }),
-/* 281 */
+/* 295 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
-	"./en/LC_MESSAGES/default.json": 370,
-	"./fr/LC_MESSAGES/default.json": 371
+	"./en/LC_MESSAGES/default.json": 398,
+	"./fr/LC_MESSAGES/default.json": 399
 };
 function webpackContext(req) {
 	return __webpack_require__(webpackContextResolve(req));
@@ -45798,11 +48123,11 @@ webpackContext.keys = function webpackContextKeys() {
 };
 webpackContext.resolve = webpackContextResolve;
 module.exports = webpackContext;
-webpackContext.id = 281;
+webpackContext.id = 295;
 
 
 /***/ }),
-/* 282 */
+/* 296 */
 /***/ (function(module, exports) {
 
 /**
@@ -45830,7 +48155,7 @@ module.exports = Backbone.Model.extend({
 
 
 /***/ }),
-/* 283 */
+/* 297 */
 /***/ (function(module, exports) {
 
 /**
@@ -45862,7 +48187,7 @@ module.exports = Model;
 
 
 /***/ }),
-/* 284 */
+/* 298 */
 /***/ (function(module, exports) {
 
 /**
@@ -45888,7 +48213,7 @@ module.exports = Backbone.Model.extend({
 
 
 /***/ }),
-/* 285 */
+/* 299 */
 /***/ (function(module, exports) {
 
 /**
@@ -45919,7 +48244,7 @@ module.exports = Backbone.Model.extend({
 
 
 /***/ }),
-/* 286 */
+/* 300 */
 /***/ (function(module, exports) {
 
 /**
@@ -45945,7 +48270,7 @@ module.exports = Backbone.Model.extend({
 
 
 /***/ }),
-/* 287 */
+/* 301 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -45959,17 +48284,18 @@ module.exports = Backbone.Model.extend({
  */
 
 var Marionette = __webpack_require__(0);
-var AboutView = __webpack_require__(289);
-var HelpIndexView = __webpack_require__(296);
+var AboutView = __webpack_require__(303);
+var HelpIndexView = __webpack_require__(312);
 var DefaultLayout = __webpack_require__(4);
-var QuarterLayout = __webpack_require__(299);
-var TitleView = __webpack_require__(7);
+var QuarterLayout = __webpack_require__(315);
+var TitleView = __webpack_require__(3);
 
 var Router = Marionette.AppRouter.extend({
     routes : {
         "app/home/": "home",
         "app/main/about/": "about",
         "app/main/help/": "help",
+        "app/main/config/": "config",
         "app/*actions": "default"
     },
 
@@ -45982,7 +48308,7 @@ var Router = Marionette.AppRouter.extend({
             tagName: 'div',
             className: 'home',
             attributes: { style: "height: 100%; padding: 5px;"},
-            template: __webpack_require__(458)
+            template: __webpack_require__(489)
         });
 
         var defaultLayout = new DefaultLayout({});
@@ -45996,10 +48322,10 @@ var Router = Marionette.AppRouter.extend({
         quarterLayout.getRegion('top-left').show(new HomeView());
 
         if (session.user.isAuth) {
-            var EventMessagePanelView = __webpack_require__(295);
+            var EventMessagePanelView = __webpack_require__(311);
             quarterLayout.getRegion('top-right').show(new EventMessagePanelView());
 
-            var ActionPanelView = __webpack_require__(290);
+            var ActionPanelView = __webpack_require__(304);
             quarterLayout.getRegion('bottom-left').show(new ActionPanelView());
         }
     },
@@ -46018,6 +48344,23 @@ var Router = Marionette.AppRouter.extend({
 
         defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Help...")}));
         defaultLayout.getRegion('content').show(new HelpIndexView());
+    },
+
+    config: function() {
+        var ConfigCollection = __webpack_require__(289);
+        var collection = new ConfigCollection();
+
+        var defaultLayout = new DefaultLayout({});
+        application.show(defaultLayout);
+
+        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Configuration state")}));
+
+        collection.fetch().then(function () {
+            var ConfigListView = __webpack_require__(306);
+            var configListView = new ConfigListView({collection : collection});
+
+            defaultLayout.getRegion('content').show(configListView);
+        });
     }
 });
 
@@ -46025,7 +48368,7 @@ module.exports = Router;
 
 
 /***/ }),
-/* 288 */
+/* 302 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -46039,10 +48382,10 @@ module.exports = Router;
  */
 
 var Marionette = __webpack_require__(0);
-var EditProfileView = __webpack_require__(292);
+var EditProfileView = __webpack_require__(308);
 var DefaultLayout = __webpack_require__(4);
-var TitleView = __webpack_require__(7);
-var ProfileModel = __webpack_require__(285);
+var TitleView = __webpack_require__(3);
+var ProfileModel = __webpack_require__(299);
 
 var ProfileRouter = Marionette.AppRouter.extend({
     routes : {
@@ -46080,7 +48423,7 @@ module.exports = ProfileRouter;
 
 
 /***/ }),
-/* 289 */
+/* 303 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -46098,7 +48441,7 @@ var Marionette = __webpack_require__(0);
 var View = Marionette.LayoutView.extend({
     tagName: 'div',
     className: 'about',
-    template: __webpack_require__(448),
+    template: __webpack_require__(478),
 
     ui: {
     },
@@ -46117,7 +48460,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 290 */
+/* 304 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -46134,7 +48477,7 @@ var Marionette = __webpack_require__(0);
 
 var View = Marionette.LayoutView.extend({
     className: "action-panel",
-    template: __webpack_require__(449),
+    template: __webpack_require__(479),
 
     attributes: {
         'style': 'height: 100%; padding: 5px;'
@@ -46173,7 +48516,82 @@ module.exports = View;
 
 
 /***/ }),
-/* 291 */
+/* 305 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/**
+ * @file config.js
+ * @brief Config item view
+ * @author Frederic SCHERMA
+ * @date 2017-03-22
+ * @copyright Copyright (c) 2017 INRA UMR1095 GDEC
+ * @license @todo
+ * @details
+ */
+
+var Marionette = __webpack_require__(0);
+var ConfigModel = __webpack_require__(77);
+
+var View = Marionette.ItemView.extend({
+    tagName: 'div',
+    template: __webpack_require__(480),
+    className: "object config",
+
+    ui: {
+    },
+
+    events: {
+    },
+
+    initialize: function() {
+        this.listenTo(this.model, 'change', this.render, this);
+    },
+
+    onRender: function() {
+    }
+});
+
+module.exports = View;
+
+
+/***/ }),
+/* 306 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/**
+ * @file configlist.js
+ * @brief Config list view
+ * @author Frederic SCHERMA
+ * @date 2017-03-22
+ * @copyright Copyright (c) 2017 INRA UMR1095 GDEC
+ * @license @todo
+ * @details
+ */
+
+var Marionette = __webpack_require__(0);
+var ConfigView = __webpack_require__(305);
+
+var View = Marionette.CollectionView.extend({
+    template: "<div></div>",
+    className: "config-list",
+    childView: ConfigView,
+
+    attributes: {
+        'style': 'height: 100%; overflow-y: auto;'
+    },
+
+    initialize: function() {
+        View.__super__.initialize.apply(this);
+
+        this.listenTo(this.collection, 'reset', this.render, this);
+    }
+});
+
+module.exports = View;
+
+
+/***/ }),
+/* 307 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -46186,7 +48604,7 @@ module.exports = View;
  * @details
  */
 
-var Dialog = __webpack_require__(5);
+var Dialog = __webpack_require__(6);
 
 /**
  * Use the dialog:confirm event of the this dialog to trigger the confirm action.
@@ -46195,7 +48613,7 @@ var View = Dialog.extend({
     attributes: {
         'id': 'dlg_confirm',
     },
-    template: __webpack_require__(450),
+    template: __webpack_require__(481),
     templateHelpers/*templateContext*/: function () {
         return {
             title: this.title,
@@ -46238,7 +48656,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 292 */
+/* 308 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -46256,7 +48674,7 @@ var Marionette = __webpack_require__(0);
 var View = Marionette.ItemView.extend({
     tagName: 'div',
     className: 'profile-edit',
-    template: __webpack_require__(453),
+    template: __webpack_require__(484),
 
     ui: {
         username: '#username',
@@ -46287,7 +48705,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 293 */
+/* 309 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -46304,7 +48722,7 @@ var Marionette = __webpack_require__(0);
 
 var View = Marionette.ItemView.extend({
     tagName: 'div',
-    template: __webpack_require__(454),
+    template: __webpack_require__(485),
     className: "object event-message",
 
     ui: {
@@ -46329,7 +48747,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 294 */
+/* 310 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -46343,7 +48761,7 @@ module.exports = View;
  */
 
 var Marionette = __webpack_require__(0);
-var EventMessageView = __webpack_require__(293);
+var EventMessageView = __webpack_require__(309);
 
 var View = Marionette.CollectionView.extend({
     className: "event-message-list",
@@ -46354,7 +48772,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 295 */
+/* 311 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -46368,11 +48786,11 @@ module.exports = View;
  */
 
 var Marionette = __webpack_require__(0);
-var Dialog = __webpack_require__(5);
+var Dialog = __webpack_require__(6);
 
 var View = Marionette.LayoutView.extend({
     className: "event-message-panel",
-    template: __webpack_require__(456),
+    template: __webpack_require__(487),
 
     attributes: {
         'style': 'height: 100%; padding: 5px;'
@@ -46397,7 +48815,7 @@ var View = Marionette.LayoutView.extend({
 
     onRender: function() {
         var view = this;
-        var EventMessageListView = __webpack_require__(294);
+        var EventMessageListView = __webpack_require__(310);
 
         application.main.collections.eventMessages.fetch().then(function() {
             view.getRegion('content').show(new EventMessageListView({collection: application.main.collections.eventMessages}));
@@ -46406,18 +48824,18 @@ var View = Marionette.LayoutView.extend({
 
     onAddEventMessage: function() {
         var CreateEventMessage = Dialog.extend({
-            template: __webpack_require__(455),
+            template: __webpack_require__(486),
 
             attributes: {
-                id: "dlg_create_event_message",
+                id: "dlg_create_event_message"
             },
 
             ui: {
-                message: "form.messages input",
+                message: "form.messages input"
             },
 
             events: {
-                'input @ui.message': 'onMessageInput',
+                'input @ui.message': 'onMessageInput'
             },
 
             initialize: function (options) {
@@ -46495,7 +48913,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 296 */
+/* 312 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -46513,7 +48931,7 @@ var Marionette = __webpack_require__(0);
 var View = Marionette.LayoutView.extend({
     tagName: 'div',
     className: 'help-index',
-    template: __webpack_require__(457),
+    template: __webpack_require__(488),
 
     ui: {
     },
@@ -46532,7 +48950,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 297 */
+/* 313 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -46548,7 +48966,7 @@ module.exports = View;
 var Marionette = __webpack_require__(0);
 
 var TwoColumnsLayout = Marionette.LayoutView.extend({
-    template: __webpack_require__(460),
+    template: __webpack_require__(491),
     attributes: {
         style: "height: 100%;"
     },
@@ -46567,7 +48985,7 @@ module.exports = TwoColumnsLayout;
 
 
 /***/ }),
-/* 298 */
+/* 314 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -46583,7 +49001,7 @@ module.exports = TwoColumnsLayout;
 var Marionette = __webpack_require__(0);
 
 var MainLayout = Marionette.LayoutView.extend({
-    template: __webpack_require__(461),
+    template: __webpack_require__(492),
     className: "column",
 
     regions: {
@@ -46612,7 +49030,7 @@ module.exports = MainLayout;
 
 
 /***/ }),
-/* 299 */
+/* 315 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -46628,7 +49046,7 @@ module.exports = MainLayout;
 var Marionette = __webpack_require__(0);
 
 var View = Marionette.LayoutView.extend({
-    template: __webpack_require__(462),
+    template: __webpack_require__(493),
     attributes: {
         style: "height: 100%;"
     },
@@ -46645,7 +49063,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 300 */
+/* 316 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -46661,7 +49079,7 @@ module.exports = View;
 var Marionette = __webpack_require__(0);
 
 var TwoColumnsLayout = Marionette.LayoutView.extend({
-    template: __webpack_require__(464),
+    template: __webpack_require__(495),
     attributes: {
         style: "height: 100%;"
     },
@@ -46678,7 +49096,7 @@ module.exports = TwoColumnsLayout;
 
 
 /***/ }),
-/* 301 */
+/* 317 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -46693,10 +49111,10 @@ module.exports = TwoColumnsLayout;
 
 var Marionette = __webpack_require__(0);
 
-__webpack_require__(382);
+__webpack_require__(410);
 
-__webpack_require__(363);
-__webpack_require__(383);
+__webpack_require__(389);
+__webpack_require__(411);
 
 var MediaLibraryModule = function() {
     this.name = "medialibrary";
@@ -46713,7 +49131,7 @@ MediaLibraryModule.prototype = {
         // i18n if not english
         if (session.language !== "en") {
             try {
-                i18next.addResources(session.language, 'default', __webpack_require__(302)("./" + session.language + '/LC_MESSAGES/default.json'));
+                i18next.addResources(session.language, 'default', __webpack_require__(318)("./" + session.language + '/LC_MESSAGES/default.json'));
             } catch (e) {
                 console.warn("No translation found for the current language. Fallback to english language");
             }
@@ -46731,7 +49149,7 @@ MediaLibraryModule.prototype = {
 
         for (var i = 0; i < widgets.length; ++i) {
             var moduleName = widgets[i].replace('_', '').toLowerCase();
-            application.descriptor.widgets.registerElement(widgets[i], __webpack_require__(303)("./" + moduleName));
+            application.descriptor.widgets.registerElement(widgets[i], __webpack_require__(319)("./" + moduleName));
         }
 
         //
@@ -46754,12 +49172,12 @@ module.exports = MediaLibraryModule;
 
 
 /***/ }),
-/* 302 */
+/* 318 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
-	"./en/LC_MESSAGES/default.json": 372,
-	"./fr/LC_MESSAGES/default.json": 373
+	"./en/LC_MESSAGES/default.json": 400,
+	"./fr/LC_MESSAGES/default.json": 401
 };
 function webpackContext(req) {
 	return __webpack_require__(webpackContextResolve(req));
@@ -46775,18 +49193,18 @@ webpackContext.keys = function webpackContextKeys() {
 };
 webpackContext.resolve = webpackContextResolve;
 module.exports = webpackContext;
-webpackContext.id = 302;
+webpackContext.id = 318;
 
 
 /***/ }),
-/* 303 */
+/* 319 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
-	"./media": 76,
-	"./media.js": 76,
-	"./mediacollection": 77,
-	"./mediacollection.js": 77
+	"./media": 80,
+	"./media.js": 80,
+	"./mediacollection": 81,
+	"./mediacollection.js": 81
 };
 function webpackContext(req) {
 	return __webpack_require__(webpackContextResolve(req));
@@ -46802,62 +49220,11 @@ webpackContext.keys = function webpackContextKeys() {
 };
 webpackContext.resolve = webpackContextResolve;
 module.exports = webpackContext;
-webpackContext.id = 303;
+webpackContext.id = 319;
 
 
 /***/ }),
-/* 304 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/**
- * @file establishment.js
- * @brief Establishment collection
- * @author Frederic SCHERMA
- * @date 2017-02-28
- * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
- * @license @todo
- * @details
- */
-
-var EstablishmentModel = __webpack_require__(38);
-
-var Collection = Backbone.Collection.extend({
-    url: application.baseUrl + 'organisation/establishment/',
-    model: EstablishmentModel,
-
-    comparator: 'name',
-
-    parse: function(data) {
-        this.prev = data.prev;
-        this.cursor = data.cursor;
-        this.next = data.next;
-        this.perms = data.perms;
-
-        return data.items;
-    },
-
-    fetch: function(options) {
-        options || (options = {});
-        var data = (options.data || {});
-
-        options.data = data;
-
-        this.cursor = options.data.cursor;
-        this.sort_by = options.data.sort_by;
-
-        if (this.filters) {
-            options.data.filters = JSON.stringify(this.filters)
-        }
-
-        return Backbone.Collection.prototype.fetch.call(this, options);
-    }
-});
-
-module.exports = Collection;
-
-
-/***/ }),
-/* 305 */
+/* 320 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -46865,18 +49232,29 @@ module.exports = Collection;
  * @brief Organisation collection
  * @author Frederic SCHERMA
  * @date 2017-02-28
- * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+ * @copyright Copyright (c) 2017 INRA UMR1095 GDEC
  * @license @todo
  * @details
  */
 
-var OrganisationModel = __webpack_require__(38);
+var OrganisationModel = __webpack_require__(29);
 
 var Collection = Backbone.Collection.extend({
-    url: application.baseUrl + 'organisation/organisation/',
+    url: function() {
+        if (this.grc) {
+            return application.baseUrl + 'organisation/grc/organisation/';
+        } else {
+            return application.baseUrl + 'organisation/organisation/';
+        }
+    },
     model: OrganisationModel,
 
     comparator: 'name',
+
+    initialize: function(models, options) {
+        options || (options = {});
+        this.grc = options.grc || false;
+    },
 
     parse: function(data) {
         this.prev = data.prev;
@@ -46908,7 +49286,199 @@ module.exports = Collection;
 
 
 /***/ }),
-/* 306 */
+/* 321 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/**
+ * @file organisationtype.js
+ * @brief Type of organisation collection
+ * @author Frederic SCHERMA
+ * @date 2017-03-06
+ * @copyright Copyright (c) 2017 INRA UMR1095 GDEC
+ * @license @todo
+ * @details
+ */
+
+var OrganisationTypeModel = __webpack_require__(327);
+
+var Collection = Backbone.Collection.extend({
+    url: application.baseUrl + 'organisation/organisation-type/',
+    model: OrganisationTypeModel,
+
+    parse: function(data) {
+        return data;
+    },
+
+    default: [],
+
+    findLabel: function(value) {
+        var res = this.findWhere({value: value});
+        return res ? res.get('label') : '';
+    }
+});
+
+module.exports = Collection;
+
+
+/***/ }),
+/* 322 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/**
+ * @file organisation.js
+ * @brief Organisation controller
+ * @author Frederic SCHERMA
+ * @date 2017-03-07
+ * @copyright Copyright (c) 2017 INRA UMR1095 GDEC
+ * @license @todo
+ * @details
+ */
+
+var Marionette = __webpack_require__(0);
+
+var OrganisationModel = __webpack_require__(29);
+
+var DefaultLayout = __webpack_require__(4);
+var TitleView = __webpack_require__(3);
+var Dialog = __webpack_require__(6);
+var OrganisationLayout = __webpack_require__(85);
+
+
+var Controller = Marionette.Object.extend({
+
+    create: function() {
+        $.ajax({
+            type: "GET",
+            url: application.baseUrl + 'descriptor/meta-model/for-describable/' + 'organisation.organisation/',
+            dataType: 'json'
+        }).done(function(data) {
+            var CreateOrganisationView = Dialog.extend({
+                attributes: {
+                    'id': 'dlg_create_organisation'
+                },
+                template: __webpack_require__(503),
+
+                ui: {
+                    create: "button.create",
+                    grc: "#organisation_grc",
+                    name: "#organisation_name",
+                    type: "#organisation_type"
+                },
+
+                events: {
+                    'click @ui.create': 'onCreate',
+                    'input @ui.name': 'onNameInput'
+                },
+
+                onRender: function () {
+                    CreateOrganisationView.__super__.onRender.apply(this);
+
+                    application.organisation.views.organisationTypes.drawSelect(this.ui.type);
+                },
+
+                onBeforeDestroy: function () {
+                    this.ui.type.selectpicker('destroy');
+
+                    CreateOrganisationView.__super__.onBeforeDestroy.apply(this);
+                },
+
+                onNameInput: function () {
+                    var name = this.ui.name.val().trim();
+
+                    if (this.validateName()) {
+                        var filters = {
+                            method: 'ieq',
+                            fields: ['name'],
+                            'name': name
+                        };
+
+                        $.ajax({
+                            type: "GET",
+                            url: application.baseUrl + 'organisation/organisation/search/',
+                            dataType: 'json',
+                            data: {filters: JSON.stringify(filters)},
+                            el: this.ui.name,
+                            success: function (data) {
+                                if (data.items.length > 0) {
+                                    for (var i in data.items) {
+                                        var t = data.items[i];
+
+                                        if (t.value.toUpperCase() == name.toUpperCase()) {
+                                            $(this.el).validateField('failed', gt.gettext('Organisation name already in usage'));
+                                            break;
+                                        }
+                                    }
+                                } else {
+                                    $(this.el).validateField('ok');
+                                }
+                            }
+                        });
+                    }
+                },
+
+                validateName: function () {
+                    var v = this.ui.name.val().trim();
+
+                    if (v.length > 255) {
+                        $(this.ui.name).validateField('failed', gt.gettext("255 characters max"));
+                        return false;
+                    } else if (v.length < 3) {
+                        $(this.ui.name).validateField('failed', gt.gettext('3 characters min'));
+                        return false;
+                    }
+
+                    return true;
+                },
+
+                validate: function () {
+                    var valid = this.validateName();
+
+                    if (this.ui.name.hasClass('invalid') || this.ui.type.hasClass('invalid')) {
+                        valid = false;
+                    }
+
+                    return valid;
+                },
+
+                onCreate: function () {
+                    var name = this.ui.name.val().trim();
+                    var to_grc = this.ui.grc.val() === "grc-partner";
+
+                    if (this.validate()) {
+                        var model = new OrganisationModel({
+                            descriptor_meta_model: data[0].id,
+                            name: name,
+                            type: this.ui.type.val(),
+                            grc: to_grc
+                        });
+
+                        this.destroy();
+
+                        var defaultLayout = new DefaultLayout();
+                        application.show(defaultLayout);
+
+                        defaultLayout.getRegion('title').show(new TitleView({
+                            title: gt.gettext("Organisation"),
+                            model: model
+                        }));
+
+                        var organisationLayout = new OrganisationLayout({model: model});
+                        defaultLayout.getRegion('content').show(organisationLayout);
+                    }
+                }
+            });
+
+            var dialog = new CreateOrganisationView();
+            dialog.render();
+        });
+    }
+});
+
+module.exports = Controller;
+
+
+/***/ }),
+/* 323 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -46936,7 +49506,7 @@ OrganisationModule.prototype = {
         // i18n if not english
         if (session.language !== "en") {
             try {
-                i18next.addResources(session.language, 'default', __webpack_require__(307)("./" + session.language + '/LC_MESSAGES/default.json'));
+                i18next.addResources(session.language, 'default', __webpack_require__(324)("./" + session.language + '/LC_MESSAGES/default.json'));
             } catch (e) {
                 console.warn("No translation found for the current language. Fallback to english language");
             }
@@ -46946,18 +49516,32 @@ OrganisationModule.prototype = {
         // collections
         //
 
+        var SelectOption = __webpack_require__(15);
+
+        var OrganisationTypeCollection = __webpack_require__(321);
+        this.collections.organisationTypes = new OrganisationTypeCollection();
+
+        this.views.organisationTypes = new SelectOption({
+            className: 'organisation-type',
+            collection: this.collections.organisationTypes
+        });
 
         //
         // controllers
         //
 
+        var OrganisationController = __webpack_require__(322);
+        this.controllers.organisation = new OrganisationController();
 
         //
         // routers
         //
 
-        var OrganisationRouter = __webpack_require__(310);
+        var OrganisationRouter = __webpack_require__(329);
         this.routers.organisation = new OrganisationRouter();
+
+        var EstablishmentRouter = __webpack_require__(328);
+        this.routers.establishment = new EstablishmentRouter();
     },
 
     start: function(options) {
@@ -46973,12 +49557,12 @@ module.exports = OrganisationModule;
 
 
 /***/ }),
-/* 307 */
+/* 324 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
-	"./en/LC_MESSAGES/default.json": 374,
-	"./fr/LC_MESSAGES/default.json": 375
+	"./en/LC_MESSAGES/default.json": 402,
+	"./fr/LC_MESSAGES/default.json": 403
 };
 function webpackContext(req) {
 	return __webpack_require__(webpackContextResolve(req));
@@ -46994,11 +49578,11 @@ webpackContext.keys = function webpackContextKeys() {
 };
 webpackContext.resolve = webpackContextResolve;
 module.exports = webpackContext;
-webpackContext.id = 307;
+webpackContext.id = 324;
 
 
 /***/ }),
-/* 308 */
+/* 325 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -47011,7 +49595,7 @@ webpackContext.id = 307;
  * @details
  */
 
-var Backbone = __webpack_require__(3);
+var Backbone = __webpack_require__(5);
 
 var Model = Backbone.Model.extend({
     url: function() {
@@ -47022,7 +49606,11 @@ var Model = Backbone.Model.extend({
     },
 
     defaults: {
-        id: null
+        id: null,
+        name: "",
+        organisation: null,
+        descriptor_meta_model: null,
+        descriptors: {}
     }
 });
 
@@ -47030,7 +49618,7 @@ module.exports = Model;
 
 
 /***/ }),
-/* 309 */
+/* 326 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -47043,13 +49631,16 @@ module.exports = Model;
  * @details
  */
 
-var Backbone = __webpack_require__(3);
+var Backbone = __webpack_require__(5);
 
 var Model = Backbone.Model.extend({
     url: application.baseUrl + 'organisation/grc/',
 
     defaults: {
-        id: null
+        id: null,
+        identifier: "",
+        name: "",
+        description: ""
     }
 });
 
@@ -47057,50 +49648,69 @@ module.exports = Model;
 
 
 /***/ }),
-/* 310 */
+/* 327 */
+/***/ (function(module, exports) {
+
+/**
+ * @file organisationtype.js
+ * @brief Type of organisatin model
+ * @author Frederic SCHERMA
+ * @date 2017-03-06
+ * @copyright Copyright (c) 2017 INRA UMR1095 GDEC
+ * @license @todo
+ * @details
+ */
+
+module.exports = Backbone.Model.extend({
+    defaults: function() {
+        return {
+            id: 0,
+            value: '',
+            label: ''
+        }
+    },
+    url: application.baseUrl + 'organisation/organisation-type/:id/'
+});
+
+
+/***/ }),
+/* 328 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
- * @file organisation.js
- * @brief Organisation router
+ * @file establishment.js
+ * @brief Establishment router
  * @author Frederic SCHERMA
- * @date 2017-02-28
- * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+ * @date 2017-03-06
+ * @copyright Copyright (c) 2017 INRA UMR1095 GDEC
  * @license @todo
  * @details
  */
 
 var Marionette = __webpack_require__(0);
 
-var GRCModel = __webpack_require__(309);
-var OrganisationModel = __webpack_require__(38);
-var EshtablishmentModel = __webpack_require__(308);
+var EshtablishmentModel = __webpack_require__(325);
 
-var OrganisationCollection = __webpack_require__(305);
-var EstablishmentCollection = __webpack_require__(304);
+var EstablishmentCollection = __webpack_require__(82);
 
-// var OrganisationListView = require('../views/organisationlist');
+//var EstablishmentListView = require('../views/establishmentlist');
+//var EstablishmentListFilterView = require('../views/establishmentlistfilter');
 
 var DefaultLayout = __webpack_require__(4);
 var ScrollingMoreView = __webpack_require__(9);
-var TitleView = __webpack_require__(7);
+var TitleView = __webpack_require__(3);
 
 var Router = Marionette.AppRouter.extend({
     routes : {
-        "app/organisation/grc/": "getGRC",
-        "app/organisation/organisation/": "getOrganisationList",
-        "app/organisation/organisation/:id/": "getOrganisation"
+        "app/organisation/organisation/:id/establishment/": "getEstablishmentList",
+        "app/organisation/establishment/:id/": "getEstablishment"
     },
 
-    getGRC: function () {
+    getEstablishmentList : function() {
         $.alert.error("Not yet !");
     },
 
-    getOrganisationList : function() {
-        $.alert.error("Not yet !");
-    },
-
-    getOrganisation : function(id) {
+    getEstablishment : function(id) {
         $.alert.error("Not yet !");
     }
 });
@@ -47109,7 +49719,640 @@ module.exports = Router;
 
 
 /***/ }),
-/* 311 */
+/* 329 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/**
+ * @file organisation.js
+ * @brief Organisation router
+ * @author Frederic SCHERMA
+ * @date 2017-02-28
+ * @copyright Copyright (c) 2017 INRA UMR1095 GDEC
+ * @license @todo
+ * @details
+ */
+
+var Marionette = __webpack_require__(0);
+
+var GRCModel = __webpack_require__(326);
+var OrganisationModel = __webpack_require__(29);
+
+var OrganisationCollection = __webpack_require__(320);
+
+var OrganisationListView = __webpack_require__(335);
+var OrganisationListFilterView = __webpack_require__(336);
+var OrganisationLayout = __webpack_require__(85);
+
+var DefaultLayout = __webpack_require__(4);
+var ScrollingMoreView = __webpack_require__(9);
+var TitleView = __webpack_require__(3);
+
+var Router = Marionette.AppRouter.extend({
+    routes : {
+        "app/organisation/grc/": "getGRC",
+        "app/organisation/grc/organisation/": "getGRCOrganisationList",
+        "app/organisation/organisation/": "getOrganisationList",
+        "app/organisation/organisation/:id/": "getOrganisation"
+    },
+
+    getGRC: function () {
+        var grc = new GRCModel();
+
+        var defaultLayout = new DefaultLayout();
+        application.show(defaultLayout);
+
+        var GRCDetailsView = __webpack_require__(332);
+        var grcDetails = new GRCDetailsView({model: grc});
+
+        grc.fetch().then(function () {
+            defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("GRC details"), model: grc}));
+            defaultLayout.getRegion('content').show(grcDetails);
+        });
+    },
+
+    getGRCOrganisationList : function() {
+        var collection = new OrganisationCollection([], {grc: true});
+
+        var defaultLayout = new DefaultLayout({});
+        application.show(defaultLayout);
+
+        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of GRC partners")}));
+
+        collection.fetch().then(function () {
+            var organisationListView = new OrganisationListView({collection : collection});
+
+            defaultLayout.getRegion('content').show(organisationListView);
+            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: organisationListView}));
+        });
+
+        defaultLayout.getRegion('bottom').show(new OrganisationListFilterView({collection: collection}));
+    },
+
+    getOrganisationList : function() {
+        var collection = new OrganisationCollection([]);
+
+        var defaultLayout = new DefaultLayout({});
+        application.show(defaultLayout);
+
+        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of organisations")}));
+
+        collection.fetch().then(function () {
+            var organisationListView = new OrganisationListView({collection : collection});
+
+            defaultLayout.getRegion('content').show(organisationListView);
+            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: organisationListView}));
+        });
+
+        defaultLayout.getRegion('bottom').show(new OrganisationListFilterView({collection: collection}));
+    },
+
+    getOrganisation : function(id) {
+        var organisation = new OrganisationModel({id: id});
+
+        var defaultLayout = new DefaultLayout();
+        application.show(defaultLayout);
+
+        var organisationLayout = new OrganisationLayout({model: organisation});
+
+        organisation.fetch().then(function() {
+            defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Organisation"), model: organisation}));
+            defaultLayout.getRegion('content').show(organisationLayout);
+        });
+    }
+});
+
+module.exports = Router;
+
+
+/***/ }),
+/* 330 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/**
+ * @file establishment.js
+ * @brief Establishment item view
+ * @author Frederic SCHERMA
+ * @date 2017-03-09
+ * @copyright Copyright (c) 2017 INRA UMR1095 GDEC
+ * @license @todo
+ * @details
+ */
+
+var Marionette = __webpack_require__(0);
+
+var View = Marionette.ItemView.extend({
+    tagName: 'tr',
+    template: __webpack_require__(499),
+    className: "object establishment",
+    templateHelpers/*templateContext*/: function () {
+        return {
+            columns: this.getOption('columns')
+        }
+    },
+
+    ui: {
+        "establishment": "td.view-establishment",
+        "remove_establishment": ".remove-establishment"
+    },
+
+    events: {
+        "click @ui.establishment": "onEstablishmentDetails",
+        "click @ui.remove_establishment": "onRemoveEstablishment"
+    },
+
+    initialize: function() {
+        this.listenTo(this.model, 'change', this.render, this);
+    },
+
+    onRender: function() {
+    },
+
+    onEstablishmentDetails: function() {
+        Backbone.history.navigate("app/organisation/establishment/" + this.model.get('id') + "/", {trigger: true});
+    },
+
+    onRemoveEstablishment: function() {
+        this.model.destroy({wait: true}).then(function() {
+            $.alert.success(gt.gettext("Successfully removed !"));
+        });
+    }
+});
+
+module.exports = View;
+
+
+/***/ }),
+/* 331 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/**
+ * @file establishmentlist.js
+ * @brief Establishment list view
+ * @author Frederic SCHERMA
+ * @date 2017-03-09
+ * @copyright Copyright (c) 2017 INRA UMR1095 GDEC
+ * @license @todo
+ * @details
+ */
+
+var ScrollView = __webpack_require__(7);
+var EstablishmentView = __webpack_require__(330);
+
+var View = ScrollView.extend({
+    template: __webpack_require__(500),
+    childView: EstablishmentView,
+    childViewContainer: 'tbody.establishment-list',
+
+    templateHelpers/*templateContext*/: function () {
+        return {
+            columns: this.getOption('columns')
+        }
+    },
+
+    childViewOptions: function () {
+        return {
+            columns: this.getOption('columns')
+        }
+    },
+
+    initialize: function(options) {
+        View.__super__.initialize.apply(this);
+
+        options || (options = {});
+        options.columns = [
+            {id: -1, name: 'establishment_code', label: 'Code'}
+        ];
+
+        this.listenTo(this.collection, 'reset', this.render, this);
+    }
+});
+
+module.exports = View;
+
+
+/***/ }),
+/* 332 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/**
+ * @file grcdetails.js
+ * @brief GRC details item view
+ * @author Frederic SCHERMA
+ * @date 2017-02-28
+ * @copyright Copyright (c) 2017 INRA UMR1095 GDEC
+ * @license @todo
+ * @details
+ */
+
+var Marionette = __webpack_require__(0);
+
+var View = Marionette.ItemView.extend({
+    tagName: 'div',
+    className: 'object grc',
+    template: __webpack_require__(501),
+
+    ui: {
+        'name': 'input[name=name]',
+        'identifier': 'input[name=identifier]',
+        'description': 'textarea[name=description]',
+        'save': '#grc_save'
+    },
+
+    events: {
+        'click @ui.save': 'updateDetails'
+    },
+
+    initialize: function() {
+        this.listenTo(this.model, 'change', this.render, this);
+    },
+
+    onRender: function() {
+    },
+
+    updateDetails: function() {
+        this.model.save({
+            name: this.ui.name.val(),
+            identifier: this.ui.identifier.val(),
+            description: this.ui.description.val()
+        }, {
+            success: function() {
+                $.alert.success(gt.gettext("Done"));
+            }
+        });
+    }
+});
+
+module.exports = View;
+
+
+/***/ }),
+/* 333 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/**
+ * @file organisation.js
+ * @brief Organisation item view
+ * @author Frederic SCHERMA
+ * @date 2017-03-06
+ * @copyright Copyright (c) 2017 INRA UMR1095 GDEC
+ * @license @todo
+ * @details
+ */
+
+var Marionette = __webpack_require__(0);
+
+var View = Marionette.ItemView.extend({
+    tagName: 'tr',
+    template: __webpack_require__(502),
+    className: "object organisation",
+
+    templateHelpers/*templateContext*/: function () {
+        return {
+            columns: this.getOption('columns')
+        }
+    },
+
+    ui: {
+        "organisation": "td.view-organisation",
+        "remove_organisation": ".remove-organisation"
+    },
+
+    events: {
+        "click @ui.organisation": "onOrganisationDetails",
+        "click @ui.remove_organisation": "onRemoveOrganisation"
+    },
+
+    initialize: function() {
+        this.listenTo(this.model, 'change', this.render, this);
+    },
+
+    onRender: function() {
+        application.organisation.views.organisationTypes.htmlFromValue(this.el);
+    },
+
+    onOrganisationDetails: function() {
+        Backbone.history.navigate("app/organisation/organisation/" + this.model.get('id') + "/", {trigger: true});
+    },
+
+    onRemoveOrganisation: function() {
+        this.model.destroy({wait: true}).then(function() {
+            $.alert.success(gt.gettext("Successfully removed !"));
+        });
+    }
+});
+
+module.exports = View;
+
+
+/***/ }),
+/* 334 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/**
+ * @file organisationdetails.js
+ * @brief Details view for organisation.
+ * @author Frederic SCHERMA
+ * @date 2017-03-07
+ * @copyright Copyright (c) 2017 INRA UMR1095 GDEC
+ * @license @todo
+ * @details
+ */
+
+var Marionette = __webpack_require__(0);
+
+var Dialog = __webpack_require__(6);
+
+var View = Marionette.ItemView.extend({
+    tagName: "div",
+    template: __webpack_require__(504),
+
+    attributes: {
+        style: "height: 25px; overflow-y: auto;"
+    },
+
+    ui: {
+        'organisation_type': '.organisation-type',
+        'change_type': '.change-type'
+    },
+
+    events: {
+        'click @ui.change_type': 'onChangeType'
+    },
+
+    initialize: function(options) {
+        this.listenTo(this.model, 'change', this.render, this);
+    },
+
+    onRender: function() {
+       application.organisation.views.organisationTypes.htmlFromValue(this.el);
+    },
+
+    onChangeType: function () {
+        var EditOrganisation = Dialog.extend({
+            template: __webpack_require__(505),
+
+            attributes: {
+                id: "dlg_edit_organisation"
+            },
+
+            ui: {
+                name: "#organisation_name",
+                type: "#organisation_type"
+            },
+
+            events: {
+                'click @ui.apply': 'onApply',
+                'input @ui.name': 'onNameInput'
+            },
+
+            initialize: function (options) {
+                EditOrganisation.__super__.initialize.apply(this);
+            },
+
+            onRender: function () {
+                EditOrganisation.__super__.onRender.apply(this);
+
+                application.organisation.views.organisationTypes.drawSelect(this.ui.type);
+
+                this.ui.name.val(this.getOption('model').get('name'));
+                this.ui.type.selectpicker('val', this.getOption('model').get('type'));
+            },
+
+            onBeforeDestroy: function () {
+                this.ui.type.selectpicker('destroy');
+
+                EditOrganisation.__super__.onBeforeDestroy.apply(this);
+            },
+
+            onNameInput: function () {
+                var name = this.ui.name.val().trim();
+                var organisation_id = this.model.get('id');
+
+                if (this.validateName()) {
+                    var filters = {
+                        method: 'ieq',
+                        fields: ['name'],
+                        'name': name
+                    };
+
+                    $.ajax({
+                        type: "GET",
+                        url: application.baseUrl + 'organisation/organisation/search/',
+                        dataType: 'json',
+                        data: {filters: JSON.stringify(filters)},
+                        el: this.ui.name,
+                        success: function (data) {
+                            if (data.items.length > 0) {
+                                for (var i in data.items) {
+                                    var t = data.items[i];
+
+                                    if (t.value.toUpperCase() == name.toUpperCase() && t.id != organisation_id) {
+                                        $(this.el).validateField('failed', gt.gettext('Organisation name already in usage'));
+                                        break;
+                                    }
+                                }
+                            } else {
+                                $(this.el).validateField('ok');
+                            }
+                        }
+                    });
+                }
+            },
+
+            validateName: function () {
+                var v = this.ui.name.val().trim();
+
+                if (v.length > 64) {
+                    $(this.ui.name).validateField('failed', gt.gettext("64 characters max"));
+                    return false;
+                } else if (v.length < 3) {
+                    $(this.ui.name).validateField('failed', gt.gettext('3 characters min'));
+                    return false;
+                }
+
+                return true;
+            },
+
+            validate: function () {
+                var valid = this.validateName();
+
+                if (this.ui.name.hasClass('invalid') || this.ui.type.hasClass('invalid')) {
+                    valid = false;
+                }
+
+                return valid;
+            },
+
+            onApply: function() {
+                var model = this.getOption('model');
+                var name = this.ui.name.val().trim();
+                var type = this.ui.type.val();
+
+                var data = {};
+
+                if (name != model.get('name')) {
+                    data.name = name;
+                }
+
+                if (type != model.get('type')) {
+                    data.type = type;
+                }
+
+                if (model.isNew()) {
+                    if (name != model.get('name')) {
+                        model.set('name', name);
+                    }
+
+                    if (type != model.get('type')) {
+                        model.set('type', type);
+                    }
+                } else {
+                    model.save(data, {patch: true, wait: true});
+                }
+
+                this.destroy();
+            }
+        });
+
+        var editOrganisation = new EditOrganisation({
+            model: this.model
+        });
+
+        editOrganisation.render();
+    }
+});
+
+module.exports = View;
+
+
+/***/ }),
+/* 335 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/**
+ * @file organisationlist.js
+ * @brief Organisation list view
+ * @author Frederic SCHERMA
+ * @date 2017-03-06
+ * @copyright Copyright (c) 2017 INRA UMR1095 GDEC
+ * @license @todo
+ * @details
+ */
+
+var ScrollView = __webpack_require__(7);
+var OrganisationView = __webpack_require__(333);
+
+var View = ScrollView.extend({
+    template: __webpack_require__(507),
+    childView: OrganisationView,
+    childViewContainer: 'tbody.organisation-list',
+
+    templateHelpers/*templateContext*/: function () {
+        return {
+            columns: this.getOption('columns')
+        }
+    },
+
+    childViewOptions: function () {
+        return {
+            columns: this.getOption('columns')
+        }
+    },
+
+    initialize: function(options) {
+        View.__super__.initialize.apply(this);
+
+        options || (options = {});
+        options.columns = [
+            {id: -1, name: 'organisation_acronym', label: 'Acronym'},
+            {id: -1, name: 'organisation_code', label: 'Code'}
+        ];
+
+        this.listenTo(this.collection, 'reset', this.render, this);
+    }
+});
+
+module.exports = View;
+
+
+/***/ }),
+/* 336 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/**
+ * @file organisationlistfilter.js
+ * @brief Filter the list of organisation
+ * @author Frederic SCHERMA
+ * @date 2017-03-06
+ * @copyright Copyright (c) 2017 INRA UMR1095 GDEC
+ * @license @todo
+ * @details
+ */
+
+var Marionette = __webpack_require__(0);
+
+var View = Marionette.ItemView.extend({
+    tagName: 'div',
+    className: 'organisation-filter',
+    template: __webpack_require__(508),
+
+    ui: {
+        filter_btn: 'button.organisation-filter',
+        organisation_type: 'select.organisation-type',
+        organisation_name: 'input.organisation-name'
+    },
+
+    events: {
+        'click @ui.filter_btn': 'onFilter',
+        'input @ui.organisation_name': 'onOrganisationNameInput'
+    },
+
+    initialize: function(options) {
+        options || (options = {});
+        this.collection = options.collection;
+    },
+
+    onRender: function() {
+        application.organisation.views.organisationTypes.drawSelect(this.ui.organisation_type, true, true);
+    },
+
+    onFilter: function () {
+        if (this.validateOrganisationName()) {
+            this.collection.filters = {
+                name_acronym: this.ui.organisation_name.val().trim(),
+                type: this.ui.organisation_type.val(),
+                method: "icontains"
+            };
+
+            this.collection.fetch({reset: true});
+        }
+    },
+
+    validateOrganisationName: function() {
+        var v = this.ui.organisation_name.val().trim();
+
+        if (v.length > 0 && v.length < 3) {
+            $(this.ui.organisation_name).validateField('failed', gt.gettext('3 characters min'));
+            return false;
+        } else if (this.ui.organisation_name.val().length == 0) {
+            $(this.ui.organisation_name).cleanField();
+            return true;
+        } else {
+            $(this.ui.organisation_name).validateField('ok');
+            return true;
+        }
+    },
+
+    onOrganisationNameInput: function () {
+        return this.validateOrganisationName();
+    }
+});
+
+module.exports = View;
+
+
+/***/ }),
+/* 337 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -47122,7 +50365,7 @@ module.exports = Router;
  * @details
  */
 
-var PermissionGroupModel = __webpack_require__(39);
+var PermissionGroupModel = __webpack_require__(40);
 
 var Collection = Backbone.Collection.extend({
     url: function() { return application.baseUrl + 'permission/group/'; },
@@ -47144,7 +50387,7 @@ module.exports = Collection;
 
 
 /***/ }),
-/* 312 */
+/* 338 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -47157,7 +50400,7 @@ module.exports = Collection;
  * @details
  */
 
-var PermissionGroupUserModel = __webpack_require__(40);
+var PermissionGroupUserModel = __webpack_require__(41);
 
 var Collection = Backbone.Collection.extend({
     url: function() { return application.baseUrl + 'permission/group/' + this.group_id + '/user/'; },
@@ -47182,7 +50425,7 @@ module.exports = Collection;
 
 
 /***/ }),
-/* 313 */
+/* 339 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -47195,7 +50438,7 @@ module.exports = Collection;
  * @details
  */
 
-var PermissionModel = __webpack_require__(41);
+var PermissionModel = __webpack_require__(42);
 
 var PermissionCollection = Backbone.Collection.extend({
     url: function() {
@@ -47223,7 +50466,7 @@ module.exports = PermissionCollection;
 
 
 /***/ }),
-/* 314 */
+/* 340 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -47236,7 +50479,7 @@ module.exports = PermissionCollection;
  * @details
  */
 
-var PermissionTypeModel = __webpack_require__(318);
+var PermissionTypeModel = __webpack_require__(344);
 
 var Collection = Backbone.Collection.extend({
     url: application.baseUrl + 'permission/type/',
@@ -47294,7 +50537,7 @@ module.exports = Collection;
 
 
 /***/ }),
-/* 315 */
+/* 341 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -47307,7 +50550,7 @@ module.exports = Collection;
  * @details
  */
 
-var PermissionUserModel = __webpack_require__(42);
+var PermissionUserModel = __webpack_require__(43);
 
 var Collection = Backbone.Collection.extend({
     url: function() {
@@ -47341,7 +50584,7 @@ module.exports = Collection;
 
 
 /***/ }),
-/* 316 */
+/* 342 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -47371,7 +50614,7 @@ PermissionModule.prototype = {
         // i18n if not english
         if (session.language !== "en") {
             try {
-                i18next.addResources(session.language, 'default', __webpack_require__(317)("./" + session.language + '/LC_MESSAGES/default.json'));
+                i18next.addResources(session.language, 'default', __webpack_require__(343)("./" + session.language + '/LC_MESSAGES/default.json'));
             } catch (e) {
                 console.warn("No translation found for the current language. Fallback to english language");
             }
@@ -47381,9 +50624,9 @@ PermissionModule.prototype = {
         // main collections
         //
 
-        var SelectOption = __webpack_require__(18);
+        var SelectOption = __webpack_require__(15);
 
-        var PermissionTypeCollection = __webpack_require__(314);
+        var PermissionTypeCollection = __webpack_require__(340);
         this.collections.permissionType = new PermissionTypeCollection();
 
         this.views.permissionType = new SelectOption({
@@ -47395,7 +50638,7 @@ PermissionModule.prototype = {
         // routers
         //
 
-        var PermissionRouter = __webpack_require__(319);
+        var PermissionRouter = __webpack_require__(345);
         this.routers.permission = new PermissionRouter();
     },
 
@@ -47411,12 +50654,12 @@ module.exports = PermissionModule;
 
 
 /***/ }),
-/* 317 */
+/* 343 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
-	"./en/LC_MESSAGES/default.json": 376,
-	"./fr/LC_MESSAGES/default.json": 377
+	"./en/LC_MESSAGES/default.json": 404,
+	"./fr/LC_MESSAGES/default.json": 405
 };
 function webpackContext(req) {
 	return __webpack_require__(webpackContextResolve(req));
@@ -47432,11 +50675,11 @@ webpackContext.keys = function webpackContextKeys() {
 };
 webpackContext.resolve = webpackContextResolve;
 module.exports = webpackContext;
-webpackContext.id = 317;
+webpackContext.id = 343;
 
 
 /***/ }),
-/* 318 */
+/* 344 */
 /***/ (function(module, exports) {
 
 /**
@@ -47463,7 +50706,7 @@ module.exports = Backbone.Model.extend({
 
 
 /***/ }),
-/* 319 */
+/* 345 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -47478,23 +50721,23 @@ module.exports = Backbone.Model.extend({
 
 var Marionette = __webpack_require__(0);
 
-var PermissionCollection = __webpack_require__(313);
-var PermissionUserCollection = __webpack_require__(315);
-var PermissionGroupCollection = __webpack_require__(311);
-var PermissionGroupUserCollection = __webpack_require__(312);
+var PermissionCollection = __webpack_require__(339);
+var PermissionUserCollection = __webpack_require__(341);
+var PermissionGroupCollection = __webpack_require__(337);
+var PermissionGroupUserCollection = __webpack_require__(338);
 
-var PermissionListView = __webpack_require__(328);
-var PermissionAddView = __webpack_require__(321);
-var PermissionUserListView = __webpack_require__(330);
-var PermissionGroupListView = __webpack_require__(324);
-var PermissionGroupUserListView = __webpack_require__(326);
-var PermissionGroupAddUserView = __webpack_require__(322);
-var PermissionAddGroupView = __webpack_require__(320);
+var PermissionListView = __webpack_require__(354);
+var PermissionAddView = __webpack_require__(347);
+var PermissionUserListView = __webpack_require__(356);
+var PermissionGroupListView = __webpack_require__(350);
+var PermissionGroupUserListView = __webpack_require__(352);
+var PermissionGroupAddUserView = __webpack_require__(348);
+var PermissionAddGroupView = __webpack_require__(346);
 
-var GroupModel = __webpack_require__(39);
+var GroupModel = __webpack_require__(40);
 
 var DefaultLayout = __webpack_require__(4);
-var TitleView = __webpack_require__(7);
+var TitleView = __webpack_require__(3);
 var ScrollingMoreView = __webpack_require__(9);
 
 var PermissionRouter = Marionette.AppRouter.extend({
@@ -47619,7 +50862,7 @@ module.exports = PermissionRouter;
 
 
 /***/ }),
-/* 320 */
+/* 346 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -47637,7 +50880,7 @@ var Marionette = __webpack_require__(0);
 var View = Marionette.ItemView.extend({
     tagName: 'div',
     className: 'group-add',
-    template: __webpack_require__(467),
+    template: __webpack_require__(509),
 
     ui: {
         add_group_btn: 'span.add-group',
@@ -47711,7 +50954,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 321 */
+/* 347 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -47729,7 +50972,7 @@ var Marionette = __webpack_require__(0);
 var View = Marionette.ItemView.extend({
     tagName: 'div',
     className: 'permission-add',
-    template: __webpack_require__(468),
+    template: __webpack_require__(510),
 
     ui: {
         add_permission: ".add-permission",
@@ -47793,7 +51036,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 322 */
+/* 348 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -47811,7 +51054,7 @@ var Marionette = __webpack_require__(0);
 var View = Marionette.ItemView.extend({
     tagName: 'div',
     className: 'user-add',
-    template: __webpack_require__(469),
+    template: __webpack_require__(511),
 
     ui: {
         add_user: ".add-user",
@@ -47895,7 +51138,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 323 */
+/* 349 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -47909,26 +51152,26 @@ module.exports = View;
  */
 
 var Marionette = __webpack_require__(0);
-var Dialog = __webpack_require__(5);
+var Dialog = __webpack_require__(6);
 
 
 var View = Marionette.ItemView.extend({
     tagName: 'tr',
     className: 'element object group',
-    template: __webpack_require__(470),
+    template: __webpack_require__(512),
 
     ui: {
         delete_group: 'span.delete-group',
         change_name: 'td.change-name',
         view_permissions: 'td.view-permissions',
-        view_users: 'td.view-users',
+        view_users: 'td.view-users'
     },
 
     events: {
         'click @ui.delete_group': 'deleteGroup',
         'click @ui.change_name': 'onRenameGroup',
         'click @ui.view_permissions': 'viewPermissions',
-        'click @ui.view_users': 'viewUsers',
+        'click @ui.view_users': 'viewUsers'
     },
 
     initialize: function() {
@@ -47955,14 +51198,14 @@ var View = Marionette.ItemView.extend({
 
     onRenameGroup: function(e) {
         var ChangeName = Dialog.extend({
-            template: __webpack_require__(471),
+            template: __webpack_require__(514),
 
             attributes: {
                 id: "dlg_change_name"
             },
 
             ui: {
-                name: "#name"
+                name: "#group_name"
             },
 
             events: {
@@ -47999,7 +51242,9 @@ var View = Marionette.ItemView.extend({
                 var model = this.getOption('model');
 
                 if (this.validateName()) {
-                    model.save({name: name}, {patch: true, wait:true});
+                    model.save({name: name}, {patch: true, wait:true, success: function() {
+                        $.alert.success('Done');
+                    }});
                     this.destroy();
                 }
             },
@@ -48018,7 +51263,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 324 */
+/* 350 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -48032,12 +51277,12 @@ module.exports = View;
  */
 
 var Marionette = __webpack_require__(0);
-var PermissionGroupModel = __webpack_require__(39);
-var PermissionGroupView = __webpack_require__(323);
-var ScrollView = __webpack_require__(6);
+var PermissionGroupModel = __webpack_require__(40);
+var PermissionGroupView = __webpack_require__(349);
+var ScrollView = __webpack_require__(7);
 
 var View = ScrollView.extend({
-    template: __webpack_require__(472),
+    template: __webpack_require__(513),
     childView: PermissionGroupView,
     childViewContainer: 'tbody.permission-group-list',
 
@@ -48052,7 +51297,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 325 */
+/* 351 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -48066,12 +51311,12 @@ module.exports = View;
  */
 
 var Marionette = __webpack_require__(0);
-var PermissionGroupUserModel = __webpack_require__(40);
+var PermissionGroupUserModel = __webpack_require__(41);
 
 var View = Marionette.ItemView.extend({
     tagName: 'tr',
     className: 'element object user',
-    template: __webpack_require__(473),
+    template: __webpack_require__(515),
 
     ui: {
         remove_user: 'span.remove-user',
@@ -48107,7 +51352,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 326 */
+/* 352 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -48121,12 +51366,12 @@ module.exports = View;
  */
 
 var Marionette = __webpack_require__(0);
-var PermissionGroupUserModel = __webpack_require__(40);
-var PermissionGroupUserView = __webpack_require__(325);
-var ScrollView = __webpack_require__(6);
+var PermissionGroupUserModel = __webpack_require__(41);
+var PermissionGroupUserView = __webpack_require__(351);
+var ScrollView = __webpack_require__(7);
 
 var View = ScrollView.extend({
-    template: __webpack_require__(474),
+    template: __webpack_require__(516),
     childView: PermissionGroupUserView,
     childViewContainer: 'tbody.group-user-list',
 
@@ -48141,7 +51386,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 327 */
+/* 353 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -48155,11 +51400,11 @@ module.exports = View;
  */
 
 var Marionette = __webpack_require__(0);
-var PermissionModel = __webpack_require__(41);
+var PermissionModel = __webpack_require__(42);
 
 var View = Marionette.ItemView.extend({
     tagName: 'div',
-    template: __webpack_require__(475),
+    template: __webpack_require__(517),
 
     ui: {
         "remove_permission": ".remove-permission",
@@ -48181,7 +51426,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 328 */
+/* 354 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -48195,11 +51440,11 @@ module.exports = View;
  */
 
 var Marionette = __webpack_require__(0);
-var PermissionModel = __webpack_require__(41);
-var PermissionView = __webpack_require__(327);
+var PermissionModel = __webpack_require__(42);
+var PermissionView = __webpack_require__(353);
 
 var PermissionListView = Marionette.CompositeView.extend({
-    template: __webpack_require__(476),
+    template: __webpack_require__(518),
     childViewContainer: ".permission-list",
     childView: PermissionView,
 
@@ -48253,7 +51498,7 @@ module.exports = PermissionListView;
 
 
 /***/ }),
-/* 329 */
+/* 355 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -48267,12 +51512,12 @@ module.exports = PermissionListView;
  */
 
 var Marionette = __webpack_require__(0);
-var PermissionUserModel = __webpack_require__(42);
+var PermissionUserModel = __webpack_require__(43);
 
 var View = Marionette.ItemView.extend({
     tagName: 'tr',
     className: 'element object user',
-    template: __webpack_require__(477),
+    template: __webpack_require__(519),
 
     ui: {
         enable_user: 'span.enable-user',
@@ -48360,7 +51605,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 330 */
+/* 356 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -48374,12 +51619,12 @@ module.exports = View;
  */
 
 var Marionette = __webpack_require__(0);
-var PermissionUserModel = __webpack_require__(42);
-var PermissionUserView = __webpack_require__(329);
-var ScrollView = __webpack_require__(6);
+var PermissionUserModel = __webpack_require__(43);
+var PermissionUserView = __webpack_require__(355);
+var ScrollView = __webpack_require__(7);
 
 var View = ScrollView.extend({
-    template: __webpack_require__(478),
+    template: __webpack_require__(520),
     childView: PermissionUserView,
     childViewContainer: 'tbody.permission-user-list',
 
@@ -48394,7 +51639,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 331 */
+/* 357 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -48451,7 +51696,7 @@ module.exports = Collection;
 
 
 /***/ }),
-/* 332 */
+/* 358 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -48464,7 +51709,7 @@ module.exports = Collection;
  * @details
  */
 
-var TaxonEntityModel = __webpack_require__(338);
+var TaxonEntityModel = __webpack_require__(364);
 
 var Collection = Backbone.Collection.extend({
     url: function() {
@@ -48508,7 +51753,7 @@ module.exports = Collection;
 
 
 /***/ }),
-/* 333 */
+/* 359 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -48521,7 +51766,7 @@ module.exports = Collection;
  * @details
  */
 
-var TaxonRankModel = __webpack_require__(339);
+var TaxonRankModel = __webpack_require__(365);
 
 var TaxonRankCollection = Backbone.Collection.extend({
     url: application.baseUrl + 'taxonomy/rank/',
@@ -48548,7 +51793,7 @@ module.exports = TaxonRankCollection;
 
 
 /***/ }),
-/* 334 */
+/* 360 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -48561,7 +51806,7 @@ module.exports = TaxonRankCollection;
  * @details
  */
 
-var TaxonSynonymTypeModel = __webpack_require__(340);
+var TaxonSynonymTypeModel = __webpack_require__(366);
 
 var Collection = Backbone.Collection.extend({
     url: application.baseUrl + 'taxonomy/taxon-synonym-type/',
@@ -48588,7 +51833,7 @@ module.exports = Collection;
 
 
 /***/ }),
-/* 335 */
+/* 361 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -48603,20 +51848,20 @@ module.exports = Collection;
 
 var Marionette = __webpack_require__(0);
 var TaxonModel = __webpack_require__(10);
-var TaxonCollection = __webpack_require__(78);
-var TaxonListView = __webpack_require__(80);
+var TaxonCollection = __webpack_require__(86);
+var TaxonListView = __webpack_require__(88);
 var DefaultLayout = __webpack_require__(4);
-var TitleView = __webpack_require__(7);
-var Dialog = __webpack_require__(5);
+var TitleView = __webpack_require__(3);
+var Dialog = __webpack_require__(6);
 
 var TaxonController = Marionette.Object.extend({
 
     create: function() {
         var CreateTaxonView = Dialog.extend({
             attributes: {
-                'id': 'dlg_create_taxon',
+                'id': 'dlg_create_taxon'
             },
-            template: __webpack_require__(482),
+            template: __webpack_require__(524),
 
             ui: {
                 create: "button.create",
@@ -48624,13 +51869,13 @@ var TaxonController = Marionette.Object.extend({
                 name: "#taxon_name",
                 rank: "#taxon_rank",
                 parent: "#taxon_parent",
-                parent_group: ".taxon-parent-group",
+                parent_group: ".taxon-parent-group"
             },
 
             events: {
                 'click @ui.create': 'onCreate',
                 'input @ui.name': 'onNameInput',
-                'change @ui.rank': 'onChangeRank',
+                'change @ui.rank': 'onChangeRank'
             },
 
             onRender: function () {
@@ -48792,6 +52037,7 @@ var TaxonController = Marionette.Object.extend({
                         type: "GET",
                         url: application.baseUrl + 'taxonomy/taxon/synonym/search/',
                         dataType: 'json',
+                        contentType: 'application/json; charset=utf8',
                         data: {filters: JSON.stringify(filters)},
                         el: this.ui.name,
                         success: function(data) {
@@ -48799,7 +52045,7 @@ var TaxonController = Marionette.Object.extend({
                                 for (var i in data.items) {
                                     var t = data.items[i];
 
-                                    if (t.value.toUpperCase() == name.toUpperCase()) {
+                                    if (t.label.toUpperCase() == name.toUpperCase()) {
                                         $(this.el).validateField('failed', gt.gettext('Taxon name already in usage'));
                                         break;
                                     }
@@ -48887,7 +52133,7 @@ module.exports = TaxonController;
 
 
 /***/ }),
-/* 336 */
+/* 362 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -48917,7 +52163,7 @@ TaxonomyModule.prototype = {
         // i18n if not english
         if (session.language !== "en") {
             try {
-                i18next.addResources(session.language, 'default', __webpack_require__(337)("./" + session.language + '/LC_MESSAGES/default.json'));
+                i18next.addResources(session.language, 'default', __webpack_require__(363)("./" + session.language + '/LC_MESSAGES/default.json'));
             } catch (e) {
                 console.warn("No translation found for the current language. Fallback to english language");
             }
@@ -48927,9 +52173,9 @@ TaxonomyModule.prototype = {
         // main collections
         //
 
-        var SelectOption = __webpack_require__(18);
+        var SelectOption = __webpack_require__(15);
 
-        var TaxonRankCollection = __webpack_require__(333);
+        var TaxonRankCollection = __webpack_require__(359);
         this.collections.taxonRanks = new TaxonRankCollection();
 
         this.views.taxonRanks = new SelectOption({
@@ -48937,7 +52183,7 @@ TaxonomyModule.prototype = {
             collection: this.collections.taxonRanks
         });
 
-        var TaxonSynonymTypeCollection = __webpack_require__(334);
+        var TaxonSynonymTypeCollection = __webpack_require__(360);
         this.collections.taxonSynonymTypes = new TaxonSynonymTypeCollection();
 
         this.views.taxonSynonymTypes = new SelectOption({
@@ -48949,17 +52195,17 @@ TaxonomyModule.prototype = {
         // controllers
         //
 
-        var TaxonController = __webpack_require__(335);
+        var TaxonController = __webpack_require__(361);
         this.controllers.taxon = new TaxonController();
 
         //
         // routers
         //
 
-        var TaxonRouter = __webpack_require__(341);
+        var TaxonRouter = __webpack_require__(367);
         this.routers.taxon = new TaxonRouter();
 
-        var TaxonCollection = __webpack_require__(78);
+        var TaxonCollection = __webpack_require__(86);
         this.collections.taxons = new TaxonCollection();
     },
 
@@ -48976,12 +52222,12 @@ module.exports = TaxonomyModule;
 
 
 /***/ }),
-/* 337 */
+/* 363 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
-	"./en/LC_MESSAGES/default.json": 378,
-	"./fr/LC_MESSAGES/default.json": 379
+	"./en/LC_MESSAGES/default.json": 406,
+	"./fr/LC_MESSAGES/default.json": 407
 };
 function webpackContext(req) {
 	return __webpack_require__(webpackContextResolve(req));
@@ -48997,11 +52243,11 @@ webpackContext.keys = function webpackContextKeys() {
 };
 webpackContext.resolve = webpackContextResolve;
 module.exports = webpackContext;
-webpackContext.id = 337;
+webpackContext.id = 363;
 
 
 /***/ }),
-/* 338 */
+/* 364 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -49014,7 +52260,7 @@ webpackContext.id = 337;
  * @details
  */
 
-var Backbone = __webpack_require__(3);
+var Backbone = __webpack_require__(5);
 
 var Model = Backbone.Model.extend({
     defaults: {
@@ -49032,7 +52278,7 @@ module.exports = Model;
 
 
 /***/ }),
-/* 339 */
+/* 365 */
 /***/ (function(module, exports) {
 
 /**
@@ -49059,7 +52305,7 @@ module.exports = Backbone.Model.extend({
 
 
 /***/ }),
-/* 340 */
+/* 366 */
 /***/ (function(module, exports) {
 
 /**
@@ -49086,7 +52332,7 @@ module.exports = Backbone.Model.extend({
 
 
 /***/ }),
-/* 341 */
+/* 367 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -49102,13 +52348,13 @@ module.exports = Backbone.Model.extend({
 var Marionette = __webpack_require__(0);
 var TaxonModel = __webpack_require__(10);
 
-var TaxonListView = __webpack_require__(80);
-var TaxonListFilterView = __webpack_require__(349);
+var TaxonListView = __webpack_require__(88);
+var TaxonListFilterView = __webpack_require__(375);
 
-var TaxonLayout = __webpack_require__(348);
+var TaxonLayout = __webpack_require__(374);
 
 var DefaultLayout = __webpack_require__(4);
-var TitleView = __webpack_require__(7);
+var TitleView = __webpack_require__(3);
 var ScrollingMoreView = __webpack_require__(9);
 
 var TaxonRouter = Marionette.AppRouter.extend({
@@ -49179,7 +52425,7 @@ module.exports = TaxonRouter;
 
 
 /***/ }),
-/* 342 */
+/* 368 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -49193,13 +52439,13 @@ module.exports = TaxonRouter;
  */
 
 var Marionette = __webpack_require__(0);
-var Dialog = __webpack_require__(5);
+var Dialog = __webpack_require__(6);
 
 var TaxonModel = __webpack_require__(10);
 
 var View = Marionette.ItemView.extend({
     tagName: 'div',
-    template: __webpack_require__(479),
+    template: __webpack_require__(521),
     templateHelpers/*templateContext*/: function () {
         return {
             taxon: this.taxon
@@ -49221,7 +52467,7 @@ var View = Marionette.ItemView.extend({
 
     events: {
         'click @ui.view_taxon': 'onViewTaxon',
-        'click @ui.change_parent': 'onChangeParent',
+        'click @ui.change_parent': 'onChangeParent'
     },
 
     initialize: function(options) {
@@ -49242,7 +52488,7 @@ var View = Marionette.ItemView.extend({
     },
 
     onRender: function() {
-        application.taxonomy.views.taxonRanks.htmlFromValue(this.el);
+        application.taxonomy.views.taxonRanks.attributeFromValue(this.el, 'title');
 
         if (this.getOption('noLink')) {
             this.ui.view_taxon.removeClass('action');
@@ -49260,14 +52506,14 @@ var View = Marionette.ItemView.extend({
 
     onChangeParent: function() {
         var ChangeParent = Dialog.extend({
-            template: __webpack_require__(193),
+            template: __webpack_require__(201),
 
             attributes: {
-                id: "dlg_change_parent",
+                id: "dlg_change_parent"
             },
 
             ui: {
-                parent: "#taxon_parent",
+                parent: "#taxon_parent"
             },
 
             initialize: function (options) {
@@ -49363,7 +52609,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 343 */
+/* 369 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -49378,9 +52624,9 @@ module.exports = View;
 
 var Marionette = __webpack_require__(0);
 var TaxonModel = __webpack_require__(10);
-var TaxonView = __webpack_require__(79);
+var TaxonView = __webpack_require__(87);
 
-var ScrollView = __webpack_require__(6);
+var ScrollView = __webpack_require__(7);
 
 
 var View = ScrollView.extend({
@@ -49403,7 +52649,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 344 */
+/* 370 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -49416,7 +52662,7 @@ module.exports = View;
  * @details
  */
 
-var DescribableEdit = __webpack_require__(35);
+var DescribableEdit = __webpack_require__(25);
 
 var View = DescribableEdit.extend({
     onCancel: function() {
@@ -49431,7 +52677,7 @@ var View = DescribableEdit.extend({
         // update the descriptor part of the taxon layout
         var taxonLayout = application.view().getRegion('content').currentView;
 
-        var TaxonDescriptorView = __webpack_require__(26);
+        var TaxonDescriptorView = __webpack_require__(30);
         var taxonDescriptorView = new TaxonDescriptorView({
             model: this.model,
             descriptorMetaModelLayout: view.descriptorMetaModelLayout});
@@ -49453,7 +52699,7 @@ var View = DescribableEdit.extend({
             // update the descriptor part of the taxon layout
             var taxonLayout = application.view().getRegion('content').currentView;
 
-            var TaxonDescriptorView = __webpack_require__(26);
+            var TaxonDescriptorView = __webpack_require__(30);
             var taxonDescriptorView = new TaxonDescriptorView({
                 model: model,
                 descriptorMetaModelLayout: view.descriptorMetaModelLayout});
@@ -49473,12 +52719,12 @@ var View = DescribableEdit.extend({
             application.getView().getRegion('right').show(contextLayout);
         }
 
-        var TitleView = __webpack_require__(7);
+        var TitleView = __webpack_require__(3);
         contextLayout.getRegion('title').show(new TitleView({title: gt.gettext("Descriptors")}));
 
         var actions = ['apply', 'cancel'];
 
-        var TaxonDescriptorContextView = __webpack_require__(43);
+        var TaxonDescriptorContextView = __webpack_require__(44);
         var contextView = new TaxonDescriptorContextView({actions: actions});
         contextLayout.getRegion('content').show(contextView);
 
@@ -49500,7 +52746,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 345 */
+/* 371 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -49515,12 +52761,12 @@ module.exports = View;
 
 var Marionette = __webpack_require__(0);
 
-var Dialog = __webpack_require__(5);
+var Dialog = __webpack_require__(6);
 
 var View = Marionette.ItemView.extend({
     tagName: 'div',
     className: 'object taxon',
-    template: __webpack_require__(486),
+    template: __webpack_require__(528),
 
     attributes: {
         style: "height: 25px; overflow-y: auto;"
@@ -49528,13 +52774,13 @@ var View = Marionette.ItemView.extend({
 
     ui: {
         "view_taxon": ".view-taxon",
-        "taxon_rank": ".taxon-ranks",
-        "change_parent": "span.change-parent"
+        "change_parent": "span.change-parent",
+        "taxon_rank": ".taxon-rank[name=taxon-rank]"
     },
 
     events: {
         'click @ui.view_taxon': 'onViewTaxon',
-        'click @ui.change_parent': 'onChangeParent',
+        'click @ui.change_parent': 'onChangeParent'
     },
 
     initialize: function() {
@@ -49544,7 +52790,8 @@ var View = Marionette.ItemView.extend({
     onRender: function() {
         application.main.views.languages.htmlFromValue(this.el);
         application.taxonomy.views.taxonSynonymTypes.htmlFromValue(this.el);
-        application.taxonomy.views.taxonRanks.htmlFromValue(this.el);
+        application.taxonomy.views.taxonRanks.elHtmlFromValue(this.ui.taxon_rank);
+        application.taxonomy.views.taxonRanks.attributeFromValue(this.el, 'title');
     },
 
     onViewTaxon: function(e) {
@@ -49555,14 +52802,14 @@ var View = Marionette.ItemView.extend({
 
     onChangeParent: function () {
         var ChangeParent = Dialog.extend({
-            template: __webpack_require__(193),
+            template: __webpack_require__(201),
 
             attributes: {
-                id: "dlg_change_parent",
+                id: "dlg_change_parent"
             },
 
             ui: {
-                parent: "#taxon_parent",
+                parent: "#taxon_parent"
             },
 
             initialize: function (options) {
@@ -49639,7 +52886,7 @@ var View = Marionette.ItemView.extend({
                 model.save({parent: parent}, {patch: true, wait: true});
 
                 this.destroy();
-            },
+            }
         });
 
         var changeParent = new ChangeParent({
@@ -49654,7 +52901,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 346 */
+/* 372 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -49667,12 +52914,12 @@ module.exports = View;
  * @details
  */
 
-var TaxonEntityView = __webpack_require__(347);
-var ScrollView = __webpack_require__(6);
+var TaxonEntityView = __webpack_require__(373);
+var ScrollView = __webpack_require__(7);
 
 
 var View = ScrollView.extend({
-    template: __webpack_require__(487),
+    template: __webpack_require__(529),
     className: "taxon-entity-list",
     childView: TaxonEntityView,
     childViewContainer: 'tbody.entities-list',
@@ -49690,7 +52937,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 347 */
+/* 373 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -49707,7 +52954,7 @@ var Marionette = __webpack_require__(0);
 
 var View = Marionette.ItemView.extend({
     tagName: 'tr',
-    template: __webpack_require__(488),
+    template: __webpack_require__(530),
     className: "element",
     taxon: null,
 
@@ -49741,7 +52988,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 348 */
+/* 374 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -49756,10 +53003,10 @@ module.exports = View;
 
 var Marionette = __webpack_require__(0);
 var ScrollingMoreView = __webpack_require__(9);
-var ContentBottomLayout = __webpack_require__(37);
+var ContentBottomLayout = __webpack_require__(28);
 
 var Layout = Marionette.LayoutView.extend({
-    template: __webpack_require__(489),
+    template: __webpack_require__(531),
 
     attributes: {
         style: "height: 100%;"
@@ -49801,7 +53048,7 @@ var Layout = Marionette.LayoutView.extend({
 
     onDescriptorMetaModelChange: function(model, value) {
         if (value == null) {
-            var TaxonDescriptorCreateView = __webpack_require__(44);
+            var TaxonDescriptorCreateView = __webpack_require__(45);
             var taxonDescriptorCreateView = new TaxonDescriptorCreateView({model: model});
 
             this.getRegion('descriptors').show(taxonDescriptorCreateView);
@@ -49814,7 +53061,7 @@ var Layout = Marionette.LayoutView.extend({
                 url: application.baseUrl + 'descriptor/meta-model/' + value + '/layout/',
                 dataType: 'json'
             }).done(function (data) {
-                var TaxonDescriptorView = __webpack_require__(26);
+                var TaxonDescriptorView = __webpack_require__(30);
                 var taxonDescriptorView = new TaxonDescriptorView({
                     model: model,
                     descriptorMetaModelLayout: data
@@ -49827,30 +53074,25 @@ var Layout = Marionette.LayoutView.extend({
     onRender: function() {
         var taxonLayout = this;
 
-        this.activeTab = this.ui.initial_pane.attr('name');
-
-        this.ui.tabs.on("shown.bs.tab", $.proxy(this.onShowTab, this));
-        this.ui.tabs.on("hide.bs.tab", $.proxy(this.onHideTab, this));
-
         // details views
-        var TaxonDetailsView = __webpack_require__(345);
+        var TaxonDetailsView = __webpack_require__(371);
         this.getRegion('details').show(new TaxonDetailsView({model: this.model}));
 
         // synonyms tab
-        var TaxonSynonymsView = __webpack_require__(350);
+        var TaxonSynonymsView = __webpack_require__(376);
         this.getRegion('synonyms').show(new TaxonSynonymsView({model: this.model}));
 
         // descriptors tab
-        var TaxonDescriptorCreateView = __webpack_require__(44);
+        var TaxonDescriptorCreateView = __webpack_require__(45);
         var taxonDescriptorCreateView = new TaxonDescriptorCreateView({model: this.model});
         this.getRegion('descriptors').show(taxonDescriptorCreateView);
 
         // direct taxon sub-levels tab
-        var TaxonChildrenCollection = __webpack_require__(331);
+        var TaxonChildrenCollection = __webpack_require__(357);
         var taxonChildren = new TaxonChildrenCollection([], {model_id: this.model.id});
 
         taxonChildren.fetch().then(function() {
-            var TaxonChildrenView = __webpack_require__(343);
+            var TaxonChildrenView = __webpack_require__(369);
             var taxonChildrenView = new TaxonChildrenView({collection: taxonChildren, model: taxonLayout.model});
 
             var contentBottomLayout = new ContentBottomLayout();
@@ -49861,11 +53103,11 @@ var Layout = Marionette.LayoutView.extend({
         });
 
         // entities relating this taxon tab
-        var TaxonEntitiesCollection = __webpack_require__(332);
+        var TaxonEntitiesCollection = __webpack_require__(358);
         var taxonEntities = new TaxonEntitiesCollection([], {model_id: this.model.id});
 
         taxonEntities.fetch().then(function() {
-            var TaxonEntitiesView = __webpack_require__(346);
+            var TaxonEntitiesView = __webpack_require__(372);
             var taxonEntitiesView = new TaxonEntitiesView({collection: taxonEntities, model: taxonLayout.model});
 
             var contentBottomLayout = new ContentBottomLayout();
@@ -49874,6 +53116,13 @@ var Layout = Marionette.LayoutView.extend({
             contentBottomLayout.getRegion('content').show(taxonEntitiesView);
             contentBottomLayout.getRegion('bottom').show(new ScrollingMoreView({targetView: taxonEntitiesView}));
         });
+    },
+
+    onBeforeAttach: function() {
+        this.activeTab = this.ui.initial_pane.attr('name');
+
+        this.ui.tabs.on("shown.bs.tab", $.proxy(this.onShowTab, this));
+        this.ui.tabs.on("hide.bs.tab", $.proxy(this.onHideTab, this));
     },
 
     onShowTab: function(e) {
@@ -49907,7 +53156,7 @@ module.exports = Layout;
 
 
 /***/ }),
-/* 349 */
+/* 375 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -49925,7 +53174,7 @@ var Marionette = __webpack_require__(0);
 var View = Marionette.ItemView.extend({
     tagName: 'div',
     className: 'taxon-filter',
-    template: __webpack_require__(490),
+    template: __webpack_require__(532),
 
     ui: {
         filter_btn: 'button.taxon-filter',
@@ -49983,7 +53232,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 350 */
+/* 376 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -49997,12 +53246,12 @@ module.exports = View;
  */
 
 var Marionette = __webpack_require__(0);
-var Dialog = __webpack_require__(5);
+var Dialog = __webpack_require__(6);
 
 var View = Marionette.ItemView.extend({
     tagName: 'div',
     className: 'taxon-synonyms',
-    template: __webpack_require__(491),
+    template: __webpack_require__(533),
 
     ui: {
         "synonym_name": ".synonym-name",
@@ -50052,6 +53301,7 @@ var View = Marionette.ItemView.extend({
 
     onSynonymNameInput: function () {
         if (this.validateName()) {
+            var view = this;
             var name = this.ui.synonym_name.val().trim();
 
             var filters = {
@@ -50066,20 +53316,25 @@ var View = Marionette.ItemView.extend({
                 dataType: 'json',
                 data: {filters: JSON.stringify(filters)},
                 cache: false,
-                el: this.ui.synonym_name,
                 success: function(data) {
                     if (data.items.length > 0) {
                         for (var i in data.items) {
                             var t = data.items[i];
 
+                            // invalid if primary exists with the same name or if exists into the same taxon
                             if (t.label.toUpperCase() == name.toUpperCase()) {
-                                $(this.el).validateField('failed', gt.gettext('Synonym of taxon already used'));
-                                break;
+                                if ((t.taxon == view.model.get('id')) || (t.type == 0)) {
+                                    view.ui.synonym_name.validateField(
+                                        'failed', gt.gettext('Synonym of taxon already used'));
+
+                                    return;
+                                }
                             }
                         }
-                    } else {
-                        $(this.el).validateField('ok');
                     }
+
+                    // validate
+                    view.ui.synonym_name.validateField('ok');
                 }
             });
         }
@@ -50126,18 +53381,18 @@ var View = Marionette.ItemView.extend({
 
     onRenameSynonym: function(e) {
         var ChangeSynonym = Dialog.extend({
-            template: __webpack_require__(481),
+            template: __webpack_require__(523),
 
             attributes: {
-                id: "dlg_change_synonym",
+                id: "dlg_change_synonym"
             },
 
             ui: {
-                synonym_name: "#taxon_synonym_name",
+                synonym_name: "#taxon_synonym_name"
             },
 
             events: {
-                'input @ui.synonym_name': 'onSynonymNameInput',
+                'input @ui.synonym_name': 'onSynonymNameInput'
             },
 
             initialize: function (options) {
@@ -50161,25 +53416,35 @@ var View = Marionette.ItemView.extend({
                         dataType: 'json',
                         data: {filters: JSON.stringify(filters)},
                         cache: false,
-                        el: this.ui.synonym_name,
                         success: function(data) {
                             if (data.items.length > 0) {
                                 for (var i in data.items) {
                                     var t = data.items[i];
 
                                     if (t.label.toUpperCase() == name.toUpperCase()) {
-                                        // same taxon, same synonym => valid
+                                        // valid if same taxon and same synonym
                                         if ((t.taxon == view.model.get('id')) && (t.id == view.getOption('synonym_id'))) {
                                             view.ui.synonym_name.validateField('ok');
                                             break;
                                         }
 
-                                        $(this.el).validateField('failed', gt.gettext('Synonym of taxon already used'));
-                                        break;
+                                        // invalid if same name and modifying a primary synonym
+                                        if (view.getOption('type') == 0) {
+                                            view.ui.synonym_name.validateField(
+                                                'failed', gt.gettext('Primary synonym must be unique'));
+                                            break;
+                                        }
+
+                                        // invalid if primary exists with the same name or if exists into the same taxon
+                                        if ((t.taxon == view.model.get('id')) || (t.type == 0)) {
+                                            view.ui.synonym_name.validateField(
+                                                'failed', gt.gettext('Synonym of taxon already used'));
+                                            break;
+                                        }
                                     }
                                 }
                             } else {
-                                $(this.el).validateField('ok');
+                                view.ui.synonym_name.validateField('ok');
                             }
                         }
                     });
@@ -50207,7 +53472,7 @@ var View = Marionette.ItemView.extend({
                 var synonym_id = this.getOption('synonym_id');
                 var name = this.ui.synonym_name.val().trim();
 
-                if (this.validateName()) {
+                if (!this.ui.synonym_name.hasClass('invalid')) {
                     $.ajax({
                         type: "PUT",
                         url: view.model.url() + 'synonym/' + synonym_id + '/',
@@ -50252,7 +53517,7 @@ module.exports = View;
 
 
 /***/ }),
-/* 351 */
+/* 377 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Backbone.BabySitter
@@ -50267,7 +53532,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Backbone.Baby
 (function(root, factory) {
 
   if (true) {
-    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(3), __webpack_require__(2)], __WEBPACK_AMD_DEFINE_RESULT__ = function(Backbone, _) {
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(5), __webpack_require__(2)], __WEBPACK_AMD_DEFINE_RESULT__ = function(Backbone, _) {
       return factory(Backbone, _);
     }.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -50449,7 +53714,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Backbone.Baby
 
 
 /***/ }),
-/* 352 */
+/* 378 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Backbone.Wreqr (Backbone.Marionette)
@@ -50465,7 +53730,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Backbone.Wreq
 (function(root, factory) {
 
   if (true) {
-    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(3), __webpack_require__(2)], __WEBPACK_AMD_DEFINE_RESULT__ = function(Backbone, _) {
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(5), __webpack_require__(2)], __WEBPACK_AMD_DEFINE_RESULT__ = function(Backbone, _) {
       return factory(Backbone, _);
     }.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -50891,7 +54156,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// Backbone.Wreq
 
 
 /***/ }),
-/* 353 */
+/* 379 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -50905,7 +54170,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
-var _utils = __webpack_require__(21);
+var _utils = __webpack_require__(20);
 
 var utils = _interopRequireWildcard(_utils);
 
@@ -50913,7 +54178,7 @@ var _logger = __webpack_require__(11);
 
 var _logger2 = _interopRequireDefault(_logger);
 
-var _EventEmitter2 = __webpack_require__(20);
+var _EventEmitter2 = __webpack_require__(19);
 
 var _EventEmitter3 = _interopRequireDefault(_EventEmitter2);
 
@@ -51214,7 +54479,7 @@ var Connector = function (_EventEmitter) {
 exports.default = Connector;
 
 /***/ }),
-/* 354 */
+/* 380 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -51226,7 +54491,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var _utils = __webpack_require__(21);
+var _utils = __webpack_require__(20);
 
 var utils = _interopRequireWildcard(_utils);
 
@@ -51234,7 +54499,7 @@ var _logger = __webpack_require__(11);
 
 var _logger2 = _interopRequireDefault(_logger);
 
-var _EventEmitter2 = __webpack_require__(20);
+var _EventEmitter2 = __webpack_require__(19);
 
 var _EventEmitter3 = _interopRequireDefault(_EventEmitter2);
 
@@ -51308,7 +54573,7 @@ var Connector = function (_EventEmitter) {
 exports.default = Connector;
 
 /***/ }),
-/* 355 */
+/* 381 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -51318,7 +54583,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _utils = __webpack_require__(21);
+var _utils = __webpack_require__(20);
 
 var utils = _interopRequireWildcard(_utils);
 
@@ -51485,7 +54750,7 @@ var Interpolator = function () {
 exports.default = Interpolator;
 
 /***/ }),
-/* 356 */
+/* 382 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -51635,7 +54900,7 @@ var LanguageUtil = function () {
 exports.default = LanguageUtil;
 
 /***/ }),
-/* 357 */
+/* 383 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -51840,7 +55105,7 @@ var PluralResolver = function () {
 exports.default = PluralResolver;
 
 /***/ }),
-/* 358 */
+/* 384 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -51852,11 +55117,11 @@ Object.defineProperty(exports, "__esModule", {
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var _EventEmitter2 = __webpack_require__(20);
+var _EventEmitter2 = __webpack_require__(19);
 
 var _EventEmitter3 = _interopRequireDefault(_EventEmitter2);
 
-var _utils = __webpack_require__(21);
+var _utils = __webpack_require__(20);
 
 var utils = _interopRequireWildcard(_utils);
 
@@ -52003,7 +55268,7 @@ var ResourceStore = function (_EventEmitter) {
 exports.default = ResourceStore;
 
 /***/ }),
-/* 359 */
+/* 385 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -52021,19 +55286,19 @@ var _logger = __webpack_require__(11);
 
 var _logger2 = _interopRequireDefault(_logger);
 
-var _EventEmitter2 = __webpack_require__(20);
+var _EventEmitter2 = __webpack_require__(19);
 
 var _EventEmitter3 = _interopRequireDefault(_EventEmitter2);
 
-var _postProcessor = __webpack_require__(82);
+var _postProcessor = __webpack_require__(90);
 
 var _postProcessor2 = _interopRequireDefault(_postProcessor);
 
-var _v = __webpack_require__(81);
+var _v = __webpack_require__(89);
 
 var compat = _interopRequireWildcard(_v);
 
-var _utils = __webpack_require__(21);
+var _utils = __webpack_require__(20);
 
 var utils = _interopRequireWildcard(_utils);
 
@@ -52316,7 +55581,7 @@ var Translator = function (_EventEmitter) {
 exports.default = Translator;
 
 /***/ }),
-/* 360 */
+/* 386 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -52398,7 +55663,7 @@ function transformOptions(options) {
 }
 
 /***/ }),
-/* 361 */
+/* 387 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -52416,45 +55681,45 @@ var _logger = __webpack_require__(11);
 
 var _logger2 = _interopRequireDefault(_logger);
 
-var _EventEmitter2 = __webpack_require__(20);
+var _EventEmitter2 = __webpack_require__(19);
 
 var _EventEmitter3 = _interopRequireDefault(_EventEmitter2);
 
-var _ResourceStore = __webpack_require__(358);
+var _ResourceStore = __webpack_require__(384);
 
 var _ResourceStore2 = _interopRequireDefault(_ResourceStore);
 
-var _Translator = __webpack_require__(359);
+var _Translator = __webpack_require__(385);
 
 var _Translator2 = _interopRequireDefault(_Translator);
 
-var _LanguageUtils = __webpack_require__(356);
+var _LanguageUtils = __webpack_require__(382);
 
 var _LanguageUtils2 = _interopRequireDefault(_LanguageUtils);
 
-var _PluralResolver = __webpack_require__(357);
+var _PluralResolver = __webpack_require__(383);
 
 var _PluralResolver2 = _interopRequireDefault(_PluralResolver);
 
-var _Interpolator = __webpack_require__(355);
+var _Interpolator = __webpack_require__(381);
 
 var _Interpolator2 = _interopRequireDefault(_Interpolator);
 
-var _BackendConnector = __webpack_require__(353);
+var _BackendConnector = __webpack_require__(379);
 
 var _BackendConnector2 = _interopRequireDefault(_BackendConnector);
 
-var _CacheConnector = __webpack_require__(354);
+var _CacheConnector = __webpack_require__(380);
 
 var _CacheConnector2 = _interopRequireDefault(_CacheConnector);
 
-var _defaults2 = __webpack_require__(360);
+var _defaults2 = __webpack_require__(386);
 
-var _postProcessor = __webpack_require__(82);
+var _postProcessor = __webpack_require__(90);
 
 var _postProcessor2 = _interopRequireDefault(_postProcessor);
 
-var _v = __webpack_require__(81);
+var _v = __webpack_require__(89);
 
 var compat = _interopRequireWildcard(_v);
 
@@ -52805,7 +56070,7 @@ var I18n = function (_EventEmitter) {
 exports.default = new I18n();
 
 /***/ }),
-/* 362 */
+/* 388 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -52815,7 +56080,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _i18next = __webpack_require__(361);
+var _i18next = __webpack_require__(387);
 
 var _i18next2 = _interopRequireDefault(_i18next);
 
@@ -52824,7 +56089,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 exports.default = _i18next2.default;
 
 /***/ }),
-/* 363 */
+/* 389 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -52840,7 +56105,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 (function (factory) {
   if (true) {
     // AMD. Register as anonymous module.
-    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(29)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(33)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -54763,7 +58028,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 
 /***/ }),
-/* 364 */
+/* 390 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -54771,15 +58036,20 @@ module.exports = {
 	"Modify descriptors": "",
 	"Apply modifications": "",
 	"Cancel modifications": "",
-	"64 characters max": "",
 	"3 characters min": "",
-	"Synonym of accession already used": "",
+	"64 characters max": "",
+	"It is not possible to use a GRC code of accession as synonym": "",
+	"Synonym of accession already defined into this accession": "",
+	"Accession GRC code must be unique": "",
 	"Invalid characters (alphanumeric, _ and - only)": "",
 	"List of accessions": "",
 	"Accession": "",
 	"List of batches for the accession": "",
 	"Batch": "",
 	"Enter a taxon name. 3 characters at least for auto-completion": "",
+	"Code of accession already used": "",
+	"Synonym used as accession code": "",
+	"128 characters max": "",
 	"The parent must be defined": "",
 	"Rename a synonym of accession": "",
 	"Name": "",
@@ -54787,23 +58057,22 @@ module.exports = {
 	"Apply": "",
 	"Create an accession": "",
 	"Template": "",
-	"Principal name of the accession (must be unique)": "",
+	"Code of the accession (must be unique)": "",
+	"Principal name of the accession": "",
 	"Language": "",
 	"Taxon (specie, variety...)": "",
 	"Continue": "",
 	"Synonyms": "",
 	"Batches": "",
 	"Actions": "",
+	"Code": "",
 	"Parent": "",
-	"Xxx": "",
-	"Yyy": "",
-	"Zzz": "",
 	"Type": "",
 	"Parents": ""
 };
 
 /***/ }),
-/* 365 */
+/* 391 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -54811,15 +58080,20 @@ module.exports = {
 	"Modify descriptors": "Modifier les descripteurs",
 	"Apply modifications": "Appliquer les modifications",
 	"Cancel modifications": "Annuler les modificiations",
-	"64 characters max": "64 caractères maximum",
 	"3 characters min": "3 caractères minimum",
-	"Synonym of accession already used": "Synonyme d'accession déjà utilisé",
-	"Invalid characters (alphanumeric, _ and - only)": "",
+	"64 characters max": "64 caractères maximum",
+	"It is not possible to use a GRC code of accession as synonym": "Il n'est pas possible d'utiliser un code de CRB d'accession en tant que synonyme",
+	"Synonym of accession already defined into this accession": "Synonyme d'accession déjà défini dans cette accession",
+	"Accession GRC code must be unique": "Le code CRB de l'accession doit être unique",
+	"Invalid characters (alphanumeric, _ and - only)": "Caractères invalides (alphanumeric, _ et - seulement)",
 	"List of accessions": "Liste des accessions",
 	"Accession": "Accession",
 	"List of batches for the accession": "Liste des lots pour l'accession",
 	"Batch": "Lot",
 	"Enter a taxon name. 3 characters at least for auto-completion": "Saisissez un nom de taxon. A moins 3 caractère pour l'auto-complétion",
+	"Code of accession already used": "Code d'accession déjà utilisé",
+	"Synonym used as accession code": "Synonyme utilisé comme code d'accession",
+	"128 characters max": "128 caractères maximum",
 	"The parent must be defined": "Le parent doit être défini",
 	"Rename a synonym of accession": "Renomer un synonyme d'accession",
 	"Name": "Nom",
@@ -54827,23 +58101,22 @@ module.exports = {
 	"Apply": "Appliquer",
 	"Create an accession": "Créer une accession",
 	"Template": "Modèle",
-	"Principal name of the accession (must be unique)": "Nom principal de l'accession (doit être unique)",
+	"Code of the accession (must be unique)": "Code de l'accession (doit être unique)",
+	"Principal name of the accession": "Nom principal de l'accession",
 	"Language": "Langue",
 	"Taxon (specie, variety...)": "Taxon (espèce, variété...)",
 	"Continue": "Continuer",
 	"Synonyms": "Synonymes",
 	"Batches": "Lots",
 	"Actions": "Actions",
+	"Code": "Code",
 	"Parent": "Parent",
-	"Xxx": "Xxx",
-	"Yyy": "Yyy",
-	"Zzz": "Zzz",
 	"Type": "Type",
-	"Parents": ""
+	"Parents": "Parents"
 };
 
 /***/ }),
-/* 366 */
+/* 392 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -54867,7 +58140,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 367 */
+/* 393 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -54891,7 +58164,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 368 */
+/* 394 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -55029,10 +58302,10 @@ module.exports = {
 	"Modify": "",
 	"Cancel": "",
 	"Apply": "",
-	"Change the name of the group of descriptors": "",
 	"Name": "",
-	"Number of types of descriptor": "",
+	"Types of descriptor": "",
 	"Group of descriptors": "",
+	"Rename the group of descriptors": "",
 	"Change the label for the meta-model of descriptor": "",
 	"Create a meta-model of descriptor": "",
 	"Target entity": "",
@@ -55049,10 +58322,10 @@ module.exports = {
 	"Condition of the type of model of descriptor": "",
 	"Condition": "",
 	"Remove condition": "",
-	"Create a model of descriptor": "",
+	"Add a type of model of descriptor": "",
+	"Unique name": "",
 	"Code": "",
-	"Required": "",
-	"Set Once": "",
+	"Rename the type of model of descriptors": "",
 	"Undefined label": "",
 	"Change the label for the panel of descriptor": "",
 	"Create a panel of descriptor": "",
@@ -55064,13 +58337,14 @@ module.exports = {
 	"Type of descriptor": "",
 	"Change the value of a field for a type of descriptor": "",
 	"Value for any languages": "",
+	"Value0": "",
+	"Value1": "",
 	"Model of the entity": "",
 	"Translation": "",
 	"Field name (value0)": "",
 	"Minimal range value": "",
 	"Maximal range value": "",
 	"Sort by field": "",
-	"Value0": "",
 	"Displayed fields": "",
 	"Ordinal - Value0": "",
 	"Display the list as": "",
@@ -55078,7 +58352,6 @@ module.exports = {
 	"Autocomplete (big list)": "",
 	"Autocomplete search field": "",
 	"Field name (value1)": "",
-	"Value1": "",
 	"Controls how is displayed the field. Hierarchy mode is a special usage for pseudo hierarchy, for which values are roughly shifted to give an illusion of parent/children. The shift depend of the level declared in the value0 while value1 contains the label. The first value contains something like 1 or 2 or 1.1, 1.2, 1.1.1...": "",
 	"Value0 - Value1": "",
 	"Hierarchy of Value1": "",
@@ -55090,7 +58363,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 369 */
+/* 395 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -55108,7 +58381,7 @@ module.exports = {
 	"Descriptor type name already in usage": "Nom de type de descriptor déjà utilisé",
 	"It is not permitted to delete a meta-model of descriptor that contains some panels": "Il n'est pas permit de supprimer un méta-modèle de descripteur contenant des panels",
 	"64 characters max": "64 caractères maximum",
-	"Successfully labeled !": "Label définit avec succès !",
+	"Successfully labeled !": "Etiquette définie avec succès !",
 	"Unable to create the meta-model of descriptor !": "Impossible de créer le méta-modèle de descripteur !",
 	"Descriptor meta-model name already in usage": "Nom de méta-modèle de descripteur déjà utilisé",
 	"Done": "Fait",
@@ -55228,32 +58501,32 @@ module.exports = {
 	"Modify": "Modifier",
 	"Cancel": "Annuler",
 	"Apply": "Appliquer",
-	"Change the name of the group of descriptors": "Changer le nom du groupe de descripteur",
 	"Name": "Nom",
-	"Number of types of descriptor": "Nombre de types de descripteur",
+	"Types of descriptor": "Types de descripteur",
 	"Group of descriptors": "Groupe de descripteurs",
-	"Change the label for the meta-model of descriptor": "Changer le label du méta-modèle de descripteur",
+	"Rename the group of descriptors": "Renommer le groupe de descripteur",
+	"Change the label for the meta-model of descriptor": "Changer l'étiquette du méta-modèle de descripteur",
 	"Create a meta-model of descriptor": "Créer un méta-modèle de descripteur",
 	"Target entity": "Entité cible",
-	"Label for the current language": "Label pour le langage courant",
+	"Label for the current language": "Etiquette pour le langage courant",
 	"Description": "Description",
 	"Descriptor meta-model name": "Nom de méta-modèle de descripteur",
 	"Update": "Mettre à jour",
-	"Label": "Label",
+	"Label": "Etiquette",
 	"Target": "Cible",
 	"Number of panels of descriptor": "Nombre de panels de descripteur",
 	"Descriptor model name": "Nom de modèle de descripteur",
 	"Verbose name": "Nom complet",
-	"Change the label for the type of model of descriptor": "Changer le label du type de modèle de descripteur",
+	"Change the label for the type of model of descriptor": "Changer l'étiquette du type de modèle de descripteur",
 	"Condition of the type of model of descriptor": "Condition du type de modèle de descripteur",
 	"Condition": "Condition",
 	"Remove condition": "Supprimer la condition",
-	"Create a model of descriptor": "Créer un modèle de descripteur",
+	"Add a type of model of descriptor": "Ajouter un type de model de descripteur",
+	"Unique name": "Nom unique",
 	"Code": "Code",
-	"Required": "Obligatoire",
-	"Set Once": "Définie une fois",
-	"Undefined label": "Label indéfini",
-	"Change the label for the panel of descriptor": "Changer le label du panel de descripteur",
+	"Rename the type of model of descriptors": "Renommer le type de model de descriptors",
+	"Undefined label": "Etiquette indéfini",
+	"Change the label for the panel of descriptor": "Changer l'étiquette du panel de descripteur",
 	"Create a panel of descriptor": "Créer un panel de descripteur",
 	"Panels of descriptor": "Panels de descripteurs",
 	"Descriptor type name": "Nom du type de descripteur",
@@ -55263,13 +58536,14 @@ module.exports = {
 	"Type of descriptor": "Type de descripteur",
 	"Change the value of a field for a type of descriptor": "Changer la valeur pour un champs d'un type de descripteur",
 	"Value for any languages": "Valeur pour toutes les langues",
+	"Value0": "Valeur0",
+	"Value1": "Valeur1",
 	"Model of the entity": "Modèle de l'entité",
 	"Translation": "Traduction",
 	"Field name (value0)": "Nom du champs (valeur0)",
 	"Minimal range value": "Valeur minimale",
 	"Maximal range value": "Valeur maximale",
 	"Sort by field": "Trier par champs",
-	"Value0": "Valeur0",
 	"Displayed fields": "Champs affichés",
 	"Ordinal - Value0": "Ordinal - Valeur0",
 	"Display the list as": "Afficher la liste tel",
@@ -55277,8 +58551,7 @@ module.exports = {
 	"Autocomplete (big list)": "Autocomplete (liste importante)",
 	"Autocomplete search field": "Champ de recherche autocomplete",
 	"Field name (value1)": "Nom du champs (valeur1)",
-	"Value1": "Valeur1",
-	"Controls how is displayed the field. Hierarchy mode is a special usage for pseudo hierarchy, for which values are roughly shifted to give an illusion of parent/children. The shift depend of the level declared in the value0 while value1 contains the label. The first value contains something like 1 or 2 or 1.1, 1.2, 1.1.1...": "Contrôle comment est affiché le champs. Le mode hierarchy est utilisé afin de générer une pseudo-hiérarchie, pour laquelle les valeurs sont sensiblement décalé afin de donner une impression de parent/enfant. Le décalage dépend du niveau déclaré dans valeur0 tandis que valeur1 contient le label. La première valeur contient quelque-chose comme 1 or 2 or 1.1, 1.2, 1.1.1...",
+	"Controls how is displayed the field. Hierarchy mode is a special usage for pseudo hierarchy, for which values are roughly shifted to give an illusion of parent/children. The shift depend of the level declared in the value0 while value1 contains the label. The first value contains something like 1 or 2 or 1.1, 1.2, 1.1.1...": "Contrôle comment est affiché le champs. Le mode hierarchy est utilisé afin de générer une pseudo-hiérarchie, pour laquelle les valeurs sont sensiblement décalé afin de donner une impression de parent/enfant. Le décalage dépend du niveau déclaré dans valeur0 tandis que valeur1 contient l'étiquette. La première valeur contient quelque-chose comme 1 or 2 or 1.1, 1.2, 1.1.1...",
 	"Value0 - Value1": "Valeur0 - Valeur1",
 	"Hierarchy of Value1": "Hiérarchie de Valeur1",
 	"Unit of the format": "Unité du format",
@@ -55289,7 +58562,27 @@ module.exports = {
 };
 
 /***/ }),
-/* 370 */
+/* 396 */
+/***/ (function(module, exports) {
+
+module.exports = {
+	"Extended search...": "",
+	"Enter a value.": "",
+	"Enter a value. 3 characters at least for auto-completion": ""
+};
+
+/***/ }),
+/* 397 */
+/***/ (function(module, exports) {
+
+module.exports = {
+	"Extended search...": "Étendre la recherche...",
+	"Enter a value.": "Saisissez une valeur",
+	"Enter a value. 3 characters at least for auto-completion": "Saisissez une valeur. Au moins 3 caractères pour avoir l'auto-complétion"
+};
+
+/***/ }),
+/* 398 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -55299,10 +58592,15 @@ module.exports = {
 	"Home": "",
 	"About...": "",
 	"Help...": "",
+	"Configuration state": "",
 	"Edit my profile informations": "",
 	"English": "",
 	"French": "",
 	"Last actions": "",
+	"Configured": "",
+	"Improperly configured": "",
+	"Partially configured": "",
+	"Undefined": "",
 	"Cancel": "",
 	"Confirm": "",
 	"Defines the message for each language": "",
@@ -55314,7 +58612,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 371 */
+/* 399 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -55324,10 +58622,15 @@ module.exports = {
 	"Home": "Accueil",
 	"About...": "A propos...",
 	"Help...": "Aide..",
+	"Configuration state": "",
 	"Edit my profile informations": "Mettre à jour mon profil",
 	"English": "Anglais",
 	"French": "Français",
 	"Last actions": "Dernières actions",
+	"Configured": "",
+	"Improperly configured": "",
+	"Partially configured": "",
+	"Undefined": "",
 	"Cancel": "Annuler",
 	"Confirm": "Confirmer",
 	"Defines the message for each language": "Définir le message pour chaque langue",
@@ -55339,7 +58642,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 372 */
+/* 400 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -55360,7 +58663,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 373 */
+/* 401 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -55381,19 +58684,75 @@ module.exports = {
 };
 
 /***/ }),
-/* 374 */
+/* 402 */
 /***/ (function(module, exports) {
 
-module.exports = {};
+module.exports = {
+	"Descriptors": "",
+	"Modify descriptors": "",
+	"Apply modifications": "",
+	"Cancel modifications": "",
+	"Successfully removed !": "",
+	"3 characters min": "",
+	"Done": "",
+	"Organisation name already in usage": "",
+	"64 characters max": "",
+	"GRC details": "",
+	"List of GRC partners": "",
+	"List of organisations": "",
+	"Organisation": "",
+	"255 characters max": "",
+	"Name": "",
+	"Identifier": "",
+	"Description": "",
+	"Create an organisation or a partner": "",
+	"Name (must be unique)": "",
+	"Partner or organisation": "",
+	"GRC partner": "",
+	"Type": "",
+	"Cancel": "",
+	"Create": "",
+	"Update an organisation or a partner": "",
+	"Apply": "",
+	"Establishments": ""
+};
 
 /***/ }),
-/* 375 */
+/* 403 */
 /***/ (function(module, exports) {
 
-module.exports = {};
+module.exports = {
+	"Descriptors": "Descripteurs",
+	"Modify descriptors": "Modifier les descripteurs",
+	"Apply modifications": "Appliquer les modifications",
+	"Cancel modifications": "Annuler les modifications",
+	"Successfully removed !": "Retiré avec succès !",
+	"3 characters min": "3 caractères minimum",
+	"Done": "Fait",
+	"Organisation name already in usage": "Nom d'organisation déjà utilisé",
+	"64 characters max": "64 caractères maximum",
+	"GRC details": "Détails du CRB",
+	"List of GRC partners": "Liste des partenaires du CRB",
+	"List of organisations": "Liste des organisations",
+	"Organisation": "Organisation",
+	"255 characters max": "255 caractères maximum",
+	"Name": "Nom",
+	"Identifier": "Identifant",
+	"Description": "Description",
+	"Create an organisation or a partner": "Créer une organisation ou un partenaire",
+	"Name (must be unique)": "Nom (doit être unique)",
+	"Partner or organisation": "Partenaire ou organisation",
+	"GRC partner": "Partenaire de CRB",
+	"Type": "Type",
+	"Cancel": "Annuler",
+	"Create": "Créer",
+	"Update an organisation or a partner": "Mettre-à-jour une organisation ou un partenaire",
+	"Apply": "Appliquer",
+	"Establishments": "Sites"
+};
 
 /***/ }),
-/* 376 */
+/* 404 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -55406,12 +58765,12 @@ module.exports = {
 	"List of groups": "",
 	"List of permissions for group": "",
 	"List of users for group": "",
-	"Rename the group of users": "",
 	"Name": "",
-	"Cancel": "",
-	"Apply": "",
 	"Number of users": "",
 	"Number of permissions": "",
+	"Rename the group of users": "",
+	"Cancel": "",
+	"Apply": "",
 	"Username": "",
 	"First name": "",
 	"Last name": "",
@@ -55424,7 +58783,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 377 */
+/* 405 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -55437,12 +58796,12 @@ module.exports = {
 	"List of groups": "Liste des groupes",
 	"List of permissions for group": "Liste des permissions pour le groupe",
 	"List of users for group": "Liste des utilisateurs pour le groupe",
-	"Rename the group of users": "Renomer le groupe d'utilisateurs",
 	"Name": "Nom",
-	"Cancel": "Annuler",
-	"Apply": "Appliquer",
 	"Number of users": "Nombre d'utilisateurs",
 	"Number of permissions": "Nombre de permissions",
+	"Rename the group of users": "Renomer le groupe d'utilisateurs",
+	"Cancel": "Annuler",
+	"Apply": "Appliquer",
 	"Username": "Nom d'utilisateur",
 	"First name": "Prénom",
 	"Last name": "Nom",
@@ -55455,7 +58814,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 378 */
+/* 406 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -55473,6 +58832,7 @@ module.exports = {
 	"3 characters min": "",
 	"64 characters max": "",
 	"Synonym of taxon already used": "",
+	"Primary synonym must be unique": "",
 	"Unable to rename the synonym !": "",
 	"List of taxons": "",
 	"Taxon details": "",
@@ -55503,7 +58863,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 379 */
+/* 407 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -55521,6 +58881,7 @@ module.exports = {
 	"3 characters min": "3 caractères minimum",
 	"64 characters max": "64 caractères maximum",
 	"Synonym of taxon already used": "Synonyme de taxon existant",
+	"Primary synonym must be unique": "Le synonyme principale doit être unique",
 	"Unable to rename the synonym !": "Impossible de renommer le synonyme !",
 	"List of taxons": "Liste des taxons",
 	"Taxon details": "Détails du taxon",
@@ -55551,226 +58912,226 @@ module.exports = {
 };
 
 /***/ }),
-/* 380 */
+/* 408 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
-	"./af": 83,
-	"./af.js": 83,
-	"./ar": 89,
-	"./ar-dz": 84,
-	"./ar-dz.js": 84,
-	"./ar-ly": 85,
-	"./ar-ly.js": 85,
-	"./ar-ma": 86,
-	"./ar-ma.js": 86,
-	"./ar-sa": 87,
-	"./ar-sa.js": 87,
-	"./ar-tn": 88,
-	"./ar-tn.js": 88,
-	"./ar.js": 89,
-	"./az": 90,
-	"./az.js": 90,
-	"./be": 91,
-	"./be.js": 91,
-	"./bg": 92,
-	"./bg.js": 92,
-	"./bn": 93,
-	"./bn.js": 93,
-	"./bo": 94,
-	"./bo.js": 94,
-	"./br": 95,
-	"./br.js": 95,
-	"./bs": 96,
-	"./bs.js": 96,
-	"./ca": 97,
-	"./ca.js": 97,
-	"./cs": 98,
-	"./cs.js": 98,
-	"./cv": 99,
-	"./cv.js": 99,
-	"./cy": 100,
-	"./cy.js": 100,
-	"./da": 101,
-	"./da.js": 101,
-	"./de": 103,
-	"./de-at": 102,
-	"./de-at.js": 102,
-	"./de.js": 103,
-	"./dv": 104,
-	"./dv.js": 104,
-	"./el": 105,
-	"./el.js": 105,
-	"./en-au": 106,
-	"./en-au.js": 106,
-	"./en-ca": 107,
-	"./en-ca.js": 107,
-	"./en-gb": 108,
-	"./en-gb.js": 108,
-	"./en-ie": 109,
-	"./en-ie.js": 109,
-	"./en-nz": 110,
-	"./en-nz.js": 110,
-	"./eo": 111,
-	"./eo.js": 111,
-	"./es": 113,
-	"./es-do": 112,
-	"./es-do.js": 112,
-	"./es.js": 113,
-	"./et": 114,
-	"./et.js": 114,
-	"./eu": 115,
-	"./eu.js": 115,
-	"./fa": 116,
-	"./fa.js": 116,
-	"./fi": 117,
-	"./fi.js": 117,
-	"./fo": 118,
-	"./fo.js": 118,
-	"./fr": 121,
-	"./fr-ca": 119,
-	"./fr-ca.js": 119,
-	"./fr-ch": 120,
-	"./fr-ch.js": 120,
-	"./fr.js": 121,
-	"./fy": 122,
-	"./fy.js": 122,
-	"./gd": 123,
-	"./gd.js": 123,
-	"./gl": 124,
-	"./gl.js": 124,
-	"./he": 125,
-	"./he.js": 125,
-	"./hi": 126,
-	"./hi.js": 126,
-	"./hr": 127,
-	"./hr.js": 127,
-	"./hu": 128,
-	"./hu.js": 128,
-	"./hy-am": 129,
-	"./hy-am.js": 129,
-	"./id": 130,
-	"./id.js": 130,
-	"./is": 131,
-	"./is.js": 131,
-	"./it": 132,
-	"./it.js": 132,
-	"./ja": 133,
-	"./ja.js": 133,
-	"./jv": 134,
-	"./jv.js": 134,
-	"./ka": 135,
-	"./ka.js": 135,
-	"./kk": 136,
-	"./kk.js": 136,
-	"./km": 137,
-	"./km.js": 137,
-	"./ko": 138,
-	"./ko.js": 138,
-	"./ky": 139,
-	"./ky.js": 139,
-	"./lb": 140,
-	"./lb.js": 140,
-	"./lo": 141,
-	"./lo.js": 141,
-	"./lt": 142,
-	"./lt.js": 142,
-	"./lv": 143,
-	"./lv.js": 143,
-	"./me": 144,
-	"./me.js": 144,
-	"./mi": 145,
-	"./mi.js": 145,
-	"./mk": 146,
-	"./mk.js": 146,
-	"./ml": 147,
-	"./ml.js": 147,
-	"./mr": 148,
-	"./mr.js": 148,
-	"./ms": 150,
-	"./ms-my": 149,
-	"./ms-my.js": 149,
-	"./ms.js": 150,
-	"./my": 151,
-	"./my.js": 151,
-	"./nb": 152,
-	"./nb.js": 152,
-	"./ne": 153,
-	"./ne.js": 153,
-	"./nl": 155,
-	"./nl-be": 154,
-	"./nl-be.js": 154,
-	"./nl.js": 155,
-	"./nn": 156,
-	"./nn.js": 156,
-	"./pa-in": 157,
-	"./pa-in.js": 157,
-	"./pl": 158,
-	"./pl.js": 158,
-	"./pt": 160,
-	"./pt-br": 159,
-	"./pt-br.js": 159,
-	"./pt.js": 160,
-	"./ro": 161,
-	"./ro.js": 161,
-	"./ru": 162,
-	"./ru.js": 162,
-	"./se": 163,
-	"./se.js": 163,
-	"./si": 164,
-	"./si.js": 164,
-	"./sk": 165,
-	"./sk.js": 165,
-	"./sl": 166,
-	"./sl.js": 166,
-	"./sq": 167,
-	"./sq.js": 167,
-	"./sr": 169,
-	"./sr-cyrl": 168,
-	"./sr-cyrl.js": 168,
-	"./sr.js": 169,
-	"./ss": 170,
-	"./ss.js": 170,
-	"./sv": 171,
-	"./sv.js": 171,
-	"./sw": 172,
-	"./sw.js": 172,
-	"./ta": 173,
-	"./ta.js": 173,
-	"./te": 174,
-	"./te.js": 174,
-	"./tet": 175,
-	"./tet.js": 175,
-	"./th": 176,
-	"./th.js": 176,
-	"./tl-ph": 177,
-	"./tl-ph.js": 177,
-	"./tlh": 178,
-	"./tlh.js": 178,
-	"./tr": 179,
-	"./tr.js": 179,
-	"./tzl": 180,
-	"./tzl.js": 180,
-	"./tzm": 182,
-	"./tzm-latn": 181,
-	"./tzm-latn.js": 181,
-	"./tzm.js": 182,
-	"./uk": 183,
-	"./uk.js": 183,
-	"./uz": 184,
-	"./uz.js": 184,
-	"./vi": 185,
-	"./vi.js": 185,
-	"./x-pseudo": 186,
-	"./x-pseudo.js": 186,
-	"./yo": 187,
-	"./yo.js": 187,
-	"./zh-cn": 188,
-	"./zh-cn.js": 188,
-	"./zh-hk": 189,
-	"./zh-hk.js": 189,
-	"./zh-tw": 190,
-	"./zh-tw.js": 190
+	"./af": 91,
+	"./af.js": 91,
+	"./ar": 97,
+	"./ar-dz": 92,
+	"./ar-dz.js": 92,
+	"./ar-ly": 93,
+	"./ar-ly.js": 93,
+	"./ar-ma": 94,
+	"./ar-ma.js": 94,
+	"./ar-sa": 95,
+	"./ar-sa.js": 95,
+	"./ar-tn": 96,
+	"./ar-tn.js": 96,
+	"./ar.js": 97,
+	"./az": 98,
+	"./az.js": 98,
+	"./be": 99,
+	"./be.js": 99,
+	"./bg": 100,
+	"./bg.js": 100,
+	"./bn": 101,
+	"./bn.js": 101,
+	"./bo": 102,
+	"./bo.js": 102,
+	"./br": 103,
+	"./br.js": 103,
+	"./bs": 104,
+	"./bs.js": 104,
+	"./ca": 105,
+	"./ca.js": 105,
+	"./cs": 106,
+	"./cs.js": 106,
+	"./cv": 107,
+	"./cv.js": 107,
+	"./cy": 108,
+	"./cy.js": 108,
+	"./da": 109,
+	"./da.js": 109,
+	"./de": 111,
+	"./de-at": 110,
+	"./de-at.js": 110,
+	"./de.js": 111,
+	"./dv": 112,
+	"./dv.js": 112,
+	"./el": 113,
+	"./el.js": 113,
+	"./en-au": 114,
+	"./en-au.js": 114,
+	"./en-ca": 115,
+	"./en-ca.js": 115,
+	"./en-gb": 116,
+	"./en-gb.js": 116,
+	"./en-ie": 117,
+	"./en-ie.js": 117,
+	"./en-nz": 118,
+	"./en-nz.js": 118,
+	"./eo": 119,
+	"./eo.js": 119,
+	"./es": 121,
+	"./es-do": 120,
+	"./es-do.js": 120,
+	"./es.js": 121,
+	"./et": 122,
+	"./et.js": 122,
+	"./eu": 123,
+	"./eu.js": 123,
+	"./fa": 124,
+	"./fa.js": 124,
+	"./fi": 125,
+	"./fi.js": 125,
+	"./fo": 126,
+	"./fo.js": 126,
+	"./fr": 129,
+	"./fr-ca": 127,
+	"./fr-ca.js": 127,
+	"./fr-ch": 128,
+	"./fr-ch.js": 128,
+	"./fr.js": 129,
+	"./fy": 130,
+	"./fy.js": 130,
+	"./gd": 131,
+	"./gd.js": 131,
+	"./gl": 132,
+	"./gl.js": 132,
+	"./he": 133,
+	"./he.js": 133,
+	"./hi": 134,
+	"./hi.js": 134,
+	"./hr": 135,
+	"./hr.js": 135,
+	"./hu": 136,
+	"./hu.js": 136,
+	"./hy-am": 137,
+	"./hy-am.js": 137,
+	"./id": 138,
+	"./id.js": 138,
+	"./is": 139,
+	"./is.js": 139,
+	"./it": 140,
+	"./it.js": 140,
+	"./ja": 141,
+	"./ja.js": 141,
+	"./jv": 142,
+	"./jv.js": 142,
+	"./ka": 143,
+	"./ka.js": 143,
+	"./kk": 144,
+	"./kk.js": 144,
+	"./km": 145,
+	"./km.js": 145,
+	"./ko": 146,
+	"./ko.js": 146,
+	"./ky": 147,
+	"./ky.js": 147,
+	"./lb": 148,
+	"./lb.js": 148,
+	"./lo": 149,
+	"./lo.js": 149,
+	"./lt": 150,
+	"./lt.js": 150,
+	"./lv": 151,
+	"./lv.js": 151,
+	"./me": 152,
+	"./me.js": 152,
+	"./mi": 153,
+	"./mi.js": 153,
+	"./mk": 154,
+	"./mk.js": 154,
+	"./ml": 155,
+	"./ml.js": 155,
+	"./mr": 156,
+	"./mr.js": 156,
+	"./ms": 158,
+	"./ms-my": 157,
+	"./ms-my.js": 157,
+	"./ms.js": 158,
+	"./my": 159,
+	"./my.js": 159,
+	"./nb": 160,
+	"./nb.js": 160,
+	"./ne": 161,
+	"./ne.js": 161,
+	"./nl": 163,
+	"./nl-be": 162,
+	"./nl-be.js": 162,
+	"./nl.js": 163,
+	"./nn": 164,
+	"./nn.js": 164,
+	"./pa-in": 165,
+	"./pa-in.js": 165,
+	"./pl": 166,
+	"./pl.js": 166,
+	"./pt": 168,
+	"./pt-br": 167,
+	"./pt-br.js": 167,
+	"./pt.js": 168,
+	"./ro": 169,
+	"./ro.js": 169,
+	"./ru": 170,
+	"./ru.js": 170,
+	"./se": 171,
+	"./se.js": 171,
+	"./si": 172,
+	"./si.js": 172,
+	"./sk": 173,
+	"./sk.js": 173,
+	"./sl": 174,
+	"./sl.js": 174,
+	"./sq": 175,
+	"./sq.js": 175,
+	"./sr": 177,
+	"./sr-cyrl": 176,
+	"./sr-cyrl.js": 176,
+	"./sr.js": 177,
+	"./ss": 178,
+	"./ss.js": 178,
+	"./sv": 179,
+	"./sv.js": 179,
+	"./sw": 180,
+	"./sw.js": 180,
+	"./ta": 181,
+	"./ta.js": 181,
+	"./te": 182,
+	"./te.js": 182,
+	"./tet": 183,
+	"./tet.js": 183,
+	"./th": 184,
+	"./th.js": 184,
+	"./tl-ph": 185,
+	"./tl-ph.js": 185,
+	"./tlh": 186,
+	"./tlh.js": 186,
+	"./tr": 187,
+	"./tr.js": 187,
+	"./tzl": 188,
+	"./tzl.js": 188,
+	"./tzm": 190,
+	"./tzm-latn": 189,
+	"./tzm-latn.js": 189,
+	"./tzm.js": 190,
+	"./uk": 191,
+	"./uk.js": 191,
+	"./uz": 192,
+	"./uz.js": 192,
+	"./vi": 193,
+	"./vi.js": 193,
+	"./x-pseudo": 194,
+	"./x-pseudo.js": 194,
+	"./yo": 195,
+	"./yo.js": 195,
+	"./zh-cn": 196,
+	"./zh-cn.js": 196,
+	"./zh-hk": 197,
+	"./zh-hk.js": 197,
+	"./zh-tw": 198,
+	"./zh-tw.js": 198
 };
 function webpackContext(req) {
 	return __webpack_require__(webpackContextResolve(req));
@@ -55786,37 +59147,11 @@ webpackContext.keys = function webpackContextKeys() {
 };
 webpackContext.resolve = webpackContextResolve;
 module.exports = webpackContext;
-webpackContext.id = 380;
+webpackContext.id = 408;
 
 
 /***/ }),
-/* 381 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(45);
-if(typeof content === 'string') content = [[module.i, content, '']];
-// add the styles to the DOM
-var update = __webpack_require__(22)(content, {});
-if(content.locals) module.exports = content.locals;
-// Hot Module Replacement
-if(true) {
-	// When the styles change, update the <style> tags
-	if(!content.locals) {
-		module.hot.accept(45, function() {
-			var newContent = __webpack_require__(45);
-			if(typeof newContent === 'string') newContent = [[module.i, newContent, '']];
-			update(newContent);
-		});
-	}
-	// When the module is disposed, remove the <style> tags
-	module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 382 */
+/* 409 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
@@ -55825,7 +59160,7 @@ if(true) {
 var content = __webpack_require__(46);
 if(typeof content === 'string') content = [[module.i, content, '']];
 // add the styles to the DOM
-var update = __webpack_require__(22)(content, {});
+var update = __webpack_require__(21)(content, {});
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(true) {
@@ -55842,23 +59177,23 @@ if(true) {
 }
 
 /***/ }),
-/* 383 */
+/* 410 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(48);
+var content = __webpack_require__(47);
 if(typeof content === 'string') content = [[module.i, content, '']];
 // add the styles to the DOM
-var update = __webpack_require__(22)(content, {});
+var update = __webpack_require__(21)(content, {});
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(true) {
 	// When the styles change, update the <style> tags
 	if(!content.locals) {
-		module.hot.accept(48, function() {
-			var newContent = __webpack_require__(48);
+		module.hot.accept(47, function() {
+			var newContent = __webpack_require__(47);
 			if(typeof newContent === 'string') newContent = [[module.i, newContent, '']];
 			update(newContent);
 		});
@@ -55868,7 +59203,33 @@ if(true) {
 }
 
 /***/ }),
-/* 384 */
+/* 411 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(49);
+if(typeof content === 'string') content = [[module.i, content, '']];
+// add the styles to the DOM
+var update = __webpack_require__(21)(content, {});
+if(content.locals) module.exports = content.locals;
+// Hot Module Replacement
+if(true) {
+	// When the styles change, update the <style> tags
+	if(!content.locals) {
+		module.hot.accept(49, function() {
+			var newContent = __webpack_require__(49);
+			if(typeof newContent === 'string') newContent = [[module.i, newContent, '']];
+			update(newContent);
+		});
+	}
+	// When the module is disposed, remove the <style> tags
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 412 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -55878,14 +59239,28 @@ var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 with (obj) {
 __p += '<th><span class="remove-accession action glyphicon glyphicon-minus-sign"></span></th><td class="action view-accession-details">' +
+__e( code ) +
+'</td><td class="action view-accession-details">' +
 __e( name ) +
 '</td><td class="action view-parent-details"><abbr class="parent taxon-rank" title="" value="' +
-__e( parent.rank ) +
+__e( parent_details.rank ) +
 '" object-id="';
- parent.id ;
+ parent ;
 __p += '">' +
-__e( parent.name ) +
-'</abbr></td><td>Xxx</td><td>Yyy</td><td>Zzz</td>';
+__e( parent_details.name ) +
+'</abbr></td> ';
+ for (var i = 0; i < columns.length; ++i) { ;
+__p += ' ';
+ var column = columns[i]; ;
+__p += ' <td name="' +
+((__t = ( column.name )) == null ? '' : __t) +
+'" descriptor-id="' +
+((__t = ( column.id )) == null ? '' : __t) +
+'">' +
+((__t = ( descriptors[column.name] )) == null ? '' : __t) +
+'</td> ';
+ } ;
+
 
 }
 return __p
@@ -55894,13 +59269,13 @@ return __p
 /*
 original source:
 
-<th><span class="remove-accession action glyphicon glyphicon-minus-sign"></span></th><td class="action view-accession-details"><%- name %></td><td class="action view-parent-details"><abbr class="parent taxon-rank" title="" value="<%- parent.rank %>" object-id="<% parent.id %>"><%- parent.name %></abbr></td><td>Xxx</td><td>Yyy</td><td>Zzz</td>
+<th><span class="remove-accession action glyphicon glyphicon-minus-sign"></span></th><td class="action view-accession-details"><%- code %></td><td class="action view-accession-details"><%- name %></td><td class="action view-parent-details"><abbr class="parent taxon-rank" title="" value="<%- parent_details.rank %>" object-id="<% parent %>"><%- parent_details.name %></abbr></td> <% for (var i = 0; i < columns.length; ++i) { %> <% var column = columns[i]; %> <td name="<%= column.name %>" descriptor-id="<%= column.id %>"><%= descriptors[column.name] %></td> <% } %>
 */
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 385 */
+/* 413 */
 /***/ (function(module, exports) {
 
 underscore
@@ -55930,7 +59305,7 @@ original source:
 
 
 /***/ }),
-/* 386 */
+/* 414 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -55951,9 +59326,11 @@ __p += ' <option value="' +
 ((__t = ( meta_model.label )) == null ? '' : __t) +
 '</option> ';
  }) ;
-__p += ' </select></div><div class="row"><div class="col-xs-8"><div class="form-group"><label class="control-label" for="accession_name">' +
-((__t = ( gt.gettext("Principal name of the accession (must be unique)") )) == null ? '' : __t) +
-'</label><input class="form-control name" id="accession_name" type="text" name="accession" value="" maxlength="64" autofocus="" autocomplete="off" style="width:100%"></div></div><div class="col-xs-4"><div class="form-group"><label class="control-label" for="accession_language">' +
+__p += ' </select></div><div class="row"><div class="col-xs-12"><div class="form-group"><label class="control-label" for="accession_code">' +
+((__t = ( gt.gettext("Code of the accession (must be unique)") )) == null ? '' : __t) +
+'</label><input class="form-control name" id="accession_code" type="text" name="accession" value="" maxlength="128" autofocus="" autocomplete="off" style="width:100%"></div></div><div class="col-xs-8"><div class="form-group"><label class="control-label" for="accession_name">' +
+((__t = ( gt.gettext("Principal name of the accession") )) == null ? '' : __t) +
+'</label><input class="form-control name" id="accession_name" type="text" name="accession" value="" maxlength="128" autocomplete="off" style="width:100%"></div></div><div class="col-xs-4"><div class="form-group"><label class="control-label" for="accession_language">' +
 ((__t = ( gt.gettext("Language") )) == null ? '' : __t) +
 '</label><select class="form-control language" id="accession_language" name="language"></select></div></div></div><div class="form-group accession-parent-group"><label class="control-label" for="accession_parent">' +
 ((__t = ( gt.gettext("Taxon (specie, variety...)") )) == null ? '' : __t) +
@@ -55970,13 +59347,13 @@ return __p
 /*
 original source:
 
-<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title"><%= gt.gettext("Create an accession") %></h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="meta_model"><%= gt.gettext("Template") %></label><select id="meta_model" style="width:100%" class="form-control"> <% _.each(meta_models, function(meta_model) { %> <option value="<%= meta_model.id %>"><%= meta_model.label %></option> <% }) %> </select></div><div class="row"><div class="col-xs-8"><div class="form-group"><label class="control-label" for="accession_name"><%= gt.gettext("Principal name of the accession (must be unique)") %></label><input class="form-control name" id="accession_name" type="text" name="accession" value="" maxlength="64" autofocus="" autocomplete="off" style="width:100%"></div></div><div class="col-xs-4"><div class="form-group"><label class="control-label" for="accession_language"><%= gt.gettext("Language") %></label><select class="form-control language" id="accession_language" name="language"></select></div></div></div><div class="form-group accession-parent-group"><label class="control-label" for="accession_parent"><%= gt.gettext("Taxon (specie, variety...)") %></label><select id="accession_parent" style="width:100%" class="form-control"></select></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= gt.gettext("Cancel") %></button> <button type="button" class="btn btn-success continue"><%= gt.gettext("Continue") %></button></div></div></div>
+<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title"><%= gt.gettext("Create an accession") %></h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="meta_model"><%= gt.gettext("Template") %></label><select id="meta_model" style="width:100%" class="form-control"> <% _.each(meta_models, function(meta_model) { %> <option value="<%= meta_model.id %>"><%= meta_model.label %></option> <% }) %> </select></div><div class="row"><div class="col-xs-12"><div class="form-group"><label class="control-label" for="accession_code"><%= gt.gettext("Code of the accession (must be unique)") %></label><input class="form-control name" id="accession_code" type="text" name="accession" value="" maxlength="128" autofocus="" autocomplete="off" style="width:100%"></div></div><div class="col-xs-8"><div class="form-group"><label class="control-label" for="accession_name"><%= gt.gettext("Principal name of the accession") %></label><input class="form-control name" id="accession_name" type="text" name="accession" value="" maxlength="128" autocomplete="off" style="width:100%"></div></div><div class="col-xs-4"><div class="form-group"><label class="control-label" for="accession_language"><%= gt.gettext("Language") %></label><select class="form-control language" id="accession_language" name="language"></select></div></div></div><div class="form-group accession-parent-group"><label class="control-label" for="accession_parent"><%= gt.gettext("Taxon (specie, variety...)") %></label><select id="accession_parent" style="width:100%" class="form-control"></select></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= gt.gettext("Cancel") %></button> <button type="button" class="btn btn-success continue"><%= gt.gettext("Continue") %></button></div></div></div>
 */
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 387 */
+/* 415 */
 /***/ (function(module, exports) {
 
 underscore
@@ -56009,7 +59386,7 @@ original source:
 
 
 /***/ }),
-/* 388 */
+/* 416 */
 /***/ (function(module, exports) {
 
 underscore
@@ -56039,25 +59416,32 @@ original source:
 
 
 /***/ }),
-/* 389 */
+/* 417 */
 /***/ (function(module, exports) {
 
 underscore
 module.exports = function (obj) {
 obj || (obj = {});
-var __t, __p = '';
+var __t, __p = '', __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
 with (obj) {
 __p += '<table class="table table-striped"><thead><tr scope="row" class="sticky-header"><th><span class="glyphicon glyphicon-asterisk"></span></th><th>' +
+((__t = ( gt.gettext("Code") )) == null ? '' : __t) +
+'</th><th>' +
 ((__t = ( gt.gettext("Name") )) == null ? '' : __t) +
 '</th><th>' +
 ((__t = ( gt.gettext("Parent") )) == null ? '' : __t) +
-'</th><th>' +
-((__t = ( gt.gettext("Xxx") )) == null ? '' : __t) +
-'</th><th>' +
-((__t = ( gt.gettext("Yyy") )) == null ? '' : __t) +
-'</th><th>' +
-((__t = ( gt.gettext("Zzz") )) == null ? '' : __t) +
-'</th></tr></thead><tbody class="accession-list"></tbody></table>';
+'</th> ';
+ for (var i = 0; i < columns.length; ++i) { ;
+__p += ' ';
+ var column = columns[i]; ;
+__p += ' <th name="' +
+((__t = ( column.id )) == null ? '' : __t) +
+'">' +
+((__t = ( column.label )) == null ? '' : __t) +
+'</th> ';
+ } ;
+__p += ' </tr></thead><tbody class="accession-list"></tbody></table>';
 
 }
 return __p
@@ -56066,12 +59450,38 @@ return __p
 /*
 original source:
 
-<table class="table table-striped"><thead><tr scope="row" class="sticky-header"><th><span class="glyphicon glyphicon-asterisk"></span></th><th><%= gt.gettext("Name") %></th><th><%= gt.gettext("Parent") %></th><th><%= gt.gettext("Xxx") %></th><th><%= gt.gettext("Yyy") %></th><th><%= gt.gettext("Zzz") %></th></tr></thead><tbody class="accession-list"></tbody></table>
+<table class="table table-striped"><thead><tr scope="row" class="sticky-header"><th><span class="glyphicon glyphicon-asterisk"></span></th><th><%= gt.gettext("Code") %></th><th><%= gt.gettext("Name") %></th><th><%= gt.gettext("Parent") %></th> <% for (var i = 0; i < columns.length; ++i) { %> <% var column = columns[i]; %> <th name="<%= column.id %>"><%= column.label %></th> <% } %> </tr></thead><tbody class="accession-list"></tbody></table>
 */
 
 
 /***/ }),
-/* 390 */
+/* 418 */
+/***/ (function(module, exports) {
+
+underscore
+module.exports = function (obj) {
+obj || (obj = {});
+var __t, __p = '';
+with (obj) {
+__p += '<table class="table table-striped" style="margin-bottom: 0px"><tbody><tr><th><button type="button" class="accession-filter btn btn-default"><span class="glyphicon glyphicon-search"></span>&nbsp;Filter</button></th><td style="width: 100%"><div class="form-group" style="margin-bottom: 0px"><input type="text" class="accession-name form-control" name="accession-name"></div></td><th><button type="button" class="accession-advanced-search btn btn-default"><span class="glyphicon glyphicon-zoom-in" title="' +
+((__t = ( gt.gettext("Advanced search") )) == null ? '' : __t) +
+'"></span></button></th><th><button type="button" class="accession-columns-config btn btn-default"><span class="glyphicon glyphicon-list-alt" title="' +
+((__t = ( gt.gettext("Displayed columns") )) == null ? '' : __t) +
+'"></span></button></th></tr></tbody></table>';
+
+}
+return __p
+};
+
+/*
+original source:
+
+<table class="table table-striped" style="margin-bottom: 0px"><tbody><tr><th><button type="button" class="accession-filter btn btn-default"><span class="glyphicon glyphicon-search"></span>&nbsp;Filter</button></th><td style="width: 100%"><div class="form-group" style="margin-bottom: 0px"><input type="text" class="accession-name form-control" name="accession-name"></div></td><th><button type="button" class="accession-advanced-search btn btn-default"><span class="glyphicon glyphicon-zoom-in" title="<%= gt.gettext("Advanced search") %>"></span></button></th><th><button type="button" class="accession-columns-config btn btn-default"><span class="glyphicon glyphicon-list-alt" title="<%= gt.gettext("Displayed columns") %>"></span></button></th></tr></tbody></table>
+*/
+
+
+/***/ }),
+/* 419 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -56089,7 +59499,7 @@ __p += '<table class="table table-striped" style="margin-bottom: 0px"><thead><tr
 '</th></tr></thead><tbody> ';
  _.each(synonyms, function(synonym) { ;
 __p += ' <tr class="element"><th scope="row"> ';
- if (synonym.type != 'IN_001:0000001') { ;
+ if (synonym.type != 'ACC_SYN:01' && synonym.type != 'ACC_SYN:02') { ;
 __p += '<span data-synonym-id="' +
 ((__t = ( synonym.id )) == null ? '' : __t) +
 '" class="action remove-synonym glyphicon glyphicon-minus-sign"></span>';
@@ -56113,23 +59523,36 @@ return __p
 /*
 original source:
 
-<table class="table table-striped" style="margin-bottom: 0px"><thead><tr><th><span class="glyphicon glyphicon-asterisk"></th><th><%= gt.gettext("Type") %></th><th><%= gt.gettext("Name") %></th><th><%= gt.gettext("Language") %></th></tr></thead><tbody> <% _.each(synonyms, function(synonym) { %> <tr class="element"><th scope="row"> <% if (synonym.type != 'IN_001:0000001') { %><span data-synonym-id="<%= synonym.id %>" class="action remove-synonym glyphicon glyphicon-minus-sign"></span><% } %> </th><td name="type" class="accession-synonym-type" value="<%- synonym.type %>"></td><td name="name" class="action rename-synonym" data-synonym-id="<%= synonym.id %>"><%- synonym.name %></td><td name="language" class="language" value="<%- synonym.language %>"></td></tr> <% }) %> <tr class="add-synonym-panel"><form><th scope="row"><span class="add-synonym action glyphicon glyphicon-plus-sign" style="margin-top: 9px"></span></th><td><select class="accession-synonym-types" name="accession-synonym-type"></select></td><td><div class="form-group" style="margin-bottom: 0px"><input class="form-control synonym-name" type="text" maxlength="64" autocomplete="off" name="synonym-name"></div></td><td><select class="synonym-languages" name="synonym-language"></select></td></form></tr></tbody></table>
+<table class="table table-striped" style="margin-bottom: 0px"><thead><tr><th><span class="glyphicon glyphicon-asterisk"></th><th><%= gt.gettext("Type") %></th><th><%= gt.gettext("Name") %></th><th><%= gt.gettext("Language") %></th></tr></thead><tbody> <% _.each(synonyms, function(synonym) { %> <tr class="element"><th scope="row"> <% if (synonym.type != 'ACC_SYN:01' && synonym.type != 'ACC_SYN:02') { %><span data-synonym-id="<%= synonym.id %>" class="action remove-synonym glyphicon glyphicon-minus-sign"></span><% } %> </th><td name="type" class="accession-synonym-type" value="<%- synonym.type %>"></td><td name="name" class="action rename-synonym" data-synonym-id="<%= synonym.id %>"><%- synonym.name %></td><td name="language" class="language" value="<%- synonym.language %>"></td></tr> <% }) %> <tr class="add-synonym-panel"><form><th scope="row"><span class="add-synonym action glyphicon glyphicon-plus-sign" style="margin-top: 9px"></span></th><td><select class="accession-synonym-types" name="accession-synonym-type"></select></td><td><div class="form-group" style="margin-bottom: 0px"><input class="form-control synonym-name" type="text" maxlength="64" autocomplete="off" name="synonym-name"></div></td><td><select class="synonym-languages" name="synonym-language"></select></td></form></tr></tbody></table>
 */
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 391 */
+/* 420 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
 module.exports = function (obj) {
 obj || (obj = {});
-var __t, __p = '', __e = _.escape;
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
 with (obj) {
 __p += '<th><input type="checkbox" class="select-batch"></th><td class="action view-batch-details">' +
 __e( name ) +
-'</td><td>Xxx</td><td>Yyy</td><td>Zzz</td>';
+'</td> ';
+ for (var i = 0; i < columns.length; ++i) { ;
+__p += ' ';
+ var column = columns[i]; ;
+__p += ' <td name="' +
+((__t = ( column.name )) == null ? '' : __t) +
+'" descriptor-id="' +
+((__t = ( column.id )) == null ? '' : __t) +
+'">' +
+((__t = ( descriptors[column.name] )) == null ? '' : __t) +
+'</td> ';
+ } ;
+
 
 }
 return __p
@@ -56138,13 +59561,13 @@ return __p
 /*
 original source:
 
-<th><input type="checkbox" class="select-batch"></th><td class="action view-batch-details"><%- name %></td><td>Xxx</td><td>Yyy</td><td>Zzz</td>
+<th><input type="checkbox" class="select-batch"></th><td class="action view-batch-details"><%- name %></td> <% for (var i = 0; i < columns.length; ++i) { %> <% var column = columns[i]; %> <td name="<%= column.name %>" descriptor-id="<%= column.id %>"><%= descriptors[column.name] %></td> <% } %>
 */
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 392 */
+/* 421 */
 /***/ (function(module, exports) {
 
 underscore
@@ -56177,7 +59600,7 @@ original source:
 
 
 /***/ }),
-/* 393 */
+/* 422 */
 /***/ (function(module, exports) {
 
 underscore
@@ -56207,23 +59630,28 @@ original source:
 
 
 /***/ }),
-/* 394 */
+/* 423 */
 /***/ (function(module, exports) {
 
 underscore
 module.exports = function (obj) {
 obj || (obj = {});
-var __t, __p = '';
+var __t, __p = '', __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
 with (obj) {
 __p += '<table class="table table-striped"><thead><tr scope="row" class="sticky-header"><th><span class="glyphicon glyphicon-asterisk"></span></th><th>' +
 ((__t = ( gt.gettext("Name") )) == null ? '' : __t) +
-'</th><th>' +
-((__t = ( gt.gettext("Xxx") )) == null ? '' : __t) +
-'</th><th>' +
-((__t = ( gt.gettext("Yyy") )) == null ? '' : __t) +
-'</th><th>' +
-((__t = ( gt.gettext("Zzz") )) == null ? '' : __t) +
-'</th></tr></thead><tbody class="batch-list"></tbody></table>';
+'</th> ';
+ for (var i = 0; i < columns.length; ++i) { ;
+__p += ' ';
+ var column = columns[i]; ;
+__p += ' <th name="' +
+((__t = ( column.id )) == null ? '' : __t) +
+'">' +
+((__t = ( column.label )) == null ? '' : __t) +
+'</th> ';
+ } ;
+__p += ' </tr></thead><tbody class="batch-list"></tbody></table>';
 
 }
 return __p
@@ -56232,12 +59660,12 @@ return __p
 /*
 original source:
 
-<table class="table table-striped"><thead><tr scope="row" class="sticky-header"><th><span class="glyphicon glyphicon-asterisk"></span></th><th><%= gt.gettext("Name") %></th><th><%= gt.gettext("Xxx") %></th><th><%= gt.gettext("Yyy") %></th><th><%= gt.gettext("Zzz") %></th></tr></thead><tbody class="batch-list"></tbody></table>
+<table class="table table-striped"><thead><tr scope="row" class="sticky-header"><th><span class="glyphicon glyphicon-asterisk"></span></th><th><%= gt.gettext("Name") %></th> <% for (var i = 0; i < columns.length; ++i) { %> <% var column = columns[i]; %> <th name="<%= column.id %>"><%= column.label %></th> <% } %> </tr></thead><tbody class="batch-list"></tbody></table>
 */
 
 
 /***/ }),
-/* 395 */
+/* 424 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -56266,7 +59694,7 @@ original source:
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 396 */
+/* 425 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -56348,7 +59776,7 @@ original source:
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 397 */
+/* 426 */
 /***/ (function(module, exports) {
 
 underscore
@@ -56380,7 +59808,7 @@ original source:
 
 
 /***/ }),
-/* 398 */
+/* 427 */
 /***/ (function(module, exports) {
 
 underscore
@@ -56410,7 +59838,7 @@ original source:
 
 
 /***/ }),
-/* 399 */
+/* 428 */
 /***/ (function(module, exports) {
 
 underscore
@@ -56444,7 +59872,7 @@ original source:
 
 
 /***/ }),
-/* 400 */
+/* 429 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -56499,7 +59927,7 @@ __p += ' <tr class="descriptor" panel-index="' +
 ((__t = ( i )) == null ? '' : __t) +
 '" descriptor-model-type="' +
 ((__t = ( descriptor_model_type.id )) == null ? '' : __t) +
-'" name="' +
+'" code="' +
 ((__t = ( descriptor_model_type.descriptor_type.code )) == null ? '' : __t) +
 '"><td class="descriptor-name" style="padding-top: 5px; padding-bottom: 3px"> ' +
 ((__t = ( descriptor_model_type.label )) == null ? '' : __t) +
@@ -56538,13 +59966,13 @@ return __p
 /*
 original source:
 
-<div class="object <%= target.split('.')[1] %>" object-type="<%= target %>" object-id="-1" style="width:100%"><div class="panels panel-group" style="margin-top: 10px"> <% var pi = 0; %> <% _.each(panels, function(panel) { %> <div class="panel panel panel-default" name="<%= panel.name %>" panel-id="<%= panel.id %>"> <% var collapsed = pi > 0 ? "collapsed" : ""; %> <div class="panel-heading" data-toggle="tooltip" data-placement="left" title="<%= gt.gettext('Collapse/Expand') %>"><a class="accordion-toggle <%= collapsed %>" data-toggle="collapse" href="#collapse<%= pi %>"><%= panel.label %></a></div> <% var inout = pi == 0 ? "in" : ""; %> <div id="collapse<%= pi %>" class="panel-collapse collapse <%= inout %>"><div class="descriptors"><table class="table table-striped"><thead><tr><th><%= gt.gettext("Descriptor") %></th><th><%= gt.gettext("Value") %></th></tr></thead><tbody> <% var i = 0; %> <% _.each(panel.descriptor_model.descriptor_model_types, function(descriptor_model_type) { %> <% var format = descriptor_model_type.descriptor_type.format; %> <% var mandatory = descriptor_model_type.mandatory ? "mandatory-field" : ""; %> <tr class="descriptor" panel-index="<%= pi %>" index="<%= i %>" descriptor-model-type="<%= descriptor_model_type.id %>" name="<%= descriptor_model_type.descriptor_type.code %>"><td class="descriptor-name" style="padding-top: 5px; padding-bottom: 3px"> <%= descriptor_model_type.label %> <span class="descriptor-type-unit"> <% if (descriptor_model_type.descriptor_type.format.unit === "custom") { %> <% if (descriptor_model_type.descriptor_type.format.custom_unit != undefined && descriptor_model_type.descriptor_type.format.custom_unit !== "") { %> (<%= descriptor_model_type.descriptor_type.format.custom_unit %>) <% } %> <% } else if (descriptor_model_type.descriptor_type.format.unit != undefined) { %> (<%= application.descriptor.collections.formatUnits.findLabel(descriptor_model_type.descriptor_type.format.unit) %>) <% } %> </span></td><td class="descriptor-value" format-type="<%= format.type %>" style="padding-top: 3px; padding-bottom: 3px"></td></tr> <% ++i; %> <% }) %> </tbody></table></div></div></div> <% ++pi %> <% }) %> </div><div class="footer" style="float: right"><button type="button" class="btn btn-default modify"><%= gt.gettext("Modify") %></button></div></div>
+<div class="object <%= target.split('.')[1] %>" object-type="<%= target %>" object-id="-1" style="width:100%"><div class="panels panel-group" style="margin-top: 10px"> <% var pi = 0; %> <% _.each(panels, function(panel) { %> <div class="panel panel panel-default" name="<%= panel.name %>" panel-id="<%= panel.id %>"> <% var collapsed = pi > 0 ? "collapsed" : ""; %> <div class="panel-heading" data-toggle="tooltip" data-placement="left" title="<%= gt.gettext('Collapse/Expand') %>"><a class="accordion-toggle <%= collapsed %>" data-toggle="collapse" href="#collapse<%= pi %>"><%= panel.label %></a></div> <% var inout = pi == 0 ? "in" : ""; %> <div id="collapse<%= pi %>" class="panel-collapse collapse <%= inout %>"><div class="descriptors"><table class="table table-striped"><thead><tr><th><%= gt.gettext("Descriptor") %></th><th><%= gt.gettext("Value") %></th></tr></thead><tbody> <% var i = 0; %> <% _.each(panel.descriptor_model.descriptor_model_types, function(descriptor_model_type) { %> <% var format = descriptor_model_type.descriptor_type.format; %> <% var mandatory = descriptor_model_type.mandatory ? "mandatory-field" : ""; %> <tr class="descriptor" panel-index="<%= pi %>" index="<%= i %>" descriptor-model-type="<%= descriptor_model_type.id %>" code="<%= descriptor_model_type.descriptor_type.code %>"><td class="descriptor-name" style="padding-top: 5px; padding-bottom: 3px"> <%= descriptor_model_type.label %> <span class="descriptor-type-unit"> <% if (descriptor_model_type.descriptor_type.format.unit === "custom") { %> <% if (descriptor_model_type.descriptor_type.format.custom_unit != undefined && descriptor_model_type.descriptor_type.format.custom_unit !== "") { %> (<%= descriptor_model_type.descriptor_type.format.custom_unit %>) <% } %> <% } else if (descriptor_model_type.descriptor_type.format.unit != undefined) { %> (<%= application.descriptor.collections.formatUnits.findLabel(descriptor_model_type.descriptor_type.format.unit) %>) <% } %> </span></td><td class="descriptor-value" format-type="<%= format.type %>" style="padding-top: 3px; padding-bottom: 3px"></td></tr> <% ++i; %> <% }) %> </tbody></table></div></div></div> <% ++pi %> <% }) %> </div><div class="footer" style="float: right"><button type="button" class="btn btn-default modify"><%= gt.gettext("Modify") %></button></div></div>
 */
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 401 */
+/* 430 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -56599,7 +60027,7 @@ __p += ' <tr class="descriptor" panel-index="' +
 ((__t = ( i )) == null ? '' : __t) +
 '" descriptor-model-type="' +
 ((__t = ( descriptor_model_type.id )) == null ? '' : __t) +
-'" name="' +
+'" code="' +
 ((__t = ( descriptor_model_type.descriptor_type.code )) == null ? '' : __t) +
 '"><td class="descriptor-name ' +
 ((__t = ( mandatory )) == null ? '' : __t) +
@@ -56642,13 +60070,13 @@ return __p
 /*
 original source:
 
-<div class="object <%= target.split('.')[1] %>" object-type="<%= target %>" object-id="-1" style="width:100%"><div class="panels panel-group" style="margin-top: 10px"> <% var pi = 0; %> <% _.each(panels, function(panel) { %> <div class="panel panel panel-default" name="<%= panel.name %>" panel-id="<%= panel.id %>"> <% var collapsed = pi > 0 ? "collapsed" : ""; %> <div class="panel-heading" data-toggle="tooltip" data-placement="left" title="<%= gt.gettext('Collapse/Expand') %>"><a class="accordion-toggle <%= collapsed %>" data-toggle="collapse" href="#collapse<%= pi %>"><%= panel.label %></a></div> <% var inout = pi == 0 ? "in" : ""; %> <div id="collapse<%= pi %>" class="panel-collapse collapse <%= inout %>"><div class="descriptors"><table class="table table-striped"><thead><tr><th><%= gt.gettext("Descriptor") %></th><th><%= gt.gettext("Value") %></th></tr></thead><tbody> <% var i = 0; %> <% _.each(panel.descriptor_model.descriptor_model_types, function(descriptor_model_type) { %> <% var format = descriptor_model_type.descriptor_type.format; %> <% var mandatory = descriptor_model_type.mandatory ? "mandatory-field" : ""; %> <tr class="descriptor" panel-index="<%= pi %>" index="<%= i %>" descriptor-model-type="<%= descriptor_model_type.id %>" name="<%= descriptor_model_type.descriptor_type.code %>"><td class="descriptor-name <%= mandatory %>" style="padding-top: 15px"> <%= descriptor_model_type.label %> <span class="descriptor-type-unit"> <% if (descriptor_model_type.descriptor_type.format.unit === "custom") { %> <% if (descriptor_model_type.descriptor_type.format.custom_unit != undefined && descriptor_model_type.descriptor_type.format.custom_unit !== "") { %> (<%= descriptor_model_type.descriptor_type.format.custom_unit %>) <% } %> <% } else if (descriptor_model_type.descriptor_type.format.unit != undefined) { %> (<%= application.descriptor.collections.formatUnits.findLabel(descriptor_model_type.descriptor_type.format.unit) %>) <% } %> </span></td><td class="descriptor-value" format-type="<%= format.type %>"></td></tr> <% ++i; %> <% }) %> </tbody></table></div></div></div> <% ++pi %> <% }) %> </div><div class="footer" style="float: right"><button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= gt.gettext("Cancel") %></button> <button type="button" class="btn btn-success apply"><%= gt.gettext("Apply") %></button></div></div>
+<div class="object <%= target.split('.')[1] %>" object-type="<%= target %>" object-id="-1" style="width:100%"><div class="panels panel-group" style="margin-top: 10px"> <% var pi = 0; %> <% _.each(panels, function(panel) { %> <div class="panel panel panel-default" name="<%= panel.name %>" panel-id="<%= panel.id %>"> <% var collapsed = pi > 0 ? "collapsed" : ""; %> <div class="panel-heading" data-toggle="tooltip" data-placement="left" title="<%= gt.gettext('Collapse/Expand') %>"><a class="accordion-toggle <%= collapsed %>" data-toggle="collapse" href="#collapse<%= pi %>"><%= panel.label %></a></div> <% var inout = pi == 0 ? "in" : ""; %> <div id="collapse<%= pi %>" class="panel-collapse collapse <%= inout %>"><div class="descriptors"><table class="table table-striped"><thead><tr><th><%= gt.gettext("Descriptor") %></th><th><%= gt.gettext("Value") %></th></tr></thead><tbody> <% var i = 0; %> <% _.each(panel.descriptor_model.descriptor_model_types, function(descriptor_model_type) { %> <% var format = descriptor_model_type.descriptor_type.format; %> <% var mandatory = descriptor_model_type.mandatory ? "mandatory-field" : ""; %> <tr class="descriptor" panel-index="<%= pi %>" index="<%= i %>" descriptor-model-type="<%= descriptor_model_type.id %>" code="<%= descriptor_model_type.descriptor_type.code %>"><td class="descriptor-name <%= mandatory %>" style="padding-top: 15px"> <%= descriptor_model_type.label %> <span class="descriptor-type-unit"> <% if (descriptor_model_type.descriptor_type.format.unit === "custom") { %> <% if (descriptor_model_type.descriptor_type.format.custom_unit != undefined && descriptor_model_type.descriptor_type.format.custom_unit !== "") { %> (<%= descriptor_model_type.descriptor_type.format.custom_unit %>) <% } %> <% } else if (descriptor_model_type.descriptor_type.format.unit != undefined) { %> (<%= application.descriptor.collections.formatUnits.findLabel(descriptor_model_type.descriptor_type.format.unit) %>) <% } %> </span></td><td class="descriptor-value" format-type="<%= format.type %>"></td></tr> <% ++i; %> <% }) %> </tbody></table></div></div></div> <% ++pi %> <% }) %> </div><div class="footer" style="float: right"><button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= gt.gettext("Cancel") %></button> <button type="button" class="btn btn-success apply"><%= gt.gettext("Apply") %></button></div></div>
 */
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 402 */
+/* 431 */
 /***/ (function(module, exports) {
 
 underscore
@@ -56660,11 +60088,11 @@ __p += '<th><span class="delete-descriptor-group action glyphicon glyphicon-minu
 ((__t = ( name )) == null ? '' : __t) +
 '">' +
 ((__t = ( name )) == null ? '' : __t) +
-'</td><td class="action view-descriptor-type" name="num_descriptor_types"><abbr class="badge" style="cursor: pointer" title="' +
+'</td><td class="action view-descriptor-type" name="num_descriptor_types"><span class="badge" title="' +
 ((__t = ( gt.gettext('Manage types of descriptor') )) == null ? '' : __t) +
 '">' +
 ((__t = ( num_descriptor_types )) == null ? '' : __t) +
-'</abbr></td>';
+'</span></td>';
 
 }
 return __p
@@ -56673,12 +60101,12 @@ return __p
 /*
 original source:
 
-<th><span class="delete-descriptor-group action glyphicon glyphicon-minus-sign"></span></th><td class="action change-name" name="name" value="<%= name %>"><%= name %></td><td class="action view-descriptor-type" name="num_descriptor_types"><abbr class="badge" style="cursor: pointer" title="<%= gt.gettext('Manage types of descriptor') %>"><%= num_descriptor_types %></abbr></td>
+<th><span class="delete-descriptor-group action glyphicon glyphicon-minus-sign"></span></th><td class="action change-name" name="name" value="<%= name %>"><%= name %></td><td class="action view-descriptor-type" name="num_descriptor_types"><span class="badge" title="<%= gt.gettext('Manage types of descriptor') %>"><%= num_descriptor_types %></span></td>
 */
 
 
 /***/ }),
-/* 403 */
+/* 432 */
 /***/ (function(module, exports) {
 
 underscore
@@ -56700,7 +60128,7 @@ original source:
 
 
 /***/ }),
-/* 404 */
+/* 433 */
 /***/ (function(module, exports) {
 
 underscore
@@ -56712,7 +60140,7 @@ __p += '<td class="action view-descriptor-group" name="name" value="' +
 ((__t = ( name )) == null ? '' : __t) +
 '">' +
 ((__t = ( name )) == null ? '' : __t) +
-'</td><td class="action view-descriptor-type" name="num_descriptor_types"><abbr class="badge" style="cursor: pointer" title="' +
+'</td><td class="action view-descriptor-type" name="num_descriptor_types"><abbr class="badge" title="' +
 ((__t = ( gt.gettext('Manage types of descriptor') )) == null ? '' : __t) +
 '">' +
 ((__t = ( num_descriptor_types )) == null ? '' : __t) +
@@ -56725,12 +60153,64 @@ return __p
 /*
 original source:
 
-<td class="action view-descriptor-group" name="name" value="<%= name %>"><%= name %></td><td class="action view-descriptor-type" name="num_descriptor_types"><abbr class="badge" style="cursor: pointer" title="<%= gt.gettext('Manage types of descriptor') %>"><%= num_descriptor_types %></abbr></td>
+<td class="action view-descriptor-group" name="name" value="<%= name %>"><%= name %></td><td class="action view-descriptor-type" name="num_descriptor_types"><abbr class="badge" title="<%= gt.gettext('Manage types of descriptor') %>"><%= num_descriptor_types %></abbr></td>
 */
 
 
 /***/ }),
-/* 405 */
+/* 434 */
+/***/ (function(module, exports) {
+
+underscore
+module.exports = function (obj) {
+obj || (obj = {});
+var __t, __p = '';
+with (obj) {
+__p += '<div class="object descriptor-group-list" object-type="descriptor-group-list" style="width:100%"><table class="table table-striped"><thead class="sticky-header"><tr><th><span class="glyphicon glyphicon-asterisk"></span></th><th>' +
+((__t = ( gt.gettext("Name") )) == null ? '' : __t) +
+'</th><th>' +
+((__t = ( gt.gettext("Types of descriptor") )) == null ? '' : __t) +
+'</th></tr></thead><tbody class="descriptor-group-list"></tbody></table></div>';
+
+}
+return __p
+};
+
+/*
+original source:
+
+<div class="object descriptor-group-list" object-type="descriptor-group-list" style="width:100%"><table class="table table-striped"><thead class="sticky-header"><tr><th><span class="glyphicon glyphicon-asterisk"></span></th><th><%= gt.gettext("Name") %></th><th><%= gt.gettext("Types of descriptor") %></th></tr></thead><tbody class="descriptor-group-list"></tbody></table></div>
+*/
+
+
+/***/ }),
+/* 435 */
+/***/ (function(module, exports) {
+
+underscore
+module.exports = function (obj) {
+obj || (obj = {});
+var __t, __p = '';
+with (obj) {
+__p += '<div class="object descriptor-group-list" object-type="descriptor-group-list" style="width:100%"><table class="table table-striped"><thead class="sticky-header"><tr><th>' +
+((__t = ( gt.gettext("Group of descriptors") )) == null ? '' : __t) +
+'</th><th>' +
+((__t = ( gt.gettext("Types of descriptor") )) == null ? '' : __t) +
+'</th></tr></thead><tbody class="descriptor-group-list"></tbody></table></div>';
+
+}
+return __p
+};
+
+/*
+original source:
+
+<div class="object descriptor-group-list" object-type="descriptor-group-list" style="width:100%"><table class="table table-striped"><thead class="sticky-header"><tr><th><%= gt.gettext("Group of descriptors") %></th><th><%= gt.gettext("Types of descriptor") %></th></tr></thead><tbody class="descriptor-group-list"></tbody></table></div>
+*/
+
+
+/***/ }),
+/* 436 */
 /***/ (function(module, exports) {
 
 underscore
@@ -56739,10 +60219,10 @@ obj || (obj = {});
 var __t, __p = '';
 with (obj) {
 __p += '<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title">' +
-((__t = ( gt.gettext("Change the name of the group of descriptors") )) == null ? '' : __t) +
-'</h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="label">' +
+((__t = ( gt.gettext("Rename the group of descriptors") )) == null ? '' : __t) +
+'</h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="descriptor_group_name">' +
 ((__t = ( gt.gettext("Name") )) == null ? '' : __t) +
-'</label><input class="form-control" id="name" type="text" name="name" value="" maxlength="32" autofocus="" autocomplete="off" style="width:100%"></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal">' +
+'</label><input class="form-control" id="descriptor_group_name" type="text" name="name" value="" maxlength="32" autofocus="" autocomplete="off" style="width:100%"></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal">' +
 ((__t = ( gt.gettext("Cancel") )) == null ? '' : __t) +
 '</button> <button type="button" class="btn btn-success apply">' +
 ((__t = ( gt.gettext("Apply") )) == null ? '' : __t) +
@@ -56755,64 +60235,12 @@ return __p
 /*
 original source:
 
-<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title"><%= gt.gettext("Change the name of the group of descriptors") %></h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="label"><%= gt.gettext("Name") %></label><input class="form-control" id="name" type="text" name="name" value="" maxlength="32" autofocus="" autocomplete="off" style="width:100%"></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= gt.gettext("Cancel") %></button> <button type="button" class="btn btn-success apply"><%= gt.gettext("Apply") %></button></div></div></div>
+<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title"><%= gt.gettext("Rename the group of descriptors") %></h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="descriptor_group_name"><%= gt.gettext("Name") %></label><input class="form-control" id="descriptor_group_name" type="text" name="name" value="" maxlength="32" autofocus="" autocomplete="off" style="width:100%"></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= gt.gettext("Cancel") %></button> <button type="button" class="btn btn-success apply"><%= gt.gettext("Apply") %></button></div></div></div>
 */
 
 
 /***/ }),
-/* 406 */
-/***/ (function(module, exports) {
-
-underscore
-module.exports = function (obj) {
-obj || (obj = {});
-var __t, __p = '';
-with (obj) {
-__p += '<div class="object descriptor-group-list" object-type="descriptor-group-list" style="width:100%"><table class="table table-striped"><thead class="sticky-header"><tr><th><span class="glyphicon glyphicon-asterisk"></span></th><th>' +
-((__t = ( gt.gettext("Name") )) == null ? '' : __t) +
-'</th><th>' +
-((__t = ( gt.gettext("Number of types of descriptor") )) == null ? '' : __t) +
-'</th></tr></thead><tbody class="descriptor-group-list"></tbody></table></div>';
-
-}
-return __p
-};
-
-/*
-original source:
-
-<div class="object descriptor-group-list" object-type="descriptor-group-list" style="width:100%"><table class="table table-striped"><thead class="sticky-header"><tr><th><span class="glyphicon glyphicon-asterisk"></span></th><th><%= gt.gettext("Name") %></th><th><%= gt.gettext("Number of types of descriptor") %></th></tr></thead><tbody class="descriptor-group-list"></tbody></table></div>
-*/
-
-
-/***/ }),
-/* 407 */
-/***/ (function(module, exports) {
-
-underscore
-module.exports = function (obj) {
-obj || (obj = {});
-var __t, __p = '';
-with (obj) {
-__p += '<div class="object descriptor-group-list" object-type="descriptor-group-list" style="width:100%"><table class="table table-striped"><thead class="sticky-header"><tr><th>' +
-((__t = ( gt.gettext("Group of descriptors") )) == null ? '' : __t) +
-'</th><th>' +
-((__t = ( gt.gettext("Number of types of descriptor") )) == null ? '' : __t) +
-'</th></tr></thead><tbody class="descriptor-group-list"></tbody></table></div>';
-
-}
-return __p
-};
-
-/*
-original source:
-
-<div class="object descriptor-group-list" object-type="descriptor-group-list" style="width:100%"><table class="table table-striped"><thead class="sticky-header"><tr><th><%= gt.gettext("Group of descriptors") %></th><th><%= gt.gettext("Number of types of descriptor") %></th></tr></thead><tbody class="descriptor-group-list"></tbody></table></div>
-*/
-
-
-/***/ }),
-/* 408 */
+/* 437 */
 /***/ (function(module, exports) {
 
 underscore
@@ -56834,7 +60262,7 @@ original source:
 
 
 /***/ }),
-/* 409 */
+/* 438 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -56871,7 +60299,7 @@ original source:
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 410 */
+/* 439 */
 /***/ (function(module, exports) {
 
 underscore
@@ -56893,7 +60321,7 @@ original source:
 
 
 /***/ }),
-/* 411 */
+/* 440 */
 /***/ (function(module, exports) {
 
 underscore
@@ -56950,7 +60378,7 @@ original source:
 
 
 /***/ }),
-/* 412 */
+/* 441 */
 /***/ (function(module, exports) {
 
 underscore
@@ -56984,7 +60412,7 @@ original source:
 
 
 /***/ }),
-/* 413 */
+/* 442 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -57017,7 +60445,7 @@ original source:
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 414 */
+/* 443 */
 /***/ (function(module, exports) {
 
 underscore
@@ -57049,7 +60477,7 @@ original source:
 
 
 /***/ }),
-/* 415 */
+/* 444 */
 /***/ (function(module, exports) {
 
 underscore
@@ -57061,11 +60489,11 @@ __p += '<th><span class="delete-descriptor-model action glyphicon glyphicon-minu
 ((__t = ( name )) == null ? '' : __t) +
 '</td><td class="action view-descriptor-model" name="verbose_name">' +
 ((__t = ( verbose_name )) == null ? '' : __t) +
-'</td><td class="action view-descriptor-model-types" name="num_descriptor_model_types"><abbr class="badge" style="cursor: pointer" title="' +
+'</td><td class="action view-descriptor-model-types" name="num_descriptor_model_types"><span class="badge" style="cursor: pointer" title="' +
 ((__t = ( gt.gettext('Manage models of type of descriptor') )) == null ? '' : __t) +
 '">' +
 ((__t = ( num_descriptor_model_types )) == null ? '' : __t) +
-'</abbr></td><td name="description"><abbr class="label label-default glyphicon glyphicon-option-horizontal" title="' +
+'</span></td><td name="description"><abbr class="label label-default glyphicon glyphicon-option-horizontal" title="' +
 ((__t = ( description )) == null ? '' : __t) +
 '"><span></span></abbr></td>';
 
@@ -57076,12 +60504,12 @@ return __p
 /*
 original source:
 
-<th><span class="delete-descriptor-model action glyphicon glyphicon-minus-sign"></span></th><td class="action view-descriptor-model" name="name"><%= name %></td><td class="action view-descriptor-model" name="verbose_name"><%= verbose_name %></td><td class="action view-descriptor-model-types" name="num_descriptor_model_types"><abbr class="badge" style="cursor: pointer" title="<%= gt.gettext('Manage models of type of descriptor') %>"><%= num_descriptor_model_types %></abbr></td><td name="description"><abbr class="label label-default glyphicon glyphicon-option-horizontal" title="<%= description %>"><span></span></abbr></td>
+<th><span class="delete-descriptor-model action glyphicon glyphicon-minus-sign"></span></th><td class="action view-descriptor-model" name="name"><%= name %></td><td class="action view-descriptor-model" name="verbose_name"><%= verbose_name %></td><td class="action view-descriptor-model-types" name="num_descriptor_model_types"><span class="badge" style="cursor: pointer" title="<%= gt.gettext('Manage models of type of descriptor') %>"><%= num_descriptor_model_types %></span></td><td name="description"><abbr class="label label-default glyphicon glyphicon-option-horizontal" title="<%= description %>"><span></span></abbr></td>
 */
 
 
 /***/ }),
-/* 416 */
+/* 445 */
 /***/ (function(module, exports) {
 
 underscore
@@ -57103,7 +60531,7 @@ original source:
 
 
 /***/ }),
-/* 417 */
+/* 446 */
 /***/ (function(module, exports) {
 
 underscore
@@ -57133,7 +60561,7 @@ original source:
 
 
 /***/ }),
-/* 418 */
+/* 447 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -57170,7 +60598,7 @@ original source:
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 419 */
+/* 448 */
 /***/ (function(module, exports) {
 
 underscore
@@ -57183,7 +60611,7 @@ __p += '<div class="object descriptor-model-list" object-type="descriptor-model-
 '</th><th>' +
 ((__t = ( gt.gettext("Verbose name") )) == null ? '' : __t) +
 '</th><th>' +
-((__t = ( gt.gettext("Number of types of descriptor") )) == null ? '' : __t) +
+((__t = ( gt.gettext("Types of descriptor") )) == null ? '' : __t) +
 '</th><th>' +
 ((__t = ( gt.gettext("Description") )) == null ? '' : __t) +
 '</th></tr></thead><tbody class="descriptor-model-list"></tbody></table></div>';
@@ -57195,12 +60623,12 @@ return __p
 /*
 original source:
 
-<div class="object descriptor-model-list" object-type="descriptor-model-list" style="width:100%"><table class="table table-striped"><thead><tr><th><span class="glyphicon glyphicon-asterisk"></span></th><th><%= gt.gettext("Name") %></th><th><%= gt.gettext("Verbose name") %></th><th><%= gt.gettext("Number of types of descriptor") %></th><th><%= gt.gettext("Description") %></th></tr></thead><tbody class="descriptor-model-list"></tbody></table></div>
+<div class="object descriptor-model-list" object-type="descriptor-model-list" style="width:100%"><table class="table table-striped"><thead><tr><th><span class="glyphicon glyphicon-asterisk"></span></th><th><%= gt.gettext("Name") %></th><th><%= gt.gettext("Verbose name") %></th><th><%= gt.gettext("Types of descriptor") %></th><th><%= gt.gettext("Description") %></th></tr></thead><tbody class="descriptor-model-list"></tbody></table></div>
 */
 
 
 /***/ }),
-/* 420 */
+/* 449 */
 /***/ (function(module, exports) {
 
 underscore
@@ -57213,7 +60641,7 @@ __p += '<div class="object descriptor-model-list" object-type="descriptor-model-
 '</th><th>' +
 ((__t = ( gt.gettext("Verbose name") )) == null ? '' : __t) +
 '</th><th>' +
-((__t = ( gt.gettext("Number of types of descriptor") )) == null ? '' : __t) +
+((__t = ( gt.gettext("Types of descriptor") )) == null ? '' : __t) +
 '</th><th>' +
 ((__t = ( gt.gettext("Description") )) == null ? '' : __t) +
 '</th></tr></thead><tbody class="descriptor-model-list"></tbody></table></div>';
@@ -57225,12 +60653,12 @@ return __p
 /*
 original source:
 
-<div class="object descriptor-model-list" object-type="descriptor-model-list" style="width:100%"><table class="table table-striped"><thead><tr><th><%= gt.gettext("Name") %></th><th><%= gt.gettext("Verbose name") %></th><th><%= gt.gettext("Number of types of descriptor") %></th><th><%= gt.gettext("Description") %></th></tr></thead><tbody class="descriptor-model-list"></tbody></table></div>
+<div class="object descriptor-model-list" object-type="descriptor-model-list" style="width:100%"><table class="table table-striped"><thead><tr><th><%= gt.gettext("Name") %></th><th><%= gt.gettext("Verbose name") %></th><th><%= gt.gettext("Types of descriptor") %></th><th><%= gt.gettext("Description") %></th></tr></thead><tbody class="descriptor-model-list"></tbody></table></div>
 */
 
 
 /***/ }),
-/* 421 */
+/* 450 */
 /***/ (function(module, exports) {
 
 underscore
@@ -57239,23 +60667,27 @@ obj || (obj = {});
 var __t, __p = '', __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 with (obj) {
-__p += '<th><span class="delete-descriptor-model-type action glyphicon glyphicon-minus-sign"></span></th><td name="descriptor_type_code">' +
+__p += '<th><span class="delete-descriptor-model-type action glyphicon glyphicon-minus-sign"></span></th><td name="descriptor-type-code"><abbr title="' +
+((__t = ( descriptor_type_groups.get(descriptor_type_group).get('name') + '.' + descriptor_type_name )) == null ? '' : __t) +
+'">' +
 ((__t = ( descriptor_type_code )) == null ? '' : __t) +
-'</td><td name="label" class="action">' +
+'</abbr></td><td name="name" class="action rename-descriptor-model-type"><span class="label label-default"><span class="glyphicon glyphicon-option-horizontal" title="' +
+((__t = ( name )) == null ? '' : __t) +
+'"></span></span></td><td name="label" class="action">' +
 ((__t = ( label )) == null ? '' : __t) +
 '</td> ';
  if (mandatory) { ;
-__p += ' <td name="mandatory"><span class="action glyphicon glyphicon-ok left-margin"></span></td> ';
+__p += ' <td style="text-align:center" name="mandatory"><span class="action glyphicon glyphicon-ok"></span></td> ';
  } else { ;
-__p += ' <td name="mandatory"><span class="action glyphicon glyphicon-remove left-margin"></span></td> ';
+__p += ' <td style="text-align:center" name="mandatory"><span class="action glyphicon glyphicon-remove"></span></td> ';
  } ;
 __p += ' ';
  if (set_once) { ;
-__p += ' <td name="set_once"><span class="action glyphicon glyphicon-ok left-margin"></span></td> ';
+__p += ' <td style="text-align:center" name="set_once"><span class="action glyphicon glyphicon-ok"></span></td> ';
  } else { ;
-__p += ' <td name="set_once"><span class="action glyphicon glyphicon-remove left-margin"></span></td> ';
+__p += ' <td style="text-align:center" name="set_once"><span class="action glyphicon glyphicon-remove"></span></td> ';
  } ;
-__p += ' <td name="condition"><span class="action glyphicon glyphicon-wrench left-margin"></span></td>';
+__p += ' <td style="text-align:center" name="condition"><span class="action glyphicon glyphicon-wrench"></span></td>';
 
 }
 return __p
@@ -57264,12 +60696,12 @@ return __p
 /*
 original source:
 
-<th><span class="delete-descriptor-model-type action glyphicon glyphicon-minus-sign"></span></th><td name="descriptor_type_code"><%= descriptor_type_code %></td><td name="label" class="action"><%= label %></td> <% if (mandatory) { %> <td name="mandatory"><span class="action glyphicon glyphicon-ok left-margin"></span></td> <% } else { %> <td name="mandatory"><span class="action glyphicon glyphicon-remove left-margin"></span></td> <% } %> <% if (set_once) { %> <td name="set_once"><span class="action glyphicon glyphicon-ok left-margin"></span></td> <% } else { %> <td name="set_once"><span class="action glyphicon glyphicon-remove left-margin"></span></td> <% } %> <td name="condition"><span class="action glyphicon glyphicon-wrench left-margin"></span></td>
+<th><span class="delete-descriptor-model-type action glyphicon glyphicon-minus-sign"></span></th><td name="descriptor-type-code"><abbr title="<%= descriptor_type_groups.get(descriptor_type_group).get('name') + '.' + descriptor_type_name %>"><%= descriptor_type_code %></abbr></td><td name="name" class="action rename-descriptor-model-type"><span class="label label-default"><span class="glyphicon glyphicon-option-horizontal" title="<%= name %>"></span></span></td><td name="label" class="action"><%= label %></td> <% if (mandatory) { %> <td style="text-align:center" name="mandatory"><span class="action glyphicon glyphicon-ok"></span></td> <% } else { %> <td style="text-align:center" name="mandatory"><span class="action glyphicon glyphicon-remove"></span></td> <% } %> <% if (set_once) { %> <td style="text-align:center" name="set_once"><span class="action glyphicon glyphicon-ok"></span></td> <% } else { %> <td style="text-align:center" name="set_once"><span class="action glyphicon glyphicon-remove"></span></td> <% } %> <td style="text-align:center" name="condition"><span class="action glyphicon glyphicon-wrench"></span></td>
 */
 
 
 /***/ }),
-/* 422 */
+/* 451 */
 /***/ (function(module, exports) {
 
 underscore
@@ -57326,7 +60758,7 @@ original source:
 
 
 /***/ }),
-/* 423 */
+/* 452 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -57374,7 +60806,7 @@ original source:
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 424 */
+/* 453 */
 /***/ (function(module, exports) {
 
 underscore
@@ -57385,14 +60817,16 @@ with (obj) {
 __p += '<div class="object descriptor-model-type-list" object-type="descriptor-model-type-list"><table class="table table-striped"><thead class="sticky-header"><tr><th><span class="glyphicon glyphicon-asterisk"></span></th><th>' +
 ((__t = ( gt.gettext("Code") )) == null ? '' : __t) +
 '</th><th>' +
+((__t = ( gt.gettext("Name") )) == null ? '' : __t) +
+'</th><th>' +
 ((__t = ( gt.gettext("Label") )) == null ? '' : __t) +
-'</th><th>' +
-((__t = ( gt.gettext("Required") )) == null ? '' : __t) +
-'</th><th>' +
-((__t = ( gt.gettext("Set Once") )) == null ? '' : __t) +
-'</th><th>' +
-((__t = ( gt.gettext("Condition") )) == null ? '' : __t) +
-'</th></tr></thead><tbody class="descriptor-model-type-list header-line"></tbody></table></div>';
+'</th><th style="text-align:center"><abbr title="' +
+((__t = ( gt.gettext('Required') )) == null ? '' : __t) +
+'"><span class="glyphicon glyphicon-exclamation-sign"></span></abbr></th><th style="text-align:center"><abbr title="' +
+((__t = ( gt.gettext('Set Once') )) == null ? '' : __t) +
+'"><span class="glyphicon glyphicon-repeat"></span></abbr></th><th style="text-align:center"><abbr title="' +
+((__t = ( gt.gettext('Condition') )) == null ? '' : __t) +
+'"><span class="glyphicon glyphicon-question-sign"></span></abbr></th></tr></thead><tbody class="descriptor-model-type-list header-line"></tbody></table></div>';
 
 }
 return __p
@@ -57401,12 +60835,42 @@ return __p
 /*
 original source:
 
-<div class="object descriptor-model-type-list" object-type="descriptor-model-type-list"><table class="table table-striped"><thead class="sticky-header"><tr><th><span class="glyphicon glyphicon-asterisk"></span></th><th><%= gt.gettext("Code") %></th><th><%= gt.gettext("Label") %></th><th><%= gt.gettext("Required") %></th><th><%= gt.gettext("Set Once") %></th><th><%= gt.gettext("Condition") %></th></tr></thead><tbody class="descriptor-model-type-list header-line"></tbody></table></div>
+<div class="object descriptor-model-type-list" object-type="descriptor-model-type-list"><table class="table table-striped"><thead class="sticky-header"><tr><th><span class="glyphicon glyphicon-asterisk"></span></th><th><%= gt.gettext("Code") %></th><th><%= gt.gettext("Name") %></th><th><%= gt.gettext("Label") %></th><th style="text-align:center"><abbr title="<%= gt.gettext('Required') %>"><span class="glyphicon glyphicon-exclamation-sign"></span></abbr></th><th style="text-align:center"><abbr title="<%= gt.gettext('Set Once') %>"><span class="glyphicon glyphicon-repeat"></span></abbr></th><th style="text-align:center"><abbr title="<%= gt.gettext('Condition') %>"><span class="glyphicon glyphicon-question-sign"></span></abbr></th></tr></thead><tbody class="descriptor-model-type-list header-line"></tbody></table></div>
 */
 
 
 /***/ }),
-/* 425 */
+/* 454 */
+/***/ (function(module, exports) {
+
+underscore
+module.exports = function (obj) {
+obj || (obj = {});
+var __t, __p = '';
+with (obj) {
+__p += '<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title">' +
+((__t = ( gt.gettext("Rename the type of model of descriptors") )) == null ? '' : __t) +
+'</h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="descriptor_model_type_name">' +
+((__t = ( gt.gettext("Name") )) == null ? '' : __t) +
+'</label><input class="form-control" id="descriptor_model_type_name" type="text" name="name" value="" maxlength="64" autofocus="" autocomplete="off" style="width:100%"></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal">' +
+((__t = ( gt.gettext("Cancel") )) == null ? '' : __t) +
+'</button> <button type="button" class="btn btn-success apply">' +
+((__t = ( gt.gettext("Apply") )) == null ? '' : __t) +
+'</button></div></div></div>';
+
+}
+return __p
+};
+
+/*
+original source:
+
+<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title"><%= gt.gettext("Rename the type of model of descriptors") %></h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="descriptor_model_type_name"><%= gt.gettext("Name") %></label><input class="form-control" id="descriptor_model_type_name" type="text" name="name" value="" maxlength="64" autofocus="" autocomplete="off" style="width:100%"></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= gt.gettext("Cancel") %></button> <button type="button" class="btn btn-success apply"><%= gt.gettext("Apply") %></button></div></div></div>
+*/
+
+
+/***/ }),
+/* 455 */
 /***/ (function(module, exports) {
 
 underscore
@@ -57436,7 +60900,7 @@ original source:
 
 
 /***/ }),
-/* 426 */
+/* 456 */
 /***/ (function(module, exports) {
 
 underscore
@@ -57491,7 +60955,7 @@ original source:
 
 
 /***/ }),
-/* 427 */
+/* 457 */
 /***/ (function(module, exports) {
 
 underscore
@@ -57515,7 +60979,7 @@ original source:
 
 
 /***/ }),
-/* 428 */
+/* 458 */
 /***/ (function(module, exports) {
 
 underscore
@@ -57558,7 +61022,7 @@ original source:
 
 
 /***/ }),
-/* 429 */
+/* 459 */
 /***/ (function(module, exports) {
 
 underscore
@@ -57599,7 +61063,7 @@ original source:
 
 
 /***/ }),
-/* 430 */
+/* 460 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -57638,7 +61102,7 @@ original source:
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 431 */
+/* 461 */
 /***/ (function(module, exports) {
 
 underscore
@@ -57668,7 +61132,7 @@ original source:
 
 
 /***/ }),
-/* 432 */
+/* 462 */
 /***/ (function(module, exports) {
 
 underscore
@@ -57698,7 +61162,7 @@ original source:
 
 
 /***/ }),
-/* 433 */
+/* 463 */
 /***/ (function(module, exports) {
 
 underscore
@@ -57731,7 +61195,7 @@ original source:
 
 
 /***/ }),
-/* 434 */
+/* 464 */
 /***/ (function(module, exports) {
 
 underscore
@@ -57753,7 +61217,7 @@ original source:
 
 
 /***/ }),
-/* 435 */
+/* 465 */
 /***/ (function(module, exports) {
 
 underscore
@@ -57764,7 +61228,7 @@ with (obj) {
 __p += '<div class="object descriptor-value-list" object-type="descriptor-value-list" style="width:100%"><table class="table table-striped descriptor-table"><thead><tr class="sticky-header"><th class="unselectable"><span class="glyphicon glyphicon-asterisk"></span></th><th class="unselectable">' +
 ((__t = ( gt.gettext("Code") )) == null ? '' : __t) +
 '&nbsp;<span class="action column-sort-id glyphicon glyphicon-sort" column-name="id" column-type="alpha"></span></th><th class="unselectable">' +
-((__t = ( gt.gettext("Value") )) == null ? '' : __t) +
+((__t = ( gt.gettext(format.fields[0]) + " (" + gt.gettext("Value0") + ")" )) == null ? '' : __t) +
 '&nbsp;<span class="action column-sort-value0 glyphicon glyphicon-sort" column-name="value0" column-type="alpha"></span></th></tr></thead><tbody class="descriptor-value-list"></tbody></table></div>';
 
 }
@@ -57774,12 +61238,12 @@ return __p
 /*
 original source:
 
-<div class="object descriptor-value-list" object-type="descriptor-value-list" style="width:100%"><table class="table table-striped descriptor-table"><thead><tr class="sticky-header"><th class="unselectable"><span class="glyphicon glyphicon-asterisk"></span></th><th class="unselectable"><%= gt.gettext("Code") %>&nbsp;<span class="action column-sort-id glyphicon glyphicon-sort" column-name="id" column-type="alpha"></span></th><th class="unselectable"><%= gt.gettext("Value") %>&nbsp;<span class="action column-sort-value0 glyphicon glyphicon-sort" column-name="value0" column-type="alpha"></span></th></tr></thead><tbody class="descriptor-value-list"></tbody></table></div>
+<div class="object descriptor-value-list" object-type="descriptor-value-list" style="width:100%"><table class="table table-striped descriptor-table"><thead><tr class="sticky-header"><th class="unselectable"><span class="glyphicon glyphicon-asterisk"></span></th><th class="unselectable"><%= gt.gettext("Code") %>&nbsp;<span class="action column-sort-id glyphicon glyphicon-sort" column-name="id" column-type="alpha"></span></th><th class="unselectable"><%= gt.gettext(format.fields[0]) + " (" + gt.gettext("Value0") + ")" %>&nbsp;<span class="action column-sort-value0 glyphicon glyphicon-sort" column-name="value0" column-type="alpha"></span></th></tr></thead><tbody class="descriptor-value-list"></tbody></table></div>
 */
 
 
 /***/ }),
-/* 436 */
+/* 466 */
 /***/ (function(module, exports) {
 
 underscore
@@ -57807,7 +61271,7 @@ original source:
 
 
 /***/ }),
-/* 437 */
+/* 467 */
 /***/ (function(module, exports) {
 
 underscore
@@ -57820,7 +61284,7 @@ __p += '<div class="object descriptor-value-list" object-type="descriptor-value-
 '&nbsp;<span class="action column-sort-id glyphicon glyphicon-sort" column-name="id" column-type="alpha"></span></th><th class="unselectable">' +
 ((__t = ( gt.gettext("Ordinal") )) == null ? '' : __t) +
 '&nbsp;<span class="action column-sort-ordinal glyphicon glyphicon-sort" column-name="ordinal" column-type="numeric"></span></th><th class="unselectable">' +
-((__t = ( gt.gettext(format.fields[0]) )) == null ? '' : __t) +
+((__t = ( gt.gettext(format.fields[0]) + " (" + gt.gettext("Value0") + ")" )) == null ? '' : __t) +
 '&nbsp;<span class="action column-sort-value0 glyphicon glyphicon-sort" column-name="value0" column-type="alpha"></span></th></tr></thead><tbody class="descriptor-value-list"></tbody></table></div>';
 
 }
@@ -57830,12 +61294,12 @@ return __p
 /*
 original source:
 
-<div class="object descriptor-value-list" object-type="descriptor-value-list" style="width:100%"><table class="table table-striped descriptor-table"><thead class="sticky-header"><tr><th><span class="glyphicon glyphicon-asterisk"></span></th><th class="unselectable"><%= gt.gettext("Code") %>&nbsp;<span class="action column-sort-id glyphicon glyphicon-sort" column-name="id" column-type="alpha"></span></th><th class="unselectable"><%= gt.gettext("Ordinal") %>&nbsp;<span class="action column-sort-ordinal glyphicon glyphicon-sort" column-name="ordinal" column-type="numeric"></span></th><th class="unselectable"><%= gt.gettext(format.fields[0]) %>&nbsp;<span class="action column-sort-value0 glyphicon glyphicon-sort" column-name="value0" column-type="alpha"></span></th></tr></thead><tbody class="descriptor-value-list"></tbody></table></div>
+<div class="object descriptor-value-list" object-type="descriptor-value-list" style="width:100%"><table class="table table-striped descriptor-table"><thead class="sticky-header"><tr><th><span class="glyphicon glyphicon-asterisk"></span></th><th class="unselectable"><%= gt.gettext("Code") %>&nbsp;<span class="action column-sort-id glyphicon glyphicon-sort" column-name="id" column-type="alpha"></span></th><th class="unselectable"><%= gt.gettext("Ordinal") %>&nbsp;<span class="action column-sort-ordinal glyphicon glyphicon-sort" column-name="ordinal" column-type="numeric"></span></th><th class="unselectable"><%= gt.gettext(format.fields[0]) + " (" + gt.gettext("Value0") + ")" %>&nbsp;<span class="action column-sort-value0 glyphicon glyphicon-sort" column-name="value0" column-type="alpha"></span></th></tr></thead><tbody class="descriptor-value-list"></tbody></table></div>
 */
 
 
 /***/ }),
-/* 438 */
+/* 468 */
 /***/ (function(module, exports) {
 
 underscore
@@ -57870,7 +61334,7 @@ original source:
 
 
 /***/ }),
-/* 439 */
+/* 469 */
 /***/ (function(module, exports) {
 
 underscore
@@ -57881,9 +61345,9 @@ with (obj) {
 __p += '<div class="object descriptor-value-list" object-type="descriptor-value-list" style="width:100%"><table class="table table-striped descriptor-table"><thead class="sticky-header"><tr><th><span class="glyphicon glyphicon-asterisk"></span></th><th class="unselectable">' +
 ((__t = ( gt.gettext("Code") )) == null ? '' : __t) +
 '&nbsp;<span class="action column-sort-id glyphicon glyphicon-sort" column-name="id" column-type="alpha"></span></th><th class="unselectable">' +
-((__t = ( gt.gettext(format.fields[0]) )) == null ? '' : __t) +
+((__t = ( gt.gettext(format.fields[0]) + " (" + gt.gettext("Value0") + ")" )) == null ? '' : __t) +
 '&nbsp;<span class="action column-sort-value0 glyphicon glyphicon-sort" column-name="value0" column-type="alpha"></span></th><th class="unselectable">' +
-((__t = ( gt.gettext(format.fields[1]) )) == null ? '' : __t) +
+((__t = ( gt.gettext(format.fields[1]) + " (" + gt.gettext("Value1") + ")" )) == null ? '' : __t) +
 '&nbsp;<span class="action column-sort-value1 glyphicon glyphicon-sort" column-name="value1" column-type="alpha"></span></th></tr></thead><tbody class="descriptor-value-list"></tbody></table></div>';
 
 }
@@ -57893,12 +61357,12 @@ return __p
 /*
 original source:
 
-<div class="object descriptor-value-list" object-type="descriptor-value-list" style="width:100%"><table class="table table-striped descriptor-table"><thead class="sticky-header"><tr><th><span class="glyphicon glyphicon-asterisk"></span></th><th class="unselectable"><%= gt.gettext("Code") %>&nbsp;<span class="action column-sort-id glyphicon glyphicon-sort" column-name="id" column-type="alpha"></span></th><th class="unselectable"><%= gt.gettext(format.fields[0]) %>&nbsp;<span class="action column-sort-value0 glyphicon glyphicon-sort" column-name="value0" column-type="alpha"></span></th><th class="unselectable"><%= gt.gettext(format.fields[1]) %>&nbsp;<span class="action column-sort-value1 glyphicon glyphicon-sort" column-name="value1" column-type="alpha"></span></th></tr></thead><tbody class="descriptor-value-list"></tbody></table></div>
+<div class="object descriptor-value-list" object-type="descriptor-value-list" style="width:100%"><table class="table table-striped descriptor-table"><thead class="sticky-header"><tr><th><span class="glyphicon glyphicon-asterisk"></span></th><th class="unselectable"><%= gt.gettext("Code") %>&nbsp;<span class="action column-sort-id glyphicon glyphicon-sort" column-name="id" column-type="alpha"></span></th><th class="unselectable"><%= gt.gettext(format.fields[0]) + " (" + gt.gettext("Value0") + ")" %>&nbsp;<span class="action column-sort-value0 glyphicon glyphicon-sort" column-name="value0" column-type="alpha"></span></th><th class="unselectable"><%= gt.gettext(format.fields[1]) + " (" + gt.gettext("Value1") + ")" %>&nbsp;<span class="action column-sort-value1 glyphicon glyphicon-sort" column-name="value1" column-type="alpha"></span></th></tr></thead><tbody class="descriptor-value-list"></tbody></table></div>
 */
 
 
 /***/ }),
-/* 440 */
+/* 470 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -57923,7 +61387,7 @@ original source:
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 441 */
+/* 471 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -57984,7 +61448,7 @@ original source:
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 442 */
+/* 472 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -58049,7 +61513,7 @@ original source:
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 443 */
+/* 473 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -58092,7 +61556,7 @@ original source:
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 444 */
+/* 474 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -58121,7 +61585,7 @@ original source:
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 445 */
+/* 475 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -58154,7 +61618,7 @@ original source:
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 446 */
+/* 476 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -58185,7 +61649,7 @@ original source:
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 447 */
+/* 477 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -58210,7 +61674,7 @@ original source:
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 448 */
+/* 478 */
 /***/ (function(module, exports) {
 
 underscore
@@ -58232,7 +61696,7 @@ original source:
 
 
 /***/ }),
-/* 449 */
+/* 479 */
 /***/ (function(module, exports) {
 
 underscore
@@ -58256,7 +61720,65 @@ original source:
 
 
 /***/ }),
-/* 450 */
+/* 480 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(module) {underscore
+module.exports = function (obj) {
+obj || (obj = {});
+var __t, __p = '', __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+__p += '<span class="config-id label label-default"><span class="config-module" style="font-weight: bold">' +
+((__t = ( module )) == null ? '' : __t) +
+'&nbsp;:&nbsp;</span>' +
+((__t = ( id )) == null ? '' : __t) +
+'</span><div class="config-values"> ';
+ for (var i = 0; i < values.length; ++i) { ;
+__p += ' ';
+ if (values[i].state == 0) { ;
+__p += ' <div class="config-value-box alert alert-success"><span class="config-state label label-success">' +
+((__t = ( gt.gettext("Configured") )) == null ? '' : __t) +
+'</span>&nbsp; <span class="config-value">' +
+((__t = ( values[i].value )) == null ? '' : __t) +
+'</span></div> ';
+ } else if (values[i].state == 1) { ;
+__p += ' <div class="config-value-box alert alert-danger"><span class="config-state label label-danger">' +
+((__t = ( gt.gettext("Improperly configured") )) == null ? '' : __t) +
+'</span>&nbsp; <span class="config-value">' +
+((__t = ( values[i].value )) == null ? '' : __t) +
+'</span></div> ';
+ } else if (values[i].state == 2) { ;
+__p += ' <div class="config-value-box alert alert-warning"><span class="config-state label label-warning">' +
+((__t = ( gt.gettext("Partially configured") )) == null ? '' : __t) +
+'</span>&nbsp; <span class="config-value">' +
+((__t = ( values[i].value )) == null ? '' : __t) +
+'</span></div> ';
+ } else { ;
+__p += ' <div class="config-value-box alert alert-info"><span class="config-state label label-default">' +
+((__t = ( gt.gettext("Undefined") )) == null ? '' : __t) +
+'</span>&nbsp; <span class="config-value">' +
+((__t = ( values[i].value )) == null ? '' : __t) +
+'</span></div> ';
+ } ;
+__p += ' ';
+ } ;
+__p += ' </div>';
+
+}
+return __p
+};
+
+/*
+original source:
+
+<span class="config-id label label-default"><span class="config-module" style="font-weight: bold"><%= module %>&nbsp;:&nbsp;</span><%= id %></span><div class="config-values"> <% for (var i = 0; i < values.length; ++i) { %> <% if (values[i].state == 0) { %> <div class="config-value-box alert alert-success"><span class="config-state label label-success"><%= gt.gettext("Configured") %></span>&nbsp; <span class="config-value"><%= values[i].value %></span></div> <% } else if (values[i].state == 1) { %> <div class="config-value-box alert alert-danger"><span class="config-state label label-danger"><%= gt.gettext("Improperly configured") %></span>&nbsp; <span class="config-value"><%= values[i].value %></span></div> <% } else if (values[i].state == 2) { %> <div class="config-value-box alert alert-warning"><span class="config-state label label-warning"><%= gt.gettext("Partially configured") %></span>&nbsp; <span class="config-value"><%= values[i].value %></span></div> <% } else { %> <div class="config-value-box alert alert-info"><span class="config-state label label-default"><%= gt.gettext("Undefined") %></span>&nbsp; <span class="config-value"><%= values[i].value %></span></div> <% } %> <% } %> </div>
+*/
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(202)(module)))
+
+/***/ }),
+/* 481 */
 /***/ (function(module, exports) {
 
 underscore
@@ -58286,7 +61808,7 @@ original source:
 
 
 /***/ }),
-/* 451 */
+/* 482 */
 /***/ (function(module, exports) {
 
 underscore
@@ -58308,7 +61830,7 @@ original source:
 
 
 /***/ }),
-/* 452 */
+/* 483 */
 /***/ (function(module, exports) {
 
 underscore
@@ -58330,7 +61852,7 @@ original source:
 
 
 /***/ }),
-/* 453 */
+/* 484 */
 /***/ (function(module, exports) {
 
 underscore
@@ -58360,7 +61882,7 @@ original source:
 
 
 /***/ }),
-/* 454 */
+/* 485 */
 /***/ (function(module, exports) {
 
 underscore
@@ -58386,7 +61908,7 @@ original source:
 
 
 /***/ }),
-/* 455 */
+/* 486 */
 /***/ (function(module, exports) {
 
 underscore
@@ -58410,7 +61932,7 @@ __p += ' <div class="form-group"><label class="control-label">' +
 ((__t = ( gt.gettext(lang_label) )) == null ? '' : __t) +
 '</label><input class="form-control" type="text" language="' +
 ((__t = ( lang_id )) == null ? '' : __t) +
-'" value="" maxlength="256" ' +
+'" value="" maxlength="255" ' +
 ((__t = ( autofocus )) == null ? '' : __t) +
 ' autocomplete="off" style="width:100%"></div> ';
  } ;
@@ -58434,12 +61956,12 @@ original source:
                     var lang_id = languages.at(i).get('id');
                     var lang_label = languages.at(i).get('label');
                     var autofocus = (i == 0) ? 'autofocus=""' : "";
-                %> <div class="form-group"><label class="control-label"><%= gt.gettext(lang_label) %></label><input class="form-control" type="text" language="<%= lang_id %>" value="" maxlength="256" <%= autofocus %> autocomplete="off" style="width:100%"></div> <% } %> </form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= gt.gettext("Cancel") %></button> <button type="button" class="btn btn-success apply"><%= gt.gettext("Create") %></button></div></div></div>
+                %> <div class="form-group"><label class="control-label"><%= gt.gettext(lang_label) %></label><input class="form-control" type="text" language="<%= lang_id %>" value="" maxlength="255" <%= autofocus %> autocomplete="off" style="width:100%"></div> <% } %> </form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= gt.gettext("Cancel") %></button> <button type="button" class="btn btn-success apply"><%= gt.gettext("Create") %></button></div></div></div>
 */
 
 
 /***/ }),
-/* 456 */
+/* 487 */
 /***/ (function(module, exports) {
 
 underscore
@@ -58463,7 +61985,7 @@ original source:
 
 
 /***/ }),
-/* 457 */
+/* 488 */
 /***/ (function(module, exports) {
 
 underscore
@@ -58485,7 +62007,7 @@ original source:
 
 
 /***/ }),
-/* 458 */
+/* 489 */
 /***/ (function(module, exports) {
 
 underscore
@@ -58511,7 +62033,7 @@ original source:
 
 
 /***/ }),
-/* 459 */
+/* 490 */
 /***/ (function(module, exports) {
 
 underscore
@@ -58535,7 +62057,7 @@ original source:
 
 
 /***/ }),
-/* 460 */
+/* 491 */
 /***/ (function(module, exports) {
 
 underscore
@@ -58557,7 +62079,7 @@ original source:
 
 
 /***/ }),
-/* 461 */
+/* 492 */
 /***/ (function(module, exports) {
 
 underscore
@@ -58579,7 +62101,7 @@ original source:
 
 
 /***/ }),
-/* 462 */
+/* 493 */
 /***/ (function(module, exports) {
 
 underscore
@@ -58601,7 +62123,7 @@ original source:
 
 
 /***/ }),
-/* 463 */
+/* 494 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -58649,7 +62171,7 @@ original source:
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 464 */
+/* 495 */
 /***/ (function(module, exports) {
 
 underscore
@@ -58671,7 +62193,7 @@ original source:
 
 
 /***/ }),
-/* 465 */
+/* 496 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -58710,7 +62232,7 @@ original source:
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 466 */
+/* 497 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -58751,7 +62273,382 @@ original source:
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 467 */
+/* 498 */
+/***/ (function(module, exports) {
+
+underscore
+module.exports = function (obj) {
+obj || (obj = {});
+var __t, __p = '', __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+__p += '<div class="describable-header" style="width: 100%"><div class="btn-group-vertical" role="group" style="width: 100%"> ';
+ for (var i = 0; i < actions.length; ++i) { ;
+__p += ' <button type="button" class="btn ' +
+((__t = ( options[actions[i]].className )) == null ? '' : __t) +
+'" name="' +
+((__t = ( actions[i] )) == null ? '' : __t) +
+'">' +
+((__t = ( gt.gettext(options[actions[i]].label) )) == null ? '' : __t) +
+'</button> ';
+ } ;
+__p += ' </div></div>';
+
+}
+return __p
+};
+
+/*
+original source:
+
+<div class="describable-header" style="width: 100%"><div class="btn-group-vertical" role="group" style="width: 100%"> <% for (var i = 0; i < actions.length; ++i) { %> <button type="button" class="btn <%= options[actions[i]].className %>" name="<%= actions[i] %>"><%= gt.gettext(options[actions[i]].label) %></button> <% } %> </div></div>
+*/
+
+
+/***/ }),
+/* 499 */
+/***/ (function(module, exports) {
+
+underscore
+module.exports = function (obj) {
+obj || (obj = {});
+var __t, __p = '', __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+__p += '<th><span class="delete-establishment action glyphicon glyphicon-minus-sign"></span></th><td class="action view-establishment" name="name" value="' +
+((__t = ( name )) == null ? '' : __t) +
+'">' +
+((__t = ( name )) == null ? '' : __t) +
+'</td><td class="organisation-acronym" name="organisation-acronym" value="' +
+((__t = ( organisation_details.acronym )) == null ? '' : __t) +
+'"></td> ';
+ for (var i = 0; i < columns.length; ++i) { ;
+__p += ' ';
+ var column = columns[i]; ;
+__p += ' <td name="' +
+((__t = ( column.name )) == null ? '' : __t) +
+'" descriptor-id="';
+ column.id ;
+__p += '">' +
+((__t = ( descriptors[column.name] )) == null ? '' : __t) +
+'</td> ';
+ } ;
+
+
+}
+return __p
+};
+
+/*
+original source:
+
+<th><span class="delete-establishment action glyphicon glyphicon-minus-sign"></span></th><td class="action view-establishment" name="name" value="<%= name %>"><%= name %></td><td class="organisation-acronym" name="organisation-acronym" value="<%= organisation_details.acronym %>"></td> <% for (var i = 0; i < columns.length; ++i) { %> <% var column = columns[i]; %> <td name="<%= column.name %>" descriptor-id="<% column.id %>"><%= descriptors[column.name] %></td> <% } %>
+*/
+
+
+/***/ }),
+/* 500 */
+/***/ (function(module, exports) {
+
+underscore
+module.exports = function (obj) {
+obj || (obj = {});
+var __t, __p = '', __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+__p += '<div class="object establishment-list" object-type="establishment-list" style="width:100%"><table class="table table-striped"><thead class="sticky-header"><tr><th><span class="glyphicon glyphicon-asterisk"></span></th><th>' +
+((__t = ( gt.gettext("Name") )) == null ? '' : __t) +
+'</th><th>' +
+((__t = ( gt.gettext("Organisation") )) == null ? '' : __t) +
+'</th> ';
+ for (var i = 0; i < columns.length; ++i) { ;
+__p += ' ';
+ var column = columns[i]; ;
+__p += ' <th name="' +
+((__t = ( column.id )) == null ? '' : __t) +
+'">' +
+((__t = ( column.label )) == null ? '' : __t) +
+'</th> ';
+ } ;
+__p += ' </tr></thead><tbody class="establishment-list"></tbody></table></div>';
+
+}
+return __p
+};
+
+/*
+original source:
+
+<div class="object establishment-list" object-type="establishment-list" style="width:100%"><table class="table table-striped"><thead class="sticky-header"><tr><th><span class="glyphicon glyphicon-asterisk"></span></th><th><%= gt.gettext("Name") %></th><th><%= gt.gettext("Organisation") %></th> <% for (var i = 0; i < columns.length; ++i) { %> <% var column = columns[i]; %> <th name="<%= column.id %>"><%= column.label %></th> <% } %> </tr></thead><tbody class="establishment-list"></tbody></table></div>
+*/
+
+
+/***/ }),
+/* 501 */
+/***/ (function(module, exports) {
+
+underscore
+module.exports = function (obj) {
+obj || (obj = {});
+var __t, __p = '';
+with (obj) {
+__p += '<div class="grc"><div class="row"><div class="form-group col-lg-5"><label for="grc_name">' +
+((__t = ( gt.gettext("Name") )) == null ? '' : __t) +
+'</label><input id="grc_name" name="name" class="form-control" value="' +
+((__t = ( name )) == null ? '' : __t) +
+'"></div></div><div class="row"><div class="form-group col-lg-5"><label for="grc_identifier">' +
+((__t = ( gt.gettext("Identifier") )) == null ? '' : __t) +
+'</label><input id="grc_identifier" name="identifier" class="form-control" value="' +
+((__t = ( identifier )) == null ? '' : __t) +
+'"></div></div><div class="row"><div class="form-group col-lg-5"><label for="grc_description">' +
+((__t = ( gt.gettext("Description") )) == null ? '' : __t) +
+'</label><textarea id="grc_description" name="description" class="form-control" maxlength="4096">' +
+((__t = ( description )) == null ? '' : __t) +
+'</textarea></div></div><div class="row"><div class="form-group col-lg-2"><button id="grc_save" class="form-control btn btn-success">Update</button></div></div></div>';
+
+}
+return __p
+};
+
+/*
+original source:
+
+<div class="grc"><div class="row"><div class="form-group col-lg-5"><label for="grc_name"><%= gt.gettext("Name") %></label><input id="grc_name" name="name" class="form-control" value="<%= name %>"></div></div><div class="row"><div class="form-group col-lg-5"><label for="grc_identifier"><%= gt.gettext("Identifier") %></label><input id="grc_identifier" name="identifier" class="form-control" value="<%= identifier %>"></div></div><div class="row"><div class="form-group col-lg-5"><label for="grc_description"><%= gt.gettext("Description") %></label><textarea id="grc_description" name="description" class="form-control" maxlength="4096"><%= description %></textarea></div></div><div class="row"><div class="form-group col-lg-2"><button id="grc_save" class="form-control btn btn-success">Update</button></div></div></div>
+*/
+
+
+/***/ }),
+/* 502 */
+/***/ (function(module, exports) {
+
+underscore
+module.exports = function (obj) {
+obj || (obj = {});
+var __t, __p = '', __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+__p += '<th><span class="delete-organisation action glyphicon glyphicon-minus-sign"></span></th><td class="action view-organisation" name="name" value="' +
+((__t = ( name )) == null ? '' : __t) +
+'">' +
+((__t = ( name )) == null ? '' : __t) +
+'</td><td class="organisation-type" name="type" value="' +
+((__t = ( type )) == null ? '' : __t) +
+'"></td> ';
+ for (var i = 0; i < columns.length; ++i) { ;
+__p += ' ';
+ var column = columns[i]; ;
+__p += ' <td name="' +
+((__t = ( column.name )) == null ? '' : __t) +
+'" descriptor-id="';
+ column.id ;
+__p += '">' +
+((__t = ( descriptors[column.name] )) == null ? '' : __t) +
+'</td> ';
+ } ;
+__p += ' <td class="action view-establishments" name="num_establishments"><abbr class="badge" style="cursor: pointer" title="' +
+((__t = ( gt.gettext('Manage establishments of the organisation') )) == null ? '' : __t) +
+'">' +
+((__t = ( num_establishments )) == null ? '' : __t) +
+'</abbr></td>';
+
+}
+return __p
+};
+
+/*
+original source:
+
+<th><span class="delete-organisation action glyphicon glyphicon-minus-sign"></span></th><td class="action view-organisation" name="name" value="<%= name %>"><%= name %></td><td class="organisation-type" name="type" value="<%= type %>"></td> <% for (var i = 0; i < columns.length; ++i) { %> <% var column = columns[i]; %> <td name="<%= column.name %>" descriptor-id="<% column.id %>"><%= descriptors[column.name] %></td> <% } %> <td class="action view-establishments" name="num_establishments"><abbr class="badge" style="cursor: pointer" title="<%= gt.gettext('Manage establishments of the organisation') %>"><%= num_establishments %></abbr></td>
+*/
+
+
+/***/ }),
+/* 503 */
+/***/ (function(module, exports) {
+
+underscore
+module.exports = function (obj) {
+obj || (obj = {});
+var __t, __p = '';
+with (obj) {
+__p += '<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title">' +
+((__t = ( gt.gettext("Create an organisation or a partner") )) == null ? '' : __t) +
+'</h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="organisation_name">' +
+((__t = ( gt.gettext("Name (must be unique)") )) == null ? '' : __t) +
+'</label><input class="form-control name" id="organisation_name" type="text" name="name" value="" maxlength="255" autofocus="" autocomplete="off" style="width:100%"></div><div class="form-group"><label class="control-label" for="organisation_grc">' +
+((__t = ( gt.gettext("Partner or organisation") )) == null ? '' : __t) +
+'</label><select class="form-control" id="organisation_grc" name="organisation-grc"><option value="grc-partner">' +
+((__t = ( gt.gettext("GRC partner") )) == null ? '' : __t) +
+'</option><option value="organisation">' +
+((__t = ( gt.gettext("Organisation") )) == null ? '' : __t) +
+'</option></select></div><div class="form-group"><label class="control-label" for="organisation_type">' +
+((__t = ( gt.gettext("Type") )) == null ? '' : __t) +
+'</label><select class="form-control organisation-type" id="organisation_type" name="organisation-type"></select></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal">' +
+((__t = ( gt.gettext("Cancel") )) == null ? '' : __t) +
+'</button> <button type="button" class="btn btn-success create">' +
+((__t = ( gt.gettext("Create") )) == null ? '' : __t) +
+'</button></div></div></div>';
+
+}
+return __p
+};
+
+/*
+original source:
+
+<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title"><%= gt.gettext("Create an organisation or a partner") %></h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="organisation_name"><%= gt.gettext("Name (must be unique)") %></label><input class="form-control name" id="organisation_name" type="text" name="name" value="" maxlength="255" autofocus="" autocomplete="off" style="width:100%"></div><div class="form-group"><label class="control-label" for="organisation_grc"><%= gt.gettext("Partner or organisation") %></label><select class="form-control" id="organisation_grc" name="organisation-grc"><option value="grc-partner"><%= gt.gettext("GRC partner") %></option><option value="organisation"><%= gt.gettext("Organisation") %></option></select></div><div class="form-group"><label class="control-label" for="organisation_type"><%= gt.gettext("Type") %></label><select class="form-control organisation-type" id="organisation_type" name="organisation-type"></select></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= gt.gettext("Cancel") %></button> <button type="button" class="btn btn-success create"><%= gt.gettext("Create") %></button></div></div></div>
+*/
+
+
+/***/ }),
+/* 504 */
+/***/ (function(module, exports) {
+
+underscore
+module.exports = function (obj) {
+obj || (obj = {});
+var __t, __p = '';
+with (obj) {
+__p += '<span style="font-weight:bold; font-size:18px; margin-bottom: 15px"><span><span class="organisation-name" data-organisation-id="' +
+((__t = ( id )) == null ? '' : __t) +
+'">' +
+((__t = ( name )) == null ? '' : __t) +
+'</span><span class="organisation-type badge left-margin" value="' +
+((__t = ( type )) == null ? '' : __t) +
+'"></span> </span><span class="glyphicon glyphicon-edit action change-type"></span></span>';
+
+}
+return __p
+};
+
+/*
+original source:
+
+<span style="font-weight:bold; font-size:18px; margin-bottom: 15px"><span><span class="organisation-name" data-organisation-id="<%= id %>"><%= name %></span><span class="organisation-type badge left-margin" value="<%= type %>"></span> </span><span class="glyphicon glyphicon-edit action change-type"></span></span>
+*/
+
+
+/***/ }),
+/* 505 */
+/***/ (function(module, exports) {
+
+underscore
+module.exports = function (obj) {
+obj || (obj = {});
+var __t, __p = '';
+with (obj) {
+__p += '<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title">' +
+((__t = ( gt.gettext("Update an organisation or a partner") )) == null ? '' : __t) +
+'</h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="organisation_name">' +
+((__t = ( gt.gettext("Name (must be unique)") )) == null ? '' : __t) +
+'</label><input class="form-control name" id="organisation_name" type="text" name="name" value="" maxlength="64" autofocus="" autocomplete="off" style="width:100%"></div><div class="form-group"><label class="control-label" for="organisation_type">' +
+((__t = ( gt.gettext("Type") )) == null ? '' : __t) +
+'</label><select class="form-control organisation-type" id="organisation_type" name="organisation-type"></select></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal">' +
+((__t = ( gt.gettext("Cancel") )) == null ? '' : __t) +
+'</button> <button type="button" class="btn btn-success apply">' +
+((__t = ( gt.gettext("Apply") )) == null ? '' : __t) +
+'</button></div></div></div>';
+
+}
+return __p
+};
+
+/*
+original source:
+
+<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title"><%= gt.gettext("Update an organisation or a partner") %></h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="organisation_name"><%= gt.gettext("Name (must be unique)") %></label><input class="form-control name" id="organisation_name" type="text" name="name" value="" maxlength="64" autofocus="" autocomplete="off" style="width:100%"></div><div class="form-group"><label class="control-label" for="organisation_type"><%= gt.gettext("Type") %></label><select class="form-control organisation-type" id="organisation_type" name="organisation-type"></select></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= gt.gettext("Cancel") %></button> <button type="button" class="btn btn-success apply"><%= gt.gettext("Apply") %></button></div></div></div>
+*/
+
+
+/***/ }),
+/* 506 */
+/***/ (function(module, exports) {
+
+underscore
+module.exports = function (obj) {
+obj || (obj = {});
+var __t, __p = '';
+with (obj) {
+__p += '<div name="details"></div><div class="column" style="margin-top: 10px; height: calc(100% - 25px)"><ul class="nav nav-tabs" role="tablist"><li role="presentation" class="active"><a href="div.tab-pane[name=descriptors]" aria-controls="descriptors" role="tab" data-toggle="tab">' +
+((__t = ( gt.gettext("Descriptors") )) == null ? '' : __t) +
+'</a></li><li role="presentation"><a href="div.tab-pane[name=establishments]" aria-controls="establishments" role="tab" data-toggle="tab">' +
+((__t = ( gt.gettext("Establishments") )) == null ? '' : __t) +
+'</a></li></ul><div class="tab-content" style="height: calc(100% - 41px - 10px)"><div role="tabpanel" class="tab-pane active" name="descriptors" style="height: 100%; overflow-y: auto; padding-right: 5px"></div><div role="tabpanel" class="tab-pane" name="establishments" style="height: 100%"></div></div></div>';
+
+}
+return __p
+};
+
+/*
+original source:
+
+<div name="details"></div><div class="column" style="margin-top: 10px; height: calc(100% - 25px)"><ul class="nav nav-tabs" role="tablist"><li role="presentation" class="active"><a href="div.tab-pane[name=descriptors]" aria-controls="descriptors" role="tab" data-toggle="tab"><%= gt.gettext("Descriptors") %></a></li><li role="presentation"><a href="div.tab-pane[name=establishments]" aria-controls="establishments" role="tab" data-toggle="tab"><%= gt.gettext("Establishments") %></a></li></ul><div class="tab-content" style="height: calc(100% - 41px - 10px)"><div role="tabpanel" class="tab-pane active" name="descriptors" style="height: 100%; overflow-y: auto; padding-right: 5px"></div><div role="tabpanel" class="tab-pane" name="establishments" style="height: 100%"></div></div></div>
+*/
+
+
+/***/ }),
+/* 507 */
+/***/ (function(module, exports) {
+
+underscore
+module.exports = function (obj) {
+obj || (obj = {});
+var __t, __p = '', __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
+with (obj) {
+__p += '<div class="object organisation-list" object-type="organisation-list" style="width:100%"><table class="table table-striped"><thead class="sticky-header"><tr><th><span class="glyphicon glyphicon-asterisk"></span></th><th>' +
+((__t = ( gt.gettext("Name") )) == null ? '' : __t) +
+'</th><th>' +
+((__t = ( gt.gettext("Type") )) == null ? '' : __t) +
+'</th> ';
+ for (var i = 0; i < columns.length; ++i) { ;
+__p += ' ';
+ var column = columns[i]; ;
+__p += ' <th name="' +
+((__t = ( column.id )) == null ? '' : __t) +
+'">' +
+((__t = ( column.label )) == null ? '' : __t) +
+'</th> ';
+ } ;
+__p += ' <th>' +
+((__t = ( gt.gettext("Establishments") )) == null ? '' : __t) +
+'</th></tr></thead><tbody class="organisation-list"></tbody></table></div>';
+
+}
+return __p
+};
+
+/*
+original source:
+
+<div class="object organisation-list" object-type="organisation-list" style="width:100%"><table class="table table-striped"><thead class="sticky-header"><tr><th><span class="glyphicon glyphicon-asterisk"></span></th><th><%= gt.gettext("Name") %></th><th><%= gt.gettext("Type") %></th> <% for (var i = 0; i < columns.length; ++i) { %> <% var column = columns[i]; %> <th name="<%= column.id %>"><%= column.label %></th> <% } %> <th><%= gt.gettext("Establishments") %></th></tr></thead><tbody class="organisation-list"></tbody></table></div>
+*/
+
+
+/***/ }),
+/* 508 */
+/***/ (function(module, exports) {
+
+underscore
+module.exports = function (obj) {
+obj || (obj = {});
+var __t, __p = '';
+with (obj) {
+__p += '<table class="table table-striped" style="margin-bottom: 0px"><tbody><tr><th><button type="button" class="organisation-filter btn btn-default"><span class="glyphicon glyphicon-search"></span>&nbsp;Filter</button></th><td style="width: 30%"><div class="form-group" style="margin-bottom: 0px"><select class="organisation-type form-control" name="organisation-type"></select></div></td><td style="width: 70%"><div class="form-group" style="margin-bottom: 0px"><input type="text" class="organisation-name form-control" name="organisation-name"></div></td></tr></tbody></table>';
+
+}
+return __p
+};
+
+/*
+original source:
+
+<table class="table table-striped" style="margin-bottom: 0px"><tbody><tr><th><button type="button" class="organisation-filter btn btn-default"><span class="glyphicon glyphicon-search"></span>&nbsp;Filter</button></th><td style="width: 30%"><div class="form-group" style="margin-bottom: 0px"><select class="organisation-type form-control" name="organisation-type"></select></div></td><td style="width: 70%"><div class="form-group" style="margin-bottom: 0px"><input type="text" class="organisation-name form-control" name="organisation-name"></div></td></tr></tbody></table>
+*/
+
+
+/***/ }),
+/* 509 */
 /***/ (function(module, exports) {
 
 underscore
@@ -58773,7 +62670,7 @@ original source:
 
 
 /***/ }),
-/* 468 */
+/* 510 */
 /***/ (function(module, exports) {
 
 underscore
@@ -58795,7 +62692,7 @@ original source:
 
 
 /***/ }),
-/* 469 */
+/* 511 */
 /***/ (function(module, exports) {
 
 underscore
@@ -58817,7 +62714,7 @@ original source:
 
 
 /***/ }),
-/* 470 */
+/* 512 */
 /***/ (function(module, exports) {
 
 underscore
@@ -58829,15 +62726,15 @@ __p += '<th><span class="delete-group action glyphicon glyphicon-minus-sign"></s
 ((__t = ( name )) == null ? '' : __t) +
 '">' +
 ((__t = ( name )) == null ? '' : __t) +
-'</td><td class="action view-users" name="num_users"><abbr class="badge" style="cursor: pointer" title="' +
+'</td><td class="action view-users" name="num_users"><span class="badge" title="' +
 ((__t = ( gt.gettext('Manage user list') )) == null ? '' : __t) +
 '">' +
 ((__t = ( num_users )) == null ? '' : __t) +
-'</abbr></td><td class="action view-permissions" name="num_permissions"><abbr class="badge" style="cursor: pointer" title="' +
+'</span></td><td class="action view-permissions" name="num_permissions"><span class="badge" title="' +
 ((__t = ( gt.gettext('Manage permission list') )) == null ? '' : __t) +
 '">' +
 ((__t = ( num_permissions )) == null ? '' : __t) +
-'</abbr></td>';
+'</span></td>';
 
 }
 return __p
@@ -58846,42 +62743,12 @@ return __p
 /*
 original source:
 
-<th><span class="delete-group action glyphicon glyphicon-minus-sign"></span></th><td class="action change-name" name="name" value="<%= name %>"><%= name %></td><td class="action view-users" name="num_users"><abbr class="badge" style="cursor: pointer" title="<%= gt.gettext('Manage user list') %>"><%= num_users %></abbr></td><td class="action view-permissions" name="num_permissions"><abbr class="badge" style="cursor: pointer" title="<%= gt.gettext('Manage permission list') %>"><%= num_permissions %></abbr></td>
+<th><span class="delete-group action glyphicon glyphicon-minus-sign"></span></th><td class="action change-name" name="name" value="<%= name %>"><%= name %></td><td class="action view-users" name="num_users"><span class="badge" title="<%= gt.gettext('Manage user list') %>"><%= num_users %></span></td><td class="action view-permissions" name="num_permissions"><span class="badge" title="<%= gt.gettext('Manage permission list') %>"><%= num_permissions %></span></td>
 */
 
 
 /***/ }),
-/* 471 */
-/***/ (function(module, exports) {
-
-underscore
-module.exports = function (obj) {
-obj || (obj = {});
-var __t, __p = '';
-with (obj) {
-__p += '<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title">' +
-((__t = ( gt.gettext("Rename the group of users") )) == null ? '' : __t) +
-'</h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="label">' +
-((__t = ( gt.gettext("Name") )) == null ? '' : __t) +
-'</label><input class="form-control" id="name" type="text" name="name" value="" maxlength="32" autofocus="" autocomplete="off" style="width:100%"></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal">' +
-((__t = ( gt.gettext("Cancel") )) == null ? '' : __t) +
-'</button> <button type="button" class="btn btn-success apply">' +
-((__t = ( gt.gettext("Apply") )) == null ? '' : __t) +
-'</button></div></div></div>';
-
-}
-return __p
-};
-
-/*
-original source:
-
-<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title"><%= gt.gettext("Rename the group of users") %></h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="label"><%= gt.gettext("Name") %></label><input class="form-control" id="name" type="text" name="name" value="" maxlength="32" autofocus="" autocomplete="off" style="width:100%"></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= gt.gettext("Cancel") %></button> <button type="button" class="btn btn-success apply"><%= gt.gettext("Apply") %></button></div></div></div>
-*/
-
-
-/***/ }),
-/* 472 */
+/* 513 */
 /***/ (function(module, exports) {
 
 underscore
@@ -58909,7 +62776,37 @@ original source:
 
 
 /***/ }),
-/* 473 */
+/* 514 */
+/***/ (function(module, exports) {
+
+underscore
+module.exports = function (obj) {
+obj || (obj = {});
+var __t, __p = '';
+with (obj) {
+__p += '<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title">' +
+((__t = ( gt.gettext("Rename the group of users") )) == null ? '' : __t) +
+'</h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="group_name">' +
+((__t = ( gt.gettext("Name") )) == null ? '' : __t) +
+'</label><input class="form-control" id="group_name" type="text" name="name" value="" maxlength="32" autofocus="" autocomplete="off" style="width:100%"></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal">' +
+((__t = ( gt.gettext("Cancel") )) == null ? '' : __t) +
+'</button> <button type="button" class="btn btn-success apply">' +
+((__t = ( gt.gettext("Apply") )) == null ? '' : __t) +
+'</button></div></div></div>';
+
+}
+return __p
+};
+
+/*
+original source:
+
+<div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title"><%= gt.gettext("Rename the group of users") %></h4></div><div class="modal-body"><form><div class="form-group"><label class="control-label" for="group_name"><%= gt.gettext("Name") %></label><input class="form-control" id="group_name" type="text" name="name" value="" maxlength="32" autofocus="" autocomplete="off" style="width:100%"></div></form></div><div class="modal-footer"><button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= gt.gettext("Cancel") %></button> <button type="button" class="btn btn-success apply"><%= gt.gettext("Apply") %></button></div></div></div>
+*/
+
+
+/***/ }),
+/* 515 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -58940,7 +62837,7 @@ original source:
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 474 */
+/* 516 */
 /***/ (function(module, exports) {
 
 underscore
@@ -58968,7 +62865,7 @@ original source:
 
 
 /***/ }),
-/* 475 */
+/* 517 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -59030,7 +62927,7 @@ original source:
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 476 */
+/* 518 */
 /***/ (function(module, exports) {
 
 underscore
@@ -59052,7 +62949,7 @@ original source:
 
 
 /***/ }),
-/* 477 */
+/* 519 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -59106,7 +63003,7 @@ original source:
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 478 */
+/* 520 */
 /***/ (function(module, exports) {
 
 underscore
@@ -59142,7 +63039,7 @@ original source:
 
 
 /***/ }),
-/* 479 */
+/* 521 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -59153,21 +63050,21 @@ function print() { __p += __j.call(arguments, '') }
 with (obj) {
 __p += '<span style="font-weight:bold; font-size:18px; margin-bottom: 15px"> ';
  for (var i = taxon.get('parent_details').length-1; i >= 0; --i) { ;
-__p += ' <span><span class="action view-taxon" data-taxon-id="' +
+__p += ' <span><span class="action view-taxon taxon-rank" data-taxon-id="' +
 ((__t = ( taxon.get('parent_details')[i].id )) == null ? '' : __t) +
+'" value="' +
+((__t = ( taxon.get('parent_details')[i].rank )) == null ? '' : __t) +
 '">' +
 ((__t = ( taxon.get('parent_details')[i].name )) == null ? '' : __t) +
-'</span><span class="taxon-rank badge left-margin" value="' +
-((__t = ( taxon.get('parent_details')[i].rank )) == null ? '' : __t) +
-'"></span> </span><span class="glyphicon glyphicon-chevron-right"></span> ';
+'</span></span><span class="glyphicon glyphicon-chevron-right"></span> ';
  } ;
-__p += ' <span><span class="action view-taxon" data-taxon-id="' +
+__p += ' <span><span class="action view-taxon taxon-rank" data-taxon-id="' +
 ((__t = ( taxon.get('id') )) == null ? '' : __t) +
+'" value="' +
+((__t = ( taxon.get('rank') )) == null ? '' : __t) +
 '">' +
 ((__t = ( taxon.get('name') )) == null ? '' : __t) +
-'</span><span class="taxon-rank badge left-margin" value="' +
-((__t = ( taxon.get('rank') )) == null ? '' : __t) +
-'"></span> </span><span class="glyphicon glyphicon-chevron-right"></span> <span><span class="name entity">' +
+'</span></span><span class="glyphicon glyphicon-chevron-right"></span> <span><span class="name entity">' +
 __e( name ) +
 '</span></span>&nbsp; <span class="glyphicon glyphicon-edit action change-parent"></span></span>';
 
@@ -59178,13 +63075,13 @@ return __p
 /*
 original source:
 
-<span style="font-weight:bold; font-size:18px; margin-bottom: 15px"> <% for (var i = taxon.get('parent_details').length-1; i >= 0; --i) { %> <span><span class="action view-taxon" data-taxon-id="<%= taxon.get('parent_details')[i].id %>"><%= taxon.get('parent_details')[i].name %></span><span class="taxon-rank badge left-margin" value="<%= taxon.get('parent_details')[i].rank %>"></span> </span><span class="glyphicon glyphicon-chevron-right"></span> <% } %> <span><span class="action view-taxon" data-taxon-id="<%= taxon.get('id') %>"><%= taxon.get('name') %></span><span class="taxon-rank badge left-margin" value="<%= taxon.get('rank') %>"></span> </span><span class="glyphicon glyphicon-chevron-right"></span> <span><span class="name entity"><%- name %></span></span>&nbsp; <span class="glyphicon glyphicon-edit action change-parent"></span></span>
+<span style="font-weight:bold; font-size:18px; margin-bottom: 15px"> <% for (var i = taxon.get('parent_details').length-1; i >= 0; --i) { %> <span><span class="action view-taxon taxon-rank" data-taxon-id="<%= taxon.get('parent_details')[i].id %>" value="<%= taxon.get('parent_details')[i].rank %>"><%= taxon.get('parent_details')[i].name %></span></span><span class="glyphicon glyphicon-chevron-right"></span> <% } %> <span><span class="action view-taxon taxon-rank" data-taxon-id="<%= taxon.get('id') %>" value="<%= taxon.get('rank') %>"><%= taxon.get('name') %></span></span><span class="glyphicon glyphicon-chevron-right"></span> <span><span class="name entity"><%- name %></span></span>&nbsp; <span class="glyphicon glyphicon-edit action change-parent"></span></span>
 */
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 480 */
+/* 522 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -59226,7 +63123,7 @@ original source:
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 481 */
+/* 523 */
 /***/ (function(module, exports) {
 
 underscore
@@ -59256,7 +63153,7 @@ original source:
 
 
 /***/ }),
-/* 482 */
+/* 524 */
 /***/ (function(module, exports) {
 
 underscore
@@ -59292,7 +63189,7 @@ original source:
 
 
 /***/ }),
-/* 483 */
+/* 525 */
 /***/ (function(module, exports) {
 
 underscore
@@ -59325,7 +63222,7 @@ original source:
 
 
 /***/ }),
-/* 484 */
+/* 526 */
 /***/ (function(module, exports) {
 
 underscore
@@ -59351,7 +63248,7 @@ original source:
 
 
 /***/ }),
-/* 485 */
+/* 527 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -59391,7 +63288,7 @@ original source:
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 486 */
+/* 528 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -59402,19 +63299,19 @@ function print() { __p += __j.call(arguments, '') }
 with (obj) {
 __p += '<span style="font-weight:bold; font-size:18px"> ';
  for (var i = parent_details.length-1; i >= 0; --i) { ;
-__p += ' <span><span class="action view-taxon" data-taxon-id="' +
+__p += ' <span><span class="action view-taxon taxon-rank" data-taxon-id="' +
 ((__t = ( parent_details[i].id )) == null ? '' : __t) +
+'" value="' +
+((__t = ( parent_details[i].rank )) == null ? '' : __t) +
 '">' +
 ((__t = ( parent_details[i].name )) == null ? '' : __t) +
-'</span><span class="taxon-rank badge left-margin" value="' +
-((__t = ( parent_details[i].rank )) == null ? '' : __t) +
-'"></span> </span><span class="glyphicon glyphicon-chevron-right"></span> ';
+'</span></span><span class="glyphicon glyphicon-chevron-right"></span> ';
  } ;
 __p += ' <span><span class="name taxon" taxonid="' +
 ((__t = ( id )) == null ? '' : __t) +
 '">' +
 __e( name ) +
-'</span><span class="taxon-rank badge left-margin" value="' +
+'</span><span class="taxon-rank badge left-margin" name="taxon-rank" value="' +
 ((__t = ( rank )) == null ? '' : __t) +
 '"></span> </span><span class="glyphicon glyphicon-edit action change-parent"></span><br></span>';
 
@@ -59425,13 +63322,13 @@ return __p
 /*
 original source:
 
-<span style="font-weight:bold; font-size:18px"> <% for (var i = parent_details.length-1; i >= 0; --i) { %> <span><span class="action view-taxon" data-taxon-id="<%= parent_details[i].id %>"><%= parent_details[i].name %></span><span class="taxon-rank badge left-margin" value="<%= parent_details[i].rank %>"></span> </span><span class="glyphicon glyphicon-chevron-right"></span> <% } %> <span><span class="name taxon" taxonid="<%= id %>"><%- name %></span><span class="taxon-rank badge left-margin" value="<%= rank %>"></span> </span><span class="glyphicon glyphicon-edit action change-parent"></span><br></span>
+<span style="font-weight:bold; font-size:18px"> <% for (var i = parent_details.length-1; i >= 0; --i) { %> <span><span class="action view-taxon taxon-rank" data-taxon-id="<%= parent_details[i].id %>" value="<%= parent_details[i].rank %>"><%= parent_details[i].name %></span></span><span class="glyphicon glyphicon-chevron-right"></span> <% } %> <span><span class="name taxon" taxonid="<%= id %>"><%- name %></span><span class="taxon-rank badge left-margin" name="taxon-rank" value="<%= rank %>"></span> </span><span class="glyphicon glyphicon-edit action change-parent"></span><br></span>
 */
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 487 */
+/* 529 */
 /***/ (function(module, exports) {
 
 underscore
@@ -59457,7 +63354,7 @@ original source:
 
 
 /***/ }),
-/* 488 */
+/* 530 */
 /***/ (function(module, exports) {
 
 underscore
@@ -59487,7 +63384,7 @@ original source:
 
 
 /***/ }),
-/* 489 */
+/* 531 */
 /***/ (function(module, exports) {
 
 underscore
@@ -59517,7 +63414,7 @@ original source:
 
 
 /***/ }),
-/* 490 */
+/* 532 */
 /***/ (function(module, exports) {
 
 underscore
@@ -59539,7 +63436,7 @@ original source:
 
 
 /***/ }),
-/* 491 */
+/* 533 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {underscore
@@ -59587,7 +63484,7 @@ original source:
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 492 */
+/* 534 */
 /***/ (function(module, exports) {
 
 var g;
@@ -59614,35 +63511,7 @@ module.exports = g;
 
 
 /***/ }),
-/* 493 */
-/***/ (function(module, exports) {
-
-module.exports = function(module) {
-	if(!module.webpackPolyfill) {
-		module.deprecate = function() {};
-		module.paths = [];
-		// module.parent = undefined by default
-		if(!module.children) module.children = [];
-		Object.defineProperty(module, "loaded", {
-			enumerable: true,
-			get: function() {
-				return module.l;
-			}
-		});
-		Object.defineProperty(module, "id", {
-			enumerable: true,
-			get: function() {
-				return module.i;
-			}
-		});
-		module.webpackPolyfill = 1;
-	}
-	return module;
-};
-
-
-/***/ }),
-/* 494 */
+/* 535 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(_) {/**
@@ -59655,27 +63524,27 @@ module.exports = function(module) {
  * @details
  */
 
-var Backbone = __webpack_require__(3);
+var Backbone = __webpack_require__(5);
 var Marionette = __webpack_require__(0);
 
 underscore = __webpack_require__(2);
 
-i18next = __webpack_require__(197);
-Logger = __webpack_require__(198);
+i18next = __webpack_require__(206);
+Logger = __webpack_require__(207);
 
 // select2 as jquery plugin ($.select2)
-__webpack_require__(200);
-__webpack_require__(203);
+__webpack_require__(209);
+__webpack_require__(212);
 
 // alphanum validator ($.alphanum)
-__webpack_require__(195);
+__webpack_require__(204);
 
 // make table header fixed position ($.stickyTableHeaders)
-__webpack_require__(201);
+__webpack_require__(210);
 
 // datetime picker ($.datetimepicker)
-__webpack_require__(196);
-__webpack_require__(202);
+__webpack_require__(205);
+__webpack_require__(211);
 
 // moment
 moment = __webpack_require__(1);
@@ -59834,6 +63703,56 @@ application = new Marionette.Application({
             }
         };
 
+        /**
+         * Update locally and on server a specific user setting object.
+         * @param setting_name Name of the setting object to modify.
+         * @param setting Content that replace the older.
+         */
+        this.updateUserSetting = function(setting_name, setting) {
+            session.user.settings[setting_name] = setting;
+
+            if (session.user.isAuth) {
+                $.ajax({
+                    type: "PATCH",
+                    url: application.baseUrl + 'main/profile/settings/',
+                    contentType: "application/json; charset=utf-8",
+                    dataType: 'json',
+                    data: JSON.stringify({name: setting_name, setting: setting}),
+                    success: function (data) {
+                    }
+                });
+            }
+        };
+
+        /**
+         * Get the value of a specific setting.
+         * @param setting_name Setting object name.
+         * @returns {*} Content of the setting (string, object, integer...)
+         */
+        this.getUserSetting = function(setting_name) {
+            return session.user.settings[setting_name];
+        };
+
+        /**
+         * Defines the default values of a specific setting if not existing.
+         * @param setting_name Setting object name.
+         * @param default_setting Default values.
+         */
+        this.setDefaultUserSetting = function(setting_name, default_setting) {
+            var setting = session.user.settings[setting_name];
+            if (setting == undefined) {
+                // undefined key
+                session.user.settings[setting_name] = default_setting;
+            } else {
+                for (var obj in default_setting) {
+                    // undefined sub-key
+                    if (!obj in setting) {
+                        setting[obj] = default_setting[obj];
+                    }
+                }
+            }
+        };
+
         // i18n
         i18next.init({
             initImmediate: false,  // avoid setTimeout
@@ -59851,7 +63770,7 @@ application = new Marionette.Application({
 
         // select2
         if (session.language === "fr") {
-            __webpack_require__(199);
+            __webpack_require__(208);
         } else {  // default to english
         }
 
@@ -59872,7 +63791,7 @@ application = new Marionette.Application({
             var module = session.modules[i];
 
             try {
-                var Module = __webpack_require__(194)("./" + module + '/init');
+                var Module = __webpack_require__(203)("./" + module + '/init');
                 this[module] = new Module();
             } catch (e) {
                 var msg = gt.gettext("Missing client module") + " : " + module + ". " +
@@ -59882,7 +63801,7 @@ application = new Marionette.Application({
                 $.alert.error(msg);
             }
 
-            if (this[module].initialize) {
+            if (this[module] && this[module].initialize) {
                 try {
                     Logger.time("Init " + module + " module");
                     this[module].initialize(this, {});
@@ -59903,7 +63822,7 @@ application = new Marionette.Application({
         for (var i = 0; i < session.modules.length; ++i) {
             var module = session.modules[i];
 
-            if (this[module].start) {
+            if (this[module] && this[module].start) {
                 try {
                     Logger.time("Start " + module + " module");
                     this[module].start({});
@@ -59919,7 +63838,8 @@ application = new Marionette.Application({
         }
 
         // update the messenger display properties
-        this.updateMessengerDisplay();
+        this.setDisplay(this.getUserSetting('ui')['display_mode']);
+        // this.updateMessengerDisplay();
 
         // starts the URL handling framework and automatically route as possible
         Backbone.history.start({pushState: true, silent: false, root: '/coll-gate'});
