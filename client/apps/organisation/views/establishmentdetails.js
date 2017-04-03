@@ -1,8 +1,8 @@
 /**
- * @file organisationdetails.js
- * @brief Details view for organisation.
+ * @file establishmentdetails.js
+ * @brief Details view for establishment.
  * @author Frederic SCHERMA
- * @date 2017-03-07
+ * @date 2017-04-02
  * @copyright Copyright (c) 2017 INRA UMR1095 GDEC
  * @license @todo
  * @details
@@ -11,43 +11,67 @@
 var Marionette = require('backbone.marionette');
 
 var Dialog = require('../../main/views/dialog');
+var OrganisationModel = require('../models/organisation');
 
 var View = Marionette.ItemView.extend({
     tagName: "div",
-    template: require('../templates/organisationdetails.html'),
+    template: require('../templates/establishmentdetails.html'),
+    templateHelpers/*templateContext*/: function () {
+        return {
+            organisation: this.organisation
+        };
+    },
+
+    organisation: {id: -1, name: ''},
+    noLink: false,
 
     attributes: {
         style: "height: 25px; overflow-y: auto;"
     },
 
     ui: {
-        'organisation_type': '.organisation-type',
-        'change_type': '.change-type'
+        'view_organisation': ".view-organisation",
+        'change_name': '.change-name'
     },
 
     events: {
-        'click @ui.change_type': 'onChangeType'
+        'click @ui.view_organisation': 'onViewOrganisation',
+        'click @ui.change_name': 'onChangeName'
     },
 
     initialize: function(options) {
-        this.listenTo(this.model, 'change', this.render, this);
+        this.mergeOptions(options, ['organisation']);
+
+        this.listenTo(this.model, 'change:name', this.render, this);
+        this.listenTo(this.model, 'change:parent', this.updateOrganisation, this);
+    },
+
+    updateOrganisation: function(model, value) {
+        var view = this;
+
+        // update the organisation
+        this.organisation = new OrganisationModel({id: value});
+        this.organisation.fetch().then(function() {
+            view.render();
+        });
     },
 
     onRender: function() {
-       application.organisation.views.organisationTypes.htmlFromValue(this.el);
+        if (this.getOption('noLink')) {
+            this.ui.view_organisation.removeClass('action');
+        }
     },
 
-    onChangeType: function () {
-        var EditOrganisation = Dialog.extend({
-            template: require('../templates/organisationedit.html'),
+    onChangeName: function () {
+        var EditEstablishment = Dialog.extend({
+            template: require('../templates/establishmentedit.html'),
 
             attributes: {
-                id: "dlg_edit_organisation"
+                id: "dlg_edit_establishment"
             },
 
             ui: {
-                name: "#organisation_name",
-                type: "#organisation_type"
+                name: "#establishment_name"
             },
 
             events: {
@@ -56,27 +80,22 @@ var View = Marionette.ItemView.extend({
             },
 
             initialize: function (options) {
-                EditOrganisation.__super__.initialize.apply(this);
+                EditEstablishment.__super__.initialize.apply(this);
             },
 
             onRender: function () {
-                EditOrganisation.__super__.onRender.apply(this);
-
-                application.organisation.views.organisationTypes.drawSelect(this.ui.type);
+                EditEstablishment.__super__.onRender.apply(this);
 
                 this.ui.name.val(this.getOption('model').get('name'));
-                this.ui.type.selectpicker('val', this.getOption('model').get('type'));
             },
 
             onBeforeDestroy: function () {
-                this.ui.type.selectpicker('destroy');
-
-                EditOrganisation.__super__.onBeforeDestroy.apply(this);
+                EditEstablishment.__super__.onBeforeDestroy.apply(this);
             },
 
             onNameInput: function () {
                 var name = this.ui.name.val().trim();
-                var organisation_id = this.model.get('id');
+                var establishment_id = this.model.get('id');
 
                 if (this.validateName()) {
                     var filters = {
@@ -87,17 +106,17 @@ var View = Marionette.ItemView.extend({
 
                     $.ajax({
                         type: "GET",
-                        url: application.baseUrl + 'organisation/organisation/search/',
+                        url: application.baseUrl + 'organisation/establishment/search/',
                         dataType: 'json',
                         data: {filters: JSON.stringify(filters)},
                         el: this.ui.name,
                         success: function (data) {
                             if (data.items.length > 0) {
                                 for (var i in data.items) {
-                                    var t = data.items[i];
+                                    var e = data.items[i];
 
-                                    if (t.value.toUpperCase() === name.toUpperCase() && t.id !== organisation_id) {
-                                        $(this.el).validateField('failed', gt.gettext('Organisation name already in usage'));
+                                    if (e.value.toUpperCase() === name.toUpperCase() && e.id !== establishment_id) {
+                                        $(this.el).validateField('failed', gt.gettext('Establishment name already in usage'));
                                         break;
                                     }
                                 }
@@ -136,7 +155,6 @@ var View = Marionette.ItemView.extend({
             onApply: function() {
                 var model = this.getOption('model');
                 var name = this.ui.name.val().trim();
-                var type = this.ui.type.val();
 
                 var data = {};
 
@@ -144,17 +162,9 @@ var View = Marionette.ItemView.extend({
                     data.name = name;
                 }
 
-                if (type !== model.get('type')) {
-                    data.type = type;
-                }
-
                 if (model.isNew()) {
                     if (name !== model.get('name')) {
                         model.set('name', name);
-                    }
-
-                    if (type !== model.get('type')) {
-                        model.set('type', type);
                     }
                 } else {
                     model.save(data, {patch: true, wait: true});
@@ -164,11 +174,19 @@ var View = Marionette.ItemView.extend({
             }
         });
 
-        var editOrganisation = new EditOrganisation({
+        var editEstablishment = new EditEstablishment({
             model: this.model
         });
 
-        editOrganisation.render();
+        editEstablishment.render();
+    },
+
+    onViewOrganisation: function (e) {
+        if (this.getOption('noLink')) {
+            return;
+        }
+
+        Backbone.history.navigate("app/organisation/organisation/" + this.organisation.get('id') + "/", {trigger: true});
     }
 });
 

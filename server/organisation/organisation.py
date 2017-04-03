@@ -299,6 +299,7 @@ def get_organisation_details(request, org_id):
 @RestOrganisationId.def_auth_request(Method.PATCH, Format.JSON, content={
         "type": "object",
         "properties": {
+            "name": Organisation.NAME_VALIDATOR_OPTIONAL,
             "type": Organisation.TYPE_VALIDATOR_OPTIONAL,
             "entity_status": Organisation.ENTITY_STATUS_VALIDATOR_OPTIONAL,
             "descriptors": {"type": "object", "required": False},
@@ -310,7 +311,8 @@ def get_organisation_details(request, org_id):
 def patch_organisation(request, org_id):
     organisation = get_object_or_404(Organisation, id=int(org_id))
 
-    organisation_type = request.data.get("organisation_type")
+    organisation_name = request.data.get("name")
+    organisation_type = request.data.get("type")
     entity_status = request.data.get("entity_status")
     descriptors = request.data.get("descriptors")
 
@@ -320,6 +322,12 @@ def patch_organisation(request, org_id):
 
     try:
         with transaction.atomic():
+            if organisation_name is not None:
+                organisation.name = organisation_name
+                result['name'] = organisation_name
+
+                organisation.update_field('name')
+
             if organisation_type is not None:
                 organisation.type = organisation_type
                 result['type'] = organisation_type

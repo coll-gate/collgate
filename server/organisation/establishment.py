@@ -5,15 +5,17 @@
 """
 coll-gate organisation establishment model REST API
 """
-
+from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import SuspiciousOperation
+from django.db import transaction, IntegrityError
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 
+from descriptor.describable import DescriptorsBuilder
+from descriptor.models import DescriptorMetaModel, DescriptorModelType
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
-from igdectk.module.manager import module_manager
 from organisation.models import Organisation, Establishment
 
 from .base import RestOrganisationModule
@@ -23,6 +25,11 @@ from .organisation import RestOrganisationId
 class RestEstablishment(RestOrganisationModule):
     regex = r'^establishment/$'
     name = 'establishment'
+
+
+class RestEstablishmentId(RestEstablishment):
+    regex = r'^(?P<est_id>[0-9]+)/$'
+    suffix = 'id'
 
 
 class RestOrganisationIdEstablishment(RestOrganisationId):
@@ -168,3 +175,145 @@ def search_establishment(request):
     }
 
     return HttpResponseRest(request, results)
+
+
+@RestEstablishment.def_auth_request(Method.POST, Format.JSON, content={
+    "type": "object",
+    "properties": {
+        "name": Establishment.NAME_VALIDATOR,
+        "organisation": {"type": "number"},
+        "descriptors": {"type": "object"}
+    },
+}, perms={
+    'organisation.change_organisation': _('You are not allowed to modify an organisation'),
+    'organisation.add_establishment': _('You are not allowed to create an establishment')
+})
+def create_establishment(request):
+    """
+    Create a new establishment.
+    """
+    name = request.data['name']
+    descriptors = request.data['descriptors']
+    org_id = request.data['organisation']
+
+    # check existence of the organisation
+    organisation = get_object_or_404(Organisation, id=int(org_id))
+
+    # check uniqueness of the name
+    if Establishment.objects.filter(name=name).exists():
+        raise SuspiciousOperation(_("The name of the establishment is already used"))
+
+    content_type = get_object_or_404(ContentType, app_label="organisation", model="establishment")
+    dmm = get_object_or_404(DescriptorMetaModel, name="establishment", target=content_type)
+
+    try:
+        with transaction.atomic():
+            # common properties
+            establishment = Establishment()
+            establishment.name = request.data['name']
+            establishment.descriptor_meta_model = dmm
+            establishment.organisation = organisation
+
+            # descriptors
+            descriptors_builder = DescriptorsBuilder(organisation)
+
+            descriptors_builder.check_and_update(dmm, descriptors)
+            establishment.descriptors = descriptors_builder.descriptors
+
+            establishment.save()
+
+            # update owner on external descriptors
+            descriptors_builder.update_associations()
+    except IntegrityError as e:
+        DescriptorModelType.integrity_except(Organisation, e)
+
+    response = {
+        'id': establishment.id,
+        'name': establishment.name,
+        'organisation': organisation.id,
+        'descriptor_meta_model': dmm.id,
+        'descriptors': establishment.descriptors
+    }
+
+    return HttpResponseRest(request, response)
+
+
+@RestEstablishmentId.def_auth_request(Method.GET, Format.JSON)
+def get_establishment_details(request, est_id):
+    establishment = Establishment.objects.get(id=int(est_id))
+
+    result = {
+        'id': establishment.id,
+        'name': establishment.name,
+        'organisation': establishment.organisation_id,
+        'descriptor_meta_model': establishment.descriptor_meta_model_id,
+        'descriptors': establishment.descriptors
+    }
+
+    return HttpResponseRest(request, result)
+
+
+@RestEstablishmentId.def_auth_request(Method.PATCH, Format.JSON, content={
+        "type": "object",
+        "properties": {
+            "name": Establishment.NAME_VALIDATOR_OPTIONAL,
+            "entity_status": Establishment.ENTITY_STATUS_VALIDATOR_OPTIONAL,
+            "descriptors": {"type": "object", "required": False},
+        },
+    },
+    perms={
+        'organisation.change_establishment': _("You are not allowed to modify an establishment"),
+    })
+def patch_establishment(request, est_id):
+    establishment = get_object_or_404(Establishment, id=int(est_id))
+
+    organisation_name = request.data.get("name")
+    entity_status = request.data.get("entity_status")
+    descriptors = request.data.get("descriptors")
+
+    result = {
+        'id': establishment.id
+    }
+
+    try:
+        with transaction.atomic():
+            if organisation_name is not None:
+                establishment.name = organisation_name
+                result['name'] = organisation_name
+
+                establishment.update_field('name')
+
+            if entity_status is not None and establishment.entity_status != entity_status:
+                establishment.set_status(entity_status)
+                result['entity_status'] = entity_status
+
+            if descriptors is not None:
+                # update descriptors
+                descriptors_builder = DescriptorsBuilder(establishment)
+
+                descriptors_builder.check_and_update(establishment.descriptor_meta_model, descriptors)
+
+                establishment.descriptors = descriptors_builder.descriptors
+                result['descriptors'] = establishment.descriptors
+
+                descriptors_builder.update_associations()
+
+                establishment.descriptors_diff = descriptors
+                establishment.update_field('descriptors')
+
+            establishment.save()
+    except IntegrityError as e:
+        DescriptorModelType.integrity_except(Organisation, e)
+
+    return HttpResponseRest(request, result)
+
+
+@RestEstablishmentId.def_auth_request(Method.DELETE, Format.JSON, perms={
+    'organisation.delete_establishment': _("You are not allowed to delete an establishment"),
+})
+def delete_establishment(request, est_id):
+    establishment = get_object_or_404(Establishment, id=int(est_id))
+
+    establishment.delete()
+
+    return HttpResponseRest(request, {})

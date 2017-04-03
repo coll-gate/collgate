@@ -11,6 +11,10 @@
 var Marionette = require('backbone.marionette');
 
 var Dialog = require('../../main/views/dialog');
+var EstablishmentModel = require('../models/establishment');
+var DefaultLayout = require('../../main/views/defaultlayout');
+var TitleView = require('../../main/views/titleview');
+var EstablishmentLayout = require('../views/establishmentlayout');
 
 
 var View = Marionette.ItemView.extend({
@@ -54,7 +58,7 @@ var View = Marionette.ItemView.extend({
         if (v.length > 0 && v.length < 3) {
             $(this.ui.establishment_name).validateField('failed', gt.gettext('3 characters min'));
             return false;
-        } else if (this.ui.establishment_name.val().length == 0) {
+        } else if (this.ui.establishment_name.val().length === 0) {
             $(this.ui.establishment_name).cleanField();
             return true;
         } else {
@@ -106,6 +110,7 @@ var View = Marionette.ItemView.extend({
                 },
 
                 onBeforeDestroy: function () {
+                    CreateEstablishmentView.__super__.onBeforeDestroy.apply(this);
                 },
 
                 onNameInput: function () {
@@ -129,7 +134,7 @@ var View = Marionette.ItemView.extend({
                                     for (var i in data.items) {
                                         var t = data.items[i];
 
-                                        if (t.value.toUpperCase() == name.toUpperCase()) {
+                                        if (t.value.toUpperCase() === name.toUpperCase()) {
                                             $(this.el).validateField('failed', gt.gettext('Establishment name already in usage'));
                                             break;
                                         }
@@ -170,21 +175,25 @@ var View = Marionette.ItemView.extend({
                     var name = this.ui.name.val().trim();
 
                     if (this.validate()) {
-                        this.getOption('collection').create({
+                        var model = new EstablishmentModel({
                             descriptor_meta_model: data[0].id,
                             name: name,
                             organisation: this.getOption('organisation').get('id')
-                        }, {
-                            wait: true,
-                            success: function() {
-                                $.alert.success(gt.gettext("Successfully created !"));
-                            },
-                            error: function() {
-                                $.alert.error(gt.gettext("Unable to create the establishment !"));
-                            }
                         });
 
                         this.destroy();
+
+                        var defaultLayout = new DefaultLayout();
+                        application.show(defaultLayout);
+
+                        defaultLayout.getRegion('title').show(new TitleView({
+                            title: gt.gettext("Establishment"),
+                            model: model,
+                            organisation: this.getOption('organisation').get('id')
+                        }));
+
+                        var establishmentLayout = new EstablishmentLayout({model: model});
+                        defaultLayout.getRegion('content').show(establishmentLayout);
                     }
                 }
             });
