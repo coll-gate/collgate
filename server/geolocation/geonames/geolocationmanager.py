@@ -27,16 +27,18 @@ class GeolocationManager(GeolocationInterface):
         self.geonames_url = 'http://api.geonames.org/'
 
     def country_format_type_validator(self, value):
-
-        if Country.objects.get(id=value):
+        try:
+            Country.objects.get(id=value)
             return None
-        return _('the descriptor value must be a referenced country')
+        except Country.DoesNotExist:
+            return _('the descriptor value must be a referenced country')
 
     def city_format_type_validator(self, value):
-
-        if City.objects.get(id=value):
+        try:
+            City.objects.get(id=value)
             return None
-        return _('the descriptor value must be a referenced city')
+        except City.DoesNotExist:
+            return _('the descriptor value must be a referenced city')
 
     def search_cities_online(self, limit, lang, term=None):
 
@@ -144,6 +146,40 @@ class GeolocationManager(GeolocationInterface):
 
         return results
 
+    def get_country_list(self, list_id, limit, lang):
+
+        qs = Country.objects.filter(id__in=list_id)
+        tqs = qs.distinct().order_by('name', 'id')[:limit]
+
+        results = []
+        for country in tqs:
+            alt_name = []
+            preferred = []
+            short = []
+            for name in country.alt_names.filter(language=lang):
+                if name.is_preferred_name:
+                    preferred.append(name.alternate_name)
+                if name.is_short_name:
+                    short.append(name.alternate_name)
+                else:
+                    alt_name.append(name.alternate_name)
+
+            result = {
+                'cou_id': country.pk,
+                'geoname_id': country.geoname_id,
+                'name': country.name,
+                'code2': country.code2,
+                'code3': country.code3,
+                'lat': country.latitude,
+                'long': country.longitude,
+                'alt_name': ', '.join(alt_name),
+                'preferred_name': ', '.join(preferred),
+                'short_name': ', '.join(short)
+            }
+            results.append(result)
+
+        return results
+
     def get_country(self, country_id, lang):
 
         c = Country.objects.get(id=country_id)
@@ -186,6 +222,39 @@ class GeolocationManager(GeolocationInterface):
             else:
                 qs = qs.filter(Q(alt_names__alternate_name__istartswith=term) | Q(name__istartswith=term))
 
+        tqs = qs.distinct().order_by('name', 'id')[:limit]
+
+        results = []
+        for city in tqs:
+            alt_name = []
+            preferred = []
+            short = []
+            for name in city.alt_names.filter(language=lang):
+                if name.is_preferred_name:
+                    preferred.append(name.alternate_name)
+                if name.is_short_name:
+                    short.append(name.alternate_name)
+                else:
+                    alt_name.append(name.alternate_name)
+
+            result = {
+                'cit_id': city.pk,
+                'geoname_id': city.geoname_id,
+                'name': city.name,
+                'lat': city.latitude,
+                'long': city.longitude,
+                'alt_name': ','.join(alt_name),
+                'cou_id': city.country_id,
+                'preferred_name': ', '.join(preferred),
+                'short_name': ', '.join(short)
+            }
+            results.append(result)
+
+        return results
+
+    def get_city_list(self, list_id, limit, lang):
+
+        qs = City.objects.filter(id__in=list_id)
         tqs = qs.distinct().order_by('name', 'id')[:limit]
 
         results = []
