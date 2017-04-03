@@ -66,12 +66,20 @@ def get_establishment_list_for_organisation(request, org_id):
 
     if filters:
         name = filters.get('name')
+        name_code = filters.get('name_code')
+        name_method = filters.get('method', 'ieq')
 
         if name:
-            if filters.get('method', 'icontains') == 'icontains':
+            if name_method == 'icontains':
                 qs = qs.filter(Q(name__icontains=name))
-            else:
+            elif name_method == 'ieq':
                 qs = qs.filter(Q(name__iexact=name))
+
+        if name_code:
+            if name_method == 'icontains':
+                qs = qs.filter(Q(name__icontains=name_code) | Q(descriptors__establishment_code=name_code))
+            elif name_method == 'ieq':
+                qs = qs.filter(Q(name__iexact=name_code) | Q(descriptors__establishment_code=name_code))
 
     qs = qs.select_related("organisation").order_by('name')[:limit]
 

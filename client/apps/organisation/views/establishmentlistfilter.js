@@ -44,7 +44,7 @@ var View = Marionette.ItemView.extend({
     onFilter: function () {
         if (this.validateEstablishmentName()) {
             this.collection.filters = {
-                name: this.ui.establishment_name.val().trim(),
+                name_code: this.ui.establishment_name.val().trim(),
                 method: "icontains"
             };
 
@@ -120,7 +120,7 @@ var View = Marionette.ItemView.extend({
                         var filters = {
                             method: 'ieq',
                             fields: ['name'],
-                            'name': name
+                            name: name
                         };
 
                         $.ajax({

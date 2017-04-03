@@ -78,6 +78,19 @@ class DescriptorFormatType(object):
         """
         pass
 
+    def get_display_values_for(self, descriptor_type, descriptor_type_format, values, limit):
+        """
+        For a list of values, lookup those values into the descriptor object and
+        returns them as dict of value_id:display_value.
+
+        :param descriptor_type: Descriptor type instance
+        :param descriptor_type_format: Related format of the descriptor type (parsed in Python object, not in JSON)        
+        :param values: List a of values (str or integer, depending of the descriptor)
+        :param limit: Max results        
+        :return: A dict of pair(value_id:display_value)
+        """
+        return {}
+
 
 class DescriptorFormatTypeManager(object):
     """
@@ -110,7 +123,7 @@ class DescriptorFormatTypeManager(object):
     def validate(cls, descriptor_type_format, value, descriptor_model_type):
         """
         Call the validate of the correct descriptor format type.
-        :param descriptor_type_format: Format of the type of descriptor as python dict
+        :param descriptor_type_format: Format of the type of descriptor as python object
         :param value: Value to validate
         :param descriptor_model_type: Related type of model of descriptor
         :except ValueError with descriptor of the problem
@@ -129,7 +142,7 @@ class DescriptorFormatTypeManager(object):
     def check(cls, descriptor_type_format):
         """
         Call the check of the correct descriptor format type.
-        :param descriptor_type_format: Format of the type of descriptor as python dict
+        :param descriptor_type_format: Format of the type of descriptor as python object
         :return: True if check success.
         :except ValueError with descriptor of the problem
         """
@@ -178,6 +191,27 @@ class DescriptorFormatTypeManager(object):
             raise ValueError("Unsupported descriptor format type %s" % format_type)
 
         dft.own(entity, old_value, new_value)
+
+    @classmethod
+    def get_display_values_for(cls, descriptor_type_format, descriptor_type, values, limit):
+        """
+        For a list of values, lookup those values into the descriptor format type object and
+        returns them as dict of value_id:display_value.
+        
+        :param limit: 
+        :param descriptor_type_format: Format of the type of descriptor as python object
+        :param descriptor_type: Descriptor type instance        
+        :param values: List a of values (str or integer, depending of the descriptor)
+        :param limit: Max results
+        :return: A dict of pair(value_id:display_value)
+        """
+        format_type = descriptor_type_format['type']
+
+        dft = cls.descriptor_format_types.get(format_type)
+        if dft is None:
+            raise ValueError("Unsupported descriptor format type %s" % format_type)
+
+        return dft.get_display_values_for(descriptor_type, descriptor_type_format, values, limit)
 
 
 class DescriptorFormatTypeGroupSingle(DescriptorFormatTypeGroup):
@@ -249,6 +283,9 @@ class DescriptorFormatTypeEnumSingle(DescriptorFormatType):
 
         return None
 
+    def get_display_values_for(self, descriptor_type, descriptor_type_format, values, limit):
+        return descriptor_type.get_values_from_list(values, limit)
+
 
 class DescriptorFormatTypeEnumPair(DescriptorFormatType):
     """
@@ -302,6 +339,9 @@ class DescriptorFormatTypeEnumPair(DescriptorFormatType):
             return str(e)
 
         return None
+
+    def get_display_values_for(self, descriptor_type, descriptor_type_format, values, limit):
+        return descriptor_type.get_values_from_list(values, limit)
 
 
 class DescriptorFormatTypeEnumOrdinal(DescriptorFormatType):
@@ -364,6 +404,9 @@ class DescriptorFormatTypeEnumOrdinal(DescriptorFormatType):
             return _('Range limits are [-127, 127]')
 
         return None
+
+    def get_display_values_for(self, descriptor_type, descriptor_type_format, values, limit):
+        return descriptor_type.get_values_from_list(values, limit)
 
 
 class DescriptorFormatTypeBoolean(DescriptorFormatType):
@@ -796,3 +839,20 @@ class DescriptorFormatTypeEntity(DescriptorFormatType):
             return _("Invalid describable entity model type name")
 
         return None
+
+    def get_display_values_for(self, descriptor_type, descriptor_type_format, values, limit):
+        results = {}
+
+        # search for the entities
+        try:
+            app_label, model = descriptor_type_format['model'].split('.')
+            content_type = get_object_or_404(ContentType, app_label=app_label, model=model)
+        except ObjectDoesNotExist:
+            return _("The descriptor doesn't refers to a valid entity model")
+
+        entities = content_type.get_object_for_this_type(id__in=values)[:limit].values_list('id', 'name')
+
+        for entity in entities:
+            results[entity[0]] = entity[1]
+
+        return results

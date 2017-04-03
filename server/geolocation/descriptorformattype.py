@@ -6,6 +6,7 @@
 coll-gate descriptor format type class for geolocation
 """
 import validictory
+from django.utils import translation
 from django.utils.translation import ugettext_lazy as _
 
 from descriptor.descriptorformattype import DescriptorFormatTypeGroup, DescriptorFormatType
@@ -96,6 +97,18 @@ class DescriptorFormatTypeCountry(DescriptorFormatType):
 
         return None
 
+    def get_display_values_for(self, descriptor_type, descriptor_type_format, values, limit):
+        results = {}
+
+        # search for the countries
+        lang = translation.get_language()
+        countries = instance.geolocation_app.geolocation_manager.get_country_list(values, limit, lang)
+
+        for country in countries:
+            results[country['cou_id']] = country['name']
+
+        return results
+
 
 class DescriptorFormatTypeCity(DescriptorFormatType):
     """
@@ -129,3 +142,15 @@ class DescriptorFormatTypeCity(DescriptorFormatType):
             return str(e)
 
         return None
+
+    def get_display_values_for(self, descriptor_type, descriptor_type_format, values, limit):
+        results = {}
+
+        # search for the cities
+        lang = translation.get_language()
+        cities = instance.geolocation_app.geolocation_manager.get_city_list(values, limit, lang)
+
+        for city in cities:
+            results[city['cit_id']] = city['name']
+
+        return results

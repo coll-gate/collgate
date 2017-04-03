@@ -48,10 +48,16 @@ var Controller = Marionette.Object.extend({
                     CreateOrganisationView.__super__.onRender.apply(this);
 
                     application.organisation.views.organisationTypes.drawSelect(this.ui.type);
+
+                    this.ui.grc.selectpicker({
+                        style: 'btn-default',
+                        container: 'body'
+                    });
                 },
 
                 onBeforeDestroy: function () {
                     this.ui.type.selectpicker('destroy');
+                    this.ui.grc.selectpicker('destroy');
 
                     CreateOrganisationView.__super__.onBeforeDestroy.apply(this);
                 },

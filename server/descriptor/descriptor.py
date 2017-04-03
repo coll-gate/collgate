@@ -1144,4 +1144,3 @@ def search_display_value_for_descriptor_type(request, grp_id, typ_id):
     }
 
     return HttpResponseRest(request, results)
-

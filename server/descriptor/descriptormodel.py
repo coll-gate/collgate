@@ -65,6 +65,11 @@ class RestDescriptorModelIdTypeIdCondition(RestDescriptorModelIdTypeId):
     suffix = 'condition'
 
 
+class RestDescriptorModelTypeNameValuesList(RestDescriptor):
+    regex = r'^descriptor-model-type/(?P<dmt_name>[a-zA-Z0-9\-\_\.]+)/$'
+    suffix = 'search'
+
+
 @RestDescriptorModel.def_auth_request(Method.GET, Format.JSON)
 def get_descriptor_models(request):
     """
@@ -739,3 +744,22 @@ def delete_condition_for_descriptor_model_type(request, des_id, typ_id):
         conditions[0].delete()
 
     return HttpResponseRest(request, {})
+
+
+@RestDescriptorModelTypeNameValuesList.def_auth_request(Method.GET, Format.JSON, parameters=('values',))
+def get_some_display_values_for_descriptor_model_type(request, dmt_name):
+    """
+    Returns all the value of the related type of model of descriptor.
+    """
+    dmt = DescriptorModelType.objects.select_related('descriptor_type').get(name=dmt_name)
+
+    limit = 100
+    format_type = json.loads(dmt.descriptor_type.format)
+
+    # json array
+    values = json.loads(request.GET['values'])
+
+    # no cursor, simple list, limited to 100 elements per call
+    results = DescriptorFormatTypeManager.get_display_values_for(format_type, dmt.descriptor_type, values, limit)
+
+    return HttpResponseRest(request, results)

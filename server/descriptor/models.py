@@ -714,8 +714,8 @@ class DescriptorType(Entity):
 
         :param str field_value: Value of the field to search
         :param str field_name: Name of the field to search for
-        :param: str cursor: Cursor position of the last previous result
-        :param: int limit: Number max of results
+        :param str cursor: Cursor position of the last previous result
+        :param int limit: Number max of results
         :return: The list of values with name starting with field_value on field_name.
         """
         format_type = json.loads(self.format)
@@ -859,6 +859,59 @@ class DescriptorType(Entity):
             return prev_cursor, next_cursor, values_list
         else:
             return "/", "/", []
+
+    def get_values_from_list(self, values, limit=100):
+        """
+        Search for values by code according to the descriptor code and the current language unsorted.
+
+        :param str values: Values of the field to search
+        :param int limit: Number max of results
+        :return: The list of values.
+        """
+        format_type = json.loads(self.format)
+        lang = translation.get_language()
+        trans = format_type.get('trans', False)
+
+        values_list = []
+
+        if self.values:
+            if trans:
+                pre_values = json.loads(self.values)
+                if lang in pre_values:
+                    data_values = pre_values[lang]
+                else:
+                    data_values = {}
+            else:
+                data_values = json.loads(self.values)
+
+            for value in values:
+                v = data_values.get(value)
+                if v:
+                    values_list.append({
+                        'id': value,
+                        'parent': v.get('parent', None),
+                        'ordinal': v.get('ordinal', None),
+                        'value0': v.get('value0', None),
+                        'value1': v.get('value1', None),
+                    })
+        else:
+            if trans:
+                qs = self.values_set.filter(language=lang)
+            else:
+                qs = self.values_set
+
+            qs = qs.filter(code__in=values)[:limit]
+
+            for value in qs:
+                values_list.append({
+                    'id': value.code,
+                    'parent': value.parent,
+                    'ordinal': value.ordinal,
+                    'value0': value.value0,
+                    'value1': value.value1
+                })
+
+            return values_list
 
 
 class DescriptorValue(Entity):
