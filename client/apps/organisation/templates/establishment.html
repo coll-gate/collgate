@@ -10,7 +10,6 @@
 
 <th><span class="delete-establishment action glyphicon glyphicon-minus-sign"></span></th>
 <td class="action view-establishment" name="name" value="<%= name %>"><%= name %></td>
-<td class="organisation-acronym" name="organisation-acronym" value="<%= organisation_details.acronym %>"></td>
 <% for (var i = 0; i < columns.length; ++i) { %>
     <% var column = columns[i]; %>
     <td name="<%= column.name %>" descriptor-id="<% column.id %>"><%= descriptors[column.name] %></td>

@@ -77,7 +77,7 @@ var Controller = Marionette.Object.extend({
                                     for (var i in data.items) {
                                         var t = data.items[i];
 
-                                        if (t.value.toUpperCase() == name.toUpperCase()) {
+                                        if (t.value.toUpperCase() === name.toUpperCase()) {
                                             $(this.el).validateField('failed', gt.gettext('Organisation name already in usage'));
                                             break;
                                         }

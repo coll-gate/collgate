@@ -3,7 +3,7 @@
  * @brief Establishment model
  * @author Frederic SCHERMA
  * @date 2017-02-28
- * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
+ * @copyright Copyright (c) 2017 INRA UMR1095 GDEC
  * @license @todo
  * @details
  */

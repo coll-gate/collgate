@@ -48,7 +48,7 @@ MODELS = {
             {
                 'id': None,
                 'name': 'organisation_geolocation',
-                'descriptor_type_name': 'country',
+                'descriptor_type_name': 'city',
                 'label': {'en': 'Location', 'fr': 'Localisation'},
                 'mandatory': False,
                 'set_once': False
@@ -80,8 +80,16 @@ MODELS = {
             {
                 'id': None,
                 'name': 'establishment_geolocation',
-                'descriptor_type_name': 'country',
+                'descriptor_type_name': 'city',
                 'label': {'en': 'Location', 'fr': 'Localisation'},
+                'mandatory': False,
+                'set_once': False
+            },
+            {
+                'id': None,
+                'name': 'establishment_code',
+                'descriptor_type_name': 'code_16',
+                'label': {'en': 'Code', 'fr': 'Code'},
                 'mandatory': False,
                 'set_once': False
             }

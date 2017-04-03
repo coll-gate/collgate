@@ -14,7 +14,6 @@
             <tr>
                 <th><span class="glyphicon glyphicon-asterisk"></span></th>
                 <th><%= gt.gettext("Name") %></th>
-                <th><%= gt.gettext("Organisation") %></th>
                 <% for (var i = 0; i < columns.length; ++i) { %>
                     <% var column = columns[i]; %>
                     <th name="<%= column.id %>"><%= column.label %></th>

@@ -79,7 +79,15 @@ class CollGateAccession(ApplicationMain):
 
         module_manager.register_module(accession_module)
 
-        if "init_fixtures" not in sys.argv and "migrate" not in sys.argv and "makemigrations" not in sys.argv:
+        command_list = ("init_fixtures", "migrate", "makemigrations", "help", "")
+        post_ready = True
+
+        for command in command_list:
+            if command in sys.argv:
+                post_ready = False
+                break
+
+        if post_ready:
             self.post_ready()
 
     def post_ready(self):
