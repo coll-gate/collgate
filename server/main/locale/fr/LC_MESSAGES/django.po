@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-22 12:09+0100\n"
+"POT-Creation-Date: 2017-04-04 17:30+0200\n"
 "PO-Revision-Date: 2016-02-01 11:53+0100\n"
 "Last-Translator: Frederic SCHERMA <frederic.scherma@clermont.inra.fr>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,14 +19,12 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: apps.py:46
-#, fuzzy
-#| msgid "Edit information"
 msgid "Administration"
-msgstr "Mise à jour des informations"
+msgstr "Administration"
 
 #: apps.py:50
 msgid "Server configuration"
-msgstr ""
+msgstr "Configuration du serveur"
 
 #: apps.py:56
 msgid "Help"
@@ -118,7 +116,8 @@ msgstr "Identifié avec succès"
 msgid ""
 "Your account is closed. Please contact an administrator to re-activate it."
 msgstr ""
-"Votre compte est cloturé. Merci de contacter un administrateur afin de ré-activer celui-ci."
+"Votre compte est cloturé. Merci de contacter un administrateur afin de ré-"
+"activer celui-ci."
 
 #: profile.py:86
 msgid "Invalid username or password"

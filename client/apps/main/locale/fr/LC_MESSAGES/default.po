@@ -64,19 +64,19 @@ msgstr "Dernières actions"
 
 #: ../../../templates/config.html:6
 msgid "Configured"
-msgstr ""
+msgstr "Configuré"
 
 #: ../../../templates/config.html:11
 msgid "Improperly configured"
-msgstr ""
+msgstr "Improprement configuré"
 
 #: ../../../templates/config.html:16
 msgid "Partially configured"
-msgstr ""
+msgstr "Partiellement configuré"
 
 #: ../../../templates/config.html:21
 msgid "Undefined"
-msgstr ""
+msgstr "Indéfini"
 
 #: ../../../templates/confirmdialog.html:11
 #: ../../../templates/eventmessagecreate.html:24

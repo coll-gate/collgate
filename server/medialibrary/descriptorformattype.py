@@ -133,7 +133,7 @@ class DescriptorFormatTypeMediaCollection(DescriptorFormatType):
 
         # check max items number
         if len(value) > descriptor_type_format['max_items']:
-            return _("The number of medias must be lesser or equal than %i" % descriptor_type_format['max_items'])
+            return _("The number of media must be lesser or equal than %i" % descriptor_type_format['max_items'])
 
         # regexp on uuid
         for val in value:

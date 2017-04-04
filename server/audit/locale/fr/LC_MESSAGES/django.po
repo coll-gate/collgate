@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-22 12:09+0100\n"
+"POT-Creation-Date: 2017-04-04 17:30+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: French <LL@li.org>\n"
@@ -18,15 +18,15 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: apps.py:81
+#: apps.py:86
 msgid "Tracability"
 msgstr "Traçabilité"
 
-#: apps.py:82
+#: apps.py:87
 msgid "Tracability for a user"
 msgstr "Traçabilité pour un utilisateur"
 
-#: apps.py:83
+#: apps.py:88
 msgid "Tracability for an entity"
 msgstr "Traçabilité pour une entité"
 

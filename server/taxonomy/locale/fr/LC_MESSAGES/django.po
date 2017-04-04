@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-22 12:09+0100\n"
+"POT-Creation-Date: 2017-04-04 17:30+0200\n"
 "PO-Revision-Date:  2016-02-03 11:38+0100\n"
 "Last-Translator: Frederic SCHERMA <frederic.scherma@clermont.inra.fr>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -30,40 +30,40 @@ msgstr "Créer une taxinomie"
 msgid "List taxons"
 msgstr "Liste des taxinomies"
 
-#: controller.py:53
+#: controller.py:55
 msgid "A taxon with this name already exists"
 msgstr "Ce nom de taxon est déjà utilisé"
 
-#: controller.py:58
+#: controller.py:60
 msgid "The rank of the parent must be lesser than the new taxon"
 msgstr "Le rang du parent doit être inférieur à celui du nouveau taxon"
 
-#: controller.py:136
+#: controller.py:137
 msgid "Empty synonym data"
 msgstr "Donnée du synonyme vide"
 
-#: controller.py:139
+#: controller.py:140
 msgid "Undefined synonym name"
 msgstr "Nom de synonyme indéfini"
 
-#: controller.py:142
+#: controller.py:143
 msgid "Undefined synonym language"
 msgstr "Langue du synonym indéfinie"
 
-#: controller.py:146 taxonsynonym.py:159
+#: controller.py:147 taxonsynonym.py:159
 msgid "Unsupported type of synonym"
 msgstr "Type de synonym non supporté"
 
-#: controller.py:154 taxonsynonym.py:167 taxonsynonym.py:220
+#: controller.py:155 taxonsynonym.py:167 taxonsynonym.py:220
 msgid "The primary name could not be used by another synonym of taxon"
 msgstr ""
 "Le nom principal ne peut pas être utilisé par un autre synonyme de taxon"
 
-#: controller.py:158 taxonsynonym.py:171 taxonsynonym.py:224
+#: controller.py:159 taxonsynonym.py:171 taxonsynonym.py:224
 msgid "Synonym already used as a primary name"
 msgstr "Synonyme déjà utilisé comme nom principal"
 
-#: controller.py:162 taxonsynonym.py:175 taxonsynonym.py:228
+#: controller.py:163 taxonsynonym.py:175 taxonsynonym.py:228
 msgid "Synonym already used into this taxon"
 msgstr "Synonyme déjà utilisé pour ce taxon"
 
@@ -155,21 +155,17 @@ msgstr "Vous n'êtes pas autorisé à modifier un taxon"
 msgid "The rank of the parent must be lowest than the taxon itself"
 msgstr "Le rang du parent doit être inférieur au taxon lui même"
 
-#: taxon.py:461
-msgid "Unable to update the taxon"
-msgstr "Impossible de mettre à jour le taxon"
-
-#: taxon.py:467
+#: taxon.py:466
 msgid "You are not allowed to remove a taxon"
 msgstr "Vous n'êtes pas autorisé à supprimer un taxon"
 
-#: taxon.py:474
+#: taxon.py:473
 msgid "This taxon is referred by one or more entities. It cannot be deleted."
 msgstr ""
 "Ce taxon est reférencé par une ou plusieurs entités. Il ne peut pas être "
 "supprimé."
 
-#: taxon.py:478
+#: taxon.py:477
 msgid "This taxon has sub-ranks. It cannot be deleted."
 msgstr "Ce taxon à des sous-rangs. Il ne peut pas être supprimé."
 
@@ -192,3 +188,6 @@ msgstr "Vous n'êtes pas autorisé à créer un taxon"
 #: taxonsynonym.py:262
 msgid "It is not possible to remove a primary synonym"
 msgstr "Il n'est pas possible de retirer un synonyme principal"
+
+#~ msgid "Unable to update the taxon"
+#~ msgstr "Impossible de mettre à jour le taxon"
