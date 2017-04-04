@@ -20,8 +20,7 @@ var EnumPair = function() {
     this.group = "list";
 };
 
-_.extend(EnumPair.prototype, EnumSingle.prototype, {
-});
+_.extend(EnumPair.prototype, EnumSingle.prototype, {});
 
 EnumPair.DescriptorTypeDetailsView = Marionette.ItemView.extend({
     className: 'descriptor-type-details-format',

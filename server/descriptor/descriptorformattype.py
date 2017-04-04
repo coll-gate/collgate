@@ -284,7 +284,15 @@ class DescriptorFormatTypeEnumSingle(DescriptorFormatType):
         return None
 
     def get_display_values_for(self, descriptor_type, descriptor_type_format, values, limit):
-        return descriptor_type.get_values_from_list(values, limit)
+        results = {}
+
+        descriptor_values = descriptor_type.get_values_from_list(values, limit)
+
+        if descriptor_type_format['display_fields'] == "value0":
+            for value in descriptor_values:
+                results[value['id']] = value['value0']
+
+        return results
 
 
 class DescriptorFormatTypeEnumPair(DescriptorFormatType):
@@ -341,7 +349,24 @@ class DescriptorFormatTypeEnumPair(DescriptorFormatType):
         return None
 
     def get_display_values_for(self, descriptor_type, descriptor_type_format, values, limit):
-        return descriptor_type.get_values_from_list(values, limit)
+        results = {}
+
+        descriptor_values = descriptor_type.get_values_from_list(values, limit)
+
+        if descriptor_type_format['display_fields'] == "value0":
+            for value in descriptor_values:
+                results[value['id']] = value['value0']
+        elif descriptor_type_format['display_fields'] == "value1":
+            for value in descriptor_values:
+                results[value['id']] = value['value1']
+        elif descriptor_type_format['display_fields'] == "value0-value1":
+            for value in descriptor_values:
+                results[value['id']] = "%s - %s" % (value['value0'], value['value1'])
+        if descriptor_type_format['display_fields'] == "hier0-value1":
+            for value in descriptor_values:
+                results[value['id']] = value['value1']
+
+        return results
 
 
 class DescriptorFormatTypeEnumOrdinal(DescriptorFormatType):

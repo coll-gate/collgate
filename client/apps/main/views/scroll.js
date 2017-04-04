@@ -58,6 +58,16 @@ var View = Marionette.CompositeView.extend({
 
     initialize: function (options) {
         View.__super__.initialize.apply(this);
+
+        this.listenTo(this.collection, 'reset', this.onResetCollection, this);
+    },
+
+    onResetCollection: function() {
+        this.lastItemsIds = null;
+
+        // reset scrolling
+        var scrollEl = this.$el.parent();
+        scrollEl.scrollTop(0);
     },
 
     onDomRefresh: function() {
@@ -82,17 +92,17 @@ var View = Marionette.CompositeView.extend({
 
         var view = this;
 
-        if (more == -1) {
+        if (more === -1) {
             more = this.capacity();
         }
 
-        if ((this.collection != null) && (this.collection.next != null)) {
+        if ((this.collection !== null) && (this.collection.next !== null)) {
             this.collection.fetch({update: true, remove: false, data: {
                 cursor: this.collection.next,
                 sort_by: this.collection.sort_by,
                 more: more
-            }}).done(function() {
-                // resync the sticky table header during scrolling
+            }}).done(function(data) {
+                // re-sync the sticky table header during scrolling
                 $(view.ui.table).stickyTableHeaders({scrollableArea: view.$el.parent()});
 
                 if (scroll) {
@@ -102,21 +112,49 @@ var View = Marionette.CompositeView.extend({
                     var clientHeight = scrollEl.prop('clientHeight');
                     scrollEl.scrollTop(height - clientHeight - view.rowHeight);
                 }
+
+                // keep list of last queried models ids
+                view.lastItemsIds = [];
+                for (var i = 0; i < data.items.length; ++i) {
+                    view.lastItemsIds.push(data.items[i].id);
+                }
             });
         }
     },
 
     scroll: function(e) {
         if (e.target.scrollTop > 1) {
-            $(this.ui.table).children('thead').addClass("sticky");
+            this.ui.table.children('thead').addClass("sticky");
         } else{
-            $(this.ui.table).children('thead').removeClass("sticky");
+            this.ui.table.children('thead').removeClass("sticky");
         }
 
-        if (e.target.scrollHeight-e.target.clientHeight == e.target.scrollTop) {
+        if (e.target.scrollHeight-e.target.clientHeight === e.target.scrollTop) {
             this.moreResults();
         }
     },
+
+    getLastItemsIds: function () {
+        if (this.lastItemsIds == undefined) {
+            this.lastItemsIds = [];
+            for (var i = 0; i < this.collection.models.length; ++i) {
+                this.lastItemsIds.push(this.collection.models[i].get('id'));
+            }
+        }
+
+        return this.lastItemsIds;
+    },
+
+    getLastModels: function() {
+        var lastItemsIds = this.getLastItemsIds();
+        var models = [];
+
+        for (var i = 0; i < lastItemsIds.length; ++i) {
+            models.push(this.collection.get(lastItemsIds[i]));
+        }
+
+        return models;
+    }
 });
 
 module.exports = View;
