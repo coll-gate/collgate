@@ -105,7 +105,6 @@ class DescriptorFormatTypeCountry(DescriptorFormatType):
         countries = instance.geolocation_app.geolocation_manager.get_country_list(values, limit, lang)
 
         for country in countries:
-            display = ""
             if country['preferred_names']:
                 display = country['preferred_names']
             elif country['short_names']:
@@ -161,7 +160,6 @@ class DescriptorFormatTypeCity(DescriptorFormatType):
         cities = instance.geolocation_app.geolocation_manager.get_city_list(values, limit, lang)
 
         for city in cities:
-            display = ""
             if city['preferred_names']:
                 display = city['preferred_names']
             elif city['short_names']:
@@ -171,14 +169,14 @@ class DescriptorFormatTypeCity(DescriptorFormatType):
             else:
                 display = city['name']
 
-            if city.country['preferred_names']:
-                display += ', ' + city.country['preferred_names']
-            elif city.country['short_names']:
-                display += ', ' + city.country['short_names']
-            elif city.country['alt_names']:
-                display += ', ' + city.country['alt_names']
+            if city['country']['preferred_names']:
+                display += ', ' + city['country']['preferred_names']
+            elif city['country']['short_names']:
+                display += ', ' + city['country']['short_names']
+            elif city['country']['alt_names']:
+                display += ', ' + city['country']['alt_names']
             else:
-                display += ', ' + city.country['name']
+                display += ', ' + city['country']['name']
 
             results[city['cit_id']] = display
 
