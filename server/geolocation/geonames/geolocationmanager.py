@@ -172,9 +172,9 @@ class GeolocationManager(GeolocationInterface):
                 'code3': country.code3,
                 'lat': country.latitude,
                 'long': country.longitude,
-                'alt_name': ', '.join(alt_name),
-                'preferred_name': ', '.join(preferred),
-                'short_name': ', '.join(short)
+                'alt_names': ', '.join(alt_name),
+                'preferred_names': ', '.join(preferred),
+                'short_names': ', '.join(short)
             }
             results.append(result)
 
@@ -254,7 +254,7 @@ class GeolocationManager(GeolocationInterface):
 
     def get_city_list(self, list_id, limit, lang):
 
-        qs = City.objects.filter(id__in=list_id)
+        qs = City.objects.filter(id__in=list_id).prefetch_related('country')
         tqs = qs.distinct().order_by('name', 'id')[:limit]
 
         results = []
@@ -270,16 +270,36 @@ class GeolocationManager(GeolocationInterface):
                 else:
                     alt_name.append(name.alternate_name)
 
+            country_alt_name = []
+            country_preferred = []
+            country_short = []
+            for name in city.country.alt_names.filter(language=lang):
+                if name.is_preferred_name:
+                    country_preferred.append(name.alternate_name)
+                if name.is_short_name:
+                    country_short.append(name.alternate_name)
+                else:
+                    country_alt_name.append(name.alternate_name)
+
             result = {
                 'cit_id': city.pk,
                 'geoname_id': city.geoname_id,
                 'name': city.name,
                 'lat': city.latitude,
                 'long': city.longitude,
-                'alt_name': ','.join(alt_name),
-                'cou_id': city.country_id,
-                'preferred_name': ', '.join(preferred),
-                'short_name': ', '.join(short)
+                'alt_names': ','.join(alt_name),
+                'country': {
+                    'id': city.country.pk,
+                    'name': city.country.name,
+                    'code3': city.country.code3,
+                    'lat': city.country.latitude,
+                    'long': city.country.longitude,
+                    'alt_names': ','.join(country_alt_name),
+                    'preferred_names': ','.join(country_preferred),
+                    'short_names': ','.join(country_short)
+                },
+                'preferred_names': ', '.join(preferred),
+                'short_names': ', '.join(short)
             }
             results.append(result)
 
