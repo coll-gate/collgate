@@ -281,10 +281,6 @@ msgstr "Plage numérique"
 msgid "Ordinal"
 msgstr "Ordinal"
 
-#: ../../../collections/formattype.js:77
-msgid "GPS coordinate"
-msgstr "Coordonnée GPS"
-
 #: ../../../collections/formattype.js:78
 msgid "Text"
 msgstr "Texte"

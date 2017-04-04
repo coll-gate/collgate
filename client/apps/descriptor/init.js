@@ -89,7 +89,6 @@ DescriptorModule.prototype = {
             'time',
             'datetime',
             'entity',
-            'gps',
             'enum_single',
             'enum_pair',
             'enum_ordinal'

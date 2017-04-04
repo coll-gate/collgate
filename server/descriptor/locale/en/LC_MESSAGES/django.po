@@ -247,10 +247,6 @@ msgstr ""
 msgid "Range min must be an integer"
 msgstr ""
 
-#: descriptorformattype.py:603
-msgid "GPS coordinate"
-msgstr ""
-
 #: descriptorformattype.py:627
 msgid "Text"
 msgstr ""

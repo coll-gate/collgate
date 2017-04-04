@@ -279,10 +279,6 @@ msgstr ""
 msgid "Ordinal"
 msgstr ""
 
-#: ../../../collections/formattype.js:77
-msgid "GPS coordinate"
-msgstr ""
-
 #: ../../../collections/formattype.js:78
 msgid "Text"
 msgstr ""

@@ -658,30 +658,6 @@ class DescriptorFormatTypeOrdinal(DescriptorFormatType):
         return None
 
 
-class DescriptorFormatTypeGPSCoordinate(DescriptorFormatType):
-    """
-    Specialisation for a GPS coordinate value.
-    """
-
-    def __init__(self):
-        super().__init__()
-
-        self.name = "gps"
-        self.group = DescriptorFormatTypeGroupSingle()
-        self.verbose_name = _("GPS coordinate")
-        self.format_fields = [
-            # @todo
-        ]
-
-    def validate(self, descriptor_type_format, value, descriptor_model_type):
-        # @todo
-        return None
-
-    def check(self, descriptor_type_format):
-        # @todo
-        return None
-
-
 class DescriptorFormatTypeString(DescriptorFormatType):
     """
     Specialisation for a text value.

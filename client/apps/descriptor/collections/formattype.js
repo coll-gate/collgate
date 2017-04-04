@@ -74,7 +74,6 @@ var Collection = Backbone.Collection.extend({
         {id: 'numeric', group: 'single', label: gt.gettext('Numeric')},
         {id: 'numeric_range', group: 'single', label: gt.gettext('Numeric range')},
         {id: 'ordinal', group: 'single', label: gt.gettext('Ordinal')},
-        {id: 'gps', group: 'single', label: gt.gettext('GPS coordinate')},
         {id: 'string', group: 'single', label: gt.gettext('Text')},
         {id: 'date', group: 'single', label: gt.gettext('Date')},
         {id: 'time', group: 'single', label: gt.gettext('Time')},

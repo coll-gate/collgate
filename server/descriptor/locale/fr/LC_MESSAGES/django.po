@@ -251,14 +251,9 @@ msgid "The descriptor value must be an integer between "
 msgstr "La valeur du descripteur doit être un entier compris entre "
 
 #: descriptorformattype.py:579 descriptorformattype.py:585
-#, fuzzy
 #| msgid "The descriptor value must be an integer"
 msgid "Range min must be an integer"
-msgstr "La valeur du descripteur doit être un entier"
-
-#: descriptorformattype.py:603
-msgid "GPS coordinate"
-msgstr "Coordonnée GPS"
+msgstr "La plage doit définir deux entiers"
 
 #: descriptorformattype.py:627
 msgid "Text"

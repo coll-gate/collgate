@@ -57,7 +57,6 @@ class CollGateDescriptor(ApplicationMain):
             descriptorformattype.DescriptorFormatTypeNumeric(),
             descriptorformattype.DescriptorFormatTypeNumericRange(),
             descriptorformattype.DescriptorFormatTypeOrdinal(),
-            descriptorformattype.DescriptorFormatTypeGPSCoordinate(),
             descriptorformattype.DescriptorFormatTypeString(),
             descriptorformattype.DescriptorFormatTypeDate(),
             descriptorformattype.DescriptorFormatTypeTime(),
