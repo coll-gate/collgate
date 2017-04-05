@@ -41,10 +41,6 @@ var View = ScrollView.extend({
         ];
 
         this.listenTo(this.collection, 'reset', this.render, this);
-    },
-
-    onRender: function() {
-        this.refreshDescriptorsColumns();
     }
 });
 

@@ -60,10 +60,11 @@ var View = Marionette.CompositeView.extend({
         View.__super__.initialize.apply(this);
 
         this.listenTo(this.collection, 'reset', this.onResetCollection, this);
+        this.listenTo(this.collection, 'sync', this.onCollectionSync, this);
     },
 
     onResetCollection: function() {
-        this.lastItemsIds = null;
+        this.lastModels = null;
 
         // reset scrolling
         var scrollEl = this.$el.parent();
@@ -102,7 +103,7 @@ var View = Marionette.CompositeView.extend({
                 sort_by: this.collection.sort_by,
                 more: more
             }}).done(function(data) {
-                // re-sync the sticky table header during scrolling
+                // re-sync the sticky table header during scrolling after collection was rendered
                 $(view.ui.table).stickyTableHeaders({scrollableArea: view.$el.parent()});
 
                 if (scroll) {
@@ -112,14 +113,28 @@ var View = Marionette.CompositeView.extend({
                     var clientHeight = scrollEl.prop('clientHeight');
                     scrollEl.scrollTop(height - clientHeight - view.rowHeight);
                 }
-
-                // keep list of last queried models ids
-                view.lastItemsIds = [];
-                for (var i = 0; i < data.items.length; ++i) {
-                    view.lastItemsIds.push(data.items[i].id);
-                }
             });
         }
+    },
+
+    onRefreshChildren: function() {
+        /* nothing by default */
+    },
+
+    onRenderCollection: function() {
+        // post refresh on children once every children was rendered for the first rendering
+        this.onRefreshChildren();
+    },
+
+    onCollectionSync: function (collection, data) {
+        // keep list of last queried models, done just once the collection get synced
+        this.lastModels = [];
+        for (var i = 0; i < data.items.length; ++i) {
+            this.lastModels.push(this.collection.get(data.items[i].id));
+        }
+
+        // post refresh on children once every children was rendered for any other rendering
+        this.onRefreshChildren();
     },
 
     scroll: function(e) {
@@ -134,26 +149,15 @@ var View = Marionette.CompositeView.extend({
         }
     },
 
-    getLastItemsIds: function () {
-        if (this.lastItemsIds == undefined) {
-            this.lastItemsIds = [];
+    getLastModels: function() {
+        if (this.lastModels == undefined) {
+            this.lastModels = [];
             for (var i = 0; i < this.collection.models.length; ++i) {
-                this.lastItemsIds.push(this.collection.models[i].get('id'));
+                this.lastModels.push(this.collection.models[i]);
             }
         }
 
-        return this.lastItemsIds;
-    },
-
-    getLastModels: function() {
-        var lastItemsIds = this.getLastItemsIds();
-        var models = [];
-
-        for (var i = 0; i < lastItemsIds.length; ++i) {
-            models.push(this.collection.get(lastItemsIds[i]));
-        }
-
-        return models;
+        return this.lastModels;
     }
 });
 

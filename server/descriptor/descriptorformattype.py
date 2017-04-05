@@ -87,9 +87,12 @@ class DescriptorFormatType(object):
         :param descriptor_type_format: Related format of the descriptor type (parsed in Python object, not in JSON)        
         :param values: List a of values (str or integer, depending of the descriptor)
         :param limit: Max results        
-        :return: A dict of pair(value_id:display_value)
+        :return: A dict containing a cache-able status and a items dict of pair(value_id:display_value)
         """
-        return {}
+        return {
+            'cacheable': True,
+            'items': {}
+        }
 
 
 class DescriptorFormatTypeManager(object):
@@ -284,15 +287,18 @@ class DescriptorFormatTypeEnumSingle(DescriptorFormatType):
         return None
 
     def get_display_values_for(self, descriptor_type, descriptor_type_format, values, limit):
-        results = {}
+        items = {}
 
         descriptor_values = descriptor_type.get_values_from_list(values, limit)
 
         if descriptor_type_format['display_fields'] == "value0":
             for value in descriptor_values:
-                results[value['id']] = value['value0']
+                items[value['id']] = value['value0']
 
-        return results
+        return {
+            'cacheable': True,
+            'items': items
+        }
 
 
 class DescriptorFormatTypeEnumPair(DescriptorFormatType):
@@ -349,24 +355,27 @@ class DescriptorFormatTypeEnumPair(DescriptorFormatType):
         return None
 
     def get_display_values_for(self, descriptor_type, descriptor_type_format, values, limit):
-        results = {}
+        items = {}
 
         descriptor_values = descriptor_type.get_values_from_list(values, limit)
 
         if descriptor_type_format['display_fields'] == "value0":
             for value in descriptor_values:
-                results[value['id']] = value['value0']
+                items[value['id']] = value['value0']
         elif descriptor_type_format['display_fields'] == "value1":
             for value in descriptor_values:
-                results[value['id']] = value['value1']
+                items[value['id']] = value['value1']
         elif descriptor_type_format['display_fields'] == "value0-value1":
             for value in descriptor_values:
-                results[value['id']] = "%s - %s" % (value['value0'], value['value1'])
+                items[value['id']] = "%s - %s" % (value['value0'], value['value1'])
         if descriptor_type_format['display_fields'] == "hier0-value1":
             for value in descriptor_values:
-                results[value['id']] = value['value1']
+                items[value['id']] = value['value1']
 
-        return results
+        return {
+            'cacheable': True,
+            'items': items
+        }
 
 
 class DescriptorFormatTypeEnumOrdinal(DescriptorFormatType):
@@ -431,7 +440,12 @@ class DescriptorFormatTypeEnumOrdinal(DescriptorFormatType):
         return None
 
     def get_display_values_for(self, descriptor_type, descriptor_type_format, values, limit):
-        return descriptor_type.get_values_from_list(values, limit)
+        items = descriptor_type.get_values_from_list(values, limit)
+
+        return {
+            'cacheable': True,
+            'items': items
+        }
 
 
 class DescriptorFormatTypeBoolean(DescriptorFormatType):
@@ -842,7 +856,7 @@ class DescriptorFormatTypeEntity(DescriptorFormatType):
         return None
 
     def get_display_values_for(self, descriptor_type, descriptor_type_format, values, limit):
-        results = {}
+        items = {}
 
         # search for the entities
         try:
@@ -854,6 +868,9 @@ class DescriptorFormatTypeEntity(DescriptorFormatType):
         entities = content_type.get_object_for_this_type(id__in=values)[:limit].values_list('id', 'name')
 
         for entity in entities:
-            results[entity[0]] = entity[1]
+            items[entity[0]] = entity[1]
 
-        return results
+        return {
+            'cacheable': False,
+            'items': items
+        }

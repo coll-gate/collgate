@@ -40,15 +40,6 @@ var View = ScrollView.extend({
         ];
 
         this.listenTo(this.collection, 'reset', this.render, this);
-        this.listenTo(this.collection, 'update', this.onUpdateCollection, this);
-    },
-
-    onRender: function () {
-        this.refreshDescriptorsColumns();
-    },
-
-    onUpdateCollection: function() {
-        this.refreshDescriptorsColumns();
     }
 });
 

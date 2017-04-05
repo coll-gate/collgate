@@ -9,51 +9,73 @@
  */
 
 var DescriptorsColumnsView = {
-    refreshDescriptorsColumns: function () {
+    onRefreshChildren: function () {
         var columns = this.getOption('columns');
-        var lastItemsIds = this.getLastItemsIds();
+        var lastModels = this.getLastModels();
 
         // one query by list of value
         for (var i = 0; i < columns.length; ++i) {
             if (columns[i].query) {
                 // make the list of values
                 var column_name = columns[i].name;
-                var values = [];
+                var keys = [];
+                var models = [];
+                var cache = application.main.getCache('descriptors', column_name);
 
-                for (var j = 0; j < lastItemsIds.length; ++j) {
-                    var model_id = lastItemsIds[j];
-                    var value = this.collection.get(model_id).get('descriptors')[column_name];
+                // lookup into the global cache
+                for (var j = 0; j < lastModels.length; ++j) {
+                    var model = lastModels[j];
+                    var key = model.get('descriptors')[column_name];
+                    var value = undefined;
 
-                    // only if the descriptors and the value are defined
+                    if (key !== undefined) {
+                        value = cache[key];
+                    }
+
                     if (value !== undefined) {
-                        values.push(value);
+                        var childView = this.children.findByModel(model);
+                        var column = childView.$el.find('td[name="' + column_name + '"]');
+
+                        // simply replace the value
+                        column.html(value);
+                    } else if (key !== undefined) {
+                        keys.push(key);
+                        models.push(model);
                     }
                 }
 
-                // @todo do a descriptor values cache but not possible for entities because name can change
-                // with a cache-able flag on the result of the query
+                if (keys.length) {
+                    $.ajax({
+                        type: "GET",
+                        url: application.baseUrl + 'descriptor/descriptor-model-type/' + column_name + '/',
+                        contentType: 'application/json; charset=utf8',
+                        data: {values: JSON.stringify(keys)},
+                        column_name: column_name,
+                        models: models,
+                        view: this
+                    }).done(function (data) {
+                        var cache = application.main.getCache('descriptors', this.column_name);
 
-                $.ajax({
-                    type: "GET",
-                    url: application.baseUrl + 'descriptor/descriptor-model-type/' + column_name + '/',
-                    contentType: 'application/json; charset=utf8',
-                    data: {values: JSON.stringify(values)},
-                    view: this,
-                    column_name: column_name
-                }).done(function(data) {
-                    var lastModels = this.view.getLastModels();
+                        for (var i = 0; i < this.models.length; ++i) {
+                            var model = models[i];
+                            var childView = this.view.children.findByModel(model);
+                            var key = model.get('descriptors')[this.column_name];
 
-                    for (var i = 0; i < lastModels.length; ++i) {
-                        var model = lastModels[i];
-                        var childView = this.view.children.findByModel(model);
+                            var column = childView.$el.find('td[name="' + this.column_name + '"]');
+                            if (key !== undefined) {
+                                // simply replace the value
+                                column.html(data.items[key]);
+                            }
 
-                        var column = childView.$el.find('td[name="' + this.column_name + '"]');
-                        if (column.html() !== "") {
-                            // simply replace the value
-                            column.html(data[column.html()]);
+                            // store in global cache
+                            if (data.cacheable) {
+                                cache[key] = data.items[key];
+                            }
                         }
-                    }
-                });
+
+                        console.debug("Cache miss for descriptor " + this.column_name + ".");
+                    });
+                }
             }
         }
     }

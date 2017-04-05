@@ -206,3 +206,14 @@ class DescriptorFormatTypeMediaCollection(DescriptorFormatType):
                 new_media.owner_object_id = entity.pk
 
                 new_media.save()
+
+    def get_display_values_for(self, descriptor_type, descriptor_type_format, values, limit):
+        items = {}
+
+        # search for the media
+        # @todo
+
+        return {
+            'cacheable': True,
+            'items': items
+        }

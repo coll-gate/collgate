@@ -98,6 +98,14 @@ MainModule.prototype = {
 
         var ProfileRouter = require('./routers/profile');
         this.routers.profile = new ProfileRouter();
+
+        //
+        // global cache
+        //
+
+        this.cache = {
+            'descriptors': {}
+        }
     },
 
     start: function(options) {
@@ -124,6 +132,20 @@ MainModule.prototype = {
     defaultRightView: function() {
         var mainView = application.getView();
         mainView.getRegion('right').empty();
+    },
+
+    getCache: function(cacheType, key) {
+        var cache = this.cache[cacheType];
+        if (cache !== undefined) {
+            var second = cache[key];
+            if (second === undefined) {
+                second = {};
+                cache[key] = second;
+            }
+            return second;
+        } else {
+            return null;
+        }
     }
 };
 

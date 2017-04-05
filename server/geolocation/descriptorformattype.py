@@ -27,7 +27,7 @@ class DescriptorFormatTypeGeolocation(DescriptorFormatType):
     Specialisation for a geolocation value.
     """
 
-    def __init__(self) -> object:
+    def __init__(self):
         super().__init__()
 
         self.name = "geolocation"
@@ -69,7 +69,7 @@ class DescriptorFormatTypeCountry(DescriptorFormatType):
     Specialisation for a country value.
     """
 
-    def __init__(self) -> object:
+    def __init__(self):
         super().__init__()
 
         self.name = "country"
@@ -98,7 +98,7 @@ class DescriptorFormatTypeCountry(DescriptorFormatType):
         return None
 
     def get_display_values_for(self, descriptor_type, descriptor_type_format, values, limit):
-        results = {}
+        items = {}
 
         # search for the countries
         lang = translation.get_language()
@@ -114,9 +114,12 @@ class DescriptorFormatTypeCountry(DescriptorFormatType):
             else:
                 display = country['name']
 
-            results[country['cou_id']] = display
+            items[country['cou_id']] = display
 
-        return results
+        return {
+            'cacheable': True,
+            'items': items
+        }
 
 
 class DescriptorFormatTypeCity(DescriptorFormatType):
@@ -124,7 +127,7 @@ class DescriptorFormatTypeCity(DescriptorFormatType):
     Specialisation for a city value.
     """
 
-    def __init__(self) -> object:
+    def __init__(self):
         super().__init__()
 
         self.name = "city"
@@ -153,7 +156,7 @@ class DescriptorFormatTypeCity(DescriptorFormatType):
         return None
 
     def get_display_values_for(self, descriptor_type, descriptor_type_format, values, limit):
-        results = {}
+        items = {}
 
         # search for the cities
         lang = translation.get_language()
@@ -178,6 +181,9 @@ class DescriptorFormatTypeCity(DescriptorFormatType):
             else:
                 display += ', ' + city['country']['name']
 
-            results[city['cit_id']] = display
+            items[city['cit_id']] = display
 
-        return results
+        return {
+            'cacheable': True,
+            'items': items
+        }
