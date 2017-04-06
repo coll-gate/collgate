@@ -41,7 +41,7 @@ class Downloader(object):
                 'Assuming local download is up to date for %s', source)
             return None, None
 
-        print('Downloading %s into %s' % (source, destination))
+        logger.warning('Downloading %s into %s' % (source, destination))
         source_stream = urlopen(source)
 
         with open(destination, 'wb') as local_file:

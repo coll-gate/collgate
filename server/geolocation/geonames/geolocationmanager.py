@@ -93,8 +93,8 @@ class GeolocationManager(GeolocationInterface):
             result = {
                 'geoname_id': city['geonameId'],
                 'name': city['name'],
-                'lat': city.get('lat'),
-                'long': city.get('lng'),
+                'lat': float(city.get('lat')),
+                'long': float(city.get('lng')),
                 'country_geoname_id': city['countryId'],
                 'country_name': city['countryName'],
                 'alt_name': ','.join(alt_name),
@@ -130,6 +130,16 @@ class GeolocationManager(GeolocationInterface):
                 else:
                     alt_name.append(name.alternate_name)
 
+                try:
+                    country.latitude = float(country.latitude)
+                except TypeError:
+                    country.latitude = None
+
+                try:
+                    country.longitude = float(country.longitude)
+                except TypeError:
+                    country.longitude = None
+
             result = {
                 'cou_id': country.pk,
                 'geoname_id': country.geoname_id,
@@ -164,6 +174,16 @@ class GeolocationManager(GeolocationInterface):
                 else:
                     alt_name.append(name.alternate_name)
 
+                try:
+                    country.latitude = float(country.latitude)
+                except TypeError:
+                    country.latitude = None
+
+                try:
+                    country.longitude = float(country.longitude)
+                except TypeError:
+                    country.longitude = None
+
             result = {
                 'cou_id': country.pk,
                 'geoname_id': country.geoname_id,
@@ -193,6 +213,16 @@ class GeolocationManager(GeolocationInterface):
                 short.append(name.alternate_name)
             else:
                 alt_name.append(name.alternate_name)
+
+        try:
+            c.latitude = float(c.latitude)
+        except TypeError:
+            c.latitude = None
+
+        try:
+            c.longitude = float(c.longitude)
+        except TypeError:
+            c.longitude = None
 
         result = {
             'cou_id': c.pk,
@@ -236,6 +266,16 @@ class GeolocationManager(GeolocationInterface):
                     short.append(name.alternate_name)
                 else:
                     alt_name.append(name.alternate_name)
+
+            try:
+                city.latitude = float(city.latitude)
+            except TypeError:
+                city.latitude = None
+
+            try:
+                city.longitude = float(city.longitude)
+            except TypeError:
+                city.longitude = None
 
             result = {
                 'cit_id': city.pk,
@@ -292,8 +332,8 @@ class GeolocationManager(GeolocationInterface):
                     'id': city.country.pk,
                     'name': city.country.name,
                     'code3': city.country.code3,
-                    'lat': city.country.latitude,
-                    'long': city.country.longitude,
+                    'lat': float(city.country.latitude),
+                    'long': float(city.country.longitude),
                     'alt_names': ','.join(country_alt_name),
                     'preferred_names': ','.join(country_preferred),
                     'short_names': ','.join(country_short)
@@ -323,8 +363,8 @@ class GeolocationManager(GeolocationInterface):
             'cit_id': c.pk,
             'geoname_id': c.geoname_id,
             'name': c.name,
-            'lat': c.latitude,
-            'long': c.longitude,
+            'lat': float(c.latitude),
+            'long': float(c.longitude),
             'alt_name': ','.join(alt_name),
             'cou_id': c.country_id,
             'preferred_name': ', '.join(preferred),
@@ -418,8 +458,8 @@ class GeolocationManager(GeolocationInterface):
             'cit_id': city.id,
             'geoname_id': city.geoname_id,
             'name': city.name,
-            'lat': city.latitude,
-            'long': city.longitude,
+            'lat': float(city.latitude),
+            'long': float(city.longitude),
             'alt_name': ','.join(alt_names),
             'cou_id': city.country_id,
             'preferred_name': ', '.join(preferred),
