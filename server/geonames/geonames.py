@@ -54,7 +54,7 @@ class Geonames(object):
 
         if not self._need_load_file(self.source) and force:
             self.need_run = False
-            print('Data are up to date for %s' % self.source)
+            logging.warning('Data are up to date for %s' % self.source)
             return
 
         self.need_run = True
@@ -107,6 +107,10 @@ class Geonames(object):
         return True
 
     def parse(self):
+        """
+        Return a python generator for geonames file parsing
+        :return: generator 
+        """
         if not six.PY3:
             file = open(self.file_path, 'r')
         else:
@@ -156,7 +160,6 @@ class Geonames(object):
         """
         Deletes source file from filesystem
         """
-
         os.remove(self.file_path)
         if self.source.split('.')[-1] == 'zip':
             os.remove(self.file_path.replace('txt', 'zip'))

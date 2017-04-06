@@ -18,6 +18,7 @@ class Base(models.Model):
     latitude = models.DecimalField(max_digits=8, decimal_places=5, null=True, blank=True)
     longitude = models.DecimalField(max_digits=8, decimal_places=5, null=True, blank=True)
     alt_names = models.ManyToManyField('AlternateName')
+    name = models.CharField(max_length=200, db_index=True)
 
     class Meta:
         abstract = True
@@ -29,8 +30,8 @@ class AlternateName(models.Model):
     Alternate names model
     """
 
-    language = models.CharField(max_length=2, null=False)
-    alternate_name = models.CharField(max_length=255, null=True, blank=True, default='')
+    language = models.CharField(max_length=2, null=False, db_index=True)
+    alternate_name = models.CharField(max_length=255, null=True, blank=True, default='', db_index=True)
     is_preferred_name = models.BooleanField(default=False)
     is_short_name = models.BooleanField(default=False)
 
@@ -44,7 +45,7 @@ class Country(Base):
     Country model.
     """
 
-    name = models.CharField(max_length=200, unique=True)
+    # name = models.CharField(max_length=200, unique=True)
 
     code2 = models.CharField(max_length=2, null=True, blank=True, unique=True, db_index=True)
     code3 = models.CharField(max_length=3, null=True, blank=True, unique=True, db_index=True)
@@ -55,15 +56,15 @@ class Country(Base):
         return str(self.geoname_id) + ' ' + str(self.name)
 
 
-class Region(Base):
-    """
-    Region/State model.
-    """
-
-    name = models.CharField(max_length=200, db_index=True)
-    # display_name = models.CharField(max_length=200)
-    geoname_code = models.CharField(max_length=50, null=True, blank=True, db_index=True)
-    country = models.ForeignKey(Country, on_delete=models.CASCADE)
+# class Region(Base):
+#     """
+#     Region/State model.
+#     """
+#
+#     # name = models.CharField(max_length=200, db_index=True)
+#     # display_name = models.CharField(max_length=200)
+#     geoname_code = models.CharField(max_length=50, null=True, blank=True, db_index=True)
+#     country = models.ForeignKey(Country, on_delete=models.CASCADE)
 
 
 class City(Base):
@@ -71,7 +72,7 @@ class City(Base):
     City model.
     """
 
-    name = models.CharField(max_length=200, db_index=True)
+    # name = models.CharField(max_length=200, db_index=True)
     country = models.ForeignKey(Country, on_delete=models.CASCADE)
     population = models.BigIntegerField(null=True, blank=True, db_index=True)
     feature_code = models.CharField(max_length=10, null=True, blank=True, db_index=True)
@@ -96,7 +97,6 @@ class State(models.Model):
     """
     Application state model
     """
-
-    source = models.CharField(max_length=1024, null=False, blank=False, unique=True)
+    source = models.CharField(max_length=1024, null=False, blank=False, unique=True, db_index=True)
     last_modified = models.DateTimeField(null=False, blank=False)
     size = models.BigIntegerField(null=True, blank=True)

@@ -27,7 +27,7 @@ class DescriptorFormatTypeGeolocation(DescriptorFormatType):
     Specialisation for a geolocation value.
     """
 
-    def __init__(self) -> object:
+    def __init__(self):
         super().__init__()
 
         self.name = "geolocation"
@@ -69,7 +69,7 @@ class DescriptorFormatTypeCountry(DescriptorFormatType):
     Specialisation for a country value.
     """
 
-    def __init__(self) -> object:
+    def __init__(self):
         super().__init__()
 
         self.name = "country"
@@ -124,7 +124,7 @@ class DescriptorFormatTypeCity(DescriptorFormatType):
     Specialisation for a city value.
     """
 
-    def __init__(self) -> object:
+    def __init__(self):
         super().__init__()
 
         self.name = "city"
