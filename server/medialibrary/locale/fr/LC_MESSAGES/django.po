@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-22 12:09+0100\n"
+"POT-Creation-Date: 2017-04-04 17:30+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,22 +23,16 @@ msgid "Media"
 msgstr "Média"
 
 #: descriptorformattype.py:47
-#, fuzzy
-#| msgid "The descriptor value must be an integer"
 msgid "The descriptor value must be a string"
-msgstr "La valeur du descripteur doit être un entier"
+msgstr "La valeur du descripteur doit être une chaîne"
 
 #: descriptorformattype.py:51 descriptorformattype.py:141
-#, fuzzy
-#| msgid "The descriptor value must be an integer"
 msgid "The descriptor value must match with the UUID format"
-msgstr "La valeur du descripteur doit être un entier"
+msgstr "La valeur du descripteur doit être au format UUID"
 
 #: descriptorformattype.py:57 descriptorformattype.py:146
-#, fuzzy
-#| msgid "The descriptor value must be an integer"
 msgid "The descriptor value must refers to an existing media"
-msgstr "La valeur du descripteur doit être un entier"
+msgstr "La valeur du descripteur doit référer à un média existant"
 
 #: descriptorformattype.py:77 descriptorformattype.py:167
 msgid ""
@@ -48,43 +42,37 @@ msgstr ""
 "(media_types)"
 
 #: descriptorformattype.py:91 descriptorformattype.py:186
-#, fuzzy
-#| msgid "The descriptor value must be an integer"
 msgid "The descriptor old_value must refers to an existing media"
-msgstr "La valeur du descripteur doit être un entier"
+msgstr "Le descripteur old_value doit référencer un média existant"
 
 #: descriptorformattype.py:107 descriptorformattype.py:203
-#, fuzzy
-#| msgid "The descriptor value must be an integer"
 msgid "The descriptor new_value must refers to an existing media"
-msgstr "La valeur du descripteur doit être un entier"
+msgstr "Le descripteur new_value doit référencer un média existant"
 
 #: descriptorformattype.py:125
 msgid "Media collection"
-msgstr "Collection de média"
+msgstr "Collection de médias"
 
 #: descriptorformattype.py:132
-#, fuzzy
-#| msgid "The descriptor value must be an integer"
 msgid "The descriptor value must be an array of string"
-msgstr "La valeur du descripteur doit être un entier"
+msgstr "La valeur du descripteur doit être un tableau de chaînes"
 
 #: descriptorformattype.py:136
 #, python-format
-msgid "The number of medias must be lesser or equal than %i"
-msgstr ""
+msgid "The number of media must be lesser or equal than %i"
+msgstr "Le nombre de medias doit être inférieur ou égale à %i"
 
 #: media.py:65 media.py:97 media.py:126 media.py:271
 msgid "Your are not the owner of the media"
-msgstr ""
+msgstr "Vous n'êtes pas le propriétaire de ce média"
 
 #: media.py:72 media.py:133
 msgid "No permissions to the owner entity"
-msgstr ""
+msgstr "Pas de permission sur l'entité propriétaire"
 
 #: media.py:109
 msgid "Unable to delete the media"
-msgstr ""
+msgstr "Impossible de supprimer le média"
 
 #: media.py:161 media.py:253
 msgid "No file specified"
@@ -101,7 +89,7 @@ msgstr "Type de fichier téléchargé indéterminé"
 
 #: media.py:279
 msgid "No change permission to the owner entity"
-msgstr ""
+msgstr "Pas de permission de modification sur l'entité propriétaire"
 
 #: media.py:286
 msgid "Trying to update a non-existing file"

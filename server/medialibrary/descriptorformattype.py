@@ -133,7 +133,7 @@ class DescriptorFormatTypeMediaCollection(DescriptorFormatType):
 
         # check max items number
         if len(value) > descriptor_type_format['max_items']:
-            return _("The number of medias must be lesser or equal than %i" % descriptor_type_format['max_items'])
+            return _("The number of media must be lesser or equal than %i" % descriptor_type_format['max_items'])
 
         # regexp on uuid
         for val in value:
@@ -206,3 +206,14 @@ class DescriptorFormatTypeMediaCollection(DescriptorFormatType):
                 new_media.owner_object_id = entity.pk
 
                 new_media.save()
+
+    def get_display_values_for(self, descriptor_type, descriptor_type_format, values, limit):
+        items = {}
+
+        # search for the media
+        # @todo
+
+        return {
+            'cacheable': True,
+            'items': items
+        }

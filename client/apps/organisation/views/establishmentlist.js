@@ -11,6 +11,8 @@
 var ScrollView = require('../../main/views/scroll');
 var EstablishmentView = require('../views/establishment');
 
+var DescriptorsColumnsView = require('../../descriptor/mixins/descriptorscolumns');
+
 var View = ScrollView.extend({
     template: require("../templates/establishmentlist.html"),
     childView: EstablishmentView,
@@ -39,33 +41,10 @@ var View = ScrollView.extend({
         ];
 
         this.listenTo(this.collection, 'reset', this.render, this);
-    },
-
-    onRender: function() {
-        var columns = this.getOption('columns');
-
-        // one query by list of value
-        for (var i = 0; i < columns.length; ++i) {
-            if (columns[i].query) {
-                // make the list of values
-                var column_name = columns[i].name;
-                var values = [];
-
-                for (var j = 0; j < this.collection.models.length; ++j) {
-                    values.push(this.collection.models[j].get('descriptors')[column_name]);
-                }
-
-                $.ajax({
-                    type: "GET",
-                    url: application.baseUrl + 'descriptor/descriptor-model-type/' + column_name + '/',
-                    contentType: 'application/json; charset=utf8',
-                    data: {values: JSON.stringify(values)}
-                }).done(function(data) {
-                   console.log(column_name, data);
-                });
-            }
-        }
     }
 });
+
+// support of descriptors columns extension
+_.extend(View.prototype, DescriptorsColumnsView);
 
 module.exports = View;

@@ -58,6 +58,17 @@ var View = Marionette.CompositeView.extend({
 
     initialize: function (options) {
         View.__super__.initialize.apply(this);
+
+        this.listenTo(this.collection, 'reset', this.onResetCollection, this);
+        this.listenTo(this.collection, 'sync', this.onCollectionSync, this);
+    },
+
+    onResetCollection: function() {
+        this.lastModels = null;
+
+        // reset scrolling
+        var scrollEl = this.$el.parent();
+        scrollEl.scrollTop(0);
     },
 
     onDomRefresh: function() {
@@ -82,17 +93,17 @@ var View = Marionette.CompositeView.extend({
 
         var view = this;
 
-        if (more == -1) {
+        if (more === -1) {
             more = this.capacity();
         }
 
-        if ((this.collection != null) && (this.collection.next != null)) {
+        if ((this.collection !== null) && (this.collection.next !== null)) {
             this.collection.fetch({update: true, remove: false, data: {
                 cursor: this.collection.next,
                 sort_by: this.collection.sort_by,
                 more: more
-            }}).done(function() {
-                // resync the sticky table header during scrolling
+            }}).done(function(data) {
+                // re-sync the sticky table header during scrolling after collection was rendered
                 $(view.ui.table).stickyTableHeaders({scrollableArea: view.$el.parent()});
 
                 if (scroll) {
@@ -106,17 +117,48 @@ var View = Marionette.CompositeView.extend({
         }
     },
 
-    scroll: function(e) {
-        if (e.target.scrollTop > 1) {
-            $(this.ui.table).children('thead').addClass("sticky");
-        } else{
-            $(this.ui.table).children('thead').removeClass("sticky");
+    onRefreshChildren: function() {
+        /* nothing by default */
+    },
+
+    onRenderCollection: function() {
+        // post refresh on children once every children was rendered for the first rendering
+        this.onRefreshChildren();
+    },
+
+    onCollectionSync: function (collection, data) {
+        // keep list of last queried models, done just once the collection get synced
+        this.lastModels = [];
+        for (var i = 0; i < data.items.length; ++i) {
+            this.lastModels.push(this.collection.get(data.items[i].id));
         }
 
-        if (e.target.scrollHeight-e.target.clientHeight == e.target.scrollTop) {
+        // post refresh on children once every children was rendered for any other rendering
+        this.onRefreshChildren();
+    },
+
+    scroll: function(e) {
+        if (e.target.scrollTop > 1) {
+            this.ui.table.children('thead').addClass("sticky");
+        } else{
+            this.ui.table.children('thead').removeClass("sticky");
+        }
+
+        if (e.target.scrollHeight-e.target.clientHeight === e.target.scrollTop) {
             this.moreResults();
         }
     },
+
+    getLastModels: function() {
+        if (this.lastModels == undefined) {
+            this.lastModels = [];
+            for (var i = 0; i < this.collection.models.length; ++i) {
+                this.lastModels.push(this.collection.models[i]);
+            }
+        }
+
+        return this.lastModels;
+    }
 });
 
 module.exports = View;

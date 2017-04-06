@@ -911,7 +911,7 @@ class DescriptorType(Entity):
                     'value1': value.value1
                 })
 
-            return values_list
+        return values_list
 
 
 class DescriptorValue(Entity):

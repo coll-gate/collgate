@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-22 12:09+0100\n"
+"POT-Creation-Date: 2017-04-04 17:30+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,39 +29,39 @@ msgstr ""
 msgid "List taxons"
 msgstr ""
 
-#: controller.py:53
+#: controller.py:55
 msgid "A taxon with this name already exists"
 msgstr ""
 
-#: controller.py:58
+#: controller.py:60
 msgid "The rank of the parent must be lesser than the new taxon"
 msgstr ""
 
-#: controller.py:136
+#: controller.py:137
 msgid "Empty synonym data"
 msgstr ""
 
-#: controller.py:139
+#: controller.py:140
 msgid "Undefined synonym name"
 msgstr ""
 
-#: controller.py:142
+#: controller.py:143
 msgid "Undefined synonym language"
 msgstr ""
 
-#: controller.py:146 taxonsynonym.py:159
+#: controller.py:147 taxonsynonym.py:159
 msgid "Unsupported type of synonym"
 msgstr ""
 
-#: controller.py:154 taxonsynonym.py:167 taxonsynonym.py:220
+#: controller.py:155 taxonsynonym.py:167 taxonsynonym.py:220
 msgid "The primary name could not be used by another synonym of taxon"
 msgstr ""
 
-#: controller.py:158 taxonsynonym.py:171 taxonsynonym.py:224
+#: controller.py:159 taxonsynonym.py:171 taxonsynonym.py:224
 msgid "Synonym already used as a primary name"
 msgstr ""
 
-#: controller.py:162 taxonsynonym.py:175 taxonsynonym.py:228
+#: controller.py:163 taxonsynonym.py:175 taxonsynonym.py:228
 msgid "Synonym already used into this taxon"
 msgstr ""
 
@@ -153,19 +153,15 @@ msgstr ""
 msgid "The rank of the parent must be lowest than the taxon itself"
 msgstr ""
 
-#: taxon.py:461
-msgid "Unable to update the taxon"
-msgstr ""
-
-#: taxon.py:467
+#: taxon.py:466
 msgid "You are not allowed to remove a taxon"
 msgstr ""
 
-#: taxon.py:474
+#: taxon.py:473
 msgid "This taxon is referred by one or more entities. It cannot be deleted."
 msgstr ""
 
-#: taxon.py:478
+#: taxon.py:477
 msgid "This taxon has sub-ranks. It cannot be deleted."
 msgstr ""
 

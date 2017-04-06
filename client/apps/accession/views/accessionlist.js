@@ -12,6 +12,8 @@ var Marionette = require('backbone.marionette');
 var AccessionView = require('../views/accession');
 var ScrollView = require('../../main/views/scroll');
 
+var DescriptorsColumnsView = require('../../descriptor/mixins/descriptorscolumns');
+
 var View = ScrollView.extend({
     template: require("../templates/accessionlist.html"),
     childView: AccessionView,
@@ -34,10 +36,14 @@ var View = ScrollView.extend({
 
         options || (options = {});
         options.columns = [
+            {id: -1, name: 'MCPD_SAMPSTAT', label: 'Biological status', query: true}
         ];
 
         this.listenTo(this.collection, 'reset', this.render, this);
     }
 });
+
+// support of descriptors columns extension
+_.extend(View.prototype, DescriptorsColumnsView);
 
 module.exports = View;

@@ -28,8 +28,8 @@ var Popover = Marionette.Behavior.extend({
 
         if (text || content) {
             this.ui.popover.addClass('btn');
-            this.ui.popover.addClass('popover-dismiss')
-            this.ui.popover.addClass('glyphicon glyphicon-question-sign')
+            this.ui.popover.addClass('popover-dismiss');
+            this.ui.popover.addClass('glyphicon glyphicon-question-sign');
             this.ui.popover.attr('data-toggle', 'popover');
 
             // not a css because element attribute (over btn style)

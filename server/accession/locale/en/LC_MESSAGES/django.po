@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-22 12:09+0100\n"
+"POT-Creation-Date: 2017-04-04 17:30+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -33,38 +33,30 @@ msgstr ""
 msgid "The language is not supported"
 msgstr ""
 
-#: accession.py:124
-msgid "Unable to create the accession"
-msgstr ""
-
-#: accession.py:153
+#: accession.py:152
 msgid "You are not allowed to list the accessions"
 msgstr ""
 
-#: accession.py:225 accessionbatch.py:33 accessionbatch.py:94 batch.py:211
+#: accession.py:241 accessionbatch.py:33 accessionbatch.py:94 batch.py:211
 #: batch.py:275
 msgid "You are not allowed to get an accession"
 msgstr ""
 
-#: accession.py:237 accessionbatch.py:47 accessionbatch.py:113 batch.py:228
+#: accession.py:253 accessionbatch.py:47 accessionbatch.py:113 batch.py:228
 #: batch.py:292
 msgid "Invalid permission to access to this accession"
 msgstr ""
 
-#: accession.py:261
+#: accession.py:277
 msgid "You are not allowed to search accessions"
 msgstr ""
 
-#: accession.py:363 accessionsynonym.py:155 accessionsynonym.py:217
+#: accession.py:379 accessionsynonym.py:155 accessionsynonym.py:217
 #: accessionsynonym.py:277
 msgid "You are not allowed to modify an accession"
 msgstr ""
 
-#: accession.py:407
-msgid "Unable to update the accession"
-msgstr ""
-
-#: accession.py:413
+#: accession.py:428
 msgid "You are not allowed to delete an accession"
 msgstr ""
 
@@ -129,23 +121,23 @@ msgstr ""
 msgid "It is not possible to remove a primary name"
 msgstr ""
 
-#: apps.py:59
+#: apps.py:60
 msgid "Accession"
 msgstr ""
 
-#: apps.py:62
+#: apps.py:63
 msgid "Create accession"
 msgstr ""
 
-#: apps.py:65
+#: apps.py:66
 msgid "Create batch"
 msgstr ""
 
-#: apps.py:70
+#: apps.py:71
 msgid "List accessions"
 msgstr ""
 
-#: apps.py:74
+#: apps.py:75
 msgid "Search accessions"
 msgstr ""
 

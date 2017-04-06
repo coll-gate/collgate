@@ -161,7 +161,7 @@ def get_accession_list(request):
 
         if cursor:
             cursor_name, cursor_id = cursor.rsplit('/', 1)
-            qs = Accession.objects.filter(Q(name__gt=cursor_name))
+            qs = Accession.objects.filter(Q(name__gt=cursor_name) | (Q(name__gte=cursor_name) & Q(id__gt=cursor_id)))
         else:
             qs = Accession.objects.all()
 
@@ -184,7 +184,7 @@ def get_accession_list(request):
         Prefetch(
             "synonyms",
             queryset=AccessionSynonym.objects.all().order_by('type', 'language'))
-    ).order_by('name')[:limit]
+    ).distinct().order_by('name')[:limit]
 
     accession_list = []
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-22 12:09+0100\n"
+"POT-Creation-Date: 2017-04-04 17:30+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,38 +34,30 @@ msgstr "Le code de l'accession est déjà utilisé"
 msgid "The language is not supported"
 msgstr "La langue n'est pas supportée"
 
-#: accession.py:124
-msgid "Unable to create the accession"
-msgstr "Impossible de créer l'accession"
-
-#: accession.py:153
+#: accession.py:152
 msgid "You are not allowed to list the accessions"
 msgstr "Vous n'êtes pas autorisé à lister les accessions"
 
-#: accession.py:225 accessionbatch.py:33 accessionbatch.py:94 batch.py:211
+#: accession.py:241 accessionbatch.py:33 accessionbatch.py:94 batch.py:211
 #: batch.py:275
 msgid "You are not allowed to get an accession"
 msgstr "Vous n'êtes pas autorisé à récupérer une accession"
 
-#: accession.py:237 accessionbatch.py:47 accessionbatch.py:113 batch.py:228
+#: accession.py:253 accessionbatch.py:47 accessionbatch.py:113 batch.py:228
 #: batch.py:292
 msgid "Invalid permission to access to this accession"
 msgstr "Permissions invalides pour accéder à cette accession"
 
-#: accession.py:261
+#: accession.py:277
 msgid "You are not allowed to search accessions"
 msgstr "Vous n'êtes pas autorisé à rechercher des accessions"
 
-#: accession.py:363 accessionsynonym.py:155 accessionsynonym.py:217
+#: accession.py:379 accessionsynonym.py:155 accessionsynonym.py:217
 #: accessionsynonym.py:277
 msgid "You are not allowed to modify an accession"
 msgstr "Vous n'êtes pas autorisé à modifier une accession"
 
-#: accession.py:407
-msgid "Unable to update the accession"
-msgstr "Impossible de modifier l'accession"
-
-#: accession.py:413
+#: accession.py:428
 msgid "You are not allowed to delete an accession"
 msgstr "Vous n'êtes pas autorisé à supprimer une accession"
 
@@ -132,23 +124,23 @@ msgstr "Il n'est pas possible de retirer un code CRB"
 msgid "It is not possible to remove a primary name"
 msgstr "Il n'est pas possible de retirer un nom principal"
 
-#: apps.py:59
+#: apps.py:60
 msgid "Accession"
 msgstr "Accession"
 
-#: apps.py:62
+#: apps.py:63
 msgid "Create accession"
 msgstr "Créer une accession"
 
-#: apps.py:65
+#: apps.py:66
 msgid "Create batch"
 msgstr "Créer un lot"
 
-#: apps.py:70
+#: apps.py:71
 msgid "List accessions"
 msgstr "Liste des accessions"
 
-#: apps.py:74
+#: apps.py:75
 msgid "Search accessions"
 msgstr "Recherche d'accessions"
 
@@ -251,3 +243,9 @@ msgstr "Expédition"
 #: models.py:362
 msgid "Elimination"
 msgstr "Elimination"
+
+#~ msgid "Unable to create the accession"
+#~ msgstr "Impossible de créer l'accession"
+
+#~ msgid "Unable to update the accession"
+#~ msgstr "Impossible de modifier l'accession"
