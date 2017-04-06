@@ -16,11 +16,10 @@ var ScrollView = require('../../main/views/scroll');
 
 
 var View = ScrollView.extend({
-    template: "<div></div>",
+    template: require("../templates/taxonlist.html"),
     className: "taxon-list",
     childView: TaxonView,
-    attributes: {
-    },
+    childViewContainer: 'tbody.taxon-list',
 
     initialize: function(options) {
         options || (options = {});

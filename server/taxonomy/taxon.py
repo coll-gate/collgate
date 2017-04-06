@@ -163,7 +163,7 @@ def get_taxon_list(request):
         Prefetch(
             "synonyms",
             queryset=TaxonSynonym.objects.all().order_by('type', 'language'))
-    ).order_by('name')[:limit]
+    ).select_related('parent').order_by('name')[:limit]
 
     items_list = []
     for taxon in qs:
@@ -173,8 +173,16 @@ def get_taxon_list(request):
             'parent': taxon.parent_id,
             'rank': taxon.rank,
             'parent_list': [int(x) for x in taxon.parent_list.rstrip(',').split(',')] if taxon.parent_list else [],
+            'parent_details': None,
             'synonyms': []
         }
+
+        if taxon.parent:
+            t['parent_details'] = {
+                'id': taxon.parent.id,
+                'name': taxon.parent.name,
+                'rank': taxon.parent.rank
+            }
 
         for synonym in taxon.synonyms.all():
             t['synonyms'].append({
@@ -518,7 +526,7 @@ def get_taxon_children(request, tax_id):
     qs = qs.prefetch_related(Prefetch(
             "synonyms",
             queryset=TaxonSynonym.objects.all().order_by('type', 'language'))
-    ).order_by('name')[:limit]
+    ).select_related('parent').order_by('name')[:limit]
 
     children = []
 
@@ -529,8 +537,16 @@ def get_taxon_children(request, tax_id):
             'parent': child.parent_id,
             'rank': child.rank,
             'parent_list': [int(x) for x in child.parent_list.rstrip(',').split(',')] if child.parent_list else [],
+            'parent_details': None,
             'synonyms': [],
         }
+
+        if taxon.parent:
+            t['parent_details'] = {
+                'id': taxon.parent.id,
+                'name': taxon.parent.name,
+                'rank': taxon.parent.rank
+            }
 
         for synonym in child.synonyms.all():
             t['synonyms'].append({

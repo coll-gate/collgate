@@ -8,7 +8,6 @@
  * @details
  */
 
-var Marionette = require('backbone.marionette');
 var AccessionView = require('../views/accession');
 var ScrollView = require('../../main/views/scroll');
 
@@ -35,9 +34,7 @@ var View = ScrollView.extend({
         View.__super__.initialize.apply(this);
 
         options || (options = {});
-        options.columns = [
-            {id: -1, name: 'MCPD_SAMPSTAT', label: 'Biological status', query: true}
-        ];
+        options.columns = application.getUserSetting('accessions_list_columns');
 
         this.listenTo(this.collection, 'reset', this.render, this);
     }

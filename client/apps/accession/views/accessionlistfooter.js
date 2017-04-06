@@ -9,6 +9,7 @@
  */
 
 var Marionette = require('backbone.marionette');
+var ColumnsConfigDialog = require('./columnsconfig');
 
 var View = Marionette.ItemView.extend({
     tagName: 'div',
@@ -24,7 +25,9 @@ var View = Marionette.ItemView.extend({
 
     events: {
         'click @ui.filter_btn': 'onFilter',
-        'input @ui.accession_name': 'onAccessionNameInput'
+        'input @ui.accession_name': 'onAccessionNameInput',
+        'click @ui.accession_advanced_search': 'onAdvancedSearch',
+        'click @ui.accession_columns_config': 'onColumnsConfig'
     },
 
     initialize: function(options) {
@@ -52,7 +55,7 @@ var View = Marionette.ItemView.extend({
         if (v.length > 0 && v.length < 3) {
             $(this.ui.accession_name).validateField('failed', gt.gettext('3 characters min'));
             return false;
-        } else if (this.ui.accession_name.val().length == 0) {
+        } else if (this.ui.accession_name.val().length === 0) {
             $(this.ui.accession_name).cleanField();
             return true;
         } else {
@@ -63,6 +66,22 @@ var View = Marionette.ItemView.extend({
 
     onAccessionNameInput: function () {
         return this.validateAccessionName();
+    },
+
+    onAdvancedSearch: function () {
+
+    },
+
+    onColumnsConfig: function () {
+        // updateUserSetting
+        $.ajax({
+            type: "GET",
+            url: application.baseUrl + 'descriptor/columns/accession.accession/',
+            contentType: "application/json; charset=utf-8"
+        }).done(function(data) {
+            var columnsConfigDialog = new ColumnsConfigDialog(data);
+            columnsConfigDialog.render();
+        });
     }
 });
 

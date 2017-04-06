@@ -14,7 +14,7 @@ var View = Marionette.ItemView.extend({
     tagName: 'tr',
     className: 'object accession element',
     attributes: {
-        'scope': 'row',
+        'scope': 'row'
     },
     template: require('../templates/accession.html'),
 
