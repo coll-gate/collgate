@@ -34,8 +34,15 @@ var Router = Marionette.AppRouter.extend({
 
         defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of accessions")}));
 
-        collection.fetch().then(function () {
-            var accessionListView = new AccessionListView({collection : collection});
+        // get available columns
+        var columns = $.ajax({
+            type: "GET",
+            url: application.baseUrl + 'descriptor/columns/accession.accession/',
+            contentType: "application/json; charset=utf-8"
+        });
+        
+        $.when(columns, collection.fetch()).done(function (data) {
+            var accessionListView = new AccessionListView({collection : collection, columns: data[0].columns});
 
             defaultLayout.getRegion('content').show(accessionListView);
             defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: accessionListView}));

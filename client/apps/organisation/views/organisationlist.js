@@ -18,23 +18,22 @@ var View = ScrollView.extend({
 
     templateHelpers/*templateContext*/: function () {
         return {
-            columns: this.getOption('columns')
+            columns: this.displayedColumns
         }
     },
 
     childViewOptions: function () {
         return {
-            columns: this.getOption('columns')
+            columns: this.displayedColumns
         }
     },
 
     initialize: function(options) {
         View.__super__.initialize.apply(this);
 
-        options || (options = {});
-        options.columns = [
-            {id: -1, name: 'organisation_acronym', label: 'Acronym'},
-            {id: -1, name: 'organisation_code', label: 'Code'}
+        this.displayedColumns = [
+            {name: 'organisation_acronym', label: 'Acronym'},
+            {name: 'organisation_code', label: 'Code'}
         ];
 
         this.listenTo(this.collection, 'reset', this.render, this);

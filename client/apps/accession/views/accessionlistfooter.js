@@ -69,7 +69,7 @@ var View = Marionette.ItemView.extend({
     },
 
     onAdvancedSearch: function () {
-
+        alert("@todo");
     },
 
     onColumnsConfig: function () {

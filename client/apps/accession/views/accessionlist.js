@@ -20,21 +20,20 @@ var View = ScrollView.extend({
 
     templateHelpers/*templateContext*/: function () {
         return {
-            columns: this.getOption('columns')
+            columns: this.displayedColumns
         }
     },
 
     childViewOptions: function () {
         return {
-            columns: this.getOption('columns')
+            columns: this.displayedColumns
         }
     },
 
     initialize: function(options) {
-        View.__super__.initialize.apply(this);
+        this.selectedColumns = application.getUserSetting('accessions_list_columns');
 
-        options || (options = {});
-        options.columns = application.getUserSetting('accessions_list_columns');
+        View.__super__.initialize.apply(this, arguments);
 
         this.listenTo(this.collection, 'reset', this.render, this);
     }

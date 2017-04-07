@@ -22,8 +22,6 @@ var View = ScrollView.extend({
     childViewContainer: 'tbody.taxon-list',
 
     initialize: function(options) {
-        options || (options = {});
-
         View.__super__.initialize.apply(this);
 
         this.listenTo(this.collection, 'reset', this.render, this);

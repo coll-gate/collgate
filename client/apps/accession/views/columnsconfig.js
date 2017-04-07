@@ -19,7 +19,7 @@ var View = Dialog.extend({
     templateHelpers/*templateContext*/: function () {
         return {
             columns: this.columns,
-            selected_columns: this.selected_columns
+            selectedColumns: this.selectedColumns
         };
     },
 
@@ -32,17 +32,18 @@ var View = Dialog.extend({
     },
 
     initialize: function (options) {
-        options || (options = {columns: []});
+        options || (options = {columns: {}});
 
         View.__super__.initialize.apply(this, options);
 
-        this.selected_columns = application.getUserSetting('accessions_list_columns');
+        // @todo parameter
+        this.selectedColumns = application.getUserSetting('accessions_list_columns');
 
         var columns = [];
         var used = new Set();
 
-        for (var i = 0; i < this.selected_columns.length; ++i) {
-            var column_name = this.selected_columns[i].name;
+        for (var i = 0; i < this.selectedColumns.length; ++i) {
+            var column_name = this.selectedColumns[i].name;
 
             columns.push({
                 name: column_name,

@@ -5,10 +5,12 @@
 """
 coll-gate descriptor module, descriptor columns
 """
+import json
 
 from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import get_object_or_404
 
+from descriptor.descriptorformattype import DescriptorFormatTypeManager
 from igdectk.rest import Format, Method
 from igdectk.rest.response import HttpResponseRest
 from .descriptor import RestDescriptor
@@ -25,23 +27,19 @@ def get_columns_name_for_describable_content_type(request, content_type_name):
     app_label, model = content_type_name.split('.')
     content_type = get_object_or_404(ContentType, app_label=app_label, model=model)
 
-    # dmms = DescriptorMetaModel.objects.filter(target=content_type).prefetch_related(Prefetch(
-    #     "descriptor_models",
-    #     queryset=DescriptorModel.objects.all().prefetch_related("descriptor_model_types")
-    # ))
-
     dmms = DescriptorMetaModel.objects.filter(target=content_type).values_list(
         "descriptor_models__descriptor_model_types__id", flat=True)
-    dmts = DescriptorModelType.objects.filter(id__in=dmms)
-
-    # @todo get query flag
+    dmts = DescriptorModelType.objects.filter(id__in=dmms).prefetch_related('descriptor_type')
 
     columns = {}
 
     for dmt in dmts:
+        descriptor_format = json.loads(dmt.descriptor_type.format)
+        query = DescriptorFormatTypeManager.is_value_code(descriptor_format)
+
         columns[dmt.name] = {
             'label': dmt.get_label(),
-            'query': False  # @todo
+            'query': query
         }
 
     results = {

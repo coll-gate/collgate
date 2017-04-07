@@ -332,8 +332,8 @@ class GeolocationManager(GeolocationInterface):
                     'id': city.country.pk,
                     'name': city.country.name,
                     'code3': city.country.code3,
-                    'lat': float(city.country.latitude),
-                    'long': float(city.country.longitude),
+                    'lat': float(city.country.latitude) if city.country.latitude else None,
+                    'long': float(city.country.longitude) if city.country.longitude else None,
                     'alt_names': ','.join(country_alt_name),
                     'preferred_names': ','.join(country_preferred),
                     'short_names': ','.join(country_short)

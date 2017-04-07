@@ -13,6 +13,7 @@ var Marionette = require('backbone.marionette');
 var View = Marionette.CompositeView.extend({
     rowHeight: 1+8+20+8,
     scrollViewInitialized: false,
+    selectedColumns: [],
 
     attributes: {
     },
@@ -57,10 +58,26 @@ var View = Marionette.CompositeView.extend({
     },
 
     initialize: function (options) {
-        View.__super__.initialize.apply(this);
+        View.__super__.initialize.apply(this, arguments);
+
+        options || (options = {columns: {}});
 
         this.listenTo(this.collection, 'reset', this.onResetCollection, this);
         this.listenTo(this.collection, 'sync', this.onCollectionSync, this);
+
+        // process columns
+        this.displayedColumns = [];
+
+        for (var i = 0; i < this.selectedColumns.length; ++i) {
+            var columnName = this.selectedColumns[i].name;
+            if (options.columns[columnName]) {
+                this.displayedColumns.push({
+                    name: columnName,
+                    label: options.columns[columnName].label,
+                    query: options.columns[columnName].query || false
+                });
+            }
+        }
     },
 
     onResetCollection: function() {
