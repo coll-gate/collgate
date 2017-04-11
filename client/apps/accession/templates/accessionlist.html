@@ -1,17 +1,36 @@
-<table class="table table-striped">
+<table class="table table-striped table-advanced">
     <thead>
-        <tr scope="row" class="sticky-header">
-            <th><span class="glyphicon glyphicon-asterisk"></span></th>
-            <th><%= gt.gettext("Code") %></th>
-            <th><%= gt.gettext("Name") %></th>
-            <th><%= gt.gettext("Parent") %></th>
+        <tr scope="row">
+            <th class="glyph-fixed-column">
+                <div><span class="glyphicon glyphicon-asterisk unselectable"></span></div>
+            </th>
+            <th class="unselectable" name="code">
+                <div><span class="glyphicon glyphicon-sort action sortby-asc-column column-action"></span><%= gt.gettext("Code") %></div>
+            </th>
+            <th class="unselectable" name="name">
+                <div><span class="glyphicon glyphicon-sort action sortby-asc-column column-action"></span><%= gt.gettext("Name") %></div>
+            </th>
+            <th class="unselectable" name="parent">
+                <div><span class="glyphicon glyphicon-sort action sortby-asc-column column-action"></span><%= gt.gettext("Parent") %></div>
+            </th>
             <% for (var i = 0; i < columns.length; ++i) { %>
                 <% var column = columns[i]; %>
-                <th name="<%= column.id %>"><%= column.label %></th>
+                <th name="<%= column.name %>" draggable="true" class="unselectable"><div>
+                    <span class="glyphicon glyphicon-sort action sortby-asc-column column-action"></span>
+                    <!--<span class="glyphicon glyphicon-sort-by-attributes action sortby-asc-column"></span>
+                    <span class="glyphicon glyphicon-sort-by-attributes-alt action sortby-desc-column"></span>-->
+                    <span class="glyphicon glyphicon-remove-sign action remove-column column-action"></span>
+                    <%= column.label %>
+                </div></th>
             <% } %>
-            <th><span class="action glyphicon glyphicon-th-list manage-columns" style="width: 5px;"></span></th>
         </tr>
     </thead>
     <tbody class="accession-list">
     </tbody>
 </table>
+<div class="placeholder-column">
+    <span class="action glyphicon glyphicon-th-list add-column" type="button"></span>
+</div>
+<div class="dropdown clearfix add-column-menu" style="position: absolute; display:none;">
+    <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu" style="display:block; position:static; margin-bottom:5px;"></ul>
+</div>

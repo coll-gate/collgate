@@ -172,7 +172,7 @@ def get_users_list(request):
         next_cursor = None
 
     response = {
-        'users': users_list,
+        'items': users_list,
         'perms': get_permissions_for(request.user, "auth", "user"),
         'prev': prev_cursor,
         'cursor': cursor,
@@ -218,7 +218,7 @@ def get_groups_list(request):
         next_cursor = None
 
     response = {
-        'groups': group_list,
+        'items': group_list,
         'perms': get_permissions_for(request.user, "auth", "group"),
         'prev': prev_cursor,
         'cursor': cursor,
@@ -782,7 +782,7 @@ def get_users_list_for_group(request, grp_id):
         next_cursor = None
 
     response = {
-        'users': users_list,
+        'items': users_list,
         'perms': get_permissions_for(request.user, "auth", "group", group),
         'prev': prev_cursor,
         'cursor': cursor,

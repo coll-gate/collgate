@@ -15,8 +15,10 @@ var DescriptorsColumnsView = require('../../descriptor/mixins/descriptorscolumns
 
 var View = ScrollView.extend({
     template: require("../templates/accessionlist.html"),
+    className: 'advanced-table-container',
     childView: AccessionView,
     childViewContainer: 'tbody.accession-list',
+    userSettingName: 'accessions_list_columns',
 
     templateHelpers/*templateContext*/: function () {
         return {
@@ -31,8 +33,6 @@ var View = ScrollView.extend({
     },
 
     initialize: function(options) {
-        this.selectedColumns = application.getUserSetting('accessions_list_columns');
-
         View.__super__.initialize.apply(this, arguments);
 
         this.listenTo(this.collection, 'reset', this.render, this);

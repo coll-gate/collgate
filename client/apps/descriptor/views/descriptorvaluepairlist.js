@@ -15,6 +15,7 @@ var ScrollView = require('../../main/views/scroll');
 
 var View = ScrollView.extend({
     template: require("../templates/descriptorvaluepairlist.html"),
+    className: "object descriptor-value-list advanced-table-container",
     childView: DescriptorValuePairView,
     childViewContainer: 'tbody.descriptor-value-list',
 
@@ -41,13 +42,13 @@ var View = ScrollView.extend({
     events: {
         'click @ui.sort_by_id': 'sortColumn',
         'click @ui.sort_by_value0': 'sortColumn',
-        'click @ui.sort_by_value1': 'sortColumn',
+        'click @ui.sort_by_value1': 'sortColumn'
     },
 
     initialize: function() {
-        this.listenTo(this.collection, 'reset', this.render, this);
+        View.__super__.initialize.apply(this, arguments);
 
-        View.__super__.initialize.apply(this);
+        this.listenTo(this.collection, 'reset', this.render, this);
     },
 
     onRender: function() {
@@ -71,7 +72,7 @@ var View = ScrollView.extend({
         }
 
         // reset scrolling
-        this.$el.parent().scrollTop(0);
+        this.getScrollElement().scrollTop(0);
     },
 
     sortColumn: function (e) {

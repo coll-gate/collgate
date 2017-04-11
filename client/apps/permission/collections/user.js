@@ -34,7 +34,7 @@ var Collection = Backbone.Collection.extend({
         this.prev = data.prev;
         this.next = data.next;
 
-        return data.users;
+        return data.items;
     },
 });
 

@@ -9,7 +9,6 @@
  */
 
 var Marionette = require('backbone.marionette');
-var ColumnsConfigDialog = require('./columnsconfig');
 
 var View = Marionette.ItemView.extend({
     tagName: 'div',
@@ -19,15 +18,13 @@ var View = Marionette.ItemView.extend({
     ui: {
         filter_btn: 'button.accession-filter',
         accession_name: 'input.accession-name',
-        accession_advanced_search: 'button.accession-advanced-search',
-        accession_columns_config: 'button.accession-columns-config'
+        accession_advanced_search: 'button.accession-advanced-search'
     },
 
     events: {
         'click @ui.filter_btn': 'onFilter',
         'input @ui.accession_name': 'onAccessionNameInput',
-        'click @ui.accession_advanced_search': 'onAdvancedSearch',
-        'click @ui.accession_columns_config': 'onColumnsConfig'
+        'click @ui.accession_advanced_search': 'onAdvancedSearch'
     },
 
     initialize: function(options) {
@@ -70,18 +67,6 @@ var View = Marionette.ItemView.extend({
 
     onAdvancedSearch: function () {
         alert("@todo");
-    },
-
-    onColumnsConfig: function () {
-        // updateUserSetting
-        $.ajax({
-            type: "GET",
-            url: application.baseUrl + 'descriptor/columns/accession.accession/',
-            contentType: "application/json; charset=utf-8"
-        }).done(function(data) {
-            var columnsConfigDialog = new ColumnsConfigDialog(data);
-            columnsConfigDialog.render();
-        });
     }
 });
 

@@ -15,6 +15,7 @@ var ScrollView = require('../../main/views/scroll');
 
 var View = ScrollView.extend({
     template: require("../templates/descriptorvaluelist.html"),
+    className: "object descriptor-value-list advanced-table-container",
     childView: DescriptorValueView,
     childViewContainer: 'tbody.descriptor-value-list',
 
@@ -39,7 +40,7 @@ var View = ScrollView.extend({
 
     events: {
         'click @ui.sort_by_id': 'sortColumn',
-        'click @ui.sort_by_value0': 'sortColumn',
+        'click @ui.sort_by_value0': 'sortColumn'
     },
 
     initialize: function() {

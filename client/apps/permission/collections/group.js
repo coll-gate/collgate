@@ -22,8 +22,8 @@ var Collection = Backbone.Collection.extend({
         this.prev = data.prev;
         this.next = data.next;
 
-        return data.groups;
-    },
+        return data.items;
+    }
 });
 
 module.exports = Collection;

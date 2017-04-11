@@ -14,16 +14,25 @@ var View = Marionette.CompositeView.extend({
     rowHeight: 1+8+20+8,
     scrollViewInitialized: false,
     selectedColumns: [],
+    userSettingName: null,
 
     attributes: {
     },
 
     ui: {
         table: 'table.table',
-        header: 'table.table thead'
+        thead: 'table.table thead',
+        tbody: 'table.table tbody',
+        add_column: 'span.add-column',
+        add_column_menu: 'div.add-column-menu',
+        remove_column: 'span.remove-column',
+        sortby_column: 'span.sortby-column'
     },
 
     events: {
+        'click @ui.add_column': 'onAddColumnAction',
+        'click @ui.remove_column': 'onRemoveColumn',
+        'click @ui.add_column_column': 'onAddColumn'
     },
 
     constructor: function() {
@@ -65,6 +74,10 @@ var View = Marionette.CompositeView.extend({
         this.listenTo(this.collection, 'reset', this.onResetCollection, this);
         this.listenTo(this.collection, 'sync', this.onCollectionSync, this);
 
+        if (this.userSettingName) {
+            this.selectedColumns = application.getUserSetting(this.userSettingName);
+        }
+
         // process columns
         this.displayedColumns = [];
 
@@ -80,28 +93,105 @@ var View = Marionette.CompositeView.extend({
         }
     },
 
+    getScrollElement: function() {
+        var scrollElement = this.$el.parent();
+
+        if (this.$el.css('overflow-y') === "auto") {
+            scrollElement = this.$el;
+        }
+
+        return scrollElement;
+    },
+
     onResetCollection: function() {
         this.lastModels = null;
 
         // reset scrolling
-        var scrollEl = this.$el.parent();
-        scrollEl.scrollTop(0);
+        var scrollElement = this.getScrollElement();
+        scrollElement.scrollTop(0);
     },
 
     onDomRefresh: function() {
         // we can only init here because we need to known the parent container
         if (!this.scrollViewInitialized) {
             // pagination on scrolling using the direct parent as scroll container
-            $(this.$el.parent()).scroll($.proxy(function (e) { this.scroll(e); }, this));
+            var scrollElement = this.getScrollElement();
+
+            scrollElement.scroll($.proxy(function (e) {
+                this.scroll(e);
+            }, this));
+
             // and sticky header on table
-            $(this.ui.table).stickyTableHeaders({scrollableArea: this.$el.parent()});
+            if (!this.ui.table.hasClass('table-advanced')) {
+                $(this.ui.table).stickyTableHeaders({scrollableArea: scrollElement});
+            }
 
             this.scrollViewInitialized = true;
         }
+
+        // add menu column close on event
+        var contextMenu = this.ui.add_column_menu;
+        var contextMenuBtn = this.ui.add_column;
+
+        if (contextMenu.length && contextMenuBtn.length) {
+            $('body').on('click', function(e) {
+                if (e.target !== contextMenuBtn[0]) {
+                    contextMenu.hide();
+                    return true;
+                }
+                return false;
+            });
+
+            contextMenu.on("click", "a", function () {
+                contextMenu.hide();
+            });
+        }
+    },
+
+    updateColumnsWidth: function() {
+        if (!this.ui.table.hasClass('table-advanced')) {
+            return;
+        }
+
+        // should be done after the columns content update (refresh)
+        var columnsWidth = [];
+        var firstBodyRaw = this.ui.table.find('tbody').children('tr:first-child');
+        var zero = false;
+
+        $.each(firstBodyRaw.children('th,td'), function(i, element) {
+            var width = $(element).width();
+            columnsWidth.push(width);
+
+            zero = width === 0;
+        });
+
+        // fix case of 0 width columns, when they are not ready
+        if (zero) {
+            var view = this;
+
+            setTimeout(function() {
+               view.updateColumnsWidth();
+            }, 10);
+
+            return;
+        }
+
+        $.each(this.ui.table.find('thead tr th'), function(i, element) {
+            var el = $(element);
+
+            // resize title column except placeholder columns
+            if (el.children('div') && !el.children('div').hasClass('placeholder-column')) {
+
+                // +1 because of border left
+                $(element).width(columnsWidth[i] + 1);
+                $(element).children('div').width(columnsWidth[i] + 1);
+            }
+        });
     },
 
     capacity: function() {
-        return Math.max(1, Math.floor(this.$el.parent().prop('clientHeight') / this.rowHeight) - 1);
+        var scrollElement = this.getScrollElement();
+        return Math.max(1, Math.floor(scrollElement.prop('clientHeight') / this.rowHeight));
     },
 
     moreResults: function(more, scroll) {
@@ -120,22 +210,33 @@ var View = Marionette.CompositeView.extend({
                 sort_by: this.collection.sort_by,
                 more: more
             }}).done(function(data) {
+                var scrollElement = view.getScrollElement();
+
                 // re-sync the sticky table header during scrolling after collection was rendered
-                $(view.ui.table).stickyTableHeaders({scrollableArea: view.$el.parent()});
+                if (!view.ui.table.hasClass('table-advanced')) {
+                    $(view.ui.table).stickyTableHeaders({scrollableArea: scrollElement});
+                }
 
                 if (scroll) {
-                    var scrollEl = view.$el.parent();
+                    // var height = scrollElement.prop('scrollHeight');
+                    var clientHeight = scrollElement.prop('clientHeight');
+                    // scrollElement.scrollTop(height - clientHeight - view.rowHeight * 0.5);
 
-                    var height = scrollEl.prop('scrollHeight');
-                    var clientHeight = scrollEl.prop('clientHeight');
-                    scrollEl.scrollTop(height - clientHeight - view.rowHeight);
+                    // view page scrolling
+                    scrollElement.scrollTop(scrollElement.scrollTop() + view.capacity() * view.rowHeight);
                 }
             });
+        } else if (scroll) {
+            var scrollElement = view.getScrollElement();
+            var clientHeight = scrollElement.prop('clientHeight');
+
+            // view page scrolling
+            scrollElement.scrollTop(scrollElement.scrollTop() + view.capacity() * view.rowHeight);
         }
     },
 
-    onRefreshChildren: function() {
-        /* nothing by default */
+    onRefreshChildren: function () {
+        this.updateColumnsWidth();
     },
 
     onRenderCollection: function() {
@@ -155,11 +256,11 @@ var View = Marionette.CompositeView.extend({
     },
 
     scroll: function(e) {
-        if (e.target.scrollTop > 1) {
+        /*if (e.target.scrollTop > 1) {
             this.ui.table.children('thead').addClass("sticky");
         } else{
             this.ui.table.children('thead').removeClass("sticky");
-        }
+        }*/
 
         if (e.target.scrollHeight-e.target.clientHeight === e.target.scrollTop) {
             this.moreResults();
@@ -175,6 +276,121 @@ var View = Marionette.CompositeView.extend({
         }
 
         return this.lastModels;
+    },
+
+    onAddColumnAction: function(e) {
+        var contextMenu = this.ui.add_column_menu;
+        if (contextMenu.length) {
+
+            if (contextMenu.css('display') === 'block') {
+                contextMenu.hide();
+            } else {
+                // clear previous values
+                var ul = contextMenu.children('ul.dropdown-menu').html("");
+
+                var columns = this.getOption('columns') || {};
+                for (var columnName in columns) {
+                    var column = columns[columnName];
+
+                    var ignore = false;
+
+                    for (var i = 0 ; i < this.displayedColumns.length; ++i) {
+                        if (columnName === this.displayedColumns[i].name) {
+                            ignore = true;
+                            break;
+                        }
+                    }
+
+                    if (!ignore) {
+                        var colRef = $('<li><a tabindex="-1" href="#" name="' + columnName + '">' + column['label'] + '</a></li>');
+                        ul.append(colRef);
+                    }
+                }
+
+                contextMenu.css({
+                    display: "block",
+                    left: this.ui.add_column.parent().position().left - contextMenu.width(),
+                    top: this.ui.add_column.parent().position().top + this.ui.add_column.height(),
+                    'z-index': 4  /* upside stickyHeader */
+                });
+            }
+
+            // event on choices
+            this.ui.add_column_menu.find('ul li a').on('click', $.proxy(this.onAddColumn, this));
+        }
+    },
+
+    onAddColumn: function (e) {
+        var columnName = $(e.target).attr('name');
+
+        this.displayedColumns.push({
+            name: columnName,
+            label: this.getOption('columns')[columnName].label,
+            query: this.getOption('columns')[columnName].query || false
+        });
+
+        // insert the new column dynamically
+        var th = $('<th></th>');
+        th.attr('name', columnName);
+        th.prop('draggable', true);
+        th.addClass('unselectable');
+
+        var div = $('<div></div>');
+        div.html(this.getOption('columns')[columnName].label);
+        div.prepend('<span class="glyphicon glyphicon-remove-sign action remove-column column-action"></span>');
+
+        th.append(div);
+
+        this.ui.thead.children('tr').append(th);
+
+        var collection = this.collection;
+        var rows = this.ui.tbody.children('tr');
+        $.each(rows, function(i, element) {
+            var el = $(element);
+            var item = collection.get(el.attr('element-id'));
+            var column = $('<td></td>');
+            column.attr('name', columnName);
+            column.attr('descriptor-id', "");
+            column.html(item.get('descriptors')[columnName]);
+
+            el.append(column);
+        });
+
+        // <span class="glyphicon glyphicon-sort action sortby-asc-column column-action"></span>
+        // <!--<span class="glyphicon glyphicon-sort-by-attributes action sortby-asc-column"></span>
+        // <span class="glyphicon glyphicon-sort-by-attributes-alt action sortby-desc-column"></span>-->
+        // <span class="glyphicon glyphicon-remove-sign action remove-column column-action"></span>
+        //
+        this.updateColumnsWidth();
+
+        if (this.getOption('columns')[columnName].query) {
+            this.onRefreshChildren(true);
+        }
+    },
+
+    onRemoveColumn: function(e) {
+        var columnName = $(e.target).parent().parent().attr('name');
+        var columnId = -1;
+
+        for (var i = 0; i < this.displayedColumns.length; ++i) {
+            var column = this.displayedColumns[i];
+            if (column.name === columnName) {
+                columnId = i;
+                break;
+            }
+        }
+
+        if (columnId !== -1) {
+            this.displayedColumns.splice(i, 1);
+
+            // save user setting
+            if (this.userSettingName) {
+                // var setting = []; // @todo
+                // application.updateUserSetting(this.userSettingName, setting);
+            }
+
+            this.render();
+        }
     }
 });
 

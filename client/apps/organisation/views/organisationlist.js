@@ -13,6 +13,7 @@ var OrganisationView = require('../views/organisation');
 
 var View = ScrollView.extend({
     template: require("../templates/organisationlist.html"),
+    className: "object organisation-list advanced-table-container",
     childView: OrganisationView,
     childViewContainer: 'tbody.organisation-list',
 
