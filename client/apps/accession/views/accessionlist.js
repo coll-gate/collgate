@@ -35,7 +35,7 @@ var View = ScrollView.extend({
     initialize: function(options) {
         View.__super__.initialize.apply(this, arguments);
 
-        this.listenTo(this.collection, 'reset', this.render, this);
+//        this.listenTo(this.collection, 'reset', this.render, this);
     }
 });
 

@@ -322,6 +322,7 @@ div.table-container {
 }
 
 .table.table-advanced thead tr th div {
+    width: 0px;
     position: absolute;
     padding: 9px 8px;
     top: 62px;
@@ -350,21 +351,26 @@ div.placeholder-column {
 
 .table.table-advanced thead tr th:first-child div, .table.table-advanced tbody tr th:first-child div {
     border-left: none;
+    min-width: 50px;
 }
 
 .table.table-advanced thead tr td:not(:first-child), .table.table-advanced tbody tr td:not(:first-child) {
     border-left: 1px solid #ddd;
+    min-width: 50px;
 }
 
 .table.table-advanced thead tr th.placeholder-column div, .table.table-advanced tbody tr td.placeholder-column {
     border-left: none;
+    min-width: 50px;
 }
 
 .table.table-advanced tbody tr:first-child th, .table.table-advanced tbody tr:first-child td {
     border-top: none;
+    min-width: 50px;
 }
 
 .table.table-advanced tfoot tr.row-spacer td, .table.table-advanced tfoot tr.row-spacer th {
+    min-width: 50px;
     /* border: none; */
     visibility: hidden;
     line-height: 0px;
@@ -378,5 +384,5 @@ span.column-action {
 }
 
 .glyph-fixed-column {
-    width: 15px;
+    width: 32px;
 }

@@ -11,8 +11,7 @@
 var DescriptorsColumnsView = {
     onRefreshChildren: function (full) {
         var columns = this.displayedColumns || [];
-        var lastModels = this.getLastModels();
-
+        var full = full !== undefined || false;
         var promises = [];
 
         if (full) {
@@ -31,17 +30,17 @@ var DescriptorsColumnsView = {
                         var key = model.get('descriptors')[columnName];
                         var value = undefined;
 
-                        if (key !== undefined) {
+                        if (key != null && key !== "") {
                             value = cache[key];
                         }
 
-                        if (value !== undefined) {
+                        if (value != undefined) {
                             var childView = this.children.findByModel(model);
                             var column = childView.$el.find('td[name="' + columnName + '"]');
 
                             // simply replace the value
                             column.html(value);
-                        } else if (key !== undefined) {
+                        } else if (key != null && key !== "") {
                             keys.push(key);
                             models.push(model);
                         }
@@ -61,7 +60,7 @@ var DescriptorsColumnsView = {
                         promise.done(function (data) {
                             var cache = application.main.getCache('descriptors', this.columnName);
 
-                            for (var i = 0; i < this.models.length; ++i) {
+                            for (var i = 0; i < models.length; ++i) {
                                 var model = models[i];
                                 var childView = this.view.children.findByModel(model);
                                 var key = model.get('descriptors')[this.columnName];
@@ -86,6 +85,8 @@ var DescriptorsColumnsView = {
                 }
             }
         } else {
+            var lastModels = this.getLastModels();
+
             // one query by list of value
             for (var i = 0; i < columns.length; ++i) {
                 if (columns[i].query) {
@@ -101,17 +102,17 @@ var DescriptorsColumnsView = {
                         var key = model.get('descriptors')[columnName];
                         var value = undefined;
 
-                        if (key !== undefined) {
+                        if (key != null && key !== "") {
                             value = cache[key];
                         }
 
-                        if (value !== undefined) {
+                        if (value != undefined) {
                             var childView = this.children.findByModel(model);
                             var column = childView.$el.find('td[name="' + columnName + '"]');
 
                             // simply replace the value
                             column.html(value);
-                        } else if (key !== undefined) {
+                        } else if (key != null && key !== "") {
                             keys.push(key);
                             models.push(model);
                         }
@@ -131,7 +132,7 @@ var DescriptorsColumnsView = {
                         promise.done(function (data) {
                             var cache = application.main.getCache('descriptors', this.columnName);
 
-                            for (var i = 0; i < this.models.length; ++i) {
+                            for (var i = 0; i < models.length; ++i) {
                                 var model = models[i];
                                 var childView = this.view.children.findByModel(model);
                                 var key = model.get('descriptors')[this.columnName];

@@ -107,15 +107,6 @@ MainModule.prototype = {
         this.cache = {
             'descriptors': {}
         };
-
-        //
-        // defaults settings
-        //
-
-        // by default, no specifics columns to display
-        app.setDefaultUserSetting('accessions_list_columns', [
-            {name: 'MCPD_SAMPSTAT', query: true}  /* @todo test only */
-        ]);
     },
 
     start: function(options) {

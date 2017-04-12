@@ -16,11 +16,7 @@
             <% for (var i = 0; i < columns.length; ++i) { %>
                 <% var column = columns[i]; %>
                 <th name="<%= column.name %>" draggable="true" class="unselectable"><div>
-                    <span class="glyphicon glyphicon-sort action sortby-asc-column column-action"></span>
-                    <!--<span class="glyphicon glyphicon-sort-by-attributes action sortby-asc-column"></span>
-                    <span class="glyphicon glyphicon-sort-by-attributes-alt action sortby-desc-column"></span>-->
-                    <span class="glyphicon glyphicon-remove-sign action remove-column column-action"></span>
-                    <%= column.label %>
+                    <span class="glyphicon glyphicon-sort action sortby-asc-column column-action"></span><%= column.label %>
                 </div></th>
             <% } %>
         </tr>

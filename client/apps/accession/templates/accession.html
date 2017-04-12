@@ -15,8 +15,8 @@
 <% for (var i = 0; i < columns.length; ++i) { %>
     <% var column = columns[i]; %>
     <% if (column.query) { %>
-        <td name="<%= column.name %>" descriptor-id="<%= column.id %>" query-value="true" value="<%= descriptors[column.name] %>"></td>
+        <td name="<%= column.name %>"></td>
     <% } else { %>
-        <td name="<%= column.name %>" descriptor-id="<%= column.id %>" query-value="false" value=""><%= descriptors[column.name] %></td>
+        <td name="<%= column.name %>"><%= descriptors[column.name] %></td>
     <% } %>
 <% } %>

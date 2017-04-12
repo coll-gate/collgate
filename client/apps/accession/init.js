@@ -67,6 +67,15 @@ AccessionModule.prototype = {
 
         var BatchRouter = require('./routers/batch');
         this.routers.batch = new BatchRouter();
+
+        //
+        // defaults settings
+        //
+
+        // by default, no specifics columns to display
+        app.setDefaultUserSetting('accessions_list_columns', [
+            {name: 'MCPD_SAMPSTAT', width: 'auto', sort_by: null}
+        ]);
     },
 
     start: function(options) {
