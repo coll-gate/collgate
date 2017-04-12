@@ -112,6 +112,7 @@ _.extend(TimeType.prototype, DescriptorFormatType.prototype, {
             if (definesValues) {
                 // HH:mm:ss
                 this.el.val(defaultValues);
+                this.el.attr('value', defaultValues);
             }
         } else {
             if (definesValues) {
@@ -124,7 +125,7 @@ _.extend(TimeType.prototype, DescriptorFormatType.prototype, {
     values: function() {
         if (this.el && this.parent) {
             if (this.readOnly) {
-                var value = this.el.val();
+                var value = this.el.attr('value');
                 return value !== "" ? value : null;
             } else {
                 var date = this.el.data('DateTimePicker').date();

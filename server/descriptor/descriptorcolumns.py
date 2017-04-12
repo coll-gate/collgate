@@ -39,7 +39,8 @@ def get_columns_name_for_describable_content_type(request, content_type_name):
 
         columns[dmt.name] = {
             'label': dmt.get_label(),
-            'query': query
+            'query': query,
+            'format': descriptor_format
         }
 
     results = {

@@ -9,17 +9,18 @@
  */
 
 var DescriptorsColumnsView = {
-    onRefreshChildren: function (full) {
-        var columns = this.displayedColumns || [];
+    onRefreshChildren: function (full, columnsList) {
+        var columns = columnsList || this.displayedColumns || [];
         var full = full !== undefined || false;
         var promises = [];
 
         if (full) {
             // one query by list of value
             for (var i = 0; i < columns.length; ++i) {
+                var columnName = columns[i].name;
+
                 if (columns[i].query) {
                     // make the list of values
-                    var columnName = columns[i].name;
                     var keys = [];
                     var models = [];
                     var cache = application.main.getCache('descriptors', columnName);
@@ -82,6 +83,19 @@ var DescriptorsColumnsView = {
 
                         promises.push(promise);
                     }
+                } else if ("format" in columns[i]) {
+                    var dft = application.descriptor.widgets.getElement(columns[i].format.type);
+                    if (dft.format != undefined) {
+                        for (var j = 0; j < this.collection.models.length; ++j) {
+                            var model = this.collection.at(j);
+                            var childView = this.children.findByModel(model);
+                            var value = model.get('descriptors')[columnName];
+                            var column = childView.$el.find('td[name="' + columnName + '"]');
+
+                            // simply replace the value
+                            column.html(dft.format(value));
+                        }
+                    }
                 }
             }
         } else {
@@ -89,9 +103,11 @@ var DescriptorsColumnsView = {
 
             // one query by list of value
             for (var i = 0; i < columns.length; ++i) {
+                // make the list of values
+                var columnName = columns[i].name;
+
                 if (columns[i].query) {
                     // make the list of values
-                    var columnName = columns[i].name;
                     var keys = [];
                     var models = [];
                     var cache = application.main.getCache('descriptors', columnName);
@@ -153,6 +169,19 @@ var DescriptorsColumnsView = {
                         });
 
                         promises.push(promise);
+                    }
+                } else if ("format" in columns[i]) {
+                    var dft = application.descriptor.widgets.getElement(columns[i].format.type);
+                    if (dft.format != undefined) {
+                        for (var j = 0; j < lastModels.length; ++j) {
+                            var model = lastModels[j];
+                            var childView = this.children.findByModel(model);
+                            var value = model.get('descriptors')[columnName];
+                            var column = childView.$el.find('td[name="' + columnName + '"]');
+
+                            // simply replace the value
+                            column.html(dft.format(value));
+                        }
                     }
                 }
             }

@@ -86,7 +86,8 @@ var View = Marionette.CompositeView.extend({
                 this.displayedColumns.push({
                     name: columnName,
                     label: options.columns[columnName].label,
-                    query: options.columns[columnName].query || false
+                    query: options.columns[columnName].query || false,
+                    format: options.columns[columnName].format
                 });
             }
         }
@@ -157,12 +158,32 @@ var View = Marionette.CompositeView.extend({
         var firstBodyRaw = this.ui.table.find('tbody').children('tr:first-child');
         var zero = false;
 
+        var headerRows = this.ui.table.find('thead tr th');
+        var rows = firstBodyRaw.children('th,td');
+
+        // no content, does nothing
+        if (rows.length === 0) {
+            $.each(headerRows, function(i, element) {
+                var el = $(element);
+
+                // resize title column
+                if (el.children('div') && !el.hasClass('glyph-fixed-column')) {
+                    $(element).children('div').width($(element).width()-1);
+                }
+            });
+
+            return;
+        }
+
         // reset in auto width (browser auto-size)
-        $.each(this.ui.table.find('thead tr th'), function(i, element) {
-            $(element).width('auto');
+        $.each(headerRows, function(i, element) {
+            var el = $(element);
+            if (!el.hasClass("glyph-fixed-column")) {
+                $(element).width('auto');
+            }
         });
 
-        $.each(firstBodyRaw.children('th,td'), function(i, element) {
+        $.each(rows, function(i, element) {
             var width = $(element).width();
             columnsWidth.push(width);
 
@@ -180,15 +201,13 @@ var View = Marionette.CompositeView.extend({
             return;
         }
 
-        $.each(this.ui.table.find('thead tr th'), function(i, element) {
+        $.each(headerRows, function(i, element) {
             var el = $(element);
 
             // resize title column except placeholder columns
-            if (el.children('div') && !el.children('div').hasClass('placeholder-column')) {
-
-                // +1 because of border left
-                $(element).width(columnsWidth[i] + 1);
-                $(element).children('div').width(columnsWidth[i] + 1);
+            if (el.children('div') && !el.hasClass('glyph-fixed-column')) {
+                $(element).width(columnsWidth[i]+1);  // count border left (should does not set it for first column)
+                $(element).children('div').width(columnsWidth[i]);
             }
         });
     },
@@ -384,7 +403,7 @@ var View = Marionette.CompositeView.extend({
 
                 this.updateColumnsWidth();
 
-                // save user setting
+                // update user setting
                 if (this.userSettingName) {
                     for (var i = 0; i < this.selectedColumns.length; ++i) {
                         if (this.selectedColumns[i].name === columnName) {
@@ -402,7 +421,8 @@ var View = Marionette.CompositeView.extend({
             this.displayedColumns.push({
                 name: columnName,
                 label: this.getOption('columns')[columnName].label,
-                query: query
+                query: query,
+                format: this.getOption('columns')[columnName].format
             });
 
             // insert the new column dynamically
@@ -435,12 +455,10 @@ var View = Marionette.CompositeView.extend({
                 el.append(column);
             });
 
-            if (this.getOption('columns')[columnName].query) {
-                this.onRefreshChildren(true);
-            } else {
-                this.updateColumnsWidth();
-            }
+            // refresh only the new column on every row
+            this.onRefreshChildren(true, this.displayedColumns[this.displayedColumns-1]);
 
+            // update user setting
             if (this.userSettingName) {
                 this.selectedColumns.push({
                     name: columnName,

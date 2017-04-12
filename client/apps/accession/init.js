@@ -72,9 +72,10 @@ AccessionModule.prototype = {
         // defaults settings
         //
 
-        // by default, no specifics columns to display
+        // by default, accession list default columns to display
         app.setDefaultUserSetting('accessions_list_columns', [
-            {name: 'MCPD_SAMPSTAT', width: 'auto', sort_by: null}
+            {name: 'IPGRI_4.1.1', width: 'auto', sort_by: null},
+            {name: 'MCPD_ORIGCTY', width: 'auto', sort_by: null}
         ]);
     },
 

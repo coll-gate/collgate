@@ -117,7 +117,8 @@ _.extend(DateType.prototype, DescriptorFormatType.prototype, {
         if (this.readOnly) {
             if (definesValues) {
                 var date = moment(defaultValues);
-                this.el.val(date.format($.datepicker._defaults.dateFormat.toUpperCase()));
+                this.el.val(date.format("L"));
+                this.el.attr('value', defaultValues);
             }
         } else {
             if (definesValues) {
@@ -130,7 +131,7 @@ _.extend(DateType.prototype, DescriptorFormatType.prototype, {
     values: function() {
         if (this.el && this.parent) {
             if (this.readOnly) {
-                var value = this.el.val();
+                var value = this.el.attr('value');
                 return value !== "" ? value : null;
             } else {
                 var date = this.el.data('DateTimePicker').date();
@@ -202,5 +203,9 @@ DateType.DescriptorTypeDetailsView = Marionette.ItemView.extend({
         return {}
     }
 });
+
+DateType.format = function (value) {
+    return moment(value).format("L");
+};
 
 module.exports = DateType;
