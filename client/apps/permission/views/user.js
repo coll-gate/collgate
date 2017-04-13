@@ -9,7 +9,6 @@
  */
 
 var Marionette = require('backbone.marionette');
-var PermissionUserModel = require('../models/user');
 
 var View = Marionette.ItemView.extend({
     tagName: 'tr',
@@ -23,7 +22,7 @@ var View = Marionette.ItemView.extend({
         set_superuser: 'span.set-superuser',
         set_regular: 'span.set-regular',
         set_staff: 'span.set-staff',
-        viewPermissions: 'td.view-permissions',
+        viewPermissions: 'td.view-permissions'
     },
 
     events: {
@@ -33,7 +32,7 @@ var View = Marionette.ItemView.extend({
         'click @ui.set_staff': 'setStaff',
         'click @ui.set_user': 'setUser',
         'click @ui.set_superuser': 'setSuperUser',
-        'click @ui.viewPermissions': 'viewPermissions',
+        'click @ui.viewPermissions': 'viewPermissions'
     },
 
     initialize: function() {

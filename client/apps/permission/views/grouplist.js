@@ -8,21 +8,20 @@
  * @details
  */
 
-var Marionette = require('backbone.marionette');
-var PermissionGroupModel = require('../models/group');
 var PermissionGroupView = require('../views/group');
 var ScrollView = require('../../main/views/scroll');
 
 var View = ScrollView.extend({
     template: require("../templates/grouplist.html"),
+    className: "permission-group-list advanced-table-container",
     childView: PermissionGroupView,
     childViewContainer: 'tbody.permission-group-list',
 
     initialize: function() {
-        this.listenTo(this.collection, 'reset', this.render, this);
-
         View.__super__.initialize.apply(this);
-    },
+
+        this.listenTo(this.collection, 'reset', this.render, this);
+    }
 });
 
 module.exports = View;

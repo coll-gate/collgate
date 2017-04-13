@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-04-13 16:46+0200\n"
+"POT-Creation-Date: 2017-04-04 17:30+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -35,10 +35,6 @@ msgstr "Non"
 msgid "Enter a value. 3 characters at least for auto-completion"
 msgstr ""
 "Saisissez une valeur. Au moins 3 caractères pour avoir l'auto-complétion"
-
-#: ../../../widgets/imprecisedate.js:95
-msgid "Undefined"
-msgstr "Indéfini"
 
 #: ../../../widgets/numeric.js:219
 msgid "32 character max"
@@ -293,39 +289,35 @@ msgstr "Texte"
 msgid "Date"
 msgstr "Date"
 
-#: ../../../collections/formattype.js:79
-msgid "Imprecise date"
-msgstr ""
-
-#: ../../../collections/formattype.js:80 ../../../collections/formatunit.js:149
+#: ../../../collections/formattype.js:79 ../../../collections/formatunit.js:149
 msgid "Time"
 msgstr "Heure"
 
-#: ../../../collections/formattype.js:81
+#: ../../../collections/formattype.js:80
 msgid "Date+time"
 msgstr "Date+heure"
 
-#: ../../../collections/formattype.js:82
+#: ../../../collections/formattype.js:81
 msgid "Entity"
 msgstr "Entité"
 
-#: ../../../collections/formattype.js:83
+#: ../../../collections/formattype.js:82
 msgid "Media"
 msgstr "Media"
 
-#: ../../../collections/formattype.js:84
+#: ../../../collections/formattype.js:83
 msgid "Media collection"
 msgstr "Collection de médias"
 
-#: ../../../collections/formattype.js:86
+#: ../../../collections/formattype.js:85
 msgid "Single enumeration"
 msgstr "Simple énumération"
 
-#: ../../../collections/formattype.js:87
+#: ../../../collections/formattype.js:86
 msgid "Pair enumeration"
 msgstr "Enumération de paires"
 
-#: ../../../collections/formattype.js:88
+#: ../../../collections/formattype.js:87
 msgid "Ordinal with text"
 msgstr "Ordinal avec texte"
 

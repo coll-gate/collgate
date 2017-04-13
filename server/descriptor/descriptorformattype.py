@@ -47,6 +47,9 @@ class DescriptorFormatType(object):
         # set to true if the content of the value is external.
         self.external = False
 
+        # set to true if the value is a code for a queried value.
+        self.value_is_code = False
+
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         """
         Validate the value according the format.
@@ -216,6 +219,21 @@ class DescriptorFormatTypeManager(object):
 
         return dft.get_display_values_for(descriptor_type, descriptor_type_format, values, limit)
 
+    @classmethod
+    def is_value_code(cls, descriptor_type_format):
+        """
+        Return true if the value contained by the descriptor is a code for a value that is then queried.
+        :param descriptor_type_format: Format of the related type of descriptor
+        :return: True if the value is a code
+        """
+        format_type = descriptor_type_format['type']
+
+        dft = cls.descriptor_format_types.get(format_type)
+        if dft is None:
+            raise ValueError("Unsupported descriptor format type %s" % format_type)
+
+        return dft.value_is_code
+
 
 class DescriptorFormatTypeGroupSingle(DescriptorFormatTypeGroup):
     """
@@ -249,6 +267,7 @@ class DescriptorFormatTypeEnumSingle(DescriptorFormatType):
         self.format_fields = [
             "type", "trans", "fields", "list_type", "sortby_field", "display_fields", "search_field"
         ]
+        self.value_is_code = True
 
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         # check if the value is a string and exists into the type of descriptor
@@ -315,6 +334,7 @@ class DescriptorFormatTypeEnumPair(DescriptorFormatType):
         self.format_fields = [
             "type", "trans", "fields", "list_type", "sortby_field", "display_fields", "search_field"
         ]
+        self.value_is_code = True
 
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         # check if the value is a string and exists into the type of descriptor
@@ -392,6 +412,7 @@ class DescriptorFormatTypeEnumOrdinal(DescriptorFormatType):
         self.format_fields = [
             "type", "trans", "fields", "list_type", "sortby_field", "display_fields", "search_field"
         ]
+        self.value_is_code = True
 
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         # check if the value is a string and exists into the type of descriptor
@@ -856,6 +877,7 @@ class DescriptorFormatTypeEntity(DescriptorFormatType):
         self.name = "entity"
         self.group = DescriptorFormatTypeGroupSingle()
         self.verbose_name = _("Entity")
+        self.value_is_code = True
 
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         # check if the value is an integer and if the related entity exists

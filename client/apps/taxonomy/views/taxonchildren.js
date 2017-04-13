@@ -8,23 +8,16 @@
  * @details
  */
 
-var Marionette = require('backbone.marionette');
-var TaxonModel = require('../models/taxon');
 var TaxonView = require('../views/taxon');
-
 var ScrollView = require('../../main/views/scroll');
 
-
 var View = ScrollView.extend({
-    template: "<div></div>",
-    className: "taxon-list",
+    template: require("../templates/taxonlist.html"),
+    className: "taxon-list advanced-table-container",
     childView: TaxonView,
-    attributes: {
-    },
+    childViewContainer: 'tbody.taxon-list',
 
-    initialize: function(options) {
-        options || (options = {});
-
+    initialize: function() {
         View.__super__.initialize.apply(this);
 
         this.listenTo(this.collection, 'reset', this.render, this);

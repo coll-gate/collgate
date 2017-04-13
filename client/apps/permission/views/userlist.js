@@ -8,21 +8,20 @@
  * @details
  */
 
-var Marionette = require('backbone.marionette');
-var PermissionUserModel = require('../models/user');
 var PermissionUserView = require('../views/user');
 var ScrollView = require('../../main/views/scroll');
 
 var View = ScrollView.extend({
     template: require("../templates/userlist.html"),
+    className: "permission-user-list advanced-table-container",
     childView: PermissionUserView,
     childViewContainer: 'tbody.permission-user-list',
 
     initialize: function() {
-        this.listenTo(this.collection, 'reset', this.render, this);
-
         View.__super__.initialize.apply(this);
-    },
+
+        this.listenTo(this.collection, 'reset', this.render, this);
+    }
 });
 
 module.exports = View;

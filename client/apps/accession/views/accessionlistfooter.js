@@ -18,13 +18,13 @@ var View = Marionette.ItemView.extend({
     ui: {
         filter_btn: 'button.accession-filter',
         accession_name: 'input.accession-name',
-        accession_advanced_search: 'button.accession-advanced-search',
-        accession_columns_config: 'button.accession-columns-config'
+        accession_advanced_search: 'button.accession-advanced-search'
     },
 
     events: {
         'click @ui.filter_btn': 'onFilter',
-        'input @ui.accession_name': 'onAccessionNameInput'
+        'input @ui.accession_name': 'onAccessionNameInput',
+        'click @ui.accession_advanced_search': 'onAdvancedSearch'
     },
 
     initialize: function(options) {
@@ -52,7 +52,7 @@ var View = Marionette.ItemView.extend({
         if (v.length > 0 && v.length < 3) {
             $(this.ui.accession_name).validateField('failed', gt.gettext('3 characters min'));
             return false;
-        } else if (this.ui.accession_name.val().length == 0) {
+        } else if (this.ui.accession_name.val().length === 0) {
             $(this.ui.accession_name).cleanField();
             return true;
         } else {
@@ -63,6 +63,10 @@ var View = Marionette.ItemView.extend({
 
     onAccessionNameInput: function () {
         return this.validateAccessionName();
+    },
+
+    onAdvancedSearch: function () {
+        alert("@todo");
     }
 });
 

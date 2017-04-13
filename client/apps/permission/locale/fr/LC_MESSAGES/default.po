@@ -59,12 +59,12 @@ msgid "Name"
 msgstr "Nom"
 
 #: ../../../templates/grouplist.html:17
-msgid "Number of users"
-msgstr "Nombre d'utilisateurs"
+msgid "Users"
+msgstr "Utilisateurs"
 
 #: ../../../templates/grouplist.html:18 ../../../templates/userlist.html:21
-msgid "Number of permissions"
-msgstr "Nombre de permissions"
+msgid "Permissions"
+msgstr "Permissions"
 
 #: ../../../templates/grouprename.html:5
 msgid "Rename the group of users"

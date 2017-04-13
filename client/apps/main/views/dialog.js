@@ -26,7 +26,7 @@ var View = Marionette.ItemView.extend({
     events: {
         'click @ui.cancel': 'onCancel',
         'click @ui.apply': 'onApply',
-        'keydown': 'escapeKey',
+        'keydown': 'escapeKey'
     },
 
     constructor: function() {
@@ -73,7 +73,7 @@ var View = Marionette.ItemView.extend({
             this.destroy();
         }, this));
 
-        // autofocus is processed now on the first input having the autofocus attribute
+        // auto-focus is processed now on the first input having the auto-focus attribute
         $(this.el).find(':input[autofocus]').focus();
     },
 
@@ -91,12 +91,12 @@ var View = Marionette.ItemView.extend({
         var code = e.keyCode || e.which;
 
         // escape key cancel
-        if (code == 27) {
+        if (code === 27) {
             this.destroy();
         }
 
         // enter on num-pad enter
-        if (code == 13) {
+        if (code === 13) {
             // click apply
             this.triggerMethod('apply');
 

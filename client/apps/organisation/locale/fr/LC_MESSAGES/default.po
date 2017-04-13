@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-04-04 17:30+0200\n"
+"POT-Creation-Date: 2017-04-13 14:18+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -135,9 +135,9 @@ msgstr "Conservatoires"
 msgid "Contacts"
 msgstr "Contacts"
 
-#: ../../../templates/establishmentlist.html:16
+#: ../../../templates/establishmentlist.html:15
 #: ../../../templates/grcdetails.html:4
-#: ../../../templates/organisationlist.html:16
+#: ../../../templates/organisationlist.html:18
 msgid "Name"
 msgstr "Nom"
 
@@ -163,7 +163,7 @@ msgstr "Partenaire de CRB"
 
 #: ../../../templates/organisationcreate.html:21
 #: ../../../templates/organisationedit.html:14
-#: ../../../templates/organisationlist.html:17
+#: ../../../templates/organisationlist.html:21
 msgid "Type"
 msgstr "Type"
 
@@ -172,7 +172,7 @@ msgid "Update an organisation or a partner"
 msgstr "Mettre-à-jour une organisation ou un partenaire"
 
 #: ../../../templates/organisationlayout.html:6
-#: ../../../templates/organisationlist.html:22
+#: ../../../templates/organisationlist.html:30
 msgid "Establishments"
 msgstr "Sites"
 

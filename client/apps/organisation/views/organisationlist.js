@@ -13,28 +13,28 @@ var OrganisationView = require('../views/organisation');
 
 var View = ScrollView.extend({
     template: require("../templates/organisationlist.html"),
+    className: "object organisation-list advanced-table-container",
     childView: OrganisationView,
     childViewContainer: 'tbody.organisation-list',
 
     templateHelpers/*templateContext*/: function () {
         return {
-            columns: this.getOption('columns')
+            columns: this.displayedColumns
         }
     },
 
     childViewOptions: function () {
         return {
-            columns: this.getOption('columns')
+            columns: this.displayedColumns
         }
     },
 
     initialize: function(options) {
         View.__super__.initialize.apply(this);
 
-        options || (options = {});
-        options.columns = [
-            {id: -1, name: 'organisation_acronym', label: 'Acronym'},
-            {id: -1, name: 'organisation_code', label: 'Code'}
+        this.displayedColumns = [
+            {name: 'organisation_acronym', label: 'Acronym'},
+            {name: 'organisation_code', label: 'Code'}
         ];
 
         this.listenTo(this.collection, 'reset', this.render, this);

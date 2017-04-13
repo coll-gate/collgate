@@ -8,18 +8,16 @@
  - @details
 -->
 
-<div class="object descriptor-model-list" object-type="descriptor-model-list" style="width:100%;">
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th><span class="glyphicon glyphicon-asterisk"></span></th>
-                <th><%= gt.gettext("Name") %></th>
-                <th><%= gt.gettext("Verbose name") %></th>
-                <th><%= gt.gettext("Types of descriptor") %></th>
-                <th><%= gt.gettext("Description") %></th>
-            </tr>
-        </thead>
-        <tbody class="descriptor-model-list">
-        </tbody>
-    </table>
-</div>
+<table class="table table-striped table-advanced">
+    <thead>
+        <tr scope="row">
+            <th class="glyph-fixed-column"><div><span class="glyphicon glyphicon-asterisk"></span></div></th>
+            <th class="title-column"><div><%= gt.gettext("Name") %></div></th>
+            <th class="title-column"><div><%= gt.gettext("Verbose name") %></div></th>
+            <th class="title-column"><div><%= gt.gettext("Types") %></div></th>
+            <th class="title-column"><div><%= gt.gettext("Description") %></div></th>
+        </tr>
+    </thead>
+    <tbody class="descriptor-model-list">
+    </tbody>
+</table>

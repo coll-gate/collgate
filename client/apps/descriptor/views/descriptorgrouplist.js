@@ -8,22 +8,19 @@
  * @details
  */
 
-var Marionette = require('backbone.marionette');
-var DescriptorGroupModel = require('../models/descriptorgroup');
 var DescriptorGroupView = require('../views/descriptorgroup');
 var ScrollView = require('../../main/views/scroll');
 
 var View = ScrollView.extend({
     template: require("../templates/descriptorgrouplist.html"),
+    className: "object descriptor-group-list advanced-table-container",
     childView: DescriptorGroupView,
     childViewContainer: 'tbody.descriptor-group-list',
 
     initialize: function() {
-        this.listenTo(this.collection, 'reset', this.render, this);
-        //this.listenTo(this.collection, 'add', this.render, this);
-        //this.listenTo(this.collection, 'remove', this.render, this);
-
         View.__super__.initialize.apply(this);
+
+        this.listenTo(this.collection, 'reset', this.render, this);
     }
 });
 

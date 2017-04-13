@@ -10,6 +10,7 @@
 
 var Marionette = require('backbone.marionette');
 
+// style
 require('./css/main.css');
 
 var MainModule = function() {
@@ -105,7 +106,7 @@ MainModule.prototype = {
 
         this.cache = {
             'descriptors': {}
-        }
+        };
     },
 
     start: function(options) {

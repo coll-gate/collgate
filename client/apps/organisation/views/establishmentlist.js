@@ -15,29 +15,29 @@ var DescriptorsColumnsView = require('../../descriptor/mixins/descriptorscolumns
 
 var View = ScrollView.extend({
     template: require("../templates/establishmentlist.html"),
+    className: "object establishment-list advanced-table-container",
     childView: EstablishmentView,
     childViewContainer: 'tbody.establishment-list',
 
     templateHelpers/*templateContext*/: function () {
         return {
-            columns: this.getOption('columns')
+            columns: this.displayedColumns
         }
     },
 
     childViewOptions: function () {
         return {
-            columns: this.getOption('columns')
+            columns: this.displayedColumns
         }
     },
 
     initialize: function(options) {
         View.__super__.initialize.apply(this);
 
-        options || (options = {});
-        options.columns = [
-            {id: -1, name: 'establishment_code', label: 'Code', query: false},
-            {id: -1, name: 'establishment_zipcode', label: 'Zipcode', query: false},
-            {id: -1, name: 'establishment_geolocation', label: 'Location', query: true}
+        this.displayedColumns = [
+            {name: 'establishment_code', label: 'Code', query: false},
+            {name: 'establishment_zipcode', label: 'Zipcode', query: false},
+            {name: 'establishment_geolocation', label: 'Location', query: true}
         ];
 
         this.listenTo(this.collection, 'reset', this.render, this);

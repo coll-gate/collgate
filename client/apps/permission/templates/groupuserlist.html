@@ -8,17 +8,16 @@
  - @details
 -->
 
-<div class="object group-user-list" object-type="user-list" style="width:100%;">
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th><span class="glyphicon glyphicon-asterisk"></span></th>
-                <th><%= gt.gettext("Username") %></th>
-                <th><%= gt.gettext("First name") %></th>
-                <th><%= gt.gettext("Last name") %></th>
-            </tr>
-        </thead>
-        <tbody class="group-user-list">
-        </tbody>
-    </table>
-</div>
+<table class="table table-striped table-advanced">
+    <thead>
+        <tr scope="row">
+            <th class="glyph-fixed-column"><div><span class="glyphicon glyphicon-asterisk"></span></div></th>
+            <th><div><%= gt.gettext("Username") %></div></th>
+            <th><div><%= gt.gettext("Email") %></div></th>
+            <th><div><%= gt.gettext("First name") %></div></th>
+            <th><div><%= gt.gettext("Last name") %></div></th>
+        </tr>
+    </thead>
+    <tbody class="group-user-list">
+    </tbody>
+</table>

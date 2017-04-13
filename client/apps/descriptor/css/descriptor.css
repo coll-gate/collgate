@@ -1,0 +1,15 @@
+div.descriptor-column.selected span.glyphicon-ok {
+    display: inline;
+}
+
+div.descriptor-column.selected span.glyphicon-plus {
+    display: none;
+}
+
+div.descriptor-column.unselected span.glyphicon-ok {
+    display: none;
+}
+
+div.descriptor-column.unselected span.glyphicon-plus {
+    display: inline;
+}

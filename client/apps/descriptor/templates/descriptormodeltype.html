@@ -8,7 +8,7 @@
  - @details
 -->
 
-<th><span class="delete-descriptor-model-type action glyphicon glyphicon-minus-sign"></span></th>
+<th class="glyph-fixed-column"><span class="delete-descriptor-model-type action glyphicon glyphicon-minus-sign"></span></th>
 <td name="descriptor-type-code">
     <abbr title="<%= descriptor_type_groups.get(descriptor_type_group).get('name') + '.' + descriptor_type_name %>"><%= descriptor_type_code %></abbr>
 </td>
@@ -17,13 +17,13 @@
 </td>
 <td name="label" class="action"><%= label %></td>
 <% if (mandatory) { %>
-    <td style="text-align:center;" name="mandatory"><span class="action glyphicon glyphicon-ok"></span></td>
+    <td class="glyph-fixed-column" style="text-align:center;" name="mandatory"><span class="action glyphicon glyphicon-ok"></span></td>
 <% } else { %>
-    <td style="text-align:center; "name="mandatory"><span class="action glyphicon glyphicon-remove"></span></td>
+    <td class="glyph-fixed-column" style="text-align:center; "name="mandatory"><span class="action glyphicon glyphicon-remove"></span></td>
 <% } %>
 <% if (set_once) { %>
-    <td style="text-align:center;" name="set_once"><span class="action glyphicon glyphicon-ok"></span></td>
+    <td class="glyph-fixed-column" style="text-align:center;" name="set_once"><span class="action glyphicon glyphicon-ok"></span></td>
 <% } else { %>
-    <td style="text-align:center;" name="set_once"><span class="action glyphicon glyphicon-remove"></span></td>
+    <td class="glyph-fixed-column" style="text-align:center;" name="set_once"><span class="action glyphicon glyphicon-remove"></span></td>
 <% } %>
-<td style="text-align:center;" name="condition"><span class="action glyphicon glyphicon-wrench"></span></td>
+<td class="glyph-fixed-column" style="text-align:center;" name="condition"><span class="action glyphicon glyphicon-wrench"></span></td>

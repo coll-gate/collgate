@@ -8,24 +8,16 @@
  - @details
 -->
 
-<div class="object taxon" object-type="taxon" object-id="<%= id %>" style="width:100%; margin-top: 8px; margin-bottom: 8px;">
-    <div class="element" style="padding-left: 5px; padding-bottom: 5px;">
-        <span class="remove-taxon action glyphicon glyphicon-minus-sign"></span>
-        <span style="font-weight:bold; font-size:18px;">
-            <span class="name taxon" taxonid="<%= id %>" style="cursor: pointer;"><%- name %></span><span class="taxon-rank badge left-margin" value="<%= rank %>"></span><br>
-        </span>
-    </div>
-    <div class="taxon-synonyms"></div>
-        <table class="table table-striped" style="margin-bottom: 0px;">
-            <tbody>
-                <% _.each(synonyms, function(synonym) { %>
-                <tr>
-                    <td style="width: 30%;" name="type" class="taxon-synonym-type" value="<%- synonym.type %>"></td>
-                    <td style="width: 40%;" name="name"><%- synonym.name %></td>
-                    <td style="width: 30%;" name="language" class="language" value="<%- synonym.language %>"></td>
-                </tr>
-                <% }) %>
-            </tbody>
-        </table>
-    </div>
-</div>
+<th class="glyph-fixed-column"><span class="remove-taxon action glyphicon glyphicon-minus-sign"></span></th>
+<td class="action view-taxon-details"><%- name %></td>
+<td class="taxon-rank" value="<%- rank %>"><%- rank %></td>
+<% if (parent_details) { %>
+    <td class="action view-parent-details"><abbr class="parent" title="" value="<%- parent_details.rank %>" object-id="<% parent %>"><%- parent_details.name %></abbr></td>
+<% } else { %>
+    <td class="view-parent-details"><abbr class="parent" title="" value="" object-id=""></abbr></td>
+<% } %>
+<% if (synonyms.length > 1) { %>
+    <td class="taxon-synonym"><%= synonyms[1].name %></td>
+<% } else { %>
+    <td class="taxon-synonym"></td>
+<% } %>

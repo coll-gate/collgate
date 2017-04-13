@@ -134,6 +134,8 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
             var type = this;
 
             if (definesValues) {
+                this.el.attr('value', defaultValues);
+
                 $.ajax({
                     type: "GET",
                     url: url + defaultValues + '/',
@@ -225,11 +227,15 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
 
     values: function() {
         if (this.el && this.parent) {
-            if (this.el.val() !== "") {
-                var value = parseInt(this.el.val());
-                return isNaN(value) ? null : value;
+            if (this.readOnly) {
+                return this.el.attr('value');
             } else {
-                return null;
+                if (this.el.val() !== "") {
+                    var value = parseInt(this.el.val());
+                    return isNaN(value) ? null : value;
+                } else {
+                    return null;
+                }
             }
         }
 

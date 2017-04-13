@@ -310,7 +310,7 @@ class DescriptorType(Entity):
                 # sort by id (code)
                 # name are unique so its a trivial case
                 if reverse:
-                    cursor_code = str(cursor.rsplit('/', 1)[0]) if cursor else "ZZ_9999:99999999"
+                    cursor_code = str(cursor.rsplit('/', 1)[0]) if cursor else "~"
 
                     for k, v in values.items():
                         if k < cursor_code:

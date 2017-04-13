@@ -20,6 +20,30 @@ var View = Marionette.LayoutView.extend({
     regions: {
         'content': "div.content",
         'bottom': "div.layout-bottom"
+    },
+
+    onShowTab: function(tabView) {
+        var region = this.getRegion('content');
+        if (region && region.currentView && region.currentView.onShowTab) {
+            region.currentView.onShowTab(tabView);
+        }
+
+        region = this.getRegion('bottom');
+        if (region && region.currentView && region.currentView.onShowTab) {
+            region.currentView.onShowTab(tabView);
+        }
+    },
+
+    onHideTab: function(tabView) {
+        var region = this.getRegion('content');
+        if (region && region.currentView && region.currentView.onHideTab) {
+            region.currentView.onHideTab(tabView);
+        }
+
+        region = this.getRegion('bottom');
+        if (region && region.currentView && region.currentView.onHideTab) {
+            region.currentView.onHideTab(tabView);
+        }
     }
 });
 

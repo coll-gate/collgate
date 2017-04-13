@@ -11,7 +11,9 @@
 var PermissionGroupModel = require('../models/group');
 
 var Collection = Backbone.Collection.extend({
-    url: function() { return application.baseUrl + 'permission/group/'; },
+    url: function() {
+        return application.baseUrl + 'permission/group/';
+    },
     model: PermissionGroupModel,
 
     comparator: 'name',
@@ -22,8 +24,24 @@ var Collection = Backbone.Collection.extend({
         this.prev = data.prev;
         this.next = data.next;
 
-        return data.groups;
+        return data.items;
     },
+
+    fetch: function(options) {
+        options || (options = {});
+        var data = (options.data || {});
+
+        options.data = data;
+
+        this.cursor = options.data.cursor;
+        this.sort_by = options.data.sort_by;
+
+        if (this.filters) {
+            options.data.filters = JSON.stringify(this.filters)
+        }
+
+        return Backbone.Collection.prototype.fetch.call(this, options);
+    }
 });
 
 module.exports = Collection;

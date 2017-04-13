@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-22 12:08+0100\n"
+"POT-Creation-Date: 2017-04-13 14:18+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,7 +22,7 @@ msgstr ""
 msgid "Enter a taxon name. 3 characters at least for auto-completion"
 msgstr ""
 
-#: ../../../views/taxon.js:49
+#: ../../../views/taxon.js:62
 msgid "Successfully removed !"
 msgstr ""
 
@@ -138,7 +138,7 @@ msgstr ""
 
 #: ../../../templates/taxonchangesynonym.html:10
 #: ../../../templates/taxonentitieslist.html:14
-#: ../../../templates/taxonsynonyms.html:6
+#: ../../../templates/taxonlist.html:5 ../../../templates/taxonsynonyms.html:6
 msgid "Name"
 msgstr ""
 
@@ -198,4 +198,16 @@ msgstr ""
 
 #: ../../../templates/taxonlayout.html:8
 msgid "Entities"
+msgstr ""
+
+#: ../../../templates/taxonlist.html:6
+msgid "Rank"
+msgstr ""
+
+#: ../../../templates/taxonlist.html:7
+msgid "Parent"
+msgstr ""
+
+#: ../../../templates/taxonlist.html:8
+msgid "Synonym"
 msgstr ""

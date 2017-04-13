@@ -8,7 +8,6 @@
  * @details
  */
 
-var Marionette = require('backbone.marionette');
 var AccessionView = require('../views/accession');
 var ScrollView = require('../../main/views/scroll');
 
@@ -16,30 +15,27 @@ var DescriptorsColumnsView = require('../../descriptor/mixins/descriptorscolumns
 
 var View = ScrollView.extend({
     template: require("../templates/accessionlist.html"),
+    className: 'advanced-table-container',
     childView: AccessionView,
     childViewContainer: 'tbody.accession-list',
+    userSettingName: 'accessions_list_columns',
 
     templateHelpers/*templateContext*/: function () {
         return {
-            columns: this.getOption('columns')
+            columns: this.displayedColumns
         }
     },
 
     childViewOptions: function () {
         return {
-            columns: this.getOption('columns')
+            columns: this.displayedColumns
         }
     },
 
     initialize: function(options) {
-        View.__super__.initialize.apply(this);
+        View.__super__.initialize.apply(this, arguments);
 
-        options || (options = {});
-        options.columns = [
-            {id: -1, name: 'MCPD_SAMPSTAT', label: 'Biological status', query: true}
-        ];
-
-        this.listenTo(this.collection, 'reset', this.render, this);
+//        this.listenTo(this.collection, 'reset', this.render, this);
     }
 });
 

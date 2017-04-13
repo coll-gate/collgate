@@ -14,7 +14,7 @@ var ScrollView = require('../../main/views/scroll');
 
 var View = ScrollView.extend({
     template: require("../templates/taxonentitieslist.html"),
-    className: "taxon-entity-list",
+    className: "taxon-entity-list advanced-table-container",
     childView: TaxonEntityView,
     childViewContainer: 'tbody.entities-list',
 

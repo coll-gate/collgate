@@ -15,6 +15,7 @@ var ScrollView = require('../../main/views/scroll');
 
 var View = ScrollView.extend({
     template: require("../templates/descriptorvalueordinallist.html"),
+    className: "object descriptor-value-list advanced-table-container",
     childView: DescriptorValueOrdinalView,
     childViewContainer: 'tbody.descriptor-value-list',
 
@@ -35,13 +36,13 @@ var View = ScrollView.extend({
         table: "table.descriptor-table",
         sort_by_id: "th span.action.column-sort-id",
         sort_by_ordinal: "th span.action.column-sort-ordinal",
-        sort_by_value0: "th span.action.column-sort-value0",
+        sort_by_value0: "th span.action.column-sort-value0"
     },
 
     events: {
         'click @ui.sort_by_id': 'sortColumn',
         'click @ui.sort_by_ordinal': 'sortColumn',
-        'click @ui.sort_by_value0': 'sortColumn',
+        'click @ui.sort_by_value0': 'sortColumn'
     },
 
     initialize: function() {
@@ -71,7 +72,7 @@ var View = ScrollView.extend({
         }
 
         // reset scrolling
-        this.$el.parent().scrollTop(0);
+        this.getScrollElement().scrollTop(0);
     },
 
     sortColumn: function (e) {
@@ -86,7 +87,7 @@ var View = ScrollView.extend({
 
         this.collection.next = null;
         this.collection.fetch({reset: true, update: false, remove: true, data: {
-            more: this.capacity(),
+            // more: this.capacity()+1,
             cursor: null,
             sort_by: sort_by
         }});

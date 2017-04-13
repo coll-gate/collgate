@@ -8,31 +8,27 @@
  * @details
  */
 
-var Marionette = require('backbone.marionette');
 var ScrollView = require('../../main/views/scroll');
-
-var DescriptorTypeModel = require('../models/descriptortype');
 var DescriptorTypeAltView = require('../views/descriptortypealt');
 
 var View = ScrollView.extend({
     template: require("../templates/descriptortypelistalt.html"),
+    className: "object descriptor-type-list advanced-table-container",
     childView: DescriptorTypeAltView,
     childViewContainer: 'tbody.descriptor-type-list',
 
     ui: {
-        'table': 'table.table',
+        'table': 'table.table'
     },
 
     events: {
     },
 
     initialize: function() {
-        this.listenTo(this.collection, 'reset', this.render, this);
-        //this.listenTo(this.collection, 'add', this.render, this);
-        //this.listenTo(this.collection, 'remove', this.render, this);
-
         View.__super__.initialize.apply(this);
-    },
+
+        this.listenTo(this.collection, 'reset', this.render, this);
+    }
 });
 
 module.exports = View;

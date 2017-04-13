@@ -22,7 +22,7 @@ var View = Marionette.ItemView.extend({
     },
 
     events: {
-        'click @ui.view_entity': 'onViewEntity',
+        'click @ui.view_entity': 'onViewEntity'
     },
 
     initialize: function(options) {
@@ -39,7 +39,7 @@ var View = Marionette.ItemView.extend({
     onViewEntity: function(e) {
         var path = this.model.get('content_type').replace('.', '/');
         Backbone.history.navigate("app/" + path + "/" + this.model.get('id') + "/", {trigger: true});
-    },
+    }
 });
 
 module.exports = View;

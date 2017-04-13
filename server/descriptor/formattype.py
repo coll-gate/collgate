@@ -59,7 +59,12 @@ def get_format_type_list(request):
     groups_list = sorted(list(groups.values()), key=lambda x: x['group'])
     items_list = sorted(list(items.values()), key=lambda x: x['id'])
 
-    return HttpResponseRest(request, {'groups': groups_list, 'items': items_list})
+    results = {
+        'groups': groups_list,
+        'items': items_list
+    }
+
+    return HttpResponseRest(request, results)
 
 
 @cache_page(60*60*24)
@@ -88,4 +93,9 @@ def get_format_unit_list(request):
                 'label': str(ltype.label)
             })
 
-    return HttpResponseRest(request, {'groups': groups, 'items': items})
+    results = {
+        'groups': groups,
+        'items': items
+    }
+
+    return HttpResponseRest(request, results)

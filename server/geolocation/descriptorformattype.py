@@ -40,6 +40,7 @@ class DescriptorFormatTypeGeolocation(DescriptorFormatType):
             "region",
             "country",
         ]
+        self.value_is_code = True
 
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         return instance.geolocation_app.geolocation_manager.format_type_validator(value)
@@ -78,6 +79,7 @@ class DescriptorFormatTypeCountry(DescriptorFormatType):
         self.format_fields = [
             "country"
         ]
+        self.value_is_code = True
 
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         return instance.geolocation_app.geolocation_manager.country_format_type_validator(value)
@@ -136,6 +138,7 @@ class DescriptorFormatTypeCity(DescriptorFormatType):
         self.format_fields = [
             "city"
         ]
+        self.value_is_code = True
 
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         return instance.geolocation_app.geolocation_manager.city_format_type_validator(value)

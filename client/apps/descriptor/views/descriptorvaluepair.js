@@ -29,13 +29,13 @@ var View = Marionette.ItemView.extend({
     ui: {
         delete_descriptor_value: 'th.delete-descriptor-value',
         edit_value0: 'td.edit-descriptor-value0',
-        edit_value1: 'td.edit-descriptor-value1',
+        edit_value1: 'td.edit-descriptor-value1'
     },
 
     events: {
         'click @ui.delete_descriptor_value': 'deleteDescriptorValue',
         'click @ui.edit_value0': 'onEditValue0',
-        'click @ui.edit_value1': 'onEditValue1',
+        'click @ui.edit_value1': 'onEditValue1'
     },
 
     initialize: function() {

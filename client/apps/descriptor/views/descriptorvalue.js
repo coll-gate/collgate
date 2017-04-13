@@ -222,7 +222,7 @@ var View = Marionette.ItemView.extend({
                 changeLabel.ui.value.val(this.model.get('value0'));
             }
         }
-    },
+    }
 });
 
 module.exports = View;

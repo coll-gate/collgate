@@ -15,7 +15,7 @@ var Dialog = require('./dialog');
  */
 var View = Dialog.extend({
     attributes: {
-        'id': 'dlg_confirm',
+        'id': 'dlg_confirm'
     },
     template: require('../templates/confirmdialog.html'),
     templateHelpers/*templateContext*/: function () {

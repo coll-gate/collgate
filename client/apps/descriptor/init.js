@@ -10,6 +10,9 @@
 
 var Marionette = require('backbone.marionette');
 
+// style
+require('./css/descriptor.css');
+
 var DescriptorModule = function() {
     this.name = "descriptor";
 };

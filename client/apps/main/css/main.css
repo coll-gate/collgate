@@ -13,6 +13,7 @@ div.root-left-bar {
 
 div.root-content {
     height: 100%;
+    min-height: 200px;
 }
 
 div.root-right-bar {
@@ -291,4 +292,94 @@ span.config-id {
 
 div.config-value-box {
     border-top-left-radius: 0px;
+}
+
+div.advanced-table-container {
+    height: calc(100% - 35px);
+    overflow-y: auto;
+    margin-top: 35px;
+    border-top: 1px solid #ddd;
+}
+
+.table.table-advanced {
+    margin-bottom: 0px;
+}
+
+div.table-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.table.table-advanced thead tr th {
+    height: 0px;
+    line-height: 0px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    background-color: white;
+    border: none;
+    white-space: nowrap;  /* single line */
+}
+
+.table.table-advanced thead tr th div {
+    width: 0px;  /* starts with 0 with to avoid initialization artifacts */
+    position: absolute;
+    padding: 8px 8px;
+    height: 32px;
+    /*top: 62px;*/
+    margin-left: -9px;
+    margin-top: -32px;
+    background: transparent;
+    line-height: normal;
+    border-left: 1px solid #ddd;
+    overflow: hidden;
+    text-overflow: ellipsis;  /* longest lines */
+    /*word-break: break-all;*/
+    /*white-space: normal;*/
+}
+
+.table.table-advanced thead tr th:first-child div {
+    border-left: none;
+    min-width: 32px;
+}
+
+.table.table-advanced thead tr th:first-child {
+    border-left: none;
+    min-width: 32px;
+}
+
+.table.table-advanced thead tr th:not(:first-child), .table.table-advanced tbody tr td:not(:first-child) {
+    border-left: 1px solid #ddd;
+    min-width: 32px;
+}
+
+.table.table-advanced tbody tr:first-child th, .table.table-advanced tbody tr:first-child td {
+    border-top: none;
+    min-width: 32px;
+}
+
+div.placeholder-column {
+    width: 25px;
+    position: absolute;
+    padding: 9px 0px 9px 8px;
+    margin-left: 0px;
+    right: 14px;
+    top: 62px;
+    background: transparent;
+    line-height: normal;
+    border-style: none;
+    overflow: hidden;
+}
+
+span.column-action {
+    margin-right: 3px;
+}
+
+.table.table-advanced thead td.glyph-fixed-column, .table.table-advanced thead th.glyph-fixed-column,
+.table.table-advanced tbody td.glyph-fixed-column, .table.table-advanced tbody th.glyph-fixed-column {
+    width: 32px;
+}
+
+.table.table-advanced thead td.glyph-fixed-column div, .table.table-advanced thead th.glyph-fixed-column div {
+    width: 32px;
 }

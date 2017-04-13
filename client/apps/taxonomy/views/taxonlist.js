@@ -12,9 +12,10 @@ var TaxonView = require('../views/taxon');
 var ScrollView = require('../../main/views/scroll');
 
 var View = ScrollView.extend({
-    template: "<div></div>",
-    className: "taxon-list",
+    template: require("../templates/taxonlist.html"),
+    className: "taxon-list advanced-table-container",
     childView: TaxonView,
+    childViewContainer: 'tbody.taxon-list',
 
     initialize: function() {
         View.__super__.initialize.apply(this);

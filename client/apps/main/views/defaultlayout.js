@@ -20,22 +20,13 @@ var DefaultLayout = Marionette.LayoutView.extend({
         'title': ".panel-title",
         'content': ".panel-body",
         'content-bottom': ".panel-body-bottom",
-        'bottom': ".panel-bottom",
-    },
-
-    initialize: function() {
-    },
-
-    onRender: function() {
-    },
-
-    onBeforeShow: function() {
+        'bottom': ".panel-bottom"
     },
 
     onBeforeDestroy: function () {
         // reset to default global display mode
         //application.setDisplay("2-8-2");
-    },
+    }
 });
 
 module.exports = DefaultLayout;
