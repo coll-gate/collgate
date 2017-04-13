@@ -104,7 +104,7 @@ var View = Marionette.CompositeView.extend({
     },
 
     isDisplayed: function() {
-        return this.ui.table.offsetParent()[0].nodeName !== 'HTML';
+        return this.ui.table.offsetParent().length && this.ui.table.offsetParent()[0].nodeName !== 'HTML';
     },
 
     onResetCollection: function() {
@@ -185,10 +185,16 @@ var View = Marionette.CompositeView.extend({
         if (rows.length === 0) {
             $.each(headerRows, function(i, element) {
                 var el = $(element);
+                var div = el.children('div');
 
                 // resize title column
-                if (el.children('div') && !el.hasClass('glyph-fixed-column')) {
-                    el.children('div').width(el.width()-1);
+                if (div && !el.hasClass('glyph-fixed-column')) {
+                    div.width(el.width()-1);
+                }
+
+                // @todo
+                if (el.hasClass('title-column')) {
+                    el.css('min-width', div.width()+1)
                 }
             });
 
@@ -199,7 +205,13 @@ var View = Marionette.CompositeView.extend({
         $.each(headerRows, function(i, element) {
             var el = $(element);
             if (!el.hasClass("glyph-fixed-column")) {
-                $(element).width('auto');
+                el.width('auto');
+            }
+
+            // try to keep as possible the title entirely visible
+            if (el.hasClass('title-column')) {
+                el.children('div').width('auto');
+                el.css('min-width', el.children('div').width()+1 + 'px');
             }
         });
 
@@ -212,12 +224,6 @@ var View = Marionette.CompositeView.extend({
 
         // fix case of 0 width columns, when they are not ready
         if (zero) {
-/*            var view = this;
-
-            setTimeout(function() {
-               view.updateColumnsWidth();
-            }, 1);
-*/
             return;
         }
 
@@ -226,8 +232,9 @@ var View = Marionette.CompositeView.extend({
 
             // resize title column except placeholder columns
             if (el.children('div') && !el.hasClass('glyph-fixed-column')) {
-                $(element).width(columnsWidth[i]+1);  // count border left (should does not set it for first column)
-                $(element).children('div').width(columnsWidth[i]);
+                // count border left (should does not set it for first column)
+                el.width(columnsWidth[i]+1);
+                el.children('div').width(columnsWidth[i]);
             }
         });
     },
@@ -244,7 +251,7 @@ var View = Marionette.CompositeView.extend({
         var view = this;
 
         if (more === -1) {
-            more = this.capacity();
+            more = this.capacity() + 1;
         }
 
         if ((this.collection !== null) && (this.collection.next !== null)) {
@@ -301,11 +308,13 @@ var View = Marionette.CompositeView.extend({
     },
 
     scroll: function(e) {
-        /*if (e.target.scrollTop > 1) {
-            this.ui.table.children('thead').addClass("sticky");
-        } else{
-            this.ui.table.children('thead').removeClass("sticky");
-        }*/
+        if (!this.ui.table.hasClass('table-advanced')) {
+            if (this.getScrollElement().scrollTop() > 1) {
+                this.ui.thead.addClass("sticky");
+            } else{
+                this.ui.thead.removeClass("sticky");
+            }
+        }
 
         if (e.target.scrollHeight-e.target.clientHeight === e.target.scrollTop) {
             this.moreResults();

@@ -8,22 +8,20 @@
  * @details
  */
 
-var Marionette = require('backbone.marionette');
-var DescriptorMetaModelModel = require('../models/descriptormetamodel');
 var DescriptorMetaModelView = require('../views/descriptormetamodel');
-
 var ScrollView = require('../../main/views/scroll');
 
 var View = ScrollView.extend({
     template: require("../templates/descriptormetamodellist.html"),
+    className: "object descriptor-meta-model-list advanced-table-container",
     childView: DescriptorMetaModelView,
     childViewContainer: 'tbody.descriptor-meta-model-list',
 
     initialize: function() {
-        this.listenTo(this.collection, 'reset', this.render, this);
-
         View.__super__.initialize.apply(this);
-    },
+
+        this.listenTo(this.collection, 'reset', this.render, this);
+    }
 });
 
 module.exports = View;

@@ -13,6 +13,7 @@ var ScrollView = require('../../main/views/scroll');
 
 var View = ScrollView.extend({
     template: require("../templates/descriptorgrouplistalt.html"),
+    className: "object descriptor-group-list advanced-table-container",
     childView: DescriptorGroupAltView,
     childViewContainer: 'tbody.descriptor-group-list',
 
@@ -23,9 +24,9 @@ var View = ScrollView.extend({
     },
 
     initialize: function(options) {
-        this.listenTo(this.collection, 'reset', this.render, this);
-
         View.__super__.initialize.apply(this);
+
+        this.listenTo(this.collection, 'reset', this.render, this);
     }
 });
 

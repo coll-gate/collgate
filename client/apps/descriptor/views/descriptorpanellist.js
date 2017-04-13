@@ -8,11 +8,9 @@
  * @details
  */
 
-var Marionette = require('backbone.marionette');
 var ScrollView = require('../../main/views/scroll');
 var Dialog = require('../../main/views/dialog');
 
-var DescriptorPanelModel = require('../models/descriptorpanel');
 var DescriptorPanelView = require('../views/descriptorpanel');
 
 var View = ScrollView.extend({
@@ -20,20 +18,27 @@ var View = ScrollView.extend({
     childView: DescriptorPanelView,
     childViewContainer: 'div.descriptor-panel-list',
 
+    attributes: {
+        style: "height: 100%; display: flex; flex-direction: column;"
+    },
+
     ui: {
+        'panels_list': 'div.panels-list',
         'top_placeholder': 'div.top-placeholder',
-        'bottom_placeholder': 'div.bottom-placeholder',
+        'bottom_placeholder': 'div.bottom-placeholder'
+    },
+
+    events: {
+        "dragenter @ui.panels_list": "dragEnterContent",
+        "dragleave @ui.panels_list" : "dragLeaveContent",
+        "dragover @ui.panels_list": "dragOverContent",
+        "drop @ui.panels_list": "dropContent"
     },
 
     initialize: function() {
-        this.listenTo(this.collection, 'reset', this.render, this);
-
         View.__super__.initialize.apply(this);
 
-        $("div.left-content").on("dragenter", $.proxy(this.dragEnterContent, this));
-        $("div.left-content").on("dragleave", $.proxy(this.dragLeaveContent, this));
-        $("div.left-content").on("dragover", $.proxy(this.dragOverContent, this));
-        $("div.left-content").on("drop", $.proxy(this.dropContent, this));
+        this.listenTo(this.collection, 'reset', this.render, this);
     },
 
     dragEnterContent: function (e) {
@@ -46,6 +51,8 @@ var View = ScrollView.extend({
 
         if (this.dragEnterCount == 1) {
             if (application.dndElement.$el.hasClass('descriptor-model')) {
+                this.ui.bottom_placeholder.css('display', 'block');
+            } else if (application.dndElement.$el.hasClass('descriptor-panel')) {
                 this.ui.bottom_placeholder.css('display', 'block');
             }
         }
@@ -64,6 +71,8 @@ var View = ScrollView.extend({
         if (this.dragEnterCount == 0) {
             if (application.dndElement.$el.hasClass('descriptor-model')) {
                 this.ui.bottom_placeholder.css('display', 'none');
+            } else if (application.dndElement.$el.hasClass('descriptor-panel')) {
+                this.ui.bottom_placeholder.css('display', 'none');
             }
         }
 
@@ -79,6 +88,8 @@ var View = ScrollView.extend({
 
         if (this.dragEnterCount == 1) {
             if (application.dndElement.$el.hasClass('descriptor-model')) {
+                this.ui.bottom_placeholder.css('display', 'block');
+            } else if (application.dndElement.$el.hasClass('descriptor-panel')) {
                 this.ui.bottom_placeholder.css('display', 'block');
             }
         }
@@ -107,15 +118,15 @@ var View = ScrollView.extend({
                 template: require('../templates/descriptorpanelcreate.html'),
 
                 attributes: {
-                    id: "dlg_create_panel",
+                    id: "dlg_create_panel"
                 },
 
                 ui: {
-                    label: "#label",
+                    label: "#label"
                 },
 
                 events: {
-                    'input @ui.label': 'onLabelInput',
+                    'input @ui.label': 'onLabelInput'
                 },
 
                 initialize: function (options) {
@@ -233,7 +244,7 @@ var View = ScrollView.extend({
         }
 
         return false;
-    },
+    }
 });
 
 module.exports = View;

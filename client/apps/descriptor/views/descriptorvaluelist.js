@@ -8,8 +8,6 @@
  * @details
  */
 
-var Marionette = require('backbone.marionette');
-var DescriptorValueModel = require('../models/descriptorvalue');
 var DescriptorValueView = require('../views/descriptorvalue');
 var ScrollView = require('../../main/views/scroll');
 
@@ -44,11 +42,9 @@ var View = ScrollView.extend({
     },
 
     initialize: function() {
-        this.listenTo(this.collection, 'reset', this.render, this);
-        //this.listenTo(this.collection, 'add', this.render, this);
-        //this.listenTo(this.collection, 'remove', this.render, this);
-
         View.__super__.initialize.apply(this);
+
+        this.listenTo(this.collection, 'reset', this.render, this);
     },
 
     onRender: function() {
@@ -72,7 +68,7 @@ var View = ScrollView.extend({
         }
 
         // reset scrolling
-        this.$el.parent().scrollTop(0);
+        this.getScrollElement().scrollTop(0);
     },
 
     sortColumn: function (e) {
@@ -86,7 +82,11 @@ var View = ScrollView.extend({
         }
 
         this.collection.next = null;
-        this.collection.fetch({reset: true, update: false, remove: true, data: {cursor: null, sort_by: sort_by}});
+        this.collection.fetch({reset: true, update: false, remove: true, data: {
+            // more: this.capacity()+1,
+            cursor: null,
+            sort_by: sort_by
+        }});
     }
 });
 

@@ -322,7 +322,7 @@ div.table-container {
 }
 
 .table.table-advanced thead tr th div {
-    width: 0px;
+    width: 0px;  /* starts with 0 with to avoid initialization artifacts */
     position: absolute;
     padding: 8px 8px;
     height: 32px;
@@ -375,6 +375,11 @@ span.column-action {
     margin-right: 3px;
 }
 
-.glyph-fixed-column {
+.table.table-advanced thead td.glyph-fixed-column, .table.table-advanced thead th.glyph-fixed-column,
+.table.table-advanced tbody td.glyph-fixed-column, .table.table-advanced tbody th.glyph-fixed-column {
+    width: 32px;
+}
+
+.table.table-advanced thead td.glyph-fixed-column div, .table.table-advanced thead th.glyph-fixed-column div {
     width: 32px;
 }

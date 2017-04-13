@@ -8,17 +8,26 @@
  * @details
  */
 
-var Marionette = require('backbone.marionette');
 var ScrollView = require('../../main/views/scroll');
 var Dialog = require('../../main/views/dialog');
-
-var DescriptorModelTypeModel = require('../models/descriptormodeltype');
 var DescriptorModelTypeView = require('../views/descriptormodeltype');
 
 var View = ScrollView.extend({
     template: require("../templates/descriptormodeltypelist.html"),
+    className: "object descriptor-model-type-list advanced-table-container",
     childView: DescriptorModelTypeView,
     childViewContainer: 'tbody.descriptor-model-type-list',
+
+    attributes: {
+        style: "padding-bottom: 15px;"
+    },
+
+    events: {
+        "dragenter": "dragEnterContent",
+        "dragleave" : "dragLeaveContent",
+        "dragover": "dragOverContent",
+        "drop": "dropContent"
+    },
 
     childViewOptions: function () {
         return {
@@ -32,11 +41,6 @@ var View = ScrollView.extend({
         options || (options = {});
 
         this.listenTo(this.collection, 'reset', this.render, this);
-
-        $("div.left-content").on("dragenter", $.proxy(this.dragEnterContent, this));
-        $("div.left-content").on("dragleave", $.proxy(this.dragLeaveContent, this));
-        $("div.left-content").on("dragover", $.proxy(this.dragOverContent, this));
-        $("div.left-content").on("drop", $.proxy(this.dropContent, this));
     },
 
     dragEnterContent: function (e) {
@@ -44,7 +48,7 @@ var View = ScrollView.extend({
             e.preventDefault();
         }
 
-        if (!$(e.target).hasClass("left-content")) {
+        if (!$(e.target).hasClass("descriptor-model-type-list")) {
             return false;
         }
 
@@ -67,7 +71,7 @@ var View = ScrollView.extend({
             e.preventDefault();
         }
 
-        if (!$(e.target).hasClass("left-content")) {
+        if (!$(e.target).hasClass("descriptor-model-type-list")) {
             return false;
         }
 
@@ -88,7 +92,7 @@ var View = ScrollView.extend({
             e.preventDefault();
         }
 
-        if (!$(e.target).hasClass("left-content")) {
+        if (!$(e.target).hasClass("descriptor-model-type-list")) {
             return false;
         }
 
@@ -111,7 +115,7 @@ var View = ScrollView.extend({
             e.stopPropagation();
         }
 
-        if (!$(e.target).hasClass("left-content")) {
+        if (!$(e.target).hasClass("descriptor-model-type-list")) {
             return false;
         }
 
@@ -282,7 +286,7 @@ var View = ScrollView.extend({
         }
 
         return false;
-    },
+    }
 });
 
 module.exports = View;

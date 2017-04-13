@@ -13,6 +13,7 @@ var DescriptorTypeView = require('../views/descriptortype');
 
 var View = ScrollView.extend({
     template: require("../templates/descriptortypelist.html"),
+    className: "object descriptor-type-list advanced-table-container",
     childView: DescriptorTypeView,
     childViewContainer: 'tbody.descriptor-type-list',
 

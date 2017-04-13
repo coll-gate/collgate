@@ -72,7 +72,7 @@ var View = ScrollView.extend({
         }
 
         // reset scrolling
-        this.$el.parent().scrollTop(0);
+        this.getScrollElement().scrollTop(0);
     },
 
     sortColumn: function (e) {
@@ -87,7 +87,7 @@ var View = ScrollView.extend({
 
         this.collection.next = null;
         this.collection.fetch({reset: true, update: false, remove: true, data: {
-            more: this.capacity(),
+            // more: this.capacity()+1,
             cursor: null,
             sort_by: sort_by
         }});

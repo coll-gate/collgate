@@ -8,17 +8,15 @@
  - @details
 -->
 
-<div class="object descriptor-type-list" object-type="descriptor-type-list" style="width:100%;">
-    <table class="table table-striped">
-        <thead class="sticky-header">
-            <tr>
-                <th><%= gt.gettext("Type of descriptor") %></th>
-                <th><%= gt.gettext("Code") %></th>
-                <th><%= gt.gettext("Number of values") %></th>
-                <th><%= gt.gettext("Description") %></th>
-            </tr>
-        </thead>
-        <tbody class="descriptor-type-list">
-        </tbody>
-    </table>
-</div>
+<table class="table table-striped table-advanced">
+    <thead>
+        <tr scope="row">
+            <th><div><%= gt.gettext("Type") %></div></th>
+            <th><div><%= gt.gettext("Code") %></div></th>
+            <th><div><%= gt.gettext("Values") %></div></th>
+            <th><div><%= gt.gettext("Description") %></div></th>
+        </tr>
+    </thead>
+    <tbody class="descriptor-type-list">
+    </tbody>
+</table>

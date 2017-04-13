@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-24 15:21+0100\n"
+"POT-Creation-Date: 2017-04-13 14:18+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -75,7 +75,7 @@ msgstr ""
 msgid "List of accessions"
 msgstr ""
 
-#: ../../../routers/accession.js:54 ../../../controllers/accession.js:256
+#: ../../../routers/accession.js:61 ../../../controllers/accession.js:256
 msgid "Accession"
 msgstr ""
 
@@ -112,7 +112,7 @@ msgid "Rename a synonym of accession"
 msgstr ""
 
 #: ../../../templates/accessionchangesynonym.html:10
-#: ../../../templates/accessionlist.html:6
+#: ../../../templates/accessionlist.html:11
 #: ../../../templates/accessionsynonyms.html:6
 #: ../../../templates/batchlist.html:5
 msgid "Name"
@@ -170,11 +170,11 @@ msgstr ""
 msgid "Actions"
 msgstr ""
 
-#: ../../../templates/accessionlist.html:5
+#: ../../../templates/accessionlist.html:8
 msgid "Code"
 msgstr ""
 
-#: ../../../templates/accessionlist.html:7
+#: ../../../templates/accessionlist.html:14
 msgid "Parent"
 msgstr ""
 

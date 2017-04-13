@@ -8,22 +8,20 @@
  * @details
  */
 
-var Marionette = require('backbone.marionette');
-var DescriptorModelModel = require('../models/descriptormodel');
 var DescriptorModelView = require('../views/descriptormodel');
-
 var ScrollView = require('../../main/views/scroll');
 
 var View = ScrollView.extend({
     template: require("../templates/descriptormodellist.html"),
+    className: "object descriptor-model-list advanced-table-container",
     childView: DescriptorModelView,
     childViewContainer: 'tbody.descriptor-model-list',
 
     initialize: function() {
-        this.listenTo(this.collection, 'reset', this.render, this);
-
         View.__super__.initialize.apply(this);
-    },
+
+        this.listenTo(this.collection, 'reset', this.render, this);
+    }
 });
 
 module.exports = View;

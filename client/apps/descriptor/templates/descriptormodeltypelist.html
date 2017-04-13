@@ -8,20 +8,18 @@
  - @details
 -->
 
-<div class="object descriptor-model-type-list" object-type="descriptor-model-type-list">
-    <table class="table table-striped">
-        <thead class="sticky-header">
-            <tr>
-                <th><span class="glyphicon glyphicon-asterisk"></span></th>
-                <th><%= gt.gettext("Code") %></th>
-                <th><%= gt.gettext("Name") %></th>
-                <th><%= gt.gettext("Label") %></th>
-                <th style="text-align:center;"><abbr title="<%= gt.gettext('Required') %>"><span class="glyphicon glyphicon-exclamation-sign"></span></abbr></th>
-                <th style="text-align:center;"><abbr title="<%= gt.gettext('Set Once') %>"><span class="glyphicon glyphicon-repeat"></span></abbr></th>
-                <th style="text-align:center;"><abbr title="<%= gt.gettext('Condition') %>"><span class="glyphicon glyphicon-question-sign"></span></abbr></th>
-            </tr>
-        </thead>
-        <tbody class="descriptor-model-type-list header-line">
-        </tbody>
-    </table>
-</div>
+<table class="table table-striped table-advanced">
+    <thead>
+        <tr scope="row">
+            <th class="glyph-fixed-column"><div><span class="glyphicon glyphicon-asterisk"></span></div></th>
+            <th><div><%= gt.gettext("Code") %></div></th>
+            <th><div><%= gt.gettext("Name") %></div></th>
+            <th><div><%= gt.gettext("Label") %></div></th>
+            <th class="glyph-fixed-column" style="text-align:center;"><div><abbr title="<%= gt.gettext('Required') %>"><span class="glyphicon glyphicon-exclamation-sign"></span></abbr></div></th>
+            <th class="glyph-fixed-column" style="text-align:center;"><div><abbr title="<%= gt.gettext('Set Once') %>"><span class="glyphicon glyphicon-repeat"></span></abbr></div></th>
+            <th class="glyph-fixed-column" style="text-align:center;"><div><abbr title="<%= gt.gettext('Condition') %>"><span class="glyphicon glyphicon-question-sign"></span></abbr></div></th>
+        </tr>
+    </thead>
+    <tbody class="descriptor-model-type-list header-line">
+    </tbody>
+</table>
