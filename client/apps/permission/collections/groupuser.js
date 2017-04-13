@@ -25,8 +25,24 @@ var Collection = Backbone.Collection.extend({
         this.prev = data.prev;
         this.next = data.next;
 
-        return data.users;
+        return data.items;
     },
+
+    fetch: function(options) {
+        options || (options = {});
+        var data = (options.data || {});
+
+        options.data = data;
+
+        this.cursor = options.data.cursor;
+        this.sort_by = options.data.sort_by;
+
+        if (this.filters) {
+            options.data.filters = JSON.stringify(this.filters)
+        }
+
+        return Backbone.Collection.prototype.fetch.call(this, options);
+    }
 });
 
 module.exports = Collection;

@@ -299,12 +299,15 @@ var View = Marionette.CompositeView.extend({
     onCollectionSync: function (collection, data) {
         // keep list of last queried models, done just once the collection get synced
         this.lastModels = [];
-        for (var i = 0; i < data.items.length; ++i) {
-            this.lastModels.push(this.collection.get(data.items[i].id));
-        }
 
-        // post refresh on children once every children was rendered for any other rendering
-        this.onRefreshChildren();
+        if (data.length > 0) {
+            for (var i = 0; i < data.items.length; ++i) {
+                this.lastModels.push(this.collection.get(data.items[i].id));
+            }
+
+            // post refresh on children once every children was rendered for any other rendering
+            this.onRefreshChildren();
+        }
     },
 
     scroll: function(e) {

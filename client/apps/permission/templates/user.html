@@ -8,28 +8,29 @@
  - @details
 -->
 
-<td name="is_active" class="action">
+<td name="is_active" class="action glyph-fixed-column">
     <% if (is_active) { %>
-        <span class="disable-user glyphicon glyphicon-ok left-margin"></span>
+        <span class="disable-user glyphicon glyphicon-ok"></span>
     <% } else { %>
-        <span class="enable-user glyphicon glyphicon-remove left-margin"></span>
+        <span class="enable-user glyphicon glyphicon-remove"></span>
     <% } %>
 </td>
-<td name="is_superuser" class="action">
+<td name="is_superuser" class="action glyph-fixed-column">
     <% if (is_superuser) { %>
-        <span class="set-user glyphicon glyphicon-ok left-margin"></span>
+        <span class="set-user glyphicon glyphicon-ok"></span>
     <% } else { %>
-        <span class="set-superuser glyphicon glyphicon-remove left-margin"></span>
+        <span class="set-superuser glyphicon glyphicon-remove"></span>
     <% } %>
 </td>
-<td name="is_staff" class="action">
+<td name="is_staff" class="action glyph-fixed-column">
     <% if (is_staff) { %>
-        <span class="set-regular glyphicon glyphicon-ok left-margin"></span>
+        <span class="set-regular glyphicon glyphicon-ok"></span>
     <% } else { %>
-        <span class="set-staff glyphicon glyphicon-remove left-margin"></span>
+        <span class="set-staff glyphicon glyphicon-remove"></span>
     <% } %>
 </td>
 <td name="username" class="action view-user-details" value="<%= username %>"><%- username %></td>
+<td name="email" class="action view-user-details"><%- email %></td>
 <td name="first_name"><%- first_name %></td>
 <td name="last_name"><%- last_name %></td>
 <td class="action view-permissions" name="num_permissions"><abbr class="badge" style="cursor: pointer;" title="<%= gt.gettext('Manage permission list') %>"><%= num_permissions %></abbr></td>
