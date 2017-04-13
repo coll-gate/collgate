@@ -85,6 +85,7 @@ DescriptorModule.prototype = {
             'numeric_range',
             'ordinal',
             'string',
+            'imprecise_date',
             'date',
             'time',
             'datetime',

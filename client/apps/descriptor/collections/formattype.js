@@ -76,6 +76,7 @@ var Collection = Backbone.Collection.extend({
         {id: 'ordinal', group: 'single', label: gt.gettext('Ordinal')},
         {id: 'string', group: 'single', label: gt.gettext('Text')},
         {id: 'date', group: 'single', label: gt.gettext('Date')},
+        {id: 'imprecise_date', group: 'single', label: gt.gettext('Imprecise date')},
         {id: 'time', group: 'single', label: gt.gettext('Time')},
         {id: 'datetime', group: 'single', label: gt.gettext('Date+time')},
         {id: 'entity', group: 'single', label: gt.gettext('Entity')},

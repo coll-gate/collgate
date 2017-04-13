@@ -778,6 +778,47 @@ class DescriptorFormatTypeTime(DescriptorFormatType):
         return None
 
 
+class DescriptorFormatTypeImpreciseDate(DescriptorFormatType):
+    """
+    Specialisation for a imprecise date value.
+    """
+
+    YEAR_RE = re.compile(r'^\d{4}$')
+    MONTH_RE = re.compile(r'^1[0-2]|0[1-9]$')
+    DAY_RE = re.compile(r'^[1-3][0-9]|0[1-9]$')
+
+    def __init__(self):
+        super().__init__()
+
+        self.name = "imprecise_date"
+        self.group = DescriptorFormatTypeGroupSingle()
+        self.verbose_name = _("Imprecise date")
+
+    def validate(self, descriptor_type_format, value, descriptor_model_type):
+
+        if len(value) != 3 and isinstance(value, list):
+            return _("The descriptor value must be an array of 3 string values")
+
+        if self.YEAR_RE.match(value[0]) is None:
+            return _("The descriptor value must contain a valid year (format:YYYY)")
+
+        if value[1] is not None:
+            if self.MONTH_RE.match(value[1]) is None:
+                return _("The descriptor value of month is invalid")
+
+        if value[2] is not None:
+            if self.DAY_RE.match(value[2]) is None:
+                return _("The descriptor value of day is invalid")
+
+        if value[2] and not value[1]:
+            return _("The descriptor value is invalid")
+
+        return None
+
+    def check(self, descriptor_type_format):
+        return None
+
+
 class DescriptorFormatTypeDateTime(DescriptorFormatType):
     """
     Specialisation for a datetime value.
