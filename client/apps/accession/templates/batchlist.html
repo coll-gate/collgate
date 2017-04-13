@@ -1,11 +1,15 @@
-<table class="table table-striped">
+<table class="table table-striped table-advanced">
     <thead>
-        <tr scope="row" class="sticky-header">
-            <th><span class="glyphicon glyphicon-asterisk"></span></th>
-            <th><%= gt.gettext("Name") %></th>
+        <tr scope="row">
+            <th class="glyph-fixed-column"><div><span class="glyphicon glyphicon-asterisk"></span></div></th>
+            <th class="unselectable"><div><%= gt.gettext("Name") %></div></th>
             <% for (var i = 0; i < columns.length; ++i) { %>
                 <% var column = columns[i]; %>
-                <th name="<%= column.id %>"><%= column.label %></th>
+                <th name="<%= column.id %>" class="unselectable">
+                    <div>
+                        <span class="glyphicon glyphicon-sort action sortby-asc-column column-action"></span><%= column.label %>
+                    </div>
+                </th>
             <% } %>
         </tr>
     </thead>

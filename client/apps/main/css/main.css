@@ -324,9 +324,11 @@ div.table-container {
 .table.table-advanced thead tr th div {
     width: 0px;
     position: absolute;
-    padding: 9px 8px;
-    top: 62px;
+    padding: 8px 8px;
+    height: 32px;
+    /*top: 62px;*/
     margin-left: -9px;
+    margin-top: -32px;
     background: transparent;
     line-height: normal;
     border-left: 1px solid #ddd;

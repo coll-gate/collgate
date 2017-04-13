@@ -13,7 +13,7 @@ var ScrollView = require('../../main/views/scroll');
 
 var View = ScrollView.extend({
     template: require("../templates/batchlist.html"),
-    className: "batch-list",
+    className: "batch-list advanced-table-container",
     childView: BatchView,
     childViewContainer: 'tbody.batch-list',
 

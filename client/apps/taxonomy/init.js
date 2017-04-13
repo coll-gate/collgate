@@ -50,7 +50,7 @@ TaxonomyModule.prototype = {
 
         this.views.taxonSynonymTypes = new SelectOption({
             className: 'taxon-synonym-type',
-            collection: this.collections.taxonSynonymTypes,
+            collection: this.collections.taxonSynonymTypes
         });
 
         //

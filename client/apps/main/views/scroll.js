@@ -103,6 +103,10 @@ var View = Marionette.CompositeView.extend({
         return scrollElement;
     },
 
+    isDisplayed: function() {
+        return this.ui.table.offsetParent()[0].nodeName !== 'HTML';
+    },
+
     onResetCollection: function() {
         this.lastModels = null;
 
@@ -146,6 +150,17 @@ var View = Marionette.CompositeView.extend({
                 contextMenu.hide();
             });
         }
+
+        // if displayed adjust columns width
+        if (this.isDisplayed()) {
+            this.updateColumnsWidth();
+        }
+    },
+
+    onShowTab: function(tabView) {
+        if (this.isDisplayed()) {
+            this.updateColumnsWidth();
+        }
     },
 
     updateColumnsWidth: function() {
@@ -153,22 +168,27 @@ var View = Marionette.CompositeView.extend({
             return;
         }
 
+        // not displayed at this time, wait for a visibility signal (onShowTab or onDomRefresh)
+        if (!this.isDisplayed()) {
+            return;
+        }
+
         // should be done after the columns content update (refresh)
         var columnsWidth = [];
-        var firstBodyRaw = this.ui.table.find('tbody').children('tr:first-child');
+        var firstBodyRaw = this.ui.tbody.children('tr:first-child');
         var zero = false;
 
-        var headerRows = this.ui.table.find('thead tr th');
+        var headerRows = this.ui.thead.find('tr th');
         var rows = firstBodyRaw.children('th,td');
 
-        // no content, does nothing
+        // no content
         if (rows.length === 0) {
             $.each(headerRows, function(i, element) {
                 var el = $(element);
 
                 // resize title column
                 if (el.children('div') && !el.hasClass('glyph-fixed-column')) {
-                    $(element).children('div').width($(element).width()-1);
+                    el.children('div').width(el.width()-1);
                 }
             });
 
@@ -187,17 +207,17 @@ var View = Marionette.CompositeView.extend({
             var width = $(element).width();
             columnsWidth.push(width);
 
-            zero = width === 0;
+            zero = width <= 0;
         });
 
         // fix case of 0 width columns, when they are not ready
         if (zero) {
-            var view = this;
+/*            var view = this;
 
             setTimeout(function() {
                view.updateColumnsWidth();
-            }, 10);
-
+            }, 1);
+*/
             return;
         }
 

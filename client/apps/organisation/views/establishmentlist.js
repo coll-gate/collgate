@@ -15,6 +15,7 @@ var DescriptorsColumnsView = require('../../descriptor/mixins/descriptorscolumns
 
 var View = ScrollView.extend({
     template: require("../templates/establishmentlist.html"),
+    className: "object establishment-list advanced-table-container",
     childView: EstablishmentView,
     childViewContainer: 'tbody.establishment-list',
 
