@@ -15,8 +15,8 @@
             </th>
             <% for (var i = 0; i < columns.length; ++i) { %>
                 <% var column = columns[i]; %>
-                <th name="<%= column.name %>" draggable="true" class="unselectable"><div>
-                    <span class="glyphicon glyphicon-sort action sortby-asc-column column-action"></span><%= column.label %>
+                <th name="<%= column.name %>" class="unselectable"><div>
+                    <span class="glyphicon glyphicon-sort action sortby-asc-column column-action"></span><span draggable="true"><%= column.label %></span>
                 </div></th>
             <% } %>
         </tr>

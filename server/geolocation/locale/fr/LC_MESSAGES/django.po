@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-04-04 17:30+0200\n"
+"POT-Creation-Date: 2017-04-14 09:38+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,11 +22,11 @@ msgstr ""
 msgid "Geolocation"
 msgstr "Géo-localisation"
 
-#: descriptorformattype.py:77
+#: descriptorformattype.py:78
 msgid "Country"
 msgstr "Pays"
 
-#: descriptorformattype.py:132
+#: descriptorformattype.py:137
 msgid "City"
 msgstr "Ville"
 
@@ -42,14 +42,14 @@ msgstr "La valeur du déscripteur doit faire réference à un pays enregistré"
 msgid "the descriptor value must be a referenced city"
 msgstr "La valeur du descripteur doit faire réference à une ville enregistrée"
 
-#: geonames/geolocationmanager.py:356
+#: geonames/geolocationmanager.py:396
 msgid "The geonames feature code is not supported"
 msgstr "Le geonames featureCode n'est pas supporté"
 
-#: geonames/geolocationmanager.py:361
+#: geonames/geolocationmanager.py:401
 msgid "The country of this city is not referenced"
 msgstr "Le pays de cette ville n'est pas enregistré"
 
-#: geonames/geolocationmanager.py:380
+#: geonames/geolocationmanager.py:420
 msgid "Unable to create the city"
 msgstr "Impossible de créer la ville"

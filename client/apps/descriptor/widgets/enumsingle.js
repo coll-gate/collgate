@@ -129,7 +129,7 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
                                 offset += "&#160;&#160;&#160;&#160;";
                             }
 
-                            if (session.languageDirection == "ltr") {
+                            if (session.languageDirection === "ltr") {
                                 option.html(offset + data[i].label);
                             } else {
                                 option.html(data[i].label + offset);
@@ -220,7 +220,7 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
                     var initials = [];
 
                     var container = this.parent.closest('div.modal-dialog').parent();
-                    if (container.length == 0) {
+                    if (container.length === 0) {
                         container = this.parent.closest('div.panel');
                     }
 

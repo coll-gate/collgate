@@ -24,7 +24,7 @@ require("select2/dist/css/select2.min.css");
 require("./deps/js/jquery.alphanum");
 
 // make table header fixed position ($.stickyTableHeaders)
-require("sticky-table-headers");
+// require("sticky-table-headers");
 
 // datetime picker ($.datetimepicker)
 require("eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min");
