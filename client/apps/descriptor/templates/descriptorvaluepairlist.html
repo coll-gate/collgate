@@ -15,16 +15,18 @@
                 <div><span class="glyphicon glyphicon-asterisk"></span></div>
             </th>
             <th class="unselectable">
-                <div><span class="action column-sort-id glyphicon glyphicon-sort column-action" column-name="id" column-type="alpha"></span><%= gt.gettext("Code") %></div>
+                <div><span class="action column-sort-id glyphicon glyphicon-sort column-action" column-name="id" column-type="alpha"></span>
+                    <span><%= gt.gettext("Code") %></span>
+                </div>
             </th>
             <th class="unselectable">
                 <div><span class="action column-sort-value0 glyphicon glyphicon-sort column-action" column-name="value0" column-type="alpha"></span>
-                    <%= gt.gettext(format.fields[0]) || gt.gettext("Value0") %>
+                    <span><%= gt.gettext(format.fields[0]) || gt.gettext("Value0") %></span>
                 </div>
             </th>
             <th class="unselectable">
                 <div><span class="action column-sort-value1 glyphicon glyphicon-sort column-action" column-name="value1" column-type="alpha"></span>
-                    <%= gt.gettext(format.fields[1]) || gt.gettext("Value1") %>
+                    <span><%= gt.gettext(format.fields[1]) || gt.gettext("Value1") %></span>
                 </div>
             </th>
         </tr>
