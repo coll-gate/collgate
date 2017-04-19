@@ -11,25 +11,15 @@
 var Marionette = require('backbone.marionette');
 
 var EstablishmentModel = require('../models/establishment');
-var EstablishmentCollection = require('../collections/establishment');
-
-//var EstablishmentListView = require('../views/establishmentlist');
-//var EstablishmentListFilterView = require('../views/establishmentlistfilter');
 
 var EstablishmentLayout = require('../views/establishmentlayout');
 var DefaultLayout = require('../../main/views/defaultlayout');
-var ScrollingMoreView = require('../../main/views/scrollingmore');
 var TitleView = require('../../main/views/titleview');
 
 
 var Router = Marionette.AppRouter.extend({
     routes : {
-        "app/organisation/organisation/:id/establishment/": "getEstablishmentList",
         "app/organisation/establishment/:id/": "getEstablishment"
-    },
-
-    getEstablishmentList : function() {
-        $.alert.error("Not yet !");
     },
 
     getEstablishment : function(id) {

@@ -191,18 +191,19 @@ application = new Marionette.Application({
          * Update locally and on server a specific user setting object.
          * @param setting_name Name of the setting object to modify.
          * @param setting Content that replace the older.
+         * @note If the name of the setting begin by '_' underscore, it will only kept locally.
          */
         this.updateUserSetting = function(setting_name, setting) {
             session.user.settings[setting_name] = setting;
 
-            if (session.user.isAuth) {
+            if (session.user.isAuth && !setting_name.startsWith('_')) {
                 $.ajax({
                     type: "PATCH",
                     url: application.baseUrl + 'main/profile/settings/',
                     contentType: "application/json; charset=utf-8",
                     dataType: 'json',
-                    data: JSON.stringify({name: setting_name, setting: setting}),
-                    success: function (data) {
+                        data: JSON.stringify({name: setting_name, setting: setting}),
+                        success: function (data) {
                     }
                 });
             }

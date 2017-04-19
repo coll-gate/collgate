@@ -8,24 +8,17 @@
  * @details
  */
 
-var Marionette = require('backbone.marionette');
-
+var LayoutView = require('../../main/views/layout');
 var ScrollingMoreView = require('../../main/views/scrollingmore');
 var ContentBottomFooterLayout = require('../../main/views/contentbottomfooterlayout');
 var OrganisationDetailsView = require('../views/organisationdetails');
 var DescriptorEditView = require('../views/descriptoredit');
 
 
-var Layout = Marionette.LayoutView.extend({
+var Layout = LayoutView.extend({
     template: require("../templates/organisationlayout.html"),
 
-    attributes: {
-        style: "height: 100%;"
-    },
-
     ui: {
-        tabs: 'a[data-toggle="tab"]',
-        initial_pane: 'div.tab-pane.active',
         establishments_tab: 'a[aria-controls=establishments]'
     },
 
@@ -35,24 +28,9 @@ var Layout = Marionette.LayoutView.extend({
         'establishments': 'div.tab-pane[name=establishments]'
     },
 
-    childEvents: {
-        'dom:refresh': function(child) {
-            var tab = this.$el.find('div.tab-pane.active').attr('name');
-            var region = this.getRegion(tab);
-
-            // update child of current tab
-            if (region && child && region.currentView === child) {
-                if (region.currentView.onShowTab) {
-                    region.currentView.onShowTab(this);
-                }
-            }
-        }
-    },
-
-    initialize: function(model, options) {
+    initialize: function(options) {
         Layout.__super__.initialize.apply(this, arguments);
 
-        this.activeTab = undefined;
         this.listenTo(this.model, 'change:descriptor_meta_model', this.onDescriptorMetaModelChange, this);
 
         if (this.model.isNew()) {
@@ -144,39 +122,6 @@ var Layout = Marionette.LayoutView.extend({
             // not available tabs
             this.disableEstablishmentTab();
         }
-    },
-
-    onBeforeAttach: function() {
-        this.activeTab = this.ui.initial_pane.attr('name');
-
-        this.ui.tabs.on("shown.bs.tab", $.proxy(this.onShowTab, this));
-        this.ui.tabs.on("hide.bs.tab", $.proxy(this.onHideTab, this));
-    },
-
-    onShowTab: function(e) {
-        // e.target current tab, e.relatedTarget previous tab
-        var tab = e.target.getAttribute('aria-controls');
-        this.activeTab = tab;
-
-        var region = this.getRegion(tab);
-        if (region && region.currentView && region.currentView.onShowTab) {
-            region.currentView.onShowTab(this);
-        }
-    },
-
-    onHideTab: function(e) {
-        var tab = e.target.getAttribute('aria-controls');
-
-        var region = this.getRegion(tab);
-        if (region && region.currentView && region.currentView.onHideTab) {
-            region.currentView.onHideTab(this);
-        }
-
-        application.main.defaultRightView();
-    },
-
-    onDestroy: function() {
-        application.main.defaultRightView();
     }
 });
 

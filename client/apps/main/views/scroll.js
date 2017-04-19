@@ -73,8 +73,9 @@ var View = Marionette.CompositeView.extend({
         this.listenTo(this.collection, 'sync', this.onCollectionSync, this);
 
         if (this.userSettingName) {
-            this.selectedColumns = application.getUserSetting(this.userSettingName);
+            this.selectedColumns = application.getUserSetting(this.userSettingName) || [];
         } else {
+            // empty, mean generated at dom refresh
             this.selectedColumns = [];
         }
 
