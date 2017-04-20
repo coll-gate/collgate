@@ -289,4 +289,16 @@ ImpreciseDateType.DescriptorTypeDetailsView = Marionette.ItemView.extend({
     }
 });
 
+ImpreciseDateType.format = function (value) {
+    if (value[0] !== null && value[1] !== null && value[2] !== null) {
+        return moment(value[0] + value[1] + value[2]).format("L");
+    } else if (value[0] !== null && value[1] !== null) {
+        return moment(value[0] + value[1]).format("MM/YYYY");
+    } else if (value[0] !== null) {
+        return moment(value[0]).format("YYYY");
+    } else {
+        return ""
+    }
+};
+
 module.exports = ImpreciseDateType;

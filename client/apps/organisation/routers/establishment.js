@@ -19,16 +19,18 @@ var TitleView = require('../../main/views/titleview');
 
 var Router = Marionette.AppRouter.extend({
     routes : {
-        "app/organisation/establishment/:id/": "getEstablishment"
+        "app/organisation/establishment/:id/*tab": "getEstablishment"
     },
 
-    getEstablishment : function(id) {
+    getEstablishment : function(id, tab) {
+        tab || (tab = "");
+
         var establishment = new EstablishmentModel({id: id});
 
         var defaultLayout = new DefaultLayout();
         application.show(defaultLayout);
 
-        var establishmentLayout = new EstablishmentLayout({model: establishment});
+        var establishmentLayout = new EstablishmentLayout({model: establishment, initialTab: tab.replace('/', '')});
 
         establishment.fetch().then(function() {
             defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Establishment"), model: establishment}));

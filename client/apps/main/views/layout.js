@@ -17,7 +17,7 @@ var Layout = Marionette.LayoutView.extend({
 
     ui: {
         tabs_buttons: 'ul.nav-tabs > li > a',
-        tabs_contents: 'tab-content > div.tab-pane',
+        tabs_contents: 'div.tab-content > div.tab-pane',
         tabs: 'a[data-toggle="tab"]',
         initial_pane: 'div.tab-pane.active'
     },
@@ -115,8 +115,10 @@ var Layout = Marionette.LayoutView.extend({
         this.activeTab = tab;
 
         var region = this.getRegion(tab);
-        if (region && region.currentView && region.currentView.onShowTab) {
-            region.currentView.onShowTab(this);
+        if (region) {
+            if (region.currentView && region.currentView.onShowTab) {
+                region.currentView.onShowTab(this);
+            }
 
             // update the url for the history with the new active tab
             var href = Backbone.history.getFragment();

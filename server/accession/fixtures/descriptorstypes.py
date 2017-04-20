@@ -50,7 +50,7 @@ DESCRIPTORS = {
         'can_modify': False,
         'description': 'Date on which the accession entered the collection',
         'format': {
-            'type': 'date'
+            'type': 'imprecise_date'
         },
         '__comment': 'Not necessary to declare a specific descriptor type. Can use a generic type defined in common group. Need to choose if this is really a date or just a 4 characters string for the wheat sample data'
     },

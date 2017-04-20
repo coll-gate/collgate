@@ -1,22 +1,28 @@
 # -*- coding: utf-8; -*-
 #
-# Copyright (c) 2016 INRA UMR1095 GDEC
+# @file __init__.py
+# @brief Application init
+# @authors Frédéric SCHERMA (INRA UMR1095)
+# @date 2016-01-22
+# @copyright Copyright (c) 2016 INRA/CIRAD
+# @license MIT (see LICENSE file)
+# @details
 
 """
 coll-gate project init
 """
 
 __title__ = "INRA Coll-Gate"
-__copyright__ = "Copyright (c) 2016 INRA UMR1095 GDEC"
+__copyright__ = "Copyright (c) 2016 INRA/CIRAD"
 __organisation__ = "INRA"
 __date__ = "2016-01-22"
 __author__ = "Frédéric Scherma"
 __maintainer__ = "Frédéric Scherma"
 __email__ = "frederic.scherma@clermont.inra.fr"
-__credits__ = ["Frédéric Scherma", "Nicolas Guilhot"]
+__credits__ = ["Frédéric Scherma", "Medhi Boulenmour", "Nicolas Guilhot"]
 __license__ = 'Private'
-__version__ = '0.1'
-__build__ = 0x000100
-__revision__ = "1"
+__version__ = '0.2'
+__build__ = 0x000200
+__revision__ = "2"
 __status__ = "Development"
 __requires__ = ["igdectk"]

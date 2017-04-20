@@ -83,12 +83,12 @@ var Router = Marionette.AppRouter.extend({
     },
 
     getOrganisation : function(id, tab) {
+        tab || (tab = "");
+
         var organisation = new OrganisationModel({id: id});
 
         var defaultLayout = new DefaultLayout();
         application.show(defaultLayout);
-
-        tab || (tab = "");
 
         var organisationLayout = new OrganisationLayout({model: organisation, initialTab: tab.replace('/', '')});
 
