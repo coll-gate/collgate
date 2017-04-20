@@ -323,7 +323,7 @@ div.table-container {
 
 .table.table-advanced thead tr th div {
     width: 0px;  /* starts with 0 with to avoid initialization artifacts */
-    position: absolute;
+    position: fixed;
     height: 32px;
     margin-left: -17px;
     margin-top: -32px;

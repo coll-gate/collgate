@@ -94,6 +94,8 @@ var View = Marionette.CompositeView.extend({
                 });
             }
         }
+
+        this.initialResizeDone = false;
     },
 
     getScrollElement: function() {
@@ -217,37 +219,30 @@ var View = Marionette.CompositeView.extend({
         if (rows.length === 0) {
             if (!this.initialResizeDone) {
                 $.each(headerRows, function (i, element) {
-                    var el = $(element);
-                    var div = el.children('div');
+                    var width = i < view.selectedColumns.length ? view.selectedColumns[i].width : null;
 
-                    // if not exist insert the label into a sub-div
-                    if (div.length === 0) {
-                        div = $('<div></div>').html(el.html());
-                        el.html(div);
+                    // width is defined by the configuration or is computed
+                    if (width != undefined && width != "auto") {
+                        // size from user settings
+                        columnsWidth.push(width);
+                    } else {
+                        // size from body
+                        width = $(element).width();
+                        columnsWidth.push(width);
                     }
 
-                    // resize title column
-                    if (div && !el.hasClass('glyph-fixed-column')) {
-                        div.width(el.width() - 1);
-                    }
-
-                    // try to keep as possible the title entirely visible
-                    if (el.hasClass('title-column')) {
-                        // pre-compute
-                        div.width('auto');
-
-                        // +4+1 padding right + border left
-                        el.css('min-width', div.width() + 4 + 1 + 'px');
-                    }
-
-                    // name unamed columns
-                    if (el.attr('name') === undefined || el.attr('name') === "") {
-                        el.attr('name', 'unamed' + i);
+                    zero = width <= 0;
+                });
+            } else {
+                $.each(headerRows, function (i, element) {
+                    var width = i < view.selectedColumns.length ? view.selectedColumns[i].width : null;
+                    if (width != undefined && width != "auto") {
+                        columnsWidth.push(width);
+                    } else {
+                        columnsWidth.push("auto");
                     }
                 });
             }
-
-            return;
         }
 
         //
@@ -533,6 +528,8 @@ var View = Marionette.CompositeView.extend({
 
             // post refresh on children once every children was rendered for any other rendering
             this.onRefreshChildren();
+        } else {
+            this.updateColumnsWidth();
         }
     },
 

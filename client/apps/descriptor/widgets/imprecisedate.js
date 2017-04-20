@@ -295,7 +295,7 @@ ImpreciseDateType.format = function (value) {
     } else if (value[0] !== null && value[1] !== null) {
         return moment(value[0] + value[1]).format("MM/YYYY");
     } else if (value[0] !== null) {
-        return moment(value[0]).format("YYYY");
+        return moment(value[0] + "-01").format("YYYY");
     } else {
         return ""
     }

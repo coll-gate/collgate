@@ -23,7 +23,7 @@ var ScrollingMoreView = require('../../main/views/scrollingmore');
 var TaxonRouter = Marionette.AppRouter.extend({
     routes : {
         "app/taxonomy/taxon/": "getTaxonList",
-        "app/taxonomy/taxon/:id/": "getTaxon"
+        "app/taxonomy/taxon/:id/*tab": "getTaxon"
     },
 /*
     constructor: function() {
@@ -67,13 +67,15 @@ var TaxonRouter = Marionette.AppRouter.extend({
         defaultLayout.getRegion('bottom').show(new TaxonListFilterView({collection: collection}));
     },
 
-    getTaxon : function(id) {
+    getTaxon : function(id, tab) {
+        tab || (tab = "");
+
         var taxon = new TaxonModel({id: id});
 
         var defaultLayout = new DefaultLayout();
         application.show(defaultLayout);
 
-        var taxonLayout = new TaxonLayout({model: taxon});
+        var taxonLayout = new TaxonLayout({model: taxon, initialTab: tab.replace('/', '')});
 
         taxon.fetch().then(function () {
             defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Taxon details"), model: taxon}));
