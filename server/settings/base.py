@@ -213,8 +213,8 @@ APPLICATIONS = {
                 ".glyph": {"default_version": "2.12.0"},
             },
             "select2": {
-                "default_version": "3.5.4",
-                ".bootstrap": {"default_version": "3.5.4"},
+                "default_version": "4.0.3",
+                ".bootstrap": {"default_version": "4.0.3"},
             },
             "igdectk": {
                 ".csrf": {"default_version": "2.0.0"},

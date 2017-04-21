@@ -264,14 +264,22 @@ var View = Marionette.CompositeView.extend({
             var el = $(element);
             var div = el.children('div');
 
-            if (!el.hasClass("glyph-fixed-column")) {
-                // el.width('auto');
-            }
+            // if (!el.hasClass("glyph-fixed-column")) {
+            //     el.width('auto');
+            // }
 
             // if not exist insert the label into a sub-div
             if (div.length === 0) {
-                div = $('<div></div>').html(el.html());
+                div = $('<div></div>').html(el.html()).attr('title', el.text());
                 el.html(div);
+
+                var draggable = div.children('[draggable]');
+                draggable.on('dragstart', $.proxy(view.onColumnDragStart, view));
+                draggable.on('dragend', $.proxy(view.onColumnDragEnd, view));
+                draggable.on('dragenter', $.proxy(view.onColumnDragEnter, view));
+                draggable.on('dragleave', $.proxy(view.onColumnDragLeave, view));
+                draggable.on('dragover', $.proxy(view.onColumnDragOver, view));
+                draggable.on('drop', $.proxy(view.onColumnDrop, view));
             }
 
             // try to keep as possible the title entirely visible
@@ -372,6 +380,169 @@ var View = Marionette.CompositeView.extend({
         if (!this.initialResizeDone) {
             this.initialResizeDone = true;
         }
+    },
+
+    onColumnDragStart: function(e) {
+        var target = $(e.currentTarget);
+
+        // fix for firefox...
+        e.originalEvent.dataTransfer.setData('text/plain', null);
+
+        target.css('opacity', '0.4');
+
+        var i1;
+        $.each(this.ui.thead.children('tr').children('td,th'), function(i, element) {
+            if (target.parent().parent().attr('name') === $(element).attr('name')) {
+                i1 = i;
+                return false;
+            }
+        });
+
+        // opacity of each cell
+        $.each(this.ui.tbody.children('tr'), function(i, element) {
+            $(element).children('th,td').eq(i1).css('opacity', '0.4');
+        });
+
+        application.dndElement = target;
+    },
+
+    onColumnDragEnd: function(e) {
+        var target = $(e.currentTarget);
+
+        target.css('opacity', 'initial');
+
+        var i1;
+        $.each(this.ui.thead.children('tr').children('td,th'), function(i, element) {
+            if (target.parent().parent().attr('name') === $(element).attr('name')) {
+                i1 = i;
+                return false;
+            }
+        });
+
+        // opacity of each cell
+        $.each(this.ui.tbody.children('tr'), function(i, element) {
+            $(element).children('th,td').eq(i1).css('opacity', 'initial');
+        });
+
+        application.dndElement = null;
+    },
+
+    onColumnDragEnter: function(e) {
+        if (e.originalEvent.preventDefault) {
+            e.originalEvent.preventDefault();
+        }
+
+        var target = $(e.currentTarget);
+
+        target.css('opacity', '0.4');
+
+        var i1;
+        $.each(this.ui.thead.children('tr').children('td,th'), function(i, element) {
+            if (target.parent().parent().attr('name') === $(element).attr('name')) {
+                i1 = i;
+                return false;
+            }
+        });
+
+        // opacity of each cell
+        $.each(this.ui.tbody.children('tr'), function(i, element) {
+            $(element).children('th,td').eq(i1).css('opacity', '0.4');
+        });
+
+        return false;
+    },
+
+    onColumnDragLeave: function(e) {
+        if (e.originalEvent.preventDefault) {
+            e.originalEvent.preventDefault();
+        }
+
+        var target = $(e.currentTarget);
+
+        target.css('opacity', 'initial');
+
+        var i1;
+        $.each(this.ui.thead.children('tr').children('td,th'), function(i, element) {
+            if (target.parent().parent().attr('name') === $(element).attr('name')) {
+                i1 = i;
+                return false;
+            }
+        });
+
+        // opacity of each cell
+        $.each(this.ui.tbody.children('tr'), function(i, element) {
+            $(element).children('th,td').eq(i1).css('opacity', 'initial');
+        });
+
+        return false;
+    },
+
+    onColumnDragOver: function(e) {
+        if (e.originalEvent.preventDefault) {
+            e.originalEvent.preventDefault();
+        }
+
+        return false;
+    },
+
+    onColumnDrop: function(e) {
+        if (e.originalEvent.stopPropagation) {
+            e.originalEvent.stopPropagation();
+        }
+
+        var target = $(e.currentTarget);
+
+        target.css('opacity', 'initial');
+
+        var srcName = application.dndElement.parent().parent().attr('name');
+        var dstName = target.parent().parent().attr('name');
+
+        if (srcName !== dstName) {
+            // switch the two columns
+            var i1 = 0, i2 = 0;
+            $.each(this.ui.thead.children('tr').children('td,th'), function(i, element) {
+                if ($(element).attr('name') === dstName) {
+                    i1 = i;
+                } else if ($(element).attr('name') === srcName) {
+                    i2 = i;
+                }
+            });
+
+            // switch label
+            target.parent().parent().swapWith(application.dndElement.parent().parent());
+
+            // switch for any row and reset opacity
+            $.each(this.ui.tbody.children('tr'), function(i, element) {
+                var columns = $(element).children('th,td');
+                columns.eq(i1).swapWith(columns.eq(i2)).css('opacity', 'initial');
+            });
+
+            // switch selectedColumns
+            var tmp = this.selectedColumns[i1];
+            this.selectedColumns[i1] = this.selectedColumns[i2];
+            this.selectedColumns[i2] = tmp;
+
+            // switch displayedColumns
+            var col1 = null, col2 = null;
+            for (var i = 0; i < this.displayedColumns.length; ++i) {
+                if (this.displayedColumns[i].name === this.selectedColumns[i1].name) {
+                    col1 = i;
+                } else if (this.displayedColumns[i].name === this.selectedColumns[i2].name) {
+                    col2 = i;
+                }
+            }
+
+            tmp = this.displayedColumns[col1];
+            this.displayedColumns[col1] = this.displayedColumns[col2];
+            this.displayedColumns[col2] = tmp;
+
+            // save user settings
+            if (this.userSettingName) {
+                application.updateUserSetting(this.userSettingName, this.selectedColumns);
+            }
+        }
+
+        return false;
     },
 
     onResizeColumnBegin: function (e) {
