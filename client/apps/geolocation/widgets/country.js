@@ -114,7 +114,7 @@ _.extend(CountryType.prototype, DescriptorFormatType.prototype, {
                 this.el.parent().remove();
             } else {
                 this.el.select2('destroy');
-                this.el.remove();
+                this.group.remove();
             }
         }
     },

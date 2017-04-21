@@ -16,6 +16,7 @@ var View = ScrollView.extend({
     className: "object organisation-list advanced-table-container",
     childView: OrganisationView,
     childViewContainer: 'tbody.organisation-list',
+    userSettingName: '_organisation_list_columns',
 
     templateHelpers/*templateContext*/: function () {
         return {

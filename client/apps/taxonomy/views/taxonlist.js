@@ -16,6 +16,7 @@ var View = ScrollView.extend({
     className: "taxon-list advanced-table-container",
     childView: TaxonView,
     childViewContainer: 'tbody.taxon-list',
+    userSettingName: '_taxon_list_columns',
 
     initialize: function() {
         View.__super__.initialize.apply(this);

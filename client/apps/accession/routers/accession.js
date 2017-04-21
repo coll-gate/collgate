@@ -23,7 +23,7 @@ var AccessionLayout = require('../views/accessionlayout');
 var Router = Marionette.AppRouter.extend({
     routes : {
         "app/accession/accession/": "getAccessionList",
-        "app/accession/accession/:id/": "getAccession"
+        "app/accession/accession/:id/*tab": "getAccession"
     },
 
     getAccessionList : function() {
@@ -51,7 +51,9 @@ var Router = Marionette.AppRouter.extend({
         defaultLayout.getRegion('bottom').show(new AccessionListFooterView({collection: collection}));
     },
 
-    getAccession : function(id) {
+    getAccession : function(id, tab) {
+        tab || (tab = "");
+
         var accession = new AccessionModel({id: id});
 
         var defaultLayout = new DefaultLayout();
@@ -60,7 +62,7 @@ var Router = Marionette.AppRouter.extend({
         accession.fetch().then(function() {
             defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Accession"), model: accession}));
 
-            var accessionLayout = new AccessionLayout({model: accession});
+            var accessionLayout = new AccessionLayout({model: accession, initialTab: tab.replace('/', '')});
             defaultLayout.getRegion('content').show(accessionLayout);
         });
     }

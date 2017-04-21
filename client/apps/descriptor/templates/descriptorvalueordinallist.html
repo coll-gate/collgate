@@ -12,20 +12,16 @@
     <thead>
         <tr scope="row">
             <th class="glyph-fixed-column">
-                <div><span class="glyphicon glyphicon-asterisk"></span></div>
+                <span class="glyphicon glyphicon-asterisk"></span>
             </th>
             <th class="unselectable">
-                <div><span class="action column-sort-id glyphicon glyphicon-sort column-action" column-name="id" column-type="alpha"></span><%= gt.gettext("Code") %></div>
+                <span class="action column-sort-id glyphicon glyphicon-sort column-action" column-name="id" column-type="alpha"></span><%= gt.gettext("Code") %>
             </th>
             <th class="unselectable">
-                <div><span class="action column-sort-ordinal glyphicon glyphicon-sort column-action" column-name="ordinal" column-type="numeric"></span>
-                    <%= gt.gettext("Ordinal") %>
-                </div>
+                <span class="action column-sort-ordinal glyphicon glyphicon-sort column-action" column-name="ordinal" column-type="numeric"></span><%= gt.gettext("Ordinal") %>
             </th>
             <th class="unselectable">
-                <div><span class="action column-sort-value0 glyphicon glyphicon-sort column-action" column-name="value0" column-type="alpha"></span>
-                    <%= gt.gettext(format.fields[0]) || gt.gettext("Value0") %>
-                </div>
+                <span class="action column-sort-value0 glyphicon glyphicon-sort column-action" column-name="value0" column-type="alpha"></span><%= gt.gettext(format.fields[0]) || gt.gettext("Value0") %>
             </th>
         </tr>
     </thead>

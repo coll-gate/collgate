@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-04-04 17:30+0200\n"
+"POT-Creation-Date: 2017-04-14 09:38+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -145,23 +145,23 @@ msgstr ""
 msgid "The language is not supported"
 msgstr ""
 
-#: taxon.py:348 taxonsynonym.py:142 taxonsynonym.py:200 taxonsynonym.py:254
+#: taxon.py:356 taxonsynonym.py:142 taxonsynonym.py:200 taxonsynonym.py:254
 msgid "You are not allowed to modify a taxon"
 msgstr ""
 
-#: taxon.py:372
+#: taxon.py:380
 msgid "The rank of the parent must be lowest than the taxon itself"
 msgstr ""
 
-#: taxon.py:466
+#: taxon.py:474
 msgid "You are not allowed to remove a taxon"
 msgstr ""
 
-#: taxon.py:473
+#: taxon.py:481
 msgid "This taxon is referred by one or more entities. It cannot be deleted."
 msgstr ""
 
-#: taxon.py:477
+#: taxon.py:485
 msgid "This taxon has sub-ranks. It cannot be deleted."
 msgstr ""
 

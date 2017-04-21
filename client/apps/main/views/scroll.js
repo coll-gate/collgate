@@ -13,8 +13,8 @@ var Marionette = require('backbone.marionette');
 var View = Marionette.CompositeView.extend({
     rowHeight: 1+8+20+8,
     scrollViewInitialized: false,
-    selectedColumns: [],
     userSettingName: null,
+    scrollbarWidth: $.position.scrollbarWidth(),
 
     attributes: {
     },
@@ -74,7 +74,10 @@ var View = Marionette.CompositeView.extend({
         this.listenTo(this.collection, 'sync', this.onCollectionSync, this);
 
         if (this.userSettingName) {
-            this.selectedColumns = application.getUserSetting(this.userSettingName);
+            this.selectedColumns = application.getUserSetting(this.userSettingName) || [];
+        } else {
+            // empty, mean generated at dom refresh
+            this.selectedColumns = [];
         }
 
         // process columns
@@ -87,10 +90,13 @@ var View = Marionette.CompositeView.extend({
                     name: columnName,
                     label: options.columns[columnName].label,
                     query: options.columns[columnName].query || false,
-                    format: options.columns[columnName].format
+                    format: options.columns[columnName].format,
+                    width: this.selectedColumns[i].width
                 });
             }
         }
+
+        this.initialResizeDone = false;
     },
 
     getScrollElement: function() {
@@ -113,6 +119,8 @@ var View = Marionette.CompositeView.extend({
         // reset scrolling
         var scrollElement = this.getScrollElement();
         scrollElement.scrollTop(0);
+
+        // this.initialResizeDone = false;
     },
 
     onDomRefresh: function() {
@@ -126,29 +134,53 @@ var View = Marionette.CompositeView.extend({
             }, this));
 
             // and sticky header on table
-            if (!this.ui.table.hasClass('table-advanced')) {
-                $(this.ui.table).stickyTableHeaders({scrollableArea: scrollElement});
+            // if (!this.ui.table.hasClass('table-advanced')) {
+            //     $(this.ui.table).stickyTableHeaders({scrollableArea: scrollElement});
+            // }
+
+            // column resizing
+            $("body").on('mousemove', $.proxy(this.onResizeColumnMove, this));
+            $("body").on('mouseup', $.proxy(this.onResizeColumnFinish, this));
+
+            // add menu column close on event
+            var contextMenu = this.ui.add_column_menu;
+            var contextMenuBtn = this.ui.add_column;
+
+            if (contextMenu.length && contextMenuBtn.length) {
+                $('body').on('click', function(e) {
+                    if (e.target !== contextMenuBtn[0]) {
+                        contextMenu.hide();
+                        return true;
+                    }
+                    return false;
+                });
+
+                contextMenu.on("click", "a", function () {
+                    contextMenu.hide();
+                });
+            }
+
+            // create an entry per column from template
+            if (this.selectedColumns.length === 0) {
+                var headerRows = this.ui.thead.children('tr').children('td,th');
+                var view = this;
+
+                $.each(headerRows, function (i, element) {
+                    var name = $(element).attr('name');
+                    if (name == undefined || name === "") {
+                        name = "unamed" + i;
+                        $(element).attr('name', name);
+                    }
+
+                    view.selectedColumns.push({
+                        name: name,
+                        width: "auto",
+                        sort_by: null
+                    })
+                });
             }
 
             this.scrollViewInitialized = true;
-        }
-
-        // add menu column close on event
-        var contextMenu = this.ui.add_column_menu;
-        var contextMenuBtn = this.ui.add_column;
-
-        if (contextMenu.length && contextMenuBtn.length) {
-            $('body').on('click', function(e) {
-                if (e.target !== contextMenuBtn[0]) {
-                    contextMenu.hide();
-                    return true;
-                }
-                return false;
-            });
-
-            contextMenu.on("click", "a", function () {
-                contextMenu.hide();
-            });
         }
 
         // if displayed adjust columns width
@@ -163,7 +195,7 @@ var View = Marionette.CompositeView.extend({
         }
     },
 
-    updateColumnsWidth: function() {
+    updateColumnsWidth: function(autoAdjust) {
         if (!this.ui.table.hasClass('table-advanced')) {
             return;
         }
@@ -173,70 +205,435 @@ var View = Marionette.CompositeView.extend({
             return;
         }
 
+        // adjust width to harmonize when there is or not a visible overflow-y
+        var hasScroll = (this.el.scrollHeight - this.el.clientHeight) > 0;
+        if (hasScroll) {
+            this.$el.css('margin-right', '0px');
+        } else {
+            this.$el.css('margin-right', this.scrollbarWidth + 'px');
+        }
+
         // should be done after the columns content update (refresh)
         var columnsWidth = [];
         var firstBodyRaw = this.ui.tbody.children('tr:first-child');
         var zero = false;
+        var view = this;
 
-        var headerRows = this.ui.thead.find('tr th');
+        autoAdjust != undefined || (autoAdjust = false);
+
+        var headerRows = this.ui.thead.children('tr').children('th,td');
         var rows = firstBodyRaw.children('th,td');
 
         // no content
         if (rows.length === 0) {
-            $.each(headerRows, function(i, element) {
-                var el = $(element);
-                var div = el.children('div');
+            if (!this.initialResizeDone) {
+                $.each(headerRows, function (i, element) {
+                    var width = i < view.selectedColumns.length ? view.selectedColumns[i].width : null;
 
-                // resize title column
-                if (div && !el.hasClass('glyph-fixed-column')) {
-                    div.width(el.width()-1);
-                }
+                    // width is defined by the configuration or is computed
+                    if (width != undefined && width != "auto") {
+                        // size from user settings
+                        columnsWidth.push(width);
+                    } else {
+                        // size from body
+                        width = $(element).width();
+                        columnsWidth.push(width);
+                    }
 
-                // @todo
-                if (el.hasClass('title-column')) {
-                    el.css('min-width', div.width()+1)
-                }
-            });
-
-            return;
+                    zero = width <= 0;
+                });
+            } else {
+                $.each(headerRows, function (i, element) {
+                    var width = i < view.selectedColumns.length ? view.selectedColumns[i].width : null;
+                    if (width != undefined && width != "auto") {
+                        columnsWidth.push(width);
+                    } else {
+                        columnsWidth.push("auto");
+                    }
+                });
+            }
         }
 
-        // reset in auto width (browser auto-size)
-        $.each(headerRows, function(i, element) {
+        //
+        // initialize uninitialized columns
+        //
+
+        var fixedPrevColumn = false;
+
+        $.each(headerRows, function (i, element) {
             var el = $(element);
-            if (!el.hasClass("glyph-fixed-column")) {
-                el.width('auto');
+            var div = el.children('div');
+
+            // if (!el.hasClass("glyph-fixed-column")) {
+            //     el.width('auto');
+            // }
+
+            // if not exist insert the label into a sub-div
+            if (div.length === 0) {
+                div = $('<div></div>').html(el.html()).attr('title', el.text());
+                el.html(div);
+
+                var draggable = div.children('[draggable]');
+                draggable.on('dragstart', $.proxy(view.onColumnDragStart, view));
+                draggable.on('dragend', $.proxy(view.onColumnDragEnd, view));
+                draggable.on('dragenter', $.proxy(view.onColumnDragEnter, view));
+                draggable.on('dragleave', $.proxy(view.onColumnDragLeave, view));
+                draggable.on('dragover', $.proxy(view.onColumnDragOver, view));
+                draggable.on('drop', $.proxy(view.onColumnDrop, view));
             }
 
             // try to keep as possible the title entirely visible
             if (el.hasClass('title-column')) {
-                el.children('div').width('auto');
-                el.css('min-width', el.children('div').width()+1 + 'px');
+                // pre-compute
+                div.width('auto');
+
+                // +4+1 padding right + border left
+                el.css('min-width', div.width() + 4 + 1 + 'px');
             }
+
+            // name unamed columns
+            if (el.attr('name') === undefined || el.attr('name') === "") {
+                el.attr('name', 'unamed' + i);
+            }
+
+            // add column sizer for each column except the first and the last
+            if (i > 0 && i < headerRows.length && div.children('div.column-sizer').length === 0) {
+                var sizer = $('<div></div>');
+                sizer.addClass('column-sizer');
+
+                var border = $('<div></div>');
+                sizer.append(border);
+
+                div.prepend(sizer);
+
+                // active sizer only if the left column is not fixed size
+                if (!fixedPrevColumn) {
+                    sizer.addClass('active');
+
+                    sizer.on('mousedown', $.proxy(view.onResizeColumnBegin, view));
+                }
+            }
+
+            // fixed column, then no sizer on the left of the next column
+            fixedPrevColumn = !!el.hasClass('glyph-fixed-column');
         });
 
-        $.each(rows, function(i, element) {
-            var width = $(element).width();
-            columnsWidth.push(width);
+        // auto adjust, recompute the correct with for each column and keep it in local configuration
+        if (autoAdjust) {
+            $.each(headerRows, function(i, element) {
+                var el = $(element);
 
-            zero = width <= 0;
-        });
+                if (!el.hasClass('glyph-fixed-column')) {
+                    el.width(el.width());
 
-        // fix case of 0 width columns, when they are not ready
-        if (zero) {
-            return;
+                    // and especially of the title div (minus border left width)
+                    el.children('div').width(el.width() - (i === 0 ? 0 : 1));
+
+                    // update user setting locally (minus border left except on first column)
+                    view.selectedColumns[i].width = el.width();
+                } else {
+                    view.selectedColumns[i].width = "auto";
+                }
+            });
+        } else {
+            // or setup the width from the local configuration
+            $.each(rows, function (i, element) {
+                var width = i < view.selectedColumns.length ? view.selectedColumns[i].width : null;
+
+                // width is defined by the configuration or is computed
+                if (width != undefined && width != "auto") {
+                    // size from user settings
+                    columnsWidth.push(width);
+                } else {
+                    // size from body
+                    width = $(element).width();
+                    columnsWidth.push(width);
+                }
+
+                zero = width <= 0;
+            });
+
+            // case of 0 width columns, columns are not ready, try again later
+            if (zero) {
+                return;
+            }
+
+            $.each(headerRows, function (i, element) {
+                var el = $(element);
+                var div = el.children('div');
+
+                // resize header column except glyph fixed columns
+                if (div.length && !el.hasClass('glyph-fixed-column')) {
+                    // count border left (no left border for the first column)
+                    el.width(columnsWidth[i]);
+                    div.width(columnsWidth[i] - (i === 0 ? 0 : 1));
+
+                    // update user setting locally (minus border left except on first column)
+                    view.selectedColumns[i].width = el.width();
+                } else {
+                    view.selectedColumns[i].width = "auto";
+                }
+            });
         }
 
-        $.each(headerRows, function(i, element) {
-            var el = $(element);
+        // done
+        if (!this.initialResizeDone) {
+            this.initialResizeDone = true;
+        }
+    },
 
-            // resize title column except placeholder columns
-            if (el.children('div') && !el.hasClass('glyph-fixed-column')) {
-                // count border left (should does not set it for first column)
-                el.width(columnsWidth[i]+1);
-                el.children('div').width(columnsWidth[i]);
+    onColumnDragStart: function(e) {
+        var target = $(e.currentTarget);
+
+        // fix for firefox...
+        e.originalEvent.dataTransfer.setData('text/plain', null);
+
+        target.css('opacity', '0.4');
+
+        var i1;
+        $.each(this.ui.thead.children('tr').children('td,th'), function(i, element) {
+            if (target.parent().parent().attr('name') === $(element).attr('name')) {
+                i1 = i;
+                return false;
             }
         });
+
+        // opacity of each cell
+        $.each(this.ui.tbody.children('tr'), function(i, element) {
+            $(element).children('th,td').eq(i1).css('opacity', '0.4');
+        });
+
+        application.dndElement = target;
+    },
+
+    onColumnDragEnd: function(e) {
+        var target = $(e.currentTarget);
+
+        target.css('opacity', 'initial');
+
+        var i1;
+        $.each(this.ui.thead.children('tr').children('td,th'), function(i, element) {
+            if (target.parent().parent().attr('name') === $(element).attr('name')) {
+                i1 = i;
+                return false;
+            }
+        });
+
+        // opacity of each cell
+        $.each(this.ui.tbody.children('tr'), function(i, element) {
+            $(element).children('th,td').eq(i1).css('opacity', 'initial');
+        });
+
+        application.dndElement = null;
+    },
+
+    onColumnDragEnter: function(e) {
+        if (e.originalEvent.preventDefault) {
+            e.originalEvent.preventDefault();
+        }
+
+        var target = $(e.currentTarget);
+
+        target.css('opacity', '0.4');
+
+        var i1;
+        $.each(this.ui.thead.children('tr').children('td,th'), function(i, element) {
+            if (target.parent().parent().attr('name') === $(element).attr('name')) {
+                i1 = i;
+                return false;
+            }
+        });
+
+        // opacity of each cell
+        $.each(this.ui.tbody.children('tr'), function(i, element) {
+            $(element).children('th,td').eq(i1).css('opacity', '0.4');
+        });
+
+        return false;
+    },
+
+    onColumnDragLeave: function(e) {
+        if (e.originalEvent.preventDefault) {
+            e.originalEvent.preventDefault();
+        }
+
+        var target = $(e.currentTarget);
+
+        target.css('opacity', 'initial');
+
+        var i1;
+        $.each(this.ui.thead.children('tr').children('td,th'), function(i, element) {
+            if (target.parent().parent().attr('name') === $(element).attr('name')) {
+                i1 = i;
+                return false;
+            }
+        });
+
+        // opacity of each cell
+        $.each(this.ui.tbody.children('tr'), function(i, element) {
+            $(element).children('th,td').eq(i1).css('opacity', 'initial');
+        });
+
+        return false;
+    },
+
+    onColumnDragOver: function(e) {
+        if (e.originalEvent.preventDefault) {
+            e.originalEvent.preventDefault();
+        }
+
+        return false;
+    },
+
+    onColumnDrop: function(e) {
+        if (e.originalEvent.stopPropagation) {
+            e.originalEvent.stopPropagation();
+        }
+
+        var target = $(e.currentTarget);
+
+        target.css('opacity', 'initial');
+
+        var srcName = application.dndElement.parent().parent().attr('name');
+        var dstName = target.parent().parent().attr('name');
+
+        if (srcName !== dstName) {
+            // switch the two columns
+            var i1 = 0, i2 = 0;
+            $.each(this.ui.thead.children('tr').children('td,th'), function(i, element) {
+                if ($(element).attr('name') === dstName) {
+                    i1 = i;
+                } else if ($(element).attr('name') === srcName) {
+                    i2 = i;
+                }
+            });
+
+            // switch label
+            target.parent().parent().swapWith(application.dndElement.parent().parent());
+
+            // switch for any row and reset opacity
+            $.each(this.ui.tbody.children('tr'), function(i, element) {
+                var columns = $(element).children('th,td');
+                columns.eq(i1).swapWith(columns.eq(i2)).css('opacity', 'initial');
+            });
+
+            // switch selectedColumns
+            var tmp = this.selectedColumns[i1];
+            this.selectedColumns[i1] = this.selectedColumns[i2];
+            this.selectedColumns[i2] = tmp;
+
+            // switch displayedColumns
+            var col1 = null, col2 = null;
+            for (var i = 0; i < this.displayedColumns.length; ++i) {
+                if (this.displayedColumns[i].name === this.selectedColumns[i1].name) {
+                    col1 = i;
+                } else if (this.displayedColumns[i].name === this.selectedColumns[i2].name) {
+                    col2 = i;
+                }
+            }
+
+            tmp = this.displayedColumns[col1];
+            this.displayedColumns[col1] = this.displayedColumns[col2];
+            this.displayedColumns[col2] = tmp;
+
+            // save user settings
+            if (this.userSettingName) {
+                application.updateUserSetting(this.userSettingName, this.selectedColumns);
+            }
+        }
+
+        return false;
+    },
+
+    onResizeColumnBegin: function (e) {
+        var sizer = $(e.currentTarget);
+
+        // get the previous column
+        var column = sizer.parent().parent();
+        var columns = column.parent().find('th');
+        var view = this;
+
+        this.resizingColumnLeft = null;
+
+        $.each(columns, function(i, element) {
+            if ($(element).attr('name') === column.attr('name')) {
+                // left and right columns directly impacted
+                view.resizingColumnLeft = $(columns[i-1]);
+                view.resizingColumnRight = $(element);
+
+                return false;
+            }
+        });
+
+        if (this.resizingColumnLeft && this.resizingColumnRight) {
+            $('body').addClass('unselectable');
+
+            // initial mouse position
+            this.resizingColumnStartOffset = e.screenX;
+
+            // initial widths
+            this.resizingColumnLeftStartWidth = this.resizingColumnLeft.width();
+            this.resizingColumnRightStartWidth = this.resizingColumnRight.width();
+        }
+    },
+
+    onResizeColumnFinish: function(e) {
+        if (this.resizingColumnLeft && this.resizingColumnRight) {
+            $('body').removeClass('unselectable');
+
+            var view = this;
+
+            var headerRows = this.ui.thead.children('tr').children('td,th');
+            $.each(headerRows, function (i, element) {
+                var el = $(element);
+
+                // ignored fixed columns width
+                if (!el.hasClass('glyph-fixed-column')) {
+                    view.selectedColumns[i].width = el.width();
+                } else {
+                    view.selectedColumns[i].width = "auto";
+                }
+            });
+
+            // save user settings
+            if (this.userSettingName) {
+                application.updateUserSetting(this.userSettingName, this.selectedColumns);
+            }
+
+            this.resizingColumnLeft = null;
+            this.resizingColumnRight = null;
+        }
+    },
+
+    onResizeColumnMove: function (e) {
+        if (this.resizingColumnLeft && this.resizingColumnRight) {
+            var delta = e.screenX - this.resizingColumnStartOffset;
+
+            // new width respecting the min width
+            var leftWidth = Math.max(
+                this.resizingColumnLeft.css('min-width').replace('px', ''),
+                this.resizingColumnLeftStartWidth + delta);
+
+            var rightWidth = Math.max(
+                this.resizingColumnRight.css('min-width').replace('px', ''),
+                this.resizingColumnRightStartWidth - delta);
+
+            this.resizingColumnLeft.width(leftWidth);
+            this.resizingColumnRight.width(rightWidth);
+
+            // adjust width of every columns
+            var columns = this.ui.thead.children('tr').children('th,td');
+            $.each(columns, function(i, element) {
+                var el = $(element);
+
+                if (!el.hasClass('glyph-fixed-column')) {
+                    el.width(el.width());
+
+                    // and especially of the title div (minus border left width)
+                    el.children('div').width(el.width() - (i === 0 ? 0 : 1));
+                }
+            });
+        }
     },
 
     capacity: function() {
@@ -263,9 +660,9 @@ var View = Marionette.CompositeView.extend({
                 var scrollElement = view.getScrollElement();
 
                 // re-sync the sticky table header during scrolling after collection was rendered
-                if (!view.ui.table.hasClass('table-advanced')) {
-                    $(view.ui.table).stickyTableHeaders({scrollableArea: scrollElement});
-                }
+                // if (!view.ui.table.hasClass('table-advanced')) {
+                //     $(view.ui.table).stickyTableHeaders({scrollableArea: scrollElement});
+                // }
 
                 if (scroll) {
                     // var height = scrollElement.prop('scrollHeight');
@@ -286,7 +683,11 @@ var View = Marionette.CompositeView.extend({
     },
 
     onRefreshChildren: function () {
-        this.updateColumnsWidth();
+        var view = this;
+
+        return $.when.apply($, []).done(function () {
+            view.updateColumnsWidth();
+        });
     },
 
     onRenderCollection: function() {
@@ -300,13 +701,15 @@ var View = Marionette.CompositeView.extend({
         // keep list of last queried models, done just once the collection get synced
         this.lastModels = [];
 
-        if (data.length > 0) {
+        if (data && data.items && data.items.length > 0) {
             for (var i = 0; i < data.items.length; ++i) {
                 this.lastModels.push(this.collection.get(data.items[i].id));
             }
 
             // post refresh on children once every children was rendered for any other rendering
             this.onRefreshChildren();
+        } else {
+            this.updateColumnsWidth();
         }
     },
 
@@ -365,7 +768,7 @@ var View = Marionette.CompositeView.extend({
 
                 // append others columns by alpha order
                 var columns = this.getOption('columns') || {};
-                var columnsByLabel = []
+                var columnsByLabel = [];
 
                 for (var columnName in columns) {
                     var column = columns[columnName];
@@ -399,8 +802,8 @@ var View = Marionette.CompositeView.extend({
                 contextMenu.css({
                     display: "block",
                     left: this.ui.add_column.parent().position().left - contextMenu.width(),
-                    top: this.ui.add_column.parent().position().top + this.ui.add_column.height(),
-                    'z-index': 4  /* upside stickyHeader */
+                    top: this.ui.add_column.parent().position().top + this.ui.add_column.height()
+                    // 'z-index': 4  /* upside stickyHeader */
                 });
             }
 
@@ -430,20 +833,20 @@ var View = Marionette.CompositeView.extend({
                 var headerCol = this.ui.thead.children('tr').children('th[name="' + columnName + '"]');
                 headerCol.remove();
 
-                var bodyCol = this.ui.tbody.find('tr td[name="' + columnName + '"]');
+                var bodyCol = this.ui.tbody.children('tr').children('td[name="' + columnName + '"]');
                 bodyCol.remove();
 
-                this.updateColumnsWidth();
-
                 // update user setting
-                if (this.userSettingName) {
-                    for (var i = 0; i < this.selectedColumns.length; ++i) {
-                        if (this.selectedColumns[i].name === columnName) {
-                            this.selectedColumns.splice(i, 1);
-                            break;
-                        }
+                for (var i = 0; i < this.selectedColumns.length; ++i) {
+                    if (this.selectedColumns[i].name === columnName) {
+                        this.selectedColumns.splice(i, 1);
+                        break;
                     }
+                }
 
+                this.updateColumnsWidth(true);
+
+                if (this.userSettingName) {
                     application.updateUserSetting(this.userSettingName, this.selectedColumns);
                 }
             }
@@ -460,12 +863,11 @@ var View = Marionette.CompositeView.extend({
             // insert the new column dynamically
             var th = $('<th></th>');
             th.attr('name', columnName);
-            th.prop('draggable', true);
             th.addClass('unselectable');
 
             var div = $('<div></div>');
-            div.html(this.getOption('columns')[columnName].label);
-            div.prepend($('<span class="glyphicon glyphicon-sort action column-action"></span>'));
+            div.append($('<span class="glyphicon glyphicon-sort action column-action"></span>'));
+            div.append($('<span draggable="true">' + this.getOption('columns')[columnName].label + '</span>'));
 
             th.append(div);
 
@@ -473,6 +875,7 @@ var View = Marionette.CompositeView.extend({
 
             var collection = this.collection;
             var rows = this.ui.tbody.children('tr');
+
             $.each(rows, function (i, element) {
                 var el = $(element);
                 var item = collection.get(el.attr('element-id'));
@@ -487,19 +890,22 @@ var View = Marionette.CompositeView.extend({
                 el.append(column);
             });
 
-            // refresh only the new column on every row
-            this.onRefreshChildren(true, this.displayedColumns[this.displayedColumns-1]);
-
             // update user setting
-            if (this.userSettingName) {
-                this.selectedColumns.push({
-                    name: columnName,
-                    width: 'auto',
-                    sort_by: null
-                });
+            this.selectedColumns.push({
+                name: columnName,
+                width: null,
+                sort_by: null
+            });
 
-                application.updateUserSetting(this.userSettingName, this.selectedColumns);
-            }
+            var view = this;
+
+            // refresh only the new column on every row
+            this.onRefreshChildren(true, this.displayedColumns[this.displayedColumns-1]).done(function() {
+                // save once refresh is done completely
+                if (view.userSettingName) {
+                    application.updateUserSetting(view.userSettingName, view.selectedColumns);
+                }
+            });
         }
     }
 });

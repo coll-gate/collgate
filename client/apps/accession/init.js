@@ -74,6 +74,10 @@ AccessionModule.prototype = {
 
         // by default, accession list default columns to display
         app.setDefaultUserSetting('accessions_list_columns', [
+            {name: 'glyph', width: 'auto', sort_by: null},
+            {name: 'code', width: 'auto', sort_by: null},
+            {name: 'name', width: 'auto', sort_by: 'asc'},
+            {name: 'parent', width: 'auto', sort_by: null},
             {name: 'IPGRI_4.1.1', width: 'auto', sort_by: null},
             {name: 'MCPD_ORIGCTY', width: 'auto', sort_by: null}
         ]);

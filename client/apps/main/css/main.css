@@ -322,18 +322,18 @@ div.table-container {
 }
 
 .table.table-advanced thead tr th div {
-    width: 0px;  /* starts with 0 with to avoid initialization artifacts */
-    position: absolute;
-    padding: 8px 8px;
+    width: 0px;  /* starts with 0 width to avoid initialization artifacts */
+    position: fixed;
     height: 32px;
-    /*top: 62px;*/
-    margin-left: -9px;
+    margin-left: -17px;
     margin-top: -32px;
     background: transparent;
     line-height: normal;
-    border-left: 1px solid #ddd;
+    border: none;
+    /*border-left: 1px solid #ddd;*/
     overflow: hidden;
     text-overflow: ellipsis;  /* longest lines */
+    padding: 8px 8px 8px 17px;
     /*word-break: break-all;*/
     /*white-space: normal;*/
 }
@@ -375,11 +375,39 @@ span.column-action {
     margin-right: 3px;
 }
 
-.table.table-advanced thead td.glyph-fixed-column, .table.table-advanced thead th.glyph-fixed-column,
-.table.table-advanced tbody td.glyph-fixed-column, .table.table-advanced tbody th.glyph-fixed-column {
+.table.table-advanced thead tr td.glyph-fixed-column, .table.table-advanced thead tr th.glyph-fixed-column,
+.table.table-advanced tbody tr td.glyph-fixed-column, .table.table-advanced tbody tr th.glyph-fixed-column {
+    width: 32px;
+    min-width: 32px;
+    max-width: 32px;
+}
+
+.table.table-advanced thead tr td.glyph-fixed-column div, .table.table-advanced thead tr th.glyph-fixed-column div {
     width: 32px;
 }
 
-.table.table-advanced thead td.glyph-fixed-column div, .table.table-advanced thead th.glyph-fixed-column div {
-    width: 32px;
+.table.table-advanced thead tr th div div.column-sizer {
+    height: 32px;
+    margin: -8px 0px 0px -15px;
+    width: 15px;
+    /*position: relative;*/
+    display: inline-block;
+    background: transparent;
+    border-left: none;
+    overflow: visible;
+    padding-left: 6px;
+    padding-right: 6px;
+    padding-top: 0px;
+}
+
+.table.table-advanced thead tr th div div.column-sizer.active {
+    /*background: cornflowerblue;*/  /* debug only */
+    cursor: col-resize;
+}
+
+.table.table-advanced thead tr th div div.column-sizer div {
+    width: 1px;
+    padding: 0px;
+    margin: 0px;
+    background-color: #ddd;
 }

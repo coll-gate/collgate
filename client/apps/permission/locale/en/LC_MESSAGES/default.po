@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-10 11:55+0100\n"
+"POT-Creation-Date: 2017-04-14 09:38+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -53,16 +53,16 @@ msgstr ""
 msgid "List of users for group"
 msgstr ""
 
-#: ../../../templates/grouplist.html:16 ../../../templates/grouprename.html:10
+#: ../../../templates/grouplist.html:15 ../../../templates/grouprename.html:10
 #: ../../../templates/permission.html:24
 msgid "Name"
 msgstr ""
 
-#: ../../../templates/grouplist.html:17
+#: ../../../templates/grouplist.html:16
 msgid "Users"
 msgstr ""
 
-#: ../../../templates/grouplist.html:18 ../../../templates/userlist.html:21
+#: ../../../templates/grouplist.html:17 ../../../templates/userlist.html:21
 msgid "Permissions"
 msgstr ""
 
@@ -78,8 +78,12 @@ msgstr ""
 msgid "Apply"
 msgstr ""
 
-#: ../../../templates/groupuserlist.html:16 ../../../templates/userlist.html:18
+#: ../../../templates/groupuserlist.html:15 ../../../templates/userlist.html:17
 msgid "Username"
+msgstr ""
+
+#: ../../../templates/groupuserlist.html:16 ../../../templates/userlist.html:18
+msgid "Email"
 msgstr ""
 
 #: ../../../templates/groupuserlist.html:17 ../../../templates/userlist.html:19
@@ -100,16 +104,4 @@ msgstr ""
 
 #: ../../../templates/permission.html:25
 msgid "Code"
-msgstr ""
-
-#: ../../../templates/userlist.html:15
-msgid "Status"
-msgstr ""
-
-#: ../../../templates/userlist.html:16
-msgid "Superuser"
-msgstr ""
-
-#: ../../../templates/userlist.html:17
-msgid "Staff"
 msgstr ""

@@ -28,7 +28,7 @@ var Router = Marionette.AppRouter.extend({
         "app/organisation/grc/": "getGRC",
         "app/organisation/grc/organisation/": "getGRCOrganisationList",
         "app/organisation/organisation/": "getOrganisationList",
-        "app/organisation/organisation/:id/": "getOrganisation"
+        "app/organisation/organisation/:id/*tab": "getOrganisation"
     },
 
     getGRC: function () {
@@ -82,13 +82,15 @@ var Router = Marionette.AppRouter.extend({
         defaultLayout.getRegion('bottom').show(new OrganisationListFilterView({collection: collection}));
     },
 
-    getOrganisation : function(id) {
+    getOrganisation : function(id, tab) {
+        tab || (tab = "");
+
         var organisation = new OrganisationModel({id: id});
 
         var defaultLayout = new DefaultLayout();
         application.show(defaultLayout);
 
-        var organisationLayout = new OrganisationLayout({model: organisation});
+        var organisationLayout = new OrganisationLayout({model: organisation, initialTab: tab.replace('/', '')});
 
         organisation.fetch().then(function() {
             defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Organisation"), model: organisation}));

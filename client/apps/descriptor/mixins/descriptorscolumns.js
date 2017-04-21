@@ -11,8 +11,9 @@
 var DescriptorsColumnsView = {
     onRefreshChildren: function (full, columnsList) {
         var columns = columnsList || this.displayedColumns || [];
-        var full = full !== undefined || false;
         var promises = [];
+
+        full = full !== undefined || false;
 
         if (full) {
             // one query by list of value
@@ -189,8 +190,9 @@ var DescriptorsColumnsView = {
 
         var view = this;
 
-        $.when.apply($, promises).done(function () {
-            view.updateColumnsWidth();
+        // return the promise
+        return $.when.apply($, promises).done(function () {
+            view.updateColumnsWidth(true);
         });
     }
 };

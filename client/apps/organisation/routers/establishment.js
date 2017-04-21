@@ -11,34 +11,26 @@
 var Marionette = require('backbone.marionette');
 
 var EstablishmentModel = require('../models/establishment');
-var EstablishmentCollection = require('../collections/establishment');
-
-//var EstablishmentListView = require('../views/establishmentlist');
-//var EstablishmentListFilterView = require('../views/establishmentlistfilter');
 
 var EstablishmentLayout = require('../views/establishmentlayout');
 var DefaultLayout = require('../../main/views/defaultlayout');
-var ScrollingMoreView = require('../../main/views/scrollingmore');
 var TitleView = require('../../main/views/titleview');
 
 
 var Router = Marionette.AppRouter.extend({
     routes : {
-        "app/organisation/organisation/:id/establishment/": "getEstablishmentList",
-        "app/organisation/establishment/:id/": "getEstablishment"
+        "app/organisation/establishment/:id/*tab": "getEstablishment"
     },
 
-    getEstablishmentList : function() {
-        $.alert.error("Not yet !");
-    },
+    getEstablishment : function(id, tab) {
+        tab || (tab = "");
 
-    getEstablishment : function(id) {
         var establishment = new EstablishmentModel({id: id});
 
         var defaultLayout = new DefaultLayout();
         application.show(defaultLayout);
 
-        var establishmentLayout = new EstablishmentLayout({model: establishment});
+        var establishmentLayout = new EstablishmentLayout({model: establishment, initialTab: tab.replace('/', '')});
 
         establishment.fetch().then(function() {
             defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Establishment"), model: establishment}));

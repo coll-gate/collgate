@@ -198,4 +198,8 @@ TimeType.DescriptorTypeDetailsView = Marionette.ItemView.extend({
     }
 });
 
+TimeType.format = function (value) {
+    return moment(value, "HH:mm:ss").format("LTS");
+};
+
 module.exports = TimeType;
