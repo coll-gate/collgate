@@ -37,8 +37,12 @@ class Command(BaseCommand):
         self.progress_widgets = None
         self.progress = 0
         self.force = False
+        self.export_file = None
         self.export = False
         self.delete = False
+        self.verbosity = None
+        self.no_color = None
+        self.cities_bulk = []
 
     def add_arguments(self, parser):
         # Named (optional) arguments
@@ -123,6 +127,8 @@ class Command(BaseCommand):
         self.progress_enabled = not options.get('no-progress')
         self.export = options.get('export')
         self.force = options.get('force')
+        self.verbosity = options.get('verbosity')
+        self.no_color = options.get('no_color')
 
         if self.export is None:
             self.export = '%s/city_light_%s.txt' % (DATA_DIR,
@@ -142,7 +148,7 @@ class Command(BaseCommand):
             else:
                 print('Creating %s' % file_path)
 
-            export_file = open(file_path, 'a')
+            self.export_file = open(file_path, 'a')
 
         for source in CITY_SOURCES:
 
@@ -157,79 +163,90 @@ class Command(BaseCommand):
             if not self.progress_enabled:
                 print('Importing...')
 
-            for items in geonames.parse():
-                imported = self.city_import(items)
+            cities_to_check = []
 
-                if self.export and imported:
-                    export_file.write('\t'.join(items) + '\n')
+            for items in geonames.parse():
+                current_city = self.city_check(items)
 
                 i += 1
                 self.progress_update(i)
 
+                if current_city:
+                    cities_to_check.append(current_city)
+
+                if len(cities_to_check) >= 500:
+                    self.city_bulk(cities_to_check)
+                    cities_to_check = []
+
+            if cities_to_check:
+                self.city_bulk(cities_to_check)
             self.progress_finish()
 
             if self.export:
-                export_file.close()
+                self.export_file.close()
 
             geonames.finish(delete=self.delete)
 
-    def city_import(self, items):
-        """
-        Import a city to the database
-        :param items: row of the source file in geoname table format
-        :return: (bool)
-        """
-
+    def city_check(self, items):
         if not items[IGeoname.featureCode] in instance.geonames_include_city_types:
             return False
 
-        try:
-            kwargs = dict(name=items[IGeoname.name],
-                          country_id=self._get_country_id(items[IGeoname.countryCode]))
-        except Country.DoesNotExist:
-            raise
+        return {
+            'geoname_id': int(items[IGeoname.geonameid]),
+            'name': items[IGeoname.name],
+            'country_code': items[IGeoname.countryCode],
+            'country_id': self._get_country_id(items[IGeoname.countryCode]),
+            'latitude': items[IGeoname.latitude],
+            'longitude': items[IGeoname.longitude],
+            'population': items[IGeoname.population],
+            'feature_code': items[IGeoname.featureCode]
+        }
 
-        try:
-            try:
-                city = City.objects.get(**kwargs)
-            except City.MultipleObjectsReturned:
-                return False
+    def city_bulk(self, cities_to_check):
+        bulk = []
+        for city in cities_to_check:
+            result = City.objects.filter(geoname_id=city.get('geoname_id'))
+            if result:
+                result[0].name = city.get('name')
+                result[0].country_id = city.get('country_id')
+                result[0].latitude = city.get('latitude')
+                result[0].longitude = city.get('longitude')
+                result[0].population = city.get('population')
+                result[0].feature_code = city.get('feature_code')
+                result[0].save()
 
-        except City.DoesNotExist:
-            try:
-                city = City.objects.get(geoname_id=items[IGeoname.geonameid])
-                city.name = items[IGeoname.name]
-                city.country_id = self._get_country_id(
-                    items[IGeoname.countryCode])
-            except City.DoesNotExist:
-                city = City(**kwargs)
+                town = result[0]
 
-        save = False
+            else:
+                town = City(
+                    geoname_id=city.get('geoname_id'),
+                    name=city.get('name'),
+                    country_id=city.get('country_id'),
+                    latitude=city.get('latitude'),
+                    longitude=city.get('longitude'),
+                    population=city.get('population'),
+                    feature_code=city.get('feature_code')
+                )
 
-        if not city.latitude:
-            city.latitude = items[IGeoname.latitude]
-            save = True
+                bulk.append(town)
 
-        if not city.longitude:
-            city.longitude = items[IGeoname.longitude]
-            save = True
+            if self.export:
+                r = [""] * 18
+                r[IGeoname.name] = city.get('name')
+                r[IGeoname.countryCode] = city.get('country_code')
+                r[IGeoname.latitude] = city.get('latitude')
+                r[IGeoname.longitude] = city.get('longitude')
+                r[IGeoname.population] = city.get('population')
+                r[IGeoname.featureCode] = city.get('feature_code')
+                r[IGeoname.geonameid] = str(city.get('geoname_id'))
 
-        if not city.population:
-            city.population = items[IGeoname.population]
-            save = True
+                self.export_file.write('\t'.join(r) + '\n')
 
-        if not city.feature_code:
-            city.feature_code = items[IGeoname.featureCode]
-            save = True
+            self.display_entry_message(town, True if result else False)
 
-        if not city.geoname_id:
-            # city may have been added manually
-            city.geoname_id = items[IGeoname.geonameid]
-            save = True
-
-        if save:
-            city.save()
-            return True
+        if bulk:
+            City.objects.bulk_create(bulk)
+            self.display_bulk_message(len(bulk))
 
     def _get_country_id(self, code2):
         """
@@ -241,3 +258,14 @@ class Command(BaseCommand):
         if code2 not in self._country_codes.keys():
             self._country_codes[code2] = Country.objects.get(code2=code2).pk
         return self._country_codes[code2]
+
+    def display_bulk_message(self, bulk_size):
+        if not self.progress_enabled and self.verbosity:
+            print('BULK INSERT!\tNb_entries:%s' % bulk_size)
+
+    def display_entry_message(self, city, state):
+        if not self.progress_enabled and self.verbosity:
+            display_state = "UPDATED" if state else "ADD"
+            if not self.no_color:
+                display_state = (Fore.BLUE if state else Fore.GREEN) + display_state + Style.RESET_ALL
+            print('[%s] %s' % (display_state, city))

@@ -7,7 +7,7 @@ coll-gate geolocation module functional tests.
 """
 
 from unittest import TestCase
-from ..appsettings import DATA_DIR, COUNTRY_SOURCES, CITY_SOURCES, TRANSLATION_SOURCES
+from ..appsettings import DATA_DIR
 from urllib import request
 import os
 from geonames.geonames import Geonames
@@ -23,48 +23,26 @@ class TestGeonames(TestCase):
         result = os.access(DATA_DIR, os.W_OK)
         self.assertTrue(result)
 
-    def test_connection_to_country_sources(self):
+    def test_connection_to_country_source(self):
         """
-        Test the connection to the country sources
+        Test the connection to a country source
         """
-        for source in COUNTRY_SOURCES:
-            result = request.urlopen(url=source, timeout=10)
-            if result.getcode() is not 200:
-                self.fail()
+        result = request.urlopen(url="http://download.geonames.org/export/dump/countryInfo.txt", timeout=10)
+        if result.getcode() is not 200:
+            self.fail()
 
-    def test_connection_to_city_sources(self):
+    def test_connection_to_city_source(self):
         """
-        Test the connection to the city sources
+        Test the connection to a city source
         """
-        for source in CITY_SOURCES:
-            result = request.urlopen(url=source, timeout=10)
-            if result.getcode() is not 200:
-                self.fail()
+        result = request.urlopen(url="http://download.geonames.org/export/dump/cities15000.zip", timeout=10)
+        if result.getcode() is not 200:
+            self.fail()
 
-    def test_connection_to_translation_sources(self):
+    def test_connection_to_translation_source(self):
         """
-        Test the connection to the translation sources
+        Test the connection to a translation source
         """
-        for source in TRANSLATION_SOURCES:
-            result = request.urlopen(url=source, timeout=10)
-            if result.getcode() is not 200:
-                self.fail()
-
-    def test_download(self):
-        """
-        Geonames module should be able to download source  
-        """
-        source = CITY_SOURCES[0]
-        destination_file_name = source.split('/')[-1]
-        file_path = os.path.join(DATA_DIR, destination_file_name)
-
-        src_size, src_last_modified = Geonames.download(source, file_path)
-        last_modified = timezone.localtime(
-            timezone.make_aware(timezone.datetime.utcfromtimestamp(os.path.getmtime(file_path)))
-        )
-
-        os.remove(file_path)
-
-        self.assertGreaterEqual(src_size, 1)
-        self.assertIsNotNone(src_last_modified)
-        self.assertTrue(timezone.is_aware(last_modified))
+        result = request.urlopen(url="http://download.geonames.org/export/dump/alternateNames.zip", timeout=10)
+        if result.getcode() is not 200:
+            self.fail()

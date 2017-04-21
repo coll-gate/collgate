@@ -170,6 +170,9 @@ WEBPACK = {
     'entry': '/build/app.js'
 }
 
+GEONAMES_COUNTRY_SOURCES = ['/home/mboulnemour/collgate/collgate/server/geonames/data/historicCountryInfo.txt',
+                            'http://download.geonames.org/export/dump/countryInfo.txt']
+
 # CACHES = {
 #     'default': {
 #         'BACKEND': 'django.core.cache.backends.dummy.DummyCache',

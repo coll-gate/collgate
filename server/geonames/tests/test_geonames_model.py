@@ -1,4 +1,6 @@
 from django.test import TestCase
+from django.utils import timezone
+
 from geonames.models import *
 
 
@@ -21,14 +23,20 @@ class TestGeonamesModel(TestCase):
             feature_code='PPLC'
         )
 
-        alt_name = AlternateName.objects.create(
+        AlternateName.objects.create(
+            alt_name_id=65894,
             language='es',
             alternate_name='Francia',
             is_preferred_name=True,
-            is_short_name=True
+            is_short_name=True,
+            content_object=france
         )
 
-        france.alt_names.add(alt_name)
+        State.objects.create(
+            source='bla/bla/bla/text/source.txt',
+            last_modified=timezone.localtime(timezone.make_aware(timezone.datetime(1992, 5, 20))),
+            size=254
+        )
 
     def test_country_display(self):
         france = Country.objects.get(geoname_id=3017382)
@@ -40,4 +48,9 @@ class TestGeonamesModel(TestCase):
 
     def test_translation_display(self):
         alt_name = AlternateName.objects.get(language='es', alternate_name='Francia')
-        self.assertEqual(str(alt_name), '(es, Francia, preferred : True, short : True)')
+        self.assertEqual(str(alt_name), '(65894 -> es, Francia, preferred : True, short : True)')
+
+    def test_state(self):
+        state = State.objects.get(source='bla/bla/bla/text/source.txt')
+        self.assertEqual(state.last_modified, timezone.localtime(timezone.make_aware(timezone.datetime(1992, 5, 20))))
+        self.assertEqual(state.size, 254)

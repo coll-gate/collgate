@@ -32,18 +32,12 @@ class TestGeonames(TestCase):
 
         State.objects.create(
             source=os.path.join(DATA_DIR, 'test.txt'),
-            last_modified=timezone.datetime(1992, 5, 20),
+            last_modified=timezone.localtime(timezone.make_aware(timezone.datetime(1992, 5, 20))),
             size=254
         )
 
     def tearDown(self):
         os.remove(os.path.join(DATA_DIR, 'test.txt'))
-
-    # def test_download(self):
-    #     self.fail()
-    #
-    # def test_extract(self):
-    #     self.fail()
 
     @mock.patch('geonames.geonames.Geonames.__init__', fakeGeonames.__init__)
     def test_parse(self):
@@ -70,22 +64,15 @@ class TestGeonames(TestCase):
         result = geo_instance.num_lines()
         self.assertEqual(result, 4)
 
-    # def test_finish(self):
-    #     self.fail()
+    @mock.patch('geonames.geonames.Geonames.__init__', fakeGeonames.__init__)
+    def test_finish(self):
+        geo_instance = Geonames('test.txt')
+        geo_instance.finish()
+        result = True if State.objects.get(source=os.path.join(DATA_DIR, 'test.txt')) else False
+        self.assertTrue(result)
 
     @mock.patch('geonames.geonames.Geonames.__init__', fakeGeonames.__init__)
-    def test__record_last_modified(self):
+    def test__need_import(self):
         geo_instance = Geonames('test.txt')
-        result = geo_instance._record_last_modified()
-        expected = State.objects.get(source=os.path.join(DATA_DIR, 'test.txt'))
-        self.assertEqual(result[0], expected)
-
-    # def test__delete_source_file(self):
-    #     self.fail()
-
-    @mock.patch('geonames.geonames.Geonames.__init__', fakeGeonames.__init__)
-    def test__need_load_file(self):
-        geo_instance = Geonames('test.txt')
-        result = geo_instance._need_load_file(os.path.join(DATA_DIR, 'test.txt'))
+        result = geo_instance._need_import()
         self.assertFalse(result)
-        # self.fail()

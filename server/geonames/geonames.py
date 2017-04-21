@@ -10,14 +10,17 @@ Geonames Source Manager
 
 from __future__ import unicode_literals
 
+from urllib.request import urlopen
+import email.utils as eut
+
 import six
 import os.path
 import zipfile
 import logging
+import re
 
 from django.utils import timezone
 from geonames.appsettings import DATA_DIR
-from .downloader import Downloader
 from .models import State
 
 
@@ -34,33 +37,46 @@ class Geonames(object):
         destination_file_name = source.split('/')[-1]
         self.file_path = os.path.join(DATA_DIR, destination_file_name)
 
-        self.size, self.last_modified = self.download(
-            url=source,
-            path=self.file_path,
-            force=force
-        )
+        if re.search("(https?://[^\s]+)", source):
+            # the source is a url
+            source_stream = urlopen(source)
+            self.size = int(source_stream.headers['content-length'])
+            self.last_modified = eut.parsedate_to_datetime(
+                source_stream.headers['last-modified']
+            )
+
+            if not self._need_import() and not force:
+                self.need_run = False
+                logging.warning('Data are up to date for %s' % self.source)
+                return
+
+            if self._need_downloading():
+                self.logger.warning('Downloading %s into %s' % (source, self.file_path))
+                with open(self.file_path, 'wb') as local_file:
+                    local_file.write(source_stream.read())
+
+        else:
+            # the source is a file path
+            if not os.path.exists(self.file_path):
+                raise FileNotFoundError
+
+            self.size = os.stat(self.file_path).st_size
+            self.last_modified = timezone.localtime(
+                timezone.make_aware(timezone.datetime.utcfromtimestamp(os.path.getmtime(self.file_path)))
+            )
+
+            if not self._need_import() and not force:
+                self.need_run = False
+                logging.warning('Data are up to date for %s' % self.source)
+                return
 
         if not self.size:
             self.need_run = False
             return
 
-        if not os.path.exists(self.file_path):
-            raise FileNotFoundError
-
-        self.size = os.stat(self.file_path).st_size
-        self.last_modified = timezone.localtime(
-            timezone.make_aware(timezone.datetime.utcfromtimestamp(os.path.getmtime(self.file_path)))
-        )
-
-        if not self._need_load_file(self.source) and force:
-            self.need_run = False
-            logging.warning('Data are up to date for %s' % self.source)
-            return
-
         self.need_run = True
 
-        # extract the destination file, use the extracted file as new
-        # destination
+        # extract the destination file, use the extracted file as new destination
         destination_file_name = destination_file_name.replace(
             'zip', 'txt')
 
@@ -72,22 +88,6 @@ class Geonames(object):
 
         self.file_path = os.path.join(
             DATA_DIR, destination_file_name)
-
-    @staticmethod
-    def download(url, path, force=False):
-        """
-        Download the source file if is not up to date or if the force param is true
-        :param url: url of the source file
-        :param path: local destination of the file
-        :param force: (bool) force downloading of the file
-        :return: (int) size of the source, (datetime) last modification date of the source
-        """
-        downloader = Downloader()
-        return downloader.download(
-            source=url,
-            destination=path,
-            force=force
-        )
 
     def extract(self, zip_path, file_name):
         """
@@ -111,16 +111,9 @@ class Geonames(object):
         Return a python generator for geonames file parsing
         :return: generator 
         """
-        if not six.PY3:
-            file = open(self.file_path, 'r')
-        else:
-            file = open(self.file_path, encoding='utf-8', mode='r')
+        file = open(self.file_path, encoding='utf-8', mode='rt')
 
         for line in file:
-            if not six.PY3:
-                # in python3 this is already an unicode
-                line = line.decode('utf8')
-
             line = line.strip()
 
             if len(line) < 1 or line[0] == '#':
@@ -133,55 +126,50 @@ class Geonames(object):
         Return the number of lines in the source file
         :return: (int)
         """
-        if not six.PY3:
-            return sum(1 for line in open(self.file_path))
-        else:
-            return sum(1 for line in open(self.file_path, encoding='utf-8'))
+        return sum(1 for line in open(self.file_path, encoding='utf-8'))
 
     def finish(self, delete=False):
         """
         Records last modifications of the source and deletes source file from filesystem if the param delete is True
         :return:
         """
-        self._record_last_modified()
-        if delete:
-            self._delete_source_file()
-
-    def _record_last_modified(self):
-        """Records last modifications"""
-
-        res = State.objects.update_or_create(
+        State.objects.update_or_create(
             source=self.source,
             defaults={'last_modified': self.last_modified, 'size': self.size}
         )
-        return res
+        if delete:
+            os.remove(self.file_path)
+            if self.source.split('.')[-1] == 'zip':
+                os.remove(self.file_path.replace('txt', 'zip'))
 
-    def _delete_source_file(self):
+    def _need_import(self):
         """
-        Deletes source file from filesystem
+        Return true if the source file need to be imported
+        :return: bool
         """
-        os.remove(self.file_path)
-        if self.source.split('.')[-1] == 'zip':
-            os.remove(self.file_path.replace('txt', 'zip'))
-
-        return True
-
-    def _need_load_file(self, source):
-        """
-        Return True if the source file need to be imported in the database
-        :param source: Absolute path to the source file
-        :return: (bool)
-        """
-
         try:
-            state = State.objects.get(source=source)
+            state = State.objects.get(source=self.source)
         except State.DoesNotExist:
             return True
 
-        db_src_time = timezone.localtime(state.last_modified)
+        db_src_time = state.last_modified
         db_src_size = state.size
 
         if db_src_time >= self.last_modified and db_src_size == self.size:
             return False
+
+    def _need_downloading(self):
+        """
+        Return True if the source file need to be downloaded
+        :return: 
+        """
+        if os.path.exists(self.file_path):
+            file_size = os.stat(self.file_path).st_size
+            file_last_modified = timezone.localtime(
+                timezone.make_aware(timezone.datetime.utcfromtimestamp(os.path.getmtime(self.file_path)))
+            )
+
+            if file_last_modified >= self.last_modified and file_size == self.size:
+                return False
         else:
             return True

@@ -1,0 +1,4 @@
+#Historic Country DATA
+#ISO	ISO3	ISO-Numeric	fips	Country	Capital	Area(in sq km)	Population	Continent	tld	CurrencyCode	CurrencyName	Phone	Postal Code Format	Postal Code Regex	Languages	geonameid	neighbours	EquivalentFipsCode
+YU	YUG			Yugoslavia			0	EU								7500737		
+UR	URS			USSR			0									8354411		
