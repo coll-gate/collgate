@@ -1,10 +1,10 @@
 /**
  * @file base.js
  * @brief About view
- * @author Frederic SCHERMA
+ * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2016-06-14
- * @copyright
- * @license
+ * @copyright Copyright (c) 2016 INRA/CIRAD
+ * @license MIT (see LICENSE file)
  * @details http://smnh.me/extending-events-and-attributes-of-the-inherited-backbone-views/
  */
 
@@ -56,3 +56,4 @@ var BaseView = Backbone.View.extend({
 });
 
 module.exports = BaseView;
+

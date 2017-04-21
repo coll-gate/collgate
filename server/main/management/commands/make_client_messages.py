@@ -1,4 +1,12 @@
-# -*- coding: utf-8 -*-
+# -*- coding: utf-8; -*-
+#
+# @file make_client_messages.py
+# @brief 
+# @author Frédéric SCHERMA (INRA UMR1095)
+# @date 2016-09-01
+# @copyright Copyright (c) 2016 INRA/CIRAD
+# @license MIT (see LICENSE file)
+# @details 
 
 """Build PO gettext files for client apps (html and js).
 """
@@ -48,3 +56,4 @@ class Command(BaseCommand):
                         os.chdir("../..")
 
                 os.chdir("../..")
+

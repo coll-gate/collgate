@@ -1,11 +1,11 @@
 /**
  * @file formattype.js
  * @brief Descriptor type format type model
- * @author Frederic SCHERMA
+ * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2017-01-05
- * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
- * @license @todo
- * @details
+ * @copyright Copyright (c) 2017 INRA/CIRAD
+ * @license MIT (see LICENSE file)
+ * @details 
  */
 
 module.exports = Backbone.Model.extend({
@@ -20,3 +20,4 @@ module.exports = Backbone.Model.extend({
     },
     url: application.baseUrl + 'descriptor/format/type/:id'
 });
+

@@ -1,6 +1,12 @@
 # -*- coding: utf-8; -*-
 #
-# Copyright (c) 2016 INRA UMR1095 GDEC
+# @file geolocation_views.py
+# @brief 
+# @author Medhi BOULNEMOUR (INRA UMR1095)
+# @date 2017-01-03
+# @copyright Copyright (c) 2016 INRA/CIRAD
+# @license MIT (see LICENSE file)
+# @details 
 
 """
 coll-gate geolocation rest handler
@@ -410,3 +416,4 @@ def add_city(request):
     }
 
     return HttpResponseRest(request, response)
+

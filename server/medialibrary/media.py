@@ -1,6 +1,12 @@
 # -*- coding: utf-8; -*-
 #
-# Copyright (c) 2017 INRA UMR1095 GDEC
+# @file media.py
+# @brief 
+# @author Frédéric SCHERMA (INRA UMR1095)
+# @date 2017-01-03
+# @copyright Copyright (c) 2017 INRA/CIRAD
+# @license MIT (see LICENSE file)
+# @details 
 
 import io
 import mimetypes
@@ -322,3 +328,4 @@ def update_upload_media(request, uuid):
     }
 
     return HttpResponseRest(request, result)
+

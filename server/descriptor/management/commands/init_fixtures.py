@@ -1,6 +1,12 @@
-# -*- coding: utf-8 -*-
+# -*- coding: utf-8; -*-
 #
-# Copyright (c) 2017 INRA UMR1095 GDEC
+# @file init_fixtures.py
+# @brief 
+# @author Frédéric SCHERMA (INRA UMR1095)
+# @date 2017-01-03
+# @copyright Copyright (c) 2017 INRA/CIRAD
+# @license MIT (see LICENSE file)
+# @details 
 
 """
 Install the initials asset of data for each application that needs it.
@@ -124,3 +130,4 @@ class Command(BaseCommand):
             connection.commit()
 
         connection.close()
+

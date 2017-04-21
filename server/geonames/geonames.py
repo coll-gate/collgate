@@ -1,8 +1,12 @@
 # -*- coding: utf-8; -*-
 #
-# todo: CHECK cities-light LICENCE
-# Source code from yourlabs/django-cities-light (geonames.py)
-# forked from coderholic/django-cities
+# @file geonames.py
+# @brief 
+# @author Medhi BOULNEMOUR (INRA UMR1095)
+# @date 2017-01-03
+# @copyright Copyright (c) 2016 INRA/CIRAD
+# @license MIT (see LICENSE file)
+# @details 
 
 """
 Geonames Source Manager
@@ -173,3 +177,4 @@ class Geonames(object):
                 return False
         else:
             return True
+

@@ -1,6 +1,12 @@
-# -*- coding: utf-8 -*-
+# -*- coding: utf-8; -*-
 #
-# Copyright (c) 2017 INRA UMR1095 GDEC
+# @file descriptorstypes.py
+# @brief 
+# @author Medhi BOULNEMOUR (INRA UMR1095)
+# @date 2017-01-03
+# @copyright Copyright (c) 2017 INRA/CIRAD
+# @license MIT (see LICENSE file)
+# @details 
 
 """
 Setup the types of descriptors.
@@ -54,3 +60,4 @@ DESCRIPTORS = {
 
 def fixture(fixture_manager):
     fixture_manager.create_or_update_types(DESCRIPTORS)
+

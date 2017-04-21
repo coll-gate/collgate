@@ -1,6 +1,12 @@
 # -*- coding: utf-8; -*-
 #
-# Copyright (c) 2016 INRA UMR1095 GDEC
+# @file help.py
+# @brief 
+# @author Frédéric SCHERMA (INRA UMR1095)
+# @date 2016-09-01
+# @copyright Copyright (c) 2016 INRA/CIRAD
+# @license MIT (see LICENSE file)
+# @details 
 
 """
 coll-gate help views
@@ -33,3 +39,4 @@ def about(request):
 @RestHelpManual.def_request(Method.GET, Format.HTML)
 def manual(request):
     return render(request, 'main/help/manual_index.html', {})
+

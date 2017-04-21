@@ -1,6 +1,12 @@
 # -*- coding: utf-8; -*-
 #
-# Copyright (c) 2016 INRA UMR1095 GDEC
+# @file descriptor.py
+# @brief 
+# @author Frédéric SCHERMA (INRA UMR1095)
+# @date 2016-09-01
+# @copyright Copyright (c) 2016 INRA/CIRAD
+# @license MIT (see LICENSE file)
+# @details 
 
 """
 coll-gate descriptor module, descriptor
@@ -1144,3 +1150,4 @@ def search_display_value_for_descriptor_type(request, grp_id, typ_id):
     }
 
     return HttpResponseRest(request, results)
+

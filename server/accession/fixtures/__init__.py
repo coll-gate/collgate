@@ -1,6 +1,12 @@
 # -*- coding: utf-8; -*-
 #
-# Copyright (c) 2016 INRA UMR1095 GDEC
+# @file __init__.py
+# @brief 
+# @author Frédéric SCHERMA (INRA UMR1095)
+# @date 2016-09-01
+# @copyright Copyright (c) 2016 INRA/CIRAD
+# @license MIT (see LICENSE file)
+# @details 
 
 """
 coll-gate accession fixtures initialisation
@@ -13,3 +19,4 @@ ORDER = [
     'mcpdtypes',
     'descriptorsmodels'
 ]
+

@@ -1,6 +1,12 @@
 # -*- coding: utf-8; -*-
 #
-# Copyright (c) 2017 INRA UMR1095 GDEC
+# @file config.py
+# @brief 
+# @author Frédéric SCHERMA (INRA UMR1095)
+# @date 2017-01-03
+# @copyright Copyright (c) 2017 INRA/CIRAD
+# @license MIT (see LICENSE file)
+# @details 
 
 """
 coll-gate application configuration state.
@@ -61,3 +67,4 @@ class Configuration:
 
 # Singleton of configuration
 configuration = Configuration()
+

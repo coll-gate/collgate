@@ -1,6 +1,12 @@
 # -*- coding: utf-8; -*-
 #
-# Copyright (c) 2017 INRA UMR1095 GDEC
+# @file apps.py
+# @brief 
+# @author Medhi BOULNEMOUR (INRA UMR1095)
+# @date 2017-01-03
+# @copyright Copyright (c) 2017 INRA/CIRAD
+# @license MIT (see LICENSE file)
+# @details 
 
 """
 coll-gate geonames module main
@@ -87,3 +93,4 @@ class CollGateGeonames(ApplicationMain):
         geonames_module.client_export = False
 
         module_manager.register_module(geonames_module)
+

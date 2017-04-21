@@ -1,6 +1,12 @@
 # -*- coding: utf-8; -*-
 #
-# Copyright (c) 2016 INRA UMR1095 GDEC
+# @file descriptormodel.py
+# @brief 
+# @author Frédéric SCHERMA (INRA UMR1095)
+# @date 2016-09-01
+# @copyright Copyright (c) 2016 INRA/CIRAD
+# @license MIT (see LICENSE file)
+# @details 
 
 """
 coll-gate descriptor module, descriptor model
@@ -763,3 +769,4 @@ def get_some_display_values_for_descriptor_model_type(request, dmt_name):
     results = DescriptorFormatTypeManager.get_display_values_for(format_type, dmt.descriptor_type, values, limit)
 
     return HttpResponseRest(request, results)
+

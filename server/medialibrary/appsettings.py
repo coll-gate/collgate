@@ -1,6 +1,12 @@
 # -*- coding: utf-8; -*-
 #
-# Copyright (c) 2017 INRA UMR1095 GDEC
+# @file appsettings.py
+# @brief 
+# @author Frédéric SCHERMA (INRA UMR1095)
+# @date 2017-01-03
+# @copyright Copyright (c) 2017 INRA/CIRAD
+# @license MIT (see LICENSE file)
+# @details 
 
 """
 coll-gate medialibrary settings
@@ -21,3 +27,4 @@ APP_SETTINGS_MODEL = 'main.models.Settings'
 HTTP_TEMPLATE_STRING = "main/%s.html"  # lookup into the main module
 
 APP_VERSION = (0, 1, 0)
+

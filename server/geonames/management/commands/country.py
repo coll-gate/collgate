@@ -1,4 +1,12 @@
-# -*- coding: utf-8 -*-
+# -*- coding: utf-8; -*-
+#
+# @file country.py
+# @brief 
+# @author Medhi BOULNEMOUR (INRA UMR1095)
+# @date 2017-01-03
+# @copyright Copyright (c) 2016 INRA/CIRAD
+# @license MIT (see LICENSE file)
+# @details 
 
 """
 Install Country
@@ -200,3 +208,4 @@ class Command(BaseCommand):
         display_status = display_status + str(added) + Style.RESET_ALL
 
         return "Added: %s | Country: %s" % (display_status, country)
+

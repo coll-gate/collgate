@@ -1,11 +1,11 @@
 /**
  * @file taxonentities.js
  * @brief Taxon entities list view
- * @author Frederic SCHERMA
+ * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2016-12-28
- * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
- * @license @todo
- * @details
+ * @copyright Copyright (c) 2016 INRA/CIRAD
+ * @license MIT (see LICENSE file)
+ * @details 
  */
 
 var TaxonEntityView = require('../views/taxonentity');
@@ -28,3 +28,4 @@ var View = ScrollView.extend({
 });
 
 module.exports = View;
+

@@ -1,6 +1,12 @@
 # -*- coding: utf-8; -*-
 #
-# Copyright (c) 2017 INRA UMR1095 GDEC
+# @file establishment.py
+# @brief 
+# @author Frédéric SCHERMA (INRA UMR1095)
+# @date 2017-01-03
+# @copyright Copyright (c) 2017 INRA/CIRAD
+# @license MIT (see LICENSE file)
+# @details 
 
 """
 coll-gate organisation establishment model REST API
@@ -325,3 +331,4 @@ def delete_establishment(request, est_id):
     establishment.delete()
 
     return HttpResponseRest(request, {})
+

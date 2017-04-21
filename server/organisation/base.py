@@ -1,6 +1,12 @@
 # -*- coding: utf-8; -*-
 #
-# Copyright (c) 2017 INRA UMR1095 GDEC
+# @file base.py
+# @brief 
+# @author Frédéric SCHERMA (INRA UMR1095)
+# @date 2017-01-03
+# @copyright Copyright (c) 2017 INRA/CIRAD
+# @license MIT (see LICENSE file)
+# @details 
 
 """
 coll-gate organisation REST API
@@ -24,3 +30,4 @@ from igdectk.module.manager import module_manager
 class RestOrganisationModule(RestHandler):
     regex = r'^organisation/$'
     name = 'organisation'
+

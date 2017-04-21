@@ -1,6 +1,12 @@
 # -*- coding: utf-8; -*-
 #
-# Copyright (c) 2014 INRA UMR1095 GDEC
+# @file models.py
+# @brief 
+# @author Frédéric SCHERMA (INRA UMR1095)
+# @date 2016-09-01
+# @copyright Copyright (c) 2016 INRA/CIRAD
+# @license MIT (see LICENSE file)
+# @details 
 
 """
 coll-gate application models.
@@ -278,3 +284,4 @@ class EventMessage(models.Model):
 
     # message in a JSON text field with an object where key are language code and value are message in locale
     message = models.CharField(max_length=4096)
+

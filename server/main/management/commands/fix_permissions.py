@@ -1,4 +1,12 @@
-# -*- coding: utf-8 -*-
+# -*- coding: utf-8; -*-
+#
+# @file fix_permissions.py
+# @brief 
+# @author Frédéric SCHERMA (INRA UMR1095)
+# @date 2016-09-01
+# @copyright Copyright (c) 2016 INRA/CIRAD
+# @license MIT (see LICENSE file)
+# @details 
 
 """Add permissions for proxy model.
 This is needed because of the bug https://code.djangoproject.com/ticket/11154
@@ -40,3 +48,4 @@ class Command(BaseCommand):
                     defaults={'name': name})
                 if created:
                     sys.stdout.write('Adding permission {}\n'.format(p))
+

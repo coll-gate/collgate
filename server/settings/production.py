@@ -1,6 +1,12 @@
 # -*- coding: utf-8; -*-
 #
-# Copyright (c) 2016 INRA UMR1095 GDEC
+# @file production.py
+# @brief 
+# @author Frédéric SCHERMA (INRA UMR1095)
+# @date 2016-09-01
+# @copyright Copyright (c) 2016 INRA/CIRAD
+# @license MIT (see LICENSE file)
+# @details 
 
 """
 Specific developement settings.
@@ -157,3 +163,4 @@ EMAIL_PORT = 25  # 465
 EMAIL_HOST_USER = "fscherma"
 EMAIL_HOST_PASSWORD = ""
 #EMAIL_USE_SSL = True
+

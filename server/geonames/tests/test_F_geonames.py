@@ -1,6 +1,12 @@
 # -*- coding: utf-8; -*-
 #
-# Copyright (c) 2017 INRA UMR1095 GDEC
+# @file test_F_geonames.py
+# @brief 
+# @author Medhi BOULNEMOUR (INRA UMR1095)
+# @date 2017-04-04
+# @copyright Copyright (c) 2017 INRA/CIRAD
+# @license MIT (see LICENSE file)
+# @details 
 
 """
 coll-gate geolocation module functional tests.
@@ -46,3 +52,4 @@ class TestGeonames(TestCase):
         result = request.urlopen(url="http://download.geonames.org/export/dump/alternateNames.zip", timeout=10)
         if result.getcode() is not 200:
             self.fail()
+

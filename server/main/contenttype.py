@@ -1,6 +1,12 @@
 # -*- coding: utf-8; -*-
 #
-# Copyright (c) 2016 INRA UMR1095 GDEC
+# @file contenttype.py
+# @brief 
+# @author Frédéric SCHERMA (INRA UMR1095)
+# @date 2016-09-01
+# @copyright Copyright (c) 2016 INRA/CIRAD
+# @license MIT (see LICENSE file)
+# @details 
 
 """
 Rest handlers.
@@ -65,3 +71,4 @@ def get_content_types(request):
     types = sorted(types, key=lambda x: x['value'].split('.')[0] + '.' + x['label'])
 
     return HttpResponseRest(request, types)
+

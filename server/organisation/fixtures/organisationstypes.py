@@ -1,6 +1,12 @@
-# -*- coding: utf-8 -*-
+# -*- coding: utf-8; -*-
 #
-# Copyright (c) 2017 INRA UMR1095 GDEC
+# @file organisationstypes.py
+# @brief 
+# @author Frédéric SCHERMA (INRA UMR1095)
+# @date 2017-01-03
+# @copyright Copyright (c) 2017 INRA/CIRAD
+# @license MIT (see LICENSE file)
+# @details 
 
 """
 Setup the model of descriptor for the organisation module.
@@ -34,3 +40,4 @@ def fixture(fixture_manager):
                     'descriptor_id': descriptor_type_id,
                     'value0': value
                 })
+

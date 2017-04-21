@@ -1,11 +1,11 @@
 /**
  * @file media.js
  * @brief Display and manage a media format of type of descriptor
- * @author Frederic SCHERMA
+ * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2017-01-25
- * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
- * @license @todo
- * @details
+ * @copyright Copyright (c) 2017 INRA/CIRAD
+ * @license MIT (see LICENSE file)
+ * @details 
  */
 
 var DescriptorFormatType = require('../../descriptor/widgets/descriptorformattype');
@@ -589,3 +589,4 @@ Media.DescriptorTypeDetailsView = Marionette.ItemView.extend({
 });
 
 module.exports = Media;
+

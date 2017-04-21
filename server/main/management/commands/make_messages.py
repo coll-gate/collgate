@@ -1,4 +1,12 @@
-# -*- coding: utf-8 -*-
+# -*- coding: utf-8; -*-
+#
+# @file make_messages.py
+# @brief 
+# @author Frédéric SCHERMA (INRA UMR1095)
+# @date 2016-09-01
+# @copyright Copyright (c) 2016 INRA/CIRAD
+# @license MIT (see LICENSE file)
+# @details 
 
 """Build PO gettext files for server apps (html and py).
 """
@@ -32,3 +40,4 @@ class Command(BaseCommand):
                     call_command('makemessages', locale=['fr', 'en'], domain='django', verbosity=0)
 
                     os.chdir('..')
+

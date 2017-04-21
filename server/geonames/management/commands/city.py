@@ -1,4 +1,12 @@
-# -*- coding: utf-8 -*-
+# -*- coding: utf-8; -*-
+#
+# @file city.py
+# @brief 
+# @author Medhi BOULNEMOUR (INRA UMR1095)
+# @date 2017-01-03
+# @copyright Copyright (c) 2016 INRA/CIRAD
+# @license MIT (see LICENSE file)
+# @details 
 
 """
 Install City
@@ -269,3 +277,4 @@ class Command(BaseCommand):
             if not self.no_color:
                 display_state = (Fore.BLUE if state else Fore.GREEN) + display_state + Style.RESET_ALL
             print('[%s] %s' % (display_state, city))
+

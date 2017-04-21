@@ -1,11 +1,11 @@
 /**
  * @file accessiondescriptor.js
  * @brief Accession descriptor item view
- * @author Frederic SCHERMA
+ * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2016-12-19
- * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
- * @license @todo
- * @details
+ * @copyright Copyright (c) 2016 INRA/CIRAD
+ * @license MIT (see LICENSE file)
+ * @details 
  */
 
 var DescribableDetails = require('../../descriptor/views/describabledetails');
@@ -53,3 +53,4 @@ var View = DescribableDetails.extend({
 });
 
 module.exports = View;
+

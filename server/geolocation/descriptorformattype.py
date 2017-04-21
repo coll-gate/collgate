@@ -1,6 +1,12 @@
 # -*- coding: utf-8; -*-
 #
-# Copyright (c) 2017 INRA UMR1095 GDEC
+# @file descriptorformattype.py
+# @brief 
+# @author Medhi BOULNEMOUR (INRA UMR1095)
+# @date 2017-01-03
+# @copyright Copyright (c) 2017 INRA/CIRAD
+# @license MIT (see LICENSE file)
+# @details 
 
 """
 coll-gate descriptor format type class for geolocation
@@ -190,3 +196,4 @@ class DescriptorFormatTypeCity(DescriptorFormatType):
             'cacheable': True,
             'items': items
         }
+

@@ -1,11 +1,11 @@
 /**
  * @file entity.js
  * @brief Display and manage an entity reference value format of type of descriptor
- * @author Frederic SCHERMA
+ * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2017-01-20
- * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
- * @license @todo
- * @details
+ * @copyright Copyright (c) 2017 INRA/CIRAD
+ * @license MIT (see LICENSE file)
+ * @details 
  */
 
 var DescriptorFormatType = require('./descriptorformattype');
@@ -285,3 +285,4 @@ Entity.DescriptorTypeDetailsView = Marionette.ItemView.extend({
 });
 
 module.exports = Entity;
+

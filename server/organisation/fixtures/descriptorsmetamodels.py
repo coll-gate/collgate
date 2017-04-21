@@ -1,6 +1,12 @@
-# -*- coding: utf-8 -*-
+# -*- coding: utf-8; -*-
 #
-# Copyright (c) 2017 INRA UMR1095 GDEC
+# @file descriptorsmetamodels.py
+# @brief 
+# @author Frédéric SCHERMA (INRA UMR1095)
+# @date 2017-01-03
+# @copyright Copyright (c) 2017 INRA/CIRAD
+# @license MIT (see LICENSE file)
+# @details 
 
 """
 Setup the value for the organisation meta-models and types of models of descriptors.
@@ -40,3 +46,4 @@ META_MODELS = {
 
 def fixture(fixture_manager):
     fixture_manager.create_or_update_meta_models(META_MODELS)
+

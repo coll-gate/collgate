@@ -1,11 +1,11 @@
 /**
  * @file selectoption.js
  * @brief Renderer for single value based on collection, and for select widgets.
- * @author Frederic SCHERMA
+ * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2016-05-20
- * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
- * @license @todo
- * @details
+ * @copyright Copyright (c) 2016 INRA/CIRAD
+ * @license MIT (see LICENSE file)
+ * @details 
  */
 
 var Marionette = require('backbone.marionette');
@@ -234,3 +234,4 @@ var Renderer = Marionette.Object.extend({
 });
 
 module.exports = Renderer;
+

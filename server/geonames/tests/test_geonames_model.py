@@ -1,3 +1,13 @@
+# -*- coding: utf-8; -*-
+#
+# @file test_geonames_model.py
+# @brief 
+# @author Medhi BOULNEMOUR (INRA UMR1095)
+# @date 2017-04-04
+# @copyright Copyright (c) 2016 INRA/CIRAD
+# @license MIT (see LICENSE file)
+# @details
+
 from django.test import TestCase
 from django.utils import timezone
 
@@ -54,3 +64,4 @@ class TestGeonamesModel(TestCase):
         state = State.objects.get(source='bla/bla/bla/text/source.txt')
         self.assertEqual(state.last_modified, timezone.localtime(timezone.make_aware(timezone.datetime(1992, 5, 20))))
         self.assertEqual(state.size, 254)
+

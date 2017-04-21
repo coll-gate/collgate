@@ -1,11 +1,11 @@
 /**
- * @file descriptorpaneltype.js
+ * @file descriptorpanel.js
  * @brief Panel of descriptors collection
- * @author Frederic SCHERMA
+ * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2016-10-27
- * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
- * @license @todo
- * @details
+ * @copyright Copyright (c) 2016 INRA/CIRAD
+ * @license MIT (see LICENSE file)
+ * @details 
  */
 
 var DescriptorPanelModel = require('../models/descriptorpanel');
@@ -34,3 +34,4 @@ var Collection = Backbone.Collection.extend({
 });
 
 module.exports = Collection;
+

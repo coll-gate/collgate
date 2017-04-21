@@ -1,4 +1,12 @@
-# -*- coding: utf-8 -*-
+# -*- coding: utf-8; -*-
+#
+# @file compile_messages.py
+# @brief 
+# @author Frédéric SCHERMA (INRA UMR1095)
+# @date 2016-09-01
+# @copyright Copyright (c) 2016 INRA/CIRAD
+# @license MIT (see LICENSE file)
+# @details 
 
 """Compile PO getext to MO files for serve apps (html and py).
 """
@@ -32,3 +40,4 @@ class Command(BaseCommand):
                     call_command('compilemessages', verbosity=0)
 
                     os.chdir('..')
+

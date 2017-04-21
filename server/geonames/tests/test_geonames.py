@@ -1,3 +1,13 @@
+# -*- coding: utf-8; -*-
+#
+# @file test_geonames.py
+# @brief 
+# @author Medhi BOULNEMOUR (INRA UMR1095)
+# @date 2017-04-04
+# @copyright Copyright (c) 2016 INRA/CIRAD
+# @license MIT (see LICENSE file)
+# @details
+
 from django.test import TestCase
 from geonames.geonames import Geonames
 from geonames.appsettings import DATA_DIR
@@ -7,7 +17,7 @@ from django.test import mock
 import os
 
 
-class fakeGeonames(Geonames):
+class FakeGeonames(Geonames):
     """
     A fake replacement for init that can be mocked for testing
     """
@@ -39,7 +49,7 @@ class TestGeonames(TestCase):
     def tearDown(self):
         os.remove(os.path.join(DATA_DIR, 'test.txt'))
 
-    @mock.patch('geonames.geonames.Geonames.__init__', fakeGeonames.__init__)
+    @mock.patch('geonames.geonames.Geonames.__init__', FakeGeonames.__init__)
     def test_parse(self):
         """
         Geonames.parse should return a lines generator from a geonames data file
@@ -58,21 +68,22 @@ class TestGeonames(TestCase):
 
         self.assertEqual(lines, expected)
 
-    @mock.patch('geonames.geonames.Geonames.__init__', fakeGeonames.__init__)
+    @mock.patch('geonames.geonames.Geonames.__init__', FakeGeonames.__init__)
     def test_num_lines(self):
         geo_instance = Geonames('test.txt')
         result = geo_instance.num_lines()
         self.assertEqual(result, 4)
 
-    @mock.patch('geonames.geonames.Geonames.__init__', fakeGeonames.__init__)
+    @mock.patch('geonames.geonames.Geonames.__init__', FakeGeonames.__init__)
     def test_finish(self):
         geo_instance = Geonames('test.txt')
         geo_instance.finish()
         result = True if State.objects.get(source=os.path.join(DATA_DIR, 'test.txt')) else False
         self.assertTrue(result)
 
-    @mock.patch('geonames.geonames.Geonames.__init__', fakeGeonames.__init__)
+    @mock.patch('geonames.geonames.Geonames.__init__', FakeGeonames.__init__)
     def test__need_import(self):
         geo_instance = Geonames('test.txt')
         result = geo_instance._need_import()
         self.assertFalse(result)
+

@@ -1,11 +1,11 @@
 /**
  * @file permissionlist.js
  * @brief Permission list view
- * @author Frederic SCHERMA
+ * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2016-05-26
- * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
- * @license @todo
- * @details
+ * @copyright Copyright (c) 2016 INRA/CIRAD
+ * @license MIT (see LICENSE file)
+ * @details 
  */
 
 var Marionette = require('backbone.marionette');
@@ -64,3 +64,4 @@ var PermissionListView = Marionette.CompositeView.extend({
 });
 
 module.exports = PermissionListView;
+

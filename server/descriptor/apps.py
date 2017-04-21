@@ -1,6 +1,12 @@
 # -*- coding: utf-8; -*-
 #
-# Copyright (c) 2016 INRA UMR1095 GDEC
+# @file apps.py
+# @brief 
+# @author Frédéric SCHERMA (INRA UMR1095)
+# @date 2016-09-01
+# @copyright Copyright (c) 2016 INRA/CIRAD
+# @license MIT (see LICENSE file)
+# @details 
 
 """
 coll-gate descriptor module main
@@ -90,3 +96,4 @@ class CollGateDescriptor(ApplicationMain):
         descriptor_module.add_menu(menu_descriptor)
 
         module_manager.register_module(descriptor_module)
+

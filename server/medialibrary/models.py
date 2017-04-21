@@ -1,6 +1,12 @@
 # -*- coding: utf-8; -*-
 #
-# Copyright (c) 2017 INRA UMR1095 GDEC
+# @file models.py
+# @brief 
+# @author Frédéric SCHERMA (INRA UMR1095)
+# @date 2017-01-03
+# @copyright Copyright (c) 2017 INRA/CIRAD
+# @license MIT (see LICENSE file)
+# @details 
 
 """
 coll-gate medialibrary models.
@@ -83,3 +89,4 @@ class Media(Entity):
     @classmethod
     def make_search_by_name(cls, term):
         return Q(name__istartswith=term) | Q(file_name__istartswith=term)
+

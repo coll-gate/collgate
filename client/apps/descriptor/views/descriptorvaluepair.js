@@ -1,11 +1,11 @@
 /**
  * @file descriptorvaluepair.js
  * @brief Value for a type of descriptor view
- * @author Frederic SCHERMA
+ * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2016-08-01
- * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
- * @license @todo
- * @details
+ * @copyright Copyright (c) 2016 INRA/CIRAD
+ * @license MIT (see LICENSE file)
+ * @details 
  */
 
 var Marionette = require('backbone.marionette');
@@ -397,3 +397,4 @@ var View = Marionette.ItemView.extend({
 });
 
 module.exports = View;
+

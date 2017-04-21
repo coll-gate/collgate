@@ -1,4 +1,12 @@
-# -*- coding: utf-8 -*-
+# -*- coding: utf-8; -*-
+#
+# @file compile_client_messages.py
+# @brief 
+# @author Frédéric SCHERMA (INRA UMR1095)
+# @date 2016-09-01
+# @copyright Copyright (c) 2016 INRA/CIRAD
+# @license MIT (see LICENSE file)
+# @details 
 
 """Compile PO getext to MO files for client apps (html and js).
 """
@@ -50,3 +58,4 @@ class Command(BaseCommand):
                         os.chdir("../..")
 
                 os.chdir("../..")
+

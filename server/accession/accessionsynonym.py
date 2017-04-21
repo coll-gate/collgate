@@ -1,6 +1,12 @@
 # -*- coding: utf-8; -*-
 #
-# Copyright (c) 2016 INRA UMR1095 GDEC
+# @file accessionsynonym.py
+# @brief 
+# @author Frédéric SCHERMA (INRA UMR1095)
+# @date 2016-09-01
+# @copyright Copyright (c) 2016 INRA/CIRAD
+# @license MIT (see LICENSE file)
+# @details 
 
 """
 Views related to the accession synonym model.
@@ -291,3 +297,4 @@ def accession_remove_synonym(request, acc_id, syn_id):
     synonym.delete()
 
     return HttpResponseRest(request, {})
+

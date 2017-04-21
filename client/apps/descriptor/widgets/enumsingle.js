@@ -1,11 +1,11 @@
 /**
  * @file enumsingle.js
  * @brief Display and manage a list a single value format of type of descriptor
- * @author Frederic SCHERMA
+ * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2017-01-20
- * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
- * @license @todo
- * @details
+ * @copyright Copyright (c) 2017 INRA/CIRAD
+ * @license MIT (see LICENSE file)
+ * @details 
  */
 
 var DescriptorFormatType = require('./descriptorformattype');
@@ -451,3 +451,4 @@ EnumSingle.DescriptorTypeDetailsView = Marionette.ItemView.extend({
 });
 
 module.exports = EnumSingle;
+

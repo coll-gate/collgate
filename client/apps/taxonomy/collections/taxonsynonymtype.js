@@ -1,11 +1,11 @@
 /**
  * @file taxonsynonymtype.js
  * @brief Taxon synonym type collection
- * @author Frederic SCHERMA
+ * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2016-04-12
- * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
- * @license @todo
- * @details
+ * @copyright Copyright (c) 2016 INRA/CIRAD
+ * @license MIT (see LICENSE file)
+ * @details 
  */
 
 var TaxonSynonymTypeModel = require('../models/taxonsynonymtype');
@@ -32,3 +32,4 @@ var Collection = Backbone.Collection.extend({
 });
 
 module.exports = Collection;
+

@@ -1,6 +1,12 @@
 # -*- coding: utf-8; -*-
 #
-# Copyright (c) 2016 INRA UMR1095 GDEC
+# @file appsettings.py
+# @brief 
+# @author Frédéric SCHERMA (INRA UMR1095)
+# @date 2016-09-01
+# @copyright Copyright (c) 2016 INRA/CIRAD
+# @license MIT (see LICENSE file)
+# @details 
 
 """
 coll-gate application settings
@@ -19,3 +25,4 @@ APP_SETTINGS_MODEL = 'main.models.Settings'
 HTTP_TEMPLATE_STRING = "main/%s.html"
 
 APP_VERSION = (0, 1, 0)
+

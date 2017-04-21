@@ -1,11 +1,11 @@
 /**
  * @file taxonrank.js
  * @brief Taxon rank collection
- * @author Frederic SCHERMA
+ * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2016-04-13
- * @copyright Copyright (c) 2016 INRA UMR1095 GDEC
- * @license @todo
- * @details
+ * @copyright Copyright (c) 2016 INRA/CIRAD
+ * @license MIT (see LICENSE file)
+ * @details 
  */
 
 var TaxonRankModel = require('../models/taxonrank');
@@ -32,3 +32,4 @@ var TaxonRankCollection = Backbone.Collection.extend({
 });
 
 module.exports = TaxonRankCollection;
+

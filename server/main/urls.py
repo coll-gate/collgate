@@ -1,6 +1,12 @@
 # -*- coding: utf-8; -*-
 #
-# Copyright (c) 2016 INRA UMR1095 GDEC
+# @file urls.py
+# @brief 
+# @author Frédéric SCHERMA (INRA UMR1095)
+# @date 2016-09-01
+# @copyright Copyright (c) 2016 INRA/CIRAD
+# @license MIT (see LICENSE file)
+# @details 
 
 """
 coll-gate main url entry point.
@@ -20,3 +26,4 @@ urlpatterns = [
     # json i18n catalog
     url(r'^jsoni18n/(?P<packages>\S+?)/(?P<domain>\S+?)/$', json_catalog, name='json-catalog',),
 ]
+
