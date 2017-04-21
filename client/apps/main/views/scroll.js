@@ -641,6 +641,26 @@ var View = Marionette.CompositeView.extend({
         return Math.max(1, Math.floor(scrollElement.prop('clientHeight') / this.rowHeight));
     },
 
+    isNeedMoreResults: function() {
+        var scrollElement = this.getScrollElement();
+        var clientHeight = scrollElement.prop('clientHeight');
+        var diff = scrollElement.prop('scrollHeight') - scrollElement.scrollTop() - clientHeight;
+
+        // less than one page in buffer (minus margin height)
+        return diff - (this.$el.outerHeight(true) - this.$el.height()) <= clientHeight;
+    },
+
+    scrollOnePage: function(direction) {
+        direction !== undefined || (direction = 1);
+
+        var scrollElement = this.getScrollElement();
+        var clientHeight = scrollElement.prop('clientHeight');
+        var amount = this.capacity() * this.rowHeight;
+
+        // view page scrolling
+        scrollElement.scrollTop(scrollElement.scrollTop() + amount * (direction > 0 ? 1 : -1));
+    },
+
     moreResults: function(more, scroll) {
         scroll || (scroll=false);
         more || (more=20);
@@ -657,7 +677,7 @@ var View = Marionette.CompositeView.extend({
                 sort_by: this.collection.sort_by,
                 more: more
             }}).done(function(data) {
-                var scrollElement = view.getScrollElement();
+                // var scrollElement = view.getScrollElement();
 
                 // re-sync the sticky table header during scrolling after collection was rendered
                 // if (!view.ui.table.hasClass('table-advanced')) {
@@ -665,20 +685,18 @@ var View = Marionette.CompositeView.extend({
                 // }
 
                 if (scroll) {
-                    // var height = scrollElement.prop('scrollHeight');
-                    var clientHeight = scrollElement.prop('clientHeight');
-                    // scrollElement.scrollTop(height - clientHeight - view.rowHeight * 0.5);
+                    view.scrollOnePage(1);
 
-                    // view page scrolling
-                    scrollElement.scrollTop(scrollElement.scrollTop() + view.capacity() * view.rowHeight);
+                    // // var height = scrollElement.prop('scrollHeight');
+                    // var clientHeight = scrollElement.prop('clientHeight');
+                    // // scrollElement.scrollTop(height - clientHeight - view.rowHeight * 0.5);
+                    //
+                    // // view page scrolling
+                    // scrollElement.scrollTop(scrollElement.scrollTop() + view.capacity() * view.rowHeight);
                 }
             });
         } else if (scroll) {
-            var scrollElement = view.getScrollElement();
-            var clientHeight = scrollElement.prop('clientHeight');
-
-            // view page scrolling
-            scrollElement.scrollTop(scrollElement.scrollTop() + view.capacity() * view.rowHeight);
+            this.scrollOnePage(1);
         }
     },
 

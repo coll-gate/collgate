@@ -11,7 +11,7 @@
 var Marionette = require('backbone.marionette');
 
 var View = Marionette.ItemView.extend({
-    template: _.template('<span class="unselectable scroll-more action label label-default"><span class="glyphicon glyphicon-option-horizontal"></span>'),
+    template: require('../templates/scrollingmore.html'),
     tagName: 'div',
     className: 'scrolling-more',
     attributes: {
@@ -19,11 +19,13 @@ var View = Marionette.ItemView.extend({
     },
 
     ui: {
+        'scroll-less': 'span.scroll-less',
         'scroll-more': 'span.scroll-more'
     },
 
     events: {
-        'click @ui.scroll-more': 'onScroll'
+        'click @ui.scroll-less': 'onScrollLess',
+        'click @ui.scroll-more': 'onScrollMore'
     },
 
     initialize: function(options) {
@@ -40,12 +42,37 @@ var View = Marionette.ItemView.extend({
         }
     },
 
-    onRender: function() {
+    onScrollLess: function() {
+        if (this.targetView && this.targetView.scrollOnePage) {
+            this.targetView.scrollOnePage(-1);
+        } else if (this.targetView) {
+            var scrollElement = this.targetView.$el.parent();
+            var clientHeight = scrollElement.prop('clientHeight');
+
+            // view page scrolling
+            scrollElement.scrollTop(scrollElement.scrollTop() - clientHeight);
+        }
     },
 
-    onScroll: function() {
+    onScrollMore: function() {
         if (this.targetView && this.targetView.moreResults) {
-            this.targetView.moreResults(this.more, true);
+            var moreResults = true;
+
+            if (this.targetView.isNeedMoreResults) {
+                moreResults = this.targetView.isNeedMoreResults();
+            }
+
+            if (moreResults) {
+                this.targetView.moreResults(this.more, true);
+            } else {
+                this.targetView.scrollOnePage(1);
+            }
+        } else if (this.targetView) {
+            var scrollElement = this.targetView.$el.parent();
+            var clientHeight = scrollElement.prop('clientHeight');
+
+            // view page scrolling
+            scrollElement.scrollTop(scrollElement.scrollTop() + clientHeight);
         }
     }
 });

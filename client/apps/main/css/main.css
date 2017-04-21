@@ -311,6 +311,13 @@ div.table-container {
     flex-direction: column;
 }
 
+.table.table-advanced thead {
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -o-user-select: none;
+}
+
 .table.table-advanced thead tr th {
     height: 0px;
     line-height: 0px;
@@ -354,7 +361,7 @@ div.table-container {
 }
 
 .table.table-advanced tbody tr:first-child th, .table.table-advanced tbody tr:first-child td {
-    border-top: none;
+    border-top: none; /* 1px transparent solid;*/
     min-width: 32px;
 }
 
