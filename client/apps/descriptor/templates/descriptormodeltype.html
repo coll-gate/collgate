@@ -10,11 +10,9 @@
 
 <th class="glyph-fixed-column"><span class="delete-descriptor-model-type action glyphicon glyphicon-minus-sign"></span></th>
 <td name="descriptor-type-code">
-    <abbr title="<%= descriptor_type_groups.get(descriptor_type_group).get('name') + '.' + descriptor_type_name %>"><%= descriptor_type_code %></abbr>
+    <span class="label label-default"><span class="glyphicon glyphicon-option-horizontal" title="<%= descriptor_type_groups.get(descriptor_type_group).get('name') + '.' + descriptor_type_name + ' (' + descriptor_type_code + ')' %>"></span></span>
 </td>
-<td name="name" class="action rename-descriptor-model-type">
-    <span class="label label-default"><span class="glyphicon glyphicon-option-horizontal" title="<%= name %>"></span></span>
-</td>
+<td name="name" class="action rename-descriptor-model-type"><%= name %></td>
 <td name="label" class="action"><%= label %></td>
 <% if (mandatory) { %>
     <td class="glyph-fixed-column" style="text-align:center;" name="mandatory"><span class="action glyphicon glyphicon-ok"></span></td>

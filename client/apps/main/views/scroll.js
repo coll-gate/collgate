@@ -286,9 +286,14 @@ var View = Marionette.CompositeView.extend({
             if (el.hasClass('title-column')) {
                 // pre-compute
                 div.width('auto');
+                div.width(div.width());
+                div.css('min-width', div.width() + 17 + 'px');
 
                 // +4+1 padding right + border left
-                el.css('min-width', div.width() + 4 + 1 + 'px');
+                el.css('min-width', div.width() + 1 + 4 + 'px');
+
+                // preset
+                el.width(div.width() + 1 + 4);
             }
 
             // name unamed columns
@@ -311,6 +316,7 @@ var View = Marionette.CompositeView.extend({
                     sizer.addClass('active');
 
                     sizer.on('mousedown', $.proxy(view.onResizeColumnBegin, view));
+                    sizer.on('mouseover', $.proxy(view.onResizeColumnHover, view));
                 }
             }
 
@@ -545,6 +551,29 @@ var View = Marionette.CompositeView.extend({
         return false;
     },
 
+    onResizeColumnHover: function(e) {
+        var sizer = $(e.currentTarget);
+
+        // get the previous column
+        var column = sizer.parent().parent();
+        var columns = column.parent().find('th');
+
+        // adapt the cursor, because if the right column is fixed size, the resize cannot be performed
+        $.each(columns, function(i, element) {
+            var el = $(element);
+
+            if (el.attr('name') === column.attr('name')) {
+                if (el.hasClass('glyph-fixed-column')) {
+                    el.children('div').children('div.column-sizer').css('cursor', 'default');
+                } else {
+                    el.children('div').children('div.column-sizer').css('cursor', '');
+                }
+
+                return false;
+            }
+        });
+    },
+
     onResizeColumnBegin: function (e) {
         var sizer = $(e.currentTarget);
 
@@ -564,6 +593,14 @@ var View = Marionette.CompositeView.extend({
                 return false;
             }
         });
+
+        // cancel if right is fixed
+        if (this.resizingColumnRight.hasClass('glyph-fixed-column')) {
+            this.resizingColumnLeft = null;
+            this.resizingColumnRight = null;
+
+            return false;
+        }
 
         if (this.resizingColumnLeft && this.resizingColumnRight) {
             $('body').addClass('unselectable');

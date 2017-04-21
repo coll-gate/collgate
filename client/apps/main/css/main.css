@@ -340,7 +340,7 @@ div.table-container {
     /*border-left: 1px solid #ddd;*/
     overflow: hidden;
     text-overflow: ellipsis;  /* longest lines */
-    padding: 8px 8px 8px 17px;
+    padding: 8px 0px 8px 17px;
     /*word-break: break-all;*/
     /*white-space: normal;*/
 }

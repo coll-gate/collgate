@@ -80,7 +80,7 @@ var View = ScrollView.extend({
 
         if (this.dragEnterCount == 0) {
             this.$el.find("tbody tr").last().css('border-bottom', 'initial');
-            this.$el.find("thead tr th").css('border-bottom', '2px solid #ddd');
+            this.$el.find("thead tr th").css('border-bottom', 'initial');
 
         }
 
@@ -122,7 +122,7 @@ var View = ScrollView.extend({
         this.dragEnterCount = 0;
 
         this.$el.find("tbody tr").last().css('border-bottom', 'initial');
-        this.$el.find("thead tr th").css('border-bottom', '2px solid #ddd');
+        this.$el.find("thead tr th").css('border-bottom', 'initial');
 
         var elt = application.dndElement;
         if (!elt) {
