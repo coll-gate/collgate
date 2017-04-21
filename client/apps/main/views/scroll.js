@@ -14,6 +14,7 @@ var View = Marionette.CompositeView.extend({
     rowHeight: 1+8+20+8,
     scrollViewInitialized: false,
     userSettingName: null,
+    scrollbarWidth: $.position.scrollbarWidth(),
 
     attributes: {
     },
@@ -202,6 +203,14 @@ var View = Marionette.CompositeView.extend({
         // not displayed at this time, wait for a visibility signal (onShowTab or onDomRefresh)
         if (!this.isDisplayed()) {
             return;
+        }
+
+        // adjust width to harmonize when there is or not a visible overflow-y
+        var hasScroll = (this.el.scrollHeight - this.el.clientHeight) > 0;
+        if (hasScroll) {
+            this.$el.css('margin-right', '0px');
+        } else {
+            this.$el.css('margin-right', this.scrollbarWidth + 'px');
         }
 
         // should be done after the columns content update (refresh)
