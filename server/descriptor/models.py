@@ -1100,6 +1100,18 @@ class DescriptorPanel(Entity):
         self.label = json.dumps(data)
 
 
+class JSONBFieldIndexType(ChoiceEnum):
+    """
+    Type of the index for a JSONB field.
+    """
+
+    NONE = IntegerChoice(0, 'None')
+    UNIQUE_BTREE = IntegerChoice(1, 'Unique-BTree')
+    BTREE = IntegerChoice(2, 'BTree')
+    GIN = IntegerChoice(3, 'GIN')
+    GIST = IntegerChoice(4, 'GIST')
+
+
 class DescriptorModelType(Entity):
     """
     This is a basic entity of the model of descriptor. It makes the relation between a panel and
@@ -1127,14 +1139,17 @@ class DescriptorModelType(Entity):
     # Related type of descriptor (relate on a specific one's)
     descriptor_type = models.ForeignKey(DescriptorType, related_name='descriptor_model_types')
 
+    # Position priority into the display. Lesser is before. Negative value are possibles.
+    position = models.IntegerField(default=0)
+
     # True if this type of descriptor is mandatory (must be defined) (model)
     mandatory = models.BooleanField(default=False)
 
     # Set once, read many means that the value of the descriptor can be set only at creation
     set_once = models.BooleanField(default=False)
 
-    # Position priority into the display. Lesser is before. Negative value are possibles.
-    position = models.IntegerField(default=0)
+    # Set to type of index.
+    index = models.IntegerField(default=JSONBFieldIndexType.NONE.value, choices=JSONBFieldIndexType.choices())
 
     class Meta:
         verbose_name = _("descriptor model type")
@@ -1211,31 +1226,69 @@ class DescriptorModelType(Entity):
         data[lang] = label
         self.label = json.dumps(data)
 
-    def create_index(self, describable, unique=False, using_gin=False, db='default'):
+    def create_btree_index(self, describable, unique=False, db='default'):
         """
-        Create a new (GIN) index on a field of JSONB descriptors of the given describable model.
-        :param describable:
-        :param unique:
-        :param using_gin:
-        :param db:
+        Create a new btree index on a field of JSONB descriptors of the given describable model.
+        :param describable: Model instance
+        :param unique: True for unique
+        :param db: DB name ('default')
         """
+        if self.index != JSONBFieldIndexType.NONE.value:
+            return False
+
         table = describable._meta.db_table
         index = "%s_descriptors_%s_key" % (table, self.name)
 
         if unique:
-            if using_gin:
-                sql = """CREATE UNIQUE INDEX %s ON %s USING GIN ((descriptors->'%s'));""" % (index, table, self.name)
-            else:
-                sql = """CREATE UNIQUE INDEX %s ON %s ((descriptors->'%s'));""" % (index, table, self.name)
+            sql = """CREATE UNIQUE INDEX %s ON %s ((descriptors->'%s'));""" % (index, table, self.name)
         else:
-            if using_gin:
-                sql = """CREATE INDEX %s ON %s USING GIN ((descriptors->'%s'));""" % (index, table, self.name)
-            else:
-                sql = """CREATE INDEX %s ON %s ((descriptors->'%s'));""" % (index, table, self.name)
+            sql = """CREATE INDEX %s ON %s ((descriptors->'%s'));""" % (index, table, self.name)
 
         connection = connections[db]
         with connection.cursor() as cursor:
             cursor.execute(sql)
+
+        return True
+
+    def create_gin_index(self, describable, db='default'):
+        """
+        Create a new GIN (not unique) index on a field of JSONB descriptors of the given describable model.
+        :param describable: Model instance
+        :param db: DB name ('default')
+        """
+        if self.index != JSONBFieldIndexType.NONE.value:
+            return False
+
+        table = describable._meta.db_table
+        index = "%s_descriptors_%s_key" % (table, self.name)
+
+        sql = """CREATE INDEX %s ON %s USING GIN ((descriptors->'%s'));""" % (index, table, self.name)
+
+        connection = connections[db]
+        with connection.cursor() as cursor:
+            cursor.execute(sql)
+
+        return True
+
+    def create_gist_index(self, describable, db='default'):
+        """
+        Create a new GIST (not unique) index on a field of JSONB descriptors of the given describable model.
+        :param describable: Model instance
+        :param db: DB name ('default')
+        """
+        if self.index != JSONBFieldIndexType.NONE.value:
+            return False
+
+        table = describable._meta.db_table
+        index = "%s_descriptors_%s_key" % (table, self.name)
+
+        sql = """CREATE INDEX %s ON %s USING GIST ((descriptors->'%s'));""" % (index, table, self.name)
+
+        connection = connections[db]
+        with connection.cursor() as cursor:
+            cursor.execute(sql)
+
+        return True
 
     def drop_index(self, describable, db='default'):
         """

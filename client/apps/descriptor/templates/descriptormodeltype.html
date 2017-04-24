@@ -15,13 +15,18 @@
 <td name="name" class="action rename-descriptor-model-type"><%= name %></td>
 <td name="label" class="action"><%= label %></td>
 <% if (mandatory) { %>
-    <td class="glyph-fixed-column" style="text-align:center;" name="mandatory"><span class="action glyphicon glyphicon-ok"></span></td>
+    <td class="glyph-fixed-column" name="mandatory"><span class="action glyphicon glyphicon-ok"></span></td>
 <% } else { %>
-    <td class="glyph-fixed-column" style="text-align:center; "name="mandatory"><span class="action glyphicon glyphicon-remove"></span></td>
+    <td class="glyph-fixed-column" name="mandatory"><span class="action glyphicon glyphicon-remove"></span></td>
 <% } %>
 <% if (set_once) { %>
-    <td class="glyph-fixed-column" style="text-align:center;" name="set_once"><span class="action glyphicon glyphicon-ok"></span></td>
+    <td class="glyph-fixed-column" name="set_once"><span class="action glyphicon glyphicon-ok"></span></td>
 <% } else { %>
-    <td class="glyph-fixed-column" style="text-align:center;" name="set_once"><span class="action glyphicon glyphicon-remove"></span></td>
+    <td class="glyph-fixed-column" name="set_once"><span class="action glyphicon glyphicon-remove"></span></td>
 <% } %>
-<td class="glyph-fixed-column" style="text-align:center;" name="condition"><span class="action glyphicon glyphicon-wrench"></span></td>
+<td class="glyph-fixed-column" name="condition"><span class="action glyphicon glyphicon-wrench"></span></td>
+<% if (index !== 0) { %>
+    <td class="glyph-fixed-column" name="index"><span class="action glyphicon glyphicon-italic"></span></td>
+<% } else { %>
+    <td class="glyph-fixed-column" name="index"><span class="action glyphicon glyphicon-italic" style="text-decoration:line-through;"></span></td>
+<% } %>
