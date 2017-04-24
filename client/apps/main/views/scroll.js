@@ -292,8 +292,8 @@ var View = Marionette.CompositeView.extend({
                 // +4+1 padding right + border left
                 el.css('min-width', div.width() + 1 + 4 + 'px');
 
-                // preset
-                el.width(div.width() + 1 + 4);
+                // preset (auto)
+                // el.width(div.width() + 1 + 4);
             }
 
             // name unamed columns
