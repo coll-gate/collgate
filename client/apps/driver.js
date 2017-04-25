@@ -268,7 +268,7 @@ application = new Marionette.Application({
         session.modules || (session.modules = ['main']);
 
         // alert display component
-        $.alert({container: '#messenger'/*'div.root-content'*/, className: 'alert'});
+        $.alert({container: '#messenger'/*'div.root-content'*/, className: 'message-alert'});
         $.alert.update();
 
         // require and initialize each modules
