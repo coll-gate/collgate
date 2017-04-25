@@ -14,10 +14,11 @@ coll-gate descriptor module models.
 
 import json
 
+from django.contrib import postgres
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.postgres.fields import JSONField
 from django.core.exceptions import SuspiciousOperation
-from django.db.models import Q
+from django.db.models import Q, Transform
 from django.shortcuts import get_object_or_404
 from django.utils import translation
 from django.utils.translation import ugettext_lazy as _
@@ -1555,6 +1556,37 @@ class DescriptorModelTypeCondition(Entity):
 
     class Meta:
         verbose_name = _("descriptor model type condition")
+
+
+class TransformMeta(type):
+    def __init__(cls, *args):
+        super(TransformMeta, cls).__init__(*args)
+        cls.lookup_name = "as_%s" % (cls.lookup_type or cls.type)
+
+        if cls.__name__ != "AsTransform":
+            JSONField.register_lookup(cls)
+
+
+class AsTransform(Transform, metaclass=TransformMeta):
+    type = None
+    lookup_type = None
+    field_type = None
+
+    def as_sql(self, qn, connection):
+        lhs, params = qn.compile(self.lhs)
+        splited = lhs.split("->")
+        lhs = "->>".join(["->".join(splited[:-1]), splited[-1]])
+        return "CAST(%s as %s)" % (lhs, self.type), params
+
+    @property
+    def output_field(self):
+        return self.field_type()
+
+
+# Fixture to support the as_text operator on JSON field, in way to perform any text operator like icontains...
+class JsonAsText(AsTransform):
+    type = "text"
+    field_type = models.CharField
 
 
 class DescribableEntity(Entity):
