@@ -103,6 +103,8 @@ var Layout = Marionette.LayoutView.extend({
             // activate the initial
             this.ui.tabs_buttons.filter('[aria-controls="' + this.initialTab + '"]').parent().addClass('active');
             this.ui.tabs_contents.filter('[name="' + this.initialTab + '"]').addClass('active');
+
+            this.activeTab = this.initialTab;
         }
 
         this.ui.tabs.on("shown.bs.tab", $.proxy(this.onShowTab, this));

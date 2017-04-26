@@ -22,6 +22,15 @@ var View = Marionette.LayoutView.extend({
         'bottom': "div.layout-bottom"
     },
 
+    childEvents: {
+        'dom:refresh': function(child) {
+            // call onShowTab when the view is inserted and directly visible
+            if (child && child.onShowTab && this.$el.isInViewport() && child.$el.isInViewport()) {
+                child.onShowTab();
+            }
+        }
+    },
+
     onShowTab: function(tabView) {
         var region = this.getRegion('content');
         if (region && region.currentView && region.currentView.onShowTab) {
@@ -48,4 +57,3 @@ var View = Marionette.LayoutView.extend({
 });
 
 module.exports = View;
-

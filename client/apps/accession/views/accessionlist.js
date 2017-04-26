@@ -10,7 +10,6 @@
 
 var AccessionView = require('../views/accession');
 var ScrollView = require('../../main/views/scroll');
-
 var DescriptorsColumnsView = require('../../descriptor/mixins/descriptorscolumns');
 
 var View = ScrollView.extend({
@@ -43,4 +42,3 @@ var View = ScrollView.extend({
 _.extend(View.prototype, DescriptorsColumnsView);
 
 module.exports = View;
-

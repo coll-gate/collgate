@@ -8,15 +8,12 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
-
 var GeolocationModule = function() {
     this.name = "geolocation";
 };
 
 GeolocationModule.prototype = {
     initialize: function(app, options) {
-        Logger.time("Init geolocation module");
 
         this.models = {};
         this.collections = {};
@@ -51,17 +48,10 @@ GeolocationModule.prototype = {
         //
         // routers
         //
-
-
-        Logger.timeEnd("Init geolocation module");
     },
 
     start: function(options) {
-        Logger.time("Start geolocation module");
-
         // nothing to do
-
-        Logger.timeEnd("Start geolocation module");
     },
 
     stop: function(options) {
@@ -69,4 +59,3 @@ GeolocationModule.prototype = {
 };
 
 module.exports = GeolocationModule;
-

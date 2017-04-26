@@ -966,4 +966,3 @@ var View = Marionette.CompositeView.extend({
 });
 
 module.exports = View;
-

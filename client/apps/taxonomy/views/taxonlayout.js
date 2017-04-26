@@ -68,11 +68,6 @@ var Layout = LayoutView.extend({
         var TaxonSynonymsView = require('../views/taxonsynonyms');
         this.getRegion('synonyms').show(new TaxonSynonymsView({model: this.model}));
 
-        // descriptors tab
-        var TaxonDescriptorCreateView = require('../views/taxondescriptorcreate');
-        var taxonDescriptorCreateView = new TaxonDescriptorCreateView({model: this.model});
-        this.getRegion('descriptors').show(taxonDescriptorCreateView);
-
         // direct taxon sub-levels tab
         var TaxonChildrenCollection = require('../collections/taxonchildren');
         var taxonChildren = new TaxonChildrenCollection([], {model_id: this.model.id});
@@ -102,8 +97,14 @@ var Layout = LayoutView.extend({
             contentBottomLayout.getRegion('content').show(taxonEntitiesView);
             contentBottomLayout.getRegion('bottom').show(new ScrollingMoreView({targetView: taxonEntitiesView}));
         });
+    },
+
+    onDomRefresh: function() {
+        // descriptors tab (on this event because of the child event not fired otherwise)
+        var TaxonDescriptorCreateView = require('../views/taxondescriptorcreate');
+        var taxonDescriptorCreateView = new TaxonDescriptorCreateView({model: this.model});
+        this.getRegion('descriptors').show(taxonDescriptorCreateView);
     }
 });
 
 module.exports = Layout;
-

@@ -21,16 +21,14 @@ var Layout = LayoutView.extend({
 
     ui: {
         synonyms_tab: 'a[aria-controls=synonyms]',
-        batches_tab: 'a[aria-controls=batches]',
-        actions_tab: 'a[aria-controls=actions]'
+        batches_tab: 'a[aria-controls=batches]'
     },
 
     regions: {
         'details': "div[name=details]",
         'descriptors': "div.tab-pane[name=descriptors]",
         'synonyms': "div.tab-pane[name=synonyms]",
-        'batches': "div.tab-pane[name=batches]",
-        'actions': "div.tab-pane[name=actions]"
+        'batches': "div.tab-pane[name=batches]"
     },
 
     initialize: function(options) {
@@ -59,14 +57,9 @@ var Layout = LayoutView.extend({
         this.ui.batches_tab.parent().addClass('disabled');
     },
 
-    disableActionTab: function () {
-        this.ui.actions_tab.parent().addClass('disabled');
-    },
-
     enableTabs: function() {
         this.ui.synonyms_tab.parent().removeClass('disabled');
         this.ui.batches_tab.parent().removeClass('disabled');
-        this.ui.actions_tab.parent().removeClass('disabled');
     },
 
     onDescriptorMetaModelChange: function(model, value) {
@@ -149,7 +142,6 @@ var Layout = LayoutView.extend({
             // not available tabs
             this.disableSynonymsTab();
             this.disableBatchesTab();
-            this.disableActionTab();
         }
     }
 });

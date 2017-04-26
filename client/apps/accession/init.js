@@ -81,6 +81,12 @@ AccessionModule.prototype = {
             {name: 'IPGRI_4.1.1', width: 'auto', sort_by: null},
             {name: 'MCPD_ORIGCTY', width: 'auto', sort_by: null}
         ]);
+
+        // by default, batches list default columns to display
+        app.setDefaultUserSetting('batches_list_columns', [
+            {name: 'glyph', width: 'auto', sort_by: null},
+            {name: 'name', width: 'auto', sort_by: 'asc'}
+        ]);
     },
 
     start: function(options) {

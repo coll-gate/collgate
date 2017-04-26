@@ -10,12 +10,14 @@
 
 var BatchView = require('../views/batch');
 var ScrollView = require('../../main/views/scroll');
+var DescriptorsColumnsView = require('../../descriptor/mixins/descriptorscolumns');
 
 var View = ScrollView.extend({
     template: require("../templates/batchlist.html"),
     className: "batch-list advanced-table-container",
     childView: BatchView,
     childViewContainer: 'tbody.batch-list',
+    userSettingName: 'batches_list_columns',
 
     templateHelpers/*templateContext*/: function () {
         return {
@@ -32,12 +34,43 @@ var View = ScrollView.extend({
     initialize: function(options) {
         View.__super__.initialize.apply(this);
 
-        this.displayedColumns = [
-        ];
+        // this.listenTo(this.collection, 'reset', this.render, this);
+    },
 
-        this.listenTo(this.collection, 'reset', this.render, this);
+    onShowTab: function() {
+        var view = this;
+
+        var contextLayout = application.getView().getRegion('right').currentView;
+        if (!contextLayout) {
+            var DefaultLayout = require('../../main/views/defaultlayout');
+            contextLayout = new DefaultLayout();
+            application.getView().getRegion('right').show(contextLayout);
+        }
+
+        var TitleView = require('../../main/views/titleview');
+        contextLayout.getRegion('title').show(new TitleView({title: gt.gettext("Batches actions")}));
+
+        var actions = ['create'];
+
+        var AccessionBatchesContextView = require('./accessionbatchescontext');
+        var contextView = new AccessionBatchesContextView({actions: actions});
+        contextLayout.getRegion('content').show(contextView);
+
+        contextView.on("batch:create", function () {
+            view.onCreate();
+        });
+    },
+
+    onHideTab: function() {
+        application.main.defaultRightView();
+    },
+
+    onCreate: function () {
+        alert();
     }
 });
 
-module.exports = View;
+// support of descriptors columns extension
+_.extend(View.prototype, DescriptorsColumnsView);
 
+module.exports = View;
