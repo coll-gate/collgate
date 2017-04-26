@@ -161,6 +161,8 @@ class Geonames(object):
 
         if db_src_time >= self.last_modified and db_src_size == self.size:
             return False
+        else:
+            return True
 
     def _need_downloading(self):
         """
@@ -175,6 +177,8 @@ class Geonames(object):
 
             if file_last_modified >= self.last_modified and file_size == self.size:
                 return False
+            else:
+                return True
         else:
             return True
 

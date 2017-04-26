@@ -167,7 +167,9 @@ class Command(BaseCommand):
                 continue
 
             i = 0
-            self.progress_start(geonames.num_lines())
+            nb_lines = geonames.num_lines()
+            refresh_tx = int(nb_lines / 100) if (nb_lines / 100) >= 1 else 1
+            self.progress_start(nb_lines)
 
             if not self.progress_enabled:
                 print('Importing...')
@@ -178,7 +180,8 @@ class Command(BaseCommand):
                 current_alt_name = self.translation_check(items)
 
                 i += 1
-                self.progress_update(i)
+                if i % refresh_tx == 0:
+                    self.progress_update(i)
 
                 if current_alt_name:
                     alt_names_to_check.append(current_alt_name)
