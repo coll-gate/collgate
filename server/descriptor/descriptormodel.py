@@ -28,7 +28,7 @@ from igdectk.rest.response import HttpResponseRest
 from main.models import InterfaceLanguages
 from .descriptor import RestDescriptor
 from .models import DescriptorModel, DescriptorModelType, DescriptorType, DescriptorModelTypeCondition, \
-    DescriptorCondition
+    DescriptorCondition, JSONBFieldIndexType, DescriptorPanel
 
 
 class RestDescriptorModel(RestDescriptor):
@@ -293,7 +293,8 @@ def list_descriptor_model_types_for_model(request, des_id):
             'descriptor_type_name': dmt.descriptor_type.name,
             'descriptor_type_code': dmt.descriptor_type.code,
             'mandatory': dmt.mandatory,
-            'set_once': dmt.set_once
+            'set_once': dmt.set_once,
+            'index': dmt.index
         })
 
     if len(items_list) > 0:
@@ -360,6 +361,7 @@ def create_descriptor_model_type_for_type(request, des_id):
     dmt.set_once = set_once
     dmt.position = position
     dmt.descriptor_type = dt
+    dmt.index = JSONBFieldIndexType.NONE.value()
 
     dmt.full_clean()
     dmt.save()
@@ -451,7 +453,7 @@ def reorder_descriptor_types_for_model(request, des_id):
             "name": DescriptorModelType.NAME_VALIDATOR_OPTIONAL,
             "mandatory": {"type": "boolean", "required": False},
             "set_once": {"type": "boolean", "required": False},
-            "index": {"type": "string", "enum": ["unique-btree", "btree", "gist", "gin"], "required": False},
+            "index": {"type": "integer", "minimum": 0, "maximum": 4, "required": False},
             "label": DescriptorModelType.LABEL_VALIDATOR_OPTIONAL
         },
     },
@@ -469,6 +471,7 @@ def patch_descriptor_model_type_for_model(request, des_id, typ_id):
     mandatory = request.data.get('mandatory')
     set_once = request.data.get('set_once')
     label = request.data.get('label')
+    index = JSONBFieldIndexType(request.data.get('index'))
 
     dmt = get_object_or_404(DescriptorModelType, id=int(typ_id), descriptor_model_id=int(des_id))
 
@@ -495,6 +498,31 @@ def patch_descriptor_model_type_for_model(request, des_id, typ_id):
         dmt.mandatory = bool(mandatory)
     if set_once is not None:
         dmt.set_once = bool(set_once)
+
+    if index is not None:
+        dp = DescriptorPanel.objects.get(descriptor_model_id=dmt.descriptor_model_id)
+        content_type_model = dp.descriptor_meta_model.target.model_class()
+
+        # drop before recreate if exists
+        if index != JSONBFieldIndexType.NONE and dmt.index != index.value:
+            dmt.drop_index(content_type_model)
+            dmt.index = JSONBFieldIndexType.NONE.value
+
+        if index == JSONBFieldIndexType.NONE and dmt.index != JSONBFieldIndexType.NONE.value:
+            dmt.drop_index(content_type_model)
+            dmt.index = JSONBFieldIndexType.NONE.value
+        elif index == JSONBFieldIndexType.UNIQUE_BTREE and dmt.index != JSONBFieldIndexType.UNIQUE_BTREE.value:
+            dmt.create_btree_index(content_type_model, unique=True)
+            dmt.index = JSONBFieldIndexType.UNIQUE_BTREE.value
+        elif index == JSONBFieldIndexType.BTREE and dmt.index != JSONBFieldIndexType.BTREE.value:
+            dmt.create_btree_index(content_type_model, unique=False)
+            dmt.index = JSONBFieldIndexType.BTREE.value
+        elif index == JSONBFieldIndexType.GIN and dmt.index != JSONBFieldIndexType.GIN.value:
+            dmt.create_gin_index(content_type_model)
+            dmt.index = JSONBFieldIndexType.GIN.value
+        elif index == JSONBFieldIndexType.GIST and dmt.index != JSONBFieldIndexType.GIST.value:
+            dmt.create_gist_index(content_type_model)
+            dmt.index = JSONBFieldIndexType.GIST.value
 
     dmt.save()
 

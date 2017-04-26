@@ -31,6 +31,7 @@ var Model = Backbone.Model.extend({
         descriptor_type_code: '',
         mandatory: false,
         set_once: false,
+        index: 'None'
     },
 
     initialize: function(attributes, options) {

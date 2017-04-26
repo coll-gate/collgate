@@ -1,0 +1,36 @@
+<!--
+ - @file descriptormetamodeltypechangeindex.html
+ - @brief
+ - @author Frédéric SCHERMA (INRA UMR1095)
+ - @date 2017-04-24
+ - @copyright Copyright (c) 2017 INRA/CIRAD
+ - @license MIT (see LICENSE file)
+ - @details
+-->
+
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title"><%= gt.gettext("Change the index type for the meta-model of descriptor") %></h4>
+        </div>
+        <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
+            <form>
+                <div class="form-group">
+                    <label class="control-label"><%= gt.gettext("Type of index or none") %></label>
+                    <select class="form-control" name="index" style="width: 100%;">
+                        <option name="none" value="0"><%= gt.gettext("None") %></option>
+                        <option name="unique-btree" value="1"><%= gt.gettext("Unique BTREE") %></option>
+                        <option name="btree" value="2"><%= gt.gettext("BTREE") %></option>
+                        <option name="gin" value="3"><%= gt.gettext("GIN") %></option>
+                        <option name="gist" value="4"><%= gt.gettext("GIST") %></option>
+                    </select>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= gt.gettext("Cancel") %></button>
+            <button type="button" class="btn btn-success apply"><%= gt.gettext("Apply") %></button>
+        </div>
+    </div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->

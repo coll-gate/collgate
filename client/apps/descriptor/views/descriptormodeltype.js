@@ -35,7 +35,8 @@ var View = Marionette.ItemView.extend({
         'label': 'td[name="label"]',
         'mandatory': 'td[name="mandatory"]',
         'set_once': 'td[name="set_once"]',
-        'condition': 'td[name="condition"]'
+        'condition': 'td[name="condition"]',
+        'index': 'td[name="index"]'
     },
 
     events: {
@@ -50,7 +51,8 @@ var View = Marionette.ItemView.extend({
         'click @ui.label': 'editLabel',
         'click @ui.mandatory': 'toggleMandatory',
         'click @ui.set_once': 'toggleSetOnce',
-        'click @ui.condition': 'editCondition'
+        'click @ui.condition': 'editCondition',
+        'click @ui.index': 'changeIndex'
     },
 
     initialize: function() {
@@ -499,6 +501,51 @@ var View = Marionette.ItemView.extend({
 
     toggleSetOnce: function() {
         this.model.save({set_once: !this.model.get('set_once')}, {patch: true, wait: true});
+    },
+
+    changeIndex: function() {
+        var model = this.model;
+
+        var ChangeIndex = Dialog.extend({
+            template: require('../templates/descriptormodeltypechangeindex.html'),
+
+            attributes: {
+                id: "dlg_change_index"
+            },
+
+            ui: {
+                index: "select[name=index]"
+            },
+
+            initialize: function (options) {
+                ChangeIndex.__super__.initialize.apply(this, arguments);
+            },
+
+            onRender: function () {
+                ChangeIndex.__super__.onRender.apply(this);
+
+                this.ui.index.val(this.model.get('index')).selectpicker({
+                    style: 'btn-default',
+                    container: 'body'
+                });
+            },
+
+            onBeforeDestroy: function () {
+                this.ui.index.selectpicker('destroy');
+
+                ChangeIndex.__super__.onBeforeDestroy.apply(this);
+            },
+
+            onApply: function () {
+                var index = parseInt(this.ui.index.val());
+
+                this.model.save({index: index}, {patch: true, wait: true});
+                this.destroy();
+            }
+        });
+
+        var changeIndex = new ChangeIndex({model: model});
+        changeIndex.render();
     },
 
     deleteDescriptorModelType: function() {

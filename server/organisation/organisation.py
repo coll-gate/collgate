@@ -1,21 +1,18 @@
 # -*- coding: utf-8; -*-
 #
 # @file organisation.py
-# @brief 
+# @brief coll-gate organisation organisation model REST API.
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2017-01-03
 # @copyright Copyright (c) 2017 INRA/CIRAD
 # @license MIT (see LICENSE file)
-# @details 
+# @details
 
-"""
-coll-gate organisation organisation model REST API
-"""
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import SuspiciousOperation
 from django.db import IntegrityError
 from django.db import transaction
-from django.db.models import Q
+from django.db.models import Q, TextField
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 
@@ -167,7 +164,8 @@ def filter_organisation(filters, cursor, limit, grc_only):
 
         if name_acronym:
             if filters.get('method', 'icontains') == 'icontains':
-                qs = qs.filter(Q(name__icontains=name_acronym) | Q(descriptors__organisation_acronym=name_acronym))
+                qs = qs.filter(Q(name__icontains=name_acronym) |
+                               Q(descriptors__organisation_acronym__as_text__icontains=name_acronym))
             else:
                 qs = qs.filter(Q(name__iexact=name_acronym) | Q(descriptors__organisation_acronym=name_acronym))
 
