@@ -50,6 +50,8 @@ _.extend(ImpreciseDateType.prototype, DescriptorFormatType.prototype, {
                 showTodayButton: true,
                 showClear: true,
                 viewMode: 'years',
+                minDate: '0001-01-01',
+                maxDate: '9999-12-31',
                 icons: {
                     close: 'OK'
                 }
@@ -169,34 +171,41 @@ _.extend(ImpreciseDateType.prototype, DescriptorFormatType.prototype, {
         if (this.readOnly) {
             if (definesValues) {
                 // defaultValues
+                date = moment();
                 if (defaultValues[0] && !defaultValues[1] && !defaultValues[2]) {
                     // format: YYYY
-                    // date = moment(defaultValues[0]);
-                    date = moment(defaultValues[0] + "-01");
+                    date.year(defaultValues[0]);
                     this.el.val(date.format("YYYY"));
                 } else if (defaultValues[0] && defaultValues[1] && !defaultValues[2]) {
                     // format: MM/YYYY
-                    date = moment(defaultValues[0] + "-" + defaultValues[1]);
+                    date.year(defaultValues[0]);
+                    date.month(defaultValues[1]-1);
                     this.el.val(date.format("MM/YYYY"));
                 } else {
                     // format: L (ex: 20/05/1992)
-                    date = moment(defaultValues[0] + defaultValues[1] + defaultValues[2]);
+                    date.year(defaultValues[0]);
+                    date.month(defaultValues[1]-1);
+                    date.date(defaultValues[2]);
                     this.el.val(date.format("L"));
                 }
             }
         } else {
             if (definesValues) {
+                date = moment();
                 if (defaultValues[0] && !defaultValues[1] && !defaultValues[2]) {
                     // format: YYYY
-                    date = moment(defaultValues[0] + "-01");
+                    date.year(defaultValues[0]);
                     this.el.data('DateTimePicker').format("YYYY");
                 } else if (defaultValues[0] && defaultValues[1] && !defaultValues[2]) {
                     // format: MM/YYYY
-                    date = moment(defaultValues[0] + "-" + defaultValues[1]);
+                    date.year(defaultValues[0]);
+                    date.month(defaultValues[1]-1);
                     this.el.data('DateTimePicker').format("MM/YYYY");
                 } else {
                     // format: L (ex: 20/05/1992)
-                    date = moment(defaultValues[0] + defaultValues[1] + defaultValues[2]);
+                    date.year(defaultValues[0]);
+                    date.month(defaultValues[1]-1);
+                    date.date(defaultValues[2]);
                     this.el.data('DateTimePicker').format("L");
                 }
                 this.el.data('DateTimePicker').date(date);
@@ -215,13 +224,15 @@ _.extend(ImpreciseDateType.prototype, DescriptorFormatType.prototype, {
                 if (date != null) {
                     switch (format) {
                         case "YYYY":
-                            return [date.format("YYYY"), null, null];
+                            console.log([parseInt(date.format("YYYY")), 0, 0]);
+                            return [parseInt(date.format("YYYY")), 0, 0];
 
                         case "MM/YYYY":
-                            return [date.format("YYYY"), date.format("MM"), null];
+                            console.log([parseInt(date.format("YYYY")), parseInt(date.format("MM")), 0]);
+                            return [parseInt(date.format("YYYY")), parseInt(date.format("MM")), 0];
 
                         case "L":
-                            return [date.format("YYYY"), date.format("MM"), date.format("DD")];
+                            return [parseInt(date.format("YYYY")), parseInt(date.format("MM")), parseInt(date.format("DD"))];
                     }
                 } else {
                     return null;

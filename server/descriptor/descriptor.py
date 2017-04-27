@@ -28,7 +28,7 @@ from igdectk.rest.response import HttpResponseRest
 from igdectk.rest.handler import RestHandler
 
 from main.models import InterfaceLanguages
-from .models import DescriptorType, DescriptorGroup, DescriptorValue, DescriptorModel
+from .models import DescriptorType, DescriptorGroup, DescriptorValue
 
 
 class RestDescriptor(RestHandler):
@@ -550,7 +550,8 @@ def update_descriptor_type(request, grp_id, typ_id):
             descr_type.values_set.all().delete()
 
         # regenerate values only if difference in range or translation
-        if org_min_range != min_range or org_max_range != max_range or format_type['trans'] != org_format.get('trans', False):
+        if org_min_range != min_range or org_max_range != max_range or format_type['trans'] != org_format.get('trans',
+                                                                                                              False):
             values = {}
 
             i = 1  # begin to 1
@@ -560,7 +561,7 @@ def update_descriptor_type(request, grp_id, typ_id):
                 for lang in InterfaceLanguages.choices():
                     lvalues = {}
 
-                    for ordinal in range(min_range, max_range+1):
+                    for ordinal in range(min_range, max_range + 1):
                         code = "%s:%07i" % (descr_type.code, i)
                         lvalues[code] = {'ordinal': ordinal, 'value0': 'Undefined(%i)' % ordinal}
                         i += 1
@@ -1011,7 +1012,7 @@ def set_values_for_descriptor_type(request, grp_id, typ_id, val_id, field):
     return HttpResponseRest(request, results)
 
 
-@cache_page(60*60*24)
+@cache_page(60 * 60 * 24)
 @RestDescriptorModelIdTypeIdValueDisplay.def_auth_request(Method.GET, Format.JSON)
 def get_all_display_values_for_descriptor_type(request, grp_id, typ_id):
     """
@@ -1150,4 +1151,3 @@ def search_display_value_for_descriptor_type(request, grp_id, typ_id):
     }
 
     return HttpResponseRest(request, results)
-
