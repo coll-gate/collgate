@@ -20,6 +20,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist, ImproperlyConfigured
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _, pgettext_lazy
+from django.db.models import Q
 
 
 class DescriptorFormatTypeGroup(object):
@@ -293,9 +294,9 @@ class DescriptorFormatTypeEnumSingle(DescriptorFormatType):
             "type": "object",
             "properties": {
                 "fields": {"type": "array", 'minLength': 1, 'maxLength': 1, 'items': [
-                        {'type': 'string', 'minLength': 0, 'maxLength': 32, 'blank': True}
-                    ]
-                },
+                    {'type': 'string', 'minLength': 0, 'maxLength': 32, 'blank': True}
+                ]
+                           },
                 "trans": {"type": "boolean"},
                 "sortby_field": {"type": "string", "enum": ['code', 'value0']},
                 "display_fields": {"type": "string", "enum": ['value0']},
@@ -360,10 +361,10 @@ class DescriptorFormatTypeEnumPair(DescriptorFormatType):
             "type": "object",
             "properties": {
                 "fields": {"type": "array", 'minLength': 2, 'maxLength': 2, 'items': [
-                        {'type': 'string', 'minLength': 0, 'maxLength': 32, 'blank': True},
-                        {'type': 'string', 'minLength': 0, 'maxLength': 32, 'blank': True}
-                    ]
-                },
+                    {'type': 'string', 'minLength': 0, 'maxLength': 32, 'blank': True},
+                    {'type': 'string', 'minLength': 0, 'maxLength': 32, 'blank': True}
+                ]
+                           },
                 "trans": {"type": "boolean"},
                 "sortby_field": {"type": "string", "enum": ['code', 'value0', 'value1']},
                 "display_fields": {"type": "string",
@@ -438,9 +439,9 @@ class DescriptorFormatTypeEnumOrdinal(DescriptorFormatType):
             "type": "object",
             "properties": {
                 "fields": {"type": "array", 'minLength': 1, 'maxLength': 1, 'items': [
-                        {'type': 'string', 'minLength': 0, 'maxLength': 32, 'blank': True}
-                    ]
-                },
+                    {'type': 'string', 'minLength': 0, 'maxLength': 32, 'blank': True}
+                ]
+                           },
                 "trans": {"type": "boolean"},
                 "sortby_field": {"type": "string", "enum": ['code', 'ordinal', 'value0']},
                 "display_fields": {"type": "string", "enum": ['value0', 'ordinal-value0']},
@@ -536,7 +537,8 @@ class DescriptorFormatTypeNumeric(DescriptorFormatType):
             "properties": {
                 "unit": {"type": "string", 'minLength': 1, 'maxLength': 32},
                 "custom_unit": {"type": "string", 'minLength': 0, 'maxLength': 32, 'blank': True},
-                "precision": {"type": "string", 'enum': ["0.0", "1.0", "2.0", "3.0", "4.0", "5.0", "6.0", "7.0", "8.0", "9.0"]}
+                "precision": {"type": "string",
+                              'enum': ["0.0", "1.0", "2.0", "3.0", "4.0", "5.0", "6.0", "7.0", "8.0", "9.0"]}
             }
         }
 
@@ -584,7 +586,8 @@ class DescriptorFormatTypeNumericRange(DescriptorFormatType):
                 descriptor_type_format['precision'],)
 
         # and min/max
-        if dec < decimal.Decimal(descriptor_type_format['range'][0]) or dec > decimal.Decimal(descriptor_type_format['range'][1]):
+        if dec < decimal.Decimal(descriptor_type_format['range'][0]) or dec > decimal.Decimal(
+                descriptor_type_format['range'][1]):
             if not isinstance(value, str):
                 return _("The descriptor value must be a decimal between") + " %i and %i" % (
                     descriptor_type_format['range'][0], descriptor_type_format['range'][1])
@@ -597,7 +600,8 @@ class DescriptorFormatTypeNumericRange(DescriptorFormatType):
             "properties": {
                 "unit": {"type": "string", 'minLength': 1, 'maxLength': 32},
                 "custom_unit": {"type": "string", 'minLength': 0, 'maxLength': 32, 'blank': True},
-                "precision": {"type": "string", 'enum': ["0.0", "1.0", "2.0", "3.0", "4.0", "5.0", "6.0", "7.0", "8.0", "9.0"]},
+                "precision": {"type": "string",
+                              'enum': ["0.0", "1.0", "2.0", "3.0", "4.0", "5.0", "6.0", "7.0", "8.0", "9.0"]},
                 "range": {"type": "array", 'minLength': 2, 'maxLength': 2, 'items': [
                     {"type": "string", 'minLength': 1, 'maxLength': 99},
                     {"type": "string", 'minLength': 1, 'maxLength': 99}
@@ -810,10 +814,6 @@ class DescriptorFormatTypeImpreciseDate(DescriptorFormatType):
     Specialisation for a imprecise date value.
     """
 
-    YEAR_RE = re.compile(r'^\d{4}$')
-    MONTH_RE = re.compile(r'^1[0-2]|0[1-9]$')
-    DAY_RE = re.compile(r'^[1-3][0-9]|0[1-9]$')
-
     def __init__(self):
         super().__init__()
 
@@ -821,21 +821,26 @@ class DescriptorFormatTypeImpreciseDate(DescriptorFormatType):
         self.group = DescriptorFormatTypeGroupSingle()
         self.verbose_name = _("Imprecise date")
 
+    class my_Q(Q):
+        def __init__(self, kwargs=None):
+            if kwargs is None:
+                kwargs = dict()
+            args = set()
+            super(Q, self).__init__(children=list(args) + list(kwargs.items()))
+
     def validate(self, descriptor_type_format, value, descriptor_model_type):
 
         if len(value) != 3 and isinstance(value, list):
             return _("The descriptor value must be an array of 3 string values")
 
-        if self.YEAR_RE.match(value[0]) is None:
+        if not isinstance(value[1], int) and 1 > value[0] or value[0] > 9999:
             return _("The descriptor value must contain a valid year (format:YYYY)")
 
-        if value[1] is not None:
-            if self.MONTH_RE.match(value[1]) is None:
-                return _("The descriptor value of month is invalid")
+        if not isinstance(value[1], int) and value[1] not in range(0, 12):
+            return _("The descriptor value of month is invalid")
 
-        if value[2] is not None:
-            if self.DAY_RE.match(value[2]) is None:
-                return _("The descriptor value of day is invalid")
+        if not isinstance(value[2], int) and value[2] not in range(0, 31):
+            return _("The descriptor value of day is invalid")
 
         if value[2] and not value[1]:
             return _("The descriptor value is invalid")
@@ -845,6 +850,37 @@ class DescriptorFormatTypeImpreciseDate(DescriptorFormatType):
     def check(self, descriptor_type_format):
         return None
 
+    def greater_than_equal(self, descriptor_type_format, value, descriptor_model_type):
+        validate_result = self.validate(descriptor_type_format, value, descriptor_model_type)
+        if validate_result is not None:
+            return validate_result
+
+        return self.my_Q({'descriptors__%s__0__gte' % descriptor_model_type['descriptor_code']: value[0]}) & self.my_Q(
+            {'descriptors__%s__1__gte' % descriptor_model_type['descriptor_code']: value[1]}) & self.my_Q(
+            {'descriptors__%s__2__gte' % descriptor_model_type['descriptor_code']: value[2]})
+
+    def less_than_equal(self, descriptor_type_format, value, descriptor_model_type):
+        validate_result = self.validate(descriptor_type_format, value, descriptor_model_type)
+        if validate_result is not None:
+            return validate_result
+
+        if value[1] is 0:
+            value[1] = 12
+        if value[2] is 0:
+            value[2] = 31
+
+        return self.my_Q({'descriptors__%s__0__lte' % descriptor_model_type['descriptor_code']: value[0]}) & self.my_Q(
+            {'descriptors__%s__1__lte' % descriptor_model_type['descriptor_code']: value[1]}) & self.my_Q(
+            {'descriptors__%s__2__lte' % descriptor_model_type['descriptor_code']: value[2]})
+
+    def equal(self, descriptor_type_format, value, descriptor_model_type):
+        validate_result = self.validate(descriptor_type_format, value, descriptor_model_type)
+        if validate_result is not None:
+            return validate_result
+
+        return self.my_Q({'descriptors__%s__0' % descriptor_model_type['descriptor_code']: value[0]}) & self.my_Q(
+            {'descriptors__%s__1' % descriptor_model_type['descriptor_code']: value[1]}) & self.my_Q(
+            {'descriptors__%s__2' % descriptor_model_type['descriptor_code']: value[2]})
 
 class DescriptorFormatTypeDateTime(DescriptorFormatType):
     """
@@ -943,4 +979,3 @@ class DescriptorFormatTypeEntity(DescriptorFormatType):
             'cacheable': False,
             'items': items
         }
-
