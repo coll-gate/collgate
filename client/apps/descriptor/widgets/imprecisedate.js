@@ -301,11 +301,11 @@ ImpreciseDateType.DescriptorTypeDetailsView = Marionette.ItemView.extend({
 });
 
 ImpreciseDateType.format = function (value) {
-    if (value[0] !== null && value[1] !== null && value[2] !== null) {
+    if (value[0] !== 0 && value[1] !== 0 && value[2] !== 0) {
         return moment(value[0] + value[1] + value[2]).format("L");
-    } else if (value[0] !== null && value[1] !== null) {
+    } else if (value[0] !== 0 && value[1] !== 0) {
         return moment(value[0] + value[1]).format("MM/YYYY");
-    } else if (value[0] !== null) {
+    } else if (value[0] !== 0) {
         return moment(value[0] + "-01").format("YYYY");
     } else {
         return ""

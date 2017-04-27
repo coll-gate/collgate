@@ -108,13 +108,21 @@ var Layout = LayoutView.extend({
                 }));
             });
 
+            // get available columns
+            var columns = $.ajax({
+                type: "GET",
+                url: application.baseUrl + 'descriptor/columns/accession.batch/',
+                contentType: "application/json; charset=utf-8"
+            });
+
             // parents batches tab
             var BatchCollection = require('../collections/batch');
             var parentBatches = new BatchCollection([], {batch_id: this.model.get('id'), batch_type: 'parents'});
 
-            parentBatches.fetch().then(function () {
+            $.when(columns, parentBatches.fetch()).done(function (data) {
                 var BatchListView = require('../views/batchlist');
-                var batchListView = new BatchListView({collection: parentBatches, model: batchLayout.model});
+                var batchListView = new BatchListView({
+                    collection: parentBatches, model: batchLayout.model, columns: data[0].columns});
 
                 var contentBottomLayout = new ContentBottomLayout();
                 batchLayout.getRegion('parents').show(contentBottomLayout);
@@ -126,9 +134,10 @@ var Layout = LayoutView.extend({
             // children batches tab
             var childrenBatches = new BatchCollection([], {batch_id: this.model.get('id'), batch_type: 'children'});
 
-            childrenBatches.fetch().then(function () {
+            $.when(columns, childrenBatches.fetch()).done(function (data) {
                 var BatchListView = require('../views/batchlist');
-                var batchListView = new BatchListView({collection: childrenBatches, model: batchLayout.model});
+                var batchListView = new BatchListView({
+                    collection: childrenBatches, model: batchLayout.model, columns: data[0].columns});
 
                 var contentBottomLayout = new ContentBottomLayout();
                 batchLayout.getRegion('batches').show(contentBottomLayout);

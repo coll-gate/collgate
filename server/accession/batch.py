@@ -96,7 +96,7 @@ def create_batch(request):
     # @todo name generator
     name = request.data['name']
     dmm_id = int_arg(request.data['descriptor_meta_model'])
-    accession_id = int_arg(request.data['parent'])
+    accession_id = int_arg(request.data['accession'])
     descriptors = request.data['descriptors']
 
     # check uniqueness of the name

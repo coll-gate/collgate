@@ -22,7 +22,15 @@ var View = ScrollView.extend({
     className: "batch-list advanced-table-container",
     childView: BatchView,
     childViewContainer: 'tbody.batch-list',
-    userSettingName: 'batches_list_columns',
+    userSettingName: function() {
+        if (this.collection.batch_type === 'parents') {
+            return 'parents_batches_list_columns';
+        } else if (this.collection.batch_type === 'children') {
+            return 'children_batches_list_columns';
+        } else {
+            return 'batches_list_columns';
+        }
+    },
 
     defaultColumns: [
         {name: 'glyph', width: 'auto', sort_by: null},
@@ -42,7 +50,7 @@ var View = ScrollView.extend({
     },
 
     initialize: function(options) {
-        View.__super__.initialize.apply(this);
+        View.__super__.initialize.apply(this, arguments);
 
         // this.listenTo(this.collection, 'reset', this.render, this);
     },

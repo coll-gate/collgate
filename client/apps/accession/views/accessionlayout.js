@@ -31,15 +31,6 @@ var Layout = LayoutView.extend({
         'batches': "div.tab-pane[name=batches]"
     },
 
-    defaultColumns: [
-        {name: 'glyph', width: 'auto', sort_by: null},
-        {name: 'code', width: 'auto', sort_by: null},
-        {name: 'name', width: 'auto', sort_by: 'asc'},
-        {name: 'parent', width: 'auto', sort_by: null},
-        {name: 'IPGRI_4.1.1', width: 'auto', sort_by: null},
-        {name: 'MCPD_ORIGCTY', width: 'auto', sort_by: null}
-    ],
-
     initialize: function(options) {
         Layout.__super__.initialize.apply(this, arguments);
 
@@ -115,9 +106,17 @@ var Layout = LayoutView.extend({
             var BatchCollection = require('../collections/batch');
             var accessionBatches = new BatchCollection([], {accession_id: this.model.get('id')});
 
-            accessionBatches.fetch().then(function() {
+            // get available columns
+            var columns = $.ajax({
+                type: "GET",
+                url: application.baseUrl + 'descriptor/columns/accession.batch/',
+                contentType: "application/json; charset=utf-8"
+            });
+
+            $.when(columns, accessionBatches.fetch()).done(function (data) {
                 var BatchListView = require('../views/batchlist');
-                var batchListView  = new BatchListView({collection: accessionBatches, model: accessionLayout.model});
+                var batchListView  = new BatchListView({
+                    collection: accessionBatches, model: accessionLayout.model, columns: data[0].columns});
 
                 var contentBottomLayout = new ContentBottomLayout();
                 accessionLayout.getRegion('batches').show(contentBottomLayout);
