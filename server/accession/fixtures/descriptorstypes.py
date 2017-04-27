@@ -1,16 +1,12 @@
 # -*- coding: utf-8; -*-
 #
 # @file descriptorstypes.py
-# @brief 
+# @brief Setup the types of descriptors.
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2016-09-01
 # @copyright Copyright (c) 2016 INRA/CIRAD
 # @license MIT (see LICENSE file)
 # @details 
-
-"""
-Setup the types of descriptors.
-"""
 
 DESCRIPTORS = {
     'accession_synonym_types': {
@@ -114,10 +110,35 @@ DESCRIPTORS = {
             'regexp': '^.{0,255}$'
         },
         '__comment': 'Not necessary to declare a specific descriptor type. Can use a generic type defined in common group.'
-    }
+    },
+    'creation_date': {
+        'id': None,
+        'name': 'creation_date',
+        'code': 'BATCH_CREATDATE',
+        'group': 'BATCH',
+        'can_delete': False,
+        'can_modify': False,
+        'description': 'Date on which the batch has been created',
+        'format': {
+            'type': 'imprecise_date'
+        },
+        '__comment': 'Not necessary to declare a specific descriptor type. Can use a generic type defined in common group.'
+    },
+    'destruction_date': {
+        'id': None,
+        'name': 'destruction_date',
+        'code': 'BATCH_DESTRDATE',
+        'group': 'BATCH',
+        'can_delete': False,
+        'can_modify': False,
+        'description': 'Date on which the batch has been destroyed',
+        'format': {
+            'type': 'imprecise_date'
+        },
+        '__comment': 'Not necessary to declare a specific descriptor type. Can use a generic type defined in common group.'
+    },
 }
 
 
 def fixture(fixture_manager):
     fixture_manager.create_or_update_types(DESCRIPTORS)
-

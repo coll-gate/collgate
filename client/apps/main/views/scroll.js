@@ -73,11 +73,11 @@ var View = Marionette.CompositeView.extend({
         this.listenTo(this.collection, 'reset', this.onResetCollection, this);
         this.listenTo(this.collection, 'sync', this.onCollectionSync, this);
 
+        // empty, mean generated at dom refresh
         if (this.userSettingName) {
-            this.selectedColumns = application.getUserSetting(this.userSettingName) || [];
+            this.selectedColumns = application.getUserSetting(this.userSettingName) || this.defaultColumns || [];
         } else {
-            // empty, mean generated at dom refresh
-            this.selectedColumns = [];
+            this.selectedColumns = this.defaultColumns || [];
         }
 
         // process columns

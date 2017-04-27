@@ -8,15 +8,15 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
+var LayoutView = require('../../main/views/layout');
 var AccessionModel = require('../models/accession');
 
 var ScrollingMoreView = require('../../main/views/scrollingmore');
 var ContentBottomLayout = require('../../main/views/contentbottomlayout');
 var BatchPathView = require('../views/batchpath');
+var BatchDescriptorEditView = require('../views/batchdescriptoredit');
 
-
-var Layout = Marionette.LayoutView.extend({
+var Layout = LayoutView.extend({
     template: require("../templates/batchlayout.html"),
 
     attributes: {
@@ -24,10 +24,8 @@ var Layout = Marionette.LayoutView.extend({
     },
 
     ui: {
-        tabs: 'a[data-toggle="tab"]',
-        initial_pane: 'div.tab-pane.active',
         descriptors_tab: 'a[aria-controls=descriptors]',
-        parent_tab: 'a[aria-controls=parents]',
+        parents_tab: 'a[aria-controls=parents]',
         batches_tab: 'a[aria-controls=batches]',
         actions_tab: 'a[aria-controls=actions]'
     },
@@ -40,29 +38,34 @@ var Layout = Marionette.LayoutView.extend({
         'actions': "div.tab-pane[name=actions]"
     },
 
-    childEvents: {
-        'dom:refresh': function(child) {
-            var tab = this.$el.find('div.tab-pane.active').attr('name');
-            var region = this.getRegion(tab);
-
-            // update child of current tab
-            if (region && child && region.currentView == child) {
-                if (region.currentView.onShowTab) {
-                    region.currentView.onShowTab(this);
-                }
-            }
-        }
-    },
-
     initialize: function(model, options) {
         Layout.__super__.initialize.apply(this, arguments);
 
-        this.activeTab = undefined;
         this.listenTo(this.model, 'change:descriptor_meta_model', this.onDescriptorMetaModelChange, this);
+
+        if (this.model.isNew()) {
+            this.listenTo(this.model, 'change:id', this.onBatchCreate, this);
+        }
+    },
+
+    onBatchCreate: function(model, value) {
+        // re-render once created
+        this.render();
+
+        // and update history
+        Backbone.history.navigate('app/accession/batch/' + this.model.get('id') + '/', {/*trigger: true,*/ replace: false});
+    },
+
+    disableParentsTab: function () {
+        this.ui.parents_tab.parent().addClass('disabled');
     },
 
     disableBatchesTab: function () {
         this.ui.batches_tab.parent().addClass('disabled');
+    },
+
+    disableActionsTab: function () {
+        this.ui.actions_tab.parent().addClass('disabled');
     },
 
     onDescriptorMetaModelChange: function(model, value) {
@@ -95,73 +98,70 @@ var Layout = Marionette.LayoutView.extend({
     onRender: function() {
         var batchLayout = this;
 
-        this.activeTab = this.ui.initial_pane.attr('name');
+        if (!this.model.isNew()) {
+            // details
+            var accession = new AccessionModel({id: this.model.get('accession')});
+            accession.fetch().then(function () {
+                batchLayout.getRegion('details').show(new BatchPathView({
+                    model: batchLayout.model,
+                    accession: accession
+                }));
+            });
 
-        this.ui.tabs.on("shown.bs.tab", $.proxy(this.onShowTab, this));
-        this.ui.tabs.on("hide.bs.tab", $.proxy(this.onHideTab, this));
+            // parents batches tab
+            var BatchCollection = require('../collections/batch');
+            var parentBatches = new BatchCollection([], {batch_id: this.model.get('id'), batch_type: 'parents'});
 
-        // details view
-        var accession = new AccessionModel({id: this.model.get('accession')});
-        accession.fetch().then(function() {
-            batchLayout.getRegion('details').show(new BatchPathView({model: batchLayout.model, accession: accession}));
-        });
+            parentBatches.fetch().then(function () {
+                var BatchListView = require('../views/batchlist');
+                var batchListView = new BatchListView({collection: parentBatches, model: batchLayout.model});
 
-        // parents batches tab
-        var BatchCollection = require('../collections/batch');
-        var parentBatches = new BatchCollection([], {batch_id: this.model.get('id'), batch_type: 'parents'});
+                var contentBottomLayout = new ContentBottomLayout();
+                batchLayout.getRegion('parents').show(contentBottomLayout);
 
-        parentBatches.fetch().then(function() {
-            var BatchListView = require('../views/batchlist');
-            var batchListView  = new BatchListView({collection: parentBatches, model: batchLayout.model});
+                contentBottomLayout.getRegion('content').show(batchListView);
+                contentBottomLayout.getRegion('bottom').show(new ScrollingMoreView({targetView: batchListView}));
+            });
 
-            var contentBottomLayout = new ContentBottomLayout();
-            batchLayout.getRegion('parents').show(contentBottomLayout);
+            // children batches tab
+            var childrenBatches = new BatchCollection([], {batch_id: this.model.get('id'), batch_type: 'children'});
 
-            contentBottomLayout.getRegion('content').show(batchListView);
-            contentBottomLayout.getRegion('bottom').show(new ScrollingMoreView({targetView: batchListView}));
-        });
+            childrenBatches.fetch().then(function () {
+                var BatchListView = require('../views/batchlist');
+                var batchListView = new BatchListView({collection: childrenBatches, model: batchLayout.model});
 
-        // children batches tab
-        var childrenBatches = new BatchCollection([], {batch_id: this.model.get('id'), batch_type: 'children'});
+                var contentBottomLayout = new ContentBottomLayout();
+                batchLayout.getRegion('batches').show(contentBottomLayout);
 
-        childrenBatches.fetch().then(function() {
-            var BatchListView = require('../views/batchlist');
-            var batchListView  = new BatchListView({collection: childrenBatches, model: batchLayout.model});
+                contentBottomLayout.getRegion('content').show(batchListView);
+                contentBottomLayout.getRegion('bottom').show(new ScrollingMoreView({targetView: batchListView}));
+            });
+        } else {
+            // details
+            var accession = new AccessionModel({id: this.model.get('accession')});
+            accession.fetch().then(function() {
+                batchLayout.getRegion('details').show(new BatchPathView({
+                    model: batchLayout.model, accession: accession, noLink: true}));
+            });
 
-            var contentBottomLayout = new ContentBottomLayout();
-            batchLayout.getRegion('batches').show(contentBottomLayout);
+            // descriptors edit tab
+            $.ajax({
+                method: "GET",
+                url: application.baseUrl + 'descriptor/meta-model/' + this.model.get('descriptor_meta_model') + '/layout/',
+                dataType: 'json'
+            }).done(function(data) {
+                var batchDescriptorView = new BatchDescriptorEditView({
+                    model: batchLayout.model, descriptorMetaModelLayout: data});
 
-            contentBottomLayout.getRegion('content').show(batchListView);
-            contentBottomLayout.getRegion('bottom').show(new ScrollingMoreView({targetView: batchListView}));
-        });
-    },
+                batchLayout.getRegion('descriptors').show(batchDescriptorView);
+            });
 
-    onShowTab: function(e) {
-        // e.target current tab, e.relatedTarget previous tab
-        var tab = e.target.getAttribute('aria-controls');
-        this.activeTab = tab;
-
-        var region = this.getRegion(tab);
-        if (region && region.currentView && region.currentView.onShowTab) {
-            region.currentView.onShowTab();
+            // not available tabs
+            this.disableParentsTab();
+            this.disableBatchesTab();
+            this.disableActionsTab();
         }
-    },
-
-    onHideTab: function(e) {
-        var tab = e.target.getAttribute('aria-controls');
-
-        var region = this.getRegion(tab);
-        if (region && region.currentView && region.currentView.onHideTab) {
-            region.currentView.onHideTab();
-        }
-
-        application.main.defaultRightView();
-    },
-
-    onDestroy: function() {
-        application.main.defaultRightView();
     }
 });
 
 module.exports = Layout;
-
