@@ -381,11 +381,11 @@ ImpreciseDateType.DescriptorTypeDetailsView = Marionette.ItemView.extend({
 
 ImpreciseDateType.format = function (value) {
     if (value[0] !== 0 && value[1] !== 0 && value[2] !== 0) {
-        return moment(value[0] + '-' + value[1] + '-' + value[2]).format("L");
+        return moment().locale(session.language).year(value[0]).month(value[1]-1).date(value[2]).format("L");
     } else if (value[0] !== 0 && value[1] !== 0) {
-        return moment(value[0] + '-' + value[1]).format("MM/YYYY");
+        return moment().locale(session.language).year(value[0]).month(value[1]-1).format("MM/YYYY");
     } else if (value[0] !== 0) {
-        return moment(value[0] + "-01").format("YYYY");
+        return moment().locale(session.language).year(value[0]).format("YYYY");
     } else {
         return ""
     }
