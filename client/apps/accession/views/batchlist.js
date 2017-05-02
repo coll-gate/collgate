@@ -14,6 +14,7 @@ var Dialog = require('../../main/views/dialog');
 var DefaultLayout = require('../../main/views/defaultlayout');
 var TitleView = require('../../main/views/titleview');
 var DescriptorsColumnsView = require('../../descriptor/mixins/descriptorscolumns');
+var AccessionModel = require('../models/accession');
 var BatchModel = require('../models/batch');
 var BatchLayout = require('../views/batchlayout');
 
@@ -58,27 +59,30 @@ var View = ScrollView.extend({
     onShowTab: function() {
         View.__super__.onShowTab.apply(this);
 
-        var view = this;
+        // context only for children (sub-batches)
+        if (this.collection.batch_type !== 'parents') {
+            var view = this;
 
-        var contextLayout = application.getView().getRegion('right').currentView;
-        if (!contextLayout) {
-            var DefaultLayout = require('../../main/views/defaultlayout');
-            contextLayout = new DefaultLayout();
-            application.getView().getRegion('right').show(contextLayout);
+            var contextLayout = application.getView().getRegion('right').currentView;
+            if (!contextLayout) {
+                var DefaultLayout = require('../../main/views/defaultlayout');
+                contextLayout = new DefaultLayout();
+                application.getView().getRegion('right').show(contextLayout);
+            }
+
+            var TitleView = require('../../main/views/titleview');
+            contextLayout.getRegion('title').show(new TitleView({title: gt.gettext("Batches actions")}));
+
+            var actions = ['create'];
+
+            var AccessionBatchesContextView = require('./accessionbatchescontext');
+            var contextView = new AccessionBatchesContextView({actions: actions});
+            contextLayout.getRegion('content').show(contextView);
+
+            contextView.on("batch:create", function () {
+                view.onCreate();
+            });
         }
-
-        var TitleView = require('../../main/views/titleview');
-        contextLayout.getRegion('title').show(new TitleView({title: gt.gettext("Batches actions")}));
-
-        var actions = ['create'];
-
-        var AccessionBatchesContextView = require('./accessionbatchescontext');
-        var contextView = new AccessionBatchesContextView({actions: actions});
-        contextLayout.getRegion('content').show(contextView);
-
-        contextView.on("batch:create", function () {
-            view.onCreate();
-        });
     },
 
     onHideTab: function() {
@@ -86,13 +90,28 @@ var View = ScrollView.extend({
     },
 
     onCreate: function () {
-        var accessionModel = this.model;
+        var accessionModel = null;
+        var batchModel = null;
 
-        $.ajax({
+        var metaModelPromise = $.ajax({
             type: "GET",
             url: application.baseUrl + 'descriptor/meta-model/for-describable/' + 'accession.batch/',
             dataType: 'json'
-        }).done(function(data) {
+        });
+
+        var accessionModelPromise = null;
+
+        if (this.model instanceof AccessionModel) {
+            accessionModel = this.model;
+            batchModel = null;
+        } else {
+            accessionModel = new AccessionModel({id: this.model.get('accession')});
+            accessionModelPromise = accessionModel.fetch();
+
+            batchModel = this.model;
+        }
+
+        $.when(metaModelPromise, accessionModelPromise).done(function (data) {
             var CreateBatchView = Dialog.extend({
                 attributes: {
                     'id': 'dlg_create_batch'
@@ -100,7 +119,7 @@ var View = ScrollView.extend({
                 template: require('../templates/batchcreate.html'),
                 templateHelpers/*templateContext*/: function () {
                     return {
-                        meta_models: data
+                        meta_models: data[0]
                     };
                 },
 
@@ -120,12 +139,13 @@ var View = ScrollView.extend({
                     CreateBatchView.__super__.onRender.apply(this);
 
                     var accession = this.getOption('accession');
+                    var batch = this.getOption('batch');
 
                     this.ui.code.val(accession.get('name') + ' (' + accession.get('code') + ')');
                     this.ui.meta_model.selectpicker({});
                 },
 
-                onBeforeDestroy: function() {
+                onBeforeDestroy: function () {
                     this.ui.meta_model.selectpicker('destroy');
 
                     CreateBatchView.__super__.onBeforeDestroy.apply(this);
@@ -148,11 +168,11 @@ var View = ScrollView.extend({
                             contentType: 'application/json; charset=utf8',
                             data: {filters: JSON.stringify(filters)},
                             el: this.ui.name,
-                            success: function(data) {
+                            success: function (data) {
                                 for (var i in data.items) {
                                     var t = data.items[i];
 
-                                    if (t.label.toUpperCase() == name.toUpperCase()) {
+                                    if (t.label.toUpperCase() === name.toUpperCase()) {
                                         $(this.el).validateField('failed', gt.gettext('Batch name already in usage'));
                                         return;
                                     }
@@ -164,7 +184,7 @@ var View = ScrollView.extend({
                     }
                 },
 
-                validateName: function() {
+                validateName: function () {
                     var v = this.ui.name.val().trim();
 
                     if (v.length > 128) {
@@ -178,17 +198,17 @@ var View = ScrollView.extend({
                     return true;
                 },
 
-                validate: function() {
+                validate: function () {
                     var valid = this.validateName();
 
-                     if (this.ui.name.hasClass('invalid')) {
+                    if (this.ui.name.hasClass('invalid')) {
                         valid = false;
                     }
 
                     return valid;
                 },
 
-                onContinue: function() {
+                onContinue: function () {
                     var view = this;
 
                     if (this.validate()) {
@@ -209,7 +229,8 @@ var View = ScrollView.extend({
 
                         defaultLayout.getRegion('title').show(new TitleView({
                             title: gt.gettext("Batch"),
-                            model: model}));
+                            model: model
+                        }));
 
                         var accessionLayout = new BatchLayout({model: model});
                         defaultLayout.getRegion('content').show(accessionLayout);
@@ -217,7 +238,7 @@ var View = ScrollView.extend({
                 }
             });
 
-            var createBatchView = new CreateBatchView({accession: accessionModel});
+            var createBatchView = new CreateBatchView({accession: accessionModel, batch: batchModel});
             createBatchView.render();
         });
     }
