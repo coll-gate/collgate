@@ -5,7 +5,7 @@
  * @date 2017-04-11
  * @copyright Copyright (c) 2017 INRA/CIRAD
  * @license MIT (see LICENSE file)
- * @details 
+ * @details
  */
 
 var DescriptorFormatType = require('./descriptorformattype');
@@ -16,6 +16,7 @@ var ImpreciseDateType = function () {
 
     this.name = "imprecise_date";
     this.group = "single";
+    var display_el = null;
 };
 
 _.extend(ImpreciseDateType.prototype, DescriptorFormatType.prototype, {
@@ -30,16 +31,17 @@ _.extend(ImpreciseDateType.prototype, DescriptorFormatType.prototype, {
             this.el = input;
         } else {
             var group = $('<div class="input-group"></div>');
-            var input = $('<input class="form-control" width="100%">');
+            var input = $('<input class="form-control" width="100%">').hide(); // element to hide
+            var display_input = $('<input class="form-control" width="100%" pattern="[0-9\/\s]+">');
             var glyph = $('<span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>').css('cursor', 'pointer');
 
+            group.append(display_input);
             group.append(input);
             group.append(glyph);
 
             parent.append(group);
 
             /// Partial datetime ///
-
             var accuracy = null;
             var current_date = null;
 
@@ -54,6 +56,80 @@ _.extend(ImpreciseDateType.prototype, DescriptorFormatType.prototype, {
                 maxDate: '9999-12-31',
                 icons: {
                     close: 'OK'
+                }
+            });
+
+            var lastFocusedElement = null;
+
+            display_input.mousedown(function(e) {
+                // To prevent case when element already had focus
+                 if (lastFocusedElement === e.target) {
+                    el.data('DateTimePicker').show();
+                 }
+            }).focus(function(e){
+                el.data('DateTimePicker').show();
+                lastFocusedElement = e.target;
+            }).blur(function(e) {
+                el.data('DateTimePicker').hide();
+                lastFocusedElement = null;
+            });
+
+            display_input.on('keydown', function (e) {
+                // Allow: backspace, delete, tab, escape, dash, enter, slash and .
+                if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 109, 110, 111, 190]) !== -1 ||
+                    // Allow: Ctrl+A, Command+A
+                    (e.keyCode === 65 && (e.ctrlKey === true || e.metaKey === true)) ||
+                    // Allow: home, end, left, right, down, up
+                    (e.keyCode >= 35 && e.keyCode <= 40)) {
+                    // let it happen, don't do anything
+                    return;
+                }
+                // Ensure that it is a number and stop the keypress
+                if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+                    e.preventDefault();
+                }
+            });
+
+            display_input.on('change', function (e) {
+                // define date accuracy
+                var temp = (display_input.val().match(/[\/\-.]/g) || []).length;
+                if (temp === 2) {
+                    accuracy = null;
+                    current_date = moment(display_input.val(), "L");
+                    el.data('DateTimePicker').format("L");
+                    el.data('DateTimePicker').date(current_date);
+                    display_input.val(el.data('DateTimePicker').date().format("L"));
+                }
+                else if (temp === 1) {
+                    accuracy = 'M';
+                    current_date = moment(display_input.val(), "MM/YYYY");
+                    el.data('DateTimePicker').format("MM/YYYY");
+                    el.data('DateTimePicker').date(current_date);
+                    display_input.val(el.data('DateTimePicker').date().format("MM/YYYY"));
+                }
+                else {
+                    accuracy = 'YYYY';
+                    current_date = moment(display_input.val(), "YYYY");
+                    el.data('DateTimePicker').format("YYYY");
+                    el.data('DateTimePicker').date(current_date);
+                    display_input.val(el.data('DateTimePicker').date().format("YYYY"));
+                }
+                el.data('DateTimePicker').hide();
+            });
+
+            el.on('dp.hide', function(e) {
+                display_input.trigger('change');
+            });
+
+            el.on("dp.change", function(e){
+                if (el.data('DateTimePicker').format() === "YYYY") {
+                    display_input.val(el.data('DateTimePicker').date().format("YYYY"));
+                }
+                else if (el.data('DateTimePicker').format() === "MM/YYYY") {
+                    display_input.val(el.data('DateTimePicker').date().format("MM/YYYY"));
+                }
+                else {
+                    display_input.val(el.data('DateTimePicker').date().format("L"));
                 }
             });
 
@@ -99,11 +175,11 @@ _.extend(ImpreciseDateType.prototype, DescriptorFormatType.prototype, {
                     if (accuracy === "YYYY") {
                         el.data('DateTimePicker').format("YYYY");
                         el.data('DateTimePicker').date(current_date);
+                        display_input.val(el.data('DateTimePicker').date().format("YYYY"));
                     } else if (accuracy === "M") {
                         el.data('DateTimePicker').format("MM/YYYY");
                         el.data('DateTimePicker').date(current_date);
-                    } else {
-                        el.data('DateTimePicker').format("L");
+                        display_input.val(el.data('DateTimePicker').date().format("MM/YYYY"));
                     }
                 });
 
@@ -134,6 +210,7 @@ _.extend(ImpreciseDateType.prototype, DescriptorFormatType.prototype, {
 
             this.parent = parent;
             this.el = input;
+            this.display_el = display_input;
         }
     },
 
@@ -172,6 +249,7 @@ _.extend(ImpreciseDateType.prototype, DescriptorFormatType.prototype, {
             if (definesValues) {
                 // defaultValues
                 date = moment();
+                date.locale(session.language);
                 if (defaultValues[0] && !defaultValues[1] && !defaultValues[2]) {
                     // format: YYYY
                     date.year(defaultValues[0]);
@@ -179,12 +257,12 @@ _.extend(ImpreciseDateType.prototype, DescriptorFormatType.prototype, {
                 } else if (defaultValues[0] && defaultValues[1] && !defaultValues[2]) {
                     // format: MM/YYYY
                     date.year(defaultValues[0]);
-                    date.month(defaultValues[1]-1);
+                    date.month(defaultValues[1] - 1);
                     this.el.val(date.format("MM/YYYY"));
                 } else {
                     // format: L (ex: 20/05/1992)
                     date.year(defaultValues[0]);
-                    date.month(defaultValues[1]-1);
+                    date.month(defaultValues[1] - 1);
                     date.date(defaultValues[2]);
                     this.el.val(date.format("L"));
                 }
@@ -196,17 +274,20 @@ _.extend(ImpreciseDateType.prototype, DescriptorFormatType.prototype, {
                     // format: YYYY
                     date.year(defaultValues[0]);
                     this.el.data('DateTimePicker').format("YYYY");
+                    this.display_el.val(date.format("YYYY"));
                 } else if (defaultValues[0] && defaultValues[1] && !defaultValues[2]) {
                     // format: MM/YYYY
                     date.year(defaultValues[0]);
-                    date.month(defaultValues[1]-1);
+                    date.month(defaultValues[1] - 1);
                     this.el.data('DateTimePicker').format("MM/YYYY");
+                    this.display_el.val(date.format("MM/YYYY"));
                 } else {
                     // format: L (ex: 20/05/1992)
                     date.year(defaultValues[0]);
-                    date.month(defaultValues[1]-1);
+                    date.month(defaultValues[1] - 1);
                     date.date(defaultValues[2]);
                     this.el.data('DateTimePicker').format("L");
+                    this.display_el.val(date.format("L"));
                 }
                 this.el.data('DateTimePicker').date(date);
             }
@@ -224,11 +305,9 @@ _.extend(ImpreciseDateType.prototype, DescriptorFormatType.prototype, {
                 if (date != null) {
                     switch (format) {
                         case "YYYY":
-                            console.log([parseInt(date.format("YYYY")), 0, 0]);
                             return [parseInt(date.format("YYYY")), 0, 0];
 
                         case "MM/YYYY":
-                            console.log([parseInt(date.format("YYYY")), parseInt(date.format("MM")), 0]);
                             return [parseInt(date.format("YYYY")), parseInt(date.format("MM")), 0];
 
                         case "L":
@@ -287,7 +366,7 @@ _.extend(ImpreciseDateType.prototype, DescriptorFormatType.prototype, {
     }
 });
 
-ImpreciseDateType.DescriptorTypeDetailsView = Marionette.ItemView.extend({  
+ImpreciseDateType.DescriptorTypeDetailsView = Marionette.ItemView.extend({
     className: 'descriptor-type-details-format',
     template: "<div></div>",
 
@@ -302,11 +381,11 @@ ImpreciseDateType.DescriptorTypeDetailsView = Marionette.ItemView.extend({
 
 ImpreciseDateType.format = function (value) {
     if (value[0] !== 0 && value[1] !== 0 && value[2] !== 0) {
-        return moment(value[0] + value[1] + value[2]).format("L");
+        return moment().locale(session.language).year(value[0]).month(value[1]-1).date(value[2]).format("L");
     } else if (value[0] !== 0 && value[1] !== 0) {
-        return moment(value[0] + value[1]).format("MM/YYYY");
+        return moment().locale(session.language).year(value[0]).month(value[1]-1).format("MM/YYYY");
     } else if (value[0] !== 0) {
-        return moment(value[0] + "-01").format("YYYY");
+        return moment().locale(session.language).year(value[0]).format("YYYY");
     } else {
         return ""
     }
