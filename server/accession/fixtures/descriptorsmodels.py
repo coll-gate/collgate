@@ -1,16 +1,12 @@
 # -*- coding: utf-8; -*-
 #
 # @file descriptorsmodels.py
-# @brief 
+# @brief Setup the value for the accession passport models and types of models of descriptors.
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2017-01-03
 # @copyright Copyright (c) 2017 INRA/CIRAD
 # @license MIT (see LICENSE file)
 # @details 
-
-"""
-Setup the value for the accession passport models and types of models of descriptors.
-"""
 
 MODELS = {
     'MCPD_ACCESSION_PASSPORT': {
@@ -60,10 +56,33 @@ MODELS = {
                 'set_once': False
             }
         ]
+    },
+    'BATCH_GENERAL': {
+        'id': None,
+        'name': 'BATCH_GENERAL',
+        'verbose_name': 'Batch general model',
+        'description': 'Base model for batch based on MCPD accession.',
+        'types': [
+            {
+                'id': None,
+                'name': 'BATCH_CREATDATE',
+                'descriptor_type_name': 'creation_date',
+                'label': {'en': 'Creation date', 'fr': "Date de création"},
+                'mandatory': False,
+                'set_once': False
+            },
+            {
+                'id': None,
+                'name': 'BATCH_DESTRDATE',
+                'descriptor_type_name': 'destruction_date',
+                'label': {'en': 'Destruction date', 'fr': "Date de destruction"},
+                'mandatory': False,
+                'set_once': False
+            },
+        ]
     }
 }
 
 
 def fixture(fixture_manager):
     fixture_manager.create_or_update_models(MODELS)
-

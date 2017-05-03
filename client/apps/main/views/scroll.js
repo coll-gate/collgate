@@ -73,11 +73,11 @@ var View = Marionette.CompositeView.extend({
         this.listenTo(this.collection, 'reset', this.onResetCollection, this);
         this.listenTo(this.collection, 'sync', this.onCollectionSync, this);
 
-        if (this.userSettingName) {
-            this.selectedColumns = application.getUserSetting(this.userSettingName) || [];
+        // empty, mean generated at dom refresh
+        if (this.getUserSettingName()) {
+            this.selectedColumns = application.getUserSetting(this.getUserSettingName()) || this.defaultColumns || [];
         } else {
-            // empty, mean generated at dom refresh
-            this.selectedColumns = [];
+            this.selectedColumns = this.defaultColumns || [];
         }
 
         // process columns
@@ -97,6 +97,18 @@ var View = Marionette.CompositeView.extend({
         }
 
         this.initialResizeDone = false;
+    },
+
+    getUserSettingName: function() {
+        if (this.userSettingName != undefined) {
+            if (_.isFunction(this.userSettingName)) {
+                return this.userSettingName();
+            } else {
+                return this.userSettingName;
+            }
+        } else {
+            return null;
+        }
     },
 
     getScrollElement: function() {
@@ -543,8 +555,8 @@ var View = Marionette.CompositeView.extend({
             this.displayedColumns[col2] = tmp;
 
             // save user settings
-            if (this.userSettingName) {
-                application.updateUserSetting(this.userSettingName, this.selectedColumns);
+            if (this.getUserSettingName()) {
+                application.updateUserSetting(this.getUserSettingName(), this.selectedColumns);
             }
         }
 
@@ -633,8 +645,8 @@ var View = Marionette.CompositeView.extend({
             });
 
             // save user settings
-            if (this.userSettingName) {
-                application.updateUserSetting(this.userSettingName, this.selectedColumns);
+            if (this.getUserSettingName()) {
+                application.updateUserSetting(this.getUserSettingName(), this.selectedColumns);
             }
 
             this.resizingColumnLeft = null;
@@ -901,8 +913,8 @@ var View = Marionette.CompositeView.extend({
 
                 this.updateColumnsWidth(true);
 
-                if (this.userSettingName) {
-                    application.updateUserSetting(this.userSettingName, this.selectedColumns);
+                if (this.getUserSettingName()) {
+                    application.updateUserSetting(this.getUserSettingName(), this.selectedColumns);
                 }
             }
         } else {
@@ -919,12 +931,7 @@ var View = Marionette.CompositeView.extend({
             var th = $('<th></th>');
             th.attr('name', columnName);
             th.addClass('unselectable');
-
-            var div = $('<div></div>');
-            div.append($('<span class="glyphicon glyphicon-sort action column-action"></span>'));
-            div.append($('<span draggable="true">' + this.getOption('columns')[columnName].label + '</span>'));
-
-            th.append(div);
+            th.append($('<span draggable="true">' + this.getOption('columns')[columnName].label + '</span>'));
 
             this.ui.thead.children('tr').append(th);
 
@@ -957,8 +964,8 @@ var View = Marionette.CompositeView.extend({
             // refresh only the new column on every row
             this.onRefreshChildren(true, this.displayedColumns[this.displayedColumns-1]).done(function() {
                 // save once refresh is done completely
-                if (view.userSettingName) {
-                    application.updateUserSetting(view.userSettingName, view.selectedColumns);
+                if (view.getUserSettingName()) {
+                    application.updateUserSetting(view.getUserSettingName(), view.selectedColumns);
                 }
             });
         }

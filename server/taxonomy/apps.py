@@ -1,16 +1,12 @@
 # -*- coding: utf-8; -*-
 #
 # @file apps.py
-# @brief 
+# @brief coll-gate taxonomy module main
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2016-09-01
 # @copyright Copyright (c) 2016 INRA/CIRAD
 # @license MIT (see LICENSE file)
 # @details 
-
-"""
-coll-gate taxonomy module main
-"""
 
 from django.utils.translation import ugettext_lazy as _
 
@@ -57,10 +53,13 @@ class CollGateTaxonomy(ApplicationMain):
         menu_taxonomy = ModuleMenu('taxonomy', _('Taxonomy'), auth=AUTH_USER)
         menu_taxonomy.add_entry(
             MenuEntry('create-taxon', _('Create taxon'), "~taxonomy/taxon/create", icon=Glyph.PLUS_SIGN, order=1))
+        menu_taxonomy.add_entry(
+            MenuEntry('create-cultivar', _('Create cultivar'), "~taxonomy/taxon/createCultivar", icon=Glyph.PLUS_SIGN, order=2))
         menu_taxonomy.add_entry(MenuSeparator(100))
         menu_taxonomy.add_entry(
             MenuEntry('list-taxon', _('List taxons'), "#taxonomy/taxon/", icon=Glyph.LIST, order=101))
+        menu_taxonomy.add_entry(
+            MenuEntry('list-taxon-cultivar', _('List cultivars'), "#taxonomy/taxon/", icon=Glyph.LIST_ALT, order=102))
         taxonomy_module.add_menu(menu_taxonomy)
 
         module_manager.register_module(taxonomy_module)
-

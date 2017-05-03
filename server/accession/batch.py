@@ -96,7 +96,7 @@ def create_batch(request):
     # @todo name generator
     name = request.data['name']
     dmm_id = int_arg(request.data['descriptor_meta_model'])
-    accession_id = int_arg(request.data['parent'])
+    accession_id = int_arg(request.data['accession'])
     descriptors = request.data['descriptors']
 
     # check uniqueness of the name
@@ -207,6 +207,8 @@ def patch_batch(request, bat_id):
 })
 def delete_batch(request, bat_id):
     batch = get_object_or_404(Batch, id=int(bat_id))
+
+    # @todo should not delete... archive, maybee delete when no children and just introduction batch ?
 
     batch.delete()
 
@@ -340,3 +342,82 @@ def get_batch_parents_batches_list(request, bat_id):
 
     return HttpResponseRest(request, results)
 
+
+@RestBatchSearch.def_auth_request(Method.GET, Format.JSON, ('filters',), perms={
+    'accession.get_accession': _("You are not allowed to get an accession"),
+    'accession.search_batch': _("You are not allowed to search batches")
+})
+def search_batch(request):
+    """
+    Quick search for batch with a exact or partial name and meta model of descriptor.
+
+    The filters can be :
+        - name: value to look for the name field.
+        - method: for the name 'ieq' or 'icontains' for insensitive case equality or %like% respectively.
+        - meta_model: id of the descriptor meta-model to look for.
+        - fields: list of fields to look for.
+    """
+    filters = json.loads(request.GET['filters'])
+
+    results_per_page = int_arg(request.GET.get('more', 30))
+    cursor = request.GET.get('cursor')
+    limit = results_per_page
+
+    if cursor:
+        cursor_name, cursor_id = cursor.rsplit('/', 1)
+        qs = Batch.objects.filter(Q(name__gt=cursor_name))
+    else:
+        qs = Batch.objects.all()
+
+    name_method = filters.get('method', 'ieq')
+    if 'meta_model' in filters['fields']:
+        meta_model = int_arg(filters['meta_model'])
+
+        if name_method == 'ieq':
+            qs = qs.filter(Q(name__iexact=filters['name']))
+        elif name_method == 'icontains':
+            qs = qs.filter(Q(name__icontains=filters['name']))
+
+        qs = qs.filter(Q(descriptor_meta_model_id=meta_model))
+    elif 'name' in filters['fields']:
+        if name_method == 'ieq':
+            qs = qs.filter(name__iexact=filters['name'])
+        elif name_method == 'icontains':
+            qs = qs.filter(name__icontains=filters['name'])
+
+    qs = qs.order_by('name')[:limit]
+
+    items_list = []
+
+    for batch in qs:
+        label = batch.name
+
+        a = {
+            'id': batch.id,
+            'label': label,
+            'value': batch.name
+        }
+
+        items_list.append(a)
+
+    if len(items_list) > 0:
+        # prev cursor (asc order)
+        obj = items_list[0]
+        prev_cursor = "%s/%i" % (obj['value'], obj['id'])
+
+        # next cursor (asc order)
+        obj = items_list[-1]
+        next_cursor = "%s/%i" % (obj['value'], obj['id'])
+    else:
+        prev_cursor = None
+        next_cursor = None
+
+    results = {
+        'perms': [],
+        'items': items_list,
+        'prev': prev_cursor,
+        'cursor': cursor,
+        'next': next_cursor,
+    }
+
+    return HttpResponseRest(request, results)

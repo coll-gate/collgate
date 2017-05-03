@@ -68,9 +68,6 @@ class CollGateAccession(ApplicationMain):
         menu_accession.add_entry(
             MenuEntry('create-accession', _('Create accession'), "~accession/accession/create",
                       icon=Glyph.GRAIN, order=1))
-        menu_accession.add_entry(
-            MenuEntry('create-batch', _('Create batch'), "~accession/batch/create",
-                      icon=Glyph.LEAF, order=2))
 
         menu_accession.add_entry(MenuSeparator(100))
         menu_accession.add_entry(

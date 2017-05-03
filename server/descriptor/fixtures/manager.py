@@ -197,7 +197,8 @@ class FixtureManager:
                         'mandatory': model_type_data.get('mandatory', False),
                         'set_once': model_type_data.get('set_once', False),
                         'position': position,
-                        'descriptor_type_id': descriptor_type_id
+                        'descriptor_type_id': descriptor_type_id,
+                        'index': model_type_data.get('index', 0)
                     }
                 )
 

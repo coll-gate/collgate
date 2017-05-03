@@ -13,8 +13,11 @@ var Marionette = require('backbone.marionette');
 var View = Marionette.ItemView.extend({
     tagName: 'tr',
     className: 'object batch element',
-    attributes: {
-        'scope': 'row',
+    attributes: function() {
+        return {
+            'scope': 'row',
+            'element-id': this.model.get('id')
+        }
     },
     template: require('../templates/batch.html'),
 

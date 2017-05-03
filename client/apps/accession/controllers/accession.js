@@ -269,4 +269,3 @@ var Controller = Marionette.Object.extend({
 });
 
 module.exports = Controller;
-

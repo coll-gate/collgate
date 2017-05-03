@@ -22,7 +22,7 @@ var BatchLayout = require('../views/batchlayout');
 var Router = Marionette.AppRouter.extend({
     routes : {
         "app/accession/accession/:id/batch/": "getAccessionBatchList",
-        "app/accession/batch/:id/": "getBatch"
+        "app/accession/batch/:id/*tab": "getBatch"
     },
 
     getAccessionBatchList : function(id) {
@@ -41,13 +41,15 @@ var Router = Marionette.AppRouter.extend({
         });
     },
 
-    getBatch : function(id) {
+    getBatch : function(id, tab) {
+        tab || (tab = "");
+
         var batch = new BatchModel({id: id});
 
         var defaultLayout = new DefaultLayout();
         application.show(defaultLayout);
 
-        var batchLayout = new BatchLayout({model: batch});
+        var batchLayout = new BatchLayout({model: batch, initialTab: tab.replace('/', '')});
 
         batch.fetch().then(function() {
             defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Batch"), model: batch}));

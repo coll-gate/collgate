@@ -210,6 +210,15 @@ application = new Marionette.Application({
         };
 
         /**
+         * Is as user setting defined.
+         * @param setting_name
+         * @returns {boolean}
+         */
+        this.hasUserSetting = function(setting_name) {
+            return setting_name in session.user.settings;
+        };
+
+        /**
          * Get the value of a specific setting.
          * @param setting_name Setting object name.
          * @returns {*} Content of the setting (string, object, integer...)

@@ -1,3 +1,5 @@
+<!DOCTYPE html>
+
 {% comment %}
 <!--
  - @file index.html
@@ -9,8 +11,6 @@
  - @details
 -->
 {% endcomment %}
-
-<!DOCTYPE html>
 
 {% load i18n %}
 {% load static from staticfiles %}
@@ -320,6 +320,10 @@ if (session.languageDirection == "rtl") {
             if (href.startsWith("~")) {
                 $(this).attr("href", "#");
                 $(this).on("click", function(e) {
+                    // close the menu and prevent default to open the url
+                    $(".dropdown").removeClass("open");
+                    $(".dropdown-toggle").attr("aria-expanded", false);
+
                     var parts = href.slice(1).split('/');
                     if (!application[parts[0]]) {
                         return false;
@@ -331,11 +335,14 @@ if (session.languageDirection == "rtl") {
                     }
 
                     var method = parts[2];
-                    ctrl[method]();
+                    if (!method || !ctrl[method]) {
+                        return false;
+                    }
 
-                    // close the menu and prevent default to open the url
-                    $(".dropdown").removeClass("open");
-                    $(".dropdown-toggle").attr("aria-expanded", false);
+                    // deferred call, because we want this menu closed before and processed outside of the signal
+                    setTimeout(function() {
+                        ctrl[method]()
+                    }, 0);
 
                     return false;
                 });
@@ -346,12 +353,12 @@ if (session.languageDirection == "rtl") {
                 $(this).attr("href", href);
 
                 $(this).click(function (e) {
-                    var href = $(this).attr("href").replace('/coll-gate/', '');
-                    Backbone.history.navigate(href, {trigger: true});
-
                     // close the menu and prevent default to open the url
                     $(".dropdown").removeClass("open");
                     $(".dropdown-toggle").attr("aria-expanded", false);
+
+                    var href = $(this).attr("href").replace('/coll-gate/', '');
+                    Backbone.history.navigate(href, {trigger: true});
 
                     return false;
                 });

@@ -106,9 +106,17 @@ var Layout = LayoutView.extend({
             var BatchCollection = require('../collections/batch');
             var accessionBatches = new BatchCollection([], {accession_id: this.model.get('id')});
 
-            accessionBatches.fetch().then(function() {
+            // get available columns
+            var columns = $.ajax({
+                type: "GET",
+                url: application.baseUrl + 'descriptor/columns/accession.batch/',
+                contentType: "application/json; charset=utf-8"
+            });
+
+            $.when(columns, accessionBatches.fetch()).done(function (data) {
                 var BatchListView = require('../views/batchlist');
-                var batchListView  = new BatchListView({collection: accessionBatches, model: accessionLayout.model});
+                var batchListView  = new BatchListView({
+                    collection: accessionBatches, model: accessionLayout.model, columns: data[0].columns});
 
                 var contentBottomLayout = new ContentBottomLayout();
                 accessionLayout.getRegion('batches').show(contentBottomLayout);

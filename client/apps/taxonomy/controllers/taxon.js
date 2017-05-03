@@ -288,8 +288,11 @@ var TaxonController = Marionette.Object.extend({
 
         var createTaxonView = new CreateTaxonView();
         createTaxonView.render();
+    },
+    
+    createCultivar: function () {
+        alert("@todo");
     }
 });
 
 module.exports = TaxonController;
-

@@ -19,6 +19,15 @@ var View = ScrollView.extend({
     childViewContainer: 'tbody.accession-list',
     userSettingName: 'accessions_list_columns',
 
+    defaultColumns: [
+        {name: 'glyph', width: 'auto', sort_by: null},
+        {name: 'code', width: 'auto', sort_by: null},
+        {name: 'name', width: 'auto', sort_by: 'asc'},
+        {name: 'parent', width: 'auto', sort_by: null},
+        {name: 'IPGRI_4.1.1', width: 'auto', sort_by: null},
+        {name: 'MCPD_ORIGCTY', width: 'auto', sort_by: null}
+    ],
+
     templateHelpers/*templateContext*/: function () {
         return {
             columns: this.displayedColumns
