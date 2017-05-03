@@ -15,6 +15,12 @@ var View = DescribableEdit.extend({
         // cancel global widget modifications
         this.cancel();
 
+        // non existing taxon, simply reload previous content (url has not changed)
+        if (this.model.isNew()) {
+            Backbone.history.loadUrl();
+            return;
+        }
+
         // does not reload models, just redo the views
         var view = this;
         var model = this.model;
@@ -89,4 +95,3 @@ var View = DescribableEdit.extend({
 });
 
 module.exports = View;
-

@@ -155,4 +155,3 @@ var Layout = LayoutView.extend({
 });
 
 module.exports = Layout;
-

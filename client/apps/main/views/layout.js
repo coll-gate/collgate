@@ -82,14 +82,16 @@ var Layout = Marionette.LayoutView.extend({
         // initial tab is defined by the initializer of the view, and is the last part of the url path
         var tabExits = this.ui.tabs_buttons.filter('[aria-controls="' + this.initialTab + '"]').length > 0;
         if (!tabExits) {
-            // if the tab is invalid, ignore it and update the url without the invalid tab name
-            var href = Backbone.history.getFragment();
+            if (!this.model.isNew()) {
+                // if the tab is invalid, ignore it and update the url without the invalid tab name
+                var href = Backbone.history.getFragment();
 
-            if (href.endsWith(this.initialTab + '/')) {
-                href = href.replace(this.initialTab + '/', '');
+                if (href.endsWith(this.initialTab + '/')) {
+                    href = href.replace(this.initialTab + '/', '');
+                }
+
+                Backbone.history.navigate(href, {replace: true, trigger: false});
             }
-
-            Backbone.history.navigate(href, {replace: true, trigger: false});
 
             this.initialTab = null;
         }
@@ -111,6 +113,42 @@ var Layout = Marionette.LayoutView.extend({
         this.ui.tabs.on("hide.bs.tab", $.proxy(this.onHideTab, this));
     },
 
+    setActiveTab: function(tab) {
+        this.activeTab = this.ui.initial_pane.attr('name');
+
+        var tabExits = this.ui.tabs_buttons.filter('[aria-controls="' + tab + '"]').length > 0;
+        if (this.activeTab !== tab && tabExits) {
+            // un-active the default
+            this.ui.tabs_buttons.filter('[aria-controls="' + this.activeTab + '"]').parent().removeClass('active');
+            this.ui.tabs_contents.filter('[name="' + this.activeTab + '"]').removeClass('active');
+
+            // activate the initial
+            this.ui.tabs_buttons.filter('[aria-controls="' + tab + '"]').parent().addClass('active');
+            this.ui.tabs_contents.filter('[name="' + tab + '"]').addClass('active');
+
+            var previousTab = this.activeTab;
+            this.activeTab = tab;
+
+            var region = this.getRegion(tab);
+            if (region) {
+                if (region.currentView && region.currentView.onShowTab) {
+                    region.currentView.onShowTab(this);
+                }
+
+                // update the url for the history with the new active tab
+                if (!this.model.isNew()) {
+                    var href = Backbone.history.getFragment();
+
+                    if (href.endsWith(previousTab + '/')) {
+                        href = href.replace(previousTab + '/', '');
+                    }
+
+                    Backbone.history.navigate(href + this.activeTab + '/', {trigger: false});
+                }
+            }
+        }
+    },
+
     onShowTab: function(e) {
         // e.target current tab, e.relatedTarget previous tab
         var tab = e.target.getAttribute('aria-controls');
@@ -123,14 +161,16 @@ var Layout = Marionette.LayoutView.extend({
             }
 
             // update the url for the history with the new active tab
-            var href = Backbone.history.getFragment();
-            var previousTab = e.relatedTarget.getAttribute('aria-controls');
+            if (!this.model.isNew()) {
+                var href = Backbone.history.getFragment();
+                var previousTab = e.relatedTarget.getAttribute('aria-controls');
 
-            if (href.endsWith(previousTab + '/')) {
-                href = href.replace(previousTab + '/', '');
+                if (href.endsWith(previousTab + '/')) {
+                    href = href.replace(previousTab + '/', '');
+                }
+
+                Backbone.history.navigate(href + this.activeTab + '/', {trigger: false});
             }
-
-            Backbone.history.navigate(href + this.activeTab + '/', {trigger: false});
         }
     },
 
@@ -151,4 +191,3 @@ var Layout = Marionette.LayoutView.extend({
 });
 
 module.exports = Layout;
-
