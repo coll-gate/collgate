@@ -64,8 +64,11 @@ var View = Marionette.ItemView.extend({
 
     onTaxonNameInput: function () {
         return this.validateTaxonName();
+    },
+
+    onBeforeDestroy: function() {
+        this.ui.taxon_rank.selectpicker('destroy');
     }
 });
 
 module.exports = View;
-

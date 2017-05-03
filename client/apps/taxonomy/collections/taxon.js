@@ -14,7 +14,7 @@ var TaxonCollection = Backbone.Collection.extend({
     url: application.baseUrl + 'taxonomy/taxon/',
     model: TaxonModel,
 
-    comparator: 'name',
+    // comparator: 'name',
 
     parse: function(data) {
         this.prev = data.prev;

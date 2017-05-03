@@ -26,7 +26,7 @@ var Collection = Backbone.Collection.extend({
     },
     model: BatchModel,
 
-    comparator: 'name',
+    // comparator: 'name',
 
     initialize: function(models, options) {
         options || (options = {});
@@ -63,4 +63,3 @@ var Collection = Backbone.Collection.extend({
 });
 
 module.exports = Collection;
-

@@ -64,6 +64,10 @@ var View = Marionette.ItemView.extend({
 
     onOrganisationNameInput: function () {
         return this.validateOrganisationName();
+    },
+
+    onBeforeDestroy: function() {
+        this.ui.organisation_type.selectpicker('destroy');
     }
 });
 

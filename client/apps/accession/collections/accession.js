@@ -14,7 +14,7 @@ var Collection = Backbone.Collection.extend({
     url: application.baseUrl + 'accession/accession/',
     model: AccessionModel,
 
-    comparator: 'name',
+    // comparator: 'name',
 
     parse: function(data) {
         this.prev = data.prev;

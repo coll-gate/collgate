@@ -1,16 +1,13 @@
 # -*- coding: utf-8; -*-
 #
 # @file data_migrate.py
-# @brief 
+# @brief Process to a migration of GRC content partial or complete, initial or punctual.
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2017-01-03
 # @copyright Copyright (c) 2017 INRA/CIRAD
 # @license MIT (see LICENSE file)
 # @details 
 
-"""
-Process to a migration of GRC content partial or complete, initial or punctual.
-"""
 from __future__ import unicode_literals, absolute_import, division
 
 import sys
@@ -109,6 +106,8 @@ class Command(BaseCommand):
         try:
             dataMigration.migrate()
         except Exception as e:
+            import traceback
+            sys.stdout.write(traceback.print_exc() + '\n')
             error = True
 
         if error:
@@ -122,4 +121,3 @@ class Command(BaseCommand):
             connection.commit()
 
         connection.close()
-

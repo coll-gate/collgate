@@ -149,8 +149,8 @@ var DescriptorsColumnsView = {
                         promise.done(function (data) {
                             var cache = application.main.getCache('descriptors', this.columnName);
 
-                            for (var i = 0; i < models.length; ++i) {
-                                var model = models[i];
+                            for (var j = 0; j < this.models.length; ++j) {
+                                var model = this.models[j];
                                 var childView = this.view.children.findByModel(model);
                                 var key = model.get('descriptors')[this.columnName];
 
@@ -198,4 +198,3 @@ var DescriptorsColumnsView = {
 };
 
 module.exports = DescriptorsColumnsView;
-

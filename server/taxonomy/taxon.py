@@ -1,16 +1,12 @@
 # -*- coding: utf-8; -*-
 #
 # @file taxon.py
-# @brief 
+# @brief coll-gate taxonomy taxon rest handlers
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2016-09-01
 # @copyright Copyright (c) 2016 INRA/CIRAD
 # @license MIT (see LICENSE file)
 # @details 
-
-"""
-coll-gate taxonomy taxon rest handlers
-"""
 
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import SuspiciousOperation
@@ -143,7 +139,7 @@ def get_taxon_list(request):
 
         if cursor:
             cursor_name, cursor_id = cursor.rsplit('/', 1)
-            qs = Taxon.objects.filter(Q(name__gt=cursor_name))
+            qs = Taxon.objects.filter(Q(name__gt=cursor_name) | (Q(name__gte=cursor_name) & Q(id__gt=cursor_id)))
         else:
             qs = Taxon.objects.all()
 
@@ -161,7 +157,7 @@ def get_taxon_list(request):
     else:
         if cursor:
             cursor_name, cursor_id = cursor.rsplit('/', 1)
-            qs = Taxon.objects.filter(Q(name__gt=cursor_name))
+            qs = Taxon.objects.filter(Q(name__gt=cursor_name) | (Q(name__gte=cursor_name) & Q(id__gt=cursor_id)))
         else:
             qs = Taxon.objects.all()
 
@@ -169,12 +165,12 @@ def get_taxon_list(request):
         Prefetch(
             "synonyms",
             queryset=TaxonSynonym.objects.all().order_by('type', 'language'))
-    ).select_related('parent').order_by('name')[:limit]
+    ).select_related('parent').order_by('name', 'id')[:limit]
 
     items_list = []
     for taxon in qs:
         t = {
-            'id': taxon.pk,
+            'id': taxon.id,
             'name': taxon.name,
             'parent': taxon.parent_id,
             'rank': taxon.rank,
@@ -675,4 +671,3 @@ def get_taxon_entities(request, tax_id):
     }
 
     return HttpResponseRest(request, results)
-

@@ -20,7 +20,7 @@ var Collection = Backbone.Collection.extend({
     },
     model: EstablishmentModel,
 
-    comparator: 'name',
+    // comparator: 'name',
 
     initialize: function(models, options) {
         options || (options = {});

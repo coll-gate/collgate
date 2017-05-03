@@ -1,16 +1,12 @@
 # -*- coding: utf-8; -*-
 #
 # @file accession.py
-# @brief 
+# @brief coll-gate accession rest handler
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2016-09-01
 # @copyright Copyright (c) 2016 INRA/CIRAD
 # @license MIT (see LICENSE file)
 # @details 
-
-"""
-coll-gate accession rest handler
-"""
 
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import SuspiciousOperation
@@ -181,7 +177,7 @@ def get_accession_list(request):
     else:
         if cursor:
             cursor_name, cursor_id = cursor.rsplit('/', 1)
-            qs = Accession.objects.filter(Q(name__gt=cursor_name))
+            qs = Accession.objects.filter(Q(name__gt=cursor_name) | (Q(name__gte=cursor_name) & Q(id__gt=cursor_id)))
         else:
             qs = Accession.objects.all()
 
@@ -190,7 +186,7 @@ def get_accession_list(request):
         Prefetch(
             "synonyms",
             queryset=AccessionSynonym.objects.all().order_by('type', 'language'))
-    ).distinct().order_by('name')[:limit]
+    ).distinct().order_by('name', 'id')[:limit]
 
     accession_list = []
 
@@ -440,4 +436,3 @@ def delete_accession(request, acc_id):
     accession.delete()
 
     return HttpResponseRest(request, {})
-
