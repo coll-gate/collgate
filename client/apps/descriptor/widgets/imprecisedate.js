@@ -1,7 +1,7 @@
 /**
  * @file imprecisedate.js
  * @brief Display and manage an imprecise date format of type of descriptor
- * @author Frédéric SCHERMA (INRA UMR1095)
+ * @author Medhi BOULNEMOUR (INRA UMR1095)
  * @date 2017-04-11
  * @copyright Copyright (c) 2017 INRA/CIRAD
  * @license MIT (see LICENSE file)
@@ -42,7 +42,7 @@ _.extend(ImpreciseDateType.prototype, DescriptorFormatType.prototype, {
             parent.append(group);
 
             /// Partial datetime ///
-            var accuracy = null;
+            var accuracy = null; // 0: nothing, 1: year, 2: year-month, 3: year-month-day
             var current_date = null;
 
             var el = input.datetimepicker({
@@ -64,7 +64,7 @@ _.extend(ImpreciseDateType.prototype, DescriptorFormatType.prototype, {
             display_input.mousedown(function(e) {
                 // To prevent case when element already had focus
                  if (lastFocusedElement === e.target) {
-                    el.data('DateTimePicker').show();
+                     el.data('DateTimePicker').show();
                  }
             }).focus(function(e){
                 el.data('DateTimePicker').show();
@@ -93,22 +93,25 @@ _.extend(ImpreciseDateType.prototype, DescriptorFormatType.prototype, {
             display_input.on('change', function (e) {
                 // define date accuracy
                 var temp = (display_input.val().match(/[\/\-.]/g) || []).length;
-                if (temp === 2) {
-                    accuracy = null;
+                if (!display_input.val()) {
+                    accuracy = 0;
+                    current_date = null;
+                    el.data('DateTimePicker').format("L");
+                    el.data('DateTimePicker').date(current_date);
+                } else if (temp === 2) {
+                    accuracy = 3;
                     current_date = moment(display_input.val(), "L");
                     el.data('DateTimePicker').format("L");
                     el.data('DateTimePicker').date(current_date);
                     display_input.val(el.data('DateTimePicker').date().format("L"));
-                }
-                else if (temp === 1) {
-                    accuracy = 'M';
+                } else if (temp === 1) {
+                    accuracy = 2;
                     current_date = moment(display_input.val(), "MM/YYYY");
                     el.data('DateTimePicker').format("MM/YYYY");
                     el.data('DateTimePicker').date(current_date);
                     display_input.val(el.data('DateTimePicker').date().format("MM/YYYY"));
-                }
-                else {
-                    accuracy = 'YYYY';
+                } else {
+                    accuracy = 1;
                     current_date = moment(display_input.val(), "YYYY");
                     el.data('DateTimePicker').format("YYYY");
                     el.data('DateTimePicker').date(current_date);
@@ -122,13 +125,13 @@ _.extend(ImpreciseDateType.prototype, DescriptorFormatType.prototype, {
             });
 
             el.on("dp.change", function(e){
-                if (el.data('DateTimePicker').format() === "YYYY") {
+                if (!el.data('DateTimePicker').date()) {
+                    display_input.val("");
+                } else if (el.data('DateTimePicker').format() === "YYYY") {
                     display_input.val(el.data('DateTimePicker').date().format("YYYY"));
-                }
-                else if (el.data('DateTimePicker').format() === "MM/YYYY") {
+                } else if (el.data('DateTimePicker').format() === "MM/YYYY") {
                     display_input.val(el.data('DateTimePicker').date().format("MM/YYYY"));
-                }
-                else {
+                } else if (el.data('DateTimePicker').format() === "L") {
                     display_input.val(el.data('DateTimePicker').date().format("L"));
                 }
             });
@@ -172,14 +175,16 @@ _.extend(ImpreciseDateType.prototype, DescriptorFormatType.prototype, {
 
                 var button = $('.OK').html(gt.gettext("Undefined")).css('display', 'none');
                 button.on('click', function (e) {
-                    if (accuracy === "YYYY") {
+                    if (accuracy === 1) {
                         el.data('DateTimePicker').format("YYYY");
                         el.data('DateTimePicker').date(current_date);
                         display_input.val(el.data('DateTimePicker').date().format("YYYY"));
-                    } else if (accuracy === "M") {
+                    } else if (accuracy === 2) {
                         el.data('DateTimePicker').format("MM/YYYY");
                         el.data('DateTimePicker').date(current_date);
                         display_input.val(el.data('DateTimePicker').date().format("MM/YYYY"));
+                    } else if (el.data('DateTimePicker').date() === null) {
+                        accuracy = 0;
                     }
                 });
 
@@ -196,9 +201,19 @@ _.extend(ImpreciseDateType.prototype, DescriptorFormatType.prototype, {
             });
 
             el.on("dp.update", function (e) {
-                accuracy = e.change;
+                // set accuracy of the date
+                if (e.change === 'YYYY') {
+                    accuracy = 1;
+                } else if (e.change === 'M') {
+                    accuracy = 2;
+                } else {
+                    accuracy = 0;
+                }
+
+                //set the current date
                 current_date = e.viewDate;
 
+                // manage (undefined/ok) button visibility
                 if (widget_picker.find('.datepicker-days').css('display') === 'block') {
                     ok_button.css('display', 'block');
                 } else if (widget_picker.find('.datepicker-months').css('display') === 'block') {
@@ -259,7 +274,7 @@ _.extend(ImpreciseDateType.prototype, DescriptorFormatType.prototype, {
                     date.year(defaultValues[0]);
                     date.month(defaultValues[1] - 1);
                     this.el.val(date.format("MM/YYYY"));
-                } else {
+                } else if (defaultValues[0] && defaultValues[1] && defaultValues[2]) {
                     // format: L (ex: 20/05/1992)
                     date.year(defaultValues[0]);
                     date.month(defaultValues[1] - 1);
@@ -281,7 +296,7 @@ _.extend(ImpreciseDateType.prototype, DescriptorFormatType.prototype, {
                     date.month(defaultValues[1] - 1);
                     this.el.data('DateTimePicker').format("MM/YYYY");
                     this.display_el.val(date.format("MM/YYYY"));
-                } else {
+                } else if (defaultValues[0] && defaultValues[1] && defaultValues[2]) {
                     // format: L (ex: 20/05/1992)
                     date.year(defaultValues[0]);
                     date.month(defaultValues[1] - 1);
@@ -380,7 +395,9 @@ ImpreciseDateType.DescriptorTypeDetailsView = Marionette.ItemView.extend({
 });
 
 ImpreciseDateType.format = function (value) {
-    if (value[0] !== 0 && value[1] !== 0 && value[2] !== 0) {
+    if (value === null) {
+        return "";
+    } else if (value[0] !== 0 && value[1] !== 0 && value[2] !== 0) {
         return moment().locale(session.language).year(value[0]).month(value[1]-1).date(value[2]).format("L");
     } else if (value[0] !== 0 && value[1] !== 0) {
         return moment().locale(session.language).year(value[0]).month(value[1]-1).format("MM/YYYY");
@@ -392,4 +409,3 @@ ImpreciseDateType.format = function (value) {
 };
 
 module.exports = ImpreciseDateType;
-
