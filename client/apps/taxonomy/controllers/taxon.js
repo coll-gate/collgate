@@ -49,6 +49,10 @@ var TaxonController = Marionette.Object.extend({
                 application.main.views.languages.drawSelect(this.ui.language);
                 application.taxonomy.views.taxonRanks.drawSelect(this.ui.rank);
 
+                // no cultivar rank here
+                this.ui.rank.find('option[value=90]').remove();
+                this.ui.rank.selectpicker('refresh');
+
                 $(this.ui.parent).select2({
                     dropdownParent: $(this.el),
                     ajax: {
@@ -113,7 +117,7 @@ var TaxonController = Marionette.Object.extend({
                 // reset parent
                 $(this.ui.parent).val('').trigger('change');
 
-                if (this.ui.rank.val() == 60)
+                if (this.ui.rank.val() === "60")
                     this.ui.parent_group.hide();
                 else
                     this.ui.parent_group.show();
@@ -179,7 +183,7 @@ var TaxonController = Marionette.Object.extend({
                     parentId = parseInt($(this.ui.parent).val());
                 }
 
-                if (rankId == 60 && parentId != 0) {
+                if (rankId === 60 && parentId !== 0) {
                     $.alert.error(gt.gettext("Family rank cannot have a parent taxon"));
                     valid = false;
                 }

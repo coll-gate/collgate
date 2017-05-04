@@ -13,6 +13,8 @@ var TaxonModel = require('../models/taxon');
 
 var TaxonListView = require('../views/taxonlist');
 var TaxonListFilterView = require('../views/taxonlistfilter');
+var CultivarListView = require('../views/cultivarlist');
+var CultivarListFilterView = require('../views/cultivarlistfilter');
 
 var TaxonLayout = require('../views/taxonlayout');
 
@@ -20,9 +22,14 @@ var DefaultLayout = require('../../main/views/defaultlayout');
 var TitleView = require('../../main/views/titleview');
 var ScrollingMoreView = require('../../main/views/scrollingmore');
 
+var TaxonCollection = require('../collections/taxon');
+var CultivarCollection = require('../collections/cultivar');
+
+
 var TaxonRouter = Marionette.AppRouter.extend({
     routes : {
         "app/taxonomy/taxon/": "getTaxonList",
+        "app/taxonomy/cultivar/": "getCultivarList",
         "app/taxonomy/taxon/:id/*tab": "getTaxon"
     },
 /*
@@ -67,6 +74,24 @@ var TaxonRouter = Marionette.AppRouter.extend({
         defaultLayout.getRegion('bottom').show(new TaxonListFilterView({collection: collection}));
     },
 
+    getCultivarList : function() {
+        var collection = new CultivarCollection();
+
+        var defaultLayout = new DefaultLayout({});
+        application.show(defaultLayout);
+
+        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of cultivars")}));
+
+        collection.fetch().then(function () {
+            var taxonListView = new CultivarListView({collection : collection});
+
+            defaultLayout.getRegion('content').show(taxonListView);
+            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: taxonListView}));
+        });
+
+        defaultLayout.getRegion('bottom').show(new CultivarListFilterView({collection: collection}));
+    },
+
     getTaxon : function(id, tab) {
         tab || (tab = "");
 
@@ -87,4 +112,3 @@ var TaxonRouter = Marionette.AppRouter.extend({
 });
 
 module.exports = TaxonRouter;
-

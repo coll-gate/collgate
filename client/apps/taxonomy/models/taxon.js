@@ -79,42 +79,4 @@ var Taxon = Backbone.Model.extend({
     }
 });
 
-/*sample for collection into model
-var Document = Backbone.Model.extend({
-  constructor: function() {
-    this.items = new ItemSet(null, {document: this});
-    this.items.on('change', this.save, this);
-    Backbone.Model.apply(this, arguments);
-  },
-  parse: function(resp) {
-    this.items.set(resp.items, {parse: true, remove: false});
-    delete resp.items;
-    return resp;
-  },
-  toJSON: function() {
-    var attrs = _.clone(this.attributes);
-    attrs.items = this.items.toJSON();
-    return attrs;
-  }
-});
-var ItemSet = Backbone.Collection.extend({
-  model: Item,
-  initialize: function(models, options) {
-    this.document = options.document;
-  }
-});
-var Item = Backbone.Model.extend({
-  // access document with this.collection.document
-});
-var document1 = new Document({
-  name: "Test",
-  version: 1,
-  items: [
-    {name : "Item 1", position : 0},
-    {name : "Item 2", position : 1}
-  ]
-});
-*/
-
 module.exports = Taxon;
-

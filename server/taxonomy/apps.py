@@ -59,7 +59,7 @@ class CollGateTaxonomy(ApplicationMain):
         menu_taxonomy.add_entry(
             MenuEntry('list-taxon', _('List taxons'), "#taxonomy/taxon/", icon=Glyph.LIST, order=101))
         menu_taxonomy.add_entry(
-            MenuEntry('list-taxon-cultivar', _('List cultivars'), "#taxonomy/taxon/", icon=Glyph.LIST_ALT, order=102))
+            MenuEntry('list-taxon-cultivar', _('List cultivars'), "#taxonomy/cultivar/", icon=Glyph.LIST_ALT, order=102))
         taxonomy_module.add_menu(menu_taxonomy)
 
         module_manager.register_module(taxonomy_module)

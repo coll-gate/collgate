@@ -1,27 +1,24 @@
 /**
- * @file taxon.js
- * @brief Taxon collection
+ * @file cultivar.js
+ * @brief Cultivar collection
  * @author Frédéric SCHERMA (INRA UMR1095)
- * @date 2016-04-13
- * @copyright Copyright (c) 2016 INRA/CIRAD
+ * @date 2017-05-04
+ * @copyright Copyright (c) 2017 INRA/CIRAD
  * @license MIT (see LICENSE file)
- * @details 
+ * @details
  */
 
-var TaxonModel = require('../models/taxon');
+var TaxonCollection = require('./taxon');
 
-var TaxonCollection = Backbone.Collection.extend({
+var Collection = TaxonCollection.extend({
     url: application.baseUrl + 'taxonomy/taxon/',
-    model: TaxonModel,
 
-    // comparator: 'name',
+    initialize: function(models, options) {
+        TaxonCollection.__super__.initialize.apply(this, arguments);
 
-    parse: function(data) {
-        this.prev = data.prev;
-        this.cursor = data.cursor;
-        this.next = data.next;
-
-        return data.items;
+        this.filters = {
+            rank: 90  // cultivar rank
+        }
     },
 
     fetch: function(options) {
@@ -41,4 +38,4 @@ var TaxonCollection = Backbone.Collection.extend({
     }
 });
 
-module.exports = TaxonCollection;
+module.exports = Collection;
