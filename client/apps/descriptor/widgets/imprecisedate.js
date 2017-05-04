@@ -16,7 +16,7 @@ var ImpreciseDateType = function () {
 
     this.name = "imprecise_date";
     this.group = "single";
-    var display_el = null;
+    this.display_el = null;
 };
 
 _.extend(ImpreciseDateType.prototype, DescriptorFormatType.prototype, {
@@ -190,9 +190,11 @@ _.extend(ImpreciseDateType.prototype, DescriptorFormatType.prototype, {
 
                 ok_button = button;
 
+                // manage (undefined/ok) button visibility 1st part
                 var picker_view = dateTimePicker.find('.picker-switch');
                 picker_view.on('click', function () {
                     if (dateTimePicker.find('.datepicker-days').css('display') === 'block') {
+                        accuracy = 1; // fix accuracy of the date
                         ok_button.css('display', 'block');
                     } else {
                         ok_button.css('display', 'none');
@@ -213,7 +215,7 @@ _.extend(ImpreciseDateType.prototype, DescriptorFormatType.prototype, {
                 //set the current date
                 current_date = e.viewDate;
 
-                // manage (undefined/ok) button visibility
+                // manage (undefined/ok) button visibility 2nd part
                 if (widget_picker.find('.datepicker-days').css('display') === 'block') {
                     ok_button.css('display', 'block');
                 } else if (widget_picker.find('.datepicker-months').css('display') === 'block') {
