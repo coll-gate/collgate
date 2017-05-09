@@ -691,7 +691,9 @@ var View = Marionette.CompositeView.extend({
     onResizeColumnMove: function (e) {
         if (this.resizingColumnLeft && this.resizingColumnRight) {
             var delta = e.screenX - this.resizingColumnStartOffset;
-            var scrollbarWidth = this.scrollbarWidth - 5.5;
+
+            // left margin. use this to compute it. maybe there is a better solution.
+            var scrollbarWidth = Math.round(Math.sqrt((this.scrollbarWidth * this.scrollbarWidth) / 2.777777778) * 0.90);
 
             // new width respecting the min width
             var leftWidth = Math.max(
@@ -715,7 +717,7 @@ var View = Marionette.CompositeView.extend({
                     el.width(el.width());
 
                     // adjust left position because of scrolling
-                    div.css('left', el.position().left + scrollbarWidth);
+                    div.css('left', el.position().left + scrollbarWidth + (i === 0 ? 0 : 1));
 
                     // adjust the label div (minus border left width)
                     div.width(el.width() - (i === 0 ? 0 : 1));
@@ -834,7 +836,9 @@ var View = Marionette.CompositeView.extend({
         var columns = this.ui.thead.children('tr').children('th,td');
         var contentColumns = this.ui.tbody.children('tr:first-child').children('th,td');
         var clientWidth = this.$el.innerWidth();
-        var scrollbarWidth = this.scrollbarWidth - 5.5;
+
+        // left margin. use this to compute it. maybe there is a better solution.
+        var scrollbarWidth = Math.round(Math.sqrt((this.scrollbarWidth * this.scrollbarWidth) / 2.7777778));
 
         $.each(columns, function(i, element) {
             var el = $(element);
@@ -847,9 +851,7 @@ var View = Marionette.CompositeView.extend({
             var sizer = div.children('div.column-sizer');
             var w = div.width();
 
-            // var ll = div.offset().left;
             div.css('left', left + scrollbarWidth);
-           // div.offset({left: ll});
 
             if (left < 16) {
                 var l = 8 - left + 16;
