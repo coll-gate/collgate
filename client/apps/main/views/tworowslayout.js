@@ -19,6 +19,18 @@ var TwoRowsLayout = Marionette.LayoutView.extend({
     regions: {
         'up': "div.row-up",
         'down': "div.row-down"
+    },
+
+    onResize: function() {
+        var view = this.getRegion('up');
+        if (view && view.currentView && view.currentView.onResize) {
+            view.currentView.onResize();
+        }
+
+        view = this.getRegion('down');
+        if (view && view.currentView && view.currentView.onResize) {
+            view.currentView.onResize();
+        }
     }
 });
 

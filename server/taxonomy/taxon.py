@@ -78,7 +78,9 @@ class RestTaxonIdEntities(RestTaxonId):
                     }
                 }
             ]
-        }
+        },
+        "descriptor_meta_model": {"type": "number", "required": False},
+        "descriptors": {"type": "object", "required": False}
     },
 }, perms={'taxonomy.add_taxon': _('You are not allowed to create a taxon')}
 )
@@ -96,15 +98,31 @@ def create_taxon(request):
 
     rank_id = int(taxon_params['rank'])
     language = taxon_params['synonyms'][0]['language']
+    descriptor_meta_model = request.data.get('descriptor_meta_model')
+    descriptors = request.data.get('descriptors')
 
     if language not in [lang.value for lang in Languages]:
         raise SuspiciousOperation(_("The language is not supported"))
 
-    taxon = Taxonomy.create_taxon(
-        taxon_params['name'],
-        rank_id,
-        parent,
-        language)
+    if descriptor_meta_model is not None and descriptors is not None:
+        dmm_id = int_arg(descriptor_meta_model)
+
+        content_type = get_object_or_404(ContentType, app_label="taxonomy", model="taxon")
+        dmm = get_object_or_404(DescriptorMetaModel, id=dmm_id, target=content_type)
+    else:
+        dmm = None
+
+    try:
+        with transaction.atomic():
+            taxon = Taxonomy.create_taxon(
+                taxon_params['name'],
+                rank_id,
+                parent,
+                language,
+                dmm,
+                descriptors)
+    except IntegrityError as e:
+        DescriptorModelType.integrity_except(Taxon, e)
 
     response = {
         'id': taxon.id,
@@ -113,8 +131,8 @@ def create_taxon(request):
         'parent': taxon.parent.id if parent_id > 0 else None,
         'parent_list': [int(x) for x in taxon.parent_list.rstrip(',').split(',')] if taxon.parent_list else [],
         'synonyms': [],
-        'descriptor_meta_model': None,
-        'descriptors': {}
+        'descriptor_meta_model': taxon.descriptor_meta_model,
+        'descriptors': taxon.descriptors
     }
 
     for s in taxon.synonyms.all():

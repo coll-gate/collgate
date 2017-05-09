@@ -20,21 +20,22 @@ var MainLayout = Marionette.LayoutView.extend({
         'right': "div.root-right-bar"
     },
 
-    initialize: function() {
-},
+    onResize: function() {
+        var view = this.getRegion('left');
+        if (view && view.currentView && view.currentView.onResize) {
+            view.currentView.onResize();
+        }
 
-    onRender: function() {
-        // application.setDisplay("2-8-2");
-    },
+        view = this.getRegion('content');
+        if (view && view.currentView && view.currentView.onResize) {
+            view.currentView.onResize();
+        }
 
-    onBeforeShow: function() {
-    },
-
-    onBeforeDestroy: function () {
-        // reset to default global display mode
-        //application.setDisplay("2-8-2");
+        view = this.getRegion('right');
+        if (view && view.currentView && view.currentView.onResize) {
+            view.currentView.onResize();
+        }
     }
 });
 
 module.exports = MainLayout;
-

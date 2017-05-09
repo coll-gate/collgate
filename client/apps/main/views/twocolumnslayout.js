@@ -21,8 +21,29 @@ var TwoColumnsLayout = Marionette.LayoutView.extend({
         'left-bottom': ".left-bottom",
         'right-content': ".right-content",
         'right-bottom': ".right-bottom",
+    },
+
+    onResize: function() {
+        var view = this.getRegion('left-content');
+        if (view && view.currentView && view.currentView.onResize) {
+            view.currentView.onResize();
+        }
+
+        view = this.getRegion('left-bottom');
+        if (view && view.currentView && view.currentView.onResize) {
+            view.currentView.onResize();
+        }
+
+        view = this.getRegion('right-content');
+        if (view && view.currentView && view.currentView.onResize) {
+            view.currentView.onResize();
+        }
+
+        view = this.getRegion('right-bottom');
+        if (view && view.currentView && view.currentView.onResize) {
+            view.currentView.onResize();
+        }
     }
 });
 
 module.exports = TwoColumnsLayout;
-

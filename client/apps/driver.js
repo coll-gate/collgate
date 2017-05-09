@@ -165,7 +165,6 @@ application = new Marionette.Application({
 
                 for (var i = 0; i < panels.length; ++i) {
                     var classes = panels[i].attr('class').split(' ');
-                    var classList = [];
 
                     for (var j = 0; j < classes.length; ++j) {
                         if (classes[j].startsWith('col-')) {
@@ -184,8 +183,21 @@ application = new Marionette.Application({
                 }
 
                 this.updateMessengerDisplay();
+
+                var view = this.getView();
+                if (view && view.onResize) {
+                    view.onResize();
+                }
             }
         };
+
+        // when the viewport is resized send a global onResize event
+        $(window).resize(function() {
+            var view = application.getView();
+            if (view && view.onResize) {
+                view.onResize();
+            }
+        });
 
         /**
          * Update locally and on server a specific user setting object.

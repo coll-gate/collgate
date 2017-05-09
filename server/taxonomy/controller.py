@@ -15,6 +15,7 @@ from django.core.exceptions import SuspiciousOperation, PermissionDenied
 from django.db import transaction
 from django.utils import translation
 
+from descriptor.describable import DescriptorsBuilder
 from main.models import Languages
 from .models import Taxon, TaxonSynonym, TaxonSynonymType, TaxonRank
 
@@ -47,14 +48,16 @@ class Taxonomy(object):
 
     @classmethod
     @transaction.atomic
-    def create_taxon(cls, name, rank_id, parent, language):
+    def create_taxon(cls, name, rank_id, parent, language, descriptor_meta_model=None, descriptors=None):
         """
         Create a new taxon with a unique name. The level must be
         greater than its parent level.
         :param name: Unique taxon name.
         :param rank_id: Taxon rank greater than parent rank.
         :param parent: None or valid Taxon instance.
-        :param language: Language code of the primary synonym created with name
+        :param language: Language code of the primary synonym created with name.
+        :param descriptor_meta_model: Descriptor meta model instance or None.
+        :param descriptors: Descriptors values or None if no descriptor meta model.
         :return: None or new Taxon instance.
         """
         if Taxon.objects.filter(name=name).exists():
@@ -70,12 +73,20 @@ class Taxonomy(object):
         taxon.rank = rank_id
         taxon.parent = parent
         taxon.parent_list = ""
+        taxon.descriptor_meta_model = descriptor_meta_model
 
         if parent:
             try:
                 Taxonomy.update_parents(taxon, parent)
             except Taxon.DoesNotExist:
                 return None
+
+        # descriptors
+        if descriptor_meta_model is not None:
+            descriptors_builder = DescriptorsBuilder(taxon)
+
+            descriptors_builder.check_and_update(descriptor_meta_model, descriptors)
+            taxon.descriptors = descriptors_builder.descriptors
 
         taxon.save()
 

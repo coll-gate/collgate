@@ -84,6 +84,9 @@ var Layout = LayoutView.extend({
         }
     },
 
+    onResize: function() {
+    },
+
     onRender: function() {
         var accessionLayout = this;
 

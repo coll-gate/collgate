@@ -12,21 +12,25 @@
     <thead>
         <tr scope="row">
             <th class="glyph-fixed-column" name="glyph">
-                <span class="glyphicon glyphicon-asterisk unselectable"></span>
+                <span class="column-label glyphicon glyphicon-asterisk unselectable"></span>
             </th>
             <th class="unselectable title-column" name="code">
-                <span class="glyphicon glyphicon-sort action sortby-asc-column column-action"></span><%= gt.gettext("Code") %>
+                <span class="glyphicon glyphicon-sort action sortby-asc-column column-action"></span>
+                <span class="column-label"><%= gt.gettext("Code") %></span>
             </th>
             <th class="unselectable title-column" name="name">
-                <span class="glyphicon glyphicon-sort action sortby-asc-column column-action"></span><%= gt.gettext("Name") %>
+                <span class="glyphicon glyphicon-sort action sortby-asc-column column-action"></span>
+                <span class="column-label"><%= gt.gettext("Name") %></span>
             </th>
             <th class="unselectable title-column" name="parent">
-                <span class="glyphicon glyphicon-sort action sortby-asc-column column-action"></span><%= gt.gettext("Parent") %>
+                <span class="glyphicon glyphicon-sort action sortby-asc-column column-action"></span>
+                <span class="column-label"><%= gt.gettext("Parent") %></span>
             </th>
             <% for (var i = 0; i < columns.length; ++i) { %>
                 <% var column = columns[i]; %>
                 <th name="<%= column.name %>" class="unselectable">
-                    <span class="glyphicon glyphicon-sort action sortby-asc-column column-action"></span><span draggable="true"><%= column.label %></span>
+                    <span class="glyphicon glyphicon-sort action sortby-asc-column column-action"></span>
+                    <span class="column-label" draggable="true"><%= column.label %></span>
                 </th>
             <% } %>
         </tr>

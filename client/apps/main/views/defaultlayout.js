@@ -24,10 +24,29 @@ var DefaultLayout = Marionette.LayoutView.extend({
     },
 
     onBeforeDestroy: function () {
-        // reset to default global display mode
-        //application.setDisplay("2-8-2");
+    },
+
+    onResize: function() {
+        var view = this.getRegion('title');
+        if (view && view.currentView && view.currentView.onResize) {
+            view.currentView.onResize();
+        }
+
+        view = this.getRegion('content');
+        if (view && view.currentView && view.currentView.onResize) {
+            view.currentView.onResize();
+        }
+
+        view = this.getRegion('content-bottom');
+        if (view && view.currentView && view.currentView.onResize) {
+            view.currentView.onResize();
+        }
+
+        view = this.getRegion('bottom');
+        if (view && view.currentView && view.currentView.onResize) {
+            view.currentView.onResize();
+        }
     }
 });
 
 module.exports = DefaultLayout;
-

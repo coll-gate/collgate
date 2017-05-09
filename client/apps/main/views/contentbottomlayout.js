@@ -53,6 +53,18 @@ var View = Marionette.LayoutView.extend({
         if (region && region.currentView && region.currentView.onHideTab) {
             region.currentView.onHideTab(tabView);
         }
+    },
+
+    onResize: function() {
+        var view = this.getRegion('content');
+        if (view && view.currentView && view.currentView.onResize) {
+            view.currentView.onResize();
+        }
+
+        view = this.getRegion('bottom');
+        if (view && view.currentView && view.currentView.onResize) {
+            view.currentView.onResize();
+        }
     }
 });
 
