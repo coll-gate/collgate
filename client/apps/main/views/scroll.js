@@ -692,9 +692,6 @@ var View = Marionette.CompositeView.extend({
         if (this.resizingColumnLeft && this.resizingColumnRight) {
             var delta = e.screenX - this.resizingColumnStartOffset;
 
-            // left margin. use this to compute it. maybe there is a better solution.
-            var scrollbarWidth = Math.round(Math.sqrt((this.scrollbarWidth * this.scrollbarWidth) / 2.777777778) * 0.90);
-
             // new width respecting the min width
             var leftWidth = Math.max(
                 parseInt(this.resizingColumnLeft.css('min-width').replace('px', '')),
@@ -711,18 +708,17 @@ var View = Marionette.CompositeView.extend({
             var columns = this.ui.thead.children('tr').children('th,td');
             $.each(columns, function(i, element) {
                 var el = $(element);
+                var div = el.children('div');
 
                 if (!el.hasClass('glyph-fixed-column')) {
-                    var div = el.children('div');
                     el.width(el.width());
-
-                    // adjust left position because of scrolling
-                    div.css('left', el.position().left + scrollbarWidth + (i === 0 ? 0 : 1));
 
                     // adjust the label div (minus border left width)
                     div.width(el.width() - (i === 0 ? 0 : 1));
                 }
             });
+
+            this.computeClipping();
         }
     },
 
@@ -838,7 +834,7 @@ var View = Marionette.CompositeView.extend({
         var clientWidth = this.$el.innerWidth();
 
         // left margin. use this to compute it. maybe there is a better solution.
-        var scrollbarWidth = Math.round(Math.sqrt((this.scrollbarWidth * this.scrollbarWidth) / 2.7777778));
+        var scrollbarWidth = Math.round(Math.sqrt((this.scrollbarWidth * this.scrollbarWidth) / 2.5));
 
         $.each(columns, function(i, element) {
             var el = $(element);
@@ -846,9 +842,6 @@ var View = Marionette.CompositeView.extend({
             var div = el.children('div');
 
             var left = row.length > 0 ? row.position().left : el.position().left;
-            var action = div.children('span.column-action');
-            var label = div.children('span.column-label');
-            var sizer = div.children('div.column-sizer');
             var w = div.width();
 
             div.css('left', left + scrollbarWidth);
