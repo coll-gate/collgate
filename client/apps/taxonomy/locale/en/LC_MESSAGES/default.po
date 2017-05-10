@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-04-13 14:18+0200\n"
+"POT-Creation-Date: 2017-05-10 10:55+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,19 +17,25 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../../views/entitypath.js:142 ../../../views/taxondetails.js:117
-#: ../../../controllers/taxon.js:96
-msgid "Enter a taxon name. 3 characters at least for auto-completion"
+#: ../../../views/cultivar.js:59 ../../../views/taxon.js:62
+msgid "Successfully removed !"
 msgstr ""
 
-#: ../../../views/taxon.js:62
-msgid "Successfully removed !"
+#: ../../../views/cultivarlistfilter.js:49 ../../../views/taxonlistfilter.js:54
+#: ../../../views/taxonsynonyms.js:58 ../../../views/taxonsynonyms.js:221
+#: ../../../controllers/taxon.js:168 ../../../controllers/taxon.js:370
+msgid "3 characters min"
+msgstr ""
+
+#: ../../../views/entitypath.js:142 ../../../views/taxondetails.js:117
+#: ../../../controllers/taxon.js:101 ../../../controllers/taxon.js:313
+msgid "Enter a taxon name. 3 characters at least for auto-completion"
 msgstr ""
 
 #: ../../../views/taxondescriptor.js:26
 #: ../../../views/taxondescriptorcreate.js:123
-#: ../../../views/taxondescriptoredit.js:69
-#: ../../../templates/taxonlayout.html:6
+#: ../../../views/taxondescriptoredit.js:75
+#: ../../../templates/taxonlayout.html:16
 msgid "Descriptors"
 msgstr ""
 
@@ -65,13 +71,7 @@ msgstr ""
 msgid "Cancel modifications"
 msgstr ""
 
-#: ../../../views/taxonlistfilter.js:54 ../../../views/taxonsynonyms.js:58
-#: ../../../views/taxonsynonyms.js:221 ../../../controllers/taxon.js:230
-msgid "3 characters min"
-msgstr ""
-
 #: ../../../views/taxonsynonyms.js:55 ../../../views/taxonsynonyms.js:224
-#: ../../../controllers/taxon.js:227
 msgid "64 characters max"
 msgstr ""
 
@@ -87,127 +87,158 @@ msgstr ""
 msgid "Unable to rename the synonym !"
 msgstr ""
 
-#: ../../../routers/taxon.js:58
+#: ../../../routers/taxon.js:65
 msgid "List of taxons"
 msgstr ""
 
-#: ../../../routers/taxon.js:79
+#: ../../../routers/taxon.js:83
+msgid "List of cultivars"
+msgstr ""
+
+#: ../../../routers/taxon.js:106
 msgid "Taxon details"
 msgstr ""
 
-#: ../../../controllers/taxon.js:211
+#: ../../../controllers/taxon.js:149 ../../../controllers/taxon.js:351
 msgid "Taxon name already in usage"
 msgstr ""
 
-#: ../../../controllers/taxon.js:248
+#: ../../../controllers/taxon.js:165 ../../../controllers/taxon.js:367
+msgid "128 characters max"
+msgstr ""
+
+#: ../../../controllers/taxon.js:187
 msgid "Family rank cannot have a parent taxon"
 msgstr ""
 
-#: ../../../controllers/taxon.js:253
+#: ../../../controllers/taxon.js:192
 msgid "This rank must have a parent taxon"
 msgstr ""
 
-#: ../../../controllers/taxon.js:282
+#: ../../../controllers/taxon.js:221
 msgid "Taxon successfully created !"
 msgstr ""
 
-#: ../../../templates/taxonchangeparent.html:5
-msgid "Change the direct parent of taxon"
+#: ../../../controllers/taxon.js:413
+msgid "Cultivar"
 msgstr ""
 
-#: ../../../templates/taxonchangeparent.html:10
-#: ../../../templates/taxoncreate.html:28
-msgid "Direct parent"
-msgstr ""
-
-#: ../../../templates/taxonchangeparent.html:16
-#: ../../../templates/taxonchangesynonym.html:16
-#: ../../../templates/taxoncreate.html:35
-#: ../../../templates/taxondescriptorcreatedialog.html:20
-msgid "Cancel"
-msgstr ""
-
-#: ../../../templates/taxonchangeparent.html:17
-#: ../../../templates/taxonchangesynonym.html:17
-msgid "Apply"
-msgstr ""
-
-#: ../../../templates/taxonchangesynonym.html:5
-msgid "Change the name for a synonym of taxon"
-msgstr ""
-
-#: ../../../templates/taxonchangesynonym.html:10
+#: ../../../templates/cultivarlist.html:15
+#: ../../../templates/taxonchangesynonym.html:20
 #: ../../../templates/taxonentitieslist.html:14
-#: ../../../templates/taxonlist.html:5 ../../../templates/taxonsynonyms.html:6
+#: ../../../templates/taxonlist.html:15
+#: ../../../templates/taxonsynonyms.html:16
 msgid "Name"
 msgstr ""
 
-#: ../../../templates/taxoncreate.html:5
+#: ../../../templates/cultivarlist.html:16
+msgid "Taxon"
+msgstr ""
+
+#: ../../../templates/cultivarlist.html:17 ../../../templates/taxonlist.html:18
+msgid "Synonym"
+msgstr ""
+
+#: ../../../templates/taxonchangeparent.html:15
+msgid "Change the direct parent of taxon"
+msgstr ""
+
+#: ../../../templates/taxonchangeparent.html:20
+#: ../../../templates/taxoncreate.html:38
+#: ../../../templates/taxoncreatecultivar.html:42
+msgid "Direct parent"
+msgstr ""
+
+#: ../../../templates/taxonchangeparent.html:26
+#: ../../../templates/taxonchangesynonym.html:26
+#: ../../../templates/taxoncreate.html:45
+#: ../../../templates/taxoncreatecultivar.html:48
+#: ../../../templates/taxondescriptorcreatedialog.html:30
+msgid "Cancel"
+msgstr ""
+
+#: ../../../templates/taxonchangeparent.html:27
+#: ../../../templates/taxonchangesynonym.html:27
+msgid "Apply"
+msgstr ""
+
+#: ../../../templates/taxonchangesynonym.html:15
+msgid "Change the name for a synonym of taxon"
+msgstr ""
+
+#: ../../../templates/taxoncreate.html:15
 msgid "Create a taxon"
 msgstr ""
 
-#: ../../../templates/taxoncreate.html:12
+#: ../../../templates/taxoncreate.html:22
 msgid "Principal name of the taxon (must be unique)"
 msgstr ""
 
-#: ../../../templates/taxoncreate.html:18
-#: ../../../templates/taxonsynonyms.html:7
+#: ../../../templates/taxoncreate.html:28
+#: ../../../templates/taxoncreatecultivar.html:36
+#: ../../../templates/taxonsynonyms.html:17
 msgid "Language"
 msgstr ""
 
-#: ../../../templates/taxoncreate.html:24
+#: ../../../templates/taxoncreate.html:34
 msgid "Taxon rank"
 msgstr ""
 
-#: ../../../templates/taxoncreate.html:36
+#: ../../../templates/taxoncreate.html:46
+#: ../../../templates/taxoncreatecultivar.html:49
 msgid "Create"
 msgstr ""
 
-#: ../../../templates/taxondescriptorcreate.html:2
-msgid "No descriptor meta-model is defined for this taxon."
+#: ../../../templates/taxoncreatecultivar.html:15
+msgid "Create a cultivar"
 msgstr ""
 
-#: ../../../templates/taxondescriptorcreate.html:3
-msgid "Defines"
-msgstr ""
-
-#: ../../../templates/taxondescriptorcreatedialog.html:5
-msgid "Defines a meta-model of descriptors"
-msgstr ""
-
-#: ../../../templates/taxondescriptorcreatedialog.html:10
+#: ../../../templates/taxoncreatecultivar.html:20
+#: ../../../templates/taxondescriptorcreatedialog.html:20
 msgid "Template"
 msgstr ""
 
-#: ../../../templates/taxondescriptorcreatedialog.html:21
+#: ../../../templates/taxoncreatecultivar.html:30
+msgid "Principal name of the cultivar (must be unique)"
+msgstr ""
+
+#: ../../../templates/taxondescriptorcreate.html:12
+msgid "No descriptor meta-model is defined for this taxon."
+msgstr ""
+
+#: ../../../templates/taxondescriptorcreate.html:13
+msgid "Defines"
+msgstr ""
+
+#: ../../../templates/taxondescriptorcreatedialog.html:15
+msgid "Defines a meta-model of descriptors"
+msgstr ""
+
+#: ../../../templates/taxondescriptorcreatedialog.html:31
 msgid "Continue"
 msgstr ""
 
 #: ../../../templates/taxonentitieslist.html:15
-#: ../../../templates/taxonsynonyms.html:5
+#: ../../../templates/taxonsynonyms.html:15
 msgid "Type"
 msgstr ""
 
-#: ../../../templates/taxonlayout.html:5
+#: ../../../templates/taxonlayout.html:15
 msgid "Synonyms"
 msgstr ""
 
-#: ../../../templates/taxonlayout.html:7
+#: ../../../templates/taxonlayout.html:17
 msgid "Sub-ranks"
 msgstr ""
 
-#: ../../../templates/taxonlayout.html:8
+#: ../../../templates/taxonlayout.html:18
 msgid "Entities"
 msgstr ""
 
-#: ../../../templates/taxonlist.html:6
+#: ../../../templates/taxonlist.html:16
 msgid "Rank"
 msgstr ""
 
-#: ../../../templates/taxonlist.html:7
+#: ../../../templates/taxonlist.html:17
 msgid "Parent"
-msgstr ""
-
-#: ../../../templates/taxonlist.html:8
-msgid "Synonym"
 msgstr ""

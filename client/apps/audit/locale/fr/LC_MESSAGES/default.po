@@ -3,12 +3,11 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-01 18:38+0100\n"
+"POT-Creation-Date: 2017-05-10 10:55+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -33,56 +32,56 @@ msgstr "Sélectionnez une entité par son UUID ou son nom"
 msgid "List of audit entries related to entity"
 msgstr "Liste des entrées d'audits pour l'entité"
 
-#: ../../../templates/auditbyentity.html:5
+#: ../../../templates/auditbyentity.html:15
 msgid "Get audits entries for an entity"
 msgstr "Récupérer les entrées d'audits pour une entité"
 
-#: ../../../templates/auditbyentity.html:10
+#: ../../../templates/auditbyentity.html:20
 msgid "Entity content type"
 msgstr "Type d'entité"
 
-#: ../../../templates/auditbyentity.html:14
+#: ../../../templates/auditbyentity.html:24
 msgid "Entity UUID or name"
 msgstr "UUID ou nom de l'entité"
 
-#: ../../../templates/auditbyentity.html:20
-#: ../../../templates/auditbyusername.html:16
+#: ../../../templates/auditbyentity.html:30
+#: ../../../templates/auditbyusername.html:26
 msgid "Cancel"
 msgstr "Annuler"
 
-#: ../../../templates/auditbyentity.html:21
-#: ../../../templates/auditbyusername.html:17
+#: ../../../templates/auditbyentity.html:31
+#: ../../../templates/auditbyusername.html:27
 msgid "Search"
 msgstr "Chercher"
 
-#: ../../../templates/auditbyusername.html:5
+#: ../../../templates/auditbyusername.html:15
 msgid "Get audits entries for a user"
 msgstr "Récupérer les entrées d'audits pour un utilisateur"
 
-#: ../../../templates/auditbyusername.html:10
+#: ../../../templates/auditbyusername.html:20
 msgid "Username"
 msgstr "Nom d'utilisateur"
 
-#: ../../../templates/auditlist.html:4
+#: ../../../templates/auditlist.html:14
 msgid "User"
 msgstr "Utilisateur"
 
-#: ../../../templates/auditlist.html:5
+#: ../../../templates/auditlist.html:15
 msgid "Date"
 msgstr "Date"
 
-#: ../../../templates/auditlist.html:6
+#: ../../../templates/auditlist.html:16
 msgid "Entity"
 msgstr "Entité"
 
-#: ../../../templates/auditlist.html:7
+#: ../../../templates/auditlist.html:17
 msgid "Type"
 msgstr "Type"
 
-#: ../../../templates/auditlist.html:8
+#: ../../../templates/auditlist.html:18
 msgid "Action"
 msgstr "Action"
 
-#: ../../../templates/auditlist.html:9
+#: ../../../templates/auditlist.html:19
 msgid "Details"
 msgstr "Détails"

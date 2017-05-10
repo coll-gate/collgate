@@ -362,8 +362,6 @@ var View = Marionette.CompositeView.extend({
                     view.selectedColumns[i].width = "auto";
                 }
 
-              //  el.offset({left: $(rows.get(i)).offset().left});
-
                 // fix top issue in firefox
                 div.offset({top: top});
             });
@@ -407,8 +405,6 @@ var View = Marionette.CompositeView.extend({
                     view.selectedColumns[i].width = "auto";
                 }
 
-               // el.offset({left: $(rows.get(i)).offset().left});
-
                 // fix top issue in firefox
                 div.offset({top: top});
             });
@@ -427,6 +423,7 @@ var View = Marionette.CompositeView.extend({
         if (this.initialResizeDone) {
             if (this.isDisplayed()) {
                 this.updateColumnsWidth(true);
+                this.computeClipping();
             }
         }
     },

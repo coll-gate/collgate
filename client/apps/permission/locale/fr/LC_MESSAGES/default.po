@@ -3,12 +3,11 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-04-14 09:38+0200\n"
+"POT-Creation-Date: 2017-05-10 10:55+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -53,7 +52,7 @@ msgstr "Liste des permissions pour le groupe"
 msgid "List of users for group"
 msgstr "Liste des utilisateurs pour le groupe"
 
-#: ../../../templates/grouplist.html:15 ../../../templates/grouprename.html:10
+#: ../../../templates/grouplist.html:15 ../../../templates/grouprename.html:20
 #: ../../../templates/permission.html:24
 msgid "Name"
 msgstr "Nom"
@@ -66,15 +65,15 @@ msgstr "Utilisateurs"
 msgid "Permissions"
 msgstr "Permissions"
 
-#: ../../../templates/grouprename.html:5
+#: ../../../templates/grouprename.html:15
 msgid "Rename the group of users"
 msgstr "Renomer le groupe d'utilisateurs"
 
-#: ../../../templates/grouprename.html:16
+#: ../../../templates/grouprename.html:26
 msgid "Cancel"
 msgstr "Annuler"
 
-#: ../../../templates/grouprename.html:17
+#: ../../../templates/grouprename.html:27
 msgid "Apply"
 msgstr "Appliquer"
 
@@ -84,7 +83,7 @@ msgstr "Nom d'utilisateur"
 
 #: ../../../templates/groupuserlist.html:16 ../../../templates/userlist.html:18
 msgid "Email"
-msgstr ""
+msgstr "Email"
 
 #: ../../../templates/groupuserlist.html:17 ../../../templates/userlist.html:19
 msgid "First name"
@@ -105,12 +104,3 @@ msgstr "Module"
 #: ../../../templates/permission.html:25
 msgid "Code"
 msgstr "Code"
-
-#~ msgid "Status"
-#~ msgstr "Status"
-
-#~ msgid "Superuser"
-#~ msgstr "Super-utilisateur"
-
-#~ msgid "Staff"
-#~ msgstr "Employé"

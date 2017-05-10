@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-04-14 09:38+0200\n"
+"POT-Creation-Date: 2017-05-10 10:57+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,81 +17,81 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: descriptorformattype.py:27 descriptorformattype.py:40
+#: descriptorformattype.py:33 descriptorformattype.py:46
 msgid "Media"
 msgstr ""
 
-#: descriptorformattype.py:47
+#: descriptorformattype.py:53
 msgid "The descriptor value must be a string"
 msgstr ""
 
-#: descriptorformattype.py:51 descriptorformattype.py:141
+#: descriptorformattype.py:57 descriptorformattype.py:147
 msgid "The descriptor value must match with the UUID format"
 msgstr ""
 
-#: descriptorformattype.py:57 descriptorformattype.py:146
+#: descriptorformattype.py:63 descriptorformattype.py:152
 msgid "The descriptor value must refers to an existing media"
 msgstr ""
 
-#: descriptorformattype.py:77 descriptorformattype.py:167
+#: descriptorformattype.py:83 descriptorformattype.py:173
 msgid ""
 "Media type must be archives, images, documents or spreadsheets (media_types)"
 msgstr ""
 
-#: descriptorformattype.py:91 descriptorformattype.py:186
+#: descriptorformattype.py:97 descriptorformattype.py:192
 msgid "The descriptor old_value must refers to an existing media"
 msgstr ""
 
-#: descriptorformattype.py:107 descriptorformattype.py:203
+#: descriptorformattype.py:113 descriptorformattype.py:209
 msgid "The descriptor new_value must refers to an existing media"
 msgstr ""
 
-#: descriptorformattype.py:125
+#: descriptorformattype.py:131
 msgid "Media collection"
 msgstr ""
 
-#: descriptorformattype.py:132
+#: descriptorformattype.py:138
 msgid "The descriptor value must be an array of string"
 msgstr ""
 
-#: descriptorformattype.py:136
+#: descriptorformattype.py:142
 #, python-format
 msgid "The number of media must be lesser or equal than %i"
 msgstr ""
 
-#: media.py:65 media.py:97 media.py:126 media.py:271
+#: media.py:71 media.py:103 media.py:132 media.py:277
 msgid "Your are not the owner of the media"
 msgstr ""
 
-#: media.py:72 media.py:133
+#: media.py:78 media.py:139
 msgid "No permissions to the owner entity"
 msgstr ""
 
-#: media.py:109
+#: media.py:115
 msgid "Unable to delete the media"
 msgstr ""
 
-#: media.py:161 media.py:253
+#: media.py:167 media.py:259
 msgid "No file specified"
 msgstr ""
 
-#: media.py:167 media.py:259
+#: media.py:173 media.py:265
 #, python-format
 msgid "Upload file size limit is set to %i bytes"
 msgstr ""
 
-#: media.py:172 media.py:264
+#: media.py:178 media.py:270
 msgid "Undetermined uploaded file type"
 msgstr ""
 
-#: media.py:279
+#: media.py:285
 msgid "No change permission to the owner entity"
 msgstr ""
 
-#: media.py:286
+#: media.py:292
 msgid "Trying to update a non-existing file"
 msgstr ""
 
-#: models.py:60
+#: models.py:66
 msgid "media"
 msgstr ""

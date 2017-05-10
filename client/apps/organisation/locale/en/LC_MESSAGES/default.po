@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-04-13 14:18+0200\n"
+"POT-Creation-Date: 2017-05-10 10:55+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,8 +18,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: ../../../views/descriptor.js:26 ../../../views/descriptoredit.js:76
-#: ../../../templates/establishmentlayout.html:5
-#: ../../../templates/organisationlayout.html:5
+#: ../../../templates/establishmentlayout.html:15
+#: ../../../templates/organisationlayout.html:15
 msgid "Descriptors"
 msgstr ""
 
@@ -61,7 +61,7 @@ msgid "3 characters min"
 msgstr ""
 
 #: ../../../views/establishmentlistfilter.js:190
-#: ../../../routers/establishment.js:44
+#: ../../../routers/establishment.js:36
 msgid "Establishment"
 msgstr ""
 
@@ -86,92 +86,92 @@ msgstr ""
 msgid "List of organisations"
 msgstr ""
 
-#: ../../../routers/organisation.js:94 ../../../controllers/organisation.js:141
-#: ../../../templates/organisationcreate.html:17
+#: ../../../routers/organisation.js:96 ../../../controllers/organisation.js:141
+#: ../../../templates/organisationcreate.html:27
 msgid "Organisation"
 msgstr ""
 
-#: ../../../templates/establishmentcreate.html:5
+#: ../../../templates/establishmentcreate.html:15
 msgid "Create an establishment"
 msgstr ""
 
-#: ../../../templates/establishmentcreate.html:10
+#: ../../../templates/establishmentcreate.html:20
 msgid "Name of the organisation"
 msgstr ""
 
-#: ../../../templates/establishmentcreate.html:14
-#: ../../../templates/establishmentedit.html:10
-#: ../../../templates/organisationcreate.html:10
-#: ../../../templates/organisationedit.html:10
+#: ../../../templates/establishmentcreate.html:24
+#: ../../../templates/establishmentedit.html:20
+#: ../../../templates/organisationcreate.html:20
+#: ../../../templates/organisationedit.html:20
 msgid "Name (must be unique)"
 msgstr ""
 
-#: ../../../templates/establishmentcreate.html:20
-#: ../../../templates/establishmentedit.html:16
-#: ../../../templates/organisationcreate.html:27
-#: ../../../templates/organisationedit.html:20
+#: ../../../templates/establishmentcreate.html:30
+#: ../../../templates/establishmentedit.html:26
+#: ../../../templates/organisationcreate.html:37
+#: ../../../templates/organisationedit.html:30
 msgid "Cancel"
 msgstr ""
 
-#: ../../../templates/establishmentcreate.html:21
-#: ../../../templates/organisationcreate.html:28
+#: ../../../templates/establishmentcreate.html:31
+#: ../../../templates/organisationcreate.html:38
 msgid "Create"
 msgstr ""
 
-#: ../../../templates/establishmentedit.html:5
+#: ../../../templates/establishmentedit.html:15
 msgid "Update an establishment"
 msgstr ""
 
-#: ../../../templates/establishmentedit.html:17
-#: ../../../templates/organisationedit.html:21
+#: ../../../templates/establishmentedit.html:27
+#: ../../../templates/organisationedit.html:31
 msgid "Apply"
 msgstr ""
 
-#: ../../../templates/establishmentlayout.html:6
+#: ../../../templates/establishmentlayout.html:16
 msgid "Conservatories"
 msgstr ""
 
-#: ../../../templates/establishmentlayout.html:7
+#: ../../../templates/establishmentlayout.html:17
 msgid "Contacts"
 msgstr ""
 
 #: ../../../templates/establishmentlist.html:15
-#: ../../../templates/grcdetails.html:4
+#: ../../../templates/grcdetails.html:14
 #: ../../../templates/organisationlist.html:18
 msgid "Name"
 msgstr ""
 
-#: ../../../templates/grcdetails.html:10
+#: ../../../templates/grcdetails.html:20
 msgid "Identifier"
 msgstr ""
 
-#: ../../../templates/grcdetails.html:16
+#: ../../../templates/grcdetails.html:26
 msgid "Description"
 msgstr ""
 
-#: ../../../templates/organisationcreate.html:5
+#: ../../../templates/organisationcreate.html:15
 msgid "Create an organisation or a partner"
 msgstr ""
 
-#: ../../../templates/organisationcreate.html:14
+#: ../../../templates/organisationcreate.html:24
 msgid "Partner or organisation"
 msgstr ""
 
-#: ../../../templates/organisationcreate.html:16
+#: ../../../templates/organisationcreate.html:26
 msgid "GRC partner"
 msgstr ""
 
-#: ../../../templates/organisationcreate.html:21
-#: ../../../templates/organisationedit.html:14
+#: ../../../templates/organisationcreate.html:31
+#: ../../../templates/organisationedit.html:24
 #: ../../../templates/organisationlist.html:21
 msgid "Type"
 msgstr ""
 
-#: ../../../templates/organisationedit.html:5
+#: ../../../templates/organisationedit.html:15
 msgid "Update an organisation or a partner"
 msgstr ""
 
-#: ../../../templates/organisationlayout.html:6
+#: ../../../templates/organisationlayout.html:16
 #: ../../../templates/organisationlist.html:30
 msgid "Establishments"
 msgstr ""

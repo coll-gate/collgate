@@ -3,12 +3,11 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-04-14 09:38+0200\n"
+"POT-Creation-Date: 2017-05-10 10:57+0200\n"
 "PO-Revision-Date: 2016-02-01 11:53+0100\n"
 "Last-Translator: Frederic SCHERMA <frederic.scherma@clermont.inra.fr>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,89 +17,89 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: apps.py:46
+#: apps.py:52
 msgid "Administration"
 msgstr "Administration"
 
-#: apps.py:50
+#: apps.py:56
 msgid "Server configuration"
 msgstr "Configuration du serveur"
 
-#: apps.py:56
+#: apps.py:62
 msgid "Help"
 msgstr "Aide"
 
-#: apps.py:58
+#: apps.py:64
 msgid "Manual index"
 msgstr "Index du manuel"
 
-#: apps.py:61
+#: apps.py:67
 msgid "About Coll-Gate IS..."
 msgstr "A propos de Coll-Gate IS..."
 
-#: eventmessage.py:94
+#: eventmessage.py:100
 msgid "You are not allowed to delete an event message"
 msgstr "Vous n'êtes pas autorisé à supprimer un message évenementiel"
 
-#: eventmessage.py:109
+#: eventmessage.py:115
 msgid "You are not allowed to create an event message"
 msgstr "Vous n'êtes pas autorisé à créer un message évenementiel"
 
-#: eventmessage.py:121
+#: eventmessage.py:127
 msgid "Unsupported language identifier"
 msgstr "Identifiant de langue non supporté"
 
-#: home.py:43
+#: home.py:49
 msgid "You are not authenticated."
 msgstr "Vous n'êtes pas identifié."
 
-#: home.py:53
+#: home.py:59
 msgid "Please, you must enable your cookies."
 msgstr "Merci d'activer la gestion des cookies."
 
-#: models.py:57
+#: models.py:63
 msgid "Latin"
 msgstr "Latin"
 
-#: models.py:58 models.py:67
+#: models.py:64 models.py:73
 msgid "English"
 msgstr "Anglais"
 
-#: models.py:59 models.py:68
+#: models.py:65 models.py:74
 msgid "French"
 msgstr "Français"
 
-#: models.py:76
+#: models.py:82
 msgid "Pending"
 msgstr "Attente"
 
-#: models.py:77
+#: models.py:83
 msgid "Valid"
 msgstr "Valide"
 
-#: models.py:78
+#: models.py:84
 msgid "Archived"
 msgstr "Archivé"
 
-#: models.py:79
+#: models.py:85
 msgid "Removed"
 msgstr "Supprimé"
 
-#: models.py:241
+#: models.py:247
 msgid ""
 "It is not allowed to change the status of an entity from valid to pending"
 msgstr ""
 "Il n'est pas permiet de changer le status d'une entité de valide à en-attente"
 
-#: models.py:244
+#: models.py:250
 msgid "It is not allowed to change the status of a removed entity"
 msgstr "Il n'est pas permiet de changer le status d'une entité retirée"
 
-#: models.py:247
+#: models.py:253
 msgid "It is not allowed to change the status of an archived entity"
 msgstr "Il n'est pas permiet de changer le status d'une entité archivée"
 
-#: profile.py:71
+#: profile.py:77
 msgid ""
 "Your account is pending for activation. Please be patient or contact an "
 "administrator."
@@ -108,44 +107,41 @@ msgstr ""
 "Votre compte est en attente d'activation. Merci de patienter ou contactez un "
 "administrateur."
 
-#: profile.py:76
+#: profile.py:82
 msgid "Successfully logged"
 msgstr "Identifié avec succès"
 
-#: profile.py:83
+#: profile.py:89
 msgid ""
 "Your account is closed. Please contact an administrator to re-activate it."
 msgstr ""
 "Votre compte est cloturé. Merci de contacter un administrateur afin de ré-"
 "activer celui-ci."
 
-#: profile.py:86
+#: profile.py:92
 msgid "Invalid username or password"
 msgstr "Identifiant ou mot de passe invalide"
 
-#: profile.py:99
+#: profile.py:105
 msgid "Logged out"
 msgstr "Déconnecté"
 
-#: templates/main/index.html:71
+#: templates/main/index.html:83
 msgid "Username"
 msgstr "Identifiant"
 
-#: templates/main/index.html:74
+#: templates/main/index.html:86
 msgid "Password"
 msgstr "Mot de passe"
 
-#: templates/main/index.html:76
+#: templates/main/index.html:88
 msgid "Sign in"
 msgstr "Se connecter"
 
-#: templates/main/index.html:91
+#: templates/main/index.html:103
 msgid "Edit information"
 msgstr "Mise à jour des informations"
 
-#: templates/main/index.html:97
+#: templates/main/index.html:109
 msgid "Logout"
 msgstr "Se déconnecter"
-
-#~ msgid "Unable to login"
-#~ msgstr "Impossible de s'identifier"

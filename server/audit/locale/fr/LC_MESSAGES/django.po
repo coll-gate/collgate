@@ -3,12 +3,11 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-04-14 09:38+0200\n"
+"POT-Creation-Date: 2017-05-10 10:57+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: French <LL@li.org>\n"
@@ -18,50 +17,50 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: apps.py:86
+#: apps.py:92
 msgid "Tracability"
 msgstr "Traçabilité"
 
-#: apps.py:87
+#: apps.py:93
 msgid "Tracability for a user"
 msgstr "Traçabilité pour un utilisateur"
 
-#: apps.py:88
+#: apps.py:94
 msgid "Tracability for an entity"
 msgstr "Traçabilité pour une entité"
 
-#: models.py:53 models.py:74 models.py:100
+#: models.py:59 models.py:80 models.py:106
 msgid "Invalid content type or application name"
 msgstr "Type de contenu ou nom d'application invalide"
 
-#: models.py:56 models.py:77 models.py:103
+#: models.py:62 models.py:83 models.py:109
 msgid "Invalid object identifier"
 msgstr "Identifiant d'objet invalide"
 
-#: models.py:80 models.py:106
+#: models.py:86 models.py:112
 msgid "Invalid user"
 msgstr "Utilisateur invalide"
 
-#: models.py:142
+#: models.py:148
 msgid "Create"
 msgstr "Créer"
 
-#: models.py:143
+#: models.py:149
 msgid "Update"
 msgstr "Mettre-à-jour"
 
-#: models.py:144
+#: models.py:150
 msgid "Delete"
 msgstr "Supprimer"
 
-#: models.py:146
+#: models.py:152
 msgid "Remove"
 msgstr "Retirer"
 
-#: models.py:147
+#: models.py:153
 msgid "Action"
 msgstr "Action"
 
-#: models.py:149
+#: models.py:155
 msgid "M2M change"
 msgstr "Changement sur M2M"

@@ -3,12 +3,11 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-04-14 09:38+0200\n"
+"POT-Creation-Date: 2017-05-10 10:57+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,89 +17,83 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: descriptorformattype.py:27 descriptorformattype.py:40
+#: descriptorformattype.py:33 descriptorformattype.py:46
 msgid "Media"
 msgstr "Média"
 
-#: descriptorformattype.py:47
+#: descriptorformattype.py:53
 msgid "The descriptor value must be a string"
 msgstr "La valeur du descripteur doit être une chaîne"
 
-#: descriptorformattype.py:51 descriptorformattype.py:141
+#: descriptorformattype.py:57 descriptorformattype.py:147
 msgid "The descriptor value must match with the UUID format"
 msgstr "La valeur du descripteur doit être au format UUID"
 
-#: descriptorformattype.py:57 descriptorformattype.py:146
+#: descriptorformattype.py:63 descriptorformattype.py:152
 msgid "The descriptor value must refers to an existing media"
 msgstr "La valeur du descripteur doit référer à un média existant"
 
-#: descriptorformattype.py:77 descriptorformattype.py:167
+#: descriptorformattype.py:83 descriptorformattype.py:173
 msgid ""
 "Media type must be archives, images, documents or spreadsheets (media_types)"
 msgstr ""
 "Le type de média doit être archives, images, documents ou spreadsheets "
 "(media_types)"
 
-#: descriptorformattype.py:91 descriptorformattype.py:186
+#: descriptorformattype.py:97 descriptorformattype.py:192
 msgid "The descriptor old_value must refers to an existing media"
 msgstr "Le descripteur old_value doit référencer un média existant"
 
-#: descriptorformattype.py:107 descriptorformattype.py:203
+#: descriptorformattype.py:113 descriptorformattype.py:209
 msgid "The descriptor new_value must refers to an existing media"
 msgstr "Le descripteur new_value doit référencer un média existant"
 
-#: descriptorformattype.py:125
+#: descriptorformattype.py:131
 msgid "Media collection"
 msgstr "Collection de médias"
 
-#: descriptorformattype.py:132
+#: descriptorformattype.py:138
 msgid "The descriptor value must be an array of string"
 msgstr "La valeur du descripteur doit être un tableau de chaînes"
 
-#: descriptorformattype.py:136
+#: descriptorformattype.py:142
 #, python-format
 msgid "The number of media must be lesser or equal than %i"
 msgstr "Le nombre de medias doit être inférieur ou égale à %i"
 
-#: media.py:65 media.py:97 media.py:126 media.py:271
+#: media.py:71 media.py:103 media.py:132 media.py:277
 msgid "Your are not the owner of the media"
 msgstr "Vous n'êtes pas le propriétaire de ce média"
 
-#: media.py:72 media.py:133
+#: media.py:78 media.py:139
 msgid "No permissions to the owner entity"
 msgstr "Pas de permission sur l'entité propriétaire"
 
-#: media.py:109
+#: media.py:115
 msgid "Unable to delete the media"
 msgstr "Impossible de supprimer le média"
 
-#: media.py:161 media.py:253
+#: media.py:167 media.py:259
 msgid "No file specified"
 msgstr "Pas de fichier spécifié"
 
-#: media.py:167 media.py:259
+#: media.py:173 media.py:265
 #, python-format
 msgid "Upload file size limit is set to %i bytes"
 msgstr "La taille limite d'un fichier téléchargé est définie à %i octets"
 
-#: media.py:172 media.py:264
+#: media.py:178 media.py:270
 msgid "Undetermined uploaded file type"
 msgstr "Type de fichier téléchargé indéterminé"
 
-#: media.py:279
+#: media.py:285
 msgid "No change permission to the owner entity"
 msgstr "Pas de permission de modification sur l'entité propriétaire"
 
-#: media.py:286
+#: media.py:292
 msgid "Trying to update a non-existing file"
 msgstr "Tentative de mise-à-jour d'un fichier inexistant"
 
-#: models.py:60
+#: models.py:66
 msgid "media"
 msgstr "média"
-
-#~ msgid "Media library destination folder misconfiguration"
-#~ msgstr "Répertoire de destination de la média librairie mal configuré"
-
-#~ msgid "media collection"
-#~ msgstr "collection de médias"

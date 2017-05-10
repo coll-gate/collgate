@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-04-14 09:38+0200\n"
+"POT-Creation-Date: 2017-05-10 10:55+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -53,7 +53,7 @@ msgstr ""
 msgid "List of users for group"
 msgstr ""
 
-#: ../../../templates/grouplist.html:15 ../../../templates/grouprename.html:10
+#: ../../../templates/grouplist.html:15 ../../../templates/grouprename.html:20
 #: ../../../templates/permission.html:24
 msgid "Name"
 msgstr ""
@@ -66,15 +66,15 @@ msgstr ""
 msgid "Permissions"
 msgstr ""
 
-#: ../../../templates/grouprename.html:5
+#: ../../../templates/grouprename.html:15
 msgid "Rename the group of users"
 msgstr ""
 
-#: ../../../templates/grouprename.html:16
+#: ../../../templates/grouprename.html:26
 msgid "Cancel"
 msgstr ""
 
-#: ../../../templates/grouprename.html:17
+#: ../../../templates/grouprename.html:27
 msgid "Apply"
 msgstr ""
 

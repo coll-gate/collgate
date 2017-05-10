@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-04-14 09:38+0200\n"
+"POT-Creation-Date: 2017-05-10 10:57+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,246 +17,246 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: apps.py:77
+#: apps.py:83
 msgid "Administration"
 msgstr "Administration"
 
-#: apps.py:82
+#: apps.py:88
 msgid "List groups of descriptors"
 msgstr "Liste des groupes de descripteurs"
 
-#: apps.py:85
+#: apps.py:91
 msgid "List models of descriptor"
 msgstr "Liste des modèles de descripteur"
 
-#: apps.py:88
+#: apps.py:94
 msgid "List meta-models of descriptor"
 msgstr "Liste des méta-modèles de descripteur"
 
-#: describable.py:142
+#: describable.py:148
 #, python-format
 msgid "Missing mandatory descriptor %s"
 msgstr "Descripteur obligatoire manquant %s"
 
-#: describable.py:147
+#: describable.py:153
 #, python-format
 msgid "Already defined set once descriptor %s"
 msgstr "Descripteur à écriture unique déjà définit %s"
 
-#: describable.py:165 describable.py:171 describable.py:180 describable.py:187
-#: describable.py:197 describable.py:205
+#: describable.py:171 describable.py:177 describable.py:186 describable.py:193
+#: describable.py:203 describable.py:211
 msgid "A conditional descriptor is defined but the condition is not true"
 msgstr "Un déscripteur conditionel est définit mais la condition est invalide"
 
-#: descriptor.py:150
+#: descriptor.py:156
 msgid "You are not allowed to create a group of descriptors"
 msgstr "Vous n'êtes pas autorisé à créer un groupe de descripteurs"
 
-#: descriptor.py:175
+#: descriptor.py:181
 msgid "You are not allowed to delete a group of descriptors"
 msgstr "Vous n'êtes pas autorisé à supprimer un groupe de descripteurs"
 
-#: descriptor.py:183
+#: descriptor.py:189
 msgid "Only an empty group of descriptors can be deleted"
 msgstr "Seul les groupes de descripteur vides peuvent être supprimés"
 
-#: descriptor.py:198
+#: descriptor.py:204
 msgid "You are not allowed to modify a group of descriptors"
 msgstr "Vous n'êtes pas autorisé à modifier un type de descripteur"
 
-#: descriptor.py:210
+#: descriptor.py:216
 msgid "Name of group of descriptor already in usage"
 msgstr "Nom de groupe de descripteur existant"
 
-#: descriptor.py:213
+#: descriptor.py:219
 msgid "It is not permit to modify this group of type of descriptors"
 msgstr "Vous n'êtes pas autorisé à modifier ce groupe de types de descripteurs"
 
-#: descriptor.py:407 descriptor.py:450 descriptor.py:488
+#: descriptor.py:413 descriptor.py:456 descriptor.py:494
 msgid "You are not allowed to modify a group of types of descriptors"
 msgstr "Vous n'êtes pas autorisé à modifier un groupe de types de descripteurs"
 
-#: descriptor.py:408
+#: descriptor.py:414
 msgid "You are not allowed to create a type of descriptor"
 msgstr "Vous n'êtes pas autorisé à créer un type de descripteur"
 
-#: descriptor.py:451
+#: descriptor.py:457
 msgid "You are not allowed to delete a type of descriptor"
 msgstr "Vous n'êtes pas autorisé à supprimer un type de descripteur"
 
-#: descriptor.py:459
+#: descriptor.py:465
 msgid "Only an empty of values type of descriptor can be deleted"
 msgstr ""
 "Seul les types de descripteur n'ayant aucunes valeurs peuvent être supprimés"
 
-#: descriptor.py:462
+#: descriptor.py:468
 msgid "Only unused types of descriptor can be deleted"
 msgstr "Seul les types de descripteur inutilisés peuvent être supprimés"
 
-#: descriptor.py:489 descriptor.py:642 descriptor.py:712 descriptor.py:792
-#: descriptor.py:948
+#: descriptor.py:495 descriptor.py:649 descriptor.py:719 descriptor.py:799
+#: descriptor.py:955
 msgid "You are not allowed to modify a type of descriptor"
 msgstr "Vous n'êtes pas autorisé à modifier un type de descripteur"
 
-#: descriptor.py:503
+#: descriptor.py:509
 msgid "It is not permit to modify this type of descriptor"
 msgstr "Vous n'êtes pas autorisé à modifier un type de descripteur"
 
-#: descriptor.py:643
+#: descriptor.py:650
 msgid "You are not allowed to create a value of descriptor"
 msgstr "Vous n'êtes pas autorisé à créer une valeur de descripteur"
 
-#: descriptor.py:713 descriptor.py:949
+#: descriptor.py:720 descriptor.py:956
 msgid "You are not allowed to modify a value of type of descriptor"
 msgstr "Vous n'êtes pas autorisé à modifier un type de descripteur"
 
-#: descriptor.py:727
+#: descriptor.py:734
 msgid "There is no values for this type of descriptor"
 msgstr "Il n'y a pas de valeurs possibles pour ce type de descripteur"
 
-#: descriptor.py:734
+#: descriptor.py:741
 msgid "Ordinal field is only defined for enumeration with ordinal"
 msgstr ""
 "Le champs ordinal est défini seulement pour le type d'énumération avec "
 "ordinal"
 
-#: descriptor.py:737
+#: descriptor.py:744
 msgid "Second value field is only defined for enumeration of pairs"
 msgstr ""
 "Le champs de valeur secondaire est défini seulement pour le type "
 "d'énumération de paires"
 
-#: descriptor.py:793
+#: descriptor.py:800
 msgid "You are not allowed to remove a value of type of descriptor"
 msgstr "Vous n'êtes pas autorisé à supprimer une valeur de type descripteur"
 
-#: descriptor.py:806
+#: descriptor.py:813
 msgid "There is some data using the type of descriptor"
 msgstr "Il existe de données utilisant ce type de descripteur"
 
-#: descriptor.py:858 descriptor.py:1023 descriptor.py:1091
+#: descriptor.py:865 descriptor.py:1030 descriptor.py:1098
 msgid "This type of descriptor does not contains a list"
 msgstr "Ce type de descripteur ne contient pas de liste"
 
-#: descriptor.py:908 descriptor.py:957
+#: descriptor.py:915 descriptor.py:964
 msgid "Field name must be value0 or value1"
 msgstr "Le nom de champs doit être value0 ou value1"
 
-#: descriptor.py:967 descriptormetamodel.py:690 descriptormetamodel.py:749
-#: descriptormodel.py:570
+#: descriptor.py:974 descriptormetamodel.py:696 descriptormetamodel.py:755
+#: descriptormodel.py:604
 msgid "Unsupported language identifier"
 msgstr "Identifiant de langue indéfini"
 
-#: descriptor.py:1027
+#: descriptor.py:1034
 msgid "List of values are not available for drop-down"
 msgstr "La liste des valeurs n'est pas disponible pour la liste déroulante"
 
-#: descriptorformattype.py:244
+#: descriptorformattype.py:251
 msgid "Single value"
 msgstr "Valeur simple"
 
-#: descriptorformattype.py:253
+#: descriptorformattype.py:260
 msgid "List of values"
 msgstr "Liste de valeurs"
 
-#: descriptorformattype.py:266
+#: descriptorformattype.py:273
 msgid "Single enumeration"
 msgstr "Simple énumération"
 
-#: descriptorformattype.py:275 descriptorformattype.py:342
-#: descriptorformattype.py:420 descriptorformattype.py:714
+#: descriptorformattype.py:282 descriptorformattype.py:349
+#: descriptorformattype.py:427 descriptorformattype.py:724
 msgid "The descriptor value must be a string"
 msgstr "La valeur du descripteur doit être une chaîne"
 
-#: descriptorformattype.py:281 descriptorformattype.py:348
-#: descriptorformattype.py:426
+#: descriptorformattype.py:288 descriptorformattype.py:355
+#: descriptorformattype.py:433
 msgid "The descriptor value must exists"
 msgstr "La valeur du descripteur doit être définie"
 
-#: descriptorformattype.py:333
+#: descriptorformattype.py:340
 msgid "Pair enumeration"
 msgstr "Enumération de paires"
 
-#: descriptorformattype.py:411
+#: descriptorformattype.py:418
 msgid "Ordinal with text"
 msgstr "Ordinal avec texte"
 
-#: descriptorformattype.py:459
+#: descriptorformattype.py:466
 msgid "Range limits are [-127, 127]"
 msgstr "Limites de la plage [-127, 127]"
 
-#: descriptorformattype.py:482
+#: descriptorformattype.py:489
 msgid "Boolean"
 msgstr "Booléen"
 
-#: descriptorformattype.py:488
+#: descriptorformattype.py:495
 msgid "The descriptor value must be a boolean"
 msgstr "La valeur du descripteur doit être un booléen"
 
-#: descriptorformattype.py:506
+#: descriptorformattype.py:513
 msgid "Numeric"
 msgstr "Numérique"
 
-#: descriptorformattype.py:512
+#: descriptorformattype.py:519
 msgid "The descriptor value must be a decimal string"
 msgstr "La valeur du descripteur doit être une chaîne de décimal"
 
-#: descriptorformattype.py:518 descriptorformattype.py:567
-#: descriptorformattype.py:573
+#: descriptorformattype.py:525 descriptorformattype.py:575
+#: descriptorformattype.py:581
 msgid "The descriptor value must be a decimal"
 msgstr "La valeur du descripteur doit être un décimal"
 
-#: descriptorformattype.py:522
+#: descriptorformattype.py:529
 msgid "The descriptor value must be a decimal with a precision of "
 msgstr "La valeur du descripteur doit être un décimal avec une précision de "
 
-#: descriptorformattype.py:545 descriptorformattype.py:610
-#: descriptorformattype.py:676
+#: descriptorformattype.py:553 descriptorformattype.py:620
+#: descriptorformattype.py:686
 msgid ""
 "Custom unit can only be defined is unit is set to custom (unit, custom_unit)"
 msgstr ""
 
-#: descriptorformattype.py:560
+#: descriptorformattype.py:568
 msgid "Numeric range"
 msgstr "Plage numérique"
 
-#: descriptorformattype.py:577
+#: descriptorformattype.py:585
 msgid "The descriptor value must be a decimal with a precision of"
 msgstr "La valeur du descripteur doit être un décimal avec une précision de"
 
-#: descriptorformattype.py:583
+#: descriptorformattype.py:592
 msgid "The descriptor value must be a decimal between"
 msgstr "La valeur du descripteur doit être un décimal compris entre"
 
-#: descriptorformattype.py:616 descriptorformattype.py:622
+#: descriptorformattype.py:626 descriptorformattype.py:632
 msgid "Range min must be a decimal"
 msgstr "Plage min doit être un décimal"
 
-#: descriptorformattype.py:625 descriptorformattype.py:691
+#: descriptorformattype.py:635 descriptorformattype.py:701
 msgid "Range min must be lesser than range max"
 msgstr "Plage min doit être inférieur à plage max"
 
-#: descriptorformattype.py:640
+#: descriptorformattype.py:650
 msgid "Ordinal"
 msgstr "Ordinal"
 
-#: descriptorformattype.py:646 descriptorformattype.py:885
+#: descriptorformattype.py:656 descriptorformattype.py:927
 msgid "The descriptor value must be an integer"
 msgstr "La valeur du descripteur doit être un entier"
 
-#: descriptorformattype.py:650
+#: descriptorformattype.py:660
 msgid "The descriptor value must be an integer between "
 msgstr "La valeur du descripteur doit être un entier compris entre "
 
-#: descriptorformattype.py:682 descriptorformattype.py:688
+#: descriptorformattype.py:692 descriptorformattype.py:698
 msgid "Range min must be an integer"
 msgstr "La plage doit définir deux entiers"
 
-#: descriptorformattype.py:706
+#: descriptorformattype.py:716
 msgid "Text"
 msgstr "Texte"
 
-#: descriptorformattype.py:718
+#: descriptorformattype.py:728
 msgid ""
 "The descriptor value must be a string with a maximum length of 1024 "
 "characters"
@@ -264,85 +264,85 @@ msgstr ""
 "La valeur du descripteur doit être une chaîne d'une longueur maximum de 1024 "
 "caractères"
 
-#: descriptorformattype.py:724
+#: descriptorformattype.py:734
 msgid "The descriptor value must be a string matching the defined format"
 msgstr ""
 "La valeur du descripteur doit être une chaîne validant le format définit"
 
-#: descriptorformattype.py:763
+#: descriptorformattype.py:773
 msgid "Date"
 msgstr "Date"
 
-#: descriptorformattype.py:768
+#: descriptorformattype.py:778
 msgid "The descriptor value must be a date string (YYYYMMDD)"
 msgstr "La valeur du descripteur doit être une chaîne de date (YYYYMMDD)"
 
-#: descriptorformattype.py:789
+#: descriptorformattype.py:799
 msgctxt "concept"
 msgid "Time"
 msgstr "Temps"
 
-#: descriptorformattype.py:794
+#: descriptorformattype.py:804
 msgid "The descriptor value must be a time string (HH:MM:SS)"
 msgstr "La valeur du descripteur doit être une chaîne d'heure (HH:MM:SS)"
 
-#: descriptorformattype.py:816
+#: descriptorformattype.py:822
 msgid "Imprecise date"
 msgstr "Date imprécise"
 
-#: descriptorformattype.py:821
+#: descriptorformattype.py:834
 msgid "The descriptor value must be an array of 3 string values"
 msgstr "La valeur du descripteur doit être une tableau de 3 chaînes"
 
-#: descriptorformattype.py:824
+#: descriptorformattype.py:837
 msgid "The descriptor value must contain a valid year (format:YYYY)"
 msgstr "La valeur du descripteur doit contenir une année valide (format:YYYY)"
 
-#: descriptorformattype.py:828
+#: descriptorformattype.py:840
 msgid "The descriptor value of month is invalid"
 msgstr "La valeur du mois du descripteur est invalide"
 
-#: descriptorformattype.py:832
+#: descriptorformattype.py:843
 msgid "The descriptor value of day is invalid"
 msgstr "La valeur du jour du descripteur est invalide"
 
-#: descriptorformattype.py:835
+#: descriptorformattype.py:846
 msgid "The descriptor value is invalid"
 msgstr "La valeur du descripteur est invalide"
 
-#: descriptorformattype.py:856
+#: descriptorformattype.py:898
 msgid "Date+time"
 msgstr "Date+Temps"
 
-#: descriptorformattype.py:861
+#: descriptorformattype.py:903
 msgid "The descriptor value must be a datetime string (ISO 8601)"
 msgstr "La valeur du descripteur doit être une chaîne dateheure (ISO 8601)"
 
-#: descriptorformattype.py:879
+#: descriptorformattype.py:921
 msgid "Entity"
 msgstr "Entité"
 
-#: descriptorformattype.py:893
+#: descriptorformattype.py:935
 msgid "The descriptor value must refers to an existing entity"
 msgstr "La valeur du descripteur doit référencer une valeur existante"
 
-#: descriptorformattype.py:917
+#: descriptorformattype.py:959
 msgid "Invalid describable entity model type name"
 msgstr "Nom de type d'entité de modèle de descripteur invalide"
 
-#: descriptorformattype.py:929
+#: descriptorformattype.py:971
 msgid "The descriptor doesn't refers to a valid entity model"
 msgstr "Le descripteur ne se référe pas à une entité valide"
 
-#: descriptormetamodel.py:138
+#: descriptormetamodel.py:144
 msgid "You are not allowed to create a meta-model of descriptor"
 msgstr "Vous n'êtes pas autorisé à créer un méta-modèle de descripteur"
 
-#: descriptormetamodel.py:205
+#: descriptormetamodel.py:211
 msgid "You are not allowed to remove a meta-model of descriptor"
 msgstr "Vous n'êtes pas autorisé à supprimer un méta-modèle de descripteur"
 
-#: descriptormetamodel.py:212
+#: descriptormetamodel.py:218
 msgid ""
 "It is not possible to remove a meta-model of descriptor that contains models "
 "of descriptor"
@@ -350,22 +350,22 @@ msgstr ""
 "Il n'est pas possible de retirer un méta-modèle de descripteur contanant des "
 "modèles de descripteur"
 
-#: descriptormetamodel.py:215
+#: descriptormetamodel.py:221
 msgid "There is some data using the meta-model of descriptor"
 msgstr "Il existe de données utilisant ce méta-modèle de descripteur"
 
-#: descriptormetamodel.py:230 descriptormetamodel.py:258
-#: descriptormetamodel.py:462 descriptormetamodel.py:536
-#: descriptormetamodel.py:598 descriptormetamodel.py:620
-#: descriptormetamodel.py:674 descriptormetamodel.py:732
+#: descriptormetamodel.py:236 descriptormetamodel.py:264
+#: descriptormetamodel.py:468 descriptormetamodel.py:542
+#: descriptormetamodel.py:604 descriptormetamodel.py:626
+#: descriptormetamodel.py:680 descriptormetamodel.py:738
 msgid "You are not allowed to modify a meta-model of descriptor"
 msgstr "Vous n'êtes pas autorisé à modifier un méta-modèle de descripteur"
 
-#: descriptormetamodel.py:463
+#: descriptormetamodel.py:469
 msgid "You are not allowed to create a panel of descriptor"
 msgstr "Vous n'êtes pas autorisé à créer un panel de descripteur"
 
-#: descriptormetamodel.py:478
+#: descriptormetamodel.py:484
 msgid ""
 "A panel of descriptor for this model already exists into this meta-model of "
 "descriptor"
@@ -373,63 +373,63 @@ msgstr ""
 "Un panel de descripteur avec ce modèle existe déjà dans ce méta-modèle de "
 "descripteur"
 
-#: descriptormetamodel.py:537 descriptormetamodel.py:599
-#: descriptormetamodel.py:733
+#: descriptormetamodel.py:543 descriptormetamodel.py:605
+#: descriptormetamodel.py:739
 msgid "You are not allowed to modify a panel of descriptor"
 msgstr "Vous n'êtes pas autorisé à modifier un panel de descripteur"
 
-#: descriptormetamodel.py:621
+#: descriptormetamodel.py:627
 msgid "You are not allowed to remove a panel of descriptor"
 msgstr "Vous n'êtes pas autorisé à supprimer un panl de descripteur"
 
-#: descriptormetamodel.py:628
+#: descriptormetamodel.py:634
 msgid "There is some entities attached to this panel"
 msgstr "Il existe des entités rattachées à ce panel"
 
-#: descriptormodel.py:148
+#: descriptormodel.py:154
 msgid "You are not allowed to create a model of descriptor"
 msgstr "Vous n'êtes pas autorisé à créer un modèle de descripteur"
 
-#: descriptormodel.py:153
+#: descriptormodel.py:159
 msgid "A model of descriptor with a similar name already exists"
 msgstr "A model de descripteur avec un nom similaire existe déjà"
 
-#: descriptormodel.py:187 descriptormodel.py:328 descriptormodel.py:392
-#: descriptormodel.py:453 descriptormodel.py:500 descriptormodel.py:553
-#: descriptormodel.py:621 descriptormodel.py:681 descriptormodel.py:732
+#: descriptormodel.py:193 descriptormodel.py:335 descriptormodel.py:400
+#: descriptormodel.py:461 descriptormodel.py:534 descriptormodel.py:587
+#: descriptormodel.py:655 descriptormodel.py:715 descriptormodel.py:766
 msgid "You are not allowed to modify a model of descriptor"
 msgstr "Vous n'êtes pas autorisé à créer un modèle de descripteur"
 
-#: descriptormodel.py:209
+#: descriptormodel.py:215
 msgid "You are not allowed to remove a model of descriptor"
 msgstr "Vous n'êtes pas autorisé à supprimer un modèle de descripteur"
 
-#: descriptormodel.py:216
+#: descriptormodel.py:222
 msgid "Only empty models of descriptor can be removed"
 msgstr "Seul les modèles de descripteur vides peuvent être retirés"
 
-#: descriptormodel.py:219
+#: descriptormodel.py:225
 msgid "Only unused models of descriptor can be removed"
 msgstr "Seul les modèles de descripteur inutilisés peuvent être supprimés"
 
-#: descriptormodel.py:329
+#: descriptormodel.py:336
 msgid "You are not allowed to create a type of model of descriptor"
 msgstr "Vous n'êtes pas autorisé à créer un type de modèle de descripteur"
 
-#: descriptormodel.py:346 descriptormodel.py:475
+#: descriptormodel.py:353 descriptormodel.py:484
 msgid "The name of descriptor model type already exists"
 msgstr "Ce nom de model de descripteur existe déjà"
 
-#: descriptormodel.py:393 descriptormodel.py:454 descriptormodel.py:554
-#: descriptormodel.py:622 descriptormodel.py:682 descriptormodel.py:733
+#: descriptormodel.py:401 descriptormodel.py:462 descriptormodel.py:588
+#: descriptormodel.py:656 descriptormodel.py:716 descriptormodel.py:767
 msgid "You are not allowed to modify a type of model of descriptor"
 msgstr "Vous n'êtes pas autorisé à modifier un type de modèle de descripteur"
 
-#: descriptormodel.py:471 descriptormodel.py:512
+#: descriptormodel.py:480 descriptormodel.py:546
 msgid "There is some data using the model of descriptor"
 msgstr "Il existe de données utilisant ce modèle de descripteur"
 
-#: descriptormodel.py:486
+#: descriptormodel.py:495
 msgid ""
 "A required type of model of descriptor cannot have a condition. You must "
 "delete the condition before to set the required state"
@@ -437,11 +437,11 @@ msgstr ""
 "A type de modèle de descripteur obligatoire ne peut pas avoir de condition. "
 "Vous devez retirer la condition avant de définir l'état obligatoire"
 
-#: descriptormodel.py:501
+#: descriptormodel.py:535
 msgid "You are not allowed to remove a type of model of descriptor"
 msgstr "Vous n'êtes pas autorisé à supprimer un type de modèle de descripteur"
 
-#: descriptormodel.py:636
+#: descriptormodel.py:670
 msgid ""
 "It is not possible to define a condition on a required type of model of "
 "descriptor"
@@ -449,7 +449,7 @@ msgstr ""
 "Il est impossible de définir une condition sur un type de modèle de "
 "descripteur obligatoire"
 
-#: descriptormodel.py:641
+#: descriptormodel.py:675
 msgid ""
 "Cyclic condition detected. You cannot define this condition or you must "
 "remove the condition on the target"
@@ -457,76 +457,76 @@ msgstr ""
 "Condition cyclique détecté. Vous ne pouvez pas définir cette conditon ou "
 "vous devez retirer la condition sur la cible"
 
-#: descriptormodel.py:683
+#: descriptormodel.py:717
 msgid "You are not allowed to modify a condition of a model of descriptor"
 msgstr ""
 "Vous n'êtes pas autorisé à modifier une condition ce modèle de descripteur"
 
-#: descriptormodel.py:734
+#: descriptormodel.py:768
 msgid "You are not allowed to delete a condition of a model of descriptor"
 msgstr ""
 "Vous n'êtes pas autorisé à supprimer une condition sur ce modèle de "
 "descripteur"
 
-#: models.py:70
+#: models.py:77
 msgid "descriptor group"
 msgstr "groupe de descripteur"
 
-#: models.py:146
+#: models.py:153
 msgid "descriptor type"
 msgstr "type de descripteur"
 
-#: models.py:950
+#: models.py:957
 msgid "descriptor value"
 msgstr "valeur de descripteur"
 
-#: models.py:1036
+#: models.py:1043
 msgid "descriptor panel"
 msgstr "panel de descripteur"
 
-#: models.py:1134
+#: models.py:1156
 msgid "descriptor model type"
 msgstr "type de modèle de descripteur"
 
-#: models.py:1265
+#: models.py:1325
 #, python-format
 msgid "Unable to update the %s"
 msgstr "Impossible de mettre à jour le %s"
 
-#: models.py:1267
+#: models.py:1327
 #, python-format
 msgid "The value of the descriptor %s must be unique."
 msgstr "La valeur du descripteur %s doit être unique"
 
-#: models.py:1269
+#: models.py:1329
 #, python-format
 msgid "Unable to save the %s"
 msgstr "Impossible de sauvegarder le %s"
 
-#: models.py:1289
+#: models.py:1349
 msgid "descriptor model"
 msgstr "modèle de descripteur"
 
-#: models.py:1382
+#: models.py:1442
 msgid "descriptor meta model"
 msgstr "méta-modèle de descripteur"
 
-#: models.py:1472
+#: models.py:1532
 msgid "Undefined"
 msgstr "Undéfini"
 
-#: models.py:1473
+#: models.py:1533
 msgid "Defined"
 msgstr "Défini"
 
-#: models.py:1474
+#: models.py:1534
 msgid "Equal to"
 msgstr "Egale à"
 
-#: models.py:1475
+#: models.py:1535
 msgid "Different from"
 msgstr "Différent de"
 
-#: models.py:1498
+#: models.py:1558
 msgid "descriptor model type condition"
 msgstr "condition de modèle de descripteur"

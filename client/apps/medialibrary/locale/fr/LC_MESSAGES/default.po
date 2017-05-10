@@ -3,12 +3,11 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-23 15:33+0100\n"
+"POT-Creation-Date: 2017-05-10 10:55+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -37,46 +36,46 @@ msgstr "Erreur durant le téléchagement du fichier"
 msgid "Unable to remove the media"
 msgstr "Impossible de supprimer le média"
 
-#: ../../../templates/widgets/media.html:2
-#: ../../../templates/widgets/mediacollection.html:2
+#: ../../../templates/widgets/media.html:12
+#: ../../../templates/widgets/mediacollection.html:12
 msgid "Type of media"
 msgstr "Type de média"
 
-#: ../../../templates/widgets/media.html:4
-#: ../../../templates/widgets/mediacollection.html:4
+#: ../../../templates/widgets/media.html:14
+#: ../../../templates/widgets/mediacollection.html:14
 msgid "Archives (zip, rar, 7z, tar, gz, bz, bz2)"
 msgstr "Archives (zip, rar, 7z, tar, gz, bz, bz2)"
 
-#: ../../../templates/widgets/media.html:5
-#: ../../../templates/widgets/mediacollection.html:5
+#: ../../../templates/widgets/media.html:15
+#: ../../../templates/widgets/mediacollection.html:15
 msgid "Images (gif, png, jpg, jpeg, tif, tiff, psd, svg)"
 msgstr "Images (gif, png, jpg, jpeg, tif, tiff, psd, svg)"
 
-#: ../../../templates/widgets/media.html:6
-#: ../../../templates/widgets/mediacollection.html:6
+#: ../../../templates/widgets/media.html:16
+#: ../../../templates/widgets/mediacollection.html:16
 msgid "Documents (doc, docx, ppt, pptx, odt, odp, pdf, ps)"
 msgstr "Documents (doc, docx, ppt, pptx, odt, odp, pdf, ps)"
 
-#: ../../../templates/widgets/media.html:7
-#: ../../../templates/widgets/mediacollection.html:7
+#: ../../../templates/widgets/media.html:17
+#: ../../../templates/widgets/mediacollection.html:17
 msgid "Spreadsheets (xls, xlsx, ods, csv)"
 msgstr "Tableaux (xls, xlsx, ods, csv)"
 
-#: ../../../templates/widgets/media.html:11
-#: ../../../templates/widgets/mediacollection.html:17
+#: ../../../templates/widgets/media.html:21
+#: ../../../templates/widgets/mediacollection.html:27
 msgid "Inline images"
 msgstr "Images en-ligne"
 
-#: ../../../templates/widgets/media.html:13
-#: ../../../templates/widgets/mediacollection.html:19
+#: ../../../templates/widgets/media.html:23
+#: ../../../templates/widgets/mediacollection.html:29
 msgid "Yes"
 msgstr "Oui"
 
-#: ../../../templates/widgets/media.html:14
-#: ../../../templates/widgets/mediacollection.html:20
+#: ../../../templates/widgets/media.html:24
+#: ../../../templates/widgets/mediacollection.html:30
 msgid "No"
 msgstr "Non"
 
-#: ../../../templates/widgets/mediacollection.html:13
+#: ../../../templates/widgets/mediacollection.html:23
 msgid "Max items number"
 msgstr "Nombre max d'items"

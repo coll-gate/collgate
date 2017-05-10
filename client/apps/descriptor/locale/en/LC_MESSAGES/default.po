@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-04-14 09:38+0200\n"
+"POT-Creation-Date: 2017-05-10 10:55+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,16 +18,16 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: ../../../widgets/boolean.js:39 ../../../widgets/boolean.js:90
-#: ../../../templates/widgets/enumordinal.html:7
-#: ../../../templates/widgets/enumpair.html:7
-#: ../../../templates/widgets/enumsingle.html:7
+#: ../../../templates/widgets/enumordinal.html:17
+#: ../../../templates/widgets/enumpair.html:17
+#: ../../../templates/widgets/enumsingle.html:17
 msgid "Yes"
 msgstr ""
 
 #: ../../../widgets/boolean.js:47 ../../../widgets/boolean.js:90
-#: ../../../templates/widgets/enumordinal.html:8
-#: ../../../templates/widgets/enumpair.html:8
-#: ../../../templates/widgets/enumsingle.html:8
+#: ../../../templates/widgets/enumordinal.html:18
+#: ../../../templates/widgets/enumpair.html:18
+#: ../../../templates/widgets/enumsingle.html:18
 msgid "No"
 msgstr ""
 
@@ -36,7 +36,7 @@ msgstr ""
 msgid "Enter a value. 3 characters at least for auto-completion"
 msgstr ""
 
-#: ../../../widgets/imprecisedate.js:95
+#: ../../../widgets/imprecisedate.js:176
 msgid "Undefined"
 msgstr ""
 
@@ -66,8 +66,8 @@ msgstr ""
 #: ../../../views/descriptormetamodeldetail.js:41
 #: ../../../views/descriptormodeladd.js:45
 #: ../../../views/descriptormodeldetail.js:43
-#: ../../../views/descriptormodeltype.js:188
-#: ../../../views/descriptormodeltype.js:365
+#: ../../../views/descriptormodeltype.js:190
+#: ../../../views/descriptormodeltype.js:367
 #: ../../../views/descriptormodeltypelist.js:182
 #: ../../../views/descriptortypedetailslayout.js:73
 msgid "Invalid characters (alphanumeric, _ and - only)"
@@ -80,9 +80,9 @@ msgstr ""
 #: ../../../views/descriptormetamodeldetail.js:43
 #: ../../../views/descriptormodeladd.js:48
 #: ../../../views/descriptormodeldetail.js:45
-#: ../../../views/descriptormodeltype.js:170
-#: ../../../views/descriptormodeltype.js:191
-#: ../../../views/descriptormodeltype.js:368
+#: ../../../views/descriptormodeltype.js:172
+#: ../../../views/descriptormodeltype.js:193
+#: ../../../views/descriptormodeltype.js:370
 #: ../../../views/descriptormodeltypelist.js:164
 #: ../../../views/descriptormodeltypelist.js:185
 #: ../../../views/descriptorpanel.js:175 ../../../views/descriptorpanel.js:357
@@ -112,8 +112,8 @@ msgstr ""
 
 #: ../../../views/descriptormetamodel.js:107
 #: ../../../views/descriptormetamodel.js:121
-#: ../../../views/descriptormodeltype.js:440
-#: ../../../views/descriptormodeltype.js:454
+#: ../../../views/descriptormodeltype.js:442
+#: ../../../views/descriptormodeltype.js:456
 #: ../../../views/descriptorpanel.js:360 ../../../views/descriptorpanel.js:377
 #: ../../../views/descriptorvalue.js:102 ../../../views/descriptorvalue.js:119
 #: ../../../views/descriptorvalueordinal.js:91
@@ -126,7 +126,7 @@ msgid "64 characters max"
 msgstr ""
 
 #: ../../../views/descriptormetamodel.js:150
-#: ../../../views/descriptormodeltype.js:483
+#: ../../../views/descriptormodeltype.js:485
 #: ../../../views/descriptorpanel.js:406
 msgid "Successfully labeled !"
 msgstr ""
@@ -149,29 +149,29 @@ msgstr ""
 msgid "Name for model of descriptor already in usage"
 msgstr ""
 
-#: ../../../views/descriptormodeltype.js:231
+#: ../../../views/descriptormodeltype.js:233
 #: ../../../views/descriptormodeltypelist.js:225
 msgid "Unable to create the type of model of descriptor !"
 msgstr ""
 
-#: ../../../views/descriptormodeltype.js:325
+#: ../../../views/descriptormodeltype.js:327
 #: ../../../views/descriptormodeltypelist.js:284
 msgid "Unable to reorder the types of model of descriptor"
 msgstr ""
 
-#: ../../../views/descriptormodeltype.js:629
-#: ../../../views/descriptormodeltype.js:632
+#: ../../../views/descriptormodeltype.js:676
+#: ../../../views/descriptormodeltype.js:679
 #: ../../../templates/describabledetails.html:27
 #: ../../../templates/describableedit.html:27
 msgid "Value"
 msgstr ""
 
-#: ../../../views/descriptormodeltype.js:670
+#: ../../../views/descriptormodeltype.js:717
 msgid "Successfully removed !"
 msgstr ""
 
-#: ../../../views/descriptormodeltype.js:708
-#: ../../../views/descriptormodeltype.js:720
+#: ../../../views/descriptormodeltype.js:755
+#: ../../../views/descriptormodeltype.js:767
 msgid "Successfully defined !"
 msgstr ""
 
@@ -277,9 +277,9 @@ msgid "Numeric range"
 msgstr ""
 
 #: ../../../collections/formattype.js:76
-#: ../../../templates/descriptorvalueordinallist.html:22
-#: ../../../templates/widgets/enumordinal.html:39
-#: ../../../templates/widgets/enumordinal.html:71
+#: ../../../templates/descriptorvalueordinallist.html:21
+#: ../../../templates/widgets/enumordinal.html:49
+#: ../../../templates/widgets/enumordinal.html:81
 msgid "Ordinal"
 msgstr ""
 
@@ -634,86 +634,86 @@ msgid "Modify"
 msgstr ""
 
 #: ../../../templates/describableedit.html:61
-#: ../../../templates/descriptorgrouprename.html:16
-#: ../../../templates/descriptormetamodelchangelabel.html:25
-#: ../../../templates/descriptormetamodelcreate.html:25
-#: ../../../templates/descriptormodeltypechangelabel.html:25
-#: ../../../templates/descriptormodeltypecondition.html:30
-#: ../../../templates/descriptormodeltypecreate.html:20
-#: ../../../templates/descriptormodeltyperename.html:16
-#: ../../../templates/descriptorpanelchangelabel.html:24
-#: ../../../templates/descriptorpanelcreate.html:16
-#: ../../../templates/descriptorvaluechangefield.html:16
-#: ../../../templates/descriptorvaluechangefieldmultiple.html:24
+#: ../../../templates/descriptorgrouprename.html:26
+#: ../../../templates/descriptormetamodelchangelabel.html:35
+#: ../../../templates/descriptormetamodelcreate.html:35
+#: ../../../templates/descriptormodeltypechangeindex.html:32
+#: ../../../templates/descriptormodeltypechangelabel.html:35
+#: ../../../templates/descriptormodeltypecondition.html:40
+#: ../../../templates/descriptormodeltypecreate.html:30
+#: ../../../templates/descriptormodeltyperename.html:26
+#: ../../../templates/descriptorpanelchangelabel.html:34
+#: ../../../templates/descriptorpanelcreate.html:26
+#: ../../../templates/descriptorvaluechangefield.html:26
+#: ../../../templates/descriptorvaluechangefieldmultiple.html:34
 msgid "Cancel"
 msgstr ""
 
 #: ../../../templates/describableedit.html:62
-#: ../../../templates/descriptorgrouprename.html:17
-#: ../../../templates/descriptormetamodelchangelabel.html:26
-#: ../../../templates/descriptormetamodelcreate.html:26
-#: ../../../templates/descriptormodeltypechangelabel.html:26
-#: ../../../templates/descriptormodeltypecondition.html:31
-#: ../../../templates/descriptormodeltypecreate.html:21
-#: ../../../templates/descriptormodeltyperename.html:17
-#: ../../../templates/descriptorpanelchangelabel.html:25
-#: ../../../templates/descriptorpanelcreate.html:17
-#: ../../../templates/descriptorvaluechangefield.html:17
-#: ../../../templates/descriptorvaluechangefieldmultiple.html:25
+#: ../../../templates/descriptorgrouprename.html:27
+#: ../../../templates/descriptormetamodelchangelabel.html:36
+#: ../../../templates/descriptormetamodelcreate.html:36
+#: ../../../templates/descriptormodeltypechangeindex.html:33
+#: ../../../templates/descriptormodeltypechangelabel.html:36
+#: ../../../templates/descriptormodeltypecondition.html:41
+#: ../../../templates/descriptormodeltypecreate.html:31
+#: ../../../templates/descriptormodeltyperename.html:27
+#: ../../../templates/descriptorpanelchangelabel.html:35
+#: ../../../templates/descriptorpanelcreate.html:27
+#: ../../../templates/descriptorvaluechangefield.html:27
+#: ../../../templates/descriptorvaluechangefieldmultiple.html:35
 msgid "Apply"
 msgstr ""
 
 #: ../../../templates/descriptorgrouplist.html:15
-#: ../../../templates/descriptorgrouprename.html:10
+#: ../../../templates/descriptorgrouprename.html:20
 #: ../../../templates/descriptormetamodellist.html:16
 #: ../../../templates/descriptormodellist.html:15
 #: ../../../templates/descriptormodellistalt.html:14
 #: ../../../templates/descriptormodeltypelist.html:16
-#: ../../../templates/descriptormodeltyperename.html:10
+#: ../../../templates/descriptormodeltyperename.html:20
 #: ../../../templates/descriptortypelist.html:15
 msgid "Name"
 msgstr ""
 
 #: ../../../templates/descriptorgrouplist.html:16
 #: ../../../templates/descriptorgrouplistalt.html:15
-msgid "Types of descriptor"
+#: ../../../templates/descriptormodellist.html:17
+#: ../../../templates/descriptormodellistalt.html:16
+msgid "Types"
 msgstr ""
 
 #: ../../../templates/descriptorgrouplistalt.html:14
 msgid "Group of descriptors"
 msgstr ""
 
-#: ../../../templates/descriptorgrouprename.html:5
+#: ../../../templates/descriptorgrouprename.html:15
 msgid "Rename the group of descriptors"
 msgstr ""
 
-#: ../../../templates/descriptormetamodelchangelabel.html:5
+#: ../../../templates/descriptormetamodelchangelabel.html:15
 msgid "Change the label for the meta-model of descriptor"
 msgstr ""
 
-#: ../../../templates/descriptormetamodelcreate.html:5
+#: ../../../templates/descriptormetamodelcreate.html:15
 msgid "Create a meta-model of descriptor"
 msgstr ""
 
-#: ../../../templates/descriptormetamodelcreate.html:10
+#: ../../../templates/descriptormetamodelcreate.html:20
 msgid "Target entity"
 msgstr ""
 
-#: ../../../templates/descriptormetamodelcreate.html:15
-#: ../../../templates/descriptormodeltypecreate.html:14
-#: ../../../templates/descriptorpanelcreate.html:10
+#: ../../../templates/descriptormetamodelcreate.html:25
+#: ../../../templates/descriptormodeltypecreate.html:24
+#: ../../../templates/descriptorpanelcreate.html:20
 msgid "Label for the current language"
 msgstr ""
 
-#: ../../../templates/descriptormetamodelcreate.html:19
+#: ../../../templates/descriptormetamodelcreate.html:29
 #: ../../../templates/descriptormetamodeldetail.html:17
 #: ../../../templates/descriptormetamodellist.html:20
 #: ../../../templates/descriptormodeldetail.html:21
-#: ../../../templates/descriptormodellist.html:18
-#: ../../../templates/descriptormodellistalt.html:17
 #: ../../../templates/descriptortypedetailslayout.html:40
-#: ../../../templates/descriptortypelist.html:18
-#: ../../../templates/descriptortypelistalt.html:17
 msgid "Description"
 msgstr ""
 
@@ -733,7 +733,7 @@ msgid "Label"
 msgstr ""
 
 #: ../../../templates/descriptormetamodellist.html:18
-#: ../../../templates/descriptormodeltypecondition.html:10
+#: ../../../templates/descriptormodeltypecondition.html:20
 msgid "Target"
 msgstr ""
 
@@ -751,48 +751,64 @@ msgstr ""
 msgid "Verbose name"
 msgstr ""
 
-#: ../../../templates/descriptormodellist.html:17
-#: ../../../templates/descriptormodellistalt.html:16
-msgid "Types"
+#: ../../../templates/descriptormodeltypechangeindex.html:15
+msgid "Change the index type for the meta-model of descriptor"
 msgstr ""
 
-#: ../../../templates/descriptormodeltypechangelabel.html:5
+#: ../../../templates/descriptormodeltypechangeindex.html:20
+msgid "Type of index or none"
+msgstr ""
+
+#: ../../../templates/descriptormodeltypechangeindex.html:22
+msgid "None"
+msgstr ""
+
+#: ../../../templates/descriptormodeltypechangeindex.html:23
+msgid "Unique BTREE"
+msgstr ""
+
+#: ../../../templates/descriptormodeltypechangeindex.html:24
+msgid "BTREE"
+msgstr ""
+
+#: ../../../templates/descriptormodeltypechangeindex.html:25
+msgid "GIN"
+msgstr ""
+
+#: ../../../templates/descriptormodeltypechangeindex.html:26
+msgid "GIST"
+msgstr ""
+
+#: ../../../templates/descriptormodeltypechangelabel.html:15
 msgid "Change the label for the type of model of descriptor"
 msgstr ""
 
-#: ../../../templates/descriptormodeltypecondition.html:5
+#: ../../../templates/descriptormodeltypecondition.html:15
 msgid "Condition of the type of model of descriptor"
 msgstr ""
 
-#: ../../../templates/descriptormodeltypecondition.html:21
+#: ../../../templates/descriptormodeltypecondition.html:31
 msgid "Condition"
 msgstr ""
 
-#: ../../../templates/descriptormodeltypecondition.html:29
+#: ../../../templates/descriptormodeltypecondition.html:39
 msgid "Remove condition"
 msgstr ""
 
-#: ../../../templates/descriptormodeltypecreate.html:5
+#: ../../../templates/descriptormodeltypecreate.html:15
 msgid "Add a type of model of descriptor"
 msgstr ""
 
-#: ../../../templates/descriptormodeltypecreate.html:10
+#: ../../../templates/descriptormodeltypecreate.html:20
 msgid "Unique name"
 msgstr ""
 
 #: ../../../templates/descriptormodeltypelist.html:15
-#: ../../../templates/descriptortypelist.html:16
-#: ../../../templates/descriptortypelistalt.html:15
-#: ../../../templates/descriptorvaluelist.html:18
-#: ../../../templates/descriptorvalueordinallist.html:18
-#: ../../../templates/descriptorvaluepairlist.html:18
-#: ../../../templates/widgets/enumordinal.html:38
-#: ../../../templates/widgets/enumpair.html:36
-#: ../../../templates/widgets/enumsingle.html:26
-msgid "Code"
+#: ../../../templates/descriptortypelistalt.html:14
+msgid "Type"
 msgstr ""
 
-#: ../../../templates/descriptormodeltyperename.html:5
+#: ../../../templates/descriptormodeltyperename.html:15
 msgid "Rename the type of model of descriptors"
 msgstr ""
 
@@ -800,11 +816,11 @@ msgstr ""
 msgid "Undefined label"
 msgstr ""
 
-#: ../../../templates/descriptorpanelchangelabel.html:5
+#: ../../../templates/descriptorpanelchangelabel.html:15
 msgid "Change the label for the panel of descriptor"
 msgstr ""
 
-#: ../../../templates/descriptorpanelcreate.html:5
+#: ../../../templates/descriptorpanelcreate.html:15
 msgid "Create a panel of descriptor"
 msgstr ""
 
@@ -824,115 +840,122 @@ msgstr ""
 msgid "Type of format"
 msgstr ""
 
+#: ../../../templates/descriptortypelist.html:16
+#: ../../../templates/descriptortypelistalt.html:15
+#: ../../../templates/descriptorvaluelist.html:18
+#: ../../../templates/descriptorvalueordinallist.html:18
+#: ../../../templates/descriptorvaluepairlist.html:18
+#: ../../../templates/widgets/enumordinal.html:48
+#: ../../../templates/widgets/enumpair.html:46
+#: ../../../templates/widgets/enumsingle.html:36
+msgid "Code"
+msgstr ""
+
 #: ../../../templates/descriptortypelist.html:17
 #: ../../../templates/descriptortypelistalt.html:16
 msgid "Values"
 msgstr ""
 
-#: ../../../templates/descriptortypelistalt.html:14
-msgid "Type"
-msgstr ""
-
-#: ../../../templates/descriptorvaluechangefield.html:5
-#: ../../../templates/descriptorvaluechangefieldmultiple.html:5
+#: ../../../templates/descriptorvaluechangefield.html:15
+#: ../../../templates/descriptorvaluechangefieldmultiple.html:15
 msgid "Change the value of a field for a type of descriptor"
 msgstr ""
 
-#: ../../../templates/descriptorvaluechangefield.html:10
+#: ../../../templates/descriptorvaluechangefield.html:20
 msgid "Value for any languages"
 msgstr ""
 
-#: ../../../templates/descriptorvaluelist.html:22
-#: ../../../templates/descriptorvalueordinallist.html:27
-#: ../../../templates/descriptorvaluepairlist.html:22
-#: ../../../templates/widgets/enumordinal.html:40
-#: ../../../templates/widgets/enumordinal.html:48
-#: ../../../templates/widgets/enumordinal.html:70
-#: ../../../templates/widgets/enumpair.html:37
-#: ../../../templates/widgets/enumpair.html:52
-#: ../../../templates/widgets/enumpair.html:76
-#: ../../../templates/widgets/enumsingle.html:27
+#: ../../../templates/descriptorvaluelist.html:21
+#: ../../../templates/descriptorvalueordinallist.html:24
+#: ../../../templates/descriptorvaluepairlist.html:21
+#: ../../../templates/widgets/enumordinal.html:50
+#: ../../../templates/widgets/enumordinal.html:58
+#: ../../../templates/widgets/enumordinal.html:80
+#: ../../../templates/widgets/enumpair.html:47
+#: ../../../templates/widgets/enumpair.html:62
+#: ../../../templates/widgets/enumpair.html:86
+#: ../../../templates/widgets/enumsingle.html:37
 msgid "Value0"
 msgstr ""
 
-#: ../../../templates/descriptorvaluepairlist.html:27
-#: ../../../templates/widgets/enumpair.html:38
-#: ../../../templates/widgets/enumpair.html:53
-#: ../../../templates/widgets/enumpair.html:77
+#: ../../../templates/descriptorvaluepairlist.html:24
+#: ../../../templates/widgets/enumpair.html:48
+#: ../../../templates/widgets/enumpair.html:63
+#: ../../../templates/widgets/enumpair.html:87
 msgid "Value1"
 msgstr ""
 
-#: ../../../templates/widgets/entity.html:2
+#: ../../../templates/widgets/entity.html:12
 msgid "Model of the entity"
 msgstr ""
 
-#: ../../../templates/widgets/enumordinal.html:5
-#: ../../../templates/widgets/enumpair.html:5
-#: ../../../templates/widgets/enumsingle.html:5
+#: ../../../templates/widgets/enumordinal.html:15
+#: ../../../templates/widgets/enumpair.html:15
+#: ../../../templates/widgets/enumsingle.html:15
 msgid "Translation"
 msgstr ""
 
-#: ../../../templates/widgets/enumordinal.html:14
-#: ../../../templates/widgets/enumpair.html:18
-#: ../../../templates/widgets/enumsingle.html:14
+#: ../../../templates/widgets/enumordinal.html:24
+#: ../../../templates/widgets/enumpair.html:28
+#: ../../../templates/widgets/enumsingle.html:24
 msgid "Field name (value0)"
 msgstr ""
 
-#: ../../../templates/widgets/enumordinal.html:23
-#: ../../../templates/widgets/numericrange.html:35
-#: ../../../templates/widgets/ordinal.html:20
+#: ../../../templates/widgets/enumordinal.html:33
+#: ../../../templates/widgets/numericrange.html:45
+#: ../../../templates/widgets/ordinal.html:30
 msgid "Minimal range value"
 msgstr ""
 
-#: ../../../templates/widgets/enumordinal.html:27
-#: ../../../templates/widgets/numericrange.html:39
-#: ../../../templates/widgets/ordinal.html:24
+#: ../../../templates/widgets/enumordinal.html:37
+#: ../../../templates/widgets/numericrange.html:49
+#: ../../../templates/widgets/ordinal.html:34
 msgid "Maximal range value"
-msgstr ""
-
-#: ../../../templates/widgets/enumordinal.html:36
-#: ../../../templates/widgets/enumpair.html:34
-#: ../../../templates/widgets/enumsingle.html:24
-msgid "Sort by field"
 msgstr ""
 
 #: ../../../templates/widgets/enumordinal.html:46
 #: ../../../templates/widgets/enumpair.html:44
+#: ../../../templates/widgets/enumsingle.html:34
+msgid "Sort by field"
+msgstr ""
+
+#: ../../../templates/widgets/enumordinal.html:56
+#: ../../../templates/widgets/enumpair.html:54
 msgid "Displayed fields"
 msgstr ""
 
-#: ../../../templates/widgets/enumordinal.html:49
+#: ../../../templates/widgets/enumordinal.html:59
 msgid "Ordinal - Value0"
 msgstr ""
 
-#: ../../../templates/widgets/enumordinal.html:59
-#: ../../../templates/widgets/enumpair.html:65
-#: ../../../templates/widgets/enumsingle.html:33
+#: ../../../templates/widgets/enumordinal.html:69
+#: ../../../templates/widgets/enumpair.html:75
+#: ../../../templates/widgets/enumsingle.html:43
 msgid "Display the list as"
 msgstr ""
 
-#: ../../../templates/widgets/enumordinal.html:61
-#: ../../../templates/widgets/enumpair.html:67
-#: ../../../templates/widgets/enumsingle.html:35
+#: ../../../templates/widgets/enumordinal.html:71
+#: ../../../templates/widgets/enumpair.html:77
+#: ../../../templates/widgets/enumsingle.html:45
 msgid "Dropdown (limit of 256 values)"
 msgstr ""
 
-#: ../../../templates/widgets/enumordinal.html:62
-#: ../../../templates/widgets/enumpair.html:68
-#: ../../../templates/widgets/enumsingle.html:36
+#: ../../../templates/widgets/enumordinal.html:72
+#: ../../../templates/widgets/enumpair.html:78
+#: ../../../templates/widgets/enumsingle.html:46
 msgid "Autocomplete (big list)"
 msgstr ""
 
-#: ../../../templates/widgets/enumordinal.html:68
-#: ../../../templates/widgets/enumpair.html:74
+#: ../../../templates/widgets/enumordinal.html:78
+#: ../../../templates/widgets/enumpair.html:84
 msgid "Autocomplete search field"
 msgstr ""
 
-#: ../../../templates/widgets/enumpair.html:24
+#: ../../../templates/widgets/enumpair.html:34
 msgid "Field name (value1)"
 msgstr ""
 
-#: ../../../templates/widgets/enumpair.html:47
+#: ../../../templates/widgets/enumpair.html:57
 msgid ""
 "Controls how is displayed the field. Hierarchy mode is a special usage for "
 "pseudo hierarchy, for which values are roughly shifted to give an illusion "
@@ -941,31 +964,31 @@ msgid ""
 "or 2 or 1.1, 1.2, 1.1.1..."
 msgstr ""
 
-#: ../../../templates/widgets/enumpair.html:54
+#: ../../../templates/widgets/enumpair.html:64
 msgid "Value0 - Value1"
 msgstr ""
 
-#: ../../../templates/widgets/enumpair.html:55
+#: ../../../templates/widgets/enumpair.html:65
 msgid "Hierarchy of Value1"
 msgstr ""
 
-#: ../../../templates/widgets/numeric.html:5
-#: ../../../templates/widgets/numericrange.html:5
-#: ../../../templates/widgets/ordinal.html:5
+#: ../../../templates/widgets/numeric.html:15
+#: ../../../templates/widgets/numericrange.html:15
+#: ../../../templates/widgets/ordinal.html:15
 msgid "Unit of the format"
 msgstr ""
 
-#: ../../../templates/widgets/numeric.html:11
-#: ../../../templates/widgets/numericrange.html:11
-#: ../../../templates/widgets/ordinal.html:11
+#: ../../../templates/widgets/numeric.html:21
+#: ../../../templates/widgets/numericrange.html:21
+#: ../../../templates/widgets/ordinal.html:21
 msgid "Custom unit name"
 msgstr ""
 
-#: ../../../templates/widgets/numeric.html:18
-#: ../../../templates/widgets/numericrange.html:18
+#: ../../../templates/widgets/numeric.html:28
+#: ../../../templates/widgets/numericrange.html:28
 msgid "Precision of the decimal"
 msgstr ""
 
-#: ../../../templates/widgets/string.html:2
+#: ../../../templates/widgets/string.html:12
 msgid "Regular expression"
 msgstr ""

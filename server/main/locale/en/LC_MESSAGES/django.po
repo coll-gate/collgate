@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-04-14 09:38+0200\n"
+"POT-Creation-Date: 2017-05-10 10:57+0200\n"
 "PO-Revision-Date: 2016-02-01 11:53+0100\n"
 "Last-Translator: Frederic SCHERMA <frederic.scherma@clermont.inra.fr>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,128 +18,128 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: apps.py:46
+#: apps.py:52
 #, fuzzy
 #| msgid "Edit information"
 msgid "Administration"
 msgstr "Edit information"
 
-#: apps.py:50
+#: apps.py:56
 msgid "Server configuration"
 msgstr ""
 
-#: apps.py:56
+#: apps.py:62
 msgid "Help"
 msgstr ""
 
-#: apps.py:58
+#: apps.py:64
 msgid "Manual index"
 msgstr ""
 
-#: apps.py:61
+#: apps.py:67
 msgid "About Coll-Gate IS..."
 msgstr ""
 
-#: eventmessage.py:94
+#: eventmessage.py:100
 msgid "You are not allowed to delete an event message"
 msgstr ""
 
-#: eventmessage.py:109
+#: eventmessage.py:115
 msgid "You are not allowed to create an event message"
 msgstr ""
 
-#: eventmessage.py:121
+#: eventmessage.py:127
 msgid "Unsupported language identifier"
 msgstr ""
 
-#: home.py:43
+#: home.py:49
 msgid "You are not authenticated."
 msgstr ""
 
-#: home.py:53
+#: home.py:59
 msgid "Please, you must enable your cookies."
 msgstr ""
 
-#: models.py:57
+#: models.py:63
 msgid "Latin"
 msgstr ""
 
-#: models.py:58 models.py:67
+#: models.py:64 models.py:73
 msgid "English"
 msgstr ""
 
-#: models.py:59 models.py:68
+#: models.py:65 models.py:74
 msgid "French"
 msgstr ""
 
-#: models.py:76
+#: models.py:82
 msgid "Pending"
 msgstr ""
 
-#: models.py:77
+#: models.py:83
 msgid "Valid"
 msgstr ""
 
-#: models.py:78
+#: models.py:84
 msgid "Archived"
 msgstr ""
 
-#: models.py:79
+#: models.py:85
 msgid "Removed"
 msgstr ""
 
-#: models.py:241
+#: models.py:247
 msgid ""
 "It is not allowed to change the status of an entity from valid to pending"
 msgstr ""
 
-#: models.py:244
+#: models.py:250
 msgid "It is not allowed to change the status of a removed entity"
 msgstr ""
 
-#: models.py:247
+#: models.py:253
 msgid "It is not allowed to change the status of an archived entity"
 msgstr ""
 
-#: profile.py:71
+#: profile.py:77
 msgid ""
 "Your account is pending for activation. Please be patient or contact an "
 "administrator."
 msgstr ""
 
-#: profile.py:76
+#: profile.py:82
 msgid "Successfully logged"
 msgstr ""
 
-#: profile.py:83
+#: profile.py:89
 msgid ""
 "Your account is closed. Please contact an administrator to re-activate it."
 msgstr ""
 
-#: profile.py:86
+#: profile.py:92
 msgid "Invalid username or password"
 msgstr ""
 
-#: profile.py:99
+#: profile.py:105
 msgid "Logged out"
 msgstr ""
 
-#: templates/main/index.html:71
+#: templates/main/index.html:83
 msgid "Username"
 msgstr ""
 
-#: templates/main/index.html:74
+#: templates/main/index.html:86
 msgid "Password"
 msgstr ""
 
-#: templates/main/index.html:76
+#: templates/main/index.html:88
 msgid "Sign in"
 msgstr ""
 
-#: templates/main/index.html:91
+#: templates/main/index.html:103
 msgid "Edit information"
 msgstr "Edit information"
 
-#: templates/main/index.html:97
+#: templates/main/index.html:109
 msgid "Logout"
 msgstr "Logout"

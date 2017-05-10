@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-04-13 14:18+0200\n"
+"POT-Creation-Date: 2017-05-10 10:55+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,12 +17,17 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+#: ../../../views/accessionbatchescontext.js:21
+#: ../../../templates/batchcreate.html:15
+msgid "Introduce a batch"
+msgstr ""
+
 #: ../../../views/accessiondescriptor.js:26
 #: ../../../views/accessiondescriptoredit.js:76
 #: ../../../views/batchdescriptor.js:26
 #: ../../../views/batchdescriptoredit.js:75
-#: ../../../templates/accessionlayout.html:6
-#: ../../../templates/batchlayout.html:5
+#: ../../../templates/accessionlayout.html:16
+#: ../../../templates/batchlayout.html:15
 msgid "Descriptors"
 msgstr ""
 
@@ -44,7 +49,8 @@ msgstr ""
 #: ../../../views/accessionlistfooter.js:53
 #: ../../../views/accessionsynonyms.js:60
 #: ../../../views/accessionsynonyms.js:223 ../../../views/batchbottom.js:57
-#: ../../../controllers/accession.js:189 ../../../controllers/accession.js:203
+#: ../../../views/batchlist.js:194 ../../../controllers/accession.js:189
+#: ../../../controllers/accession.js:203
 msgid "3 characters min"
 msgstr ""
 
@@ -71,20 +77,34 @@ msgstr ""
 msgid "Invalid characters (alphanumeric, _ and - only)"
 msgstr ""
 
+#: ../../../views/batchlist.js:74
+msgid "Batches actions"
+msgstr ""
+
+#: ../../../views/batchlist.js:176
+msgid "Batch name already in usage"
+msgstr ""
+
+#: ../../../views/batchlist.js:191 ../../../controllers/accession.js:186
+#: ../../../controllers/accession.js:200
+msgid "128 characters max"
+msgstr ""
+
+#: ../../../views/batchlist.js:231 ../../../routers/batch.js:55
+msgid "Batch"
+msgstr ""
+
 #: ../../../routers/accession.js:35
 msgid "List of accessions"
 msgstr ""
 
-#: ../../../routers/accession.js:61 ../../../controllers/accession.js:256
+#: ../../../routers/accession.js:63 ../../../controllers/accession.js:256
+#: ../../../templates/batchcreate.html:30
 msgid "Accession"
 msgstr ""
 
 #: ../../../routers/batch.js:34
 msgid "List of batches for the accession"
-msgstr ""
-
-#: ../../../routers/batch.js:53
-msgid "Batch"
 msgstr ""
 
 #: ../../../controllers/accession.js:105
@@ -99,89 +119,91 @@ msgstr ""
 msgid "Synonym used as accession code"
 msgstr ""
 
-#: ../../../controllers/accession.js:186 ../../../controllers/accession.js:200
-msgid "128 characters max"
-msgstr ""
-
 #: ../../../controllers/accession.js:219
 msgid "The parent must be defined"
 msgstr ""
 
-#: ../../../templates/accessionchangesynonym.html:5
+#: ../../../templates/accessionchangesynonym.html:15
 msgid "Rename a synonym of accession"
 msgstr ""
 
-#: ../../../templates/accessionchangesynonym.html:10
-#: ../../../templates/accessionlist.html:11
-#: ../../../templates/accessionsynonyms.html:6
-#: ../../../templates/batchlist.html:5
+#: ../../../templates/accessionchangesynonym.html:20
+#: ../../../templates/accessionlist.html:23
+#: ../../../templates/accessionsynonyms.html:16
+#: ../../../templates/batchlist.html:15
 msgid "Name"
 msgstr ""
 
-#: ../../../templates/accessionchangesynonym.html:16
-#: ../../../templates/accessioncreate.html:44
+#: ../../../templates/accessionchangesynonym.html:26
+#: ../../../templates/accessioncreate.html:54
+#: ../../../templates/batchcreate.html:46
 msgid "Cancel"
 msgstr ""
 
-#: ../../../templates/accessionchangesynonym.html:17
+#: ../../../templates/accessionchangesynonym.html:27
 msgid "Apply"
 msgstr ""
 
-#: ../../../templates/accessioncreate.html:5
+#: ../../../templates/accessioncreate.html:15
 msgid "Create an accession"
 msgstr ""
 
-#: ../../../templates/accessioncreate.html:10
+#: ../../../templates/accessioncreate.html:20
+#: ../../../templates/batchcreate.html:20
 msgid "Template"
 msgstr ""
 
-#: ../../../templates/accessioncreate.html:20
+#: ../../../templates/accessioncreate.html:30
 msgid "Code of the accession (must be unique)"
 msgstr ""
 
-#: ../../../templates/accessioncreate.html:26
+#: ../../../templates/accessioncreate.html:36
 msgid "Principal name of the accession"
 msgstr ""
 
-#: ../../../templates/accessioncreate.html:32
-#: ../../../templates/accessionsynonyms.html:7
+#: ../../../templates/accessioncreate.html:42
+#: ../../../templates/accessionsynonyms.html:17
 msgid "Language"
 msgstr ""
 
-#: ../../../templates/accessioncreate.html:38
+#: ../../../templates/accessioncreate.html:48
 msgid "Taxon (specie, variety...)"
 msgstr ""
 
-#: ../../../templates/accessioncreate.html:45
+#: ../../../templates/accessioncreate.html:55
+#: ../../../templates/batchcreate.html:47
 msgid "Continue"
 msgstr ""
 
-#: ../../../templates/accessionlayout.html:5
+#: ../../../templates/accessionlayout.html:15
 msgid "Synonyms"
 msgstr ""
 
-#: ../../../templates/accessionlayout.html:7
-#: ../../../templates/batchlayout.html:7
+#: ../../../templates/accessionlayout.html:17
+#: ../../../templates/batchlayout.html:17
 msgid "Batches"
 msgstr ""
 
-#: ../../../templates/accessionlayout.html:8
-#: ../../../templates/batchlayout.html:8
-msgid "Actions"
-msgstr ""
-
-#: ../../../templates/accessionlist.html:8
+#: ../../../templates/accessionlist.html:19
 msgid "Code"
 msgstr ""
 
-#: ../../../templates/accessionlist.html:14
+#: ../../../templates/accessionlist.html:27
 msgid "Parent"
 msgstr ""
 
-#: ../../../templates/accessionsynonyms.html:5
+#: ../../../templates/accessionsynonyms.html:15
 msgid "Type"
 msgstr ""
 
-#: ../../../templates/batchlayout.html:6
+#: ../../../templates/batchcreate.html:38
+msgid "Name of the batch"
+msgstr ""
+
+#: ../../../templates/batchlayout.html:16
 msgid "Parents"
+msgstr ""
+
+#: ../../../templates/batchlayout.html:18
+msgid "Actions"
 msgstr ""

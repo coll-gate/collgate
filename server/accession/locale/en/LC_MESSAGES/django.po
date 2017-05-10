@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-04-14 09:38+0200\n"
+"POT-Creation-Date: 2017-05-10 10:57+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,226 +17,226 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: accession.py:56
+#: accession.py:58
 msgid "You are not allowed to create an accession"
 msgstr ""
 
-#: accession.py:69
+#: accession.py:71
 msgid "The code of the accession is already used as a synonym name"
 msgstr ""
 
-#: accession.py:73
+#: accession.py:75
 msgid "The code of the accession is already used"
 msgstr ""
 
-#: accession.py:76
+#: accession.py:78
 msgid "The language is not supported"
 msgstr ""
 
-#: accession.py:152
+#: accession.py:154
 msgid "You are not allowed to list the accessions"
 msgstr ""
 
-#: accession.py:241 accessionbatch.py:33 accessionbatch.py:94 batch.py:211
-#: batch.py:275
+#: accession.py:243 accessionbatch.py:39 accessionbatch.py:100 batch.py:219
+#: batch.py:283 batch.py:347
 msgid "You are not allowed to get an accession"
 msgstr ""
 
-#: accession.py:253 accessionbatch.py:47 accessionbatch.py:113 batch.py:228
-#: batch.py:292
+#: accession.py:255 accessionbatch.py:53 accessionbatch.py:119 batch.py:236
+#: batch.py:300
 msgid "Invalid permission to access to this accession"
 msgstr ""
 
-#: accession.py:277
+#: accession.py:279
 msgid "You are not allowed to search accessions"
 msgstr ""
 
-#: accession.py:379 accessionsynonym.py:155 accessionsynonym.py:217
-#: accessionsynonym.py:277
+#: accession.py:381 accessionsynonym.py:161 accessionsynonym.py:223
+#: accessionsynonym.py:283
 msgid "You are not allowed to modify an accession"
 msgstr ""
 
-#: accession.py:428
+#: accession.py:430
 msgid "You are not allowed to delete an accession"
 msgstr ""
 
-#: accessionbatch.py:34 accessionbatch.py:95 batch.py:212
+#: accessionbatch.py:40 accessionbatch.py:101 batch.py:220
 msgid "You are not allowed to list batches for an accession"
 msgstr ""
 
-#: accessionsynonym.py:156
+#: accessionsynonym.py:162
 msgid "You are not allowed to add a synonym of accession"
 msgstr ""
 
-#: accessionsynonym.py:170
+#: accessionsynonym.py:176
 msgid "Unsupported type of synonym"
 msgstr ""
 
-#: accessionsynonym.py:173
+#: accessionsynonym.py:179
 msgid "An accession cannot have more than one GRC code"
 msgstr ""
 
-#: accessionsynonym.py:176
+#: accessionsynonym.py:182
 msgid "An accession cannot have more than one primary name"
 msgstr ""
 
-#: accessionsynonym.py:184
+#: accessionsynonym.py:190
 msgid "The GRC code name of the accession could not be used as synonym"
 msgstr ""
 
-#: accessionsynonym.py:188
+#: accessionsynonym.py:194
 msgid "Synonym already used as a primary name"
 msgstr ""
 
-#: accessionsynonym.py:192 accessionsynonym.py:245
+#: accessionsynonym.py:198 accessionsynonym.py:251
 msgid "Synonym already used into this accession"
 msgstr ""
 
-#: accessionsynonym.py:218
+#: accessionsynonym.py:224
 msgid "You are not allowed to modify a synonym of accession"
 msgstr ""
 
-#: accessionsynonym.py:237
+#: accessionsynonym.py:243
 msgid ""
 "The GRC code of accession could not be used by another synonym of accession"
 msgstr ""
 
-#: accessionsynonym.py:241
+#: accessionsynonym.py:247
 msgid "Synonym already used as a GRC code of accession"
 msgstr ""
 
-#: accessionsynonym.py:269
+#: accessionsynonym.py:275
 msgid "Unable to rename a synonym of an accession"
 msgstr ""
 
-#: accessionsynonym.py:278
+#: accessionsynonym.py:284
 msgid "You are not allowed to delete a synonym of accession"
 msgstr ""
 
-#: accessionsynonym.py:286
+#: accessionsynonym.py:292
 msgid "It is not possible to remove a GRC code name"
 msgstr ""
 
-#: accessionsynonym.py:289
+#: accessionsynonym.py:295
 msgid "It is not possible to remove a primary name"
 msgstr ""
 
-#: apps.py:60
+#: apps.py:66
 msgid "Accession"
 msgstr ""
 
-#: apps.py:63
+#: apps.py:69
 msgid "Create accession"
 msgstr ""
 
-#: apps.py:66
-msgid "Create batch"
-msgstr ""
-
-#: apps.py:71
+#: apps.py:74
 msgid "List accessions"
 msgstr ""
 
-#: apps.py:75
+#: apps.py:78
 msgid "Search accessions"
 msgstr ""
 
-#: batch.py:64
+#: batch.py:70
 msgid "Invalid permission to access to this batch"
 msgstr ""
 
-#: batch.py:86
+#: batch.py:92
 msgid "You are not allowed to create a batch"
 msgstr ""
 
-#: batch.py:98
+#: batch.py:104
 msgid "The name of the batch is already used"
 msgstr ""
 
-#: batch.py:128
+#: batch.py:134
 msgid "Unable to create the batch"
 msgstr ""
 
-#: batch.py:150
+#: batch.py:156
 msgid "You are not allowed to modify a batch"
 msgstr ""
 
-#: batch.py:162
+#: batch.py:168
 msgid "Invalid permission to modify this accession"
 msgstr ""
 
-#: batch.py:194
+#: batch.py:200
 msgid "Unable to update the batch"
 msgstr ""
 
-#: batch.py:200
+#: batch.py:206
 msgid "You are not allowed to delete a batch"
 msgstr ""
 
-#: batch.py:276
+#: batch.py:284
 msgid "You are not allowed to list parent batches for a batch"
 msgstr ""
 
-#: controller.py:47
-msgid "Empty synonym data"
-msgstr ""
-
-#: controller.py:50
-msgid "Undefined synonym name or primary synonym"
+#: batch.py:348
+msgid "You are not allowed to search batches"
 msgstr ""
 
 #: controller.py:53
+msgid "Empty synonym data"
+msgstr ""
+
+#: controller.py:56
+msgid "Undefined synonym name or primary synonym"
+msgstr ""
+
+#: controller.py:59
 msgid "Undefined synonym language"
 msgstr ""
 
-#: models.py:34
+#: models.py:40
 msgid "panel"
 msgstr ""
 
-#: models.py:59
+#: models.py:65
 msgid "accession"
 msgstr ""
 
-#: models.py:156
+#: models.py:162
 msgid "accession synonym"
 msgstr ""
 
-#: models.py:243
+#: models.py:249
 msgid "batch"
 msgstr ""
 
-#: models.py:307
+#: models.py:313
 msgid "sample"
 msgstr ""
 
-#: models.py:355
+#: models.py:361
 msgid "Introduction"
 msgstr ""
 
-#: models.py:356
+#: models.py:362
 msgid "Multiplication"
 msgstr ""
 
-#: models.py:357
+#: models.py:363
 msgid "Regeneration"
 msgstr ""
 
-#: models.py:358
+#: models.py:364
 msgid "Test"
 msgstr ""
 
-#: models.py:359
+#: models.py:365
 msgid "Clean-up"
 msgstr ""
 
-#: models.py:360
+#: models.py:366
 msgid "Sample"
 msgstr ""
 
-#: models.py:361
+#: models.py:367
 msgid "Dispatch"
 msgstr ""
 
-#: models.py:362
+#: models.py:368
 msgid "Elimination"
 msgstr ""
