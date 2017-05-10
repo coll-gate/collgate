@@ -1,16 +1,12 @@
 # -*- coding: utf-8; -*-
 #
 # @file development.py
-# @brief 
+# @brief Development specific settings.
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2016-09-01
 # @copyright Copyright (c) 2016 INRA/CIRAD
 # @license MIT (see LICENSE file)
 # @details 
-
-"""
-Specific development settings.
-"""
 
 import os
 
@@ -184,4 +180,3 @@ GEONAMES_COUNTRY_SOURCES = ['/home/mboulnemour/collgate/collgate/server/geonames
 #         'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
 #     }
 # }
-

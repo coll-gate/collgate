@@ -1,16 +1,12 @@
 # -*- coding: utf-8; -*-
 #
 # @file __init__.py
-# @brief Application init
+# @brief coll-gate project init
 # @authors Frédéric SCHERMA (INRA UMR1095)
 # @date 2016-01-22
 # @copyright Copyright (c) 2016 INRA/CIRAD
 # @license MIT (see LICENSE file)
 # @details
-
-"""
-coll-gate project init
-"""
 
 __title__ = "INRA Coll-Gate"
 __copyright__ = "Copyright (c) 2016 INRA/CIRAD"
