@@ -295,20 +295,15 @@ div.config-value-box {
 }
 
 div.advanced-table-container {
-    height: calc(100% - 35px);
+    height: 100%;
     overflow-y: auto;
-    margin-top: 35px;
-    border-top: 1px solid #ddd;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 .table.table-advanced {
     margin-bottom: 0px;
-}
-
-div.table-container {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
 }
 
 .table.table-advanced thead {
@@ -319,63 +314,30 @@ div.table-container {
 }
 
 .table.table-advanced thead tr th {
-    height: 0px;
-    line-height: 0px;
-    padding-top: 0px;
-    padding-bottom: 0px;
-    background-color: white;
-    border: none;
     white-space: nowrap;  /* single line */
-}
-
-.table.table-advanced thead tr th div.table-advanced-header {
-    position: relative;
-    display: table-row-group;
-}
-
-@-moz-document url-prefix() {
-    .table.table-advanced thead tr th {
-        position: relative;
-    }
-
-    .table.table-advanced thead tr th div.table-advanced-header {
-        position: fixed;
-        display: initial;
-    }
-}
-
-.table.table-advanced thead tr th div.table-advanced-header div.table-advanced-label {
-    /*width: 0px;  !* starts with 0 width to avoid initialization artifacts *!*/
-    display: block;
-    position: absolute;
+    border: none;
     height: 32px;
-    margin-left: -17px;
-    margin-top: -32px;
+}
+
+div.table-advanced-head {
+    flex: 0 1 auto;
+    border-bottom: 1px solid #ddd;
+}
+
+div.table-advanced-body {
+    overflow: auto;
+    flex: 1 1 auto;
+}
+
+.table.table-advanced thead tr th div.table-advanced-label {
     background: transparent;
     line-height: normal;
     border: none;
-    /*border-left: 1px solid #ddd;*/
+    position: absolute;
     overflow: hidden;
     text-overflow: ellipsis;  /* longest lines */
-    padding: 8px 0px 8px 17px;
+    margin-top: -16px;
 }
-
-/*.table.table-advanced thead tr th div {*/
-    /*width: 0px;  !* starts with 0 width to avoid initialization artifacts *!*/
-    /*position: absolute;*/
-    /*height: 32px;*/
-    /*margin-left: -17px;*/
-    /*margin-top: -32px;*/
-    /*background: transparent;*/
-    /*line-height: normal;*/
-    /*border: none;*/
-    /*!*border-left: 1px solid #ddd;*!*/
-    /*overflow: hidden;*/
-    /*text-overflow: ellipsis;  !* longest lines *!*/
-    /*padding: 8px 0px 8px 17px;*/
-    /*!*word-break: break-all;*!*/
-    /*!*white-space: normal;*!*/
-/*}*/
 
 .table.table-advanced thead tr th:first-child div {
     border-left: none;
@@ -387,13 +349,13 @@ div.table-container {
     min-width: 32px;
 }
 
-.table.table-advanced thead tr th:not(:first-child), .table.table-advanced tbody tr td:not(:first-child) {
+/*.table.table-advanced thead tr th:not(:first-child),*/ .table.table-advanced tbody tr td:not(:first-child) {
     border-left: 1px solid #ddd;
     min-width: 32px;
 }
 
 .table.table-advanced tbody tr:first-child th, .table.table-advanced tbody tr:first-child td {
-    border-top: none; /* 1px transparent solid;*/
+    border-top: none;
     min-width: 32px;
 }
 
@@ -422,14 +384,13 @@ span.column-action {
 }
 
 .table.table-advanced thead tr td.glyph-fixed-column div, .table.table-advanced thead tr th.glyph-fixed-column div {
-    width: 32px;
+    width: 20px;
 }
 
-.table.table-advanced thead tr th div div.column-sizer {
+.table.table-advanced thead tr th div.column-sizer {
     height: 32px;
     position: absolute;
-    margin: -8px 0px 0px -15px;
-    width: 15px;
+    margin: -24px 0px 0px -14px;
     background: transparent;
     border-left: none;
     overflow: visible;
@@ -438,18 +399,13 @@ span.column-action {
     padding-top: 0px;
 }
 
-.table.table-advanced thead tr th div div.column-sizer div {
-    height: 100%;
-}
-
-.table.table-advanced thead tr th div div.column-sizer.active {
-    /*background: cornflowerblue;*/  /* debug only */
+.table.table-advanced thead tr th div.column-sizer.active {
+    /*background: cornflowerblue;*/
     cursor: col-resize;
 }
 
-.table.table-advanced thead tr th div div.column-sizer div {
+.table.table-advanced thead tr th div.column-sizer div {
+    height: 100%;
     width: 1px;
-    padding: 0px;
-    margin: 0px;
     background-color: #ddd;
 }
