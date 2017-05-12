@@ -821,7 +821,7 @@ class DescriptorFormatTypeImpreciseDate(DescriptorFormatType):
         self.group = DescriptorFormatTypeGroupSingle()
         self.verbose_name = _("Imprecise date")
 
-    class my_Q(Q):
+    class MyQ(Q):
         def __init__(self, kwargs=None):
             if kwargs is None:
                 kwargs = dict()
@@ -855,8 +855,8 @@ class DescriptorFormatTypeImpreciseDate(DescriptorFormatType):
         if validate_result is not None:
             return validate_result
 
-        return self.my_Q({'descriptors__%s__0__gte' % descriptor_model_type['descriptor_code']: value[0]}) & self.my_Q(
-            {'descriptors__%s__1__gte' % descriptor_model_type['descriptor_code']: value[1]}) & self.my_Q(
+        return self.MyQ({'descriptors__%s__0__gte' % descriptor_model_type['descriptor_code']: value[0]}) & self.MyQ(
+            {'descriptors__%s__1__gte' % descriptor_model_type['descriptor_code']: value[1]}) & self.MyQ(
             {'descriptors__%s__2__gte' % descriptor_model_type['descriptor_code']: value[2]})
 
     def less_than_equal(self, descriptor_type_format, value, descriptor_model_type):
@@ -869,8 +869,8 @@ class DescriptorFormatTypeImpreciseDate(DescriptorFormatType):
         if value[2] is 0:
             value[2] = 31
 
-        return self.my_Q({'descriptors__%s__0__lte' % descriptor_model_type['descriptor_code']: value[0]}) & self.my_Q(
-            {'descriptors__%s__1__lte' % descriptor_model_type['descriptor_code']: value[1]}) & self.my_Q(
+        return self.MyQ({'descriptors__%s__0__lte' % descriptor_model_type['descriptor_code']: value[0]}) & self.MyQ(
+            {'descriptors__%s__1__lte' % descriptor_model_type['descriptor_code']: value[1]}) & self.MyQ(
             {'descriptors__%s__2__lte' % descriptor_model_type['descriptor_code']: value[2]})
 
     def equal(self, descriptor_type_format, value, descriptor_model_type):
@@ -878,9 +878,10 @@ class DescriptorFormatTypeImpreciseDate(DescriptorFormatType):
         if validate_result is not None:
             return validate_result
 
-        return self.my_Q({'descriptors__%s__0' % descriptor_model_type['descriptor_code']: value[0]}) & self.my_Q(
-            {'descriptors__%s__1' % descriptor_model_type['descriptor_code']: value[1]}) & self.my_Q(
+        return self.MyQ({'descriptors__%s__0' % descriptor_model_type['descriptor_code']: value[0]}) & self.MyQ(
+            {'descriptors__%s__1' % descriptor_model_type['descriptor_code']: value[1]}) & self.MyQ(
             {'descriptors__%s__2' % descriptor_model_type['descriptor_code']: value[2]})
+
 
 class DescriptorFormatTypeDateTime(DescriptorFormatType):
     """

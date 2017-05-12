@@ -111,9 +111,9 @@ DESCRIPTORS = {
         },
         '__comment': 'Not necessary to declare a specific descriptor type. Can use a generic type defined in common group.'
     },
-    'creation_date': {
+    'batch_creation_date': {
         'id': None,
-        'name': 'creation_date',
+        'name': 'batch_creation_date',
         'code': 'BATCH_CREATDATE',
         'group': 'BATCH',
         'can_delete': False,
@@ -124,9 +124,9 @@ DESCRIPTORS = {
         },
         '__comment': 'Not necessary to declare a specific descriptor type. Can use a generic type defined in common group.'
     },
-    'destruction_date': {
+    'batch_destruction_date': {
         'id': None,
-        'name': 'destruction_date',
+        'name': 'batch_destruction_date',
         'code': 'BATCH_DESTRDATE',
         'group': 'BATCH',
         'can_delete': False,
@@ -137,6 +137,19 @@ DESCRIPTORS = {
         },
         '__comment': 'Not necessary to declare a specific descriptor type. Can use a generic type defined in common group.'
     },
+    'batch_comment': {
+        'id': None,
+        'name': 'batch_comment',
+        'code': 'BATCH_COMMENT',
+        'group': 'BATCH',
+        'can_delete': False,
+        'can_modify': False,
+        'description': 'Comment',
+        'format': {
+            'type': 'string'
+        },
+        '__comment': 'Not necessary to declare a specific descriptor type. Can use a generic type defined in common group.'
+    }
 }
 
 

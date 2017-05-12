@@ -69,6 +69,7 @@ var Collection = Backbone.Collection.extend({
         {group: 'common', label: gt.gettext('Common')},
         {group: 'grain', label: gt.gettext('Grain')},
         {group: 'meter', label: gt.gettext('Meter')},
+        {group: 'weight', label: gt.gettext('Weight')},
         {group: 'plant_and_plot', label: gt.gettext('Plant and plot')},
         {group: 'quantity_and_volume', label: gt.gettext('Quantity and volume')},
         {group: 'surface', label: gt.gettext('Surface')},
@@ -102,6 +103,9 @@ var Collection = Backbone.Collection.extend({
         {id: 'decimeter', group: 'meter', label: gt.gettext("dm")},
         {id: 'meter', group: 'meter', label: gt.gettext("m")},
         {id: 'kilometer', group: 'meter', label: gt.gettext("km")},
+
+        {id: 'gram', group: 'weight', label: gt.gettext("g")},
+        {id: 'kilogram', group: 'weight', label: gt.gettext("kg")},
 
         {id: 'plant_per_meter', group: 'plant_and_plot', label: gt.gettext("plant/m")},
         {id: 'plant_per_meter2', group: 'plant_and_plot', label: gt.gettext("plant/m²")},

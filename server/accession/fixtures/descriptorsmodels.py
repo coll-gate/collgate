@@ -66,7 +66,7 @@ MODELS = {
             {
                 'id': None,
                 'name': 'BATCH_CREATDATE',
-                'descriptor_type_name': 'creation_date',
+                'descriptor_type_name': 'batch_creation_date',
                 'label': {'en': 'Creation date', 'fr': "Date de création"},
                 'mandatory': False,
                 'set_once': False
@@ -74,8 +74,16 @@ MODELS = {
             {
                 'id': None,
                 'name': 'BATCH_DESTRDATE',
-                'descriptor_type_name': 'destruction_date',
+                'descriptor_type_name': 'batch_destruction_date',
                 'label': {'en': 'Destruction date', 'fr': "Date de destruction"},
+                'mandatory': False,
+                'set_once': False
+            },
+            {
+                'id': None,
+                'name': 'BATCH_COMMENTS',
+                'descriptor_type_name': 'batch_comment',
+                'label': {'en': 'Comment', 'fr': "Commentaire"},
                 'mandatory': False,
                 'set_once': False
             },
