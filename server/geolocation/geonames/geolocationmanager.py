@@ -75,7 +75,8 @@ class GeolocationManager(GeolocationInterface):
         results = []
 
         if data.get('status', False):
-            raise Exception(data.get('status').get('message'))
+            raise Exception("GEONAMES Error: %s, %s" % (
+                data.get('status').get('value'), data.get('status').get('message')))
 
         for city in data.get('geonames'):
 
@@ -473,4 +474,3 @@ class GeolocationManager(GeolocationInterface):
         }
 
         return result
-
