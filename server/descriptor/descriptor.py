@@ -484,9 +484,7 @@ def delete_descriptor_type_for_group(request, grp_id, typ_id):
                 "properties": {
                     "type": {"type": "string", 'minLength': 1, 'maxLength': 32},
                 },
-                "additionalProperties": {
-                    "type": "any"
-                }
+                "additionalProperties": True
             }
         },
     },

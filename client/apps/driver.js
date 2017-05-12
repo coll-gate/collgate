@@ -39,6 +39,8 @@ application = new Marionette.Application({
     // region: '#root',  // @todo Uncomment me after Mn 3 migration and remove the addRegions
 
     initialize: function(options) {
+        this.isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+
         Logger.useDefaults({
             defaultLevel: Logger.WARN,
             formatter: function (messages, context) {

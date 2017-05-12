@@ -18,13 +18,12 @@ var View = ScrollView.extend({
     childViewContainer: 'tbody.descriptor-type-list',
 
     initialize: function() {
+        View.__super__.initialize.apply(this);
+
         this.listenTo(this.collection, 'reset', this.render, this);
         //this.listenTo(this.collection, 'add', this.render, this);
         //this.listenTo(this.collection, 'remove', this.render, this);
-
-        View.__super__.initialize.apply(this);
     }
 });
 
 module.exports = View;
-

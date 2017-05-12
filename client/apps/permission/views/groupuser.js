@@ -9,7 +9,6 @@
  */
 
 var Marionette = require('backbone.marionette');
-var PermissionGroupUserModel = require('../models/groupuser');
 
 var View = Marionette.ItemView.extend({
     tagName: 'tr',
@@ -47,4 +46,3 @@ var View = Marionette.ItemView.extend({
 });
 
 module.exports = View;
-

@@ -683,7 +683,7 @@ msgstr "Nom"
 #: ../../../templates/descriptormodellist.html:17
 #: ../../../templates/descriptormodellistalt.html:16
 msgid "Types"
-msgstr ""
+msgstr "Types"
 
 #: ../../../templates/descriptorgrouplistalt.html:14
 msgid "Group of descriptors"
@@ -741,7 +741,7 @@ msgstr "Cible"
 
 #: ../../../templates/descriptormetamodellist.html:19
 msgid "Panels"
-msgstr ""
+msgstr "Panels"
 
 #: ../../../templates/descriptormodeldetail.html:13
 msgid "Descriptor model name"
@@ -808,7 +808,7 @@ msgstr "Nom unique"
 #: ../../../templates/descriptormodeltypelist.html:15
 #: ../../../templates/descriptortypelistalt.html:14
 msgid "Type"
-msgstr ""
+msgstr "Type"
 
 #: ../../../templates/descriptormodeltyperename.html:15
 msgid "Rename the type of model of descriptors"
@@ -856,7 +856,7 @@ msgstr "Code"
 #: ../../../templates/descriptortypelist.html:17
 #: ../../../templates/descriptortypelistalt.html:16
 msgid "Values"
-msgstr ""
+msgstr "Valeurs"
 
 #: ../../../templates/descriptorvaluechangefield.html:15
 #: ../../../templates/descriptorvaluechangefieldmultiple.html:15

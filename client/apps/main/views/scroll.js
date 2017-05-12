@@ -20,9 +20,9 @@ var View = Marionette.CompositeView.extend({
     },
 
     ui: {
-        table: 'table.table',
-        thead: 'table.table thead',
-        tbody: 'table.table tbody',
+        table: 'table.table.table-advanced',
+        thead: 'table.table.table-advanced thead',
+        tbody: 'table.table.table-advanced tbody',
         add_column: 'span.add-column',
         add_column_menu: 'div.add-column-menu',
         remove_column: 'span.remove-column',
@@ -122,7 +122,11 @@ var View = Marionette.CompositeView.extend({
     },
 
     isDisplayed: function() {
-        return this.ui.table.offsetParent().length && this.ui.table.offsetParent()[0].nodeName !== 'HTML';
+        if (this.ui.table instanceof Object) {
+            return this.ui.table.offsetParent().length && this.ui.table.offsetParent()[0].nodeName !== 'HTML';
+        } else {
+            return false;
+        }
     },
 
     onResetCollection: function() {
@@ -198,10 +202,8 @@ var View = Marionette.CompositeView.extend({
     },
 
     onResizeWindow: function() {
-        if (this.scrollViewInitialized) {
-            if (this.isDisplayed()) {
-                this.updateColumnsWidth(true);
-            }
+        if (this.isDisplayed()) {
+            this.updateColumnsWidth(true);
         }
     },
 
@@ -278,18 +280,19 @@ var View = Marionette.CompositeView.extend({
 
         $.each(headerRows, function (i, element) {
             var el = $(element);
-            var div = el.children('div');
-
-            // if (!el.hasClass("glyph-fixed-column")) {
-            //     el.width('auto');
-            // }
+            var divHeader = el.children('div.table-advanced-header');
+            var divLabel = divHeader.children('div.table-advanced-label');
 
             // if not exist insert the label into a sub-div
-            if (div.length === 0) {
-                div = $('<div></div>').html(el.html()).attr('title', el.text());
-                el.html(div);
+            if (divHeader.length === 0) {
+                divHeader = $('<div class="table-advanced-header"></div>');
 
-                var draggable = div.children('[draggable]');
+                divLabel = $('<div class="table-advanced-label"></div>').html(el.html()).attr('title', el.text());
+                divHeader.append(divLabel);
+
+                el.html(divHeader);
+
+                var draggable = divLabel.children('[draggable]');
                 draggable.on('dragstart', $.proxy(view.onColumnDragStart, view));
                 draggable.on('dragend', $.proxy(view.onColumnDragEnd, view));
                 draggable.on('dragenter', $.proxy(view.onColumnDragEnter, view));
@@ -301,18 +304,15 @@ var View = Marionette.CompositeView.extend({
             // try to keep as possible the title entirely visible
             if (el.hasClass('title-column')) {
                 // pre-compute
-                div.width('auto');
-                div.width(div.width());
-                div.css('min-width', div.width() + 17 + 'px');
+                divLabel.width('auto');
+                divLabel.width(divLabel.width());
+                divLabel.css('min-width', divLabel.width() + 17 + 'px');
 
                 // +4+1 padding right + border left
-                el.css('min-width', div.width() + 1 + 4 + 'px');
+                el.css('min-width', divLabel.width() + 1 + 4 + 'px');
 
                 // and for the first body row
-                $(rows.get(i)).css('min-width', div.width() + 17 + 'px');
-
-                // preset (auto)
-                // el.width(div.width() + 1 + 4);
+                $(rows.get(i)).css('min-width', divLabel.width() + 17 + 'px');
             }
 
             // name unamed columns
@@ -321,14 +321,12 @@ var View = Marionette.CompositeView.extend({
             }
 
             // add column sizer for each column except the first and the last
-            if (i > 0 && i < headerRows.length && div.children('div.column-sizer').length === 0) {
-                var sizer = $('<div></div>');
-                sizer.addClass('column-sizer');
-
+            if (i > 0 && i < headerRows.length && divLabel.children('div.column-sizer').length === 0) {
+                var sizer = $('<div class="column-sizer"></div>');
                 var border = $('<div></div>');
                 sizer.append(border);
 
-                div.prepend(sizer);
+                divLabel.prepend(sizer);
 
                 // active sizer only if the left column is not fixed size
                 if (!fixedPrevColumn) {
@@ -347,23 +345,19 @@ var View = Marionette.CompositeView.extend({
         if (autoAdjust) {
             $.each(headerRows, function(i, element) {
                 var el = $(element);
-                var div = el.children('div');
-                var top = div.offset().top;
+                var divLabel = el.children('div.table-advanced-header').children('div.table-advanced-label');
 
                 if (!el.hasClass('glyph-fixed-column')) {
                     el.width(el.width());
 
                     // and especially of the title div (minus border left width)
-                    div.width(el.width() - (i === 0 ? 0 : 1));
+                    divLabel.width(el.width() - (i === 0 ? 0 : 1));
 
                     // update user setting locally (minus border left except on first column)
                     view.selectedColumns[i].width = el.width();
                 } else {
                     view.selectedColumns[i].width = "auto";
                 }
-
-                // fix top issue in firefox
-                div.offset({top: top});
             });
         } else {
             // or setup the width from the local configuration
@@ -390,23 +384,19 @@ var View = Marionette.CompositeView.extend({
 
             $.each(headerRows, function (i, element) {
                 var el = $(element);
-                var div = el.children('div');
-                var top = div.offset().top;
+                var divLabel = el.children('div.table-advanced-header').children('div.table-advanced-label');
 
                 // resize header column except glyph fixed columns
-                if (div.length && !el.hasClass('glyph-fixed-column')) {
+                if (divLabel.length && !el.hasClass('glyph-fixed-column')) {
                     // count border left (no left border for the first column)
                     el.width(columnsWidth[i]);
-                    div.width(columnsWidth[i] - (i === 0 ? 0 : 1));
+                    divLabel.width(columnsWidth[i] - (i === 0 ? 0 : 1));
 
                     // update user setting locally (minus border left except on first column)
                     view.selectedColumns[i].width = el.width();
                 } else {
                     view.selectedColumns[i].width = "auto";
                 }
-
-                // fix top issue in firefox
-                div.offset({top: top});
             });
         }
 
@@ -438,7 +428,7 @@ var View = Marionette.CompositeView.extend({
 
         var i1;
         $.each(this.ui.thead.children('tr').children('td,th'), function(i, element) {
-            if (target.parent().parent().attr('name') === $(element).attr('name')) {
+            if (target.parent().parent().parent().attr('name') === $(element).attr('name')) {
                 i1 = i;
                 return false;
             }
@@ -459,7 +449,7 @@ var View = Marionette.CompositeView.extend({
 
         var i1;
         $.each(this.ui.thead.children('tr').children('td,th'), function(i, element) {
-            if (target.parent().parent().attr('name') === $(element).attr('name')) {
+            if (target.parent().parent().parent().attr('name') === $(element).attr('name')) {
                 i1 = i;
                 return false;
             }
@@ -484,7 +474,7 @@ var View = Marionette.CompositeView.extend({
 
         var i1;
         $.each(this.ui.thead.children('tr').children('td,th'), function(i, element) {
-            if (target.parent().parent().attr('name') === $(element).attr('name')) {
+            if (target.parent().parent().parent().attr('name') === $(element).attr('name')) {
                 i1 = i;
                 return false;
             }
@@ -509,7 +499,7 @@ var View = Marionette.CompositeView.extend({
 
         var i1;
         $.each(this.ui.thead.children('tr').children('td,th'), function(i, element) {
-            if (target.parent().parent().attr('name') === $(element).attr('name')) {
+            if (target.parent().parent().parent().attr('name') === $(element).attr('name')) {
                 i1 = i;
                 return false;
             }
@@ -540,8 +530,8 @@ var View = Marionette.CompositeView.extend({
 
         target.css('opacity', 'initial');
 
-        var srcName = application.dndElement.parent().parent().attr('name');
-        var dstName = target.parent().parent().attr('name');
+        var srcName = application.dndElement.parent().parent().parent().attr('name');
+        var dstName = target.parent().parent().parent().attr('name');
 
         if (srcName !== dstName) {
             // switch the two columns
@@ -555,7 +545,7 @@ var View = Marionette.CompositeView.extend({
             });
 
             // switch label
-            target.parent().parent().swapWith(application.dndElement.parent().parent());
+            target.parent().parent().parent().swapWith(application.dndElement.parent().parent().parent());
 
             // switch for any row and reset opacity
             $.each(this.ui.tbody.children('tr'), function(i, element) {
@@ -598,7 +588,7 @@ var View = Marionette.CompositeView.extend({
         var sizer = $(e.currentTarget);
 
         // get the previous column
-        var column = sizer.parent().parent();
+        var column = sizer.parent().parent().parent();
         var columns = column.parent().find('th');
 
         // adapt the cursor, because if the right column is fixed size, the resize cannot be performed
@@ -607,9 +597,11 @@ var View = Marionette.CompositeView.extend({
 
             if (el.attr('name') === column.attr('name')) {
                 if (el.hasClass('glyph-fixed-column')) {
-                    el.children('div').children('div.column-sizer').css('cursor', 'default');
+                    el.children('div.table-advanced-header').children('div.table-advanced-label')
+                        .children('div.column-sizer').css('cursor', 'default');
                 } else {
-                    el.children('div').children('div.column-sizer').css('cursor', '');
+                    el.children('div.table-advanced-header').children('div.table-advanced-label')
+                        .children('div.column-sizer').css('cursor', '');
                 }
 
                 return false;
@@ -621,7 +613,7 @@ var View = Marionette.CompositeView.extend({
         var sizer = $(e.currentTarget);
 
         // get the previous column
-        var column = sizer.parent().parent();
+        var column = sizer.parent().parent().parent();
         var columns = column.parent().find('th');
         var view = this;
 
@@ -705,13 +697,13 @@ var View = Marionette.CompositeView.extend({
             var columns = this.ui.thead.children('tr').children('th,td');
             $.each(columns, function(i, element) {
                 var el = $(element);
-                var div = el.children('div');
+                var divLabel = el.children('div.table-advanced-header').children('div.table-advanced-label');
 
                 if (!el.hasClass('glyph-fixed-column')) {
                     el.width(el.width());
 
                     // adjust the label div (minus border left width)
-                    div.width(el.width() - (i === 0 ? 0 : 1));
+                    divLabel.width(el.width() - (i === 0 ? 0 : 1));
                 }
             });
 
@@ -810,8 +802,16 @@ var View = Marionette.CompositeView.extend({
     },
 
     scroll: function(e) {
-        if (e.target.scrollHeight-e.target.clientHeight === e.target.scrollTop) {
-            this.moreResults();
+        if (this.previousScrollTop === undefined) {
+            this.previousScrollTop = 0;
+        }
+
+        if (e.target.scrollTop !== this.previousScrollTop) {
+            this.previousScrollTop = e.target.scrollTop;
+
+            if (e.target.scrollHeight - e.target.clientHeight === e.target.scrollTop) {
+                this.moreResults();
+            }
         }
 
         if (this.previousScrollLeft === undefined) {
@@ -831,28 +831,59 @@ var View = Marionette.CompositeView.extend({
         var clientWidth = this.$el.innerWidth();
 
         // left margin. use this to compute it. maybe there is a better solution.
-        var scrollbarWidth = Math.round(Math.sqrt((this.scrollbarWidth * this.scrollbarWidth) / 2.5));
+        var leftMargin = application.isFirefox ? this.$el.offset().left - 8 : 8 + 1;
+        // var leftMargin = Math.round(Math.sqrt((this.scrollbarWidth * this.scrollbarWidth) / 2.5));
+        var rightMargin = this.ui.add_column.length > 0 ? 24 + 14 : 0;
 
         $.each(columns, function(i, element) {
             var el = $(element);
             var row = $(contentColumns.get(i));
-            var div = el.children('div');
+            var divLabel = el.children('div.table-advanced-header').children('div.table-advanced-label');
 
             var left = row.length > 0 ? row.position().left : el.position().left;
-            var w = div.width();
+            var w = divLabel.width();
 
-            div.css('left', left + scrollbarWidth);
+            if (application.isFirefox) {
+                divLabel.parent().css('left', left + leftMargin);
+                console.log(leftMargin)
+            } else {
+                divLabel.css('left', left + leftMargin);
+            }
 
             if (left < 16) {
                 var l = 8 - left + 16;
-                var r = w + 32;  /* 32 of spacing */
-                div.css('clip', 'rect(0px ' + r + 'px 32px ' + l + 'px)');
-            } else if (left+w > clientWidth - 24 - 14/* + 5*/) {
+                var r = w + 32;  // 32 of spacing
+                divLabel.css('clip', 'rect(0px ' + r + 'px 32px ' + l + 'px)');
+
+                if (r - l <= 0) {
+                    divLabel.css('display', 'none')
+                } else {
+                    divLabel.css('display', '');
+                }
+            } else if (left+w > clientWidth - rightMargin) {
                 var l = 0;
                 var r = clientWidth - left;
-                div.css('clip', 'rect(0px ' + r + 'px 32px ' + l + 'px)');
+                divLabel.css('clip', 'rect(0px ' + r + 'px 32px ' + l + 'px)');
+
+                if (r - l <= 0) {
+                    divLabel.css('display', 'none')
+                } else {
+                    divLabel.css('display', '');
+
+                    // avoid overflow on body that makes a scrollbar
+                    if (!el.hasClass('glyph-fixed-column')) {
+                        var minWidth = Math.min(el.width(), r - l + 1);
+                        divLabel.width(minWidth - (i === 0 ? 0 : 1));
+                    }
+                }
             } else {
-                div.css('clip', '');
+                divLabel.css('clip', '');
+                divLabel.css('display', 'block');
+
+                // restore
+                if (!el.hasClass('glyph-fixed-column')) {
+                    divLabel.width(el.width() - (i === 0 ? 0 : 1));
+                }
             }
         });
     },
