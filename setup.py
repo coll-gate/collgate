@@ -69,8 +69,8 @@ setup(
     url='',
 
     # Author details
-    author='Frederic SCHERMA, Nicolas GUILHOT INRA UMR1095 GDEC',
-    author_email='frederic.scherma@clermont.inra.fr, nicolas.guilhot@clermont.inra.fr',
+    author='Frederic SCHERMA (INRA UMR1095), Medhi BOULNEMOUR (INRA UMR1095), Nicolas GUILHOT (INRA UMR1095)',
+    author_email='frederic.scherma@inra.fr, medhi.boulnemour@inra.fr, nicolas.guilhot@inra.fr',
 
     # Choose your license
     license=license,
@@ -88,11 +88,11 @@ setup(
         'Topic :: Software Development :: Build Tools',
 
         # Pick your license as you wish (should match "license" above)
-        'License :: Proprietary License',
+        'License :: MIT',
 
         # Specify the Python versions you support here. In particular, ensure
         # that you indicate whether you support Python 2, Python 3 or both.
-        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
     ],
 
     # What does your project relate to?

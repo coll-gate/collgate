@@ -1,15 +1,14 @@
 # -*- coding: utf-8; -*-
 #
 # @file base.py
-# @brief 
+# @brief Django base settings for coll-gate project.
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2016-09-01
 # @copyright Copyright (c) 2016 INRA/CIRAD
 # @license MIT (see LICENSE file)
 # @details 
-"""
-Django settings for coll-gate project.
 
+"""
 For more information on this file, see
 https://docs.djangoproject.com/en/1.9/topics/settings/
 
@@ -289,4 +288,3 @@ CACHES = {
         }
     }
 }
-
