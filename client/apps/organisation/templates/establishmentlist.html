@@ -8,17 +8,22 @@
  - @details 
 -->
 
-<table class="table table-striped table-advanced">
-    <thead>
-        <tr scope="row">
-            <th class="glyph-fixed-column"><span class="glyphicon glyphicon-asterisk"></span></div></th>
-            <th><%= gt.gettext("Name") %></th>
-            <% for (var i = 0; i < columns.length; ++i) { %>
-                <% var column = columns[i]; %>
-                <th name="<%= column.name %>"><%= column.label %></th>
-            <% } %>
-        </tr>
-    </thead>
-    <tbody class="establishment-list">
-    </tbody>
-</table>
+<div class="table-advanced-head">
+    <table class="table table-striped table-advanced">
+        <thead>
+            <tr scope="row">
+                <th class="glyph-fixed-column"><span class="glyphicon glyphicon-asterisk"></span></th>
+                <th><%= gt.gettext("Name") %></th>
+                <% for (var i = 0; i < columns.length; ++i) { %>
+                    <% var column = columns[i]; %>
+                    <th name="<%= column.name %>"><%= column.label %></th>
+                <% } %>
+            </tr>
+        </thead>
+    </table>
+</div>
+<div class="table-advanced-body">
+    <table class="table table-striped table-advanced">
+        <tbody class="establishment-list"></tbody>
+    </table>
+</div>

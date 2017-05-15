@@ -101,7 +101,7 @@ var PermissionRouter = Marionette.AppRouter.extend({
         application.show(defaultLayout);
 
         var group = new GroupModel({id: id});
-        /*group.fetch().then(function() {
+        group.fetch().then(function() {
             defaultLayout.getRegion('title').show(new TitleView({
                 title: gt.gettext("List of permissions for group"),
                 object: group.get('name')
@@ -109,22 +109,6 @@ var PermissionRouter = Marionette.AppRouter.extend({
         });
 
         permissionsCollection.fetch().then(function () {
-            var permissionList = new PermissionListView({collection : permissionsCollection});
-
-            defaultLayout.getRegion('content').show(permissionList);
-            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: permissionList}));
-
-            if ($.inArray("auth.add_permission", permissionsCollection.perms) >= 0) {
-                defaultLayout.getRegion('bottom').show(new PermissionAddView({collection : permissionsCollection}));
-            }
-        });*/
-
-        $.when(group.fetch(), permissionsCollection.fetch()).done(function(data) {
-            defaultLayout.getRegion('title').show(new TitleView({
-                title: gt.gettext("List of permissions for group"),
-                object: group.get('name')
-            }));
-
             var permissionList = new PermissionListView({collection : permissionsCollection});
 
             defaultLayout.getRegion('content').show(permissionList);
@@ -160,22 +144,6 @@ var PermissionRouter = Marionette.AppRouter.extend({
                 defaultLayout.getRegion('bottom').show(new PermissionGroupAddUserView({collection : userCollection}));
             }
         });
-
-        // $.when(group.fetch(), userCollection.fetch()).done(function(data) {
-        //     defaultLayout.getRegion('title').show(new TitleView({
-        //         title: gt.gettext("List of users for group"),
-        //         object: group.get('name')
-        //     }));
-        //
-        //     var permissionGroupUserList = new PermissionGroupUserListView({collection : userCollection});
-        //
-        //     defaultLayout.getRegion('content').show(permissionGroupUserList);
-        //     defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: permissionGroupUserList}));
-        //
-        //     if ($.inArray("auth.change_group", userCollection.perms) >= 0) {
-        //         defaultLayout.getRegion('bottom').show(new PermissionGroupAddUserView({collection : userCollection}));
-        //     }
-        // });
     },
 });
 

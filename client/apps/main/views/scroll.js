@@ -310,20 +310,17 @@ var View = Marionette.CompositeView.extend({
             }
 
             // try to keep as possible the title entirely visible
-            if (el.hasClass('title-column')) {
+            if (el.hasClass('title-column') && div.css('min-width') === '0px') {
                 // pre-compute
-                // @todo min-width is incorrectly computed
-                var minWidth = $('<div>' + div.html() + '</div>').width();
-
-                // div.width('auto');
-                //div.width(div.width());
-                div.css('min-width', minWidth/*div.width()*/ + 17 + 'px');
+                div.width('auto');
+                var minWidth = div.width();
+                div.css('min-width', minWidth + 17 + 'px');
 
                 // +4+1 padding right + border left
-                el.css('min-width', minWidth/*div.width()*/ + 1 + 4 + 'px');
+                el.css('min-width', minWidth + 1 + 4 + 'px');
 
                 // and for the first body row
-                $(rows.get(i)).css('min-width', minWidth/*div.width()*/ + 17 + 'px');
+                $(rows.get(i)).css('min-width', minWidth + 17 + 'px');
             } else if (el.hasClass('glyph-fixed-column')) {
                 el.css('min-width', div.width());
                 el.css('max-width', div.width());
@@ -439,7 +436,7 @@ var View = Marionette.CompositeView.extend({
         // fix for firefox...
         e.originalEvent.dataTransfer.setData('text/plain', null);
 
-        target.css('opacity', '0.4');
+        target.parent().css('opacity', '0.4');
 
         var i1;
         $.each(this.ui.thead.children('tr').children('td,th'), function(i, element) {
@@ -460,7 +457,7 @@ var View = Marionette.CompositeView.extend({
     onColumnDragEnd: function(e) {
         var target = $(e.currentTarget);
 
-        target.css('opacity', 'initial');
+        target.parent().css('opacity', 'initial');
 
         var i1;
         $.each(this.ui.thead.children('tr').children('td,th'), function(i, element) {
@@ -483,21 +480,25 @@ var View = Marionette.CompositeView.extend({
             e.originalEvent.preventDefault();
         }
 
+        if (e.currentTarget === application.dndElement[0]) {
+            return false;
+        }
+
         var target = $(e.currentTarget);
 
-        target.css('opacity', '0.4');
+        target.parent().css('opacity', '0.4');
 
-        var i1;
+        var i2;
         $.each(this.ui.thead.children('tr').children('td,th'), function(i, element) {
             if (target.parent().parent().attr('name') === $(element).attr('name')) {
-                i1 = i;
+                i2 = i;
                 return false;
             }
         });
 
         // opacity of each cell
         $.each(this.ui.tbody.children('tr'), function(i, element) {
-            $(element).children('th,td').eq(i1).css('opacity', '0.4');
+            $(element).children('th,td').eq(i2).css('opacity', '0.4');
         });
 
         return false;
@@ -508,21 +509,25 @@ var View = Marionette.CompositeView.extend({
             e.originalEvent.preventDefault();
         }
 
+        if (e.currentTarget === application.dndElement[0]) {
+            return false;
+        }
+
         var target = $(e.currentTarget);
 
-        target.css('opacity', 'initial');
+        target.parent().css('opacity', 'initial');
 
-        var i1;
+        var i2;
         $.each(this.ui.thead.children('tr').children('td,th'), function(i, element) {
             if (target.parent().parent().attr('name') === $(element).attr('name')) {
-                i1 = i;
+                i2 = i;
                 return false;
             }
         });
 
         // opacity of each cell
         $.each(this.ui.tbody.children('tr'), function(i, element) {
-            $(element).children('th,td').eq(i1).css('opacity', 'initial');
+            $(element).children('th,td').eq(i2).css('opacity', 'initial');
         });
 
         return false;
@@ -543,7 +548,7 @@ var View = Marionette.CompositeView.extend({
 
         var target = $(e.currentTarget);
 
-        target.css('opacity', 'initial');
+        target.parent().css('opacity', 'initial');
 
         var srcName = application.dndElement.parent().parent().attr('name');
         var dstName = target.parent().parent().attr('name');
@@ -710,7 +715,7 @@ var View = Marionette.CompositeView.extend({
 
             // define width of header
             var head = this.ui.thead.children('tr').children('th,td');
-            var body = this.ui.tbody.children('tr').children('th,td');
+            var body = this.ui.tbody.children('tr:first-child').children('th,td');
 
             // and body
             $(body[this.resizingColumnIndex-1]).width(leftWidth);
@@ -856,6 +861,7 @@ var View = Marionette.CompositeView.extend({
         // var scrollLeft = this.ui.tbody.parent().parent().scrollLeft();
         var leftMargin = application.isFirefox ? 7 : 8;
         var rightMargin = this.ui.add_column.length > 0 ? 24 + 14 : 0;
+        var leftClip = this.ui.table.position().left;
 
         $.each(head, function(i, element) {
             var el = $(element);
@@ -869,8 +875,8 @@ var View = Marionette.CompositeView.extend({
             label.css('left', left + leftMargin);
             sizer.css('left', left + leftMargin);
 
-            if (left < 24 - leftMargin) {
-                var l = 8 - left;
+            if (left < leftClip - leftMargin) {
+                var l = Math.max(0, leftClip - leftMargin - left);
                 var r = w + 32;  // 32 of spacing
                 label.css('clip', 'rect(0px ' + r + 'px 32px ' + l + 'px)');
                 sizer.css('display', 'none');

@@ -8,15 +8,20 @@
  - @details 
 -->
 
-<table class="table table-striped table-advanced">
-    <thead>
-        <tr scope="row">
-            <th><%= gt.gettext("Type") %></th>
-            <th><%= gt.gettext("Code") %></th>
-            <th><%= gt.gettext("Values") %></th>
-            <th class="glyph-fixed-column"><span class="glyphicon glyphicon-info-sign"></span></th>
-        </tr>
-    </thead>
-    <tbody class="descriptor-type-list">
-    </tbody>
-</table>
+<div class="table-advanced-head">
+    <table class="table table-striped table-advanced">
+        <thead>
+            <tr scope="row">
+                <th><%= gt.gettext("Type") %></th>
+                <th><%= gt.gettext("Code") %></th>
+                <th><%= gt.gettext("Values") %></th>
+                <th class="glyph-fixed-column"><span class="glyphicon glyphicon-info-sign"></span></th>
+            </tr>
+        </thead>
+    </table>
+</div>
+<div class="table-advanced-body">
+    <table class="table table-striped table-advanced">
+        <tbody class="descriptor-type-list"></tbody>
+    </table>
+</div>

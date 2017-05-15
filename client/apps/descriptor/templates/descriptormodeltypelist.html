@@ -8,19 +8,24 @@
  - @details 
 -->
 
-<table class="table table-striped table-advanced">
-    <thead>
-        <tr scope="row">
-            <th class="glyph-fixed-column"><span class="glyphicon glyphicon-asterisk"></span></th>
-            <th class="title-column"><%= gt.gettext("Type") %></th>
-            <th><%= gt.gettext("Name") %></th>
-            <th><%= gt.gettext("Label") %></th>
-            <th class="glyph-fixed-column"><abbr title="<%= gt.gettext('Required') %>"><span class="glyphicon glyphicon-exclamation-sign"></span></abbr></th>
-            <th class="glyph-fixed-column"><abbr title="<%= gt.gettext('Set Once') %>"><span class="glyphicon glyphicon-repeat"></span></abbr></th>
-            <th class="glyph-fixed-column"><abbr title="<%= gt.gettext('Condition') %>"><span class="glyphicon glyphicon-question-sign"></span></abbr></th>
-            <th class="glyph-fixed-column"><abbr title="<%= gt.gettext('Index') %>"><span class="glyphicon glyphicon-italic"></span></abbr></th>
-        </tr>
-    </thead>
-    <tbody class="descriptor-model-type-list header-line">
-    </tbody>
-</table>
+<div class="table-advanced-head">
+    <table class="table table-striped table-advanced">
+        <thead>
+            <tr scope="row">
+                <th class="glyph-fixed-column"><span class="glyphicon glyphicon-asterisk"></span></th>
+                <th class="title-column"><%= gt.gettext("Type") %></th>
+                <th><%= gt.gettext("Name") %></th>
+                <th><%= gt.gettext("Label") %></th>
+                <th class="glyph-fixed-column"><abbr title="<%= gt.gettext('Required') %>"><span class="glyphicon glyphicon-exclamation-sign"></span></abbr></th>
+                <th class="glyph-fixed-column"><abbr title="<%= gt.gettext('Set Once') %>"><span class="glyphicon glyphicon-repeat"></span></abbr></th>
+                <th class="glyph-fixed-column"><abbr title="<%= gt.gettext('Condition') %>"><span class="glyphicon glyphicon-question-sign"></span></abbr></th>
+                <th class="glyph-fixed-column"><abbr title="<%= gt.gettext('Index') %>"><span class="glyphicon glyphicon-italic"></span></abbr></th>
+            </tr>
+        </thead>
+    </table>
+</div>
+<div class="table-advanced-body">
+    <table class="table table-striped table-advanced">
+        <tbody class="descriptor-model-type-list header-line"></tbody>
+    </table>
+</div>

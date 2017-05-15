@@ -8,13 +8,18 @@
  - @details 
 -->
 
-<table class="table table-striped table-advanced">
-    <thead>
-        <tr scope="row">
-            <th><%= gt.gettext("Group of descriptors") %></th>
-            <th class="title-column"><%= gt.gettext("Types") %></th>
-        </tr>
-    </thead>
-    <tbody class="descriptor-group-list">
-    </tbody>
-</table>
+<div class="table-advanced-head">
+    <table class="table table-striped table-advanced">
+        <thead>
+            <tr scope="row">
+                <th><%= gt.gettext("Group of descriptors") %></th>
+                <th class="title-column"><%= gt.gettext("Types") %></th>
+            </tr>
+        </thead>
+    </table>
+</div>
+<div class="table-advanced-body">
+    <table class="table table-striped table-advanced">
+        <tbody class="descriptor-group-list"></tbody>
+    </table>
+</div>

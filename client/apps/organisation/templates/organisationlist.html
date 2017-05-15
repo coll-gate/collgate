@@ -8,29 +8,34 @@
  - @details 
 -->
 
-<table class="table table-striped table-advanced">
-    <thead>
-        <tr scope="row">
-            <th class="unselectable glyph-fixed-column">
-                <div><span class="glyphicon glyphicon-asterisk"></span></div>
-            </th>
-            <th class="unselectable">
-                <div><%= gt.gettext("Name") %></div>
-            </th>
-            <th class="unselectable">
-                <div><%= gt.gettext("Type") %></div>
-            </th>
-            <% for (var i = 0; i < columns.length; ++i) { %>
-                <% var column = columns[i]; %>
-                <th name="<%= column.name %>" class="unselectable">
-                    <div><%= column.label %></div>
+<div class="table-advanced-head">
+    <table class="table table-striped table-advanced">
+        <thead>
+            <tr scope="row">
+                <th class="unselectable glyph-fixed-column">
+                    <div><span class="glyphicon glyphicon-asterisk"></span></div>
                 </th>
-            <% } %>
-            <th class="unselectable">
-                <div><%= gt.gettext("Establishments") %></div>
-            </th>
-        </tr>
-    </thead>
-    <tbody class="organisation-list">
-    </tbody>
-</table>
+                <th class="unselectable">
+                    <div><%= gt.gettext("Name") %></div>
+                </th>
+                <th class="unselectable">
+                    <div><%= gt.gettext("Type") %></div>
+                </th>
+                <% for (var i = 0; i < columns.length; ++i) { %>
+                    <% var column = columns[i]; %>
+                    <th name="<%= column.name %>" class="unselectable">
+                        <div><%= column.label %></div>
+                    </th>
+                <% } %>
+                <th class="unselectable">
+                    <div><%= gt.gettext("Establishments") %></div>
+                </th>
+            </tr>
+        </thead>
+    </table>
+</div>
+<div class="table-advanced-body">
+    <table class="table table-striped table-advanced">
+        <tbody class="organisation-list"></tbody>
+    </table>
+</div>

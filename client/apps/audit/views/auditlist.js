@@ -8,22 +8,21 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
 var AuditView = require('../views/audit');
 var ScrollView = require('../../main/views/scroll');
 
 var View = ScrollView.extend({
     template: require("../templates/auditlist.html"),
+    className: "object audit-list advanced-table-container",
     childView: AuditView,
     childViewContainer: 'tbody.audit-list',
 
     initialize: function() {
-        this.listenTo(this.collection, 'reset', this.render, this);
-        this.listenTo(this.collection, 'change', this.render, this);
-
         View.__super__.initialize.apply(this);
+
+        this.listenTo(this.collection, 'reset', this.render, this);
+        // this.listenTo(this.collection, 'change', this.render, this);
     },
 });
 
 module.exports = View;
-

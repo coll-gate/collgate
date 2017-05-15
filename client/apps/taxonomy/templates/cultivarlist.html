@@ -8,15 +8,20 @@
  - @details
 -->
 
-<table class="table table-striped table-advanced">
-    <thead>
-        <tr scope="row">
-            <th class="glyph-fixed-column"><div><span class="glyphicon glyphicon-asterisk"></span></div></th>
-            <th name="name"><div><%= gt.gettext("Name") %></div></th>
-            <th name="parent"><div><%= gt.gettext("Taxon") %></div></th>
-            <th name="synonym"><div><%= gt.gettext("Synonym") %></div></th>
-        </tr>
-    </thead>
-    <tbody class="cultivar-list">
-    </tbody>
-</table>
+<div class="table-advanced-head">
+    <table class="table table-striped table-advanced">
+        <thead>
+            <tr scope="row">
+                <th class="glyph-fixed-column"><div><span class="glyphicon glyphicon-asterisk"></span></div></th>
+                <th name="name"><div><%= gt.gettext("Name") %></div></th>
+                <th name="parent"><div><%= gt.gettext("Taxon") %></div></th>
+                <th name="synonym"><div><%= gt.gettext("Synonym") %></div></th>
+            </tr>
+        </thead>
+    </table>
+</div>
+<div class="table-advanced-body">
+    <table class="table table-striped table-advanced">
+        <tbody class="cultivar-list"></tbody>
+    </table>
+</div>

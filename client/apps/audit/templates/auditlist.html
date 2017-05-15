@@ -8,17 +8,22 @@
  - @details 
 -->
 
-<table class="table table-striped">
-    <thead>
-        <tr scope="row" class="sticky-header">
-            <th><%= gt.gettext("User") %></th>
-            <th><%= gt.gettext("Date") %></th>
-            <th><%= gt.gettext("Entity") %></th>
-            <th><%= gt.gettext("Type") %></th>
-            <th><%= gt.gettext("Action") %></th>
-            <th><%= gt.gettext("Details") %></th>
-        </tr>
-    </thead>
-    <tbody class="audit-list">
-    </tbody>
-</table>
+<div class="table-advanced-head">
+    <table class="table table-striped table-advanced">
+        <thead>
+            <tr scope="row">
+                <th><%= gt.gettext("User") %></th>
+                <th><%= gt.gettext("Date") %></th>
+                <th><%= gt.gettext("Entity") %></th>
+                <th><%= gt.gettext("Type") %></th>
+                <th><%= gt.gettext("Action") %></th>
+                <th><%= gt.gettext("Details") %></th>
+            </tr>
+        </thead>
+    </table>
+</div>
+<div class="table-advanced-body">
+    <table class="table table-striped table-advanced">
+        <tbody class="audit-list"></tbody>
+    </table>
+</div>

@@ -8,20 +8,25 @@
  - @details 
 -->
 
-<table class="table table-striped descriptor-table table-advanced">
-    <thead>
-        <tr scope="row">
-            <th class="glyph-fixed-column">
-                <span class="glyphicon glyphicon-asterisk"></span>
-            </th>
-            <th class="unselectable">
-                <span class="action column-sort-id glyphicon glyphicon-sort column-action" column-name="id" column-type="alpha"></span><%= gt.gettext("Code") %>
-            </th>
-            <th class="unselectable">
-                <span class="action column-sort-value0 glyphicon glyphicon-sort column-action" column-name="value0" column-type="alpha"></span><%= gt.gettext(format.fields[0]) || gt.gettext("Value0") %>
-            </th>
-        </tr>
-    </thead>
-    <tbody class="descriptor-value-list">
-    </tbody>
-</table>
+<div class="table-advanced-head">
+    <table class="table table-striped descriptor-table table-advanced">
+        <thead>
+            <tr scope="row">
+                <th class="glyph-fixed-column">
+                    <span class="glyphicon glyphicon-asterisk"></span>
+                </th>
+                <th class="unselectable">
+                    <span class="action column-sort-id glyphicon glyphicon-sort column-action" column-name="id" column-type="alpha"></span><%= gt.gettext("Code") %>
+                </th>
+                <th class="unselectable">
+                    <span class="action column-sort-value0 glyphicon glyphicon-sort column-action" column-name="value0" column-type="alpha"></span><%= gt.gettext(format.fields[0]) || gt.gettext("Value0") %>
+                </th>
+            </tr>
+        </thead>
+    </table>
+</div>
+<div class="table-advanced-body">
+    <table class="table table-striped descriptor-table table-advanced">
+        <tbody class="descriptor-value-list"></tbody>
+    </table>
+</div>
