@@ -159,15 +159,16 @@ AUTHENTICATION_BACKENDS = (
 
 LDAPS = {
     'default': {
-        'HOST': "ldap.clermont.inra.fr",
-        'USER_DN': "uid=%s,ou=clermont-ferrand,ou=personnes,dc=inra,dc=fr",
+        'HOST': "ldap-authentification.inra.fr",
+        'BASE_DN': "ou=personnes,dc=inra,dc=fr",
         'OPTIONS': {
             'auto_add_user': True,
-            'search_filter': "(unite=*)",
-            'email_fields': ['mail', 'mailSynthese'],
-            'state_fields': {'etatFicheLdap': 'actif'},
-            'firstname_fields': ['givenName'],
-            'lastname_fields': ['sn'],
+            'search_filter': "()",
+            'username_attr': 'uid',
+            'email_attrs': ['mail', 'mailSynthese'],
+            'state_attrs': {'etatFicheLdap': 'actif'},
+            'firstname_attrs': ['givenName'],
+            'lastname_attrs': ['sn'],
         }
     },
 }

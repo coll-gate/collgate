@@ -16,6 +16,7 @@ var DefaultLayout = require('../../main/views/defaultlayout');
 var TitleView = require('../../main/views/titleview');
 var Dialog = require('../../main/views/dialog');
 var AccessionLayout = require('../views/accessionlayout');
+var SearchEntityDialog = require('../views/search');
 
 
 var Controller = Marionette.Object.extend({
@@ -265,7 +266,12 @@ var Controller = Marionette.Object.extend({
             var createAccessionView = new CreateAccessionView();
             createAccessionView.render();
         });
-    }
+    },
+
+    search: function () {
+        var searchEntityDialog = new SearchEntityDialog();
+        searchEntityDialog.render();
+     }
 });
 
 module.exports = Controller;

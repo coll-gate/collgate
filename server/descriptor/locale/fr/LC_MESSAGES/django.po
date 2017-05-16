@@ -513,7 +513,7 @@ msgstr "méta-modèle de descripteur"
 
 #: models.py:1532
 msgid "Undefined"
-msgstr "Undéfini"
+msgstr "Indéfini"
 
 #: models.py:1533
 msgid "Defined"

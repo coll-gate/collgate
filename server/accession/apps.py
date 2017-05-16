@@ -75,7 +75,7 @@ class CollGateAccession(ApplicationMain):
 
         menu_accession.add_entry(MenuSeparator(200))
         menu_accession.add_entry(
-            MenuEntry('search-accession', _('Search accessions'), "#accession/accession/search/",
+            MenuEntry('search-accession', _('Search accessions'), "~accession/accession/search",
                       icon=Glyph.SEARCH, order=201))
 
         accession_module.add_menu(menu_accession)

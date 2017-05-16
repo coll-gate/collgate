@@ -22,11 +22,15 @@ var View = ScrollView.extend({
         style: "padding-bottom: 15px;"
     },
 
+    ui: {
+      'body': 'div.table-advanced-body'
+    },
+
     events: {
-        "dragenter": "dragEnterContent",
-        "dragleave" : "dragLeaveContent",
-        "dragover": "dragOverContent",
-        "drop": "dropContent"
+        "dragenter @ui.body": "dragEnterContent",
+        "dragleave @ui.body" : "dragLeaveContent",
+        "dragover @ui.body": "dragOverContent",
+        "drop @ui.body": "dropContent"
     },
 
     childViewOptions: function () {
@@ -48,15 +52,19 @@ var View = ScrollView.extend({
             e.preventDefault();
         }
 
-        if (!$(e.target).hasClass("descriptor-model-type-list")) {
+        if (!$(e.target).hasClass("table-advanced-body")) {
             return false;
         }
+
+        // if (!application.dndElement.$el.hasClass('descriptor-type')) {
+        //     return false;
+        // }
 
         this.dragEnterCount || (this.dragEnterCount = 0);
         ++this.dragEnterCount;
 
-        if (this.dragEnterCount == 1) {
-            if (this.$el.find("tbody tr").length == 0) {
+        if (this.dragEnterCount === 1) {
+            if (this.$el.find("tbody tr").length === 0) {
                 this.$el.find("thead tr th").css('border-bottom', '5px dashed #ddd');
             }
 
@@ -71,14 +79,18 @@ var View = ScrollView.extend({
             e.preventDefault();
         }
 
-        if (!$(e.target).hasClass("descriptor-model-type-list")) {
+        if (!$(e.target).hasClass("table-advanced-body")) {
             return false;
         }
+
+        // if (!application.dndElement.$el.hasClass('descriptor-type')) {
+        //     return false;
+        // }
 
         this.dragEnterCount || (this.dragEnterCount = 1);
         --this.dragEnterCount;
 
-        if (this.dragEnterCount == 0) {
+        if (this.dragEnterCount === 0) {
             this.$el.find("tbody tr").last().css('border-bottom', 'initial');
             this.$el.find("thead tr th").css('border-bottom', 'initial');
 
@@ -92,14 +104,18 @@ var View = ScrollView.extend({
             e.preventDefault();
         }
 
-        if (!$(e.target).hasClass("descriptor-model-type-list")) {
+        if (!$(e.target).hasClass("table-advanced-body")) {
             return false;
         }
 
+        // if (!application.dndElement.$el.hasClass('descriptor-type')) {
+        //     return false;
+        // }
+
         this.dragEnterCount || (this.dragEnterCount = 1);
 
-        if (this.dragEnterCount == 1) {
-            if (this.$el.find("tbody tr").length == 0) {
+        if (this.dragEnterCount === 1) {
+            if (this.$el.find("tbody tr").length === 0) {
                 this.$el.find("thead tr th").css('border-bottom', '5px dashed #ddd');
             }
 
@@ -115,7 +131,7 @@ var View = ScrollView.extend({
             e.stopPropagation();
         }
 
-        if (!$(e.target).hasClass("descriptor-model-type-list")) {
+        if (!$(e.target).hasClass("table-advanced-body")) {
             return false;
         }
 
@@ -290,4 +306,3 @@ var View = ScrollView.extend({
 });
 
 module.exports = View;
-

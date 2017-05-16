@@ -10,8 +10,6 @@
 
 var Marionette = require('backbone.marionette');
 
-var AccessionModel = require('../models/accession');
-
 var View = Marionette.ItemView.extend({
     tagName: 'div',
     template: require('../templates/batchpath.html'),
@@ -59,4 +57,3 @@ var View = Marionette.ItemView.extend({
 });
 
 module.exports = View;
-
