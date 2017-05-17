@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-10 10:55+0200\n"
+"POT-Creation-Date: 2017-05-17 10:26+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -62,26 +62,26 @@ msgstr "Récupérer les entrées d'audits pour un utilisateur"
 msgid "Username"
 msgstr "Nom d'utilisateur"
 
-#: ../../../templates/auditlist.html:14
+#: ../../../templates/auditlist.html:15
 msgid "User"
 msgstr "Utilisateur"
 
-#: ../../../templates/auditlist.html:15
+#: ../../../templates/auditlist.html:16
 msgid "Date"
 msgstr "Date"
 
-#: ../../../templates/auditlist.html:16
+#: ../../../templates/auditlist.html:17
 msgid "Entity"
 msgstr "Entité"
 
-#: ../../../templates/auditlist.html:17
+#: ../../../templates/auditlist.html:18
 msgid "Type"
 msgstr "Type"
 
-#: ../../../templates/auditlist.html:18
+#: ../../../templates/auditlist.html:19
 msgid "Action"
 msgstr "Action"
 
-#: ../../../templates/auditlist.html:19
+#: ../../../templates/auditlist.html:20
 msgid "Details"
 msgstr "Détails"

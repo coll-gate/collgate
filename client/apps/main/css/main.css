@@ -294,6 +294,17 @@ div.config-value-box {
     border-top-left-radius: 0px;
 }
 
+div.root-right-bar-grabber {
+    margin-right: 0px;
+    margin-top: 5px;
+    position: absolute;
+    width: 10px;
+    right: -15px;
+    top: 0px;
+    height: calc(100% - 10px);
+    border-right: 5px solid #444;
+}
+
 div.advanced-table-container {
     height: 100%;
     overflow-y: auto;

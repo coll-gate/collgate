@@ -21,6 +21,12 @@ var TwoRowsLayout = Marionette.LayoutView.extend({
         'down': "div.row-down"
     },
 
+    childEvents: {
+        'select:tab': function (child) {
+            this.triggerMethod('select:tab', child);
+        },
+    },
+
     onResize: function() {
         var view = this.getRegion('up');
         if (view && view.currentView && view.currentView.onResize) {

@@ -49,8 +49,8 @@ class CollGateTaxonomy(ApplicationMain):
             Taxon
         ]
 
-        # taxonomy menu
-        menu_taxonomy = ModuleMenu('taxonomy', _('Taxonomy'), auth=AUTH_USER)
+        # classification menu
+        menu_taxonomy = ModuleMenu('classification', _('Classification'), auth=AUTH_USER)
         menu_taxonomy.add_entry(
             MenuEntry('create-taxon', _('Create taxon'), "~taxonomy/taxon/create", icon=Glyph.PLUS_SIGN, order=1))
         menu_taxonomy.add_entry(

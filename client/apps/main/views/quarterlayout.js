@@ -23,6 +23,12 @@ var View = Marionette.LayoutView.extend({
         'bottom-right': "div.row-down div.right"
     },
 
+    childEvents: {
+        'select:tab': function (child) {
+            this.triggerMethod('select:tab', child);
+        },
+    },
+
     onResize: function() {
         var view = this.getRegion('top-left');
         if (view && view.currentView && view.currentView.onResize) {

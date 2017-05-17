@@ -23,6 +23,12 @@ var View = Marionette.LayoutView.extend({
         'footer': "div.layout-footer"
     },
 
+    childEvents: {
+        'select:tab': function (child) {
+            this.triggerMethod('select:tab', child);
+        },
+    },
+
     onShowTab: function(tabView) {
         var region = this.getRegion('content');
         if (region && region.currentView && region.currentView.onShowTab) {

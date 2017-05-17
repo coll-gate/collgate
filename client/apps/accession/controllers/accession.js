@@ -18,7 +18,6 @@ var Dialog = require('../../main/views/dialog');
 var AccessionLayout = require('../views/accessionlayout');
 var SearchEntityDialog = require('../views/search');
 
-
 var Controller = Marionette.Object.extend({
 
     create: function() {
@@ -103,7 +102,7 @@ var Controller = Marionette.Object.extend({
                             cache: true
                         },
                         minimumInputLength: 3,
-                        placeholder: gt.gettext("Enter a taxon name. 3 characters at least for auto-completion")
+                        placeholder: gt.gettext("Enter a classification name. 3 characters at least for auto-completion")
                     });
                 },
 
@@ -135,7 +134,7 @@ var Controller = Marionette.Object.extend({
                                 for (var i in data.items) {
                                     var t = data.items[i];
 
-                                    if (t.value.toUpperCase() == code.toUpperCase()) {
+                                    if (t.value.toUpperCase() === code.toUpperCase()) {
                                         $(this.el).validateField('failed', gt.gettext('Code of accession already used'));
                                         return;
                                     }
@@ -168,7 +167,7 @@ var Controller = Marionette.Object.extend({
                                 for (var i in data.items) {
                                     var t = data.items[i];
 
-                                    if (t.type === "ACC_SYN:01" && t.label.toUpperCase() == name.toUpperCase()) {
+                                    if (t.type === "ACC_SYN:01" && t.label.toUpperCase() === name.toUpperCase()) {
                                         $(this.el).validateField('failed', gt.gettext('Synonym used as accession code'));
                                         return;
                                     }

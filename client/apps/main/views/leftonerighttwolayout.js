@@ -23,8 +23,13 @@ var TwoColumnsLayout = Marionette.LayoutView.extend({
         'right-up-bottom': ".right-up-bottom",
         'right-down-content': ".right-down-content",
         'right-down-bottom': ".right-down-bottom"
+    },
+
+    childEvents: {
+        'select:tab': function (child) {
+            this.triggerMethod('select:tab', child);
+        },
     }
 });
 
 module.exports = TwoColumnsLayout;
-

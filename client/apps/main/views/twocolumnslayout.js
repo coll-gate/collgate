@@ -23,6 +23,12 @@ var TwoColumnsLayout = Marionette.LayoutView.extend({
         'right-bottom': ".right-bottom",
     },
 
+    childEvents: {
+        'select:tab': function (child) {
+            this.triggerMethod('select:tab', child);
+        },
+    },
+
     onResize: function() {
         var view = this.getRegion('left-content');
         if (view && view.currentView && view.currentView.onResize) {

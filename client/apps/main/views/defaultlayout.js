@@ -23,6 +23,12 @@ var DefaultLayout = Marionette.LayoutView.extend({
         'bottom': ".panel-bottom"
     },
 
+    childEvents: {
+        'select:tab': function (child) {
+            this.triggerMethod('select:tab', child);
+        },
+    },
+
     onBeforeDestroy: function () {
     },
 

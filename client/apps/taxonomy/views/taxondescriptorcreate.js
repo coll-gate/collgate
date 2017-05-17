@@ -120,7 +120,7 @@ var View = Marionette.ItemView.extend({
         var contextView = new TaxonDescriptorContextView({actions: actions});
 
         var TitleView = require('../../main/views/titleview');
-        contextLayout.getRegion('title').show(new TitleView({title: gt.gettext("Descriptors")}));
+        contextLayout.getRegion('title').show(new TitleView({title: gt.gettext("Descriptors"), glyphicon: 'glyphicon-wrench'}));
         contextLayout.getRegion('content').show(contextView);
 
         contextView.on("descriptormetamodel:add", function() {

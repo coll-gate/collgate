@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-10 10:55+0200\n"
+"POT-Creation-Date: 2017-05-17 11:00+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,16 +23,22 @@ msgid "Descriptors"
 msgstr "Descripteurs"
 
 #: ../../../views/descriptorcontext.js:21
-msgid "Modify descriptors"
-msgstr "Modifier les descripteurs"
+msgid "Modify"
+msgstr "Modifier"
 
 #: ../../../views/descriptorcontext.js:22
-msgid "Apply modifications"
-msgstr "Appliquer les modifications"
+#: ../../../templates/establishmentedit.html:27
+#: ../../../templates/organisationedit.html:31
+msgid "Apply"
+msgstr "Appliquer"
 
 #: ../../../views/descriptorcontext.js:23
-msgid "Cancel modifications"
-msgstr "Annuler les modifications"
+#: ../../../templates/establishmentcreate.html:30
+#: ../../../templates/establishmentedit.html:26
+#: ../../../templates/organisationcreate.html:37
+#: ../../../templates/organisationedit.html:30
+msgid "Cancel"
+msgstr "Annuler"
 
 #: ../../../views/establishment.js:46 ../../../views/organisation.js:48
 msgid "Successfully removed !"
@@ -105,13 +111,6 @@ msgstr "Nom de l'organisation"
 msgid "Name (must be unique)"
 msgstr "Nom (doit être unique)"
 
-#: ../../../templates/establishmentcreate.html:30
-#: ../../../templates/establishmentedit.html:26
-#: ../../../templates/organisationcreate.html:37
-#: ../../../templates/organisationedit.html:30
-msgid "Cancel"
-msgstr "Annuler"
-
 #: ../../../templates/establishmentcreate.html:31
 #: ../../../templates/organisationcreate.html:38
 msgid "Create"
@@ -121,11 +120,6 @@ msgstr "Créer"
 msgid "Update an establishment"
 msgstr "Modifier un site"
 
-#: ../../../templates/establishmentedit.html:27
-#: ../../../templates/organisationedit.html:31
-msgid "Apply"
-msgstr "Appliquer"
-
 #: ../../../templates/establishmentlayout.html:16
 msgid "Conservatories"
 msgstr "Conservatoires"
@@ -134,9 +128,9 @@ msgstr "Conservatoires"
 msgid "Contacts"
 msgstr "Contacts"
 
-#: ../../../templates/establishmentlist.html:15
+#: ../../../templates/establishmentlist.html:16
 #: ../../../templates/grcdetails.html:14
-#: ../../../templates/organisationlist.html:18
+#: ../../../templates/organisationlist.html:19
 msgid "Name"
 msgstr "Nom"
 
@@ -162,7 +156,7 @@ msgstr "Partenaire de CRB"
 
 #: ../../../templates/organisationcreate.html:31
 #: ../../../templates/organisationedit.html:24
-#: ../../../templates/organisationlist.html:21
+#: ../../../templates/organisationlist.html:22
 msgid "Type"
 msgstr "Type"
 
@@ -171,6 +165,6 @@ msgid "Update an organisation or a partner"
 msgstr "Mettre-à-jour une organisation ou un partenaire"
 
 #: ../../../templates/organisationlayout.html:16
-#: ../../../templates/organisationlist.html:30
+#: ../../../templates/organisationlist.html:31
 msgid "Establishments"
 msgstr "Sites"

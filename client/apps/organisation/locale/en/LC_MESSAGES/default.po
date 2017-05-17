@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-10 10:55+0200\n"
+"POT-Creation-Date: 2017-05-17 11:00+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -24,15 +24,21 @@ msgid "Descriptors"
 msgstr ""
 
 #: ../../../views/descriptorcontext.js:21
-msgid "Modify descriptors"
+msgid "Modify"
 msgstr ""
 
 #: ../../../views/descriptorcontext.js:22
-msgid "Apply modifications"
+#: ../../../templates/establishmentedit.html:27
+#: ../../../templates/organisationedit.html:31
+msgid "Apply"
 msgstr ""
 
 #: ../../../views/descriptorcontext.js:23
-msgid "Cancel modifications"
+#: ../../../templates/establishmentcreate.html:30
+#: ../../../templates/establishmentedit.html:26
+#: ../../../templates/organisationcreate.html:37
+#: ../../../templates/organisationedit.html:30
+msgid "Cancel"
 msgstr ""
 
 #: ../../../views/establishment.js:46 ../../../views/organisation.js:48
@@ -106,13 +112,6 @@ msgstr ""
 msgid "Name (must be unique)"
 msgstr ""
 
-#: ../../../templates/establishmentcreate.html:30
-#: ../../../templates/establishmentedit.html:26
-#: ../../../templates/organisationcreate.html:37
-#: ../../../templates/organisationedit.html:30
-msgid "Cancel"
-msgstr ""
-
 #: ../../../templates/establishmentcreate.html:31
 #: ../../../templates/organisationcreate.html:38
 msgid "Create"
@@ -120,11 +119,6 @@ msgstr ""
 
 #: ../../../templates/establishmentedit.html:15
 msgid "Update an establishment"
-msgstr ""
-
-#: ../../../templates/establishmentedit.html:27
-#: ../../../templates/organisationedit.html:31
-msgid "Apply"
 msgstr ""
 
 #: ../../../templates/establishmentlayout.html:16
@@ -135,9 +129,9 @@ msgstr ""
 msgid "Contacts"
 msgstr ""
 
-#: ../../../templates/establishmentlist.html:15
+#: ../../../templates/establishmentlist.html:16
 #: ../../../templates/grcdetails.html:14
-#: ../../../templates/organisationlist.html:18
+#: ../../../templates/organisationlist.html:19
 msgid "Name"
 msgstr ""
 
@@ -163,7 +157,7 @@ msgstr ""
 
 #: ../../../templates/organisationcreate.html:31
 #: ../../../templates/organisationedit.html:24
-#: ../../../templates/organisationlist.html:21
+#: ../../../templates/organisationlist.html:22
 msgid "Type"
 msgstr ""
 
@@ -172,6 +166,6 @@ msgid "Update an organisation or a partner"
 msgstr ""
 
 #: ../../../templates/organisationlayout.html:16
-#: ../../../templates/organisationlist.html:30
+#: ../../../templates/organisationlist.html:31
 msgid "Establishments"
 msgstr ""

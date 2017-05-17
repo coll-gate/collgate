@@ -18,12 +18,12 @@ var View = Marionette.LayoutView.extend({
         return {
             actions: this.getOption('actions'),
             options: {
-                'add': {className: 'btn-success', label: gt.gettext('Defines descriptors')},
-                'modify': {className: 'btn-default', label: gt.gettext('Modify descriptors')},
-                'replace': {className: 'btn-default', label: gt.gettext('Replace all descriptors')},
-                'delete': {className: 'btn-danger', label: gt.gettext('Delete all descriptors')},
-                'apply': {className: 'btn-success', label: gt.gettext('Apply modifications')},
-                'cancel': {className: 'btn-default', label: gt.gettext('Cancel modifications')}
+                'add': {className: 'btn-success', label: gt.gettext('Defines')},
+                'modify': {className: 'btn-default', label: gt.gettext('Modify')},
+                'replace': {className: 'btn-default', label: gt.gettext('Replace all')},
+                'delete': {className: 'btn-danger', label: gt.gettext('Delete all')},
+                'apply': {className: 'btn-success', label: gt.gettext('Apply')},
+                'cancel': {className: 'btn-default', label: gt.gettext('Cancel')}
             }
         }
     },

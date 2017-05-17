@@ -19,7 +19,7 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label class="control-label" for="entity_type"><%= gt.gettext("Entity type") %></label>
+                            <label class="control-label" for="entity_type"><%= gt.gettext("Search into") %></label>
                             <select id="entity_type" class="form-control">
                                 <% _.each(entity_types, function(entity_type) { %>
                                     <option value="<%= entity_type.id %>"><%= entity_type.label %></option>
@@ -29,7 +29,7 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label class="control-label" for="meta_model"><%= gt.gettext("Template") %></label>
+                            <label class="control-label" for="meta_model"><%= gt.gettext("... of model") %></label>
                             <select id="meta_model" class="form-control">
                                 <% _.each(meta_models, function(meta_model) { %>
                                     <option value="<%= meta_model.id %>"><%= meta_model.label %></option>
@@ -59,6 +59,25 @@
                     </div>
                     <div class="col-md-2">
                         <div class="form-group">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label" for="results_entity_type"><%= gt.gettext("Returns all") %></label>
+                            <select id="results_entity_type" class="form-control">
+                                <% _.each(entity_types, function(entity_type) { %>
+                                    <option value="<%= entity_type.id %>"><%= entity_type.label %></option>
+                                <% }) %>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label" for="results_panel"><%= gt.gettext("... into a panel") %></label>
+                            <select id="results_panel" class="form-control">
+                            </select>
                         </div>
                     </div>
                 </div>

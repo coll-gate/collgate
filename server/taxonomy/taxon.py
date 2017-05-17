@@ -663,6 +663,14 @@ def get_taxon_entities(request, tax_id):
                     'name': item.name
                 }
 
+                # @todo have a common method/interface to any entities of taxon get_fields(...)
+
+                if hasattr(item, 'code'):
+                    t['code'] = item.code
+
+                # if hasattr(item, 'synonyms'):
+                #     t['synonym'] = items.synonyms.filter(type=)
+
                 items.append(t)
 
         if rest == 0:

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-10 10:55+0200\n"
+"POT-Creation-Date: 2017-05-17 11:00+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -48,28 +48,36 @@ msgstr ""
 "Etes-vous sûr de vouloir supprimer tous les descripteurs pour ce taxon ?"
 
 #: ../../../views/taxondescriptorcontext.js:21
-msgid "Defines descriptors"
-msgstr "Définir les descripteurs"
+#: ../../../templates/taxondescriptorcreate.html:13
+msgid "Defines"
+msgstr "Définir"
 
 #: ../../../views/taxondescriptorcontext.js:22
-msgid "Modify descriptors"
-msgstr "Modifiers les descripteurs"
+msgid "Modify"
+msgstr "Modifier"
 
 #: ../../../views/taxondescriptorcontext.js:23
-msgid "Replace all descriptors"
-msgstr "Remplacer tous les descripteurs"
+msgid "Replace all"
+msgstr "Remplacer tous"
 
 #: ../../../views/taxondescriptorcontext.js:24
-msgid "Delete all descriptors"
-msgstr "Supprimer tous les descripteurs"
+msgid "Delete all"
+msgstr "Supprimer tous"
 
 #: ../../../views/taxondescriptorcontext.js:25
-msgid "Apply modifications"
-msgstr "Appliquer les modifications"
+#: ../../../templates/taxonchangeparent.html:27
+#: ../../../templates/taxonchangesynonym.html:27
+msgid "Apply"
+msgstr "Appliquer"
 
 #: ../../../views/taxondescriptorcontext.js:26
-msgid "Cancel modifications"
-msgstr "Annuler les modifications"
+#: ../../../templates/taxonchangeparent.html:26
+#: ../../../templates/taxonchangesynonym.html:26
+#: ../../../templates/taxoncreate.html:45
+#: ../../../templates/taxoncreatecultivar.html:48
+#: ../../../templates/taxondescriptorcreatedialog.html:30
+msgid "Cancel"
+msgstr "Annuler"
 
 #: ../../../views/taxonsynonyms.js:55 ../../../views/taxonsynonyms.js:224
 msgid "64 characters max"
@@ -123,19 +131,19 @@ msgstr "Taxon créé avec succès !"
 msgid "Cultivar"
 msgstr "Cultivar"
 
-#: ../../../templates/cultivarlist.html:15
+#: ../../../templates/cultivarlist.html:16
 #: ../../../templates/taxonchangesynonym.html:20
-#: ../../../templates/taxonentitieslist.html:14
-#: ../../../templates/taxonlist.html:15
+#: ../../../templates/taxonentitieslist.html:17
+#: ../../../templates/taxonlist.html:16
 #: ../../../templates/taxonsynonyms.html:16
 msgid "Name"
 msgstr "Nom"
 
-#: ../../../templates/cultivarlist.html:16
+#: ../../../templates/cultivarlist.html:17
 msgid "Taxon"
 msgstr "Taxon"
 
-#: ../../../templates/cultivarlist.html:17 ../../../templates/taxonlist.html:18
+#: ../../../templates/cultivarlist.html:18 ../../../templates/taxonlist.html:19
 msgid "Synonym"
 msgstr "Synonyme"
 
@@ -148,19 +156,6 @@ msgstr "Changer le parent immédiat du taxon"
 #: ../../../templates/taxoncreatecultivar.html:42
 msgid "Direct parent"
 msgstr "Parent direct"
-
-#: ../../../templates/taxonchangeparent.html:26
-#: ../../../templates/taxonchangesynonym.html:26
-#: ../../../templates/taxoncreate.html:45
-#: ../../../templates/taxoncreatecultivar.html:48
-#: ../../../templates/taxondescriptorcreatedialog.html:30
-msgid "Cancel"
-msgstr "Annuler"
-
-#: ../../../templates/taxonchangeparent.html:27
-#: ../../../templates/taxonchangesynonym.html:27
-msgid "Apply"
-msgstr "Appliquer"
 
 #: ../../../templates/taxonchangesynonym.html:15
 msgid "Change the name for a synonym of taxon"
@@ -206,10 +201,6 @@ msgstr "Nom principal du cultivar (doit être unique)"
 msgid "No descriptor meta-model is defined for this taxon."
 msgstr "Aucun méta-modèle de descripteur n'est définit pour ce taxon."
 
-#: ../../../templates/taxondescriptorcreate.html:13
-msgid "Defines"
-msgstr "Définir"
-
 #: ../../../templates/taxondescriptorcreatedialog.html:15
 msgid "Defines a meta-model of descriptors"
 msgstr "Définir un méta-model de descripteurs"
@@ -223,22 +214,26 @@ msgstr "Continue"
 msgid "Type"
 msgstr "Type"
 
+#: ../../../templates/taxonentitieslist.html:16
+msgid "Code"
+msgstr "Code"
+
 #: ../../../templates/taxonlayout.html:15
 msgid "Synonyms"
 msgstr "Synonymes"
 
 #: ../../../templates/taxonlayout.html:17
 msgid "Sub-ranks"
-msgstr "Sous-niveaux"
+msgstr "Sous-rangs"
 
 #: ../../../templates/taxonlayout.html:18
-msgid "Entities"
-msgstr "Entités"
+msgid "Accessions"
+msgstr "Accessions"
 
-#: ../../../templates/taxonlist.html:16
+#: ../../../templates/taxonlist.html:17
 msgid "Rank"
 msgstr "Rang"
 
-#: ../../../templates/taxonlist.html:17
+#: ../../../templates/taxonlist.html:18
 msgid "Parent"
 msgstr "Parent"

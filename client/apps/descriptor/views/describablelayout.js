@@ -23,4 +23,3 @@ var Layout = Marionette.LayoutView.extend({
 });
 
 module.exports = Layout;
-

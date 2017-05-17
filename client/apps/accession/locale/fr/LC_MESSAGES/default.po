@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-10 10:55+0200\n"
+"POT-Creation-Date: 2017-05-17 11:00+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -32,18 +32,22 @@ msgstr "Descripteurs"
 
 #: ../../../views/accessiondescriptorcontext.js:21
 #: ../../../views/batchdescriptorcontext.js:21
-msgid "Modify descriptors"
-msgstr "Modifier les descripteurs"
+msgid "Modify"
+msgstr "Modifier"
 
 #: ../../../views/accessiondescriptorcontext.js:22
 #: ../../../views/batchdescriptorcontext.js:22
-msgid "Apply modifications"
-msgstr "Appliquer les modifications"
+#: ../../../templates/accessionchangesynonym.html:27
+msgid "Apply"
+msgstr "Appliquer"
 
 #: ../../../views/accessiondescriptorcontext.js:23
 #: ../../../views/batchdescriptorcontext.js:23
-msgid "Cancel modifications"
-msgstr "Annuler les modificiations"
+#: ../../../templates/accessionchangesynonym.html:26
+#: ../../../templates/accessioncreate.html:54
+#: ../../../templates/batchcreate.html:46 ../../../templates/search.html:88
+msgid "Cancel"
+msgstr "Annuler"
 
 #: ../../../views/accessionlistfooter.js:53
 #: ../../../views/accessionsynonyms.js:60
@@ -91,26 +95,63 @@ msgstr "Nom de lot déjà utilisé"
 msgid "128 characters max"
 msgstr "128 caractères maximum"
 
-#: ../../../views/batchlist.js:231 ../../../routers/batch.js:55
+#: ../../../views/batchlist.js:231 ../../../views/search.js:24
+#: ../../../views/search.js:127 ../../../views/search.js:130
+#: ../../../views/search.js:132 ../../../routers/batch.js:55
 msgid "Batch"
 msgstr "Lot"
+
+#: ../../../views/search.js:22 ../../../views/search.js:125
+msgid "Cultivar"
+msgstr "Cultivar"
+
+#: ../../../views/search.js:23 ../../../views/search.js:126
+#: ../../../views/search.js:129 ../../../routers/accession.js:63
+#: ../../../controllers/accession.js:256 ../../../templates/batchcreate.html:30
+msgid "Accession"
+msgstr "Accession"
+
+#: ../../../views/search.js:76
+msgid "Undefined"
+msgstr "Indéfini"
+
+#: ../../../views/search.js:77
+msgid "Defined"
+msgstr "Défini"
+
+#: ../../../views/search.js:78
+msgid "Contains"
+msgstr "Contient"
+
+#: ../../../views/search.js:79
+msgid "Exact"
+msgstr "Exactement"
+
+#: ../../../views/search.js:80
+msgid "Different from"
+msgstr "Différent de"
+
+#: ../../../views/search.js:81
+msgid "Lesser than"
+msgstr "Inférieur à"
+
+#: ../../../views/search.js:82
+msgid "Greater than"
+msgstr "Supérieur à"
 
 #: ../../../routers/accession.js:35
 msgid "List of accessions"
 msgstr "Liste des accessions"
-
-#: ../../../routers/accession.js:63 ../../../controllers/accession.js:256
-#: ../../../templates/batchcreate.html:30
-msgid "Accession"
-msgstr "Accession"
 
 #: ../../../routers/batch.js:34
 msgid "List of batches for the accession"
 msgstr "Liste des lots pour l'accession"
 
 #: ../../../controllers/accession.js:105
-msgid "Enter a taxon name. 3 characters at least for auto-completion"
-msgstr "Saisissez un nom de taxon. A moins 3 caractère pour l'auto-complétion"
+msgid "Enter a classification name. 3 characters at least for auto-completion"
+msgstr ""
+"Saisissez un nom de classification. Au moins 3 caractères pour l'auto-"
+"complétion"
 
 #: ../../../controllers/accession.js:138
 msgid "Code of accession already used"
@@ -129,21 +170,11 @@ msgid "Rename a synonym of accession"
 msgstr "Renomer un synonyme d'accession"
 
 #: ../../../templates/accessionchangesynonym.html:20
-#: ../../../templates/accessionlist.html:23
+#: ../../../templates/accessionlist.html:24
 #: ../../../templates/accessionsynonyms.html:16
-#: ../../../templates/batchlist.html:15
+#: ../../../templates/batchlist.html:16
 msgid "Name"
 msgstr "Nom"
-
-#: ../../../templates/accessionchangesynonym.html:26
-#: ../../../templates/accessioncreate.html:54
-#: ../../../templates/batchcreate.html:46
-msgid "Cancel"
-msgstr "Annuler"
-
-#: ../../../templates/accessionchangesynonym.html:27
-msgid "Apply"
-msgstr "Appliquer"
 
 #: ../../../templates/accessioncreate.html:15
 msgid "Create an accession"
@@ -168,8 +199,8 @@ msgid "Language"
 msgstr "Langue"
 
 #: ../../../templates/accessioncreate.html:48
-msgid "Taxon (specie, variety...)"
-msgstr "Taxon (espèce, variété...)"
+msgid "Primary classification (specie, variety, cultivar...)"
+msgstr "Classification principale (espèce, variété, cultivar...)"
 
 #: ../../../templates/accessioncreate.html:55
 #: ../../../templates/batchcreate.html:47
@@ -185,13 +216,13 @@ msgstr "Synonymes"
 msgid "Batches"
 msgstr "Lots"
 
-#: ../../../templates/accessionlist.html:19
+#: ../../../templates/accessionlist.html:20
 msgid "Code"
 msgstr "Code"
 
-#: ../../../templates/accessionlist.html:27
-msgid "Parent"
-msgstr "Parent"
+#: ../../../templates/accessionlist.html:28
+msgid "Classification"
+msgstr "Classification"
 
 #: ../../../templates/accessionsynonyms.html:15
 msgid "Type"
@@ -208,3 +239,43 @@ msgstr "Parents"
 #: ../../../templates/batchlayout.html:18
 msgid "Actions"
 msgstr "Actions"
+
+#: ../../../templates/search.html:15
+msgid "Advanced search"
+msgstr "Recherche avancée"
+
+#: ../../../templates/search.html:22
+msgid "Search into"
+msgstr "Rechercher dans"
+
+#: ../../../templates/search.html:32
+msgid "... of model"
+msgstr "... de modèle"
+
+#: ../../../templates/search.html:44
+msgid "Field/descriptor"
+msgstr "Champ/descripteur"
+
+#: ../../../templates/search.html:50
+msgid "Condition"
+msgstr "Condition"
+
+#: ../../../templates/search.html:56
+msgid "Value"
+msgstr "Valeur"
+
+#: ../../../templates/search.html:68
+msgid "Returns all"
+msgstr "Renvoi tout les"
+
+#: ../../../templates/search.html:78
+msgid "... into a panel"
+msgstr "... dans un panel"
+
+#: ../../../templates/search.html:87
+msgid "Save"
+msgstr "Enregister"
+
+#: ../../../templates/search.html:89
+msgid "Search"
+msgstr "Rechercher"

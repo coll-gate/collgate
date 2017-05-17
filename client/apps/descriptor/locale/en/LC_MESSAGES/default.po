@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-10 10:55+0200\n"
+"POT-Creation-Date: 2017-05-17 10:26+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -68,7 +68,7 @@ msgstr ""
 #: ../../../views/descriptormodeldetail.js:43
 #: ../../../views/descriptormodeltype.js:190
 #: ../../../views/descriptormodeltype.js:367
-#: ../../../views/descriptormodeltypelist.js:182
+#: ../../../views/descriptormodeltypelist.js:198
 #: ../../../views/descriptortypedetailslayout.js:73
 msgid "Invalid characters (alphanumeric, _ and - only)"
 msgstr ""
@@ -83,8 +83,8 @@ msgstr ""
 #: ../../../views/descriptormodeltype.js:172
 #: ../../../views/descriptormodeltype.js:193
 #: ../../../views/descriptormodeltype.js:370
-#: ../../../views/descriptormodeltypelist.js:164
-#: ../../../views/descriptormodeltypelist.js:185
+#: ../../../views/descriptormodeltypelist.js:180
+#: ../../../views/descriptormodeltypelist.js:201
 #: ../../../views/descriptorpanel.js:175 ../../../views/descriptorpanel.js:357
 #: ../../../views/descriptorpanel.js:374
 #: ../../../views/descriptorpanellist.js:144
@@ -150,12 +150,12 @@ msgid "Name for model of descriptor already in usage"
 msgstr ""
 
 #: ../../../views/descriptormodeltype.js:233
-#: ../../../views/descriptormodeltypelist.js:225
+#: ../../../views/descriptormodeltypelist.js:241
 msgid "Unable to create the type of model of descriptor !"
 msgstr ""
 
 #: ../../../views/descriptormodeltype.js:327
-#: ../../../views/descriptormodeltypelist.js:284
+#: ../../../views/descriptormodeltypelist.js:300
 msgid "Unable to reorder the types of model of descriptor"
 msgstr ""
 
@@ -277,7 +277,7 @@ msgid "Numeric range"
 msgstr ""
 
 #: ../../../collections/formattype.js:76
-#: ../../../templates/descriptorvalueordinallist.html:21
+#: ../../../templates/descriptorvalueordinallist.html:22
 #: ../../../templates/widgets/enumordinal.html:49
 #: ../../../templates/widgets/enumordinal.html:81
 msgid "Ordinal"
@@ -287,7 +287,7 @@ msgstr ""
 msgid "Text"
 msgstr ""
 
-#: ../../../collections/formattype.js:78 ../../../collections/formatunit.js:148
+#: ../../../collections/formattype.js:78 ../../../collections/formatunit.js:152
 msgid "Date"
 msgstr ""
 
@@ -295,7 +295,7 @@ msgstr ""
 msgid "Imprecise date"
 msgstr ""
 
-#: ../../../collections/formattype.js:80 ../../../collections/formatunit.js:149
+#: ../../../collections/formattype.js:80 ../../../collections/formatunit.js:153
 msgid "Time"
 msgstr ""
 
@@ -344,283 +344,295 @@ msgid "Meter"
 msgstr ""
 
 #: ../../../collections/formatunit.js:72
-msgid "Plant and plot"
+msgid "Weight"
 msgstr ""
 
 #: ../../../collections/formatunit.js:73
-msgid "Quantity and volume"
+msgid "Plant and plot"
 msgstr ""
 
 #: ../../../collections/formatunit.js:74
-msgid "Surface"
+msgid "Quantity and volume"
 msgstr ""
 
 #: ../../../collections/formatunit.js:75
+msgid "Surface"
+msgstr ""
+
+#: ../../../collections/formatunit.js:76
 msgctxt "concept"
 msgid "Time"
 msgstr ""
 
-#: ../../../collections/formatunit.js:79
+#: ../../../collections/formatunit.js:80
 msgid "L value"
 msgstr ""
 
-#: ../../../collections/formatunit.js:80
+#: ../../../collections/formatunit.js:81
 msgid "a value"
 msgstr ""
 
-#: ../../../collections/formatunit.js:81
+#: ../../../collections/formatunit.js:82
 msgid "b value"
 msgstr ""
 
-#: ../../../collections/formatunit.js:83
+#: ../../../collections/formatunit.js:84
 msgid "°C"
 msgstr ""
 
-#: ../../../collections/formatunit.js:84
+#: ../../../collections/formatunit.js:85
 msgid "Category"
 msgstr ""
 
-#: ../../../collections/formatunit.js:85
+#: ../../../collections/formatunit.js:86
 msgid "Custom"
 msgstr ""
 
-#: ../../../collections/formatunit.js:86
+#: ../../../collections/formatunit.js:87
 msgid "J (joule)"
 msgstr ""
 
-#: ../../../collections/formatunit.js:87
+#: ../../../collections/formatunit.js:88
 msgid "Norm 1"
 msgstr ""
 
-#: ../../../collections/formatunit.js:88
+#: ../../../collections/formatunit.js:89
 msgid "Note"
 msgstr ""
 
-#: ../../../collections/formatunit.js:89
+#: ../../../collections/formatunit.js:90
 msgid "% (percent)"
 msgstr ""
 
-#: ../../../collections/formatunit.js:90
+#: ../../../collections/formatunit.js:91
 msgid "Scale"
 msgstr ""
 
-#: ../../../collections/formatunit.js:92
+#: ../../../collections/formatunit.js:93
 msgid "g/100 grain"
 msgstr ""
 
-#: ../../../collections/formatunit.js:93
+#: ../../../collections/formatunit.js:94
 msgid "g/200 grain"
 msgstr ""
 
-#: ../../../collections/formatunit.js:94
+#: ../../../collections/formatunit.js:95
 msgid "g/1000 grain"
 msgstr ""
 
-#: ../../../collections/formatunit.js:95
+#: ../../../collections/formatunit.js:96
 msgid "grain/m²"
 msgstr ""
 
-#: ../../../collections/formatunit.js:96
+#: ../../../collections/formatunit.js:97
 msgid "grain/spike"
 msgstr ""
 
-#: ../../../collections/formatunit.js:97
+#: ../../../collections/formatunit.js:98
 msgid "grain/spikelet"
 msgstr ""
 
-#: ../../../collections/formatunit.js:99
+#: ../../../collections/formatunit.js:100
 msgid "um"
 msgstr ""
 
-#: ../../../collections/formatunit.js:100
+#: ../../../collections/formatunit.js:101
 msgid "mm"
 msgstr ""
 
-#: ../../../collections/formatunit.js:101
+#: ../../../collections/formatunit.js:102
 msgid "cm"
 msgstr ""
 
-#: ../../../collections/formatunit.js:102
+#: ../../../collections/formatunit.js:103
 msgid "dm"
 msgstr ""
 
-#: ../../../collections/formatunit.js:103
+#: ../../../collections/formatunit.js:104
 msgid "m"
 msgstr ""
 
-#: ../../../collections/formatunit.js:104
+#: ../../../collections/formatunit.js:105
 msgid "km"
 msgstr ""
 
-#: ../../../collections/formatunit.js:106
-msgid "plant/m"
-msgstr ""
-
 #: ../../../collections/formatunit.js:107
-msgid "plant/m²"
+msgid "g"
 msgstr ""
 
 #: ../../../collections/formatunit.js:108
-msgid "plant/ha"
-msgstr ""
-
-#: ../../../collections/formatunit.js:109
-msgid "plant/plot"
+msgid "kg"
 msgstr ""
 
 #: ../../../collections/formatunit.js:110
-msgid "g/plant"
+msgid "plant/m"
 msgstr ""
 
 #: ../../../collections/formatunit.js:111
-msgid "g/plot"
+msgid "plant/m²"
 msgstr ""
 
 #: ../../../collections/formatunit.js:112
-msgid "kg/plot"
+msgid "plant/ha"
 msgstr ""
 
 #: ../../../collections/formatunit.js:113
-msgid "stoma/mm²"
+msgid "plant/plot"
 msgstr ""
 
 #: ../../../collections/formatunit.js:114
-msgid "node"
+msgid "g/plant"
 msgstr ""
 
 #: ../../../collections/formatunit.js:115
-msgid "spikelet"
+msgid "g/plot"
 msgstr ""
 
 #: ../../../collections/formatunit.js:116
-msgid "spike/m²"
+msgid "kg/plot"
 msgstr ""
 
 #: ../../../collections/formatunit.js:117
-msgid "tiller/m"
+msgid "stoma/mm²"
 msgstr ""
 
 #: ../../../collections/formatunit.js:118
-msgid "tiller/m²"
+msgid "node"
+msgstr ""
+
+#: ../../../collections/formatunit.js:119
+msgid "spikelet"
 msgstr ""
 
 #: ../../../collections/formatunit.js:120
-msgid "ml"
+msgid "spike/m²"
 msgstr ""
 
 #: ../../../collections/formatunit.js:121
-msgid "ml/%"
+msgid "tiller/m"
 msgstr ""
 
 #: ../../../collections/formatunit.js:122
-msgid "ppm"
-msgstr ""
-
-#: ../../../collections/formatunit.js:123
-msgid "mg/kg"
+msgid "tiller/m²"
 msgstr ""
 
 #: ../../../collections/formatunit.js:124
-msgid "g/kg"
+msgid "ml"
 msgstr ""
 
 #: ../../../collections/formatunit.js:125
-msgid "g/m²"
+msgid "ml/%"
 msgstr ""
 
 #: ../../../collections/formatunit.js:126
-msgid "kh/ha"
+msgid "ppm"
 msgstr ""
 
 #: ../../../collections/formatunit.js:127
-msgid "t/ha"
+msgid "mg/kg"
 msgstr ""
 
 #: ../../../collections/formatunit.js:128
-msgid "g/l"
+msgid "g/kg"
 msgstr ""
 
 #: ../../../collections/formatunit.js:129
-msgid "kg/hl"
+msgid "g/m²"
 msgstr ""
 
 #: ../../../collections/formatunit.js:130
-msgid "mmol/m²/s"
+msgid "kh/ha"
 msgstr ""
 
 #: ../../../collections/formatunit.js:131
-msgid "g/m²/day"
+msgid "t/ha"
 msgstr ""
 
 #: ../../../collections/formatunit.js:132
-msgid "CCl (chlore)"
+msgid "g/l"
 msgstr ""
 
 #: ../../../collections/formatunit.js:133
-msgid "delta 13C (carbon)"
+msgid "kg/hl"
+msgstr ""
+
+#: ../../../collections/formatunit.js:134
+msgid "mmol/m²/s"
 msgstr ""
 
 #: ../../../collections/formatunit.js:135
-msgid "mm²"
+msgid "g/m²/day"
 msgstr ""
 
 #: ../../../collections/formatunit.js:136
-msgid "cm²"
+msgid "CCl (chlore)"
 msgstr ""
 
 #: ../../../collections/formatunit.js:137
-msgid "m²"
-msgstr ""
-
-#: ../../../collections/formatunit.js:138
-msgid "ha"
+msgid "delta 13C (carbon)"
 msgstr ""
 
 #: ../../../collections/formatunit.js:139
-msgid "km²"
+msgid "mm²"
+msgstr ""
+
+#: ../../../collections/formatunit.js:140
+msgid "cm²"
 msgstr ""
 
 #: ../../../collections/formatunit.js:141
-msgid "ms"
+msgid "m²"
 msgstr ""
 
 #: ../../../collections/formatunit.js:142
-msgid "s"
+msgid "ha"
 msgstr ""
 
 #: ../../../collections/formatunit.js:143
-msgid "min"
-msgstr ""
-
-#: ../../../collections/formatunit.js:144
-msgid "hour"
+msgid "km²"
 msgstr ""
 
 #: ../../../collections/formatunit.js:145
-msgid "day"
+msgid "ms"
 msgstr ""
 
 #: ../../../collections/formatunit.js:146
-msgid "month"
+msgid "s"
 msgstr ""
 
 #: ../../../collections/formatunit.js:147
-msgid "year"
+msgid "min"
+msgstr ""
+
+#: ../../../collections/formatunit.js:148
+msgid "hour"
+msgstr ""
+
+#: ../../../collections/formatunit.js:149
+msgid "day"
 msgstr ""
 
 #: ../../../collections/formatunit.js:150
-msgid "Date Time"
+msgid "month"
 msgstr ""
 
 #: ../../../collections/formatunit.js:151
+msgid "year"
+msgstr ""
+
+#: ../../../collections/formatunit.js:154
+msgid "Date Time"
+msgstr ""
+
+#: ../../../collections/formatunit.js:155
 msgid "%/min"
 msgstr ""
 
-#: ../../../collections/formatunit.js:152
+#: ../../../collections/formatunit.js:156
 msgid "%/hour"
 msgstr ""
 
-#: ../../../collections/formatunit.js:153
+#: ../../../collections/formatunit.js:157
 msgid "%/day"
 msgstr ""
 
@@ -665,25 +677,25 @@ msgstr ""
 msgid "Apply"
 msgstr ""
 
-#: ../../../templates/descriptorgrouplist.html:15
+#: ../../../templates/descriptorgrouplist.html:16
 #: ../../../templates/descriptorgrouprename.html:20
 #: ../../../templates/descriptormetamodellist.html:16
-#: ../../../templates/descriptormodellist.html:15
-#: ../../../templates/descriptormodellistalt.html:14
-#: ../../../templates/descriptormodeltypelist.html:16
+#: ../../../templates/descriptormodellist.html:16
+#: ../../../templates/descriptormodellistalt.html:15
+#: ../../../templates/descriptormodeltypelist.html:17
 #: ../../../templates/descriptormodeltyperename.html:20
-#: ../../../templates/descriptortypelist.html:15
+#: ../../../templates/descriptortypelist.html:16
 msgid "Name"
 msgstr ""
 
-#: ../../../templates/descriptorgrouplist.html:16
-#: ../../../templates/descriptorgrouplistalt.html:15
-#: ../../../templates/descriptormodellist.html:17
-#: ../../../templates/descriptormodellistalt.html:16
+#: ../../../templates/descriptorgrouplist.html:17
+#: ../../../templates/descriptorgrouplistalt.html:16
+#: ../../../templates/descriptormodellist.html:18
+#: ../../../templates/descriptormodellistalt.html:17
 msgid "Types"
 msgstr ""
 
-#: ../../../templates/descriptorgrouplistalt.html:14
+#: ../../../templates/descriptorgrouplistalt.html:15
 msgid "Group of descriptors"
 msgstr ""
 
@@ -728,7 +740,7 @@ msgid "Update"
 msgstr ""
 
 #: ../../../templates/descriptormetamodellist.html:17
-#: ../../../templates/descriptormodeltypelist.html:17
+#: ../../../templates/descriptormodeltypelist.html:18
 msgid "Label"
 msgstr ""
 
@@ -746,8 +758,8 @@ msgid "Descriptor model name"
 msgstr ""
 
 #: ../../../templates/descriptormodeldetail.html:17
-#: ../../../templates/descriptormodellist.html:16
-#: ../../../templates/descriptormodellistalt.html:15
+#: ../../../templates/descriptormodellist.html:17
+#: ../../../templates/descriptormodellistalt.html:16
 msgid "Verbose name"
 msgstr ""
 
@@ -803,8 +815,8 @@ msgstr ""
 msgid "Unique name"
 msgstr ""
 
-#: ../../../templates/descriptormodeltypelist.html:15
-#: ../../../templates/descriptortypelistalt.html:14
+#: ../../../templates/descriptormodeltypelist.html:16
+#: ../../../templates/descriptortypelistalt.html:15
 msgid "Type"
 msgstr ""
 
@@ -840,19 +852,19 @@ msgstr ""
 msgid "Type of format"
 msgstr ""
 
-#: ../../../templates/descriptortypelist.html:16
-#: ../../../templates/descriptortypelistalt.html:15
-#: ../../../templates/descriptorvaluelist.html:18
-#: ../../../templates/descriptorvalueordinallist.html:18
-#: ../../../templates/descriptorvaluepairlist.html:18
+#: ../../../templates/descriptortypelist.html:17
+#: ../../../templates/descriptortypelistalt.html:16
+#: ../../../templates/descriptorvaluelist.html:19
+#: ../../../templates/descriptorvalueordinallist.html:19
+#: ../../../templates/descriptorvaluepairlist.html:19
 #: ../../../templates/widgets/enumordinal.html:48
 #: ../../../templates/widgets/enumpair.html:46
 #: ../../../templates/widgets/enumsingle.html:36
 msgid "Code"
 msgstr ""
 
-#: ../../../templates/descriptortypelist.html:17
-#: ../../../templates/descriptortypelistalt.html:16
+#: ../../../templates/descriptortypelist.html:18
+#: ../../../templates/descriptortypelistalt.html:17
 msgid "Values"
 msgstr ""
 
@@ -865,9 +877,9 @@ msgstr ""
 msgid "Value for any languages"
 msgstr ""
 
-#: ../../../templates/descriptorvaluelist.html:21
-#: ../../../templates/descriptorvalueordinallist.html:24
-#: ../../../templates/descriptorvaluepairlist.html:21
+#: ../../../templates/descriptorvaluelist.html:22
+#: ../../../templates/descriptorvalueordinallist.html:25
+#: ../../../templates/descriptorvaluepairlist.html:22
 #: ../../../templates/widgets/enumordinal.html:50
 #: ../../../templates/widgets/enumordinal.html:58
 #: ../../../templates/widgets/enumordinal.html:80
@@ -878,7 +890,7 @@ msgstr ""
 msgid "Value0"
 msgstr ""
 
-#: ../../../templates/descriptorvaluepairlist.html:24
+#: ../../../templates/descriptorvaluepairlist.html:25
 #: ../../../templates/widgets/enumpair.html:48
 #: ../../../templates/widgets/enumpair.html:63
 #: ../../../templates/widgets/enumpair.html:87

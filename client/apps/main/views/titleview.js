@@ -15,12 +15,13 @@ var TitleView = Marionette.ItemView.extend({
     template: _.template('<span name="title"></span><span class="heading" name="object"></span>'),
 
     ui: {
+        glyphicon: null,
         title: 'span[name="title"]',
         object: 'span[name="object"]'
     },
 
     initialize: function(options) {
-        options || (options = {title: "", object: null});
+        options || (options = {glyphicon: null, title: "", object: null});
 
         this.listenTo(this.model, 'change', this.render, this);
 
@@ -29,6 +30,10 @@ var TitleView = Marionette.ItemView.extend({
 
     onRender: function() {
         this.ui.title.html(this.getOption('title'));
+
+        if (this.getOption('getOption') !== null) {
+            this.ui.title.prepend('<span class="glyphicon ' + this.getOption('glyphicon') + '"></span>&nbsp;');
+        }
 
         if (this.model && this.model.has('name')) {
             if (!this.ui.object.is(":visible")) {
@@ -53,4 +58,3 @@ var TitleView = Marionette.ItemView.extend({
 });
 
 module.exports = TitleView;
-

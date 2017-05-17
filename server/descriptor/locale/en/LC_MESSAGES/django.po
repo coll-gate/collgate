@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-10 10:57+0200\n"
+"POT-Creation-Date: 2017-05-17 10:26+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -72,7 +72,7 @@ msgstr ""
 msgid "It is not permit to modify this group of type of descriptors"
 msgstr ""
 
-#: descriptor.py:413 descriptor.py:456 descriptor.py:494
+#: descriptor.py:413 descriptor.py:456 descriptor.py:492
 msgid "You are not allowed to modify a group of types of descriptors"
 msgstr ""
 
@@ -92,57 +92,57 @@ msgstr ""
 msgid "Only unused types of descriptor can be deleted"
 msgstr ""
 
-#: descriptor.py:495 descriptor.py:649 descriptor.py:719 descriptor.py:799
-#: descriptor.py:955
+#: descriptor.py:493 descriptor.py:647 descriptor.py:717 descriptor.py:797
+#: descriptor.py:953
 msgid "You are not allowed to modify a type of descriptor"
 msgstr ""
 
-#: descriptor.py:509
+#: descriptor.py:507
 msgid "It is not permit to modify this type of descriptor"
 msgstr ""
 
-#: descriptor.py:650
+#: descriptor.py:648
 msgid "You are not allowed to create a value of descriptor"
 msgstr ""
 
-#: descriptor.py:720 descriptor.py:956
+#: descriptor.py:718 descriptor.py:954
 msgid "You are not allowed to modify a value of type of descriptor"
 msgstr ""
 
-#: descriptor.py:734
+#: descriptor.py:732
 msgid "There is no values for this type of descriptor"
 msgstr ""
 
-#: descriptor.py:741
+#: descriptor.py:739
 msgid "Ordinal field is only defined for enumeration with ordinal"
 msgstr ""
 
-#: descriptor.py:744
+#: descriptor.py:742
 msgid "Second value field is only defined for enumeration of pairs"
 msgstr ""
 
-#: descriptor.py:800
+#: descriptor.py:798
 msgid "You are not allowed to remove a value of type of descriptor"
 msgstr ""
 
-#: descriptor.py:813
+#: descriptor.py:811
 msgid "There is some data using the type of descriptor"
 msgstr ""
 
-#: descriptor.py:865 descriptor.py:1030 descriptor.py:1098
+#: descriptor.py:863 descriptor.py:1028 descriptor.py:1096
 msgid "This type of descriptor does not contains a list"
 msgstr ""
 
-#: descriptor.py:915 descriptor.py:964
+#: descriptor.py:913 descriptor.py:962
 msgid "Field name must be value0 or value1"
 msgstr ""
 
-#: descriptor.py:974 descriptormetamodel.py:696 descriptormetamodel.py:755
+#: descriptor.py:972 descriptormetamodel.py:696 descriptormetamodel.py:755
 #: descriptormodel.py:604
 msgid "Unsupported language identifier"
 msgstr ""
 
-#: descriptor.py:1034
+#: descriptor.py:1032
 msgid "List of values are not available for drop-down"
 msgstr ""
 
@@ -235,7 +235,7 @@ msgstr ""
 msgid "Ordinal"
 msgstr ""
 
-#: descriptorformattype.py:656 descriptorformattype.py:927
+#: descriptorformattype.py:656 descriptorformattype.py:928
 msgid "The descriptor value must be an integer"
 msgstr ""
 
@@ -302,27 +302,27 @@ msgstr ""
 msgid "The descriptor value is invalid"
 msgstr ""
 
-#: descriptorformattype.py:898
+#: descriptorformattype.py:899
 msgid "Date+time"
 msgstr ""
 
-#: descriptorformattype.py:903
+#: descriptorformattype.py:904
 msgid "The descriptor value must be a datetime string (ISO 8601)"
 msgstr ""
 
-#: descriptorformattype.py:921
+#: descriptorformattype.py:922
 msgid "Entity"
 msgstr ""
 
-#: descriptorformattype.py:935
+#: descriptorformattype.py:936
 msgid "The descriptor value must refers to an existing entity"
 msgstr ""
 
-#: descriptorformattype.py:959
+#: descriptorformattype.py:960
 msgid "Invalid describable entity model type name"
 msgstr ""
 
-#: descriptorformattype.py:971
+#: descriptorformattype.py:972
 msgid "The descriptor doesn't refers to a valid entity model"
 msgstr ""
 

@@ -23,12 +23,17 @@ var Layout = Marionette.LayoutView.extend({
     },
 
     childEvents: {
+        'select:tab': function (child) {
+            this.triggerMethod('select:tab', child);
+        },
         'dom:refresh': function(child) {
             var tab = this.$el.find('div.tab-pane.active').attr('name');
             var region = this.getRegion(tab);
 
             // update child of current tab
             if (region && child && region.currentView === child) {
+                // this.triggerMethod('select:tab', region.currentView);
+
                 if (region.currentView.onShowTab) {
                     region.currentView.onShowTab(this);
                 }
@@ -113,6 +118,18 @@ var Layout = Marionette.LayoutView.extend({
         this.ui.tabs.on("hide.bs.tab", $.proxy(this.onHideTab, this));
     },
 
+    onDomRefresh: function() {
+        var region = this.getRegion(this.activeTab);
+        if (region) {
+            // if (region.currentView && region.currentView.onShowTab) {
+                //region.currentView.onShowTab(this);
+            // }
+
+            // initial trigger for parents
+            this.triggerMethod('select:tab', region.currentView);
+        }
+    },
+
     setActiveTab: function(tab) {
         this.activeTab = this.ui.initial_pane.attr('name');
 
@@ -134,6 +151,9 @@ var Layout = Marionette.LayoutView.extend({
                 if (region.currentView && region.currentView.onShowTab) {
                     region.currentView.onShowTab(this);
                 }
+
+                // trigger for parents
+                this.triggerMethod('select:tab', region.currentView);
 
                 // update the url for the history with the new active tab
                 if (!this.model.isNew()) {
@@ -159,6 +179,9 @@ var Layout = Marionette.LayoutView.extend({
             if (region.currentView && region.currentView.onShowTab) {
                 region.currentView.onShowTab(this);
             }
+
+            // trigger for parents
+            this.triggerMethod('select:tab', region.currentView);
 
             // update the url for the history with the new active tab
             if (!this.model.isNew()) {

@@ -31,7 +31,8 @@ var View = Dialog.extend({
         search: "button.search",
         save: "button.save",
         meta_model: "#meta_model",
-        entity_type: "#entity_type"
+        entity_type: "#entity_type",
+        results_entity_type: '#results_entity_type'
     },
 
     events: {
@@ -50,6 +51,7 @@ var View = Dialog.extend({
 
         this.ui.entity_type.selectpicker({});
         this.ui.meta_model.selectpicker({});
+        this.ui.results_entity_type.selectpicker({});
 
         // initial row
         this.onAddSearchRow();
@@ -58,6 +60,7 @@ var View = Dialog.extend({
     onBeforeDestroy: function() {
         this.ui.entity_type.selectpicker('destroy');
         this.ui.meta_model.selectpicker('destroy');
+        this.ui.results_entity_type.selectpicker('destroy');
 
         var rows = this.$el.find('div.search-condition');
         $.each(rows, function(i, el) {
@@ -72,11 +75,11 @@ var View = Dialog.extend({
 
         condition.append('<option value="isnull">' + gt.gettext('Undefined') + '</option>');
         condition.append('<option value="notnull">' + gt.gettext('Defined') + '</option>');
-        condition.append('<option value="icontains">' + gt.gettext('Contient') + '</option>');
-        condition.append('<option value="eq">' + gt.gettext('Exact') + '</option>');
-        condition.append('<option value="neq">' + gt.gettext('Different') + '</option>');
-        condition.append('<option value="lte">' + gt.gettext('Lesser than') + '</option>');
-        condition.append('<option value="gte">' + gt.gettext('Greater than') + '</option>');
+        condition.append('<option value="icontains">' + gt.gettext('Contains') + '</option>');
+        condition.append('<option value="eq">' + gt.gettext('Exact') + ' =' + '</option>');
+        condition.append('<option value="neq">' + gt.gettext('Different from') + ' <>' + '</option>');
+        condition.append('<option value="lte">' + gt.gettext('Lesser than') + ' <=' + '</option>');
+        condition.append('<option value="gte">' + gt.gettext('Greater than') + ' >=' + '</option>');
 
         condition.selectpicker({}).selectpicker('val', 'eq').on('change', $.proxy(this.onChangeCondition, this));
 
@@ -115,6 +118,21 @@ var View = Dialog.extend({
 
             view.ui.meta_model.selectpicker('refresh');
         });
+
+        this.ui.results_entity_type.children('option').remove();
+
+        if (entityType === "taxonomy.taxon") {
+            this.ui.results_entity_type.append('<option value="taxonomy.taxon">' + gt.gettext('Cultivar') + '</option>');
+            this.ui.results_entity_type.append('<option value="accession.accession">' + gt.gettext('Accession') + '</option>');
+            this.ui.results_entity_type.append('<option value="accession.batch">' + gt.gettext('Batch') + '</option>');
+        } else if (entityType === "accession.accession") {
+            this.ui.results_entity_type.append('<option value="accession.accession">' + gt.gettext('Accession') + '</option>');
+            this.ui.results_entity_type.append('<option value="accession.batch">' + gt.gettext('Batch') + '</option>');
+        } else if (entityType === "accession.batch") {
+            this.ui.results_entity_type.append('<option value="accession.batch">' + gt.gettext('Batch') + '</option>');
+        }
+
+        this.ui.results_entity_type.selectpicker('refresh');
     },
 
     onChangeMetaModel: function() {

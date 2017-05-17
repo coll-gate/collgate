@@ -22,7 +22,7 @@ var View = Marionette.ItemView.extend({
 
     ui: {
         "establishment": "td.view-establishment",
-        "remove_establishment": ".remove-establishment"
+        "remove_establishment": ".delete-establishment"
     },
 
     events: {

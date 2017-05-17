@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-10 10:55+0200\n"
+"POT-Creation-Date: 2017-05-17 11:00+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -48,27 +48,35 @@ msgid "Are you sure you want to delete any descriptors for this taxon ?"
 msgstr ""
 
 #: ../../../views/taxondescriptorcontext.js:21
-msgid "Defines descriptors"
+#: ../../../templates/taxondescriptorcreate.html:13
+msgid "Defines"
 msgstr ""
 
 #: ../../../views/taxondescriptorcontext.js:22
-msgid "Modify descriptors"
+msgid "Modify"
 msgstr ""
 
 #: ../../../views/taxondescriptorcontext.js:23
-msgid "Replace all descriptors"
+msgid "Replace all"
 msgstr ""
 
 #: ../../../views/taxondescriptorcontext.js:24
-msgid "Delete all descriptors"
+msgid "Delete all"
 msgstr ""
 
 #: ../../../views/taxondescriptorcontext.js:25
-msgid "Apply modifications"
+#: ../../../templates/taxonchangeparent.html:27
+#: ../../../templates/taxonchangesynonym.html:27
+msgid "Apply"
 msgstr ""
 
 #: ../../../views/taxondescriptorcontext.js:26
-msgid "Cancel modifications"
+#: ../../../templates/taxonchangeparent.html:26
+#: ../../../templates/taxonchangesynonym.html:26
+#: ../../../templates/taxoncreate.html:45
+#: ../../../templates/taxoncreatecultivar.html:48
+#: ../../../templates/taxondescriptorcreatedialog.html:30
+msgid "Cancel"
 msgstr ""
 
 #: ../../../views/taxonsynonyms.js:55 ../../../views/taxonsynonyms.js:224
@@ -123,19 +131,19 @@ msgstr ""
 msgid "Cultivar"
 msgstr ""
 
-#: ../../../templates/cultivarlist.html:15
+#: ../../../templates/cultivarlist.html:16
 #: ../../../templates/taxonchangesynonym.html:20
-#: ../../../templates/taxonentitieslist.html:14
-#: ../../../templates/taxonlist.html:15
+#: ../../../templates/taxonentitieslist.html:17
+#: ../../../templates/taxonlist.html:16
 #: ../../../templates/taxonsynonyms.html:16
 msgid "Name"
 msgstr ""
 
-#: ../../../templates/cultivarlist.html:16
+#: ../../../templates/cultivarlist.html:17
 msgid "Taxon"
 msgstr ""
 
-#: ../../../templates/cultivarlist.html:17 ../../../templates/taxonlist.html:18
+#: ../../../templates/cultivarlist.html:18 ../../../templates/taxonlist.html:19
 msgid "Synonym"
 msgstr ""
 
@@ -147,19 +155,6 @@ msgstr ""
 #: ../../../templates/taxoncreate.html:38
 #: ../../../templates/taxoncreatecultivar.html:42
 msgid "Direct parent"
-msgstr ""
-
-#: ../../../templates/taxonchangeparent.html:26
-#: ../../../templates/taxonchangesynonym.html:26
-#: ../../../templates/taxoncreate.html:45
-#: ../../../templates/taxoncreatecultivar.html:48
-#: ../../../templates/taxondescriptorcreatedialog.html:30
-msgid "Cancel"
-msgstr ""
-
-#: ../../../templates/taxonchangeparent.html:27
-#: ../../../templates/taxonchangesynonym.html:27
-msgid "Apply"
 msgstr ""
 
 #: ../../../templates/taxonchangesynonym.html:15
@@ -206,10 +201,6 @@ msgstr ""
 msgid "No descriptor meta-model is defined for this taxon."
 msgstr ""
 
-#: ../../../templates/taxondescriptorcreate.html:13
-msgid "Defines"
-msgstr ""
-
 #: ../../../templates/taxondescriptorcreatedialog.html:15
 msgid "Defines a meta-model of descriptors"
 msgstr ""
@@ -223,6 +214,10 @@ msgstr ""
 msgid "Type"
 msgstr ""
 
+#: ../../../templates/taxonentitieslist.html:16
+msgid "Code"
+msgstr ""
+
 #: ../../../templates/taxonlayout.html:15
 msgid "Synonyms"
 msgstr ""
@@ -232,13 +227,13 @@ msgid "Sub-ranks"
 msgstr ""
 
 #: ../../../templates/taxonlayout.html:18
-msgid "Entities"
-msgstr ""
-
-#: ../../../templates/taxonlist.html:16
-msgid "Rank"
+msgid "Accessions"
 msgstr ""
 
 #: ../../../templates/taxonlist.html:17
+msgid "Rank"
+msgstr ""
+
+#: ../../../templates/taxonlist.html:18
 msgid "Parent"
 msgstr ""
