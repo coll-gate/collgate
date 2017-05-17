@@ -22,12 +22,7 @@ var MainLayout = Marionette.LayoutView.extend({
 
     ui: {
         'content': "div.root-content",
-        'right': "div.root-right-bar",
-        'right_grabber': "div.root-right-bar-grabber"
-    },
-
-    events: {
-        'mouseover @ui.right_grabber': 'onMouseHoverRightPane'
+        'right': "div.root-right-bar"
     },
 
     onResize: function() {
@@ -47,16 +42,14 @@ var MainLayout = Marionette.LayoutView.extend({
         }
 
         this.ui.right.css('height', this.ui.content.height() + 10 + "px");
-        // this.ui.right_grabber.css('height', this.ui.content.height() + "px");
-        this.ui.right_grabber.css('top', this.ui.content.position().top + "px");
 
-        if (this.ui.right.hasClass('col-md-0')) {
-            this.ui.right_grabber.css('display', 'block');
+        if (this.ui.content.hasClass('col-md-12')) {
+            this.ui.content.children('div.root-right-bar-grabber').css('display', 'block');
         } else {
-            this.ui.right_grabber.css('display', 'none');
+            this.ui.content.children('div.root-right-bar-grabber').css('display', 'none');
         }
 
-        if (this.ui.right.hasClass('col-is-hover') && this.ui.right.hasClass('col-md-0')) {
+        if (this.ui.right.hasClass('col-is-hover') && this.ui.content.hasClass('col-md-12')) {
             this.hideRightPane();
         }
     },
@@ -67,6 +60,14 @@ var MainLayout = Marionette.LayoutView.extend({
             if (child && child.$el.parent().hasClass('root-content')) {
                 var grabber = $('<div class="root-right-bar-grabber"></div>');
                 this.ui.content.append(grabber);
+
+                this.ui.content.children('div.root-right-bar-grabber').on('mouseover', $.proxy(this.onMouseHoverRightPane, this));
+
+                if (this.ui.content.hasClass('col-md-12')) {
+                    grabber.css('display', 'block');
+                } else {
+                    grabber.css('display', 'none');
+                }
             }
         }
     },
@@ -76,7 +77,7 @@ var MainLayout = Marionette.LayoutView.extend({
     },
 
     onMouseHoverRightPane: function() {
-        if (!this.ui.right.hasClass('col-is-hover') && this.ui.right.hasClass('col-md-0')) {
+        if (!this.ui.right.hasClass('col-is-hover') && this.ui.content.hasClass('col-md-12')) {
             this.ui.right.css({
                 position: 'absolute',
                 display: 'block',
@@ -110,7 +111,7 @@ var MainLayout = Marionette.LayoutView.extend({
     },
 
     hideRightPane: function() {
-        if (this.ui.right.hasClass('col-is-hover') && this.ui.right.hasClass('col-md-0')) {
+        if (this.ui.right.hasClass('col-is-hover') && this.ui.content.hasClass('col-md-12')) {
             this.ui.right.css({
                 position: '',
                 display: 'none',
