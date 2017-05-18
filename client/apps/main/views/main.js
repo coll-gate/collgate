@@ -56,7 +56,7 @@ var MainLayout = Marionette.LayoutView.extend({
 
     childEvents: {
         'dom:refresh': function(child) {
-            // re-inject the grabbe column each time the content has changed
+            // re-inject the grabber column each time the content has changed
             if (child && child.$el.parent().hasClass('root-content')) {
                 var grabber = $('<div class="root-right-bar-grabber"></div>');
                 this.ui.content.append(grabber);
@@ -74,19 +74,46 @@ var MainLayout = Marionette.LayoutView.extend({
 
     onDomRefresh: function() {
         $('body').on('mouseover', $.proxy(this.onMouseOut, this));
+        $(window).scroll($.proxy(this.onWindowScroll, this));
+    },
+
+    onWindowScroll: function() {
+        if (this.ui.right.hasClass('col-is-hover') && this.ui.content.hasClass('col-md-12')) {
+            var top = this.ui.content.position().top;
+            var height = this.ui.content.height() + 10;
+
+            // adjust top position for mobile devices
+            var scrollTop = $(window).scrollTop();
+            if (scrollTop !== 0 || $(window).height() < $('body').height()) {
+                top = scrollTop + 15;
+                height = $(window).height() - 30;
+            }
+
+            this.ui.right.css('top', top).css('height', height);
+        }
     },
 
     onMouseHoverRightPane: function() {
         if (!this.ui.right.hasClass('col-is-hover') && this.ui.content.hasClass('col-md-12')) {
+            var top = this.ui.content.position().top;
+            var height = this.ui.content.height() + 10;
+
+            // for mobile devices the top and height must be adjusted by scroll height and viewport height
+            var scrollTop = $(window).scrollTop();
+            if (scrollTop !== 0 || $(window).height() < $('body').height()) {
+                top = scrollTop + 15;
+                height = $(window).height() - 30;
+            }
+
             this.ui.right.css({
                 position: 'absolute',
                 display: 'block',
                 'min-width': '16.6667%',
                 'max-width': '33.3334%',
                 right: '0px',
-                height: this.ui.content.height() + 10 + "px",
-                top: this.ui.content.position().top + "px",
-                'padding-right': '1px',
+                height: height + "px",
+                top: top + "px",
+                'padding-right': '0px',
                 'z-index': 1000
             }).addClass('col-is-hover');
 
