@@ -89,7 +89,7 @@ INSTALLED_APPS = (
     'geonames',
     'geolocation',
     'organisation',
-    'taxonomy',
+    'classification',
     'accession'
 )
 

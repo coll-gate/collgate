@@ -1,6 +1,6 @@
 # -*- coding: utf-8; -*-
 #
-# @file __init__.py
+# @file urls.py
 # @brief 
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2016-09-01
@@ -9,9 +9,10 @@
 # @details 
 
 """
-coll-gate classification module initialisation
+coll-gate classification module url entry point.
 """
 
-# Application Config for startup and more...
-default_app_config = __name__ + '.apps.CollGatePermission'
+from django.conf.urls import include, url
 
+urlpatterns = [
+]

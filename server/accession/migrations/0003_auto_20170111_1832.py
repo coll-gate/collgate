@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('taxonomy', '0001_initial'),
+        ('classification', '0001_initial'),
         ('accession', '0002_auto_20170111_1832'),
     ]
 
@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='accession',
             name='parent',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='taxonomy.Taxon'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='classification.Taxon'),
         ),
         migrations.AddField(
             model_name='accession',

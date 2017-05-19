@@ -121,9 +121,9 @@ var Layout = Marionette.LayoutView.extend({
     onDomRefresh: function() {
         var region = this.getRegion(this.activeTab);
         if (region) {
-            // if (region.currentView && region.currentView.onShowTab) {
-                //region.currentView.onShowTab(this);
-            // }
+            if (region.currentView && region.currentView.onShowTab) {
+                region.currentView.onShowTab(this);
+            }
 
             // initial trigger for parents
             this.triggerMethod('select:tab', region.currentView);

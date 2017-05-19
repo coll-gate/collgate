@@ -22,7 +22,7 @@ from igdectk.common.models import ChoiceEnum, IntegerChoice
 
 from main.models import Languages, Entity
 from descriptor.models import DescribableEntity, DescriptorType
-from taxonomy.models import Taxon
+from classification.models import Taxon
 
 
 class Asset(Entity):

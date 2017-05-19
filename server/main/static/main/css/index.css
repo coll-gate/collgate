@@ -77,8 +77,20 @@ hr {
     }
 }
 */
-.container {
-    width: 100%;
+
+@media (max-width: 1119px) {
+    div.navbar {
+        margin-bottom: 0px;
+    }
+
+    .container {
+        width: 100%;
+        padding: 0px;
+    }
+
+    #root {
+        height: calc(100vh - 50px - 10px - 5px - 30px - 1px);  /* 100% of the viewport height - height of header and footer */
+    }
 }
 
 @media (min-width: 1200px) {

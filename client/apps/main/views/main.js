@@ -104,10 +104,11 @@ var MainLayout = Marionette.LayoutView.extend({
         }
 
         // display grabber in full width
-        if (this.ui.content.hasClass('col-md-12')) {
-            this.ui.content.children('div.root-right-bar-grabber').css('display', 'block');
+        if (this.ui.content.hasClass('col-md-12') || this.compactDisplay) {
+            var right = $('div.container').css('padding-right').replace('px', '');
+            this.ui.content.children('div.root-right-bar-grabber').css('display', 'block').css('right', '-' + right + 'px');
         } else {
-            this.ui.content.children('div.root-right-bar-grabber').css('display', 'none');
+            this.ui.content.children('div.root-right-bar-grabber').css('display', 'none')
         }
     },
 
@@ -121,7 +122,8 @@ var MainLayout = Marionette.LayoutView.extend({
                 this.ui.content.children('div.root-right-bar-grabber').on('mouseover', $.proxy(this.onMouseHoverRightPane, this));
 
                 if (this.ui.content.hasClass('col-md-12')) {
-                    grabber.css('display', 'block');
+                    var right = $('div.container').css('padding-right').replace('px', '');
+                    grabber.css('display', 'block').css('right', '-' + right + 'px');
                 } else {
                     grabber.css('display', 'none');
                 }

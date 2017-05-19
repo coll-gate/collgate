@@ -1,6 +1,6 @@
 # -*- coding: utf-8; -*-
 #
-# @file __init__.py
+# @file base.py
 # @brief 
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2016-09-01
@@ -9,9 +9,12 @@
 # @details 
 
 """
-coll-gate classification module initialisation
+coll-gate classification base rest handler.
 """
 
-# Application Config for startup and more...
-default_app_config = __name__ + '.apps.CollGatePermission'
+from igdectk.rest.handler import *
 
+
+class RestClassification(RestHandler):
+    regex = r'^classification/$'
+    name = 'classification'

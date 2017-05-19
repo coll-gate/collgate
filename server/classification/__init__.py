@@ -13,5 +13,4 @@ coll-gate classification module initialisation
 """
 
 # Application Config for startup and more...
-default_app_config = __name__ + '.apps.CollGatePermission'
-
+default_app_config = __name__ + '.apps.CollGateClassification'
