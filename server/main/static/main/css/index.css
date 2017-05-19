@@ -26,12 +26,34 @@ hr {
     div.navbar-collapse {
         background-color: initial;
     }
-}
 
-@media (min-width: 769px) {
     div.navbar {
-        margin-bottom: 10px;  /* default is 20px */
-        background-image: linear-gradient(to bottom, #000000 0, #A0BD2E 100%);
+        position: absolute;
+        margin-bottom: 0px;
+        width: 100%;
+        top: 0px;
+    }
+
+    footer {
+        display: none;
+    }
+
+    #root {
+        height: calc(100vh - 50px);
+        margin-top: 50px;
+    }
+
+    div.root-content {
+        padding: 0;
+    }
+
+    div.container {
+        width: 100%;
+        padding: 0px;
+    }
+
+    div.root-content div div.panel {
+        border: none;
     }
 }
 
@@ -77,10 +99,10 @@ hr {
     }
 }
 */
-
-@media (max-width: 1119px) {
+@media (min-width: 769px) {
     div.navbar {
         margin-bottom: 0px;
+        background-image: linear-gradient(to bottom, #000000 0, #A0BD2E 100%);
     }
 
     .container {
@@ -89,23 +111,30 @@ hr {
     }
 
     #root {
-        height: calc(100vh - 50px - 10px - 5px - 30px - 1px);  /* 100% of the viewport height - height of header and footer */
+        height: calc(100vh - 50px - 10px - 5px - 55px - 1px);  /* 100% of the viewport height - height of header and footer */
     }
 }
 
 @media (min-width: 1200px) {
+    div.navbar {
+        margin-bottom: 10px;
+    }
+
     .container {
         width: 100%;
     }
 
+    div.navbar {
+        flex: 0 1 auto;
+    }
+
     #root {
-        height: calc(100vh - 50px - 10px - 5px - 30px - 1px);  /* 100% of the viewport height - height of header and footer */
+        height: calc(100vh - 50px - 10px - 5px - 15px - 1px);  /* 100% of the viewport height - height of header and footer */
     }
 }
 
 html,
 body {
-    /*height: 94%;*/
     margin: 0
 }
 

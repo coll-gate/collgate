@@ -139,7 +139,7 @@ var MainLayout = Marionette.LayoutView.extend({
     onWindowScroll: function() {
         if (this.ui.right.hasClass('col-is-hover') && this.ui.content.hasClass('col-md-12')) {
             var top = this.ui.content.position().top;
-            var height = this.ui.content.height() + 10;
+            var height = this.ui.content.outerHeight();
 
             // adjust top position for mobile devices
             var scrollTop = $(window).scrollTop();
@@ -154,8 +154,12 @@ var MainLayout = Marionette.LayoutView.extend({
 
     onMouseHoverRightPane: function() {
         if (!this.ui.right.hasClass('col-is-hover') && this.ui.content.hasClass('col-md-12')) {
+            if (this.ui.right.children().length === 0) {
+                return false;
+            }
+
             var top = this.ui.content.position().top;
-            var height = this.ui.content.height() + 10;
+            var height = this.ui.content.outerHeight();
 
             // for mobile devices the top and height must be adjusted by scroll height and viewport height
             var scrollTop = $(window).scrollTop();

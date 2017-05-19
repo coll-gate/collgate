@@ -9,14 +9,17 @@
  */
 
 div.root-left-bar {
+    padding: 5px;
 }
 
 div.root-content {
+    padding: 5px;
     height: 100%;
     min-height: 200px;
 }
 
 div.root-right-bar {
+    padding: 5px;
 }
 
 div.column {
@@ -38,6 +41,41 @@ div.left, div.right {
 
     div.row-up, div.row-down {
         height: 50%;
+    }
+}
+
+div.root-right-bar-grabber {
+    margin-right: 0px;
+    margin-top: 5px;
+    position: absolute;
+    width: 10px;
+    right: -15px;
+    top: 0px;
+    height: calc(100% - 10px);
+    border-right: 5px solid #444;
+}
+
+@media (max-width: 768px) {
+    div.root-left-bar, div.root-content, div.root-right-bar {
+        padding: 0px;
+    }
+
+    div.container {
+        width: 100%;
+        padding: 0px;
+    }
+
+    div.root-content div div.panel {
+        border: none;
+        height: 100%;/*calc(100vh - 50px);*/
+    }
+
+    div.root-right-bar-grabber {
+        margin-right: 0px;
+        margin-top: 0px;
+        right: 0px;
+        width: 5px;
+        height: 100%;
     }
 }
 
@@ -294,17 +332,6 @@ div.config-value-box {
     border-top-left-radius: 0px;
 }
 
-div.root-right-bar-grabber {
-    margin-right: 0px;
-    margin-top: 5px;
-    position: absolute;
-    width: 10px;
-    right: -15px;
-    top: 0px;
-    height: calc(100% - 10px);
-    border-right: 5px solid #444;
-}
-
 div.advanced-table-container {
     height: 100%;
     overflow-y: auto;
@@ -371,12 +398,10 @@ div.table-advanced-body {
 }
 
 div.placeholder-column {
-    width: 25px;
     position: absolute;
-    padding: 9px 0px 9px 8px;
-    margin-left: 0px;
-    right: 14px;
-    top: 62px;
+    margin-top: 8px;
+    margin-left: 4px;
+    right: 18px;
     background: transparent;
     line-height: normal;
     border-style: none;

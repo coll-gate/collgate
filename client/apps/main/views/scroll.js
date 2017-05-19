@@ -306,7 +306,7 @@ var View = Marionette.CompositeView.extend({
                 // pre-compute
                 label.width('auto');
                 var minWidth = label.width();
-                label.css('min-width', minWidth + 8 + 8 + 'px');
+                // label.css('min-width', minWidth + 8 + 8 + 'px');
 
                 // +4+1 padding right + border left
                 el.css('min-width', minWidth + 8 + 8 + (i === 0 ? 0 : 1) + 'px');
@@ -321,7 +321,7 @@ var View = Marionette.CompositeView.extend({
                 var sorters = label.children('span.column-action').length * (label.children('span.column-action').width() + 3 + 3);
 
                 var minWidth = 32 + sorters;
-                label.css('min-width', minWidth + 'px');
+                // label.css('min-width', minWidth + 'px');
                 el.css('min-width', minWidth + 8 + 8 + (i === 0 ? 0 : 1) + 'px');
                 $(rows.get(i)).css('min-width', minWidth + 8 + 8 + (i === 0 ? 0 : 1) + 'px');
             }
@@ -900,7 +900,7 @@ var View = Marionette.CompositeView.extend({
                 var r = Math.max(0, clientWidth - left - rightMargin);
                 label.css('clip', 'rect(0px ' + r + 'px 32px ' + l + 'px)');
 
-                if (left > clientWidth) {
+                if (left > clientWidth || r - l <= 0) {
                     label.css('display', 'none');
                     sizer.css('display', 'none');
                 } else {
