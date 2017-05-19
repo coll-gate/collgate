@@ -313,6 +313,8 @@ var View = Marionette.CompositeView.extend({
 
                 // and for the first body row
                 $(rows.get(i)).css('min-width', minWidth + 8 + 8 + (i === 0 ? 0 : 1) + 'px');
+                
+                el.width('auto');
             } else if (el.hasClass('glyph-fixed-column')) {
                 el.css('min-width', label.width());
                 el.css('max-width', label.width());
@@ -324,6 +326,8 @@ var View = Marionette.CompositeView.extend({
                 // label.css('min-width', minWidth + 'px');
                 el.css('min-width', minWidth + 8 + 8 + (i === 0 ? 0 : 1) + 'px');
                 $(rows.get(i)).css('min-width', minWidth + 8 + 8 + (i === 0 ? 0 : 1) + 'px');
+
+                el.width('auto');
             }
 
             // name unamed columns

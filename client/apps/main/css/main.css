@@ -33,28 +33,6 @@ div.left, div.right {
     height: calc(100% - 2px);
 }
 
-/** based on bootstrap min-width */
-@media (min-width: 992px) {
-    div.column-left, div.column-right {
-        width: calc(50% - 1px);
-    }
-
-    div.row-up, div.row-down {
-        height: 50%;
-    }
-}
-
-div.root-right-bar-grabber {
-    margin-right: 0px;
-    margin-top: 5px;
-    position: absolute;
-    width: 10px;
-    right: -15px;
-    top: 0px;
-    height: calc(100% - 10px);
-    border-right: 5px solid #444;
-}
-
 @media (max-width: 768px) {
     div.root-left-bar, div.root-content, div.root-right-bar {
         padding: 0px;
@@ -77,6 +55,27 @@ div.root-right-bar-grabber {
         width: 5px;
         height: 100%;
     }
+}
+
+@media (min-width: 992px) {
+    div.column-left, div.column-right {
+        width: calc(50% - 1px);
+    }
+
+    div.row-up, div.row-down {
+        height: 50%;
+    }
+}
+
+div.root-right-bar-grabber {
+    margin-right: 0px;
+    margin-top: 5px;
+    position: absolute;
+    width: 5px;
+    right: -15px;
+    top: 0px;
+    height: calc(100% - 10px);
+    border-right: 5px solid #444;
 }
 
 div.column-spacer {
