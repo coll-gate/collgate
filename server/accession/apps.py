@@ -80,6 +80,16 @@ class CollGateAccession(ApplicationMain):
 
         accession_module.add_menu(menu_accession)
 
+        # batch menu
+        menu_batch = ModuleMenu('batch', _('Batch'), auth=AUTH_USER)
+
+        accession_module.add_menu(menu_batch)
+
+        # action menu
+        menu_action = ModuleMenu('action', _('Action'), auth=AUTH_USER)
+
+        accession_module.add_menu(menu_action)
+
         module_manager.register_module(accession_module)
 
         command_list = ("init_fixtures", "migrate", "makemigrations", "help", "")

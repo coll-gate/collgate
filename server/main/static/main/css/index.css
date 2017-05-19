@@ -18,12 +18,30 @@ hr {
     border-top: solid 1px #96a052;
 }
 
-.navbar {
-    /*height: 50px;*/
-    margin-bottom: 10px;  /* default is 20px */
-    background-image: linear-gradient(to bottom, #000000 0, #A0BD2E 100%);
+@media (max-width: 768px) {
+    div.navbar-header {
+        background-image: linear-gradient(to bottom, #000000 0, #A0BD2E 100%);
+    }
+
+    div.navbar-collapse {
+        background-color: initial;
+    }
 }
 
+@media (min-width: 769px) {
+    div.navbar {
+        margin-bottom: 10px;  /* default is 20px */
+        background-image: linear-gradient(to bottom, #000000 0, #A0BD2E 100%);
+    }
+}
+
+@media (max-width: 994px) {
+    div.access-buttons {
+        display: none;
+    }
+}
+
+/*
 @media (min-width: 1800px) {
     div.navbar-container {
         margin-left: 17.5%;
@@ -57,6 +75,10 @@ hr {
         margin-left: 0%;
         margin-right: 0%;
     }
+}
+*/
+.container {
+    width: 100%;
 }
 
 @media (min-width: 1200px) {

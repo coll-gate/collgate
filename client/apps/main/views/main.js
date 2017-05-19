@@ -21,8 +21,47 @@ var MainLayout = Marionette.LayoutView.extend({
     },
 
     ui: {
+        'left': "div.root-left-bar",
         'content': "div.root-content",
         'right': "div.root-right-bar"
+    },
+
+    initialize: function() {
+        this.currentDisplayMode = application.getUserSetting("ui")['display_mode'] || "2-8-2";
+        this.compactDisplay = false;
+    },
+
+    setDisplay: function(mode) {
+        // full width for mobile devices
+        var panels = [
+            this.ui.left,
+            this.ui.content,
+            this.ui.right
+        ];
+
+        var m = mode.split('-');
+        for (var i = 0; i < panels.length; ++i) {
+            var classes = panels[i].attr('class').split(' ');
+
+            for (var j = 0; j < classes.length; ++j) {
+                if (classes[j].startsWith('col-')) {
+                    panels[i].removeClass(classes[j]);
+                }
+            }
+
+            if (m[i] && m[i] > 0) {
+                panels[i].addClass("col-md-" + m[i]);
+                panels[i].css("display", "block");
+            }
+            else {
+                panels[i].addClass("col-md-" + m[i]);
+                panels[i].css("display", "none");
+            }
+        }
+
+        this.currentDisplayMode = mode;
+
+        application.updateMessengerDisplay();
     },
 
     onResize: function() {
@@ -43,14 +82,32 @@ var MainLayout = Marionette.LayoutView.extend({
 
         this.ui.right.css('height', this.ui.content.height() + 10 + "px");
 
+        // hide if previously shown
+        if (this.ui.right.hasClass('col-is-hover') && this.ui.content.hasClass('col-md-12')) {
+            this.hideRightPane();
+        }
+
+        // restricted width
+        if ($(window).width() <= 994/*768*/) {
+            this.compactDisplay = true;
+
+            // full width for mobile devices
+            this.setDisplay('0-12-0');
+        } else {
+            if (this.compactDisplay) {
+                var displayMode = application.getUserSetting("ui")['display_mode'] || "2-8-2";
+
+                // restore to previous setting
+                this.setDisplay(displayMode);
+                this.compactDisplay = false;
+            }
+        }
+
+        // display grabber in full width
         if (this.ui.content.hasClass('col-md-12')) {
             this.ui.content.children('div.root-right-bar-grabber').css('display', 'block');
         } else {
             this.ui.content.children('div.root-right-bar-grabber').css('display', 'none');
-        }
-
-        if (this.ui.right.hasClass('col-is-hover') && this.ui.content.hasClass('col-md-12')) {
-            this.hideRightPane();
         }
     },
 
