@@ -90,4 +90,3 @@ var Popover = Marionette.Behavior.extend({
 });
 
 module.exports = Popover;
-

@@ -641,8 +641,8 @@ def get_taxon_entities(request, tax_id):
 
         children = getattr(taxon, field_name)
         if children and rest > 0:
-            if cursor_name:  # name is unique per type of entity
-                qs = children.filter(name__gt=cursor_name)
+            if cursor_name:  # name could be not unique
+                qs = children.filter(Q(name__gt=cursor_name) | (Q(name__gte=cursor_name) & Q(id__gt=cursor_id)))
                 cursor_name = None
             else:
                 qs = children.all()

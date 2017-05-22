@@ -145,9 +145,7 @@ var View = Marionette.CompositeView.extend({
             // pagination on scrolling using the direct parent as scroll container
             var scrollElement = this.getScrollElement();
 
-            scrollElement.scroll($.proxy(function (e) {
-                this.scroll(e);
-            }, this));
+            scrollElement.scroll($.proxy(this.scroll, this));
 
             // column resizing
             $("body").on('mousemove', $.proxy(this.onResizeColumnMove, this));
@@ -157,10 +155,6 @@ var View = Marionette.CompositeView.extend({
             // add menu column close on event
             var contextMenu = this.ui.add_column_menu;
             var contextMenuBtn = this.ui.add_column;
-
-            // if (application.isFirefox) {
-            //     this.ui.thead.parent().parent().css('width', '99%');
-            // }
 
             if (contextMenu.length && contextMenuBtn.length) {
                 $('body').on('click', function(e) {
@@ -756,7 +750,7 @@ var View = Marionette.CompositeView.extend({
         var diff = scrollElement.prop('scrollHeight') - scrollElement.scrollTop() - clientHeight;
 
         // less than one page in buffer (minus margin height)
-        return diff - (this.$el.outerHeight(true) - this.$el.height()) <= clientHeight;
+        return diff - (scrollElement.outerHeight(true) - scrollElement.height()) <= clientHeight;
     },
 
     scrollOnePage: function(direction) {

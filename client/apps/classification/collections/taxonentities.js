@@ -16,7 +16,7 @@ var Collection = Backbone.Collection.extend({
     },
     model: TaxonEntityModel,
 
-    comparator: 'name',
+    // comparator: 'name',
 
     initialize: function(models, options) {
         options || (options = {});
@@ -49,4 +49,3 @@ var Collection = Backbone.Collection.extend({
 });
 
 module.exports = Collection;
-

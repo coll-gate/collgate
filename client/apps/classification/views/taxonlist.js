@@ -26,4 +26,3 @@ var View = ScrollView.extend({
 });
 
 module.exports = View;
-

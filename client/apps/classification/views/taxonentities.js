@@ -11,16 +11,13 @@
 var TaxonEntityView = require('../views/taxonentity');
 var ScrollView = require('../../main/views/scroll');
 
-
 var View = ScrollView.extend({
     template: require("../templates/taxonentitieslist.html"),
     className: "taxon-entity-list advanced-table-container",
     childView: TaxonEntityView,
     childViewContainer: 'tbody.entities-list',
 
-    initialize: function(options) {
-        options || (options = {});
-
+    initialize: function() {
         View.__super__.initialize.apply(this);
 
         this.listenTo(this.collection, 'reset', this.render, this);
@@ -28,4 +25,3 @@ var View = ScrollView.extend({
 });
 
 module.exports = View;
-

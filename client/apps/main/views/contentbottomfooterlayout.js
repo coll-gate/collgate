@@ -27,6 +27,12 @@ var View = Marionette.LayoutView.extend({
         'select:tab': function (child) {
             this.triggerMethod('select:tab', child);
         },
+        'dom:refresh': function(child) {
+            // call onShowTab when the view is inserted and directly visible
+            if (child && child.onShowTab && this.$el.isInViewport() && child.$el.isInViewport()) {
+                child.onShowTab();
+            }
+        }
     },
 
     onShowTab: function(tabView) {
