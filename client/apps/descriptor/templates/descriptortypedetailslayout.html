@@ -8,39 +8,34 @@
  - @details 
 -->
 
-<div class="descriptor-type-details">
-    <div style="width: 50%;">
-        <div class="row">
-            <div class="col-xs-6">
-                <div class="descriptor-type-name form-group">
-                    <label for="descriptor_type_name"><%- gt.gettext('Descriptor type name') %></label>
-                    <input id="descriptor_type_name" class="form-control" type="text" maxlength="255" value="<%= name %>">
-                </div>
-            </div>
-            <div class="col-xs-6">
-                <div class="descriptor-type-code form-group">
-                    <label for="descriptor_type_code"><%- gt.gettext('Descriptor type code') %></label>
-                    <input id="descriptor_type_code" class="form-control" type="text" readonly="readonly" maxlength="255" value="<%= code %>">
-                </div>
-            </div>
+<div class="descriptor-type-details col-lg-offset-2 col-lg-8">
+    <div class="row">
+        <div class="descriptor-type-name form-group col-md-6">
+            <label for="descriptor_type_name"><%- gt.gettext('Descriptor type name') %></label>
+            <input id="descriptor_type_name" class="form-control" type="text" maxlength="255" value="<%= name %>">
+        </div>
+        <div class="descriptor-type-code form-group col-md-6">
+            <label for="descriptor_type_code"><%- gt.gettext('Descriptor type code') %></label>
+            <input id="descriptor_type_code" class="form-control" type="text" readonly="readonly" maxlength="255"
+                   value="<%= code %>">
         </div>
     </div>
-    <div class="block" style="width: 50%;">
-        <div class="row">
-            <div class="col-xs-6">
-                <div class="descriptor-type-format form-group">
-                    <label for="format_type"><%- gt.gettext('Type of format') %></label>
-                    <select id="format_type" class="form-control"></select>
-                </div>
-            </div>
+
+    <div class="row">
+        <div class="descriptor-type-format form-group col-md-6">
+            <label for="format_type"><%- gt.gettext('Type of format') %></label>
+            <select id="format_type" class="form-control"></select>
         </div>
     </div>
+
     <div class="contextual-region"></div>
-    <div class="descriptor-type-description form-group block" style="width: 50%;">
+
+
+    <div class="descriptor-type-description form-group">
         <label for="descriptor_type_description"><%- gt.gettext('Description') %></label>
         <textarea id="descriptor_type_description" class="form-control" maxlength="1024"><%= description %></textarea>
     </div>
-    <div class="descriptor-type-update form-group block" style="width: 100px; margin-left: 20%; margin-top: 25px;">
-        <button id="save" class="form-control btn btn-success"><%- gt.gettext('Update') %></button>
+    <div class="descriptor-type-update form-group text-center">
+        <button id="save" class="btn btn-success btn-block"><%- gt.gettext('Update') %></button>
     </div>
 </div>

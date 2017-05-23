@@ -19,18 +19,6 @@ from descriptor.models import DescriptorType
 from .descriptorsgroups import GROUPS
 
 DESCRIPTORS = {
-    'geolocation': {
-        'id': None,
-        'name': 'geolocation',
-        'code': 'GE_001',
-        'group': 'common',
-        'can_delete': False,
-        'can_modify': False,
-        'description': 'Defines a default geolocation.',
-        'format': {
-            'type': 'geolocation'
-        }
-    },
     'country': {
         'id': None,
         'name': 'country',

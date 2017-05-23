@@ -5,7 +5,7 @@
  * @date 2016-08-01
  * @copyright Copyright (c) 2016 INRA/CIRAD
  * @license MIT (see LICENSE file)
- * @details 
+ * @details
  */
 
 var Marionette = require('backbone.marionette');
@@ -17,41 +17,53 @@ var View = Marionette.ItemView.extend({
     tagName: 'tr',
     className: 'element object descriptor-value',
     template: require('../templates/descriptorvaluepair.html'),
-    templateHelpers/*templateContext*/: function() {
-        var ctx = this.model;
-        ctx.format = this.model.collection.format;
+    templateHelpers/*templateContext*/: function () {
+        // var ctx = this.model;
+        // ctx.format = this.model.collection.format;
+        //
+        // // @todo check with user permission
+        // ctx.can_delete = this.getOption('can_delete');
+        // ctx.can_modify = this.getOption('can_modify');
+        // return ctx;
+        return {RowActionsBtn: require('../../main/templates/rowactionsbuttons.html')}
+    },
 
-        // @todo check with user permission
-        ctx.can_delete = this.getOption('can_delete');
-        ctx.can_modify = this.getOption('can_modify');
-        return ctx;
+    behaviors: {
+        ActionBtnEvents: {
+            behaviorClass: require('../../main/behaviors/actionbuttonevents'),
+            title: {
+                edit: gt.gettext('Edit value0'),
+                edit2: gt.gettext('Edit value1')
+            }
+        }
     },
     ui: {
-        delete_descriptor_value: 'th.delete-descriptor-value',
-        edit_value0: 'td.edit-descriptor-value0',
-        edit_value1: 'td.edit-descriptor-value1'
+        delete_btn: '.action.delete',
+        edit_btn: '.action.edit',
+        edit2_btn: '.action.edit2'
     },
 
     events: {
-        'click @ui.delete_descriptor_value': 'deleteDescriptorValue',
-        'click @ui.edit_value0': 'onEditValue0',
-        'click @ui.edit_value1': 'onEditValue1'
+        'click @ui.delete_btn': 'deleteDescriptorValue',
+        'click @ui.edit_btn': 'onEditValue0',
+        'click @ui.edit2_btn': 'onEditValue1'
     },
 
-    initialize: function() {
+    initialize: function () {
         this.listenTo(this.model, 'change', this.render, this);
     },
 
-    onRender: function() {
+    onRender: function () {
     },
 
     deleteDescriptorValue: function () {
         if (!this.model.get('can_delete') || !session.user.isSuperUser || session.user.isStaff) {
             this.model.destroy({wait: true});
         }
+        return false;
     },
 
-    onEditValue0: function() {
+    onEditValue0: function () {
         if (this.getOption('can_modify')) {
             var model = this.model;
 
@@ -219,11 +231,12 @@ var View = Marionette.ItemView.extend({
 
                 changeLabel.render();
                 changeLabel.ui.value.val(this.model.get('value0'));
+                return false;
             }
         }
     },
 
-    onEditValue1: function() {
+    onEditValue1: function () {
         if (this.getOption('can_modify')) {
             var model = this.model;
 
@@ -391,9 +404,10 @@ var View = Marionette.ItemView.extend({
 
                 changeLabel.render();
                 changeLabel.ui.value.val(this.model.get('value1'));
+                return false;
             }
         }
-    },
+    }
 });
 
 module.exports = View;

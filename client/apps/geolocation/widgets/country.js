@@ -369,5 +369,22 @@ _.extend(CountryType.prototype, DescriptorFormatType.prototype, {
     }
 });
 
+CountryType.DescriptorTypeDetailsView = Marionette.ItemView.extend({
+    className: 'descriptor-type-details-format',
+    template: "<div></div>",
+
+    initialize: function() {
+        this.listenTo(this.model, 'change', this.render, this);
+    },
+
+    onRender: function() {
+    },
+
+    getFormat: function() {
+        return {
+        }
+    }
+});
+
 module.exports = CountryType;
 

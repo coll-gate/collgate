@@ -9,7 +9,8 @@
  */
 
 body {
-    background-color: #faf0eb;
+    /*background-color: #faf0eb;*/
+    background-image: linear-gradient(to right, #ffffff 0, #d2ffba 35%,  #e7ffc1 50%, #d2ffba 65%, #ffffff 100%);
 }
 
 hr {
@@ -21,7 +22,7 @@ hr {
 .navbar {
     /*height: 50px;*/
     margin-bottom: 10px;  /* default is 20px */
-    background-image: linear-gradient(to bottom, #000000 0, #A0BD2E 100%);
+    background-image: linear-gradient(to bottom, #000000 0, #114f33 50%, #A0BD2E 100%);
 }
 
 @media (min-width: 1800px) {

@@ -5,7 +5,7 @@
  * @date 2017-01-25
  * @copyright Copyright (c) 2017 INRA/CIRAD
  * @license MIT (see LICENSE file)
- * @details 
+ * @details
  */
 
 var Marionette = require('backbone.marionette');
@@ -31,25 +31,32 @@ var Layout = Marionette.LayoutView.extend({
         'change @ui.format_type': 'changeFormatType'
     },
 
-    initialize: function() {
+    initialize: function () {
     },
 
-    onRender: function() {
+    onRender: function () {
         var format = this.model.get('format');
 
         application.descriptor.views.formatTypes.drawSelect(this.ui.format_type, true, false, format.type);
 
-        // @todo check user permissions
-        if (!this.model.get('can_modify')) {
-            this.ui.save.hide();
-        }
-
         // update the contextual region according to the format
         var Element = application.descriptor.widgets.getElement(format.type);
         if (Element && Element.DescriptorTypeDetailsView) {
-            this.getRegion('content').show(new Element.DescriptorTypeDetailsView({model: this.model}));
+            var content_el = new Element.DescriptorTypeDetailsView({model: this.model});
+            this.getRegion('content').show(content_el);
         } else {
             this.getRegion('content').empty();
+        }
+
+        // @todo check user permissions
+        if (!this.model.get('can_modify')) {
+            this.ui.save.hide();
+            _.map(this.ui, function (key) {
+                key.prop('disabled', 'true');
+            });
+            _.map(content_el.ui, function (key) {
+                key.prop('disabled', 'true');
+            });
         }
     },
 
@@ -100,7 +107,7 @@ var Layout = Marionette.LayoutView.extend({
             code: code,
             format: format,
             description: description
-        }, {wait: true}).done(function() {
+        }, {wait: true}).done(function () {
             $.alert.success(gt.gettext("Done"));
         });
     }

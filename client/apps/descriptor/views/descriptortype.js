@@ -9,6 +9,7 @@
  */
 
 var Marionette = require('backbone.marionette');
+var _ = require('underscore');
 var DescriptorTypeModel = require('../models/descriptortype');
 
 var View = Marionette.ItemView.extend({
@@ -17,15 +18,27 @@ var View = Marionette.ItemView.extend({
     template: require('../templates/descriptortype.html'),
 
     ui: {
-        delete_descriptor_type: 'span.delete-descriptor-type',
-        view_descriptor_type: 'td.view-descriptor-type',
-        view_descriptor_value: 'td.view-descriptor-value'
+        delete_btn: '.action.delete',
+        edit_btn: '.action.edit',
+        manage_btn: '.action.manage'
     },
 
     events: {
-        'click @ui.delete_descriptor_type': 'deleteDescriptorType',
-        'click @ui.view_descriptor_type': 'viewDescriptorType',
-        'click @ui.view_descriptor_value': 'viewDescriptorValue'
+        'click @ui.delete_btn': 'deleteDescriptorType',
+        'click @ui.edit_btn': 'viewDescriptorType',
+        'click @ui.manage_btn': 'viewDescriptorValue'
+    },
+
+    templateHelpers/*templateContext*/: function () {
+        return {
+            RowActionsBtn: require('../../main/templates/rowactionsbuttons.html')
+        }
+    },
+
+    behaviors: {
+        ActionBtnEvents: {
+            behaviorClass: require('../../main/behaviors/actionbuttonevents')
+        }
     },
 
     initialize: function() {
@@ -34,17 +47,31 @@ var View = Marionette.ItemView.extend({
 
     onRender: function() {
         // @todo check user permissions
+        // if (!this.model.get('can_modify') || !session.user.isSuperUser || !session.user.isStaff) {
+        //     this.ui.edit_btn.prop("disabled", true);
+        // }
+
+        if (!_.contains(['enum_single', 'enum_pair', 'enum_ordinal'],this.model.get('format').type)) {
+            this.ui.manage_btn.prop('disabled', true)
+        }
+
         if (!this.model.get('can_delete') || !session.user.isSuperUser || !session.user.isStaff) {
-            $(this.ui.delete_descriptor_type).hide();
+            this.ui.delete_btn.prop("disabled", true);
         }
     },
 
     viewDescriptorType: function() {
         Backbone.history.navigate("app/descriptor/group/" + this.model.get('group') + "/type/" + this.model.id + '/', {trigger: true});
+        return false;
     },
 
     viewDescriptorValue: function () {
-        Backbone.history.navigate("app/descriptor/group/" + this.model.get('group') + "/type/" + this.model.id + '/value/', {trigger: true});
+        if (_.contains(['enum_single', 'enum_pair', 'enum_ordinal'],this.model.get('format').type)) {
+            Backbone.history.navigate("app/descriptor/group/" + this.model.get('group') + "/type/" + this.model.id + '/value/', {trigger: true});
+        } else {
+            $.alert.error(gt.gettext("Descriptor can not contain a list of values"));
+        }
+        return false;
     },
 
     deleteDescriptorType: function () {
@@ -53,6 +80,7 @@ var View = Marionette.ItemView.extend({
         } else {
             $.alert.error(gt.gettext("Some values exists for this type of descriptor"));
         }
+        return false;
     }
 });
 
