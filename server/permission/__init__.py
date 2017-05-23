@@ -9,7 +9,7 @@
 # @details 
 
 """
-coll-gate taxonomy module initialisation
+coll-gate classification module initialisation
 """
 
 # Application Config for startup and more...

@@ -9,7 +9,7 @@
 # @details 
 
 """
-coll-gate taxonomy module main
+coll-gate classification module main
 """
 
 from django.utils.translation import ugettext_lazy as _

@@ -19,60 +19,79 @@ hr {
     border-top: solid 1px #96a052;
 }
 
-.navbar {
-    /*height: 50px;*/
-    margin-bottom: 10px;  /* default is 20px */
-    background-image: linear-gradient(to bottom, #000000 0, #114f33 50%, #A0BD2E 100%);
-}
+@media (max-width: 768px) {
+    div.navbar-header {
+        background-image: linear-gradient(to bottom, #000000 0, #114f33 50%, #A0BD2E 100%);
+    }
 
-@media (min-width: 1800px) {
-    div.navbar-container {
-        margin-left: 17.5%;
-        margin-right: 17.5%;
+    div.navbar-collapse {
+        background-color: initial;
+    }
+
+    div.navbar {
+        position: absolute;
+        margin-bottom: 0px;
+        width: 100%;
+        top: 0px;
+    }
+
+    footer {
+        display: none;
+    }
+
+    #root {
+        height: calc(100vh - 50px);
+        margin-top: 50px;
+    }
+
+    div.container {
+        width: 100%;
+        padding: 0px;
     }
 }
 
-@media (max-width: 1799px) {
-    div.navbar-container {
-        margin-left: 12%;
-        margin-right: 12%;
+@media (max-width: 994px) {
+    div.access-buttons {
+        display: none;
     }
 }
 
-@media (max-width: 1555px) {
-    div.navbar-container {
-        margin-left: 7%;
-        margin-right: 7%;
+@media (min-width: 769px) {
+    div.navbar {
+        margin-bottom: 0px;
+        background-image: linear-gradient(to bottom, #000000 0, #A0BD2E 100%);
     }
-}
 
-@media (max-width: 1400px) {
-    div.navbar-container {
-        margin-left: 3%;
-        margin-right: 3%;
+    .container {
+        width: 100%;
+        padding: 0px;
     }
-}
 
-@media (max-width: 1250px) {
-    div.navbar-container {
-        margin-left: 0%;
-        margin-right: 0%;
+    #root {
+        height: calc(100vh - 50px - 10px - 5px - 5px - 1px);  /* 100% of the viewport height - height of header and footer */
     }
 }
 
 @media (min-width: 1200px) {
+    div.navbar {
+        margin-bottom: 10px;
+    }
+
     .container {
         width: 100%;
     }
 
+    div.navbar {
+        flex: 0 1 auto;
+    }
+
     #root {
-        height: calc(100vh - 50px - 10px - 5px - 30px - 1px);  /* 100% of the viewport height - height of header and footer */
+        height: calc(100vh - 50px - 10px - 5px - 15px - 1px);  /* 100% of the viewport height - height of header and footer */
     }
 }
 
 html,
 body {
-    /*height: 94%;*/
     margin: 0
 }
 

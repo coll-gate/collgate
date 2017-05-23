@@ -78,4 +78,3 @@ var View = Marionette.ItemView.extend({
 });
 
 module.exports = View;
-

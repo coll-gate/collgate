@@ -42,7 +42,7 @@ var View = Marionette.ItemView.extend({
 
     onRender: function() {
         // parent rank
-        application.taxonomy.views.taxonRanks.attributeFromValue(this.el, "title");
+        application.classification.views.taxonRanks.attributeFromValue(this.el, "title");
         // and date-time
         // this.ui.datetime.localizeDate(null, session.language);
     },
@@ -52,7 +52,7 @@ var View = Marionette.ItemView.extend({
     },
 
     viewParent: function () {
-        Backbone.history.navigate('app/taxonomy/taxon/' + this.model.get('parent') + '/', {trigger: true});
+        Backbone.history.navigate('app/classification/taxon/' + this.model.get('parent') + '/', {trigger: true});
     }
 });
 

@@ -9,11 +9,11 @@
  */
 
 var LayoutView = require('../../main/views/layout');
-var TaxonModel = require('../../taxonomy/models/taxon');
+var TaxonModel = require('../../classification/models/taxon');
 
 var ScrollingMoreView = require('../../main/views/scrollingmore');
 var ContentBottomLayout = require('../../main/views/contentbottomlayout');
-var EntityPathView = require('../../taxonomy/views/entitypath');
+var EntityPathView = require('../../classification/views/entitypath');
 var AccessionDescriptorEditView = require('../views/accessiondescriptoredit');
 
 var Layout = LayoutView.extend({
@@ -82,9 +82,6 @@ var Layout = LayoutView.extend({
                 accessionLayout.getRegion('descriptors').show(accessionDescriptorView);
             });
         }
-    },
-
-    onResize: function() {
     },
 
     onRender: function() {

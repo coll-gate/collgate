@@ -19,7 +19,7 @@ var View = Dialog.extend({
     templateHelpers/*templateContext*/: function () {
         return {
             entity_types: [
-                {id: 'taxonomy.taxon', label: gt.gettext('Cultivar')},
+                {id: 'classification.taxon', label: gt.gettext('Cultivar')},
                 {id: 'accession.accession', label: gt.gettext('Accession')},
                 {id: 'accession.batch', label: gt.gettext('Batch')}
             ],
@@ -121,8 +121,8 @@ var View = Dialog.extend({
 
         this.ui.results_entity_type.children('option').remove();
 
-        if (entityType === "taxonomy.taxon") {
-            this.ui.results_entity_type.append('<option value="taxonomy.taxon">' + gt.gettext('Cultivar') + '</option>');
+        if (entityType === "classification.taxon") {
+            this.ui.results_entity_type.append('<option value="classification.taxon">' + gt.gettext('Cultivar') + '</option>');
             this.ui.results_entity_type.append('<option value="accession.accession">' + gt.gettext('Accession') + '</option>');
             this.ui.results_entity_type.append('<option value="accession.batch">' + gt.gettext('Batch') + '</option>');
         } else if (entityType === "accession.accession") {

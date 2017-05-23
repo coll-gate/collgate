@@ -56,9 +56,9 @@ class CollGateAccession(ApplicationMain):
             Sample
         ]
 
-        # add the taxon entities models, taxonomy_module
-        taxonomy_app = apps.get_app_config('taxonomy')
-        taxonomy_app.children_entities += [
+        # add the taxon entities models, classification_module
+        classification_app = apps.get_app_config('classification')
+        classification_app.children_entities += [
             Accession
         ]
 
@@ -79,6 +79,16 @@ class CollGateAccession(ApplicationMain):
                       icon=Glyph.SEARCH, order=201))
 
         accession_module.add_menu(menu_accession)
+
+        # batch menu
+        menu_batch = ModuleMenu('batch', _('Batch'), auth=AUTH_USER)
+
+        accession_module.add_menu(menu_batch)
+
+        # action menu
+        menu_action = ModuleMenu('action', _('Action'), auth=AUTH_USER)
+
+        accession_module.add_menu(menu_action)
 
         module_manager.register_module(accession_module)
 

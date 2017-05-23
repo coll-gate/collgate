@@ -23,7 +23,7 @@ from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
 from main.models import Languages
 from permission.utils import get_permissions_for
-from taxonomy.models import Taxon
+from classification.models import Taxon
 
 from .models import Accession, AccessionSynonym
 from .base import RestAccession

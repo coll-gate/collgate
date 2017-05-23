@@ -385,8 +385,8 @@ def get_user_permissions(request, username):
 
     permissions = []
 
-    # from taxonomy.models import Taxon
-    # content_type = ContentType.objects.get_by_natural_key('taxonomy', 'Taxon')
+    # from classification.models import Taxon
+    # content_type = ContentType.objects.get_by_natural_key('classification', 'Taxon')
     # obj = get_object_or_404(Taxon, id=1)
     # UserObjectPermission.objects.assign_perm('change_taxon', user=User.objects.get(username='fscherma'), obj=obj)
 

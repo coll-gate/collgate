@@ -157,39 +157,13 @@ application = new Marionette.Application({
             if (typeof(mode) !== 'string' || !mode)
                 return;
 
-            var m = mode.split('-');
-            if (m.length == 3) {
-                var panels = [
-                    $("div.root-left-bar"),
-                    $("div.root-content"),
-                    $("div.root-right-bar")
-                ];
+            var view = application.getView();
+            if (view && view.setDisplay) {
+                view.setDisplay(mode);
+            }
 
-                for (var i = 0; i < panels.length; ++i) {
-                    var classes = panels[i].attr('class').split(' ');
-
-                    for (var j = 0; j < classes.length; ++j) {
-                        if (classes[j].startsWith('col-')) {
-                            panels[i].removeClass(classes[j]);
-                        }
-                    }
-
-                    if (m[i] && m[i] > 0) {
-                        panels[i].addClass("col-md-" + m[i]);
-                        panels[i].css("display", "block");
-                    }
-                    else {
-                        panels[i].addClass("col-md-" + m[i]);
-                        panels[i].css("display", "none");
-                    }
-                }
-
-                this.updateMessengerDisplay();
-
-                var view = this.getView();
-                if (view && view.onResize) {
-                    view.onResize();
-                }
+            if (view && view.onResize) {
+                view.onResize();
             }
         };
 

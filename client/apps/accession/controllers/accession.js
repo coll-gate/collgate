@@ -61,7 +61,7 @@ var Controller = Marionette.Object.extend({
                     $(this.ui.parent).select2({
                         dropdownParent: $(this.el),
                         ajax: {
-                            url: application.baseUrl + "taxonomy/taxon/search/",
+                            url: application.baseUrl + "classification/taxon/search/",
                             dataType: 'json',
                             delay: 250,
                             data: function (params) {

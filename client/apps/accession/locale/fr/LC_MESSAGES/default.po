@@ -266,7 +266,7 @@ msgstr "Valeur"
 
 #: ../../../templates/search.html:68
 msgid "Returns all"
-msgstr "Renvoi tout les"
+msgstr "Renvoyer tous les"
 
 #: ../../../templates/search.html:78
 msgid "... into a panel"

@@ -89,8 +89,9 @@ INSTALLED_APPS = (
     'geonames',
     'geolocation',
     'organisation',
-    'taxonomy',
-    'accession'
+    'classification',
+    'accession',
+    'collgatecereals'
 )
 
 LOGGING = {
@@ -180,3 +181,11 @@ GEONAMES_COUNTRY_SOURCES = ['/home/mboulnemour/collgate/collgate/server/geonames
 #         'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
 #     }
 # }
+
+APPLICATIONS['geonames'] = {
+    'DB_DEFAULT_SETTINGS': {
+        'geonames_username': '"mboulnemour"',
+        'geonames_include_city_types': ['PPL', 'PPLA', 'PPLA2', 'PPLA3', 'PPLA', 'PPLC',
+                                        'PPLF', 'PPLG', 'PPLL', 'PPLR', 'PPLS', 'STLMT']
+    }
+}
