@@ -59,7 +59,7 @@ hr {
 @media (min-width: 769px) {
     div.navbar {
         margin-bottom: 0px;
-        background-image: linear-gradient(to bottom, #000000 0, #A0BD2E 100%);
+        background-image: linear-gradient(to bottom, #000000 0, #114f33 50%, #A0BD2E 100%);
     }
 
     .container {

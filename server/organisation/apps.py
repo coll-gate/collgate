@@ -101,7 +101,7 @@ class CollGateOrganisation(ApplicationMain):
             grc = GRC()
             grc.save()
 
-            configuration.partial("GRC instance", "GRC instance created. Need configuration.")
+            configuration.partial("organisation", "GRC instance", "GRC instance created. Need configuration.")
         elif num_grcs > 1:
             configuration.wrong(
                 "organisation",

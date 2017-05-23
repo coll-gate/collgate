@@ -72,15 +72,15 @@
             <ul class="nav navbar-nav">
                 {% include 'bootstrap/menu.html' %}
             </ul>
-            <div class="btn-group">
+            <div class="btn-group access-buttons">
                 <button class="btn btn-sm btn-success navbar-btn" id="nav_back"><span class="glyphicon glyphicon-backward"></span></button>
                 <button class="btn btn-sm btn-success navbar-btn" id="nav_fwd"><span class="glyphicon glyphicon-forward"></span></button>
                 <button class="btn btn-sm btn-success navbar-btn" id="nav_refresh"><span class="glyphicon glyphicon-refresh"></span></button>
                 <button class="btn btn-sm btn-default navbar-btn" id="toggle_display" title="{% trans 'Change display' %}"><span class="glyphicon glyphicon-expand"></span></button>
             </div>
-            <form class="navbar-form navbar-right" role="form" method="post" action="{% url 'main:profile-signin' %}">
-                {% csrf_token %}
-                {% if not user.is_authenticated %}
+            {% if not user.is_authenticated %}
+                <form class="navbar-form navbar-right" role="form" method="post" action="{% url 'main:profile-signin' %}">
+                    {% csrf_token %}
                     <div class="form-group">
                         <input type="text" placeholder="{% trans 'Username' %}" class="form-control" name="username">
                     </div>
@@ -88,10 +88,13 @@
                         <input type="password" placeholder="{% trans 'Password' %}" class="form-control" name="password">
                     </div>
                     <button type="submit" class="btn btn-success">{% trans "Sign in" %}</button>
-                {% else %}
-                    <button type="submit" class="btn btn-danger"><span class="glyphicon glyphicon-off"></span></button>
-                {% endif %}
-            </form>
+                </form>
+            {% else %}
+                <!--<form class="navbar-form navbar-right" role="form" method="post" action="{% url 'main:profile-signin' %}">-->
+                    <!--{% csrf_token %}-->
+                    <!--<button type="submit" class="btn btn-danger"><span class="glyphicon glyphicon-off"></span></button>-->
+                <!--</form>-->
+            {% endif %}
             {% if user.is_authenticated %}
                 <ul class="nav navbar-nav navbar-right">
                     <li class="dropdown auth-user">
@@ -100,6 +103,22 @@
                             <b class="caret"></b>
                         </a>
                         <ul class="dropdown-menu" role="menu" aria-labelledby="menu-drop-profile">
+                            <li role="presentation" class="user-language">
+                                <form class="navbar-form" id='set_language' role="form" method="post" action="/coll-gate/i18n/setlang/" style="margin-left: 10px; width: calc(100% - 10px);">
+                                    {% csrf_token %}
+                                    <input hidden id="lang_redirect" value="/coll-gate/" name="next">
+                                    <div class="form-group" style="width: 100%;">
+                                        <select name="language" id="languages" style="width: 100%;">
+                                            {% get_language_info_list for LANGUAGES as languages %}
+                                            {% for language in languages %}
+                                                {% with 'main/img/lang/'|add:language.code|add:'.png' as image_static %}
+                                                <option value="{{ language.code }}" img="{% static image_static %}">{{ language.name_local|capfirst }} ({{ language.code }})</option>
+                                                {% endwith %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </form>
+                            </li>
                             <li role="presentation" class="auth-user">
                                 <a role="menuitem" class="url" tabindex="-1" href="#main/profile/edit/">
                                     <span class="glyphicon glyphicon-user"></span>&nbsp;{% trans "Edit information" %}
@@ -115,7 +134,7 @@
                     </li>
                 </ul>
             {% endif %}
-            <form class="navbar-form navbar-right" id='set_language' role="form" method="post" action="/coll-gate/i18n/setlang/">
+            <!--<form class="navbar-form navbar-right" id='set_language' role="form" method="post" action="/coll-gate/i18n/setlang/">
                 {% csrf_token %}
                 <input hidden id="lang_redirect" value="/coll-gate/" name="next">
                 <div class="form-group" style="margin-top: 4px;">
@@ -128,7 +147,7 @@
                         {% endfor %}
                     </select>
                 </div>
-            </form>
+            </form>-->
         </div><!--/.navbar-collapse -->
     </div>
 </div>
@@ -140,9 +159,9 @@
     {% endblock %}
 </div> <!-- /container -->
 
-<footer class="footer" style="margin-top: 5px;">
+<footer class="footer">
     <div class="container">
-        <p style="text-align:center;">Coll-Gate IS {% collgate "version" %} Copyright &copy; 2016-2017 INRA/CIRAD</p>
+        <div style="text-align:center;">Coll-Gate IS {% collgate "version" %} Copyright &copy; 2016-2017 INRA/CIRAD</div>
     </div>
 </footer>
 
@@ -186,7 +205,7 @@ session.user.settings = {{ profile_settings|safe }};
 {% endif %}
 
 // LTR or RTL language
-var elem = document.getElementById('languages');
+var elem = document.getElementById('drop-profile');
 if (window.getComputedStyle) { // all browsers
     session.languageDirection = window.getComputedStyle(elem, null).getPropertyValue('direction');
 } else { // IE5-8
