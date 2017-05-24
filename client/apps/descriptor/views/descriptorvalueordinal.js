@@ -18,19 +18,26 @@ var View = Marionette.ItemView.extend({
     className: 'element object descriptor-value',
     template: require('../templates/descriptorvalueordinal.html'),
     templateHelpers/*templateContext*/: function() {
-        var ctx = this.model;
-        ctx.format = this.model.collection.format;
-        ctx.can_delete = this.getOption('can_delete');
-        ctx.can_modify = this.getOption('can_modify');
-        return ctx;
+        // var ctx = this.model;
+        // ctx.format = this.model.collection.format;
+        // ctx.can_delete = this.getOption('can_delete');
+        // ctx.can_modify = this.getOption('can_modify');
+        // return ctx;
+        return {RowActionsBtn: require('../../main/templates/rowactionsbuttons.html')}
     },
 
     ui: {
-        edit_value0: 'td.edit-descriptor-value0',
+        edit_btn: '.action.edit'
     },
 
     events: {
-        'click @ui.edit_value0': 'onEditValue0',
+        'click @ui.edit_btn': 'onEditValue0'
+    },
+
+    behaviors: {
+        ActionBtnEvents: {
+            behaviorClass: require('../../main/behaviors/actionbuttonevents')
+        }
     },
 
     initialize: function() {

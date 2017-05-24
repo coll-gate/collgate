@@ -9,7 +9,8 @@
  */
 
 body {
-    background-color: #faf0eb;
+    /*background-color: #faf0eb;*/
+    background-image: linear-gradient(to right, #ffffff 0, #d2ffba 35%,  #e7ffc1 50%, #d2ffba 65%, #ffffff 100%);
 }
 
 hr {
@@ -20,7 +21,7 @@ hr {
 
 @media (max-width: 768px) {
     div.navbar-header {
-        background-image: linear-gradient(to bottom, #000000 0, #A0BD2E 100%);
+        background-image: linear-gradient(to bottom, #000000 0, #114f33 50%, #A0BD2E 100%);
     }
 
     div.navbar-collapse {
@@ -58,7 +59,7 @@ hr {
 @media (min-width: 769px) {
     div.navbar {
         margin-bottom: 0px;
-        background-image: linear-gradient(to bottom, #000000 0, #A0BD2E 100%);
+        background-image: linear-gradient(to bottom, #000000 0, #114f33 50%, #A0BD2E 100%);
     }
 
     .container {

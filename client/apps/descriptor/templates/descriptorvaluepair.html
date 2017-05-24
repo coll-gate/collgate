@@ -8,11 +8,13 @@
  - @details 
 -->
 
-<% if (can_delete) { %>
-<th class="glyph-fixed-column action delete-descriptor-value"><span class="glyphicon glyphicon-minus-sign"></span></th>
-<% } else { %>
-<th class="glyph-fixed-column"><span></span></th>
-<% } %>
-<td class="action edit-descriptor-id" name="id"><%= id %></td>
-<td class="action edit-descriptor-value0"><%= value0 %></td>
-<td class="action edit-descriptor-value1"><%= value1 %></td>
+<td name="id"><%= id %></td>
+<td class="action edit"><%= value0 %></td>
+<td class="action edit2 last-column">
+    <div class="col-xs-6">
+        <%= value1 %>
+    </div>
+    <div class="col-xs-6">
+        <%= RowActionsBtn({manage: false, edit: 2}) %>
+    </div>
+</td>

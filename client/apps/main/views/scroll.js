@@ -198,6 +198,7 @@ var View = Marionette.CompositeView.extend({
                 });
             }
 
+            this.updateColumnsWidth(true);
             this.scrollViewInitialized = true;
         }
 

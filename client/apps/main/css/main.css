@@ -444,3 +444,12 @@ span.column-action {
     width: 1px;
     background-color: #ddd;
 }
+
+div.actions-buttons.btn-group-xs button {
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+/*todo: find way to remove "!important" tag */
+td.last-column {
+    min-width: 120px !important;
+}

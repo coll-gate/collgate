@@ -65,7 +65,7 @@ class CollGateGeolocation(ApplicationMain):
         from . import descriptorformattype
 
         self.format_types += [
-            descriptorformattype.DescriptorFormatTypeGeolocation(),
+            # descriptorformattype.DescriptorFormatTypeGeolocation(),
             descriptorformattype.DescriptorFormatTypeCountry(),
             descriptorformattype.DescriptorFormatTypeCity(),
         ]

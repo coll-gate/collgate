@@ -1,0 +1,42 @@
+<!--
+ - @file descriptorgroup.html
+ - @brief Template for row actions buttons
+ - @author Medhi BOULNEMOUR (INRA UMR1095)
+ - @date 2017-05-19
+ - @copyright Copyright (c) 2016 INRA/CIRAD
+ - @license MIT (see LICENSE file)
+ - @details
+-->
+
+<div class="action actions-buttons btn-group btn-group-xs pull-right" role="group">
+    <% if (typeof(show) !== 'undefined' && show === true) { %>
+    <button class="action show btn btn-default" type="button">
+        <span class="glyphicon glyphicon-eye-open" title="<%= gt.gettext('Show') %>"></span>
+    </button>
+    <% } %>
+
+    <% if (typeof(edit) === 'undefined' || edit !== false) { %>
+    <button class="action edit btn btn-default" type="button">
+        <span class="glyphicon glyphicon-edit"></span>
+    </button>
+    <% } %>
+
+    <% if (typeof(edit) !== 'undefined' && edit === 2) { %>
+    <button class="action edit2 btn btn-default" type="button">
+        <span class="glyphicon glyphicon-edit"></span>
+    </button>
+    <% } %>
+
+    <% if (typeof(manage) === 'undefined' || manage === true) { %>
+    <button class="action manage btn btn-default" type="button">
+        <span class="glyphicon glyphicon-th-list"></span>
+    </button>
+    <% } %>
+
+    <% if (typeof(remove) === 'undefined' || remove === true) { %>
+    <button class="action delete btn btn-default" type="button">
+        <span class="glyphicon glyphicon-trash"></span>
+    </button>
+    <% } %>
+
+</div>
