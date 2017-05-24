@@ -18,9 +18,10 @@ var DescriptorsColumnsView = {
         if (full) {
             // one query by list of value
             for (var i = 0; i < columns.length; ++i) {
-                var columnName = columns[i].name;
+                var columnName = columns[i];
+                var options = this.getOption('columns')[columnName];
 
-                if (columns[i].query) {
+                if (options.query) {
                     // make the list of values
                     var keys = [];
                     var models = [];
@@ -84,8 +85,8 @@ var DescriptorsColumnsView = {
 
                         promises.push(promise);
                     }
-                } else if ("format" in columns[i] && columns[i].format != undefined) {
-                    var dft = application.descriptor.widgets.getElement(columns[i].format.type);
+                } else if ("format" in options && options.format != undefined) {
+                    var dft = application.descriptor.widgets.getElement(options.format.type);
                     if (dft.format != undefined) {
                         for (var j = 0; j < this.collection.models.length; ++j) {
                             var model = this.collection.at(j);
@@ -99,14 +100,18 @@ var DescriptorsColumnsView = {
                     }
                 } else {
                     var cellClassName = "";
-                    if (typeof(columns[i].event) === "string") {
-                        cellClassName = "action " + columns[i].event;
+                    if (typeof(options.event) === "string") {
+                        cellClassName = "action " + options.event;
                     }
 
                     for (var j = 0; j < this.collection.models.length; ++j) {
                         var model = this.collection.at(j);
                         var childView = this.children.findByModel(model);
                         var cell = childView.$el.find('td[name="' + columnName + '"]');
+
+                        if (options.custom) {
+                            childView[options.custom](cell);
+                        }
 
                         cell.addClass(cellClassName)
                     }
@@ -118,9 +123,10 @@ var DescriptorsColumnsView = {
             // one query by list of value
             for (var i = 0; i < columns.length; ++i) {
                 // make the list of values
-                var columnName = columns[i].name;
+                var columnName = columns[i];
+                var options = this.getOption('columns')[columnName];
 
-                if (columns[i].query) {
+                if (options.query) {
                     // make the list of values
                     var keys = [];
                     var models = [];
@@ -184,8 +190,8 @@ var DescriptorsColumnsView = {
 
                         promises.push(promise);
                     }
-                } else if ("format" in columns[i] && columns[i].format != undefined) {
-                    var dft = application.descriptor.widgets.getElement(columns[i].format.type);
+                } else if ("format" in options && options.format != undefined) {
+                    var dft = application.descriptor.widgets.getElement(options.format.type);
                     if (dft.format != undefined) {
                         for (var j = 0; j < lastModels.length; ++j) {
                             var model = lastModels[j];
@@ -199,8 +205,8 @@ var DescriptorsColumnsView = {
                     }
                 } else {
                     var cellClassName = "";
-                    if (typeof(columns[i].event) === "string") {
-                        cellClassName = "action " + columns[i].event;
+                    if (typeof(options.event) === "string") {
+                        cellClassName = "action " + options.event;
                     }
 
                     for (var j = 0; j < lastModels.length; ++j) {
@@ -208,9 +214,8 @@ var DescriptorsColumnsView = {
                         var childView = this.children.findByModel(model);
                         var cell = childView.$el.find('td[name="' + columnName + '"]');
 
-                        if (columns[i].custom) {
-                            var html = childView[columns[i].custom](cell);
-                            console.log(html);
+                        if (options.custom) {
+                            childView[options.custom](cell);
                         }
 
                         cell.addClass(cellClassName)

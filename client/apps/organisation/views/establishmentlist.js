@@ -21,24 +21,36 @@ var View = ScrollView.extend({
 
     templateHelpers/*templateContext*/: function () {
         return {
-            columns: this.displayedColumns
+            columnsList: this.displayedColumns,
+            columnsOptions: this.getOption('columns')
         }
     },
 
     childViewOptions: function () {
         return {
-            columns: this.displayedColumns
+            columnsList: this.displayedColumns,
+            columnsOptions: this.getOption('columns')
         }
     },
 
-    initialize: function(options) {
-        View.__super__.initialize.apply(this);
+    defaultColumns: [
+        {name: 'glyph', width: 'auto', sort_by: null},
+        {name: 'name', width: 'auto', sort_by: 'asc'},
+        {name: 'establishment_code', width: 'auto', sort_by: null},
+        {name: 'establishment_zipcode', width: 'auto', sort_by: null},
+        {name: 'establishment_geolocation', width: 'auto', sort_by: null},
+    ],
 
-        this.displayedColumns = [
-            {name: 'establishment_code', label: 'Code', query: false},
-            {name: 'establishment_zipcode', label: 'Zipcode', query: false},
-            {name: 'establishment_geolocation', label: 'Location', query: true}
-        ];
+    columnsOptions: {
+        'name': {label: gt.gettext('Name'), minWidth: true, event: 'view-establishment'},
+        'establishment_code': {label: gt.gettext('Code'), minWidth: true, format: {type: 'string'}},
+        'establishment_zipcode': {label: gt.gettext('Zipcode'), minWidth: true, format: {type: 'string'}},
+        'establishment_geolocation': {
+            label: gt.gettext('Location'), minWidth: true, event: 'view-establishments', query: true}
+    },
+
+    initialize: function(options) {
+        View.__super__.initialize.apply(this, arguments);
 
         this.listenTo(this.collection, 'reset', this.render, this);
     }
@@ -48,4 +60,3 @@ var View = ScrollView.extend({
 _.extend(View.prototype, DescriptorsColumnsView);
 
 module.exports = View;
-

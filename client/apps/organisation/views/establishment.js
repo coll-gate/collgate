@@ -14,9 +14,11 @@ var View = Marionette.ItemView.extend({
     tagName: 'tr',
     template: require('../templates/establishment.html'),
     className: "object establishment",
+
     templateHelpers/*templateContext*/: function () {
         return {
-            columns: this.getOption('columns')
+            columnsList: this.getOption('columnsList'),
+            columnsOptions: this.getOption('columnsOptions')
         }
     },
 

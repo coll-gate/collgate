@@ -9,15 +9,16 @@
 -->
 
 <th class="glyph-fixed-column"><span class="remove-accession action glyphicon glyphicon-minus-sign"></span></th>
-<% for (var i = 0; i < columns.length; ++i) { %>
-    <% var column = columns[i]; %>
+<% for (var i = 0; i < columnsList.length; ++i) { %>
+    <% var columnName = columnsList[i]; %>
+    <% var column = columnsOptions[columnName]; %>
     <% if (column.custom) { %>
-        <td name="<%= column.name %>"></td>
+        <td name="<%= columnName %>"></td>
     <% } else if (column.format == undefined) { %>
-        <td name="<%= column.name %>"><%= arguments[0][column.name] %></td>
+        <td name="<%= columnName %>"><%= arguments[0][columnName] %></td>
     <% } else if (column.query) { %>
-        <td name="<%= column.name %>"></td>
+        <td name="<%= columnName %>"></td>
     <% } else { %>
-        <td name="<%= column.name %>"><%= descriptors[column.name] %></td>
+        <td name="<%= columnName %>"><%= descriptors[columnName] %></td>
     <% } %>
 <% } %>

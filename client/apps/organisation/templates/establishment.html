@@ -9,8 +9,16 @@
 -->
 
 <th><span class="delete-establishment action glyphicon glyphicon-minus-sign"></span></th>
-<td class="action view-establishment" name="name" value="<%= name %>"><%= name %></td>
-<% for (var i = 0; i < columns.length; ++i) { %>
-    <% var column = columns[i]; %>
-    <td name="<%= column.name %>" descriptor-id="<% column.id %>"><%= descriptors[column.name] %></td>
+<% for (var i = 0; i < columnsList.length; ++i) { %>
+    <% var columnName = columnsList[i]; %>
+    <% var column = columnsOptions[columnName]; %>
+    <% if (column.custom) { %>
+        <td name="<%= columnName %>"></td>
+    <% } else if (column.format == undefined) { %>
+        <td name="<%= columnName %>"><%= arguments[0][columnName] %></td>
+    <% } else if (column.query) { %>
+        <td name="<%= columnName %>"></td>
+    <% } else { %>
+        <td name="<%= columnName %>"><%= descriptors[columnName] %></td>
+    <% } %>
 <% } %>

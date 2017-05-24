@@ -10,6 +10,7 @@
 
 var ScrollView = require('../../main/views/scroll');
 var OrganisationView = require('../views/organisation');
+var DescriptorsColumnsView = require('../../descriptor/mixins/descriptorscolumns');
 
 var View = ScrollView.extend({
     template: require("../templates/organisationlist.html"),
@@ -20,26 +21,45 @@ var View = ScrollView.extend({
 
     templateHelpers/*templateContext*/: function () {
         return {
-            columns: this.displayedColumns
+            columnsList: this.displayedColumns,
+            columnsOptions: this.getOption('columns')
         }
     },
 
     childViewOptions: function () {
         return {
-            columns: this.displayedColumns
+            columnsList: this.displayedColumns,
+            columnsOptions: this.getOption('columns')
+        }
+    },
+
+    defaultColumns: [
+        {name: 'glyph', width: 'auto', sort_by: null},
+        {name: 'name', width: 'auto', sort_by: 'asc'},
+        {name: 'type', width: 'auto', sort_by: null},
+        {name: 'organisation_acronym', width: 'auto', sort_by: null},
+        {name: 'organisation_code', width: 'auto', sort_by: null},
+        {name: 'num_establishments', width: 'auto', sort_by: null},
+    ],
+
+    columnsOptions: {
+        'name': {label: gt.gettext('Name'), minWidth: true, event: 'view-organisation'},
+        'type': {label: gt.gettext('Type'), minWidth: true, custom: 'organisationTypeCell'},
+        'organisation_acronym': {label: gt.gettext('Acronym'), minWidth: true, format: {type: 'string'}},
+        'organisation_code': {label: gt.gettext('Code'), minWidth: true, format: {type: 'string'}},
+        'num_establishments': {
+            label: gt.gettext('Establishments'), minWidth: true, event: 'view-establishments', custom: 'numEstablishmentsCell'
         }
     },
 
     initialize: function(options) {
-        View.__super__.initialize.apply(this);
-
-        this.displayedColumns = [
-            {name: 'organisation_acronym', label: 'Acronym'},
-            {name: 'organisation_code', label: 'Code'}
-        ];
+        View.__super__.initialize.apply(this, arguments);
 
         this.listenTo(this.collection, 'reset', this.render, this);
     }
 });
+
+// support of descriptors columns extension
+_.extend(View.prototype, DescriptorsColumnsView);
 
 module.exports = View;

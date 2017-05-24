@@ -23,7 +23,8 @@ var View = Marionette.ItemView.extend({
 
     templateHelpers/*templateContext*/: function () {
         return {
-            columns: this.getOption('columns')
+            columnsList: this.getOption('columnsList'),
+            columnsOptions: this.getOption('columnsOptions')
         }
     },
 

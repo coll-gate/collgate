@@ -70,6 +70,10 @@ var View = Marionette.CompositeView.extend({
 
         options || (options = {columns: {}});
 
+        if (options.columns === undefined) {
+            options.columns = {};
+        }
+
         if (this.columnsOptions !== undefined) {
             _.extend(options.columns, this.columnsOptions);
         }
@@ -84,23 +88,18 @@ var View = Marionette.CompositeView.extend({
             this.selectedColumns = this.defaultColumns || [];
         }
 
+        // @todo fix for columns diff between options and settings
+
         // process columns
         this.displayedColumns = [];
 
+        // setup dynamic columns list
         for (var i = 0; i < this.selectedColumns.length; ++i) {
             var columnName = this.selectedColumns[i].name;
             var column = options.columns[columnName];
 
             if (column) {
-                this.displayedColumns.push({
-                    name: columnName,
-                    label: column.label,
-                    query: column.query || false,
-                    format: column.format,
-                    width: this.selectedColumns[i].width,
-                    event: column.event,
-                    custom: column.custom
-                });
+                this.displayedColumns.push(columnName);
             }
         }
 
@@ -257,7 +256,7 @@ var View = Marionette.CompositeView.extend({
                     var width = i < view.selectedColumns.length ? view.selectedColumns[i].width : null;
 
                     // width is defined by the configuration or is computed
-                    if (width != undefined && width != "auto") {
+                    if (width != undefined && width !== "auto") {
                         // size from user settings
                         columnsWidth.push(width);
                     } else {
@@ -271,7 +270,7 @@ var View = Marionette.CompositeView.extend({
             } else {
                 $.each(headerRows, function (i, element) {
                     var width = i < view.selectedColumns.length ? view.selectedColumns[i].width : null;
-                    if (width != undefined && width != "auto") {
+                    if (width != undefined && width !== "auto") {
                         columnsWidth.push(width);
                     } else {
                         columnsWidth.push("auto");
@@ -292,7 +291,7 @@ var View = Marionette.CompositeView.extend({
 
             // if not exist insert the label into a sub-div
             if (label.length === 0) {
-                label = $('<div class="table-advanced-label"></div>').html(el.html()).attr('title', el.text());
+                label = $('<div class="table-advanced-label"></div>').html(el.html()).attr('title', el.text().trim());
                 el.html(label);
 
                 var draggable = label.children('[draggable]');
@@ -358,23 +357,26 @@ var View = Marionette.CompositeView.extend({
             fixedPrevColumn = !!el.hasClass('glyph-fixed-column');
         });
 
-        // auto adjust, recompute the correct with for each column and keep it in local configuration
+        // auto adjust, recompute the correct width for each column and keep it in local configuration
         if (autoAdjust) {
             $.each(headerRows, function(i, element) {
                 var el = $(element);
                 // var label = el.children('div.table-advanced-label');
 
                 if (!el.hasClass('glyph-fixed-column')) {
-                    el.width(el.width());
-                    $(rows[i]).width(el.width());
+                    // el.width(el.width());
+                    // $(rows[i]).width(el.width());
+
+                    // adjust head from body
+                    el.width($(rows[i]).width());
 
                     // and especially of the title div (minus border left width) (@see computeClipping)
                     // label.width(el.width() - (i === 0 ? 0 : 1));
 
                     // update user setting locally (minus border left except on first column)
-                    view.selectedColumns[i].width = el.width();
+                    // view.selectedColumns[i].width = el.width();
                 } else {
-                    view.selectedColumns[i].width = "auto";
+                   view.selectedColumns[i].width = "auto";
                 }
             });
         } else {
@@ -402,13 +404,13 @@ var View = Marionette.CompositeView.extend({
 
             $.each(headerRows, function (i, element) {
                 var el = $(element);
-                var label = el.children('div.table-advanced-label');
+                // var label = el.children('div.table-advanced-label');
 
                 // resize header column except glyph fixed columns
-                if (label.length && !el.hasClass('glyph-fixed-column')) {
+                if (!el.hasClass('glyph-fixed-column')) {
                     // count border left (no left border for the first column)
-                    $(rows[i]).width(columnsWidth[i]);
                     el.width(columnsWidth[i]);
+                    $(rows[i]).width(columnsWidth[i]);
 
                     // (@see computeClipping)
                     // label.width(columnsWidth[i] - (i === 0 ? 0 : 1));
@@ -489,7 +491,7 @@ var View = Marionette.CompositeView.extend({
             e.originalEvent.preventDefault();
         }
 
-        if (e.currentTarget === application.dndElement[0]) {
+        if (application.dndElement && e.currentTarget === application.dndElement[0]) {
             return false;
         }
 
@@ -587,12 +589,12 @@ var View = Marionette.CompositeView.extend({
             this.selectedColumns[i1] = this.selectedColumns[i2];
             this.selectedColumns[i2] = tmp;
 
-            // switch displayedColumns
+            // switch displayedColumns @todo fix insert before
             var col1 = null, col2 = null;
             for (var i = 0; i < this.displayedColumns.length; ++i) {
-                if (this.displayedColumns[i].name === this.selectedColumns[i1].name) {
+                if (this.displayedColumns[i] === this.selectedColumns[i1].name) {
                     col1 = i;
-                } else if (this.displayedColumns[i].name === this.selectedColumns[i2].name) {
+                } else if (this.displayedColumns[i] === this.selectedColumns[i2].name) {
                     col2 = i;
                 }
             }
@@ -958,19 +960,19 @@ var View = Marionette.CompositeView.extend({
 
                 // add displayed columns first in order
                 for (var i = 0 ; i < this.displayedColumns.length; ++i) {
-                    var column = this.displayedColumns[i];
+                    var columnName = this.displayedColumns[i];
 
                     var li = $('<li></li>');
-                    var a = $('<a tabindex="-1" href="#" name="' + column.name + '"></a>');
+                    var a = $('<a tabindex="-1" href="#" name="' + columnName + '"></a>');
                     li.append(a);
 
                     a.append($('<span class="glyphicon glyphicon-check"></span>'));
                     a.prop("displayed", true);
 
-                    a.append('&nbsp;' + column.label);
+                    a.append('&nbsp;' + this.getOption('columns')[columnName].label);
                     ul.append(li);
 
-                    displayedColumns.add(column.name);
+                    displayedColumns.add(columnName);
                 }
 
                 // append others columns by alpha order
@@ -981,8 +983,7 @@ var View = Marionette.CompositeView.extend({
                     var column = columns[columnName];
                     columnsByLabel.push({
                         name: columnName,
-                        label: column.label,
-                        query: column.query || false
+                        label: column.label
                     });
                 }
 
@@ -1026,8 +1027,7 @@ var View = Marionette.CompositeView.extend({
             var columnId = -1;
 
             for (var i = 0; i < this.displayedColumns.length; ++i) {
-                var column = this.displayedColumns[i];
-                if (column.name === columnName) {
+                if (this.displayedColumns[i] === columnName) {
                     columnId = i;
                     break;
                 }
@@ -1060,15 +1060,10 @@ var View = Marionette.CompositeView.extend({
             var column = this.getOption('columns')[columnName];
             var query = column.query || false;
 
-            this.displayedColumns.push({
-                name: columnName,
-                label: column.label,
-                query: query,
-                format: column.format
-            });
+            this.displayedColumns.push(columnName);
 
             // insert the new column dynamically
-            var th = $('<th draggable="true"></th>');
+            var th = $('<th></th>');
             th.attr('name', columnName);
             th.addClass('unselectable');
 

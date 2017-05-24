@@ -13,10 +13,16 @@
         <thead>
             <tr scope="row">
                 <th class="glyph-fixed-column"><span class="glyphicon glyphicon-asterisk"></span></th>
-                <th><%= gt.gettext("Name") %></th>
-                <% for (var i = 0; i < columns.length; ++i) { %>
-                    <% var column = columns[i]; %>
-                    <th name="<%= column.name %>" class="descriptor-column"><%= column.label %></th>
+                <% for (var i = 0; i < columnsList.length; ++i) { %>
+                    <% var columnName = columnsList[i]; %>
+                    <% var column = columnsOptions[columnName]; %>
+                    <% var classes = "unselectable"; %>
+                    <% if (column.minWidth != undefined) classes += " title-column"; %>
+                    <% if (column.action != undefined) classes += " column-action"; %>
+                    <th name="<%= columnName %>" class="unselectable descriptor-column">
+                        <span class="glyphicon glyphicon-sort action sortby-asc-column column-action"></span>
+                        <span class="column-label" draggable="true"><%= column.label %></span>
+                    </th>
                 <% } %>
             </tr>
         </thead>

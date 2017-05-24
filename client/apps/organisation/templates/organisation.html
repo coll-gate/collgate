@@ -9,10 +9,23 @@
 -->
 
 <th class="glyph-fixed-column"><span class="delete-organisation action glyphicon glyphicon-minus-sign"></span></th>
-<td class="action view-organisation" name="name" value="<%= name %>"><%= name %></td>
-<td class="organisation-type" name="type" value="<%= type %>"></td>
-<% for (var i = 0; i < columns.length; ++i) { %>
-    <% var column = columns[i]; %>
-    <td name="<%= column.name %>" descriptor-id="<% column.id %>"><%= descriptors[column.name] %></td>
+<!--<td class="action view-organisation" name="name" value="<%= name %>"><%= name %></td>-->
+<!--<td class="organisation-type" name="type" value="<%= type %>"></td>-->
+<!--<% for (var i = 0; i < columns.length; ++i) { %>-->
+    <!--<% var column = columns[i]; %>-->
+    <!--<td name="<%= column.name %>" descriptor-id="<% column.id %>"><%= descriptors[column.name] %></td>-->
+<!--<% } %>-->
+<!--<td class="action view-establishments" name="num_establishments"><abbr class="badge" style="cursor: pointer;" title="<%= gt.gettext('Manage establishments of the organisation') %>"><%= num_establishments %></abbr></td>-->
+<% for (var i = 0; i < columnsList.length; ++i) { %>
+    <% var columnName = columnsList[i]; %>
+    <% var column = columnsOptions[columnName]; %>
+    <% if (column.custom) { %>
+        <td name="<%= columnName %>"></td>
+    <% } else if (column.format == undefined) { %>
+        <td name="<%= columnName %>"><%= arguments[0][columnName] %></td>
+    <% } else if (column.query) { %>
+        <td name="<%= columnName %>"></td>
+    <% } else { %>
+        <td name="<%= columnName %>"><%= descriptors[columnName] %></td>
+    <% } %>
 <% } %>
-<td class="action view-establishments" name="num_establishments"><abbr class="badge" style="cursor: pointer;" title="<%= gt.gettext('Manage establishments of the organisation') %>"><%= num_establishments %></abbr></td>

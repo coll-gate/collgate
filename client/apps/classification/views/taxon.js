@@ -65,4 +65,3 @@ var TaxonItemView = Marionette.ItemView.extend({
 });
 
 module.exports = TaxonItemView;
-
