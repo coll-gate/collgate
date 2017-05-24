@@ -13,7 +13,8 @@ var Marionette = require('backbone.marionette');
 var View = Marionette.ItemView.extend({
     tagName: 'tr',
     className: 'object accession element',
-    attributes: function() { return {
+    attributes: function() {
+        return {
             'scope': 'row',
             'element-id': this.model.get('id')
         }
@@ -41,10 +42,6 @@ var View = Marionette.ItemView.extend({
     },
 
     onRender: function() {
-        // parent rank
-        application.classification.views.taxonRanks.attributeFromValue(this.el, "title");
-        // and date-time
-        // this.ui.datetime.localizeDate(null, session.language);
     },
 
     viewDetails: function () {
@@ -53,8 +50,17 @@ var View = Marionette.ItemView.extend({
 
     viewParent: function () {
         Backbone.history.navigate('app/classification/taxon/' + this.model.get('parent') + '/', {trigger: true});
+    },
+
+    parentCell: function(td) {
+        var el = $('<span class="parent taxon-rank" title="">' + this.model.get('parent_details').name + '</span>');
+        var rank = application.classification.collections.taxonRanks.findLabel(this.model.get('parent_details').rank);
+
+        el.attr('value', this.model.get('parent_details').rank);
+        el.attr('title', rank);
+
+        td.html(el);
     }
 });
 
 module.exports = View;
-

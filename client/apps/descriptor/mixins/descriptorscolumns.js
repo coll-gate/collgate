@@ -38,10 +38,10 @@ var DescriptorsColumnsView = {
 
                         if (value != undefined) {
                             var childView = this.children.findByModel(model);
-                            var column = childView.$el.find('td[name="' + columnName + '"]');
+                            var cell = childView.$el.find('td[name="' + columnName + '"]');
 
                             // simply replace the value
-                            column.html(value);
+                            cell.html(value);
                         } else if (key != null && key !== "") {
                             keys.push(key);
                             models.push(model);
@@ -84,18 +84,31 @@ var DescriptorsColumnsView = {
 
                         promises.push(promise);
                     }
-                } else if ("format" in columns[i]) {
+                } else if ("format" in columns[i] && columns[i].format != undefined) {
                     var dft = application.descriptor.widgets.getElement(columns[i].format.type);
                     if (dft.format != undefined) {
                         for (var j = 0; j < this.collection.models.length; ++j) {
                             var model = this.collection.at(j);
                             var childView = this.children.findByModel(model);
                             var value = model.get('descriptors')[columnName];
-                            var column = childView.$el.find('td[name="' + columnName + '"]');
+                            var cell = childView.$el.find('td[name="' + columnName + '"]');
 
                             // simply replace the value
-                            column.html(dft.format(value));
+                            cell.html(dft.format(value));
                         }
+                    }
+                } else {
+                    var cellClassName = "";
+                    if (typeof(columns[i].event) === "string") {
+                        cellClassName = "action " + columns[i].event;
+                    }
+
+                    for (var j = 0; j < this.collection.models.length; ++j) {
+                        var model = this.collection.at(j);
+                        var childView = this.children.findByModel(model);
+                        var cell = childView.$el.find('td[name="' + columnName + '"]');
+
+                        cell.addClass(cellClassName)
                     }
                 }
             }
@@ -125,10 +138,10 @@ var DescriptorsColumnsView = {
 
                         if (value != undefined) {
                             var childView = this.children.findByModel(model);
-                            var column = childView.$el.find('td[name="' + columnName + '"]');
+                            var cell = childView.$el.find('td[name="' + columnName + '"]');
 
                             // simply replace the value
-                            column.html(value);
+                            cell.html(value);
                         } else if (key != null && key !== "") {
                             keys.push(key);
                             models.push(model);
@@ -154,10 +167,10 @@ var DescriptorsColumnsView = {
                                 var childView = this.view.children.findByModel(model);
                                 var key = model.get('descriptors')[this.columnName];
 
-                                var column = childView.$el.find('td[name="' + this.columnName + '"]');
+                                var cell = childView.$el.find('td[name="' + this.columnName + '"]');
                                 if (key !== undefined) {
                                     // simply replace the value
-                                    column.html(data.items[key]);
+                                    cell.html(data.items[key]);
                                 }
 
                                 // store in global cache
@@ -171,18 +184,36 @@ var DescriptorsColumnsView = {
 
                         promises.push(promise);
                     }
-                } else if ("format" in columns[i]) {
+                } else if ("format" in columns[i] && columns[i].format != undefined) {
                     var dft = application.descriptor.widgets.getElement(columns[i].format.type);
                     if (dft.format != undefined) {
                         for (var j = 0; j < lastModels.length; ++j) {
                             var model = lastModels[j];
                             var childView = this.children.findByModel(model);
                             var value = model.get('descriptors')[columnName];
-                            var column = childView.$el.find('td[name="' + columnName + '"]');
+                            var cell = childView.$el.find('td[name="' + columnName + '"]');
 
                             // simply replace the value
-                            column.html(dft.format(value));
+                            cell.html(dft.format(value));
                         }
+                    }
+                } else {
+                    var cellClassName = "";
+                    if (typeof(columns[i].event) === "string") {
+                        cellClassName = "action " + columns[i].event;
+                    }
+
+                    for (var j = 0; j < lastModels.length; ++j) {
+                        var model = lastModels[j];
+                        var childView = this.children.findByModel(model);
+                        var cell = childView.$el.find('td[name="' + columnName + '"]');
+
+                        if (columns[i].custom) {
+                            var html = childView[columns[i].custom](cell);
+                            console.log(html);
+                        }
+
+                        cell.addClass(cellClassName)
                     }
                 }
             }

@@ -70,6 +70,10 @@ var View = Marionette.CompositeView.extend({
 
         options || (options = {columns: {}});
 
+        if (this.columnsOptions !== undefined) {
+            _.extend(options.columns, this.columnsOptions);
+        }
+
         this.listenTo(this.collection, 'reset', this.onResetCollection, this);
         this.listenTo(this.collection, 'sync', this.onCollectionSync, this);
 
@@ -85,13 +89,17 @@ var View = Marionette.CompositeView.extend({
 
         for (var i = 0; i < this.selectedColumns.length; ++i) {
             var columnName = this.selectedColumns[i].name;
-            if (options.columns[columnName]) {
+            var column = options.columns[columnName];
+
+            if (column) {
                 this.displayedColumns.push({
                     name: columnName,
-                    label: options.columns[columnName].label,
-                    query: options.columns[columnName].query || false,
-                    format: options.columns[columnName].format,
-                    width: this.selectedColumns[i].width
+                    label: column.label,
+                    query: column.query || false,
+                    format: column.format,
+                    width: this.selectedColumns[i].width,
+                    event: column.event,
+                    custom: column.custom
                 });
             }
         }
@@ -1048,20 +1056,39 @@ var View = Marionette.CompositeView.extend({
                 }
             }
         } else {
-            var query = this.getOption('columns')[columnName].query || false;
+            var column = this.getOption('columns')[columnName];
+            var query = column.query || false;
 
             this.displayedColumns.push({
                 name: columnName,
-                label: this.getOption('columns')[columnName].label,
+                label: column.label,
                 query: query,
-                format: this.getOption('columns')[columnName].format
+                format: column.format
             });
 
             // insert the new column dynamically
-            var th = $('<th></th>');
+            var th = $('<th draggable="true"></th>');
             th.attr('name', columnName);
             th.addClass('unselectable');
-            th.append($('<span draggable="true">' + this.getOption('columns')[columnName].label + '</span>'));
+
+            var labelOrGlyph = $('<span draggable="true">' + this.getOption('columns')[columnName].label + '</span>');
+
+            if (column.minWidth) {
+                th.addClass("title-column");
+            }
+
+            th.append('<span class="glyphicon glyphicon-sort action sortby-asc-column column-action"></span>');
+
+            if (typeof(column.glyphicon) === "string") {
+                labelOrGlyph.addClass("glyphicon " + column.glyphicon);
+            }
+
+            var cellClassName = "";
+            if (typeof(column.event) === "string") {
+                cellClassName = "action " + column.event;
+            }
+
+            th.append(labelOrGlyph);
 
             this.ui.thead.children('tr').append(th);
 
@@ -1074,8 +1101,11 @@ var View = Marionette.CompositeView.extend({
                 var column = $('<td></td>');
                 column.attr('name', columnName);
                 column.attr('descriptor-id', "");
+                column.addClass(cellClassName);
 
-                if (!query) {
+                if (!column.format) {
+                    column.html(item.get(columnName));
+                } else if (!query) {
                     column.html(item.get('descriptors')[columnName]);
                 }
 

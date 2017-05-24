@@ -9,12 +9,13 @@
 -->
 
 <th class="glyph-fixed-column"><span class="remove-accession action glyphicon glyphicon-minus-sign"></span></th>
-<td class="action view-accession-details"><%- code %></td>
-<td class="action view-accession-details"><%- name %></td>
-<td class="action view-parent-details"><abbr class="parent taxon-rank" title="" value="<%- parent_details.rank %>" object-id="<% parent %>"><%- parent_details.name %></abbr></td>
 <% for (var i = 0; i < columns.length; ++i) { %>
     <% var column = columns[i]; %>
-    <% if (column.query) { %>
+    <% if (column.custom) { %>
+        <td name="<%= column.name %>"></td>
+    <% } else if (column.format == undefined) { %>
+        <td name="<%= column.name %>"><%= arguments[0][column.name] %></td>
+    <% } else if (column.query) { %>
         <td name="<%= column.name %>"></td>
     <% } else { %>
         <td name="<%= column.name %>"><%= descriptors[column.name] %></td>

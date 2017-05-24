@@ -133,8 +133,8 @@
                         </ul>
                     </li>
                 </ul>
-            {% endif %}
-            <!--<form class="navbar-form navbar-right" id='set_language' role="form" method="post" action="/coll-gate/i18n/setlang/">
+            {% else %}
+            <form class="navbar-form navbar-right" id='set_language' role="form" method="post" action="/coll-gate/i18n/setlang/">
                 {% csrf_token %}
                 <input hidden id="lang_redirect" value="/coll-gate/" name="next">
                 <div class="form-group" style="margin-top: 4px;">
@@ -147,7 +147,8 @@
                         {% endfor %}
                     </select>
                 </div>
-            </form>-->
+            </form>
+            {% endif %}
         </div><!--/.navbar-collapse -->
     </div>
 </div>
@@ -205,11 +206,11 @@ session.user.settings = {{ profile_settings|safe }};
 {% endif %}
 
 // LTR or RTL language
-var elem = document.getElementById('drop-profile');
+var elem = $('a.navbar-brand.url');
 if (window.getComputedStyle) { // all browsers
-    session.languageDirection = window.getComputedStyle(elem, null).getPropertyValue('direction');
+    session.languageDirection = window.getComputedStyle(elem[0], null).getPropertyValue('direction');
 } else { // IE5-8
-    session.languageDirection = elem.currentStyle.direction;
+    session.languageDirection = elem[0].currentStyle.direction;
 }
 
 function addCss(code) {
@@ -227,7 +228,7 @@ function addCss(code) {
     style.innerHTML = code;
 }
 
-if (session.languageDirection == "rtl") {
+if (session.languageDirection === "rtl") {
     // this fix RTL support for bootstrap select
     addCss(".bootstrap-select.btn-group .btn .caret { position: absolute; top: 50%; left: 12px; margin-top: -2px; vertical-align: middle; }");
     addCss(".bootstrap-select.btn-group .btn .filter-option { display: inline-block; overflow: hidden; width: 100%; text-align: right; }");

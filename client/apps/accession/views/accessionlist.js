@@ -28,6 +28,18 @@ var View = ScrollView.extend({
         {name: 'MCPD_ORIGCTY', width: 'auto', sort_by: null}
     ],
 
+    columnsOptions: {
+        'code': {
+            label: gt.gettext('Code'), width: 'auto', minWidth: true, event: 'view-accession-details'
+        },
+        'name': {
+            label: gt.gettext('Name'), width: 'auto', minWidth: true, event: 'view-accession-details'
+        },
+        'parent': {
+            label: gt.gettext('Classification'), width: 'auto', minWidth: true, event: 'view-parent-details', custom: 'parentCell'
+        }
+    },
+
     templateHelpers/*templateContext*/: function () {
         return {
             columns: this.displayedColumns

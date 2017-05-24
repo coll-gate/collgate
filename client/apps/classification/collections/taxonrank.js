@@ -17,7 +17,7 @@ var TaxonRankCollection = Backbone.Collection.extend({
     findValue: function(id) {
         for (var r in this.models) {
             var rank = this.models[r];
-            if (rank.get('id') == id)
+            if (rank.get('id') === id)
                 return rank.get('value');
         }
     },
@@ -25,11 +25,10 @@ var TaxonRankCollection = Backbone.Collection.extend({
     findLabel: function(value) {
         for (var r in this.models) {
             var rank = this.models[r];
-            if (rank.get('value') == value)
+            if (rank.get('value') === value)
                 return rank.get('label');
         }
     }
 });
 
 module.exports = TaxonRankCollection;
-
