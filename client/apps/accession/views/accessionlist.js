@@ -29,6 +29,7 @@ var View = ScrollView.extend({
     ],
 
     columnsOptions: {
+        'glyph': {label: '', width: 'auto', glyphicon: 'glyphicon-asterisk', event: 'remove-accession', fixed: true},
         'code': {label: gt.gettext('Code'), width: 'auto', minWidth: true, event: 'view-accession-details'},
         'name': {label: gt.gettext('Name'), width: 'auto', minWidth: true, event: 'view-accession-details'},
         'parent': {

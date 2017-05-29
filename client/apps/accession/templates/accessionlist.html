@@ -12,18 +12,29 @@
     <table class="table table-striped table-advanced">
         <thead>
             <tr scope="row">
-                <th class="glyph-fixed-column" name="glyph">
-                    <span class="column-label glyphicon glyphicon-asterisk unselectable"></span>
-                </th>
                 <% for (var i = 0; i < columnsList.length; ++i) { %>
                     <% var columnName = columnsList[i]; %>
                     <% var column = columnsOptions[columnName]; %>
                     <% var classes = "unselectable"; %>
                     <% if (column.minWidth === true) classes += " title-column"; %>
                     <% if (column.action != undefined) classes += " action"; %>
+                    <% if (column.glyphicon != undefined) classes += " glyph-fixed-column"; %>
+                    <% if (column.fixed) classes += " fixed-column"; %>
                     <th name="<%= columnName %>" class="<%= classes %>">
+                    <% if (column.glyphicon != undefined) { %>
+                        <% if (column.fixed) { %>
+                            <span class="glyphicon <%= column.glyphicon %> column-action"></span>
+                        <% } else { %>
+                            <span class="glyphicon <%= column.glyphicon %> column-action" draggable="true"></span>
+                        <% } %>
+                    <% } else { %>
                         <span class="glyphicon glyphicon-sort column-action action sortby-asc-column"></span>
-                        <span class="column-label" draggable="true"><%= column.label %></span>
+                        <% if (column.fixed) { %>
+                            <span class="column-label"><%= column.label %></span>
+                        <% } else { %>
+                            <span class="column-label" draggable="true"><%= column.label %></span>
+                        <% } %>
+                    <% } %>
                     </th>
                 <% } %>
             </tr>

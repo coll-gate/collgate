@@ -197,7 +197,7 @@ var View = Marionette.CompositeView.extend({
                 });
             }
 
-            this.updateColumnsWidth(true);
+            this.updateColumnsWidth();
             this.scrollViewInitialized = true;
         }
 
@@ -209,6 +209,7 @@ var View = Marionette.CompositeView.extend({
 
     onResizeWindow: function() {
         if (this.isDisplayed()) {
+            this.updateColumnsWidth();
             this.updateColumnsWidth(true);
         }
     },
@@ -216,6 +217,7 @@ var View = Marionette.CompositeView.extend({
     onShowTab: function(tabView) {
         if (this.isDisplayed()) {
             this.updateColumnsWidth();
+            this.updateColumnsWidth(true);
         }
     },
 
@@ -234,6 +236,14 @@ var View = Marionette.CompositeView.extend({
         var firstBodyRow = this.ui.tbody.children('tr:first-child');
         var zero = false;
         var view = this;
+
+        var tableWidth = this.ui.tbody.width();
+        if (this.previousTableWidth == undefined) {
+            this.previousTableWidth = tableWidth;
+        }
+
+        var widthFactor = tableWidth / this.previousTableWidth;
+        this.previousTableWidth = tableWidth;
 
         autoAdjust != undefined || (autoAdjust = false);
 
@@ -258,7 +268,7 @@ var View = Marionette.CompositeView.extend({
                     // width is defined by the configuration or is computed
                     if (width != undefined && width !== "auto") {
                         // size from user settings
-                        columnsWidth.push(width);
+                        columnsWidth.push(width * tableWidth);
                     } else {
                         // size from body
                         width = $(element).width();
@@ -271,7 +281,7 @@ var View = Marionette.CompositeView.extend({
                 $.each(headerRows, function (i, element) {
                     var width = i < view.selectedColumns.length ? view.selectedColumns[i].width : null;
                     if (width != undefined && width !== "auto") {
-                        columnsWidth.push(width);
+                        columnsWidth.push(width * tableWidth);
                     } else {
                         columnsWidth.push("auto");
                     }
@@ -295,16 +305,22 @@ var View = Marionette.CompositeView.extend({
                 el.html(label);
 
                 var draggable = label.children('[draggable]');
+
                 draggable.on('dragstart', $.proxy(view.onColumnDragStart, view));
                 draggable.on('dragend', $.proxy(view.onColumnDragEnd, view));
-                draggable.on('dragenter', $.proxy(view.onColumnDragEnter, view));
-                draggable.on('dragleave', $.proxy(view.onColumnDragLeave, view));
-                draggable.on('dragover', $.proxy(view.onColumnDragOver, view));
-                draggable.on('drop', $.proxy(view.onColumnDrop, view));
+
+                el.on('dragenter', $.proxy(view.onColumnDragEnter, view));
+                el.on('dragleave', $.proxy(view.onColumnDragLeave, view));
+                el.on('dragover', $.proxy(view.onColumnDragOver, view));
+                el.on('drop', $.proxy(view.onColumnDrop, view));
             }
 
-            // try to keep as possible the title entirely visible
-            if (el.hasClass('title-column') && label.css('min-width') === '0px') {
+            if (el.hasClass('glyph-fixed-column')) {
+                el.css('min-width', label.width());
+                el.css('max-width', label.width());
+            } else if (el.hasClass('title-column') && label.css('min-width') === '0px') {
+                // try to keep as possible the title entirely visible
+
                 // pre-compute
                 label.width('auto');
                 var minWidth = label.width();
@@ -317,9 +333,6 @@ var View = Marionette.CompositeView.extend({
                 $(rows.get(i)).css('min-width', minWidth + 8 + 8 + (i === 0 ? 0 : 1) + 'px');
                 
                 el.width('auto');
-            } else if (el.hasClass('glyph-fixed-column')) {
-                el.css('min-width', label.width());
-                el.css('max-width', label.width());
             } else if (label.css('min-width') === '0px') {
                 // for each sorter, plus 3 par span, plus 3 of right margin
                 var sorters = label.children('span.column-action').length * (label.children('span.column-action').width() + 3 + 3);
@@ -361,7 +374,7 @@ var View = Marionette.CompositeView.extend({
         if (autoAdjust) {
             $.each(headerRows, function(i, element) {
                 var el = $(element);
-                // var label = el.children('div.table-advanced-label');
+                var label = el.children('div.table-advanced-label');
 
                 if (!el.hasClass('glyph-fixed-column')) {
                     // el.width(el.width());
@@ -374,7 +387,7 @@ var View = Marionette.CompositeView.extend({
                     // label.width(el.width() - (i === 0 ? 0 : 1));
 
                     // update user setting locally (minus border left except on first column)
-                    // view.selectedColumns[i].width = el.width();
+                    view.selectedColumns[i].width = el.width() / tableWidth;
                 } else {
                    view.selectedColumns[i].width = "auto";
                 }
@@ -386,8 +399,8 @@ var View = Marionette.CompositeView.extend({
 
                 // width is defined by the configuration or is computed
                 if (width != undefined && width != "auto") {
-                    // size from user settings
-                    columnsWidth.push(width);
+                    // size from user settings (normalized)
+                    columnsWidth.push(width * tableWidth);
                 } else {
                     // size from body
                     width = $(element).width();
@@ -416,7 +429,7 @@ var View = Marionette.CompositeView.extend({
                     // label.width(columnsWidth[i] - (i === 0 ? 0 : 1));
 
                     // update user setting locally (minus border left except on first column)
-                    view.selectedColumns[i].width = el.width();
+                    view.selectedColumns[i].width = el.width() / tableWidth;
                 } else {
                     view.selectedColumns[i].width = "auto";
                 }
@@ -435,23 +448,23 @@ var View = Marionette.CompositeView.extend({
         // re-adjust when parent send a resize event
         if (this.initialResizeDone) {
             if (this.isDisplayed()) {
+                this.updateColumnsWidth();
                 this.updateColumnsWidth(true);
-                this.computeClipping();
+                // this.computeClipping();
             }
         }
     },
 
     onColumnDragStart: function(e) {
-        var target = $(e.currentTarget);
-
         // fix for firefox...
         e.originalEvent.dataTransfer.setData('text/plain', null);
 
-        target.parent().css('opacity', '0.4');
+        var target = $(e.currentTarget).parent().parent();
+        target.css('opacity', '0.4');
 
         var i1;
         $.each(this.ui.thead.children('tr').children('td,th'), function(i, element) {
-            if (target.parent().parent().attr('name') === $(element).attr('name')) {
+            if (target.attr('name') === $(element).attr('name')) {
                 i1 = i;
                 return false;
             }
@@ -463,16 +476,16 @@ var View = Marionette.CompositeView.extend({
         });
 
         application.dndElement = target;
+        this.targetDropElement = null;
     },
 
     onColumnDragEnd: function(e) {
-        var target = $(e.currentTarget);
-
-        target.parent().css('opacity', 'initial');
+        var target = $(e.currentTarget).parent().parent();
+        target.css('opacity', 'initial');
 
         var i1;
         $.each(this.ui.thead.children('tr').children('td,th'), function(i, element) {
-            if (target.parent().parent().attr('name') === $(element).attr('name')) {
+            if (target.attr('name') === $(element).attr('name')) {
                 i1 = i;
                 return false;
             }
@@ -483,7 +496,26 @@ var View = Marionette.CompositeView.extend({
             $(element).children('th,td').eq(i1).css('opacity', 'initial');
         });
 
+        if (this.targetDropElement) {
+            var target = $(this.targetDropElement);
+            target.css('opacity', 'initial');
+
+            var i2;
+            $.each(this.ui.thead.children('tr').children('td,th'), function(i, element) {
+                if (target.attr('name') === $(element).attr('name')) {
+                    i2 = i;
+                    return false;
+                }
+            });
+
+            // opacity of each cell
+            $.each(this.ui.tbody.children('tr'), function(i, element) {
+                $(element).children('th,td').eq(i2).css('opacity', 'initial');
+            });
+        }
+
         application.dndElement = null;
+        this.targetDropElement = null;
     },
 
     onColumnDragEnter: function(e) {
@@ -491,17 +523,44 @@ var View = Marionette.CompositeView.extend({
             e.originalEvent.preventDefault();
         }
 
+        if (this.targetDropElement) {
+            var oldTarget = $(this.targetDropElement);
+            oldTarget.css('opacity', 'initial');
+
+            var i2;
+            $.each(this.ui.thead.children('tr').children('td,th'), function(i, element) {
+                if (oldTarget.attr('name') === $(element).attr('name')) {
+                    i2 = i;
+                    return false;
+                }
+            });
+
+            // opacity of each cell
+            $.each(this.ui.tbody.children('tr'), function(i, element) {
+                $(element).children('th,td').eq(i2).css('opacity', 'initial');
+            });
+
+            this.targetDropElement = null;
+        }
+
         if (application.dndElement && e.currentTarget === application.dndElement[0]) {
             return false;
         }
 
         var target = $(e.currentTarget);
+        if (target.hasClass('fixed-column')) {
+            return false;
+        }
 
-        target.parent().css('opacity', '0.4');
+        target.css('opacity', '0.4');
+
+        if (this.targetDropElement === e.currentTarget) {
+            return false;
+        }
 
         var i2;
         $.each(this.ui.thead.children('tr').children('td,th'), function(i, element) {
-            if (target.parent().parent().attr('name') === $(element).attr('name')) {
+            if (target.attr('name') === $(element).attr('name')) {
                 i2 = i;
                 return false;
             }
@@ -511,6 +570,8 @@ var View = Marionette.CompositeView.extend({
         $.each(this.ui.tbody.children('tr'), function(i, element) {
             $(element).children('th,td').eq(i2).css('opacity', '0.4');
         });
+
+        this.targetDropElement = e.currentTarget;
 
         return false;
     },
@@ -524,13 +585,16 @@ var View = Marionette.CompositeView.extend({
             return false;
         }
 
-        var target = $(e.currentTarget);
+        if (this.targetDropElement === e.currentTarget) {
+            return false;
+        }
 
-        target.parent().css('opacity', 'initial');
+        var target = $(e.currentTarget);
+        target.css('opacity', 'initial');
 
         var i2;
         $.each(this.ui.thead.children('tr').children('td,th'), function(i, element) {
-            if (target.parent().parent().attr('name') === $(element).attr('name')) {
+            if (target.attr('name') === $(element).attr('name')) {
                 i2 = i;
                 return false;
             }
@@ -540,6 +604,8 @@ var View = Marionette.CompositeView.extend({
         $.each(this.ui.tbody.children('tr'), function(i, element) {
             $(element).children('th,td').eq(i2).css('opacity', 'initial');
         });
+
+        this.targetDropElement = null;
 
         return false;
     },
@@ -558,50 +624,61 @@ var View = Marionette.CompositeView.extend({
         }
 
         var target = $(e.currentTarget);
+        if (target.hasClass('fixed-column')) {
+            return false;
+        }
 
-        target.parent().css('opacity', 'initial');
+        target.css('opacity', 'initial');
 
-        var srcName = application.dndElement.parent().parent().attr('name');
-        var dstName = target.parent().parent().attr('name');
+        var srcName = application.dndElement.attr('name');
+        var dstName = target.attr('name');
 
         if (srcName !== dstName) {
             // switch the two columns
-            var i1 = 0, i2 = 0;
+            var i1 = 0, i2 = 0, srcI = -1, dstI = -1;
             $.each(this.ui.thead.children('tr').children('td,th'), function(i, element) {
                 if ($(element).attr('name') === dstName) {
-                    i1 = i;
+                    srcI = i1 = i;
                 } else if ($(element).attr('name') === srcName) {
-                    i2 = i;
+                    dstI = i2 = i;
                 }
             });
 
+            if (i1 < i2 && i1 > 0) {
+                --i1;
+            }
+
             // switch label
-            target.parent().parent().swapWith(application.dndElement.parent().parent());
+            var headColumns = $(this.ui.thead.children('tr')[0]).children('th,td');
+            headColumns.eq(i2).moveBefore(headColumns.eq(i1).css('opacity', 'initial'));
 
             // switch for any row and reset opacity
             $.each(this.ui.tbody.children('tr'), function(i, element) {
                 var columns = $(element).children('th,td');
-                columns.eq(i1).swapWith(columns.eq(i2)).css('opacity', 'initial');
+                columns.eq(srcI).css('opacity', 'initial');
+                columns.eq(i2).moveBefore(columns.eq(i1));
             });
 
-            // switch selectedColumns
-            var tmp = this.selectedColumns[i1];
-            this.selectedColumns[i1] = this.selectedColumns[i2];
-            this.selectedColumns[i2] = tmp;
-
-            // switch displayedColumns @todo fix insert before
             var col1 = null, col2 = null;
             for (var i = 0; i < this.displayedColumns.length; ++i) {
-                if (this.displayedColumns[i] === this.selectedColumns[i1].name) {
+                if (this.displayedColumns[i] === this.selectedColumns[srcI].name) {
                     col1 = i;
                 } else if (this.displayedColumns[i] === this.selectedColumns[i2].name) {
                     col2 = i;
                 }
             }
 
-            tmp = this.displayedColumns[col1];
-            this.displayedColumns[col1] = this.displayedColumns[col2];
-            this.displayedColumns[col2] = tmp;
+            // switch selectedColumns
+            var tmp = this.selectedColumns[i2];
+
+            this.selectedColumns.splice(i2, 1);
+            this.selectedColumns.splice(srcI, 0, tmp);
+
+            // // switch displayedColumns
+            tmp = this.displayedColumns[col2];
+
+            this.displayedColumns.splice(col2, 1);
+            this.displayedColumns.splice(col1, 0, tmp);
 
             // re-adjust columns for some cases
             this.updateColumnsWidth(true);
@@ -685,6 +762,7 @@ var View = Marionette.CompositeView.extend({
             $('body').removeClass('unselectable');
 
             var view = this;
+            var tableWidth = this.ui.tbody.width();
 
             var headerRows = this.ui.thead.children('tr').children('td,th');
             $.each(headerRows, function (i, element) {
@@ -692,7 +770,7 @@ var View = Marionette.CompositeView.extend({
 
                 // ignored fixed columns width
                 if (!el.hasClass('glyph-fixed-column')) {
-                    view.selectedColumns[i].width = el.width();
+                    view.selectedColumns[i].width = el.width() / tableWidth;
                 } else {
                     view.selectedColumns[i].width = "auto";
                 }
@@ -731,21 +809,21 @@ var View = Marionette.CompositeView.extend({
             // and body
             $(body[this.resizingColumnIndex-1]).width(leftWidth);
             $(body[this.resizingColumnIndex]).width(rightWidth);
-
+/*
             // and auto-adjust all columns from body constraints
             $.each(body, function(i, element) {
                 var el = $(element);
                 var headEl = $(head[i]);
-                var div = headEl.children('div.table-advanced-label');
+                var label = headEl.children('div.table-advanced-label');
 
                 if (!el.hasClass('glyph-fixed-column')) {
                     headEl.width(el.width());
 
                     // adjust the label div (minus border left width)
-                    div.width(el.width() - (i === 0 ? 0 : 1));
+                    label.width(el.width() - (i === 0 ? 0 : 1));
                 }
             });
-
+*/
             this.computeClipping();
         }
     },
@@ -954,6 +1032,8 @@ var View = Marionette.CompositeView.extend({
             if (contextMenu.css('display') === 'block') {
                 contextMenu.hide();
             } else {
+                var columns = this.getOption('columns') || {};
+
                 // clear previous values
                 var ul = contextMenu.children('ul.dropdown-menu').html("");
                 var displayedColumns = new Set();
@@ -961,6 +1041,9 @@ var View = Marionette.CompositeView.extend({
                 // add displayed columns first in order
                 for (var i = 0 ; i < this.displayedColumns.length; ++i) {
                     var columnName = this.displayedColumns[i];
+
+                    if (columnName in columns && columns[columnName].fixed)
+                        continue;
 
                     var li = $('<li></li>');
                     var a = $('<a tabindex="-1" href="#" name="' + columnName + '"></a>');
@@ -976,7 +1059,6 @@ var View = Marionette.CompositeView.extend({
                 }
 
                 // append others columns by alpha order
-                var columns = this.getOption('columns') || {};
                 var columnsByLabel = [];
 
                 for (var columnName in columns) {
@@ -993,6 +1075,9 @@ var View = Marionette.CompositeView.extend({
 
                 for (var c in columnsByLabel) {
                     var column = columnsByLabel[c];
+
+                    if (column.name in columns && columns[column.name].fixed)
+                        continue;
 
                     if (!displayedColumns.has(column.name)) {
                         var li = $('<li></li>');
@@ -1067,7 +1152,10 @@ var View = Marionette.CompositeView.extend({
             th.attr('name', columnName);
             th.addClass('unselectable');
 
-            var labelOrGlyph = $('<span draggable="true">' + this.getOption('columns')[columnName].label + '</span>');
+            var labelOrGlyph = $('<span>' + this.getOption('columns')[columnName].label + '</span>');
+            if (!!!column.fixed) {
+                labelOrGlyph.prop('draggable', true);
+            }
 
             if (column.minWidth) {
                 th.addClass("title-column");
@@ -1077,11 +1165,16 @@ var View = Marionette.CompositeView.extend({
 
             if (typeof(column.glyphicon) === "string") {
                 labelOrGlyph.addClass("glyphicon " + column.glyphicon);
+                th.addClass('glyph-fixed-column');
             }
 
             var cellClassName = "";
             if (typeof(column.event) === "string") {
                 cellClassName = "action " + column.event;
+            }
+
+            if (column.fixed) {
+                th.addClass('fixed-column');
             }
 
             th.append(labelOrGlyph);
@@ -1096,7 +1189,6 @@ var View = Marionette.CompositeView.extend({
                 var item = collection.get(el.attr('element-id'));
                 var column = $('<td></td>');
                 column.attr('name', columnName);
-                column.attr('descriptor-id', "");
                 column.addClass(cellClassName);
 
                 if (!column.format) {

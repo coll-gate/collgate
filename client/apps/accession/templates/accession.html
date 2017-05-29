@@ -8,17 +8,14 @@
  - @details 
 -->
 
-<th class="glyph-fixed-column"><span class="remove-accession action glyphicon glyphicon-minus-sign"></span></th>
 <% for (var i = 0; i < columnsList.length; ++i) { %>
     <% var columnName = columnsList[i]; %>
     <% var column = columnsOptions[columnName]; %>
-    <% if (column.custom) { %>
-        <td name="<%= columnName %>"></td>
-    <% } else if (column.format == undefined) { %>
-        <td name="<%= columnName %>"><%= arguments[0][columnName] %></td>
-    <% } else if (column.query) { %>
-        <td name="<%= columnName %>"></td>
-    <% } else { %>
-        <td name="<%= columnName %>"><%= descriptors[columnName] %></td>
-    <% } %>
+    <% var classes = ""; %>
+    <% if (column.glyphicon != undefined) classes += " glyph-fixed-column"; %>
+    <td name="<%= columnName %>" class="<%= classes %>">
+        <% if (column.glyphicon) { %><span class="glyphicon glyphicon-minus-sign"></span>
+        <% } else if (column.format == undefined) { %><%= arguments[0][columnName] %>
+        <% } else { %><%= descriptors[columnName] %><% } %>
+    </td>
 <% } %>
