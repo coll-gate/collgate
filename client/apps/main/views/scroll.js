@@ -650,13 +650,13 @@ var View = Marionette.CompositeView.extend({
 
             // switch label
             var headColumns = $(this.ui.thead.children('tr')[0]).children('th,td');
-            headColumns.eq(i2).moveBefore(headColumns.eq(i1).css('opacity', 'initial'));
+            headColumns.eq(i2).insertAfter(headColumns.eq(i1).css('opacity', 'initial'));
 
             // switch for any row and reset opacity
             $.each(this.ui.tbody.children('tr'), function(i, element) {
                 var columns = $(element).children('th,td');
                 columns.eq(srcI).css('opacity', 'initial');
-                columns.eq(i2).moveBefore(columns.eq(i1));
+                columns.eq(i2).insertAfter(columns.eq(i1));
             });
 
             var col1 = null, col2 = null;
