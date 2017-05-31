@@ -23,9 +23,9 @@
                     <th name="<%= columnName %>" class="<%= classes %>">
                     <% if (column.glyphicon != undefined) { %>
                         <% if (column.fixed) { %>
-                            <span class="glyphicon <%= column.glyphicon %> column-action"></span>
+                            <span class="glyphicon <%= column.glyphicon[0] %> column-action"></span>
                         <% } else { %>
-                            <span class="glyphicon <%= column.glyphicon %> column-action" draggable="true"></span>
+                            <span class="glyphicon <%= column.glyphicon[0] %> column-action" draggable="true"></span>
                         <% } %>
                     <% } else { %>
                         <span class="glyphicon glyphicon-sort column-action action sortby-asc-column"></span>

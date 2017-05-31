@@ -38,6 +38,12 @@ var View = Marionette.ItemView.extend({
         'click @ui.parent': 'viewParent'
     },
 
+    // behaviors: {
+    //     ActionBtnEvents: {
+    //         behaviorClass: require('../../main/behaviors/actionbuttonevents')
+    //     }
+    // },
+
     initialize: function() {
         this.listenTo(this.model, 'change', this.render, this);
     },

@@ -210,6 +210,15 @@ var Layout = Marionette.LayoutView.extend({
 
     onDestroy: function() {
         application.main.defaultRightView();
+    },
+
+    onResize: function() {
+        if (this.activeTab) {
+            var view = this.getRegion(this.activeTab);
+            if (view && view.currentView && view.currentView.onResize) {
+                view.currentView.onResize();
+            }
+        }
     }
 });
 

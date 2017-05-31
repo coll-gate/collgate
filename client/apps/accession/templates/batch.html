@@ -8,9 +8,15 @@
  - @details 
 -->
 
-<th class="glyph-fixed-column"><input type="checkbox" class="select-batch"></th>
-<td class="action view-batch-details"><%- name %></td>
-<% for (var i = 0; i < columns.length; ++i) { %>
-    <% var column = columns[i]; %>
-    <td name="<%= column.name %>"><%= descriptors[column.name] %></td>
+<td class="glyph-fixed-column"><input type="checkbox" class="select-batch"></td>
+<% for (var i = 0; i < columnsList.length; ++i) { %>
+    <% var columnName = columnsList[i]; %>
+    <% var column = columnsOptions[columnName]; %>
+    <% var classes = ""; %>
+    <% if (column.glyphicon != undefined) classes += " glyph-fixed-column"; %>
+    <td name="<%= columnName %>" class="<%= classes %>">
+        <% if (column.glyphicon) { %><span class="glyphicon <%= column.glyphicon[1] %>"></span>
+        <% } else if (column.format == undefined) { %><%= arguments[0][columnName] %>
+        <% } else { %><%= descriptors[columnName] %><% } %>
+    </td>
 <% } %>

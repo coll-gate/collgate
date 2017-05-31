@@ -5,7 +5,7 @@
  - @date 2016-09-01
  - @copyright Copyright (c) 2016 INRA/CIRAD
  - @license MIT (see LICENSE file)
- - @details 
+ - @details
 -->
 
 <div class="table-advanced-head">
@@ -13,11 +13,29 @@
         <thead>
             <tr scope="row">
                 <th class="glyph-fixed-column" name="glyph"><span class="glyphicon glyphicon-asterisk"></span></th>
-                <th class="unselectable" name="name"><%= gt.gettext("Name") %></th>
-                <% for (var i = 0; i < columns.length; ++i) { %>
-                    <% var column = columns[i]; %>
-                    <th name="<%= column.name %>" class="unselectable">
-                        <span class="glyphicon glyphicon-sort action sortby-asc-column column-action"></span><span draggable="true"><%= column.label %></span>
+                <% for (var i = 0; i < columnsList.length; ++i) { %>
+                    <% var columnName = columnsList[i]; %>
+                    <% var column = columnsOptions[columnName]; %>
+                    <% var classes = "unselectable"; %>
+                    <% if (column.minWidth === true) classes += " title-column"; %>
+                    <% if (column.action != undefined) classes += " action"; %>
+                    <% if (column.glyphicon != undefined) classes += " glyph-fixed-column"; %>
+                    <% if (column.fixed) classes += " fixed-column"; %>
+                    <th name="<%= columnName %>" class="<%= classes %>">
+                    <% if (column.glyphicon != undefined) { %>
+                        <% if (column.fixed) { %>
+                            <span class="glyphicon <%= column.glyphicon[0] %> column-action"></span>
+                        <% } else { %>
+                            <span class="glyphicon <%= column.glyphicon[0] %> column-action" draggable="true"></span>
+                        <% } %>
+                    <% } else { %>
+                        <span class="glyphicon glyphicon-sort column-action action sortby-asc-column"></span>
+                        <% if (column.fixed) { %>
+                            <span class="column-label"><%= column.label %></span>
+                        <% } else { %>
+                            <span class="column-label" draggable="true"><%= column.label %></span>
+                        <% } %>
+                    <% } %>
                     </th>
                 <% } %>
             </tr>

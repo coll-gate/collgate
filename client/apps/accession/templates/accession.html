@@ -14,7 +14,7 @@
     <% var classes = ""; %>
     <% if (column.glyphicon != undefined) classes += " glyph-fixed-column"; %>
     <td name="<%= columnName %>" class="<%= classes %>">
-        <% if (column.glyphicon) { %><span class="glyphicon glyphicon-minus-sign"></span>
+        <% if (column.glyphicon) { %><span class="glyphicon <%= column.glyphicon[1] %>"></span>
         <% } else if (column.format == undefined) { %><%= arguments[0][columnName] %>
         <% } else { %><%= descriptors[columnName] %><% } %>
     </td>

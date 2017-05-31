@@ -34,6 +34,20 @@ var View = Marionette.CompositeView.extend({
         'click @ui.add_column_column': 'onAddColumn'
     },
 
+    templateHelpers/*templateContext*/: function () {
+        return {
+            columnsList: this.displayedColumns,
+            columnsOptions: this.getOption('columns')
+        }
+    },
+
+    childViewOptions: function () {
+        return {
+            columnsList: this.displayedColumns,
+            columnsOptions: this.getOption('columns')
+        }
+    },
+
     constructor: function() {
         var prototype = this.constructor.prototype;
 
@@ -87,8 +101,6 @@ var View = Marionette.CompositeView.extend({
         } else {
             this.selectedColumns = this.defaultColumns || [];
         }
-
-        // @todo fix for columns diff between options and settings
 
         // process columns
         this.displayedColumns = [];
@@ -548,7 +560,8 @@ var View = Marionette.CompositeView.extend({
         }
 
         var target = $(e.currentTarget);
-        if (target.hasClass('fixed-column')) {
+        if (target.hasClass('fixed-column') ||
+            target.children('div.table-advanced-label').children('span[draggable=true]').length === 0) {
             return false;
         }
 
@@ -650,13 +663,13 @@ var View = Marionette.CompositeView.extend({
 
             // switch label
             var headColumns = $(this.ui.thead.children('tr')[0]).children('th,td');
-            headColumns.eq(i2).insertAfter(headColumns.eq(i1).css('opacity', 'initial'));
+            headColumns.eq(i2).moveBefore(headColumns.eq(i1).css('opacity', 'initial'));
 
             // switch for any row and reset opacity
             $.each(this.ui.tbody.children('tr'), function(i, element) {
                 var columns = $(element).children('th,td');
                 columns.eq(srcI).css('opacity', 'initial');
-                columns.eq(i2).insertAfter(columns.eq(i1));
+                columns.eq(i2).moveBefore(columns.eq(i1));
             });
 
             var col1 = null, col2 = null;
