@@ -14,8 +14,8 @@ coll-gate medialibrary settings
 
 # Default settings of the application
 APP_DB_DEFAULT_SETTINGS = {
-    'storage_location': '"/coll-gate/storage"',
-    'storage_path': '"media"',
+    'storage_location': "/coll-gate/storage",
+    'storage_path': "media",
     'max_file_size': 16*1024*1024
 }
 

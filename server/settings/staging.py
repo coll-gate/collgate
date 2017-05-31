@@ -166,13 +166,13 @@ EMAIL_HOST_PASSWORD = ""
 
 APPLICATIONS['geonames'] = {
     'DB_DEFAULT_SETTINGS': {
-        'geonames_username': '"demo"',
+        'geonames_username': "demo",
     }
 }
 
 APPLICATIONS['medialibrary'] = {
     'DB_DEFAULT_SETTINGS': {
-        'storage_location': '"/coll-gate/media"',
-        'storage_path': '"/var/lib/collgate/media"'
+        'storage_location': "/coll-gate/media",
+        'storage_path': "/var/lib/collgate/media"
     }
 }

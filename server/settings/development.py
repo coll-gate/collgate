@@ -184,8 +184,15 @@ GEONAMES_COUNTRY_SOURCES = ['/home/mboulnemour/collgate/collgate/server/geonames
 
 APPLICATIONS['geonames'] = {
     'DB_DEFAULT_SETTINGS': {
-        'geonames_username': '"mboulnemour"',
+        'geonames_username': "mboulnemour",
         'geonames_include_city_types': ['PPL', 'PPLA', 'PPLA2', 'PPLA3', 'PPLA', 'PPLC',
                                         'PPLF', 'PPLG', 'PPLL', 'PPLR', 'PPLS', 'STLMT']
+    }
+}
+
+APPLICATIONS['medialibrary'] = {
+    'DB_DEFAULT_SETTINGS': {
+        'storage_location': "/coll-gate/storage",
+        'storage_path': "media"
     }
 }

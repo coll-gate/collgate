@@ -17,7 +17,7 @@ from django.conf import settings
 
 # Default settings of the application
 APP_DB_DEFAULT_SETTINGS = {
-    'geonames_username': '"demo"',
+    'geonames_username': "demo",
     'geonames_include_city_types': ['PPL', 'PPLA', 'PPLA2', 'PPLA3', 'PPLA', 'PPLC',
                                     'PPLF', 'PPLG', 'PPLL', 'PPLR', 'PPLS', 'STLMT']
 }
@@ -120,4 +120,3 @@ class IAlternate:
     isShort = 5
     isColloquial = 6
     isHistoric = 7
-

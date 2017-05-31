@@ -130,4 +130,3 @@ class Command(BaseCommand):
             connection.commit()
 
         connection.close()
-
