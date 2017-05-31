@@ -14,7 +14,7 @@ coll-gate application settings
 
 # Default settings of the application
 APP_DB_DEFAULT_SETTINGS = {
-    "emailer": '"frederic.scherma@clermont.inra.fr"',
+    "emailer": "frederic.scherma@inra.fr",
 }
 
 APP_VERBOSE_NAME = "Coll-Gate :: Main"
@@ -25,4 +25,3 @@ APP_SETTINGS_MODEL = 'main.models.Settings'
 HTTP_TEMPLATE_STRING = "main/%s.html"
 
 APP_VERSION = (0, 1, 0)
-

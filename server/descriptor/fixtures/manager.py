@@ -241,6 +241,12 @@ class FixtureManager:
                 panel['id'] = panel_model.id
                 position += 1
 
+                # create indexes
+                dmts = panel_model.descriptor_model.descriptor_model_types
+                for dmt in dmts:
+                    if dmt.index != 0:
+                        pass  # @todo
+
             # keep id for others fixtures
             v['id'] = descriptor_meta_model.id
 

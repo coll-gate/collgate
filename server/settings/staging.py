@@ -166,16 +166,13 @@ EMAIL_HOST_PASSWORD = ""
 
 APPLICATIONS['geonames'] = {
     'DB_DEFAULT_SETTINGS': {
-        'geonames_username': '"demo"',
-        'geonames_include_city_types': ['PPL', 'PPLA', 'PPLA2', 'PPLA3', 'PPLA', 'PPLC',
-                                        'PPLF', 'PPLG', 'PPLL', 'PPLR', 'PPLS', 'STLMT']
+        'geonames_username': "demo",
     }
 }
 
 APPLICATIONS['medialibrary'] = {
     'DB_DEFAULT_SETTINGS': {
-        'storage_location': '"/coll-gate/media"',
-        'storage_path': '"/var/lib/collgate/media"',
-        'max_file_size': 16777216
+        'storage_location': "/coll-gate/media",
+        'storage_path': "/var/lib/collgate/media"
     }
 }
