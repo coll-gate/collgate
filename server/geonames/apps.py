@@ -52,20 +52,25 @@ class CollGateGeonames(ApplicationMain):
                                   'PPLF', 'PPLG', 'PPLH', 'PPLL', 'PPLQ', 'PPLR', 'PPLS', 'PPLW',
                                   'PPLX', 'STLMT']
 
-        codes_supported = True
-        for code in self.geonames_include_city_types:
-            if code not in geonames_features_code:
-                codes_supported = False
-                break
+        if isinstance(self.geonames_include_city_types, list):
+            codes_supported = True
+            for code in self.geonames_include_city_types:
+                if code not in geonames_features_code:
+                    codes_supported = False
+                    break
 
-        if not codes_supported:
+            if not codes_supported:
+                configuration.wrong('geonames',
+                                    'geonames_include_city_types',
+                                    "City types not supported")
+            else:
+                configuration.validate('geonames',
+                                       'geonames_include_city_types',
+                                       "City types supported : FeatureCode -> %s " % self.geonames_include_city_types)
+        else:
             configuration.wrong('geonames',
                                 'geonames_include_city_types',
-                                "City types not supported")
-        else:
-            configuration.validate('geonames',
-                                   'geonames_include_city_types',
-                                   "City types supported : FeatureCode -> %s " % self.geonames_include_city_types)
+                                "Invalid format (not a list)")
 
         instance.geonames_include_city_types = self.geonames_include_city_types
         instance.geonames_username = self.geonames_username
