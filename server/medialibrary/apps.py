@@ -6,14 +6,11 @@
 # @date 2016-09-01
 # @copyright Copyright (c) 2016 INRA/CIRAD
 # @license MIT (see LICENSE file)
-# @details 
-
-"""
-coll-gate medialibrary module main
-"""
+# @details coll-gate medialibrary module main
 
 import os
 
+import sys
 from django.core.exceptions import ImproperlyConfigured
 
 from igdectk.common.apphelpers import ApplicationMain
@@ -36,6 +33,39 @@ class CollGateMediaLibrary(ApplicationMain):
     def ready(self):
         super().ready()
 
+        # create a module medialibrary
+        media_library_module = Module('medialibrary', base_url='coll-gate')
+        media_library_module.include_urls((
+            'base',
+            'media'
+            )
+        )
+
+        # registers media types of formats
+        from . import descriptorformattype
+
+        self.format_types += [
+            descriptorformattype.DescriptorFormatTypeMedia(),
+            descriptorformattype.DescriptorFormatTypeMediaCollection()
+        ]
+
+        from descriptor.descriptorformattype import DescriptorFormatTypeManager
+        DescriptorFormatTypeManager.register(self.format_types)
+
+        module_manager.register_module(media_library_module)
+
+        command_list = ("init_fixtures", "migrate", "makemigrations", "help", "")
+        post_ready = True
+
+        for command in command_list:
+            if command in sys.argv:
+                post_ready = False
+                break
+
+        if post_ready:
+            self.post_ready()
+
+    def post_ready(self):
         # some local settings
         storage_path = self.get_setting('storage_path')
         if not os.path.isabs(storage_path):
@@ -67,25 +97,3 @@ class CollGateMediaLibrary(ApplicationMain):
             configuration.validate("medialibrary",
                                    "Media-library max file size",
                                    "Max file size is %i bytes." % localsettings.max_file_size)
-
-        # create a module medialibrary
-        media_library_module = Module('medialibrary', base_url='coll-gate')
-        media_library_module.include_urls((
-            'base',
-            'media'
-            )
-        )
-
-        # registers media types of formats
-        from . import descriptorformattype
-
-        self.format_types += [
-            descriptorformattype.DescriptorFormatTypeMedia(),
-            descriptorformattype.DescriptorFormatTypeMediaCollection()
-        ]
-
-        from descriptor.descriptorformattype import DescriptorFormatTypeManager
-        DescriptorFormatTypeManager.register(self.format_types)
-
-        module_manager.register_module(media_library_module)
-
