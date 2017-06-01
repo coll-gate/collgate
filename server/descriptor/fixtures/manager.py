@@ -6,11 +6,7 @@
 # @date 2017-01-03
 # @copyright Copyright (c) 2017 INRA/CIRAD
 # @license MIT (see LICENSE file)
-# @details 
-
-"""
-Install the initials asset of data for each application that needs it.
-"""
+# @details Install the initials asset of data for each application that needs it.
 
 from __future__ import unicode_literals, absolute_import, division
 
