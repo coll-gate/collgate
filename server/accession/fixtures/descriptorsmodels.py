@@ -6,7 +6,9 @@
 # @date 2017-01-03
 # @copyright Copyright (c) 2017 INRA/CIRAD
 # @license MIT (see LICENSE file)
-# @details 
+# @details
+
+from descriptor.models import JSONBFieldIndexType
 
 MODELS = {
     'MCPD_ACCESSION_PASSPORT': {
@@ -28,6 +30,7 @@ MODELS = {
                 'name': 'MCPD_ACQDATE',
                 'descriptor_type_name': 'acquisition_date',
                 'label': {'en': 'Acquisition date', 'fr': "Date d'acquisition"},
+                'index': JSONBFieldIndexType.BTREE.value,
                 'mandatory': False,
                 'set_once': False
             },

@@ -6,15 +6,12 @@
 # @date 2016-09-01
 # @copyright Copyright (c) 2016 INRA/CIRAD
 # @license MIT (see LICENSE file)
-# @details 
+# @details coll-gate descriptor module models.
 
-"""
-coll-gate descriptor module models.
-"""
-
+import codecs
 import json
+import hashlib
 
-from django.contrib import postgres
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.postgres.fields import JSONField
 from django.core.exceptions import SuspiciousOperation
@@ -1227,6 +1224,34 @@ class DescriptorModelType(Entity):
         data[lang] = label
         self.label = json.dumps(data)
 
+    def create_or_drop_index(self, describable, db='default'):
+        """
+        Create or drop the index on the describable table, according to the current value of index for the model.
+        :param describable: Model instance
+        :param db: DB name ('default')
+        """
+        # drop previous if exists
+        if self.index != JSONBFieldIndexType.NONE.value:
+            self.drop_index(describable, db=db)
+
+        if self.index == JSONBFieldIndexType.NONE.value:
+            return self.drop_index(describable, db=db)
+        elif self.index == JSONBFieldIndexType.UNIQUE_BTREE.value:
+            return self.create_btree_index(describable, unique=True, db=db)
+        elif self.index == JSONBFieldIndexType.BTREE.value:
+            return self.create_btree_index(describable, unique=False, db=db)
+        elif self.index == JSONBFieldIndexType.GIN.value:
+            return self.create_gin_index(describable, db=db)
+        elif self.index == JSONBFieldIndexType.GIST.value:
+            return self.create_gist_index(describable, db=db)
+
+    def _make_index_name(self, table_name):
+        to_hash = "%s_%s" % (table_name, self.name)
+        index_name = codecs.encode(
+            hashlib.sha1(to_hash.encode()).digest(), 'base64')[0:-2].decode('utf-8').replace('+', '$').replace('/', '_')
+
+        return "descriptor_%s_key" % index_name
+
     def create_btree_index(self, describable, unique=False, db='default'):
         """
         Create a new btree index on a field of JSONB descriptors of the given describable model.
@@ -1234,16 +1259,13 @@ class DescriptorModelType(Entity):
         :param unique: True for unique
         :param db: DB name ('default')
         """
-        if self.index != JSONBFieldIndexType.NONE.value:
-            return False
-
         table = describable._meta.db_table
-        index = "%s_descriptors_%s_key" % (table, self.name)
+        index_name = self._make_index_name(table)
 
         if unique:
-            sql = """CREATE UNIQUE INDEX %s ON %s ((descriptors->'%s'));""" % (index, table, self.name)
+            sql = """CREATE UNIQUE INDEX %s ON %s ((descriptors->'%s'));""" % (index_name, table, self.name)
         else:
-            sql = """CREATE INDEX %s ON %s ((descriptors->'%s'));""" % (index, table, self.name)
+            sql = """CREATE INDEX %s ON %s ((descriptors->'%s'));""" % (index_name, table, self.name)
 
         connection = connections[db]
         with connection.cursor() as cursor:
@@ -1257,13 +1279,10 @@ class DescriptorModelType(Entity):
         :param describable: Model instance
         :param db: DB name ('default')
         """
-        if self.index != JSONBFieldIndexType.NONE.value:
-            return False
-
         table = describable._meta.db_table
-        index = "%s_descriptors_%s_key" % (table, self.name)
+        index_name = self._make_index_name(table)
 
-        sql = """CREATE INDEX %s ON %s USING GIN ((descriptors->'%s'));""" % (index, table, self.name)
+        sql = """CREATE INDEX %s ON %s USING GIN ((descriptors->'%s'));""" % (index_name, table, self.name)
 
         connection = connections[db]
         with connection.cursor() as cursor:
@@ -1277,13 +1296,10 @@ class DescriptorModelType(Entity):
         :param describable: Model instance
         :param db: DB name ('default')
         """
-        if self.index != JSONBFieldIndexType.NONE.value:
-            return False
-
         table = describable._meta.db_table
-        index = "%s_descriptors_%s_key" % (table, self.name)
+        index_name = self._make_index_name(table)
 
-        sql = """CREATE INDEX %s ON %s USING GIST ((descriptors->'%s'));""" % (index, table, self.name)
+        sql = """CREATE INDEX %s ON %s USING GIST ((descriptors->'%s'));""" % (index_name, table, self.name)
 
         connection = connections[db]
         with connection.cursor() as cursor:
@@ -1298,13 +1314,24 @@ class DescriptorModelType(Entity):
         :param db:
         """
         table = describable._meta.db_table
-        index = "%s_descriptors_%s_key" % (table, self.name)
+        index_name = self._make_index_name(table)
 
-        sql = """DROP INDEX IF EXISTS %s""" % index
+        sql = """DROP INDEX IF EXISTS %s""" % index_name
 
         connection = connections[db]
         with connection.cursor() as cursor:
             cursor.execute(sql)
+
+    def count_index_usage(self, content_type):
+        """
+        Check how many users need this index. The index can only be dropped when it reach 0.
+        :return: Number of references
+        """
+        if self.index == JSONBFieldIndexType.NONE.value:
+            return 0
+
+        count = self.descriptor_model.panels.filter(descriptor_meta_model__target=content_type).count()
+        return count
 
     @classmethod
     def integrity_except(cls, model_class, exception):
@@ -1469,7 +1496,9 @@ class DescriptorMetaModel(Entity):
         self.label = json.dumps(data)
 
     def in_usage(self):
-        """Check if some entities use of this meta-model"""
+        """
+        Check if some entities use of this meta-model
+        """
         from django.apps import apps
         describable_entities = apps.get_app_config('descriptor').describable_entities
 

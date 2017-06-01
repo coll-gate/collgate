@@ -57,7 +57,6 @@ class Command(BaseCommand):
 
         from audit import localsettings
 
-        print(options.get('username'))
         if options.get('audit'):
             localsettings.override_settings(True, options.get('username'))
         else:

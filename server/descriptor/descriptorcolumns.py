@@ -6,11 +6,8 @@
 # @date 2017-01-03
 # @copyright Copyright (c) 2017 INRA/CIRAD
 # @license MIT (see LICENSE file)
-# @details 
+# @details coll-gate descriptor module, descriptor columns
 
-"""
-coll-gate descriptor module, descriptor columns
-"""
 import json
 
 from django.contrib.contenttypes.models import ContentType
@@ -55,4 +52,3 @@ def get_columns_name_for_describable_content_type(request, content_type_name):
     }
 
     return HttpResponseRest(request, results)
-

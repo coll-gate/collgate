@@ -26,7 +26,8 @@ from igdectk.rest.response import HttpResponseRest
 
 from main.models import InterfaceLanguages
 from .descriptor import RestDescriptor
-from .models import DescriptorModel, DescriptorPanel, DescriptorMetaModel, DescriptorModelTypeCondition
+from .models import DescriptorModel, DescriptorPanel, DescriptorMetaModel, DescriptorModelTypeCondition, \
+    DescriptorModelType
 
 
 class RestDescriptorMetaModel(RestDescriptor):
@@ -367,7 +368,7 @@ def get_descriptor_meta_model_layout(request, dmm_id):
 def search_descriptor_meta_models(request):
     """
     Filters the meta-models of descriptors by name.
-    @todo could needs pagination
+    @todo could needs cursor and limit
     """
     filters = json.loads(request.GET['filters'])
     page = int_arg(request.GET.get('page', 1))
@@ -503,6 +504,12 @@ def create_descriptor_panel_for_meta_model(request, dmm_id):
             ldp.position = new_position
             ldp.save()
 
+    # create related indexes
+    dmts = dm.descriptor_model_types.all()
+    for dmt in dmts:
+        content_type_model = dmm.target.model_class()
+        dmt.create_or_drop_index(content_type_model)
+
     result = {
         'id': dp.id,
         'label': dp.get_label(),
@@ -635,6 +642,17 @@ def remove_descriptor_panel_of_meta_model(request, dmm_id, pan_id):
 
     panel = get_object_or_404(DescriptorPanel, id=int(pan_id), descriptor_meta_model=dmm)
 
+    # drop related indexes
+    dmms = panel.descriptor_model.descriptor_model_types.all().values_list("id", flat=True)
+    dmts = DescriptorModelType.objects.filter(id__in=dmms)
+
+    for dmt in dmts:
+        content_type_model = dmm.target.model_class()
+
+        # drop only if not used by another descriptor meta model
+        if dmt.count_index_usage(dmm.target) <= 1:
+            dmt.drop_index(content_type_model)
+
     position = panel.position
     panel.delete()
 
@@ -671,10 +689,7 @@ def get_all_labels_of_descriptor_meta_model(request, dmm_id):
 @RestDescriptorMetaModelIdLabel.def_auth_request(
     Method.PUT, Format.JSON, content={
         "type": "object",
-        "additionalProperties": {
-            "type": "string",
-            "maxLength": 64  # @todo regexp to avoid whitespace before and after
-        }
+        "additionalProperties": DescriptorPanel.LABEL_VALIDATOR
     },
     perms={
         'descriptor.change_descriptormetamodel': _('You are not allowed to modify a meta-model of descriptor'),
@@ -729,10 +744,7 @@ def get_all_labels_of_descriptor_meta_model(request, dmm_id, pan_id):
 @RestDescriptorMetaModelIdPanelIdLabel.def_auth_request(
     Method.PUT, Format.JSON, content={
         "type": "object",
-        "additionalProperties": {
-            "type": "string",
-            "maxLength": 64  # @todo regexp to avoid whitespace before and after
-        }
+        "additionalProperties": DescriptorPanel.LABEL_VALIDATOR
     },
     perms={
         'descriptor.change_descriptormetamodel': _('You are not allowed to modify a meta-model of descriptor'),
@@ -764,4 +776,3 @@ def change_all_labels_of_descriptor_panel(request, dmm_id, pan_id):
     }
 
     return HttpResponseRest(request, result)
-

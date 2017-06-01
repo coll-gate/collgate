@@ -20,8 +20,8 @@ import sys
 
 from django.contrib.contenttypes.models import ContentType
 
-from ..models import DescriptorGroup, DescriptorType, DescriptorModel, DescriptorModelType,\
-    DescriptorMetaModel, DescriptorPanel, DescriptorValue
+from ..models import DescriptorGroup, DescriptorType, DescriptorModel, DescriptorModelType, \
+    DescriptorMetaModel, DescriptorPanel, DescriptorValue, JSONBFieldIndexType
 
 
 class FixtureManager:
@@ -242,10 +242,10 @@ class FixtureManager:
                 position += 1
 
                 # create indexes
-                dmts = panel_model.descriptor_model.descriptor_model_types
+                dmts = panel_model.descriptor_model.descriptor_model_types.all()
                 for dmt in dmts:
-                    if dmt.index != 0:
-                        pass  # @todo
+                    content_type_model = content_type.model_class()
+                    dmt.create_or_drop_index(content_type_model)
 
             # keep id for others fixtures
             v['id'] = descriptor_meta_model.id
