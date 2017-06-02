@@ -5,7 +5,7 @@
  * @date 2016-10-27
  * @copyright Copyright (c) 2016 INRA/CIRAD
  * @license MIT (see LICENSE file)
- * @details 
+ * @details
  */
 
 var Marionette = require('backbone.marionette');
@@ -18,51 +18,64 @@ var View = Marionette.ItemView.extend({
     className: 'element object descriptor-meta-model',
     template: require('../templates/descriptormetamodel.html'),
 
-    ui: {
-        delete_descriptor_meta_model: 'span.delete-descriptor-meta-model',
-        change_descriptor_meta_model_label: 'td.change-descriptor-meta-model-label',
-        view_descriptor_meta_model: 'td.view-descriptor-meta-model',
-        view_descriptor_panels: 'td.view-descriptor-panels',
-    },
-
-    events: {
-        'click @ui.delete_descriptor_meta_model': 'deleteDescriptorMetaModel',
-        'click @ui.change_descriptor_meta_model_label': 'editLabel',
-        'click @ui.view_descriptor_meta_model': 'viewDescriptorMetaModelDetails',
-        'click @ui.view_descriptor_panels': 'viewDescriptorPanels',
-    },
-
-    initialize: function() {
-        this.listenTo(this.model, 'change', this.render, this);
-    },
-
-    onRender: function() {
-        // localize content-type
-        application.main.views.contentTypes.htmlFromValue(this.el);
-
-        // TODO check with user permission
-        /*if (!this.model.get('can_delete') || !session.user.isSuperUser) {
-            $(this.ui.delete_descriptor_model).hide();
-        }*/
-    },
-
-    viewDescriptorMetaModelDetails: function() {
-        Backbone.history.navigate("app/descriptor/meta-model/" + this.model.id + "/", {trigger: true});
-    },
-
-    viewDescriptorPanels: function() {
-        Backbone.history.navigate("app/descriptor/meta-model/" + this.model.id + "/panel/", {trigger: true});
-    },
-
-    deleteDescriptorMetaModel: function() {
-        if (this.model.get('num_descriptor_models') == 0) {
-            this.model.destroy({wait: true});
-        } else {
-            $.alert.error(gt.gettext("It is not permitted to delete a meta-model of descriptor that contains some panels"));
+    behaviors: {
+        ActionBtnEvents: {
+            behaviorClass: require('../../main/behaviors/actionbuttonevents'),
+            title_edit2: gt.gettext("Edit label")
         }
     },
 
-    editLabel: function() {
+    ui: {
+        edit_btn: '.action.edit',
+        tag_btn: '.action.tag',
+        manage_btn: '.action.manage',
+        delete_btn: 'button.action.delete'
+    },
+
+    events: {
+        'click @ui.edit_btn': 'viewDescriptorMetaModelDetails',
+        'click @ui.tag_btn': 'editLabel',
+        'click @ui.manage_btn': 'viewDescriptorPanels',
+        'click @ui.delete_btn': 'deleteDescriptorMetaModel'
+    },
+
+    initialize: function () {
+        this.listenTo(this.model, 'change', this.render, this);
+    },
+
+    onRender: function () {
+        // localize content-type
+        application.main.views.contentTypes.htmlFromValue(this.el);
+
+        var rowActionButtons = _.template(require('../../main/templates/rowactionsbuttons.html')({tag: true}));
+        this.$el.append(rowActionButtons);
+
+        var btn_group = this.$el.children('div.row-action-group').children('div.action.actions-buttons');
+
+        // @todo check with user permission
+        // if (!this.model.get('can_delete') || !session.user.isSuperUser || !session.user.isStaff) {
+        //     btn_group.children('button.action.delete').prop('disabled', true);
+        // }
+    },
+
+    viewDescriptorMetaModelDetails: function () {
+        Backbone.history.navigate("app/descriptor/meta-model/" + this.model.id + "/", {trigger: true});
+    },
+
+    viewDescriptorPanels: function () {
+        Backbone.history.navigate("app/descriptor/meta-model/" + this.model.id + "/panel/", {trigger: true});
+    },
+
+    deleteDescriptorMetaModel: function () {
+        // if (this.model.get('num_descriptor_models') === 0) {
+        //     this.model.destroy({wait: true});
+        // } else {
+        //     $.alert.error(gt.gettext("It is not permitted to delete a meta-model of descriptor that contains some panels"));
+        // }
+        this.model.destroy({wait: true});
+    },
+
+    editLabel: function () {
         var model = this.model;
 
         $.ajax({
@@ -113,8 +126,8 @@ var View = Marionette.ItemView.extend({
                     return true;
                 },
 
-                validateLabels: function() {
-                    $.each($(this.ui.label), function(i, label) {
+                validateLabels: function () {
+                    $.each($(this.ui.label), function (i, label) {
                         var v = $(this).val();
 
                         if (v.length > 64) {
@@ -132,7 +145,7 @@ var View = Marionette.ItemView.extend({
 
                     var labels = {};
 
-                    $.each($(this.ui.label), function(i, label) {
+                    $.each($(this.ui.label), function (i, label) {
                         var v = $(this).val();
                         labels[$(label).attr("language")] = v;
                     });
@@ -144,11 +157,11 @@ var View = Marionette.ItemView.extend({
                             dataType: 'json',
                             contentType: "application/json; charset=utf-8",
                             data: JSON.stringify(labels)
-                        }).done(function() {
+                        }).done(function () {
                             // manually update the current context label
                             model.set('label', labels[session.language]);
                             $.alert.success(gt.gettext("Successfully labeled !"));
-                        }).always(function() {
+                        }).always(function () {
                             view.destroy();
                         });
                     }

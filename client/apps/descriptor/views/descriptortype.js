@@ -29,12 +29,6 @@ var View = Marionette.ItemView.extend({
         'click @ui.manage_btn': 'viewDescriptorValue'
     },
 
-    templateHelpers/*templateContext*/: function () {
-        return {
-            RowActionsBtn: require('../../main/templates/rowactionsbuttons.html')
-        }
-    },
-
     behaviors: {
         ActionBtnEvents: {
             behaviorClass: require('../../main/behaviors/actionbuttonevents')
@@ -46,17 +40,24 @@ var View = Marionette.ItemView.extend({
     },
 
     onRender: function() {
+
+        var rowActionButtons = _.template(require('../../main/templates/rowactionsbuttons.html')());
+        this.$el.append(rowActionButtons);
+
+        var btn_group = this.$el.children('div.row-action-group').children('div.action.actions-buttons');
+
         // @todo check user permissions
+
         // if (!this.model.get('can_modify') || !session.user.isSuperUser || !session.user.isStaff) {
-        //     this.ui.edit_btn.prop("disabled", true);
+        //     btn_group.children('button.action.edit').prop('disabled', true);
         // }
 
         if (!_.contains(['enum_single', 'enum_pair', 'enum_ordinal'],this.model.get('format').type)) {
-            this.ui.manage_btn.prop('disabled', true)
+            btn_group.children('button.action.manage').prop('disabled', true);
         }
 
         if (!this.model.get('can_delete') || !session.user.isSuperUser || !session.user.isStaff) {
-            this.ui.delete_btn.prop("disabled", true);
+            btn_group.children('button.action.delete').prop('disabled', true);
         }
     },
 

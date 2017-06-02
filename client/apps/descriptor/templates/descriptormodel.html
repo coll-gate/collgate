@@ -8,8 +8,7 @@
  - @details 
 -->
 
-<th class="glyph-fixed-column"><span class="delete-descriptor-model action glyphicon glyphicon-minus-sign"></span></th>
-<td class="action view-descriptor-model" name="name"><%= name %></td>
-<td class="action view-descriptor-model" name="verbose_name"><%= verbose_name %></td>
-<td class="action view-descriptor-model-types" name="num_descriptor_model_types"><span class="badge" style="cursor: pointer;" title="<%= gt.gettext('Manage models of type of descriptor') %>"><%= num_descriptor_model_types %></span></td>
 <td name="description" class="glyph-fixed-column"><span class="glyphicon glyphicon-question-sign" title="<%= description %>" style="cursor: help;"></span></td>
+<td class="action edit" name="name"><%= name %></td>
+<td class="action edit" name="verbose_name"><%= verbose_name %></td>
+<td class="action manage" name="num_descriptor_model_types"><span class="badge" style="cursor: pointer;" title="<%= gt.gettext('Manage models of type of descriptor') %>"><%= num_descriptor_model_types %></span></td>

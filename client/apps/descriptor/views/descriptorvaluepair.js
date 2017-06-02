@@ -31,10 +31,8 @@ var View = Marionette.ItemView.extend({
     behaviors: {
         ActionBtnEvents: {
             behaviorClass: require('../../main/behaviors/actionbuttonevents'),
-            title: {
-                edit: gt.gettext('Edit value0'),
-                edit2: gt.gettext('Edit value1')
-            }
+            title_edit: gt.gettext('Edit value0'),
+            title_edit2: gt.gettext('Edit value1')
         }
     },
     ui: {
@@ -54,10 +52,28 @@ var View = Marionette.ItemView.extend({
     },
 
     onRender: function () {
+        var rowActionButtons = _.template(require('../../main/templates/rowactionsbuttons.html')({
+            manage: false,
+            edit: 2
+        }));
+        this.$el.append(rowActionButtons);
+
+        var btn_group = this.$el.children('div.row-action-group').children('div.action.actions-buttons');
+
+        // @todo check user permissions
+
+        if (!this.getOption('can_modify') || !session.user.isSuperUser || !session.user.isStaff) {
+            btn_group.children('button.action.edit').prop('disabled', true);
+            btn_group.children('button.action.edit2').prop('disabled', true);
+        }
+
+        if (!this.getOption('can_delete') || !session.user.isSuperUser || !session.user.isStaff) {
+            btn_group.children('button.action.delete').prop('disabled', true);
+        }
     },
 
     deleteDescriptorValue: function () {
-        if (!this.model.get('can_delete') || !session.user.isSuperUser || session.user.isStaff) {
+        if (!this.getOption('can_delete') || !session.user.isSuperUser || session.user.isStaff) {
             this.model.destroy({wait: true});
         }
         return false;

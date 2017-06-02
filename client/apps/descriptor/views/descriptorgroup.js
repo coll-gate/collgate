@@ -16,12 +16,6 @@ var View = Marionette.ItemView.extend({
     className: 'element object descriptor-group actions',
     template: require('../templates/descriptorgroup.html'),
 
-    templateHelpers/*templateContext*/: function () {
-        return {
-            RowActionsBtn: require('../../main/templates/rowactionsbuttons.html')
-        }
-    },
-
     behaviors: {
         ActionBtnEvents: {
             behaviorClass: require('../../main/behaviors/actionbuttonevents')
@@ -46,12 +40,17 @@ var View = Marionette.ItemView.extend({
     },
 
     onRender: function () {
+        var rowActionButtons = _.template(require('../../main/templates/rowactionsbuttons.html')());
+        this.$el.append(rowActionButtons);
+
+        var btn_group = this.$el.children('div.row-action-group').children('div.action.actions-buttons');
+
         // @todo check with user permission
         if (!this.model.get('can_modify') || !session.user.isSuperUser || !session.user.isStaff) {
-            this.ui.edit_btn.prop("disabled", true);
+            btn_group.children('button.action.edit').prop('disabled', true);
         }
         if (!this.model.get('can_delete') || !session.user.isSuperUser || !session.user.isStaff) {
-            this.ui.delete_btn.prop("disabled", true);
+            btn_group.children('button.action.delete').prop('disabled', true);
             var title = gt.gettext('Group of descriptors locked');
             this.ui.status_icon.html('<span class="glyphicon glyphicon-lock" title="' + title + '"></span>');
         }
