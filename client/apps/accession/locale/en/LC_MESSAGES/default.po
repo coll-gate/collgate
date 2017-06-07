@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-17 11:00+0200\n"
+"POT-Creation-Date: 2017-06-01 17:35+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -46,14 +46,28 @@ msgstr ""
 #: ../../../views/batchdescriptorcontext.js:23
 #: ../../../templates/accessionchangesynonym.html:26
 #: ../../../templates/accessioncreate.html:54
-#: ../../../templates/batchcreate.html:46 ../../../templates/search.html:88
+#: ../../../templates/batchcreate.html:46 ../../../templates/search.html:81
 msgid "Cancel"
+msgstr ""
+
+#: ../../../views/accessionlist.js:33
+msgid "Code"
+msgstr ""
+
+#: ../../../views/accessionlist.js:34 ../../../views/batchlist.js:44
+#: ../../../templates/accessionchangesynonym.html:20
+#: ../../../templates/accessionsynonyms.html:16
+msgid "Name"
+msgstr ""
+
+#: ../../../views/accessionlist.js:36
+msgid "Classification"
 msgstr ""
 
 #: ../../../views/accessionlistfooter.js:53
 #: ../../../views/accessionsynonyms.js:60
 #: ../../../views/accessionsynonyms.js:223 ../../../views/batchbottom.js:57
-#: ../../../views/batchlist.js:194 ../../../controllers/accession.js:189
+#: ../../../views/batchlist.js:202 ../../../controllers/accession.js:189
 #: ../../../controllers/accession.js:203
 msgid "3 characters min"
 msgstr ""
@@ -81,20 +95,20 @@ msgstr ""
 msgid "Invalid characters (alphanumeric, _ and - only)"
 msgstr ""
 
-#: ../../../views/batchlist.js:74
+#: ../../../views/batchlist.js:82
 msgid "Batches actions"
 msgstr ""
 
-#: ../../../views/batchlist.js:176
+#: ../../../views/batchlist.js:184
 msgid "Batch name already in usage"
 msgstr ""
 
-#: ../../../views/batchlist.js:191 ../../../controllers/accession.js:186
+#: ../../../views/batchlist.js:199 ../../../controllers/accession.js:186
 #: ../../../controllers/accession.js:200
 msgid "128 characters max"
 msgstr ""
 
-#: ../../../views/batchlist.js:231 ../../../views/search.js:24
+#: ../../../views/batchlist.js:239 ../../../views/search.js:24
 #: ../../../views/search.js:127 ../../../views/search.js:130
 #: ../../../views/search.js:132 ../../../routers/batch.js:55
 msgid "Batch"
@@ -166,13 +180,6 @@ msgstr ""
 msgid "Rename a synonym of accession"
 msgstr ""
 
-#: ../../../templates/accessionchangesynonym.html:20
-#: ../../../templates/accessionlist.html:24
-#: ../../../templates/accessionsynonyms.html:16
-#: ../../../templates/batchlist.html:16
-msgid "Name"
-msgstr ""
-
 #: ../../../templates/accessioncreate.html:15
 msgid "Create an accession"
 msgstr ""
@@ -211,14 +218,6 @@ msgstr ""
 #: ../../../templates/accessionlayout.html:17
 #: ../../../templates/batchlayout.html:17
 msgid "Batches"
-msgstr ""
-
-#: ../../../templates/accessionlist.html:20
-msgid "Code"
-msgstr ""
-
-#: ../../../templates/accessionlist.html:28
-msgid "Classification"
 msgstr ""
 
 #: ../../../templates/accessionsynonyms.html:15
@@ -265,14 +264,10 @@ msgstr ""
 msgid "Returns all"
 msgstr ""
 
-#: ../../../templates/search.html:78
-msgid "... into a panel"
-msgstr ""
-
-#: ../../../templates/search.html:87
+#: ../../../templates/search.html:80
 msgid "Save"
 msgstr ""
 
-#: ../../../templates/search.html:89
+#: ../../../templates/search.html:82
 msgid "Search"
 msgstr ""

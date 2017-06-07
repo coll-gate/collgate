@@ -17,7 +17,7 @@ import sys
 from django.contrib.contenttypes.models import ContentType
 
 from ..models import DescriptorGroup, DescriptorType, DescriptorModel, DescriptorModelType, \
-    DescriptorMetaModel, DescriptorPanel, DescriptorValue, JSONBFieldIndexType
+    DescriptorMetaModel, DescriptorPanel, DescriptorValue
 
 
 class FixtureManager:
@@ -331,4 +331,3 @@ class FixtureManager:
             # empty any previous inline values
             if descriptor is not None:
                 DescriptorType.objects.filter(name=descriptor['name']).update(values="")
-

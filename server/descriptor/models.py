@@ -1631,4 +1631,3 @@ class DescribableEntity(Entity):
 
     class Meta:
         abstract = True
-

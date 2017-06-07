@@ -1,16 +1,14 @@
 # -*- coding: utf-8; -*-
 #
 # @file apps.py
-# @brief 
+# @brief coll-gate application main
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2016-09-01
 # @copyright Copyright (c) 2016 INRA/CIRAD
 # @license MIT (see LICENSE file)
 # @details 
 
-"""
-coll-gate application main
-"""
+import json
 
 from django.utils.translation import ugettext_lazy as _
 
@@ -27,6 +25,20 @@ class CollGateMain(ApplicationMain):
 
     def ready(self):
         super().ready()
+
+        # add defaults languages if they doesn't exists
+        from main.models import Language
+        if not Language.objects.filter(code='en').exists():
+            language = Language(code='en', label=json.dumps({'en': 'English', 'fr': 'Anglais'}))
+            language.save()
+
+        if not Language.objects.filter(code='fr').exists():
+            language = Language(code='fr', label=json.dumps({'en': 'French', 'fr': 'Français'}))
+            language.save()
+
+        if not Language.objects.filter(code='la').exists():
+            language = Language(code='la', label=json.dumps({'en': 'Latin', 'fr': 'Latin'}))
+            language.save()
 
         main_module = Module('main', base_url='coll-gate')
         main_module.include_urls((
@@ -55,6 +67,10 @@ class CollGateMain(ApplicationMain):
         menu_administration.add_entry(
             MenuEntry('server-config', _('Server configuration'), "#main/config/",
                       icon=Glyph.COG, order=-199, auth=AUTH_SUPER_USER))
+
+        menu_administration.add_entry(
+            MenuEntry('language-list', _('Configured languages'), "#main/language/",
+                      icon=Glyph.LIST, order=-198, auth=AUTH_SUPER_USER))
         menu_administration.add_entry(MenuSeparator(-100, auth=AUTH_SUPER_USER))
         main_module.add_menu(menu_administration)
 
@@ -68,4 +84,3 @@ class CollGateMain(ApplicationMain):
         main_module.add_menu(menu_help)
 
         module_manager.register_module(main_module)
-

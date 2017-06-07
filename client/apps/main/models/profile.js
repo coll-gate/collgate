@@ -23,4 +23,3 @@ module.exports = Backbone.Model.extend({
         return application.baseUrl + 'main/profile/';
     }
 });
-

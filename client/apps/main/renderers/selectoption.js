@@ -27,7 +27,8 @@ var Renderer = Marionette.Object.extend({
             this.collection.fetch();  // lazy loading
 
             this.collection.on("sync", this.render, this);  // render the template once got
-            this.collection.on("change", this.render, this);
+            this.collection.on("add", this.render, this);
+            this.collection.on("remove", this.render, this);
             this.collection.on("reset", this.render, this);
         }
     },
@@ -234,4 +235,3 @@ var Renderer = Marionette.Object.extend({
 });
 
 module.exports = Renderer;
-

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-10 10:55+0200\n"
+"POT-Creation-Date: 2017-06-07 09:53+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,33 +29,86 @@ msgstr "Ne devrait pas être vide"
 msgid "Successfully inserted !"
 msgstr "Inséré avec succé !"
 
-#: ../../../routers/main.js:42
+#: ../../../views/language.js:85 ../../../views/language.js:99
+#: ../../../views/languageadd.js:73
+msgid "128 characters max"
+msgstr "128 caractèrs max"
+
+#: ../../../views/language.js:128
+msgid "Successfully labeled !"
+msgstr "Renommé avec succès !"
+
+#: ../../../views/languageadd.js:76
+msgid "3 characters min"
+msgstr "3 caractères min"
+
+#: ../../../views/languageadd.js:119
+msgid "Invalid characters (alphabet, _ and - only)"
+msgstr "Caractères invalides (alphabet, _ et - seulement)"
+
+#: ../../../views/languageadd.js:122
+msgid "2 characters min"
+msgstr "2 caractères min"
+
+#: ../../../views/languageadd.js:132
+msgid "Language code already in usage"
+msgstr "Code de langue existant"
+
+#: ../../../routers/main.js:47
 msgid "Home"
 msgstr "Accueil"
 
-#: ../../../routers/main.js:62
+#: ../../../routers/main.js:67
 msgid "About..."
 msgstr "A propos..."
 
-#: ../../../routers/main.js:70
+#: ../../../routers/main.js:75
 msgid "Help..."
 msgstr "Aide.."
 
-#: ../../../routers/main.js:81
+#: ../../../routers/main.js:86
 msgid "Configuration state"
 msgstr "Etat de la configuration"
+
+#: ../../../routers/main.js:102
+msgid "List of languages for data"
+msgstr "Liste des langues des données"
 
 #: ../../../routers/profile.js:39
 msgid "Edit my profile informations"
 msgstr "Mettre à jour mon profil"
 
-#: ../../../collections/language.js:22 ../../../collections/uilanguage.js:22
+#: ../../../collections/language.js:24 ../../../collections/uilanguage.js:22
 msgid "English"
 msgstr "Anglais"
 
-#: ../../../collections/language.js:23 ../../../collections/uilanguage.js:23
+#: ../../../collections/language.js:25 ../../../collections/uilanguage.js:23
 msgid "French"
 msgstr "Français"
+
+#: ../../../collections/language.js:26
+msgid "Latin"
+msgstr "Latin"
+
+#: ../../../behaviors/actionbuttonevents.js:16
+msgid "show"
+msgstr "voir"
+
+#: ../../../behaviors/actionbuttonevents.js:17
+msgid "Edit"
+msgstr "Editer"
+
+#: ../../../behaviors/actionbuttonevents.js:18
+msgid "Edit2"
+msgstr "Edition2"
+
+#: ../../../behaviors/actionbuttonevents.js:19
+msgid "Manage"
+msgstr "Gérer"
+
+#: ../../../behaviors/actionbuttonevents.js:20
+msgid "Delete"
+msgstr "Supprimer"
 
 #: ../../../templates/actionpanel.html:13
 msgid "Last actions"
@@ -67,7 +120,7 @@ msgstr "Configuré"
 
 #: ../../../templates/config.html:21
 msgid "Improperly configured"
-msgstr "Improprement configuré"
+msgstr "Incorrectement configuré"
 
 #: ../../../templates/config.html:26
 msgid "Partially configured"
@@ -79,6 +132,8 @@ msgstr "Indéfini"
 
 #: ../../../templates/confirmdialog.html:21
 #: ../../../templates/eventmessagecreate.html:34
+#: ../../../templates/languagechangelabel.html:34
+#: ../../../templates/languagecreate.html:38
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -105,6 +160,35 @@ msgstr "Introduction"
 #: ../../../templates/home.html:17
 msgid "Welcome to Coll-Gate"
 msgstr "Bienvenue sur Coll-Gate"
+
+#: ../../../templates/languagechangelabel.html:15
+msgid "Change the label for the language"
+msgstr "Changer l'étiquette pour la langue"
+
+#: ../../../templates/languagechangelabel.html:35
+msgid "Apply"
+msgstr "Appliquer"
+
+#: ../../../templates/languagecreate.html:15
+msgid "Add a language for data"
+msgstr "Ajouter une langue pour les données"
+
+#: ../../../templates/languagecreate.html:22
+#: ../../../templates/languagelist.html:16
+msgid "Code"
+msgstr "Code"
+
+#: ../../../templates/languagecreate.html:30
+msgid "Label for current language"
+msgstr "Etiquette pour le language courant"
+
+#: ../../../templates/languagecreate.html:39
+msgid "Add"
+msgstr "Ajouter"
+
+#: ../../../templates/languagelist.html:17
+msgid "Label"
+msgstr "Etiquette"
 
 #: ../../../templates/leftbar.html:11
 msgid "Welcome"

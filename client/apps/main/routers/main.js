@@ -15,12 +15,17 @@ var DefaultLayout = require('../views/defaultlayout');
 var QuarterLayout = require('../views/quarterlayout');
 var TitleView = require('../views/titleview');
 
+var LanguageCollection = require('../collections/language');
+var LanguageListView = require('../views/languagelist');
+var LanguageAddView = require('../views/languageadd');
+
 var Router = Marionette.AppRouter.extend({
     routes : {
         "app/home/": "home",
         "app/main/about/": "about",
         "app/main/help/": "help",
         "app/main/config/": "config",
+        "app/main/language/": "getLanguagesList",
         "app/*actions": "default"
     },
 
@@ -86,8 +91,25 @@ var Router = Marionette.AppRouter.extend({
 
             defaultLayout.getRegion('content').show(configListView);
         });
+    },
+
+    getLanguagesList: function () {
+        var collection = application.main.collections.languages;
+
+        var defaultLayout = new DefaultLayout({});
+        application.show(defaultLayout);
+
+        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of languages for data")}));
+
+        collection.fetch().done(function (data) {
+            var languageListView = new LanguageListView({collection : collection});
+
+            defaultLayout.getRegion('content').show(languageListView);
+            // defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: languageListView}));
+        });
+
+        defaultLayout.getRegion('bottom').show(new LanguageAddView({collection: collection}));
     }
 });
 
 module.exports = Router;
-

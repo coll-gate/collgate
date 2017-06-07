@@ -11,11 +11,16 @@
 module.exports = Backbone.Model.extend({
     defaults: function() {
         return {
-            id: 0,
+            id: null,
             value: '',
             label: ''
         }
     },
-    url: application.baseUrl + 'main/language/:id'
-});
 
+    url: function() {
+        if (this.isNew())
+            return application.baseUrl + 'main/language/';
+        else
+            return application.baseUrl + 'main/language/' + this.get('id') + '/';
+    }
+});

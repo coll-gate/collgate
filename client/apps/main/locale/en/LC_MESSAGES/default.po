@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-10 10:55+0200\n"
+"POT-Creation-Date: 2017-06-07 09:53+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -30,32 +30,85 @@ msgstr ""
 msgid "Successfully inserted !"
 msgstr ""
 
-#: ../../../routers/main.js:42
+#: ../../../views/language.js:85 ../../../views/language.js:99
+#: ../../../views/languageadd.js:73
+msgid "128 characters max"
+msgstr ""
+
+#: ../../../views/language.js:128
+msgid "Successfully labeled !"
+msgstr ""
+
+#: ../../../views/languageadd.js:76
+msgid "3 characters min"
+msgstr ""
+
+#: ../../../views/languageadd.js:119
+msgid "Invalid characters (alphabet, _ and - only)"
+msgstr ""
+
+#: ../../../views/languageadd.js:122
+msgid "2 characters min"
+msgstr ""
+
+#: ../../../views/languageadd.js:132
+msgid "Language code already in usage"
+msgstr ""
+
+#: ../../../routers/main.js:47
 msgid "Home"
 msgstr ""
 
-#: ../../../routers/main.js:62
+#: ../../../routers/main.js:67
 msgid "About..."
 msgstr ""
 
-#: ../../../routers/main.js:70
+#: ../../../routers/main.js:75
 msgid "Help..."
 msgstr ""
 
-#: ../../../routers/main.js:81
+#: ../../../routers/main.js:86
 msgid "Configuration state"
+msgstr ""
+
+#: ../../../routers/main.js:102
+msgid "List of languages for data"
 msgstr ""
 
 #: ../../../routers/profile.js:39
 msgid "Edit my profile informations"
 msgstr ""
 
-#: ../../../collections/language.js:22 ../../../collections/uilanguage.js:22
+#: ../../../collections/language.js:24 ../../../collections/uilanguage.js:22
 msgid "English"
 msgstr ""
 
-#: ../../../collections/language.js:23 ../../../collections/uilanguage.js:23
+#: ../../../collections/language.js:25 ../../../collections/uilanguage.js:23
 msgid "French"
+msgstr ""
+
+#: ../../../collections/language.js:26
+msgid "Latin"
+msgstr ""
+
+#: ../../../behaviors/actionbuttonevents.js:16
+msgid "show"
+msgstr ""
+
+#: ../../../behaviors/actionbuttonevents.js:17
+msgid "Edit"
+msgstr ""
+
+#: ../../../behaviors/actionbuttonevents.js:18
+msgid "Edit2"
+msgstr ""
+
+#: ../../../behaviors/actionbuttonevents.js:19
+msgid "Manage"
+msgstr ""
+
+#: ../../../behaviors/actionbuttonevents.js:20
+msgid "Delete"
 msgstr ""
 
 #: ../../../templates/actionpanel.html:13
@@ -80,6 +133,8 @@ msgstr ""
 
 #: ../../../templates/confirmdialog.html:21
 #: ../../../templates/eventmessagecreate.html:34
+#: ../../../templates/languagechangelabel.html:34
+#: ../../../templates/languagecreate.html:38
 msgid "Cancel"
 msgstr ""
 
@@ -105,6 +160,35 @@ msgstr ""
 
 #: ../../../templates/home.html:17
 msgid "Welcome to Coll-Gate"
+msgstr ""
+
+#: ../../../templates/languagechangelabel.html:15
+msgid "Change the label for the language"
+msgstr ""
+
+#: ../../../templates/languagechangelabel.html:35
+msgid "Apply"
+msgstr ""
+
+#: ../../../templates/languagecreate.html:15
+msgid "Add a language for data"
+msgstr ""
+
+#: ../../../templates/languagecreate.html:22
+#: ../../../templates/languagelist.html:16
+msgid "Code"
+msgstr ""
+
+#: ../../../templates/languagecreate.html:30
+msgid "Label for current language"
+msgstr ""
+
+#: ../../../templates/languagecreate.html:39
+msgid "Add"
+msgstr ""
+
+#: ../../../templates/languagelist.html:17
+msgid "Label"
 msgstr ""
 
 #: ../../../templates/leftbar.html:11

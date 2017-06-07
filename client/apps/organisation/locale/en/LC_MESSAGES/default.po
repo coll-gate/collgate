@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-17 11:00+0200\n"
+"POT-Creation-Date: 2017-06-01 17:35+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -41,7 +41,7 @@ msgstr ""
 msgid "Cancel"
 msgstr ""
 
-#: ../../../views/establishment.js:46 ../../../views/organisation.js:48
+#: ../../../views/establishment.js:48 ../../../views/organisation.js:51
 msgid "Successfully removed !"
 msgstr ""
 
@@ -66,6 +66,23 @@ msgstr ""
 msgid "3 characters min"
 msgstr ""
 
+#: ../../../views/establishmentlist.js:45 ../../../views/organisationlist.js:46
+#: ../../../templates/grcdetails.html:14
+msgid "Name"
+msgstr ""
+
+#: ../../../views/establishmentlist.js:46 ../../../views/organisationlist.js:49
+msgid "Code"
+msgstr ""
+
+#: ../../../views/establishmentlist.js:47
+msgid "Zipcode"
+msgstr ""
+
+#: ../../../views/establishmentlist.js:49
+msgid "Location"
+msgstr ""
+
 #: ../../../views/establishmentlistfilter.js:190
 #: ../../../routers/establishment.js:36
 msgid "Establishment"
@@ -75,9 +92,28 @@ msgstr ""
 msgid "Done"
 msgstr ""
 
+#: ../../../views/organisation.js:70
+msgid "Manage establishments of the organisation"
+msgstr ""
+
 #: ../../../views/organisationdetails.js:100
 #: ../../../controllers/organisation.js:87
 msgid "Organisation name already in usage"
+msgstr ""
+
+#: ../../../views/organisationlist.js:47
+#: ../../../templates/organisationcreate.html:31
+#: ../../../templates/organisationedit.html:24
+msgid "Type"
+msgstr ""
+
+#: ../../../views/organisationlist.js:48
+msgid "Acronym"
+msgstr ""
+
+#: ../../../views/organisationlist.js:51
+#: ../../../templates/organisationlayout.html:16
+msgid "Establishments"
 msgstr ""
 
 #: ../../../routers/organisation.js:44
@@ -129,12 +165,6 @@ msgstr ""
 msgid "Contacts"
 msgstr ""
 
-#: ../../../templates/establishmentlist.html:16
-#: ../../../templates/grcdetails.html:14
-#: ../../../templates/organisationlist.html:19
-msgid "Name"
-msgstr ""
-
 #: ../../../templates/grcdetails.html:20
 msgid "Identifier"
 msgstr ""
@@ -155,17 +185,6 @@ msgstr ""
 msgid "GRC partner"
 msgstr ""
 
-#: ../../../templates/organisationcreate.html:31
-#: ../../../templates/organisationedit.html:24
-#: ../../../templates/organisationlist.html:22
-msgid "Type"
-msgstr ""
-
 #: ../../../templates/organisationedit.html:15
 msgid "Update an organisation or a partner"
-msgstr ""
-
-#: ../../../templates/organisationlayout.html:16
-#: ../../../templates/organisationlist.html:31
-msgid "Establishments"
 msgstr ""

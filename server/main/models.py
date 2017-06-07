@@ -11,6 +11,7 @@
 """
 coll-gate application models.
 """
+import json
 import re
 import uuid as uuid
 
@@ -20,6 +21,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
+from django.utils import translation
 from django.utils.translation import ugettext_lazy as _
 
 from igdectk.common.models import ChoiceEnum, IntegerChoice, StringChoice
@@ -55,16 +57,6 @@ class Settings(models.Model):
     value = models.CharField(max_length=1024)
 
 
-class Languages(ChoiceEnum):
-    """
-    Static for purposes.
-    """
-
-    LA = StringChoice('la', _('Latin'))
-    EN = StringChoice('en', _('English'))
-    FR = StringChoice('fr', _('French'))
-
-
 class InterfaceLanguages(ChoiceEnum):
     """
     Static for purposes.
@@ -72,6 +64,59 @@ class InterfaceLanguages(ChoiceEnum):
 
     EN = StringChoice('en', _('English'))
     FR = StringChoice('fr', _('French'))
+
+
+class Languages(ChoiceEnum):
+    """
+    Default static languages for data.
+    """
+
+    LA = StringChoice('la', _('Latin'))
+    EN = StringChoice('en', _('English'))
+    FR = StringChoice('fr', _('French'))
+
+
+class Language(models.Model):
+    """
+    Defines the list of configured languages for data (not UI).
+    """
+
+    # code pattern
+    CODE_VALIDATOR = {"type": "string", "minLength": 2, "maxLength": 5, "pattern": "^[a-zA-Z]{2}([_-][a-zA-Z]{2})*$"}
+
+    # label validator
+    LABEL_VALIDATOR = {"type": "string", "minLength": 1, "maxLength": 128, "pattern": r"^\S+.+\S+$"}
+
+    # label validator optional
+    LABEL_VALIDATOR_OPTIONAL = {
+        "type": "string", "minLength": 1, "maxLength": 128, "pattern": r"^\S+.+\S+$", "required": False}
+
+    # language code
+    code = models.CharField(max_length=5, null=False, blank=False)
+
+    # Label of the language.
+    # It is i18nized used JSON dict with language code as key and label as value (string:string).
+    label = models.TextField(default="{}")
+
+    def get_label(self):
+        """
+        Get the label for this meta model in the current regional.
+        """
+        data = json.loads(self.label)
+        lang = translation.get_language()
+
+        return data.get(lang, "")
+
+    def set_label(self, lang, label):
+        """
+        Set the label for a specific language.
+        :param str lang: language code string
+        :param str label: Localized label
+        :note Model instance save() is not called.
+        """
+        data = json.loads(self.label)
+        data[lang] = label
+        self.label = json.dumps(data)
 
 
 class EntityStatus(ChoiceEnum):

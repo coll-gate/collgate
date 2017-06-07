@@ -18,7 +18,7 @@ msgstr ""
 
 #: ../../../views/cultivar.js:59 ../../../views/taxon.js:62
 msgid "Successfully removed !"
-msgstr "Retiré avec succé !"
+msgstr "Retiré avec succès !"
 
 #: ../../../views/cultivarlistfilter.js:49 ../../../views/taxonlistfilter.js:54
 #: ../../../views/taxonsynonyms.js:58 ../../../views/taxonsynonyms.js:221

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-17 10:26+0200\n"
+"POT-Creation-Date: 2017-06-07 09:53+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -138,6 +138,26 @@ msgstr "Liste des accessions"
 #: apps.py:78
 msgid "Search accessions"
 msgstr "Recherche d'accessions"
+
+#: apps.py:84
+msgid "Batch"
+msgstr "Lot"
+
+#: apps.py:87
+msgid "Introduce a batch"
+msgstr "Introduire un lot"
+
+#: apps.py:92
+msgid "List batches"
+msgstr "Liste des lots"
+
+#: apps.py:96
+msgid "Search batches"
+msgstr "Recherche de lots"
+
+#: apps.py:102
+msgid "Action"
+msgstr "Action"
 
 #: batch.py:70
 msgid "Invalid permission to access to this batch"

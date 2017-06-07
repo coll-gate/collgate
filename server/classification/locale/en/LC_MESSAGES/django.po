@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-17 10:26+0200\n"
+"POT-Creation-Date: 2017-06-07 09:53+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -37,39 +37,39 @@ msgstr ""
 msgid "List cultivars"
 msgstr ""
 
-#: controller.py:64
+#: controller.py:65
 msgid "A taxon with this name already exists"
 msgstr ""
 
-#: controller.py:69
+#: controller.py:70
 msgid "The rank of the parent must be lesser than the new taxon"
 msgstr ""
 
-#: controller.py:154
+#: controller.py:155
 msgid "Empty synonym data"
 msgstr ""
 
-#: controller.py:157
+#: controller.py:158
 msgid "Undefined synonym name"
 msgstr ""
 
-#: controller.py:160
+#: controller.py:161
 msgid "Undefined synonym language"
 msgstr ""
 
-#: controller.py:164 taxonsynonym.py:165
+#: controller.py:165 taxonsynonym.py:165
 msgid "Unsupported type of synonym"
 msgstr ""
 
-#: controller.py:172 taxonsynonym.py:173 taxonsynonym.py:226
+#: controller.py:173 taxonsynonym.py:173 taxonsynonym.py:226
 msgid "The primary name could not be used by another synonym of taxon"
 msgstr ""
 
-#: controller.py:176 taxonsynonym.py:177 taxonsynonym.py:230
+#: controller.py:177 taxonsynonym.py:177 taxonsynonym.py:230
 msgid "Synonym already used as a primary name"
 msgstr ""
 
-#: controller.py:180 taxonsynonym.py:181 taxonsynonym.py:234
+#: controller.py:181 taxonsynonym.py:181 taxonsynonym.py:234
 msgid "Synonym already used into this taxon"
 msgstr ""
 

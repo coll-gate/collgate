@@ -1,16 +1,13 @@
 # -*- coding: utf-8; -*-
 #
 # @file descriptormodel.py
-# @brief 
+# @brief coll-gate descriptor module, descriptor model
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2016-09-01
 # @copyright Copyright (c) 2016 INRA/CIRAD
 # @license MIT (see LICENSE file)
 # @details 
 
-"""
-coll-gate descriptor module, descriptor model
-"""
 import json
 
 from django.core.exceptions import SuspiciousOperation
@@ -18,7 +15,6 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.utils import translation
 from django.utils.translation import ugettext_lazy as _
-from django.db.models.functions import Length
 
 from descriptor.descriptorformattype import DescriptorFormatTypeManager
 from igdectk.common.helpers import int_arg
