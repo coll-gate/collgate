@@ -9,7 +9,6 @@
  */
 
 var Marionette = require('backbone.marionette');
-var DescriptorModelModel = require('../models/descriptormodel');
 
 var View = Marionette.ItemView.extend({
     tagName: 'tr',
@@ -30,7 +29,12 @@ var View = Marionette.ItemView.extend({
 
     behaviors: {
         ActionBtnEvents: {
-            behaviorClass: require('../../main/behaviors/actionbuttonevents')
+            behaviorClass: require('../../main/behaviors/actionbuttonevents'),
+            actions: {
+                edit: {title: gt.gettext("Edit label"), event: 'viewDescriptorModelDetails'},
+                manage: {display: true, event: 'viewDescriptorModelTypes'},
+                remove: {display: true, event: 'deleteDescriptorModel'}
+            }
         }
     },
 
@@ -38,16 +42,26 @@ var View = Marionette.ItemView.extend({
         this.listenTo(this.model, 'change', this.render, this);
     },
 
-    onRender: function() {
-        var rowActionButtons = _.template(require('../../main/templates/rowactionsbuttons.html')());
-        this.$el.append(rowActionButtons);
-
-        var btn_group = this.$el.children('div.row-action-group').children('div.action.actions-buttons');
+    actionsProperties: function() {
+        var properties = {
+            tag: {disabled: false},
+            remove: {disabled: false}
+        };
 
         // @todo check with user permission
-        // if (!this.getOption('can_delete') || !session.user.isSuperUser || !session.user.isStaff) {
-        //     btn_group.children('button.action.delete').prop('disabled', true);
-        // }
+
+        if (/*!this.model.get('can_modify') ||*/ !session.user.isSuperUser || !session.user.isStaff) {
+            properties.tag.disabled = true;
+        }
+
+        if (this.model.get('num_descriptor_model_types') > 0 || /*!this.model.get('can_delete') ||*/ !session.user.isSuperUser || !session.user.isStaff) {
+            properties.remove.disabled = true;
+        }
+
+        return properties;
+    },
+
+    onRender: function() {
     },
 
     viewDescriptorModelDetails: function() {
@@ -66,4 +80,3 @@ var View = Marionette.ItemView.extend({
 });
 
 module.exports = View;
-

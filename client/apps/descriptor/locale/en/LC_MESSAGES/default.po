@@ -65,7 +65,7 @@ msgid "Some types of descriptor exists for this group"
 msgstr ""
 
 #: ../../../views/descriptorgroup.js:76
-msgid "Can't Rename"
+msgid "Can't rename"
 msgstr ""
 
 #: ../../../views/descriptorgroup.js:108

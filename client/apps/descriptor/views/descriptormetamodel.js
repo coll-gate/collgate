@@ -11,7 +11,6 @@
 var Marionette = require('backbone.marionette');
 
 var Dialog = require('../../main/views/dialog');
-var DescriptorMetaModelModel = require('../models/descriptormetamodel');
 
 var View = Marionette.ItemView.extend({
     tagName: 'tr',
@@ -21,7 +20,12 @@ var View = Marionette.ItemView.extend({
     behaviors: {
         ActionBtnEvents: {
             behaviorClass: require('../../main/behaviors/actionbuttonevents'),
-            title_edit2: gt.gettext("Edit label")
+            actions: {
+                edit: {title: gt.gettext("Edit label"), event: 'viewDescriptorMetaModelDetails'},
+                tag: {display: true, event: 'editLabel'},
+                manage: {display: true, event: 'viewDescriptorPanels'},
+                remove: {display: true, event: 'deleteDescriptorMetaModel'}
+            }
         }
     },
 
@@ -43,19 +47,28 @@ var View = Marionette.ItemView.extend({
         this.listenTo(this.model, 'change', this.render, this);
     },
 
+    actionsProperties: function() {
+        var properties = {
+            edit: {disabled: false},
+            remove: {disabled: false}
+        };
+
+        // @todo check with user permission
+
+        if (!session.user.isSuperUser || !session.user.isStaff) {
+            properties.edit.disabled = true;
+        }
+
+        if (this.model.get('num_descriptor_models') > 0 || !session.user.isSuperUser || !session.user.isStaff) {
+            properties.remove.disabled = true;
+        }
+
+        return properties;
+    },
+
     onRender: function () {
         // localize content-type
         application.main.views.contentTypes.htmlFromValue(this.el);
-
-        var rowActionButtons = _.template(require('../../main/templates/rowactionsbuttons.html')({tag: true}));
-        this.$el.append(rowActionButtons);
-
-        var btn_group = this.$el.children('div.row-action-group').children('div.action.actions-buttons');
-
-        // @todo check with user permission
-        // if (!this.model.get('can_delete') || !session.user.isSuperUser || !session.user.isStaff) {
-        //     btn_group.children('button.action.delete').prop('disabled', true);
-        // }
     },
 
     viewDescriptorMetaModelDetails: function () {
@@ -175,4 +188,3 @@ var View = Marionette.ItemView.extend({
 });
 
 module.exports = View;
-

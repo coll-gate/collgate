@@ -58,15 +58,15 @@ msgstr "Champ "
 
 #: ../../../views/descriptorgroup.js:55
 msgid "Group of descriptors locked"
-msgstr ""
+msgstr "Groupe de descripteurs vérouillé"
 
 #: ../../../views/descriptorgroup.js:69
 msgid "Some types of descriptor exists for this group"
 msgstr "Des types de descripteur existent pour ce groupe"
 
 #: ../../../views/descriptorgroup.js:76
-msgid "Can't Rename"
-msgstr ""
+msgid "Can't rename"
+msgstr "Impossible de renommer"
 
 #: ../../../views/descriptorgroup.js:108
 #: ../../../views/descriptorgroupadd.js:45

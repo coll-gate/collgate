@@ -9,8 +9,6 @@
  */
 
 var Marionette = require('backbone.marionette');
-var _ = require('underscore');
-var DescriptorTypeModel = require('../models/descriptortype');
 
 var View = Marionette.ItemView.extend({
     tagName: 'tr',
@@ -31,7 +29,13 @@ var View = Marionette.ItemView.extend({
 
     behaviors: {
         ActionBtnEvents: {
-            behaviorClass: require('../../main/behaviors/actionbuttonevents')
+            behaviorClass: require('../../main/behaviors/actionbuttonevents'),
+            actions: {
+                tag: {display: false},
+                edit: {display: true, event: 'viewDescriptorType'},
+                manage: {display: true, event: 'viewDescriptorValue'},
+                remove: {display: true, event: 'deleteDescriptorType'}
+            }
         }
     },
 
@@ -39,26 +43,31 @@ var View = Marionette.ItemView.extend({
         this.listenTo(this.model, 'change', this.render, this);
     },
 
-    onRender: function() {
-
-        var rowActionButtons = _.template(require('../../main/templates/rowactionsbuttons.html')());
-        this.$el.append(rowActionButtons);
-
-        var btn_group = this.$el.children('div.row-action-group').children('div.action.actions-buttons');
+    actionsProperties: function() {
+        var properties = {
+            edit: {disabled: false},
+            manage: {disabled: false},
+            remove: {disabled: false}
+        };
 
         // @todo check user permissions
 
-        // if (!this.model.get('can_modify') || !session.user.isSuperUser || !session.user.isStaff) {
-        //     btn_group.children('button.action.edit').prop('disabled', true);
-        // }
+        if (!this.model.get('can_modify') || !session.user.isSuperUser || !session.user.isStaff) {
+            // properties.edit.disabled = true;
+        }
 
-        if (!_.contains(['enum_single', 'enum_pair', 'enum_ordinal'],this.model.get('format').type)) {
-            btn_group.children('button.action.manage').prop('disabled', true);
+        if (!_.contains(['enum_single', 'enum_pair', 'enum_ordinal'], this.model.get('format').type)) {
+            properties.manage.disabled = true;
         }
 
         if (!this.model.get('can_delete') || !session.user.isSuperUser || !session.user.isStaff) {
-            btn_group.children('button.action.delete').prop('disabled', true);
+            properties.remove.disabled = true;
         }
+
+        return properties;
+    },
+
+    onRender: function() {
     },
 
     viewDescriptorType: function() {
@@ -86,4 +95,3 @@ var View = Marionette.ItemView.extend({
 });
 
 module.exports = View;
-

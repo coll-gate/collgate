@@ -18,42 +18,48 @@ var View = Marionette.ItemView.extend({
 
     behaviors: {
         ActionBtnEvents: {
-            behaviorClass: require('../../main/behaviors/actionbuttonevents')
+            behaviorClass: require('../../main/behaviors/actionbuttonevents'),
+            actions: {
+                edit: {display: false},
+                tag: {display: true, title: gt.gettext("Edit label"), event: 'onRenameGroup'},
+                manage: {display: true, event: 'viewDescriptorType'},
+                remove: {display: true, event: 'deleteDescriptorGroup'}
+            }
         }
     },
 
     ui: {
         status_icon: 'td.lock-status',
-        delete_btn: 'button.action.delete',
-        edit_btn: 'button.action.edit',
-        manage_btn: '.action.manage'
+        delete_btn: 'td.action.remove',
+        rename_btn: 'td.action.rename',
+        manage_btn: 'td.action.manage'
     },
 
     events: {
-        'click @ui.delete_btn': 'deleteDescriptorGroup',
-        'click @ui.edit_btn': 'onRenameGroup',
-        'click @ui.manage_btn': 'viewDescriptorType'
+       // 'click @ui.delete_btn': 'deleteDescriptorGroup',
+       // 'click @ui.edit_btn': 'onRenameGroup',
+       'click @ui.manage_btn': 'viewDescriptorType'
     },
 
     initialize: function () {
         this.listenTo(this.model, 'change', this.render, this);
     },
 
-    onRender: function () {
-        var rowActionButtons = _.template(require('../../main/templates/rowactionsbuttons.html')());
-        this.$el.append(rowActionButtons);
+    actionsProperties: function() {
+        var properties = {
+            tag: {disabled: false},
+            remove: {disabled: false}
+        };
 
-        var btn_group = this.$el.children('div.row-action-group').children('div.action.actions-buttons');
-
-        // @todo check with user permission
         if (!this.model.get('can_modify') || !session.user.isSuperUser || !session.user.isStaff) {
-            btn_group.children('button.action.edit').prop('disabled', true);
+            properties.tag.disabled = true;
         }
-        if (!this.model.get('can_delete') || !session.user.isSuperUser || !session.user.isStaff) {
-            btn_group.children('button.action.delete').prop('disabled', true);
-            var title = gt.gettext('Group of descriptors locked');
-            this.ui.status_icon.html('<span class="glyphicon glyphicon-lock" title="' + title + '"></span>');
+
+        if (this.model.get('num_descriptor_types') > 0 || !this.model.get('can_delete') || !session.user.isSuperUser || !session.user.isStaff) {
+            properties.remove.disabled = true;
         }
+
+        return properties;
     },
 
     viewDescriptorType: function () {
@@ -62,7 +68,7 @@ var View = Marionette.ItemView.extend({
     },
 
     deleteDescriptorGroup: function () {
-        if (this.model.get('num_descriptor_types') == 0) {
+        if (this.model.get('num_descriptor_types') === 0) {
             this.model.destroy({wait: true});
         } else {
             $.alert.error(gt.gettext("Some types of descriptor exists for this group"));
@@ -72,7 +78,7 @@ var View = Marionette.ItemView.extend({
 
     onRenameGroup: function (e) {
         if (!this.model.get('can_modify') || !session.user.isSuperUser || !session.user.isStaff) {
-            $.alert.error(gt.gettext("Can't Rename"));
+            $.alert.error(gt.gettext("Can't rename"));
             return false;
         }
 
@@ -143,4 +149,3 @@ var View = Marionette.ItemView.extend({
 });
 
 module.exports = View;
-

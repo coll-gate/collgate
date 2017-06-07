@@ -26,6 +26,17 @@ var View = Marionette.ItemView.extend({
         'click @ui.change_label': 'onEditLabel'
     },
 
+    behaviors: {
+        ActionBtnEvents: {
+            behaviorClass: require('../../main/behaviors/actionbuttonevents'),
+            actions: {
+                edit: {display: false},
+                tag: {display: true, event: 'onEditLabel'},
+                remove: {display: true, event: 'deleteLanguage'}
+            }
+        }
+    },
+
     initialize: function() {
         this.listenTo(this.model, 'change', this.render, this);
     },

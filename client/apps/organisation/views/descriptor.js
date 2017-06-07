@@ -53,4 +53,3 @@ var View = DescribableDetails.extend({
 });
 
 module.exports = View;
-

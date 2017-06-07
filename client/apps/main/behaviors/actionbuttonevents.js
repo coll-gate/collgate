@@ -9,27 +9,31 @@
  */
 
 var Marionette = require('backbone.marionette');
+var RowActionButtons = require('../templates/rowactionsbuttons.html');
 
 var ActionBtnEvents = Marionette.Behavior.extend({
     defaults: {
-        title_show: gt.gettext('Show'),
-        title_edit: gt.gettext('Edit'),
-        title_edit2: gt.gettext('Edit2'),
-        title_tag: gt.gettext('Label'),
-        title_manage: gt.gettext('Manage'),
-        title_delete: gt.gettext('Delete')
+        actions: {
+            show: {title: gt.gettext('Show'), display: false},
+            edit: {title: gt.gettext('Edit'), display: true},
+            edit2: {title: gt.gettext('Edit2'), display: false},
+            tag: {title: gt.gettext('Label'), display: false},
+            manage: {title: gt.gettext('Manage'), display: false},
+            remove: {title: gt.gettext('Delete'), display: true}
+        }
     },
 
     events: {
         'mouseenter': 'showActions',
         'mouseleave': 'hideActions',
-        'destroy': 'destroyEvents'
+        'mouseover': 'overActions',
+        'mouseout': 'outActions'
     },
-
+/*
     changeButtonMode: function () {
         var group = this.$el.children('div.row-action-group');
-        var nb_buttons = group.children('div.action.actions-buttons')[0].childElementCount;
-        group.css('margin-left', (-nb_buttons * 24 - 10).toString() + 'px');
+        var numButtons = group.children('div.action.actions-buttons')[0].childElementCount;
+        group.css('margin-left', (-numButtons * 24 - 10).toString() + 'px');
 
         // $(window).on('resize', function change_btn_mode() {
         //     var btn_size = null;
@@ -53,34 +57,133 @@ var ActionBtnEvents = Marionette.Behavior.extend({
         // $(window).trigger('resize');
         return false;
     },
+*/
+    overActions: function (e) {
+        if (this.view.rowActionButtons && e.relatedTarget && (
+            (e.relatedTarget.parentNode && e.relatedTarget.parentNode === this.view.rowActionButtons[0]) ||
+            (e.relatedTarget.parentNode && e.relatedTarget.parentNode.parentNode && e.relatedTarget.parentNode.parentNode === this.view.rowActionButtons[0]))) {
+            this.view.inButtons = true;
+            return false
+        }
 
-    onDomRefresh: function () {
-        var group = this.$el.children('div.row-action-group').children('div.action.actions-buttons');
-        this.changeButtonMode();
+        if (this.view.rowActionButtons) {
+            this.view.inButtons = true;
+            return false;
+        }
 
-        group.children('button.action.show').prop("title", this.options.title_show);
-        group.children('button.action.edit').prop("title", this.options.title_edit);
-        group.children('button.action.edit2').prop("title", this.options.title_edit2);
-        group.children('button.action.tag').prop("title", this.options.title_tag);
-        group.children('button.action.manage').prop("title", this.options.title_manage);
-        group.children('button.action.delete').prop("title", this.options.title_delete);
+        // follow vertical scrolling
+        var container = this.$el.parent().parent().parent();
+        container.scroll($.proxy(function(e) {
+            var container = this.$el.parent().parent().parent();
+            var hasScroll = (container.prop('scrollHeight') - container.prop('clientHeight')) > 0;
+            var top = this.$el.position().top;
+            var right = 16 + 4 + (hasScroll ? 20 : 0);
+
+            if (this.view.rowActionButtons) {
+                this.view.rowActionButtons.css({
+                    top: top,
+                    right: right
+                });
+            }
+        }, this));
+
+        var hasScroll = (container.prop('scrollHeight') - container.prop('clientHeight')) > 0;
+        var top = this.$el.position().top;
+        var right = 16 + 4 + (hasScroll ? 20 : 0);
+
+        var defaults = _.clone(this.defaults.actions);
+        var actions = _.clone(this.options.actions);
+
+        var options = jQuery.extend({}, defaults, actions);
+        var properties = this.view.actionsProperties ? this.view.actionsProperties() : {};
+
+        for (var action in options) {
+            if (properties[action] != undefined) {
+                if (properties[action].display != undefined) {
+                    options[action].display = properties[action].display;
+                }
+
+                if (properties[action].disabled != undefined) {
+                    options[action].disabled = properties[action].disabled;
+                }
+
+                if (properties[action].title != undefined) {
+                    options[action].title = properties[action].title;
+                }
+
+                if (properties[action].event != undefined) {
+                    options[action].event = properties[action].event;
+                }
+            }
+        }
+
+        this.view.rowActionButtons = $(_.template(RowActionButtons(options))());
+        this.$el.children('td:last-child').append(this.view.rowActionButtons);
+
+        this.view.rowActionButtons.css({
+            display: 'block',
+            position: 'absolute',
+            top: top,
+            right: right
+        });
+
+        // bind events
+        for (var action in options) {
+            if (options[action].event != undefined) {
+                this.view.rowActionButtons.children('div').children('button.action[name=' + action + ']').on('click',
+                    $.proxy(this.view[options[action].event], this.view));
+            }
+        }
+
+        // default click
+        this.view.rowActionButtons.children('div').on('click', function(e) { return false; });
+
         return false;
     },
 
-    showActions: function (e) {
-        var group = this.$el.children('div.row-action-group');
-        group.css("display", "block");
+    outActions: function(e) {
+        if (!this.view.rowActionButtons) {
+            return false;
+        }
+
+        if (this.view.rowActionButtons && e.relatedTarget && (
+            (e.relatedTarget.parentNode && e.relatedTarget.parentNode === this.view.rowActionButtons[0]) ||
+            (e.relatedTarget.parentNode && e.relatedTarget.parentNode.parentNode && e.relatedTarget.parentNode.parentNode === this.view.rowActionButtons[0]))) {
+            this.view.inButtons = true;
+            return false
+        }
+
+        if (this.view.rowActionButtons && !this.view.inButtons) {
+            this.view.rowActionButtons.remove();
+            this.view.rowActionButtons = null;
+            this.view.inButtons = false;
+        }
+
         return false;
     },
 
-    hideActions: function (e) {
-        // if ($(window).width() > 1024) {
-            var group = this.$el.children('div.row-action-group');
-            group.css("display", "none");
-        // }
+    showActions: function(e) {
+        if (!this.view.rowActionButtons) {
+            return false;
+        }
+
+        this.view.inButtons = false;
+        return false;
+    },
+
+    hideActions: function(e) {
+        if (!this.view.rowActionButtons) {
+            return false;
+        }
+
+        if (this.view.rowActionButtons && this.view.inButtons) {
+            this.view.rowActionButtons.remove();
+            this.view.rowActionButtons = null;
+            this.view.inButtons = false;
+        }
+
         return false;
     }
-
 });
 
 module.exports = ActionBtnEvents;
