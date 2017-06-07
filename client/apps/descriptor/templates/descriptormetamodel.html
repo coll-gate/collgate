@@ -8,9 +8,8 @@
  - @details 
 -->
 
-<th class="glyph-fixed-column"><span class="delete-descriptor-meta-model action glyphicon glyphicon-minus-sign"></span></th>
-<td class="action view-descriptor-meta-model" name="name"><%= name %></td>
-<td class="action change-descriptor-meta-model-label" name="label"><%= label %></td>
+<td name="description" class="glyph-fixed-column"><span class="glyphicon glyphicon-question-sign" title="<%= description %>" style="cursor: help;"></span></td>
+<td class="action edit" name="name"><%= name %></td>
+<td class="action tag" name="label"><%= label %></td>
 <td><abbr class="content-type target-content-type" title="<%- target %>" value="<%- target %>"></abbr></td>
-<td class="action view-descriptor-panels" name="num_descriptor_models"><abbr class="badge" style="cursor: pointer;" title="<%= gt.gettext('Manage panels of descriptor') %>"><%= num_descriptor_models %></abbr></td>
-<td name="description"><abbr class="label label-default glyphicon glyphicon-option-horizontal" title="<%= description %>"><span></span></abbr></td>
+<td class="action manage" name="num_descriptor_models"><abbr class="badge" style="cursor: pointer;" title="<%= gt.gettext('Manage panels of descriptor') %>"><%= num_descriptor_models %></abbr></td>

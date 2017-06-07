@@ -23,7 +23,7 @@ msgstr "Classification"
 
 #: apps.py:55
 msgid "Create taxon"
-msgstr "Créer une taxinomie"
+msgstr "Créer un taxon"
 
 #: apps.py:57
 msgid "Create cultivar"
@@ -31,7 +31,7 @@ msgstr "Créer un cultivar"
 
 #: apps.py:60
 msgid "List taxons"
-msgstr "Liste des taxinomies"
+msgstr "Liste des taxons"
 
 #: apps.py:62
 msgid "List cultivars"

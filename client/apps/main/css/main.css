@@ -45,7 +45,7 @@ div.left, div.right {
 
     div.root-content div div.panel {
         border: none;
-        height: 100%;/*calc(100vh - 50px);*/
+        height: 100%; /*calc(100vh - 50px);*/
     }
 
     div.root-right-bar-grabber {
@@ -85,7 +85,8 @@ div.column-spacer {
     padding: 0px;
 }
 
-div.panel/*.panel-default*/ {
+div.panel /*.panel-default*/
+{
     display: flex;
     flex-flow: column;
     height: 100%;
@@ -116,7 +117,7 @@ div.panel div.panel-body {
 }
 
 div.layout-bottom {
-    height: auto;  /* 30px; now uses of auto height and flex display */
+    height: auto; /* 30px; now uses of auto height and flex display */
 }
 
 div.right-up, div.right-down {
@@ -167,15 +168,15 @@ div.event-message:hover > span.remove-event-message {
 
 .panel-heading .accordion-toggle:after {
     /* symbol for "opening" panels */
-    font-family: 'Glyphicons Halflings';  /* essential for enabling glyphicon */
-    content: "\e114";    /* adjust as needed, taken from bootstrap.css */
-    float: right;        /* adjust as needed */
-    color: grey;         /* adjust as needed */
+    font-family: 'Glyphicons Halflings'; /* essential for enabling glyphicon */
+    content: "\e114"; /* adjust as needed, taken from bootstrap.css */
+    float: right; /* adjust as needed */
+    color: grey; /* adjust as needed */
 }
 
 .panel-heading .accordion-toggle.collapsed:after {
     /* symbol for "collapsed" panels */
-    content: "\e080";    /* adjust as needed, taken from bootstrap.css */
+    content: "\e080"; /* adjust as needed, taken from bootstrap.css */
 }
 
 /* disable bootstrap collapsing animation */
@@ -197,15 +198,15 @@ span.url {
 }
 
 /*.element {*/
-    /*border-bottom: 1px solid #96a052;*/
-    /*maring-top: 0px;*/
-    /*margin-bottom: 15px;*/
+/*border-bottom: 1px solid #96a052;*/
+/*maring-top: 0px;*/
+/*margin-bottom: 15px;*/
 /*}*/
 
 /*.ui-autocomplete {*/
-    /*position: absolute;*/
-    /*cursor: default;*/
-    /*z-index:10000 !important;*/
+/*position: absolute;*/
+/*cursor: default;*/
+/*z-index:10000 !important;*/
 /*}*/
 
 /*.table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th {
@@ -239,13 +240,13 @@ tr.element:hover, div.element:hover {
 }
 
 [draggable] {
-  -moz-user-select: none;
-  -khtml-user-select: none;
-  -webkit-user-select: none;
-  user-select: none;
-  /* Required to make elements draggable in old WebKit */
-  -khtml-user-drag: element;
-  -webkit-user-drag: element;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+    /* Required to make elements draggable in old WebKit */
+    -khtml-user-drag: element;
+    -webkit-user-drag: element;
 }
 
 .draggable-over {
@@ -351,7 +352,7 @@ div.advanced-table-container {
 }
 
 .table.table-advanced thead tr th {
-    white-space: nowrap;  /* single line */
+    white-space: nowrap; /* single line */
     border: none;
     height: 32px;
 }
@@ -372,7 +373,7 @@ div.table-advanced-body {
     border: none;
     position: absolute;
     overflow: hidden;
-    text-overflow: ellipsis;  /* longest lines */
+    text-overflow: ellipsis; /* longest lines */
     margin-top: -16px;
 }
 
@@ -386,7 +387,8 @@ div.table-advanced-body {
     min-width: 32px;
 }
 
-/*.table.table-advanced thead tr th:not(:first-child),*/ .table.table-advanced tbody tr td:not(:first-child) {
+/*.table.table-advanced thead tr th:not(:first-child),*/
+.table.table-advanced tbody tr td:not(:first-child) {
     border-left: 1px solid #ddd;
     min-width: 32px;
 }
@@ -445,11 +447,13 @@ span.column-action {
     background-color: #ddd;
 }
 
-div.actions-buttons.btn-group-xs button {
-    padding-top: 0px;
-    padding-bottom: 0px;
+div.row-action-group {
+    /*position: absolute;*/
+    /*right: 32px;*/
+    display: none;
 }
-/*todo: find way to remove "!important" tag */
-td.last-column {
-    min-width: 120px !important;
+
+div.row-action-group div {
+    margin-top: -20%;
+    margin-bottom: -40%;
 }

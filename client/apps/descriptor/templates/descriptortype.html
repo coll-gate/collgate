@@ -8,23 +8,16 @@
  - @details 
 -->
 
-<td name="description"><span class="glyphicon glyphicon-question-sign" title="<%= description %>"
+<td class="glyph-fixed-column" name="description"><span class="glyphicon glyphicon-question-sign" title="<%= description %>"
                              style="cursor: help;"></span></td>
 <td class="action edit" name="name" value="<%= name %>"><%= name %></td>
 <td class="action edit" name="code"><%= code %></td>
 <td class="action edit" name="type" value="<%= format.type %>"><%= format.type %></td>
 <% if (format.type === "enum_single" || format.type === "enum_pair" || format.type === "enum_ordinal") { %>
-<td class="action manage last-column" name="num_descriptor_values">
-    <div class="col-xs-6">
-        <span class="badge" style="cursor: pointer;" title="<%= gt.gettext('Manage values of the descriptor') %>"><%= num_descriptor_values %></span>
-    </div>
+<td class="action manage" name="num_descriptor_values">
+    <span class="badge" style="cursor: pointer;" title="<%= gt.gettext('Manage values of the descriptor') %>"><%= num_descriptor_values %></span>
     <% } else { %>
-<td class="last-column" name="num_descriptor_values">
-    <div class="col-xs-6">
-        <abbr class="text-muted" title="<%= gt.gettext('No values for this descriptor') %>">NA</abbr>
-    </div>
+<td class="action edit" name="num_descriptor_values">
+    <abbr class="text-muted" title="<%= gt.gettext('No values for this descriptor') %>">NA</abbr>
     <% } %>
-    <div class="col-xs-6">
-        <%= RowActionsBtn() %>
-    </div>
 </td>

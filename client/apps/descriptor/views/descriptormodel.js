@@ -17,15 +17,21 @@ var View = Marionette.ItemView.extend({
     template: require('../templates/descriptormodel.html'),
 
     ui: {
-        delete_descriptor_model: 'span.delete-descriptor-model',
-        view_descriptor_model: 'td.view-descriptor-model',
-        view_descriptor_model_types: 'td.view-descriptor-model-types'
+        delete_btn: 'button.action.delete',
+        edit_btn: '.action.edit',
+        manage_btn: '.action.manage'
     },
 
     events: {
-        'click @ui.delete_descriptor_model': 'deleteDescriptorModel',
-        'click @ui.view_descriptor_model': 'viewDescriptorModelDetails',
-        'click @ui.view_descriptor_model_types': 'viewDescriptorModelTypes'
+        'click @ui.delete_btn': 'deleteDescriptorModel',
+        'click @ui.edit_btn': 'viewDescriptorModelDetails',
+        'click @ui.manage_btn': 'viewDescriptorModelTypes'
+    },
+
+    behaviors: {
+        ActionBtnEvents: {
+            behaviorClass: require('../../main/behaviors/actionbuttonevents')
+        }
     },
 
     initialize: function() {
@@ -33,10 +39,15 @@ var View = Marionette.ItemView.extend({
     },
 
     onRender: function() {
-        // TODO check with user permission
-        /*if (!this.model.get('can_delete') || !session.user.isSuperUser) {
-            $(this.ui.delete_descriptor_model).hide();
-        }*/
+        var rowActionButtons = _.template(require('../../main/templates/rowactionsbuttons.html')());
+        this.$el.append(rowActionButtons);
+
+        var btn_group = this.$el.children('div.row-action-group').children('div.action.actions-buttons');
+
+        // @todo check with user permission
+        // if (!this.getOption('can_delete') || !session.user.isSuperUser || !session.user.isStaff) {
+        //     btn_group.children('button.action.delete').prop('disabled', true);
+        // }
     },
 
     viewDescriptorModelDetails: function() {
@@ -48,7 +59,7 @@ var View = Marionette.ItemView.extend({
     },
 
     deleteDescriptorModel: function() {
-        if (this.model.get('num_descriptor_types') == 0) {
+        if (this.model.get('num_descriptor_types') === 0) {
             this.model.destroy({wait: true});
         }
     }

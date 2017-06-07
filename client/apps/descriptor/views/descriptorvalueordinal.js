@@ -17,14 +17,6 @@ var View = Marionette.ItemView.extend({
     tagName: 'tr',
     className: 'element object descriptor-value',
     template: require('../templates/descriptorvalueordinal.html'),
-    templateHelpers/*templateContext*/: function() {
-        // var ctx = this.model;
-        // ctx.format = this.model.collection.format;
-        // ctx.can_delete = this.getOption('can_delete');
-        // ctx.can_modify = this.getOption('can_modify');
-        // return ctx;
-        return {RowActionsBtn: require('../../main/templates/rowactionsbuttons.html')}
-    },
 
     ui: {
         edit_btn: '.action.edit'
@@ -45,7 +37,15 @@ var View = Marionette.ItemView.extend({
     },
 
     onRender: function() {
-  
+        var rowActionButtons = _.template(require('../../main/templates/rowactionsbuttons.html')({manage: false, remove: false}));
+        this.$el.append(rowActionButtons);
+
+        var btn_group = this.$el.children('div.row-action-group').children('div.action.actions-buttons');
+
+        // @todo check with user permission
+        if (!this.getOption('can_modify') || !session.user.isSuperUser || !session.user.isStaff) {
+            btn_group.children('button.action.edit').prop('disabled', true);
+        }
     },
 
     onEditValue0: function() {

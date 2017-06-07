@@ -12,55 +12,72 @@ var Marionette = require('backbone.marionette');
 
 var ActionBtnEvents = Marionette.Behavior.extend({
     defaults: {
-        title:{
-            show: gt.gettext('show'),
-            edit: gt.gettext('Edit'),
-            edit2: gt.gettext('Edit2'),
-            manage: gt.gettext('Manage'),
-            delete: gt.gettext('Delete')
-        }
-    },
-
-    ui: {
-        actions_btn_group: 'div.action.actions-buttons',
-        delete_btn: 'button.action.delete',
-        edit_btn: 'button.action.edit',
-        edit2_btn: 'button.action.edit2',
-        show_btn: 'button.action.show',
-        manage_btn: 'button.action.manage'
+        title_show: gt.gettext('Show'),
+        title_edit: gt.gettext('Edit'),
+        title_edit2: gt.gettext('Edit2'),
+        title_tag: gt.gettext('Label'),
+        title_manage: gt.gettext('Manage'),
+        title_delete: gt.gettext('Delete')
     },
 
     events: {
         'mouseenter': 'showActions',
-        'mouseleave': 'hideActions'
+        'mouseleave': 'hideActions',
+        'destroy': 'destroyEvents'
     },
 
-    onShow: function () {
-        this.ui.actions_btn_group.css("display", "none");
-        this.ui.show_btn.prop("title", this.options.title.show);
-        this.ui.edit_btn.prop("title", this.options.title.edit);
-        this.ui.edit2_btn.prop("title", this.options.title.edit2);
-        this.ui.manage_btn.prop("title", this.options.title.manage);
-        this.ui.delete_btn.prop("title", this.options.title.delete);
+    changeButtonMode: function () {
+        var group = this.$el.children('div.row-action-group');
+        var nb_buttons = group.children('div.action.actions-buttons')[0].childElementCount;
+        group.css('margin-left', (-nb_buttons * 24 - 10).toString() + 'px');
+
+        // $(window).on('resize', function change_btn_mode() {
+        //     var btn_size = null;
+        //     if ($(window).width() <= 1024) {
+        //         group.css("display", "block");
+        //         group.children('div.action.actions-buttons').removeClass('btn-group-xs');
+        //         group.children('div.action.actions-buttons').addClass('btn-group-md');
+        //         btn_size = 42;
+        //     } else {
+        //         group.css("display", "none");
+        //         group.children('div.action.actions-buttons').removeClass('btn-group-md');
+        //         group.children('div.action.actions-buttons').addClass('btn-group-xs');
+        //         btn_size = 24;
+        //     }
+        //
+        //     // Calculate left margin according to the number of buttons
+        //     group.css('margin-left', (-nb_buttons * btn_size - 10).toString() + 'px');
+        //     console.log(btn_size);
+        // });
+        //
+        // $(window).trigger('resize');
+        return false;
+    },
+
+    onDomRefresh: function () {
+        var group = this.$el.children('div.row-action-group').children('div.action.actions-buttons');
+        this.changeButtonMode();
+
+        group.children('button.action.show').prop("title", this.options.title_show);
+        group.children('button.action.edit').prop("title", this.options.title_edit);
+        group.children('button.action.edit2').prop("title", this.options.title_edit2);
+        group.children('button.action.tag').prop("title", this.options.title_tag);
+        group.children('button.action.manage').prop("title", this.options.title_manage);
+        group.children('button.action.delete').prop("title", this.options.title_delete);
         return false;
     },
 
     showActions: function (e) {
-        // e.stopPropagation();
-        // e.preventDefault();
-
-        // this.ui.actions_btn_group.show("drop", {direction: 'right'}, 'fast' );
-        this.ui.actions_btn_group.css('display', 'flex');
+        var group = this.$el.children('div.row-action-group');
+        group.css("display", "block");
         return false;
     },
 
     hideActions: function (e) {
-        // if (e.currentTarget)
-        // e.stopPropagation();
-        // e.preventDefault();
-
-        // this.ui.actions_btn_group.hide("drop", {direction: 'right'}, 'fast' );
-        this.ui.actions_btn_group.hide();
+        // if ($(window).width() > 1024) {
+            var group = this.$el.children('div.row-action-group');
+            group.css("display", "none");
+        // }
         return false;
     }
 
