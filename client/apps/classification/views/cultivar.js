@@ -33,8 +33,34 @@ var View = Marionette.ItemView.extend({
         "click @ui.remove_cultivar": "onRemoveCultivar"
     },
 
+    behaviors: {
+        ActionBtnEvents: {
+            behaviorClass: require('../../main/behaviors/actionbuttonevents'),
+            actions: {
+                edit: {display: false},
+                manage: {display: true, event: 'onCultivarDetails'},
+                remove: {display: true, event: 'onRemoveCultivar'}
+            }
+        }
+    },
+
     initialize: function() {
         this.listenTo(this.model, 'change', this.render, this);
+    },
+
+    actionsProperties: function() {
+        var properties = {
+            manage: {disabled: false},
+            remove: {disabled: false}
+        };
+
+        // @todo manage permissions
+
+        if (/*!this.model.get('can_delete') ||*/0) {
+            properties.remove.disabled = true;
+        }
+
+        return properties;
     },
 
     onRender: function() {

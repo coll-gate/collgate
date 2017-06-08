@@ -135,12 +135,17 @@ var ActionBtnEvents = Marionette.Behavior.extend({
             }
         }
 
+        var top = this.$el.children('td:last-child').html() === "" ? 0 : -this.$el.children().height();
+
         this.rowActionButtons = $(_.template(RowActionButtons(options))());
         this.$el.children('td:last-child').append(this.rowActionButtons);
 
         this.rowActionButtons.css({
             display: 'block'
         });
+
+        // adjust top when content into the column
+        this.rowActionButtons.children('div').css('top', top);
 
         // bind events
         for (var action in options) {

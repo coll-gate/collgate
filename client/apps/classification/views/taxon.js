@@ -9,7 +9,6 @@
  */
 
 var Marionette = require('backbone.marionette');
-var TaxonModel = require('../models/taxon');
 
 var TaxonItemView = Marionette.ItemView.extend({
     tagName: 'tr',
@@ -35,8 +34,34 @@ var TaxonItemView = Marionette.ItemView.extend({
         "click @ui.remove_taxon": "onRemoveTaxon"
     },
 
+    behaviors: {
+        ActionBtnEvents: {
+            behaviorClass: require('../../main/behaviors/actionbuttonevents'),
+            actions: {
+                edit: {display: false},
+                manage: {display: true, event: 'onTaxonDetails'},
+                remove: {display: true, event: 'onRemoveTaxon'}
+            }
+        }
+    },
+
     initialize: function() {
         this.listenTo(this.model, 'change', this.render, this);
+    },
+
+    actionsProperties: function() {
+        var properties = {
+            manage: {disabled: false},
+            remove: {disabled: false}
+        };
+
+        // @todo manage permissions
+
+        if (/*!this.model.get('can_delete') ||*/0) {
+            properties.remove.disabled = true;
+        }
+
+        return properties;
     },
 
     onRender: function() {
