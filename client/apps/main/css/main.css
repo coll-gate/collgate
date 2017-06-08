@@ -448,12 +448,16 @@ span.column-action {
 }
 
 div.row-action-group {
-    /*position: absolute;*/
-    /*right: 32px;*/
     display: none;
+    position: relative;
+    width: 100%;
 }
 
 div.row-action-group div {
-    margin-top: -20%;
-    margin-bottom: -40%;
+    position: absolute;
+    top: -20px;
+    float: right;
+    right: 0px;
+    /*margin-top: -20%;*/
+    /*margin-bottom: -40%;*/
 }

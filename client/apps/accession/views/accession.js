@@ -38,14 +38,34 @@ var View = Marionette.ItemView.extend({
         'click @ui.parent': 'viewParent'
     },
 
-    // behaviors: {
-    //     ActionBtnEvents: {
-    //         behaviorClass: require('../../main/behaviors/actionbuttonevents')
-    //     }
-    // },
+    behaviors: {
+        ActionBtnEvents: {
+            behaviorClass: require('../../main/behaviors/actionbuttonevents'),
+            actions: {
+                edit: {display: false},
+                manage: {display: true, event: 'viewDetails'},
+                remove: {display: true, event: 'onDeleteAccession'}
+            }
+        }
+    },
 
     initialize: function() {
         this.listenTo(this.model, 'change', this.render, this);
+    },
+
+    actionsProperties: function() {
+        var properties = {
+            manage: {disabled: false},
+            remove: {disabled: false}
+        };
+
+        // @todo manage permissions
+
+        if (/*!this.model.get('can_delete') ||*/0) {
+            properties.remove.disabled = true;
+        }
+
+        return properties;
     },
 
     onRender: function() {
@@ -67,6 +87,10 @@ var View = Marionette.ItemView.extend({
         el.attr('title', rank);
 
         td.html(el);
+    },
+
+    onDeleteAccession: function() {
+        alert("@todo");
     }
 });
 

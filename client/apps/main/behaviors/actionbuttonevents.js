@@ -92,26 +92,6 @@ var ActionBtnEvents = Marionette.Behavior.extend({
              return false;
         }
 
-        // follow vertical scrolling
-        var container = this.$el.parent().parent().parent();
-        container.scroll($.proxy(function(e) {
-            var container = this.$el.parent().parent().parent();
-            var hasScroll = (container.prop('scrollHeight') - container.prop('clientHeight')) > 0;
-            var top = this.$el.position().top;
-            var right = 16 + 4 + (hasScroll ? 20 : 0);
-
-            if (this.rowActionButtons) {
-                this.rowActionButtons.css({
-                    top: top,
-                    right: right
-                });
-            }
-        }, this));
-
-        var hasScroll = (container.prop('scrollHeight') - container.prop('clientHeight')) > 0;
-        var top = this.$el.position().top;
-        var right = 16 + 4 + (hasScroll ? 20 : 0);
-
         var actions = this.options.actions;
         var options = _.deepClone(this.defaults.actions);
 
@@ -159,10 +139,7 @@ var ActionBtnEvents = Marionette.Behavior.extend({
         this.$el.children('td:last-child').append(this.rowActionButtons);
 
         this.rowActionButtons.css({
-            display: 'block',
-            position: 'absolute',
-            top: top,
-            right: right
+            display: 'block'
         });
 
         // bind events
