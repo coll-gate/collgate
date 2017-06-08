@@ -1,9 +1,9 @@
 /**
  * @file actionbuttonevents.js
  * @brief
- * @author Medhi BOULNEMOUR (INRA UMR1095)
+ * @author Medhi BOULNEMOUR (INRA UMR1095), Frédéric SCHERMA (INRA UMR1095)
  * @date 2017-05-19
- * @copyright Copyright (c) 2016 INRA/CIRAD
+ * @copyright Copyright (c) 2017 INRA/CIRAD
  * @license MIT (see LICENSE file)
  * @details
  */
@@ -51,24 +51,45 @@ var ActionBtnEvents = Marionette.Behavior.extend({
         //
         //     // Calculate left margin according to the number of buttons
         //     group.css('margin-left', (-nb_buttons * btn_size - 10).toString() + 'px');
-        //     console.log(btn_size);
         // });
         //
         // $(window).trigger('resize');
         return false;
     },
 */
-    overActions: function (e) {
-        if (this.view.rowActionButtons && e.relatedTarget && (
-            (e.relatedTarget.parentNode && e.relatedTarget.parentNode === this.view.rowActionButtons[0]) ||
-            (e.relatedTarget.parentNode && e.relatedTarget.parentNode.parentNode && e.relatedTarget.parentNode.parentNode === this.view.rowActionButtons[0]))) {
-            this.view.inButtons = true;
-            return false
+    onDestroy: function() {
+        if (application.tmp.lastActionButtonEvents === this) {
+            application.tmp.lastActionButtonEvents = null;
         }
 
-        if (this.view.rowActionButtons) {
-            this.view.inButtons = true;
-            return false;
+        if (this.rowActionButtons) {
+            this.rowActionButtons.remove();
+        }
+    },
+
+    overActions: function (e) {
+        // delete a previous one not clean (issue on chrome)
+        if (application.tmp.lastActionButtonEvents !== this) {
+            var last = application.tmp.lastActionButtonEvents;
+
+            if (last && last.rowActionButtons) {
+                last.inButtons = last.inRow = false;
+                last.rowActionButtons.remove();
+            }
+
+            application.tmp.lastActionButtonEvents = this;
+        }
+
+        if (this.rowActionButtons && e.relatedTarget && (
+            (e.relatedTarget.parentNode && e.relatedTarget.parentNode === this.rowActionButtons[0]) ||
+            (e.relatedTarget.parentNode && e.relatedTarget.parentNode.parentNode && e.relatedTarget.parentNode.parentNode === this.rowActionButtons[0]))) {
+            this.inButtons = true;
+        } else {
+            this.inButtons = false;
+        }
+
+        if (this.rowActionButtons) {
+             return false;
         }
 
         // follow vertical scrolling
@@ -79,8 +100,8 @@ var ActionBtnEvents = Marionette.Behavior.extend({
             var top = this.$el.position().top;
             var right = 16 + 4 + (hasScroll ? 20 : 0);
 
-            if (this.view.rowActionButtons) {
-                this.view.rowActionButtons.css({
+            if (this.rowActionButtons) {
+                this.rowActionButtons.css({
                     top: top,
                     right: right
                 });
@@ -91,13 +112,30 @@ var ActionBtnEvents = Marionette.Behavior.extend({
         var top = this.$el.position().top;
         var right = 16 + 4 + (hasScroll ? 20 : 0);
 
-        var defaults = _.clone(this.defaults.actions);
-        var actions = _.clone(this.options.actions);
+        var actions = this.options.actions;
+        var options = _.deepClone(this.defaults.actions);
 
-        var options = jQuery.extend({}, defaults, actions);
         var properties = this.view.actionsProperties ? this.view.actionsProperties() : {};
 
         for (var action in options) {
+            if (actions[action] != undefined) {
+                if (actions[action].display != undefined) {
+                    options[action].display = actions[action].display;
+                }
+
+                if (actions[action].disabled != undefined) {
+                    options[action].disabled = actions[action].disabled;
+                }
+
+                if (actions[action].title != undefined) {
+                    options[action].title = actions[action].title;
+                }
+
+                if (actions[action].event != undefined) {
+                    options[action].event = actions[action].event;
+                }
+            }
+
             if (properties[action] != undefined) {
                 if (properties[action].display != undefined) {
                     options[action].display = properties[action].display;
@@ -117,10 +155,10 @@ var ActionBtnEvents = Marionette.Behavior.extend({
             }
         }
 
-        this.view.rowActionButtons = $(_.template(RowActionButtons(options))());
-        this.$el.children('td:last-child').append(this.view.rowActionButtons);
+        this.rowActionButtons = $(_.template(RowActionButtons(options))());
+        this.$el.children('td:last-child').append(this.rowActionButtons);
 
-        this.view.rowActionButtons.css({
+        this.rowActionButtons.css({
             display: 'block',
             position: 'absolute',
             top: top,
@@ -130,56 +168,45 @@ var ActionBtnEvents = Marionette.Behavior.extend({
         // bind events
         for (var action in options) {
             if (options[action].event != undefined) {
-                this.view.rowActionButtons.children('div').children('button.action[name=' + action + ']').on('click',
+                this.rowActionButtons.children('div').children('button.action[name=' + action + ']').on('click',
                     $.proxy(this.view[options[action].event], this.view));
             }
         }
 
         // default click
-        this.view.rowActionButtons.children('div').on('click', function(e) { return false; });
+        this.rowActionButtons.children('div').on('click', function(e) { return false; });
 
         return false;
     },
 
     outActions: function(e) {
-        if (!this.view.rowActionButtons) {
-            return false;
+        if (this.rowActionButtons && e.relatedTarget && (
+            (e.relatedTarget.parentNode && e.relatedTarget.parentNode === this.rowActionButtons[0]) ||
+            (e.relatedTarget.parentNode && e.relatedTarget.parentNode.parentNode && e.relatedTarget.parentNode.parentNode === this.rowActionButtons[0]))) {
+            this.inButtons = true;
+        } else {
+            this.inButtons = false;
         }
 
-        if (this.view.rowActionButtons && e.relatedTarget && (
-            (e.relatedTarget.parentNode && e.relatedTarget.parentNode === this.view.rowActionButtons[0]) ||
-            (e.relatedTarget.parentNode && e.relatedTarget.parentNode.parentNode && e.relatedTarget.parentNode.parentNode === this.view.rowActionButtons[0]))) {
-            this.view.inButtons = true;
-            return false
-        }
-
-        if (this.view.rowActionButtons && !this.view.inButtons) {
-            this.view.rowActionButtons.remove();
-            this.view.rowActionButtons = null;
-            this.view.inButtons = false;
+        if (this.rowActionButtons && !this.inButtons && !this.inRow) {
+            this.rowActionButtons.remove();
+            this.rowActionButtons = null;
         }
 
         return false;
     },
 
     showActions: function(e) {
-        if (!this.view.rowActionButtons) {
-            return false;
-        }
-
-        this.view.inButtons = false;
+        this.inRow = true;
         return false;
     },
 
     hideActions: function(e) {
-        if (!this.view.rowActionButtons) {
-            return false;
-        }
+        this.inRow = false;
 
-        if (this.view.rowActionButtons && this.view.inButtons) {
-            this.view.rowActionButtons.remove();
-            this.view.rowActionButtons = null;
-            this.view.inButtons = false;
+        if (this.rowActionButtons && !this.inButtons && !this.inRow) {
+            this.rowActionButtons.remove();
+            this.rowActionButtons = null;
         }
 
         return false;

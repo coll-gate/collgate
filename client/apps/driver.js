@@ -33,6 +33,16 @@ require("eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.mi
 // moment
 moment = require("moment");
 
+// utils
+_.deepClone = function(obj) {
+    return (!obj || (typeof obj !== 'object'))?obj:
+        (_.isString(obj))?String.prototype.slice.call(obj):
+        (_.isDate(obj))?new Date(obj.valueOf()):
+        (_.isFunction(obj.clone))?obj.clone():
+        (_.isArray(obj)) ? _.map(obj, function(t){return _.deepClone(t)}):
+        _.mapObject(obj, function(val, key) {return _.deepClone(val)});
+};
+
 // global application
 application = new Marionette.Application({
 
@@ -130,6 +140,9 @@ application = new Marionette.Application({
                 window.location.assign(application.baseUrl + 'app/home/');
             }
         });
+
+        // temporary dictionary
+        this.tmp = {};
     },
 
     onBeforeStart: function(options) {
