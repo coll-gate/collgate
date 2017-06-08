@@ -1,23 +1,17 @@
 # -*- coding: utf-8; -*-
 #
 # @file controller.py
-# @brief 
+# @brief coll-gate classification module controller
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2016-09-01
 # @copyright Copyright (c) 2016 INRA/CIRAD
 # @license MIT (see LICENSE file)
 # @details 
 
-"""
-coll-gate classification module controller
-"""
-
 from django.core.exceptions import SuspiciousOperation, PermissionDenied
 from django.db import transaction
-from django.utils import translation
 
 from descriptor.describable import DescriptorsBuilder
-from main.models import Languages
 from .models import Taxon, TaxonSynonym, TaxonSynonymType, TaxonRank
 
 from django.utils.translation import ugettext_lazy as _
@@ -186,4 +180,3 @@ class Taxonomy(object):
                                type=synonym['type'],
                                language=synonym['language'])
         synonym.save()
-

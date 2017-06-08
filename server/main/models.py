@@ -1,16 +1,13 @@
 # -*- coding: utf-8; -*-
 #
 # @file models.py
-# @brief 
+# @brief coll-gate application models.
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2016-09-01
 # @copyright Copyright (c) 2016 INRA/CIRAD
 # @license MIT (see LICENSE file)
 # @details 
 
-"""
-coll-gate application models.
-"""
 import json
 import re
 import uuid as uuid
@@ -50,7 +47,7 @@ class Profile(models.Model):
 
 class Settings(models.Model):
     """
-    IGdecTk application setting table.
+    Global setting table.
     """
 
     param_name = models.CharField(max_length=127)
@@ -62,16 +59,6 @@ class InterfaceLanguages(ChoiceEnum):
     Static for purposes.
     """
 
-    EN = StringChoice('en', _('English'))
-    FR = StringChoice('fr', _('French'))
-
-
-class Languages(ChoiceEnum):
-    """
-    Default static languages for data.
-    """
-
-    LA = StringChoice('la', _('Latin'))
     EN = StringChoice('en', _('English'))
     FR = StringChoice('fr', _('French'))
 
@@ -329,4 +316,3 @@ class EventMessage(models.Model):
 
     # message in a JSON text field with an object where key are language code and value are message in locale
     message = models.CharField(max_length=4096)
-

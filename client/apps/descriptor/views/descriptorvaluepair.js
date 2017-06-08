@@ -9,7 +9,6 @@
  */
 
 var Marionette = require('backbone.marionette');
-var DescriptorValueModel = require('../models/descriptorvalue');
 
 var Dialog = require('../../main/views/dialog');
 
@@ -25,14 +24,19 @@ var View = Marionette.ItemView.extend({
         // ctx.can_delete = this.getOption('can_delete');
         // ctx.can_modify = this.getOption('can_modify');
         // return ctx;
-        return {RowActionsBtn: require('../../main/templates/rowactionsbuttons.html')}
+        return {
+            RowActionsBtn: require('../../main/templates/rowactionsbuttons.html')
+        };
     },
 
     behaviors: {
         ActionBtnEvents: {
             behaviorClass: require('../../main/behaviors/actionbuttonevents'),
-            title_edit: gt.gettext('Edit value0'),
-            title_edit2: gt.gettext('Edit value1')
+            actions: {
+                edit: {display: true, title: gt.gettext("Edit value0"), event: 'onEditValue0'},
+                edit2: {display: true, title: gt.gettext("Edit value1"), event: 'onEditValue1'},
+                remove: {display: true, event: 'deleteDescriptorValue'}
+            }
         }
     },
     ui: {
@@ -51,25 +55,25 @@ var View = Marionette.ItemView.extend({
         this.listenTo(this.model, 'change', this.render, this);
     },
 
-    onRender: function () {
-        var rowActionButtons = _.template(require('../../main/templates/rowactionsbuttons.html')({
-            manage: false,
-            edit: 2
-        }));
-        this.$el.append(rowActionButtons);
-
-        var btn_group = this.$el.children('div.row-action-group').children('div.action.actions-buttons');
+    actionsProperties: function() {
+        var properties = {
+            edit: {disabled: false},
+            edit2: {disabled: false},
+            remove: {disable: false}
+        };
 
         // @todo check user permissions
 
         if (!this.getOption('can_modify') || !session.user.isSuperUser || !session.user.isStaff) {
-            btn_group.children('button.action.edit').prop('disabled', true);
-            btn_group.children('button.action.edit2').prop('disabled', true);
+            properties.edit.disabled = true;
+            properties.edit2.disabled = true;
         }
 
         if (!this.getOption('can_delete') || !session.user.isSuperUser || !session.user.isStaff) {
-            btn_group.children('button.action.delete').prop('disabled', true);
+            properties.remove.disabled = true;
         }
+
+        return properties;
     },
 
     deleteDescriptorValue: function () {
@@ -427,4 +431,3 @@ var View = Marionette.ItemView.extend({
 });
 
 module.exports = View;
-

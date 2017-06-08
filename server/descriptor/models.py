@@ -1,12 +1,12 @@
 # -*- coding: utf-8; -*-
 #
 # @file models.py
-# @brief 
+# @brief coll-gate descriptor module models
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2016-09-01
 # @copyright Copyright (c) 2016 INRA/CIRAD
 # @license MIT (see LICENSE file)
-# @details coll-gate descriptor module models.
+# @details
 
 import codecs
 import json
@@ -20,7 +20,7 @@ from django.shortcuts import get_object_or_404
 from django.utils import translation
 from django.utils.translation import ugettext_lazy as _
 
-from main.models import Languages, Entity
+from main.models import Entity
 
 from django.db import connections, models
 from django.db.models.sql.compiler import SQLCompiler
@@ -930,7 +930,7 @@ class DescriptorValue(Entity):
     code = models.CharField(max_length=64)
 
     # A value is dedicated for a descriptor and an language
-    language = models.CharField(max_length=8, choices=Languages.choices(), default=Languages.EN.value)
+    language = models.CharField(max_length=5, default="en")
 
     # Related type of descriptor.
     descriptor = models.ForeignKey(DescriptorType, related_name='values_set')

@@ -9,8 +9,6 @@
  */
 
 var Marionette = require('backbone.marionette');
-var DescriptorValueModel = require('../models/descriptorvalue');
-
 var Dialog = require('../../main/views/dialog');
 
 var View = Marionette.ItemView.extend({
@@ -40,7 +38,11 @@ var View = Marionette.ItemView.extend({
 
     behaviors: {
         ActionBtnEvents: {
-            behaviorClass: require('../../main/behaviors/actionbuttonevents')
+            behaviorClass: require('../../main/behaviors/actionbuttonevents'),
+            actions: {
+                edit: {display: true, title: gt.gettext("Edit value0"), event: 'onEditValue0'},
+                remove: {display: true, event: 'deleteDescriptorValue'}
+            }
         }
     },
 
@@ -48,19 +50,23 @@ var View = Marionette.ItemView.extend({
         this.listenTo(this.model, 'change', this.render, this);
     },
 
-    onRender: function () {
-        var rowActionButtons = _.template(require('../../main/templates/rowactionsbuttons.html')({manage: false}));
-        this.$el.append(rowActionButtons);
+    actionsProperties: function() {
+        var properties = {
+            edit: {disabled: false},
+            remove: {disable: false}
+        };
 
-        var btn_group = this.$el.children('div.row-action-group').children('div.action.actions-buttons');
+        // @todo check user permissions
 
-        // @todo check with user permission
         if (!this.getOption('can_modify') || !session.user.isSuperUser || !session.user.isStaff) {
-            btn_group.children('button.action.edit').prop('disabled', true);
+            properties.edit.disabled = true;
         }
+
         if (!this.getOption('can_delete') || !session.user.isSuperUser || !session.user.isStaff) {
-            btn_group.children('button.action.delete').prop('disabled', true);
+            properties.remove.disabled = true;
         }
+
+        return properties;
     },
 
     deleteDescriptorValue: function () {
@@ -247,4 +253,3 @@ var View = Marionette.ItemView.extend({
 });
 
 module.exports = View;
-

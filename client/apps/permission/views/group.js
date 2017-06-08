@@ -11,7 +11,6 @@
 var Marionette = require('backbone.marionette');
 var Dialog = require('../../main/views/dialog');
 
-
 var View = Marionette.ItemView.extend({
     tagName: 'tr',
     className: 'element object group',
@@ -29,6 +28,18 @@ var View = Marionette.ItemView.extend({
         'click @ui.change_name': 'onRenameGroup',
         'click @ui.view_permissions': 'viewPermissions',
         'click @ui.view_users': 'viewUsers'
+    },
+
+    behaviors: {
+        ActionBtnEvents: {
+            behaviorClass: require('../../main/behaviors/actionbuttonevents'),
+            actions: {
+                edit: {display: true, title: gt.gettext("Manage permissions"), event: 'viewPermissions'},
+                tag: {display: true, title: gt.gettext("Edit label"), event: 'onRenameGroup'},
+                manage: {display: true, title: gt.gettext("Manage users"), event: 'viewUsers'},
+                remove: {display: true, event: 'deleteGroup'}
+            }
+        }
     },
 
     initialize: function() {

@@ -1,21 +1,16 @@
 # -*- coding: utf-8; -*-
 #
 # @file controller.py
-# @brief 
+# @brief coll-gate accession module controller
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2016-09-01
 # @copyright Copyright (c) 2016 INRA/CIRAD
 # @license MIT (see LICENSE file)
 # @details 
 
-"""
-coll-gate accession module controller
-"""
 from django.core.exceptions import SuspiciousOperation
-from django.utils import translation
 from django.utils.translation import ugettext_lazy as _
 
-from main.models import Languages
 from .models import Accession, AccessionSynonym
 
 
@@ -77,4 +72,3 @@ class AccessionController(object):
             return
 
         AccessionSynonym.objects.filter(accession_id=accession_id, name=synonym['name']).delete()
-

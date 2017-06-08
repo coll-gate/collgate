@@ -62,13 +62,6 @@ def get_languages(request):
             'label': language.get_label()
         })
 
-    # for language in Languages:
-    #     languages.append({
-    #         'id': language.value,
-    #         'value': language.value,
-    #         'label': str(language.label)
-    #     })
-
     return HttpResponseRest(request, languages)
 
 

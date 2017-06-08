@@ -20,7 +20,7 @@ from django.db import models
 
 from igdectk.common.models import ChoiceEnum, IntegerChoice
 
-from main.models import Languages, Entity
+from main.models import Entity
 from descriptor.models import DescribableEntity, DescriptorType
 from classification.models import Taxon
 
@@ -153,7 +153,7 @@ class AccessionSynonym(Entity):
     name = models.CharField(max_length=255, db_index=True)
 
     # language code
-    language = models.CharField(max_length=8, choices=Languages.choices(), default=Languages.EN.value)
+    language = models.CharField(max_length=5, default="en")
 
     # type of synonym is related to the type of descriptor TYPE_CODE that is an 'enum_single'.
     type = models.CharField(max_length=64, default=TYPE_SYNONYM)
@@ -397,4 +397,3 @@ class BatchAction(models.Model):
         index_together = (("accession", "type"),)
 
         default_permissions = list()
-

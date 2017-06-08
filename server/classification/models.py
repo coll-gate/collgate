@@ -1,16 +1,12 @@
 # -*- coding: utf-8; -*-
 #
 # @file models.py
-# @brief 
+# @brief coll-gate classification module models.
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2016-09-01
 # @copyright Copyright (c) 2016 INRA/CIRAD
 # @license MIT (see LICENSE file)
 # @details 
-
-"""
-coll-gate classification module models.
-"""
 
 from django.contrib.postgres.fields import JSONField
 from django.db import models
@@ -22,7 +18,7 @@ from django.utils.translation import ugettext_lazy as _
 from descriptor.models import DescriptorMetaModel
 from igdectk.common.models import ChoiceEnum, IntegerChoice
 
-from main.models import Languages, Entity
+from main.models import Entity
 
 
 class TaxonSynonymType(ChoiceEnum):
@@ -170,7 +166,7 @@ class TaxonSynonym(Entity):
     name = models.CharField(max_length=255, db_index=True)
 
     # language code
-    language = models.CharField(max_length=2, choices=Languages.choices())
+    language = models.CharField(max_length=5, default="en")
 
     # type of synonym is related to TaxonSynonymType values
     type = models.IntegerField(choices=TaxonSynonymType.choices())
@@ -232,4 +228,3 @@ class TaxonSynonym(Entity):
             return False
 
         return True
-

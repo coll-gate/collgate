@@ -19,8 +19,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from descriptor.describable import DescriptorsBuilder
 from descriptor.models import DescriptorMetaModel, DescriptorModelType
-from main.models import Languages
-from permission.utils import get_permissions_for
+from main.models import Language
 
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
@@ -79,7 +78,7 @@ class RestTaxonIdEntities(RestTaxonId):
                 }
             ]
         },
-        "descriptor_meta_model": {"type": "number", "required": False},
+        "descriptor_meta_model": {"type": ["number", "null"], "required": False},
         "descriptors": {"type": "object", "required": False}
     },
 }, perms={'classification.add_taxon': _('You are not allowed to create a taxon')}
@@ -101,7 +100,7 @@ def create_taxon(request):
     descriptor_meta_model = request.data.get('descriptor_meta_model')
     descriptors = request.data.get('descriptors')
 
-    if language not in [lang.value for lang in Languages]:
+    if not Language.objects.filter(code=language).exists():
         raise SuspiciousOperation(_("The language is not supported"))
 
     if descriptor_meta_model is not None and descriptors is not None:

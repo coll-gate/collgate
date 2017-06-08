@@ -21,7 +21,7 @@ from descriptor.describable import DescriptorsBuilder
 from descriptor.models import DescriptorMetaModel, DescriptorModelType
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
-from main.models import Languages
+from main.models import Language
 from permission.utils import get_permissions_for
 from classification.models import Taxon
 
@@ -74,7 +74,7 @@ def create_accession(request):
     if Accession.objects.filter(code=code).exists():
         raise SuspiciousOperation(_("The code of the accession is already used"))
 
-    if language not in [lang.value for lang in Languages]:
+    if not Language.objects.filter(code=language).exists():
         raise SuspiciousOperation(_("The language is not supported"))
 
     content_type = get_object_or_404(ContentType, app_label="accession", model="accession")
