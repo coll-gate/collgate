@@ -1,16 +1,12 @@
 # -*- coding: utf-8; -*-
 #
 # @file apps.py
-# @brief 
+# @brief coll-gate classification module main
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2016-09-01
 # @copyright Copyright (c) 2016 INRA/CIRAD
 # @license MIT (see LICENSE file)
 # @details 
-
-"""
-coll-gate classification module main
-"""
 
 from django.utils.translation import ugettext_lazy as _
 
@@ -46,4 +42,3 @@ class CollGatePermission(ApplicationMain):
         permission_module.add_menu(menu_permission)
 
         module_manager.register_module(permission_module)
-

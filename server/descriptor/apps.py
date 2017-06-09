@@ -1,16 +1,12 @@
 # -*- coding: utf-8; -*-
 #
 # @file apps.py
-# @brief 
+# @brief coll-gate descriptor module main
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2016-09-01
 # @copyright Copyright (c) 2016 INRA/CIRAD
 # @license MIT (see LICENSE file)
 # @details 
-
-"""
-coll-gate descriptor module main
-"""
 
 from django.utils.translation import ugettext_lazy as _
 
@@ -96,4 +92,3 @@ class CollGateDescriptor(ApplicationMain):
         descriptor_module.add_menu(menu_descriptor)
 
         module_manager.register_module(descriptor_module)
-

@@ -9,6 +9,7 @@
 # @details 
 
 import json
+import sys
 
 from django.utils.translation import ugettext_lazy as _
 
@@ -25,20 +26,6 @@ class CollGateMain(ApplicationMain):
 
     def ready(self):
         super().ready()
-
-        # add defaults languages if they doesn't exists
-        from main.models import Language
-        if not Language.objects.filter(code='en').exists():
-            language = Language(code='en', label=json.dumps({'en': 'English', 'fr': 'Anglais'}))
-            language.save()
-
-        if not Language.objects.filter(code='fr').exists():
-            language = Language(code='fr', label=json.dumps({'en': 'French', 'fr': 'Français'}))
-            language.save()
-
-        if not Language.objects.filter(code='la').exists():
-            language = Language(code='la', label=json.dumps({'en': 'Latin', 'fr': 'Latin'}))
-            language.save()
 
         main_module = Module('main', base_url='coll-gate')
         main_module.include_urls((
@@ -84,3 +71,22 @@ class CollGateMain(ApplicationMain):
         main_module.add_menu(menu_help)
 
         module_manager.register_module(main_module)
+
+        if self.is_run_mode():
+            self.post_ready()
+
+    def post_ready(self):
+        if self.is_table_exists('main_language'):
+            # add defaults languages if they doesn't exists
+            from main.models import Language
+            if not Language.objects.filter(code='en').exists():
+                language = Language(code='en', label=json.dumps({'en': 'English', 'fr': 'Anglais'}))
+                language.save()
+
+            if not Language.objects.filter(code='fr').exists():
+                language = Language(code='fr', label=json.dumps({'en': 'French', 'fr': 'Français'}))
+                language.save()
+
+            if not Language.objects.filter(code='la').exists():
+                language = Language(code='la', label=json.dumps({'en': 'Latin', 'fr': 'Latin'}))
+                language.save()

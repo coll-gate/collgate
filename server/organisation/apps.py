@@ -1,16 +1,13 @@
 # -*- coding: utf-8; -*-
 #
 # @file apps.py
-# @brief 
+# @brief coll-gate organisation module main
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2017-01-03
 # @copyright Copyright (c) 2017 INRA/CIRAD
 # @license MIT (see LICENSE file)
 # @details 
 
-"""
-coll-gate organisation module main
-"""
 import sys
 
 from django.core.exceptions import ImproperlyConfigured
@@ -80,58 +77,50 @@ class CollGateOrganisation(ApplicationMain):
 
         module_manager.register_module(organisation_module)
 
-        command_list = ("init_fixtures", "migrate", "makemigrations", "help", "")
-        post_ready = True
-
-        for command in command_list:
-            if command in sys.argv:
-                post_ready = False
-                break
-
-        if post_ready:
+        if self.is_run_mode():
             self.post_ready()
 
     def post_ready(self):
-        # check if there is a unique GRC model instance
         from organisation.models import GRC
-        num_grcs = len(GRC.objects.all())
+        if self.is_table_exists(GRC):
+            # check if there is a unique GRC model instance
+            num_grcs = len(GRC.objects.all())
 
-        if num_grcs == 0:
-            self.logger.info("Missing GRC configuration. Create a unique GRC model instance. Need configuration.")
-            grc = GRC()
-            grc.save()
+            if num_grcs == 0:
+                self.logger.info("Missing GRC configuration. Create a unique GRC model instance. Need configuration.")
+                grc = GRC()
+                grc.save()
 
-            configuration.partial("organisation", "GRC instance", "GRC instance created. Need configuration.")
-        elif num_grcs > 1:
-            configuration.wrong(
-                "organisation",
-                "GRC instance",
-                "Invalid GRC configuration. Only a unique GRC could be configured.")
-        else:
-            configuration.validate("organisation", "GRC instance", "GRC instance detected.")
+                configuration.partial("organisation", "GRC instance", "GRC instance created. Need configuration.")
+            elif num_grcs > 1:
+                configuration.wrong(
+                    "organisation",
+                    "GRC instance",
+                    "Invalid GRC configuration. Only a unique GRC could be configured.")
+            else:
+                configuration.validate("organisation", "GRC instance", "GRC instance detected.")
 
-        # keep descriptor meta-model for organisation and establishment.
         from descriptor.models import DescriptorMetaModel
+        if self.is_table_exists(DescriptorMetaModel):
+            # keep descriptor meta-model for organisation and establishment.
+            if not DescriptorMetaModel.objects.filter(name="organisation").exists():
+                configuration.wrong(
+                    "organisation",
+                    "Organisation descriptor meta-model",
+                    "Missing organisation descriptor meta-model. Be sure to have installed fixtures.")
+            else:
+                configuration.validate(
+                    "organisation",
+                    "Organisation descriptor meta-model",
+                    "Organisation descriptor meta-model detected.")
 
-        if not DescriptorMetaModel.objects.filter(name="organisation").exists():
-            configuration.wrong(
-                "organisation",
-                "Organisation descriptor meta-model",
-                "Missing organisation descriptor meta-model. Be sure to have installed fixtures.")
-        else:
-            configuration.validate(
-                "organisation",
-                "Organisation descriptor meta-model",
-                "Organisation descriptor meta-model detected.")
-
-        if not DescriptorMetaModel.objects.filter(name="establishment").exists():
-            configuration.wrong(
-                "organisation",
-                "Establishment descriptor meta-model",
-                "Missing establishment descriptor meta-model. Be sure to have installed fixtures.")
-        else:
-            configuration.validate(
-                "organisation",
-                "Establishment descriptor meta-model",
-                "Establishment descriptor meta-model detected.")
-
+            if not DescriptorMetaModel.objects.filter(name="establishment").exists():
+                configuration.wrong(
+                    "organisation",
+                    "Establishment descriptor meta-model",
+                    "Missing establishment descriptor meta-model. Be sure to have installed fixtures.")
+            else:
+                configuration.validate(
+                    "organisation",
+                    "Establishment descriptor meta-model",
+                    "Establishment descriptor meta-model detected.")

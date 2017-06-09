@@ -1,16 +1,12 @@
 # -*- coding: utf-8; -*-
 #
 # @file apps.py
-# @brief 
+# @brief coll-gate geolocation module main
 # @author Medhi BOULNEMOUR (INRA UMR1095)
 # @date 2017-01-03
 # @copyright Copyright (c) 2016 INRA/CIRAD
 # @license MIT (see LICENSE file)
 # @details 
-
-"""
-coll-gate geolocation module main
-"""
 
 from igdectk.common.apphelpers import ApplicationMain
 from igdectk.module.module import Module
@@ -74,4 +70,3 @@ class CollGateGeolocation(ApplicationMain):
         DescriptorFormatTypeManager.register(self.format_types)
 
         module_manager.register_menu(geolocation_module)
-

@@ -105,27 +105,18 @@ class CollGateAccession(ApplicationMain):
 
         module_manager.register_module(accession_module)
 
-        command_list = ("init_fixtures", "migrate", "makemigrations", "help", "")
-        post_ready = True
-
-        for command in command_list:
-            if command in sys.argv:
-                post_ready = False
-                break
-
-        if post_ready:
+        if self.is_run_mode():
             self.post_ready()
 
     def post_ready(self):
         from descriptor.models import DescriptorType
-
-        if not DescriptorType.objects.filter(name="accession_synonym_types").exists():
-            configuration.wrong(
-                "accession",
-                "accession_synonym_types descriptor type",
-                "Missing accession_synonym_types descriptor type. Be sure to have installed fixtures.")
-        else:
-            configuration.validate("accession",
-                                   "accession_synonym_types descriptor type",
-                                   "accession_synonym_types descriptor type detected.")
-
+        if self.is_table_exists(DescriptorType):
+            if not DescriptorType.objects.filter(name="accession_synonym_types").exists():
+                configuration.wrong(
+                    "accession",
+                    "accession_synonym_types descriptor type",
+                    "Missing accession_synonym_types descriptor type. Be sure to have installed fixtures.")
+            else:
+                configuration.validate("accession",
+                                       "accession_synonym_types descriptor type",
+                                       "accession_synonym_types descriptor type detected.")

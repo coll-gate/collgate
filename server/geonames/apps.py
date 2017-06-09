@@ -1,16 +1,12 @@
 # -*- coding: utf-8; -*-
 #
 # @file apps.py
-# @brief 
+# @brief coll-gate geonames module main
 # @author Medhi BOULNEMOUR (INRA UMR1095)
 # @date 2017-01-03
 # @copyright Copyright (c) 2017 INRA/CIRAD
 # @license MIT (see LICENSE file)
 # @details 
-
-"""
-coll-gate geonames module main
-"""
 
 from igdectk.common.apphelpers import ApplicationMain
 from igdectk.module.module import Module
@@ -98,4 +94,3 @@ class CollGateGeonames(ApplicationMain):
         geonames_module.client_export = False
 
         module_manager.register_module(geonames_module)
-
