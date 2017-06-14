@@ -21,20 +21,51 @@ var BatchLayout = require('../views/batchlayout');
 
 var Router = Marionette.AppRouter.extend({
     routes : {
+        "app/accession/batch/": "getBatchList",
         "app/accession/accession/:id/batch/": "getAccessionBatchList",
         "app/accession/batch/:id/*tab": "getBatch"
     },
 
-    getAccessionBatchList : function(id) {
+    getBatchList : function() {
         var collection = new BatchCollection();
+
+        var defaultLayout = new DefaultLayout({});
+        application.show(defaultLayout);
+
+        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of all batches")}));
+
+        // get available columns
+        var columns = $.ajax({
+            type: "GET",
+            url: application.baseUrl + 'descriptor/columns/accession.batch/',
+            contentType: "application/json; charset=utf-8"
+        });
+
+        $.when(columns, collection.fetch()).done(function (data) {
+            var batchListView  = new BatchListView({collection: collection, columns: data[0].columns});
+
+            defaultLayout.getRegion('content').show(batchListView);
+            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: batchListView}));
+        });
+    },
+
+    getAccessionBatchList : function(id) {
+        var collection = new BatchCollection({accession_id: id});
 
         var defaultLayout = new DefaultLayout({});
         application.show(defaultLayout);
 
         defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of batches for the accession")}));
 
-        collection.fetch().then(function () {
-            var batchListView = new BatchListView({collection : collection});
+        // get available columns
+        var columns = $.ajax({
+            type: "GET",
+            url: application.baseUrl + 'descriptor/columns/accession.batch/',
+            contentType: "application/json; charset=utf-8"
+        });
+
+        $.when(columns, collection.fetch()).done(function (data) {
+            var batchListView = new BatchListView({collection : collection, columns: data[0].columns});
 
             defaultLayout.getRegion('content').show(batchListView);
             defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: batchListView}));
@@ -59,4 +90,3 @@ var Router = Marionette.AppRouter.extend({
 });
 
 module.exports = Router;
-

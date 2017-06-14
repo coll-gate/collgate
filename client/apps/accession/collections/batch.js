@@ -21,7 +21,7 @@ var Collection = Backbone.Collection.extend({
                 return application.baseUrl + 'accession/batch/' + this.batch_id + '/batch/';
             }
         } else {
-            return application.baseUrl + 'accession/accession/batch/';
+            return application.baseUrl + 'accession/batch/';
         }
     },
     model: BatchModel,
