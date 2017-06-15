@@ -17,7 +17,6 @@ from __future__ import unicode_literals
 from urllib.request import urlopen
 import email.utils as eut
 
-import six
 import os.path
 import zipfile
 import logging
