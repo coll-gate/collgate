@@ -32,6 +32,17 @@ var View = Marionette.ItemView.extend({
         "click @ui.remove_establishment": "onRemoveEstablishment"
     },
 
+    behaviors: {
+        ActionBtnEvents: {
+            behaviorClass: require('../../main/behaviors/actionbuttonevents'),
+            actions: {
+                edit: {display: true, event: 'onEstablishmentDetails'},
+                manage: {display: false /*, event: 'onConservatoryList'*/},
+                remove: {display: true, event: 'onRemoveEstablishment'}
+            }
+        }
+    },
+
     initialize: function() {
         this.listenTo(this.model, 'change', this.render, this);
     },

@@ -20,7 +20,6 @@ var View = ScrollView.extend({
     userSettingName: 'accessions_list_columns',
 
     defaultColumns: [
-        {name: 'glyph', width: 'auto', sort_by: null},
         {name: 'code', width: 'auto', sort_by: null},
         {name: 'name', width: 'auto', sort_by: 'asc'},
         {name: 'parent', width: 'auto', sort_by: null},
@@ -29,7 +28,6 @@ var View = ScrollView.extend({
     ],
 
     columnsOptions: {
-        'glyph': {label: '', width: 'auto', glyphicon: ['glyphicon-asterisk', 'glyphicon-minus-sign'], event: 'remove-accession', fixed: true},
         'code': {label: gt.gettext('Code'), width: 'auto', minWidth: true, event: 'view-accession-details'},
         'name': {label: gt.gettext('Name'), width: 'auto', minWidth: true, event: 'view-accession-details'},
         'parent': {

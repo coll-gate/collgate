@@ -12,7 +12,6 @@
     <table class="table table-striped table-advanced">
         <thead>
             <tr scope="row">
-                <th class="glyph-fixed-column" name="glyph"><span class="glyphicon glyphicon-asterisk"></span></th>
                 <% for (var i = 0; i < columnsList.length; ++i) { %>
                     <% var columnName = columnsList[i]; %>
                     <% var column = columnsOptions[columnName]; %>
@@ -47,7 +46,7 @@
         <tbody class="batch-list"></tbody>
     </table>
 </div>
-<div class="placeholder-column" style="top: calc(62px + 75px);">
+<div class="placeholder-column">
     <span class="action glyphicon glyphicon-th-list add-column" type="button"></span>
 </div>
 <div class="dropdown clearfix add-column-menu" style="position: absolute; display:none;">

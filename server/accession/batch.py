@@ -1,16 +1,12 @@
 # -*- coding: utf-8; -*-
 #
 # @file batch.py
-# @brief 
+# @brief coll-gate batch rest handler
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2017-01-03
 # @copyright Copyright (c) 2017 INRA/CIRAD
 # @license MIT (see LICENSE file)
 # @details 
-
-"""
-coll-gate batch rest handler
-"""
 
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import SuspiciousOperation
@@ -415,6 +411,81 @@ def search_batch(request):
     results = {
         'perms': [],
         'items': items_list,
+        'prev': prev_cursor,
+        'cursor': cursor,
+        'next': next_cursor,
+    }
+
+    return HttpResponseRest(request, results)
+
+
+@RestBatch.def_auth_request(Method.GET, Format.JSON, perms={
+    'accession.get_accession': _("You are not allowed to get an accession"),
+    'accession.list_batch': _("You are not allowed to list the batches")
+})
+def get_batch_list(request):
+    results_per_page = int_arg(request.GET.get('more', 30))
+    cursor = request.GET.get('cursor')
+    limit = results_per_page
+    order_by = ['name', 'id']
+
+    # @todo how to manage permission to list only auth batches
+    # @todo use order_by one cursor, and on order_by
+
+    if request.GET.get('filters'):
+        filters = json.loads(request.GET['filters'])
+
+        if cursor:
+            cursor_name, cursor_id = cursor.rsplit('/', 1)
+            qs = Batch.objects.filter(Q(name__gt=cursor_name) | (Q(name__gte=cursor_name) & Q(id__gt=cursor_id)))
+        else:
+            qs = Batch.objects.all()
+
+        name = filters.get('name', '')
+
+        # name search
+        if filters.get('method', 'icontains') == 'icontains':
+            qs = qs.filter(Q(name__icontains=name))
+        else:
+            qs = qs.filter(Q(name__iexact=name))
+    else:
+        if cursor:
+            cursor_name, cursor_id = cursor.rsplit('/', 1)
+            qs = Batch.objects.filter(Q(name__gt=cursor_name) | (Q(name__gte=cursor_name) & Q(id__gt=cursor_id)))
+        else:
+            qs = Batch.objects.all()
+
+    # Prefetch permit to have only 2 requests
+    qs = qs.select_related('accession').order_by(*order_by)[:limit]
+
+    batch_list = []
+
+    for batch in qs:
+        a = {
+            'id': batch.pk,
+            'name': batch.name,
+            'accession': batch.accession_id,
+            'descriptor_meta_model': batch.descriptor_meta_model_id,
+            'descriptors': batch.descriptors
+        }
+
+        batch_list.append(a)
+
+    if len(batch_list) > 0:
+        # prev cursor (asc order)
+        entity = batch_list[0]
+        prev_cursor = "/".join(str(entity[field]) for field in order_by)
+
+        # next cursor (asc order)
+        entity = batch_list[-1]
+        next_cursor = "/".join(str(entity[field]) for field in order_by)
+    else:
+        prev_cursor = None
+        next_cursor = None
+
+    results = {
+        'perms': [],
+        'items': batch_list,
         'prev': prev_cursor,
         'cursor': cursor,
         'next': next_cursor,

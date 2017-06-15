@@ -855,9 +855,13 @@ class DescriptorFormatTypeImpreciseDate(DescriptorFormatType):
         if validate_result is not None:
             return validate_result
 
-        return self.MyQ({'descriptors__%s__0__gte' % descriptor_model_type['descriptor_code']: value[0]}) & self.MyQ(
-            {'descriptors__%s__1__gte' % descriptor_model_type['descriptor_code']: value[1]}) & self.MyQ(
-            {'descriptors__%s__2__gte' % descriptor_model_type['descriptor_code']: value[2]})
+        # return self.MyQ({'descriptors__%s__0__gte' % descriptor_model_type['descriptor_code']: value[0]}) & self.MyQ(
+        #     {'descriptors__%s__1__gte' % descriptor_model_type['descriptor_code']: value[1]}) & self.MyQ(
+        #     {'descriptors__%s__2__gte' % descriptor_model_type['descriptor_code']: value[2]})
+
+        return (Q(**{'descriptors__%s__0__gte' % descriptor_model_type['descriptor_code']: value[0]}) &
+                Q(**{'descriptors__%s__1__gte' % descriptor_model_type['descriptor_code']: value[1]}) &
+                Q(**{'descriptors__%s__2__gte' % descriptor_model_type['descriptor_code']: value[2]}))
 
     def less_than_equal(self, descriptor_type_format, value, descriptor_model_type):
         validate_result = self.validate(descriptor_type_format, value, descriptor_model_type)

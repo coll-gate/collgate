@@ -186,6 +186,8 @@ application = new Marionette.Application({
             if (view && view.onResize) {
                 view.onResize();
             }
+
+            application.updateMessengerDisplay();
         });
 
         /**

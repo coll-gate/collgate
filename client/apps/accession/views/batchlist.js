@@ -35,13 +35,13 @@ var View = ScrollView.extend({
     },
 
     defaultColumns: [
-        // {name: 'glyph', width: 'auto', sort_by: null},
+        {name: 'glyph', width: 'auto', sort_by: null},
         {name: 'name', width: 'auto', sort_by: 'asc'},
     ],
 
     columnsOptions: {
-        // 'glyph': {label: '', width: 'auto', glyphicon: ['glyphicon-asterisk', 'glyphicon-minus-sign'], event: 'remove-batch', fixed: true},
-        'name': {label: gt.gettext('Name'), width: 'auto', minWidth: true, event: 'view-batch-details'},
+        'glyph': {label: '', width: 'auto', glyphicon: ['glyphicon-unchecked', 'glyphicon-unchecked'], event: 'selectBatch', fixed: true},
+        'name': {label: gt.gettext('Name'), width: 'auto', minWidth: true, event: 'viewDetails'},
     },
 
     templateHelpers/*templateContext*/: function () {

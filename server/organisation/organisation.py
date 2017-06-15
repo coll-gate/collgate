@@ -177,6 +177,10 @@ def filter_organisation(filters, cursor, limit, grc_only):
 
     qs = qs.order_by('name')[:limit]
 
+    # from django.db.models.expressions import OrderBy
+    # from django.db.models.expressions import RawSQL
+    # qs = qs.order_by(OrderBy(RawSQL("LOWER(descriptors->>%s)", ("organisation_acronym",)), descending=True))
+
     items_list = []
     for organisation in qs:
         t = {

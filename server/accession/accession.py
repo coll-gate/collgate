@@ -12,7 +12,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import SuspiciousOperation
 from django.db import IntegrityError
 from django.db import transaction
-from django.db.models import Prefetch
+from django.db.models import Prefetch, prefetch_related_objects
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
@@ -155,42 +155,87 @@ def create_accession(request):
 })
 def get_accession_list(request):
     results_per_page = int_arg(request.GET.get('more', 30))
-    cursor = request.GET.get('cursor')
+    cursor = json.loads(request.GET.get('cursor', "null"))
     limit = results_per_page
+    # order_by = ['descriptors__IPGRI_4.1.1', 'descriptors__MCPD_ORIGCTY', 'name', 'id']
+    # order_by = ['descriptors__MCPD_ORIGCTY', 'name', 'id']
+    # order_by = ['geonames_country_name', 'id']
+    # order_by = ['id']
+    order_by = ['name', 'id']
+    # order_by = ['parent__name']
+
+    # from main.cursor import CursorQuery
+    # cq = CursorQuery(Accession.objects, cursor, order_by)
+    #
+    # if request.GET.get('filters'):
+    #     filters = json.loads(request.GET['filters'])
+    #     cq.filters(filters)
+    #
+    # # Prefetch permit to have only 2 requests (clause order_by done directly, not per accession.synonyms)
+    # qs = cq.query_set.select_related('parent').prefetch_related(
+    #     Prefetch(
+    #         "synonyms",
+    #         queryset=AccessionSynonym.objects.all().order_by('type', 'language'))
+    # ).distinct()  # .order_by(*order_by)[:limit]
+    #
+    # # qs = qs.extra(select={"geonames_country_name": "SELECT geonames_country.name FROM geonames_country WHERE (accession_accession.descriptors->>'MCPD_ORIGCTY')::INTEGER = geonames_country.id"})
+    # # qs = qs.extra(params=["INNER JOIN geonames_country ON((accession_accession.descriptors->>'MCPD_ORIGCTY')::INTEGER = geonames_country.id"])
+    # qs = cq.order_by(qs)[:limit]
+    #
+    # for accession in qs:
+    #     a = {
+    #         'id': accession.pk,
+    #         'name': accession.name,
+    #         'code': accession.code,
+    #         'parent': accession.parent_id,
+    #         'descriptor_meta_model': accession.descriptor_meta_model_id,
+    #         'descriptors': accession.descriptors,
+    #         'synonyms': [],
+    #         'parent_details': {
+    #             'id': accession.parent_id,
+    #             'name': accession.parent.name,
+    #             'rank': accession.parent.rank,
+    #         },
+    #         # 'geonames_country_name': accession.geonames_country_name
+    #     }
+    #     print(accession.geonames_country_name)
+    #
+    #     for synonym in accession.synonyms.all():
+    #         a['synonyms'].append({
+    #             'id': synonym.id,
+    #             'name': synonym.name,
+    #             'type': synonym.type,
+    #             'language': synonym.language
+    #         })
+    #
+    #     cq.add_item(a)
+    #
+    # cq.update()
+
+    from main.cursor import ManualCursorQuery
+    cq = ManualCursorQuery(Accession, cursor, order_by)
 
     if request.GET.get('filters'):
         filters = json.loads(request.GET['filters'])
+        cq.filters(filters)
 
-        if cursor:
-            cursor_name, cursor_id = cursor.rsplit('/', 1)
-            qs = Accession.objects.filter(Q(name__gt=cursor_name) | (Q(name__gte=cursor_name) & Q(id__gt=cursor_id)))
-        else:
-            qs = Accession.objects.all()
-
-        name = filters.get('name', '')
-
-        # name search based on synonyms
-        if filters.get('method', 'icontains') == 'icontains':
-            qs = qs.filter(Q(synonyms__name__icontains=name))
-        else:
-            qs = qs.filter(Q(name__iexact=name)).filter(Q(synonyms__name__iexact=name))
-    else:
-        if cursor:
-            cursor_name, cursor_id = cursor.rsplit('/', 1)
-            qs = Accession.objects.filter(Q(name__gt=cursor_name) | (Q(name__gte=cursor_name) & Q(id__gt=cursor_id)))
-        else:
-            qs = Accession.objects.all()
-
-    # Prefetch permit to have only 2 requests (clause order_by done directly, not per accession.synonyms)
-    qs = qs.select_related('parent').prefetch_related(
-        Prefetch(
+    cq.prefetch_related(Prefetch(
             "synonyms",
-            queryset=AccessionSynonym.objects.all().order_by('type', 'language'))
-    ).distinct().order_by('name', 'id')[:limit]
+            queryset=AccessionSynonym.objects.all().order_by('type', 'language')))
 
-    accession_list = []
+    # cq.join(Accession.parent, ['name', 'rank'])
+    # cq.select_related('parent')
+    cq.prefetch_related("parent")  # @or use aliases @todo how to avoid using that extra query and having the join ?
 
-    for accession in qs:
+    # cq.join(Country, ['descriptors.MCPD_ORIGCTY', 'name'])  # @todo using descriptor model ?? to get foreign model...
+    # from geonames.models import Country
+    # cq.prefetch_related(Prefetch(
+    #         "descriptors__MCPD_ORIGCTY",
+    #         queryset=Country.objects.all()))
+
+    cq.order_by().limit(limit)
+
+    for accession in cq:
         a = {
             'id': accession.pk,
             'name': accession.name,
@@ -200,7 +245,7 @@ def get_accession_list(request):
             'descriptors': accession.descriptors,
             'synonyms': [],
             'parent_details': {
-                'id': accession.parent.id,
+                'id': accession.parent_id,
                 'name': accession.parent.name,
                 'rank': accession.parent.rank,
             }
@@ -214,27 +259,96 @@ def get_accession_list(request):
                 'language': synonym.language
             })
 
-        accession_list.append(a)
+        cq.add_item(a)
 
-    if len(accession_list) > 0:
-        # prev cursor (asc order)
-        entity = accession_list[0]
-        prev_cursor = "%s/%s" % (entity['name'], entity['id'])
-
-        # next cursor (asc order)
-        entity = accession_list[-1]
-        next_cursor = "%s/%s" % (entity['name'], entity['id'])
-    else:
-        prev_cursor = None
-        next_cursor = None
+    cq.finalize()
 
     results = {
         'perms': [],
-        'items': accession_list,
-        'prev': prev_cursor,
+        'items': cq.items,
+        'prev': cq.prev_cursor,
         'cursor': cursor,
-        'next': next_cursor,
+        'next': cq.next_cursor,
     }
+
+    # if request.GET.get('filters'):
+    #     filters = json.loads(request.GET['filters'])
+    #
+    #     if cursor:
+    #         cursor_name, cursor_id = cursor.rsplit('/', 1)
+    #         qs = Accession.objects.filter(Q(name__gt=cursor_name) | (Q(name__gte=cursor_name) & Q(id__gt=cursor_id)))
+    #     else:
+    #         qs = Accession.objects.all()
+    #
+    #     name = filters.get('name', '')
+    #
+    #     # name search based on synonyms
+    #     if filters.get('method', 'icontains') == 'icontains':
+    #         qs = qs.filter(Q(synonyms__name__icontains=name))
+    #     else:
+    #         qs = qs.filter(Q(name__iexact=name)).filter(Q(synonyms__name__iexact=name))
+    # else:
+    #     if cursor:
+    #         cursor_name, cursor_id = cursor.rsplit('/', 1)
+    #         qs = Accession.objects.filter(Q(name__gt=cursor_name) | (Q(name__gte=cursor_name) & Q(id__gt=cursor_id)))
+    #     else:
+    #         qs = Accession.objects.all()
+    #
+    # # Prefetch permit to have only 2 requests (clause order_by done directly, not per accession.synonyms)
+    # qs = qs.select_related('parent').prefetch_related(
+    #     Prefetch(
+    #         "synonyms",
+    #         queryset=AccessionSynonym.objects.all().order_by('type', 'language'))
+    # ).distinct().order_by(*order_by)[:limit]
+    # print(qs.query)
+    #
+    # accession_list = []
+    #
+    # for accession in qs:
+    #     a = {
+    #         'id': accession.pk,
+    #         'name': accession.name,
+    #         'code': accession.code,
+    #         'parent': accession.parent_id,
+    #         'descriptor_meta_model': accession.descriptor_meta_model_id,
+    #         'descriptors': accession.descriptors,
+    #         'synonyms': [],
+    #         'parent_details': {
+    #             'id': accession.parent.id,
+    #             'name': accession.parent.name,
+    #             'rank': accession.parent.rank,
+    #         }
+    #     }
+    #
+    #     for synonym in accession.synonyms.all():
+    #         a['synonyms'].append({
+    #             'id': synonym.id,
+    #             'name': synonym.name,
+    #             'type': synonym.type,
+    #             'language': synonym.language
+    #         })
+    #
+    #     accession_list.append(a)
+    #
+    # if len(accession_list) > 0:
+    #     # prev cursor (asc order)
+    #     entity = accession_list[0]
+    #     prev_cursor = "/".join(str(entity[field]) for field in order_by)
+    #
+    #     # next cursor (asc order)
+    #     entity = accession_list[-1]
+    #     next_cursor = "/".join(str(entity[field]) for field in order_by)
+    # else:
+    #     prev_cursor = None
+    #     next_cursor = None
+    #
+    # results = {
+    #     'perms': [],
+    #     'items': accession_list,
+    #     'prev': prev_cursor,
+    #     'cursor': cursor,
+    #     'next': next_cursor,
+    # }
 
     return HttpResponseRest(request, results)
 

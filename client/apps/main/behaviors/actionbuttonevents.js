@@ -135,7 +135,7 @@ var ActionBtnEvents = Marionette.Behavior.extend({
             }
         }
 
-        var top = this.$el.children('td:last-child').html() === "" ? 0 : -this.$el.children().height();
+        var top = this.$el.children('td:last-child').html() === "" ? 0 : -20;
 
         this.rowActionButtons = $(_.template(RowActionButtons(options))());
         this.$el.children('td:last-child').append(this.rowActionButtons);

@@ -51,6 +51,11 @@ var View = Marionette.ItemView.extend({
 
     viewAccession: function () {
         Backbone.history.navigate('app/accession/accession/' + this.model.get('accession') + '/', {trigger: true});
+    },
+
+    selectBatch: function () {
+        // @todo
+        alert("not yet implemented !");
     }
 });
 
