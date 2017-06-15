@@ -18,6 +18,7 @@ from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 
 from descriptor.describable import DescriptorsBuilder
+from descriptor.descriptorcolumns import get_description
 from descriptor.models import DescriptorMetaModel, DescriptorModelType
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
@@ -161,7 +162,7 @@ def get_accession_list(request):
     # order_by = ['descriptors__MCPD_ORIGCTY', 'name', 'id']
     # order_by = ['geonames_country_name', 'id']
     # order_by = ['id']
-    order_by = ['name', 'id']
+    order_by = ['#MCPD_ORIGCTY', 'name', 'id']
     # order_by = ['parent__name']
 
     # from main.cursor import CursorQuery
@@ -212,6 +213,8 @@ def get_accession_list(request):
     #
     # cq.update()
 
+    description = get_description(Accession)
+
     from main.cursor import ManualCursorQuery
     cq = ManualCursorQuery(Accession, cursor, order_by)
 
@@ -223,11 +226,9 @@ def get_accession_list(request):
             "synonyms",
             queryset=AccessionSynonym.objects.all().order_by('type', 'language')))
 
-    # cq.join(Accession.parent, ['name', 'rank'])
-    # cq.select_related('parent')
-    cq.prefetch_related("parent")  # @or use aliases @todo how to avoid using that extra query and having the join ?
+    cq.join('parent', ['name', 'rank'])  # replace cq.select_related('parent__name', 'parent__rank')
 
-    # cq.join(Country, ['descriptors.MCPD_ORIGCTY', 'name'])  # @todo using descriptor model ?? to get foreign model...
+    cq.join('#MCPD_ORIGCTY', ['name'])
     # from geonames.models import Country
     # cq.prefetch_related(Prefetch(
     #         "descriptors__MCPD_ORIGCTY",
@@ -245,7 +246,7 @@ def get_accession_list(request):
             'descriptors': accession.descriptors,
             'synonyms': [],
             'parent_details': {
-                'id': accession.parent_id,
+                'id': accession.parent.id,
                 'name': accession.parent.name,
                 'rank': accession.parent.rank,
             }

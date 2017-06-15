@@ -133,6 +133,16 @@ class DescriptorFormatTypeManager(object):
         return list(cls.descriptor_format_types.values())
 
     @classmethod
+    def get(cls, descriptor_type_format):
+        format_type = descriptor_type_format['type']
+
+        dft = cls.descriptor_format_types.get(format_type)
+        if dft is None:
+            raise ValueError("Unsupported descriptor format type %s" % format_type)
+
+        return dft
+
+    @classmethod
     def validate(cls, descriptor_type_format, value, descriptor_model_type):
         """
         Call the validate of the correct descriptor format type.

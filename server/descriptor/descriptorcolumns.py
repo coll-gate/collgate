@@ -52,3 +52,27 @@ def get_columns_name_for_describable_content_type(request, content_type_name):
     }
 
     return HttpResponseRest(request, results)
+
+
+# @todo could be cached, but need invalidation from change on descriptor model chain...
+def get_description(model):
+    content_type = get_object_or_404(ContentType, app_label=model._meta.app_label, model=model._meta.model_name)
+
+    dmms = DescriptorMetaModel.objects.filter(target=content_type).values_list(
+        "descriptor_models__descriptor_model_types__id", flat=True)
+    dmts = DescriptorModelType.objects.filter(id__in=dmms).prefetch_related('descriptor_type')
+
+    results = {}
+
+    for dmt in dmts:
+        descriptor_format = json.loads(dmt.descriptor_type.format)
+        dft = DescriptorFormatTypeManager.get(descriptor_format)
+
+        results[dmt.name] = {
+            'name': dmt.name,
+            'index': dmt.index,
+            'model': dft,
+            'format': descriptor_format
+        }
+
+    return results
