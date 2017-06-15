@@ -22,6 +22,8 @@ class ManualCursorQuery(object):
     Make easier the usage of cursor for pagination in query set.
     """
 
+    FIELDS_SEP = "->"
+
     def __init__(self, model, cursor=None, order_by=('id',)):
         self._model = model
         self._query_set = None
@@ -48,22 +50,24 @@ class ManualCursorQuery(object):
 
         self.model_fields = {}
 
+        self._description = get_description(self._model)
+
         for field in model._meta.get_fields():
             if type(field) is models.fields.reverse_related.ManyToManyRel:
-                self.model_fields[field.name] = ('m2m',)
+                self.model_fields[field.name] = ('M2M',)
             elif type(field) is models.fields.reverse_related.ManyToOneRel:
-                self.model_fields[field.name] = ('m2o',)
+                self.model_fields[field.name] = ('M2O',)
             elif type(field) is models.fields.related.ForeignKey:
-                self.model_fields[field.name] = ('fk',)
+                self.model_fields[field.name] = ('FK',)
                 self.query_select.append('"%s"."%s_id"' % (db_table, field.name))
             elif type(field) is models.fields.IntegerField or type(field) == models.fields.AutoField:
-                self.model_fields[field.name] = ('int',)
+                self.model_fields[field.name] = ('INTEGER',)
                 self.query_select.append('"%s"."%s"' % (db_table, field.name))
             elif type(field) is JSONField:
-                self.model_fields[field.name] = ('json',)
+                self.model_fields[field.name] = ('JSON',)
                 self.query_select.append('"%s"."%s"' % (db_table, field.name))
             else:
-                self.model_fields[field.name] = ('str',)
+                self.model_fields[field.name] = ('TEXT',)
                 self.query_select.append('"%s"."%s"' % (db_table, field.name))
 
         if cursor:
@@ -82,25 +86,54 @@ class ManualCursorQuery(object):
 
                     for prev_field, prev_i, prev_op, prev_ope, prev_is_descriptor in previous:
                         if prev_is_descriptor:
-                            if '.' in prev_field:
-                                pff = prev_field.split('.')
-                                value = self._make_value(cursor[prev_i], 'str')  # @todo from DMT
+                            if self.FIELDS_SEP in prev_field:
+                                pff = prev_field.split(self.FIELDS_SEP)
+
+                                # @todo
+                                descr = self._description[pff[0]]
+                                cast_type = 'TEXT'  # 'INTEGER' if descr['model'].related_model else 'TEXT' (sub)
+
+                                value = self._make_value(cursor[prev_i], cast_type)
                                 lqs.append('"descr_%s"."%s" %s %s' % (pff[0], pff[1], prev_ope, value))
                             else:
-                                value = self._make_value(cursor[prev_i], 'int')  # @todo from DMT
-                                lqs.append('CAST("%s"."descriptors"->>\'%s\' AS INTEGER) %s %s' % (db_table, prev_field, prev_ope, value))
+                                # @todo
+                                descr = self._description[prev_field]
+                                cast_type = 'INTEGER' if descr['model'].related_model else 'TEXT'
+
+                                value = self._make_value(cursor[prev_i], cast_type)
+
+                                if cast_type == 'INTEGER':
+                                    lqs.append('CAST("%s"."descriptors"->>\'%s\' AS %s) %s %s' % (
+                                        db_table, prev_field, cast_type, prev_ope, value))
+                                else:
+                                    lqs.append('("%s"."descriptors"->>\'%s\') %s %s' % (
+                                        db_table, prev_field, prev_ope, value))
                         else:
                             value = self._make_value(cursor[prev_i], self.model_fields[prev_field][0])
                             lqs.append('"%s"."%s" %s %s' % (db_table, prev_field, prev_ope, value))
 
                     if is_descriptor:
-                        if '.' in f:
-                            ff = f.split('.')
-                            value = self._make_value(cursor[i], 'str')  # @todo from DMT
+                        if self.FIELDS_SEP in f:
+                            ff = f.split(self.FIELDS_SEP)
+
+                            # @todo
+                            descr = self._description[ff[0]]
+                            cast_type = 'TEXT'  # 'INTEGER' if descr['model'].related_model else 'TEXT' (sub)
+
+                            value = self._make_value(cursor[i], cast_type)
                             lqs.append('"descr_%s"."%s" %s %s' % (ff[0], ff[1], op, value))
                         else:
-                            value = self._make_value(cursor[i], 'int')  # @todo from DMT
-                            lqs.append('CAST("%s"."descriptors"->>\'%s\' AS INTEGER) %s %s' % (db_table, f, op, value))
+                            # @todo
+                            descr = self._description[f]
+                            cast_type = 'INTEGER' if descr['model'].related_model else 'TEXT'
+
+                            value = self._make_value(cursor[i], cast_type)
+
+                            if cast_type == 'INTEGER':
+                                lqs.append('CAST("%s"."descriptors"->>\'%s\' AS %s) %s %s' % (
+                                    db_table, f, cast_type, op, value))
+                            else:
+                                lqs.append('("%s"."descriptors"->>\'%s\') %s %s' % (db_table, f, op, value))
                     else:
                         value = self._make_value(cursor[i], self.model_fields[f][0])
                         lqs.append('"%s"."%s" %s %s' % (db_table, f, op, value))
@@ -108,13 +141,27 @@ class ManualCursorQuery(object):
                     _where.append(" AND ".join(lqs))
                 else:
                     if is_descriptor:
-                        if '.' in f:
-                            ff = f.split('.')
-                            value = self._make_value(cursor[i], 'str')  # @todo from DMT
+                        if self.FIELDS_SEP in f:
+                            ff = f.split(self.FIELDS_SEP)
+
+                            # @todo
+                            descr = self._description[ff[0]]
+                            cast_type = 'TEXT'  # 'INTEGER' if descr['model'].related_model else 'TEXT' (sub)
+
+                            value = self._make_value(cursor[i], cast_type)
                             _where.append('"descr_%s"."%s" %s %s' % (ff[0], ff[1], op, value))
                         else:
-                            value = self._make_value(cursor[i], 'int')  # @todo from DMT
-                            _where.append('CAST("%s"."descriptors"->>\'%s\' AS INTEGER) %s %s' % (db_table, f, op, value))
+                            # @todo
+                            descr = self._description[f]
+                            cast_type = 'INTEGER' if descr['model'].related_model else 'TEXT'
+
+                            value = self._make_value(cursor[i], cast_type)
+
+                            if cast_type == 'INTEGER':
+                                _where.append('CAST("%s"."descriptors"->>\'%s\' AS %s) %s %s' % (
+                                    db_table, f, cast_type, op, value))
+                            else:
+                                _where.append('("%s"."descriptors"->>\'%s\') %s %s' % (db_table, f, op, value))
                     else:
                         value = self._make_value(cursor[i], self.model_fields[f][0])
                         _where.append('"%s"."%s" %s %s' % (db_table, f, op, value))
@@ -125,11 +172,11 @@ class ManualCursorQuery(object):
 
             self.query_where.append(" OR ".join(_where))
 
-    def _make_value(self, value, type_str):
+    def _make_value(self, value, cast_type):
         if value is None:
             return "NULL"
 
-        if type_str == 'int':
+        if cast_type == 'INTEGER' or cast_type == 'FK':
             try:
                 int(value)
             except ValueError:
@@ -146,18 +193,33 @@ class ManualCursorQuery(object):
             f = field.lstrip('+-#')
             order = "DESC" if field[0] == '-' else "ASC"
             is_descriptor = field[0] == '#' or field[1] == '#'
-            type_str = self.model_fields[f][0] if not is_descriptor else 'int'   # @todo from DT
 
-            # @todo must use descriptor comparator
+            if self.FIELDS_SEP in f:
+                ff = f.split(self.FIELDS_SEP)
+
+                if is_descriptor:
+                    descr = self._description[ff[0]]
+                    cast_type = 'TEXT'  # 'INTEGER' if descr['model'].related_model else 'TEXT' (sub) @todo
+                else:
+                    cast_type = self.model_fields[ff[0]][0]  #@todo
+            else:
+                if is_descriptor:
+                    descr = self._description[f]
+                    cast_type = 'INTEGER' if descr['model'].related_model else 'TEXT'
+                else:
+                    cast_type = self.model_fields[f][0]
+
+            # @todo must use descriptor comparator and cast_type
             if is_descriptor:
-                if '.' in f:
-                    ff = f.split('.')
+                if self.FIELDS_SEP in f:
+                    ff = f.split(self.FIELDS_SEP)
                     self.query_order_by.append('"descr_%s"."%s" %s' % (ff[0], ff[1], order))
                 else:
-                    if type_str == 'int':
+                    if cast_type == 'INTEGER':
                         self.query_order_by.append('CAST("%s"."descriptors"->>\'%s\' as INTEGER) %s' % (db_table, f, order))
                     else:
-                        self.query_order_by.append('CAST("%s"."descriptors"->>\'%s\' as TEXT) %s' % (db_table, f, order))
+                        self.query_order_by.append('("%s"."descriptors"->>\'%s\') %s' % (db_table, f, order))
+                        # self.query_order_by.append('CAST("%s"."descriptors"->>\'%s\' as TEXT) %s' % (db_table, f, order))
             else:
                 self.query_order_by.append('"%s"."%s" %s' % (db_table, f, order))
 
@@ -183,8 +245,8 @@ class ManualCursorQuery(object):
                 entity = self._query_set[0]
 
                 if is_descriptor:
-                    if '.' in f:
-                        ff = f.split('.')
+                    if self.FIELDS_SEP in f:
+                        ff = f.split(self.FIELDS_SEP)
                         self._prev_cursor.append(getattr(entity, "descr_%s_%s" % (ff[0], ff[1])))
                     else:
                         self._prev_cursor.append(entity.descriptors.get(f))
@@ -195,8 +257,8 @@ class ManualCursorQuery(object):
                 entity = self._query_set[-1]
 
                 if is_descriptor:
-                    if '.' in f:
-                        ff = f.split('.')
+                    if self.FIELDS_SEP in f:
+                        ff = f.split(self.FIELDS_SEP)
                         self._next_cursor.append(getattr(entity, "descr_%s_%s" % (ff[0], ff[1])))
                     else:
                         self._next_cursor.append(entity.descriptors.get(f))
@@ -206,7 +268,7 @@ class ManualCursorQuery(object):
         self._cursor_built = True
 
     def filters(self, filters):
-        # @todo
+        # @todo OR AND structured criterion
         name = filters.get('name', '')
         field = "name"
         value = '"%s"' % name
@@ -248,7 +310,7 @@ class ManualCursorQuery(object):
         related_model = description['model'].related_model
         join_db_table = related_model._meta.db_table
 
-        # @todo descriptor_name can contains some '.', replace or avoid possibility to have '.'
+        # descriptor_name can contains some '.', replaces them by '_'
         renamed_table = "descr_" + descriptor_name.replace('.', '_')
 
         for field in related_model._meta.get_fields():
@@ -256,37 +318,45 @@ class ManualCursorQuery(object):
                 continue
 
             if type(field) is models.fields.reverse_related.ManyToManyRel:
+                # model_fields[field.name] = ('M2M',)
                 pass
-                # model_fields[field.name] = ('m2m',)
             elif type(field) is models.fields.reverse_related.ManyToOneRel:
+                # model_fields[field.name] = ('M2O',)
                 pass
-                # model_fields[field.name] = ('m2o',)
             elif type(field) is models.fields.related.ForeignKey:
-                model_fields[field.name + '_id'] = ('fk',)
+                model_fields[field.name + '_id'] = ('FK',)
                 self.query_select.append('"%s"."%s_id" AS "%s_%s_id"' % (renamed_table, field.name, renamed_table, field.name))
             elif type(field) is models.fields.IntegerField or type(field) == models.fields.AutoField:
-                model_fields[field.name] = ('int',)
+                model_fields[field.name] = ('INTEGER',)
                 self.query_select.append('"%s"."%s" AS "%s_%s"' % (renamed_table, field.name, renamed_table, field.name))
             elif type(field) is JSONField:
-                self.model_fields[field.name] = ('json',)
+                self.model_fields[field.name] = ('JSON',)
                 self.query_select.append('"%s"."%s" AS "%s_%s"' % (renamed_table, field.name, renamed_table, field.name))
             else:
-                model_fields[field.name] = ('str',)
+                model_fields[field.name] = ('TEXT',)
                 self.query_select.append('"%s"."%s" AS "%s_%s"' % (renamed_table, field.name, renamed_table, field.name))
 
         self._select_related[renamed_table] = (related_model, model_fields)
 
-        on_clause = ['("%s"."descriptors"->>\'%s\')::INTEGER = "%s"."id"' % (db_table, descriptor_name, renamed_table)]
+        # @todo from description
+        cast_type = "INTEGER" if self._description[descriptor_name]['model'].related_model else "TEXT"
+
+        if cast_type == "INTEGER":
+            on_clause = ['("%s"."descriptors"->>\'%s\')::%s = "%s"."id"' % (db_table, descriptor_name, cast_type, renamed_table)]
+        else:
+            on_clause = ['("%s"."descriptors"->>\'%s\') = "%s"."id"' % (db_table, descriptor_name, renamed_table)]
+
         _from = 'INNER JOIN "%s" AS "%s" ON (%s)' % (join_db_table, renamed_table, ", ".join(on_clause))
 
         self.query_from.append(_from)
         return self
 
+    def _cast_type(self, field):
+        # @todo
+        return ""
+
     def join(self, related_field, fields=None):
         if related_field.startswith('#'):
-            if self._description is None:
-                self._description = get_description(self._model)
-
             descriptor = related_field.lstrip('#')
             return self.join_descriptor(self._description[descriptor], descriptor, fields)
 
@@ -304,24 +374,24 @@ class ManualCursorQuery(object):
 
                 if type(field) is models.fields.reverse_related.ManyToManyRel:
                     pass
-                    # model_fields[field.name] = ('m2m',)
+                    # model_fields[field.name] = ('M2M',)
                 elif type(field) is models.fields.reverse_related.ManyToOneRel:
                     pass
-                    # model_fields[field.name] = ('m2o',)
+                    # model_fields[field.name] = ('M2O',)
                 elif type(field) is models.fields.related.ForeignKey:
-                    model_fields[field.name + '_id'] = ('fk',)
+                    model_fields[field.name + '_id'] = ('FK',)
                     # self.query_select.append('"%s"."%s_id" AS "%s_%s_id"' % (join_db_table, field.name))
                     self.query_select.append('"%s"."%s_id" AS "%s_%s_id"' % (join_db_table, field.name, related_field, field.name))
                 elif type(field) is models.fields.IntegerField or type(field) == models.fields.AutoField:
-                    model_fields[field.name] = ('int',)
+                    model_fields[field.name] = ('INTEGER',)
                     # self.query_select.append('"%s"."%s"' % (join_db_table, field.name))
                     self.query_select.append('"%s"."%s" AS "%s_%s"' % (join_db_table, field.name, related_field, field.name))
                 elif type(field) is JSONField:
-                    self.model_fields[field.name] = ('json',)
+                    self.model_fields[field.name] = ('JSON',)
                     # self.query_select.append('"%s"."%s"' % (join_db_table, field.name))
                     self.query_select.append('"%s"."%s" AS "%s_%s"' % (join_db_table, field.name, related_field, field.name))
                 else:
-                    model_fields[field.name] = ('str',)
+                    model_fields[field.name] = ('TEXT',)
                     # self.query_select.append('"%s"."%s"' % (join_db_table, field.name))
                     self.query_select.append('"%s"."%s" AS "%s_%s"' % (join_db_table, field.name, related_field, field.name))
 

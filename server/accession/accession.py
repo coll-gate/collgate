@@ -157,60 +157,17 @@ def get_accession_list(request):
     results_per_page = int_arg(request.GET.get('more', 30))
     cursor = json.loads(request.GET.get('cursor', "null"))
     limit = results_per_page
-    # order_by = ['descriptors__IPGRI_4.1.1', 'descriptors__MCPD_ORIGCTY', 'name', 'id']
     # order_by = ['descriptors__MCPD_ORIGCTY', 'name', 'id']
-    # order_by = ['geonames_country_name', 'id']
     # order_by = ['id']
-    order_by = ['#MCPD_ORIGCTY.name', 'name', 'id']
-    # order_by = ['parent__name']
+    # order_by = ['name', 'id']
+    # order_by = ['parent->name', 'id']  # @todo test
+    # order_by = ['#MCPD_ORIGCTY->name', 'name', 'id']
+    order_by = ['#MCPD_ORIGCTY->name', '#IPGRI_4.1.1', 'name', 'id']
 
     # from main.cursor import CursorQuery
     # cq = CursorQuery(Accession.objects, cursor, order_by)
-    #
-    # if request.GET.get('filters'):
-    #     filters = json.loads(request.GET['filters'])
-    #     cq.filters(filters)
-    #
-    # # Prefetch permit to have only 2 requests (clause order_by done directly, not per accession.synonyms)
-    # qs = cq.query_set.select_related('parent').prefetch_related(
-    #     Prefetch(
-    #         "synonyms",
-    #         queryset=AccessionSynonym.objects.all().order_by('type', 'language'))
-    # ).distinct()  # .order_by(*order_by)[:limit]
-    #
     # # qs = qs.extra(select={"geonames_country_name": "SELECT geonames_country.name FROM geonames_country WHERE (accession_accession.descriptors->>'MCPD_ORIGCTY')::INTEGER = geonames_country.id"})
     # # qs = qs.extra(params=["INNER JOIN geonames_country ON((accession_accession.descriptors->>'MCPD_ORIGCTY')::INTEGER = geonames_country.id"])
-    # qs = cq.order_by(qs)[:limit]
-    #
-    # for accession in qs:
-    #     a = {
-    #         'id': accession.pk,
-    #         'name': accession.name,
-    #         'code': accession.code,
-    #         'parent': accession.parent_id,
-    #         'descriptor_meta_model': accession.descriptor_meta_model_id,
-    #         'descriptors': accession.descriptors,
-    #         'synonyms': [],
-    #         'parent_details': {
-    #             'id': accession.parent_id,
-    #             'name': accession.parent.name,
-    #             'rank': accession.parent.rank,
-    #         },
-    #         # 'geonames_country_name': accession.geonames_country_name
-    #     }
-    #     print(accession.geonames_country_name)
-    #
-    #     for synonym in accession.synonyms.all():
-    #         a['synonyms'].append({
-    #             'id': synonym.id,
-    #             'name': synonym.name,
-    #             'type': synonym.type,
-    #             'language': synonym.language
-    #         })
-    #
-    #     cq.add_item(a)
-    #
-    # cq.update()
 
     from main.cursor import ManualCursorQuery
     cq = ManualCursorQuery(Accession, cursor, order_by)
@@ -223,7 +180,7 @@ def get_accession_list(request):
             "synonyms",
             queryset=AccessionSynonym.objects.all().order_by('type', 'language')))
 
-    cq.join('parent', ['name', 'rank'])  # replace cq.select_related('parent__name', 'parent__rank')
+    cq.join('parent', ['name', 'rank'])
     cq.join('#MCPD_ORIGCTY', ['name'])
 
     cq.order_by().limit(limit)
