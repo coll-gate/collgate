@@ -1,16 +1,13 @@
 # -*- coding: utf-8; -*-
 #
 # @file descriptorformattype.py
-# @brief 
+# @brief coll-gate descriptor format type class for geolocation
 # @author Medhi BOULNEMOUR (INRA UMR1095)
 # @date 2017-01-03
 # @copyright Copyright (c) 2017 INRA/CIRAD
 # @license MIT (see LICENSE file)
 # @details 
 
-"""
-coll-gate descriptor format type class for geolocation
-"""
 import validictory
 from django.utils import translation
 from django.utils.translation import ugettext_lazy as _
@@ -87,6 +84,9 @@ class DescriptorFormatTypeCountry(DescriptorFormatType):
         ]
         self.value_is_code = True
 
+        from geonames.models import Country
+        self.related_model = Country
+
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         return instance.geolocation_app.geolocation_manager.country_format_type_validator(value)
 
@@ -146,6 +146,9 @@ class DescriptorFormatTypeCity(DescriptorFormatType):
         ]
         self.value_is_code = True
 
+        from geonames.models import City
+        self.related_model = City
+
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         return instance.geolocation_app.geolocation_manager.city_format_type_validator(value)
 
@@ -196,4 +199,3 @@ class DescriptorFormatTypeCity(DescriptorFormatType):
             'cacheable': True,
             'items': items
         }
-

@@ -18,7 +18,6 @@ from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 
 from descriptor.describable import DescriptorsBuilder
-from descriptor.descriptorcolumns import get_description
 from descriptor.models import DescriptorMetaModel, DescriptorModelType
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
@@ -213,8 +212,6 @@ def get_accession_list(request):
     #
     # cq.update()
 
-    description = get_description(Accession)
-
     from main.cursor import ManualCursorQuery
     cq = ManualCursorQuery(Accession, cursor, order_by)
 
@@ -227,7 +224,6 @@ def get_accession_list(request):
             queryset=AccessionSynonym.objects.all().order_by('type', 'language')))
 
     cq.join('parent', ['name', 'rank'])  # replace cq.select_related('parent__name', 'parent__rank')
-
     cq.join('#MCPD_ORIGCTY', ['name'])
     # from geonames.models import Country
     # cq.prefetch_related(Prefetch(

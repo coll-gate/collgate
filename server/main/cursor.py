@@ -13,6 +13,7 @@ from django.db.models import Q, prefetch_related_objects
 from django.db.models.expressions import OrderBy, RawSQL
 from django.db.models.fields.related_descriptors import ForwardManyToOneDescriptor
 
+from descriptor.descriptorcolumns import get_description
 from descriptor.models import DescriptorModelType
 
 
@@ -203,6 +204,7 @@ class ManualCursorQuery(object):
         self._items = []
 
         self._cursor = cursor
+        self._description = None
 
         self._prev_cursor = None
         self._next_cursor = None
@@ -392,28 +394,29 @@ class ManualCursorQuery(object):
     def next_cursor(self):
         return self._next_cursor
 
-    def join_descriptor(self, descriptor_name, fields=None):
+    def join_descriptor(self, description, descriptor_name, fields=None):
         model_fields = {}
         db_table = self._model._meta.db_table
 
-        dt = DescriptorModelType.objects.get(name=descriptor_name).descriptor_type
-        from geonames.models import Country
-        related_model = Country  # dt._ getattr(self._model, descriptor_name) @todo how to
+        related_model = description['model'].related_model
+        join_db_table = related_model._meta.db_table
 
-        join_db_table = related_model.field.related_model._meta.db_table
+        # self._select_related[related_field] = (related_model.field.related_model, model_fields)
 
-        self._select_related[related_field] = (related_model.field.related_model, model_fields)
+        # on_clause = ['"%s"."%s_id" = "%s"."id"' % (db_table, related_field, join_db_table)]
+        # _from = 'INNER JOIN "%s" ON (%s)' % (join_db_table, ", ".join(on_clause))
 
-        on_clause = ['"%s"."%s_id" = "%s"."id"' % (db_table, related_field, join_db_table)]
-        _from = 'INNER JOIN "%s" ON (%s)' % (join_db_table, ", ".join(on_clause))
-
-        self.query_from.append(_from)
+        # self.query_from.append(_from)
 
         return self
 
     def join(self, related_field, fields=None):
         if related_field.startswith('#'):
-            return self.join_descriptor(related_field.lstrip('#'), fields)
+            if self._description is None:
+                self._description = get_description(self._model)
+
+            descriptor = related_field.lstrip('#')
+            return self.join_descriptor(self._description[descriptor], descriptor, fields)
 
         model_fields = {}
         db_table = self._model._meta.db_table

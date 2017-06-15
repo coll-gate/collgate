@@ -1,16 +1,12 @@
 # -*- coding: utf-8; -*-
 #
 # @file descriptorformattype.py
-# @brief 
+# @brief coll-gate descriptor format type class
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2017-01-03
 # @copyright Copyright (c) 2017 INRA/CIRAD
 # @license MIT (see LICENSE file)
 # @details 
-
-"""
-coll-gate descriptor format type class
-"""
 
 import re
 import decimal
@@ -56,6 +52,9 @@ class DescriptorFormatType(object):
 
         # set to true if the value is a code for a queried value.
         self.value_is_code = False
+
+        # set to the related model
+        self.related_model = None
 
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         """
