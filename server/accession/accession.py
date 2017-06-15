@@ -161,7 +161,7 @@ def get_accession_list(request):
     # order_by = ['descriptors__MCPD_ORIGCTY', 'name', 'id']
     # order_by = ['geonames_country_name', 'id']
     # order_by = ['id']
-    order_by = ['#MCPD_ORIGCTY', 'name', 'id']
+    order_by = ['#MCPD_ORIGCTY.name', 'name', 'id']
     # order_by = ['parent__name']
 
     # from main.cursor import CursorQuery
@@ -225,12 +225,10 @@ def get_accession_list(request):
 
     cq.join('parent', ['name', 'rank'])  # replace cq.select_related('parent__name', 'parent__rank')
     cq.join('#MCPD_ORIGCTY', ['name'])
-    # from geonames.models import Country
-    # cq.prefetch_related(Prefetch(
-    #         "descriptors__MCPD_ORIGCTY",
-    #         queryset=Country.objects.all()))
 
     cq.order_by().limit(limit)
+
+    accession_items = []
 
     for accession in cq:
         a = {
@@ -256,13 +254,11 @@ def get_accession_list(request):
                 'language': synonym.language
             })
 
-        cq.add_item(a)
-
-    cq.finalize()
+        accession_items.append(a)
 
     results = {
         'perms': [],
-        'items': cq.items,
+        'items': accession_items,
         'prev': cq.prev_cursor,
         'cursor': cursor,
         'next': cq.next_cursor,
