@@ -15,8 +15,11 @@ import validictory
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist, ImproperlyConfigured
 from django.shortcuts import get_object_or_404
+from django.utils import translation
 from django.utils.translation import ugettext_lazy as _, pgettext_lazy
 from django.db.models import Q
+
+from descriptor.models import DescriptorValue
 
 
 class DescriptorFormatTypeGroup(object):
@@ -50,11 +53,12 @@ class DescriptorFormatType(object):
         # set to true if the content of the value is external.
         self.external = False
 
-        # set to true if the value is a code for a queried value.
-        self.value_is_code = False
-
-        # set to the related model
+        # defines the related model, on which the value (a foreign key) is a reference.
         self.related_model = None
+
+        # defines the type of the stored data. "INTEGER" for a foreign key,
+        # or it can defines an array or a dict of one level maximum.
+        self.data = "TEXT"
 
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         """
@@ -102,6 +106,15 @@ class DescriptorFormatType(object):
             'cacheable': True,
             'items': {}
         }
+
+    def select(self, db_table, descriptor_name, table_alias):
+        if self.data == "INTEGER":
+            on_clauses = ['("%s"."descriptors"->>\'%s\')::%s = "%s"."id"' % (
+                db_table, descriptor_name, self.data, table_alias)]
+        else:
+            on_clauses = ['("%s"."descriptors"->>\'%s\') = "%s"."id"' % (db_table, descriptor_name, table_alias)]
+
+        return on_clauses
 
 
 class DescriptorFormatTypeManager(object):
@@ -235,21 +248,6 @@ class DescriptorFormatTypeManager(object):
 
         return dft.get_display_values_for(descriptor_type, descriptor_type_format, values, limit)
 
-    @classmethod
-    def is_value_code(cls, descriptor_type_format):
-        """
-        Return true if the value contained by the descriptor is a code for a value that is then queried.
-        :param descriptor_type_format: Format of the related type of descriptor
-        :return: True if the value is a code
-        """
-        format_type = descriptor_type_format['type']
-
-        dft = cls.descriptor_format_types.get(format_type)
-        if dft is None:
-            raise ValueError("Unsupported descriptor format type %s" % format_type)
-
-        return dft.value_is_code
-
 
 class DescriptorFormatTypeGroupSingle(DescriptorFormatTypeGroup):
     """
@@ -269,6 +267,15 @@ class DescriptorFormatTypeGroupList(DescriptorFormatTypeGroup):
         super().__init__("list", _("List of values"))
 
 
+class DescriptorFormatTypeGroupReference(DescriptorFormatTypeGroup):
+    """
+    Group of reference of values descriptors.
+    """
+
+    def __init__(self):
+        super().__init__("reference", _("Reference to"))
+
+
 class DescriptorFormatTypeEnumSingle(DescriptorFormatType):
     """
     Specialisation for single list of values.
@@ -283,7 +290,8 @@ class DescriptorFormatTypeEnumSingle(DescriptorFormatType):
         self.format_fields = [
             "type", "trans", "fields", "list_type", "sortby_field", "display_fields", "search_field"
         ]
-        self.value_is_code = True
+        self.data = "TEXT"
+        self.related_model = DescriptorValue
 
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         # check if the value is a string and exists into the type of descriptor
@@ -335,6 +343,16 @@ class DescriptorFormatTypeEnumSingle(DescriptorFormatType):
             'items': items
         }
 
+    def select(self, db_table, descriptor_name, table_alias):
+        language = "'" + translation.get_language() + "'"
+
+        on_clauses = [
+            '("%s"."descriptors"->>\'%s\') = "%s"."code"' % (db_table, descriptor_name, table_alias),
+            '"%s"."language" = %s' % (table_alias, language)
+        ]
+
+        return on_clauses
+
 
 class DescriptorFormatTypeEnumPair(DescriptorFormatType):
     """
@@ -350,7 +368,8 @@ class DescriptorFormatTypeEnumPair(DescriptorFormatType):
         self.format_fields = [
             "type", "trans", "fields", "list_type", "sortby_field", "display_fields", "search_field"
         ]
-        self.value_is_code = True
+        self.data = "TEXT"
+        self.related_model = DescriptorValue
 
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         # check if the value is a string and exists into the type of descriptor
@@ -413,6 +432,16 @@ class DescriptorFormatTypeEnumPair(DescriptorFormatType):
             'items': items
         }
 
+    def select(self, db_table, descriptor_name, table_alias):
+        language = "'" + translation.get_language() + "'"
+
+        on_clauses = [
+            '("%s"."descriptors"->>\'%s\') = "%s"."code"' % (db_table, descriptor_name, table_alias),
+            '"%s"."language" = %s' % (table_alias, language)
+        ]
+
+        return on_clauses
+
 
 class DescriptorFormatTypeEnumOrdinal(DescriptorFormatType):
     """
@@ -428,7 +457,8 @@ class DescriptorFormatTypeEnumOrdinal(DescriptorFormatType):
         self.format_fields = [
             "type", "trans", "fields", "list_type", "sortby_field", "display_fields", "search_field"
         ]
-        self.value_is_code = True
+        self.data = "TEXT"
+        self.related_model = DescriptorValue
 
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         # check if the value is a string and exists into the type of descriptor
@@ -484,6 +514,16 @@ class DescriptorFormatTypeEnumOrdinal(DescriptorFormatType):
             'items': items
         }
 
+    def select(self, db_table, descriptor_name, table_alias):
+        language = "'" + translation.get_language() + "'"
+
+        on_clauses = [
+            '("%s"."descriptors"->>\'%s\') = "%s"."code"' % (db_table, descriptor_name, table_alias),
+            '"%s"."language" = %s' % (table_alias, language)
+        ]
+
+        return on_clauses
+
 
 class DescriptorFormatTypeBoolean(DescriptorFormatType):
     """
@@ -497,6 +537,7 @@ class DescriptorFormatTypeBoolean(DescriptorFormatType):
         self.group = DescriptorFormatTypeGroupSingle()
         self.verbose_name = _("Boolean")
         self.format_fields = ["type"]
+        self.data = "BOOLEAN"
 
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         # check if the value is a boolean
@@ -521,6 +562,7 @@ class DescriptorFormatTypeNumeric(DescriptorFormatType):
         self.group = DescriptorFormatTypeGroupSingle()
         self.verbose_name = _("Numeric")
         self.format_fields = ["type", "precision", "unit", "custom_unit"]
+        self.data = "TEXT"
 
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         # check if the value is a decimal (string with digits - and .) with the according precision of decimals
@@ -576,6 +618,7 @@ class DescriptorFormatTypeNumericRange(DescriptorFormatType):
         self.group = DescriptorFormatTypeGroupSingle()
         self.verbose_name = _("Numeric range")
         self.format_fields = ["type", "range", "precision", "unit", "custom_unit"]
+        self.data = ["TEXT", "TEXT"]
 
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         # check if the value is a decimal (string with digits - and .) with the according precision of
@@ -658,6 +701,7 @@ class DescriptorFormatTypeOrdinal(DescriptorFormatType):
         self.group = DescriptorFormatTypeGroupSingle()
         self.verbose_name = _("Ordinal")
         self.format_fields = ["type", "range", "unit", "custom_unit"]
+        self.data = "INTEGER"
 
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         # check if the value is an integer into the range min/max
@@ -726,6 +770,7 @@ class DescriptorFormatTypeString(DescriptorFormatType):
         self.format_fields = [
             "regexp"
         ]
+        self.data = "TEXT"
 
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         # check if the value is a string matching the regexp and the max length of 1024 characters
@@ -780,6 +825,7 @@ class DescriptorFormatTypeDate(DescriptorFormatType):
         self.name = "date"
         self.group = DescriptorFormatTypeGroupSingle()
         self.verbose_name = _("Date")
+        self.data = "TEXT"
 
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         # check if the value is a YYYYMMDD date
@@ -806,6 +852,7 @@ class DescriptorFormatTypeTime(DescriptorFormatType):
         self.name = "time"
         self.group = DescriptorFormatTypeGroupSingle()
         self.verbose_name = pgettext_lazy("concept", "Time")
+        self.data = "TEXT"
 
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         # check if the value is a HH:MM:SS time
@@ -829,6 +876,7 @@ class DescriptorFormatTypeImpreciseDate(DescriptorFormatType):
         self.name = "imprecise_date"
         self.group = DescriptorFormatTypeGroupSingle()
         self.verbose_name = _("Imprecise date")
+        self.data = ["INTEGER", "INTEGER", "INTEGER"]
 
     class MyQ(Q):
         def __init__(self, kwargs=None):
@@ -910,6 +958,7 @@ class DescriptorFormatTypeDateTime(DescriptorFormatType):
         self.name = "datetime"
         self.group = DescriptorFormatTypeGroupSingle()
         self.verbose_name = _("Date+time")
+        self.data = "TEXT"
 
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         # check if the value is an ISO and UTC (convert to UTC if necessary)
@@ -922,74 +971,76 @@ class DescriptorFormatTypeDateTime(DescriptorFormatType):
         return None
 
 
-class DescriptorFormatTypeEntity(DescriptorFormatType):
-    """
-    Specialisation for a referred entity value.
-    """
-
-    def __init__(self):
-        super().__init__()
-
-        self.name = "entity"
-        self.group = DescriptorFormatTypeGroupSingle()
-        self.verbose_name = _("Entity")
-        self.value_is_code = True
-
-    def validate(self, descriptor_type_format, value, descriptor_model_type):
-        # check if the value is an integer and if the related entity exists
-        if not isinstance(value, int):
-            return _("The descriptor value must be an integer")
-
-        # check if the entity exists
-        try:
-            app_label, model = descriptor_type_format['model'].split('.')
-            content_type = get_object_or_404(ContentType, app_label=app_label, model=model)
-            content_type.get_object_for_this_type(id=value)
-        except ObjectDoesNotExist:
-            return _("The descriptor value must refers to an existing entity")
-
-        return None
-
-    def check(self, descriptor_type_format):
-        schema = {
-            "type": "object",
-            "properties": {
-                "model": {"type": "string", 'minLength': 3, 'maxLength': 256}
-            }
-        }
-
-        try:
-            validictory.validate(descriptor_type_format, schema)
-        except validictory.MultipleValidationError as e:
-            return str(e)
-
-        entity_list = []
-
-        from django.apps import apps
-        for entity in apps.get_app_config('descriptor').describable_entities:
-            entity_list.append("%s.%s" % (entity._meta.app_label, entity._meta.model_name))
-
-        if descriptor_type_format['model'] not in entity_list:
-            return _("Invalid describable entity model type name")
-
-        return None
-
-    def get_display_values_for(self, descriptor_type, descriptor_type_format, values, limit):
-        items = {}
-
-        # search for the entities
-        try:
-            app_label, model = descriptor_type_format['model'].split('.')
-            content_type = get_object_or_404(ContentType, app_label=app_label, model=model)
-        except ObjectDoesNotExist:
-            return _("The descriptor doesn't refers to a valid entity model")
-
-        entities = content_type.get_object_for_this_type(id__in=values)[:limit].values_list('id', 'name')
-
-        for entity in entities:
-            items[entity[0]] = entity[1]
-
-        return {
-            'cacheable': False,
-            'items': items
-        }
+# class DescriptorFormatTypeEntity(DescriptorFormatType):
+#     """
+#     Specialisation for a referred entity value.
+#     """
+#
+#     def __init__(self):
+#         super().__init__()
+#
+#         self.name = "entity"
+#         self.group = DescriptorFormatTypeGroupSingle()
+#         self.verbose_name = _("Entity")
+#         self.value_is_code = True
+#         # self.related_model = Entity @todo how to because it depends of
+#         self.data = "INTEGER"
+#
+#     def validate(self, descriptor_type_format, value, descriptor_model_type):
+#         # check if the value is an integer and if the related entity exists
+#         if not isinstance(value, int):
+#             return _("The descriptor value must be an integer")
+#
+#         # check if the entity exists
+#         try:
+#             app_label, model = descriptor_type_format['model'].split('.')
+#             content_type = get_object_or_404(ContentType, app_label=app_label, model=model)
+#             content_type.get_object_for_this_type(id=value)
+#         except ObjectDoesNotExist:
+#             return _("The descriptor value must refers to an existing entity")
+#
+#         return None
+#
+#     def check(self, descriptor_type_format):
+#         schema = {
+#             "type": "object",
+#             "properties": {
+#                 "model": {"type": "string", 'minLength': 3, 'maxLength': 256}
+#             }
+#         }
+#
+#         try:
+#             validictory.validate(descriptor_type_format, schema)
+#         except validictory.MultipleValidationError as e:
+#             return str(e)
+#
+#         entity_list = []
+#
+#         from django.apps import apps
+#         for entity in apps.get_app_config('descriptor').describable_entities:
+#             entity_list.append("%s.%s" % (entity._meta.app_label, entity._meta.model_name))
+#
+#         if descriptor_type_format['model'] not in entity_list:
+#             return _("Invalid describable entity model type name")
+#
+#         return None
+#
+#     def get_display_values_for(self, descriptor_type, descriptor_type_format, values, limit):
+#         items = {}
+#
+#         # search for the entities
+#         try:
+#             app_label, model = descriptor_type_format['model'].split('.')
+#             content_type = get_object_or_404(ContentType, app_label=app_label, model=model)
+#         except ObjectDoesNotExist:
+#             return _("The descriptor doesn't refers to a valid entity model")
+#
+#         entities = content_type.get_object_for_this_type(id__in=values)[:limit].values_list('id', 'name')
+#
+#         for entity in entities:
+#             items[entity[0]] = entity[1]
+#
+#         return {
+#             'cacheable': False,
+#             'items': items
+#         }

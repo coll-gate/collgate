@@ -1,16 +1,13 @@
 # -*- coding: utf-8; -*-
 #
 # @file descriptorformattype.py
-# @brief 
+# @brief coll-gate descriptor format type class for media library
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2017-01-03
 # @copyright Copyright (c) 2017 INRA/CIRAD
 # @license MIT (see LICENSE file)
 # @details 
 
-"""
-coll-gate descriptor format type class for media library
-"""
 import os
 import re
 import validictory
@@ -46,6 +43,8 @@ class DescriptorFormatTypeMedia(DescriptorFormatType):
         self.verbose_name = _("Media")
         self.format_fields = ["media_types", "media_inline"]
         self.external = True
+        self.data = "INTEGER"
+        self.related_model = Media
 
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         # check if the value is a string and if the related entity exists
@@ -131,6 +130,8 @@ class DescriptorFormatTypeMediaCollection(DescriptorFormatType):
         self.verbose_name = _("Media collection")
         self.format_fields = ["media_types", "max_items", "media_inline"]
         self.external = True
+        self.data = "INTEGER_ARRAY"
+        self.related_model = Media
 
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         # check if the value is a string and if the related entity exists
@@ -223,4 +224,3 @@ class DescriptorFormatTypeMediaCollection(DescriptorFormatType):
             'cacheable': True,
             'items': items
         }
-

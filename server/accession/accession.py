@@ -12,7 +12,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import SuspiciousOperation
 from django.db import IntegrityError
 from django.db import transaction
-from django.db.models import Prefetch, prefetch_related_objects
+from django.db.models import Prefetch
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
@@ -162,15 +162,11 @@ def get_accession_list(request):
     # order_by = ['name', 'id']
     # order_by = ['parent->name', 'id']  # @todo test
     # order_by = ['#MCPD_ORIGCTY->name', 'name', 'id']
-    order_by = ['#MCPD_ORIGCTY->name', '#IPGRI_4.1.1', 'name', 'id']
 
-    # from main.cursor import CursorQuery
-    # cq = CursorQuery(Accession.objects, cursor, order_by)
-    # # qs = qs.extra(select={"geonames_country_name": "SELECT geonames_country.name FROM geonames_country WHERE (accession_accession.descriptors->>'MCPD_ORIGCTY')::INTEGER = geonames_country.id"})
-    # # qs = qs.extra(params=["INNER JOIN geonames_country ON((accession_accession.descriptors->>'MCPD_ORIGCTY')::INTEGER = geonames_country.id"])
+    order_by = ['#MCPD_ORIGCTY->name', '#IPGRI_4.1.1->value1', 'name', 'id']
 
-    from main.cursor import ManualCursorQuery
-    cq = ManualCursorQuery(Accession, cursor, order_by)
+    from main.cursor import CursorQuery
+    cq = CursorQuery(Accession)
 
     if request.GET.get('filters'):
         filters = json.loads(request.GET['filters'])
@@ -181,9 +177,14 @@ def get_accession_list(request):
             queryset=AccessionSynonym.objects.all().order_by('type', 'language')))
 
     cq.join('parent', ['name', 'rank'])
+    cq.select_related('parent->name', 'parent->rank')  # to be done manually (later remove join)
     cq.join('#MCPD_ORIGCTY', ['name'])
+    # cq.select_related('#MCPD_ORIGCTY->name')  # done by order_by/cursor/filter
+    cq.join('#IPGRI_4.1.1', ['value1'])
+    # cq.select_related('#IPGRI_4.1.1->value1')  # done by order_by/cursor/filter
 
-    cq.order_by().limit(limit)
+    cq.cursor(cursor, order_by)
+    cq.order_by(order_by).limit(limit)
 
     accession_items = []
 
@@ -220,6 +221,11 @@ def get_accession_list(request):
         'cursor': cursor,
         'next': cq.next_cursor,
     }
+
+    # from main.cursor import CursorQuery
+    # cq = CursorQuery(Accession.objects, cursor, order_by)
+    # # qs = qs.extra(select={"geonames_country_name": "SELECT geonames_country.name FROM geonames_country WHERE (accession_accession.descriptors->>'MCPD_ORIGCTY')::INTEGER = geonames_country.id"})
+    # # qs = qs.extra(params=["INNER JOIN geonames_country ON((accession_accession.descriptors->>'MCPD_ORIGCTY')::INTEGER = geonames_country.id"])
 
     # if request.GET.get('filters'):
     #     filters = json.loads(request.GET['filters'])

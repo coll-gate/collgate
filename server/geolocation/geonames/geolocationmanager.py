@@ -1,16 +1,12 @@
 # -*- coding: utf-8; -*-
 #
 # @file geolocationmanager.py
-# @brief 
+# @brief coll-gate geolocation manager for cities light
 # @author Medhi BOULNEMOUR (INRA UMR1095)
 # @date 2017-01-03
 # @copyright Copyright (c) 2017 INRA/CIRAD
 # @license MIT (see LICENSE file)
 # @details 
-
-"""
-coll-gate geolocation manager for cities light
-"""
 
 from django.db.models import Q
 from geolocation.geolocationinterface import GeolocationInterface

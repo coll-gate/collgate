@@ -25,6 +25,12 @@ from main.config import Configuration, configuration
 class CollGateOrganisation(ApplicationMain):
     name = '.'.join(__name__.split('.')[0:-1])
 
+    def __init__(self, app_name, app_module):
+        super(CollGateOrganisation, self).__init__(app_name, app_module)
+
+        # different types of format for type of descriptors for this module
+        self.format_types = []
+
     def ready(self):
         super().ready()
 

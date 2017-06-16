@@ -21,6 +21,12 @@ from igdectk.bootstrap.glyphs import Glyph
 class CollGateClassification(ApplicationMain):
     name = '.'.join(__name__.split('.')[0:-1])
 
+    def __init__(self, app_name, app_module):
+        super(CollGateClassification, self).__init__(app_name, app_module)
+
+        # different types of format for type of descriptors for this module
+        self.format_types = []
+
     def ready(self):
         super().ready()
 

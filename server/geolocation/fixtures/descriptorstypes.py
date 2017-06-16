@@ -1,22 +1,12 @@
 # -*- coding: utf-8; -*-
 #
 # @file descriptorstypes.py
-# @brief 
+# @brief Setup the types of descriptors.
 # @author Medhi BOULNEMOUR (INRA UMR1095)
 # @date 2017-01-03
 # @copyright Copyright (c) 2017 INRA/CIRAD
 # @license MIT (see LICENSE file)
 # @details 
-
-"""
-Setup the types of descriptors.
-"""
-
-import json
-import sys
-
-from descriptor.models import DescriptorType
-from .descriptorsgroups import GROUPS
 
 DESCRIPTORS = {
     'country': {
@@ -48,4 +38,3 @@ DESCRIPTORS = {
 
 def fixture(fixture_manager):
     fixture_manager.create_or_update_types(DESCRIPTORS)
-

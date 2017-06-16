@@ -82,7 +82,7 @@ class DescriptorFormatTypeCountry(DescriptorFormatType):
         self.format_fields = [
             "country"
         ]
-        self.value_is_code = True
+        self.data = "INTEGER"
 
         from geonames.models import Country
         self.related_model = Country
@@ -144,7 +144,7 @@ class DescriptorFormatTypeCity(DescriptorFormatType):
         self.format_fields = [
             "city"
         ]
-        self.value_is_code = True
+        self.data = "INTEGER"
 
         from geonames.models import City
         self.related_model = City

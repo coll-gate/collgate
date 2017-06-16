@@ -1,16 +1,13 @@
 # -*- coding: utf-8; -*-
 #
 # @file apps.py
-# @brief 
+# @brief coll-gate accession module main
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2016-09-01
 # @copyright Copyright (c) 2016 INRA/CIRAD
 # @license MIT (see LICENSE file)
 # @details 
 
-"""
-coll-gate accession module main
-"""
 import sys
 from django.utils.translation import ugettext_lazy as _
 
@@ -25,6 +22,12 @@ from main.config import configuration
 
 class CollGateAccession(ApplicationMain):
     name = '.'.join(__name__.split('.')[0:-1])
+
+    def __init__(self, app_name, app_module):
+        super(CollGateAccession, self).__init__(app_name, app_module)
+
+        # different types of format for type of descriptors for this module
+        self.format_types = []
 
     def ready(self):
         super().ready()
@@ -61,6 +64,17 @@ class CollGateAccession(ApplicationMain):
         classification_app.children_entities += [
             Accession
         ]
+
+        # registers descriptors types of formats
+        from . import descriptorformattype
+
+        self.format_types += [
+            descriptorformattype.DescriptorFormatTypeAccession(),
+            descriptorformattype.DescriptorFormatTypeBatch()
+        ]
+
+        from descriptor.descriptorformattype import DescriptorFormatTypeManager
+        DescriptorFormatTypeManager.register(self.format_types)
 
         # accession menu
         menu_accession = ModuleMenu('accession', _('Accession'), auth=AUTH_USER)

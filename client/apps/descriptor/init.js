@@ -92,7 +92,7 @@ DescriptorModule.prototype = {
             'date',
             'time',
             'datetime',
-            'entity',
+            // 'entity',
             'enum_single',
             'enum_pair',
             'enum_ordinal'
@@ -130,4 +130,3 @@ DescriptorModule.prototype = {
 };
 
 module.exports = DescriptorModule;
-

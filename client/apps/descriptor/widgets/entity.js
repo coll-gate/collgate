@@ -16,6 +16,7 @@ var Entity = function() {
 
     this.name = "entity";
     this.group = "single";
+    this.searchUrl = null
 };
 
 _.extend(Entity.prototype, DescriptorFormatType.prototype, {
@@ -33,11 +34,11 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
             this.group = this._createInputGroup(parent, "glyphicon-share", select);
 
             // init the autocomplete
-            var url = application.baseUrl + format.model.replace('.', '/') + '/';
+            var url = application.baseUrl + (this.searchUrl ? this.searchUrl : (format.model.replace('.', '/') + '/'));
             var initials = [];
 
             var container = parent.closest('div.modal-dialog').parent();
-            if (container.length == 0) {
+            if (container.length === 0) {
                 container = parent.closest('div.panel');
             }
 
@@ -128,7 +129,7 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
 
         definesValues = this.isValueDefined(definesValues, defaultValues);
 
-        var url = application.baseUrl + format.model.replace('.', '/') + '/';
+        var url = application.baseUrl + (this.searchUrl ? this.searchUrl : (format.model.replace('.', '/') + '/'));
 
         if (this.readOnly) {
             var type = this;
@@ -155,7 +156,7 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
                 var initials = [];
 
                 var container = this.parent.closest('div.modal-dialog').parent();
-                if (container.length == 0) {
+                if (container.length === 0) {
                     container = this.parent.closest('div.panel');
                 }
 
@@ -261,10 +262,11 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
 
 Entity.DescriptorTypeDetailsView = Marionette.ItemView.extend({
     className: 'descriptor-type-details-format',
-    template: require('../templates/widgets/entity.html'),
+    // template: require('../templates/widgets/entity.html'),
+    template: "<div></div>",
 
     ui: {
-        format_model: '#format_model'
+        // format_model: '#format_model'
     },
 
     initialize: function() {
@@ -272,17 +274,15 @@ Entity.DescriptorTypeDetailsView = Marionette.ItemView.extend({
     },
 
     onRender: function() {
-        var format = this.model.get('format');
-
-        application.descriptor.views.describables.drawSelect(this.ui.format_model, true, false, format.model);
+        // var format = this.model.get('format');
+        // application.descriptor.views.describables.drawSelect(this.ui.format_model, true, false, format.model);
     },
 
     getFormat: function() {
         return {
-            'model': this.ui.format_model.val()
+            // 'model': this.ui.format_model.val()
         }
     }
 });
 
 module.exports = Entity;
-

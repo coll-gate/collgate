@@ -1,16 +1,13 @@
 # -*- coding: utf-8; -*-
 #
 # @file describable.py
-# @brief 
+# @brief coll-gate descriptor module, descriptor
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2016-09-01
 # @copyright Copyright (c) 2016 INRA/CIRAD
 # @license MIT (see LICENSE file)
 # @details 
 
-"""
-coll-gate descriptor module, descriptor
-"""
 import json
 
 from django.contrib.contenttypes.models import ContentType
@@ -225,4 +222,3 @@ class DescriptorsBuilder(object):
         """
         for dt_format, old_value, new_value in self.own_list:
             DescriptorFormatTypeManager.own(dt_format, self.entity, old_value, new_value)
-

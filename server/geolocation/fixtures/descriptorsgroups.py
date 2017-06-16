@@ -1,20 +1,12 @@
 # -*- coding: utf-8; -*-
 #
 # @file descriptorsgroups.py
-# @brief 
+# @brief Setup the groups of geolocation.
 # @author Medhi BOULNEMOUR (INRA UMR1095)
 # @date 2017-01-03
 # @copyright Copyright (c) 2017 INRA/CIRAD
 # @license MIT (see LICENSE file)
 # @details 
-
-"""
-Setup the groups of geolocation.
-"""
-
-import sys
-
-from descriptor.models import DescriptorGroup
 
 GROUPS = {
     'common': {
@@ -28,4 +20,3 @@ GROUPS = {
 
 def fixture(fixture_manager):
     fixture_manager.create_or_update_groups(GROUPS)
-

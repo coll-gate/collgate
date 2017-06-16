@@ -1,16 +1,12 @@
 # -*- coding: utf-8; -*-
 #
 # @file descriptorstypes.py
-# @brief 
+# @brief Setup the types of descriptors.
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2017-01-03
 # @copyright Copyright (c) 2017 INRA/CIRAD
 # @license MIT (see LICENSE file)
 # @details 
-
-"""
-Setup the types of descriptors.
-"""
 
 DESCRIPTORS = {
     'acronym_1': {
@@ -70,4 +66,3 @@ DESCRIPTORS = {
 
 def fixture(fixture_manager):
     fixture_manager.create_or_update_types(DESCRIPTORS)
-
