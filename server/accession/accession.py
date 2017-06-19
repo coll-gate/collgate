@@ -162,8 +162,8 @@ def get_accession_list(request):
     # order_by = ['name', 'id']
     # order_by = ['parent->name', 'id']  # @todo test
     # order_by = ['#MCPD_ORIGCTY->name', 'name', 'id']
-
-    order_by = ['#MCPD_ORIGCTY->name', '#IPGRI_4.1.1->value1', 'name', 'id']
+    order_by = ['#test_accession->name', '#MCPD_ORIGCTY->name', '#IPGRI_4.1.1->value1', 'name', 'id']
+    # order_by = ['#MCPD_ORIGCTY->name', '#IPGRI_4.1.1->value1', 'name', 'id']
 
     from main.cursor import CursorQuery
     cq = CursorQuery(Accession)
@@ -176,12 +176,8 @@ def get_accession_list(request):
             "synonyms",
             queryset=AccessionSynonym.objects.all().order_by('type', 'language')))
 
-    cq.join('parent', ['name', 'rank'])
-    cq.select_related('parent->name', 'parent->rank')  # to be done manually (later remove join)
-    cq.join('#MCPD_ORIGCTY', ['name'])
-    # cq.select_related('#MCPD_ORIGCTY->name')  # done by order_by/cursor/filter
-    cq.join('#IPGRI_4.1.1', ['value1'])
-    # cq.select_related('#IPGRI_4.1.1->value1')  # done by order_by/cursor/filter
+    cq.select_related('parent->name', 'parent->rank')
+    # cq.join('#test_accession', ['code'])
 
     cq.cursor(cursor, order_by)
     cq.order_by(order_by).limit(limit)

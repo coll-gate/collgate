@@ -786,4 +786,3 @@ def get_some_display_values_for_descriptor_model_type(request, dmt_name):
     results = DescriptorFormatTypeManager.get_display_values_for(format_type, dmt.descriptor_type, values, limit)
 
     return HttpResponseRest(request, results)
-

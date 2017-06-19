@@ -65,7 +65,7 @@ class CollGateDescriptor(ApplicationMain):
             descriptorformattype.DescriptorFormatTypeImpreciseDate(),
             descriptorformattype.DescriptorFormatTypeTime(),
             descriptorformattype.DescriptorFormatTypeDateTime(),
-            # descriptorformattype.DescriptorFormatTypeEntity(),
+            descriptorformattype.DescriptorFormatTypeEntity(),
             descriptorformattype.DescriptorFormatTypeEnumSingle(),
             descriptorformattype.DescriptorFormatTypeEnumPair(),
             descriptorformattype.DescriptorFormatTypeEnumOrdinal(),

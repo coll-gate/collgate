@@ -84,9 +84,6 @@ class DescriptorFormatTypeCountry(DescriptorFormatType):
         ]
         self.data = "INTEGER"
 
-        from geonames.models import Country
-        self.related_model = Country
-
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         return instance.geolocation_app.geolocation_manager.country_format_type_validator(value)
 
@@ -129,6 +126,10 @@ class DescriptorFormatTypeCountry(DescriptorFormatType):
             'items': items
         }
 
+    def related_model(self, descriptor_type_format):
+        from geonames.models import Country
+        return Country
+
 
 class DescriptorFormatTypeCity(DescriptorFormatType):
     """
@@ -145,9 +146,6 @@ class DescriptorFormatTypeCity(DescriptorFormatType):
             "city"
         ]
         self.data = "INTEGER"
-
-        from geonames.models import City
-        self.related_model = City
 
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         return instance.geolocation_app.geolocation_manager.city_format_type_validator(value)
@@ -199,3 +197,7 @@ class DescriptorFormatTypeCity(DescriptorFormatType):
             'cacheable': True,
             'items': items
         }
+
+    def related_model(self, descriptor_type_format):
+        from geonames.models import City
+        return City

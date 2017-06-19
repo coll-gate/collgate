@@ -262,11 +262,11 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
 
 Entity.DescriptorTypeDetailsView = Marionette.ItemView.extend({
     className: 'descriptor-type-details-format',
-    // template: require('../templates/widgets/entity.html'),
-    template: "<div></div>",
+    template: require('../templates/widgets/entity.html'),
+    // template: "<div></div>",
 
     ui: {
-        // format_model: '#format_model'
+        format_model: '#format_model'
     },
 
     initialize: function() {
@@ -274,13 +274,13 @@ Entity.DescriptorTypeDetailsView = Marionette.ItemView.extend({
     },
 
     onRender: function() {
-        // var format = this.model.get('format');
-        // application.descriptor.views.describables.drawSelect(this.ui.format_model, true, false, format.model);
+        var format = this.model.get('format');
+        application.descriptor.views.describables.drawSelect(this.ui.format_model, true, false, format.model);
     },
 
     getFormat: function() {
         return {
-            // 'model': this.ui.format_model.val()
+            'model': this.ui.format_model.val()
         }
     }
 });

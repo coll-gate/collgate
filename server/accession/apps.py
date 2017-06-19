@@ -8,7 +8,6 @@
 # @license MIT (see LICENSE file)
 # @details 
 
-import sys
 from django.utils.translation import ugettext_lazy as _
 
 from igdectk.common.apphelpers import ApplicationMain
@@ -64,17 +63,6 @@ class CollGateAccession(ApplicationMain):
         classification_app.children_entities += [
             Accession
         ]
-
-        # registers descriptors types of formats
-        from . import descriptorformattype
-
-        self.format_types += [
-            descriptorformattype.DescriptorFormatTypeAccession(),
-            descriptorformattype.DescriptorFormatTypeBatch()
-        ]
-
-        from descriptor.descriptorformattype import DescriptorFormatTypeManager
-        DescriptorFormatTypeManager.register(self.format_types)
 
         # accession menu
         menu_accession = ModuleMenu('accession', _('Accession'), auth=AUTH_USER)

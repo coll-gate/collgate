@@ -44,7 +44,6 @@ class DescriptorFormatTypeMedia(DescriptorFormatType):
         self.format_fields = ["media_types", "media_inline"]
         self.external = True
         self.data = "INTEGER"
-        self.related_model = Media
 
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         # check if the value is a string and if the related entity exists
@@ -116,6 +115,9 @@ class DescriptorFormatTypeMedia(DescriptorFormatType):
 
             new_media.save()
 
+    def related_model(self, descriptor_type_format):
+        return Media
+
 
 class DescriptorFormatTypeMediaCollection(DescriptorFormatType):
     """
@@ -131,7 +133,6 @@ class DescriptorFormatTypeMediaCollection(DescriptorFormatType):
         self.format_fields = ["media_types", "max_items", "media_inline"]
         self.external = True
         self.data = "INTEGER_ARRAY"
-        self.related_model = Media
 
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         # check if the value is a string and if the related entity exists
@@ -224,3 +225,6 @@ class DescriptorFormatTypeMediaCollection(DescriptorFormatType):
             'cacheable': True,
             'items': items
         }
+
+    def related_model(self, descriptor_type_format):
+        return Media

@@ -79,7 +79,16 @@ class CursorQuery(object):
         self._cursor = cursor
         self._cursor_fields = cursor_fields
 
-        self.add_select_related(cursor_fields)
+        select_related = []
+
+        for field in cursor_fields:
+            if field in self.model_fields:
+                if self.model_fields[field][0] == 'FK':
+                    select_related.append(field)
+            elif field.startswith('#'):
+                select_related.append(field)
+
+        self.add_select_related(select_related)
         return self
 
     def _perform_cursor(self):
@@ -96,9 +105,9 @@ class CursorQuery(object):
                 op = '<' if field[0] == '-' else '>'
                 ope = '<=' if field[0] == '-' else '>='
 
-                if len(previous):
-                    lqs = []
+                lqs = []
 
+                if len(previous):
                     for prev_field, prev_i, prev_op, prev_ope, prev_is_descriptor in previous:
                         if prev_is_descriptor:
                             if self.FIELDS_SEP in prev_field:
@@ -120,17 +129,21 @@ class CursorQuery(object):
                         value = self._make_value(self._cursor[i], self.model_fields[f][1])
                         lqs.append('"%s"."%s" %s %s' % (db_table, f, op, value))
 
-                    _where.append(" AND ".join(lqs))
+                    if self._cursor[i] is not None:
+                        _where.append(" AND ".join(lqs))
                 else:
                     if is_descriptor:
                         if self.FIELDS_SEP in f:
                             ff = f.split(self.FIELDS_SEP)
-                            _where.append(self._cast_sub_type(ff[0], ff[1], op, self._cursor[i]))
+                            lqs.append(self._cast_sub_type(ff[0], ff[1], op, self._cursor[i]))
                         else:
-                            _where.append(self._cast_descriptor_type(db_table, f, op, self._cursor[i]))
+                            lqs.append(self._cast_descriptor_type(db_table, f, op, self._cursor[i]))
                     else:
                         value = self._make_value(self._cursor[i], self.model_fields[f][1])
-                        _where.append('"%s"."%s" %s %s' % (db_table, f, op, value))
+                        lqs.append('"%s"."%s" %s %s' % (db_table, f, op, value))
+
+                    if self._cursor[i] is not None:
+                        _where.append(" AND ".join(lqs))
 
                 previous.append((f, i, op, ope, is_descriptor))
 
@@ -165,7 +178,16 @@ class CursorQuery(object):
         if not self._order_by:
             self._order_by = ('id',)
 
-        self.add_select_related(*args)
+        select_related = []
+
+        for field in self._order_by:
+            if field in self.model_fields:
+                if self.model_fields[field][0] == 'FK':
+                    select_related.append(field)
+            elif field.startswith('#'):
+                select_related.append(field)
+
+        self.add_select_related(select_related)
         return self
 
     def _process_order_by(self):
@@ -294,14 +316,16 @@ class CursorQuery(object):
         description = self._description[descriptor_name]
         cast_type = description['model'].data
 
-        # @todo in descriptor format type
         final_value = self._make_value(value, cast_type)
 
-        if cast_type != "TEXT":
-            return 'CAST("%s"."descriptors"->>\'%s\' AS %s) %s %s' % (
-                table_name, descriptor_name, cast_type, operator, final_value)
+        if value is None:
+            return '("%s"."descriptors"->>\'%s\') IS NULL' % (table_name, descriptor_name)
         else:
-            return '("%s"."descriptors"->>\'%s\') %s %s' % (table_name, descriptor_name, operator, final_value)
+            if cast_type != "TEXT":
+                return 'CAST("%s"."descriptors"->>\'%s\' AS %s) %s %s' % (
+                    table_name, descriptor_name, cast_type, operator, final_value)
+            else:
+                return '("%s"."descriptors"->>\'%s\') %s %s' % (table_name, descriptor_name, operator, final_value)
 
     def _cast_sub_type(self, descriptor_name, field_name, operator, value):
         # descriptor_name can contains some '.', replaces them by '_'
@@ -311,13 +335,16 @@ class CursorQuery(object):
         cast_type = related_fields[field_name][1]
         final_value = self._make_value(value, cast_type)
 
-        return '"%s"."%s" %s %s' % (renamed_table, field_name, operator, final_value)
+        if value is None:
+            return '"%s"."%s" IS NULL' % (renamed_table, field_name)
+        else:
+            return '"%s"."%s" %s %s' % (renamed_table, field_name, operator, final_value)
 
     def join_descriptor(self, description, descriptor_name, fields=None):
         model_fields = {}
         db_table = self._model._meta.db_table
 
-        related_model = description['model'].related_model
+        related_model = description['model'].related_model(description['format'])
         join_db_table = related_model._meta.db_table
 
         # descriptor_name can contains some '.', replaces them by '_'
@@ -349,7 +376,7 @@ class CursorQuery(object):
         self._related_tables[renamed_table] = (related_model, model_fields)
 
         on_clauses = description['model'].select(db_table, descriptor_name, renamed_table)
-        _from = 'INNER JOIN "%s" AS "%s" ON (%s)' % (join_db_table, renamed_table, " AND ".join(on_clauses))
+        _from = 'LEFT JOIN "%s" AS "%s" ON (%s)' % (join_db_table, renamed_table, " AND ".join(on_clauses))
 
         self.query_from.append(_from)
         return self
@@ -397,7 +424,7 @@ class CursorQuery(object):
         self._related_tables[related_field] = (related_model.field.related_model, model_fields)
 
         on_clause = ['"%s"."%s_id" = "%s"."id"' % (db_table, related_field, join_db_table)]
-        _from = 'INNER JOIN "%s" ON (%s)' % (join_db_table, " AND ".join(on_clause))
+        _from = 'LEFT JOIN "%s" ON (%s)' % (join_db_table, " AND ".join(on_clause))
 
         self.query_from.append(_from)
         return self
@@ -459,7 +486,10 @@ class CursorQuery(object):
         if self._query_set is not None:
             return self._query_set
 
-        # @todo perform here joins using  _select_related
+        # perform joins using select_related
+        for related_model, related_fields in self._select_related.items():
+            self.join(related_model, related_fields)
+
         self._perform_cursor()
         self._process_order_by()
 
