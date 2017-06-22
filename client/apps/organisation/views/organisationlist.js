@@ -36,16 +36,16 @@ var View = ScrollView.extend({
     defaultColumns: [
         {name: 'name', width: 'auto', sort_by: 'asc'},
         {name: 'type', width: 'auto', sort_by: null},
-        {name: 'organisation_acronym', width: 'auto', sort_by: null},
-        {name: 'organisation_code', width: 'auto', sort_by: null},
+        {name: '#organisation_acronym', width: 'auto', sort_by: null},
+        {name: '#organisation_code', width: 'auto', sort_by: null},
         {name: 'num_establishments', width: 'auto', sort_by: null},
     ],
 
     columnsOptions: {
         'name': {label: gt.gettext('Name'), minWidth: true, event: 'view-organisation'},
         'type': {label: gt.gettext('Type'), minWidth: true, custom: 'organisationTypeCell'},
-        'organisation_acronym': {label: gt.gettext('Acronym'), minWidth: true, format: {type: 'string'}},
-        'organisation_code': {label: gt.gettext('Code'), minWidth: true, format: {type: 'string'}},
+        '#organisation_acronym': {label: gt.gettext('Acronym'), minWidth: true, format: {type: 'string'}},
+        '#organisation_code': {label: gt.gettext('Code'), minWidth: true, format: {type: 'string'}},
         'num_establishments': {
             label: gt.gettext('Establishments'), minWidth: true, event: 'view-establishments', custom: 'numEstablishmentsCell'
         }

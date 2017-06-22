@@ -10,8 +10,7 @@
 
 from django.contrib.postgres.fields import JSONField
 from django.db import models
-from django.db.models import Q, prefetch_related_objects
-from django.db.models.expressions import OrderBy, RawSQL
+from django.db.models import prefetch_related_objects
 from django.db.models.fields.related_descriptors import ForwardManyToOneDescriptor
 
 from descriptor.descriptorcolumns import get_description
@@ -82,11 +81,16 @@ class CursorQuery(object):
         select_related = []
 
         for field in cursor_fields:
-            if field in self.model_fields:
-                if self.model_fields[field][0] == 'FK':
-                    select_related.append(field)
-            elif field.startswith('#'):
-                select_related.append(field)
+            f = field.lstrip('+-#')
+            is_descriptor = field[0] == '#' or field[1] == '#'
+
+            if is_descriptor:
+                # only if sub-value of descriptor
+                if self.FIELDS_SEP in f:
+                    select_related.append('#' + f)
+            elif f in self.model_fields:
+                if self.model_fields[f][0] == 'FK':
+                    select_related.append(f)
 
         self.add_select_related(select_related)
         return self
@@ -99,6 +103,8 @@ class CursorQuery(object):
             previous = []
             i = 0
 
+            # @todo if cursor as NULL value todo case INTEGER, TEXT, DATE...
+
             for field in self._cursor_fields:
                 f = field.lstrip('+-#')
                 is_descriptor = field[0] == '#' or field[1] == '#'
@@ -109,6 +115,9 @@ class CursorQuery(object):
 
                 if len(previous):
                     for prev_field, prev_i, prev_op, prev_ope, prev_is_descriptor in previous:
+                        # if self._cursor[prev_i] is None:
+                        #    continue
+
                         if prev_is_descriptor:
                             if self.FIELDS_SEP in prev_field:
                                 pff = prev_field.split(self.FIELDS_SEP)
@@ -116,8 +125,11 @@ class CursorQuery(object):
                             else:
                                 lqs.append(self._cast_descriptor_type(db_table, prev_field, prev_ope, self._cursor[prev_i]))
                         else:
-                            value = self._make_value(self._cursor[prev_i], self.model_fields[prev_field][1])
-                            lqs.append('"%s"."%s" %s %s' % (db_table, prev_field, prev_ope, value))
+                            if self.FIELDS_SEP in prev_field:
+                                pff = prev_field.split(self.FIELDS_SEP)
+                                lqs.append(self._cast_default_sub_type(pff[0], pff[1], prev_ope, self._cursor[prev_i]))
+                            else:
+                                lqs.append(self._cast_default_type(db_table, prev_field, prev_ope, self._cursor[prev_i]))
 
                     if is_descriptor:
                         if self.FIELDS_SEP in f:
@@ -126,11 +138,14 @@ class CursorQuery(object):
                         else:
                             lqs.append(self._cast_descriptor_type(db_table, f, op, self._cursor[i]))
                     else:
-                        value = self._make_value(self._cursor[i], self.model_fields[f][1])
-                        lqs.append('"%s"."%s" %s %s' % (db_table, f, op, value))
+                        if self.FIELDS_SEP in f:
+                            ff = f.split(self.FIELDS_SEP)
+                            lqs.append(self._cast_default_sub_type(ff[0], ff[1], op, self._cursor[i]))
+                        else:
+                            lqs.append(self._cast_default_type(db_table, f, op, self._cursor[i]))
 
-                    if self._cursor[i] is not None:
-                        _where.append(" AND ".join(lqs))
+                    # if self._cursor[i] is not None:
+                    _where.append("(%s)" % " AND ".join(lqs))
                 else:
                     if is_descriptor:
                         if self.FIELDS_SEP in f:
@@ -139,11 +154,14 @@ class CursorQuery(object):
                         else:
                             lqs.append(self._cast_descriptor_type(db_table, f, op, self._cursor[i]))
                     else:
-                        value = self._make_value(self._cursor[i], self.model_fields[f][1])
-                        lqs.append('"%s"."%s" %s %s' % (db_table, f, op, value))
+                        if self.FIELDS_SEP in f:
+                            ff = f.split(self.FIELDS_SEP)
+                            lqs.append(self._cast_default_sub_type(ff[0], ff[1], op, self._cursor[i]))
+                        else:
+                            lqs.append(self._cast_default_type(db_table, f, op, self._cursor[i]))
 
-                    if self._cursor[i] is not None:
-                        _where.append(" AND ".join(lqs))
+                    # if self._cursor[i] is not None:
+                    _where.append("(%s)" % " AND ".join(lqs))
 
                 previous.append((f, i, op, ope, is_descriptor))
 
@@ -153,13 +171,16 @@ class CursorQuery(object):
 
     def _make_value(self, value, cast_type):
         if value is None:
-            return "NULL"
+            if cast_type == 'INTEGER' or cast_type == 'FK':
+                return "0"  # "NULL"
+            else:
+                return "''"  # "NULL"
 
         if cast_type == 'INTEGER' or cast_type == 'FK':
             try:
                 int(value)
             except ValueError:
-                return "NULL"
+                return 0  # "NULL"
 
             return str(value)
         else:
@@ -181,11 +202,16 @@ class CursorQuery(object):
         select_related = []
 
         for field in self._order_by:
-            if field in self.model_fields:
-                if self.model_fields[field][0] == 'FK':
-                    select_related.append(field)
-            elif field.startswith('#'):
-                select_related.append(field)
+            f = field.lstrip('+-#')
+            is_descriptor = field[0] == '#' or field[1] == '#'
+
+            if is_descriptor:
+                # only if sub-value of descriptor
+                if self.FIELDS_SEP in f:
+                    select_related.append('#' + f)
+            elif f in self.model_fields:
+                if self.model_fields[f][0] == 'FK':
+                    select_related.append(f)
 
         self.add_select_related(select_related)
         return self
@@ -195,7 +221,7 @@ class CursorQuery(object):
 
         for field in self._order_by:
             f = field.lstrip('+-#')
-            order = "DESC" if field[0] == '-' else "ASC"
+            order = "DESC NULLS LAST" if field[0] == '-' else "ASC NULLS FIRST"
             is_descriptor = field[0] == '#' or field[1] == '#'
 
             if self.FIELDS_SEP in f:
@@ -228,7 +254,11 @@ class CursorQuery(object):
                     else:
                         self.query_order_by.append('("%s"."descriptors"->>\'%s\') %s' % (db_table, f, order))
             else:
-                self.query_order_by.append('"%s"."%s" %s' % (db_table, f, order))
+                if self.FIELDS_SEP in f:
+                    ff = f.split(self.FIELDS_SEP)
+                    self.query_order_by.append('"%s" %s' % ("_".join(ff), order))
+                else:
+                    self.query_order_by.append('"%s"."%s" %s' % (db_table, f, order))
 
         return self
 
@@ -259,7 +289,11 @@ class CursorQuery(object):
                     else:
                         self._prev_cursor.append(entity.descriptors.get(f))
                 else:
-                    self._prev_cursor.append(getattr(entity, f))
+                    if self.FIELDS_SEP in f:
+                        ff = f.split(self.FIELDS_SEP)
+                        self._prev_cursor.append(getattr(entity, "_".join(ff)))
+                    else:
+                        self._prev_cursor.append(getattr(entity, f))
 
                 # next cursor
                 entity = self._query_set[-1]
@@ -272,11 +306,15 @@ class CursorQuery(object):
                     else:
                         self._next_cursor.append(entity.descriptors.get(f))
                 else:
-                    self._next_cursor.append(getattr(entity, f))
+                    if self.FIELDS_SEP in f:
+                        ff = f.split(self.FIELDS_SEP)
+                        self._next_cursor.append(getattr(entity, "_".join(ff)))
+                    else:
+                        self._next_cursor.append(getattr(entity, f))
 
         self._cursor_built = True
 
-    def filters(self, filters):
+    def filter(self, filters):
         # @todo OR AND structured criterion
         name = filters.get('name', '')
         field = "name"
@@ -312,14 +350,47 @@ class CursorQuery(object):
 
         return self._next_cursor
 
+    def _cast_default_type(self, table_name, field_name, operator, value):
+        cast_type = self.model_fields[field_name][1]
+        final_value = self._make_value(value, cast_type)
+        coalesce_value = self._make_value(None, cast_type)
+        uses_coalesce = True
+
+        if uses_coalesce:
+            return 'COALESCE("%s"."%s", %s) %s %s' % (
+                table_name, field_name, coalesce_value, operator, final_value)
+        else:
+            return '"%s"."%s" %s %s' % (
+                table_name, field_name, operator, final_value)
+
+    def _cast_default_sub_type(self, table_name, field_name, operator, value):
+        cast_type = self._related_tables[table_name][1][field_name]
+        final_value = self._make_value(value, cast_type)
+        coalesce_value = self._make_value(None, cast_type)
+        uses_coalesce = True
+
+        if uses_coalesce:
+            return 'COALESCE("%s"."%s", %s) %s %s' % (
+                self._related_tables[table_name][0]._meta.db_table, field_name, coalesce_value, operator, final_value)
+        else:
+            return '"%s"."%s" %s %s' % (
+                self._related_tables[table_name][0]._meta.db_table, field_name, operator, final_value)
+
     def _cast_descriptor_type(self, table_name, descriptor_name, operator, value):
         description = self._description[descriptor_name]
+
         cast_type = description['model'].data
-
         final_value = self._make_value(value, cast_type)
+        coalesce_value = self._make_value(None, cast_type)
+        uses_coalesce = True
 
-        if value is None:
-            return '("%s"."descriptors"->>\'%s\') IS NULL' % (table_name, descriptor_name)
+        if uses_coalesce:
+            if cast_type != "TEXT":
+                return 'COALESCE(CAST("%s"."descriptors"->>\'%s\' AS %s), %s) %s %s' % (
+                    table_name, descriptor_name, cast_type, coalesce_value, operator, final_value)
+            else:
+                return 'COALESCE(("%s"."descriptors"->>\'%s\'), %s) %s %s' % (
+                    table_name, descriptor_name, coalesce_value, operator, final_value)
         else:
             if cast_type != "TEXT":
                 return 'CAST("%s"."descriptors"->>\'%s\' AS %s) %s %s' % (
@@ -334,9 +405,11 @@ class CursorQuery(object):
 
         cast_type = related_fields[field_name][1]
         final_value = self._make_value(value, cast_type)
+        coalesce_value = self._make_value(None, cast_type)
+        uses_coalesce = True
 
-        if value is None:
-            return '"%s"."%s" IS NULL' % (renamed_table, field_name)
+        if uses_coalesce:
+            return 'COALESCE("%s"."%s", %s) %s %s' % (renamed_table, field_name, coalesce_value, operator, final_value)
         else:
             return '"%s"."%s" %s %s' % (renamed_table, field_name, operator, final_value)
 
@@ -490,8 +563,11 @@ class CursorQuery(object):
         for related_model, related_fields in self._select_related.items():
             self.join(related_model, related_fields)
 
-        self._perform_cursor()
-        self._process_order_by()
+        try:
+            self._perform_cursor()
+            self._process_order_by()
+        except KeyError:
+            raise
 
         _select = "SELECT DISTINCT " if self.query_distinct else "SELECT " + ", ".join(self.query_select)
         _from = "FROM " + " ".join(self.query_from)
@@ -536,178 +612,3 @@ class CursorQuery(object):
             prefetch_related_objects(self._query_set, *self._prefetch_related)
 
         return self._query_set
-
-
-# class CursorQuery(object):
-#     """
-#     Make easier the usage of cursor for pagination in query set.
-#     """
-#
-#     def __init__(self, objects, cursor=None, order_by=('id',)):
-#         self._objects = objects
-#         self._query_set = None
-#         self._order_by = order_by
-#
-#         self._items = []
-#
-#         self._cursor = cursor
-#
-#         self._prev_cursor = None
-#         self._next_cursor = None
-#
-#         if cursor:
-#             q_cursors = Q()
-#             previous = []
-#             i = 0
-#             #
-#             # for field in order_by:
-#             #     f = field.lstrip('+-')
-#             #     op = 'lt' if field[0] == '-' else 'gt'
-#             #     ope = 'lte' if field[0] == '-' else 'gte'
-#             #
-#             #     # @todo if value is None
-#             #
-#             #     if len(previous):
-#             #         lqs = Q(**{'%s__%s' % (f, ope): cursor[i]})
-#             #         last = len(previous) - 1
-#             #         i2 = 0
-#             #
-#             #         for prev_field, prev_i, prev_op, prev_ope in previous:
-#             #             if i2 == last:
-#             #                 lqs &= Q(**{'%s__%s' % (prev_field, prev_op): cursor[prev_i]})
-#             #             else:
-#             #                 lqs &= Q(**{'%s__%s' % (prev_field, prev_ope): cursor[prev_i]})
-#             #
-#             #             i2 += 1
-#             #
-#             #         q_cursors |= lqs
-#             #     else:
-#             #         q_cursors |= Q(**{'%s__%s' % (f, op): cursor[i]})
-#             #
-#             #     previous.append((f, i, op, ope))
-#             #
-#             #     # q_cursors &= lqs
-#             #     i += 1
-#
-#             #self._query_set = objects.extra(where=['"geonames_country_name" = "France"'])
-#
-#             for field in order_by:
-#                 f = field.lstrip('+-')
-#                 op = 'lt' if field[0] == '-' else 'gt'
-#                 ope = 'lte' if field[0] == '-' else 'gte'
-#
-#                 # @todo if value is None
-#
-#                 if len(previous):
-#                     lqs = Q()
-#
-#                     for prev_field, prev_i, prev_op, prev_ope in previous:
-#                         lqs &= Q(**{'%s__%s' % (prev_field, prev_ope): cursor[prev_i]})
-#
-#                     lqs &= Q(**{'%s__%s' % (f, op): cursor[i]})
-#
-#                     q_cursors |= lqs
-#                 else:
-#                     q_cursors |= Q(**{'%s__%s' % (f, op): cursor[i]})
-#
-#                 previous.append((f, i, op, ope))
-#
-#                 # q_cursors &= lqs
-#                 i += 1
-#
-#             # self._query_set = objects.filter(q_cursors)
-#             self._query_set = self._query_set.filter(q_cursors)
-#         else:
-#             self._query_set = objects.all()
-#
-#     def order_by(self, query_set=None):
-#         orders_by = []
-#         db_table = self._objects.model._meta.db_table
-#
-#         for field in self._order_by:
-#             f = field.lstrip('+-')
-#             descending = field[0] == '-'
-#
-#             if f.startswith('descriptors__'):
-#                 # @todo must take descriptor comparator
-#                 raw = "CAST(%s.descriptors->>%%s as INTEGER)" % db_table
-#
-#                 orders_by.append(OrderBy(RawSQL(raw, (f.split('__')[1],)), descending=descending))
-#                 # orders_by.append(OrderBy(RawSQL("CAST(accession_accession.descriptors->>%s as INTEGER)", (db_table, f.split('__')[1],)), descending=descending))
-#                 # orders_by.append(OrderBy(RawSQL("LOWER(descriptors->>%s)", (f.split('__')[1],)), descending=descending))
-#             else:
-#                 orders_by.append(field)
-#
-#         if query_set is None:
-#             self._query_set = self._query_set.order_by(*orders_by)
-#         else:
-#             self._query_set = query_set.order_by(*orders_by)
-#
-#         return self._query_set
-#
-#     @property
-#     def query_set(self):
-#         return self._query_set
-#
-#     def add_item(self, item):
-#         self.items.append(item)
-#
-#     def update(self):
-#         if len(self.items) > 0:
-#             self._prev_cursor = []
-#             self._next_cursor = []
-#
-#             for field in self._order_by:
-#                 f = field.lstrip('+-')
-#
-#                 # prev cursor
-#                 entity = self.items[0]
-#
-#                 if f.startswith('descriptors__'):
-#                     self._prev_cursor.append(entity['descriptors'][f.split('__')[1]])
-#                 else:
-#                     self._prev_cursor.append(entity[f])
-#
-#                 # next cursor
-#                 entity = self.items[-1]
-#
-#                 if f.startswith('descriptors__'):
-#                     self._next_cursor.append(entity['descriptors'][f.split('__')[1]])
-#                 else:
-#                     self._next_cursor.append(entity[f])
-#
-#             # # prev cursor
-#             # entity = self.items[0]
-#             # self._prev_cursor.append(entity['id'])
-#             #
-#             # # next cursor
-#             # entity = self.items[-1]
-#             # self._next_cursor.append(entity['id'])
-#         else:
-#             self._prev_cursor = None
-#             self._next_cursor = None
-#
-#     def filters(self, filters):
-#         # @todo
-#         name = filters.get('name', '')
-#
-#         # name search based on synonyms
-#         if filters.get('method', 'icontains') == 'icontains':
-#             self._query_set = self._query_set.filter(Q(synonyms__name__icontains=name))
-#         else:
-#             self._query_set = self._query_set.filter(Q(name__iexact=name)).filter(Q(synonyms__name__iexact=name))
-#
-#         # @todo must take descriptor comparator
-#
-#     @property
-#     def items(self):
-#         return self._items
-#
-#     @property
-#     def prev_cursor(self):
-#         return self._prev_cursor
-#
-#     @property
-#     def next_cursor(self):
-#         return self._next_cursor
-#

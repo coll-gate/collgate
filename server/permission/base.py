@@ -1,16 +1,12 @@
 # -*- coding: utf-8; -*-
 #
 # @file base.py
-# @brief 
+# @brief coll-gate permission REST API
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2016-09-01
 # @copyright Copyright (c) 2016 INRA/CIRAD
 # @license MIT (see LICENSE file)
 # @details 
-
-"""
-coll-gate permission REST API
-"""
 
 from django.contrib.auth.models import Permission, User, Group
 from django.contrib.contenttypes.models import ContentType

@@ -171,6 +171,9 @@ var View = Marionette.CompositeView.extend({
             $("body").on('mouseup', $.proxy(this.onResizeColumnFinish, this));
             $(window).on('resize', $.proxy(this.onResizeWindow, this));
 
+            $(window).on('keydown', $.proxy(this.onKeyDown, this));
+            $(window).on('keyup', $.proxy(this.onKeyUp, this));
+
             // add menu column close on event
             var contextMenu = this.ui.add_column_menu;
             var contextMenuBtn = this.ui.add_column;
@@ -325,6 +328,9 @@ var View = Marionette.CompositeView.extend({
                 el.on('dragleave', $.proxy(view.onColumnDragLeave, view));
                 el.on('dragover', $.proxy(view.onColumnDragOver, view));
                 el.on('drop', $.proxy(view.onColumnDrop, view));
+
+                var sorters = label.children('span.column-sorter');
+                sorters.on('click', $.proxy(view.onSortColumn, view));
             }
 
             if (el.hasClass('glyph-fixed-column')) {
@@ -346,10 +352,11 @@ var View = Marionette.CompositeView.extend({
                 
                 el.width('auto');
             } else if (label.css('min-width') === '0px') {
-                // for each sorter, plus 3 par span, plus 3 of right margin
-                var sorters = label.children('span.column-action').length * (label.children('span.column-action').width() + 3 + 3);
+                // for each actor + 3 per span + 3 of right margin
+                var actors = label.children('span.column-action');
+                var actorsWidth = actors.length * (actors   .width() + 3 + 3);
 
-                var minWidth = 32 + sorters;
+                var minWidth = 32 + actorsWidth;
                 // label.css('min-width', minWidth + 'px');
                 el.css('min-width', minWidth + 8 + 8 + (i === 0 ? 0 : 1) + 'px');
                 $(rows.get(i)).css('min-width', minWidth + 8 + 8 + (i === 0 ? 0 : 1) + 'px');
@@ -376,6 +383,9 @@ var View = Marionette.CompositeView.extend({
                     sizer.on('mousedown', $.proxy(view.onResizeColumnBegin, view));
                     sizer.on('mouseover', $.proxy(view.onResizeColumnHover, view));
                 }
+            } else if (i === 0 && el.children('div.column-sizer').length != 0) {
+                // remove previous sizer (can appears when moving columns)
+                el.children('div.column-sizer').remove();
             }
 
             // fixed column, then no sizer on the left of the next column
@@ -648,33 +658,35 @@ var View = Marionette.CompositeView.extend({
 
         if (srcName !== dstName) {
             // switch the two columns
-            var i1 = 0, i2 = 0, srcI = -1, dstI = -1;
+            var i1 = 0, i2 = 0;
             $.each(this.ui.thead.children('tr').children('td,th'), function(i, element) {
                 if ($(element).attr('name') === dstName) {
-                    srcI = i1 = i;
+                    i1 = i;
                 } else if ($(element).attr('name') === srcName) {
-                    dstI = i2 = i;
+                    i2 = i;
                 }
             });
 
-            if (i1 < i2 && i1 > 0) {
-                --i1;
-            }
-
-            // switch label
+            // switch labels
             var headColumns = $(this.ui.thead.children('tr')[0]).children('th,td');
-            headColumns.eq(i2).moveBefore(headColumns.eq(i1).css('opacity', 'initial'));
+            headColumns.eq(i1 > i2 ? i1 : i2).moveBefore(headColumns.eq(i1 > i2 ? i2 : i1)).css('opacity', 'initial');
 
             // switch for any row and reset opacity
-            $.each(this.ui.tbody.children('tr'), function(i, element) {
-                var columns = $(element).children('th,td');
-                columns.eq(srcI).css('opacity', 'initial');
-                columns.eq(i2).moveBefore(columns.eq(i1));
-            });
+            if (i1 < i2) {
+                $.each(this.ui.tbody.children('tr'), function (i, element) {
+                    var columns = $(element).children('th,td');
+                    columns.eq(i2).moveBefore(columns.eq(i1).css('opacity', 'initial'));
+                });
+            } else {
+                $.each(this.ui.tbody.children('tr'), function (i, element) {
+                    var columns = $(element).children('th,td');
+                    columns.eq(i1).moveBefore(columns.eq(i2).css('opacity', 'initial'));
+                });
+            }
 
             var col1 = null, col2 = null;
             for (var i = 0; i < this.displayedColumns.length; ++i) {
-                if (this.displayedColumns[i] === this.selectedColumns[srcI].name) {
+                if (this.displayedColumns[i] === this.selectedColumns[i1].name) {
                     col1 = i;
                 } else if (this.displayedColumns[i] === this.selectedColumns[i2].name) {
                     col2 = i;
@@ -685,7 +697,7 @@ var View = Marionette.CompositeView.extend({
             var tmp = this.selectedColumns[i2];
 
             this.selectedColumns.splice(i2, 1);
-            this.selectedColumns.splice(srcI, 0, tmp);
+            this.selectedColumns.splice(i1, 0, tmp);
 
             // // switch displayedColumns
             tmp = this.displayedColumns[col2];
@@ -1156,7 +1168,6 @@ var View = Marionette.CompositeView.extend({
             }
         } else {
             var column = this.getOption('columns')[columnName];
-            var query = column.query || false;
 
             this.displayedColumns.push(columnName);
 
@@ -1174,7 +1185,8 @@ var View = Marionette.CompositeView.extend({
                 th.addClass("title-column");
             }
 
-            th.append('<span class="glyphicon glyphicon-sort action sortby-asc-column column-action"></span>');
+            var sorter = $('<span class="column-sorter glyphicon glyphicon-sort action sortby-asc-column column-action"></span>');
+            th.append(sorter);
 
             if (typeof(column.glyphicon) === "string") {
                 labelOrGlyph.addClass("glyphicon " + column.glyphicon);
@@ -1200,17 +1212,25 @@ var View = Marionette.CompositeView.extend({
             $.each(rows, function (i, element) {
                 var el = $(element);
                 var item = collection.get(el.attr('element-id'));
-                var column = $('<td></td>');
-                column.attr('name', columnName);
-                column.addClass(cellClassName);
+                var cell = $('<td></td>');
+                cell.attr('name', columnName);
+                cell.addClass(cellClassName);
 
-                if (!column.format) {
-                    column.html(item.get(columnName));
-                } else if (!query) {
-                    column.html(item.get('descriptors')[columnName]);
+                if (column.custom) {
+                    // deferred
+                } else if (column.glyphicon) {
+                    var span = $('<span class="glyphicon %>"></span>');
+                    span.addClass(column.glyphicon[1]);
+                    cell.html(span);
+                } else if (!column.format) {
+                    cell.html(item.get(columnName.replace(/^#/, '')));
+                } else if (column.query) {
+                    // deferred
+                } else if (columnName.startsWith('#')) {
+                    cell.html(item.get('descriptors')[columnName.replace(/^#/, '')] || "");
                 }
 
-                el.append(column);
+                el.append(cell);
             });
 
             // update user setting
@@ -1229,6 +1249,101 @@ var View = Marionette.CompositeView.extend({
                     application.updateUserSetting(view.getUserSettingName(), view.selectedColumns);
                 }
             });
+        }
+    },
+
+    onSortColumn: function(e) {
+        var el = $(e.target);
+        var columnEl = $(e.target).parent().parent();
+        var columnName = columnEl.attr('name');
+        var column = this.getOption('columns')[columnName];
+        var sortField = columnName;
+        var order = '+';
+        var sorters = this.ui.thead.children('tr').children('th,td').find('div.table-advanced-label span.column-sorter');
+        var sortBy = _.clone(this.collection.sort_by) || [];
+
+        if (column.format) {
+            // @todo how to be generic ? using widget info ??
+            if (column.format.display_fields) {
+                sortField = sortField + "->" + column.format.display_fields
+            } else if (column.format.type === 'country') {
+                sortField = sortField + "->" + 'name'
+            }
+        } else if (column.field) {
+            sortField += '->' + column.field;
+        }
+
+        var i = -1;
+        for (var j = 0; j < sortBy.length; ++j) {
+            if (sortBy[j] === sortField || sortBy[j].slice(1) === sortField) {
+                i = j;
+                break;
+            }
+        }
+
+        if (i !== -1) {
+            order = sortBy[i][0] === '-' ? '-' : '+';
+            // toggle current sorter order
+            order = order === '+' ? '-' : (order === '-' ? '' : '+');
+        }
+
+        if (!this.controlKeyDown) {
+            // cleanup
+            sorters.removeClass(
+                'sortby-asc-column sortby-desc-column glyphicon-sort-by-alphabet glyphicon-sort-by-alphabet-alt');
+
+            if (order === '+') {
+                el.addClass('sortby-asc-column glyphicon-sort-by-alphabet');
+            } else if (order === '-') {
+                el.addClass('sortby-desc-column glyphicon-sort-by-alphabet-alt');
+            } else {
+                el.addClass('glyphicon-sort');
+            }
+
+            if (order === '') {
+                sortBy = [];
+            } else {
+                sortBy = [order + sortField];
+            }
+        } else {
+            // multiple
+            if (order === '+') {
+                el.removeClass('sortby-desc-column glyphicon-sort-by-alphabet-alt');
+                el.addClass('sortby-asc-column glyphicon-sort-by-alphabet');
+            } else if (order === '-') {
+                el.removeClass('sortby-asc-column glyphicon-sort-by-alphabet-alt');
+                el.addClass('sortby-desc-column glyphicon-sort-by-alphabet-alt');
+            } else {
+                el.removeClass('sortby-asc-column sortby-desc-column glyphicon-sort-by-alphabet glyphicon-sort-by-alphabet-alt');
+                el.addClass('glyphicon-sort');
+            }
+
+            if (i >= 0) {
+                if (order === '') {
+                    sortBy.splice(i, 1);
+                } else {
+                    sortBy[i] = order + sortField;
+                }
+            } else {
+                sortBy.push(order + sortField);
+            }
+        }
+
+        this.collection.fetch({reset: true, data: {
+            sort_by: sortBy,
+            more: Math.max(this.capacity() + 1, 30)
+        }});
+    },
+
+    onKeyDown: function(e) {
+        if (e.key === 'Control') {
+            this.controlKeyDown = true;
+        }
+    },
+
+    onKeyUp: function(e) {
+        if (e.key === 'Control') {
+            this.controlKeyDown = false;
         }
     }
 });

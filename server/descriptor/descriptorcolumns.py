@@ -38,9 +38,9 @@ def get_columns_name_for_describable_content_type(request, content_type_name):
 
     for dmt in dmts:
         descriptor_format = json.loads(dmt.descriptor_type.format)
-        query = True if DescriptorFormatTypeManager.get(descriptor_format).related_model else False
+        query = True if DescriptorFormatTypeManager.get(descriptor_format).related_model(descriptor_format) else False
 
-        columns[dmt.name] = {
+        columns['#' + dmt.name] = {
             'label': dmt.get_label(),
             'query': query,
             'format': descriptor_format

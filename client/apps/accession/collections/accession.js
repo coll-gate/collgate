@@ -43,6 +43,10 @@ var Collection = Backbone.Collection.extend({
             opts.data.cursor = JSON.stringify(data.cursor);
         }
 
+        if (data.sort_by && typeof data.sort_by !== 'string') {
+            opts.data.sort_by = JSON.stringify(data.sort_by);
+        }
+
         return Backbone.Collection.prototype.fetch.call(this, opts);
     }
 });

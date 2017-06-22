@@ -35,16 +35,16 @@ var View = ScrollView.extend({
 
     defaultColumns: [
         {name: 'name', width: 'auto', sort_by: 'asc'},
-        {name: 'establishment_code', width: 'auto', sort_by: null},
-        {name: 'establishment_zipcode', width: 'auto', sort_by: null},
-        {name: 'establishment_geolocation', width: 'auto', sort_by: null},
+        {name: '#establishment_code', width: 'auto', sort_by: null},
+        {name: '#establishment_zipcode', width: 'auto', sort_by: null},
+        {name: '#establishment_geolocation', width: 'auto', sort_by: null},
     ],
 
     columnsOptions: {
         'name': {label: gt.gettext('Name'), minWidth: true, event: 'view-establishment'},
-        'establishment_code': {label: gt.gettext('Code'), minWidth: true, format: {type: 'string'}},
-        'establishment_zipcode': {label: gt.gettext('Zipcode'), minWidth: true, format: {type: 'string'}},
-        'establishment_geolocation': {
+        '#establishment_code': {label: gt.gettext('Code'), minWidth: true, format: {type: 'string'}},
+        '#establishment_zipcode': {label: gt.gettext('Zipcode'), minWidth: true, format: {type: 'string'}},
+        '#establishment_geolocation': {
             label: gt.gettext('Location'), minWidth: true, event: 'view-establishments', query: true}
     },
 

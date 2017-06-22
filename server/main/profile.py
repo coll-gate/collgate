@@ -1,16 +1,12 @@
 # -*- coding: utf-8; -*-
 #
 # @file profile.py
-# @brief 
+# @brief Views related to the management of the user profile.
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2016-09-01
 # @copyright Copyright (c) 2016 INRA/CIRAD
 # @license MIT (see LICENSE file)
 # @details 
-
-"""
-Views related to the management of the user profile.
-"""
 
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout

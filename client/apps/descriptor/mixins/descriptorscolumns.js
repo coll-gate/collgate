@@ -25,12 +25,12 @@ var DescriptorsColumnsView = {
                     // make the list of values
                     var keys = [];
                     var models = [];
-                    var cache = application.main.getCache('descriptors', columnName);
+                    var cache = application.main.getCache('descriptors', columnName.replace(/^#/, ''));
 
                     // lookup into the global cache
                     for (var j = 0; j < this.collection.models.length; ++j) {
                         var model = this.collection.at(j);
-                        var key = model.get('descriptors')[columnName];
+                        var key = model.get('descriptors')[columnName.replace(/^#/, '')];
                         var value = undefined;
 
                         if (key != null && key !== "") {
@@ -52,7 +52,7 @@ var DescriptorsColumnsView = {
                     if (keys.length) {
                         var promise = $.ajax({
                             type: "GET",
-                            url: application.baseUrl + 'descriptor/descriptor-model-type/' + columnName + '/',
+                            url: application.baseUrl + 'descriptor/descriptor-model-type/' + columnName.replace(/^#/, '') + '/',
                             contentType: 'application/json; charset=utf8',
                             data: {values: JSON.stringify(keys)},
                             columnName: columnName,
@@ -61,12 +61,12 @@ var DescriptorsColumnsView = {
                         });
 
                         promise.done(function (data) {
-                            var cache = application.main.getCache('descriptors', this.columnName);
+                            var cache = application.main.getCache('descriptors', this.columnName.replace(/^#/, ''));
 
                             for (var i = 0; i < models.length; ++i) {
                                 var model = models[i];
                                 var childView = this.view.children.findByModel(model);
-                                var key = model.get('descriptors')[this.columnName];
+                                var key = model.get('descriptors')[this.columnName.replace(/^#/, '')];
 
                                 var column = childView.$el.find('td[name="' + this.columnName + '"]');
                                 if (key !== undefined) {
@@ -80,7 +80,7 @@ var DescriptorsColumnsView = {
                                 }
                             }
 
-                            console.debug("Cache miss for descriptor " + this.columnName + ".");
+                            console.debug("Cache miss for descriptor " + this.columnName.replace(/^#/, '') + ".");
                         });
 
                         promises.push(promise);
@@ -91,7 +91,7 @@ var DescriptorsColumnsView = {
                         for (var j = 0; j < this.collection.models.length; ++j) {
                             var model = this.collection.at(j);
                             var childView = this.children.findByModel(model);
-                            var value = model.get('descriptors')[columnName];
+                            var value = model.get('descriptors')[columnName.replace(/^#/, '')];
                             var cell = childView.$el.find('td[name="' + columnName + '"]');
 
                             // simply replace the value
@@ -130,12 +130,12 @@ var DescriptorsColumnsView = {
                     // make the list of values
                     var keys = [];
                     var models = [];
-                    var cache = application.main.getCache('descriptors', columnName);
+                    var cache = application.main.getCache('descriptors', columnName.replace(/^#/, ''));
 
                     // lookup into the global cache
                     for (var j = 0; j < lastModels.length; ++j) {
                         var model = lastModels[j];
-                        var key = model.get('descriptors')[columnName];
+                        var key = model.get('descriptors')[columnName.replace(/^#/, '')];
                         var value = undefined;
 
                         if (key != null && key !== "") {
@@ -157,7 +157,7 @@ var DescriptorsColumnsView = {
                     if (keys.length) {
                         var promise = $.ajax({
                             type: "GET",
-                            url: application.baseUrl + 'descriptor/descriptor-model-type/' + columnName + '/',
+                            url: application.baseUrl + 'descriptor/descriptor-model-type/' + columnName.replace(/^#/, '') + '/',
                             contentType: 'application/json; charset=utf8',
                             data: {values: JSON.stringify(keys)},
                             columnName: columnName,
@@ -166,12 +166,12 @@ var DescriptorsColumnsView = {
                         });
 
                         promise.done(function (data) {
-                            var cache = application.main.getCache('descriptors', this.columnName);
+                            var cache = application.main.getCache('descriptors', this.columnName.replace(/^#/, ''));
 
                             for (var j = 0; j < this.models.length; ++j) {
                                 var model = this.models[j];
                                 var childView = this.view.children.findByModel(model);
-                                var key = model.get('descriptors')[this.columnName];
+                                var key = model.get('descriptors')[this.columnName.replace(/^#/, '')];
 
                                 var cell = childView.$el.find('td[name="' + this.columnName + '"]');
                                 if (key !== undefined) {
@@ -185,7 +185,7 @@ var DescriptorsColumnsView = {
                                 }
                             }
 
-                            console.debug("Cache miss for descriptor " + this.columnName + ".");
+                            console.debug("Cache miss for descriptor " + this.columnName.replace(/^#/, '') + ".");
                         });
 
                         promises.push(promise);
@@ -196,7 +196,7 @@ var DescriptorsColumnsView = {
                         for (var j = 0; j < lastModels.length; ++j) {
                             var model = lastModels[j];
                             var childView = this.children.findByModel(model);
-                            var value = model.get('descriptors')[columnName];
+                            var value = model.get('descriptors')[columnName.replace(/^#/, '')];
                             var cell = childView.$el.find('td[name="' + columnName + '"]');
 
                             // simply replace the value

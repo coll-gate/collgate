@@ -155,29 +155,35 @@ def create_accession(request):
 })
 def get_accession_list(request):
     results_per_page = int_arg(request.GET.get('more', 30))
-    cursor = json.loads(request.GET.get('cursor', "null"))
+    cursor = json.loads(request.GET.get('cursor', 'null'))
     limit = results_per_page
-    # order_by = ['descriptors__MCPD_ORIGCTY', 'name', 'id']
-    # order_by = ['id']
+    sort_by = json.loads(request.GET.get('sort_by', '[]'))
+
     # order_by = ['name', 'id']
-    # order_by = ['parent->name', 'id']  # @todo test
+    # order_by = ['parent->name', 'id']
     # order_by = ['#MCPD_ORIGCTY->name', 'name', 'id']
-    order_by = ['#test_accession->name', '#MCPD_ORIGCTY->name', '#IPGRI_4.1.1->value1', 'name', 'id']
+    # order_by = ['-#IPGRI_4.1.1->value1', 'name', 'id']
+    # order_by = ['#test_accession->name', '#MCPD_ORIGCTY->name', '#IPGRI_4.1.1->value1', 'name', 'id']
     # order_by = ['#MCPD_ORIGCTY->name', '#IPGRI_4.1.1->value1', 'name', 'id']
+
+    if not len(sort_by) or sort_by[-1] not in ('id', '+id', '-id'):
+        order_by = sort_by + ['id']
+    else:
+        order_by = sort_by
 
     from main.cursor import CursorQuery
     cq = CursorQuery(Accession)
 
     if request.GET.get('filters'):
         filters = json.loads(request.GET['filters'])
-        cq.filters(filters)
+        cq.filter(filters)
 
     cq.prefetch_related(Prefetch(
             "synonyms",
             queryset=AccessionSynonym.objects.all().order_by('type', 'language')))
 
     cq.select_related('parent->name', 'parent->rank')
-    # cq.join('#test_accession', ['code'])
+    # cq.select_related('#test_accession->code')
 
     cq.cursor(cursor, order_by)
     cq.order_by(order_by).limit(limit)
@@ -217,11 +223,6 @@ def get_accession_list(request):
         'cursor': cursor,
         'next': cq.next_cursor,
     }
-
-    # from main.cursor import CursorQuery
-    # cq = CursorQuery(Accession.objects, cursor, order_by)
-    # # qs = qs.extra(select={"geonames_country_name": "SELECT geonames_country.name FROM geonames_country WHERE (accession_accession.descriptors->>'MCPD_ORIGCTY')::INTEGER = geonames_country.id"})
-    # # qs = qs.extra(params=["INNER JOIN geonames_country ON((accession_accession.descriptors->>'MCPD_ORIGCTY')::INTEGER = geonames_country.id"])
 
     # if request.GET.get('filters'):
     #     filters = json.loads(request.GET['filters'])

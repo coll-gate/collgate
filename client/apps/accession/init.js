@@ -30,21 +30,6 @@ AccessionModule.prototype = {
         }
 
         //
-        // descriptor format types
-        //
-
-        // register the format type of descriptors
-        var widgets = [
-            'accession',
-            'batch'
-        ];
-
-        for (var i = 0; i < widgets.length; ++i) {
-            var moduleName = widgets[i].replace('_', '').toLowerCase();
-            application.descriptor.widgets.registerElement(widgets[i], require('./widgets/' + moduleName));
-        }
-
-        //
         // main collections
         //
 
