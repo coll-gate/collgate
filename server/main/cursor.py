@@ -56,20 +56,20 @@ class CursorQuery(object):
 
         for field in model._meta.get_fields():
             if type(field) is models.fields.reverse_related.ManyToManyRel:
-                self.model_fields[field.name] = ('M2M', '')
+                self.model_fields[field.name] = ('M2M', '', field.null)
             elif type(field) is models.fields.reverse_related.ManyToOneRel:
-                self.model_fields[field.name] = ('M2O', '')
+                self.model_fields[field.name] = ('M2O', '', field.null)
             elif type(field) is models.fields.related.ForeignKey:
-                self.model_fields[field.name] = ('FK', 'INTEGER')
+                self.model_fields[field.name] = ('FK', 'INTEGER', field.null)
                 self.query_select.append('"%s"."%s_id"' % (db_table, field.name))
             elif type(field) is models.fields.IntegerField or type(field) == models.fields.AutoField:
-                self.model_fields[field.name] = ('INTEGER', 'INTEGER')
+                self.model_fields[field.name] = ('INTEGER', 'INTEGER', field.null)
                 self.query_select.append('"%s"."%s"' % (db_table, field.name))
             elif type(field) is JSONField:
-                self.model_fields[field.name] = ('JSON', 'JSON')
+                self.model_fields[field.name] = ('JSON', 'JSON', field.null)
                 self.query_select.append('"%s"."%s"' % (db_table, field.name))
             else:
-                self.model_fields[field.name] = ('TEXT', 'TEXT')
+                self.model_fields[field.name] = ('TEXT', 'TEXT', field.null)
                 self.query_select.append('"%s"."%s"' % (db_table, field.name))
 
             # @todo maybe for DATE (idem for join)
@@ -103,8 +103,6 @@ class CursorQuery(object):
             previous = []
             i = 0
 
-            # @todo if cursor as NULL value todo case INTEGER, TEXT, DATE...
-
             for field in self._cursor_fields:
                 f = field.lstrip('+-#')
                 is_descriptor = field[0] == '#' or field[1] == '#'
@@ -121,7 +119,7 @@ class CursorQuery(object):
                         if prev_is_descriptor:
                             if self.FIELDS_SEP in prev_field:
                                 pff = prev_field.split(self.FIELDS_SEP)
-                                lqs.append(self._cast_sub_type(pff[0], pff[1], prev_ope, self._cursor[prev_i]))
+                                lqs.append(self._cast_descriptor_sub_type(pff[0], pff[1], prev_ope, self._cursor[prev_i]))
                             else:
                                 lqs.append(self._cast_descriptor_type(db_table, prev_field, prev_ope, self._cursor[prev_i]))
                         else:
@@ -134,7 +132,7 @@ class CursorQuery(object):
                     if is_descriptor:
                         if self.FIELDS_SEP in f:
                             ff = f.split(self.FIELDS_SEP)
-                            lqs.append(self._cast_sub_type(ff[0], ff[1], op, self._cursor[i]))
+                            lqs.append(self._cast_descriptor_sub_type(ff[0], ff[1], op, self._cursor[i]))
                         else:
                             lqs.append(self._cast_descriptor_type(db_table, f, op, self._cursor[i]))
                     else:
@@ -150,7 +148,7 @@ class CursorQuery(object):
                     if is_descriptor:
                         if self.FIELDS_SEP in f:
                             ff = f.split(self.FIELDS_SEP)
-                            lqs.append(self._cast_sub_type(ff[0], ff[1], op, self._cursor[i]))
+                            lqs.append(self._cast_descriptor_sub_type(ff[0], ff[1], op, self._cursor[i]))
                         else:
                             lqs.append(self._cast_descriptor_type(db_table, f, op, self._cursor[i]))
                     else:
@@ -169,18 +167,27 @@ class CursorQuery(object):
 
             self.query_filters.append(" OR ".join(_where))
 
-    def _make_value(self, value, cast_type):
+    def _make_value(self, value, field_data):
         if value is None:
-            if cast_type == 'INTEGER' or cast_type == 'FK':
-                return "0"  # "NULL"
+            if field_data[1] == 'INTEGER':
+                if field_data[2]:
+                    return "0"
+                else:
+                    return "NULL"
             else:
-                return "''"  # "NULL"
+                if field_data[2]:
+                    return "''"
+                else:
+                    return "NULL"
 
-        if cast_type == 'INTEGER' or cast_type == 'FK':
+        if field_data[1] == 'INTEGER':
             try:
                 int(value)
             except ValueError:
-                return 0  # "NULL"
+                if field_data[2]:
+                    return "0"
+                else:
+                    return "NULL"
 
             return str(value)
         else:
@@ -237,7 +244,7 @@ class CursorQuery(object):
             else:
                 if is_descriptor:
                     description = self._description[f]
-                    cast_type = description['model'].data
+                    cast_type = description['handler'].data
                 else:
                     cast_type = self.model_fields[f][1]
 
@@ -351,12 +358,11 @@ class CursorQuery(object):
         return self._next_cursor
 
     def _cast_default_type(self, table_name, field_name, operator, value):
-        cast_type = self.model_fields[field_name][1]
-        final_value = self._make_value(value, cast_type)
-        coalesce_value = self._make_value(None, cast_type)
-        uses_coalesce = True
+        field_model = self.model_fields[field_name]
+        final_value = self._make_value(value, field_model)
+        coalesce_value = self._make_value(None, field_model)
 
-        if uses_coalesce:
+        if field_model[2]:  # is null
             return 'COALESCE("%s"."%s", %s) %s %s' % (
                 table_name, field_name, coalesce_value, operator, final_value)
         else:
@@ -364,12 +370,11 @@ class CursorQuery(object):
                 table_name, field_name, operator, final_value)
 
     def _cast_default_sub_type(self, table_name, field_name, operator, value):
-        cast_type = self._related_tables[table_name][1][field_name]
-        final_value = self._make_value(value, cast_type)
-        coalesce_value = self._make_value(None, cast_type)
-        uses_coalesce = True
+        field_model = self._related_tables[table_name][1][field_name]
+        final_value = self._make_value(value, field_model)
+        coalesce_value = self._make_value(None, field_model)
 
-        if uses_coalesce:
+        if field_model[2]:  # is null
             return 'COALESCE("%s"."%s", %s) %s %s' % (
                 self._related_tables[table_name][0]._meta.db_table, field_name, coalesce_value, operator, final_value)
         else:
@@ -378,37 +383,37 @@ class CursorQuery(object):
 
     def _cast_descriptor_type(self, table_name, descriptor_name, operator, value):
         description = self._description[descriptor_name]
+        return description['handler'].operator(operator, table_name, descriptor_name, value)
+        #
+        # cast_type = description['handler'].data
+        # final_value = self._make_value(value, cast_type)
+        # coalesce_value = self._make_value(None, cast_type)
+        # can_null = description['handler'].null
+        #
+        # if can_null:
+        #     if cast_type != "TEXT":
+        #         return 'COALESCE(CAST("%s"."descriptors"->>\'%s\' AS %s), %s) %s %s' % (
+        #             table_name, descriptor_name, cast_type, coalesce_value, operator, final_value)
+        #     else:
+        #         return 'COALESCE(("%s"."descriptors"->>\'%s\'), %s) %s %s' % (
+        #             table_name, descriptor_name, coalesce_value, operator, final_value)
+        # else:
+        #     if cast_type != "TEXT":
+        #         return 'CAST("%s"."descriptors"->>\'%s\' AS %s) %s %s' % (
+        #             table_name, descriptor_name, cast_type, operator, final_value)
+        #     else:
+        #         return '("%s"."descriptors"->>\'%s\') %s %s' % (table_name, descriptor_name, operator, final_value)
 
-        cast_type = description['model'].data
-        final_value = self._make_value(value, cast_type)
-        coalesce_value = self._make_value(None, cast_type)
-        uses_coalesce = True
-
-        if uses_coalesce:
-            if cast_type != "TEXT":
-                return 'COALESCE(CAST("%s"."descriptors"->>\'%s\' AS %s), %s) %s %s' % (
-                    table_name, descriptor_name, cast_type, coalesce_value, operator, final_value)
-            else:
-                return 'COALESCE(("%s"."descriptors"->>\'%s\'), %s) %s %s' % (
-                    table_name, descriptor_name, coalesce_value, operator, final_value)
-        else:
-            if cast_type != "TEXT":
-                return 'CAST("%s"."descriptors"->>\'%s\' AS %s) %s %s' % (
-                    table_name, descriptor_name, cast_type, operator, final_value)
-            else:
-                return '("%s"."descriptors"->>\'%s\') %s %s' % (table_name, descriptor_name, operator, final_value)
-
-    def _cast_sub_type(self, descriptor_name, field_name, operator, value):
+    def _cast_descriptor_sub_type(self, descriptor_name, field_name, operator, value):
         # descriptor_name can contains some '.', replaces them by '_'
         renamed_table = "descr_" + descriptor_name.replace('.', '_')
         related_model, related_fields = self._related_tables[renamed_table]
 
-        cast_type = related_fields[field_name][1]
-        final_value = self._make_value(value, cast_type)
-        coalesce_value = self._make_value(None, cast_type)
-        uses_coalesce = True
+        field_model = related_fields[field_name]
+        final_value = self._make_value(value, field_model)
+        coalesce_value = self._make_value(None, field_model)
 
-        if uses_coalesce:
+        if field_model[2]:  # is null
             return 'COALESCE("%s"."%s", %s) %s %s' % (renamed_table, field_name, coalesce_value, operator, final_value)
         else:
             return '"%s"."%s" %s %s' % (renamed_table, field_name, operator, final_value)
@@ -417,7 +422,7 @@ class CursorQuery(object):
         model_fields = {}
         db_table = self._model._meta.db_table
 
-        related_model = description['model'].related_model(description['format'])
+        related_model = description['handler'].related_model(description['format'])
         join_db_table = related_model._meta.db_table
 
         # descriptor_name can contains some '.', replaces them by '_'
@@ -428,28 +433,29 @@ class CursorQuery(object):
                 continue
 
             if type(field) is models.fields.reverse_related.ManyToManyRel:
-                # model_fields[field.name] = ('M2M', '')
+                # model_fields[field.name] = ('M2M', '', field.null)
                 pass
             elif type(field) is models.fields.reverse_related.ManyToOneRel:
-                # model_fields[field.name] = ('M2O', '')
+                # model_fields[field.name] = ('M2O', '', field.null)
                 pass
             elif type(field) is models.fields.related.ForeignKey:
-                model_fields[field.name + '_id'] = ('FK', 'INTEGER')
+                # @todo could be TEXT
+                model_fields[field.name + '_id'] = ('FK', 'INTEGER', field.null)
                 self.query_select.append('"%s"."%s_id" AS "%s_%s_id"' % (renamed_table, field.name, renamed_table, field.name))
             elif type(field) is models.fields.IntegerField or type(field) == models.fields.AutoField:
-                model_fields[field.name] = ('INTEGER', 'INTEGER')
+                model_fields[field.name] = ('INTEGER', 'INTEGER', field.null)
                 self.query_select.append('"%s"."%s" AS "%s_%s"' % (renamed_table, field.name, renamed_table, field.name))
             elif type(field) is JSONField:
-                self.model_fields[field.name] = ('JSON', 'JSON')
+                self.model_fields[field.name] = ('JSON', 'JSON', field.null)
                 self.query_select.append('"%s"."%s" AS "%s_%s"' % (renamed_table, field.name, renamed_table, field.name))
             else:
-                model_fields[field.name] = ('TEXT', 'TEXT')
+                model_fields[field.name] = ('TEXT', 'TEXT', field.null)
                 self.query_select.append('"%s"."%s" AS "%s_%s"' % (renamed_table, field.name, renamed_table, field.name))
 
         self._related_tables[renamed_table] = (related_model, model_fields)
 
-        on_clauses = description['model'].select(db_table, descriptor_name, renamed_table)
-        _from = 'LEFT JOIN "%s" AS "%s" ON (%s)' % (join_db_table, renamed_table, " AND ".join(on_clauses))
+        on_clauses = description['handler'].join(db_table, descriptor_name, renamed_table)
+        _from = 'LEFT JOIN "%s" AS "%s" ON (%s)' % (join_db_table, renamed_table, on_clauses)
 
         self.query_from.append(_from)
         return self
@@ -473,24 +479,25 @@ class CursorQuery(object):
 
                 if type(field) is models.fields.reverse_related.ManyToManyRel:
                     pass
-                    # model_fields[field.name] = ('M2M',)
+                    # model_fields[field.name] = ('M2M', '', field.null)
                 elif type(field) is models.fields.reverse_related.ManyToOneRel:
                     pass
-                    # model_fields[field.name] = ('M2O',)
+                    # model_fields[field.name] = ('M2O', '', field.null)
                 elif type(field) is models.fields.related.ForeignKey:
-                    model_fields[field.name + '_id'] = ('FK', 'INTEGER')
+                    # @todo could be TEXT
+                    model_fields[field.name + '_id'] = ('FK', 'INTEGER', field.null)
                     # self.query_select.append('"%s"."%s_id" AS "%s_%s_id"' % (join_db_table, field.name))
                     self.query_select.append('"%s"."%s_id" AS "%s_%s_id"' % (join_db_table, field.name, related_field, field.name))
                 elif type(field) is models.fields.IntegerField or type(field) == models.fields.AutoField:
-                    model_fields[field.name] = ('INTEGER', 'INTEGER')
+                    model_fields[field.name] = ('INTEGER', 'INTEGER', field.null)
                     # self.query_select.append('"%s"."%s"' % (join_db_table, field.name))
                     self.query_select.append('"%s"."%s" AS "%s_%s"' % (join_db_table, field.name, related_field, field.name))
                 elif type(field) is JSONField:
-                    self.model_fields[field.name] = ('JSON', 'JSON')
+                    self.model_fields[field.name] = ('JSON', 'JSON', field.null)
                     # self.query_select.append('"%s"."%s"' % (join_db_table, field.name))
                     self.query_select.append('"%s"."%s" AS "%s_%s"' % (join_db_table, field.name, related_field, field.name))
                 else:
-                    model_fields[field.name] = ('TEXT', 'TEXT')
+                    model_fields[field.name] = ('TEXT', 'TEXT', field.null)
                     # self.query_select.append('"%s"."%s"' % (join_db_table, field.name))
                     self.query_select.append('"%s"."%s" AS "%s_%s"' % (join_db_table, field.name, related_field, field.name))
 

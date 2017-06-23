@@ -1,18 +1,17 @@
 # -*- coding: utf-8; -*-
 #
 # @file formattype.py
-# @brief 
+# @brief coll-gate descriptor module, descriptor format
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2016-09-01
 # @copyright Copyright (c) 2016 INRA/CIRAD
 # @license MIT (see LICENSE file)
 # @details 
 
-"""
-coll-gate descriptor module, descriptor format
-"""
 from django.core.exceptions import SuspiciousOperation
 from django.views.decorators.cache import cache_page
+
+from descriptor.descriptorformatunit import DescriptorFormatUnitManager
 from igdectk.rest import Format, Method
 from igdectk.rest.response import HttpResponseRest
 
@@ -79,30 +78,33 @@ def get_format_unit_list(request):
     """
     Return the list of units of format.
     """
-    groups = []
-    items = []
+    groups = {}
+    items = {}
 
-    from django.apps import apps
-    descriptor_app = apps.get_app_config('descriptor')
+    for fu in DescriptorFormatUnitManager.values():
+        if fu.group:
+            if fu.group.name not in groups:
+                groups[fu.group.name] = {
+                    'group': fu.group.name,
+                    'label': str(fu.group.verbose_name)
+                }
 
-    for group in descriptor_app.format_units:
-        groups.append({
-            'group': group.group,
-            'label': str(group.label)
-        })
+        if fu.name in items:
+            raise SuspiciousOperation("Already registered descriptor format unit %s" % fu.name)
 
-        for ltype in group.items:
-            items.append({
-                'id': ltype.value,
-                'group': group.group,
-                'value': ltype.value,
-                'label': str(ltype.label)
-            })
+        items[fu.name] = {
+            'id': fu.name,
+            'group': fu.group.name,
+            'value': fu.name,
+            'label': str(fu.verbose_name)
+        }
+
+    groups_list = sorted(list(groups.values()), key=lambda x: x['group'])
+    items_list = sorted(list(items.values()), key=lambda x: x['id'])
 
     results = {
-        'groups': groups,
-        'items': items
+        'groups': groups_list,
+        'items': items_list
     }
 
     return HttpResponseRest(request, results)
-

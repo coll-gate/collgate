@@ -83,6 +83,7 @@ class DescriptorFormatTypeCountry(DescriptorFormatType):
             "country"
         ]
         self.data = "INTEGER"
+        self.display_field = "name"
 
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         return instance.geolocation_app.geolocation_manager.country_format_type_validator(value)

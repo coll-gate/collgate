@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-07 09:53+0200\n"
+"POT-Creation-Date: 2017-06-23 15:43+0200\n"
 "PO-Revision-Date:  2016-02-03 11:38+0100\n"
 "Last-Translator: Frederic SCHERMA <frederic.scherma@clermont.inra.fr>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,162 +17,162 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: apps.py:53
+#: apps.py:59
 msgid "Classification"
 msgstr "Classification"
 
-#: apps.py:55
+#: apps.py:61
 msgid "Create taxon"
 msgstr "Créer un taxon"
 
-#: apps.py:57
+#: apps.py:63
 msgid "Create cultivar"
 msgstr "Créer un cultivar"
 
-#: apps.py:60
+#: apps.py:66
 msgid "List taxons"
 msgstr "Liste des taxons"
 
-#: apps.py:62
+#: apps.py:68
 msgid "List cultivars"
 msgstr "Liste des cultivars"
 
-#: controller.py:65
+#: controller.py:59
 msgid "A taxon with this name already exists"
 msgstr "Ce nom de taxon est déjà utilisé"
 
-#: controller.py:70
+#: controller.py:64
 msgid "The rank of the parent must be lesser than the new taxon"
 msgstr "Le rang du parent doit être inférieur à celui du nouveau taxon"
 
-#: controller.py:155
+#: controller.py:149
 msgid "Empty synonym data"
 msgstr "Donnée du synonyme vide"
 
-#: controller.py:158
+#: controller.py:152
 msgid "Undefined synonym name"
 msgstr "Nom de synonyme indéfini"
 
-#: controller.py:161
+#: controller.py:155
 msgid "Undefined synonym language"
 msgstr "Langue du synonym indéfinie"
 
-#: controller.py:165 taxonsynonym.py:165
+#: controller.py:159 taxonsynonym.py:165
 msgid "Unsupported type of synonym"
 msgstr "Type de synonym non supporté"
 
-#: controller.py:173 taxonsynonym.py:173 taxonsynonym.py:226
+#: controller.py:167 taxonsynonym.py:173 taxonsynonym.py:226
 msgid "The primary name could not be used by another synonym of taxon"
 msgstr ""
 "Le nom principal ne peut pas être utilisé par un autre synonyme de taxon"
 
-#: controller.py:177 taxonsynonym.py:177 taxonsynonym.py:230
+#: controller.py:171 taxonsynonym.py:177 taxonsynonym.py:230
 msgid "Synonym already used as a primary name"
 msgstr "Synonyme déjà utilisé comme nom principal"
 
-#: controller.py:181 taxonsynonym.py:181 taxonsynonym.py:234
+#: controller.py:175 taxonsynonym.py:181 taxonsynonym.py:234
 msgid "Synonym already used into this taxon"
 msgstr "Synonyme déjà utilisé pour ce taxon"
 
-#: models.py:33
+#: models.py:29
 msgid "Primary"
 msgstr "Principal"
 
-#: models.py:34
+#: models.py:30
 msgid "Synonym"
 msgstr "Synonyme"
 
-#: models.py:35
+#: models.py:31
 msgid "Code"
 msgstr "Code"
 
-#: models.py:40
+#: models.py:36
 msgid "Family"
 msgstr "Famille"
 
-#: models.py:41
+#: models.py:37
 msgid "Subfamily"
 msgstr "Sous-famille"
 
-#: models.py:42
+#: models.py:38
 msgid "Tribe"
 msgstr "Tribu"
 
-#: models.py:43
+#: models.py:39
 msgid "Subtribe"
 msgstr "Sous-tribu"
 
-#: models.py:44
+#: models.py:40
 msgid "Genus"
 msgstr "Genre"
 
-#: models.py:45
+#: models.py:41
 msgid "Subgenus"
 msgstr "Sous-genre"
 
-#: models.py:46
+#: models.py:42
 msgid "Section"
 msgstr "Section"
 
-#: models.py:47
+#: models.py:43
 msgid "Subsection"
 msgstr "Sous-section"
 
-#: models.py:48
+#: models.py:44
 msgid "Specie"
 msgstr "Espèce"
 
-#: models.py:49
+#: models.py:45
 msgid "Subspecie"
 msgstr "Sous-espèce"
 
-#: models.py:50
+#: models.py:46
 msgid "Variety"
 msgstr "Variété"
 
-#: models.py:51
+#: models.py:47
 msgid "Subvariety"
 msgstr "Sous-variété"
 
-#: models.py:52
+#: models.py:48
 msgid "Cultivar"
 msgstr "Cultivar"
 
-#: models.py:89
+#: models.py:85
 msgid "taxon"
 msgstr "taxon"
 
-#: models.py:179
+#: models.py:175
 msgid "taxon synonym"
 msgstr "synonyme de taxon"
 
-#: taxon.py:85
+#: taxon.py:84
 msgid "You are not allowed to create a taxon"
 msgstr "Vous n'êtes pas autorisé à créer un taxon"
 
-#: taxon.py:105
+#: taxon.py:104
 msgid "The language is not supported"
 msgstr "La langue n'est pas supportée"
 
-#: taxon.py:376 taxonsynonym.py:148 taxonsynonym.py:206 taxonsynonym.py:260
+#: taxon.py:375 taxonsynonym.py:148 taxonsynonym.py:206 taxonsynonym.py:260
 msgid "You are not allowed to modify a taxon"
 msgstr "Vous n'êtes pas autorisé à modifier un taxon"
 
-#: taxon.py:400
+#: taxon.py:399
 msgid "The rank of the parent must be lowest than the taxon itself"
 msgstr "Le rang du parent doit être inférieur au taxon lui même"
 
-#: taxon.py:494
+#: taxon.py:493
 msgid "You are not allowed to remove a taxon"
 msgstr "Vous n'êtes pas autorisé à supprimer un taxon"
 
-#: taxon.py:501
+#: taxon.py:500
 msgid "This taxon is referred by one or more entities. It cannot be deleted."
 msgstr ""
 "Ce taxon est reférencé par une ou plusieurs entités. Il ne peut pas être "
 "supprimé."
 
-#: taxon.py:505
+#: taxon.py:504
 msgid "This taxon has sub-ranks. It cannot be deleted."
 msgstr "Ce taxon à des sous-rangs. Il ne peut pas être supprimé."
 

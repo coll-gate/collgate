@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-07 09:53+0200\n"
+"POT-Creation-Date: 2017-06-23 15:43+0200\n"
 "PO-Revision-Date: 2016-02-01 11:53+0100\n"
 "Last-Translator: Frederic SCHERMA <frederic.scherma@clermont.inra.fr>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,29 +18,29 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: apps.py:64
+#: apps.py:51
 #, fuzzy
 #| msgid "Edit information"
 msgid "Administration"
 msgstr "Edit information"
 
-#: apps.py:68
+#: apps.py:55
 msgid "Server configuration"
 msgstr ""
 
-#: apps.py:72
+#: apps.py:59
 msgid "Configured languages"
 msgstr ""
 
-#: apps.py:78
+#: apps.py:65
 msgid "Help"
 msgstr ""
 
-#: apps.py:80
+#: apps.py:67
 msgid "Manual index"
 msgstr ""
 
-#: apps.py:83
+#: apps.py:70
 msgid "About Coll-Gate IS..."
 msgstr ""
 
@@ -52,7 +52,7 @@ msgstr ""
 msgid "You are not allowed to create an event message"
 msgstr ""
 
-#: eventmessage.py:127 language.py:154
+#: eventmessage.py:127 language.py:147
 msgid "Unsupported language identifier"
 msgstr ""
 
@@ -64,67 +64,63 @@ msgstr ""
 msgid "Please, you must enable your cookies."
 msgstr ""
 
-#: models.py:65 models.py:75
+#: models.py:62
 msgid "English"
 msgstr ""
 
-#: models.py:66 models.py:76
+#: models.py:63
 msgid "French"
 msgstr ""
 
-#: models.py:74
-msgid "Latin"
-msgstr ""
-
-#: models.py:127
+#: models.py:114
 msgid "Pending"
 msgstr ""
 
-#: models.py:128
+#: models.py:115
 msgid "Valid"
 msgstr ""
 
-#: models.py:129
+#: models.py:116
 msgid "Archived"
 msgstr ""
 
-#: models.py:130
+#: models.py:117
 msgid "Removed"
 msgstr ""
 
-#: models.py:292
+#: models.py:279
 msgid ""
 "It is not allowed to change the status of an entity from valid to pending"
 msgstr ""
 
-#: models.py:295
+#: models.py:282
 msgid "It is not allowed to change the status of a removed entity"
 msgstr ""
 
-#: models.py:298
+#: models.py:285
 msgid "It is not allowed to change the status of an archived entity"
 msgstr ""
 
-#: profile.py:77
+#: profile.py:73
 msgid ""
 "Your account is pending for activation. Please be patient or contact an "
 "administrator."
 msgstr ""
 
-#: profile.py:82
+#: profile.py:78
 msgid "Successfully logged"
 msgstr ""
 
-#: profile.py:89
+#: profile.py:85
 msgid ""
 "Your account is closed. Please contact an administrator to re-activate it."
 msgstr ""
 
-#: profile.py:92
+#: profile.py:88
 msgid "Invalid username or password"
 msgstr ""
 
-#: profile.py:105
+#: profile.py:101
 msgid "Logged out"
 msgstr ""
 

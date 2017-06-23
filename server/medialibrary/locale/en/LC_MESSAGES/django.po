@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-07 09:53+0200\n"
+"POT-Creation-Date: 2017-06-23 15:43+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,44 +17,44 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: descriptorformattype.py:33 descriptorformattype.py:46
+#: descriptorformattype.py:30 descriptorformattype.py:43
 msgid "Media"
 msgstr ""
 
-#: descriptorformattype.py:53
+#: descriptorformattype.py:51
 msgid "The descriptor value must be a string"
 msgstr ""
 
-#: descriptorformattype.py:57 descriptorformattype.py:147
+#: descriptorformattype.py:55 descriptorformattype.py:149
 msgid "The descriptor value must match with the UUID format"
 msgstr ""
 
-#: descriptorformattype.py:63 descriptorformattype.py:152
+#: descriptorformattype.py:61 descriptorformattype.py:154
 msgid "The descriptor value must refers to an existing media"
 msgstr ""
 
-#: descriptorformattype.py:83 descriptorformattype.py:173
+#: descriptorformattype.py:81 descriptorformattype.py:175
 msgid ""
 "Media type must be archives, images, documents or spreadsheets (media_types)"
 msgstr ""
 
-#: descriptorformattype.py:97 descriptorformattype.py:192
+#: descriptorformattype.py:95 descriptorformattype.py:194
 msgid "The descriptor old_value must refers to an existing media"
 msgstr ""
 
-#: descriptorformattype.py:113 descriptorformattype.py:209
+#: descriptorformattype.py:111 descriptorformattype.py:211
 msgid "The descriptor new_value must refers to an existing media"
 msgstr ""
 
-#: descriptorformattype.py:131
+#: descriptorformattype.py:132
 msgid "Media collection"
 msgstr ""
 
-#: descriptorformattype.py:138
+#: descriptorformattype.py:140
 msgid "The descriptor value must be an array of string"
 msgstr ""
 
-#: descriptorformattype.py:142
+#: descriptorformattype.py:144
 #, python-format
 msgid "The number of media must be lesser or equal than %i"
 msgstr ""

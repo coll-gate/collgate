@@ -19,6 +19,7 @@ from django.utils import translation
 from django.utils.translation import ugettext_lazy as _, pgettext_lazy
 from django.db.models import Q
 
+from descriptor.descriptorformatunit import DescriptorFormatUnitManager
 from descriptor.models import DescriptorValue
 
 
@@ -46,6 +47,9 @@ class DescriptorFormatType(object):
 
         # i18n verbose name displayable for the client
         self.verbose_name = ''
+
+        # true if the value accept None
+        self.null = True
 
         # list of related field into format.*.
         self.format_fields = ["type"]
@@ -112,14 +116,197 @@ class DescriptorFormatType(object):
         """
         return None
 
-    def select(self, db_table, descriptor_name, table_alias):
-        if self.data == "INTEGER":
-            on_clauses = ['("%s"."descriptors"->>\'%s\')::%s = "%s"."id"' % (
-                db_table, descriptor_name, self.data, table_alias)]
-        else:
-            on_clauses = ['("%s"."descriptors"->>\'%s\') = "%s"."id"' % (db_table, descriptor_name, table_alias)]
+    def join(self, db_table, descriptor_name, table_alias):
+        """
+        Join conditions from value of the descriptor to the related model.
 
-        return on_clauses
+        :param db_table: Name of the model table containing the descriptors.
+        :param descriptor_name: Name of the descriptor (model type).
+        :param table_alias: Table name of the related model or generally an alias.
+        :return: A generated string containing the conditions, with AND, OR...
+        """
+        if self.data == "INTEGER":
+            return '("%s"."descriptors"->>\'%s\')::%s = "%s"."id"' % (db_table, descriptor_name, self.data, table_alias)
+        else:
+            return '("%s"."descriptors"->>\'%s\') = "%s"."id"' % (db_table, descriptor_name, table_alias)
+
+    def make_sql_value(self, value):
+        """
+
+        :param value:
+        :return:
+        """
+        if value is None:
+            if self.data == 'INTEGER':
+                if self.null:
+                    return "0"
+                else:
+                    return "NULL"
+            else:
+                if self.null:
+                    return "''"
+                else:
+                    return "NULL"
+
+        if self.data == 'INTEGER':
+            try:
+                int(value)
+            except ValueError:
+                if self.null:
+                    return "0"
+                else:
+                    return "NULL"
+
+            return str(value)
+        else:
+            return "'" + value.replace("'", "''") + "'"
+
+    def operator(self, operator, db_table, descriptor_name, value):
+        """
+        According to operator switch to the operator method.
+
+        :param operator: Operator string.
+        :param db_table: Name of the table.
+        :param descriptor_name: Name of the descriptor.
+        :param value: Value previously validated or None.
+        :return: String of the clause-s or None.
+        """
+        if operator == '=' or operator == 'eq':
+            return self.operator_eq(db_table, descriptor_name, value)
+        elif operator == '!=' or operator == 'neq':
+            return self.operator_neq(db_table, descriptor_name, value)
+        elif operator == '<=' or operator == 'lte':
+            return self.operator_lte(db_table, descriptor_name, value)
+        elif operator == '<' or operator == 'lt':
+            return self.operator_lt(db_table, descriptor_name, value)
+        elif operator == '>=' or operator == 'gte':
+            return self.operator_gte(db_table, descriptor_name, value)
+        elif operator == '>' or operator == 'gt':
+            return self.operator_gt(db_table, descriptor_name, value)
+        elif operator == 'ILIKE' or operator == 'icontains':
+            return self.operator_ilike(db_table, descriptor_name, value)
+        elif operator == 'LIKE' or operator == 'contains':
+            return self.operator_like(db_table, descriptor_name, value)
+        else:
+            return None
+
+    def operator_ilike(self, db_table, descriptor_name, value):
+        """
+        Case insensitive text comparison based on ILIKE operator.
+        """
+        if self.data == "INTEGER":
+            return None
+        else:
+            return '("%s"."descriptors"->>\'%s\') ILIKE \'%s\'' % (
+                db_table, descriptor_name, self.make_sql_value(value))
+
+    def operator_like(self, db_table, descriptor_name, value):
+        """
+        Case sensitive text comparison based on LIKE operator.
+        """
+        if self.data == "INTEGER":
+            return None
+        else:
+            return '("%s"."descriptors"->>\'%s\') LIKE \'%s\'' % (
+                db_table, descriptor_name, self.make_sql_value(value))
+
+    def operator_eq(self, db_table, descriptor_name, value):
+        """
+        Strict equality operator.
+        """
+        if self.data == "INTEGER":
+            return '("%s"."descriptors"->>\'%s\')::%s = %s' % (
+                db_table, descriptor_name, self.data, self.make_sql_value(value))
+        else:
+            return '("%s"."descriptors"->>\'%s\') = \'%s\'' % (
+                db_table, descriptor_name, self.make_sql_value(value))
+
+    def operator_neq(self, db_table, descriptor_name, value):
+        """
+        Strict inequality operator.
+        """
+        if self.data == "INTEGER":
+            return '("%s"."descriptors"->>\'%s\')::%s != %s' % (
+                db_table, descriptor_name, self.data, self.make_sql_value(value))
+        else:
+            return '("%s"."descriptors"->>\'%s\') != \'%s\'' % (
+                db_table, descriptor_name, self.make_sql_value(value))
+
+    def operator_lte(self, db_table, descriptor_name, value):
+        """
+        Lesser than or equal operator.
+        """
+        if self.data == "INTEGER":
+            if self.null:
+                return 'COALESCE(("%s"."descriptors"->>\'%s\')::%s, 0) <= %s' % (
+                    db_table, descriptor_name, self.data, self.make_sql_value(value))
+            else:
+                return '("%s"."descriptors"->>\'%s\')::%s <= %s' % (
+                    db_table, descriptor_name, self.data, self.make_sql_value(value))
+        else:
+            if self.null:
+                return 'COALESCE(("%s"."descriptors"->>\'%s\')::%s, \'\') <= %s' % (
+                    db_table, descriptor_name, self.data, self.make_sql_value(value))
+            else:
+                return '("%s"."descriptors"->>\'%s\') <= \'%s\'' % (
+                    db_table, descriptor_name, self.make_sql_value(value))
+
+    def operator_lt(self, db_table, descriptor_name, value):
+        """
+        Strict lesser than operator.
+        """
+        if self.data == "INTEGER":
+            if self.null:
+                return 'COALESCE(("%s"."descriptors"->>\'%s\')::%s, 0) < %s' % (
+                    db_table, descriptor_name, self.data, self.make_sql_value(value))
+            else:
+                return '("%s"."descriptors"->>\'%s\')::%s < %s' % (
+                    db_table, descriptor_name, self.data, self.make_sql_value(value))
+        else:
+            if self.null:
+                return 'COALESCE(("%s"."descriptors"->>\'%s\')::%s, \'\') < %s' % (
+                    db_table, descriptor_name, self.data, self.make_sql_value(value))
+            else:
+                return '("%s"."descriptors"->>\'%s\') < \'%s\'' % (
+                    db_table, descriptor_name, self.make_sql_value(value))
+
+    def operator_gte(self, db_table, descriptor_name, value):
+        """
+        Greater than or equal operator.
+        """
+        if self.data == "INTEGER":
+            if self.null:
+                return 'COALESCE(("%s"."descriptors"->>\'%s\')::%s, 0) >= %s' % (
+                    db_table, descriptor_name, self.data, self.make_sql_value(value))
+            else:
+                return '("%s"."descriptors"->>\'%s\')::%s >= %s' % (
+                    db_table, descriptor_name, self.data, self.make_sql_value(value))
+        else:
+            if self.null:
+                return 'COALESCE(("%s"."descriptors"->>\'%s\')::%s, \'\') >= %s' % (
+                    db_table, descriptor_name, self.data, self.make_sql_value(value))
+            else:
+                return '("%s"."descriptors"->>\'%s\') >= \'%s\'' % (
+                    db_table, descriptor_name, self.make_sql_value(value))
+
+    def operator_gt(self, db_table, descriptor_name, value):
+        """
+        Strict greater than operator.
+        """
+        if self.data == "INTEGER":
+            if self.null:
+                return 'COALESCE(("%s"."descriptors"->>\'%s\')::%s, 0) > %s' % (
+                    db_table, self.data, descriptor_name, self.make_sql_value(value))
+            else:
+                return '("%s"."descriptors"->>\'%s\')::%s > %s' % (
+                    db_table, descriptor_name, self.data, self.make_sql_value(value))
+        else:
+            if self.null:
+                return 'COALESCE(("%s"."descriptors"->>\'%s\')::%s, \'\') > %s' % (
+                    db_table, descriptor_name, self.data, self.make_sql_value(value))
+            else:
+                return '("%s"."descriptors"->>\'%s\') > \'%s\'' % (
+                    db_table, descriptor_name, self.make_sql_value(value))
 
 
 class DescriptorFormatTypeManager(object):
@@ -350,7 +537,7 @@ class DescriptorFormatTypeEnumSingle(DescriptorFormatType):
     def related_model(self, descriptor_type_format):
         return DescriptorValue
 
-    def select(self, db_table, descriptor_name, table_alias):
+    def join(self, db_table, descriptor_name, table_alias):
         language = "'" + translation.get_language() + "'"
 
         on_clauses = [
@@ -358,7 +545,7 @@ class DescriptorFormatTypeEnumSingle(DescriptorFormatType):
             '"%s"."language" = %s' % (table_alias, language)
         ]
 
-        return on_clauses
+        return " AND ".join(on_clauses)
 
 
 class DescriptorFormatTypeEnumPair(DescriptorFormatType):
@@ -441,7 +628,7 @@ class DescriptorFormatTypeEnumPair(DescriptorFormatType):
     def related_model(self, descriptor_type_format):
         return DescriptorValue
 
-    def select(self, db_table, descriptor_name, table_alias):
+    def join(self, db_table, descriptor_name, table_alias):
         language = "'" + translation.get_language() + "'"
 
         on_clauses = [
@@ -449,7 +636,7 @@ class DescriptorFormatTypeEnumPair(DescriptorFormatType):
             '"%s"."language" = %s' % (table_alias, language)
         ]
 
-        return on_clauses
+        return " AND ".join(on_clauses)
 
 
 class DescriptorFormatTypeEnumOrdinal(DescriptorFormatType):
@@ -525,7 +712,7 @@ class DescriptorFormatTypeEnumOrdinal(DescriptorFormatType):
     def related_model(self, descriptor_type_format):
         return DescriptorValue
 
-    def select(self, db_table, descriptor_name, table_alias):
+    def join(self, db_table, descriptor_name, table_alias):
         language = "'" + translation.get_language() + "'"
 
         on_clauses = [
@@ -533,7 +720,7 @@ class DescriptorFormatTypeEnumOrdinal(DescriptorFormatType):
             '"%s"."language" = %s' % (table_alias, language)
         ]
 
-        return on_clauses
+        return " AND ".join(on_clauses)
 
 
 class DescriptorFormatTypeBoolean(DescriptorFormatType):
@@ -609,10 +796,14 @@ class DescriptorFormatTypeNumeric(DescriptorFormatType):
         except validictory.MultipleValidationError as e:
             return str(e)
 
-        # @todo "unit" must be in the allowed list
-
         if descriptor_type_format['unit'] != "custom" and descriptor_type_format['custom_unit'] != "":
             return _("Custom unit can only be defined is unit is set to custom (unit, custom_unit)")
+
+        # "unit" must be in the allowed list
+        if not descriptor_type_format['custom_unit']:
+            format_unit = DescriptorFormatUnitManager.get(descriptor_type_format['unit'])
+            if not format_unit:
+                return _("The unit must refers to a valid predefined value (unit)")
 
         return None
 
@@ -918,7 +1109,7 @@ class DescriptorFormatTypeImpreciseDate(DescriptorFormatType):
     def check(self, descriptor_type_format):
         return None
 
-    def greater_than_equal(self, descriptor_type_format, value, descriptor_model_type):
+    def operator_gte(self, descriptor_type_format, value, descriptor_model_type):
         validate_result = self.validate(descriptor_type_format, value, descriptor_model_type)
         if validate_result is not None:
             return validate_result
@@ -931,7 +1122,7 @@ class DescriptorFormatTypeImpreciseDate(DescriptorFormatType):
                 Q(**{'descriptors__%s__1__gte' % descriptor_model_type['descriptor_code']: value[1]}) &
                 Q(**{'descriptors__%s__2__gte' % descriptor_model_type['descriptor_code']: value[2]}))
 
-    def less_than_equal(self, descriptor_type_format, value, descriptor_model_type):
+    def operator_lte(self, descriptor_type_format, value, descriptor_model_type):
         validate_result = self.validate(descriptor_type_format, value, descriptor_model_type)
         if validate_result is not None:
             return validate_result
@@ -945,7 +1136,7 @@ class DescriptorFormatTypeImpreciseDate(DescriptorFormatType):
             {'descriptors__%s__1__lte' % descriptor_model_type['descriptor_code']: value[1]}) & self.MyQ(
             {'descriptors__%s__2__lte' % descriptor_model_type['descriptor_code']: value[2]})
 
-    def equal(self, descriptor_type_format, value, descriptor_model_type):
+    def operator_eq(self, descriptor_type_format, value, descriptor_model_type):
         validate_result = self.validate(descriptor_type_format, value, descriptor_model_type)
         if validate_result is not None:
             return validate_result

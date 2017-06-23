@@ -30,7 +30,7 @@ class CollGateDescriptor(ApplicationMain):
         # different types of format for type of descriptors for this module
         self.format_types = []
 
-        # different units of format for type of descriptors @todo
+        # different units of format for type of descriptors
         self.format_units = []
 
     def ready(self):
@@ -72,8 +72,18 @@ class CollGateDescriptor(ApplicationMain):
         ]
 
         # and register them
-        from .descriptorformattype import DescriptorFormatTypeManager
-        DescriptorFormatTypeManager.register(self.format_types)
+        descriptorformattype.DescriptorFormatTypeManager.register(self.format_types)
+
+        # registers standard units
+        from . import descriptorformatunit
+
+        for element in dir(descriptorformatunit):
+            attr = getattr(descriptorformatunit, element)
+            if type(attr) is type and descriptorformatunit.DescriptorFormatUnit in attr.__bases__:
+                self.format_units.append(attr())
+
+        # and register them
+        descriptorformatunit.DescriptorFormatUnitManager.register(self.format_units)
 
         # descriptor menu
         menu_descriptor = ModuleMenu('administration', _('Administration'), order=999, auth=AUTH_STAFF)
