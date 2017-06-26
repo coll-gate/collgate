@@ -16,6 +16,24 @@ from django.db.models.fields.related_descriptors import ForwardManyToOneDescript
 from descriptor.descriptorcolumns import get_description
 
 
+class CursorQueryError(Exception):
+
+    def __init__(self, message):
+        super(Exception, self).__init__(message)
+
+
+class CursorQueryValueError(CursorQueryError):
+
+    def __init__(self, message):
+        super(Exception, self).__init__("Value error: " + message)
+
+
+class CursorQueryOperatorError(CursorQueryError):
+
+    def __init__(self, message):
+        super(Exception, self).__init__("Operator error: " + message)
+
+
 class CursorQuery(object):
     """
     Cursor query is the main object to handle complex queries onto any object based on describable.
@@ -366,24 +384,24 @@ class CursorQuery(object):
         self._cursor_built = True
 
     def _parse_and_add_filters(self, filters, depth):
-        if depth > 3:
-            raise ValueError('Filter max depth allowed is 3')
+        if depth >= 3:
+            raise CursorQueryError('Filter max depth allowed is 3')
 
         select_related = []
 
         for lfilter in filters:
-            filter_type = lfilter.get('type', 'term')
+            lfilter_type = type(lfilter)
+            filter_type = lfilter.get('type', None) if lfilter_type is dict else 'sub' if lfilter_type in (tuple, list) else None
 
             # sub
             if filter_type == 'sub':
-                items = lfilter.get('items', [])
-                self._parse_and_add_filter(items, depth+1)
+                self._parse_and_add_filters(lfilter, depth+1)
 
             # term
             elif filter_type == 'term':
                 field = lfilter.get('field', None)
                 if not field:
-                    raise ValueError('Undefined field name')
+                    raise CursorQueryValueError('Undefined field name')
 
                 f = field.lstrip('#')
                 is_descriptor = field[0] == '#' or field[1] == '#'
@@ -395,6 +413,13 @@ class CursorQuery(object):
                 elif f in self.model_fields:
                     if self.model_fields[f][0] == 'FK':
                         select_related.append(f)
+
+            # op
+            elif filter_type == 'op':
+                pass
+
+            else:
+                raise CursorQueryError('Unrecognized filter type')
 
         # add for join
         self.add_select_related(select_related)
@@ -444,29 +469,41 @@ class CursorQuery(object):
         if filters is None:
             filters = self._filter_clauses
 
-        if depth > 3:
-            raise ValueError('Filter max depth allowed is 3')
+        if depth >= 3:
+            raise CursorQueryError('Filter max depth allowed is 3')
 
         db_table = self._model._meta.db_table
         lqs = []
+        previous_type = 'op'
 
         for lfilter in filters:
-            filter_type = lfilter.get('type', 'term')
+            lfilter_type = type(lfilter)
+            filter_type = lfilter.get('type', None) if lfilter_type is dict else 'sub' if lfilter_type in (tuple, list) else None
 
             if filter_type == 'sub':
-                pass  # @todo sub query
+                res = self._process_filter(lfilter, depth + 1)
+                if res:
+                    # two consecutive terms, insert a default AND operator
+                    if previous_type != 'op':
+                        lqs.append(" AND ")
+
+                    lqs.append(res)
             # term
             elif filter_type == 'term':
+                # two consecutive terms, insert a default AND operator
+                if previous_type != 'op':
+                    lqs.append(" AND ")
+
                 field = lfilter.get('field', None)
                 if not field:
-                    raise ValueError('Undefined field name')
+                    raise CursorQueryValueError('Undefined field name')
 
                 value = lfilter.get('value', None)
                 cmp = lfilter.get('op', '=').lower()
                 op = self.OPERATORS_MAP.get(cmp)
 
                 if not op:
-                    raise ValueError('Unrecognized term operator')
+                    raise CursorQueryValueError('Unrecognized term operator')
 
                 if cmp in ('contains', 'icontains'):
                     value = "%%" + value + "%%"
@@ -492,17 +529,19 @@ class CursorQuery(object):
                         lqs.append(self._cast_default_type(db_table, f, op, value))
             # operator
             elif filter_type == 'op':
-                value = lfilter.get('value', '')
-                if value in ('and', 'AND', '&&'):
+                # two consecutive operators, raise a value error
+                if previous_type == 'op':
+                    raise CursorQueryOperatorError('Two consecutive operators items')
+
+                value = lfilter.get('value', '').lower()
+                if value in ('and', '&&'):
                     lqs.append(' AND ')
-                elif value in ('or', 'OR', '||'):
+                elif value in ('or', '||'):
                     lqs.append(' OR ')
                 else:
-                    raise ValueError('Unrecognized composition operator')
+                    raise CursorQueryOperatorError('Unrecognized composition operator')
 
-            items = lfilter.get('items', None)
-            if items:
-                lqs.append(self._process_filter(items, depth+1))
+            previous_type = filter_type
 
         if lqs:
             result = "(" + "".join(lqs) + ")"
@@ -723,7 +762,7 @@ class CursorQuery(object):
         """
 
         if self._query_set is not None:
-            raise TypeError("Cannot call select_related() after iterate over results")
+            raise CursorQueryError("Cannot call select_related() after iterate over results")
 
         if fields == (None,):
             self._select_related = False
@@ -762,8 +801,8 @@ class CursorQuery(object):
             self._process_cursor()
             self._process_order_by()
             self._process_filter()
-        except KeyError:
-            raise
+        except KeyError as e:
+            raise CursorQueryError(e)
 
         _select = "SELECT DISTINCT " if self.query_distinct else "SELECT " + ", ".join(self.query_select)
         _from = "FROM " + " ".join(self.query_from)
