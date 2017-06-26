@@ -37,10 +37,12 @@ var View = Marionette.ItemView.extend({
 
     onFilter: function () {
         if (this.validateAccessionName()) {
-            this.collection.filters = {
-                name: this.ui.accession_name.val().trim(),
-                method: "icontains"
-            };
+            this.collection.filters = [{
+                type: 'term',
+                field: 'name',
+                value: this.ui.accession_name.val().trim(),
+                op: "icontains"
+            }];
 
             this.collection.fetch({reset: true});
         }

@@ -18,10 +18,37 @@ from descriptor.descriptorcolumns import get_description
 
 class CursorQuery(object):
     """
-    Make easier the usage of cursor for pagination in query set.
+    Cursor query is the main object to handle complex queries onto any object based on describable.
+    It allow to sort and process the pagination with a cursor:limit, and allow complex filters.
+    It is like the Django query object but with some extension about support of JSONB fields.
+
+    The field "descriptors" is supported using a prefix # plus the name of its descriptor code (key).
+    Joins are done automatically when necessary.
+
+    Descriptor format type objects and models are used to performs the correct SQL queries.
+
+    So this is the way to use for make queries.
     """
 
     FIELDS_SEP = "->"
+
+    # need to escape % because of django raw
+    OPERATORS_MAP = {
+        '=': '=',
+        'eq': '=',
+        '!=': '!=',
+        'neq': '!=',
+        'gte': '>=',
+        'gt': '>',
+        'lte': '<=',
+        'lt': '<',
+        'contains': 'LIKE',
+        'icontains': 'ILIKE',
+        'startswith': 'LIKE',
+        'istartswith': 'ILIKE',
+        'endswith': 'LIKE',
+        'iendswith': 'ILIKE'
+    }
 
     def __init__(self, model):
         self._model = model
@@ -47,6 +74,8 @@ class CursorQuery(object):
 
         self._select_related = False
         self._prefetch_related = []
+
+        self._filter_clauses = []
 
         db_table = model._meta.db_table
 
@@ -75,6 +104,13 @@ class CursorQuery(object):
             # @todo maybe for DATE (idem for join)
 
     def cursor(self, cursor, cursor_fields=('id',)):
+        """
+        Defines the cursor at the previous latest element in way to get the next elements.
+
+        :param cursor: Next cursor from the latest query set or None for starting.
+        :param cursor_fields: Ordered name of the fields of the cursor.
+        :return: self
+        """
         self._cursor = cursor
         self._cursor_fields = cursor_fields
 
@@ -95,7 +131,7 @@ class CursorQuery(object):
         self.add_select_related(select_related)
         return self
 
-    def _perform_cursor(self):
+    def _process_cursor(self):
         db_table = self._model._meta.db_table
 
         if self._cursor:
@@ -194,6 +230,15 @@ class CursorQuery(object):
             return "'" + value.replace("'", "''") + "'"
 
     def order_by(self, *args):
+        """
+        Defines the order by fields. The order of the field is important.
+        Prefix by + or - for ordering ASC or DESC. Default is + when it is not defined.
+        Prefix the name by # when it is a descriptor field. The -> separator permit
+        to order by sub-fields (@see cursor).
+
+        :param args: Array-s or string-s objects.
+        :return: self
+        """
         self._order_by = []
 
         for arg in args:
@@ -248,7 +293,6 @@ class CursorQuery(object):
                 else:
                     cast_type = self.model_fields[f][1]
 
-            # @todo must use descriptor comparators
             if is_descriptor:
                 if self.FIELDS_SEP in f:
                     ff = f.split(self.FIELDS_SEP)
@@ -321,30 +365,160 @@ class CursorQuery(object):
 
         self._cursor_built = True
 
-    def filter(self, filters):
-        # @todo OR AND structured criterion
-        name = filters.get('name', '')
-        field = "name"
+    def _parse_and_add_filters(self, filters, depth):
+        if depth > 3:
+            raise ValueError('Filter max depth allowed is 3')
 
-        db_table = self._model._meta.db_table
+        select_related = []
 
-        # name search based on synonyms
-        if filters.get('method', 'icontains') == 'icontains':
-            op = "ILIKE"
-            value = "'%%" + name.replace("'", "''") + "%%'"  # need to escape % because of django raw
-        else:
-            op = "="
+        for lfilter in filters:
+            filter_type = lfilter.get('type', 'term')
 
-        where = '"%s"."%s" %s %s' % (db_table, field, op, value)
+            # sub
+            if filter_type == 'sub':
+                items = lfilter.get('items', [])
+                self._parse_and_add_filter(items, depth+1)
 
-        # @todo if table is from inner join or model, and like, type (integer...)
-        # and what now about descriptor comparator ????
-        self.query_where.append(where)
+            # term
+            elif filter_type == 'term':
+                field = lfilter.get('field', None)
+                if not field:
+                    raise ValueError('Undefined field name')
+
+                f = field.lstrip('#')
+                is_descriptor = field[0] == '#' or field[1] == '#'
+
+                if is_descriptor:
+                    # only if sub-value of descriptor
+                    if self.FIELDS_SEP in f:
+                        select_related.append('#' + f)
+                elif f in self.model_fields:
+                    if self.model_fields[f][0] == 'FK':
+                        select_related.append(f)
+
+        # add for join
+        self.add_select_related(select_related)
+
+    def filter(self, *filters):
+        """
+        Defines criterion to filters. The max depth of lists is by default 3.
+
+        :param filters: A structure compound of lists and sub-lists.
+        :return: self
+        """
+        # @todo is need validation here ?
+        for lfilter in filters:
+
+            ltype = type(lfilter)
+
+            if ltype is str:
+                pass
+            elif ltype is tuple or ltype is list:
+                self._parse_and_add_filters(lfilter, 0)
+                self._filter_clauses.extend(lfilter)
+            elif ltype is dict:
+                pass
+
+        # name = filters.get('name', '')
+        # field = "name"
+        #
+        # db_table = self._model._meta.db_table
+        #
+        # try:
+        #     pass
+        # except ValueError:
+        #     return self
+        #
+        # # name search based on synonyms
+        # if filters.get('method', 'icontains') == 'icontains':
+        #     op = "ILIKE"
+        #     value = "'%%" + name.replace("'", "''") + "%%'"  # need to escape % because of django raw
+        # else:
+        #     op = "="
+        #
+        # filters = '"%s"."%s" %s %s' % (db_table, field, op, value)
 
         return self
 
+    def _process_filter(self, filters=None, depth=0):
+        if filters is None:
+            filters = self._filter_clauses
+
+        if depth > 3:
+            raise ValueError('Filter max depth allowed is 3')
+
+        db_table = self._model._meta.db_table
+        lqs = []
+
+        for lfilter in filters:
+            filter_type = lfilter.get('type', 'term')
+
+            if filter_type == 'sub':
+                pass  # @todo sub query
+            # term
+            elif filter_type == 'term':
+                field = lfilter.get('field', None)
+                if not field:
+                    raise ValueError('Undefined field name')
+
+                value = lfilter.get('value', None)
+                cmp = lfilter.get('op', '=').lower()
+                op = self.OPERATORS_MAP.get(cmp)
+
+                if not op:
+                    raise ValueError('Unrecognized term operator')
+
+                if cmp in ('contains', 'icontains'):
+                    value = "%%" + value + "%%"
+                elif cmp in ('startswith', 'istartswith'):
+                    value = value + "%%"
+                elif cmp in ('endswith', 'iendswith'):
+                    value = "%%" + value
+
+                f = field.lstrip('#')
+                is_descriptor = field[0] == '#' or field[1] == '#'
+
+                if is_descriptor:
+                    if self.FIELDS_SEP in f:
+                        ff = f.split(self.FIELDS_SEP)
+                        lqs.append(self._cast_descriptor_sub_type(ff[0], ff[1], op, value))
+                    else:
+                        lqs.append(self._cast_descriptor_type(db_table, f, op, value))
+                else:
+                    if self.FIELDS_SEP in f:
+                        ff = f.split(self.FIELDS_SEP)
+                        lqs.append(self._cast_default_sub_type(ff[0], ff[1], op, value))
+                    else:
+                        lqs.append(self._cast_default_type(db_table, f, op, value))
+            # operator
+            elif filter_type == 'op':
+                value = lfilter.get('value', '')
+                if value in ('and', 'AND', '&&'):
+                    lqs.append(' AND ')
+                elif value in ('or', 'OR', '||'):
+                    lqs.append(' OR ')
+                else:
+                    raise ValueError('Unrecognized composition operator')
+
+            items = lfilter.get('items', None)
+            if items:
+                lqs.append(self._process_filter(items, depth+1))
+
+        if lqs:
+            result = "(" + "".join(lqs) + ")"
+        else:
+            result = None
+
+        if depth == 0 and result:
+            self.query_where.append(result)
+
+        return result
+
     @property
     def prev_cursor(self):
+        """
+        Return the build cursor from the query set results, used to get previous subset of results.
+        """
         if not self._cursor_built:
             self._build_cursor()
 
@@ -352,6 +526,9 @@ class CursorQuery(object):
 
     @property
     def next_cursor(self):
+        """
+        Return the build cursor from the query set results, used to get next subset of results.
+        """
         if not self._cursor_built:
             self._build_cursor()
 
@@ -384,25 +561,6 @@ class CursorQuery(object):
     def _cast_descriptor_type(self, table_name, descriptor_name, operator, value):
         description = self._description[descriptor_name]
         return description['handler'].operator(operator, table_name, descriptor_name, value)
-        #
-        # cast_type = description['handler'].data
-        # final_value = self._make_value(value, cast_type)
-        # coalesce_value = self._make_value(None, cast_type)
-        # can_null = description['handler'].null
-        #
-        # if can_null:
-        #     if cast_type != "TEXT":
-        #         return 'COALESCE(CAST("%s"."descriptors"->>\'%s\' AS %s), %s) %s %s' % (
-        #             table_name, descriptor_name, cast_type, coalesce_value, operator, final_value)
-        #     else:
-        #         return 'COALESCE(("%s"."descriptors"->>\'%s\'), %s) %s %s' % (
-        #             table_name, descriptor_name, coalesce_value, operator, final_value)
-        # else:
-        #     if cast_type != "TEXT":
-        #         return 'CAST("%s"."descriptors"->>\'%s\' AS %s) %s %s' % (
-        #             table_name, descriptor_name, cast_type, operator, final_value)
-        #     else:
-        #         return '("%s"."descriptors"->>\'%s\') %s %s' % (table_name, descriptor_name, operator, final_value)
 
     def _cast_descriptor_sub_type(self, descriptor_name, field_name, operator, value):
         # descriptor_name can contains some '.', replaces them by '_'
@@ -510,10 +668,21 @@ class CursorQuery(object):
         return self
 
     def limit(self, limit):
+        """
+        Query set number of results limit (SQL LIMIT).
+
+        :param limit: Integer
+        :return: self
+        """
         self.query_limit = limit
         return self
 
     def distinct(self):
+        """
+        Query set SELECT DISTINCT.
+
+        :return: self
+        """
         self.query_distinct = True
         return self
 
@@ -546,6 +715,13 @@ class CursorQuery(object):
         self._select_related = field_dict
 
     def select_related(self, *fields):
+        """
+        Make left join to models related by fields.
+
+        :param fields:
+        :return: self
+        """
+
         if self._query_set is not None:
             raise TypeError("Cannot call select_related() after iterate over results")
 
@@ -558,10 +734,22 @@ class CursorQuery(object):
         return self
 
     def prefetch_related(self, prefetch):
+        """
+        Make additional queries for many-to-many related.
+
+        :param prefetch:
+        :return: self
+        """
         self._prefetch_related.append(prefetch)
         return self
 
     def sql(self):
+        """
+        Build the SQL query that will be performed directly if there is some prefetch related,
+        or at iterator called else.
+
+        :return: Query set
+        """
         # does not perform twice
         if self._query_set is not None:
             return self._query_set
@@ -571,14 +759,14 @@ class CursorQuery(object):
             self.join(related_model, related_fields)
 
         try:
-            self._perform_cursor()
+            self._process_cursor()
             self._process_order_by()
+            self._process_filter()
         except KeyError:
             raise
 
         _select = "SELECT DISTINCT " if self.query_distinct else "SELECT " + ", ".join(self.query_select)
         _from = "FROM " + " ".join(self.query_from)
-        # _where = "WHERE " + " OR ".join(self.query_where)
         _order_by = "ORDER BY " + ", ".join(self.query_order_by)
         _limit = "LIMIT %i" % self.query_limit
 
@@ -619,3 +807,31 @@ class CursorQuery(object):
             prefetch_related_objects(self._query_set, *self._prefetch_related)
 
         return self._query_set
+
+    def get(self):
+        """
+        Get a single element for the query. Raise a model DoesNotExists exception if there is no results, or a
+        MultipleObjectsReturned if there is more than 1 unique result.
+
+        :return: The unique model instance.
+        """
+        if self._query_set is None:
+            self.sql()
+
+        if len(self._query_set) == 0:
+            raise self._model.DoesNotExists()
+        elif len(self._query_set) > 1:
+            raise self.MultipleObjectsReturned()
+
+        instance = self._query_set[0]
+        for field, (related_model, model_fields) in self._related_tables.items():
+            if field.startswith('descr_'):
+                continue
+
+            new_model = related_model(id=getattr(instance, "%s_id" % field))
+            setattr(instance, "_%s_cache" % field, new_model)
+
+            for related_field in model_fields:
+                setattr(new_model, related_field, getattr(instance, "%s_%s" % (field, related_field)))
+
+        return instance

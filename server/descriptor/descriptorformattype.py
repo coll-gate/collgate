@@ -132,9 +132,11 @@ class DescriptorFormatType(object):
 
     def make_sql_value(self, value):
         """
+        Convert the given value for a SQL query according to the format of the descriptor and about the
+        meaning of the NULL value.
 
-        :param value:
-        :return:
+        :param value: Value to convert.
+        :return: Converted value a string.
         """
         if value is None:
             if self.data == 'INTEGER':
@@ -169,7 +171,7 @@ class DescriptorFormatType(object):
         :param db_table: Name of the table.
         :param descriptor_name: Name of the descriptor.
         :param value: Value previously validated or None.
-        :return: String of the clause-s or None.
+        :return: String of the clause-s or raise a ValueError exception.
         """
         if operator == '=' or operator == 'eq':
             return self.operator_eq(db_table, descriptor_name, value)
@@ -188,7 +190,7 @@ class DescriptorFormatType(object):
         elif operator == 'LIKE' or operator == 'contains':
             return self.operator_like(db_table, descriptor_name, value)
         else:
-            return None
+            raise ValueError('Unrecognized operator')
 
     def operator_ilike(self, db_table, descriptor_name, value):
         """
