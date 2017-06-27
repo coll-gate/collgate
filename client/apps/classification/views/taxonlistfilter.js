@@ -53,7 +53,7 @@ var View = Marionette.ItemView.extend({
         if (v.length > 0 && v.length < 3) {
             $(this.ui.taxon_name).validateField('failed', gt.gettext('3 characters min'));
             return false;
-        } else if (this.ui.taxon_name.val().length == 0) {
+        } else if (this.ui.taxon_name.val().length === 0) {
             $(this.ui.taxon_name).cleanField();
             return true;
         } else {

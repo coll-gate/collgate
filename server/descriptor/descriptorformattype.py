@@ -225,7 +225,7 @@ class DescriptorFormatType(object):
         if self.data == "INTEGER":
             return None
         else:
-            return '("%s"."descriptors"->>\'%s\') LIKE \'%s\'' % (
+            return '("%s"."descriptors"->>\'%s\') LIKE %s' % (
                 db_table, descriptor_name, self.make_sql_value(value))
 
     def operator_ilike(self, db_table, descriptor_name, value):
@@ -235,7 +235,7 @@ class DescriptorFormatType(object):
         if self.data == "INTEGER":
             return None
         else:
-            return '("%s"."descriptors"->>\'%s\') ILIKE \'%s\'' % (
+            return '("%s"."descriptors"->>\'%s\') ILIKE %s' % (
                 db_table, descriptor_name, self.make_sql_value(value))
 
     def operator_eq(self, db_table, descriptor_name, value):
@@ -246,7 +246,7 @@ class DescriptorFormatType(object):
             return '("%s"."descriptors"->>\'%s\')::%s = %s' % (
                 db_table, descriptor_name, self.data, self.make_sql_value(value))
         else:
-            return '("%s"."descriptors"->>\'%s\') = \'%s\'' % (
+            return '("%s"."descriptors"->>\'%s\') = %s' % (
                 db_table, descriptor_name, self.make_sql_value(value))
 
     def operator_neq(self, db_table, descriptor_name, value):
@@ -257,7 +257,7 @@ class DescriptorFormatType(object):
             return '("%s"."descriptors"->>\'%s\')::%s != %s' % (
                 db_table, descriptor_name, self.data, self.make_sql_value(value))
         else:
-            return '("%s"."descriptors"->>\'%s\') != \'%s\'' % (
+            return '("%s"."descriptors"->>\'%s\') != %s' % (
                 db_table, descriptor_name, self.make_sql_value(value))
 
     def operator_lte(self, db_table, descriptor_name, value):
@@ -276,7 +276,7 @@ class DescriptorFormatType(object):
                 return 'COALESCE(("%s"."descriptors"->>\'%s\')::%s, \'\') <= %s' % (
                     db_table, descriptor_name, self.data, self.make_sql_value(value))
             else:
-                return '("%s"."descriptors"->>\'%s\') <= \'%s\'' % (
+                return '("%s"."descriptors"->>\'%s\') <= %s' % (
                     db_table, descriptor_name, self.make_sql_value(value))
 
     def operator_lt(self, db_table, descriptor_name, value):
@@ -295,7 +295,7 @@ class DescriptorFormatType(object):
                 return 'COALESCE(("%s"."descriptors"->>\'%s\')::%s, \'\') < %s' % (
                     db_table, descriptor_name, self.data, self.make_sql_value(value))
             else:
-                return '("%s"."descriptors"->>\'%s\') < \'%s\'' % (
+                return '("%s"."descriptors"->>\'%s\') < %s' % (
                     db_table, descriptor_name, self.make_sql_value(value))
 
     def operator_gte(self, db_table, descriptor_name, value):
@@ -314,7 +314,7 @@ class DescriptorFormatType(object):
                 return 'COALESCE(("%s"."descriptors"->>\'%s\')::%s, \'\') >= %s' % (
                     db_table, descriptor_name, self.data, self.make_sql_value(value))
             else:
-                return '("%s"."descriptors"->>\'%s\') >= \'%s\'' % (
+                return '("%s"."descriptors"->>\'%s\') >= %s' % (
                     db_table, descriptor_name, self.make_sql_value(value))
 
     def operator_gt(self, db_table, descriptor_name, value):
@@ -333,7 +333,7 @@ class DescriptorFormatType(object):
                 return 'COALESCE(("%s"."descriptors"->>\'%s\')::%s, \'\') > %s' % (
                     db_table, descriptor_name, self.data, self.make_sql_value(value))
             else:
-                return '("%s"."descriptors"->>\'%s\') > \'%s\'' % (
+                return '("%s"."descriptors"->>\'%s\') > %s' % (
                     db_table, descriptor_name, self.make_sql_value(value))
 
 

@@ -41,6 +41,8 @@ def get_columns_name_for_describable_content_type(request, content_type_name):
         query = True if DescriptorFormatTypeManager.get(descriptor_format).related_model(descriptor_format) else False
 
         columns['#' + dmt.name] = {
+            'group': dmt.descriptor_type.group_id,
+            'type': dmt.descriptor_type_id,
             'label': dmt.get_label(),
             'query': query,
             'format': descriptor_format

@@ -1230,7 +1230,7 @@ var View = Marionette.CompositeView.extend({
                 if (column.custom) {
                     // deferred
                 } else if (column.glyphicon) {
-                    var span = $('<span class="glyphicon %>"></span>');
+                    var span = $('<span class="glyphicon"></span>');
                     span.addClass(column.glyphicon[1]);
                     cell.html(span);
                 } else if (!column.format) {

@@ -17,13 +17,16 @@ var View = Marionette.ItemView.extend({
 
     ui: {
         filter_btn: 'button.accession-filter',
-        accession_name: 'input.accession-name',
+        accession_field: 'select.accession-field',
+        search_value: 'input.search-value',
+        search_group: 'div.search-value-group',
         accession_advanced_search: 'button.accession-advanced-search'
     },
 
     events: {
         'click @ui.filter_btn': 'onFilter',
-        'input @ui.accession_name': 'onAccessionNameInput',
+        'change @ui.accession_field': 'onChangeField',
+        'input @ui.search_value': 'onSearchValue',
         'click @ui.accession_advanced_search': 'onAdvancedSearch'
     },
 
@@ -33,17 +36,65 @@ var View = Marionette.ItemView.extend({
     },
 
     onRender: function() {
+        var columns = this.getOption('columns') || {};
+
+        // append others columns by alpha order
+        var columnsByLabel = [];
+
+        for (var columnName in columns) {
+            var column = columns[columnName];
+            columnsByLabel.push({
+                name: columnName,
+                label: column.label
+            });
+        }
+
+        columnsByLabel.sort(function(a, b) {
+            return a.label.localeCompare(b.label);
+        });
+
+        for (var c in columnsByLabel) {
+            var column = columnsByLabel[c];
+
+            var option = $('<option>' + column.label + '</option>');
+            option.attr('value', column.name);
+
+            this.ui.accession_field.append(option);
+        }
+
+        $(this.ui.accession_field).selectpicker({
+            style: 'btn-default',
+            container: 'body'
+        }).selectpicker('val', 'name');
     },
 
     onFilter: function () {
-        if (this.validateAccessionName()) {
-            this.collection.filters = [{
-                type: 'term',
-                field: 'name',
-                value: this.ui.accession_name.val().trim(),
-                op: "icontains"
-            }];
-            //
+        if (this.validateSearchValue()) {
+            var field = this.ui.accession_field.val();
+            var op = "eq";
+            var value = null;
+
+            if (field === "name") {
+                op = "icontains";
+            }
+
+            if (this.widget) {
+                value = this.widget.values();
+            } else {
+                value = this.ui.search_value.val().trim();
+            }
+
+            if (value !== null) {
+                this.collection.filters = [{
+                    type: 'term',
+                    field: field,
+                    value: value,
+                    op: op
+                }];
+            } else {
+                this.collection.filters = null;
+            }
+
             // this.collection.filters = [{
             //     type: 'term',
             //     field: 'name',
@@ -68,32 +119,57 @@ var View = Marionette.ItemView.extend({
             // }, []]];
 
             this.collection.fetch({reset: true});
+            this.collection.count();
         }
     },
 
-    validateAccessionName: function() {
-        var v = this.ui.accession_name.val().trim();
+    validateSearchValue: function() {
+        var v = this.ui.search_value.val().trim();
+        var field = this.ui.accession_field.val();
+        var column = this.getOption('columns')[field] || {};
 
-        if (v.length > 0 && v.length < 3) {
-            $(this.ui.accession_name).validateField('failed', gt.gettext('3 characters min'));
-            return false;
-        } else if (this.ui.accession_name.val().length === 0) {
-            $(this.ui.accession_name).cleanField();
-            return true;
+        if (field === 'name' || field === 'code')
+        {
+            if (v.length > 0 && v.length < 3) {
+                $(this.ui.search_value).validateField('failed', gt.gettext('3 characters min'));
+                return false;
+            } else if (this.ui.search_value.val().length === 0) {
+                $(this.ui.search_value).cleanField();
+                return true;
+            } else {
+                $(this.ui.search_value).validateField('ok');
+                return true;
+            }
         } else {
-            $(this.ui.accession_name).validateField('ok');
             return true;
         }
     },
 
-    onAccessionNameInput: function () {
-        return this.validateAccessionName();
+    onSearchValue: function () {
+        return this.validateSearchValue();
     },
 
-    onAdvancedSearch: function () {
-        alert("@todo");
+    onChangeField: function () {
+        var field = this.ui.accession_field.val();
+        var column = this.getOption('columns')[field] || {};
+
+        if (this.widget) {
+            this.widget.destroy();
+            this.widget = null;
+        }
+
+        this.ui.search_group.empty();
+
+        if (column.format) {
+            this.widget = application.descriptor.widgets.newElement(column.format.type);
+            if (this.widget) {
+                this.widget.create(column.format, this.ui.search_group, false, column.group, column.type);
+            }
+        } else {
+            var input = $('<input type="text" class="search-value form-control" name="search-value"/>');
+            this.ui.search_group.append(input);
+        }
     }
 });
 
 module.exports = View;
-

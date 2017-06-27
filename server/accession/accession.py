@@ -39,6 +39,11 @@ class RestAccessionSearch(RestAccessionAccession):
     suffix = 'search'
 
 
+class RestAccessionAccessionCount(RestAccessionAccession):
+    regex = r'^count/$'
+    name = 'count'
+
+
 class RestAccessionId(RestAccessionAccession):
     regex = r'^(?P<acc_id>[0-9]+)/$'
     suffix = 'id'
@@ -148,6 +153,26 @@ def create_accession(request):
     }
 
     return HttpResponseRest(request, response)
+
+
+@RestAccessionAccessionCount.def_auth_request(Method.GET, Format.JSON, perms={
+    'accession.list_accession': _("You are not allowed to list the accessions")
+})
+def get_accession_list(request):
+    from main.cursor import CursorQuery
+    cq = CursorQuery(Accession)
+
+    if request.GET.get('filters'):
+        filters = json.loads(request.GET['filters'])
+        cq.filter(filters)
+
+    count = cq.count()
+
+    results = {
+        'count': count
+    }
+
+    return HttpResponseRest(request, results)
 
 
 @RestAccessionAccession.def_auth_request(Method.GET, Format.JSON, perms={

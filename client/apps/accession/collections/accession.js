@@ -48,6 +48,28 @@ var Collection = Backbone.Collection.extend({
         }
 
         return Backbone.Collection.prototype.fetch.call(this, opts);
+    },
+
+    count: function(options) {
+        options || (options = {});
+        var data = (options.data || {});
+
+        var opts = _.clone(options);
+        opts.data = data;
+
+        if (this.filters) {
+            opts.data.filters = JSON.stringify(this.filters)
+        }
+
+        $.ajax({
+            type: "GET",
+            url: this.url + 'count/',
+            dataType: 'json',
+            data: opts.data,
+            collection: this
+        }).done(function (data) {
+            this.collection.trigger('count', data.count);
+        });
     }
 });
 

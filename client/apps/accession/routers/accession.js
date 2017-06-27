@@ -45,10 +45,14 @@ var Router = Marionette.AppRouter.extend({
             var accessionListView = new AccessionListView({collection : collection, columns: data[0].columns});
 
             defaultLayout.getRegion('content').show(accessionListView);
-            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: accessionListView}));
-        });
+            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({
+                collection: collection,
+                targetView: accessionListView
+            }));
 
-        defaultLayout.getRegion('bottom').show(new AccessionListFooterView({collection: collection}));
+            defaultLayout.getRegion('bottom').show(new AccessionListFooterView({
+                collection: collection, columns: data[0].columns}));
+        });
     },
 
     getAccession : function(id, tab) {

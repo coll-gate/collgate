@@ -9,7 +9,7 @@
 # @details
 
 from django.contrib.postgres.fields import JSONField
-from django.db import models
+from django.db import models, ProgrammingError, connection
 from django.db.models import prefetch_related_objects
 from django.db.models.fields.related_descriptors import ForwardManyToOneDescriptor
 
@@ -68,7 +68,7 @@ class CursorQuery(object):
         'iendswith': 'ILIKE'
     }
 
-    def __init__(self, model):
+    def __init__(self, model, db='default'):
         self._model = model
         self._query_set = None
         self._order_by = ('id',)
@@ -708,18 +708,21 @@ class CursorQuery(object):
         if self._query_set is None:
             self.sql()
 
-        for instance in self._query_set:
-            for field, (related_model, model_fields) in self._related_tables.items():
-                if field.startswith('descr_'):
-                    continue
+        try:
+            for instance in self._query_set:
+                for field, (related_model, model_fields) in self._related_tables.items():
+                    if field.startswith('descr_'):
+                        continue
 
-                new_model = related_model(id=getattr(instance, "%s_id" % field))
-                setattr(instance, "_%s_cache" % field, new_model)
+                    new_model = related_model(id=getattr(instance, "%s_id" % field))
+                    setattr(instance, "_%s_cache" % field, new_model)
 
-                for related_field in model_fields:
-                    setattr(new_model, related_field, getattr(instance, "%s_%s" % (field, related_field)))
+                    for related_field in model_fields:
+                        setattr(new_model, related_field, getattr(instance, "%s_%s" % (field, related_field)))
 
-            yield instance
+                yield instance
+        except ProgrammingError as e:
+            raise CursorQueryError('Invalid query arguments')
 
     def add_select_related(self, fields):
         if isinstance(self._select_related, bool):
@@ -773,8 +776,9 @@ class CursorQuery(object):
             return self._query_set
 
         # perform joins using select_related
-        for related_model, related_fields in self._select_related.items():
-            self.join(related_model, related_fields)
+        if type(self._select_related) is list:
+            for related_model, related_fields in self._select_related.items():
+                self.join(related_model, related_fields)
 
         try:
             self._process_cursor()
@@ -821,6 +825,8 @@ class CursorQuery(object):
                 self._query_set = list(self._query_set)
             except IndexError:
                 self._query_set = list()
+            except ProgrammingError:
+                raise CursorQueryError('Invalid query arguments')
 
             prefetch_related_objects(self._query_set, *self._prefetch_related)
 
@@ -853,3 +859,48 @@ class CursorQuery(object):
                 setattr(new_model, related_field, getattr(instance, "%s_%s" % (field, related_field)))
 
         return instance
+
+    def count(self):
+        """
+        Only does the count of the number of results.
+
+        :return: Integer count value.
+        """
+        # perform joins using select_related, like for normal SQL but does not perform the ORDER BY and LIMIT
+        if type(self._select_related) is list:
+           for related_model, related_fields in self._select_related.items():
+                self.join(related_model, related_fields)
+
+        try:
+            self._process_cursor()
+            self._process_filter()
+        except KeyError as e:
+            raise CursorQueryError(e)
+
+        _select = "SELECT DISTINCT COUNT(*)" if self.query_distinct else "SELECT COUNT(*)"   # + ", ".join(self.query_select)
+        _from = "FROM " + " ".join(self.query_from)
+
+        if self.query_filters:
+            if self.query_where:
+                _where = "WHERE (%s) AND (%s)" % (" AND ".join(self.query_filters), " OR ".join(self.query_where))
+            else:
+                _where = "WHERE " + " AND ".join(self.query_filters)
+        else:
+            _where = "WHERE " + " OR ".join(self.query_where)
+
+        if self.query_where or self.query_filters:
+            sql = " ".join([_select, _from, _where])
+        else:
+            sql = _select
+
+            if _from:
+                sql = sql + " " + _from
+
+            if self.query_where or self.query_filters:
+                sql = sql + " " + _where
+
+        cursor = connection.cursor()
+        cursor.execute(sql)
+        row = cursor.fetchone()
+
+        return row[0]
