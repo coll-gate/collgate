@@ -1,6 +1,6 @@
 # -*- coding: utf-8; -*-
 #
-# @file geolocation_views.py
+# @file geolocation.py
 # @brief 
 # @author Medhi BOULNEMOUR (INRA UMR1095)
 # @date 2017-01-03

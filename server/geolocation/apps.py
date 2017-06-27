@@ -53,7 +53,7 @@ class CollGateGeolocation(ApplicationMain):
         geolocation_module = Module('geolocation', base_url='coll-gate')
         geolocation_module.include_urls((
             'base',
-            'geolocation_views'
+            'geolocation'
             )
         )
 

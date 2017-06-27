@@ -155,7 +155,7 @@ msgstr "Nom de méta-modèle de descripteur déjà utilisé"
 #: ../../../views/descriptormodeldetail.js:63
 #: ../../../views/descriptortypedetailslayout.js:111
 msgid "Done"
-msgstr "Fait"
+msgstr "Terminé"
 
 #: ../../../views/descriptormodeladd.js:73
 msgid "Name for model of descriptor already in usage"
@@ -194,7 +194,7 @@ msgstr "Impossible de réordonner les panels de descripters"
 
 #: ../../../views/descriptortype.js:72
 msgid "Descriptor can not contain a list of values"
-msgstr ""
+msgstr "Le descripteur ne peut pas contenir une liste de valeurs"
 
 #: ../../../views/descriptortype.js:81
 msgid "Some values exists for this type of descriptor"
