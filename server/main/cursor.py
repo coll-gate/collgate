@@ -431,9 +431,7 @@ class CursorQuery(object):
         :param filters: A structure compound of lists and sub-lists.
         :return: self
         """
-        # @todo is need validation here ?
         for lfilter in filters:
-
             ltype = type(lfilter)
 
             if ltype is str:
@@ -443,25 +441,6 @@ class CursorQuery(object):
                 self._filter_clauses.extend(lfilter)
             elif ltype is dict:
                 pass
-
-        # name = filters.get('name', '')
-        # field = "name"
-        #
-        # db_table = self._model._meta.db_table
-        #
-        # try:
-        #     pass
-        # except ValueError:
-        #     return self
-        #
-        # # name search based on synonyms
-        # if filters.get('method', 'icontains') == 'icontains':
-        #     op = "ILIKE"
-        #     value = "'%%" + name.replace("'", "''") + "%%'"  # need to escape % because of django raw
-        # else:
-        #     op = "="
-        #
-        # filters = '"%s"."%s" %s %s' % (db_table, field, op, value)
 
         return self
 

@@ -11,17 +11,17 @@
 <% for (var i = 0; i < columnsList.length; ++i) {
     var columnName = columnsList[i];
     var column = columnsOptions[columnName];
-    if (column === undefined) {
-        %><td name="<%= columnName %>" class="view-batch-details"><%= descriptors[columnName] %></td><%
-    } else if (column.custom) {
+    if (column.custom) {
         %><td name="<%= columnName %>"></td><%
     } else if (column.glyphicon != undefined) {
         %><td name="<%= columnName %>" class="glyph-fixed-column"><span class="glyphicon <%= column.glyphicon[1] %>"></span></td><%
-    } else if (column.format == undefined) {
-        %><td name="<%= columnName %>" class="view-batch-details"><%= arguments[0][columnName] %></td><%
+    } else if (!column.format) {
+        %><td name="<%= columnName %>"><%= arguments[0][columnName] %></td><%
     } else if (column.query) {
         %><td name="<%= columnName %>"></td><%
+    } else if (columnName.startsWith('#') && descriptors[columnName.replace(/^#/, '')] != undefined) {
+        %><td name="<%= columnName %>"><%= descriptors[columnName.replace(/^#/, '')] || "" %></td><%
     } else {
-        %><td name="<%= columnName %>"><%= descriptors[columnName] %></td><%
+        %><td name="<%= columnName %>"></td><%
     }
 } %>

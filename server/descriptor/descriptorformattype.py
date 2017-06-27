@@ -185,22 +185,38 @@ class DescriptorFormatType(object):
             return self.operator_gte(db_table, descriptor_name, value)
         elif operator == '>' or operator == 'gt':
             return self.operator_gt(db_table, descriptor_name, value)
-        elif operator == 'ILIKE' or operator == 'icontains':
-            return self.operator_ilike(db_table, descriptor_name, value)
-        elif operator == 'LIKE' or operator == 'contains':
-            return self.operator_like(db_table, descriptor_name, value)
+        elif operator == 'icontains':
+            return self.operator_icontains(db_table, descriptor_name, value)
+        elif operator == 'contains':
+            return self.operator_contains(db_table, descriptor_name, value)
+        elif operator == 'istartswith':
+            return self.operator_istartswith(db_table, descriptor_name, value)
+        elif operator == 'startswith':
+            return self.operator_startswith(db_table, descriptor_name, value)
+        elif operator == 'iendswith':
+            return self.operator_iendswith(db_table, descriptor_name, value)
+        elif operator == 'endswith':
+            return self.operator_endswith(db_table, descriptor_name, value)
         else:
             raise ValueError('Unrecognized operator')
 
-    def operator_ilike(self, db_table, descriptor_name, value):
-        """
-        Case insensitive text comparison based on ILIKE operator.
-        """
-        if self.data == "INTEGER":
-            return None
-        else:
-            return '("%s"."descriptors"->>\'%s\') ILIKE \'%s\'' % (
-                db_table, descriptor_name, self.make_sql_value(value))
+    def operator_startswith(self, db_table, descriptor_name, value):
+        return self.operator_like(db_table, descriptor_name, value + "%%")
+
+    def operator_istartswith(self, db_table, descriptor_name, value):
+        return self.operator_ilike(db_table, descriptor_name, value + "%%")
+
+    def operator_endswith(self, db_table, descriptor_name, value):
+        return self.operator_like(db_table, descriptor_name, "%%" + value)
+
+    def operator_iendswith(self, db_table, descriptor_name, value):
+        return self.operator_ilike(db_table, descriptor_name, "%%" + value)
+
+    def operator_contains(self, db_table, descriptor_name, value):
+        return self.operator_like(db_table, descriptor_name, "%%" + value + "%%")
+
+    def operator_icontains(self, db_table, descriptor_name, value):
+        return self.operator_ilike(db_table, descriptor_name, "%%" + value + "%%")
 
     def operator_like(self, db_table, descriptor_name, value):
         """
@@ -210,6 +226,16 @@ class DescriptorFormatType(object):
             return None
         else:
             return '("%s"."descriptors"->>\'%s\') LIKE \'%s\'' % (
+                db_table, descriptor_name, self.make_sql_value(value))
+
+    def operator_ilike(self, db_table, descriptor_name, value):
+        """
+        Case insensitive text comparison based on ILIKE operator.
+        """
+        if self.data == "INTEGER":
+            return None
+        else:
+            return '("%s"."descriptors"->>\'%s\') ILIKE \'%s\'' % (
                 db_table, descriptor_name, self.make_sql_value(value))
 
     def operator_eq(self, db_table, descriptor_name, value):

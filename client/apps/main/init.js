@@ -123,6 +123,9 @@ MainModule.prototype = {
 
     },
 
+    /**
+     * Setup the default left view, meaning the left bar view.
+     */
     defaultLeftView: function() {
         var mainView = application.getView();
 
@@ -130,11 +133,21 @@ MainModule.prototype = {
         mainView.getRegion('left').show(new LeftBarView());
     },
 
+    /**
+     * Setup the default right view, meaning an empty area.
+     */
     defaultRightView: function() {
         var mainView = application.getView();
         mainView.getRegion('right').empty();
     },
 
+    /**
+     * Get a cache from its cache type and key.
+     * @todo Could add a cache manager with a populate method.
+     * @param cacheType Cache type is a first classification key.
+     * @param key Key of the cache to get.
+     * @returns A cache object. It is empty at the first call.
+     */
     getCache: function(cacheType, key) {
         var cache = this.cache[cacheType];
         if (cache !== undefined) {
@@ -147,8 +160,32 @@ MainModule.prototype = {
         } else {
             return null;
         }
+    },
+
+    /**
+     * Manage a body glass-pane element. The glass-pane is shown if foo is set to 'show', and 'destroy' remove it from
+     * the body. Default behavior is to remove it on click event.
+     * @param foo 'show' or 'destroy' or nothing to simply get the element.
+     * @returns {*|jQuery|HTMLElement}
+     */
+    glassPane: function(foo) {
+        if (!this.glassPaneElement) {
+            this.glassPaneElement = $('<div class="glasspane glasspane-full"></div>');
+        }
+
+        if (foo === 'show' && $('body').children('div.glasspane').length === 0) {
+            $('body').append(this.glassPaneElement);
+
+            this.glassPaneElement.on('click', function() {
+               this.remove();
+               return true;
+            });
+        } else if (foo === 'destroy' && $('body').children('div.glasspane').length !== 0) {
+            this.glassPaneElement.remove();
+        }
+
+        return this.glassPaneElement;
     }
 };
 
 module.exports = MainModule;
-

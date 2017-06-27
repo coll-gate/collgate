@@ -54,7 +54,7 @@ var View = ScrollView.extend({
     childViewOptions: function () {
         return {
             columnsList: this.displayedColumns,
-            columnsOptions: this.getOption('columnsOptions')
+            columnsOptions: this.getOption('columns')
         }
     },
 

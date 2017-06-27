@@ -133,7 +133,13 @@ var MainLayout = Marionette.LayoutView.extend({
 
     onDomRefresh: function() {
         $('body').on('mouseover', $.proxy(this.onMouseOut, this));
-        $(window).scroll($.proxy(this.onWindowScroll, this));
+        $(window).on('scroll', $.proxy(this.onWindowScroll, this));
+    },
+
+    onDestroy: function() {
+        // cleanup bound events
+        $('body').off('mouseover', $.proxy(this.onMouseOut, this));
+        $(window).off('scroll', $.proxy(this.onWindowScroll, this));
     },
 
     onWindowScroll: function() {

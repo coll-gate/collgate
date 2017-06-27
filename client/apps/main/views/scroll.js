@@ -158,35 +158,37 @@ var View = Marionette.CompositeView.extend({
         // this.initialResizeDone = false;
     },
 
+    onDestroy: function() {
+        // cleanup bound events
+        $("body").off('mousemove', $.proxy(this.onResizeColumnMove, this));
+        $("body").off('mouseup', $.proxy(this.onResizeColumnFinish, this));
+        $(window).off('resize', $.proxy(this.onResizeWindow, this));
+
+        $(window).off('focusout', $.proxy(this.onWindowLostFocus, this));
+        $(window).off('keydown', $.proxy(this.onKeyDown, this));
+        $(window).off('keyup', $.proxy(this.onKeyUp, this));
+    },
+
     onDomRefresh: function() {
         // we can only init here because we need to known the parent container
         if (!this.scrollViewInitialized) {
             // pagination on scrolling using the direct parent as scroll container
             var scrollElement = this.getScrollElement();
-
-            scrollElement.scroll($.proxy(this.scroll, this));
+            scrollElement.on('scroll', $.proxy(this.scroll, this));
 
             // column resizing
             $("body").on('mousemove', $.proxy(this.onResizeColumnMove, this));
             $("body").on('mouseup', $.proxy(this.onResizeColumnFinish, this));
             $(window).on('resize', $.proxy(this.onResizeWindow, this));
 
+            // order by using CTRL key
+            $(window).on('focusout', $.proxy(this.onWindowLostFocus, this));
             $(window).on('keydown', $.proxy(this.onKeyDown, this));
             $(window).on('keyup', $.proxy(this.onKeyUp, this));
 
             // add menu column close on event
             var contextMenu = this.ui.add_column_menu;
-            var contextMenuBtn = this.ui.add_column;
-
-            if (contextMenu.length && contextMenuBtn.length) {
-                $('body').on('click', function(e) {
-                    if (e.target !== contextMenuBtn[0]) {
-                        contextMenu.hide();
-                        return true;
-                    }
-                    return false;
-                });
-
+            if (contextMenu.length) {
                 contextMenu.on("click", "a", function () {
                     contextMenu.hide();
                 });
@@ -1120,7 +1122,13 @@ var View = Marionette.CompositeView.extend({
                 contextMenu.css({
                     display: "block",
                     left: this.ui.add_column.parent().position().left - contextMenu.width(),
-                    top: this.ui.add_column.parent().position().top + this.ui.add_column.height()
+                    top: this.ui.add_column.parent().position().top + this.ui.add_column.height(),
+                }).addClass('glasspane-top-of');
+
+                // hide the context menu when click on the glass pane
+                application.main.glassPane('show').on('click', function(e) {
+                    contextMenu.hide();
+                    return true;
                 });
             }
 
@@ -1132,6 +1140,9 @@ var View = Marionette.CompositeView.extend({
     onAddRemoveColumn: function (e) {
         var a = $(e.currentTarget);
         var columnName = a.attr('name');
+
+        // destroy the glass pane
+        application.main.glassPane('destroy');
 
         if (a.prop("displayed")) {
             var columnId = -1;
@@ -1290,7 +1301,9 @@ var View = Marionette.CompositeView.extend({
         if (!this.controlKeyDown) {
             // cleanup
             sorters.removeClass(
-                'sortby-asc-column sortby-desc-column glyphicon-sort-by-alphabet glyphicon-sort-by-alphabet-alt');
+                'sortby-asc-column sortby-desc-column glyphicon-sort-by-alphabet glyphicon-sort-by-alphabet-alt')
+                .attr('sort-position', null)
+                .empty();
 
             if (order === '+') {
                 el.addClass('sortby-asc-column glyphicon-sort-by-alphabet');
@@ -1304,6 +1317,7 @@ var View = Marionette.CompositeView.extend({
                 sortBy = [];
             } else {
                 sortBy = [order + sortField];
+                el.attr('sort-position', 0);
             }
         } else {
             // multiple
@@ -1316,17 +1330,56 @@ var View = Marionette.CompositeView.extend({
             } else {
                 el.removeClass('sortby-asc-column sortby-desc-column glyphicon-sort-by-alphabet glyphicon-sort-by-alphabet-alt');
                 el.addClass('glyphicon-sort');
+                el.attr('sort-position', null);
             }
 
             if (i >= 0) {
                 if (order === '') {
                     sortBy.splice(i, 1);
+                    el.empty().attr('sort-position', null);
+
+                    // reorder previous
+                    $.each(sorters, function(n, el) {
+                        var element = $(el);
+                        var pos = parseInt(element.attr('sort-position') || -1);
+
+                        if (pos > i) {
+                            --pos;
+                            element.attr('sort-position', pos);
+                        }
+                    });
                 } else {
                     sortBy[i] = order + sortField;
+                    el.attr('sort-position', i);
                 }
             } else {
                 sortBy.push(order + sortField);
+                el.attr('sort-position', sortBy.length-1);
             }
+
+            // assign order
+            const EXPONENT_MAP = {
+                0: '¹',
+                1: '²',
+                2: '³',
+                3: '⁴',
+                4: '⁵',
+                5: '⁶',
+                6: '⁷',
+                7: '⁸',
+                9: '⁹'
+            };
+
+            $.each(sorters, function (n, el) {
+                var element = $(el);
+                var pos = parseInt(element.attr('sort-position') || -1);
+
+                if (pos >= 0 && sortBy.length > 1) {
+                    $(element).text(EXPONENT_MAP[pos] || '');
+                } else {
+                    $(element).text('');
+                }
+            });
         }
 
         this.collection.fetch({reset: true, data: {
@@ -1335,15 +1388,22 @@ var View = Marionette.CompositeView.extend({
         }});
     },
 
+    onWindowLostFocus: function(e) {
+        this.controlKeyDown = false;
+        this.ui.thead.css('background-color', 'initial');
+    },
+
     onKeyDown: function(e) {
         if (e.key === 'Control') {
             this.controlKeyDown = true;
+            this.ui.thead.css('background-color', '#aedd36');
         }
     },
 
     onKeyUp: function(e) {
         if (e.key === 'Control') {
             this.controlKeyDown = false;
+            this.ui.thead.css('background-color', 'initial');
         }
     }
 });

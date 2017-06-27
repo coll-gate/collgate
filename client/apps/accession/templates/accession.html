@@ -14,7 +14,7 @@
     if (column.custom) {
         %><td name="<%= columnName %>"></td><%
     } else if (column.glyphicon != undefined) {
-        %><td name="<%= columnName %>" class="<%= glyph-fixed-column %>"><span class="glyphicon <%= column.glyphicon[1] %>"></span></td><%
+        %><td name="<%= columnName %>" class="glyph-fixed-column"><span class="glyphicon <%= column.glyphicon[1] %>"></span></td><%
     } else if (!column.format) {
         %><td name="<%= columnName %>"><%= arguments[0][columnName] %></td><%
     } else if (column.query) {
