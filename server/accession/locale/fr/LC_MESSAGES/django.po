@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-07 09:53+0200\n"
+"POT-Creation-Date: 2017-06-23 15:43+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -37,30 +37,30 @@ msgstr "La langue n'est pas supportée"
 msgid "You are not allowed to list the accessions"
 msgstr "Vous n'êtes pas autorisé à lister les accessions"
 
-#: accession.py:243 accessionbatch.py:39 accessionbatch.py:100 batch.py:219
-#: batch.py:283 batch.py:347
+#: accession.py:310 accessionbatch.py:39 accessionbatch.py:100 batch.py:215
+#: batch.py:279 batch.py:343 batch.py:423
 msgid "You are not allowed to get an accession"
 msgstr "Vous n'êtes pas autorisé à récupérer une accession"
 
-#: accession.py:255 accessionbatch.py:53 accessionbatch.py:119 batch.py:236
-#: batch.py:300
+#: accession.py:322 accessionbatch.py:53 accessionbatch.py:119 batch.py:232
+#: batch.py:296
 msgid "Invalid permission to access to this accession"
 msgstr "Permissions invalides pour accéder à cette accession"
 
-#: accession.py:279
+#: accession.py:346
 msgid "You are not allowed to search accessions"
 msgstr "Vous n'êtes pas autorisé à rechercher des accessions"
 
-#: accession.py:381 accessionsynonym.py:161 accessionsynonym.py:223
+#: accession.py:448 accessionsynonym.py:161 accessionsynonym.py:223
 #: accessionsynonym.py:283
 msgid "You are not allowed to modify an accession"
 msgstr "Vous n'êtes pas autorisé à modifier une accession"
 
-#: accession.py:430
+#: accession.py:497
 msgid "You are not allowed to delete an accession"
 msgstr "Vous n'êtes pas autorisé à supprimer une accession"
 
-#: accessionbatch.py:40 accessionbatch.py:101 batch.py:220
+#: accessionbatch.py:40 accessionbatch.py:101 batch.py:216
 msgid "You are not allowed to list batches for an accession"
 msgstr "Vous n'êtes pas autorisé à lister les lots pour une accession"
 
@@ -123,142 +123,148 @@ msgstr "Il n'est pas possible de retirer un code CRB"
 msgid "It is not possible to remove a primary name"
 msgstr "Il n'est pas possible de retirer un nom principal"
 
-#: apps.py:66
+#: apps.py:68
 msgid "Accession"
 msgstr "Accession"
 
-#: apps.py:69
+#: apps.py:71
 msgid "Create accession"
 msgstr "Créer une accession"
 
-#: apps.py:74
+#: apps.py:76
 msgid "List accessions"
 msgstr "Liste des accessions"
 
-#: apps.py:78
+#: apps.py:80
 msgid "Search accessions"
 msgstr "Recherche d'accessions"
 
-#: apps.py:84
+#: apps.py:86
 msgid "Batch"
 msgstr "Lot"
 
-#: apps.py:87
+#: apps.py:89
 msgid "Introduce a batch"
 msgstr "Introduire un lot"
 
-#: apps.py:92
+#: apps.py:94
 msgid "List batches"
 msgstr "Liste des lots"
 
-#: apps.py:96
+#: apps.py:98
 msgid "Search batches"
 msgstr "Recherche de lots"
 
-#: apps.py:102
+#: apps.py:104
 msgid "Action"
 msgstr "Action"
 
-#: batch.py:70
+#: batch.py:66
 msgid "Invalid permission to access to this batch"
 msgstr "Permissions invalides pour accéder à ce lot"
 
-#: batch.py:92
+#: batch.py:88
 msgid "You are not allowed to create a batch"
 msgstr "Vous n'êtes pas autorisé à créer un lot"
 
-#: batch.py:104
+#: batch.py:100
 msgid "The name of the batch is already used"
 msgstr "Ce nom de lot est déjà utilisé"
 
-#: batch.py:134
+#: batch.py:130
 msgid "Unable to create the batch"
 msgstr "Impossible de créer ce lot"
 
-#: batch.py:156
+#: batch.py:152
 msgid "You are not allowed to modify a batch"
 msgstr "Vous n'êtes pas autorisé à modifier un lot"
 
-#: batch.py:168
+#: batch.py:164
 msgid "Invalid permission to modify this accession"
 msgstr "Permissions invalides pour modifier cette accession"
 
-#: batch.py:200
+#: batch.py:196
 msgid "Unable to update the batch"
 msgstr "Impossible de modifier le lot"
 
-#: batch.py:206
+#: batch.py:202
 msgid "You are not allowed to delete a batch"
 msgstr "Vous n'êtes pas autorisé à supprimer un lot"
 
-#: batch.py:284
+#: batch.py:280
 msgid "You are not allowed to list parent batches for a batch"
 msgstr "Vous n'êtes pas autorisé à lister les lots pour un lot"
 
-#: batch.py:348
+#: batch.py:344
 msgid "You are not allowed to search batches"
 msgstr "Vous n'êtes pas autorisé à rechercher des lots"
 
-#: controller.py:53
+#: batch.py:424
+#, fuzzy
+#| msgid "You are not allowed to list the accessions"
+msgid "You are not allowed to list the batches"
+msgstr "Vous n'êtes pas autorisé à lister les accessions"
+
+#: controller.py:48
 msgid "Empty synonym data"
 msgstr "Données de synonyme incomplètes"
 
-#: controller.py:56
+#: controller.py:51
 msgid "Undefined synonym name or primary synonym"
 msgstr "Nom de synonyme ou principal indéfini"
 
-#: controller.py:59
+#: controller.py:54
 msgid "Undefined synonym language"
 msgstr "Langue du synonyme indéfinie"
 
-#: models.py:40
+#: models.py:36
 msgid "panel"
 msgstr "collection"
 
-#: models.py:65
+#: models.py:61
 msgid "accession"
 msgstr "accession"
 
-#: models.py:162
+#: models.py:158
 msgid "accession synonym"
 msgstr "synonyme d'accession"
 
-#: models.py:249
+#: models.py:245
 msgid "batch"
 msgstr "lot"
 
-#: models.py:313
+#: models.py:309
 msgid "sample"
 msgstr "échantillon"
 
-#: models.py:361
+#: models.py:357
 msgid "Introduction"
 msgstr "Introduction"
 
-#: models.py:362
+#: models.py:358
 msgid "Multiplication"
 msgstr "Multiplication"
 
-#: models.py:363
+#: models.py:359
 msgid "Regeneration"
 msgstr "Regénération"
 
-#: models.py:364
+#: models.py:360
 msgid "Test"
 msgstr "Test"
 
-#: models.py:365
+#: models.py:361
 msgid "Clean-up"
 msgstr "Assainissement"
 
-#: models.py:366
+#: models.py:362
 msgid "Sample"
 msgstr "Echantillon"
 
-#: models.py:367
+#: models.py:363
 msgid "Dispatch"
 msgstr "Expédition"
 
-#: models.py:368
+#: models.py:364
 msgid "Elimination"
 msgstr "Elimination"

@@ -69,9 +69,10 @@ def get_description(model):
         dft = DescriptorFormatTypeManager.get(descriptor_format)
 
         results[dmt.name] = {
+            'model': dmt,
             'name': dmt.name,
             'index': dmt.index,
-            'model': dft,
+            'handler': dft,
             'format': descriptor_format
         }
 

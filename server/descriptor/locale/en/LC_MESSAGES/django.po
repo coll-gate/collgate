@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-07 09:53+0200\n"
+"POT-Creation-Date: 2017-06-23 15:43+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,34 +17,34 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: apps.py:83
+#: apps.py:89
 msgid "Administration"
 msgstr ""
 
-#: apps.py:88
+#: apps.py:94
 msgid "List groups of descriptors"
 msgstr ""
 
-#: apps.py:91
+#: apps.py:97
 msgid "List models of descriptor"
 msgstr ""
 
-#: apps.py:94
+#: apps.py:100
 msgid "List meta-models of descriptor"
 msgstr ""
 
-#: describable.py:148
+#: describable.py:145
 #, python-format
 msgid "Missing mandatory descriptor %s"
 msgstr ""
 
-#: describable.py:153
+#: describable.py:150
 #, python-format
 msgid "Already defined set once descriptor %s"
 msgstr ""
 
-#: describable.py:171 describable.py:177 describable.py:186 describable.py:193
-#: describable.py:203 describable.py:211
+#: describable.py:168 describable.py:174 describable.py:183 describable.py:190
+#: describable.py:200 describable.py:208
 msgid "A conditional descriptor is defined but the condition is not true"
 msgstr ""
 
@@ -146,184 +146,500 @@ msgstr ""
 msgid "List of values are not available for drop-down"
 msgstr ""
 
-#: descriptorformattype.py:251
+#: descriptorformattype.py:450
 msgid "Single value"
 msgstr ""
 
-#: descriptorformattype.py:260
+#: descriptorformattype.py:459
 msgid "List of values"
 msgstr ""
 
-#: descriptorformattype.py:273
+#: descriptorformattype.py:468
+msgid "Reference to"
+msgstr ""
+
+#: descriptorformattype.py:481
 msgid "Single enumeration"
 msgstr ""
 
-#: descriptorformattype.py:282 descriptorformattype.py:349
-#: descriptorformattype.py:427 descriptorformattype.py:724
+#: descriptorformattype.py:490 descriptorformattype.py:570
+#: descriptorformattype.py:661 descriptorformattype.py:980
 msgid "The descriptor value must be a string"
 msgstr ""
 
-#: descriptorformattype.py:288 descriptorformattype.py:355
-#: descriptorformattype.py:433
+#: descriptorformattype.py:496 descriptorformattype.py:576
+#: descriptorformattype.py:667
 msgid "The descriptor value must exists"
 msgstr ""
 
-#: descriptorformattype.py:340
+#: descriptorformattype.py:561
 msgid "Pair enumeration"
 msgstr ""
 
-#: descriptorformattype.py:418
+#: descriptorformattype.py:652
 msgid "Ordinal with text"
 msgstr ""
 
-#: descriptorformattype.py:466
+#: descriptorformattype.py:700
 msgid "Range limits are [-127, 127]"
 msgstr ""
 
-#: descriptorformattype.py:489
+#: descriptorformattype.py:736
 msgid "Boolean"
 msgstr ""
 
-#: descriptorformattype.py:495
+#: descriptorformattype.py:743
 msgid "The descriptor value must be a boolean"
 msgstr ""
 
-#: descriptorformattype.py:513
+#: descriptorformattype.py:761
 msgid "Numeric"
 msgstr ""
 
-#: descriptorformattype.py:519
+#: descriptorformattype.py:768
 msgid "The descriptor value must be a decimal string"
 msgstr ""
 
-#: descriptorformattype.py:525 descriptorformattype.py:575
-#: descriptorformattype.py:581
+#: descriptorformattype.py:774 descriptorformattype.py:829
+#: descriptorformattype.py:835
 msgid "The descriptor value must be a decimal"
 msgstr ""
 
-#: descriptorformattype.py:529
+#: descriptorformattype.py:778
 msgid "The descriptor value must be a decimal with a precision of "
 msgstr ""
 
-#: descriptorformattype.py:553 descriptorformattype.py:620
-#: descriptorformattype.py:686
+#: descriptorformattype.py:800 descriptorformattype.py:874
+#: descriptorformattype.py:941
 msgid ""
 "Custom unit can only be defined is unit is set to custom (unit, custom_unit)"
 msgstr ""
 
-#: descriptorformattype.py:568
+#: descriptorformattype.py:806
+msgid "The unit must refers to a valid predefined value (unit)"
+msgstr ""
+
+#: descriptorformattype.py:821
 msgid "Numeric range"
 msgstr ""
 
-#: descriptorformattype.py:585
+#: descriptorformattype.py:839
 msgid "The descriptor value must be a decimal with a precision of"
 msgstr ""
 
-#: descriptorformattype.py:592
+#: descriptorformattype.py:846
 msgid "The descriptor value must be a decimal between"
 msgstr ""
 
-#: descriptorformattype.py:626 descriptorformattype.py:632
+#: descriptorformattype.py:880 descriptorformattype.py:886
 msgid "Range min must be a decimal"
 msgstr ""
 
-#: descriptorformattype.py:635 descriptorformattype.py:701
+#: descriptorformattype.py:889 descriptorformattype.py:956
 msgid "Range min must be lesser than range max"
 msgstr ""
 
-#: descriptorformattype.py:650
+#: descriptorformattype.py:904
 msgid "Ordinal"
 msgstr ""
 
-#: descriptorformattype.py:656 descriptorformattype.py:928
+#: descriptorformattype.py:911 descriptorformattype.py:1193
 msgid "The descriptor value must be an integer"
 msgstr ""
 
-#: descriptorformattype.py:660
+#: descriptorformattype.py:915
 msgid "The descriptor value must be an integer between "
 msgstr ""
 
-#: descriptorformattype.py:692 descriptorformattype.py:698
+#: descriptorformattype.py:947 descriptorformattype.py:953
 msgid "Range min must be an integer"
 msgstr ""
 
-#: descriptorformattype.py:716
+#: descriptorformattype.py:971
 msgid "Text"
 msgstr ""
 
-#: descriptorformattype.py:728
+#: descriptorformattype.py:984
 msgid ""
 "The descriptor value must be a string with a maximum length of 1024 "
 "characters"
 msgstr ""
 
-#: descriptorformattype.py:734
+#: descriptorformattype.py:990
 msgid "The descriptor value must be a string matching the defined format"
 msgstr ""
 
-#: descriptorformattype.py:773
+#: descriptorformattype.py:1029 descriptorformatunit.py:239
 msgid "Date"
 msgstr ""
 
-#: descriptorformattype.py:778
+#: descriptorformattype.py:1035
 msgid "The descriptor value must be a date string (YYYYMMDD)"
 msgstr ""
 
-#: descriptorformattype.py:799
+#: descriptorformattype.py:1056 descriptorformatunit.py:150
 msgctxt "concept"
 msgid "Time"
 msgstr ""
 
-#: descriptorformattype.py:804
+#: descriptorformattype.py:1062
 msgid "The descriptor value must be a time string (HH:MM:SS)"
 msgstr ""
 
-#: descriptorformattype.py:822
+#: descriptorformattype.py:1080
 msgid "Imprecise date"
 msgstr ""
 
-#: descriptorformattype.py:834
+#: descriptorformattype.py:1093
 msgid "The descriptor value must be an array of 3 string values"
 msgstr ""
 
-#: descriptorformattype.py:837
+#: descriptorformattype.py:1096
 msgid "The descriptor value must contain a valid year (format:YYYY)"
 msgstr ""
 
-#: descriptorformattype.py:840
+#: descriptorformattype.py:1099
 msgid "The descriptor value of month is invalid"
 msgstr ""
 
-#: descriptorformattype.py:843
+#: descriptorformattype.py:1102
 msgid "The descriptor value of day is invalid"
 msgstr ""
 
-#: descriptorformattype.py:846
+#: descriptorformattype.py:1105
 msgid "The descriptor value is invalid"
 msgstr ""
 
-#: descriptorformattype.py:899
+#: descriptorformattype.py:1162
 msgid "Date+time"
 msgstr ""
 
-#: descriptorformattype.py:904
+#: descriptorformattype.py:1168
 msgid "The descriptor value must be a datetime string (ISO 8601)"
 msgstr ""
 
-#: descriptorformattype.py:922
+#: descriptorformattype.py:1186
 msgid "Entity"
 msgstr ""
 
-#: descriptorformattype.py:936
+#: descriptorformattype.py:1201
 msgid "The descriptor value must refers to an existing entity"
 msgstr ""
 
-#: descriptorformattype.py:960
+#: descriptorformattype.py:1225
 msgid "Invalid describable entity model type name"
 msgstr ""
 
-#: descriptorformattype.py:972
+#: descriptorformattype.py:1237
 msgid "The descriptor doesn't refers to a valid entity model"
+msgstr ""
+
+#: descriptorformatunit.py:78
+msgid "Chroma"
+msgstr ""
+
+#: descriptorformatunit.py:87
+msgid "Common"
+msgstr ""
+
+#: descriptorformatunit.py:96
+msgid "Grain"
+msgstr ""
+
+#: descriptorformatunit.py:105
+msgid "Meter"
+msgstr ""
+
+#: descriptorformatunit.py:114
+msgid "Weight"
+msgstr ""
+
+#: descriptorformatunit.py:123
+msgid "Plant and plot"
+msgstr ""
+
+#: descriptorformatunit.py:132
+msgid "Quantity and volume"
+msgstr ""
+
+#: descriptorformatunit.py:141
+msgid "Surface"
+msgstr ""
+
+#: descriptorformatunit.py:167
+msgid "L value"
+msgstr ""
+
+#: descriptorformatunit.py:168
+msgid "a value"
+msgstr ""
+
+#: descriptorformatunit.py:169
+msgid "b value"
+msgstr ""
+
+#: descriptorformatunit.py:171
+msgid "°C"
+msgstr ""
+
+#: descriptorformatunit.py:172
+msgid "Category"
+msgstr ""
+
+#: descriptorformatunit.py:173
+msgid "Custom"
+msgstr ""
+
+#: descriptorformatunit.py:174
+msgid "J (joule)"
+msgstr ""
+
+#: descriptorformatunit.py:175
+msgid "Norm 1"
+msgstr ""
+
+#: descriptorformatunit.py:176
+msgid "Note"
+msgstr ""
+
+#: descriptorformatunit.py:177
+msgid "% (percent)"
+msgstr ""
+
+#: descriptorformatunit.py:178
+msgid "Scale"
+msgstr ""
+
+#: descriptorformatunit.py:180
+msgid "g/100 grain"
+msgstr ""
+
+#: descriptorformatunit.py:181
+msgid "g/200 grain"
+msgstr ""
+
+#: descriptorformatunit.py:182
+msgid "g/1000 grain"
+msgstr ""
+
+#: descriptorformatunit.py:183
+msgid "grain/m²"
+msgstr ""
+
+#: descriptorformatunit.py:184
+msgid "grain/spike"
+msgstr ""
+
+#: descriptorformatunit.py:185
+msgid "grain/spikelet"
+msgstr ""
+
+#: descriptorformatunit.py:187
+msgid "um"
+msgstr ""
+
+#: descriptorformatunit.py:188
+msgid "mm"
+msgstr ""
+
+#: descriptorformatunit.py:189
+msgid "cm"
+msgstr ""
+
+#: descriptorformatunit.py:190
+msgid "dm"
+msgstr ""
+
+#: descriptorformatunit.py:191
+msgid "m"
+msgstr ""
+
+#: descriptorformatunit.py:192
+msgid "km"
+msgstr ""
+
+#: descriptorformatunit.py:194
+msgid "g"
+msgstr ""
+
+#: descriptorformatunit.py:195
+msgid "kg"
+msgstr ""
+
+#: descriptorformatunit.py:197
+msgid "plant/m"
+msgstr ""
+
+#: descriptorformatunit.py:198
+msgid "plant/m²"
+msgstr ""
+
+#: descriptorformatunit.py:199
+msgid "plant/ha"
+msgstr ""
+
+#: descriptorformatunit.py:200
+msgid "plant/plot"
+msgstr ""
+
+#: descriptorformatunit.py:201
+msgid "g/plant"
+msgstr ""
+
+#: descriptorformatunit.py:202
+msgid "g/plot"
+msgstr ""
+
+#: descriptorformatunit.py:203
+msgid "kg/plot"
+msgstr ""
+
+#: descriptorformatunit.py:204
+msgid "stoma/mm²"
+msgstr ""
+
+#: descriptorformatunit.py:205
+msgid "node"
+msgstr ""
+
+#: descriptorformatunit.py:206
+msgid "spikelet"
+msgstr ""
+
+#: descriptorformatunit.py:207
+msgid "spike/m²"
+msgstr ""
+
+#: descriptorformatunit.py:208
+msgid "tiller/m"
+msgstr ""
+
+#: descriptorformatunit.py:209
+msgid "tiller/m²"
+msgstr ""
+
+#: descriptorformatunit.py:211
+msgid "ml"
+msgstr ""
+
+#: descriptorformatunit.py:212
+msgid "ml/%"
+msgstr ""
+
+#: descriptorformatunit.py:213
+msgid "ppm"
+msgstr ""
+
+#: descriptorformatunit.py:214
+msgid "mg/kg"
+msgstr ""
+
+#: descriptorformatunit.py:215
+msgid "g/kg"
+msgstr ""
+
+#: descriptorformatunit.py:216
+msgid "g/m²"
+msgstr ""
+
+#: descriptorformatunit.py:217
+msgid "kh/ha"
+msgstr ""
+
+#: descriptorformatunit.py:218
+msgid "t/ha"
+msgstr ""
+
+#: descriptorformatunit.py:219
+msgid "g/l"
+msgstr ""
+
+#: descriptorformatunit.py:220
+msgid "kg/hl"
+msgstr ""
+
+#: descriptorformatunit.py:221
+msgid "mmol/m²/s"
+msgstr ""
+
+#: descriptorformatunit.py:222
+msgid "g/m²/day"
+msgstr ""
+
+#: descriptorformatunit.py:223
+msgid "CCl (chlore)"
+msgstr ""
+
+#: descriptorformatunit.py:224
+msgid "delta 13C (carbon)"
+msgstr ""
+
+#: descriptorformatunit.py:226
+msgid "mm²"
+msgstr ""
+
+#: descriptorformatunit.py:227
+msgid "cm²"
+msgstr ""
+
+#: descriptorformatunit.py:228
+msgid "m²"
+msgstr ""
+
+#: descriptorformatunit.py:229
+msgid "ha"
+msgstr ""
+
+#: descriptorformatunit.py:230
+msgid "km²"
+msgstr ""
+
+#: descriptorformatunit.py:232
+msgid "ms"
+msgstr ""
+
+#: descriptorformatunit.py:233
+msgid "s"
+msgstr ""
+
+#: descriptorformatunit.py:234
+msgid "min"
+msgstr ""
+
+#: descriptorformatunit.py:235
+msgid "hour"
+msgstr ""
+
+#: descriptorformatunit.py:236
+msgid "day"
+msgstr ""
+
+#: descriptorformatunit.py:237
+msgid "month"
+msgstr ""
+
+#: descriptorformatunit.py:238
+msgid "year"
+msgstr ""
+
+#: descriptorformatunit.py:240
+msgid "Time"
+msgstr ""
+
+#: descriptorformatunit.py:241
+msgid "Date+Time"
+msgstr ""
+
+#: descriptorformatunit.py:242
+msgid "%/min"
+msgstr ""
+
+#: descriptorformatunit.py:243
+msgid "%/hour"
+msgstr ""
+
+#: descriptorformatunit.py:244
+msgid "%/day"
 msgstr ""
 
 #: descriptormetamodel.py:145

@@ -37,10 +37,35 @@ var View = Marionette.ItemView.extend({
 
     onFilter: function () {
         if (this.validateAccessionName()) {
-            this.collection.filters = {
-                name: this.ui.accession_name.val().trim(),
-                method: "icontains"
-            };
+            this.collection.filters = [{
+                type: 'term',
+                field: 'name',
+                value: this.ui.accession_name.val().trim(),
+                op: "icontains"
+            }];
+            //
+            // this.collection.filters = [{
+            //     type: 'term',
+            //     field: 'name',
+            //     value: this.ui.accession_name.val().trim(),
+            //     op: "icontains"
+            // }, {
+            //     type: 'op',
+            //     value: 'and'
+            // }, [{
+            //     type: 'term',
+            //     field: '#MCPD_ORIGCTY->name',
+            //     value: 'France',
+            //     op: "neq"
+            // }, {
+            //     type: 'op',
+            //     value: 'or'
+            // }, {
+            //     type: 'term',
+            //     field: '#IPGRI_4.1.1->value1',
+            //     value: 'Hiver',
+            //     op: "eq"
+            // }, []]];
 
             this.collection.fetch({reset: true});
         }

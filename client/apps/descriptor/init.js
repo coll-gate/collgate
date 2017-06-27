@@ -69,7 +69,7 @@ DescriptorModule.prototype = {
         this.collections.formatUnits = new FormatUnitCollection();
 
         this.views.formatUnits = new SelectOption({
-            sync: true,
+            // sync: true,
             className: 'format-unit',
             collection: this.collections.formatUnits,
         });

@@ -526,7 +526,7 @@ msgstr "noeud"
 
 #: ../../../collections/formatunit.js:119
 msgid "spikelet"
-msgstr "epillet"
+msgstr "épillet"
 
 #: ../../../collections/formatunit.js:120
 msgid "spike/m²"
