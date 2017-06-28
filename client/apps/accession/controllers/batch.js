@@ -30,7 +30,7 @@ var Controller = Marionette.Object.extend({
                 attributes: {
                     'id': 'dlg_create_batch'
                 },
-                template: require('../templates/batchcreate.html'),
+                template: require('../templates/navbatchcreate.html'),
                 templateHelpers/*templateContext*/: function () {
                     return {
                         meta_models: data
@@ -171,7 +171,9 @@ var Controller = Marionette.Object.extend({
                 },
 
                 validate: function () {
-                    return (this.validateName() && this.validateAccession())
+                    var valid_name = this.validateName();
+                    var valid_accession = this.validateAccession();
+                    return (valid_name && valid_accession);
                 },
 
                 onContinue: function () {
