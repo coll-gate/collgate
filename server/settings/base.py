@@ -227,6 +227,7 @@ APPLICATIONS = {
             },
             "igdectk": {
                 ".csrf": {"default_version": "2.0.0"},
+                ".validator": {"default_version": "2.0.0"}
             }
         },
     },
