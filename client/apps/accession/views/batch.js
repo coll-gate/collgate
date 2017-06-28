@@ -28,6 +28,17 @@ var View = Marionette.ItemView.extend({
         }
     },
 
+    behaviors: {
+        ActionBtnEvents: {
+            behaviorClass: require('../../main/behaviors/actionbuttonevents'),
+            actions: {
+                edit: {display: false},
+                manage: {display: true, event: 'viewDetails'},
+                remove: {display: true, event: 'onDeleteBatch'}
+            }
+        }
+    },
+
     ui: {
         details: 'td.view-batch-details',
         accession: 'td.view-accession-details'
@@ -51,6 +62,11 @@ var View = Marionette.ItemView.extend({
 
     viewAccession: function () {
         Backbone.history.navigate('app/accession/accession/' + this.model.get('accession') + '/', {trigger: true});
+    },
+
+    onDeleteBatch: function() {
+        // @todo remove? or may be archives?
+        alert("@todo");
     },
 
     selectBatch: function () {
