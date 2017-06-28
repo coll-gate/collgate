@@ -56,7 +56,9 @@ AccessionModule.prototype = {
         //
 
         var AccessionController = require('./controllers/accession');
+        var BatchController = require('./controllers/batch');
         this.controllers.accession = new AccessionController();
+        this.controllers.batch = new BatchController();
 
         //
         // routers
