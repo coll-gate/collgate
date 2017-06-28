@@ -68,24 +68,78 @@ var View = Marionette.ItemView.extend({
 
     onScroll: function(e) {
         if (this.targetView) {
-            // @todo a delay a capture perform only the last scroll event
-            var rows = this.targetView.ui.tbody.children('tr');
-            var view = this;
-            var top = this.targetView.ui.tbody.parent().parent().position().top;
+            if (this.scrollEvent) {
+                return;
+            }
 
-            // optimize that
-            _.each(rows, function(el, i) {
-                var pos = $(el).offset().top - top;
+            this.scrollEvent = true;
 
-                // @todo a better test
-                if (pos > -8 && pos < 8) {
-                    view.ui.collection_position.html(i+1);
-
-                    // @todo for optimisation
-                    view.previousTopElement = i;
-                    return false;
+            setTimeout(function(view) {
+                // view destroyed before
+                if (view.isDestroyed) {
+                    return;
                 }
-            });
+
+                view.scrollEvent = false;
+                var top = view.targetView.ui.tbody.parent().parent().offset().top;
+
+                if (view.previousTopElement) {
+                    if (view.previousTopElement.offset().top <= top) {
+                        var element = view.previousTopElement;
+                        var i = view.previousTopElementIndex;
+
+                        view.previousTopElement = null;
+
+                        while (element.length) {
+                            if (element.offset().top + element.height() >= top) {
+                                view.ui.collection_position.html(i + 1);
+                                view.previousTopElement = element;
+                                view.previousTopElementIndex = i;
+
+                                return;
+                            }
+
+                            element = element.next();
+                            ++i;
+                        }
+                    } else if (view.previousTopElement.offset().top > top) {
+                        var element = view.previousTopElement;
+                        var i = view.previousTopElementIndex;
+
+                        this.previousTopElement = null;
+
+                        while (element.length) {
+                            if (element.offset().top + element.height() < top) {
+                                view.ui.collection_position.html(i + 1);
+                                view.previousTopElement = element;
+                                view.previousTopElementIndex = i;
+
+                                return;
+                            }
+
+                            element = element.prev();
+                            --i;
+                        }
+                    }
+                }
+
+                var rows = view.targetView.ui.tbody.children('tr');
+
+                view.previousTopElement = null;
+                view.previousTopElementIndex = 0;
+
+                $.each(rows, function (i, el) {
+                    var element = $(el);
+
+                    if (element.offset().top + element.height() >= top) {
+                        view.ui.collection_position.html(i + 1);
+                        view.previousTopElement = element;
+                        view.previousTopElementIndex = i;
+
+                        return false;
+                    }
+                });
+            }, 100, this);
         }
     },
 
