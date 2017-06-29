@@ -141,6 +141,11 @@ application = new Marionette.Application({
             }
         });
 
+        $(document).ajaxSuccess(function(event, jqXHR, settings, thrownError) {
+            // update the session last action timestamp at each query success
+            session.user.lastAction = new Date().getTime();
+        });
+
         // temporary dictionary
         this.tmp = {};
     },

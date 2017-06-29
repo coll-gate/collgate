@@ -81,7 +81,7 @@ var View = Marionette.ItemView.extend({
             if (this.widget) {
                 value = this.widget.values();
             } else {
-                value = this.ui.search_value.val().trim();
+                value = this.$el.find(".search-value").val().trim();
             }
 
             if (value !== null) {
@@ -124,20 +124,19 @@ var View = Marionette.ItemView.extend({
     },
 
     validateSearchValue: function() {
-        var v = this.ui.search_value.val().trim();
         var field = this.ui.accession_field.val();
-        var column = this.getOption('columns')[field] || {};
 
-        if (field === 'name' || field === 'code')
-        {
+        if (field === 'name' || field === 'code') {
+            var v = this.$el.find(".search-value").val().trim();
+
             if (v.length > 0 && v.length < 3) {
-                $(this.ui.search_value).validateField('failed', gt.gettext('3 characters min'));
+                this.$el.find(".search-value").validateField('failed', gt.gettext('3 characters min'));
                 return false;
-            } else if (this.ui.search_value.val().length === 0) {
-                $(this.ui.search_value).cleanField();
+            } else if (this.$el.find(".search-value").val().length === 0) {
+                this.$el.find(".search-value").cleanField();
                 return true;
             } else {
-                $(this.ui.search_value).validateField('ok');
+                this.$el.find(".search-value").validateField('ok');
                 return true;
             }
         } else {
@@ -158,6 +157,7 @@ var View = Marionette.ItemView.extend({
             this.widget = null;
         }
 
+        this.ui.search_value.cleanField();
         this.ui.search_group.empty();
 
         if (column.format) {

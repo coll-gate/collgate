@@ -776,7 +776,7 @@ class CursorQuery(object):
             return self._query_set
 
         # perform joins using select_related
-        if type(self._select_related) is list:
+        if type(self._select_related) is dict:
             for related_model, related_fields in self._select_related.items():
                 self.join(related_model, related_fields)
 

@@ -1,16 +1,13 @@
 # -*- coding: utf-8; -*-
 #
 # @file home.py
-# @brief 
+# @brief Views related to the home page.
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2016-09-01
 # @copyright Copyright (c) 2016 INRA/CIRAD
 # @license MIT (see LICENSE file)
 # @details 
 
-"""
-Views related to the home page.
-"""
 from django.contrib import messages
 from django.conf import settings
 from django.shortcuts import get_object_or_404

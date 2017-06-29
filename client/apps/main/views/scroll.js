@@ -160,13 +160,12 @@ var View = Marionette.CompositeView.extend({
 
     onDestroy: function() {
         // cleanup bound events
-        $("body").off('mousemove', $.proxy(this.onResizeColumnMove, this));
-        $("body").off('mouseup', $.proxy(this.onResizeColumnFinish, this));
-        $(window).off('resize', $.proxy(this.onResizeWindow, this));
+        $("body").off('mousemove', $.proxy(this.onResizeColumnMove, this))
+            .off('mouseup', $.proxy(this.onResizeColumnFinish, this));
 
-        $(window).off('focusout', $.proxy(this.onWindowLostFocus, this));
-        $(window).off('keydown', $.proxy(this.onKeyDown, this));
-        $(window).off('keyup', $.proxy(this.onKeyUp, this));
+        $(window).off('focusout', $.proxy(this.onWindowLostFocus, this))
+            .off('keydown', $.proxy(this.onKeyDown, this))
+            .off('keyup', $.proxy(this.onKeyUp, this));
     },
 
     onDomRefresh: function() {
@@ -177,14 +176,13 @@ var View = Marionette.CompositeView.extend({
             scrollElement.on('scroll', $.proxy(this.scroll, this));
 
             // column resizing
-            $("body").on('mousemove', $.proxy(this.onResizeColumnMove, this));
-            $("body").on('mouseup', $.proxy(this.onResizeColumnFinish, this));
-            $(window).on('resize', $.proxy(this.onResizeWindow, this));
+            $("body").on('mousemove', $.proxy(this.onResizeColumnMove, this))
+                .on('mouseup', $.proxy(this.onResizeColumnFinish, this));
 
             // order by using CTRL key
-            $(window).on('focusout', $.proxy(this.onWindowLostFocus, this));
-            $(window).on('keydown', $.proxy(this.onKeyDown, this));
-            $(window).on('keyup', $.proxy(this.onKeyUp, this));
+            $(window).on('focusout', $.proxy(this.onWindowLostFocus, this))
+                .on('keydown', $.proxy(this.onKeyDown, this))
+                .on('keyup', $.proxy(this.onKeyUp, this));
 
             // add menu column close on event
             var contextMenu = this.ui.add_column_menu;
@@ -224,17 +222,25 @@ var View = Marionette.CompositeView.extend({
         }
     },
 
-    onResizeWindow: function() {
-        if (this.isDisplayed()) {
-            this.updateColumnsWidth();
-            this.updateColumnsWidth(true);
+    onResize: function() {
+        // re-adjust when parent send a resize event
+        if (this.initialResizeDone) {
+            if (this.isDisplayed()) {
+                // need async update on some cases of resize
+                var view = this;
+                setTimeout(function() {
+                    view.updateColumnsWidth();
+
+                    // need a second call because width in some case need an adjustment
+                    view.computeClipping();
+                }, 0);
+            }
         }
     },
 
     onShowTab: function(tabView) {
         if (this.isDisplayed()) {
             this.updateColumnsWidth();
-            this.updateColumnsWidth(true);
         }
     },
 
@@ -254,27 +260,25 @@ var View = Marionette.CompositeView.extend({
         var zero = false;
         var view = this;
 
-        var tableWidth = this.ui.tbody.width();
-        if (this.previousTableWidth == undefined) {
-            this.previousTableWidth = tableWidth;
-        }
-
-        var widthFactor = tableWidth / this.previousTableWidth;
-        this.previousTableWidth = tableWidth;
-
         autoAdjust != undefined || (autoAdjust = false);
 
         var headerRows = this.ui.thead.children('tr').children('th,td');
         var rows = firstBodyRow.children('th,td');
 
         // when overflow-y on body, pad the right of the head
-        if (this.ui.tbody.parent().parent()[0].clientHeight < this.ui.tbody.parent().parent()[0].scrollHeight) {
+        var hasScroll = (this.ui.tbody[0].scrollHeight - this.ui.tbody[0].parentNode.parentNode.clientHeight) > 0;
+        if (hasScroll) {
             this.ui.thead.parent().parent().css('padding-right', this.scrollbarWidth + 'px');
         } else {
             this.ui.thead.parent().parent().css('padding-right', '');
         }
 
         this.ui.thead.parent().width(this.ui.tbody.parent().width());
+
+        var tableWidth = this.ui.tbody.width();
+
+        // var widthFactor = tableWidth / (this.previousTableWidth || tableWidth);
+        // this.previousTableWidth = tableWidth;
 
         // no content
         if (rows.length === 0) {
@@ -323,21 +327,22 @@ var View = Marionette.CompositeView.extend({
 
                 var draggable = label.children('[draggable]');
 
-                draggable.on('dragstart', $.proxy(view.onColumnDragStart, view));
-                draggable.on('dragend', $.proxy(view.onColumnDragEnd, view));
+                draggable.on('dragstart', $.proxy(view.onColumnDragStart, view))
+                    .on('dragend', $.proxy(view.onColumnDragEnd, view));
 
-                el.on('dragenter', $.proxy(view.onColumnDragEnter, view));
-                el.on('dragleave', $.proxy(view.onColumnDragLeave, view));
-                el.on('dragover', $.proxy(view.onColumnDragOver, view));
-                el.on('drop', $.proxy(view.onColumnDrop, view));
+                el.on('dragenter', $.proxy(view.onColumnDragEnter, view))
+                    .on('dragleave', $.proxy(view.onColumnDragLeave, view))
+                    .on('dragover', $.proxy(view.onColumnDragOver, view))
+                    .on('drop', $.proxy(view.onColumnDrop, view));
 
                 var sorters = label.children('span.column-sorter');
                 sorters.on('click', $.proxy(view.onSortColumn, view));
             }
 
             if (el.hasClass('glyph-fixed-column')) {
-                el.css('min-width', label.width());
-                el.css('max-width', label.width());
+                el.css('min-width', label.width())
+                    .css('max-width', label.width());
+
             } else if (el.hasClass('title-column') && label.css('min-width') === '0px') {
                 // try to keep as possible the title entirely visible
 
@@ -356,7 +361,7 @@ var View = Marionette.CompositeView.extend({
             } else if (label.css('min-width') === '0px') {
                 // for each actor + 3 per span + 3 of right margin
                 var actors = label.children('span.column-action');
-                var actorsWidth = actors.length * (actors   .width() + 3 + 3);
+                var actorsWidth = actors.length * (actors.width() + 3 + 3);
 
                 var minWidth = 32 + actorsWidth;
                 // label.css('min-width', minWidth + 'px');
@@ -382,10 +387,10 @@ var View = Marionette.CompositeView.extend({
                 if (!fixedPrevColumn) {
                     sizer.addClass('active');
 
-                    sizer.on('mousedown', $.proxy(view.onResizeColumnBegin, view));
-                    sizer.on('mouseover', $.proxy(view.onResizeColumnHover, view));
+                    sizer.on('mousedown', $.proxy(view.onResizeColumnBegin, view))
+                        .on('mouseover', $.proxy(view.onResizeColumnHover, view));
                 }
-            } else if (i === 0 && el.children('div.column-sizer').length != 0) {
+            } else if (i === 0 && el.children('div.column-sizer').length !== 0) {
                 // remove previous sizer (can appears when moving columns)
                 el.children('div.column-sizer').remove();
             }
@@ -398,22 +403,16 @@ var View = Marionette.CompositeView.extend({
         if (autoAdjust) {
             $.each(headerRows, function(i, element) {
                 var el = $(element);
-                var label = el.children('div.table-advanced-label');
 
                 if (!el.hasClass('glyph-fixed-column')) {
-                    // el.width(el.width());
-                    // $(rows[i]).width(el.width());
-
                     // adjust head from body
+                    $(rows[i]).width($(rows[i]).width());
                     el.width($(rows[i]).width());
-
-                    // and especially of the title div (minus border left width) (@see computeClipping)
-                    // label.width(el.width() - (i === 0 ? 0 : 1));
 
                     // update user setting locally (minus border left except on first column)
                     view.selectedColumns[i].width = el.width() / tableWidth;
                 } else {
-                   view.selectedColumns[i].width = "auto";
+                    view.selectedColumns[i].width = "auto";
                 }
             });
         } else {
@@ -441,41 +440,27 @@ var View = Marionette.CompositeView.extend({
 
             $.each(headerRows, function (i, element) {
                 var el = $(element);
-                // var label = el.children('div.table-advanced-label');
 
                 // resize header column except glyph fixed columns
                 if (!el.hasClass('glyph-fixed-column')) {
                     // count border left (no left border for the first column)
-                    el.width(columnsWidth[i]);
                     $(rows[i]).width(columnsWidth[i]);
-
-                    // (@see computeClipping)
-                    // label.width(columnsWidth[i] - (i === 0 ? 0 : 1));
+                    el.width(columnsWidth[i]);
 
                     // update user setting locally (minus border left except on first column)
-                    view.selectedColumns[i].width = el.width() / tableWidth;
+                   view.selectedColumns[i].width = el.width() / tableWidth;
                 } else {
                     view.selectedColumns[i].width = "auto";
                 }
             });
         }
 
+        // update labels width, position and clipping
         this.computeClipping();
 
         // done
         if (!this.initialResizeDone) {
             this.initialResizeDone = true;
-        }
-    },
-
-    onResize: function() {
-        // re-adjust when parent send a resize event
-        if (this.initialResizeDone) {
-            if (this.isDisplayed()) {
-                this.updateColumnsWidth();
-                this.updateColumnsWidth(true);
-                // this.computeClipping();
-            }
         }
     },
 
@@ -974,13 +959,13 @@ var View = Marionette.CompositeView.extend({
         var body = this.ui.tbody.children('tr:first-child').children('th,td');
         var clientWidth = this.$el.innerWidth();
 
-        var hasScroll = (this.el.scrollHeight - this.el.clientHeight) > 0;
+        var hasScroll = (this.ui.tbody[0].scrollHeight - this.ui.tbody[0].parentNode.parentNode.clientHeight) > 0;
 
         // var scrollLeft = this.ui.tbody.parent().parent().scrollLeft();
         var leftMargin = application.isFirefox ? 7 : 8;
         var rightMargin = this.ui.add_column.length > 0 ? this.ui.add_column.parent().width() : 0;
         var leftClip = this.ui.table.position().left;
-        var rightClip = this.ui.add_column.length > 0 ? this.ui.add_column.parent().width() : 0;
+        // var rightClip = this.ui.add_column.length > 0 ? this.ui.add_column.parent().width() : 0;
 
         if (hasScroll) {
             rightMargin = Math.max(rightMargin, this.scrollbarWidth);
@@ -1123,7 +1108,18 @@ var View = Marionette.CompositeView.extend({
                     display: "block",
                     left: this.ui.add_column.parent().position().left - contextMenu.width(),
                     top: this.ui.add_column.parent().position().top + this.ui.add_column.height(),
+                    'tab-index': 0
                 }).addClass('glasspane-top-of');
+
+                // inside of the window
+                var maxHeight = $(window).height() - (this.ui.add_column.parent().offset().top + this.ui.add_column.height()) - 20;
+                ul.css('max-height', maxHeight + 'px').css('overflow-y', 'auto');
+
+                // hide header highlight
+                if (this.controlKeyDown) {
+                    this.controlKeyDown = false;
+                    this.ui.thead.css('background-color', 'initial');
+                }
 
                 // hide the context menu when click on the glass pane
                 application.main.glassPane('show').on('click', function(e) {
@@ -1389,21 +1385,31 @@ var View = Marionette.CompositeView.extend({
     },
 
     onWindowLostFocus: function(e) {
-        this.controlKeyDown = false;
-        this.ui.thead.css('background-color', 'initial');
+        if (this.controlKeyDown) {
+            this.controlKeyDown = false;
+            this.ui.thead.css('background-color', 'initial');
+        }
     },
 
     onKeyDown: function(e) {
         if (e.key === 'Control') {
-            this.controlKeyDown = true;
-            this.ui.thead.css('background-color', '#aedd36');
+            if (!application.main.isForeground(this)) {
+                return false;
+            }
+
+            if (!this.controlKeyDown) {
+                this.controlKeyDown = true;
+                this.ui.thead.css('background-color', '#aedd36');
+            }
         }
     },
 
     onKeyUp: function(e) {
         if (e.key === 'Control') {
-            this.controlKeyDown = false;
-            this.ui.thead.css('background-color', 'initial');
+            if (this.controlKeyDown) {
+                this.controlKeyDown = false;
+                this.ui.thead.css('background-color', 'initial');
+            }
         }
     }
 });

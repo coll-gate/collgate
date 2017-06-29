@@ -194,7 +194,8 @@ session.user = {
     isAuth: false,
     isSuperUser: false,
     isStaff: false,
-    settings: {}
+    settings: {},
+    lastAction : new Date().getTime()
 };
 
 {% if user.is_authenticated %}

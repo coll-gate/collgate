@@ -185,6 +185,22 @@ MainModule.prototype = {
         }
 
         return this.glassPaneElement;
+    },
+
+    /**
+     * Check whether if a given view is on foreground or not.
+     * @param view Valid view to check.
+     * @returns {boolean} True is the view is on foreground (no model upside, or glass pane)
+     */
+    isForeground: function(view) {
+        var body = $('body');
+
+        if ((body.children('div.modal-backdrop.in').length && !view.$el.closest('div.modal.in').length) ||
+            body.children('div.glasspane').length) {
+            return false;
+        }
+
+        return true;
     }
 };
 

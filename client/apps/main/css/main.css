@@ -478,3 +478,16 @@ div.glasspane.glasspane-full {
 .glasspane-top-of {
     z-index: 10001;
 }
+
+.input-group span.select2.select2-container>span.selection>span {
+    height: 34px;
+    padding: 0 0 0 8px;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    padding-top: 2px;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    top: 3px;
+}

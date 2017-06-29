@@ -26,6 +26,8 @@ var MainLayout = Marionette.LayoutView.extend({
         'right': "div.root-right-bar"
     },
 
+    ping_timeout: 3*60*1000,   // every 3 minutes
+
     initialize: function() {
         this.currentDisplayMode = application.getUserSetting("ui")['display_mode'] || "2-8-2";
         this.compactDisplay = false;
@@ -80,7 +82,8 @@ var MainLayout = Marionette.LayoutView.extend({
             view.currentView.onResize();
         }
 
-        this.ui.right.css('height', this.ui.content.height() + 10 + "px");
+        // this.ui.right.css('height', this.ui.content.height() + 10 + "px");  bug on table on resize
+        this.ui.right.css('height', "100%");
 
         // hide if previously shown
         if (this.ui.right.hasClass('col-is-hover') && this.ui.content.hasClass('col-md-12')) {
@@ -134,6 +137,7 @@ var MainLayout = Marionette.LayoutView.extend({
     onDomRefresh: function() {
         $('body').on('mouseover', $.proxy(this.onMouseOut, this));
         $(window).on('scroll', $.proxy(this.onWindowScroll, this));
+        $(window).on('focus', $.proxy(this.onWindowFocus, this));
     },
 
     onDestroy: function() {
@@ -202,6 +206,7 @@ var MainLayout = Marionette.LayoutView.extend({
         }
 
         this.hideRightPane();
+        this.checkSessionValidity();
 
         return false;
     },
@@ -223,6 +228,43 @@ var MainLayout = Marionette.LayoutView.extend({
                 .css('border-right', '')
                 .css('border-top', '')
                 .css('border-bottom', '');
+        }
+    },
+    
+    onWindowFocus: function () {
+        this.checkSessionValidity();
+        return false;
+    },
+
+    checkSessionValidity: function() {
+        // only if user is authenticated
+        if (!session.user.isAuth) {
+            return;
+        }
+
+        var now = new Date().getTime();
+        if (now - session.user.lastAction > this.ping_timeout) {
+            if (this.ping) {
+                return;
+            }
+
+            this.ping = true;
+
+            $.ajax({
+                method: "GET",
+                url: application.baseUrl + 'main/profile/ping/',
+                dataType: 'json',
+                view: this
+            }).done(function (data) {
+                this.view.ping = false;
+
+                if (!data.pong) {
+                    session.user.isAuth = false;
+
+                    // session terminated, message and back to home page
+                    window.location.assign(application.baseUrl + 'app/home/');
+                }
+            });
         }
     }
 });

@@ -43,6 +43,11 @@ class RestProfileSettings(RestProfile):
     name = 'settings'
 
 
+class RestProfilePing(RestProfile):
+    regex = r'^ping/$'
+    name = 'ping'
+
+
 @RestProfileSignIn.def_request(Method.POST, Format.HTML)
 def profile_sign_in(request):
     """
@@ -174,3 +179,16 @@ def update_self_settings(request):
 
     return HttpResponseRest(request, {})
 
+
+@RestProfilePing.def_auth_request(Method.GET, Format.JSON)
+def get_ping_session(request):
+    """
+    Ping current session for self. Returns true if the session still authenticated.
+    """
+    status = request.user.is_authenticated()
+
+    result = {
+        'pong': status
+    }
+
+    return HttpResponseRest(request, result)
