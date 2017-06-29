@@ -19,6 +19,7 @@ Logger = require('js-logger');
 // select2 as jquery plugin ($.select2)
 require("select2");
 require("select2/dist/css/select2.min.css");
+// require("select2-bootstrap-theme/dist/select2-bootstrap.min.css");
 
 // alphanum validator ($.alphanum)
 require("./deps/js/jquery.alphanum");
@@ -32,6 +33,9 @@ require("eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.mi
 
 // moment
 moment = require("moment");
+
+// some fixtures
+require("./fixtures");
 
 // utils
 _.deepClone = function(obj) {
@@ -382,6 +386,20 @@ application = new Marionette.Application({
      */
     view: function() {
         return this.getView().getRegion('content').currentView;
+    },
+
+    /**
+     * Is the current unique instance of DND object is valid and is a jQuery element.
+     */
+    isDndElement() {
+        return application.dndElement && (application.dndElement instanceof jQuery);
+    },
+
+    /**
+     * Is the current unique instance of DND object is valid and is a backbone view.
+     */
+    isDndView() {
+        return application.dndElement && (application.dndElement instanceof Backbone.View);
     }
 });
 

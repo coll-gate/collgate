@@ -39,13 +39,13 @@ _.extend(CountryType.prototype, DescriptorFormatType.prototype, {
             var initials = [];
 
             var container = parent.closest('div.modal-dialog').parent();
-            if (container.length == 0) {
+            if (container.length === 0) {
                 container = parent.closest('div.panel');
             }
 
             var params = {
                 data: initials,
-                dropdownParent: container,
+                dropdownParent: this.group, // container,
                 ajax: {
                     url: url,
                     dataType: 'json',
@@ -101,7 +101,7 @@ _.extend(CountryType.prototype, DescriptorFormatType.prototype, {
                 placeholder: gt.gettext("Enter a value. 3 characters at least for auto-completion")
             };
 
-            select.select2(params);
+            select.select2(params).fixSelect2Position();
 
             this.parent = parent;
             this.el = select;
@@ -176,13 +176,13 @@ _.extend(CountryType.prototype, DescriptorFormatType.prototype, {
                 var initials = [];
 
                 var container = this.parent.closest('div.modal-dialog').parent();
-                if (container.length == 0) {
+                if (container.length === 0) {
                     container = this.parent.closest('div.panel');
                 }
 
                 var params = {
                     data: initials,
-                    dropdownParent: container,
+                    dropdownParent: this.group, // container,
                     ajax: {
                         url: url + 'search/',
                         dataType: 'json',
@@ -387,4 +387,3 @@ CountryType.DescriptorTypeDetailsView = Marionette.ItemView.extend({
 });
 
 module.exports = CountryType;
-

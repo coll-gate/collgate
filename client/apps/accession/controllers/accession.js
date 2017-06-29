@@ -59,7 +59,7 @@ var Controller = Marionette.Object.extend({
                     this.ui.meta_model.selectpicker({});
 
                     $(this.ui.parent).select2({
-                        dropdownParent: $(this.el),
+                        dropdownParent: this.ui.parent.parent(),
                         ajax: {
                             url: application.baseUrl + "classification/taxon/search/",
                             dataType: 'json',
@@ -103,12 +103,13 @@ var Controller = Marionette.Object.extend({
                         },
                         minimumInputLength: 3,
                         placeholder: gt.gettext("Enter a classification name. 3 characters at least for auto-completion")
-                    });
+                    }).fixSelect2Position();
                 },
 
                 onBeforeDestroy: function() {
                     this.ui.language.selectpicker('destroy');
                     this.ui.meta_model.selectpicker('destroy');
+                    this.ui.parent.select2('destroy');
 
                     CreateAccessionView.__super__.onBeforeDestroy.apply(this);
                 },

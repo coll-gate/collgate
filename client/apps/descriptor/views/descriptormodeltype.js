@@ -97,6 +97,10 @@ var View = Marionette.ItemView.extend({
             e.originalEvent.preventDefault();
         }
 
+        if (!application.isDndView()) {
+            return false;
+        }
+
         if (application.dndElement.$el.hasClass('descriptor-model-type')) {
             if (this.model.get('position') < application.dndElement.model.get('position')) {
                 this.$el.css('border-top', '5px dashed #ddd');
@@ -104,7 +108,7 @@ var View = Marionette.ItemView.extend({
                 this.$el.css('border-bottom', '5px dashed #ddd');
             }
         } else if (application.dndElement.$el.hasClass('descriptor-type')) {
-             this.$el.css('border-top', '5px dashed #ddd');
+            this.$el.css('border-top', '5px dashed #ddd');
         }
 
         return false;
@@ -115,6 +119,10 @@ var View = Marionette.ItemView.extend({
             e.originalEvent.preventDefault();
         }
 
+        if (!application.isDndView()) {
+            return false;
+        }
+
         if (application.dndElement.$el.hasClass('descriptor-model-type')) {
             if (this.model.get('position') < application.dndElement.model.get('position')) {
                 this.$el.css('border-top', 'initial');
@@ -122,7 +130,7 @@ var View = Marionette.ItemView.extend({
                 this.$el.css('border-bottom', 'initial');
             }
         } else if (application.dndElement.$el.hasClass('descriptor-type')) {
-             this.$el.css('border-top', 'initial');
+            this.$el.css('border-top', 'initial');
         }
 
         return false;
@@ -133,8 +141,11 @@ var View = Marionette.ItemView.extend({
             e.originalEvent.stopPropagation();
         }
 
-        var elt = application.dndElement;
+        if (!application.isDndView()) {
+            return false;
+        }
 
+        var elt = application.dndElement;
         if (elt.$el.hasClass('descriptor-type')) {
             // reset borders
             this.$el.css('border-top', 'initial');

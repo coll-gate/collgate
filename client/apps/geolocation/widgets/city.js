@@ -38,7 +38,7 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
             var initials = [];
 
             var container = parent.closest('div.modal-dialog').parent();
-            if (container.length == 0) {
+            if (container.length === 0) {
                 container = parent.closest('div.panel');
             }
 
@@ -202,7 +202,7 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
 
             var params = {
                 data: initials,
-                dropdownParent: container,
+                dropdownParent: this.group, // container,
                 ajax: selectAjax(false),
                 allowClear: true,
                 minimumInputLength: 1,
@@ -550,7 +550,7 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
 
                 var params = {
                     data: initials,
-                    dropdownParent: container,
+                    dropdownParent: this.group, // container,
                     ajax: selectAjax(false),
                     allowClear: true,
                     minimumInputLength: 1,

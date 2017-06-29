@@ -56,12 +56,12 @@ var View = ScrollView.extend({
             return false;
         }
 
-        // if (!application.dndElement.$el.hasClass('descriptor-type')) {
-        //     return false;
-        // }
-
         this.dragEnterCount || (this.dragEnterCount = 0);
         ++this.dragEnterCount;
+
+        if (!application.isDndView()) {
+            return false;
+        }
 
         if (this.dragEnterCount === 1) {
             if (this.$el.find("tbody tr").length === 0) {
@@ -83,12 +83,12 @@ var View = ScrollView.extend({
             return false;
         }
 
-        // if (!application.dndElement.$el.hasClass('descriptor-type')) {
-        //     return false;
-        // }
-
         this.dragEnterCount || (this.dragEnterCount = 1);
         --this.dragEnterCount;
+
+        if (!application.isDndView()) {
+            return false;
+        }
 
         if (this.dragEnterCount === 0) {
             this.$el.find("tbody tr").last().css('border-bottom', 'initial');
@@ -108,11 +108,11 @@ var View = ScrollView.extend({
             return false;
         }
 
-        // if (!application.dndElement.$el.hasClass('descriptor-type')) {
-        //     return false;
-        // }
-
         this.dragEnterCount || (this.dragEnterCount = 1);
+
+        if (!application.isDndView()) {
+            return false;
+        }
 
         if (this.dragEnterCount === 1) {
             if (this.$el.find("tbody tr").length === 0) {
@@ -137,14 +137,14 @@ var View = ScrollView.extend({
 
         this.dragEnterCount = 0;
 
+        if (!application.isDndView()) {
+            return false;
+        }
+
         this.$el.find("tbody tr").last().css('border-bottom', 'initial');
         this.$el.find("thead tr th").css('border-bottom', 'initial');
 
         var elt = application.dndElement;
-        if (!elt) {
-            return false;
-        }
-
         if (elt.$el.hasClass('descriptor-type')) {
             var code = elt.model.get('code');
 

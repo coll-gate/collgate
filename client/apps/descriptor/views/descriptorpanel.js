@@ -10,8 +10,6 @@
 
 var Marionette = require('backbone.marionette');
 var Dialog = require('../../main/views/dialog');
-var DescriptorPanelModel = require('../models/descriptorpanel');
-
 
 var View = Marionette.ItemView.extend({
     tagName: 'div',
@@ -71,7 +69,11 @@ var View = Marionette.ItemView.extend({
         this.dragEnterCount || (this.dragEnterCount = 0);
         ++this.dragEnterCount;
 
-        if (this.dragEnterCount == 1) {
+        if (!application.isDndElement()) {
+            return false;
+        }
+
+        if (this.dragEnterCount === 1) {
             if (application.dndElement.$el.hasClass('descriptor-panel')) {
                 if (this.model.get('position') < application.dndElement.model.get('position')) {
                     this.ui.top_placeholder.css('display', 'block');
@@ -94,7 +96,11 @@ var View = Marionette.ItemView.extend({
         this.dragEnterCount || (this.dragEnterCount = 1);
         --this.dragEnterCount;
 
-        if (this.dragEnterCount == 0) {
+        if (!application.isDndElement()) {
+            return false;
+        }
+
+        if (this.dragEnterCount === 0) {
             if (application.dndElement.$el.hasClass('descriptor-panel')) {
                 if (this.model.get('position') < application.dndElement.model.get('position')) {
                     this.ui.top_placeholder.css('display', 'none');
@@ -116,7 +122,11 @@ var View = Marionette.ItemView.extend({
 
         this.dragEnterCount || (this.dragEnterCount = 1);
 
-        if (this.dragEnterCount == 1) {
+        if (!application.isDndElement()) {
+            return false;
+        }
+
+        if (this.dragEnterCount === 1) {
             if (application.dndElement.$el.hasClass('descriptor-panel')) {
                 if (this.model.get('position') < application.dndElement.model.get('position')) {
                     this.ui.top_placeholder.css('display', 'block');
@@ -137,9 +147,13 @@ var View = Marionette.ItemView.extend({
             e.originalEvent.stopPropagation();
         }
 
-        var elt = application.dndElement;
         this.dragEnterCount = 0;
 
+        if (!application.isDndElement()) {
+            return false;
+        }
+
+        var elt = application.dndElement;
         if (elt.$el.hasClass('descriptor-model')) {
             // reset placeholders
             this.ui.top_placeholder.css('display', 'none');

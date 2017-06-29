@@ -44,7 +44,7 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
 
             var params = {
                 data: initials,
-                dropdownParent: container,
+                dropdownParent: this.group, // container,
                 ajax: {
                     url: url + 'search/',
                     dataType: 'json',
@@ -162,7 +162,7 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
 
                 var params = {
                     data: initials,
-                    dropdownParent: container,
+                    dropdownParent: this.group, // container,
                     ajax: {
                         url: url + 'search/',
                         dataType: 'json',

@@ -57,7 +57,7 @@ var Controller = Marionette.Object.extend({
                     this.ui.meta_model.selectpicker({});
 
                     $(this.ui.accession).select2({
-                        dropdownParent: $(this.el),
+                        dropdownParent: this.ui.accession.parent(),
                         ajax: {
                             url: application.baseUrl + "accession/accession/search/",
                             dataType: 'json',
@@ -106,6 +106,7 @@ var Controller = Marionette.Object.extend({
 
                 onBeforeDestroy: function () {
                     this.ui.meta_model.selectpicker('destroy');
+                    this.ui.accession.select2('destroy');
 
                     CreateBatchView.__super__.onBeforeDestroy.apply(this);
                 },

@@ -49,7 +49,7 @@ var View = ScrollView.extend({
         this.dragEnterCount || (this.dragEnterCount = 0);
         ++this.dragEnterCount;
 
-        if (this.dragEnterCount == 1) {
+        if (application.dndElement && this.dragEnterCount === 1) {
             if (application.dndElement.$el.hasClass('descriptor-model')) {
                 this.ui.bottom_placeholder.css('display', 'block');
             } else if (application.dndElement.$el.hasClass('descriptor-panel')) {
@@ -68,7 +68,11 @@ var View = ScrollView.extend({
         this.dragEnterCount || (this.dragEnterCount = 1);
         --this.dragEnterCount;
 
-        if (this.dragEnterCount == 0) {
+        if (!application.isDndElement()) {
+            return false;
+        }
+
+        if (this.dragEnterCount === 0) {
             if (application.dndElement.$el.hasClass('descriptor-model')) {
                 this.ui.bottom_placeholder.css('display', 'none');
             } else if (application.dndElement.$el.hasClass('descriptor-panel')) {
@@ -86,7 +90,11 @@ var View = ScrollView.extend({
 
         this.dragEnterCount || (this.dragEnterCount = 1);
 
-        if (this.dragEnterCount == 1) {
+        if (!application.isDndElement()) {
+            return false;
+        }
+
+        if (this.dragEnterCount === 1) {
             if (application.dndElement.$el.hasClass('descriptor-model')) {
                 this.ui.bottom_placeholder.css('display', 'block');
             } else if (application.dndElement.$el.hasClass('descriptor-panel')) {
@@ -108,11 +116,11 @@ var View = ScrollView.extend({
         this.ui.top_placeholder.css('display', 'none');
         this.ui.bottom_placeholder.css('display', 'none');
 
-        var elt = application.dndElement;
-        if (!elt) {
+        if (!application.isDndElement()) {
             return false;
         }
 
+        var elt = application.dndElement;
         if (elt.$el.hasClass('descriptor-model')) {
             var DefinesLabel = Dialog.extend({
                 template: require('../templates/descriptorpanelcreate.html'),
@@ -248,4 +256,3 @@ var View = ScrollView.extend({
 });
 
 module.exports = View;
-

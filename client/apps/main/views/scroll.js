@@ -552,7 +552,11 @@ var View = Marionette.CompositeView.extend({
             this.targetDropElement = null;
         }
 
-        if (application.dndElement && e.currentTarget === application.dndElement[0]) {
+        if (!application.isDndElement()) {
+            return false;
+        }
+
+        if (e.currentTarget === application.dndElement[0]) {
             return false;
         }
 
@@ -591,11 +595,19 @@ var View = Marionette.CompositeView.extend({
             e.originalEvent.preventDefault();
         }
 
+        if (!application.isDndElement()) {
+            return false;
+        }
+
         if (e.currentTarget === application.dndElement[0]) {
             return false;
         }
 
         if (this.targetDropElement === e.currentTarget) {
+            return false;
+        }
+
+        if (application.dndElement.children('div.table-advanced-label').length === 0) {
             return false;
         }
 
@@ -631,6 +643,10 @@ var View = Marionette.CompositeView.extend({
     onColumnDrop: function(e) {
         if (e.originalEvent.stopPropagation) {
             e.originalEvent.stopPropagation();
+        }
+
+        if (!application.isDndElement()) {
+            return false;
         }
 
         var target = $(e.currentTarget);
@@ -926,7 +942,7 @@ var View = Marionette.CompositeView.extend({
             // post refresh on children once every children was rendered for any other rendering
             this.onRefreshChildren();
         } else {
-            this.updateColumnsWidth();
+            this.updateColumnsWidth(true);
         }
     },
 
