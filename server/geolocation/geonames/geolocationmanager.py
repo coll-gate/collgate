@@ -133,16 +133,6 @@ class GeolocationManager(GeolocationInterface):
                 else:
                     alt_name.append(name.alternate_name)
 
-                try:
-                    country.latitude = float(country.latitude)
-                except TypeError:
-                    country.latitude = None
-
-                try:
-                    country.longitude = float(country.longitude)
-                except TypeError:
-                    country.longitude = None
-
             result = {
                 'cou_id': country.pk,
                 'geoname_id': country.geoname_id,
@@ -177,16 +167,6 @@ class GeolocationManager(GeolocationInterface):
                 else:
                     alt_name.append(name.alternate_name)
 
-                try:
-                    country.latitude = float(country.latitude)
-                except TypeError:
-                    country.latitude = None
-
-                try:
-                    country.longitude = float(country.longitude)
-                except TypeError:
-                    country.longitude = None
-
             result = {
                 'cou_id': country.pk,
                 'geoname_id': country.geoname_id,
@@ -216,16 +196,6 @@ class GeolocationManager(GeolocationInterface):
                 short.append(name.alternate_name)
             else:
                 alt_name.append(name.alternate_name)
-
-        try:
-            c.latitude = float(c.latitude)
-        except TypeError:
-            c.latitude = None
-
-        try:
-            c.longitude = float(c.longitude)
-        except TypeError:
-            c.longitude = None
 
         result = {
             'cou_id': c.pk,
@@ -269,16 +239,6 @@ class GeolocationManager(GeolocationInterface):
                     short.append(name.alternate_name)
                 else:
                     alt_name.append(name.alternate_name)
-
-            try:
-                city.latitude = float(city.latitude)
-            except TypeError:
-                city.latitude = None
-
-            try:
-                city.longitude = float(city.longitude)
-            except TypeError:
-                city.longitude = None
 
             result = {
                 'cit_id': city.pk,

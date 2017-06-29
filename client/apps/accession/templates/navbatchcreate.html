@@ -1,0 +1,44 @@
+<!--
+ - @file navbatchcreate.html
+ - @brief 
+ - @author Medhi BOULNEMOUR (INRA UMR1095)
+ - @date 2017-06-28
+ - @copyright Copyright (c) 2016 INRA/CIRAD
+ - @license MIT (see LICENSE file)
+ - @details 
+-->
+
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title"><%= gt.gettext("Introduce a batch") %></h4>
+        </div>
+        <div class="modal-body">
+            <form>
+                <div class="form-group">
+                    <label class="control-label" for="batch_name"><%= gt.gettext("Name of the batch") %></label>
+                    <input class="form-control name" id="batch_name" type="text" name="accession" value=""
+                           maxlength="128" autofocus="" autocomplete="off" style="width:100%;">
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for="meta_model"><%= gt.gettext("Accession") %></label>
+                    <select id="accession" style="width:100%;" class="form-control"></select>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for="meta_model"><%= gt.gettext("Template") %></label>
+                    <select id="meta_model" style="width:100%;" class="form-control">
+                        <% _.each(meta_models, function(meta_model) { %>
+                        <option value="<%= meta_model.id %>"><%= meta_model.label %></option>
+                        <% }) %>
+                    </select>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= gt.gettext("Cancel") %>
+            </button>
+            <button type="button" class="btn btn-success continue"><%= gt.gettext("Continue") %></button>
+        </div>
+    </div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->
