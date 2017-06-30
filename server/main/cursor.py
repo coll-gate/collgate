@@ -175,7 +175,9 @@ class CursorQuery(object):
                                 pff = prev_field.split(self.FIELDS_SEP)
                                 lqs.append(self._cast_descriptor_sub_type(pff[0], pff[1], prev_ope, self._cursor[prev_i]))
                             else:
-                                lqs.append(self._cast_descriptor_type(db_table, prev_field, prev_ope, self._cursor[prev_i]))
+                                clause = self._cast_descriptor_type(db_table, prev_field, prev_ope, self._cursor[prev_i])
+                                if clause:
+                                    lqs.append(clause)
                         else:
                             if self.FIELDS_SEP in prev_field:
                                 pff = prev_field.split(self.FIELDS_SEP)
@@ -188,7 +190,9 @@ class CursorQuery(object):
                             ff = f.split(self.FIELDS_SEP)
                             lqs.append(self._cast_descriptor_sub_type(ff[0], ff[1], op, self._cursor[i]))
                         else:
-                            lqs.append(self._cast_descriptor_type(db_table, f, op, self._cursor[i]))
+                            clause = self._cast_descriptor_type(db_table, f, op, self._cursor[i])
+                            if clause:
+                                lqs.append(clause)
                     else:
                         if self.FIELDS_SEP in f:
                             ff = f.split(self.FIELDS_SEP)
@@ -197,14 +201,17 @@ class CursorQuery(object):
                             lqs.append(self._cast_default_type(db_table, f, op, self._cursor[i]))
 
                     # if self._cursor[i] is not None:
-                    _where.append("(%s)" % " AND ".join(lqs))
+                    if len(lqs):
+                        _where.append("(%s)" % " AND ".join(lqs))
                 else:
                     if is_descriptor:
                         if self.FIELDS_SEP in f:
                             ff = f.split(self.FIELDS_SEP)
                             lqs.append(self._cast_descriptor_sub_type(ff[0], ff[1], op, self._cursor[i]))
                         else:
-                            lqs.append(self._cast_descriptor_type(db_table, f, op, self._cursor[i]))
+                            clause = self._cast_descriptor_type(db_table, f, op, self._cursor[i])
+                            if clause:
+                                lqs.append(clause)
                     else:
                         if self.FIELDS_SEP in f:
                             ff = f.split(self.FIELDS_SEP)
@@ -213,13 +220,15 @@ class CursorQuery(object):
                             lqs.append(self._cast_default_type(db_table, f, op, self._cursor[i]))
 
                     # if self._cursor[i] is not None:
-                    _where.append("(%s)" % " AND ".join(lqs))
+                    if len(lqs):
+                        _where.append("(%s)" % " AND ".join(lqs))
 
                 previous.append((f, i, op, ope, is_descriptor))
 
                 i += 1
 
-            self.query_filters.append(" OR ".join(_where))
+            if len(_where):
+                self.query_filters.append(" OR ".join(_where))
 
     def _make_value(self, value, field_data):
         if value is None:
@@ -499,7 +508,9 @@ class CursorQuery(object):
                         ff = f.split(self.FIELDS_SEP)
                         lqs.append(self._cast_descriptor_sub_type(ff[0], ff[1], op, value))
                     else:
-                        lqs.append(self._cast_descriptor_type(db_table, f, op, value))
+                        clause = self._cast_descriptor_type(db_table, f, op, value)
+                        if clause:
+                            lqs.append(clause)
                 else:
                     if self.FIELDS_SEP in f:
                         ff = f.split(self.FIELDS_SEP)

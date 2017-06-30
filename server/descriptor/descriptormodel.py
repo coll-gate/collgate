@@ -468,7 +468,7 @@ def patch_descriptor_model_type_for_model(request, des_id, typ_id):
     mandatory = request.data.get('mandatory')
     set_once = request.data.get('set_once')
     label = request.data.get('label')
-    index = JSONBFieldIndexType(request.data.get('index'))
+    index = JSONBFieldIndexType(request.data.get('index', 0))
 
     dmt = get_object_or_404(DescriptorModelType, id=int(typ_id), descriptor_model_id=int(des_id))
 

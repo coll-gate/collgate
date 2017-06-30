@@ -31,7 +31,11 @@ _.extend(ImpreciseDateType.prototype, DescriptorFormatType.prototype, {
             this.el = input;
         } else {
             var group = $('<div class="input-group"></div>');
-            var input = $('<input class="form-control" width="100%">').hide(); // element to hide
+            var input = $('<input class="form-control" width="100%">').css({
+                    height: '0px',
+                    visibility: 'hidden',
+                    padding: '0px',
+                    border: 'none'}); // element to hide
             var display_input = $('<input class="form-control" width="100%" pattern="[0-9\/\s]+">');
             var glyph = $('<span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>').css('cursor', 'pointer');
 
@@ -56,7 +60,11 @@ _.extend(ImpreciseDateType.prototype, DescriptorFormatType.prototype, {
                 maxDate: '9999-12-31',
                 icons: {
                     close: 'OK'
-                }
+                },
+                // widgetPositioning: {
+                //    vertical: 'auto',
+                //    horizontal: 'auto'
+                // }
             });
 
             var lastFocusedElement = null;
@@ -156,7 +164,7 @@ _.extend(ImpreciseDateType.prototype, DescriptorFormatType.prototype, {
                 dateTimePicker.appendTo('body');
                 dateTimePicker.css({
                     position: 'absolute',
-                    top: position.top,
+                    top: position.top + ((position.top < parentPos.top) ? -display_input.outerHeight() : 0),
                     bottom: 'auto',
                     left: position.left,
                     right: 'auto',
@@ -397,7 +405,7 @@ ImpreciseDateType.DescriptorTypeDetailsView = Marionette.ItemView.extend({
 });
 
 ImpreciseDateType.format = function (value) {
-    if (value === null) {
+    if (value === null || value === undefined) {
         return "";
     } else if (value[0] !== 0 && value[1] !== 0 && value[2] !== 0) {
         return moment().locale(session.language).year(value[0]).month(value[1]-1).date(value[2]).format("L");

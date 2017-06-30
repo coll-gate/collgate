@@ -173,7 +173,15 @@ class DescriptorFormatType(object):
         :param value: Value previously validated or None.
         :return: String of the clause-s or raise a ValueError exception.
         """
-        if operator == '=' or operator == 'eq':
+        if operator == 'exists':
+            return self.operator_exists(db_table, descriptor_name)
+        elif operator == 'notexists':
+            return self.operator_exists(db_table, descriptor_name)
+        elif operator == 'isnull':
+            return self.operator_isnull(db_table, descriptor_name)
+        elif operator == 'notnull':
+            return self.operator_notnull(db_table, descriptor_name)
+        elif operator == '=' or operator == 'eq':
             return self.operator_eq(db_table, descriptor_name, value)
         elif operator == '!=' or operator == 'neq':
             return self.operator_neq(db_table, descriptor_name, value)
@@ -199,6 +207,18 @@ class DescriptorFormatType(object):
             return self.operator_endswith(db_table, descriptor_name, value)
         else:
             raise ValueError('Unrecognized operator')
+
+    def operator_exists(self, db_table, descriptor_name):
+        return '("%s"."descriptors"?\'%s\') IS TRUE' % (db_table, descriptor_name)
+
+    def operator_notexists(self, db_table, descriptor_name):
+        return '("%s"."descriptors"?\'%s\') IS FALSE' % (db_table, descriptor_name)
+
+    def operator_isnull(self, db_table, descriptor_name):
+        return '("%s"."descriptors"->>\'%s\') IS NULL' % (db_table, descriptor_name)
+
+    def operator_notnull(self, db_table, descriptor_name):
+        return '("%s"."descriptors"->>\'%s\') IS NOT NULL' % (db_table, descriptor_name)
 
     def operator_startswith(self, db_table, descriptor_name, value):
         return self.operator_like(db_table, descriptor_name, value + "%%")
@@ -1106,7 +1126,7 @@ class DescriptorFormatTypeImpreciseDate(DescriptorFormatType):
         self.name = "imprecise_date"
         self.group = DescriptorFormatTypeGroupSingle()
         self.verbose_name = _("Imprecise date")
-        self.data = ["INTEGER", "INTEGER", "INTEGER"]
+        self.data = "TEXT"
 
     class MyQ(Q):
         def __init__(self, kwargs=None):
@@ -1137,41 +1157,416 @@ class DescriptorFormatTypeImpreciseDate(DescriptorFormatType):
     def check(self, descriptor_type_format):
         return None
 
-    def operator_gte(self, descriptor_type_format, value, descriptor_model_type):
-        validate_result = self.validate(descriptor_type_format, value, descriptor_model_type)
-        if validate_result is not None:
-            return validate_result
+    # def operator_gte(self, descriptor_type_format, value, descriptor_model_type):
+    #     validate_result = self.validate(descriptor_type_format, value, descriptor_model_type)
+    #     if validate_result is not None:
+    #         return validate_result
+    #
+    #     # return self.MyQ({'descriptors__%s__0__gte' % descriptor_model_type['descriptor_code']: value[0]}) & self.MyQ(
+    #     #     {'descriptors__%s__1__gte' % descriptor_model_type['descriptor_code']: value[1]}) & self.MyQ(
+    #     #     {'descriptors__%s__2__gte' % descriptor_model_type['descriptor_code']: value[2]})
+    #
+    #     return (Q(**{'descriptors__%s__0__gte' % descriptor_model_type['descriptor_code']: value[0]}) &
+    #             Q(**{'descriptors__%s__1__gte' % descriptor_model_type['descriptor_code']: value[1]}) &
+    #             Q(**{'descriptors__%s__2__gte' % descriptor_model_type['descriptor_code']: value[2]}))
 
-        # return self.MyQ({'descriptors__%s__0__gte' % descriptor_model_type['descriptor_code']: value[0]}) & self.MyQ(
-        #     {'descriptors__%s__1__gte' % descriptor_model_type['descriptor_code']: value[1]}) & self.MyQ(
-        #     {'descriptors__%s__2__gte' % descriptor_model_type['descriptor_code']: value[2]})
+    # def operator_lte(self, descriptor_type_format, value, descriptor_model_type):
+    #     validate_result = self.validate(descriptor_type_format, value, descriptor_model_type)
+    #     if validate_result is not None:
+    #         return validate_result
+    #
+    #     if value[1] is 0:
+    #         value[1] = 12
+    #     if value[2] is 0:
+    #         value[2] = 31
+    #
+    #     return self.MyQ({'descriptors__%s__0__lte' % descriptor_model_type['descriptor_code']: value[0]}) & self.MyQ(
+    #         {'descriptors__%s__1__lte' % descriptor_model_type['descriptor_code']: value[1]}) & self.MyQ(
+    #         {'descriptors__%s__2__lte' % descriptor_model_type['descriptor_code']: value[2]})
+    #
+    # def operator_eq(self, descriptor_type_format, value, descriptor_model_type):
+    #     validate_result = self.validate(descriptor_type_format, value, descriptor_model_type)
+    #     if validate_result is not None:
+    #         return validate_result
+    #
+    #     return self.MyQ({'descriptors__%s__0' % descriptor_model_type['descriptor_code']: value[0]}) & self.MyQ(
+    #         {'descriptors__%s__1' % descriptor_model_type['descriptor_code']: value[1]}) & self.MyQ(
+    #         {'descriptors__%s__2' % descriptor_model_type['descriptor_code']: value[2]})
 
-        return (Q(**{'descriptors__%s__0__gte' % descriptor_model_type['descriptor_code']: value[0]}) &
-                Q(**{'descriptors__%s__1__gte' % descriptor_model_type['descriptor_code']: value[1]}) &
-                Q(**{'descriptors__%s__2__gte' % descriptor_model_type['descriptor_code']: value[2]}))
+    def make_sql_value(self, value):
+        """
+        Convert the given value for a SQL query according to the format of the descriptor and about the
+        meaning of the NULL value.
 
-    def operator_lte(self, descriptor_type_format, value, descriptor_model_type):
-        validate_result = self.validate(descriptor_type_format, value, descriptor_model_type)
-        if validate_result is not None:
-            return validate_result
+        :param value: Value to convert.
+        :return: Converted value a string.
+        """
+        if value is None:
+            if self.null:
+                return ['0', '0', '0']
+            else:
+                return "NULL"
 
-        if value[1] is 0:
-            value[1] = 12
-        if value[2] is 0:
-            value[2] = 31
+        try:
+            result = []
 
-        return self.MyQ({'descriptors__%s__0__lte' % descriptor_model_type['descriptor_code']: value[0]}) & self.MyQ(
-            {'descriptors__%s__1__lte' % descriptor_model_type['descriptor_code']: value[1]}) & self.MyQ(
-            {'descriptors__%s__2__lte' % descriptor_model_type['descriptor_code']: value[2]})
+            for i in range(0, 3):
+                if value[i] is None:
+                    result.append("0")
+                else:
+                    result.append(str(int(value[i])))
+        except ValueError:
+            if self.null:
+                return ['0', '0', '0']
+            else:
+                return "NULL"
 
-    def operator_eq(self, descriptor_type_format, value, descriptor_model_type):
-        validate_result = self.validate(descriptor_type_format, value, descriptor_model_type)
-        if validate_result is not None:
-            return validate_result
+        return result
 
-        return self.MyQ({'descriptors__%s__0' % descriptor_model_type['descriptor_code']: value[0]}) & self.MyQ(
-            {'descriptors__%s__1' % descriptor_model_type['descriptor_code']: value[1]}) & self.MyQ(
-            {'descriptors__%s__2' % descriptor_model_type['descriptor_code']: value[2]})
+    def operator_eq(self, db_table, descriptor_name, value):
+        """
+        Strict equality operator.
+        """
+        final_value = self.make_sql_value(value)
+        clauses = []
+
+        if final_value[0] != '0':
+            if final_value[1] != '0':
+                if final_value[2] != '0':
+                    # year is always present
+                    clauses.append('(("%s"."descriptors"->\'%s\')->>0)::INTEGER = %s' % (
+                        db_table, descriptor_name, final_value[0]))
+
+                    # month
+                    clauses.append('((("%s"."descriptors"->\'%s\')->>1)::INTEGER = 0' % (
+                        db_table, descriptor_name) + " OR "
+                                   '(("%s"."descriptors"->\'%s\')->>1)::INTEGER = %s)' % (
+                        db_table, descriptor_name, final_value[1]))
+
+                    # day of month
+                    clauses.append('((("%s"."descriptors"->\'%s\')->>2)::INTEGER = 0' % (
+                        db_table, descriptor_name) + " OR "
+                                     '(("%s"."descriptors"->\'%s\')->>2)::INTEGER = %s)' % (
+                       db_table, descriptor_name, final_value[2]))
+                else:
+                    # year
+                    clauses.append('(("%s"."descriptors"->\'%s\')->>0)::INTEGER = %s' % (
+                        db_table, descriptor_name, final_value[0]))
+
+                    # month
+                    clauses.append('((("%s"."descriptors"->\'%s\')->>1)::INTEGER = 0' % (
+                        db_table, descriptor_name) + " OR "
+                                   '(("%s"."descriptors"->\'%s\')->>1)::INTEGER = %s)' % (
+                        db_table, descriptor_name, final_value[1]))
+            else:
+                # year
+                clauses.append('(("%s"."descriptors"->\'%s\')->>0)::INTEGER = %s' % (
+                    db_table, descriptor_name, final_value[0]))
+
+        # clauses = [
+            # '(("%s"."descriptors"->\'%s\')->>0)::INTEGER = %s' % (db_table, descriptor_name, final_value[0]),
+            # '(("%s"."descriptors"->\'%s\')->>1)::INTEGER = %s' % (db_table, descriptor_name, final_value[1]),
+            # '(("%s"."descriptors"->\'%s\')->>2)::INTEGER = %s' % (db_table, descriptor_name, final_value[2])
+            # '("%s"."descriptors"->\'%s\')->>0 = \'%s\'' % (db_table, descriptor_name, final_value[0]),
+            # '("%s"."descriptors"->\'%s\')->>1 = \'%s\'' % (db_table, descriptor_name, final_value[1]),
+            # '("%s"."descriptors"->\'%s\')->>2 = \'%s\'' % (db_table, descriptor_name, final_value[2])
+            # '("%s"."descriptors"#>\'{%s,0}\')[0] = %s' % (db_table, descriptor_name, final_value[0]),
+            # '("%s"."descriptors"#>\'{%s,1}\')[0] = %s' % (db_table, descriptor_name, final_value[1]),
+            # '("%s"."descriptors"#>\'{%s,2}\')[0] = %s' % (db_table, descriptor_name, final_value[2])
+            # 'TRANSLATE(("%s"."descriptors"->>\'%s\'), \'[]\' ,\'{}\')::INT[] = \'{%s}\'' % (
+            #     db_table, descriptor_name, ','.join(final_value)),
+        # ]
+
+        return "(%s)" % " AND ".join(clauses)
+
+    def operator_neq(self, db_table, descriptor_name, value):
+        """
+        Strict inequality operator.
+        """
+        final_value = self.make_sql_value(value)
+        clauses = []
+
+        if final_value[0] != '0':
+            if final_value[1] != '0':
+                if final_value[2] != '0':
+                    # year is always present
+                    clauses.append('(("%s"."descriptors"->\'%s\')->>0)::INTEGER != %s' % (
+                        db_table, descriptor_name, final_value[0]))
+
+                    # month
+                    clauses.append('((("%s"."descriptors"->\'%s\')->>1)::INTEGER != 0' % (
+                        db_table, descriptor_name) + " AND "
+                                   '(("%s"."descriptors"->\'%s\')->>1)::INTEGER != %s)' % (
+                        db_table, descriptor_name, final_value[1]))
+
+                    # day of month
+                    clauses.append('((("%s"."descriptors"->\'%s\')->>2)::INTEGER != 0' % (
+                        db_table, descriptor_name) + " AND "
+                                     '(("%s"."descriptors"->\'%s\')->>2)::INTEGER != %s)' % (
+                       db_table, descriptor_name, final_value[2]))
+                else:
+                    # year
+                    clauses.append('(("%s"."descriptors"->\'%s\')->>0)::INTEGER != %s' % (
+                        db_table, descriptor_name, final_value[0]))
+
+                    # month
+                    clauses.append('((("%s"."descriptors"->\'%s\')->>1)::INTEGER != 0' % (
+                        db_table, descriptor_name) + " AND "
+                                   '(("%s"."descriptors"->\'%s\')->>1)::INTEGER != %s)' % (
+                        db_table, descriptor_name, final_value[1]))
+            else:
+                # year
+                clauses.append('(("%s"."descriptors"->\'%s\')->>0)::INTEGER != %s' % (
+                    db_table, descriptor_name, final_value[0]))
+
+        return "(%s)" % " OR ".join(clauses)
+
+    def operator_lte(self, db_table, descriptor_name, value):
+        """
+        Lesser than or equal operator.
+        """
+        final_value = self.make_sql_value(value)
+        clauses = []
+
+        # @todo IF YEAR IS EQUAL THEN... IF MONTH IS EQUAL TOO THEN... DAY) and same for LT, GT and GTE operators
+        if final_value[0] != '0':
+            sub_clauses = []
+            is_null = self.operator_isnull(db_table, descriptor_name)
+
+            if final_value[1] != '0':
+                if final_value[2] != '0':
+                    # year is always present
+                    sub_clauses.append('(("%s"."descriptors"->\'%s\')->>0)::INTEGER <= %s' % (
+                        db_table, descriptor_name, final_value[0]))
+
+                    # month
+                    sub_clauses.append('((("%s"."descriptors"->\'%s\')->>1)::INTEGER = 0' % (
+                        db_table, descriptor_name) + " OR "
+                                   '(("%s"."descriptors"->\'%s\')->>1)::INTEGER <= %s)' % (
+                        db_table, descriptor_name, final_value[1]))
+
+                    # day of month
+                    sub_clauses.append('((("%s"."descriptors"->\'%s\')->>2)::INTEGER = 0' % (
+                        db_table, descriptor_name) + " OR "
+                                   '(("%s"."descriptors"->\'%s\')->>2)::INTEGER <= %s)' % (
+                        db_table, descriptor_name, final_value[2]))
+                else:
+                    # year
+                    sub_clauses.append('(("%s"."descriptors"->\'%s\')->>0)::INTEGER <= %s' % (
+                        db_table, descriptor_name, final_value[0]))
+
+                    # month
+                    sub_clauses.append('((("%s"."descriptors"->\'%s\')->>1)::INTEGER = 0' % (
+                        db_table, descriptor_name) + " OR "
+                                  '(("%s"."descriptors"->\'%s\')->>1)::INTEGER <= %s)' % (
+                        db_table, descriptor_name, final_value[1]))
+            else:
+                # year
+                sub_clauses.append('(("%s"."descriptors"->\'%s\')->>0)::INTEGER <= %s' % (
+                    db_table, descriptor_name, final_value[0]))
+
+            clauses.append("%s OR (%s)" % (is_null, " AND ".join(sub_clauses)))
+        else:
+            is_null = self.operator_isnull(db_table, descriptor_name)
+
+            sub_clauses = []
+
+            # year is always present
+            sub_clauses.append('(("%s"."descriptors"->\'%s\')->>0)::INTEGER <= 0' % (
+                db_table, descriptor_name))
+
+            # month
+            sub_clauses.append('(("%s"."descriptors"->\'%s\')->>1)::INTEGER <= 0' % (
+                db_table, descriptor_name))
+
+            # day of month
+            sub_clauses.append('(("%s"."descriptors"->\'%s\')->>2)::INTEGER <= 0' % (
+                db_table, descriptor_name))
+
+            clauses.append("%s OR (%s)" % (is_null, " AND ".join(sub_clauses)))
+
+        return "(%s)" % " AND ".join(clauses)
+
+    def operator_lt(self, db_table, descriptor_name, value):
+        """
+        Strict lesser than operator.
+        """
+        final_value = self.make_sql_value(value)
+        clauses = []
+
+        if final_value[0] != '0':
+            # @todo is detect NULL ???
+            sub_clauses = []
+            is_null = self.operator_isnull(db_table, descriptor_name)
+
+            if final_value[1] != '0':
+                if final_value[2] != '0':
+                    # year is always present
+                    sub_clauses.append('(("%s"."descriptors"->\'%s\')->>0)::INTEGER <= %s' % (
+                        db_table, descriptor_name, final_value[0]))
+
+                    # month
+                    sub_clauses.append('((("%s"."descriptors"->\'%s\')->>1)::INTEGER = 0' % (
+                        db_table, descriptor_name) + " OR "
+                                   '(("%s"."descriptors"->\'%s\')->>1)::INTEGER < %s)' % (
+                        db_table, descriptor_name, final_value[1]))
+
+                    # day of month
+                    sub_clauses.append('((("%s"."descriptors"->\'%s\')->>2)::INTEGER = 0' % (
+                        db_table, descriptor_name) + " OR "
+                                   '(("%s"."descriptors"->\'%s\')->>2)::INTEGER < %s)' % (
+                        db_table, descriptor_name, final_value[2]))
+                else:
+                    # year
+                    sub_clauses.append('(("%s"."descriptors"->\'%s\')->>0)::INTEGER < %s' % (
+                        db_table, descriptor_name, final_value[0]))
+
+                    # month
+                    sub_clauses.append('((("%s"."descriptors"->\'%s\')->>1)::INTEGER = 0' % (
+                        db_table, descriptor_name) + " OR "
+                                  '(("%s"."descriptors"->\'%s\')->>1)::INTEGER < %s)' % (
+                        db_table, descriptor_name, final_value[1]))
+            else:
+                # year
+                sub_clauses.append('(("%s"."descriptors"->\'%s\')->>0)::INTEGER < %s' % (
+                    db_table, descriptor_name, final_value[0]))
+
+            clauses.append("%s OR (%s)" % (is_null, " AND ".join(sub_clauses)))
+        else:
+            # lt null mean empty set
+            return None
+
+        return "(%s)" % " AND ".join(clauses)
+
+    def operator_gte(self, db_table, descriptor_name, value):
+        """
+        Greater than or equal operator.
+        """
+        final_value = self.make_sql_value(value)
+        clauses = []
+
+        # at least greater than or equal than NULL or [0, 0, 0] dates
+        if final_value[0] != '0':
+            # @todo is detect NULL ???
+            sub_clauses = []
+            # is_null = self.operator_notnull(db_table, descriptor_name)
+
+            # @todo can be NULL but then it is the EQUAL of the >=
+            if final_value[1] != '0':
+                if final_value[2] != '0':
+                    # year is always present
+                    sub_clauses.append('(("%s"."descriptors"->\'%s\')->>0)::INTEGER >= %s' % (
+                        db_table, descriptor_name, final_value[0]))
+
+                    # month
+                    sub_clauses.append('((("%s"."descriptors"->\'%s\')->>1)::INTEGER = 0' % (
+                        db_table, descriptor_name) + " OR "
+                                   '(("%s"."descriptors"->\'%s\')->>1)::INTEGER >= %s)' % (
+                        db_table, descriptor_name, final_value[1]))
+
+                    # day of month
+                    sub_clauses.append('((("%s"."descriptors"->\'%s\')->>2)::INTEGER = 0' % (
+                        db_table, descriptor_name) + " OR "
+                                   '(("%s"."descriptors"->\'%s\')->>2)::INTEGER >= %s)' % (
+                        db_table, descriptor_name, final_value[2]))
+                else:
+                    # year
+                    sub_clauses.append('(("%s"."descriptors"->\'%s\')->>0)::INTEGER >= %s' % (
+                        db_table, descriptor_name, final_value[0]))
+
+                    # month
+                    sub_clauses.append('((("%s"."descriptors"->\'%s\')->>1)::INTEGER = 0' % (
+                        db_table, descriptor_name) + " OR "
+                                  '(("%s"."descriptors"->\'%s\')->>1)::INTEGER >= %s)' % (
+                        db_table, descriptor_name, final_value[1]))
+            else:
+                # year
+                sub_clauses.append('(("%s"."descriptors"->\'%s\')->>0)::INTEGER >= %s' % (
+                    db_table, descriptor_name, final_value[0]))
+
+            # clauses.append("%s OR (%s)" % (is_null, " AND ".join(sub_clauses)))
+            clauses = sub_clauses
+        else:
+            is_null = self.operator_isnull(db_table, descriptor_name)
+
+            sub_clauses = []
+
+            # year is always present
+            sub_clauses.append('(("%s"."descriptors"->\'%s\')->>0)::INTEGER >= 0' % (
+                db_table, descriptor_name))
+
+            # month
+            sub_clauses.append('(("%s"."descriptors"->\'%s\')->>1)::INTEGER >= 0' % (
+                db_table, descriptor_name))
+
+            # day of month
+            sub_clauses.append('(("%s"."descriptors"->\'%s\')->>2)::INTEGER >= 0' % (
+                db_table, descriptor_name))
+
+            clauses.append("%s OR (%s)" % (is_null, " AND ".join(sub_clauses)))
+
+        return "(%s)" % " AND ".join(clauses)
+
+    def operator_gt(self, db_table, descriptor_name, value):
+        """
+        Strict greater than operator.
+        """
+        final_value = self.make_sql_value(value)
+        clauses = []
+
+        # always at least greater than NULL or [0, 0, 0] dates
+        if final_value[0] != '0':
+            if final_value[1] != '0':
+                if final_value[2] != '0':
+                    # year is always present
+                    clauses.append('(("%s"."descriptors"->\'%s\')->>0)::INTEGER > %s' % (
+                        db_table, descriptor_name, final_value[0]))
+
+                    # month
+                    clauses.append('((("%s"."descriptors"->\'%s\')->>1)::INTEGER != 0' % (
+                        db_table, descriptor_name) + " OR "
+                                   '(("%s"."descriptors"->\'%s\')->>1)::INTEGER > %s)' % (
+                        db_table, descriptor_name, final_value[1]))
+
+                    # day of month
+                    clauses.append('((("%s"."descriptors"->\'%s\')->>2)::INTEGER != 0' % (
+                        db_table, descriptor_name) + " OR "
+                                   '(("%s"."descriptors"->\'%s\')->>2)::INTEGER > %s)' % (
+                        db_table, descriptor_name, final_value[2]))
+                else:
+                    # year
+                    clauses.append('(("%s"."descriptors"->\'%s\')->>0)::INTEGER > %s' % (
+                        db_table, descriptor_name, final_value[0]))
+
+                    # month
+                    clauses.append('((("%s"."descriptors"->\'%s\')->>1)::INTEGER != 0' % (
+                        db_table, descriptor_name) + " OR "
+                                  '(("%s"."descriptors"->\'%s\')->>1)::INTEGER > %s)' % (
+                        db_table, descriptor_name, final_value[1]))
+            else:
+                # year
+                clauses.append('(("%s"."descriptors"->\'%s\')->>0)::INTEGER > %s' % (
+                    db_table, descriptor_name, final_value[0]))
+        else:
+            is_null = self.operator_notnull(db_table, descriptor_name)
+
+            sub_clauses = []
+
+            # year is always present
+            sub_clauses.append('(("%s"."descriptors"->\'%s\')->>0)::INTEGER > 0' % (
+                db_table, descriptor_name))
+
+            # month
+            sub_clauses.append('(("%s"."descriptors"->\'%s\')->>1)::INTEGER > 0' % (
+                db_table, descriptor_name))
+
+            # day of month
+            sub_clauses.append('(("%s"."descriptors"->\'%s\')->>2)::INTEGER > 0' % (
+                db_table, descriptor_name))
+
+            clauses.append("%s OR (%s)" % (is_null, " AND ".join(sub_clauses)))
+
+        return "(%s)" % " AND ".join(clauses)
 
 
 class DescriptorFormatTypeDateTime(DescriptorFormatType):

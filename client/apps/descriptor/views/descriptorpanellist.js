@@ -68,7 +68,7 @@ var View = ScrollView.extend({
         this.dragEnterCount || (this.dragEnterCount = 1);
         --this.dragEnterCount;
 
-        if (!application.isDndElement()) {
+        if (!application.isDndView()) {
             return false;
         }
 
@@ -90,7 +90,7 @@ var View = ScrollView.extend({
 
         this.dragEnterCount || (this.dragEnterCount = 1);
 
-        if (!application.isDndElement()) {
+        if (!application.isDndView()) {
             return false;
         }
 
@@ -116,7 +116,7 @@ var View = ScrollView.extend({
         this.ui.top_placeholder.css('display', 'none');
         this.ui.bottom_placeholder.css('display', 'none');
 
-        if (!application.isDndElement()) {
+        if (!application.isDndView()) {
             return false;
         }
 

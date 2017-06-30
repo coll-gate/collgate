@@ -69,7 +69,7 @@ var View = Marionette.ItemView.extend({
         this.dragEnterCount || (this.dragEnterCount = 0);
         ++this.dragEnterCount;
 
-        if (!application.isDndElement()) {
+        if (!application.isDndView()) {
             return false;
         }
 
@@ -96,7 +96,7 @@ var View = Marionette.ItemView.extend({
         this.dragEnterCount || (this.dragEnterCount = 1);
         --this.dragEnterCount;
 
-        if (!application.isDndElement()) {
+        if (!application.isDndView()) {
             return false;
         }
 
@@ -122,7 +122,7 @@ var View = Marionette.ItemView.extend({
 
         this.dragEnterCount || (this.dragEnterCount = 1);
 
-        if (!application.isDndElement()) {
+        if (!application.isDndView()) {
             return false;
         }
 
@@ -149,7 +149,7 @@ var View = Marionette.ItemView.extend({
 
         this.dragEnterCount = 0;
 
-        if (!application.isDndElement()) {
+        if (!application.isDndView()) {
             return false;
         }
 
