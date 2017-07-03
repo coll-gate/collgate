@@ -61,8 +61,97 @@ var View = Marionette.ItemView.extend({
         }
     },
 
+    updatePosition: function() {
+        var top = this.targetView.ui.tbody.parent().parent().offset().top;
+        var found = false;
+
+        if (this.previousTopElement) {
+            if (this.previousTopElement.offset().top <= top) {
+                var element = this.previousTopElement;
+                var i = this.previousTopElementIndex;
+
+                this.previousTopElement = null;
+
+                while (element && element.length) {
+                    if (element.offset().top + element.height() >= top) {
+                        this.previousTopElement = element;
+                        this.previousTopElementIndex = i;
+
+                        found = true;
+                        break;
+                    }
+
+                    element = element.next();
+                    ++i;
+                }
+console.log("titutututuu", i)
+            } else if (this.previousTopElement.offset().top > top) {
+                var element = this.previousTopElement;
+                var i = this.previousTopElementIndex;
+
+                this.previousTopElement = null;
+
+                while (element && element.length) {
+                    if (element.offset().top <= top) {
+                        this.previousTopElement = element;
+                        this.previousTopElementIndex = i;
+
+                        found = true;
+                        break;
+                    }
+
+                    element = element.prev();
+                    --i;
+                }
+console.log("totototo", i)
+            }
+        }
+
+        if (!found) {
+            var rows = this.targetView.ui.tbody.children('tr');
+            var view = this;
+
+            this.previousTopElement = null;
+            this.previousTopElementIndex = 0;
+
+            $.each(rows, function (i, el) {
+                var element = $(el);
+
+                if (element.offset().top + element.height() >= top) {
+                    view.previousTopElement = element;
+                    view.previousTopElementIndex = i;
+
+                    return false;
+                }
+            });
+        }
+
+        var bottom = top + this.targetView.ui.tbody.parent().parent().height();
+        var element = this.previousTopElement;
+        var i = this.previousTopElementIndex;
+
+        while (element && element.length) {
+            if (element.offset().top >= bottom) {
+                break;
+            }
+
+            element = element.next();
+            ++i;
+        }
+
+        var first = this.previousTopElement ? this.previousTopElementIndex + 1 : 0;
+        var last = i;
+
+        this.ui.collection_position.html(first + " - " + last);
+    },
+
     onUpdateCount: function(count) {
-        this.ui.collection_position.html(1);
+        if (count === 0) {
+            this.ui.collection_position.html(0 + " - " + 0);
+            // this.updatePosition();
+        } else {
+            this.updatePosition();
+        }
         this.ui.collection_count.html(count);
     },
 
@@ -81,64 +170,7 @@ var View = Marionette.ItemView.extend({
                 }
 
                 view.scrollEvent = false;
-                var top = view.targetView.ui.tbody.parent().parent().offset().top;
-
-                if (view.previousTopElement) {
-                    if (view.previousTopElement.offset().top <= top) {
-                        var element = view.previousTopElement;
-                        var i = view.previousTopElementIndex;
-
-                        view.previousTopElement = null;
-
-                        while (element.length) {
-                            if (element.offset().top + element.height() >= top) {
-                                view.ui.collection_position.html(i + 1);
-                                view.previousTopElement = element;
-                                view.previousTopElementIndex = i;
-
-                                return;
-                            }
-
-                            element = element.next();
-                            ++i;
-                        }
-                    } else if (view.previousTopElement.offset().top > top) {
-                        var element = view.previousTopElement;
-                        var i = view.previousTopElementIndex;
-
-                        this.previousTopElement = null;
-
-                        while (element.length) {
-                            if (element.offset().top + element.height() < top) {
-                                view.ui.collection_position.html(i + 1);
-                                view.previousTopElement = element;
-                                view.previousTopElementIndex = i;
-
-                                return;
-                            }
-
-                            element = element.prev();
-                            --i;
-                        }
-                    }
-                }
-
-                var rows = view.targetView.ui.tbody.children('tr');
-
-                view.previousTopElement = null;
-                view.previousTopElementIndex = 0;
-
-                $.each(rows, function (i, el) {
-                    var element = $(el);
-
-                    if (element.offset().top + element.height() >= top) {
-                        view.ui.collection_position.html(i + 1);
-                        view.previousTopElement = element;
-                        view.previousTopElementIndex = i;
-
-                        return false;
-                    }
-                });
+                view.updatePosition();
             }, 100, this);
         }
     },
