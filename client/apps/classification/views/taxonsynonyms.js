@@ -85,7 +85,7 @@ var View = Marionette.ItemView.extend({
                             var t = data.items[i];
 
                             // invalid if primary exists with the same name or if exists into the same taxon
-                            if (t.label.toUpperCase() == name.toUpperCase()) {
+                            if (t.label.toUpperCase() === name.toUpperCase()) {
                                 if ((t.taxon == view.model.get('id')) || (t.type == 0)) {
                                     view.ui.synonym_name.validateField(
                                         'failed', gt.gettext('Synonym of taxon already used'));
@@ -184,7 +184,7 @@ var View = Marionette.ItemView.extend({
                                 for (var i in data.items) {
                                     var t = data.items[i];
 
-                                    if (t.label.toUpperCase() == name.toUpperCase()) {
+                                    if (t.label.toUpperCase() === name.toUpperCase()) {
                                         // valid if same taxon and same synonym
                                         if ((t.taxon == view.model.get('id')) && (t.id == view.getOption('synonym_id'))) {
                                             view.ui.synonym_name.validateField('ok');

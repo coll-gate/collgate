@@ -39,6 +39,11 @@ class RestTaxonSearch(RestTaxon):
     suffix = 'search'
 
 
+class RestTaxonCount(RestTaxon):
+    regex = r'^count/$'
+    name = 'count'
+
+
 class RestTaxonId(RestTaxon):
     regex = r'^(?P<tax_id>[0-9]+)/$'
     suffix = 'id'
@@ -147,90 +152,176 @@ def create_taxon(request):
 
 @RestTaxon.def_auth_request(Method.GET, Format.JSON)
 def get_taxon_list(request):
+    # results_per_page = int_arg(request.GET.get('more', 30))
+    # cursor = request.GET.get('cursor')
+    # limit = results_per_page
+    #
+    # if request.GET.get('filters'):
+    #     filters = json.loads(request.GET['filters'])
+    #
+    #     if cursor:
+    #         cursor_name, cursor_id = cursor.rsplit('/', 1)
+    #         qs = Taxon.objects.filter(Q(name__gt=cursor_name) | (Q(name__gte=cursor_name) & Q(id__gt=cursor_id)))
+    #     else:
+    #         qs = Taxon.objects.all()
+    #
+    #     name = filters.get('name', '')
+    #     rank = filters.get('rank')
+    #
+    #     # name search based on synonyms
+    #     if filters.get('method', 'icontains') == 'icontains':
+    #         qs = qs.filter(Q(synonyms__name__icontains=name))
+    #     else:
+    #         qs = qs.filter(Q(name__iexact=name)).filter(Q(synonyms__name__iexact=name))
+    #
+    #     if rank:
+    #         qs = qs.filter(Q(rank=rank))
+    # else:
+    #     if cursor:
+    #         cursor_name, cursor_id = cursor.rsplit('/', 1)
+    #         qs = Taxon.objects.filter(Q(name__gt=cursor_name) | (Q(name__gte=cursor_name) & Q(id__gt=cursor_id)))
+    #     else:
+    #         qs = Taxon.objects.all()
+    #
+    # qs = qs.prefetch_related(
+    #     Prefetch(
+    #         "synonyms",
+    #         queryset=TaxonSynonym.objects.all().order_by('type', 'language'))
+    # ).select_related('parent').order_by('name', 'id')[:limit]
+    #
+    # items_list = []
+    # for taxon in qs:
+    #     t = {
+    #         'id': taxon.id,
+    #         'name': taxon.name,
+    #         'parent': taxon.parent_id,
+    #         'rank': taxon.rank,
+    #         'parent_list': [int(x) for x in taxon.parent_list.rstrip(',').split(',')] if taxon.parent_list else [],
+    #         'parent_details': None,
+    #         'synonyms': []
+    #     }
+    #
+    #     if taxon.parent:
+    #         t['parent_details'] = {
+    #             'id': taxon.parent.id,
+    #             'name': taxon.parent.name,
+    #             'rank': taxon.parent.rank
+    #         }
+    #
+    #     for synonym in taxon.synonyms.all():
+    #         t['synonyms'].append({
+    #             'id': synonym.id,
+    #             'name': synonym.name,
+    #             'type': synonym.type,
+    #             'language': synonym.language
+    #         })
+    #
+    #         items_list.append(t)
+    #
+    # if len(items_list) > 0:
+    #     # prev cursor (asc order)
+    #     taxon = items_list[0]
+    #     prev_cursor = "%s/%s" % (taxon['name'], taxon['id'])
+    #
+    #     # next cursor (asc order)
+    #     taxon = items_list[-1]
+    #     next_cursor = "%s/%s" % (taxon['name'], taxon['id'])
+    # else:
+    #     prev_cursor = None
+    #     next_cursor = None
+    #
+    # results = {
+    #     'perms': [],
+    #     'items': items_list,
+    #     'prev': prev_cursor,
+    #     'cursor': cursor,
+    #     'next': next_cursor,
+    # }
+
     results_per_page = int_arg(request.GET.get('more', 30))
-    cursor = request.GET.get('cursor')
+    cursor = json.loads(request.GET.get('cursor', 'null'))
     limit = results_per_page
+    sort_by = json.loads(request.GET.get('sort_by', '[]'))
+
+    if not len(sort_by) or sort_by[-1] not in ('id', '+id', '-id'):
+        order_by = sort_by + ['id']
+    else:
+        order_by = sort_by
+
+    from main.cursor import CursorQuery
+    cq = CursorQuery(Taxon)
 
     if request.GET.get('filters'):
         filters = json.loads(request.GET['filters'])
+        cq.filter(filters)
 
-        if cursor:
-            cursor_name, cursor_id = cursor.rsplit('/', 1)
-            qs = Taxon.objects.filter(Q(name__gt=cursor_name) | (Q(name__gte=cursor_name) & Q(id__gt=cursor_id)))
-        else:
-            qs = Taxon.objects.all()
-
-        name = filters.get('name', '')
-        rank = filters.get('rank')
-
-        # name search based on synonyms
-        if filters.get('method', 'icontains') == 'icontains':
-            qs = qs.filter(Q(synonyms__name__icontains=name))
-        else:
-            qs = qs.filter(Q(name__iexact=name)).filter(Q(synonyms__name__iexact=name))
-
-        if rank:
-            qs = qs.filter(Q(rank=rank))
-    else:
-        if cursor:
-            cursor_name, cursor_id = cursor.rsplit('/', 1)
-            qs = Taxon.objects.filter(Q(name__gt=cursor_name) | (Q(name__gte=cursor_name) & Q(id__gt=cursor_id)))
-        else:
-            qs = Taxon.objects.all()
-
-    qs = qs.prefetch_related(
-        Prefetch(
+    cq.prefetch_related(Prefetch(
             "synonyms",
-            queryset=TaxonSynonym.objects.all().order_by('type', 'language'))
-    ).select_related('parent').order_by('name', 'id')[:limit]
+            queryset=TaxonSynonym.objects.all().order_by('type', 'language')))
 
-    items_list = []
-    for taxon in qs:
-        t = {
-            'id': taxon.id,
-            'name': taxon.name,
-            'parent': taxon.parent_id,
-            'rank': taxon.rank,
-            'parent_list': [int(x) for x in taxon.parent_list.rstrip(',').split(',')] if taxon.parent_list else [],
+    cq.select_related('parent->name', 'parent->rank')
+
+    cq.cursor(cursor, order_by)
+    cq.order_by(order_by).limit(limit)
+
+    classification_items = []
+
+    for classification in cq:
+        c = {
+            'id': classification.id,
+            'name': classification.name,
+            'parent': classification.parent_id,
+            'rank': classification.rank,
+            'descriptor_meta_model': classification.descriptor_meta_model_id,
+            'descriptors': classification.descriptors,
+            'parent_list': [int(x) for x in classification.parent_list.rstrip(',').split(',')] if classification.parent_list else [],
             'parent_details': None,
             'synonyms': []
         }
 
-        if taxon.parent:
-            t['parent_details'] = {
-                'id': taxon.parent.id,
-                'name': taxon.parent.name,
-                'rank': taxon.parent.rank
+        if classification.parent:
+            c['parent_details'] = {
+                'id': classification.parent.id,
+                'name': classification.parent.name,
+                'rank': classification.parent.rank
             }
 
-        for synonym in taxon.synonyms.all():
-            t['synonyms'].append({
+        for synonym in classification.synonyms.all():
+            c['synonyms'].append({
                 'id': synonym.id,
                 'name': synonym.name,
                 'type': synonym.type,
                 'language': synonym.language
             })
 
-            items_list.append(t)
-
-    if len(items_list) > 0:
-        # prev cursor (asc order)
-        taxon = items_list[0]
-        prev_cursor = "%s/%s" % (taxon['name'], taxon['id'])
-
-        # next cursor (asc order)
-        taxon = items_list[-1]
-        next_cursor = "%s/%s" % (taxon['name'], taxon['id'])
-    else:
-        prev_cursor = None
-        next_cursor = None
+        classification_items.append(c)
 
     results = {
         'perms': [],
-        'items': items_list,
-        'prev': prev_cursor,
+        'items': classification_items,
+        'prev': cq.prev_cursor,
         'cursor': cursor,
-        'next': next_cursor,
+        'next': cq.next_cursor,
+    }
+
+    return HttpResponseRest(request, results)
+
+
+@RestTaxonCount.def_auth_request(Method.GET, Format.JSON, perms={
+    'classification.list_taxon': _("You are not allowed to list the classification")
+})
+def get_classification_list_count(request):
+    from main.cursor import CursorQuery
+    cq = CursorQuery(Taxon)
+
+    if request.GET.get('filters'):
+        filters = json.loads(request.GET['filters'])
+        cq.filter(filters)
+
+    count = cq.count()
+
+    results = {
+        'count': count
     }
 
     return HttpResponseRest(request, results)

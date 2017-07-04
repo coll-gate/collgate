@@ -44,10 +44,11 @@ var View = Marionette.ItemView.extend({
             this.more = -1;
         }
 
-        if (this.getOption('collection')) {
-            this.getOption('collection').count();
+        var collection = this.getOption('collection');
+        if (collection && collection.count) {
+            collection.count();
 
-            this.listenTo(this.getOption('collection'), 'count', this.onUpdateCount, this);
+            this.listenTo(collection, 'count', this.onUpdateCount, this);
         }
     },
 
@@ -59,6 +60,10 @@ var View = Marionette.ItemView.extend({
         if (this.targetView && this.targetView.getScrollElement) {
             this.targetView.getScrollElement().on('scroll', $.proxy(this.onScroll, this));
         }
+    },
+
+    onResize: function() {
+       this.updatePosition();
     },
 
     updatePosition: function() {
@@ -84,7 +89,6 @@ var View = Marionette.ItemView.extend({
                     element = element.next();
                     ++i;
                 }
-console.log("titutututuu", i)
             } else if (this.previousTopElement.offset().top > top) {
                 var element = this.previousTopElement;
                 var i = this.previousTopElementIndex;
@@ -103,7 +107,6 @@ console.log("titutututuu", i)
                     element = element.prev();
                     --i;
                 }
-console.log("totototo", i)
             }
         }
 

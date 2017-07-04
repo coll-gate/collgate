@@ -64,14 +64,25 @@ var TaxonRouter = Marionette.AppRouter.extend({
 
         defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of taxons")}));
 
-        collection.fetch().then(function () {
-            var taxonListView = new TaxonListView({collection : collection});
-
-            defaultLayout.getRegion('content').show(taxonListView);
-            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: taxonListView}));
+        // get available columns
+        var columns = $.ajax({
+            type: "GET",
+            url: application.baseUrl + 'descriptor/columns/classification.taxon/',
+            contentType: "application/json; charset=utf-8"
         });
 
-        defaultLayout.getRegion('bottom').show(new TaxonListFilterView({collection: collection}));
+        $.when(columns, collection.fetch()).done(function (data) {
+            var taxonListView = new TaxonListView({collection : collection, columns: data[0].columns});
+
+            defaultLayout.getRegion('content').show(taxonListView);
+            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({
+                targetView: taxonListView,
+                collection: collection
+            }));
+
+            defaultLayout.getRegion('bottom').show(new TaxonListFilterView({
+                collection: collection, columns: data[0].columns}));
+        });
     },
 
     getCultivarList : function() {
@@ -86,7 +97,10 @@ var TaxonRouter = Marionette.AppRouter.extend({
             var taxonListView = new CultivarListView({collection : collection});
 
             defaultLayout.getRegion('content').show(taxonListView);
-            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: taxonListView}));
+            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({
+                targetView: taxonListView,
+                collection: collection
+            }));
         });
 
         defaultLayout.getRegion('bottom').show(new CultivarListFilterView({collection: collection}));

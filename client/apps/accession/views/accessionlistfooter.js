@@ -16,18 +16,16 @@ var View = Marionette.ItemView.extend({
     template: require('../templates/accessionlistfooter.html'),
 
     ui: {
-        filter_btn: 'button.accession-filter',
-        accession_field: 'select.accession-field',
+        filter_btn: 'button.entity-filter',
+        entity_field: 'select.entity-field',
         search_value: 'input.search-value',
-        search_group: 'div.search-value-group',
-        accession_advanced_search: 'button.accession-advanced-search'
+        search_group: 'div.search-value-group'
     },
 
     events: {
         'click @ui.filter_btn': 'onFilter',
-        'change @ui.accession_field': 'onChangeField',
-        'input @ui.search_value': 'onSearchValue',
-        'click @ui.accession_advanced_search': 'onAdvancedSearch'
+        'change @ui.entity_field': 'onChangeField',
+        'input @ui.search_value': 'onSearchValue'
     },
 
     initialize: function(options) {
@@ -59,10 +57,10 @@ var View = Marionette.ItemView.extend({
             var option = $('<option>' + column.label + '</option>');
             option.attr('value', column.name);
 
-            this.ui.accession_field.append(option);
+            this.ui.entity_field.append(option);
         }
 
-        $(this.ui.accession_field).selectpicker({
+        $(this.ui.entity_field).selectpicker({
             style: 'btn-default',
             container: 'body'
         }).selectpicker('val', 'name');
@@ -70,7 +68,7 @@ var View = Marionette.ItemView.extend({
 
     onFilter: function () {
         if (this.validateSearchValue()) {
-            var field = this.ui.accession_field.val();
+            var field = this.ui.entity_field.val();
             var op = "eq";
             var value = null;
 
@@ -98,7 +96,7 @@ var View = Marionette.ItemView.extend({
             // this.collection.filters = [{
             //     type: 'term',
             //     field: 'name',
-            //     value: this.ui.accession_name.val().trim(),
+            //     value: this.ui.entity_name.val().trim(),
             //     op: "icontains"
             // }, {
             //     type: 'op',
@@ -124,7 +122,7 @@ var View = Marionette.ItemView.extend({
     },
 
     validateSearchValue: function() {
-        var field = this.ui.accession_field.val();
+        var field = this.ui.entity_field.val();
 
         if (field === 'name' || field === 'code') {
             var v = this.$el.find(".search-value").val().trim();
@@ -149,7 +147,7 @@ var View = Marionette.ItemView.extend({
     },
 
     onChangeField: function () {
-        var field = this.ui.accession_field.val();
+        var field = this.ui.entity_field.val();
         var column = this.getOption('columns')[field] || {};
 
         if (this.widget) {

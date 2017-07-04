@@ -158,7 +158,7 @@ def create_accession(request):
 @RestAccessionAccessionCount.def_auth_request(Method.GET, Format.JSON, perms={
     'accession.list_accession': _("You are not allowed to list the accessions")
 })
-def get_accession_list(request):
+def get_accession_list_count(request):
     from main.cursor import CursorQuery
     cq = CursorQuery(Accession)
 

@@ -19,7 +19,7 @@ var View = Marionette.ItemView.extend({
             'element-id': this.model.get('id')
         }
     },
-    template: require('../templates/accession.html'),
+    template: require("../../descriptor/templates/entity.html"),
 
     templateHelpers/*templateContext*/: function () {
         return {
@@ -80,11 +80,16 @@ var View = Marionette.ItemView.extend({
     },
 
     parentCell: function(td) {
-        var el = $('<span class="parent taxon-rank" title="">' + this.model.get('parent_details').name + '</span>');
-        var rank = application.classification.collections.taxonRanks.findLabel(this.model.get('parent_details').rank);
+        var parent_name = this.model.get('parent_details').name || "";
+        var parent_rank = this.model.get('parent_details').rank;
 
-        el.attr('value', this.model.get('parent_details').rank);
-        el.attr('title', rank);
+        var el = $('<span class="parent taxon-rank" title="">' + parent_name + '</span>');
+        if (parent_rank) {
+            var rank = application.classification.collections.taxonRanks.findLabel(this.model.get('parent_details').rank);
+
+            el.attr('value', this.model.get('parent_details').rank);
+            el.attr('title', rank);
+        }
 
         td.html(el);
     },

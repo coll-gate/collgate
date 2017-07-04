@@ -32,11 +32,31 @@ var View = Marionette.ItemView.extend({
 
     onFilter: function () {
         if (this.validateCultivarName()) {
-            this.collection.filters = {
-                name: this.ui.cultivar_name.val().trim(),
-                rank: 90,  // cultivar rank
-                method: "icontains"
-            };
+            var name = this.ui.cultivar_name.val().trim();
+
+            if (name.length) {
+                this.collection.filters = [{
+                    type: 'term',
+                    field: 'name',
+                    value: name,
+                    op: "icontains"
+                }, {
+                    type: 'op',
+                    value: 'and'
+                }, {
+                    type: 'term',
+                    field: 'rank',
+                    value: 90,   // cultivar rank
+                    op: "eq"
+                }];
+            } else {
+                this.collection.filters = [{
+                    type: 'term',
+                    field: 'rank',
+                    value: 90,   // cultivar rank
+                    op: "eq"
+                }];
+            }
 
             this.collection.fetch({reset: true});
         }

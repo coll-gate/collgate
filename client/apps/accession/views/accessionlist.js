@@ -13,10 +13,10 @@ var ScrollView = require('../../main/views/scroll');
 var DescriptorsColumnsView = require('../../descriptor/mixins/descriptorscolumns');
 
 var View = ScrollView.extend({
-    template: require("../templates/accessionlist.html"),
+    template: require("../../descriptor/templates/entitylist.html"),
     className: 'advanced-table-container',
     childView: AccessionView,
-    childViewContainer: 'tbody.accession-list',
+    childViewContainer: 'tbody.entity-list',
     userSettingName: 'accessions_list_columns',
 
     defaultColumns: [
@@ -57,7 +57,7 @@ var View = ScrollView.extend({
     initialize: function(options) {
         View.__super__.initialize.apply(this, arguments);
 
-//        this.listenTo(this.collection, 'reset', this.render, this);
+        // this.listenTo(this.collection, 'reset', this.render, this);
     }
 });
 

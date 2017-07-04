@@ -119,7 +119,7 @@ var View = Marionette.CompositeView.extend({
     },
 
     getUserSettingName: function() {
-        if (this.userSettingName != undefined) {
+        if (this.userSettingName) {
             if (_.isFunction(this.userSettingName)) {
                 return this.userSettingName();
             } else {
@@ -1331,6 +1331,14 @@ var View = Marionette.CompositeView.extend({
                 sortBy = [order + sortField];
                 el.attr('sort-position', 0);
             }
+
+            // update the user column
+            for (var i = 0; i < this.selectedColumns.length; ++i) {
+                if (this.selectedColumns[i].name === columnName) {
+                    this.selectedColumns[i].sort_by = order === '+' ? 'asc' : 'desc';
+                    break
+                }
+            }
         } else {
             // multiple
             if (order === '+') {
@@ -1398,6 +1406,24 @@ var View = Marionette.CompositeView.extend({
             sort_by: sortBy,
             more: Math.max(this.capacity() + 1, 30)
         }});
+/*
+        // update user columns
+        for (var i = 0; i < this.selectedColumns.length; ++i) {
+            var column = this.selectedColumns[i];
+
+            for (var j = 0; j < sortBy.length; ++j) {
+                var sorter = sortBy[j];
+
+                if (column.name === sorters) {
+
+                }
+            }
+        }
+*/
+        // and save them
+        if (this.getUserSettingName()) {
+            application.updateUserSetting(this.getUserSettingName(), this.selectedColumns);
+        }
     },
 
     onWindowLostFocus: function(e) {

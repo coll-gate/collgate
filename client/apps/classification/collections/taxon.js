@@ -28,16 +28,47 @@ var TaxonCollection = Backbone.Collection.extend({
         options || (options = {});
         var data = (options.data || {});
 
-        options.data = data;
+        var opts = _.clone(options);
+        opts.data = data;
 
-        this.cursor = options.data.cursor;
-        this.sort_by = options.data.sort_by;
+        this.cursor = data.cursor;
+        this.sort_by = data.sort_by;
 
         if (this.filters) {
-            options.data.filters = JSON.stringify(this.filters)
+            opts.data.filters = JSON.stringify(this.filters)
         }
 
-        return Backbone.Collection.prototype.fetch.call(this, options);
+        if (data.cursor && typeof data.cursor !== 'string') {
+            opts.data.cursor = JSON.stringify(data.cursor);
+        }
+
+        if (data.sort_by && typeof data.sort_by !== 'string') {
+            opts.data.sort_by = JSON.stringify(data.sort_by);
+        }
+
+        return Backbone.Collection.prototype.fetch.call(this, opts);
+    },
+
+    count: function(options) {
+        options || (options = {});
+        var data = (options.data || {});
+
+        var opts = _.clone(options);
+        opts.data = data;
+
+        if (this.filters) {
+            opts.data.filters = JSON.stringify(this.filters)
+        }
+
+        $.ajax({
+            type: "GET",
+            url: this.url + 'count/',
+            dataType: 'json',
+            data: opts.data,
+            collection: this
+        }).done(function (data) {
+            this.collection.trigger('count', data.count);
+        });
     }
 });
 

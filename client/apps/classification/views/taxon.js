@@ -13,10 +13,20 @@ var Marionette = require('backbone.marionette');
 var TaxonItemView = Marionette.ItemView.extend({
     tagName: 'tr',
     className: 'object taxon element',
-    attributes: {
-        'scope': 'row'
+    attributes: function() {
+        return {
+            'scope': 'row',
+            'element-id': this.model.get('id')
+        }
     },
-    template: require('../templates/taxon.html'),
+    template: require("../../descriptor/templates/entity.html"),
+
+    templateHelpers/*templateContext*/: function () {
+        return {
+            columnsList: this.getOption('columnsList'),
+            columnsOptions: this.getOption('columnsOptions')
+        }
+    },
 
     ui: {
         "taxon": "td.view-taxon-details",
@@ -66,10 +76,7 @@ var TaxonItemView = Marionette.ItemView.extend({
 
     onRender: function() {
         application.main.views.languages.htmlFromValue(this.el);
-        application.classification.views.taxonSynonymTypes.htmlFromValue(this.el);
-
-        application.classification.views.taxonRanks.elHtmlFromValue(this.ui.taxon_rank);
-        application.classification.views.taxonRanks.elAttributeFromValue(this.ui.parent, "title");
+        // application.classification.views.taxonSynonymTypes.htmlFromValue(this.el);
     },
 
     onTaxonDetails: function() {
@@ -86,6 +93,38 @@ var TaxonItemView = Marionette.ItemView.extend({
         this.model.destroy({wait: true}).then(function() {
             $.alert.success(gt.gettext("Successfully removed !"));
         });
+    },
+
+    rankCell: function(td) {
+        var rank = this.model.get('rank');
+        var text = application.classification.collections.taxonRanks.findLabel(rank);
+
+        td.html(text);
+    },
+
+    parentCell: function(td) {
+        var parent_name = this.model.get('parent_details').name || "";
+        var parent_rank = this.model.get('parent_details').rank;
+
+        var el = $('<span class="parent taxon-rank" title="">' + parent_name + '</span>');
+        if (parent_rank) {
+            var rank = application.classification.collections.taxonRanks.findLabel(this.model.get('parent_details').rank);
+
+            el.attr('value', this.model.get('parent_details').rank);
+            el.attr('title', rank);
+        }
+
+        td.html(el);
+    },
+
+    synonymCell: function(td) {
+        var synonyms = this.model.get('synonyms');
+
+        if (synonyms.length > 1) {
+            var text = this.model.get('synonyms')[1].name;
+
+            td.html(text);
+        }
     }
 });
 

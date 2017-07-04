@@ -349,46 +349,54 @@ class CursorQuery(object):
             self._prev_cursor = None
             self._next_cursor = None
         else:
-            self._prev_cursor = []
-            self._next_cursor = []
+            first_entity = None
+            last_entity = None
 
-            for field in self._order_by:
-                f = field.lstrip('+-#')
-                is_descriptor = field[0] == '#' or field[1] == '#'
+            try:
+                # @todo could be cached during iteration
+                first_entity = self._query_set[0]
+                last_entity = self._query_set[-1]
+            except IndexError:
+                self._prev_cursor = None
+                self._next_cursor = None
 
-                # prev cursor
-                entity = self._query_set[0]
+            if first_entity is not None and last_entity is not None:
+                self._prev_cursor = []
+                self._next_cursor = []
 
-                if is_descriptor:
-                    if self.FIELDS_SEP in f:
-                        ff = f.split(self.FIELDS_SEP)
-                        renamed_table = "descr_" + ff[0].replace('.', '_')
-                        self._prev_cursor.append(getattr(entity, "%s_%s" % (renamed_table, ff[1])))
+                for field in self._order_by:
+                    f = field.lstrip('+-#')
+                    is_descriptor = field[0] == '#' or field[1] == '#'
+
+                    # prev cursor
+                    if is_descriptor:
+                        if self.FIELDS_SEP in f:
+                            ff = f.split(self.FIELDS_SEP)
+                            renamed_table = "descr_" + ff[0].replace('.', '_')
+                            self._prev_cursor.append(getattr(first_entity, "%s_%s" % (renamed_table, ff[1])))
+                        else:
+                            self._prev_cursor.append(first_entity.descriptors.get(f))
                     else:
-                        self._prev_cursor.append(entity.descriptors.get(f))
-                else:
-                    if self.FIELDS_SEP in f:
-                        ff = f.split(self.FIELDS_SEP)
-                        self._prev_cursor.append(getattr(entity, "_".join(ff)))
-                    else:
-                        self._prev_cursor.append(getattr(entity, f))
+                        if self.FIELDS_SEP in f:
+                            ff = f.split(self.FIELDS_SEP)
+                            self._prev_cursor.append(getattr(first_entity, "_".join(ff)))
+                        else:
+                            self._prev_cursor.append(getattr(first_entity, f))
 
-                # next cursor
-                entity = self._query_set[-1]
-
-                if is_descriptor:
-                    if self.FIELDS_SEP in f:
-                        ff = f.split(self.FIELDS_SEP)
-                        renamed_table = "descr_" + ff[0].replace('.', '_')
-                        self._next_cursor.append(getattr(entity, "%s_%s" % (renamed_table, ff[1])))
+                    # next cursor
+                    if is_descriptor:
+                        if self.FIELDS_SEP in f:
+                            ff = f.split(self.FIELDS_SEP)
+                            renamed_table = "descr_" + ff[0].replace('.', '_')
+                            self._next_cursor.append(getattr(last_entity, "%s_%s" % (renamed_table, ff[1])))
+                        else:
+                            self._next_cursor.append(last_entity.descriptors.get(f))
                     else:
-                        self._next_cursor.append(entity.descriptors.get(f))
-                else:
-                    if self.FIELDS_SEP in f:
-                        ff = f.split(self.FIELDS_SEP)
-                        self._next_cursor.append(getattr(entity, "_".join(ff)))
-                    else:
-                        self._next_cursor.append(getattr(entity, f))
+                        if self.FIELDS_SEP in f:
+                            ff = f.split(self.FIELDS_SEP)
+                            self._next_cursor.append(getattr(last_entity, "_".join(ff)))
+                        else:
+                            self._next_cursor.append(getattr(last_entity, f))
 
         self._cursor_built = True
 
@@ -581,11 +589,13 @@ class CursorQuery(object):
         coalesce_value = self._make_value(None, field_model)
 
         if field_model[2]:  # is null
-            return 'COALESCE("%s"."%s", %s) %s %s' % (
-                self._related_tables[table_name][0]._meta.db_table, field_name, coalesce_value, operator, final_value)
+            # return 'COALESCE("%s"."%s", %s) %s %s' % (
+            #     self._related_tables[table_name][0]._meta.db_table, field_name, coalesce_value, operator, final_value)
+            return 'COALESCE("%s"."%s", %s) %s %s' % (table_name, field_name, coalesce_value, operator, final_value)
         else:
-            return '"%s"."%s" %s %s' % (
-                self._related_tables[table_name][0]._meta.db_table, field_name, operator, final_value)
+            # return '"%s"."%s" %s %s' % (
+            #     self._related_tables[table_name][0]._meta.db_table, field_name, operator, final_value)
+            return '"%s"."%s" %s %s' % (table_name, field_name, operator, final_value)
 
     def _cast_descriptor_type(self, table_name, descriptor_name, operator, value):
         description = self._description[descriptor_name]
@@ -654,6 +664,7 @@ class CursorQuery(object):
 
         model_fields = {}
         db_table = self._model._meta.db_table
+        db_table_alias = related_field
 
         related_model = getattr(self._model, related_field)
 
@@ -673,25 +684,21 @@ class CursorQuery(object):
                 elif type(field) is models.fields.related.ForeignKey:
                     # @todo could be TEXT
                     model_fields[field.name + '_id'] = ('FK', 'INTEGER', field.null)
-                    # self.query_select.append('"%s"."%s_id" AS "%s_%s_id"' % (join_db_table, field.name))
-                    self.query_select.append('"%s"."%s_id" AS "%s_%s_id"' % (join_db_table, field.name, related_field, field.name))
+                    self.query_select.append('"%s"."%s_id" AS "%s_%s_id"' % (db_table_alias, field.name, related_field, field.name))
                 elif type(field) is models.fields.IntegerField or type(field) == models.fields.AutoField:
                     model_fields[field.name] = ('INTEGER', 'INTEGER', field.null)
-                    # self.query_select.append('"%s"."%s"' % (join_db_table, field.name))
-                    self.query_select.append('"%s"."%s" AS "%s_%s"' % (join_db_table, field.name, related_field, field.name))
+                    self.query_select.append('"%s"."%s" AS "%s_%s"' % (db_table_alias, field.name, related_field, field.name))
                 elif type(field) is JSONField:
                     self.model_fields[field.name] = ('JSON', 'JSON', field.null)
-                    # self.query_select.append('"%s"."%s"' % (join_db_table, field.name))
-                    self.query_select.append('"%s"."%s" AS "%s_%s"' % (join_db_table, field.name, related_field, field.name))
+                    self.query_select.append('"%s"."%s" AS "%s_%s"' % (db_table_alias, field.name, related_field, field.name))
                 else:
                     model_fields[field.name] = ('TEXT', 'TEXT', field.null)
-                    # self.query_select.append('"%s"."%s"' % (join_db_table, field.name))
-                    self.query_select.append('"%s"."%s" AS "%s_%s"' % (join_db_table, field.name, related_field, field.name))
+                    self.query_select.append('"%s"."%s" AS "%s_%s"' % (db_table_alias, field.name, related_field, field.name))
 
         self._related_tables[related_field] = (related_model.field.related_model, model_fields)
 
-        on_clause = ['"%s"."%s_id" = "%s"."id"' % (db_table, related_field, join_db_table)]
-        _from = 'LEFT JOIN "%s" ON (%s)' % (join_db_table, " AND ".join(on_clause))
+        on_clause = ['"%s"."%s_id" = "%s"."id"' % (db_table, related_field, db_table_alias)]
+        _from = 'LEFT JOIN "%s" AS "%s" ON (%s)' % (join_db_table, db_table_alias, " AND ".join(on_clause))
 
         self.query_from.append(_from)
         return self
