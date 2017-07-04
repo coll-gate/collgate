@@ -21,7 +21,7 @@ var View = ScrollView.extend({
 
     defaultColumns: [
         {name: 'code', width: 'auto', sort_by: null},
-        {name: 'name', width: 'auto', sort_by: 'asc'},
+        {name: 'name', width: 'auto', sort_by: '+0'},
         {name: 'parent', width: 'auto', sort_by: null},
         {name: '#IPGRI_4.1.1', width: 'auto', sort_by: null},
         {name: '#MCPD_ORIGCTY', width: 'auto', sort_by: null}

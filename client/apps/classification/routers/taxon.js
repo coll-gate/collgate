@@ -71,7 +71,22 @@ var TaxonRouter = Marionette.AppRouter.extend({
             contentType: "application/json; charset=utf-8"
         });
 
-        $.when(columns, collection.fetch()).done(function (data) {
+        columns.done(function(data) {
+            var taxonListView = new TaxonListView({collection : collection, columns: data.columns});
+
+            defaultLayout.getRegion('content').show(taxonListView);
+            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({
+                targetView: taxonListView,
+                collection: collection
+            }));
+
+            defaultLayout.getRegion('bottom').show(new TaxonListFilterView({
+                collection: collection, columns: data.columns}));
+
+            taxonListView.query();
+        });
+
+        /*$.when(columns, collection.fetch()).done(function (data) {
             var taxonListView = new TaxonListView({collection : collection, columns: data[0].columns});
 
             defaultLayout.getRegion('content').show(taxonListView);
@@ -82,7 +97,7 @@ var TaxonRouter = Marionette.AppRouter.extend({
 
             defaultLayout.getRegion('bottom').show(new TaxonListFilterView({
                 collection: collection, columns: data[0].columns}));
-        });
+        });*/
     },
 
     getCultivarList : function() {

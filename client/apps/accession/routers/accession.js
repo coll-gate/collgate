@@ -41,8 +41,8 @@ var Router = Marionette.AppRouter.extend({
             contentType: "application/json; charset=utf-8"
         });
         
-        $.when(columns, collection.fetch()).done(function (data) {
-            var accessionListView = new AccessionListView({collection : collection, columns: data[0].columns});
+        columns.done(function (data) {
+            var accessionListView = new AccessionListView({collection : collection, columns: data.columns});
 
             defaultLayout.getRegion('content').show(accessionListView);
             defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({
@@ -51,7 +51,9 @@ var Router = Marionette.AppRouter.extend({
             }));
 
             defaultLayout.getRegion('bottom').show(new AccessionListFooterView({
-                collection: collection, columns: data[0].columns}));
+                collection: collection, columns: data.columns}));
+
+            accessionListView.query();
         });
     },
 

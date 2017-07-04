@@ -10,6 +10,18 @@
 
 var Marionette = require('backbone.marionette');
 
+const EXPONENT_MAP = {
+    0: '¹',
+    1: '²',
+    2: '³',
+    3: '⁴',
+    4: '⁵',
+    5: '⁶',
+    6: '⁷',
+    7: '⁸',
+    9: '⁹'
+};
+
 var View = Marionette.CompositeView.extend({
     rowHeight: 1+8+20+8,
     scrollViewInitialized: false,
@@ -145,6 +157,90 @@ var View = Marionette.CompositeView.extend({
             return this.ui.table.offsetParent().length && this.ui.table.offsetParent()[0].nodeName !== 'HTML';
         } else {
             return false;
+        }
+    },
+
+    /**
+     * Reset the collection and process the first fetch according to the current columns settings.
+     * This method must be called in place of the collection fetch else the initial sort cannot be performed
+     * by the user settings took by the view.
+     */
+    query: function() {
+        if (this.collection) {
+            // cleanup
+            var sorters = this.ui.thead.children('tr').children('th,td').find('div.table-advanced-label span.column-sorter');
+            sorters.removeClass(
+                'sortby-asc-column sortby-desc-column glyphicon-sort-by-alphabet glyphicon-sort-by-alphabet-alt')
+                .attr('sort-position', null)
+                .empty();
+
+            var sort_by = [];
+            var numOrders = 0;
+            var columns = this.getOption('columns');
+
+            for (var i = 0; i < this.selectedColumns.length; ++i) {
+                var selectColumn = this.selectedColumns[i];
+
+                if (selectColumn.sort_by) {
+                    ++numOrders;
+                }
+            }
+
+            for (var i = 0; i < this.selectedColumns.length; ++i) {
+                var selectColumn = this.selectedColumns[i];
+                if (!selectColumn.sort_by) {
+                    continue;
+                }
+
+                var sort_by_match = selectColumn.sort_by.match(/^([\+\-]*)([0-9]+)$/);
+                if (!sort_by_match) {
+                    continue;
+                }
+
+                var column = columns[selectColumn.name];
+
+                var order = sort_by_match[1] ? sort_by_match[1] : '+';
+                var pos = sort_by_match[2] ? sort_by_match[2] : 0;
+                var sortField = selectColumn.name;
+
+                if (column.format) {
+                    // @todo how to be generic ? using widget info ??
+                    if (column.format.display_fields) {
+                        sortField = sortField + "->" + column.format.display_fields
+                    } else if (column.format.type === 'country') {
+                        sortField = sortField + "->" + 'name'
+                    }
+                } else if (column.field) {
+                    sortField += '->' + column.field;
+                }
+
+                sort_by.splice(pos, 0, order + sortField);
+
+                // setup column header
+                var el = $(this.ui.thead.children('tr').children('th,td').get(i));
+                var sorter = el.children('div.table-advanced-label').children('span.column-sorter');
+                sorter.attr('sort-position', pos);
+
+                if (numOrders > 1) {
+                    sorter.text(EXPONENT_MAP[pos] || '');
+                } else {
+                    sorter.text('');
+                }
+
+                if (order === '+') {
+                    sorter.addClass('sortby-asc-column glyphicon-sort-by-alphabet');
+                } else if (order === '-') {
+                    sorter.addClass('sortby-desc-column glyphicon-sort-by-alphabet-alt');
+                } else {
+                    sorter.addClass('glyphicon-sort');
+                }
+            }
+
+            this.collection.fetch({
+                reset: true, data: {
+                    sort_by: sort_by
+                }
+            });
         }
     },
 
@@ -1331,14 +1427,6 @@ var View = Marionette.CompositeView.extend({
                 sortBy = [order + sortField];
                 el.attr('sort-position', 0);
             }
-
-            // update the user column
-            for (var i = 0; i < this.selectedColumns.length; ++i) {
-                if (this.selectedColumns[i].name === columnName) {
-                    this.selectedColumns[i].sort_by = order === '+' ? 'asc' : 'desc';
-                    break
-                }
-            }
         } else {
             // multiple
             if (order === '+') {
@@ -1378,18 +1466,6 @@ var View = Marionette.CompositeView.extend({
             }
 
             // assign order
-            const EXPONENT_MAP = {
-                0: '¹',
-                1: '²',
-                2: '³',
-                3: '⁴',
-                4: '⁵',
-                5: '⁶',
-                6: '⁷',
-                7: '⁸',
-                9: '⁹'
-            };
-
             $.each(sorters, function (n, el) {
                 var element = $(el);
                 var pos = parseInt(element.attr('sort-position') || -1);
@@ -1402,24 +1478,26 @@ var View = Marionette.CompositeView.extend({
             });
         }
 
+        // update user columns setting
+        for (var i = 0; i < this.selectedColumns.length; ++i) {
+            var el = $(sorters[i]);
+            var pos = el.attr('sort-position');
+
+            if (el.hasClass('sortby-asc-column')) {
+                this.selectedColumns[i].sort_by = '+' + pos;
+            } else if (el.hasClass('sortby-desc-column')) {
+                this.selectedColumns[i].sort_by = '-' + pos;
+            } else {
+                this.selectedColumns[i].sort_by = null;
+            }
+        }
+
+        // reset and fetch collection
         this.collection.fetch({reset: true, data: {
             sort_by: sortBy,
             more: Math.max(this.capacity() + 1, 30)
         }});
-/*
-        // update user columns
-        for (var i = 0; i < this.selectedColumns.length; ++i) {
-            var column = this.selectedColumns[i];
 
-            for (var j = 0; j < sortBy.length; ++j) {
-                var sorter = sortBy[j];
-
-                if (column.name === sorters) {
-
-                }
-            }
-        }
-*/
         // and save them
         if (this.getUserSettingName()) {
             application.updateUserSetting(this.getUserSettingName(), this.selectedColumns);

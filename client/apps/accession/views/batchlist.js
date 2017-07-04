@@ -36,7 +36,7 @@ var View = ScrollView.extend({
 
     defaultColumns: [
         {name: 'glyph', width: 'auto', sort_by: null},
-        {name: 'name', width: 'auto', sort_by: 'asc'},
+        {name: 'name', width: 'auto', sort_by: '+0'},
     ],
 
     columnsOptions: {
