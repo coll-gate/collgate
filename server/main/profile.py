@@ -8,6 +8,8 @@
 # @license MIT (see LICENSE file)
 # @details 
 
+import packaging
+
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 
@@ -157,12 +159,13 @@ def update_self_profile(request):
     "type": "object",
     "properties": {
         "name": {"type": "string", "minLength": 2, "maxLength": 64, "pattern": "^[a-zA-Z\_][a-zA-Z0-9\-\_]+$"},
-        "setting": {"type": "any"}
+        "setting": {"type": "any"},
+        "version": {"type": "string", "minLength": 1, "maxLength": 64, "pattern": "^[0-9]+[0-9\.]*[0-9]*$"}
     }
 })
 def update_self_settings(request):
     """
-    Get current session profile details
+    Update or create a user setting.
     """
     profile = get_object_or_404(Profile, user=request.user)
 
@@ -171,8 +174,22 @@ def update_self_settings(request):
 
     setting = request.data['setting']
 
+    try:
+        version = packaging.version.parse(request.data['version'])
+    except ValueError:
+        raise ValueError('Invalid version number format')
+
+    if version < packaging.version.parse('0.1'):
+        raise ValueError('Minimal version number must be 0.1')
+
     current_settings = json.loads(profile.settings)
-    current_settings[setting_name] = setting
+
+    # setup of update setting version and content
+    current_settings[setting_name] = {
+        'version': str(version),
+        'setting': setting
+    }
+
     profile.settings = json.dumps(current_settings)
 
     profile.save()

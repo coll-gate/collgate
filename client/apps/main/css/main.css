@@ -375,6 +375,7 @@ div.table-advanced-body {
     overflow: hidden;
     text-overflow: ellipsis; /* longest lines */
     margin-top: -16px;
+    padding: 1px 0px 1px 3px;
 }
 
 .table.table-advanced thead tr th:first-child div {
@@ -490,4 +491,9 @@ div.glasspane.glasspane-full {
 
 .select2-container--default .select2-selection--single .select2-selection__arrow {
     top: 3px;
+}
+
+.table.table-advanced thead tr th div.table-advanced-label.highlight-label {
+    background-color: #aedd36;
+    border-radius: 8px;
 }

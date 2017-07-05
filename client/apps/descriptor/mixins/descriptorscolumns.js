@@ -228,7 +228,7 @@ var DescriptorsColumnsView = {
 
         // return the promise
         return $.when.apply($, promises).done(function () {
-            view.updateColumnsWidth(true);
+            view.updateColumnsWidth();
         });
     }
 };

@@ -24,6 +24,9 @@ require("select2/dist/css/select2.min.css");
 // alphanum validator ($.alphanum)
 require("./deps/js/jquery.alphanum");
 
+// versioncompare ($.versioncompare)
+moment = require("./deps/js/jquery.versioncompare");
+
 // make table header fixed position ($.stickyTableHeaders)
 // require("sticky-table-headers");
 
@@ -201,20 +204,54 @@ application = new Marionette.Application({
 
         /**
          * Update locally and on server a specific user setting object.
-         * @param setting_name Name of the setting object to modify.
+         * @param settingName Name of the setting object to modify.
          * @param setting Content that replace the older.
+         * @param version Version of the settings to update. Default is "0.1"
          * @note If the name of the setting begin by '_' underscore, it will only kept locally.
+         * If the new version string is lesser than the current, nothing is performed and an exception is thrown.
+         * If the new version string is greater, this new version mean the current.
          */
-        this.updateUserSetting = function(setting_name, setting) {
-            session.user.settings[setting_name] = setting;
+        this.updateUserSetting = function(settingName, setting, version) {
+            version || (version = '0.1');
 
-            if (session.user.isAuth && !setting_name.startsWith('_')) {
+            var current = session.user.settings[settingName];
+            if (current) {
+                var cmp = $.versioncompare(version, current.version || '0.1');
+
+                if (cmp === 0) {
+                    current.setting = _.deepClone(setting);
+                } else if (cmp === 1) {
+                    current.version = version;
+                    current.setting = _.deepClone(setting);
+                } else {
+                    return;
+                    // throw new Error("User setting version must be greater or equal.");
+                }
+            } else {
+                // validate the version number
+                var cmp = $.versioncompare(version, '0.1');
+
+                if (cmp === -1) {
+                    throw new Error("User setting minimal version supported is '0.1'.");
+                }
+
+                session.user.settings[settingName] = {
+                    version: version,
+                    setting: _.deepClone(setting)
+                };
+            }
+
+            if (session.user.isAuth && !settingName.startsWith('_')) {
                 $.ajax({
                     type: "PATCH",
                     url: application.baseUrl + 'main/profile/settings/',
                     contentType: "application/json; charset=utf-8",
                     dataType: 'json',
-                        data: JSON.stringify({name: setting_name, setting: setting}),
+                        data: JSON.stringify({
+                            name: settingName,
+                            version: version,
+                            setting: setting
+                        }),
                         success: function (data) {
                     }
                 });
@@ -223,39 +260,73 @@ application = new Marionette.Application({
 
         /**
          * Is as user setting defined.
-         * @param setting_name
+         * @param settingName
          * @returns {boolean}
          */
-        this.hasUserSetting = function(setting_name) {
-            return setting_name in session.user.settings;
+        this.hasUserSetting = function(settingName) {
+            return settingName in session.user.settings;
         };
 
         /**
          * Get the value of a specific setting.
-         * @param setting_name Setting object name.
-         * @returns {*} Content of the setting (string, object, integer...)
+         * @param settingName Setting object name.
+         * @returns {*} Setting version string.
          */
-        this.getUserSetting = function(setting_name) {
-            return session.user.settings[setting_name];
+        this.getUserSettingVersion = function(settingName) {
+            var setting = session.user.settings[settingName];
+            if (setting) {
+                return setting.version;
+            } else {
+                return '0.1';
+            }
+        };
+
+        /**
+         * Get the value of a specific setting.
+         * @param settingName Setting object name.
+         * @param version Minimum version required. If the version is not satisfied then null is return.
+         * @param defaultSetting If no setting found result default setting.
+         * @returns {*} Setting data.
+         */
+        this.getUserSetting = function(settingName, version, defaultSetting) {
+            version || (version = '0.1');
+
+            var setting = session.user.settings[settingName];
+            if (setting && setting.version && ($.versioncompare(version, setting.version) === 0)) {
+                return setting.setting;
+            } else if (defaultSetting) {
+                return defaultSetting;
+            } else {
+                return null;
+            }
         };
 
         /**
          * Defines the default values of a specific setting if not existing.
-         * @param setting_name Setting object name.
-         * @param default_setting Default values.
+         * @param settingName Setting object name.
+         * @param defaultSetting Default values.
+         * @param version Default version number (Default '0.1').
          */
-        this.setDefaultUserSetting = function(setting_name, default_setting) {
-            var setting = session.user.settings[setting_name];
-            if (setting == undefined) {
-                // undefined key
-                session.user.settings[setting_name] = default_setting;
-            } else {
-                for (var obj in default_setting) {
-                    // undefined sub-key
-                    if (!obj in setting) {
-                        setting[obj] = default_setting[obj];
-                    }
+        this.setDefaultUserSetting = function(settingName, defaultSetting, version) {
+            version || (version = '0.1');
+
+            var setting = session.user.settings[settingName];
+            if (!setting) {
+                // validate the version number
+                var cmp = $.versioncompare(version, '0.1');
+
+                if (cmp === -1) {
+                    throw new Error("User setting minimal version supported is '0.1'.");
                 }
+
+                // undefined key
+                session.user.settings[settingName] = {
+                    version: version,
+                    setting: _.deepClone(defaultSetting)
+                };
+            } else {
+                // nothing to do
+                // setting.setting = _.deepClone(defaultSetting);
             }
         };
 
@@ -344,8 +415,8 @@ application = new Marionette.Application({
         }
 
         // update the messenger display properties
-        this.setDisplay(this.getUserSetting('ui')['display_mode']);
-        // this.updateMessengerDisplay();
+        var uiSettings = this.getUserSetting('ui', UI_SETTING_VERSION, UI_DEFAULT_SETTING);
+        this.setDisplay(uiSettings['display_mode']);
 
         // starts the URL handling framework and automatically route as possible
         Backbone.history.start({pushState: true, silent: false, root: '/coll-gate'});

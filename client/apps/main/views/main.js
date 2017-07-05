@@ -29,7 +29,8 @@ var MainLayout = Marionette.LayoutView.extend({
     ping_timeout: 3*60*1000,   // every 3 minutes
 
     initialize: function() {
-        this.currentDisplayMode = application.getUserSetting("ui")['display_mode'] || "2-8-2";
+        var uiSetting = application.getUserSetting("ui", UI_SETTING_VERSION, UI_DEFAULT_SETTING);
+        this.currentDisplayMode = uiSetting['display_mode'];
         this.compactDisplay = false;
     },
 
@@ -98,7 +99,7 @@ var MainLayout = Marionette.LayoutView.extend({
             this.setDisplay('0-12-0');
         } else {
             if (this.compactDisplay) {
-                var displayMode = application.getUserSetting("ui")['display_mode'] || "2-8-2";
+                var displayMode = application.getUserSetting("ui", UI_SETTING_VERSION, UI_DEFAULT_SETTING)['display_mode'];
 
                 // restore to previous setting
                 this.setDisplay(displayMode);

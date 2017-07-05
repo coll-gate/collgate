@@ -18,6 +18,7 @@ var View = ScrollView.extend({
     childView: AccessionView,
     childViewContainer: 'tbody.entity-list',
     userSettingName: 'accessions_list_columns',
+    userSettingVersion: '1.0',
 
     defaultColumns: [
         {name: 'code', width: 'auto', sort_by: null},

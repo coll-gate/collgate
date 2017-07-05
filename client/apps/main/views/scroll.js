@@ -26,6 +26,7 @@ var View = Marionette.CompositeView.extend({
     rowHeight: 1+8+20+8,
     scrollViewInitialized: false,
     userSettingName: null,
+    userSettingVersion: null,
     scrollbarWidth: $.position.scrollbarWidth(),
 
     attributes: {
@@ -109,7 +110,10 @@ var View = Marionette.CompositeView.extend({
 
         // empty, mean generated at dom refresh
         if (this.getUserSettingName()) {
-            this.selectedColumns = application.getUserSetting(this.getUserSettingName()) || this.defaultColumns || [];
+            this.selectedColumns = application.getUserSetting(
+                this.getUserSettingName(),
+                this.getUserSettingVersion(),
+                this.defaultColumns || []);
         } else {
             this.selectedColumns = this.defaultColumns || [];
         }
@@ -136,6 +140,18 @@ var View = Marionette.CompositeView.extend({
                 return this.userSettingName();
             } else {
                 return this.userSettingName;
+            }
+        } else {
+            return null;
+        }
+    },
+
+    getUserSettingVersion: function() {
+        if (this.userSettingVersion) {
+            if (_.isFunction(this.userSettingVersion)) {
+                return this.userSettingVersion();
+            } else {
+                return this.userSettingVersion;
             }
         } else {
             return null;
@@ -295,7 +311,7 @@ var View = Marionette.CompositeView.extend({
 
                 $.each(headerRows, function (i, element) {
                     var name = $(element).attr('name');
-                    if (name == undefined || name === "") {
+                    if (!name) {
                         name = "unamed" + i;
                         $(element).attr('name', name);
                     }
@@ -809,7 +825,10 @@ var View = Marionette.CompositeView.extend({
 
             // save user settings
             if (this.getUserSettingName()) {
-                application.updateUserSetting(this.getUserSettingName(), this.selectedColumns);
+                application.updateUserSetting(
+                    this.getUserSettingName(),
+                    this.selectedColumns,
+                    this.getUserSettingVersion());
             }
         }
 
@@ -902,7 +921,10 @@ var View = Marionette.CompositeView.extend({
 
             // save user settings
             if (this.getUserSettingName()) {
-                application.updateUserSetting(this.getUserSettingName(), this.selectedColumns);
+                application.updateUserSetting(
+                    this.getUserSettingName(),
+                    this.selectedColumns,
+                    this.getUserSettingVersion());
             }
 
             this.resizingColumnLeft = null;
@@ -927,7 +949,7 @@ var View = Marionette.CompositeView.extend({
             this.resizingColumnRight.width(rightWidth);
 
             // define width of header
-            var head = this.ui.thead.children('tr').children('th,td');
+            // var head = this.ui.thead.children('tr').children('th,td');
             var body = this.ui.tbody.children('tr:first-child').children('th,td');
 
             // and body
@@ -1018,14 +1040,14 @@ var View = Marionette.CompositeView.extend({
             view.updateColumnsWidth();
         });
     },
-
+/*
     onRenderCollection: function() {
-        // post refresh on children once every children was rendered for the first rendering
-        if (this.lastModels == undefined) {
+        // called once collection get models for render
+        if (!this.lastModels) {
             this.onRefreshChildren();
         }
     },
-
+*/
     onCollectionSync: function (collection, data) {
         // keep list of last queried models, done just once the collection get synced
         this.lastModels = [];
@@ -1038,7 +1060,7 @@ var View = Marionette.CompositeView.extend({
             // post refresh on children once every children was rendered for any other rendering
             this.onRefreshChildren();
         } else {
-            this.updateColumnsWidth(true);
+            this.updateColumnsWidth();
         }
     },
 
@@ -1139,7 +1161,7 @@ var View = Marionette.CompositeView.extend({
     },
 
     getLastModels: function() {
-        if (this.lastModels == undefined) {
+        if (!this.lastModels) {
             this.lastModels = [];
             for (var i = 0; i < this.collection.models.length; ++i) {
                 this.lastModels.push(this.collection.models[i]);
@@ -1230,7 +1252,7 @@ var View = Marionette.CompositeView.extend({
                 // hide header highlight
                 if (this.controlKeyDown) {
                     this.controlKeyDown = false;
-                    this.ui.thead.css('background-color', 'initial');
+                    this.highlightLabels(false);
                 }
 
                 // hide the context menu when click on the glass pane
@@ -1242,6 +1264,16 @@ var View = Marionette.CompositeView.extend({
 
             // event on choices
             this.ui.add_column_menu.find('ul li a').on('click', $.proxy(this.onAddRemoveColumn, this));
+        }
+    },
+
+    highlightLabels: function(highlight) {
+        var labels = this.ui.thead.children('tr').children('th,td').find('div.table-advanced-label');
+
+        if (highlight) {
+            labels.addClass('highlight-label');
+        } else {
+            labels.removeClass('highlight-label');
         }
     },
 
@@ -1282,7 +1314,10 @@ var View = Marionette.CompositeView.extend({
                 this.updateColumnsWidth(true);
 
                 if (this.getUserSettingName()) {
-                    application.updateUserSetting(this.getUserSettingName(), this.selectedColumns);
+                    application.updateUserSetting(
+                        this.getUserSettingName(),
+                        this.selectedColumns,
+                        this.getUserSettingVersion());
                 }
             }
         } else {
@@ -1296,7 +1331,7 @@ var View = Marionette.CompositeView.extend({
             th.addClass('unselectable');
 
             var labelOrGlyph = $('<span>' + this.getOption('columns')[columnName].label + '</span>');
-            if (!!!column.fixed) {
+            if (!column.fixed) {
                 labelOrGlyph.prop('draggable', true);
             }
 
@@ -1365,7 +1400,11 @@ var View = Marionette.CompositeView.extend({
             this.onRefreshChildren(true, this.displayedColumns[this.displayedColumns-1]).done(function() {
                 // save once refresh is done completely
                 if (view.getUserSettingName()) {
-                    application.updateUserSetting(view.getUserSettingName(), view.selectedColumns);
+                    application.updateUserSetting(
+                        view.getUserSettingName(),
+                        view.selectedColumns,
+                        view.getUserSettingVersion()
+                    );
                 }
             });
         }
@@ -1500,14 +1539,23 @@ var View = Marionette.CompositeView.extend({
 
         // and save them
         if (this.getUserSettingName()) {
-            application.updateUserSetting(this.getUserSettingName(), this.selectedColumns);
+            application.updateUserSetting(
+                this.getUserSettingName(),
+                this.selectedColumns,
+                this.getUserSettingVersion());
         }
     },
 
     onWindowLostFocus: function(e) {
+        if (e.target !== window) {
+            return false;
+        }
+
         if (this.controlKeyDown) {
             this.controlKeyDown = false;
-            this.ui.thead.css('background-color', 'initial');
+            this.highlightLabels(false);
+
+            return true;
         }
     },
 
@@ -1519,7 +1567,7 @@ var View = Marionette.CompositeView.extend({
 
             if (!this.controlKeyDown) {
                 this.controlKeyDown = true;
-                this.ui.thead.css('background-color', '#aedd36');
+                this.highlightLabels(true);
             }
         }
     },
@@ -1528,7 +1576,7 @@ var View = Marionette.CompositeView.extend({
         if (e.key === 'Control') {
             if (this.controlKeyDown) {
                 this.controlKeyDown = false;
-                this.ui.thead.css('background-color', 'initial');
+                this.highlightLabels(false);
             }
         }
     }

@@ -204,6 +204,12 @@ session.user.isAuth = true;
 session.user.isSuperUser = {{ user.is_superuser|yesno:"true,false" }};
 session.user.isStaff = {{ user.is_staff|yesno:"true,false" }};
 session.user.settings = {{ profile_settings|safe }};
+
+const UI_DEFAULT_SETTING = {
+    display_mode: '2-8-2'
+};
+
+const UI_SETTING_VERSION = '1.0';
 {% endif %}
 
 // LTR or RTL language
@@ -273,10 +279,10 @@ if (session.languageDirection === "rtl") {
             var language = $('#languages').val() || 'en';
 
             // update and save user setting
-            var ui = application.getUserSetting('ui');
+            var ui = application.getUserSetting('ui', UI_SETTING_VERSION, UI_DEFAULT_SETTING);
             ui.preferred_language = language;
 
-            application.updateUserSetting('ui', ui);
+            application.updateUserSetting('ui', ui, UI_SETTING_VERSION);
 
             $.ajax({
                 type: "POST",
@@ -390,26 +396,27 @@ if (session.languageDirection === "rtl") {
 
         // toggle display mode and save user setting
         $("#toggle_display").on("click", function(e) {
-            var mode = $(this).attr("display-mode") || application.getUserSetting("ui")['display_mode'] || "2-8-2";
-            var newMode = undefined;
+            var mode = $(this).attr("display-mode") || application.getUserSetting(
+                "ui", UI_SETTING_VERSION, UI_DEFAULT_SETTING)['display_mode'];
+            var newMode = null;
 
-            if (mode == "2-8-2") {
+            if (mode === "2-8-2") {
                 newMode = "0-10-2";
-            } else if (mode == "0-10-2") {
+            } else if (mode === "0-10-2") {
                 newMode = "0-12-0";
-            } else if (mode == "0-12-0") {
+            } else if (mode === "0-12-0") {
                 newMode = "2-8-2";
             }
 
-            if (mode != newMode && newMode != undefined) {
+            if (newMode && newMode !== mode) {
                 application.setDisplay(newMode);
                 $(this).attr("display-mode", newMode);
 
                 // update and save user setting
-                var ui = application.getUserSetting('ui');
+                var ui = application.getUserSetting('ui', UI_SETTING_VERSION, UI_DEFAULT_SETTING);
                 ui.display_mode = newMode;
 
-                application.updateUserSetting('ui', ui);
+                application.updateUserSetting('ui', ui, UI_SETTING_VERSION);
             }
         });
     });

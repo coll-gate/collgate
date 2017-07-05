@@ -21,6 +21,7 @@ var View = ScrollView.extend({
     userSettingName: function() {
         return /*this.classification.get('name')*/'taxon' + '_classification_list_columns';
     },
+    userSettingVersion: '1.0',
 
     defaultColumns: [
         {name: 'name', width: 'auto', sort_by: '+0'},

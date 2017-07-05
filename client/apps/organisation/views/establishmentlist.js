@@ -19,6 +19,9 @@ var View = ScrollView.extend({
     childView: EstablishmentView,
     childViewContainer: 'tbody.establishment-list',
 
+    userSettingName: '_establishment_list_columns',
+    userSettingVersion: '1.0',
+
     templateHelpers/*templateContext*/: function () {
         return {
             columnsList: this.displayedColumns,

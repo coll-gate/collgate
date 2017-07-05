@@ -55,7 +55,7 @@ MainModule.prototype = {
         app.setDefaultUserSetting('ui', {
             display_mode: '2-8-2',
             preferred_language: 'en'
-        });
+        }, '1.0');
 
         //
         // collections

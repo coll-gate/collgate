@@ -116,7 +116,12 @@ var View = Marionette.ItemView.extend({
             //     op: "eq"
             // }, []]];
 
-            this.collection.fetch({reset: true});
+            this.collection.fetch({
+                reset: true,
+                data: {
+                    sort_by: this.collection.sort_by
+                }
+            });
             this.collection.count();
         }
     },
@@ -128,8 +133,10 @@ var View = Marionette.ItemView.extend({
             var v = this.$el.find(".search-value").val().trim();
 
             if (v.length > 0 && v.length < 3) {
-                this.$el.find(".search-value").validateField('failed', gt.gettext('3 characters min'));
-                return false;
+                this.$el.find(".search-value").validateField('ok');
+                return true;
+                // this.$el.find(".search-value").validateField('failed', gt.gettext('3 characters min'));
+                // return false;
             } else if (this.$el.find(".search-value").val().length === 0) {
                 this.$el.find(".search-value").cleanField();
                 return true;
