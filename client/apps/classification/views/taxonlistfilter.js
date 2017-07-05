@@ -13,7 +13,7 @@ var Marionette = require('backbone.marionette');
 var View = Marionette.ItemView.extend({
     tagName: 'div',
     className: 'taxon-filter',
-    template: require('../templates/taxonlistfilter.html'),
+    template: require('../../descriptor/templates/entitylistfilter.html'),
 
     ui: {
         filter_btn: 'button.entity-filter',
@@ -93,7 +93,12 @@ var View = Marionette.ItemView.extend({
                 this.collection.filters = null;
             }
 
-            this.collection.fetch({reset: true});
+            this.collection.fetch({
+                reset: true,
+                data: {
+                    sort_by: this.collection.sort_by
+                }
+            });
             this.collection.count();
         }
     },

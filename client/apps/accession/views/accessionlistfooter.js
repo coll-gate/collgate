@@ -13,7 +13,7 @@ var Marionette = require('backbone.marionette');
 var View = Marionette.ItemView.extend({
     tagName: 'div',
     className: 'accession-footer',
-    template: require('../templates/accessionlistfooter.html'),
+    template: require('../../descriptor/templates/entitylistfilter.html'),
 
     ui: {
         filter_btn: 'button.entity-filter',

@@ -373,16 +373,15 @@ div.table-advanced-body {
     border: none;
     position: absolute;
     overflow: hidden;
-    text-overflow: ellipsis; /* longest lines */
-    /*margin-top: -16px; compensation for padding */
-    margin: -17px 0px 0px -3px;
+    text-overflow: ellipsis;  /* longest lines */
+    margin: -17px 0px 0px -3px;  /*margin-top: -16px; compensation for padding*/
+    /* padding used to have correct background round borders */
     padding: 1px 0px 1px 3px;
 }
 
 .table.table-advanced thead tr th:first-child div {
     border-left: none;
-    /*min-width: 32px;*/
-    min-width: 21px;
+    min-width: 21px;  /*min-width: 32px; reduced to avoid out of cell */
 }
 
 .table.table-advanced thead tr th:first-child {

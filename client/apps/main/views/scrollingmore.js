@@ -14,9 +14,6 @@ var View = Marionette.ItemView.extend({
     template: require('../templates/scrollingmore.html'),
     tagName: 'div',
     className: 'scrolling-more',
-    // attributes: {
-    //     style: "margin: 5px; margin-left: 48%; margin-right: 52%;"
-    // },
 
     ui: {
         scroll_less: 'span.scroll-less',
@@ -46,9 +43,14 @@ var View = Marionette.ItemView.extend({
 
         var collection = this.getOption('collection');
         if (collection && collection.count) {
-            collection.count();
-
+            // update count and reset position on on count signal
             this.listenTo(collection, 'count', this.onUpdateCount, this);
+
+            // update position on reset collection
+            this.listenTo(collection, 'reset', this.onUpdatePosition, this);
+
+            // initial count query
+            collection.count();
         }
     },
 
@@ -156,6 +158,10 @@ var View = Marionette.ItemView.extend({
             this.updatePosition();
         }
         this.ui.collection_count.html(count);
+    },
+
+    onUpdatePosition: function() {
+        this.updatePosition();
     },
 
     onScroll: function(e) {
