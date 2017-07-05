@@ -103,18 +103,20 @@ var TaxonItemView = Marionette.ItemView.extend({
     },
 
     parentCell: function(td) {
-        var parent_name = this.model.get('parent_details').name || "";
-        var parent_rank = this.model.get('parent_details').rank;
+        if (this.model.get('parent_details')) {
+            var parent_name = this.model.get('parent_details').name || "";
+            var parent_rank = this.model.get('parent_details').rank;
 
-        var el = $('<span class="parent taxon-rank" title="">' + parent_name + '</span>');
-        if (parent_rank) {
-            var rank = application.classification.collections.taxonRanks.findLabel(this.model.get('parent_details').rank);
+            var el = $('<span class="parent taxon-rank" title="">' + parent_name + '</span>');
+            if (parent_rank) {
+                var rank = application.classification.collections.taxonRanks.findLabel(this.model.get('parent_details').rank);
 
-            el.attr('value', this.model.get('parent_details').rank);
-            el.attr('title', rank);
+                el.attr('value', this.model.get('parent_details').rank);
+                el.attr('title', rank);
+            }
+
+            td.html(el);
         }
-
-        td.html(el);
     },
 
     synonymCell: function(td) {

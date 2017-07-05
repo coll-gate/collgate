@@ -577,11 +577,17 @@ class CursorQuery(object):
         coalesce_value = self._make_value(None, field_model)
 
         if field_model[2]:  # is null
-            return 'COALESCE("%s"."%s", %s) %s %s' % (
-                table_name, field_name, coalesce_value, operator, final_value)
+            if field_model[0] == 'FK':  # @todo and lookup on db model field name ?
+                return 'COALESCE("%s"."%s_id", %s) %s %s' % (
+                    table_name, field_name, coalesce_value, operator, final_value)
+            else:
+                return 'COALESCE("%s"."%s", %s) %s %s' % (
+                    table_name, field_name, coalesce_value, operator, final_value)
         else:
-            return '"%s"."%s" %s %s' % (
-                table_name, field_name, operator, final_value)
+            if field_model[0] == 'FK':  # @todo same as prev
+                return '"%s"."%s_id" %s %s' % (table_name, field_name, operator, final_value)
+            else:
+                return '"%s"."%s" %s %s' % (table_name, field_name, operator, final_value)
 
     def _cast_default_sub_type(self, table_name, field_name, operator, value):
         field_model = self._related_tables[table_name][1][field_name]

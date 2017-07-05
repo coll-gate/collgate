@@ -108,16 +108,41 @@ var Layout = LayoutView.extend({
             var TaxonChildrenCollection = require('../collections/taxonchildren');
             var taxonChildren = new TaxonChildrenCollection([], {model_id: this.model.id});
 
-            taxonChildren.fetch().then(function () {
+            // get available columns
+            var columns = $.ajax({
+                type: "GET",
+                url: application.baseUrl + 'descriptor/columns/classification.taxon/',
+                contentType: "application/json; charset=utf-8"
+            });
+
+            // @todo with a cached columns
+            columns.done(function(data) {
                 var TaxonChildrenView = require('../views/taxonchildren');
-                var taxonChildrenView = new TaxonChildrenView({collection: taxonChildren, model: taxonLayout.model});
+                var taxonChildrenView = new TaxonChildrenView({
+                    collection: taxonChildren,
+                    model: taxonLayout.model,
+                    columns: data.columns});
 
                 var contentBottomLayout = new ContentBottomLayout();
                 taxonLayout.getRegion('children').show(contentBottomLayout);
 
                 contentBottomLayout.getRegion('content').show(taxonChildrenView);
-                contentBottomLayout.getRegion('bottom').show(new ScrollingMoreView({targetView: taxonChildrenView}));
+                contentBottomLayout.getRegion('bottom').show(new ScrollingMoreView({
+                    targetView: taxonChildrenView, collection: taxonChildren}));
+
+                taxonChildrenView.query();
             });
+
+            // taxonChildren.fetch().then(function () {
+            //     var TaxonChildrenView = require('../views/taxonchildren');
+            //     var taxonChildrenView = new TaxonChildrenView({collection: taxonChildren, model: taxonLayout.model});
+            //
+            //     var contentBottomLayout = new ContentBottomLayout();
+            //     taxonLayout.getRegion('children').show(contentBottomLayout);
+            //
+            //     contentBottomLayout.getRegion('content').show(taxonChildrenView);
+            //     contentBottomLayout.getRegion('bottom').show(new ScrollingMoreView({targetView: taxonChildrenView}));
+            // });
 
             // entities relating this taxon tab
             var TaxonEntitiesCollection = require('../collections/taxonentities');

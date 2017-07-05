@@ -19,7 +19,7 @@
         %><td name="<%= columnName %>"><%= arguments[0][columnName] %></td><%
     } else if (column.query) {
         %><td name="<%= columnName %>"></td><%
-    } else if (columnName.startsWith('#') && descriptors[columnName.replace(/^#/, '')] != undefined) {console.log(columnName, column)
+    } else if (columnName.startsWith('#') && descriptors[columnName.replace(/^#/, '')] != undefined) {
         %><td name="<%= columnName %>"><%= descriptors[columnName.replace(/^#/, '')] || "" %></td><%
     } else {
         %><td name="<%= columnName %>"></td><%

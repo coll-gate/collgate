@@ -1111,7 +1111,7 @@ var View = Marionette.CompositeView.extend({
 
         if (hasScroll) {
             rightMargin = Math.max(rightMargin, this.scrollbarWidth);
-        }console.log(rightMargin)
+        }
 
         $.each(head, function(i, element) {
             var el = $(element);
