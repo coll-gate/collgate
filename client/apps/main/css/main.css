@@ -374,13 +374,15 @@ div.table-advanced-body {
     position: absolute;
     overflow: hidden;
     text-overflow: ellipsis; /* longest lines */
-    margin-top: -16px;
+    /*margin-top: -16px; compensation for padding */
+    margin: -17px 0px 0px -3px;
     padding: 1px 0px 1px 3px;
 }
 
 .table.table-advanced thead tr th:first-child div {
     border-left: none;
-    min-width: 32px;
+    /*min-width: 32px;*/
+    min-width: 21px;
 }
 
 .table.table-advanced thead tr th:first-child {

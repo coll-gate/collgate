@@ -379,15 +379,14 @@ var View = Marionette.CompositeView.extend({
 
         // when overflow-y on body, pad the right of the head
         var hasScroll = (this.ui.tbody[0].scrollHeight - this.ui.tbody[0].parentNode.parentNode.clientHeight) > 0;
-        if (hasScroll) {
+        if (hasScroll || this.ui.add_column.length > 0) {
             this.ui.thead.parent().parent().css('padding-right', this.scrollbarWidth + 'px');
         } else {
             this.ui.thead.parent().parent().css('padding-right', '');
         }
 
-        this.ui.thead.parent().width(this.ui.tbody.parent().width());
-
         var tableWidth = this.ui.tbody.width();
+        this.ui.thead.parent().width(this.ui.tbody.parent().width());
 
         // var widthFactor = tableWidth / (this.previousTableWidth || tableWidth);
         // this.previousTableWidth = tableWidth;
@@ -581,7 +580,8 @@ var View = Marionette.CompositeView.extend({
         e.originalEvent.dataTransfer.setData('text/plain', null);
 
         var target = $(e.currentTarget).parent().parent();
-        target.css('opacity', '0.4');
+        target.css('opacity', '0.4')
+            .children('div.table-advanced-label').addClass('highlight-label');
 
         var i1;
         $.each(this.ui.thead.children('tr').children('td,th'), function(i, element) {
@@ -602,7 +602,8 @@ var View = Marionette.CompositeView.extend({
 
     onColumnDragEnd: function(e) {
         var target = $(e.currentTarget).parent().parent();
-        target.css('opacity', 'initial');
+        target.css('opacity', 'initial')
+            .children('div.table-advanced-label').removeClass('highlight-label');
 
         var i1;
         $.each(this.ui.thead.children('tr').children('td,th'), function(i, element) {
@@ -619,7 +620,8 @@ var View = Marionette.CompositeView.extend({
 
         if (this.targetDropElement) {
             var target = $(this.targetDropElement);
-            target.css('opacity', 'initial');
+            target.css('opacity', 'initial')
+                .children('div.table-advanced-label').removeClass('highlight-label');
 
             var i2;
             $.each(this.ui.thead.children('tr').children('td,th'), function(i, element) {
@@ -646,7 +648,8 @@ var View = Marionette.CompositeView.extend({
 
         if (this.targetDropElement) {
             var oldTarget = $(this.targetDropElement);
-            oldTarget.css('opacity', 'initial');
+            oldTarget.css('opacity', 'initial')
+                .children('div.table-advanced-label').removeClass('highlight-label');
 
             var i2;
             $.each(this.ui.thead.children('tr').children('td,th'), function(i, element) {
@@ -678,7 +681,8 @@ var View = Marionette.CompositeView.extend({
             return false;
         }
 
-        target.css('opacity', '0.4');
+        target.css('opacity', '0.4')
+            .children('div.table-advanced-label').addClass('highlight-label');
 
         if (this.targetDropElement === e.currentTarget) {
             return false;
@@ -724,7 +728,8 @@ var View = Marionette.CompositeView.extend({
         }
 
         var target = $(e.currentTarget);
-        target.css('opacity', 'initial');
+        target.css('opacity', 'initial')
+            .children('div.table-advanced-label').removeClass('highlight-label');
 
         var i2;
         $.each(this.ui.thead.children('tr').children('td,th'), function(i, element) {
@@ -766,7 +771,8 @@ var View = Marionette.CompositeView.extend({
             return false;
         }
 
-        target.css('opacity', 'initial');
+        target.css('opacity', 'initial')
+            .children('div.table-advanced-label').removeClass('highlight-label');
 
         var srcName = application.dndElement.attr('name');
         var dstName = target.attr('name');
@@ -784,7 +790,9 @@ var View = Marionette.CompositeView.extend({
 
             // switch labels
             var headColumns = $(this.ui.thead.children('tr')[0]).children('th,td');
-            headColumns.eq(i1 > i2 ? i1 : i2).moveBefore(headColumns.eq(i1 > i2 ? i2 : i1)).css('opacity', 'initial');
+            headColumns.eq(i1 > i2 ? i1 : i2).moveBefore(headColumns.eq(i1 > i2 ? i2 : i1))
+                .css('opacity', 'initial')
+                .children('div.table-advanced-label').removeClass('highlight-label');
 
             // switch for any row and reset opacity
             if (i1 < i2) {
@@ -1103,7 +1111,7 @@ var View = Marionette.CompositeView.extend({
 
         if (hasScroll) {
             rightMargin = Math.max(rightMargin, this.scrollbarWidth);
-        }
+        }console.log(rightMargin)
 
         $.each(head, function(i, element) {
             var el = $(element);
@@ -1130,7 +1138,7 @@ var View = Marionette.CompositeView.extend({
                 }
             } else if (left+w > clientWidth - rightMargin) {
                 var l = 0;
-                var r = Math.max(0, clientWidth - left - rightMargin);
+                var r = Math.max(0, clientWidth - left/* - rightMargin*/);
                 label.css('clip', 'rect(0px ' + r + 'px 32px ' + l + 'px)');
 
                 if (left > clientWidth || r - l <= 0) {
@@ -1140,9 +1148,9 @@ var View = Marionette.CompositeView.extend({
                     label.css('display', '');
                     sizer.css('display', '');
 
-                    // avoid overflow on body that makes a scrollbar
+                    // avoid overflow on body that makes a scrollbar or add option button
                     if (!el.hasClass('glyph-fixed-column')) {
-                        var minWidth = Math.min(w + 2, r - l + 8);
+                        var minWidth = Math.min(w + 2 - rightMargin, r - l + 8);
                         label.width(minWidth);
                     }
                 }
