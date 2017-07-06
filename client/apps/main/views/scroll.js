@@ -21,7 +21,12 @@ const EXPONENT_MAP = {
     7: '⁸',
     9: '⁹'
 };
-
+/*
+var TableBody = Marionette.CollectionView.extend({
+    tagName: 'tbody',
+    childView: RowView
+});
+*/
 var View = Marionette.CompositeView.extend({
     rowHeight: 1+8+20+8,
     scrollViewInitialized: false,
@@ -47,7 +52,7 @@ var View = Marionette.CompositeView.extend({
         'click @ui.add_column_column': 'onAddColumn'
     },
 
-    templateHelpers/*templateContext*/: function () {
+    templateContext: function () {
         return {
             columnsList: this.displayedColumns,
             columnsOptions: this.getOption('columns')
@@ -596,7 +601,7 @@ var View = Marionette.CompositeView.extend({
             $(element).children('th,td').eq(i1).css('opacity', '0.4');
         });
 
-        application.dndElement = target;
+        application.main.dndElement = target;
         this.targetDropElement = null;
     },
 
@@ -637,7 +642,7 @@ var View = Marionette.CompositeView.extend({
             });
         }
 
-        application.dndElement = null;
+        application.main.dndElement = null;
         this.targetDropElement = null;
     },
 
@@ -667,11 +672,11 @@ var View = Marionette.CompositeView.extend({
             this.targetDropElement = null;
         }
 
-        if (!application.isDndElement()) {
+        if (!application.main.isDndElement()) {
             return false;
         }
 
-        if (e.currentTarget === application.dndElement[0]) {
+        if (e.currentTarget === application.main.dndElement[0]) {
             return false;
         }
 
@@ -711,11 +716,11 @@ var View = Marionette.CompositeView.extend({
             e.originalEvent.preventDefault();
         }
 
-        if (!application.isDndElement()) {
+        if (!application.main.isDndElement()) {
             return false;
         }
 
-        if (e.currentTarget === application.dndElement[0]) {
+        if (e.currentTarget === application.main.dndElement[0]) {
             return false;
         }
 
@@ -723,7 +728,7 @@ var View = Marionette.CompositeView.extend({
             return false;
         }
 
-        if (application.dndElement.children('div.table-advanced-label').length === 0) {
+        if (application.main.dndElement.children('div.table-advanced-label').length === 0) {
             return false;
         }
 
@@ -762,7 +767,7 @@ var View = Marionette.CompositeView.extend({
             e.originalEvent.stopPropagation();
         }
 
-        if (!application.isDndElement()) {
+        if (!application.main.isDndElement()) {
             return false;
         }
 
@@ -774,7 +779,7 @@ var View = Marionette.CompositeView.extend({
         target.css('opacity', 'initial')
             .children('div.table-advanced-label').removeClass('highlight-label');
 
-        var srcName = application.dndElement.attr('name');
+        var srcName = application.main.dndElement.attr('name');
         var dstName = target.attr('name');
 
         if (srcName !== dstName) {
@@ -1048,14 +1053,14 @@ var View = Marionette.CompositeView.extend({
             view.updateColumnsWidth();
         });
     },
-/*
-    onRenderCollection: function() {
-        // called once collection get models for render
+
+    onRender: function() {
+        // if collection in fetched before rendering the view, meaning by null lastModels
         if (!this.lastModels) {
             this.onRefreshChildren();
         }
     },
-*/
+
     onCollectionSync: function (collection, data) {
         // keep list of last queried models, done just once the collection get synced
         this.lastModels = [];

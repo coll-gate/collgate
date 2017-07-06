@@ -13,10 +13,10 @@ var Dialog = require('../../main/views/dialog');
 
 var TaxonModel = require('../models/taxon');
 
-var View = Marionette.ItemView.extend({
+var View = Marionette.View.extend({
     tagName: 'div',
     template: require('../templates/entitypath.html'),
-    templateHelpers/*templateContext*/: function () {
+    templateContext: function () {
         return {
             taxon: this.taxon
         };
@@ -176,4 +176,3 @@ var View = Marionette.ItemView.extend({
 });
 
 module.exports = View;
-

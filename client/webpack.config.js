@@ -70,6 +70,7 @@ module.exports = function(env) {
             publicPath: '/build'
         },
         plugins: [
+            new webpack.optimize.ModuleConcatenationPlugin(),
             new webpack.ProvidePlugin({_: 'underscore'})
         ],
         resolve: {

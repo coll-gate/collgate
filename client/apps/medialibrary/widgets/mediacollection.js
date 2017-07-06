@@ -166,7 +166,7 @@ _.extend(MediaCollection.prototype, DescriptorFormatType.prototype, {
     }
 });
 
-MediaCollection.DescriptorTypeDetailsView = Marionette.ItemView.extend({
+MediaCollection.DescriptorTypeDetailsView = Marionette.View.extend({
     className: 'descriptor-type-details-format',
     template: require('../templates/widgets/mediacollection.html'),
 

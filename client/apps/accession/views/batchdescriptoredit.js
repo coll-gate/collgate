@@ -26,14 +26,14 @@ var View = DescribableEdit.extend({
         var name = this.model.get('name');
 
         // update the layout content
-        var batchLayout = application.view().getRegion('content').currentView;
+        var batchLayout = application.main.viewContent().getChildView('content');
 
         var BatchDescriptorView = require('../views/batchdescriptor');
         var batchDescriptorView = new BatchDescriptorView({
             model: this.model,
             descriptorMetaModelLayout: view.descriptorMetaModelLayout});
 
-        batchLayout.getRegion('descriptors').show(batchDescriptorView);
+        batchLayout.showChildView('descriptors', batchDescriptorView);
     },
 
     onApply: function () {
@@ -48,7 +48,7 @@ var View = DescribableEdit.extend({
 
         this.model.save({descriptors: descriptors}, {wait: true, patch: !model.isNew()}).then(function () {
             //Backbone.history.navigate('app/accession/batch/' + model.get('id') + '/', {trigger: true, replace: true});
-            var batchLayout = application.view().getRegion('content').currentView;
+            var batchLayout = application.main.viewContent().getChildView('content');
 
             // update the layout content
             var BatchDescriptorView = require('../views/batchdescriptor');
@@ -56,7 +56,7 @@ var View = DescribableEdit.extend({
                 model: model,
                 descriptorMetaModelLayout: view.descriptorMetaModelLayout});
 
-            batchLayout.getRegion('descriptors').show(batchDescriptorView);
+            batchLayout.showChildView('descriptors', batchDescriptorView);
         });
     },
 
@@ -64,21 +64,21 @@ var View = DescribableEdit.extend({
         var view = this;
 
         // contextual panel
-        var contextLayout = application.getView().getRegion('right').currentView;
+        var contextLayout = application.getView().getChildView('right');
         if (!contextLayout) {
             var DefaultLayout = require('../../main/views/defaultlayout');
             contextLayout = new DefaultLayout();
-            application.getView().getRegion('right').show(contextLayout);
+            application.getView().showChildView('right', contextLayout);
         }
 
         var TitleView = require('../../main/views/titleview');
-        contextLayout.getRegion('title').show(new TitleView({title: gt.gettext("Descriptors"), glyphicon: 'glyphicon-wrench'}));
+        contextLayout.showChildView('title', new TitleView({title: gt.gettext("Descriptors"), glyphicon: 'glyphicon-wrench'}));
 
         var actions = ['apply', 'cancel'];
 
         var BatchDescriptorContextView = require('../views/batchdescriptorcontext');
         var contextView = new BatchDescriptorContextView({actions: actions});
-        contextLayout.getRegion('content').show(contextView);
+        contextLayout.showChildView('content', contextView);
 
         contextView.on("describable:cancel", function() {
             view.onCancel();

@@ -27,14 +27,14 @@ var View = DescribableEdit.extend({
         var name = model.get('name');
 
         // update the descriptor part of the taxon layout
-        var taxonLayout = application.view().getRegion('content').currentView;
+        var taxonLayout = application.main.viewContent().getChildView('content');
 
         var TaxonDescriptorView = require('./taxondescriptor');
         var taxonDescriptorView = new TaxonDescriptorView({
             model: this.model,
             descriptorMetaModelLayout: view.descriptorMetaModelLayout});
 
-        taxonLayout.getRegion('descriptors').show(taxonDescriptorView);
+        taxonLayout.showChildView('descriptors', taxonDescriptorView);
     },
 
     onApply: function () {
@@ -49,14 +49,14 @@ var View = DescribableEdit.extend({
 
         this.model.save({descriptors: descriptors}, {wait: true, patch: !model.isNew()}).then(function () {
             // update the descriptor part of the taxon layout
-            var taxonLayout = application.view().getRegion('content').currentView;
+            var taxonLayout = application.main.viewContent().getChildView('content');
 
             var TaxonDescriptorView = require('./taxondescriptor');
             var taxonDescriptorView = new TaxonDescriptorView({
                 model: model,
                 descriptorMetaModelLayout: view.descriptorMetaModelLayout});
 
-            taxonLayout.getRegion('descriptors').show(taxonDescriptorView);
+            taxonLayout.showChildView('descriptors', taxonDescriptorView);
         });
     },
 
@@ -64,21 +64,21 @@ var View = DescribableEdit.extend({
         var view = this;
 
         // contextual panel
-        var contextLayout = application.getView().getRegion('right').currentView;
+        var contextLayout = application.getView().getChildView('right');
         if (!contextLayout) {
             var DefaultLayout = require('../../main/views/defaultlayout');
             contextLayout = new DefaultLayout();
-            application.getView().getRegion('right').show(contextLayout);
+            application.getView().showChildView('right', contextLayout);
         }
 
         var TitleView = require('../../main/views/titleview');
-        contextLayout.getRegion('title').show(new TitleView({title: gt.gettext("Descriptors"), glyphicon: 'glyphicon-wrench'}));
+        contextLayout.showChildView('title', new TitleView({title: gt.gettext("Descriptors"), glyphicon: 'glyphicon-wrench'}));
 
         var actions = ['apply', 'cancel'];
 
         var TaxonDescriptorContextView = require('../views/taxondescriptorcontext');
         var contextView = new TaxonDescriptorContextView({actions: actions});
-        contextLayout.getRegion('content').show(contextView);
+        contextLayout.showChildView('content', contextView);
 
         contextView.on("describable:cancel", function() {
             view.onCancel();

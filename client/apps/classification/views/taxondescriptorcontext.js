@@ -10,11 +10,11 @@
 
 var Marionette = require('backbone.marionette');
 
-var View = Marionette.LayoutView.extend({
+var View = Marionette.View.extend({
     tagName: 'div',
     template: require('../templates/taxondescriptorcontext.html'),
     className: "context taxon",
-    templateHelpers/*templateContext*/: function () {
+    templateContext: function () {
         return {
             actions: this.getOption('actions'),
             options: {
@@ -52,4 +52,3 @@ var View = Marionette.LayoutView.extend({
 });
 
 module.exports = View;
-

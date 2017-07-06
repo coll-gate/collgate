@@ -11,7 +11,7 @@
 var Marionette = require('backbone.marionette');
 var Dialog = require('../../main/views/dialog');
 
-var View = Marionette.ItemView.extend({
+var View = Marionette.View.extend({
     tagName: 'tr',
     className: 'element object descriptor-value',
     template: require('../templates/descriptorvalueordinal.html'),
@@ -71,7 +71,7 @@ var View = Marionette.ItemView.extend({
 
                     var ChangeValues = Dialog.extend({
                         template: require('../templates/descriptorvaluechangefieldmultiple.html'),
-                        templateHelpers/*templateContext*/: function () {
+                        templateContext: function () {
                             return {
                                 values: values,
                             };

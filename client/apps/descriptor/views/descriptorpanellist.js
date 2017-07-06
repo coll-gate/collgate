@@ -49,10 +49,10 @@ var View = ScrollView.extend({
         this.dragEnterCount || (this.dragEnterCount = 0);
         ++this.dragEnterCount;
 
-        if (application.dndElement && this.dragEnterCount === 1) {
-            if (application.dndElement.$el.hasClass('descriptor-model')) {
+        if (application.main.dndElement && this.dragEnterCount === 1) {
+            if (application.main.dndElement.$el.hasClass('descriptor-model')) {
                 this.ui.bottom_placeholder.css('display', 'block');
-            } else if (application.dndElement.$el.hasClass('descriptor-panel')) {
+            } else if (application.main.dndElement.$el.hasClass('descriptor-panel')) {
                 this.ui.bottom_placeholder.css('display', 'block');
             }
         }
@@ -68,14 +68,14 @@ var View = ScrollView.extend({
         this.dragEnterCount || (this.dragEnterCount = 1);
         --this.dragEnterCount;
 
-        if (!application.isDndView()) {
+        if (!application.main.isDndView()) {
             return false;
         }
 
         if (this.dragEnterCount === 0) {
-            if (application.dndElement.$el.hasClass('descriptor-model')) {
+            if (application.main.dndElement.$el.hasClass('descriptor-model')) {
                 this.ui.bottom_placeholder.css('display', 'none');
-            } else if (application.dndElement.$el.hasClass('descriptor-panel')) {
+            } else if (application.main.dndElement.$el.hasClass('descriptor-panel')) {
                 this.ui.bottom_placeholder.css('display', 'none');
             }
         }
@@ -90,14 +90,14 @@ var View = ScrollView.extend({
 
         this.dragEnterCount || (this.dragEnterCount = 1);
 
-        if (!application.isDndView()) {
+        if (!application.main.isDndView()) {
             return false;
         }
 
         if (this.dragEnterCount === 1) {
-            if (application.dndElement.$el.hasClass('descriptor-model')) {
+            if (application.main.dndElement.$el.hasClass('descriptor-model')) {
                 this.ui.bottom_placeholder.css('display', 'block');
-            } else if (application.dndElement.$el.hasClass('descriptor-panel')) {
+            } else if (application.main.dndElement.$el.hasClass('descriptor-panel')) {
                 this.ui.bottom_placeholder.css('display', 'block');
             }
         }
@@ -116,11 +116,11 @@ var View = ScrollView.extend({
         this.ui.top_placeholder.css('display', 'none');
         this.ui.bottom_placeholder.css('display', 'none');
 
-        if (!application.isDndView()) {
+        if (!application.main.isDndView()) {
             return false;
         }
 
-        var elt = application.dndElement;
+        var elt = application.main.dndElement;
         if (elt.$el.hasClass('descriptor-model')) {
             var DefinesLabel = Dialog.extend({
                 template: require('../templates/descriptorpanelcreate.html'),

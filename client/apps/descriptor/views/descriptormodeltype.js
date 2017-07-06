@@ -14,12 +14,12 @@ var Dialog = require('../../main/views/dialog');
 var DescriptorTypeModel = require('../models/descriptortype');
 
 
-var View = Marionette.ItemView.extend({
+var View = Marionette.View.extend({
     tagName: 'tr',
     className: 'element object descriptor-model-type',
     template: require('../templates/descriptormodeltype.html'),
 
-    templateHelpers/*templateContext*/: function () {
+    templateContext: function () {
         return {
             descriptor_type_groups: this.getOption('descriptor_type_groups')
         }
@@ -75,12 +75,12 @@ var View = Marionette.ItemView.extend({
         e.originalEvent.dataTransfer.setData('text/plain', null);
 
         this.$el.css('opacity', '0.4');
-        application.dndElement = this;
+        application.main.dndElement = this;
     },
 
     dragEnd: function(e) {
         this.$el.css('opacity', '1.0');
-        application.dndElement = null;
+        application.main.dndElement = null;
     },
 
     dragOver: function (e) {
@@ -97,17 +97,17 @@ var View = Marionette.ItemView.extend({
             e.originalEvent.preventDefault();
         }
 
-        if (!application.isDndView()) {
+        if (!application.main.isDndView()) {
             return false;
         }
 
-        if (application.dndElement.$el.hasClass('descriptor-model-type')) {
-            if (this.model.get('position') < application.dndElement.model.get('position')) {
+        if (application.main.dndElement.$el.hasClass('descriptor-model-type')) {
+            if (this.model.get('position') < application.main.dndElement.model.get('position')) {
                 this.$el.css('border-top', '5px dashed #ddd');
-            } else if (this.model.get('position') > application.dndElement.model.get('position')) {
+            } else if (this.model.get('position') > application.main.dndElement.model.get('position')) {
                 this.$el.css('border-bottom', '5px dashed #ddd');
             }
-        } else if (application.dndElement.$el.hasClass('descriptor-type')) {
+        } else if (application.main.dndElement.$el.hasClass('descriptor-type')) {
             this.$el.css('border-top', '5px dashed #ddd');
         }
 
@@ -119,17 +119,17 @@ var View = Marionette.ItemView.extend({
             e.originalEvent.preventDefault();
         }
 
-        if (!application.isDndView()) {
+        if (!application.main.isDndView()) {
             return false;
         }
 
-        if (application.dndElement.$el.hasClass('descriptor-model-type')) {
-            if (this.model.get('position') < application.dndElement.model.get('position')) {
+        if (application.main.dndElement.$el.hasClass('descriptor-model-type')) {
+            if (this.model.get('position') < application.main.dndElement.model.get('position')) {
                 this.$el.css('border-top', 'initial');
-            } else if (this.model.get('position') > application.dndElement.model.get('position')) {
+            } else if (this.model.get('position') > application.main.dndElement.model.get('position')) {
                 this.$el.css('border-bottom', 'initial');
             }
-        } else if (application.dndElement.$el.hasClass('descriptor-type')) {
+        } else if (application.main.dndElement.$el.hasClass('descriptor-type')) {
             this.$el.css('border-top', 'initial');
         }
 
@@ -141,11 +141,11 @@ var View = Marionette.ItemView.extend({
             e.originalEvent.stopPropagation();
         }
 
-        if (!application.isDndView()) {
+        if (!application.main.isDndView()) {
             return false;
         }
 
-        var elt = application.dndElement;
+        var elt = application.main.dndElement;
         if (elt.$el.hasClass('descriptor-type')) {
             // reset borders
             this.$el.css('border-top', 'initial');
@@ -420,7 +420,7 @@ var View = Marionette.ItemView.extend({
 
             var ChangeLabel = Dialog.extend({
                 template: require('../templates/descriptormodeltypechangelabel.html'),
-                templateHelpers/*templateContext*/: function () {
+                templateContext: function () {
                     return {
                         labels: labels
                     };
@@ -589,7 +589,7 @@ var View = Marionette.ItemView.extend({
 
             var ChangeCondition = Dialog.extend({
                 template: require('../templates/descriptormodeltypecondition.html'),
-                templateHelpers/*templateContext*/: function () {
+                templateContext: function () {
                     return {
                         targets: model.collection.models,
                         condition: condition
@@ -790,4 +790,3 @@ var View = Marionette.ItemView.extend({
 });
 
 module.exports = View;
-

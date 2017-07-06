@@ -15,7 +15,7 @@ var DescriptorTypeCollection = require('../collections/descriptortype');
 var DescriptorTypeListAltView = require('./descriptortypelistalt');
 var ScrollingMoreView = require('../../main/views/scrollingmore');
 
-var View = Marionette.ItemView.extend({
+var View = Marionette.View.extend({
     tagName: 'tr',
     className: 'element object descriptor-group-alt',
     template: require('../templates/descriptorgroupalt.html'),
@@ -45,4 +45,3 @@ var View = Marionette.ItemView.extend({
 });
 
 module.exports = View;
-

@@ -107,6 +107,9 @@ MainModule.prototype = {
         this.cache = {
             'descriptors': {}
         };
+
+        // temporary dictionary
+        this.tmp = {};
     },
 
     start: function(options) {
@@ -201,6 +204,36 @@ MainModule.prototype = {
         }
 
         return true;
+    },
+
+    /**
+     * Show a view into the content region of the main view.
+     * @param view
+     */
+    showContent: function(view) {
+        return application.getView().showChildView('content', view);
+    },
+
+    /**
+     * Get the view of the content region of the main view.
+     * @returns Marionette.View or undefined
+     */
+    viewContent: function() {
+        return application.getView().getChildView('content');
+    },
+
+    /**
+     * Is the current unique instance of DND object is valid and is a jQuery element.
+     */
+    isDndElement() {
+        return this.dndElement && (this.dndElement instanceof jQuery);
+    },
+
+    /**
+     * Is the current unique instance of DND object is valid and is a backbone view.
+     */
+    isDndView() {
+        return this.dndElement && (this.dndElement instanceof Backbone.View);
     }
 };
 

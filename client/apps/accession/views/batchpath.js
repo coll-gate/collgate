@@ -10,10 +10,10 @@
 
 var Marionette = require('backbone.marionette');
 
-var View = Marionette.ItemView.extend({
+var View = Marionette.View.extend({
     tagName: 'div',
     template: require('../templates/batchpath.html'),
-    templateHelpers/*templateContext*/: function () {
+    templateContext: function () {
         return {
             accession: this.accession
         };

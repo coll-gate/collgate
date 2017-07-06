@@ -31,7 +31,7 @@ var Controller = Marionette.Object.extend({
                     'id': 'dlg_create_batch'
                 },
                 template: require('../templates/navbatchcreate.html'),
-                templateHelpers/*templateContext*/: function () {
+                templateContext: function () {
                     return {
                         meta_models: data
                     };
@@ -195,7 +195,7 @@ var Controller = Marionette.Object.extend({
                         view.destroy();
 
                         var defaultLayout = new DefaultLayout();
-                        application.show(defaultLayout);
+                        application.main.showContent(defaultLayout);
 
                         defaultLayout.getRegion('title').show(new TitleView({
                             title: gt.gettext("Batch"),

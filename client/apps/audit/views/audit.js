@@ -11,7 +11,7 @@
 var Marionette = require('backbone.marionette');
 var AuditModel = require('../models/audit');
 
-var View = Marionette.ItemView.extend({
+var View = Marionette.View.extend({
     tagName: 'tr',
     className: 'object audit element',
     attributes: {

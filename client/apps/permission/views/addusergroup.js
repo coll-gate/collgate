@@ -10,7 +10,7 @@
 
 var Marionette = require('backbone.marionette');
 
-var View = Marionette.ItemView.extend({
+var View = Marionette.View.extend({
     tagName: 'div',
     className: 'user-add',
     template: require('../templates/addusergroup.html'),
@@ -94,4 +94,3 @@ var View = Marionette.ItemView.extend({
 });
 
 module.exports = View;
-

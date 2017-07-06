@@ -401,7 +401,7 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
     }
 });
 
-EnumSingle.DescriptorTypeDetailsView = Marionette.ItemView.extend({
+EnumSingle.DescriptorTypeDetailsView = Marionette.View.extend({
     className: 'descriptor-type-details-format',
     template: require('../templates/widgets/enumsingle.html'),
 
@@ -451,4 +451,3 @@ EnumSingle.DescriptorTypeDetailsView = Marionette.ItemView.extend({
 });
 
 module.exports = EnumSingle;
-

@@ -11,7 +11,7 @@
 var Marionette = require('backbone.marionette');
 var Dialog = require('../../main/views/dialog');
 
-var View = Marionette.ItemView.extend({
+var View = Marionette.View.extend({
     tagName: 'tr',
     className: 'element object descriptor-group actions',
     template: require('../templates/descriptorgroup.html'),

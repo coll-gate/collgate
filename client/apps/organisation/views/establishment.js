@@ -10,12 +10,12 @@
 
 var Marionette = require('backbone.marionette');
 
-var View = Marionette.ItemView.extend({
+var View = Marionette.View.extend({
     tagName: 'tr',
     template: require('../templates/establishment.html'),
     className: "object establishment",
 
-    templateHelpers/*templateContext*/: function () {
+    templateContext: function () {
         return {
             columnsList: this.getOption('columnsList'),
             columnsOptions: this.getOption('columnsOptions')
@@ -62,4 +62,3 @@ var View = Marionette.ItemView.extend({
 });
 
 module.exports = View;
-

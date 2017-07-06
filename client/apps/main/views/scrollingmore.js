@@ -10,7 +10,7 @@
 
 var Marionette = require('backbone.marionette');
 
-var View = Marionette.ItemView.extend({
+var View = Marionette.View.extend({
     template: require('../templates/scrollingmore.html'),
     tagName: 'div',
     className: 'scrolling-more',

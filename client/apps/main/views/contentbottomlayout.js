@@ -10,7 +10,7 @@
 
 var Marionette = require('backbone.marionette');
 
-var View = Marionette.LayoutView.extend({
+var View = Marionette.View.extend({
     template: require("../templates/contentbottomlayout.html"),
 
     attributes: {
@@ -22,21 +22,28 @@ var View = Marionette.LayoutView.extend({
         'bottom': "div.layout-bottom"
     },
 
-    childEvents: {
-        childEvents: {
-            'select:tab': function (child) {
-                this.triggerMethod('select:tab', child);
-            },
+    childViewEvents: {
+        'select:tab': function (region, child) {
+            this.triggerMethod('select:tab', region, child);
         },
         'dom:refresh': function(child) {
             // call onShowTab when the view is inserted and directly visible
             if (child && child.onShowTab && this.$el.isInViewport() && child.$el.isInViewport()) {
-                child.onShowTab();
+                // child.onShowTab();
+
+                // @todo fix the last Mn 3 issue, must be cleaned once fixed on next Mn version
+                // only as possible (2 of 2) fixtures
+                if (this._lastRegion && this._lastRegion.currentView) {
+                    // child.onShowTab(this._lastRegion);
+                    this._lastRegion = null;
+                }
             }
         }
     },
 
     onShowTab: function(tabView) {
+        this._lastRegion = tabView;
+
         var region = this.getRegion('content');
         if (region && region.currentView && region.currentView.onShowTab) {
             region.currentView.onShowTab(tabView);

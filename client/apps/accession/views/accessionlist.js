@@ -41,7 +41,7 @@ var View = ScrollView.extend({
         }
     },
 
-    templateHelpers/*templateContext*/: function () {
+    templateContext: function () {
         return {
             columnsList: this.displayedColumns,
             columnsOptions: this.getOption('columns')

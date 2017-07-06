@@ -259,8 +259,7 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
     }
 });
 
-
-Entity.DescriptorTypeDetailsView = Marionette.ItemView.extend({
+Entity.DescriptorTypeDetailsView = Marionette.View.extend({
     className: 'descriptor-type-details-format',
     template: require('../templates/widgets/entity.html'),
     // template: "<div></div>",

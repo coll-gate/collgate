@@ -13,7 +13,7 @@ var ItemView = require('../../main/views/itemview');
 var View = ItemView.extend({
     tagName: 'div',
     template: require('../templates/describabledetails.html'),
-    templateHelpers/*templateContext*/: function () {
+    templateContext: function () {
         return {
             panels: this.descriptorMetaModelLayout.panels,
             target: this.descriptorMetaModelLayout.target

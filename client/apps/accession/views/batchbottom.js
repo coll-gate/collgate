@@ -10,7 +10,7 @@
 
 var Marionette = require('backbone.marionette');
 
-var View = Marionette.ItemView.extend({
+var View = Marionette.View.extend({
     tagName: 'div',
     className: 'batch-bottom',
     template: require('../templates/batchbottom.html'),
@@ -56,7 +56,7 @@ var View = Marionette.ItemView.extend({
         } else if (v.length > 0 && v.length < 3) {
             $(this.ui.batch_name).validateField('failed', gt.gettext('3 characters min'));
             return false;
-        } else if (this.ui.batch_name.val().length == 0) {
+        } else if (this.ui.batch_name.val().length === 0) {
             $(this.ui.batch_name).cleanField();
             return true;
         } else {
@@ -71,4 +71,3 @@ var View = Marionette.ItemView.extend({
 });
 
 module.exports = View;
-

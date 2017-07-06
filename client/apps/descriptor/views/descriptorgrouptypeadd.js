@@ -10,7 +10,7 @@
 
 var Marionette = require('backbone.marionette');
 
-var View = Marionette.ItemView.extend({
+var View = Marionette.View.extend({
     tagName: 'div',
     className: 'type-add',
     template: require('../templates/descriptorgrouptypeadd.html'),
@@ -76,7 +76,7 @@ var View = Marionette.ItemView.extend({
                         for (var i in data.items) {
                             var t = data.items[i];
 
-                            if (t.name.toUpperCase() == view.ui.add_type_name.val().toUpperCase()) {
+                            if (t.name.toUpperCase() === view.ui.add_type_name.val().toUpperCase()) {
                                 $(view.ui.add_type_name).validateField('failed', gt.gettext('Descriptor type name already in usage'));
                                 break;
                             }
@@ -91,4 +91,3 @@ var View = Marionette.ItemView.extend({
 });
 
 module.exports = View;
-

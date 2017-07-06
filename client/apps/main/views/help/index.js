@@ -10,7 +10,7 @@
 
 var Marionette = require('backbone.marionette');
 
-var View = Marionette.LayoutView.extend({
+var View = Marionette.View.extend({
     tagName: 'div',
     className: 'help-index',
     template: require('../../templates/help/index.html'),
@@ -29,4 +29,3 @@ var View = Marionette.LayoutView.extend({
 });
 
 module.exports = View;
-

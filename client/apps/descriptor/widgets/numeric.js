@@ -149,7 +149,7 @@ _.extend(Numeric.prototype, DescriptorFormatType.prototype, {
     }
 });
 
-Numeric.DescriptorTypeDetailsView = Marionette.ItemView.extend({
+Numeric.DescriptorTypeDetailsView = Marionette.View.extend({
     className: 'descriptor-type-details-format',
     template: require('../templates/widgets/numeric.html'),
 
@@ -227,4 +227,3 @@ Numeric.DescriptorTypeDetailsView = Marionette.ItemView.extend({
 });
 
 module.exports = Numeric;
-

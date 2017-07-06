@@ -60,7 +60,7 @@ var TaxonRouter = Marionette.AppRouter.extend({
         var collection = application.classification.collections.taxons;
 
         var defaultLayout = new DefaultLayout({});
-        application.show(defaultLayout);
+        application.main.showContent(defaultLayout);
 
         defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of taxons")}));
 
@@ -104,7 +104,7 @@ var TaxonRouter = Marionette.AppRouter.extend({
         var collection = new CultivarCollection();
 
         var defaultLayout = new DefaultLayout({});
-        application.show(defaultLayout);
+        application.main.showContent(defaultLayout);
 
         defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of cultivars")}));
 
@@ -127,7 +127,7 @@ var TaxonRouter = Marionette.AppRouter.extend({
         var taxon = new TaxonModel({id: id});
 
         var defaultLayout = new DefaultLayout();
-        application.show(defaultLayout);
+        application.main.showContent(defaultLayout);
 
         var taxonLayout = new TaxonLayout({model: taxon, initialTab: tab.replace('/', '')});
 

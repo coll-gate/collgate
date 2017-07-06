@@ -10,7 +10,7 @@
 
 var Marionette = require('backbone.marionette');
 
-var View = Marionette.ItemView.extend({
+var View = Marionette.View.extend({
     constructor: function() {
         var prototype = this.constructor.prototype;
 
@@ -39,7 +39,7 @@ var View = Marionette.ItemView.extend({
             prototype = prototype.constructor.__super__;
         }
 
-        Marionette.ItemView.apply(this, arguments);
+        Marionette.View.apply(this, arguments);
     },
 
     initialize: function (options) {

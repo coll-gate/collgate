@@ -21,7 +21,7 @@ var EnumOrdinal = function() {
 _.extend(EnumOrdinal.prototype, EnumSingle.prototype, {
 });
 
-EnumOrdinal.DescriptorTypeDetailsView = Marionette.ItemView.extend({
+EnumOrdinal.DescriptorTypeDetailsView = Marionette.View.extend({
     className: 'descriptor-type-details-format',
     template: require('../templates/widgets/enumordinal.html'),
 
@@ -130,4 +130,3 @@ EnumOrdinal.DescriptorTypeDetailsView = Marionette.ItemView.extend({
 });
 
 module.exports = EnumOrdinal;
-

@@ -10,7 +10,7 @@
 
 var Marionette = require('backbone.marionette');
 
-var TitleView = Marionette.ItemView.extend({
+var TitleView = Marionette.View.extend({
     tagName: "span",
     template: _.template('<span name="title"></span><span class="heading" name="object"></span>'),
 

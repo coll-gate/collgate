@@ -12,7 +12,7 @@ var Marionette = require('backbone.marionette');
 var Dialog = require('../../main/views/dialog');
 var TaxonDescriptorView = require('../views/taxondescriptor');
 
-var View = Marionette.ItemView.extend({
+var View = Marionette.View.extend({
     tagName: 'div',
     template: require('../templates/taxondescriptorcreate.html'),
 
@@ -43,7 +43,7 @@ var View = Marionette.ItemView.extend({
                     'id': 'dlg_create_descriptor',
                 },
                 template: require('../templates/taxondescriptorcreatedialog.html'),
-                templateHelpers/*templateContext*/: function () {
+                templateContext: function () {
                     return {
                         meta_models: data,
                     };
@@ -80,7 +80,7 @@ var View = Marionette.ItemView.extend({
                         view.destroy();
 
                         // update the descriptor part of the taxon layout
-                        var taxonLayout = application.view().getRegion('content').currentView;
+                        var taxonLayout = application.main.viewContent();
 
                         // patch the taxon descriptor meta model
                         model.save({descriptor_meta_model: metaModel}, {patch: true, wait: false});
@@ -94,7 +94,7 @@ var View = Marionette.ItemView.extend({
                                 model: model,
                                 descriptorMetaModelLayout: data
                             });
-                            taxonLayout.getRegion('descriptors').show(taxonDescriptorView);
+                            taxonLayout.showChildView('descriptors', taxonDescriptorView);
                         });
                     }
                 }
@@ -110,7 +110,7 @@ var View = Marionette.ItemView.extend({
 
         var DefaultLayout = require('../../main/views/defaultlayout');
         var contextLayout = new DefaultLayout();
-        application.getView().getRegion('right').show(contextLayout);
+        application.getView().showChildView('right', contextLayout);
 
         var actions = [];
 
@@ -120,8 +120,8 @@ var View = Marionette.ItemView.extend({
         var contextView = new TaxonDescriptorContextView({actions: actions});
 
         var TitleView = require('../../main/views/titleview');
-        contextLayout.getRegion('title').show(new TitleView({title: gt.gettext("Descriptors"), glyphicon: 'glyphicon-wrench'}));
-        contextLayout.getRegion('content').show(contextView);
+        contextLayout.showChildView('title', new TitleView({title: gt.gettext("Descriptors"), glyphicon: 'glyphicon-wrench'}));
+        contextLayout.showChildView('content', contextView);
 
         contextView.on("descriptormetamodel:add", function() {
             view.onDefine();

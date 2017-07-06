@@ -41,10 +41,10 @@ var View = ScrollView.extend({
 
     columnsOptions: {
         'glyph': {label: '', width: 'auto', glyphicon: ['glyphicon-unchecked', 'glyphicon-unchecked'], event: 'selectBatch', fixed: true},
-        'name': {label: gt.gettext('Name'), width: 'auto', minWidth: true, event: 'viewDetails'},
+        'name': {label: gt.gettext('Name'), width: 'auto', minWidth: true, event: 'view-batch-details'},
     },
 
-    templateHelpers/*templateContext*/: function () {
+    templateContext: function () {
         return {
             columnsList: this.displayedColumns,
             columnsOptions: this.getOption('columns')
@@ -125,7 +125,7 @@ var View = ScrollView.extend({
                     'id': 'dlg_create_batch'
                 },
                 template: require('../templates/batchcreate.html'),
-                templateHelpers/*templateContext*/: function () {
+                templateContext: function () {
                     return {
                         meta_models: data[0]
                     };
@@ -233,7 +233,7 @@ var View = ScrollView.extend({
                         view.destroy();
 
                         var defaultLayout = new DefaultLayout();
-                        application.show(defaultLayout);
+                        application.main.showContent(defaultLayout);
 
                         defaultLayout.getRegion('title').show(new TitleView({
                             title: gt.gettext("Batch"),

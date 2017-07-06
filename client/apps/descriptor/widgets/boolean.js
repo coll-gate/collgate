@@ -160,7 +160,7 @@ _.extend(BooleanType.prototype, DescriptorFormatType.prototype, {
     }
 });
 
-BooleanType.DescriptorTypeDetailsView = Marionette.ItemView.extend({
+BooleanType.DescriptorTypeDetailsView = Marionette.View.extend({
     className: 'descriptor-type-details-format',
     template: "<div></div>",
 
@@ -178,4 +178,3 @@ BooleanType.DescriptorTypeDetailsView = Marionette.ItemView.extend({
 });
 
 module.exports = BooleanType;
-

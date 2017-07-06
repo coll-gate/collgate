@@ -53,7 +53,7 @@ _.deepClone = function(obj) {
 // global application
 application = new Marionette.Application({
 
-    // region: '#root',  // @todo Uncomment me after Mn 3 migration and remove the addRegions
+    region: '#root',
 
     initialize: function(options) {
         this.isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
@@ -152,9 +152,6 @@ application = new Marionette.Application({
             // update the session last action timestamp at each query success
             session.user.lastAction = new Date().getTime();
         });
-
-        // temporary dictionary
-        this.tmp = {};
     },
 
     onBeforeStart: function(options) {
@@ -431,49 +428,7 @@ application = new Marionette.Application({
         }
 
         Logger.timeEnd('Application startup');
-    },
-
-    // helper to be removed in Mn 3 (@see Marionette.Application)
-    showView: function(view) {
-        return this.getRegion('root').show(view);
-    },
-
-    // helper to be removed in Mn 3 (@see Marionette.Application)
-    getView: function() {
-        return this.getRegion('root').currentView;
-    },
-
-    /**
-     * Show a view into the content region of the main view.
-     * @param view
-     */
-    show: function(view) {
-        return this.getView().getRegion('content').show(view);
-    },
-
-    /**
-     * Get the view of the content region of the main view.
-     * @returns Marionette.View or undefined
-     */
-    view: function() {
-        return this.getView().getRegion('content').currentView;
-    },
-
-    /**
-     * Is the current unique instance of DND object is valid and is a jQuery element.
-     */
-    isDndElement() {
-        return application.dndElement && (application.dndElement instanceof jQuery);
-    },
-
-    /**
-     * Is the current unique instance of DND object is valid and is a backbone view.
-     */
-    isDndView() {
-        return application.dndElement && (application.dndElement instanceof Backbone.View);
     }
 });
-
-application.addRegions({root: "#root"});
 
 application.start({initialData: ''});

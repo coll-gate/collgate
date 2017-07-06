@@ -10,7 +10,7 @@
 
 var Marionette = require('backbone.marionette');
 
-var TaxonItemView = Marionette.ItemView.extend({
+var TaxonItemView = Marionette.View.extend({
     tagName: 'tr',
     className: 'object taxon element',
     attributes: function() {
@@ -21,7 +21,7 @@ var TaxonItemView = Marionette.ItemView.extend({
     },
     template: require("../../descriptor/templates/entity.html"),
 
-    templateHelpers/*templateContext*/: function () {
+    templateContext: function () {
         return {
             columnsList: this.getOption('columnsList'),
             columnsOptions: this.getOption('columnsOptions')

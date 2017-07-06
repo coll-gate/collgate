@@ -10,7 +10,7 @@
 
 var Marionette = require('backbone.marionette');
 
-var View = Marionette.LayoutView.extend({
+var View = Marionette.View.extend({
     template: '<thead name="grid-column"></thead><tbody name="grid-row"></tbody><tfoot name="grid-footer"></tfoot>',
     attributes: {
         style: "height: 100%;"
@@ -30,4 +30,3 @@ var View = Marionette.LayoutView.extend({
 });
 
 module.exports = View;
-

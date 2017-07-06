@@ -15,21 +15,21 @@ var View = DescribableDetails.extend({
     onShowTab: function() {
         var view = this;
 
-        var contextLayout = application.getView().getRegion('right').currentView;
+        var contextLayout = application.getView().getChildView('right');
         if (!contextLayout) {
             var DefaultLayout = require('../../main/views/defaultlayout');
             contextLayout = new DefaultLayout();
-            application.getView().getRegion('right').show(contextLayout);
+            application.getView().showChildView('right', contextLayout);
         }
 
         var TitleView = require('../../main/views/titleview');
-        contextLayout.getRegion('title').show(new TitleView({title: gt.gettext("Descriptors"), glyphicon: 'glyphicon-wrench'}));
+        contextLayout.showChildView('title', new TitleView({title: gt.gettext("Descriptors"), glyphicon: 'glyphicon-wrench'}));
 
         var actions = ['modify'];
 
         var AccessionDescriptorContextView = require('./accessiondescriptorcontext');
         var contextView = new AccessionDescriptorContextView({actions: actions});
-        contextLayout.getRegion('content').show(contextView);
+        contextLayout.showChildView('content', contextView);
 
         contextView.on("describable:modify", function () {
             view.onModify();
@@ -45,12 +45,11 @@ var View = DescribableDetails.extend({
         var name = this.model.get('name');
 
         // update the layout content
-        var accessionLayout = application.view().getRegion('content').currentView;
+        var accessionLayout = application.main.viewContent().getChildView('content');
 
         var view = new AccessionDescriptorEditView({model: this.model, descriptorMetaModelLayout: this.descriptorMetaModelLayout});
-        accessionLayout.getRegion('descriptors').show(view);
+        accessionLayout.showChildView('descriptors', view);
     }
 });
 
 module.exports = View;
-

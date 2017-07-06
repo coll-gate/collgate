@@ -204,7 +204,7 @@ _.extend(StringType.prototype, DescriptorFormatType.prototype, {
     },
 });
 
-StringType.DescriptorTypeDetailsView = Marionette.ItemView.extend({
+StringType.DescriptorTypeDetailsView = Marionette.View.extend({
     className: 'descriptor-type-details-format',
     template: require('../templates/widgets/string.html'),
 
@@ -230,4 +230,3 @@ StringType.DescriptorTypeDetailsView = Marionette.ItemView.extend({
 });
 
 module.exports = StringType;
-

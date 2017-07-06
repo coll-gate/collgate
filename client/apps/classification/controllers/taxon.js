@@ -240,7 +240,7 @@ var TaxonController = Marionette.Object.extend({
                     'id': 'dlg_create_taxon_cultivar'
                 },
                 template: require('../templates/taxoncreatecultivar.html'),
-                templateHelpers/*templateContext*/: function () {
+                templateContext: function () {
                     return {
                         meta_models: data
                     };
@@ -407,7 +407,7 @@ var TaxonController = Marionette.Object.extend({
                         view.destroy();
 
                         var defaultLayout = new DefaultLayout();
-                        application.show(defaultLayout);
+                        application.main.showContent(defaultLayout);
 
                         defaultLayout.getRegion('title').show(new TitleView({
                             title: gt.gettext("Cultivar"),

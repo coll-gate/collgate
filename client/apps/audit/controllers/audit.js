@@ -103,11 +103,11 @@ var Controller = Marionette.Object.extend({
         var modal = new ModalView({controller: this});
         modal.render();
 
-        modal.on("view:search", function(args) {
-            var username = args.view.ui.username.val();
+        modal.on("view:search", function(view) {
+            var username = view.ui.username.val();
             if (username) {
                 this.getAuditListByUsername(username);
-                args.view.destroy();
+                view.destroy();
 
                 Backbone.history.navigate('app/audit/search/?username=' + username, {silent: true});
             }
@@ -118,7 +118,7 @@ var Controller = Marionette.Object.extend({
         var auditCollection = new AuditCollection([], {username: username});
 
         var defaultLayout = new DefaultLayout({});
-        application.show(defaultLayout);
+        application.main.showContent(defaultLayout);
 
         defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of audit entries related to user"), object: username}));
 
@@ -231,13 +231,13 @@ var Controller = Marionette.Object.extend({
         var modal = new ModalView({controller: this});
         modal.render();
 
-        modal.on("view:search", function(args) {
-            var object_id = $(args.view.ui.entity).val();
-            var object_name = $(args.view.ui.entity).select2('data')[0].text;
-            var ct = $(args.view.ui.content_type).val().split('.');
-            if (ct.length == 2 && object_id) {
+        modal.on("view:search", function(view) {
+            var object_id = $(view.ui.entity).val();
+            var object_name = $(view.ui.entity).select2('data')[0].text;
+            var ct = $(view.ui.content_type).val().split('.');
+            if (ct.length === 2 && object_id) {
                 this.getAuditListByEntity(ct[0], ct[1], object_id, object_name);
-                args.view.destroy();
+                view.destroy();
 
                 Backbone.history.navigate('app/audit/search/?app_label=' + ct[0] + '&model=' + ct[1] + '&object_id=' + object_id, {silent: true});
             }
@@ -248,7 +248,7 @@ var Controller = Marionette.Object.extend({
         var auditCollection = new AuditCollection([], {entity: {app_label: app_label, model: model, object_id: object_id}});
 
         var defaultLayout = new DefaultLayout({});
-        application.show(defaultLayout);
+        application.main.showContent(defaultLayout);
 
         // if not specified retrieve the entity name
         if (object_name == null) {

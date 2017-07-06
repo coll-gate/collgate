@@ -12,7 +12,7 @@ var Marionette = require('backbone.marionette');
 
 var Dialog = require('../../main/views/dialog');
 
-var View = Marionette.ItemView.extend({
+var View = Marionette.View.extend({
     tagName: 'div',
     className: 'object taxon',
     template: require('../templates/taxondetails.html'),
@@ -147,4 +147,3 @@ var View = Marionette.ItemView.extend({
 });
 
 module.exports = View;
-

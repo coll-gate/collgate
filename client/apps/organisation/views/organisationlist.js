@@ -21,7 +21,7 @@ var View = ScrollView.extend({
     userSettingName: '_organisation_list_columns',
     userSettingVersion: '1.0',
 
-    templateHelpers/*templateContext*/: function () {
+    templateContext: function () {
         return {
             columnsList: this.displayedColumns,
             columnsOptions: this.getOption('columns')

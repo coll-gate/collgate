@@ -10,7 +10,7 @@
 
 var Marionette = require('backbone.marionette');
 
-var Layout = Marionette.LayoutView.extend({
+var Layout = Marionette.View.extend({
     template: require("../templates/descriptortypedetailslayout.html"),
 
     ui: {
@@ -114,4 +114,3 @@ var Layout = Marionette.LayoutView.extend({
 });
 
 module.exports = Layout;
-

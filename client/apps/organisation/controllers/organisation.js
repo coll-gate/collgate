@@ -135,7 +135,7 @@ var Controller = Marionette.Object.extend({
                         this.destroy();
 
                         var defaultLayout = new DefaultLayout();
-                        application.show(defaultLayout);
+                        application.main.showContent(defaultLayout);
 
                         defaultLayout.getRegion('title').show(new TitleView({
                             title: gt.gettext("Organisation"),

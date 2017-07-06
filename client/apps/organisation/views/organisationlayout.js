@@ -14,7 +14,6 @@ var ContentBottomFooterLayout = require('../../main/views/contentbottomfooterlay
 var OrganisationDetailsView = require('../views/organisationdetails');
 var DescriptorEditView = require('../views/descriptoredit');
 
-
 var Layout = LayoutView.extend({
     template: require("../templates/organisationlayout.html"),
 
@@ -126,4 +125,3 @@ var Layout = LayoutView.extend({
 });
 
 module.exports = Layout;
-

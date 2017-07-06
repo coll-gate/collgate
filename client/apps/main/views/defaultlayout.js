@@ -10,7 +10,7 @@
 
 var Marionette = require('backbone.marionette');
 
-var DefaultLayout = Marionette.LayoutView.extend({
+var DefaultLayout = Marionette.View.extend({
     template: require("../templates/defaultlayout.html"),
     attributes: {
         style: "height: 100%;"
@@ -23,10 +23,10 @@ var DefaultLayout = Marionette.LayoutView.extend({
         'bottom': ".panel-bottom"
     },
 
-    childEvents: {
-        'select:tab': function (child) {
-            this.triggerMethod('select:tab', child);
-        },
+    childViewEvents: {
+        'select:tab': function (region, child) {
+            this.triggerMethod('select:tab', region, child);
+        }
     },
 
     onBeforeDestroy: function () {

@@ -10,7 +10,7 @@
 
 var Marionette = require('backbone.marionette');
 
-var View = Marionette.LayoutView.extend({
+var View = Marionette.View.extend({
     className: "action-panel",
     template: require('../templates/actionpanel.html'),
 
@@ -48,4 +48,3 @@ var View = Marionette.LayoutView.extend({
 });
 
 module.exports = View;
-

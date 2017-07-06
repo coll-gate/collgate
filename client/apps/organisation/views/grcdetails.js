@@ -10,7 +10,7 @@
 
 var Marionette = require('backbone.marionette');
 
-var View = Marionette.ItemView.extend({
+var View = Marionette.View.extend({
     tagName: 'div',
     className: 'object grc',
     template: require('../templates/grcdetails.html'),
@@ -47,4 +47,3 @@ var View = Marionette.ItemView.extend({
 });
 
 module.exports = View;
-

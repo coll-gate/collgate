@@ -58,8 +58,8 @@ var ActionBtnEvents = Marionette.Behavior.extend({
     },
 */
     onDestroy: function() {
-        if (application.tmp.lastActionButtonEvents === this) {
-            application.tmp.lastActionButtonEvents = null;
+        if (application.main.tmp.lastActionButtonEvents === this) {
+            application.main.tmp.lastActionButtonEvents = null;
         }
 
         if (this.rowActionButtons) {
@@ -69,15 +69,15 @@ var ActionBtnEvents = Marionette.Behavior.extend({
 
     overActions: function (e) {
         // delete a previous one not clean (issue on chrome)
-        if (application.tmp.lastActionButtonEvents !== this) {
-            var last = application.tmp.lastActionButtonEvents;
+        if (application.main.tmp.lastActionButtonEvents !== this) {
+            var last = application.main.tmp.lastActionButtonEvents;
 
             if (last && last.rowActionButtons) {
                 last.inButtons = last.inRow = false;
                 last.rowActionButtons.remove();
             }
 
-            application.tmp.lastActionButtonEvents = this;
+            application.main.tmp.lastActionButtonEvents = this;
         }
 
         if (this.rowActionButtons && e.relatedTarget && (

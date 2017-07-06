@@ -10,7 +10,7 @@
 
 var Marionette = require('backbone.marionette');
 
-var View = Marionette.LayoutView.extend({
+var View = Marionette.View.extend({
     template: require("../templates/quarterlayout.html"),
     attributes: {
         style: "height: 100%;"
@@ -23,9 +23,9 @@ var View = Marionette.LayoutView.extend({
         'bottom-right': "div.row-down div.right"
     },
 
-    childEvents: {
-        'select:tab': function (child) {
-            this.triggerMethod('select:tab', child);
+    childViewEvents: {
+        'select:tab': function (region, child) {
+            this.triggerMethod('select:tab', region, child);
         },
     },
 

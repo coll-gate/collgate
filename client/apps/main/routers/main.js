@@ -34,7 +34,7 @@ var Router = Marionette.AppRouter.extend({
     },
 
     home: function() {
-        var HomeView = Marionette.LayoutView.extend({
+        var HomeView = Marionette.View.extend({
             tagName: 'div',
             className: 'home',
             attributes: { style: "height: 100%; padding: 5px;"},
@@ -42,7 +42,7 @@ var Router = Marionette.AppRouter.extend({
         });
 
         var defaultLayout = new DefaultLayout({});
-        application.show(defaultLayout);
+        application.main.showContent(defaultLayout);
 
         defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Home")}));
 
@@ -62,7 +62,7 @@ var Router = Marionette.AppRouter.extend({
 
     about: function() {
         var defaultLayout = new DefaultLayout({});
-        application.show(defaultLayout);
+        application.main.showContent(defaultLayout);
 
         defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("About...")}));
         defaultLayout.getRegion('content').show(new AboutView());
@@ -70,7 +70,7 @@ var Router = Marionette.AppRouter.extend({
 
     help: function() {
         var defaultLayout = new DefaultLayout({});
-        application.show(defaultLayout);
+        application.main.showContent(defaultLayout);
 
         defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Help...")}));
         defaultLayout.getRegion('content').show(new HelpIndexView());
@@ -81,7 +81,7 @@ var Router = Marionette.AppRouter.extend({
         var collection = new ConfigCollection();
 
         var defaultLayout = new DefaultLayout({});
-        application.show(defaultLayout);
+        application.main.showContent(defaultLayout);
 
         defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Configuration state")}));
 
@@ -97,7 +97,7 @@ var Router = Marionette.AppRouter.extend({
         var collection = application.main.collections.languages;
 
         var defaultLayout = new DefaultLayout({});
-        application.show(defaultLayout);
+        application.main.showContent(defaultLayout);
 
         defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of languages for data")}));
 

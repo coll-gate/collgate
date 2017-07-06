@@ -39,7 +39,7 @@ var Router = Marionette.AppRouter.extend({
         var collection = new DescriptorModelCollection();
 
         var defaultLayout = new DefaultLayout({});
-        application.show(defaultLayout);
+        application.main.showContent(defaultLayout);
 
         defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of models of descriptor")}));
 
@@ -57,7 +57,7 @@ var Router = Marionette.AppRouter.extend({
 
     getDescriptorModel: function (id) {
         var defaultLayout = new DefaultLayout();
-        application.show(defaultLayout);
+        application.main.showContent(defaultLayout);
 
         var model = new DescriptorModelModel({id: id});
 
@@ -69,7 +69,7 @@ var Router = Marionette.AppRouter.extend({
 
     getDescriptorModelTypeListForModel: function(id) {
         var defaultLayout = new DefaultLayout({});
-        application.show(defaultLayout);
+        application.main.showContent(defaultLayout);
 
         defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of types of models of descriptor")}));
 

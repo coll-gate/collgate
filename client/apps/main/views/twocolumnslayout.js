@@ -10,7 +10,7 @@
 
 var Marionette = require('backbone.marionette');
 
-var TwoColumnsLayout = Marionette.LayoutView.extend({
+var TwoColumnsLayout = Marionette.View.extend({
     template: require("../templates/twocolumnslayout.html"),
     attributes: {
         style: "height: 100%;"
@@ -23,9 +23,9 @@ var TwoColumnsLayout = Marionette.LayoutView.extend({
         'right-bottom': ".right-bottom",
     },
 
-    childEvents: {
-        'select:tab': function (child) {
-            this.triggerMethod('select:tab', child);
+    childViewEvents: {
+        'select:tab': function (region, child) {
+            this.triggerMethod('select:tab', region, child);
         },
     },
 

@@ -10,7 +10,7 @@
 
 var Marionette = require('backbone.marionette');
 
-var MainLayout = Marionette.LayoutView.extend({
+var MainLayout = Marionette.View.extend({
     template: require('../templates/main.html'),
     className: "column",
 
@@ -116,7 +116,10 @@ var MainLayout = Marionette.LayoutView.extend({
         }
     },
 
-    childEvents: {
+    childViewEvents: {
+        'select:tab': function (region, child) {
+            this.triggerMethod('select:tab', region, child);
+        },
         'dom:refresh': function(child) {
             // re-inject the grabber column each time the content has changed
             if (child && child.$el.parent().hasClass('root-content')) {

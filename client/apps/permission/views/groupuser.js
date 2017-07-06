@@ -10,7 +10,7 @@
 
 var Marionette = require('backbone.marionette');
 
-var View = Marionette.ItemView.extend({
+var View = Marionette.View.extend({
     tagName: 'tr',
     className: 'element object user',
     template: require('../templates/groupuser.html'),
@@ -34,7 +34,7 @@ var View = Marionette.ItemView.extend({
 
     removeUserFromGroup: function () {
         // can't remove himself if it is not staff or superuser
-        if (session.user.username == this.model.get('username') && !(this.model.get('is_staff') || this.model.get('is_superuser')))
+        if (session.user.username === this.model.get('username') && !(this.model.get('is_staff') || this.model.get('is_superuser')))
             return;
 
         this.model.destroy({wait: true});

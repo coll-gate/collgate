@@ -10,7 +10,7 @@
 
 var Marionette = require('backbone.marionette');
 
-var View = Marionette.ItemView.extend({
+var View = Marionette.View.extend({
     tagName: 'div',
     className: 'descriptor-model-add',
     template: require('../templates/descriptormodeladd.html'),
@@ -84,4 +84,3 @@ var View = Marionette.ItemView.extend({
 });
 
 module.exports = View;
-

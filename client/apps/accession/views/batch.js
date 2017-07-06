@@ -10,7 +10,7 @@
 
 var Marionette = require('backbone.marionette');
 
-var View = Marionette.ItemView.extend({
+var View = Marionette.View.extend({
     tagName: 'tr',
     className: 'object batch element',
     attributes: function() {
@@ -21,7 +21,7 @@ var View = Marionette.ItemView.extend({
     },
     template: require('../templates/batch.html'),
 
-    templateHelpers/*templateContext*/: function () {
+    templateContext: function () {
         return {
             columnsList: this.getOption('columnsList'),
             columnsOptions: this.getOption('columnsOptions')

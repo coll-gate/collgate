@@ -5,12 +5,12 @@
  * @date 2017-03-07
  * @copyright Copyright (c) 2017 INRA/CIRAD
  * @license MIT (see LICENSE file)
- * @details 
+ * @details
  */
 
 var Marionette = require('backbone.marionette');
 
-var Layout = Marionette.LayoutView.extend({
+var Layout = Marionette.View.extend({
     attributes: {
         style: "height: 100%;"
     },
@@ -22,19 +22,22 @@ var Layout = Marionette.LayoutView.extend({
         initial_pane: 'div.tab-pane.active'
     },
 
-    childEvents: {
-        'select:tab': function (child) {
-            this.triggerMethod('select:tab', child);
+    childViewEvents: {
+        'select:tab': function (region, child) {
+            this.triggerMethod('select:tab', region, child);
         },
         'dom:refresh': function(child) {
             var tab = this.$el.find('div.tab-pane.active').attr('name');
             var region = this.getRegion(tab);
 
+            console.log("test issue dont forget me", this.getChildView(tab));
+
             // update child of current tab
             if (region && child && region.currentView === child) {
-                // this.triggerMethod('select:tab', region.currentView);
+                // this.triggerMethod('select:tab', region, region.currentView);
 
                 if (region.currentView.onShowTab) {
+                    console.log("ohh but i'm fixed !!!!");
                     region.currentView.onShowTab(this);
                 }
             }
@@ -69,7 +72,7 @@ var Layout = Marionette.LayoutView.extend({
             prototype = prototype.constructor.__super__;
         }
 
-        Marionette.LayoutView.apply(this, arguments);
+        Marionette.View.apply(this, arguments);
     },
 
     initialize: function(options) {
@@ -79,6 +82,32 @@ var Layout = Marionette.LayoutView.extend({
 
         this.activeTab = undefined;
         this.initialTab = options['initialTab'] || null;
+
+        var self = this;
+
+        // @todo uses this fix for the moment wait Mn 3 next version
+        for (var region in this.getRegions()) {
+            this.getRegion(region).on('show', function (region, child) {
+                var tab = self.activeTab;  // self.$el.find('div.tab-pane.active').attr('name');
+                var currentRegion = self.getRegion(tab);
+
+                // only as possible (1 of 2) fixtures
+                if (currentRegion && currentRegion.currentView) {
+                    if (currentRegion.currentView.onShowTab) {
+                        currentRegion.currentView.onShowTab(currentRegion);
+
+                        self.triggerMethod('select:tab', currentRegion, currentRegion.currentView);
+                    }
+                }
+
+                // update child if region is region of the current tab
+                if (region === currentRegion) {
+                    if (child && child.onShowTab) {
+                        child.onShowTab(currentRegion);
+                    }
+                }
+            });
+        }
     },
 
     onBeforeAttach: function() {
@@ -101,7 +130,7 @@ var Layout = Marionette.LayoutView.extend({
             this.initialTab = null;
         }
 
-        // if the initial tab is different from initial tab
+        // if the initial tab is different from active tab
         if (this.initialTab !== null && this.initialTab !== this.activeTab) {
             // un-active the default
             this.ui.tabs_buttons.filter('[aria-controls="' + this.activeTab + '"]').parent().removeClass('active');
@@ -114,8 +143,8 @@ var Layout = Marionette.LayoutView.extend({
             this.activeTab = this.initialTab;
         }
 
-        this.ui.tabs.on("shown.bs.tab", $.proxy(this.onShowTab, this));
-        this.ui.tabs.on("hide.bs.tab", $.proxy(this.onHideTab, this));
+        this.ui.tabs.on("shown.bs.tab", $.proxy(this.onShowBsTab, this));
+        this.ui.tabs.on("hide.bs.tab", $.proxy(this.onHideBsTab, this));
     },
 
     onDomRefresh: function() {
@@ -126,7 +155,9 @@ var Layout = Marionette.LayoutView.extend({
             }
 
             // initial trigger for parents
-            this.triggerMethod('select:tab', region.currentView);
+            // @todo for any of these similar trigger because Mn 3 region.currentView is not set as this time
+            // contrary to Mn 2
+            this.triggerMethod('select:tab', region, region.currentView);
         }
     },
 
@@ -153,7 +184,9 @@ var Layout = Marionette.LayoutView.extend({
                 }
 
                 // trigger for parents
-                this.triggerMethod('select:tab', region.currentView);
+                if (region.currentView) {
+                    this.triggerMethod('select:tab', region, region.currentView);
+                }
 
                 // update the url for the history with the new active tab
                 if (!this.model.isNew()) {
@@ -169,7 +202,7 @@ var Layout = Marionette.LayoutView.extend({
         }
     },
 
-    onShowTab: function(e) {
+    onShowBsTab: function(e) {
         // e.target current tab, e.relatedTarget previous tab
         var tab = e.target.getAttribute('aria-controls');
         this.activeTab = tab;
@@ -181,7 +214,9 @@ var Layout = Marionette.LayoutView.extend({
             }
 
             // trigger for parents
-            this.triggerMethod('select:tab', region.currentView);
+            if (region.currentView) {
+                this.triggerMethod('select:tab', region, region.currentView);
+            }
 
             // update the url for the history with the new active tab
             if (!this.model.isNew()) {
@@ -197,7 +232,7 @@ var Layout = Marionette.LayoutView.extend({
         }
     },
 
-    onHideTab: function(e) {
+    onHideBsTab: function(e) {
         var tab = e.target.getAttribute('aria-controls');
 
         var region = this.getRegion(tab);

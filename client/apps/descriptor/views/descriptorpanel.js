@@ -11,7 +11,7 @@
 var Marionette = require('backbone.marionette');
 var Dialog = require('../../main/views/dialog');
 
-var View = Marionette.ItemView.extend({
+var View = Marionette.View.extend({
     tagName: 'div',
     className: 'object descriptor-panel',
     template: require('../templates/descriptorpanel.html'),
@@ -53,12 +53,12 @@ var View = Marionette.ItemView.extend({
         e.originalEvent.dataTransfer.setData('text/plain', null);
 
         this.$el.css('opacity', '0.4');
-        application.dndElement = this;
+        application.main.dndElement = this;
     },
 
     dragEnd: function(e) {
         this.$el.css('opacity', '1.0');
-        application.dndElement = null;
+        application.main.dndElement = null;
     },
 
     dragEnter: function (e) {
@@ -69,18 +69,18 @@ var View = Marionette.ItemView.extend({
         this.dragEnterCount || (this.dragEnterCount = 0);
         ++this.dragEnterCount;
 
-        if (!application.isDndView()) {
+        if (!application.main.isDndView()) {
             return false;
         }
 
         if (this.dragEnterCount === 1) {
-            if (application.dndElement.$el.hasClass('descriptor-panel')) {
-                if (this.model.get('position') < application.dndElement.model.get('position')) {
+            if (application.main.dndElement.$el.hasClass('descriptor-panel')) {
+                if (this.model.get('position') < application.main.dndElement.model.get('position')) {
                     this.ui.top_placeholder.css('display', 'block');
-                } else if (this.model.get('position') > application.dndElement.model.get('position')) {
+                } else if (this.model.get('position') > application.main.dndElement.model.get('position')) {
                     this.ui.bottom_placeholder.css('display', 'block');
                 }
-            } else if (application.dndElement.$el.hasClass('descriptor-model')) {
+            } else if (application.main.dndElement.$el.hasClass('descriptor-model')) {
                 this.ui.top_placeholder.css('display', 'block');
             }
         }
@@ -96,18 +96,18 @@ var View = Marionette.ItemView.extend({
         this.dragEnterCount || (this.dragEnterCount = 1);
         --this.dragEnterCount;
 
-        if (!application.isDndView()) {
+        if (!application.main.isDndView()) {
             return false;
         }
 
         if (this.dragEnterCount === 0) {
-            if (application.dndElement.$el.hasClass('descriptor-panel')) {
-                if (this.model.get('position') < application.dndElement.model.get('position')) {
+            if (application.main.dndElement.$el.hasClass('descriptor-panel')) {
+                if (this.model.get('position') < application.main.dndElement.model.get('position')) {
                     this.ui.top_placeholder.css('display', 'none');
-                } else if (this.model.get('position') > application.dndElement.model.get('position')) {
+                } else if (this.model.get('position') > application.main.dndElement.model.get('position')) {
                     this.ui.bottom_placeholder.css('display', 'none');
                 }
-            } else if (application.dndElement.$el.hasClass('descriptor-model')) {
+            } else if (application.main.dndElement.$el.hasClass('descriptor-model')) {
                 this.ui.top_placeholder.css('display', 'none');
             }
         }
@@ -122,18 +122,18 @@ var View = Marionette.ItemView.extend({
 
         this.dragEnterCount || (this.dragEnterCount = 1);
 
-        if (!application.isDndView()) {
+        if (!application.main.isDndView()) {
             return false;
         }
 
         if (this.dragEnterCount === 1) {
-            if (application.dndElement.$el.hasClass('descriptor-panel')) {
-                if (this.model.get('position') < application.dndElement.model.get('position')) {
+            if (application.main.dndElement.$el.hasClass('descriptor-panel')) {
+                if (this.model.get('position') < application.main.dndElement.model.get('position')) {
                     this.ui.top_placeholder.css('display', 'block');
-                } else if (this.model.get('position') > application.dndElement.model.get('position')) {
+                } else if (this.model.get('position') > application.main.dndElement.model.get('position')) {
                     this.ui.bottom_placeholder.css('display', 'block');
                 }
-            } else if (application.dndElement.$el.hasClass('descriptor-model')) {
+            } else if (application.main.dndElement.$el.hasClass('descriptor-model')) {
                 this.ui.top_placeholder.css('display', 'block');
             }
         }
@@ -149,11 +149,11 @@ var View = Marionette.ItemView.extend({
 
         this.dragEnterCount = 0;
 
-        if (!application.isDndView()) {
+        if (!application.main.isDndView()) {
             return false;
         }
 
-        var elt = application.dndElement;
+        var elt = application.main.dndElement;
         if (elt.$el.hasClass('descriptor-model')) {
             // reset placeholders
             this.ui.top_placeholder.css('display', 'none');
@@ -338,7 +338,7 @@ var View = Marionette.ItemView.extend({
 
             var ChangeLabel = Dialog.extend({
                 template: require('../templates/descriptorpanelchangelabel.html'),
-                templateHelpers/*templateContext*/: function () {
+                templateContext: function () {
                     return {
                         labels: labels
                     };
@@ -511,4 +511,3 @@ var View = Marionette.ItemView.extend({
 });
 
 module.exports = View;
-

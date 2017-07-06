@@ -11,7 +11,7 @@
 var Marionette = require('backbone.marionette');
 var PermissionModel = require('../models/permission');
 
-var View = Marionette.ItemView.extend({
+var View = Marionette.View.extend({
     tagName: 'div',
     template: require('../templates/permission.html'),
 

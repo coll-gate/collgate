@@ -391,7 +391,7 @@ _.extend(ImpreciseDateType.prototype, DescriptorFormatType.prototype, {
     }
 });
 
-ImpreciseDateType.DescriptorTypeDetailsView = Marionette.ItemView.extend({
+ImpreciseDateType.DescriptorTypeDetailsView = Marionette.View.extend({
     className: 'descriptor-type-details-format',
     template: "<div></div>",
 

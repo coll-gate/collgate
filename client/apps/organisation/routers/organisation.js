@@ -35,7 +35,7 @@ var Router = Marionette.AppRouter.extend({
         var grc = new GRCModel();
 
         var defaultLayout = new DefaultLayout();
-        application.show(defaultLayout);
+        application.main.showContent(defaultLayout);
 
         var GRCDetailsView = require('../views/grcdetails');
         var grcDetails = new GRCDetailsView({model: grc});
@@ -50,7 +50,7 @@ var Router = Marionette.AppRouter.extend({
         var collection = new OrganisationCollection([], {grc: true});
 
         var defaultLayout = new DefaultLayout({});
-        application.show(defaultLayout);
+        application.main.showContent(defaultLayout);
 
         defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of GRC partners")}));
 
@@ -68,7 +68,7 @@ var Router = Marionette.AppRouter.extend({
         var collection = new OrganisationCollection([]);
 
         var defaultLayout = new DefaultLayout({});
-        application.show(defaultLayout);
+        application.main.showContent(defaultLayout);
 
         defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of organisations")}));
 
@@ -88,7 +88,7 @@ var Router = Marionette.AppRouter.extend({
         var organisation = new OrganisationModel({id: id});
 
         var defaultLayout = new DefaultLayout();
-        application.show(defaultLayout);
+        application.main.showContent(defaultLayout);
 
         var organisationLayout = new OrganisationLayout({model: organisation, initialTab: tab.replace('/', '')});
 

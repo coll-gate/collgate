@@ -10,7 +10,7 @@
 
 var Marionette = require('backbone.marionette');
 
-var Layout = Marionette.LayoutView.extend({
+var Layout = Marionette.View.extend({
     template: _.template('<div class="describable-header"></div><div class="describable-body"></div><div class="describable-footer"></div>'),
     attributes: {
     },

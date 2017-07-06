@@ -10,7 +10,7 @@
 
 var Marionette = require('backbone.marionette');
 
-var View = Marionette.LayoutView.extend({
+var View = Marionette.View.extend({
     template: require('../templates/leftbar.html'),
 
     initialize: function(options) {
@@ -21,4 +21,3 @@ var View = Marionette.LayoutView.extend({
 });
 
 module.exports = View;
-

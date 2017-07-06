@@ -9,10 +9,9 @@
  */
 
 var Marionette = require('backbone.marionette');
-
 var Dialog = require('../../main/views/dialog');
 
-var View = Marionette.ItemView.extend({
+var View = Marionette.View.extend({
     tagName: 'div',
     className: 'descriptor-meta-model-add',
     template: require('../templates/descriptormetamodeladd.html'),
@@ -156,7 +155,7 @@ var View = Marionette.ItemView.extend({
                         for (var i in data.items) {
                             var t = data.items[i];
 
-                            if (t.name.toUpperCase() == this.el.val().toUpperCase()) {
+                            if (t.name.toUpperCase() === this.el.val().toUpperCase()) {
                                 $(this.el).validateField('failed', gt.gettext('Descriptor meta-model name already in usage'));
                                 break;
                             }
@@ -171,4 +170,3 @@ var View = Marionette.ItemView.extend({
 });
 
 module.exports = View;
-

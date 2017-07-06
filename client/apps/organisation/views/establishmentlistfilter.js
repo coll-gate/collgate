@@ -17,7 +17,7 @@ var TitleView = require('../../main/views/titleview');
 var EstablishmentLayout = require('../views/establishmentlayout');
 
 
-var View = Marionette.ItemView.extend({
+var View = Marionette.View.extend({
     tagName: 'div',
     className: 'establishment-filter',
     template: require('../templates/establishmentlistfilter.html'),
@@ -184,7 +184,7 @@ var View = Marionette.ItemView.extend({
                         this.destroy();
 
                         var defaultLayout = new DefaultLayout();
-                        application.show(defaultLayout);
+                        application.main.showContent(defaultLayout);
 
                         defaultLayout.getRegion('title').show(new TitleView({
                             title: gt.gettext("Establishment"),
@@ -209,4 +209,3 @@ var View = Marionette.ItemView.extend({
 });
 
 module.exports = View;
-

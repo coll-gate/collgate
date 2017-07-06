@@ -11,7 +11,7 @@
 var Marionette = require('backbone.marionette');
 var Dialog = require('../../main/views/dialog');
 
-var View = Marionette.ItemView.extend({
+var View = Marionette.View.extend({
     tagName: 'div',
     className: 'taxon-synonyms',
     template: require('../templates/taxonsynonyms.html'),
@@ -277,4 +277,3 @@ var View = Marionette.ItemView.extend({
 });
 
 module.exports = View;
-

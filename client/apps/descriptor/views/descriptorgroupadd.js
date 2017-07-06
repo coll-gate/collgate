@@ -10,7 +10,7 @@
 
 var Marionette = require('backbone.marionette');
 
-var View = Marionette.ItemView.extend({
+var View = Marionette.View.extend({
     tagName: 'div',
     className: 'group-add',
     template: require('../templates/descriptorgroupadd.html'),
@@ -84,4 +84,3 @@ var View = Marionette.ItemView.extend({
 });
 
 module.exports = View;
-

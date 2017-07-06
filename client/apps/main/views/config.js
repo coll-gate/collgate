@@ -11,7 +11,7 @@
 var Marionette = require('backbone.marionette');
 var ConfigModel = require('../models/config');
 
-var View = Marionette.ItemView.extend({
+var View = Marionette.View.extend({
     tagName: 'div',
     template: require('../templates/config.html'),
     className: "object config",
@@ -31,4 +31,3 @@ var View = Marionette.ItemView.extend({
 });
 
 module.exports = View;
-

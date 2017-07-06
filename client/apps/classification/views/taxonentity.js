@@ -10,7 +10,7 @@
 
 var Marionette = require('backbone.marionette');
 
-var View = Marionette.ItemView.extend({
+var View = Marionette.View.extend({
     tagName: 'tr',
     template: require('../templates/taxonentity.html'),
     className: "element",
@@ -43,4 +43,3 @@ var View = Marionette.ItemView.extend({
 });
 
 module.exports = View;
-

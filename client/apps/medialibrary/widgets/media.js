@@ -546,7 +546,7 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
     }
 });
 
-Media.DescriptorTypeDetailsView = Marionette.ItemView.extend({
+Media.DescriptorTypeDetailsView = Marionette.View.extend({
     className: 'descriptor-type-details-format',
     template: require('../templates/widgets/media.html'),
 
@@ -589,4 +589,3 @@ Media.DescriptorTypeDetailsView = Marionette.ItemView.extend({
 });
 
 module.exports = Media;
-

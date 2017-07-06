@@ -15,15 +15,15 @@ var View = DescribableDetails.extend({
     onShowTab: function() {
         var view = this;
 
-        var contextLayout = application.getView().getRegion('right').currentView;
+        var contextLayout = application.getView().getChildView('right');
         if (!contextLayout) {
             var DefaultLayout = require('../../main/views/defaultlayout');
             contextLayout = new DefaultLayout();
-            application.getView().getRegion('right').show(contextLayout);
+            application.getView().showChildView('right', contextLayout);
         }
 
         var TitleView = require('../../main/views/titleview');
-        contextLayout.getRegion('title').show(new TitleView({title: gt.gettext("Descriptors"), glyphicon: 'glyphicon-wrench'}));
+        contextLayout.showChildView('title', new TitleView({title: gt.gettext("Descriptors"), glyphicon: 'glyphicon-wrench'}));
 
         var actions = [];
 
@@ -37,7 +37,7 @@ var View = DescribableDetails.extend({
 
         var TaxonDescriptorContextView = require('./taxondescriptorcontext');
         var contextView = new TaxonDescriptorContextView({actions: actions});
-        contextLayout.getRegion('content').show(contextView);
+        contextLayout.showChildView('content', contextView);
 
         contextView.on("describable:modify", function () {
             view.onModify();
@@ -76,13 +76,12 @@ var View = DescribableDetails.extend({
         var name = model.get('name');
 
         // update the descriptor part of the taxon layout
-        var taxonLayout = application.view().getRegion('content').currentView;
+        var taxonLayout = application.main.viewContent().getChildView('content');
 
         var view = new TaxonDescriptorEditView({
             model: this.model, descriptorMetaModelLayout: this.descriptorMetaModelLayout});
-        taxonLayout.getRegion('descriptors').show(view);
+        taxonLayout.showChildView('descriptors', view);
     }
 });
 
 module.exports = View;
-

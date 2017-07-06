@@ -15,21 +15,21 @@ var View = DescribableDetails.extend({
     onShowTab: function() {
         var view = this;
 
-        var contextLayout = application.getView().getRegion('right').currentView;
+        var contextLayout = application.getView().getChildView('right');
         if (!contextLayout) {
             var DefaultLayout = require('../../main/views/defaultlayout');
             contextLayout = new DefaultLayout();
-            application.getView().getRegion('right').show(contextLayout);
+            application.getView().showChildView('right', contextLayout);
         }
 
         var TitleView = require('../../main/views/titleview');
-        contextLayout.getRegion('title').show(new TitleView({title: gt.gettext("Descriptors")}));
+        contextLayout.showChildView('title', new TitleView({title: gt.gettext("Descriptors")}));
 
         var actions = ['modify'];
 
         var DescriptorContextView = require('./descriptorcontext');
         var contextView = new DescriptorContextView({actions: actions});
-        contextLayout.getRegion('content').show(contextView);
+        contextLayout.showChildView('content', contextView);
 
         contextView.on("describable:modify", function () {
             view.onModify();
@@ -45,10 +45,10 @@ var View = DescribableDetails.extend({
         var name = this.model.get('name');
 
         // update the layout content
-        var layout = application.view().getRegion('content').currentView;
+        var layout = application.main.viewContent().getChildView('content');
 
         var view = new DescriptorEditView({model: this.model, descriptorMetaModelLayout: this.descriptorMetaModelLayout});
-        layout.getRegion('descriptors').show(view);
+        layout.showChildView('descriptors', view);
     }
 });
 

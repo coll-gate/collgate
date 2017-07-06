@@ -12,7 +12,7 @@ var Marionette = require('backbone.marionette');
 
 var Dialog = require('../../main/views/dialog');
 
-var View = Marionette.ItemView.extend({
+var View = Marionette.View.extend({
     tagName: 'tr',
     className: 'element object descriptor-meta-model',
     template: require('../templates/descriptormetamodel.html'),
@@ -100,7 +100,7 @@ var View = Marionette.ItemView.extend({
 
             var ChangeLabel = Dialog.extend({
                 template: require('../templates/descriptormetamodelchangelabel.html'),
-                templateHelpers/*templateContext*/: function () {
+                templateContext: function () {
                     return {
                         labels: labels,
                     };

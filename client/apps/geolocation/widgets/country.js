@@ -369,7 +369,7 @@ _.extend(CountryType.prototype, DescriptorFormatType.prototype, {
     }
 });
 
-CountryType.DescriptorTypeDetailsView = Marionette.ItemView.extend({
+CountryType.DescriptorTypeDetailsView = Marionette.View.extend({
     className: 'descriptor-type-details-format',
     template: "<div></div>",
 

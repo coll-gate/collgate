@@ -16,7 +16,7 @@ var View = Dialog.extend({
     attributes: {
         'id': 'dlg_search'
     },
-    templateHelpers/*templateContext*/: function () {
+    templateContext: function () {
         return {
             entity_types: [
                 {id: 'classification.taxon', label: gt.gettext('Cultivar')},

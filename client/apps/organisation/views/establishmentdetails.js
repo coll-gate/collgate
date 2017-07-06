@@ -13,10 +13,10 @@ var Marionette = require('backbone.marionette');
 var Dialog = require('../../main/views/dialog');
 var OrganisationModel = require('../models/organisation');
 
-var View = Marionette.ItemView.extend({
+var View = Marionette.View.extend({
     tagName: "div",
     template: require('../templates/establishmentdetails.html'),
-    templateHelpers/*templateContext*/: function () {
+    templateContext: function () {
         return {
             organisation: this.organisation
         };
@@ -191,4 +191,3 @@ var View = Marionette.ItemView.extend({
 });
 
 module.exports = View;
-

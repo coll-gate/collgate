@@ -22,7 +22,7 @@ var EnumPair = function() {
 
 _.extend(EnumPair.prototype, EnumSingle.prototype, {});
 
-EnumPair.DescriptorTypeDetailsView = Marionette.ItemView.extend({
+EnumPair.DescriptorTypeDetailsView = Marionette.View.extend({
     className: 'descriptor-type-details-format',
     template: require('../templates/widgets/enumpair.html'),
 
@@ -126,4 +126,3 @@ EnumPair.DescriptorTypeDetailsView = Marionette.ItemView.extend({
 });
 
 module.exports = EnumPair;
-

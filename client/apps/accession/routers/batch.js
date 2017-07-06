@@ -30,7 +30,7 @@ var Router = Marionette.AppRouter.extend({
         var collection = new BatchCollection();
 
         var defaultLayout = new DefaultLayout({});
-        application.show(defaultLayout);
+        application.main.showContent(defaultLayout);
 
         defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of all batches")}));
 
@@ -53,7 +53,7 @@ var Router = Marionette.AppRouter.extend({
         var collection = new BatchCollection({accession_id: id});
 
         var defaultLayout = new DefaultLayout({});
-        application.show(defaultLayout);
+        application.main.showContent(defaultLayout);
 
         defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of batches for the accession")}));
 
@@ -78,7 +78,7 @@ var Router = Marionette.AppRouter.extend({
         var batch = new BatchModel({id: id});
 
         var defaultLayout = new DefaultLayout();
-        application.show(defaultLayout);
+        application.main.showContent(defaultLayout);
 
         var batchLayout = new BatchLayout({model: batch, initialTab: tab.replace('/', '')});
 

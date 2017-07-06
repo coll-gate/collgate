@@ -811,7 +811,7 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
     }
 });
 
-CityType.DescriptorTypeDetailsView = Marionette.ItemView.extend({
+CityType.DescriptorTypeDetailsView = Marionette.View.extend({
     className: 'descriptor-type-details-format',
     template: "<div></div>",
 
@@ -829,4 +829,3 @@ CityType.DescriptorTypeDetailsView = Marionette.ItemView.extend({
 });
 
 module.exports = CityType;
-

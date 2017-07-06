@@ -10,11 +10,11 @@
 
 var Marionette = require('backbone.marionette');
 
-var View = Marionette.LayoutView.extend({
+var View = Marionette.View.extend({
     tagName: 'div',
     template: require('../templates/accessionbatchescontext.html'),
     className: "context accession-batches",
-    templateHelpers/*templateContext*/: function () {
+    templateContext: function () {
         return {
             actions: this.getOption('actions'),
             options: {

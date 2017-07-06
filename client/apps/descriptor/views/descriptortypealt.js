@@ -11,7 +11,7 @@
 var Marionette = require('backbone.marionette');
 var DescriptorTypeModel = require('../models/descriptortype');
 
-var View = Marionette.ItemView.extend({
+var View = Marionette.View.extend({
     tagName: 'tr',
     className: 'element object descriptor-type',
     template: require('../templates/descriptortypealt.html'),
@@ -34,14 +34,13 @@ var View = Marionette.ItemView.extend({
         e.originalEvent.dataTransfer.setData('text/plain', null);
 
         this.$el.css('opacity', '0.4');
-        application.dndElement = this;
+        application.main.dndElement = this;
     },
 
     dragEnd: function(e) {
         this.$el.css('opacity', '1.0');
-        application.dndElement = null;
+        application.main.dndElement = null;
     },
 });
 
 module.exports = View;
-

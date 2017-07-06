@@ -191,7 +191,7 @@ _.extend(DateType.prototype, DescriptorFormatType.prototype, {
     }
 });
 
-DateType.DescriptorTypeDetailsView = Marionette.ItemView.extend({
+DateType.DescriptorTypeDetailsView = Marionette.View.extend({
     className: 'descriptor-type-details-format',
     template: "<div></div>",
 
@@ -209,4 +209,3 @@ DateType.format = function (value) {
 };
 
 module.exports = DateType;
-

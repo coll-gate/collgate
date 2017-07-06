@@ -79,7 +79,7 @@ var Layout = LayoutView.extend({
                     model: model,
                     descriptorMetaModelLayout: data
                 });
-                accessionLayout.getRegion('descriptors').show(accessionDescriptorView);
+                accessionLayout.showChildView('descriptors', accessionDescriptorView);
             });
         }
     },
@@ -92,7 +92,7 @@ var Layout = LayoutView.extend({
             // taxon parent
             var taxon = new TaxonModel({id: this.model.get('parent')});
             taxon.fetch().then(function () {
-                accessionLayout.getRegion('details').show(new EntityPathView({
+                accessionLayout.showChildView('details', new EntityPathView({
                     model: accessionLayout.model,
                     taxon: taxon
                 }));
@@ -100,7 +100,7 @@ var Layout = LayoutView.extend({
 
             // synonyms tab
             var AccessionSynonymsView = require('../views/accessionsynonyms');
-            accessionLayout.getRegion('synonyms').show(new AccessionSynonymsView({model: this.model}));
+            accessionLayout.showChildView('synonyms', new AccessionSynonymsView({model: this.model}));
 
             // batches tab
             var BatchCollection = require('../collections/batch');
@@ -119,10 +119,10 @@ var Layout = LayoutView.extend({
                     collection: accessionBatches, model: accessionLayout.model, columns: data[0].columns});
 
                 var contentBottomLayout = new ContentBottomLayout();
-                accessionLayout.getRegion('batches').show(contentBottomLayout);
+                accessionLayout.showChildView('batches', contentBottomLayout);
 
-                contentBottomLayout.getRegion('content').show(batchListView);
-                contentBottomLayout.getRegion('bottom').show(new ScrollingMoreView({targetView: batchListView}));
+                contentBottomLayout.showChildView('content', batchListView);
+                contentBottomLayout.showChildView('bottom', new ScrollingMoreView({targetView: batchListView}));
             });
 
             this.onDescriptorMetaModelChange(this.model, this.model.get('descriptor_meta_model'));
@@ -131,7 +131,7 @@ var Layout = LayoutView.extend({
             // details
             var taxon = new TaxonModel({id: this.model.get('parent')});
             taxon.fetch().then(function() {
-                accessionLayout.getRegion('details').show(new EntityPathView({
+                accessionLayout.showChildView('details', new EntityPathView({
                     model: accessionLayout.model, taxon: taxon, noLink: true}));
             });
 
@@ -144,7 +144,7 @@ var Layout = LayoutView.extend({
                 var accessionDescriptorView = new AccessionDescriptorEditView({
                     model: accessionLayout.model, descriptorMetaModelLayout: data});
 
-                accessionLayout.getRegion('descriptors').show(accessionDescriptorView);
+                accessionLayout.showChildView('descriptors', accessionDescriptorView);
             });
 
             // not available tabs

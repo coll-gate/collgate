@@ -13,7 +13,7 @@ var ItemView = require('../../main/views/itemview');
 var View = ItemView.extend({
     tagName: 'div',
     template: require('../templates/describableedit.html'),
-    templateHelpers/*templateContext*/: function () {
+    templateContext: function () {
         return {
             panels: this.descriptorMetaModelLayout.panels,
             target: this.descriptorMetaModelLayout.target
@@ -138,7 +138,7 @@ var View = ItemView.extend({
         }
     },
 
-    onDestroy: function() {
+    onBeforeDestroy: function() {
         // destroy any widgets
         for (var pi = 0; pi < this.descriptorMetaModelLayout.panels.length; ++pi) {
             for (var i = 0; i < this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types.length; ++i) {
@@ -247,4 +247,3 @@ var View = ItemView.extend({
 });
 
 module.exports = View;
-
