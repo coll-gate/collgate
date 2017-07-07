@@ -28,17 +28,17 @@ var Layout = Marionette.View.extend({
         },
         'dom:refresh': function(child) {
             var tab = this.$el.find('div.tab-pane.active').attr('name');
-            var region = this.getRegion(tab);
+            var view = this.getChildView(tab);
 
-            console.log("test issue dont forget me", this.getChildView(tab));
+            console.log("test issue dont forget me", view);
 
             // update child of current tab
-            if (region && child && region.currentView === child) {
-                // this.triggerMethod('select:tab', region, region.currentView);
+            if (view && view === child) {
+                // this.triggerMethod('select:tab', this.getRegion(tab), view);
 
-                if (region.currentView.onShowTab) {
+                if (view.onShowTab) {
                     console.log("ohh but i'm fixed !!!!");
-                    region.currentView.onShowTab(this);
+                    view.onShowTab(this);
                 }
             }
         }

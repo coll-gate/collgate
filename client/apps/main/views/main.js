@@ -260,6 +260,7 @@ var MainLayout = Marionette.View.extend({
                 dataType: 'json',
                 view: this
             }).done(function (data) {
+                // lastAction timestamp is set during global jQuery callback on driver.js
                 this.view.ping = false;
 
                 if (!data.pong) {

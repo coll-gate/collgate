@@ -48,11 +48,29 @@ _.deepClone = function(obj) {
 };
 
 // global application
-application = new Marionette.Application({
+var Application = Marionette.Application.extend({
 
     region: '#root',
 
     initialize: function(options) {
+        Application.__super__.initialize.apply(this, arguments);
+
+        Logger.useDefaults({
+            defaultLevel: Logger.WARN,
+            formatter: function (messages, context) {
+                messages.unshift(new Date().toLocaleString());
+            }
+        });
+
+        if (session.debug) {
+            Logger.setLevel(Logger.DEBUG);
+        }
+
+        // create a global default logger
+        session.logger = Logger.get('default');
+
+        Logger.time('Application startup');
+
         // capture most of HTTP error and display an alert message
         Backbone.originalSync = Backbone.sync;
         Backbone.sync = function (method, model, opts) {
@@ -136,22 +154,6 @@ application = new Marionette.Application({
     onBeforeStart: function(options) {
         this.baseUrl = '/coll-gate/';
         this.isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
-
-        Logger.useDefaults({
-            defaultLevel: Logger.WARN,
-            formatter: function (messages, context) {
-                messages.unshift(new Date().toLocaleString());
-            }
-        });
-
-        if (session.debug) {
-            Logger.setLevel(Logger.DEBUG);
-        }
-
-        // create a global default logger
-        session.logger = Logger.get('default');
-
-        Logger.time('Application startup');
 
         /**
          * Update the width and left position of the messenger div.
@@ -428,4 +430,5 @@ application = new Marionette.Application({
     }
 });
 
+application = new Application();
 application.start({initialData: ''});
