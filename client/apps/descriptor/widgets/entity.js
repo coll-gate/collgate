@@ -39,12 +39,12 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
 
             var container = parent.closest('div.modal-dialog').parent();
             if (container.length === 0) {
-                container = parent.closest('div.panel');
+                container = this.group;  // parent.closest('div.panel');
             }
 
             var params = {
                 data: initials,
-                dropdownParent: this.group, // container,
+                dropdownParent: container,
                 ajax: {
                     url: url + 'search/',
                     dataType: 'json',
@@ -92,7 +92,7 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
             };
 
             // make an autocomplete widget on simple_value
-            select.select2(params);
+            select.select2(params).fixSelect2Position();
 
             this.parent = parent;
             this.el = select;
@@ -219,7 +219,7 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
 
                     params.data = initials;
 
-                    type.el.select2(params);
+                    type.el.select2(params).fixSelect2Position();
                     type.el.val(defaultValues).trigger('change');
                 });
             }

@@ -47,8 +47,8 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
                 var initials = [];
 
                 var container = parent.closest('div.modal-dialog').parent();
-                if (container.length == 0) {
-                    container = parent.closest('div.panel');
+                if (container.length === 0) {
+                    container = this.group;  // parent.closest('div.panel');
                 }
 
                 var params = {
@@ -96,7 +96,7 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
                     placeholder: gt.gettext("Enter a value. 3 characters at least for auto-completion")
                 };
 
-                select.select2(params);
+                select.select2(params).fixSelect2Position();
 
                 this.parent = parent;
                 this.el = select;
@@ -221,7 +221,7 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
 
                     var container = this.parent.closest('div.modal-dialog').parent();
                     if (container.length === 0) {
-                        container = this.parent.closest('div.panel');
+                        container = this.group;  // parent.closest('div.panel');
                     }
 
                     var params = {
@@ -282,7 +282,7 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
 
                         params.data = initials;
 
-                        type.el.select2(params);
+                        type.el.select2(params).fixSelect2Position();
                         type.el.val(defaultValues).trigger('change');
 
                         // remove temporary value

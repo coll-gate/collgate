@@ -40,12 +40,12 @@ _.extend(CountryType.prototype, DescriptorFormatType.prototype, {
 
             var container = parent.closest('div.modal-dialog').parent();
             if (container.length === 0) {
-                container = parent.closest('div.panel');
+                container = this.group;  // parent.closest('div.panel');
             }
 
             var params = {
                 data: initials,
-                dropdownParent: this.group, // container,
+                dropdownParent: container,
                 ajax: {
                     url: url,
                     dataType: 'json',
@@ -177,12 +177,12 @@ _.extend(CountryType.prototype, DescriptorFormatType.prototype, {
 
                 var container = this.parent.closest('div.modal-dialog').parent();
                 if (container.length === 0) {
-                    container = this.parent.closest('div.panel');
+                    container = this.group;  // parent.closest('div.panel');
                 }
 
                 var params = {
                     data: initials,
-                    dropdownParent: this.group, // container,
+                    dropdownParent: container,
                     ajax: {
                         url: url + 'search/',
                         dataType: 'json',
@@ -257,7 +257,7 @@ _.extend(CountryType.prototype, DescriptorFormatType.prototype, {
 
                     initials.push({id: data.id, text: display});
                     params.data = initials;
-                    type.el.select2(params);
+                    type.el.select2(params).fixSelect2Position();
                     type.el.val(defaultValues).trigger('change');
 
                     // remove temporary value

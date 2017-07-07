@@ -39,7 +39,7 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
 
             var container = parent.closest('div.modal-dialog').parent();
             if (container.length === 0) {
-                container = parent.closest('div.panel');
+                container = this.group;  // parent.closest('div.panel');
             }
 
             var default_option = null;
@@ -48,7 +48,7 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
 
             // Change display for the special option "Extend search"
             var formatOption = function (option) {
-                if (option.id == 'more') {
+                if (option.id === 'more') {
                     return $('<span class="text-info">' + gt.gettext("Extended search...") + '</span>');
                 }
                 return option.text
@@ -202,7 +202,7 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
 
             var params = {
                 data: initials,
-                dropdownParent: this.group, // container,
+                dropdownParent: container,
                 ajax: selectAjax(false),
                 allowClear: true,
                 minimumInputLength: 1,
@@ -222,25 +222,25 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
                         // initials.push(default_option);
                         params.data = initials;
                         params.ajax = selectAjax(false);
-                        select.select2(params);
+                        select.select2(params).fixSelect2Position();
                         select.val(default_option).trigger('change.select2');
                     } else {
                         params.ajax = selectAjax(false);
-                        select.select2(params);
+                        select.select2(params).fixSelect2Position();
                     }
                     select.unbind('select2:change');
                     select.unbind('select2:close');
                     select.unbind('select2:select');
 
                     select.on('select2:select', function () {
-                        if (select.select2('val') == 'more') {
+                        if (select.select2('val') === 'more') {
                             initSelect2(true);
                         }
                     });
                 }
                 else {
                     params.ajax = selectAjax(true);
-                    select.select2(params);
+                    select.select2(params).fixSelect2Position();
                     select.on('change.select2', function () {
                         // Add the webservice city to the local database
                         if (select.val()) {
@@ -281,7 +281,7 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
                                 });
                                 params.data = initials;
                                 params.ajax = selectAjax(false);
-                                select.select2(params);
+                                select.select2(params).fixSelect2Position();
                                 select.on('select2:select', function () {
                                     if (select.select2('val') == 'more') {
                                         initSelect2(true);
@@ -388,8 +388,8 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
                 var initials = [];
 
                 var container = this.parent.closest('div.modal-dialog').parent();
-                if (container.length == 0) {
-                    container = this.parent.closest('div.panel');
+                if (container.length === 0) {
+                    container = this.group;  // parent.closest('div.panel');
                 }
 
                 var default_option = null;
@@ -550,7 +550,7 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
 
                 var params = {
                     data: initials,
-                    dropdownParent: this.group, // container,
+                    dropdownParent: container,
                     ajax: selectAjax(false),
                     allowClear: true,
                     minimumInputLength: 1,
@@ -571,18 +571,18 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
                             // initials.push(default_option);
                             params.data = initials;
                             params.ajax = selectAjax(false);
-                            select.select2(params);
+                            select.select2(params).fixSelect2Position();
                             select.val(default_option.id).trigger('change.select2');
                         } else {
                             params.ajax = selectAjax(false);
-                            select.select2(params);
+                            select.select2(params).fixSelect2Position();
                         }
                         select.unbind('select2:change');
                         select.unbind('select2:close');
                         select.unbind('select2:select');
 
                         select.on('select2:select', function () {
-                            if (select.select2('val') == 'more') {
+                            if (select.select2('val') === 'more') {
                                 initSelect2(true);
                             }
                         });
@@ -590,7 +590,7 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
                     }
                     else {
                         params.ajax = selectAjax(true);
-                        select.select2(params);
+                        select.select2(params).fixSelect2Position();
                         select.on('change.select2', function () {
                                 // Add the webservice city to the local database
 
@@ -635,9 +635,9 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
 
                                         params.data = initials;
                                         params.ajax = selectAjax(false);
-                                        select.select2(params);
+                                        select.select2(params).fixSelect2Position();
                                         select.on('select2:select', function () {
-                                            if (select.select2('val') == 'more') {
+                                            if (select.select2('val') === 'more') {
                                                 initSelect2(true);
                                             }
                                         });
@@ -696,9 +696,9 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
                     initials.push(default_option);
                     params.data = initials;
                     params.ajax = selectAjax(false);
-                    select.select2(params);
+                    select.select2(params).fixSelect2Position();
                     select.on('select2:select', function () {
-                        if (select.select2('val') == 'more') {
+                        if (select.select2('val') === 'more') {
                             initSelect2(true);
                         }
                     });
