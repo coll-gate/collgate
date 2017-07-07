@@ -25,7 +25,7 @@ var DescriptorsColumnsView = {
                     // make the list of values
                     var keys = [];
                     var models = [];
-                    var cache = application.main.getCache('descriptors', columnName.replace(/^#/, ''));
+                    var cache = application.main.cache.get('descriptors', columnName.replace(/^#/, ''));
 
                     // lookup into the global cache
                     for (var j = 0; j < this.collection.models.length; ++j) {
@@ -61,7 +61,7 @@ var DescriptorsColumnsView = {
                         });
 
                         promise.done(function (data) {
-                            var cache = application.main.getCache('descriptors', this.columnName.replace(/^#/, ''));
+                            var cache = application.main.cache.get('descriptors', this.columnName.replace(/^#/, ''));
 
                             for (var i = 0; i < models.length; ++i) {
                                 var model = models[i];
@@ -80,7 +80,7 @@ var DescriptorsColumnsView = {
                                 }
                             }
 
-                            console.debug("Cache miss for descriptor " + this.columnName.replace(/^#/, '') + ".");
+                            session.logger.debug("Cache miss for descriptor " + this.columnName.replace(/^#/, '') + ".");
                         });
 
                         promises.push(promise);
@@ -130,7 +130,7 @@ var DescriptorsColumnsView = {
                     // make the list of values
                     var keys = [];
                     var models = [];
-                    var cache = application.main.getCache('descriptors', columnName.replace(/^#/, ''));
+                    var cache = application.main.cache.get('descriptors', columnName.replace(/^#/, ''));
 
                     // lookup into the global cache
                     for (var j = 0; j < lastModels.length; ++j) {
@@ -166,7 +166,7 @@ var DescriptorsColumnsView = {
                         });
 
                         promise.done(function (data) {
-                            var cache = application.main.getCache('descriptors', this.columnName.replace(/^#/, ''));
+                            var cache = application.main.cache.get('descriptors', this.columnName.replace(/^#/, ''));
 
                             for (var j = 0; j < this.models.length; ++j) {
                                 var model = this.models[j];
@@ -185,7 +185,7 @@ var DescriptorsColumnsView = {
                                 }
                             }
 
-                            console.debug("Cache miss for descriptor " + this.columnName.replace(/^#/, '') + ".");
+                            session.logger.debug("Cache miss for descriptor " + this.columnName.replace(/^#/, '') + ".");
                         });
 
                         promises.push(promise);

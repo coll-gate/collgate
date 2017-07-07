@@ -53,12 +53,12 @@ var View = Marionette.View.extend({
         e.originalEvent.dataTransfer.setData('text/plain', null);
 
         this.$el.css('opacity', '0.4');
-        application.main.dndElement = this;
+        application.main.dnd.set(this, 'descriptor-panel');
     },
 
     dragEnd: function(e) {
         this.$el.css('opacity', '1.0');
-        application.main.dndElement = null;
+        application.main.dnd.unset();
     },
 
     dragEnter: function (e) {
@@ -69,18 +69,18 @@ var View = Marionette.View.extend({
         this.dragEnterCount || (this.dragEnterCount = 0);
         ++this.dragEnterCount;
 
-        if (!application.main.isDndView()) {
+        if (!application.main.dnd.hasView('descriptor-model descriptor-panel')) {
             return false;
         }
 
         if (this.dragEnterCount === 1) {
-            if (application.main.dndElement.$el.hasClass('descriptor-panel')) {
-                if (this.model.get('position') < application.main.dndElement.model.get('position')) {
+            if (application.main.dnd.get().$el.hasClass('descriptor-panel')) {
+                if (this.model.get('position') < application.main.dnd.get().model.get('position')) {
                     this.ui.top_placeholder.css('display', 'block');
-                } else if (this.model.get('position') > application.main.dndElement.model.get('position')) {
+                } else if (this.model.get('position') > application.main.dnd.get().model.get('position')) {
                     this.ui.bottom_placeholder.css('display', 'block');
                 }
-            } else if (application.main.dndElement.$el.hasClass('descriptor-model')) {
+            } else if (application.main.dnd.get().$el.hasClass('descriptor-model')) {
                 this.ui.top_placeholder.css('display', 'block');
             }
         }
@@ -96,18 +96,18 @@ var View = Marionette.View.extend({
         this.dragEnterCount || (this.dragEnterCount = 1);
         --this.dragEnterCount;
 
-        if (!application.main.isDndView()) {
+        if (!application.main.dnd.hasView('descriptor-model descriptor-panel')) {
             return false;
         }
 
         if (this.dragEnterCount === 0) {
-            if (application.main.dndElement.$el.hasClass('descriptor-panel')) {
-                if (this.model.get('position') < application.main.dndElement.model.get('position')) {
+            if (application.main.dnd.get().$el.hasClass('descriptor-panel')) {
+                if (this.model.get('position') < application.main.dnd.get().model.get('position')) {
                     this.ui.top_placeholder.css('display', 'none');
-                } else if (this.model.get('position') > application.main.dndElement.model.get('position')) {
+                } else if (this.model.get('position') > application.main.dnd.get().model.get('position')) {
                     this.ui.bottom_placeholder.css('display', 'none');
                 }
-            } else if (application.main.dndElement.$el.hasClass('descriptor-model')) {
+            } else if (application.main.dnd.get().$el.hasClass('descriptor-model')) {
                 this.ui.top_placeholder.css('display', 'none');
             }
         }
@@ -122,18 +122,18 @@ var View = Marionette.View.extend({
 
         this.dragEnterCount || (this.dragEnterCount = 1);
 
-        if (!application.main.isDndView()) {
+        if (!application.main.dnd.hasView('descriptor-model descriptor-panel')) {
             return false;
         }
 
         if (this.dragEnterCount === 1) {
-            if (application.main.dndElement.$el.hasClass('descriptor-panel')) {
-                if (this.model.get('position') < application.main.dndElement.model.get('position')) {
+            if (application.main.dnd.get().$el.hasClass('descriptor-panel')) {
+                if (this.model.get('position') < application.main.dnd.get().model.get('position')) {
                     this.ui.top_placeholder.css('display', 'block');
-                } else if (this.model.get('position') > application.main.dndElement.model.get('position')) {
+                } else if (this.model.get('position') > application.main.dnd.get().model.get('position')) {
                     this.ui.bottom_placeholder.css('display', 'block');
                 }
-            } else if (application.main.dndElement.$el.hasClass('descriptor-model')) {
+            } else if (application.main.dnd.get().$el.hasClass('descriptor-model')) {
                 this.ui.top_placeholder.css('display', 'block');
             }
         }
@@ -149,11 +149,11 @@ var View = Marionette.View.extend({
 
         this.dragEnterCount = 0;
 
-        if (!application.main.isDndView()) {
+        if (!application.main.dnd.hasView('descriptor-model descriptor-panel')) {
             return false;
         }
 
-        var elt = application.main.dndElement;
+        var elt = application.main.dnd.get();
         if (elt.$el.hasClass('descriptor-model')) {
             // reset placeholders
             this.ui.top_placeholder.css('display', 'none');
@@ -247,7 +247,7 @@ var View = Marionette.View.extend({
         }
         else if (elt.$el.hasClass('descriptor-panel')) {
             // useless drop on himself
-            if (this == elt) {
+            if (this === elt) {
                 return false;
             }
 
@@ -279,7 +279,7 @@ var View = Marionette.View.extend({
 
                     for (var model in collection.models) {
                         var dmt = collection.models[model];
-                        if (dmt.get('id') != elt.model.get('id')) {
+                        if (dmt.get('id') !== elt.model.get('id')) {
                             if (dmt.get('position') >= newPosition) {
                                 to_rshift.push(dmt);
                             }
@@ -299,7 +299,7 @@ var View = Marionette.View.extend({
 
                     for (var model in collection.models) {
                         var dmt = collection.models[model];
-                        if (dmt.get('id') != elt.model.get('id')) {
+                        if (dmt.get('id') !== elt.model.get('id')) {
                             if (dmt.get('position') <= newPosition) {
                                 to_lshift.push(dmt);
                             }

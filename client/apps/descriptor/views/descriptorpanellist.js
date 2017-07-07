@@ -49,10 +49,14 @@ var View = ScrollView.extend({
         this.dragEnterCount || (this.dragEnterCount = 0);
         ++this.dragEnterCount;
 
-        if (application.main.dndElement && this.dragEnterCount === 1) {
-            if (application.main.dndElement.$el.hasClass('descriptor-model')) {
+        if (!application.main.dnd.hasView('descriptor-model descriptor-panel')) {
+            return false;
+        }
+
+        if (this.dragEnterCount === 1) {
+            if (application.main.dnd.get().$el.hasClass('descriptor-model')) {
                 this.ui.bottom_placeholder.css('display', 'block');
-            } else if (application.main.dndElement.$el.hasClass('descriptor-panel')) {
+            } else if (application.main.dnd.get().$el.hasClass('descriptor-panel')) {
                 this.ui.bottom_placeholder.css('display', 'block');
             }
         }
@@ -68,14 +72,14 @@ var View = ScrollView.extend({
         this.dragEnterCount || (this.dragEnterCount = 1);
         --this.dragEnterCount;
 
-        if (!application.main.isDndView()) {
+        if (!application.main.dnd.hasView('descriptor-model descriptor-panel')) {
             return false;
         }
 
         if (this.dragEnterCount === 0) {
-            if (application.main.dndElement.$el.hasClass('descriptor-model')) {
+            if (application.main.dnd.get().$el.hasClass('descriptor-model')) {
                 this.ui.bottom_placeholder.css('display', 'none');
-            } else if (application.main.dndElement.$el.hasClass('descriptor-panel')) {
+            } else if (application.main.dnd.get().$el.hasClass('descriptor-panel')) {
                 this.ui.bottom_placeholder.css('display', 'none');
             }
         }
@@ -90,14 +94,14 @@ var View = ScrollView.extend({
 
         this.dragEnterCount || (this.dragEnterCount = 1);
 
-        if (!application.main.isDndView()) {
+        if (!application.main.dnd.hasView('descriptor-model descriptor-panel')) {
             return false;
         }
 
         if (this.dragEnterCount === 1) {
-            if (application.main.dndElement.$el.hasClass('descriptor-model')) {
+            if (application.main.dnd.get().$el.hasClass('descriptor-model')) {
                 this.ui.bottom_placeholder.css('display', 'block');
-            } else if (application.main.dndElement.$el.hasClass('descriptor-panel')) {
+            } else if (application.main.dnd.get().$el.hasClass('descriptor-panel')) {
                 this.ui.bottom_placeholder.css('display', 'block');
             }
         }
@@ -116,11 +120,11 @@ var View = ScrollView.extend({
         this.ui.top_placeholder.css('display', 'none');
         this.ui.bottom_placeholder.css('display', 'none');
 
-        if (!application.main.isDndView()) {
+        if (!application.main.dnd.hasView('descriptor-model descriptor-panel')) {
             return false;
         }
 
-        var elt = application.main.dndElement;
+        var elt = application.main.dnd.get();
         if (elt.$el.hasClass('descriptor-model')) {
             var DefinesLabel = Dialog.extend({
                 template: require('../templates/descriptorpanelcreate.html'),
@@ -238,7 +242,7 @@ var View = ScrollView.extend({
                 // lshift any others element
                 for (var model in collection.models) {
                     var dmt = collection.models[model];
-                    if (dmt.get('id') != elt.model.get('id')) {
+                    if (dmt.get('id') !== elt.model.get('id')) {
                         var p = dmt.get('position');
                         dmt.set('position', p - 1);
                     }

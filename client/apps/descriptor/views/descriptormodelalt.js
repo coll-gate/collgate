@@ -9,7 +9,6 @@
  */
 
 var Marionette = require('backbone.marionette');
-var DescriptorModelModel = require('../models/descriptormodel');
 
 var View = Marionette.View.extend({
     tagName: 'tr',
@@ -37,12 +36,12 @@ var View = Marionette.View.extend({
         e.originalEvent.dataTransfer.setData('text/plain', null);
 
         this.$el.css('opacity', '0.4');
-        application.main.dndElement = this;
+        application.main.dnd.set(this, 'descriptor-model');
     },
 
     dragEnd: function(e) {
         this.$el.css('opacity', '1.0');
-        application.main.dndElement = null;
+        application.main.dnd.unset();
     },
 });
 

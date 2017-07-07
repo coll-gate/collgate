@@ -27,9 +27,6 @@ require("./deps/js/jquery.alphanum");
 // versioncompare ($.versioncompare)
 moment = require("./deps/js/jquery.versioncompare");
 
-// make table header fixed position ($.stickyTableHeaders)
-// require("sticky-table-headers");
-
 // datetime picker ($.datetimepicker)
 require("eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min");
 require("eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css");
@@ -56,24 +53,6 @@ application = new Marionette.Application({
     region: '#root',
 
     initialize: function(options) {
-        this.isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
-
-        Logger.useDefaults({
-            defaultLevel: Logger.WARN,
-            formatter: function (messages, context) {
-                messages.unshift(new Date().toLocaleString());
-            }
-        });
-
-        if (session.debug) {
-            Logger.setLevel(Logger.DEBUG);
-        }
-
-        Logger.time('Application startup');
-
-        // create a global default logger
-        session.logger = Logger.get('default');
-
         // capture most of HTTP error and display an alert message
         Backbone.originalSync = Backbone.sync;
         Backbone.sync = function (method, model, opts) {
@@ -156,6 +135,23 @@ application = new Marionette.Application({
 
     onBeforeStart: function(options) {
         this.baseUrl = '/coll-gate/';
+        this.isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+
+        Logger.useDefaults({
+            defaultLevel: Logger.WARN,
+            formatter: function (messages, context) {
+                messages.unshift(new Date().toLocaleString());
+            }
+        });
+
+        if (session.debug) {
+            Logger.setLevel(Logger.DEBUG);
+        }
+
+        // create a global default logger
+        session.logger = Logger.get('default');
+
+        Logger.time('Application startup');
 
         /**
          * Update the width and left position of the messenger div.

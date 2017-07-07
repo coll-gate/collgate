@@ -8,8 +8,6 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
-
 // style
 require('./css/main.css');
 
@@ -101,15 +99,20 @@ MainModule.prototype = {
         this.routers.profile = new ProfileRouter();
 
         //
-        // global cache
+        // utils
         //
 
-        this.cache = {
-            'descriptors': {}
-        };
+        // global cache manager
+        var Cache = require('./utils/cache');
+        this.cache = new Cache();
+        this.cache.register('descriptors');
 
         // temporary dictionary
         this.tmp = {};
+
+        // drag'n'drop manager
+        var DragAndDrop = require('./utils/dnd');
+        this.dnd = new DragAndDrop();
     },
 
     start: function(options) {
@@ -142,27 +145,6 @@ MainModule.prototype = {
     defaultRightView: function() {
         var mainView = application.getView();
         mainView.getRegion('right').empty();
-    },
-
-    /**
-     * Get a cache from its cache type and key.
-     * @todo Could add a cache manager with a populate method.
-     * @param cacheType Cache type is a first classification key.
-     * @param key Key of the cache to get.
-     * @returns A cache object. It is empty at the first call.
-     */
-    getCache: function(cacheType, key) {
-        var cache = this.cache[cacheType];
-        if (cache !== undefined) {
-            var second = cache[key];
-            if (second === undefined) {
-                second = {};
-                cache[key] = second;
-            }
-            return second;
-        } else {
-            return null;
-        }
     },
 
     /**
@@ -220,20 +202,6 @@ MainModule.prototype = {
      */
     viewContent: function() {
         return application.getView().getChildView('content');
-    },
-
-    /**
-     * Is the current unique instance of DND object is valid and is a jQuery element.
-     */
-    isDndElement() {
-        return this.dndElement && (this.dndElement instanceof jQuery);
-    },
-
-    /**
-     * Is the current unique instance of DND object is valid and is a backbone view.
-     */
-    isDndView() {
-        return this.dndElement && (this.dndElement instanceof Backbone.View);
     }
 };
 

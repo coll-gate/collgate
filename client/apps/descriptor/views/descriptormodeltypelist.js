@@ -59,7 +59,7 @@ var View = ScrollView.extend({
         this.dragEnterCount || (this.dragEnterCount = 0);
         ++this.dragEnterCount;
 
-        if (!application.main.isDndView()) {
+        if (!application.main.dnd.hasView('descriptor-type descriptor-model-type')) {
             return false;
         }
 
@@ -86,7 +86,7 @@ var View = ScrollView.extend({
         this.dragEnterCount || (this.dragEnterCount = 1);
         --this.dragEnterCount;
 
-        if (!application.main.isDndView()) {
+        if (!application.main.dnd.hasView('descriptor-type descriptor-model-type')) {
             return false;
         }
 
@@ -110,7 +110,7 @@ var View = ScrollView.extend({
 
         this.dragEnterCount || (this.dragEnterCount = 1);
 
-        if (!application.main.isDndView()) {
+        if (!application.main.dnd.hasView('descriptor-type descriptor-model-type')) {
             return false;
         }
 
@@ -137,14 +137,14 @@ var View = ScrollView.extend({
 
         this.dragEnterCount = 0;
 
-        if (!application.main.isDndView()) {
+        if (!application.main.dnd.hasView('descriptor-type descriptor-model-type')) {
             return false;
         }
 
         this.$el.find("tbody tr").last().css('border-bottom', 'initial');
         this.$el.find("thead tr th").css('border-bottom', 'initial');
 
-        var elt = application.main.dndElement;
+        var elt = application.main.dnd.get();
         if (elt.$el.hasClass('descriptor-type')) {
             var code = elt.model.get('code');
 

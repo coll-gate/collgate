@@ -601,7 +601,7 @@ var View = Marionette.CompositeView.extend({
             $(element).children('th,td').eq(i1).css('opacity', '0.4');
         });
 
-        application.main.dndElement = target;
+        application.main.dnd.set(target, 'advanced-table-column');
         this.targetDropElement = null;
     },
 
@@ -642,7 +642,7 @@ var View = Marionette.CompositeView.extend({
             });
         }
 
-        application.main.dndElement = null;
+        application.main.dnd.unset();
         this.targetDropElement = null;
     },
 
@@ -672,11 +672,11 @@ var View = Marionette.CompositeView.extend({
             this.targetDropElement = null;
         }
 
-        if (!application.main.isDndElement()) {
+        if (!application.main.dnd.isSelector('advanced-table-column')) {
             return false;
         }
 
-        if (e.currentTarget === application.main.dndElement[0]) {
+        if (e.currentTarget === application.main.dnd.get()[0]) {
             return false;
         }
 
@@ -716,11 +716,11 @@ var View = Marionette.CompositeView.extend({
             e.originalEvent.preventDefault();
         }
 
-        if (!application.main.isDndElement()) {
+        if (!application.main.dnd.isSelector('advanced-table-column')) {
             return false;
         }
 
-        if (e.currentTarget === application.main.dndElement[0]) {
+        if (e.currentTarget === application.main.dnd.get()[0]) {
             return false;
         }
 
@@ -728,7 +728,7 @@ var View = Marionette.CompositeView.extend({
             return false;
         }
 
-        if (application.main.dndElement.children('div.table-advanced-label').length === 0) {
+        if (application.main.dnd.get().children('div.table-advanced-label').length === 0) {
             return false;
         }
 
@@ -767,7 +767,7 @@ var View = Marionette.CompositeView.extend({
             e.originalEvent.stopPropagation();
         }
 
-        if (!application.main.isDndElement()) {
+        if (!application.main.dnd.isSelector('advanced-table-column')) {
             return false;
         }
 
@@ -779,7 +779,7 @@ var View = Marionette.CompositeView.extend({
         target.css('opacity', 'initial')
             .children('div.table-advanced-label').removeClass('highlight-label');
 
-        var srcName = application.main.dndElement.attr('name');
+        var srcName = application.main.dnd.get().attr('name');
         var dstName = target.attr('name');
 
         if (srcName !== dstName) {
