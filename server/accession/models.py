@@ -65,6 +65,18 @@ class Accession(DescribableEntity):
     # inherit of a taxon rank
     parent = models.ForeignKey(Taxon)
 
+    @classmethod
+    def columns(cls):
+        return {
+            'parent': {
+                'field': 'name',
+                'format': {
+                    'type': 'entity',
+                    'model': 'classification.taxon'
+                }
+            }
+        }
+
     class Meta:
         verbose_name = _("accession")
 

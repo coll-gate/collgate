@@ -108,8 +108,16 @@ var View = Marionette.CompositeView.extend({
             options.columns = {};
         }
 
+        // merge values for each column
         if (this.columnsOptions !== undefined) {
-            _.extend(options.columns, this.columnsOptions);
+            for (var columnName in this.columnsOptions) {
+                if (columnName in options.columns) {
+                    _.extend(options.columns[columnName], this.columnsOptions[columnName]);
+                } else {
+                    options.columns[columnName] = _.deepClone(this.columnsOptions[columnName]);
+                }
+            }
+            // _.extend(options.columns, this.columnsOptions);
         }
 
         this.listenTo(this.collection, 'reset', this.onResetCollection, this);
@@ -228,10 +236,14 @@ var View = Marionette.CompositeView.extend({
 
                 if (column.format) {
                     // @todo how to be generic ? using widget info ??
-                    if (column.format.display_fields) {
-                        sortField = sortField + "->" + column.format.display_fields
+                    if (column.field) {
+                        sortField += '->' + column.field;
+                    } else if (column.format.display_fields) {
+                        sortField += "->" + column.format.display_fields
                     } else if (column.format.type === 'country') {
-                        sortField = sortField + "->" + 'name'
+                        sortField += "->" + 'name'
+                    } else if (column.format.type === 'city') {
+                        sortField += "->" + 'name'
                     }
                 } else if (column.field) {
                     sortField += '->' + column.field;
@@ -1437,10 +1449,14 @@ var View = Marionette.CompositeView.extend({
 
         if (column.format) {
             // @todo how to be generic ? using widget info ??
-            if (column.format.display_fields) {
-                sortField = sortField + "->" + column.format.display_fields
+            if (column.field) {
+                sortField += "->" + column.field;
+            } else if (column.format.display_fields) {
+                sortField += "->" + column.format.display_fields
             } else if (column.format.type === 'country') {
-                sortField = sortField + "->" + 'name'
+                sortField += "->" + 'name'
+            } else if (column.format.type === 'city') {
+                sortField += "->" + 'name'
             }
         } else if (column.field) {
             sortField += '->' + column.field;

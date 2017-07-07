@@ -64,6 +64,9 @@ var View = Marionette.View.extend({
             style: 'btn-default',
             container: 'body'
         }).selectpicker('val', 'name');
+
+        // initial
+        this.onChangeField();
     },
 
     onFilter: function () {
@@ -127,9 +130,7 @@ var View = Marionette.View.extend({
     },
 
     validateSearchValue: function() {
-        var field = this.ui.entity_field.val();
-
-        if (field === 'name' || field === 'code') {
+        if (!this.widget) {
             var v = this.$el.find(".search-value").val().trim();
 
             if (v.length > 0 && v.length < 3) {

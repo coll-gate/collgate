@@ -48,6 +48,11 @@ def get_columns_name_for_describable_content_type(request, content_type_name):
             'format': descriptor_format
         }
 
+    # add standard columns
+    model_class = content_type.model_class()
+    if hasattr(model_class, 'columns'):
+        columns.update(model_class.columns())
+
     results = {
         'cacheable': True,
         'columns': columns

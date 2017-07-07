@@ -80,14 +80,14 @@ var DescriptorsColumnsView = {
                                 }
                             }
 
-                            session.logger.debug("Cache miss for descriptor " + this.columnName.replace(/^#/, '') + ".");
+                            console.debug("Cache miss for descriptor " + this.columnName.replace(/^#/, '') + ".");
                         });
 
                         promises.push(promise);
                     }
-                } else if ("format" in options && options.format != undefined) {
+                } else if (columnName.startsWith('#') && "format" in options && options.format != undefined) {
                     var dft = application.descriptor.widgets.getElement(options.format.type);
-                    if (dft.format != undefined) {
+                    if (dft && dft.format != undefined) {
                         for (var j = 0; j < this.collection.models.length; ++j) {
                             var model = this.collection.at(j);
                             var childView = this.children.findByModel(model);
@@ -190,9 +190,9 @@ var DescriptorsColumnsView = {
 
                         promises.push(promise);
                     }
-                } else if ("format" in options && options.format != undefined) {
+                } else if (columnName.startsWith('#') && "format" in options && options.format != undefined) {
                     var dft = application.descriptor.widgets.getElement(options.format.type);
-                    if (dft.format != undefined) {
+                    if (dft && dft.format != undefined) {
                         for (var j = 0; j < lastModels.length; ++j) {
                             var model = lastModels[j];
                             var childView = this.children.findByModel(model);
