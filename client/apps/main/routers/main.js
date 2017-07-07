@@ -44,19 +44,19 @@ var Router = Marionette.AppRouter.extend({
         var defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
-        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Home")}));
+        defaultLayout.showChildView('title', new TitleView({title: gt.gettext("Home")}));
 
         var quarterLayout = new QuarterLayout();
-        defaultLayout.getRegion('content').show(quarterLayout);
+        defaultLayout.showChildView('content', quarterLayout);
 
-        quarterLayout.getRegion('top-left').show(new HomeView());
+        quarterLayout.showChildView('top-left', new HomeView());
 
         if (session.user.isAuth) {
             var EventMessagePanelView = require('../views/eventmessagepanel');
-            quarterLayout.getRegion('top-right').show(new EventMessagePanelView());
+            quarterLayout.showChildView('top-right', new EventMessagePanelView());
 
             var ActionPanelView = require('../views/actionpanel');
-            quarterLayout.getRegion('bottom-left').show(new ActionPanelView());
+            quarterLayout.showChildView('bottom-left', new ActionPanelView());
         }
     },
 
@@ -64,16 +64,16 @@ var Router = Marionette.AppRouter.extend({
         var defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
-        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("About...")}));
-        defaultLayout.getRegion('content').show(new AboutView());
+        defaultLayout.showChildView('title', new TitleView({title: gt.gettext("About...")}));
+        defaultLayout.showChildView('content', new AboutView());
     },
 
     help: function() {
         var defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
-        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Help...")}));
-        defaultLayout.getRegion('content').show(new HelpIndexView());
+        defaultLayout.showChildView('title', new TitleView({title: gt.gettext("Help...")}));
+        defaultLayout.showChildView('content', new HelpIndexView());
     },
 
     config: function() {
@@ -83,13 +83,13 @@ var Router = Marionette.AppRouter.extend({
         var defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
-        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Configuration state")}));
+        defaultLayout.showChildView('title', new TitleView({title: gt.gettext("Configuration state")}));
 
         collection.fetch().then(function () {
             var ConfigListView = require('../views/configlist');
             var configListView = new ConfigListView({collection : collection});
 
-            defaultLayout.getRegion('content').show(configListView);
+            defaultLayout.showChildView('content', configListView);
         });
     },
 
@@ -99,16 +99,16 @@ var Router = Marionette.AppRouter.extend({
         var defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
-        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of languages for data")}));
+        defaultLayout.showChildView('title', new TitleView({title: gt.gettext("List of languages for data")}));
 
         collection.fetch().done(function (data) {
             var languageListView = new LanguageListView({collection : collection});
 
-            defaultLayout.getRegion('content').show(languageListView);
-            // defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: languageListView}));
+            defaultLayout.showChildView('content', languageListView);
+            // defaultLayout.showChildView('content-bottom', new ScrollingMoreView({targetView: languageListView}));
         });
 
-        defaultLayout.getRegion('bottom').show(new LanguageAddView({collection: collection}));
+        defaultLayout.showChildView('bottom', new LanguageAddView({collection: collection}));
     }
 });
 

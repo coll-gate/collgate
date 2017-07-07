@@ -197,13 +197,13 @@ var Controller = Marionette.Object.extend({
                         var defaultLayout = new DefaultLayout();
                         application.main.showContent(defaultLayout);
 
-                        defaultLayout.getRegion('title').show(new TitleView({
+                        defaultLayout.showChildView('title', new TitleView({
                             title: gt.gettext("Batch"),
                             model: model
                         }));
 
                         var batchLayout = new BatchLayout({model: model});
-                        defaultLayout.getRegion('content').show(batchLayout);
+                        defaultLayout.showChildView('content', batchLayout);
                     }
                 }
             });

@@ -44,17 +44,17 @@ var Router = Marionette.AppRouter.extend({
         var defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
-        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of groups of descriptors")}));
+        defaultLayout.showChildView('title', new TitleView({title: gt.gettext("List of groups of descriptors")}));
 
         collection.fetch().then(function () {
             var descriptorGroupListView = new DescriptorGroupListView({read_only: true, collection: collection});
-            defaultLayout.getRegion('content').show(descriptorGroupListView);
-            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: descriptorGroupListView}));
+            defaultLayout.showChildView('content', descriptorGroupListView);
+            defaultLayout.showChildView('content-bottom', new ScrollingMoreView({targetView: descriptorGroupListView}));
         });
 
         // @todo lookup for permission
         if (session.user.isAuth && (session.user.isSuperUser || session.user.isStaff)) {
-            defaultLayout.getRegion('bottom').show(new DescriptorGroupAddView({collection: collection}));
+            defaultLayout.showChildView('bottom', new DescriptorGroupAddView({collection: collection}));
         }
     },
 
@@ -66,19 +66,19 @@ var Router = Marionette.AppRouter.extend({
 
         var model = new DescriptorGroupModel({id: id});
         model.fetch().then(function () {
-            defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Types of descriptors for the group"), model: model}));
+            defaultLayout.showChildView('title', new TitleView({title: gt.gettext("Types of descriptors for the group"), model: model}));
 
             // @todo lookup for permission
             if (session.user.isAuth && (session.user.isSuperUser || session.user.isStaff) && model.get('can_modify')) {
-                defaultLayout.getRegion('bottom').show(new DescriptorGroupTypeAddView({collection: collection}));
+                defaultLayout.showChildView('bottom', new DescriptorGroupTypeAddView({collection: collection}));
             }
         });
 
         collection.fetch().then(function () {
             var descriptorTypeListView = new DescriptorTypeListView({collection : collection});
 
-            defaultLayout.getRegion('content').show(descriptorTypeListView);
-            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: descriptorTypeListView}));
+            defaultLayout.showChildView('content', descriptorTypeListView);
+            defaultLayout.showChildView('content-bottom', new ScrollingMoreView({targetView: descriptorTypeListView}));
         });
     },
 
@@ -89,8 +89,8 @@ var Router = Marionette.AppRouter.extend({
         var model = new DescriptorTypeModel({id: tid}, {group_id: gid});
 
         model.fetch().then(function () {
-            defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Details for the type of descriptor"), model: model}));
-            defaultLayout.getRegion('content').show(new DescriptorTypeDetailsLayout({model: model}));
+            defaultLayout.showChildView('title', new TitleView({title: gt.gettext("Details for the type of descriptor"), model: model}));
+            defaultLayout.showChildView('content', new DescriptorTypeDetailsLayout({model: model}));
         });
     },
 
@@ -102,7 +102,7 @@ var Router = Marionette.AppRouter.extend({
 
         var model = new DescriptorTypeModel({id: tid}, {group_id: gid});
         model.fetch().then(function () {
-            defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Values for the type of descriptor"), model: model}));
+            defaultLayout.showChildView('title', new TitleView({title: gt.gettext("Values for the type of descriptor"), model: model}));
 
             collection.fetch().then(function () {
                 var valueListView = null;
@@ -115,7 +115,7 @@ var Router = Marionette.AppRouter.extend({
 
                     // @todo lookup for permission
                     if (session.user.isAuth && (session.user.isSuperUser || session.user.isStaff) && model.get('can_modify')) {
-                        defaultLayout.getRegion('bottom').show(new DescriptorValueAddView({collection: collection}));
+                        defaultLayout.showChildView('bottom', new DescriptorValueAddView({collection: collection}));
                     }
                 } else if (model.get('format').type === "enum_pair") {
                     valueListView = new DescriptorValuePairListView({
@@ -125,7 +125,7 @@ var Router = Marionette.AppRouter.extend({
 
                     // @todo lookup for permission
                     if (session.user.isAuth && (session.user.isSuperUser || session.user.isStaff) && model.get('can_modify')) {
-                        defaultLayout.getRegion('bottom').show(new DescriptorValueAddView({collection: collection}));
+                        defaultLayout.showChildView('bottom', new DescriptorValueAddView({collection: collection}));
                     }
                 } else if (model.get('format').type === "enum_ordinal") {
                     valueListView = new DescriptorValueOrdinalListView({
@@ -135,8 +135,8 @@ var Router = Marionette.AppRouter.extend({
                 }
 
                 if (valueListView != null) {
-                    defaultLayout.getRegion('content').show(valueListView);
-                    defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: valueListView, more: -1}));
+                    defaultLayout.showChildView('content', valueListView);
+                    defaultLayout.showChildView('content-bottom', new ScrollingMoreView({targetView: valueListView, more: -1}));
                 }
             });
         });
@@ -144,4 +144,3 @@ var Router = Marionette.AppRouter.extend({
 });
 
 module.exports = Router;
-

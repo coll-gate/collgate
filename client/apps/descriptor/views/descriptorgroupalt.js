@@ -38,8 +38,8 @@ var View = Marionette.View.extend({
         collection.fetch().then(function () {
             var descriptorTypeListView = new DescriptorTypeListAltView({collection : collection});
 
-            layout.getRegion('right-down-content').show(descriptorTypeListView);
-            layout.getRegion('right-down-bottom').show(new ScrollingMoreView({targetView: descriptorTypeListView}));
+            layout.showChildView('right-down-content', descriptorTypeListView);
+            layout.showChildView('right-down-bottom', new ScrollingMoreView({targetView: descriptorTypeListView}));
         });
     },
 });

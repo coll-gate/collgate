@@ -85,7 +85,7 @@ var Layout = LayoutView.extend({
                     model: model,
                     descriptorMetaModelLayout: data
                 });
-                batchLayout.getRegion('descriptors').show(batchDescriptorView);
+                batchLayout.showChildView('descriptors', batchDescriptorView);
 
                 // manually called
                 if (batchLayout.activeTab === 'descriptors') {
@@ -102,7 +102,7 @@ var Layout = LayoutView.extend({
             // details
             var accession = new AccessionModel({id: this.model.get('accession')});
             accession.fetch().then(function () {
-                batchLayout.getRegion('details').show(new BatchPathView({
+                batchLayout.showChildView('details', new BatchPathView({
                     model: batchLayout.model,
                     accession: accession
                 }));
@@ -125,10 +125,10 @@ var Layout = LayoutView.extend({
                     collection: parentBatches, model: batchLayout.model, columns: data[0].columns});
 
                 var contentBottomLayout = new ContentBottomLayout();
-                batchLayout.getRegion('parents').show(contentBottomLayout);
+                batchLayout.showChildView('parents', contentBottomLayout);
 
-                contentBottomLayout.getRegion('content').show(batchListView);
-                contentBottomLayout.getRegion('bottom').show(new ScrollingMoreView({targetView: batchListView}));
+                contentBottomLayout.showChildView('content', batchListView);
+                contentBottomLayout.showChildView('bottom', new ScrollingMoreView({targetView: batchListView}));
             });
 
             // children batches tab
@@ -140,16 +140,16 @@ var Layout = LayoutView.extend({
                     collection: childrenBatches, model: batchLayout.model, columns: data[0].columns});
 
                 var contentBottomLayout = new ContentBottomLayout();
-                batchLayout.getRegion('batches').show(contentBottomLayout);
+                batchLayout.showChildView('batches', contentBottomLayout);
 
-                contentBottomLayout.getRegion('content').show(batchListView);
-                contentBottomLayout.getRegion('bottom').show(new ScrollingMoreView({targetView: batchListView}));
+                contentBottomLayout.showChildView('content', batchListView);
+                contentBottomLayout.showChildView('bottom', new ScrollingMoreView({targetView: batchListView}));
             });
         } else {
             // details
             var accession = new AccessionModel({id: this.model.get('accession')});
             accession.fetch().then(function() {
-                batchLayout.getRegion('details').show(new BatchPathView({
+                batchLayout.showChildView('details', new BatchPathView({
                     model: batchLayout.model, accession: accession, noLink: true}));
             });
 
@@ -162,7 +162,7 @@ var Layout = LayoutView.extend({
                 var batchDescriptorView = new BatchDescriptorEditView({
                     model: batchLayout.model, descriptorMetaModelLayout: data});
 
-                batchLayout.getRegion('descriptors').show(batchDescriptorView);
+                batchLayout.showChildView('descriptors', batchDescriptorView);
             });
 
             // not available tabs

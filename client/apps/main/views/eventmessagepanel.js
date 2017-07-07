@@ -41,7 +41,7 @@ var View = Marionette.View.extend({
         var EventMessageListView = require('./eventmessagelist');
 
         application.main.collections.eventMessages.fetch().then(function() {
-            view.getRegion('content').show(new EventMessageListView({collection: application.main.collections.eventMessages}));
+            view.showChildView('content', new EventMessageListView({collection: application.main.collections.eventMessages}));
         });
     },
 

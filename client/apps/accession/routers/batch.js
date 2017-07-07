@@ -32,7 +32,7 @@ var Router = Marionette.AppRouter.extend({
         var defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
-        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of all batches")}));
+        defaultLayout.showChildView('title', new TitleView({title: gt.gettext("List of all batches")}));
 
         // get available columns
         var columns = $.ajax({
@@ -44,8 +44,8 @@ var Router = Marionette.AppRouter.extend({
         $.when(columns, collection.fetch()).done(function (data) {
             var batchListView  = new BatchListView({collection: collection, columns: data[0].columns});
 
-            defaultLayout.getRegion('content').show(batchListView);
-            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: batchListView}));
+            defaultLayout.showChildView('content', batchListView);
+            defaultLayout.showChildView('content-bottom', new ScrollingMoreView({targetView: batchListView}));
         });
     },
 
@@ -55,7 +55,7 @@ var Router = Marionette.AppRouter.extend({
         var defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
-        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of batches for the accession")}));
+        defaultLayout.showChildView('title', new TitleView({title: gt.gettext("List of batches for the accession")}));
 
         // get available columns
         var columns = $.ajax({
@@ -67,8 +67,8 @@ var Router = Marionette.AppRouter.extend({
         $.when(columns, collection.fetch()).done(function (data) {
             var batchListView = new BatchListView({collection : collection, columns: data[0].columns});
 
-            defaultLayout.getRegion('content').show(batchListView);
-            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: batchListView}));
+            defaultLayout.showChildView('content', batchListView);
+            defaultLayout.showChildView('content-bottom', new ScrollingMoreView({targetView: batchListView}));
         });
     },
 
@@ -83,8 +83,8 @@ var Router = Marionette.AppRouter.extend({
         var batchLayout = new BatchLayout({model: batch, initialTab: tab.replace('/', '')});
 
         batch.fetch().then(function() {
-            defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Batch"), model: batch}));
-            defaultLayout.getRegion('content').show(batchLayout);
+            defaultLayout.showChildView('title', new TitleView({title: gt.gettext("Batch"), model: batch}));
+            defaultLayout.showChildView('content', batchLayout);
         });
     }
 });

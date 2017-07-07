@@ -41,17 +41,17 @@ var Router = Marionette.AppRouter.extend({
         var defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
-        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of meta-models of descriptor")}));
+        defaultLayout.showChildView('title', new TitleView({title: gt.gettext("List of meta-models of descriptor")}));
 
         collection.fetch().then(function () {
             var descriptorMetaModelList = new DescriptorMetaModelListView({collection : collection});
-            defaultLayout.getRegion('content').show(descriptorMetaModelList);
-            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: descriptorMetaModelList}));
+            defaultLayout.showChildView('content', descriptorMetaModelList);
+            defaultLayout.showChildView('content-bottom', new ScrollingMoreView({targetView: descriptorMetaModelList}));
         });
 
         // @todo lookup for permission
         if (session.user.isAuth && (session.user.isSuperUser || session.user.isStaff)) {
-            defaultLayout.getRegion('bottom').show(new DescriptorMetaModelAddView({collection: collection}));
+            defaultLayout.showChildView('bottom', new DescriptorMetaModelAddView({collection: collection}));
         }
     },
 
@@ -62,8 +62,8 @@ var Router = Marionette.AppRouter.extend({
         var model = new DescriptorMetaModelModel({id: id});
 
         model.fetch().then(function () {
-            defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Details for the meta-model of descriptor"), object: model.get('name')}));
-            defaultLayout.getRegion('content').show(new DescriptorMetaModelDetailView({model : model}));
+            defaultLayout.showChildView('title', new TitleView({title: gt.gettext("Details for the meta-model of descriptor"), object: model.get('name')}));
+            defaultLayout.showChildView('content', new DescriptorMetaModelDetailView({model : model}));
         });
     },
 
@@ -73,15 +73,15 @@ var Router = Marionette.AppRouter.extend({
         var defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
-        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of panels of descriptor")}));
+        defaultLayout.showChildView('title', new TitleView({title: gt.gettext("List of panels of descriptor")}));
 
         var twoColumnsLayout = new TwoColumnsLayout({});
-        defaultLayout.getRegion('content').show(twoColumnsLayout);
+        defaultLayout.showChildView('content', twoColumnsLayout);
 
         panelCollection.fetch().then(function () {
             var descriptorPanelList = new DescriptorPanelListView({collection : panelCollection});
-            twoColumnsLayout.getRegion('left-content').show(descriptorPanelList);
-            twoColumnsLayout.getRegion('left-bottom').show(new ScrollingMoreView({targetView: descriptorPanelList}));
+            twoColumnsLayout.showChildView('left-content', descriptorPanelList);
+            twoColumnsLayout.showChildView('left-bottom', new ScrollingMoreView({targetView: descriptorPanelList}));
         });
 
         var modelCollection = new DescriptorModelCollection();
@@ -91,11 +91,10 @@ var Router = Marionette.AppRouter.extend({
                 layout: twoColumnsLayout
             });
 
-            twoColumnsLayout.getRegion('right-content').show(descriptorModelList);
-            twoColumnsLayout.getRegion('right-bottom').show(new ScrollingMoreView({targetView: descriptorModelList}));
+            twoColumnsLayout.showChildView('right-content', descriptorModelList);
+            twoColumnsLayout.showChildView('right-bottom', new ScrollingMoreView({targetView: descriptorModelList}));
         });
     },
 });
 
 module.exports = Router;
-

@@ -120,13 +120,13 @@ var Controller = Marionette.Object.extend({
         var defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
-        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of audit entries related to user"), object: username}));
+        defaultLayout.showChildView('title', new TitleView({title: gt.gettext("List of audit entries related to user"), object: username}));
 
         auditCollection.fetch({data: {cursor: null}, processData: true}).then(function () {
             var auditListView = new AuditListView({collection: auditCollection});
 
-            defaultLayout.getRegion('content').show(auditListView);
-            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: auditListView}));
+            defaultLayout.showChildView('content', auditListView);
+            defaultLayout.showChildView('content-bottom', new ScrollingMoreView({targetView: auditListView}));
         });
     },
 
@@ -261,13 +261,13 @@ var Controller = Marionette.Object.extend({
                     object_id: object_id
                 },
             }).done(function (data) {
-                defaultLayout.getRegion('title').show(new TitleView({
+                defaultLayout.showChildView('title', new TitleView({
                     title: gt.gettext("List of audit entries related to entity"),
                     object: data.name
                 }));
             });
         } else {
-            defaultLayout.getRegion('title').show(new TitleView({
+            defaultLayout.showChildView('title', new TitleView({
                 title: gt.gettext("List of audit entries related to entity"),
                 object: object_name
             }));
@@ -276,11 +276,10 @@ var Controller = Marionette.Object.extend({
         auditCollection.fetch({data: {cursor: null}, processData: true}).then(function () {
             var auditListView = new AuditListView({collection: auditCollection});
 
-            defaultLayout.getRegion('content').show(auditListView);
-            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: auditListView}));
+            defaultLayout.showChildView('content', auditListView);
+            defaultLayout.showChildView('content-bottom', new ScrollingMoreView({targetView: auditListView}));
         });
     }
 });
 
 module.exports = Controller;
-

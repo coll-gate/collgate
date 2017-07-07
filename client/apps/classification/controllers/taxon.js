@@ -409,13 +409,13 @@ var TaxonController = Marionette.Object.extend({
                         var defaultLayout = new DefaultLayout();
                         application.main.showContent(defaultLayout);
 
-                        defaultLayout.getRegion('title').show(new TitleView({
+                        defaultLayout.showChildView('title', new TitleView({
                             title: gt.gettext("Cultivar"),
                             model: model
                         }));
 
                         var taxonLayout = new TaxonLayout({model: model});
-                        defaultLayout.getRegion('content').show(taxonLayout);
+                        defaultLayout.showChildView('content', taxonLayout);
                     }
                 }
             });

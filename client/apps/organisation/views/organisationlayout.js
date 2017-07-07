@@ -62,7 +62,7 @@ var Layout = LayoutView.extend({
                     model: model,
                     descriptorMetaModelLayout: data
                 });
-                organisationLayout.getRegion('descriptors').show(descriptorView);
+                organisationLayout.showChildView('descriptors', descriptorView);
             });
         }
     },
@@ -77,7 +77,7 @@ var Layout = LayoutView.extend({
         // details view
         if (!this.model.isNew()) {
             // details view
-            organisationLayout.getRegion('details').show(new OrganisationDetailsView({model: this.model}));
+            organisationLayout.showChildView('details', new OrganisationDetailsView({model: this.model}));
 
             // establishments tab
             var EstablishmentCollection = require('../collections/establishment');
@@ -88,13 +88,13 @@ var Layout = LayoutView.extend({
                 var establishmentListView  = new EstablishmentListView({collection: establishments, model: organisationLayout.model});
 
                 var contentBottomFooterLayout = new ContentBottomFooterLayout();
-                organisationLayout.getRegion('establishments').show(contentBottomFooterLayout);
+                organisationLayout.showChildView('establishments', contentBottomFooterLayout);
 
-                contentBottomFooterLayout.getRegion('content').show(establishmentListView);
-                contentBottomFooterLayout.getRegion('bottom').show(new ScrollingMoreView({targetView: establishmentListView}));
+                contentBottomFooterLayout.showChildView('content', establishmentListView);
+                contentBottomFooterLayout.showChildView('bottom', new ScrollingMoreView({targetView: establishmentListView}));
 
                 var EstablishmentListFilterView = require('./establishmentlistfilter');
-                contentBottomFooterLayout.getRegion('footer').show(new EstablishmentListFilterView({
+                contentBottomFooterLayout.showChildView('footer', new EstablishmentListFilterView({
                     organisation: organisationLayout.model,
                     collection: establishments
                 }));
@@ -104,7 +104,7 @@ var Layout = LayoutView.extend({
             this.ui.establishments_tab.parent().removeClass('disabled');
         } else {
             // details
-            organisationLayout.getRegion('details').show(new OrganisationDetailsView({model: this.model}));
+            organisationLayout.showChildView('details', new OrganisationDetailsView({model: this.model}));
 
             // descriptors edit tab
             $.ajax({
@@ -115,7 +115,7 @@ var Layout = LayoutView.extend({
                 var descriptorView = new DescriptorEditView({
                     model: organisationLayout.model, descriptorMetaModelLayout: data});
 
-                organisationLayout.getRegion('descriptors').show(descriptorView);
+                organisationLayout.showChildView('descriptors', descriptorView);
             });
 
             // not available tabs

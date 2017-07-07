@@ -44,13 +44,13 @@ var PermissionRouter = Marionette.AppRouter.extend({
         var defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
-        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of users")}));
+        defaultLayout.showChildView('title', new TitleView({title: gt.gettext("List of users")}));
 
         userCollection.fetch().then(function () {
             var permissionUserList = new PermissionUserListView({collection : userCollection});
 
-            defaultLayout.getRegion('content').show(permissionUserList);
-            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: permissionUserList}));
+            defaultLayout.showChildView('content', permissionUserList);
+            defaultLayout.showChildView('content-bottom', new ScrollingMoreView({targetView: permissionUserList}));
         });
     },
 
@@ -60,16 +60,16 @@ var PermissionRouter = Marionette.AppRouter.extend({
         var defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
-        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of permissions for user"), object: username}));
+        defaultLayout.showChildView('title', new TitleView({title: gt.gettext("List of permissions for user"), object: username}));
 
         permissionsCollection.fetch().then(function () {
             var permissionListView = new PermissionListView({collection : permissionsCollection});
 
-            defaultLayout.getRegion('content').show(permissionListView);
-            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: permissionListView}));
+            defaultLayout.showChildView('content', permissionListView);
+            defaultLayout.showChildView('content-bottom', new ScrollingMoreView({targetView: permissionListView}));
 
             if ($.inArray("auth.add_permission", permissionsCollection.perms) >= 0) {
-                defaultLayout.getRegion('bottom').show(new PermissionAddView({collection : permissionsCollection}));
+                defaultLayout.showChildView('bottom', new PermissionAddView({collection : permissionsCollection}));
             }
         });
     },
@@ -80,16 +80,16 @@ var PermissionRouter = Marionette.AppRouter.extend({
         var defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
-        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of groups")}));
+        defaultLayout.showChildView('title', new TitleView({title: gt.gettext("List of groups")}));
 
         groupCollection.fetch().then(function () {
             var permissionGroupList = new PermissionGroupListView({collection : groupCollection});
 
-            defaultLayout.getRegion('content').show(permissionGroupList);
-            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: permissionGroupList}));
+            defaultLayout.showChildView('content', permissionGroupList);
+            defaultLayout.showChildView('content-bottom', new ScrollingMoreView({targetView: permissionGroupList}));
 
             if ($.inArray("auth.add_group", groupCollection.perms) >= 0) {
-                defaultLayout.getRegion('bottom').show(new PermissionAddGroupView({collection : groupCollection}));
+                defaultLayout.showChildView('bottom', new PermissionAddGroupView({collection : groupCollection}));
             }
         });
     },
@@ -102,7 +102,7 @@ var PermissionRouter = Marionette.AppRouter.extend({
 
         var group = new GroupModel({id: id});
         group.fetch().then(function() {
-            defaultLayout.getRegion('title').show(new TitleView({
+            defaultLayout.showChildView('title', new TitleView({
                 title: gt.gettext("List of permissions for group"),
                 object: group.get('name')
             }));
@@ -111,11 +111,11 @@ var PermissionRouter = Marionette.AppRouter.extend({
         permissionsCollection.fetch().then(function () {
             var permissionList = new PermissionListView({collection : permissionsCollection});
 
-            defaultLayout.getRegion('content').show(permissionList);
-            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: permissionList}));
+            defaultLayout.showChildView('content', permissionList);
+            defaultLayout.showChildView('content-bottom', new ScrollingMoreView({targetView: permissionList}));
 
             if ($.inArray("auth.add_permission", permissionsCollection.perms) >= 0) {
-                defaultLayout.getRegion('bottom').show(new PermissionAddView({collection : permissionsCollection}));
+                defaultLayout.showChildView('bottom', new PermissionAddView({collection : permissionsCollection}));
             }
         });
     },
@@ -128,7 +128,7 @@ var PermissionRouter = Marionette.AppRouter.extend({
 
         var group = new GroupModel({id: id});
         group.fetch().then(function() {
-            defaultLayout.getRegion('title').show(new TitleView({
+            defaultLayout.showChildView('title', new TitleView({
                 title: gt.gettext("List of users for group"),
                 object: group.get('name')
             }));
@@ -137,11 +137,11 @@ var PermissionRouter = Marionette.AppRouter.extend({
         userCollection.fetch().then(function() {
             var permissionGroupUserList = new PermissionGroupUserListView({collection : userCollection});
 
-            defaultLayout.getRegion('content').show(permissionGroupUserList);
-            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: permissionGroupUserList}));
+            defaultLayout.showChildView('content', permissionGroupUserList);
+            defaultLayout.showChildView('content-bottom', new ScrollingMoreView({targetView: permissionGroupUserList}));
 
             if ($.inArray("auth.change_group", userCollection.perms) >= 0) {
-                defaultLayout.getRegion('bottom').show(new PermissionGroupAddUserView({collection : userCollection}));
+                defaultLayout.showChildView('bottom', new PermissionGroupAddUserView({collection : userCollection}));
             }
         });
     },

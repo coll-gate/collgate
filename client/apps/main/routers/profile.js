@@ -36,10 +36,10 @@ var ProfileRouter = Marionette.AppRouter.extend({
 
         model = new ProfileModel({username: session.user.username});
 
-        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Edit my profile informations")}));
+        defaultLayout.showChildView('title', new TitleView({title: gt.gettext("Edit my profile informations")}));
 
         model.fetch().done(function() {
-            defaultLayout.getRegion('content').show(new EditProfileView({model: model}));
+            defaultLayout.showChildView('content', new EditProfileView({model: model}));
         });
 
         //application.setDisplay('0-10-2');
@@ -47,4 +47,3 @@ var ProfileRouter = Marionette.AppRouter.extend({
 });
 
 module.exports = ProfileRouter;
-

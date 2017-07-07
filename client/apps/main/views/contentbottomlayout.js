@@ -44,38 +44,38 @@ var View = Marionette.View.extend({
     onShowTab: function(tabView) {
         this._lastRegion = tabView;
 
-        var region = this.getRegion('content');
-        if (region && region.currentView && region.currentView.onShowTab) {
-            region.currentView.onShowTab(tabView);
+        var view = this.getChildView('content');
+        if (view && view.onShowTab) {
+            view.onShowTab(tabView);
         }
 
-        region = this.getRegion('bottom');
-        if (region && region.currentView && region.currentView.onShowTab) {
-            region.currentView.onShowTab(tabView);
+        view = this.getChildView('bottom');
+        if (view && view.onShowTab) {
+            view.onShowTab(tabView);
         }
     },
 
     onHideTab: function(tabView) {
-        var region = this.getRegion('content');
-        if (region && region.currentView && region.currentView.onHideTab) {
-            region.currentView.onHideTab(tabView);
+        var view = this.getChildView('content');
+        if (view && view.onHideTab) {
+            view.onHideTab(tabView);
         }
 
-        region = this.getRegion('bottom');
-        if (region && region.currentView && region.currentView.onHideTab) {
-            region.currentView.onHideTab(tabView);
+        view = this.getChildView('bottom');
+        if (view && view.onHideTab) {
+            view.onHideTab(tabView);
         }
     },
 
     onResize: function() {
-        var view = this.getRegion('content');
-        if (view && view.currentView && view.currentView.onResize) {
-            view.currentView.onResize();
+        var view = this.getChildView('content');
+        if (view && view.onResize) {
+            view.onResize();
         }
 
-        view = this.getRegion('bottom');
-        if (view && view.currentView && view.currentView.onResize) {
-            view.currentView.onResize();
+        view = this.getChildView('bottom');
+        if (view && view.onResize) {
+            view.onResize();
         }
     }
 });

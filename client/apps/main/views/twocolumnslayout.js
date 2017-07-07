@@ -30,24 +30,24 @@ var TwoColumnsLayout = Marionette.View.extend({
     },
 
     onResize: function() {
-        var view = this.getRegion('left-content');
-        if (view && view.currentView && view.currentView.onResize) {
-            view.currentView.onResize();
+        var view = this.getChildView('left-content');
+        if (view && view.onResize) {
+            view.onResize();
         }
 
-        view = this.getRegion('left-bottom');
-        if (view && view.currentView && view.currentView.onResize) {
-            view.currentView.onResize();
+        view = this.getChildView('left-bottom');
+        if (view && view.onResize) {
+            view.onResize();
         }
 
-        view = this.getRegion('right-content');
-        if (view && view.currentView && view.currentView.onResize) {
-            view.currentView.onResize();
+        view = this.getChildView('right-content');
+        if (view && view.onResize) {
+            view.onResize();
         }
 
-        view = this.getRegion('right-bottom');
-        if (view && view.currentView && view.currentView.onResize) {
-            view.currentView.onResize();
+        view = this.getChildView('right-bottom');
+        if (view && view.onResize) {
+            view.onResize();
         }
     }
 });

@@ -63,7 +63,7 @@ var Layout = LayoutView.extend({
                     model: model,
                     descriptorMetaModelLayout: data
                 });
-                establishmentLayout.getRegion('descriptors').show(descriptorView);
+                establishmentLayout.showChildView('descriptors', descriptorView);
             });
         }
     },
@@ -84,7 +84,7 @@ var Layout = LayoutView.extend({
             // organisation parent
             var organisation = new OrganisationModel({id: this.model.get('organisation')});
             organisation.fetch().then(function () {
-                establishmentLayout.getRegion('details').show(new EstablishmentDetailsView({
+                establishmentLayout.showChildView('details', new EstablishmentDetailsView({
                     model: establishmentLayout.model,
                     organisation: organisation
                 }));
@@ -99,13 +99,13 @@ var Layout = LayoutView.extend({
                 var establishmentListView  = new EstablishmentListView({collection: establishments, model: organisationLayout.model});
 
                 var contentBottomFooterLayout = new ContentBottomFooterLayout();
-                organisationLayout.getRegion('establishments').show(contentBottomFooterLayout);
+                organisationLayout.showChildView('establishments', contentBottomFooterLayout);
 
-                contentBottomFooterLayout.getRegion('content').show(establishmentListView);
-                contentBottomFooterLayout.getRegion('bottom').show(new ScrollingMoreView({targetView: establishmentListView}));
+                contentBottomFooterLayout.showChildView('content', establishmentListView);
+                contentBottomFooterLayout.showChildView('bottom', new ScrollingMoreView({targetView: establishmentListView}));
 
                 var EstablishmentListFilterView = require('./establishmentlistfilter');
-                contentBottomFooterLayout.getRegion('footer').show(new EstablishmentListFilterView({
+                contentBottomFooterLayout.showChildView('footer', new EstablishmentListFilterView({
                     organisation: organisationLayout.model,
                     collection: establishments
                 }));
@@ -120,7 +120,7 @@ var Layout = LayoutView.extend({
             // organisation parent
             var organisation = new OrganisationModel({id: this.model.get('organisation')});
             organisation.fetch().then(function () {
-                establishmentLayout.getRegion('details').show(new EstablishmentDetailsView({
+                establishmentLayout.showChildView('details', new EstablishmentDetailsView({
                     model: establishmentLayout.model,
                     organisation: organisation,
                     noLink: true
@@ -136,7 +136,7 @@ var Layout = LayoutView.extend({
                 var descriptorView = new DescriptorEditView({
                     model: establishmentLayout.model, descriptorMetaModelLayout: data});
 
-                establishmentLayout.getRegion('descriptors').show(descriptorView);
+                establishmentLayout.showChildView('descriptors', descriptorView);
             });
 
             // not available tabs
@@ -147,4 +147,3 @@ var Layout = LayoutView.extend({
 });
 
 module.exports = Layout;
-

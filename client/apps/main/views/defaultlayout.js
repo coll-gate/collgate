@@ -33,24 +33,24 @@ var DefaultLayout = Marionette.View.extend({
     },
 
     onResize: function() {
-        var view = this.getRegion('title');
-        if (view && view.currentView && view.currentView.onResize) {
-            view.currentView.onResize();
+        var view = this.getChildView('title');
+        if (view && view.onResize) {
+            view.onResize();
         }
 
-        view = this.getRegion('content');
-        if (view && view.currentView && view.currentView.onResize) {
-            view.currentView.onResize();
+        view = this.getChildView('content');
+        if (view && view.onResize) {
+            view.onResize();
         }
 
-        view = this.getRegion('content-bottom');
-        if (view && view.currentView && view.currentView.onResize) {
-            view.currentView.onResize();
+        view = this.getChildView('content-bottom');
+        if (view && view.onResize) {
+            view.onResize();
         }
 
-        view = this.getRegion('bottom');
-        if (view && view.currentView && view.currentView.onResize) {
-            view.currentView.onResize();
+        view = this.getChildView('bottom');
+        if (view && view.onResize) {
+            view.onResize();
         }
     }
 });

@@ -68,19 +68,19 @@ var MainLayout = Marionette.View.extend({
     },
 
     onResize: function() {
-        var view = this.getRegion('left');
-        if (view && view.currentView && view.currentView.onResize) {
-            view.currentView.onResize();
+        var view = this.getChildView('left');
+        if (view && view.onResize) {
+            view.onResize();
         }
 
-        view = this.getRegion('content');
-        if (view && view.currentView && view.currentView.onResize) {
-            view.currentView.onResize();
+        view = this.getChildView('content');
+        if (view && view.onResize) {
+            view.onResize();
         }
 
-        view = this.getRegion('right');
-        if (view && view.currentView && view.currentView.onResize) {
-            view.currentView.onResize();
+        view = this.getChildView('right');
+        if (view && view.onResize) {
+            view.onResize();
         }
 
         // this.ui.right.css('height', this.ui.content.height() + 10 + "px");  bug on table on resize

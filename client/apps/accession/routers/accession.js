@@ -32,7 +32,7 @@ var Router = Marionette.AppRouter.extend({
         var defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
-        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of accessions")}));
+        defaultLayout.showChildView('title', new TitleView({title: gt.gettext("List of accessions")}));
 
         // get available columns
         var columns = $.ajax({
@@ -44,13 +44,13 @@ var Router = Marionette.AppRouter.extend({
         columns.done(function (data) {
             var accessionListView = new AccessionListView({collection : collection, columns: data.columns});
 
-            defaultLayout.getRegion('content').show(accessionListView);
-            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({
+            defaultLayout.showChildView('content', accessionListView);
+            defaultLayout.showChildView('content-bottom', new ScrollingMoreView({
                 collection: collection,
                 targetView: accessionListView
             }));
 
-            defaultLayout.getRegion('bottom').show(new AccessionListFooterView({
+            defaultLayout.showChildView('bottom', new AccessionListFooterView({
                 collection: collection, columns: data.columns}));
 
             accessionListView.query();
@@ -66,10 +66,10 @@ var Router = Marionette.AppRouter.extend({
         application.main.showContent(defaultLayout);
 
         accession.fetch().then(function() {
-            defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Accession"), model: accession}));
+            defaultLayout.showChildView('title', new TitleView({title: gt.gettext("Accession"), model: accession}));
 
             var accessionLayout = new AccessionLayout({model: accession, initialTab: tab.replace('/', '')});
-            defaultLayout.getRegion('content').show(accessionLayout);
+            defaultLayout.showChildView('content', accessionLayout);
         });
     }
 });

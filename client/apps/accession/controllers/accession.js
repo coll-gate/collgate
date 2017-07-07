@@ -253,12 +253,12 @@ var Controller = Marionette.Object.extend({
                         var defaultLayout = new DefaultLayout();
                         application.main.showContent(defaultLayout);
 
-                        defaultLayout.getRegion('title').show(new TitleView({
+                        defaultLayout.showChildView('title', new TitleView({
                             title: gt.gettext("Accession"),
                             model: model}));
 
                         var accessionLayout = new AccessionLayout({model: model});
-                        defaultLayout.getRegion('content').show(accessionLayout);
+                        defaultLayout.showChildView('content', accessionLayout);
                     }
                 }
             });

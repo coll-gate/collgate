@@ -235,9 +235,9 @@ var Layout = Marionette.View.extend({
     onHideBsTab: function(e) {
         var tab = e.target.getAttribute('aria-controls');
 
-        var region = this.getRegion(tab);
-        if (region && region.currentView && region.currentView.onHideTab) {
-            region.currentView.onHideTab(this);
+        var view = this.getChildView(tab);
+        if (view && view.onHideTab) {
+            view.onHideTab(this);
         }
 
         application.main.defaultRightView();
@@ -249,9 +249,9 @@ var Layout = Marionette.View.extend({
 
     onResize: function() {
         if (this.activeTab) {
-            var view = this.getRegion(this.activeTab);
-            if (view && view.currentView && view.currentView.onResize) {
-                view.currentView.onResize();
+            var view = this.getChildView(this.activeTab);
+            if (view && view.onResize) {
+                view.onResize();
             }
         }
     }

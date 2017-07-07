@@ -71,7 +71,7 @@ var Layout = LayoutView.extend({
             var TaxonDescriptorCreateView = require('../views/taxondescriptorcreate');
             var taxonDescriptorCreateView = new TaxonDescriptorCreateView({model: model});
 
-            this.getRegion('descriptors').show(taxonDescriptorCreateView);
+            this.showChildView('descriptors', taxonDescriptorCreateView);
         } else {
             var taxonLayout = this;
 
@@ -86,7 +86,7 @@ var Layout = LayoutView.extend({
                     model: model,
                     descriptorMetaModelLayout: data
                 });
-                taxonLayout.getRegion('descriptors').show(taxonDescriptorView);
+                taxonLayout.showChildView('descriptors', taxonDescriptorView);
             });
         }
     },
@@ -98,11 +98,11 @@ var Layout = LayoutView.extend({
         if (!this.model.isNew()) {
             // details views
             var TaxonDetailsView = require('../views/taxondetails');
-            this.getRegion('details').show(new TaxonDetailsView({model: this.model}));
+            this.showChildView('details', new TaxonDetailsView({model: this.model}));
 
             // synonyms tab
             var TaxonSynonymsView = require('../views/taxonsynonyms');
-            this.getRegion('synonyms').show(new TaxonSynonymsView({model: this.model}));
+            this.showChildView('synonyms', new TaxonSynonymsView({model: this.model}));
 
             // direct taxon sub-levels tab
             var TaxonChildrenCollection = require('../collections/taxonchildren');
@@ -124,10 +124,10 @@ var Layout = LayoutView.extend({
                     columns: data.columns});
 
                 var contentBottomLayout = new ContentBottomLayout();
-                taxonLayout.getRegion('children').show(contentBottomLayout);
+                taxonLayout.showChildView('children', contentBottomLayout);
 
-                contentBottomLayout.getRegion('content').show(taxonChildrenView);
-                contentBottomLayout.getRegion('bottom').show(new ScrollingMoreView({
+                contentBottomLayout.showChildView('content', taxonChildrenView);
+                contentBottomLayout.showChildView('bottom', new ScrollingMoreView({
                     targetView: taxonChildrenView, collection: taxonChildren}));
 
                 taxonChildrenView.query();
@@ -138,10 +138,10 @@ var Layout = LayoutView.extend({
             //     var taxonChildrenView = new TaxonChildrenView({collection: taxonChildren, model: taxonLayout.model});
             //
             //     var contentBottomLayout = new ContentBottomLayout();
-            //     taxonLayout.getRegion('children').show(contentBottomLayout);
+            //     taxonLayout.showChildView('children', contentBottomLayout);
             //
-            //     contentBottomLayout.getRegion('content').show(taxonChildrenView);
-            //     contentBottomLayout.getRegion('bottom').show(new ScrollingMoreView({targetView: taxonChildrenView}));
+            //     contentBottomLayout.showChildView('content', taxonChildrenView);
+            //     contentBottomLayout.showChildView('bottom', new ScrollingMoreView({targetView: taxonChildrenView}));
             // });
 
             // entities relating this taxon tab
@@ -153,10 +153,10 @@ var Layout = LayoutView.extend({
                 var taxonEntitiesView = new TaxonEntitiesView({collection: taxonEntities, model: taxonLayout.model});
 
                 var contentBottomLayout = new ContentBottomLayout();
-                taxonLayout.getRegion('entities').show(contentBottomLayout);
+                taxonLayout.showChildView('entities', contentBottomLayout);
 
-                contentBottomLayout.getRegion('content').show(taxonEntitiesView);
-                contentBottomLayout.getRegion('bottom').show(new ScrollingMoreView({targetView: taxonEntitiesView}));
+                contentBottomLayout.showChildView('content', taxonEntitiesView);
+                contentBottomLayout.showChildView('bottom', new ScrollingMoreView({targetView: taxonEntitiesView}));
             });
 
             this.onDescriptorMetaModelChange(this.model, this.model.get('descriptor_meta_model'));
@@ -164,7 +164,7 @@ var Layout = LayoutView.extend({
         } else {
             // details views
             var TaxonDetailsView = require('../views/taxondetails');
-            this.getRegion('details').show(new TaxonDetailsView({model: this.model}));
+            this.showChildView('details', new TaxonDetailsView({model: this.model}));
 
             // descriptors edit tab
             $.ajax({
@@ -175,7 +175,7 @@ var Layout = LayoutView.extend({
                 var taxonDescriptorView = new TaxonDescriptorEditView({
                     model: taxonLayout.model, descriptorMetaModelLayout: data});
 
-                taxonLayout.getRegion('descriptors').show(taxonDescriptorView);
+                taxonLayout.showChildView('descriptors', taxonDescriptorView);
             });
 
             this.setActiveTab("descriptors");
@@ -191,7 +191,7 @@ var Layout = LayoutView.extend({
     //     descriptors tab (on this event because of the child event not fired otherwise)
     //     var TaxonDescriptorCreateView = require('../views/taxondescriptorcreate');
     //     var taxonDescriptorCreateView = new TaxonDescriptorCreateView({model: this.model});
-    //     this.getRegion('descriptors').show(taxonDescriptorCreateView);
+    //     this.showChildView('descriptors', taxonDescriptorCreateView);
     // }
 });
 

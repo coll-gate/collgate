@@ -62,7 +62,7 @@ var TaxonRouter = Marionette.AppRouter.extend({
         var defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
-        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of taxons")}));
+        defaultLayout.showChildView('title', new TitleView({title: gt.gettext("List of taxons")}));
 
         // get available columns
         var columns = $.ajax({
@@ -74,13 +74,13 @@ var TaxonRouter = Marionette.AppRouter.extend({
         columns.done(function(data) {
             var taxonListView = new TaxonListView({collection : collection, columns: data.columns});
 
-            defaultLayout.getRegion('content').show(taxonListView);
-            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({
+            defaultLayout.showChildView('content', taxonListView);
+            defaultLayout.showChildView('content-bottom', new ScrollingMoreView({
                 targetView: taxonListView,
                 collection: collection
             }));
 
-            defaultLayout.getRegion('bottom').show(new TaxonListFilterView({
+            defaultLayout.showChildView('bottom', new TaxonListFilterView({
                 collection: collection, columns: data.columns}));
 
             taxonListView.query();
@@ -89,13 +89,13 @@ var TaxonRouter = Marionette.AppRouter.extend({
         /*$.when(columns, collection.fetch()).done(function (data) {
             var taxonListView = new TaxonListView({collection : collection, columns: data[0].columns});
 
-            defaultLayout.getRegion('content').show(taxonListView);
-            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({
+            defaultLayout.showChildView('content', taxonListView);
+            defaultLayout.showChildView('content-bottom', new ScrollingMoreView({
                 targetView: taxonListView,
                 collection: collection
             }));
 
-            defaultLayout.getRegion('bottom').show(new TaxonListFilterView({
+            defaultLayout.showChildView('bottom', new TaxonListFilterView({
                 collection: collection, columns: data[0].columns}));
         });*/
     },
@@ -106,19 +106,19 @@ var TaxonRouter = Marionette.AppRouter.extend({
         var defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
-        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of cultivars")}));
+        defaultLayout.showChildView('title', new TitleView({title: gt.gettext("List of cultivars")}));
 
         collection.fetch().then(function () {
             var taxonListView = new CultivarListView({collection : collection});
 
-            defaultLayout.getRegion('content').show(taxonListView);
-            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({
+            defaultLayout.showChildView('content',taxonListView);
+            defaultLayout.showChildView('content-bottom', new ScrollingMoreView({
                 targetView: taxonListView,
                 collection: collection
             }));
         });
 
-        defaultLayout.getRegion('bottom').show(new CultivarListFilterView({collection: collection}));
+        defaultLayout.showChildView('bottom', new CultivarListFilterView({collection: collection}));
     },
 
     getTaxon : function(id, tab) {
@@ -132,8 +132,8 @@ var TaxonRouter = Marionette.AppRouter.extend({
         var taxonLayout = new TaxonLayout({model: taxon, initialTab: tab.replace('/', '')});
 
         taxon.fetch().then(function () {
-            defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Taxon details"), model: taxon}));
-            defaultLayout.getRegion('content').show(taxonLayout);
+            defaultLayout.showChildView('title', new TitleView({title: gt.gettext("Taxon details"), model: taxon}));
+            defaultLayout.showChildView('content', taxonLayout);
         });
 
         taxon.fetch();

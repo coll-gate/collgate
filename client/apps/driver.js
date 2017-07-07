@@ -331,7 +331,8 @@ application = new Marionette.Application({
         i18next.init({
             initImmediate: false,  // avoid setTimeout
             lng: session.language,
-            ns: 'default',
+            ns: ['default'],
+            defaultNS: 'default',
             debug: false,
             fallbackLng: 'en'
         });

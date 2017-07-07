@@ -41,17 +41,17 @@ var Router = Marionette.AppRouter.extend({
         var defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
-        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of models of descriptor")}));
+        defaultLayout.showChildView('title', new TitleView({title: gt.gettext("List of models of descriptor")}));
 
         collection.fetch().then(function () {
             var descriptorModelList = new DescriptorModelListView({collection : collection});
-            defaultLayout.getRegion('content').show(descriptorModelList);
-            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: descriptorModelList}));
+            defaultLayout.showChildView('content', descriptorModelList);
+            defaultLayout.showChildView('content-bottom', new ScrollingMoreView({targetView: descriptorModelList}));
         });
 
         // @todo lookup for permission
         if (session.user.isAuth && (session.user.isSuperUser || session.user.isStaff)) {
-            defaultLayout.getRegion('bottom').show(new DescriptorModelAddView({collection: collection}));
+            defaultLayout.showChildView('bottom', new DescriptorModelAddView({collection: collection}));
         }
     },
 
@@ -62,8 +62,8 @@ var Router = Marionette.AppRouter.extend({
         var model = new DescriptorModelModel({id: id});
 
         model.fetch().then(function () {
-            defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Details for the model of descriptor"), object: model.get('name')}));
-            defaultLayout.getRegion('content').show(new DescriptorModelDetailView({model : model}));
+            defaultLayout.showChildView('title', new TitleView({title: gt.gettext("Details for the model of descriptor"), object: model.get('name')}));
+            defaultLayout.showChildView('content', new DescriptorModelDetailView({model : model}));
         });
     },
 
@@ -71,10 +71,10 @@ var Router = Marionette.AppRouter.extend({
         var defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
-        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of types of models of descriptor")}));
+        defaultLayout.showChildView('title', new TitleView({title: gt.gettext("List of types of models of descriptor")}));
 
         var leftOneRightTwoLayout = new LeftOneRightTwoLayout({});
-        defaultLayout.getRegion('content').show(leftOneRightTwoLayout);
+        defaultLayout.showChildView('content', leftOneRightTwoLayout);
 
         var modelTypeCollection = new DescriptorModelTypeCollection([], {model_id: id});
         var groupCollection = new DescriptorGroupCollection();
@@ -85,23 +85,22 @@ var Router = Marionette.AppRouter.extend({
                 collection : modelTypeCollection,
                 descriptor_type_groups: groupCollection});
 
-            leftOneRightTwoLayout.getRegion('left-content').show(descriptorTypeModelList);
-            leftOneRightTwoLayout.getRegion('left-bottom').show(new ScrollingMoreView({targetView: descriptorTypeModelList}));
+            leftOneRightTwoLayout.showChildView('left-content', descriptorTypeModelList);
+            leftOneRightTwoLayout.showChildView('left-bottom', new ScrollingMoreView({targetView: descriptorTypeModelList}));
 
             var descriptorGroupList = new DescriptorGroupListAltView({
                 collection: groupCollection,
                 layout: leftOneRightTwoLayout
             });
 
-            leftOneRightTwoLayout.getRegion('right-up-content').show(descriptorGroupList);
-            leftOneRightTwoLayout.getRegion('right-up-bottom').show(new ScrollingMoreView({targetView: descriptorGroupList}));
+            leftOneRightTwoLayout.showChildView('right-up-content', descriptorGroupList);
+            leftOneRightTwoLayout.showChildView('right-up-bottom', new ScrollingMoreView({targetView: descriptorGroupList}));
         });
 
         var descriptorTypeList = new DescriptorTypeListAltView({});
-        leftOneRightTwoLayout.getRegion('right-down-content').show(descriptorTypeList);
-        leftOneRightTwoLayout.getRegion('right-down-bottom').show(new ScrollingMoreView({targetView: descriptorTypeList}));
+        leftOneRightTwoLayout.showChildView('right-down-content', descriptorTypeList);
+        leftOneRightTwoLayout.showChildView('right-down-bottom', new ScrollingMoreView({targetView: descriptorTypeList}));
     }
 });
 
 module.exports = Router;
-

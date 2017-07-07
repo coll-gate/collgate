@@ -43,7 +43,7 @@ var Layout = Marionette.View.extend({
         var Element = application.descriptor.widgets.getElement(format.type);
         if (Element && Element.DescriptorTypeDetailsView) {
             var content_el = new Element.DescriptorTypeDetailsView({model: this.model});
-            this.getRegion('content').show(content_el);
+            this.showChildView('content', content_el);
         } else {
             this.getRegion('content').empty();
         }
@@ -66,7 +66,7 @@ var Layout = Marionette.View.extend({
         // update the contextual region according to the format
         var Element = application.descriptor.widgets.getElement(type);
         if (Element && Element.DescriptorTypeDetailsView) {
-            this.getRegion('content').show(new Element.DescriptorTypeDetailsView({model: this.model}));
+            this.showChildView('content', new Element.DescriptorTypeDetailsView({model: this.model}));
         } else {
             this.getRegion('content').empty();
         }
@@ -95,8 +95,8 @@ var Layout = Marionette.View.extend({
 
         var format = {};
 
-        if (this.getRegion('content').currentView) {
-            format = this.getRegion('content').currentView.getFormat();
+        if (this.getChildView('content')) {
+            format = this.getChildView('content').getFormat();
         }
 
         // merge the format type

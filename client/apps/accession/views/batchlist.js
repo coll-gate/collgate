@@ -71,21 +71,21 @@ var View = ScrollView.extend({
         if (this.collection.batch_type !== 'parents') {
             var view = this;
 
-            var contextLayout = application.getView().getRegion('right').currentView;
+            var contextLayout = application.getView().getChildView('right');
             if (!contextLayout) {
                 var DefaultLayout = require('../../main/views/defaultlayout');
                 contextLayout = new DefaultLayout();
-                application.getView().getRegion('right').show(contextLayout);
+                application.getView().showChildView('right', contextLayout);
             }
 
             var TitleView = require('../../main/views/titleview');
-            contextLayout.getRegion('title').show(new TitleView({title: gt.gettext("Batches actions")}));
+            contextLayout.showChildView('title', new TitleView({title: gt.gettext("Batches actions")}));
 
             var actions = ['create'];
 
             var AccessionBatchesContextView = require('./accessionbatchescontext');
             var contextView = new AccessionBatchesContextView({actions: actions});
-            contextLayout.getRegion('content').show(contextView);
+            contextLayout.showChildView('content', contextView);
 
             contextView.on("batch:create", function () {
                 view.onCreate();
@@ -235,13 +235,13 @@ var View = ScrollView.extend({
                         var defaultLayout = new DefaultLayout();
                         application.main.showContent(defaultLayout);
 
-                        defaultLayout.getRegion('title').show(new TitleView({
+                        defaultLayout.showChildView('title', new TitleView({
                             title: gt.gettext("Batch"),
                             model: model
                         }));
 
                         var accessionLayout = new BatchLayout({model: model});
-                        defaultLayout.getRegion('content').show(accessionLayout);
+                        defaultLayout.showChildView('content', accessionLayout);
                     }
                 }
             });

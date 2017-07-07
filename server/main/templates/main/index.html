@@ -167,6 +167,13 @@
 </footer>
 
 <script language="javascript">
+
+const UI_DEFAULT_SETTING = {
+    display_mode: '2-8-2'
+};
+
+const UI_SETTING_VERSION = '1.0';
+
 // initials alerts coming from django templating
 initials_alerts = [{% spaceless %}
 {% for message in messages %}
@@ -204,12 +211,6 @@ session.user.isAuth = true;
 session.user.isSuperUser = {{ user.is_superuser|yesno:"true,false" }};
 session.user.isStaff = {{ user.is_staff|yesno:"true,false" }};
 session.user.settings = {{ profile_settings|safe }};
-
-const UI_DEFAULT_SETTING = {
-    display_mode: '2-8-2'
-};
-
-const UI_SETTING_VERSION = '1.0';
 {% endif %}
 
 // LTR or RTL language

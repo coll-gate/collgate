@@ -41,8 +41,8 @@ var Router = Marionette.AppRouter.extend({
         var grcDetails = new GRCDetailsView({model: grc});
 
         grc.fetch().then(function () {
-            defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("GRC details"), model: grc}));
-            defaultLayout.getRegion('content').show(grcDetails);
+            defaultLayout.showChildView('title', new TitleView({title: gt.gettext("GRC details"), model: grc}));
+            defaultLayout.showChildView('content', grcDetails);
         });
     },
 
@@ -52,16 +52,16 @@ var Router = Marionette.AppRouter.extend({
         var defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
-        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of GRC partners")}));
+        defaultLayout.showChildView('title', new TitleView({title: gt.gettext("List of GRC partners")}));
 
         collection.fetch().then(function () {
             var organisationListView = new OrganisationListView({collection : collection});
 
-            defaultLayout.getRegion('content').show(organisationListView);
-            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: organisationListView}));
+            defaultLayout.showChildView('content', organisationListView);
+            defaultLayout.showChildView('content-bottom', new ScrollingMoreView({targetView: organisationListView}));
         });
 
-        defaultLayout.getRegion('bottom').show(new OrganisationListFilterView({collection: collection}));
+        defaultLayout.showChildView('bottom', new OrganisationListFilterView({collection: collection}));
     },
 
     getOrganisationList : function() {
@@ -70,16 +70,16 @@ var Router = Marionette.AppRouter.extend({
         var defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
-        defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("List of organisations")}));
+        defaultLayout.showChildView('title', new TitleView({title: gt.gettext("List of organisations")}));
 
         collection.fetch().then(function () {
             var organisationListView = new OrganisationListView({collection : collection});
 
-            defaultLayout.getRegion('content').show(organisationListView);
-            defaultLayout.getRegion('content-bottom').show(new ScrollingMoreView({targetView: organisationListView}));
+            defaultLayout.showChildView('content', organisationListView);
+            defaultLayout.showChildView('content-bottom', new ScrollingMoreView({targetView: organisationListView}));
         });
 
-        defaultLayout.getRegion('bottom').show(new OrganisationListFilterView({collection: collection}));
+        defaultLayout.showChildView('bottom', new OrganisationListFilterView({collection: collection}));
     },
 
     getOrganisation : function(id, tab) {
@@ -93,11 +93,10 @@ var Router = Marionette.AppRouter.extend({
         var organisationLayout = new OrganisationLayout({model: organisation, initialTab: tab.replace('/', '')});
 
         organisation.fetch().then(function() {
-            defaultLayout.getRegion('title').show(new TitleView({title: gt.gettext("Organisation"), model: organisation}));
-            defaultLayout.getRegion('content').show(organisationLayout);
+            defaultLayout.showChildView('title', new TitleView({title: gt.gettext("Organisation"), model: organisation}));
+            defaultLayout.showChildView('content', organisationLayout);
         });
     }
 });
 
 module.exports = Router;
-

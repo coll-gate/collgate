@@ -28,14 +28,14 @@ var TwoRowsLayout = Marionette.View.extend({
     },
 
     onResize: function() {
-        var view = this.getRegion('up');
-        if (view && view.currentView && view.currentView.onResize) {
-            view.currentView.onResize();
+        var view = this.getChildView('up');
+        if (view && view.onResize) {
+            view.onResize();
         }
 
-        view = this.getRegion('down');
-        if (view && view.currentView && view.currentView.onResize) {
-            view.currentView.onResize();
+        view = this.getChildView('down');
+        if (view && view.onResize) {
+            view.onResize();
         }
     }
 });

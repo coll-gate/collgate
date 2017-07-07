@@ -186,14 +186,14 @@ var View = Marionette.View.extend({
                         var defaultLayout = new DefaultLayout();
                         application.main.showContent(defaultLayout);
 
-                        defaultLayout.getRegion('title').show(new TitleView({
+                        defaultLayout.showChildView('title', new TitleView({
                             title: gt.gettext("Establishment"),
                             model: model,
                             organisation: this.getOption('organisation').get('id')
                         }));
 
                         var establishmentLayout = new EstablishmentLayout({model: model});
-                        defaultLayout.getRegion('content').show(establishmentLayout);
+                        defaultLayout.showChildView('content', establishmentLayout);
                     }
                 }
             });

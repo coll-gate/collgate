@@ -38,7 +38,7 @@ var View = Marionette.View.extend({
         /*var ActionListView = require('./actionlist');
 
         application.main.collections.eventMessages.fetch().then(function() {
-            view.getRegion('content').show(new ActionListView({collection: application.main.collections.action}));
+            view.showChildView('content', new ActionListView({collection: application.main.collections.action}));
         });*/
     },
 
