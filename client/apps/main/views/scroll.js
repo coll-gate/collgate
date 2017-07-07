@@ -27,6 +27,8 @@ var TableBody = Marionette.CollectionView.extend({
     childView: RowView
 });
 */
+
+// @todo evolve to CollectionView and a layout before Mn remove CompositeView
 var View = Marionette.CompositeView.extend({
     rowHeight: 1+8+20+8,
     scrollViewInitialized: false,

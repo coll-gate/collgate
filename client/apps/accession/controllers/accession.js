@@ -184,10 +184,15 @@ var Controller = Marionette.Object.extend({
                     var v = this.ui.code.val().trim();
 
                     if (v.length > 128) {
-                        $(this.ui.code).validateField('failed', gt.gettext("128 characters max"));
+                        this.ui.code.validateField('failed', gt.gettext("128 characters max"));
                         return false;
-                    } else if (v.length < 3) {
-                        $(this.ui.code).validateField('failed', gt.gettext('3 characters min'));
+                    } else if (v.length < 1) {
+                        this.ui.code.validateField('failed', gt.gettext('1 characters min'));
+                        return false;
+                    }
+
+                    if (v === this.ui.name.val().trim()) {
+                        this.ui.code.validateField('failed', 'Code and name must be different');
                         return false;
                     }
 
@@ -198,10 +203,15 @@ var Controller = Marionette.Object.extend({
                     var v = this.ui.name.val().trim();
 
                     if (v.length > 128) {
-                        $(this.ui.name).validateField('failed', gt.gettext("128 characters max"));
+                        this.ui.name.validateField('failed', gt.gettext("128 characters max"));
                         return false;
-                    } else if (v.length < 3) {
-                        $(this.ui.name).validateField('failed', gt.gettext('3 characters min'));
+                    } else if (v.length < 1) {
+                        this.ui.name.validateField('failed', gt.gettext('1 characters min'));
+                        return false;
+                    }
+
+                    if (v === this.ui.code.val().trim()) {
+                        this.ui.name.validateField('failed', 'Code and name must be different');
                         return false;
                     }
 
@@ -213,12 +223,18 @@ var Controller = Marionette.Object.extend({
 
                     var parentId = 0;
 
-                    if (this.ui.parent.val())
+                    if (this.ui.parent.val()) {
                         parentId = parseInt(this.ui.parent.val());
+                    }
 
-                    if (parentId == 0) {
+                    if (!parentId) {
                         $.alert.error(gt.gettext("The parent must be defined"));
                         valid = false;
+                    }
+
+                    if (this.ui.code.val().trim() === this.ui.name.val().trim()) {
+                        this.ui.code.validateField('failed', 'Code and name must be different');
+                        this.ui.name.validateField('failed', 'Code and name must be different');
                     }
 
                      if (this.ui.code.hasClass('invalid') ||

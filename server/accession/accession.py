@@ -82,6 +82,9 @@ def create_accession(request):
     if not Language.objects.filter(code=language).exists():
         raise SuspiciousOperation(_("The language is not supported"))
 
+    if name == code:
+        raise SuspiciousOperation(_("The code and the name of the accession must be different"))
+
     content_type = get_object_or_404(ContentType, app_label="accession", model="accession")
     dmm = get_object_or_404(DescriptorMetaModel, id=dmm_id, target=content_type)
 

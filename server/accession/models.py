@@ -6,7 +6,9 @@
 # @date 2016-09-01
 # @copyright Copyright (c) 2016 INRA/CIRAD
 # @license MIT (see LICENSE file)
-# @details 
+# @details
+
+import re
 
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
@@ -47,6 +49,12 @@ class Accession(DescribableEntity):
     """
     Accession entity defines a physical or virtual accession.
     """
+
+    # simple name pattern with alphanumeric characters plus _ and - with a least a length of 1
+    NAME_RE = re.compile(r'^[a-zA-Z0-9_-]+$', re.IGNORECASE)
+
+    # default name validator
+    NAME_VALIDATOR = {"type": "string", "minLength": 1, "maxLength": 32, "pattern": "^[a-zA-Z0-9\-\_]+$"}
 
     # non-unique primary name of the accession
     name = models.CharField(max_length=255, db_index=True)
@@ -122,10 +130,10 @@ class AccessionSynonym(Entity):
     """
 
     # name validator, used with content validation, to avoid any whitespace before and after
-    NAME_VALIDATOR = {"type": "string", "minLength": 3, "maxLength": 128, "pattern": r"^\S+.+\S+$"}
+    NAME_VALIDATOR = {"type": "string", "minLength": 1, "maxLength": 128, "pattern": r"^\S+.+\S+$"}
 
     # code validator, used with content validation, to avoid any whitespace before and after
-    CODE_VALIDATOR = {"type": "string", "minLength": 3, "maxLength": 128, "pattern": r"^\S+.+\S+$"}
+    CODE_VALIDATOR = {"type": "string", "minLength": 1, "maxLength": 128, "pattern": r"^\S+.+\S+$"}
 
     # accession synonym type validator
     TYPE_VALIDATOR = {"type:": "string", 'minLength': 9, 'maxLength': 17, "pattern": r"^ACC_SYN:[0-9]{1,9}$"}

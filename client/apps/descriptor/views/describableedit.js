@@ -138,7 +138,7 @@ var View = ItemView.extend({
         }
     },
 
-    onBeforeDestroy: function() {
+    onBeforeDetach: function() {
         // destroy any widgets
         for (var pi = 0; pi < this.descriptorMetaModelLayout.panels.length; ++pi) {
             for (var i = 0; i < this.descriptorMetaModelLayout.panels[pi].descriptor_model.descriptor_model_types.length; ++i) {
