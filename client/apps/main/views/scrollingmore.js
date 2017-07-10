@@ -165,6 +165,7 @@ var View = Marionette.View.extend({
     },
 
     onScroll: function(e) {
+
         if (this.targetView) {
             if (this.scrollEvent) {
                 return;
@@ -174,7 +175,7 @@ var View = Marionette.View.extend({
 
             setTimeout(function(view) {
                 // view destroyed before
-                if (view.isDestroyed) {
+                if (view.isDestroyed()) {
                     return;
                 }
 

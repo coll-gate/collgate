@@ -228,26 +228,9 @@ var View = Marionette.CompositeView.extend({
                     continue;
                 }
 
-                var column = columns[selectColumn.name];
-
                 var order = sort_by_match[1] ? sort_by_match[1] : '+';
                 var pos = sort_by_match[2] ? sort_by_match[2] : 0;
-                var sortField = selectColumn.name;
-
-                if (column.format) {
-                    // @todo how to be generic ? using widget info ??
-                    if (column.field) {
-                        sortField += '->' + column.field;
-                    } else if (column.format.display_fields) {
-                        sortField += "->" + column.format.display_fields
-                    } else if (column.format.type === 'country') {
-                        sortField += "->" + 'name'
-                    } else if (column.format.type === 'city') {
-                        sortField += "->" + 'name'
-                    }
-                } else if (column.field) {
-                    sortField += '->' + column.field;
-                }
+                var sortField = this.getSortField(selectColumn.name);
 
                 sort_by.splice(pos, 0, order + sortField);
 
@@ -1225,7 +1208,7 @@ var View = Marionette.CompositeView.extend({
                     a.append($('<span class="glyphicon glyphicon-check"></span>'));
                     a.prop("displayed", true);
 
-                    a.append('&nbsp;' + this.getOption('columns')[columnName].label);
+                    a.append('&nbsp;' + (this.getOption('columns')[columnName].label || columnName));
                     ul.append(li);
 
                     displayedColumns.add(columnName);
@@ -1238,7 +1221,7 @@ var View = Marionette.CompositeView.extend({
                     var column = columns[columnName];
                     columnsByLabel.push({
                         name: columnName,
-                        label: column.label
+                        label: column.label || columnName
                     });
                 }
 
@@ -1357,7 +1340,7 @@ var View = Marionette.CompositeView.extend({
             th.attr('name', columnName);
             th.addClass('unselectable');
 
-            var labelOrGlyph = $('<span>' + this.getOption('columns')[columnName].label + '</span>');
+            var labelOrGlyph = $('<span>' + (this.getOption('columns')[columnName].label || columnName) + '</span>');
             if (!column.fixed) {
                 labelOrGlyph.prop('draggable', true);
             }
@@ -1424,7 +1407,7 @@ var View = Marionette.CompositeView.extend({
             var view = this;
 
             // refresh only the new column on every row
-            this.onRefreshChildren(true, this.displayedColumns[this.displayedColumns-1]).done(function() {
+            this.onRefreshChildren(true, this.displayedColumns.slice(-1)).done(function() {
                 // save once refresh is done completely
                 if (view.getUserSettingName()) {
                     application.updateUserSetting(
@@ -1437,30 +1420,39 @@ var View = Marionette.CompositeView.extend({
         }
     },
 
+    getSortField: function(columnName) {
+        // not column descriptor simply returns the column name
+        if (!columnName in this.getOption('columns')) {
+            return columnName;
+        }
+
+        var column = this.getOption('columns')[columnName];
+
+        if ("format" in column) {
+            if ("field" in column) {
+                return columnName + "->" + column.field;
+            } else if ("display_fields" in column.format) {
+                return columnName + "->" + column.format.display_fields;
+            } else if (column.query) {
+                return columnName + "->" + 'name';
+            } else {
+                return columnName;
+            }
+        } else if ("field" in column) {
+            return columnName + '->' + column.field;
+        } else {
+            return columnName;
+        }
+    },
+
     onSortColumn: function(e) {
         var el = $(e.target);
         var columnEl = $(e.target).parent().parent();
         var columnName = columnEl.attr('name');
-        var column = this.getOption('columns')[columnName];
-        var sortField = columnName;
+        var sortField = this.getSortField(columnName);
         var order = '+';
         var sorters = this.ui.thead.children('tr').children('th,td').find('div.table-advanced-label span.column-sorter');
         var sortBy = _.clone(this.collection.sort_by) || [];
-
-        if (column.format) {
-            // @todo how to be generic ? using widget info ??
-            if (column.field) {
-                sortField += "->" + column.field;
-            } else if (column.format.display_fields) {
-                sortField += "->" + column.format.display_fields
-            } else if (column.format.type === 'country') {
-                sortField += "->" + 'name'
-            } else if (column.format.type === 'city') {
-                sortField += "->" + 'name'
-            }
-        } else if (column.field) {
-            sortField += '->' + column.field;
-        }
 
         var i = -1;
         for (var j = 0; j < sortBy.length; ++j) {

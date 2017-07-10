@@ -60,6 +60,10 @@ var Layout = Marionette.View.extend({
         }
     },
 
+    onBeforeDetach: function () {
+        this.ui.format_type.selectpicker('destroy');
+    },
+
     changeFormatType: function () {
         var type = this.ui.format_type.val();
 

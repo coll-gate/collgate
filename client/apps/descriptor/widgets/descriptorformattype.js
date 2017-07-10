@@ -126,4 +126,3 @@ DescriptorFormatType.prototype = {
 };
 
 module.exports = DescriptorFormatType;
-

@@ -183,12 +183,12 @@ _.extend(StringType.prototype, DescriptorFormatType.prototype, {
         }
 
         var help = input.parent().siblings('span.help-block');
-        if (help.length == 0) {
+        if (help.length === 0) {
             help = $('<span class="help-block"></span>');
             el.append(help);
         }
 
-        if (type == -1) {
+        if (type === -1) {
             el.addClass('has-error');
             input.addClass('invalid');
 

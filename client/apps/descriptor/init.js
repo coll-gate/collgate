@@ -95,11 +95,12 @@ DescriptorModule.prototype = {
             'entity',
             'enum_single',
             'enum_pair',
-            'enum_ordinal'
+            'enum_ordinal',
+            'descriptor_meta_model'
         ];
 
         for (var i = 0; i < widgets.length; ++i) {
-            var moduleName = widgets[i].replace('_', '').toLowerCase();
+            var moduleName = widgets[i].replace(/_/g, '').toLowerCase();
             this.widgets.registerElement(widgets[i], require('./widgets/' + moduleName));
         }
 

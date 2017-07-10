@@ -43,7 +43,7 @@ var View = Marionette.View.extend({
             var column = columns[columnName];
             columnsByLabel.push({
                 name: columnName,
-                label: column.label
+                label: column.label || columnName
             });
         }
 
@@ -170,11 +170,14 @@ var View = Marionette.View.extend({
             this.widget = application.descriptor.widgets.newElement(column.format.type);
             if (this.widget) {
                 this.widget.create(column.format, this.ui.search_group, false, column.group, column.type);
+                return;
             }
-        } else {
-            var input = $('<input type="text" class="search-value form-control" name="search-value"/>');
-            this.ui.search_group.append(input);
+
+            this.widget = null;
         }
+
+        var input = $('<input type="text" class="search-value form-control" name="search-value"/>');
+        this.ui.search_group.append(input);
     }
 });
 

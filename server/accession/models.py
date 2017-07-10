@@ -13,8 +13,8 @@ import re
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
-from django.utils.translation import ugettext_lazy as _
 from django.db import models
+from django.utils.translation import ugettext_lazy as _
 
 from igdectk.common.models import ChoiceEnum, IntegerChoice
 
@@ -66,13 +66,24 @@ class Accession(DescribableEntity):
     parent = models.ForeignKey(Taxon)
 
     @classmethod
-    def columns(cls):
+    def get_defaults_columns(cls):
         return {
             'parent': {
+                'label': _('Classification'),
                 'field': 'name',
+                'query': False,
                 'format': {
                     'type': 'entity',
                     'model': 'classification.taxon'
+                }
+            },
+            'descriptor_meta_model': {
+                'label': _('Model'),
+                'field': 'name',
+                'query': False,
+                'format': {
+                    'type': 'descriptor_meta_model',
+                    'model': 'accession.accession'
                 }
             }
         }

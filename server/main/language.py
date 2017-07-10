@@ -119,7 +119,7 @@ def get_all_labels_of_language(request, code):
     """
     language = get_object_or_404(Language, code=code)
 
-    label_dict = json.loads(language.label)
+    label_dict = language.label
 
     # complete with missing languages
     for lang, lang_label in InterfaceLanguages.choices():
@@ -146,7 +146,7 @@ def change_language_labels(request, code):
         if lang not in languages_values:
             raise SuspiciousOperation(_("Unsupported language identifier"))
 
-    language.label = json.dumps(labels)
+    language.label = labels
     language.save()
 
     result = {

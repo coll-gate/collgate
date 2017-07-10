@@ -14,6 +14,7 @@ coll-gate medialibrary models.
 import json
 
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.db.models import Q
 from django.utils import translation
@@ -50,8 +51,9 @@ class Media(Entity):
     # file size in bytes
     file_size = models.PositiveIntegerField(default=0)
 
-    # document label (JSON stored dict with multiple languages codes)
-    label = models.TextField(default="{}", blank=False, null=False)
+    # Document label.
+    # It is i18nized used JSON dict with language code as key and label as string value.
+    label = JSONField(default={}, blank=False, null=False)
 
     # general description (JSON stored dict with multiple languages codes)
     description = models.TextField(default="{}", blank=False, null=False)
@@ -89,4 +91,3 @@ class Media(Entity):
     @classmethod
     def make_search_by_name(cls, term):
         return Q(name__istartswith=term) | Q(file_name__istartswith=term)
-

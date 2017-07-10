@@ -1,40 +1,39 @@
 /**
- * @file entity.js
- * @brief Display and manage an entity reference value format of type of descriptor
+ * @file descriptormetamodel.js
+ * @brief Display and manage a meta-model of descriptor reference value format
  * @author Frédéric SCHERMA (INRA UMR1095)
- * @date 2017-01-20
+ * @date 2017-07-10
  * @copyright Copyright (c) 2017 INRA/CIRAD
  * @license MIT (see LICENSE file)
- * @details 
+ * @details
  */
 
 var DescriptorFormatType = require('./descriptorformattype');
-var Marionette = require('backbone.marionette');
 
-var Entity = function() {
+var DescriptorMetaModel = function() {
     DescriptorFormatType.call(this);
 
-    this.name = "entity";
+    this.name = "descriptor_meta_model";
     this.group = "reference";
     this.searchUrl = null
 };
 
-_.extend(Entity.prototype, DescriptorFormatType.prototype, {
+_.extend(DescriptorMetaModel.prototype, DescriptorFormatType.prototype, {
     create: function(format, parent, readOnly) {
         readOnly || (readOnly = false);
 
         if (readOnly) {
-            var input = this._createStdInput(parent, "glyphicon-share");
+            var input = this._createStdInput(parent, "glyphicon-folder-open");
 
             this.parent = parent;
             this.readOnly = true;
             this.el = input;
         } else {
             var select = $('<select style="width: 100%;"></select>');
-            this.group = this._createInputGroup(parent, "glyphicon-share", select);
+            this.group = this._createInputGroup(parent, "glyphicon-folter-open", select);
 
             // init the autocomplete
-            var url = application.baseUrl + (this.searchUrl ? this.searchUrl : (format.model.replace('.', '/') + '/'));
+            var url = application.baseUrl + "descriptor/meta-model/";
             var initials = [];
 
             var container = parent.closest('div.modal-dialog').parent();
@@ -55,8 +54,9 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
                         return {
                             filters: JSON.stringify({
                                 method: 'icontains',
-                                fields: ['name'],
-                                name: params.term
+                                fields: ['name_or_label', 'model'],
+                                name: params.term,
+                                model: format.model
                             }),
                             cursor: params.next
                         };
@@ -129,7 +129,7 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
 
         definesValues = this.isValueDefined(definesValues, defaultValues);
 
-        var url = application.baseUrl + (this.searchUrl ? this.searchUrl : (format.model.replace('.', '/') + '/'));
+        var url = application.baseUrl + "descriptor/meta-model/";
 
         if (this.readOnly) {
             var type = this;
@@ -173,8 +173,9 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
                             return {
                                 filters: JSON.stringify({
                                     method: 'icontains',
-                                    fields: ['name'],
-                                    name: params.term
+                                    fields: ['name_or_label', 'model'],
+                                    name: params.term,
+                                    model: format.model
                                 }),
                                 cursor: params.next
                             };
@@ -259,29 +260,6 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
     }
 });
 
-Entity.DescriptorTypeDetailsView = Marionette.View.extend({
-    className: 'descriptor-type-details-format',
-    template: require('../templates/widgets/entity.html'),
-    // template: "<div></div>",
+// not edition view
 
-    ui: {
-        format_model: '#format_model'
-    },
-
-    initialize: function() {
-        this.listenTo(this.model, 'change', this.render, this);
-    },
-
-    onRender: function() {
-        var format = this.model.get('format');
-        application.descriptor.views.describables.drawSelect(this.ui.format_model, true, false, format.model);
-    },
-
-    getFormat: function() {
-        return {
-            'model': this.ui.format_model.val()
-        }
-    }
-});
-
-module.exports = Entity;
+module.exports = DescriptorMetaModel;

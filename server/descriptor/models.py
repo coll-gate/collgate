@@ -1030,8 +1030,8 @@ class DescriptorPanel(Entity):
     descriptor_model = models.ForeignKey('DescriptorModel', related_name='panels')
 
     # Label of the panel (can be used for a tab, or any dialog title).
-    # It is i18nized used JSON dict with language code as key and label as value (string:string).
-    label = models.TextField(default="{}")
+    # It is i18nized used JSON dict with language code as key and label as string value.
+    label = JSONField(default={})
 
     # Position priority into the display. Lesser is before. Negative value are possibles.
     position = models.IntegerField(default=0)
@@ -1072,6 +1072,7 @@ class DescriptorPanel(Entity):
                 'position': self.position
             }
 
+
     def audit_delete(self, user):
         return {
             'label': self.label
@@ -1079,12 +1080,10 @@ class DescriptorPanel(Entity):
 
     def get_label(self):
         """
-        Get the label for this panel in the current regional.
+        Get the label for this meta model in the current regional.
         """
-        data = json.loads(self.label)
         lang = translation.get_language()
-
-        return data.get(lang, "")
+        return self.label.get(lang, "")
 
     def set_label(self, lang, label):
         """
@@ -1093,9 +1092,7 @@ class DescriptorPanel(Entity):
         :param str label: Localized label
         :note Model instance save() is not called.
         """
-        data = json.loads(self.label)
-        data[lang] = label
-        self.label = json.dumps(data)
+        self.label[lang] = label
 
 
 class JSONBFieldIndexType(ChoiceEnum):
@@ -1128,8 +1125,8 @@ class DescriptorModelType(Entity):
     name = models.CharField(unique=True, max_length=255, db_index=True)
 
     # Label of the type of descriptor.
-    # It is i18nized used JSON dict with language code as key and label as value (string:string).
-    label = models.TextField(default="{}")
+    # It is i18nized used JSON dict with language code as key and label as string value.
+    label = JSONField(default={})
 
     # Relate the descriptor model (one descriptor model can have many descriptor model types)
     descriptor_model = models.ForeignKey('DescriptorModel', related_name='descriptor_model_types')
@@ -1206,12 +1203,10 @@ class DescriptorModelType(Entity):
 
     def get_label(self):
         """
-        Get the label for this panel in the current regional.
+        Get the label for this meta model in the current regional.
         """
-        data = json.loads(self.label)
         lang = translation.get_language()
-
-        return data.get(lang, "")
+        return self.label.get(lang, "")
 
     def set_label(self, lang, label):
         """
@@ -1220,9 +1215,7 @@ class DescriptorModelType(Entity):
         :param str label: Localized label
         :note Model instance save() is not called.
         """
-        data = json.loads(self.label)
-        data[lang] = label
-        self.label = json.dumps(data)
+        self.label[lang] = label
 
     def create_or_drop_index(self, describable, db='default'):
         """
@@ -1453,8 +1446,8 @@ class DescriptorMetaModel(Entity):
     target = models.ForeignKey(ContentType, editable=False, related_name='descriptor_meta_models')
 
     # Label of the meta model of descriptor.
-    # It is i18nized used JSON dict with language code as key and label as value (string:string).
-    label = models.TextField(default="{}")
+    # It is i18nized used JSON dict with language code as key and label as string value.
+    label = JSONField(default={})
 
     # Textual description of the model of descriptor. There is no translation. It is for staff usage.
     description = models.TextField(blank=True, default="")
@@ -1479,10 +1472,8 @@ class DescriptorMetaModel(Entity):
         """
         Get the label for this meta model in the current regional.
         """
-        data = json.loads(self.label)
         lang = translation.get_language()
-
-        return data.get(lang, "")
+        return self.label.get(lang, "")
 
     def set_label(self, lang, label):
         """
@@ -1491,9 +1482,7 @@ class DescriptorMetaModel(Entity):
         :param str label: Localized label
         :note Model instance save() is not called.
         """
-        data = json.loads(self.label)
-        data[lang] = label
-        self.label = json.dumps(data)
+        self.label[lang] = label
 
     def in_usage(self):
         """

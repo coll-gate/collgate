@@ -144,7 +144,8 @@ class CursorQuery(object):
                     select_related.append('#' + f)
             elif f in self.model_fields:
                 if self.model_fields[f][0] == 'FK':
-                    select_related.append(f)
+                    if self.FIELDS_SEP in f:
+                        select_related.append(f)
 
         self.add_select_related(select_related)
         return self
@@ -290,7 +291,8 @@ class CursorQuery(object):
                     select_related.append('#' + f)
             elif f in self.model_fields:
                 if self.model_fields[f][0] == 'FK':
-                    select_related.append(f)
+                    if self.FIELDS_SEP in f:
+                        select_related.append(f)
 
         self.add_select_related(select_related)
         return self
@@ -429,7 +431,8 @@ class CursorQuery(object):
                         select_related.append('#' + f)
                 elif f in self.model_fields:
                     if self.model_fields[f][0] == 'FK':
-                        select_related.append(f)
+                        if self.FIELDS_SEP in f:
+                            select_related.append(f)
 
             # op
             elif filter_type == 'op':

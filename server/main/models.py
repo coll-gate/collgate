@@ -12,6 +12,7 @@ import json
 import re
 import uuid as uuid
 
+from django.contrib.postgres.fields import JSONField
 from django.core.exceptions import SuspiciousOperation
 from django.core.validators import RegexValidator
 from django.db import models
@@ -81,18 +82,16 @@ class Language(models.Model):
     # language code
     code = models.CharField(max_length=5, null=False, blank=False)
 
-    # Label of the language.
-    # It is i18nized used JSON dict with language code as key and label as value (string:string).
-    label = models.TextField(default="{}")
+    # Label of the language
+    # It is i18nized used JSON dict with language code as key and label as string value.
+    label = JSONField(default={})
 
     def get_label(self):
         """
         Get the label for this meta model in the current regional.
         """
-        data = json.loads(self.label)
         lang = translation.get_language()
-
-        return data.get(lang, "")
+        return self.label.get(lang, "")
 
     def set_label(self, lang, label):
         """
@@ -101,9 +100,7 @@ class Language(models.Model):
         :param str label: Localized label
         :note Model instance save() is not called.
         """
-        data = json.loads(self.label)
-        data[lang] = label
-        self.label = json.dumps(data)
+        self.label[lang] = label
 
 
 class EntityStatus(ChoiceEnum):

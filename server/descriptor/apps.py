@@ -68,7 +68,7 @@ class CollGateDescriptor(ApplicationMain):
             descriptorformattype.DescriptorFormatTypeEntity(),
             descriptorformattype.DescriptorFormatTypeEnumSingle(),
             descriptorformattype.DescriptorFormatTypeEnumPair(),
-            descriptorformattype.DescriptorFormatTypeEnumOrdinal(),
+            descriptorformattype.DescriptorFormatTypeEnumOrdinal()
         ]
 
         # and register them

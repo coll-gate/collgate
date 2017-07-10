@@ -23,17 +23,25 @@ var DescriptorsColumnsView = {
 
                 if (options.query) {
                     // make the list of values
-                    var keys = [];
+                    var keys = new Set();
                     var models = [];
                     var cache = application.main.cache.get('descriptors', columnName.replace(/^#/, ''));
+
+                    // @todo for non descriptor...
 
                     // lookup into the global cache
                     for (var j = 0; j < this.collection.models.length; ++j) {
                         var model = this.collection.at(j);
-                        var key = model.get('descriptors')[columnName.replace(/^#/, '')];
+                        var key = null;
                         var value = undefined;
 
-                        if (key != null && key !== "") {
+                        if (columnName.startsWith('#')) {
+                            key = model.get('descriptors')[columnName.slice(1)];
+                        } else {
+                            key = model.get(columnName);
+                        }
+
+                        if (key !== null && key !== "") {
                             value = cache[key];
                         }
 
@@ -43,18 +51,18 @@ var DescriptorsColumnsView = {
 
                             // simply replace the value
                             cell.html(value);
-                        } else if (key != null && key !== "") {
-                            keys.push(key);
+                        } else if (key !== null && key !== "") {
+                            keys.add(key);
                             models.push(model);
                         }
                     }
 
-                    if (keys.length) {
+                    if (keys.size) {
                         var promise = $.ajax({
                             type: "GET",
                             url: application.baseUrl + 'descriptor/descriptor-model-type/' + columnName.replace(/^#/, '') + '/',
                             contentType: 'application/json; charset=utf8',
-                            data: {values: JSON.stringify(keys)},
+                            data: {values: JSON.stringify(Array.from(keys))},
                             columnName: columnName,
                             models: models,
                             view: this
@@ -85,9 +93,9 @@ var DescriptorsColumnsView = {
 
                         promises.push(promise);
                     }
-                } else if (columnName.startsWith('#') && "format" in options && options.format != undefined) {
+                } else if (columnName.startsWith('#') && "format" in options && options.format) {
                     var dft = application.descriptor.widgets.getElement(options.format.type);
-                    if (dft && dft.format != undefined) {
+                    if (dft && dft.format) {
                         for (var j = 0; j < this.collection.models.length; ++j) {
                             var model = this.collection.at(j);
                             var childView = this.children.findByModel(model);
@@ -128,17 +136,25 @@ var DescriptorsColumnsView = {
 
                 if (options.query) {
                     // make the list of values
-                    var keys = [];
+                    var keys = new Set();
                     var models = [];
                     var cache = application.main.cache.get('descriptors', columnName.replace(/^#/, ''));
+
+                    // @todo for non descriptor...
 
                     // lookup into the global cache
                     for (var j = 0; j < lastModels.length; ++j) {
                         var model = lastModels[j];
-                        var key = model.get('descriptors')[columnName.replace(/^#/, '')];
+                        var key = null;
                         var value = undefined;
 
-                        if (key != null && key !== "") {
+                        if (columnName.startsWith('#')) {
+                            key = model.get('descriptors')[columnName.slice(1)];
+                        } else {
+                            key = model.get(columnName);
+                        }
+
+                        if (key !== null && key !== "") {
                             value = cache[key];
                         }
 
@@ -148,18 +164,18 @@ var DescriptorsColumnsView = {
 
                             // simply replace the value
                             cell.html(value);
-                        } else if (key != null && key !== "") {
-                            keys.push(key);
+                        } else if (key !== null && key !== "") {
+                            keys.add(key);
                             models.push(model);
                         }
                     }
 
-                    if (keys.length) {
+                    if (keys.size) {
                         var promise = $.ajax({
                             type: "GET",
                             url: application.baseUrl + 'descriptor/descriptor-model-type/' + columnName.replace(/^#/, '') + '/',
                             contentType: 'application/json; charset=utf8',
-                            data: {values: JSON.stringify(keys)},
+                            data: {values: JSON.stringify(Array.from(keys))},
                             columnName: columnName,
                             models: models,
                             view: this
@@ -190,9 +206,9 @@ var DescriptorsColumnsView = {
 
                         promises.push(promise);
                     }
-                } else if (columnName.startsWith('#') && "format" in options && options.format != undefined) {
+                } else if (columnName.startsWith('#') && "format" in options && options.format) {
                     var dft = application.descriptor.widgets.getElement(options.format.type);
-                    if (dft && dft.format != undefined) {
+                    if (dft && dft.format) {
                         for (var j = 0; j < lastModels.length; ++j) {
                             var model = lastModels[j];
                             var childView = this.children.findByModel(model);

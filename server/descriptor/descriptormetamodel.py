@@ -364,21 +364,34 @@ def get_descriptor_meta_model_layout(request, dmm_id):
     return HttpResponseRest(request, results)
 
 
-@RestDescriptorMetaModelSearch.def_auth_request(Method.GET, Format.JSON, ('filters',), staff=True)
+@RestDescriptorMetaModelSearch.def_auth_request(Method.GET, Format.JSON, ('filters',))
 def search_descriptor_meta_models(request):
     """
     Filters the meta-models of descriptors by name.
-    @todo could needs cursor and limit
     """
     filters = json.loads(request.GET['filters'])
-    page = int_arg(request.GET.get('page', 1))
 
     meta_models = None
 
-    if filters['method'] == 'ieq' and 'name' in filters['fields']:
-        meta_models = DescriptorMetaModel.objects.filter(name__iexact=filters['name'])
-    elif filters['method'] == 'icontains' and 'name' in filters['fields']:
-        meta_models = DescriptorMetaModel.objects.filter(name__icontains=filters['name'])
+    if 'name' in filters['fields']:
+        if filters['method'] == 'ieq':
+            meta_models = DescriptorMetaModel.objects.filter(name__iexact=filters['name'])
+        elif filters['method'] == 'icontains':
+            meta_models = DescriptorMetaModel.objects.filter(name__icontains=filters['name'])
+    elif 'name_or_label' in filters['fields']:
+        lang = translation.get_language()
+
+        if filters['method'] == 'ieq':
+            q_params = {"label__%s__iexact" % lang: filters['name']}
+            meta_models = DescriptorMetaModel.objects.filter(Q(name__iexact=filters['name']) | Q(**q_params))
+        elif filters['method'] == 'icontains':
+            q_params = {"label__%s__icontains" % lang: filters['name']}
+            meta_models = DescriptorMetaModel.objects.filter(Q(name__icontains=filters['name']) | Q(**q_params))
+
+    if 'model' in filters['fields'] and 'model' in filters:
+        app_name, model = filters['model'].split('.')
+        content_type = get_object_or_404(ContentType, app_label=app_name, model=model)
+        meta_models = meta_models.filter(target=content_type)
 
     meta_models_list = []
 
@@ -393,7 +406,7 @@ def search_descriptor_meta_models(request):
 
     response = {
         'items': meta_models_list,
-        'page': page
+        'page': 1
     }
 
     return HttpResponseRest(request, response)
@@ -674,7 +687,7 @@ def get_all_labels_of_descriptor_meta_model(request, dmm_id):
     """
     dmm = get_object_or_404(DescriptorMetaModel, id=int(dmm_id))
 
-    label_dict = json.loads(dmm.label)
+    label_dict = dmm.label
 
     # complete with missing languages
     for lang, lang_label in InterfaceLanguages.choices():
@@ -710,7 +723,7 @@ def change_all_labels_of_descriptor_meta_model(request, dmm_id):
         if lang not in languages_values:
             raise SuspiciousOperation(_("Unsupported language identifier"))
 
-    dmm.label = json.dumps(labels)
+    dmm.label = labels
 
     dmm.update_field('label')
     dmm.save()
@@ -729,7 +742,7 @@ def get_all_labels_of_descriptor_meta_model(request, dmm_id, pan_id):
     """
     dp = get_object_or_404(DescriptorPanel, id=int(pan_id), descriptor_meta_model=int(dmm_id))
 
-    label_dict = json.loads(dp.label)
+    label_dict = dp.label
 
     # complete with missing languages
     for lang, lang_label in InterfaceLanguages.choices():
@@ -766,7 +779,7 @@ def change_all_labels_of_descriptor_panel(request, dmm_id, pan_id):
         if lang not in languages_values:
             raise SuspiciousOperation(_("Unsupported language identifier"))
 
-    dp.label = json.dumps(labels)
+    dp.label = labels
 
     dp.update_field('label')
     dp.save()

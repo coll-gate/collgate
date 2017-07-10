@@ -555,7 +555,7 @@ def get_all_labels_of_descriptor_model_type(request, des_id, typ_id):
     """
     dmt = get_object_or_404(DescriptorModelType, id=int(typ_id), descriptor_model_id=int(des_id))
 
-    label_dict = json.loads(dmt.label)
+    label_dict = dmt.label
 
     # complete with missing languages
     for lang, lang_label in InterfaceLanguages.choices():
@@ -592,7 +592,7 @@ def change_all_labels_of_descriptor_model_type(request, des_id, typ_id):
         if lang not in languages_values:
             raise SuspiciousOperation(_("Unsupported language identifier"))
 
-    dmt.label = json.dumps(labels)
+    dmt.label = labels
 
     dmt.update_field('label')
     dmt.save()

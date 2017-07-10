@@ -11,11 +11,15 @@
 import json
 
 from django.contrib.contenttypes.models import ContentType
+from django.core.cache import cache
 from django.shortcuts import get_object_or_404
 
 from descriptor.descriptorformattype import DescriptorFormatTypeManager
+
 from igdectk.rest import Format, Method
 from igdectk.rest.response import HttpResponseRest
+from igdectk.common.cache import named_cache_page
+
 from .descriptor import RestDescriptor
 from .models import DescriptorMetaModel, DescriptorModelType
 
@@ -25,8 +29,39 @@ class RestDescriptorColumnsForContentType(RestDescriptor):
     name = 'columns'
 
 
+# @todo how/where to invalidate
+def invalidate_cache_for_describable(model):
+    model_name = "%s.%s" % (model._meta.app_label, model._meta.model_name)
+
+    # VIEW cache
+    cache_key = 'get_columns_name_for_describable_content_type' + ':' + model_name
+
+    if cache.get(cache_key):
+        cache.set(cache_key, None, 0)
+
+    # API cache
+    cache_key = 'descriptor.get_description' + ':' + model_name
+
+    if cache.get(cache_key):
+        cache.set(cache_key, None, 0)
+
+
 @RestDescriptorColumnsForContentType.def_auth_request(Method.GET, Format.JSON)
+# @named_cache_page(60*60*24)
 def get_columns_name_for_describable_content_type(request, content_type_name):
+    """
+    According to a specified model, retrieve any meta-models of descriptors, and
+    from them, returns any information about theirs related type of models of descriptors.
+    Additionally, if the model offers a get_default_columns method, then the returned object will contains
+    information returns by this method for the model standard fields.
+
+    For example, a model offering a name field, information about this columns can be defined like a descriptor
+    into a dict.
+
+    :param request:
+    :param content_type_name: Module.model content type name.
+    :return: An array of dict defining all available columns related to this model.
+    """
     app_label, model = content_type_name.split('.')
     content_type = get_object_or_404(ContentType, app_label=app_label, model=model)
 
@@ -36,6 +71,8 @@ def get_columns_name_for_describable_content_type(request, content_type_name):
 
     columns = {}
 
+    # add descriptor model type information for each descriptors attached to any meta-model related to the
+    # entity model
     for dmt in dmts:
         descriptor_format = json.loads(dmt.descriptor_type.format)
         query = True if DescriptorFormatTypeManager.get(descriptor_format).related_model(descriptor_format) else False
@@ -48,10 +85,21 @@ def get_columns_name_for_describable_content_type(request, content_type_name):
             'format': descriptor_format
         }
 
-    # add standard columns
+    # and add standard columns information if the models defines a get_default_columns method
     model_class = content_type.model_class()
-    if hasattr(model_class, 'columns'):
-        columns.update(model_class.columns())
+    if hasattr(model_class, 'get_defaults_columns'):
+        for name, column in model_class.get_defaults_columns().items():
+            query = False
+
+            descriptor_format = column.get('format')
+            # if descriptor_format and DescriptorFormatTypeManager.get(descriptor_format).related_model(descriptor_format):
+
+            columns[name] = {
+                'type': column.get('type'),
+                'label': column.get('label', name),
+                'query': query,
+                'format': descriptor_format
+            }
 
     results = {
         'cacheable': True,
@@ -61,8 +109,16 @@ def get_columns_name_for_describable_content_type(request, content_type_name):
     return HttpResponseRest(request, results)
 
 
-# @todo could be cached, but need invalidation from change on descriptor model chain...
 def get_description(model):
+    """
+    Returns information about columns for a specified model. All columns of any related meta-models.
+    """
+    cache_key = 'descriptor.get_description:%s.%s' % (model._meta.app_label, model._meta.model_name)
+
+    # results = cache.get(cache_key)
+    # if results:
+    #     return results
+
     content_type = get_object_or_404(ContentType, app_label=model._meta.app_label, model=model._meta.model_name)
 
     dmms = DescriptorMetaModel.objects.filter(target=content_type).values_list(
@@ -76,11 +132,13 @@ def get_description(model):
         dft = DescriptorFormatTypeManager.get(descriptor_format)
 
         results[dmt.name] = {
-            'model': dmt,
             'name': dmt.name,
+            'model': dmt,
             'index': dmt.index,
             'handler': dft,
             'format': descriptor_format
         }
+
+    cache.set(cache_key, results, 60*60*24)
 
     return results

@@ -32,4 +32,3 @@ DescriptorFormatTypeManager.prototype = {
 };
 
 module.exports = DescriptorFormatTypeManager;
-

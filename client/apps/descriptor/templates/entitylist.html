@@ -30,9 +30,9 @@
                     <% } else { %>
                         <span class="column-sorter glyphicon glyphicon-sort column-action action"></span>
                         <% if (column.fixed) { %>
-                            <span class="column-label"><%= column.label %></span>
+                            <span class="column-label"><%= column.label || column.name %></span>
                         <% } else { %>
-                            <span class="column-label" draggable="true"><%= column.label %></span>
+                            <span class="column-label" draggable="true"><%= column.label || column.name %></span>
                         <% } %>
                     <% } %>
                     </th>
