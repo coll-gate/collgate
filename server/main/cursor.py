@@ -289,9 +289,12 @@ class CursorQuery(object):
                 # only if sub-value of descriptor
                 if self.FIELDS_SEP in f:
                     select_related.append('#' + f)
-            elif f in self.model_fields:
-                if self.model_fields[f][0] == 'FK':
-                    if self.FIELDS_SEP in f:
+            else:
+                if self.FIELDS_SEP in f:
+                    ff = f.split(self.FIELDS_SEP)
+
+                    if ff[0] in self.model_fields:
+                        # if self.model_fields[f][0] == 'FK':
                         select_related.append(f)
 
         self.add_select_related(select_related)
@@ -337,6 +340,8 @@ class CursorQuery(object):
                 if self.FIELDS_SEP in f:
                     ff = f.split(self.FIELDS_SEP)
                     self.query_order_by.append('"%s" %s' % ("_".join(ff), order))
+                elif self.model_fields[f][0] == 'FK':
+                    self.query_order_by.append('"%s"."%s_id" %s' % (db_table, f, order))
                 else:
                     self.query_order_by.append('"%s"."%s" %s' % (db_table, f, order))
 
@@ -382,6 +387,8 @@ class CursorQuery(object):
                         if self.FIELDS_SEP in f:
                             ff = f.split(self.FIELDS_SEP)
                             self._prev_cursor.append(getattr(first_entity, "_".join(ff)))
+                        elif self.model_fields[f][0] == 'FK':
+                            self._prev_cursor.append(getattr(first_entity, f + '_id'))
                         else:
                             self._prev_cursor.append(getattr(first_entity, f))
 
@@ -397,6 +404,8 @@ class CursorQuery(object):
                         if self.FIELDS_SEP in f:
                             ff = f.split(self.FIELDS_SEP)
                             self._next_cursor.append(getattr(last_entity, "_".join(ff)))
+                        elif self.model_fields[f][0] == 'FK':
+                            self._next_cursor.append(getattr(last_entity, f + '_id'))
                         else:
                             self._next_cursor.append(getattr(last_entity, f))
 

@@ -94,6 +94,7 @@ def get_columns_name_for_describable_content_type(request, content_type_name):
             columns[name] = {
                 'group': 0,
                 'type': 0,
+                'field': column.get('field', None),
                 'label': column.get('label', name),
                 'query': column.get('query', False),
                 'format': descriptor_format

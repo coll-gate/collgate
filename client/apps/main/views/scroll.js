@@ -1429,16 +1429,14 @@ var View = Marionette.CompositeView.extend({
         var column = this.getOption('columns')[columnName];
 
         if ("format" in column) {
-            if ("field" in column) {
+            if ("field" in column && column.field) {
                 return columnName + "->" + column.field;
-            } else if ("display_fields" in column.format) {
+            } else if ("display_fields" in column.format && column.format.display_fields) {
                 return columnName + "->" + column.format.display_fields;
-            } else if (column.query) {
-                return columnName + "->" + 'name';
             } else {
                 return columnName;
             }
-        } else if ("field" in column) {
+        } else if ("field" in column && column.field) {
             return columnName + '->' + column.field;
         } else {
             return columnName;

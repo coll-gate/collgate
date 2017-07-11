@@ -71,7 +71,7 @@ class Accession(DescribableEntity):
             'parent': {
                 'label': _('Classification'),
                 'field': 'name',
-                'query': False,
+                'query': False,   # could be later, for the moment LEFT JOIN into the queryset
                 'format': {
                     'type': 'entity',
                     'model': 'classification.taxon'

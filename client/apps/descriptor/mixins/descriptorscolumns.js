@@ -72,118 +72,13 @@ var DescriptorsColumnsView = {
                 }
             }
         }
-/*
-        if (full) {
-            // one query by list of value
-            for (var i = 0; i < columns.length; ++i) {
-                var columnName = columns[i];
-                var options = this.getOption('columns')[columnName];
-
-                if (options.query) {
-                    if (columnName.startsWith('#')) {
-                        var promise = this._fetchDescriptorsValue(this.collection.models, columnName);
-                        if (promise) {
-                            promises.push(promise);
-                        }
-                    } else {
-
-                    }
-                } else if ("format" in options && options.format) {
-                    var dft = application.descriptor.widgets.getElement(options.format.type);
-                    if (dft && dft.format) {
-                        if (columnName.startsWith('#')) {
-                            for (var j = 0; j < this.collection.models.length; ++j) {
-                                var model = this.collection.at(j);
-                                var childView = this.children.findByModel(model);
-                                var value = model.get('descriptors')[columnName.replace(/^#/, '')];
-                                var cell = childView.$el.find('td[name="' + columnName + '"]');
-
-                                // simply replace the value
-                                cell.html(dft.format(value));
-                            }
-                        } else {
-
-                        }
-                    }
-                } else {
-                    var cellClassName = "";
-                    if (typeof(options.event) === "string") {
-                        cellClassName = "action " + options.event;
-                    }
-
-                    for (var j = 0; j < this.collection.models.length; ++j) {
-                        var model = this.collection.at(j);
-                        var childView = this.children.findByModel(model);
-                        var cell = childView.$el.find('td[name="' + columnName + '"]');
-
-                        if (options.custom) {
-                            childView[options.custom](cell);
-                        }
-
-                        cell.addClass(cellClassName)
-                    }
-                }
-            }
-        } else {
-            var lastModels = this.getLastModels();
-
-            // one query by list of value
-            for (var i = 0; i < columns.length; ++i) {
-                // make the list of values
-                var columnName = columns[i];
-                var options = this.getOption('columns')[columnName];
-
-                if (options.query) {
-                    if (columnName.startsWith('#')) {
-                        var promise = this._fetchDescriptorsValue(lastModels, columnName);
-                        if (promise) {
-                            promises.push(promise);
-                        }
-                    } else {
-
-                    }
-                } else if ("format" in options && options.format) {
-                    var dft = application.descriptor.widgets.getElement(options.format.type);
-                    if (dft && dft.format) {
-                        if (columnName.startsWith('#')) {
-                            for (var j = 0; j < lastModels.length; ++j) {
-                                var model = lastModels[j];
-                                var childView = this.children.findByModel(model);
-                                var value = model.get('descriptors')[columnName.replace(/^#/, '')];
-                                var cell = childView.$el.find('td[name="' + columnName + '"]');
-
-                                // simply replace the value
-                                cell.html(dft.format(value));
-                            }
-                        } else {
-
-                        }
-                    }
-                } else {
-                    var cellClassName = "";
-                    if (typeof(options.event) === "string") {
-                        cellClassName = "action " + options.event;
-                    }
-
-                    for (var j = 0; j < lastModels.length; ++j) {
-                        var model = lastModels[j];
-                        var childView = this.children.findByModel(model);
-                        var cell = childView.$el.find('td[name="' + columnName + '"]');
-
-                        if (options.custom) {
-                            childView[options.custom](cell);
-                        }
-
-                        cell.addClass(cellClassName)
-                    }
-                }
-            }
-        }*/
 
         var view = this;
 
         // return the promise
         return $.when.apply($, promises).done(function () {
+            view.updateColumnsWidth();
+        }).fail(function() {
             view.updateColumnsWidth();
         });
     },
@@ -201,17 +96,17 @@ var DescriptorsColumnsView = {
             var key = model.get('descriptors')[columnName.slice(1)];
             var value = undefined;
 
-            if (key !== null && key !== "") {
+            if (key !== null && key !== undefined && key !== "") {
                 value = cache[key];
             }
 
-            if (value != undefined) {
+            if (value !== undefined) {
                 var childView = this.children.findByModel(model);
                 var cell = childView.$el.find('td[name="' + columnName + '"]');
 
                 // simply replace the value
                 cell.html(value);
-            } else if (key !== null && key !== "") {
+            } else if (key !== null && key !== undefined && key !== "") {
                 keys.add(key);
                 models.push(model);
             }
@@ -249,6 +144,20 @@ var DescriptorsColumnsView = {
                 }
 
                 session.logger.debug("Cache miss for descriptor " + this.columnName.replace(/^#/, '') + ".");
+            }).fail(function () {
+                var message = gt.gettext("Error");
+
+                for (var j = 0; j < this.models.length; ++j) {
+                    var model = this.models[j];
+                    var childView = this.view.children.findByModel(model);
+                    var key = model.get('descriptors')[this.columnName.replace(/^#/, '')];
+
+                    var cell = childView.$el.find('td[name="' + this.columnName + '"]');
+                    if (key !== undefined) {
+                        var span = $('<span class="label label-danger">' + message + '</span>');
+                        cell.append(span)
+                    }
+                }
             });
 
             return promise;
@@ -270,17 +179,17 @@ var DescriptorsColumnsView = {
             var key = model.get(columnName);
             var value = undefined;
 
-            if (key !== null && key !== "") {
+            if (key !== null && key !== undefined && key !== "") {
                 value = cache[key];
             }
 
-            if (value != undefined) {
+            if (value !== undefined) {
                 var childView = this.children.findByModel(model);
                 var cell = childView.$el.find('td[name="' + columnName + '"]');
 
                 // simply replace the value
                 cell.html(value);
-            } else if (key !== null && key !== "") {
+            } else if (key !== null && key !== undefined && key !== "") {
                 keys.add(key);
                 models.push(model);
             }
@@ -291,7 +200,10 @@ var DescriptorsColumnsView = {
         if (options.format.type === "descriptor_meta_model") {
             url = "descriptor/meta-model/";
         } else if (options.format.type === "entity") {
-            url = options.format.model.replace('.', '/');
+            url = "main/entity/" + options.format.model + '/';
+        } else {
+            // unknown type
+            return null;
         }
 
         if (keys.size) {
@@ -326,6 +238,20 @@ var DescriptorsColumnsView = {
                 }
 
                 session.logger.debug("Cache miss for column " + this.columnName + ".");
+            }).fail(function () {
+                var message = gt.gettext("Error");
+
+                for (var j = 0; j < this.models.length; ++j) {
+                    var model = this.models[j];
+                    var childView = this.view.children.findByModel(model);
+                    var key = model.get(this.columnName);
+
+                    var cell = childView.$el.find('td[name="' + this.columnName + '"]');
+                    if (key !== undefined) {
+                        var span = $('<span class="label label-danger">' + message + '</span>');
+                        cell.append(span)
+                    }
+                }
             });
 
             return promise;
