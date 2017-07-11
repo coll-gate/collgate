@@ -89,15 +89,13 @@ def get_columns_name_for_describable_content_type(request, content_type_name):
     model_class = content_type.model_class()
     if hasattr(model_class, 'get_defaults_columns'):
         for name, column in model_class.get_defaults_columns().items():
-            query = False
-
             descriptor_format = column.get('format')
-            # if descriptor_format and DescriptorFormatTypeManager.get(descriptor_format).related_model(descriptor_format):
 
             columns[name] = {
-                'type': column.get('type'),
+                'group': 0,
+                'type': 0,
                 'label': column.get('label', name),
-                'query': query,
+                'query': column.get('query', False),
                 'format': descriptor_format
             }
 

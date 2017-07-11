@@ -40,7 +40,7 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
                 this.autocomplete = true;
 
                 var select = $('<select style="width: 100%;"></select>');
-                this.group = this._createInputGroup(parent, "glyphicon-list", select);
+                this.groupEl = this._createInputGroup(parent, "glyphicon-list", select);
 
                 // init the autocomplete
                 var url = application.baseUrl + 'descriptor/group/' + descriptorTypeGroup + '/type/' + descriptorTypeId + '/';
@@ -48,7 +48,7 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
 
                 var container = parent.closest('div.modal-dialog').parent();
                 if (container.length === 0) {
-                    container = this.group;  // parent.closest('div.panel');
+                    container = this.groupEl;  // parent.closest('div.panel');
                 }
 
                 var params = {
@@ -104,7 +104,7 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
                 this.autocomplete = false;
 
                 var select = $('<select data-width="100%"></select>');
-                this.group = this._createInputGroup(parent, "glyphicon-list", select);
+                this.groupEl = this._createInputGroup(parent, "glyphicon-list", select);
 
                 select.selectpicker({container: 'body', style: 'btn-default'});
 
@@ -160,7 +160,7 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
                 } else {
                     this.el.selectpicker('destroy');
                 }
-                this.group.remove();
+                this.groupEl.remove();
             }
         }
     },
@@ -221,7 +221,7 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
 
                     var container = this.parent.closest('div.modal-dialog').parent();
                     if (container.length === 0) {
-                        container = this.group;  // parent.closest('div.panel');
+                        container = this.groupEl;  // parent.closest('div.panel');
                     }
 
                     var params = {

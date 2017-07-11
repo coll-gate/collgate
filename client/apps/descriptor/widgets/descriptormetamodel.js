@@ -30,7 +30,7 @@ _.extend(DescriptorMetaModel.prototype, DescriptorFormatType.prototype, {
             this.el = input;
         } else {
             var select = $('<select style="width: 100%;"></select>');
-            this.group = this._createInputGroup(parent, "glyphicon-folter-open", select);
+            this.groupEl = this._createInputGroup(parent, "glyphicon-folter-open", select);
 
             // init the autocomplete
             var url = application.baseUrl + "descriptor/meta-model/";
@@ -38,7 +38,7 @@ _.extend(DescriptorMetaModel.prototype, DescriptorFormatType.prototype, {
 
             var container = parent.closest('div.modal-dialog').parent();
             if (container.length === 0) {
-                container = this.group;  // parent.closest('div.panel');
+                container = this.groupEl;  // parent.closest('div.panel');
             }
 
             var params = {
@@ -105,7 +105,7 @@ _.extend(DescriptorMetaModel.prototype, DescriptorFormatType.prototype, {
                 this.el.parent().remove();
             } else {
                 this.el.select2('destroy');
-                this.group.remove();
+                this.groupEl.remove();
             }
         }
     },
@@ -162,7 +162,7 @@ _.extend(DescriptorMetaModel.prototype, DescriptorFormatType.prototype, {
 
                 var params = {
                     data: initials,
-                    dropdownParent: this.group, // container,
+                    dropdownParent: container,
                     ajax: {
                         url: url + 'search/',
                         dataType: 'json',

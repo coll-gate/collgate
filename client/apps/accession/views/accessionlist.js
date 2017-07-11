@@ -39,7 +39,11 @@ var View = ScrollView.extend({
             custom: 'parentCell',
             field: 'name'
         },
-        'descriptor_meta_model': {label: gt.gettext('Model'), width: 'auto', minWidth: true}
+        'descriptor_meta_model': {
+            label: gt.gettext('Model'),
+            width: 'auto',
+            minWidth: true
+        }
     },
 
     templateContext: function () {

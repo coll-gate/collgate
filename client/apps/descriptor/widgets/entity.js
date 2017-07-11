@@ -31,7 +31,7 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
             this.el = input;
         } else {
             var select = $('<select style="width: 100%;"></select>');
-            this.group = this._createInputGroup(parent, "glyphicon-share", select);
+            this.groupEl = this._createInputGroup(parent, "glyphicon-share", select);
 
             // init the autocomplete
             var url = application.baseUrl + (this.searchUrl ? this.searchUrl : (format.model.replace('.', '/') + '/'));
@@ -39,7 +39,7 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
 
             var container = parent.closest('div.modal-dialog').parent();
             if (container.length === 0) {
-                container = this.group;  // parent.closest('div.panel');
+                container = this.groupEl;  // parent.closest('div.panel');
             }
 
             var params = {
@@ -105,7 +105,7 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
                 this.el.parent().remove();
             } else {
                 this.el.select2('destroy');
-                this.group.remove();
+                this.groupEl.remove();
             }
         }
     },
@@ -162,7 +162,7 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
 
                 var params = {
                     data: initials,
-                    dropdownParent: this.group, // container,
+                    dropdownParent: container,
                     ajax: {
                         url: url + 'search/',
                         dataType: 'json',
@@ -262,7 +262,6 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
 Entity.DescriptorTypeDetailsView = Marionette.View.extend({
     className: 'descriptor-type-details-format',
     template: require('../templates/widgets/entity.html'),
-    // template: "<div></div>",
 
     ui: {
         format_model: '#format_model'

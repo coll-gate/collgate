@@ -32,7 +32,7 @@ _.extend(CountryType.prototype, DescriptorFormatType.prototype, {
         } else {
             var select = $('<select style="width: 100%;"></select>');
             parent.append(select);
-            this.group = this._createInputGroup(parent, "glyphicon-map-marker", select);
+            this.groupEl = this._createInputGroup(parent, "glyphicon-map-marker", select);
 
             // init the autocomplete
             var url = application.baseUrl + 'geolocation/country/search';
@@ -40,7 +40,7 @@ _.extend(CountryType.prototype, DescriptorFormatType.prototype, {
 
             var container = parent.closest('div.modal-dialog').parent();
             if (container.length === 0) {
-                container = this.group;  // parent.closest('div.panel');
+                container = this.groupEl;  // parent.closest('div.panel');
             }
 
             var params = {
@@ -114,7 +114,7 @@ _.extend(CountryType.prototype, DescriptorFormatType.prototype, {
                 this.el.parent().remove();
             } else {
                 this.el.select2('destroy');
-                this.group.remove();
+                this.groupEl.remove();
             }
         }
     },
@@ -177,7 +177,7 @@ _.extend(CountryType.prototype, DescriptorFormatType.prototype, {
 
                 var container = this.parent.closest('div.modal-dialog').parent();
                 if (container.length === 0) {
-                    container = this.group;  // parent.closest('div.panel');
+                    container = this.groupEl;  // parent.closest('div.panel');
                 }
 
                 var params = {

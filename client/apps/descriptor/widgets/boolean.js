@@ -61,7 +61,7 @@ _.extend(BooleanType.prototype, DescriptorFormatType.prototype, {
                 this.el.parent().remove();
             } else {
                 this.el.selectpicker('destroy');
-                this.group.remove();
+                this.groupEl.remove();
             }
         }
     },

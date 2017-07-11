@@ -80,7 +80,7 @@ class Accession(DescribableEntity):
             'descriptor_meta_model': {
                 'label': _('Model'),
                 'field': 'name',
-                'query': False,
+                'query': True,
                 'format': {
                     'type': 'descriptor_meta_model',
                     'model': 'accession.accession'

@@ -1,16 +1,13 @@
 # -*- coding: utf-8; -*-
 #
 # @file descriptormetamodel.py
-# @brief 
+# @brief coll-gate descriptor module, descriptor meta-model
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2016-09-01
 # @copyright Copyright (c) 2016 INRA/CIRAD
 # @license MIT (see LICENSE file)
 # @details 
 
-"""
-coll-gate descriptor module, descriptor meta-model
-"""
 import json
 
 from django.contrib.contenttypes.models import ContentType
@@ -33,6 +30,11 @@ from .models import DescriptorModel, DescriptorPanel, DescriptorMetaModel, Descr
 class RestDescriptorMetaModel(RestDescriptor):
     regex = r'^meta-model/$'
     suffix = 'descriptor-meta-model'
+
+
+class RestDescriptorMetaModelValues(RestDescriptorMetaModel):
+    regex = r'^values/$'
+    suffix = 'values'
 
 
 class RestDescriptorMetaModelForDescribable(RestDescriptorMetaModel):
@@ -171,6 +173,26 @@ def create_descriptor_meta_model(request):
     }
 
     return HttpResponseRest(request, result)
+
+
+@RestDescriptorMetaModelValues.def_auth_request(Method.GET, Format.JSON, parameters=('values',))
+def get_descriptor_meta_model_values(request):
+    # json array
+    values = json.loads(request.GET['values'])
+
+    dmms = DescriptorMetaModel.objects.filter(id__in=values)
+
+    items = {}
+
+    for dmm in dmms:
+        items[dmm.id] = dmm.get_label()
+
+    results = {
+        'cacheable': True,
+        'items': items
+    }
+
+    return HttpResponseRest(request, results)
 
 
 @RestDescriptorMetaModelForDescribable.def_auth_request(Method.GET, Format.JSON)

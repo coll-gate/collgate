@@ -6,9 +6,10 @@
 # @date 2016-09-01
 # @copyright Copyright (c) 2016 INRA/CIRAD
 # @license MIT (see LICENSE file)
-# @details 
+# @details
 
-import packaging
+# import re
+from packaging import version as pkg_version
 
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
@@ -48,6 +49,12 @@ class RestProfileSettings(RestProfile):
 class RestProfilePing(RestProfile):
     regex = r'^ping/$'
     name = 'ping'
+
+
+# def compare_version(version1, version2):
+#     def normalize(v):
+#         return [int(x) for x in re.sub(r'(\.0+)*$', '', v).split(".")]
+#     return (normalize(version1) > normalize(version2)) - (normalize(version1) < normalize(version2))
 
 
 @RestProfileSignIn.def_request(Method.POST, Format.HTML)
@@ -175,11 +182,11 @@ def update_self_settings(request):
     setting = request.data['setting']
 
     try:
-        version = packaging.version.parse(request.data['version'])
+        version = pkg_version.parse(request.data['version'])
     except ValueError:
         raise ValueError('Invalid version number format')
 
-    if version < packaging.version.parse('0.1'):
+    if version < pkg_version.parse('0.1'):
         raise ValueError('Minimal version number must be 0.1')
 
     current_settings = json.loads(profile.settings)

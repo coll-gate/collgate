@@ -8,8 +8,6 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
-
 // style
 require('./css/descriptor.css');
 
@@ -103,6 +101,15 @@ DescriptorModule.prototype = {
             var moduleName = widgets[i].replace(/_/g, '').toLowerCase();
             this.widgets.registerElement(widgets[i], require('./widgets/' + moduleName));
         }
+
+        //
+        // Cache
+        //
+
+        app.main.cache.register('descriptors');
+        app.main.cache.register('descriptor_meta_model');
+        app.main.cache.register('entity');
+
 
         //
         // routers

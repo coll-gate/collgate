@@ -31,7 +31,7 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
         } else {
             var select = $('<select style="width: 100%;"></select>');
             parent.append(select);
-            this.group = this._createInputGroup(parent, "glyphicon-map-marker", select);
+            this.groupEl = this._createInputGroup(parent, "glyphicon-map-marker", select);
 
             // init the autocomplete
             var url = application.baseUrl + 'geolocation/';
@@ -39,7 +39,7 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
 
             var container = parent.closest('div.modal-dialog').parent();
             if (container.length === 0) {
-                container = this.group;  // parent.closest('div.panel');
+                container = this.groupEl;  // parent.closest('div.panel');
             }
 
             var default_option = null;
@@ -315,7 +315,7 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
                 this.el.parent().remove();
             } else {
                 this.el.select2('destroy');
-                this.group.remove();
+                this.groupEl.remove();
             }
         }
     },
@@ -389,7 +389,7 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
 
                 var container = this.parent.closest('div.modal-dialog').parent();
                 if (container.length === 0) {
-                    container = this.group;  // parent.closest('div.panel');
+                    container = this.groupEl;  // parent.closest('div.panel');
                 }
 
                 var default_option = null;
@@ -397,7 +397,7 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
 
                 // Change display for the special option "Extend search"
                 var formatOption = function (option) {
-                    if (option.id == 'more') {
+                    if (option.id === 'more') {
                         return $('<span class="text-info">' + gt.gettext("Extended search...") + '</span>');
                     }
                     return option.text

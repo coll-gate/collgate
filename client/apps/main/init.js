@@ -105,7 +105,6 @@ MainModule.prototype = {
         // global cache manager
         var Cache = require('./utils/cache');
         this.cache = new Cache();
-        this.cache.register('descriptors');
 
         // temporary dictionary
         this.tmp = {};

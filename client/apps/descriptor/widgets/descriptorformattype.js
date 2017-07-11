@@ -10,11 +10,12 @@
 
 var DescriptorFormatType = function() {
     this.name = "";         // format type name
-    this.group = "";        // related group name
+    this.group = "";        // related informal group name
 
     this.readOnly = false;  // true mean the widget is read only
     this.parent = null;     // direct parent
     this.el = null;         // element itself
+    this.groupEl = null;    // group (container) element
 
     // standard css style for span
     this.spanStyle = {"padding-top": "3px", "padding-bottom": "3px"};
