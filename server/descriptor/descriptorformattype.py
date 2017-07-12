@@ -345,7 +345,7 @@ class DescriptorFormatType(object):
         if self.data == "INTEGER":
             if self.null:
                 return 'COALESCE(("%s"."descriptors"->>\'%s\')::%s, 0) > %s' % (
-                    db_table, self.data, descriptor_name, self.make_sql_value(value))
+                    db_table, descriptor_name, self.data, self.make_sql_value(value))
             else:
                 return '("%s"."descriptors"->>\'%s\')::%s > %s' % (
                     db_table, descriptor_name, self.data, self.make_sql_value(value))

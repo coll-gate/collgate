@@ -498,3 +498,43 @@ div.glasspane.glasspane-full {
     background-color: #aedd36;
     border-radius: 8px;
 }
+
+div.add-column-menu {
+    min-width: 200px;
+    width: 80vw;
+    max-width: 350px;
+    background-color: white;
+    border-radius: 5px;
+}
+
+div.add-column-menu div.input-group {
+    margin: 10px;
+}
+
+div.add-column-menu ul.columns-list {
+    overflow-y: auto;
+    max-height: 80vh;
+    list-style-type: none;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin: 10px;
+    padding: 10px;
+}
+
+div.add-column-menu ul.columns-list li.column {
+}
+
+div.add-column-menu ul.columns-list li.column label {
+    margin-bottom: 0px;
+    font-weight: normal;
+}
+
+div.add-column-menu ul.columns-list li.column label input {
+    position: relative;
+    top: 1px;
+}
+
+div.add-column-menu div.btn-group {
+    float: right;
+    margin: 0px 10px 10px 10px;
+}

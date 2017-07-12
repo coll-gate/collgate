@@ -19,6 +19,7 @@ from descriptor.descriptorformattype import DescriptorFormatTypeManager
 from igdectk.rest import Format, Method
 from igdectk.rest.response import HttpResponseRest
 from igdectk.common.cache import named_cache_page
+from main.cache import cache_manager
 
 from .descriptor import RestDescriptor
 from .models import DescriptorMetaModel, DescriptorModelType
@@ -112,10 +113,11 @@ def get_description(model):
     """
     Returns information about columns for a specified model. All columns of any related meta-models.
     """
-    cache_key = 'descriptor.get_description:%s.%s' % (model._meta.app_label, model._meta.model_name)
-
-    # results = cache.get(cache_key)
-    # if results:
+    # cache_name = 'description:%s.%s' % (model._meta.app_label, model._meta.model_name)
+    # cache_entry = cache_manager.get('descriptor', cache_name)
+    #
+    # results = cache_entry.content
+    # if results and cache_entry.content:
     #     return results
 
     content_type = get_object_or_404(ContentType, app_label=model._meta.app_label, model=model._meta.model_name)
@@ -138,6 +140,6 @@ def get_description(model):
             'format': descriptor_format
         }
 
-    cache.set(cache_key, results, 60*60*24)
+    # cache_manager.set('descriptor', cache_name, 60*60*24).content = results
 
     return results

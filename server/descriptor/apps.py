@@ -36,6 +36,10 @@ class CollGateDescriptor(ApplicationMain):
     def ready(self):
         super().ready()
 
+        # register descriptor cache category
+        from main.cache import cache_manager
+        cache_manager.register('descriptor')
+
         from audit.models import register_models
         register_models(CollGateDescriptor.name)
 

@@ -285,6 +285,8 @@ var View = Marionette.CompositeView.extend({
     onDomRefresh: function() {
         // we can only init here because we need to known the parent container
         if (!this.scrollViewInitialized) {
+            var self = this;
+
             // pagination on scrolling using the direct parent as scroll container
             var scrollElement = this.getScrollElement();
             scrollElement.on('scroll', $.proxy(this.scroll, this));
@@ -298,18 +300,43 @@ var View = Marionette.CompositeView.extend({
                 .on('keydown', $.proxy(this.onKeyDown, this))
                 .on('keyup', $.proxy(this.onKeyUp, this));
 
-            // add menu column close on event
-            var contextMenu = this.ui.add_column_menu;
-            if (contextMenu.length) {
-                contextMenu.on("click", "a", function () {
-                    contextMenu.hide();
-                });
-            }
+            // btn events
+            this.ui.add_column_menu.children('div.btn-group').children('span.select-all').on('click', function() {
+                self.ui.add_column_menu.children('ul.columns-list')
+                    .children('li.column').children('label').children('input').prop("checked", true);
+            });
+
+            this.ui.add_column_menu.children('div.btn-group').children('span.select-none').on('click', function() {
+                self.ui.add_column_menu.children('ul.columns-list')
+                    .children('li.column').children('label').children('input').prop("checked", false);
+            });
+
+            this.ui.add_column_menu.children('div.btn-group').children('span.select-close').on(
+                'click', $.proxy(this.onAddRemoveColumn, this));
+
+            this.ui.add_column_menu.children('div.input-group').children('input[name=add-column-filter]').on('input', function (e) {
+               var name = $(e.target).val();
+               var labels = self.ui.add_column_menu.children('ul.columns-list')
+                   .children('li.column')
+                   .children('label');
+
+               $.each(labels, function(i, element) {
+                   var el = $(element);
+
+                   var c1 = el.attr('name').toUpperCase().indexOf(name.toUpperCase()) !== -1;
+                   var c2 = el.text().toUpperCase().indexOf(name.toUpperCase()) !== -1;
+
+                   if (c1 || c2) {
+                       el.parent().css('display', 'block');
+                   } else {
+                       el.parent().css('display', 'none');
+                   }
+               });
+            });
 
             // create an entry per column from template
             if (this.selectedColumns.length === 0) {
                 var headerRows = this.ui.thead.children('tr').children('td,th');
-                var view = this;
 
                 $.each(headerRows, function (i, element) {
                     var name = $(element).attr('name');
@@ -318,7 +345,7 @@ var View = Marionette.CompositeView.extend({
                         $(element).attr('name', name);
                     }
 
-                    view.selectedColumns.push({
+                    self.selectedColumns.push({
                         name: name,
                         width: "auto",
                         sort_by: null
@@ -1181,17 +1208,26 @@ var View = Marionette.CompositeView.extend({
         return this.lastModels;
     },
 
+    highlightLabels: function(highlight) {
+        var labels = this.ui.thead.children('tr').children('th,td').find('div.table-advanced-label');
+
+        if (highlight) {
+            labels.addClass('highlight-label');
+        } else {
+            labels.removeClass('highlight-label');
+        }
+    },
+
     onAddColumnAction: function(e) {
         var contextMenu = this.ui.add_column_menu;
         if (contextMenu.length) {
-
             if (contextMenu.css('display') === 'block') {
                 contextMenu.hide();
             } else {
                 var columns = this.getOption('columns') || {};
 
                 // clear previous values
-                var ul = contextMenu.children('ul.dropdown-menu').html("");
+                var ul = contextMenu.children('ul.columns-list').html("");
                 var displayedColumns = new Set();
 
                 // add displayed columns first in order
@@ -1201,14 +1237,13 @@ var View = Marionette.CompositeView.extend({
                     if (columnName in columns && columns[columnName].fixed)
                         continue;
 
-                    var li = $('<li></li>');
-                    var a = $('<a tabindex="-1" href="#" name="' + columnName + '"></a>');
-                    li.append(a);
+                    var li = $('<li class="column"></li>');
+                    var label = $('<label tabindex="-1" name="' + columnName + '"><input type="checkbox" checked=""/></label>');
+                    li.append(label);
 
-                    a.append($('<span class="glyphicon glyphicon-check"></span>'));
-                    a.prop("displayed", true);
+                    label.prop("displayed", true);
 
-                    a.append('&nbsp;' + (this.getOption('columns')[columnName].label || columnName));
+                    label.append('&nbsp;' + (this.getOption('columns')[columnName].label || columnName));
                     ul.append(li);
 
                     displayedColumns.add(columnName);
@@ -1236,14 +1271,13 @@ var View = Marionette.CompositeView.extend({
                         continue;
 
                     if (!displayedColumns.has(column.name)) {
-                        var li = $('<li></li>');
-                        var a = $('<a tabindex="-1" href="#" name="' + column.name + '"></a>');
-                        li.append(a);
+                        var li = $('<li class="column"></li>');
+                        var label = $('<label tabindex="-1" name="' + column.name + '"><input type="checkbox"/></label>');
+                        li.append(label);
 
-                        a.append($('<span class="glyphicon glyphicon-unchecked"></span>'));
-                        a.prop("displayed", false);
+                        label.prop("displayed", false);
 
-                        a.append('&nbsp;' + column.label);
+                        label.append('&nbsp;' + column.label);
                         ul.append(li);
                     }
                 }
@@ -1257,6 +1291,8 @@ var View = Marionette.CompositeView.extend({
 
                 // inside of the window
                 var maxHeight = $(window).height() - (this.ui.add_column.parent().offset().top + this.ui.add_column.height()) - 20;
+                maxHeight -= contextMenu.children('div.input-group').outerHeight() + contextMenu.children('div.btn-group').outerHeight();
+                maxHeight -= ul.outerHeight() - ul.height();
                 ul.css('max-height', maxHeight + 'px').css('overflow-y', 'auto');
 
                 // hide header highlight
@@ -1271,28 +1307,202 @@ var View = Marionette.CompositeView.extend({
                     return true;
                 });
             }
-
-            // event on choices
-            this.ui.add_column_menu.find('ul li a').on('click', $.proxy(this.onAddRemoveColumn, this));
         }
     },
 
-    highlightLabels: function(highlight) {
-        var labels = this.ui.thead.children('tr').children('th,td').find('div.table-advanced-label');
+    /**
+     * Remove a column given its name.
+     * @param columnName Column name.
+     * @param save If true save user settings.
+     * @returns boolean if success.
+     */
+    removeColumn: function(columnName, save) {
+        var columnId = -1;
 
-        if (highlight) {
-            labels.addClass('highlight-label');
-        } else {
-            labels.removeClass('highlight-label');
+        for (var j = 0; j < this.displayedColumns.length; ++j) {
+            if (this.displayedColumns[j] === columnName) {
+                columnId = j;
+                break;
+            }
         }
+
+        if (columnId === -1) {
+            return false;
+        }
+
+        this.displayedColumns.splice(columnId, 1);
+
+        var headerCol = this.ui.thead.children('tr').children('th[name="' + columnName + '"]');
+        headerCol.remove();
+
+        var bodyCol = this.ui.tbody.children('tr').children('td[name="' + columnName + '"]');
+        bodyCol.remove();
+
+        // update user setting
+        for (var i = 0; i < this.selectedColumns.length; ++i) {
+            if (this.selectedColumns[i].name === columnName) {
+                this.selectedColumns.splice(i, 1);
+                break;
+            }
+        }
+
+        if (save) {
+            if (this.getUserSettingName()) {
+                application.updateUserSetting(
+                    this.getUserSettingName(),
+                    this.selectedColumns,
+                    this.getUserSettingVersion()
+                );
+            }
+        }
+
+        return true;
     },
 
-    onAddRemoveColumn: function (e) {
-        var a = $(e.currentTarget);
-        var columnName = a.attr('name');
+    addColumn: function(columnName, save) {
+        var columnId = -1;
+        var self = this;
+
+        var column = this.getOption('columns')[columnName];
+        this.displayedColumns.push(columnName);
+
+        // insert the new column dynamically
+        var th = $('<th></th>');
+        th.attr('name', columnName);
+        th.addClass('unselectable');
+
+        var labelOrGlyph = $('<span>' + (this.getOption('columns')[columnName].label || columnName) + '</span>');
+        if (!column.fixed) {
+            labelOrGlyph.prop('draggable', true);
+        }
+
+        if (column.minWidth) {
+            th.addClass("title-column");
+        }
+
+        var sorter = $('<span class="column-sorter glyphicon glyphicon-sort action sortby-asc-column column-action"></span>');
+        th.append(sorter);
+
+        if (typeof(column.glyphicon) === "string") {
+            labelOrGlyph.addClass("glyphicon " + column.glyphicon);
+            th.addClass('glyph-fixed-column');
+        }
+
+        var cellClassName = "";
+        if (typeof(column.event) === "string") {
+            cellClassName = "action " + column.event;
+        }
+
+        if (column.fixed) {
+            th.addClass('fixed-column');
+        }
+
+        th.append(labelOrGlyph);
+
+        this.ui.thead.children('tr').append(th);
+
+        var collection = this.collection;
+        var rows = this.ui.tbody.children('tr');
+
+        $.each(rows, function (i, element) {
+            var el = $(element);
+            var item = collection.get(el.attr('element-id'));
+            var cell = $('<td></td>');
+            cell.attr('name', columnName);
+            cell.addClass(cellClassName);
+
+            if (column.custom) {
+                // deferred
+            } else if (column.glyphicon) {
+                var span = $('<span class="glyphicon"></span>');
+                span.addClass(column.glyphicon[1]);
+                cell.html(span);
+            } else if (!column.format) {
+                cell.html(item.get(columnName.replace(/^#/, '')));
+            } else if (column.query) {
+                // deferred
+            } else if (columnName.startsWith('#')) {
+                cell.html(item.get('descriptors')[columnName.replace(/^#/, '')] || "");
+            }
+
+            el.append(cell);
+        });
+
+        // update user setting
+        this.selectedColumns.push({
+            name: columnName,
+            width: null,
+            sort_by: null
+        });
+
+        // refresh only the new column on every row
+        this.onRefreshChildren(true, this.displayedColumns.slice(-1)).done(function() {
+            // save once refresh is done completely
+            if (self.getUserSettingName()) {
+                application.updateUserSetting(
+                    self.getUserSettingName(),
+                    self.selectedColumns,
+                    self.getUserSettingVersion()
+                );
+            }
+        });
+
+        if (save) {
+            if (this.getUserSettingName()) {
+                application.updateUserSetting(
+                    this.getUserSettingName(),
+                    this.selectedColumns,
+                    this.getUserSettingVersion()
+                );
+            }
+        }
+
+        return true;
+    },
+
+    onAddRemoveColumn: function () {
+        var contextMenu = this.ui.add_column_menu;
+        var labels = contextMenu.children('ul.columns-list').children('li.column').children('label');
+        var self = this;
+
+        // hide the dialog
+        contextMenu.hide();
 
         // destroy the glass pane
         application.main.glassPane('destroy');
+
+        // first remove columns
+        $.each(labels, function(i, element) {
+            var el = $(element);
+            var columnName = el.attr('name');
+
+            if (el.prop('displayed') && !el.children('input').prop('checked')) {
+                self.removeColumn(columnName, false);
+            }
+        });
+
+        // then add others
+        labels = contextMenu.children('ul.columns-list').children('li.column').children('label');
+        $.each(labels, function(i, element) {
+            var el = $(element);
+            var columnName = el.attr('name');
+
+            if (!el.prop('displayed') && el.children('input').prop('checked')) {
+                self.addColumn(columnName, false);
+            }
+        });
+
+        this.updateColumnsWidth(true);
+
+        if (this.getUserSettingName()) {
+            application.updateUserSetting(
+                this.getUserSettingName(),
+                this.selectedColumns,
+                this.getUserSettingVersion()
+            );
+        }
+
+        /*var columnName = a.attr('name');
 
         if (a.prop("displayed")) {
             var columnId = -1;
@@ -1417,7 +1627,7 @@ var View = Marionette.CompositeView.extend({
                     );
                 }
             });
-        }
+        }*/
     },
 
     getSortField: function(columnName) {

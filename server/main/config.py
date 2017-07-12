@@ -1,19 +1,15 @@
 # -*- coding: utf-8; -*-
 #
 # @file config.py
-# @brief 
+# @brief coll-gate application configuration state.
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2017-01-03
 # @copyright Copyright (c) 2017 INRA/CIRAD
 # @license MIT (see LICENSE file)
 # @details 
 
-"""
-coll-gate application configuration state.
-"""
 
-
-class Configuration:
+class Configuration(object):
     """
     Global configuration state list.
     """
@@ -25,10 +21,11 @@ class Configuration:
     def __init__(self):
         self.configurations = {}
 
-    def check(self, module, key, value, state):
+    def check(self, module_name, key, value, state):
         """
         Add a check status.
 
+        :param module_name:
         :param key: Name of the check.
         :param value: Comment, text of the check.
         :param state: State of the validation of the check
@@ -43,21 +40,21 @@ class Configuration:
         else:
             self.configurations[key] = {
                 'name': key,
-                'module': module,
+                'module': module_name,
                 'values': [{
                     'state': state,
                     'value': value
                 }]
             }
 
-    def validate(self, module, key, value):
-        self.check(module, key, value, Configuration.GOOD)
+    def validate(self, module_name, key, value):
+        self.check(module_name, key, value, Configuration.GOOD)
 
-    def wrong(self, module, key, value):
-        self.check(module, key, value, Configuration.IMPROPERLY_CONFIGURED)
+    def wrong(self, module_name, key, value):
+        self.check(module_name, key, value, Configuration.IMPROPERLY_CONFIGURED)
 
-    def partial(self, module, key, value):
-        self.check(module, key, value, Configuration.PARTIALLY_CONFIGURED)
+    def partial(self, module_name, key, value):
+        self.check(module_name, key, value, Configuration.PARTIALLY_CONFIGURED)
 
     def check_list(self):
         """
@@ -67,4 +64,3 @@ class Configuration:
 
 # Singleton of configuration
 configuration = Configuration()
-

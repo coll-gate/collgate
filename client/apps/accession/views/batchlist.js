@@ -19,10 +19,10 @@ var BatchModel = require('../models/batch');
 var BatchLayout = require('../views/batchlayout');
 
 var View = ScrollView.extend({
-    template: require("../templates/batchlist.html"),
+    template: require("../../descriptor/templates/entitylist.html"),
     className: "batch-list advanced-table-container",
     childView: BatchView,
-    childViewContainer: 'tbody.batch-list',
+    childViewContainer: 'tbody.entity-list',
 
     userSettingName: function() {
         if (this.collection.batch_type === 'parents') {

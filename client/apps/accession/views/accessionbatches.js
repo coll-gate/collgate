@@ -12,10 +12,10 @@ var BatchView = require('../views/batch');
 var ScrollView = require('../../main/views/scroll');
 
 var View = ScrollView.extend({
-    template: require("../templates/batchlist.html"),
+    template: require("../../descriptor/templates/entitylist.html"),
     className: "accession-batch-list",
     childView: BatchView,
-    childViewContainer: 'tbody.batch-list',
+    childViewContainer: 'tbody.entity-list',
 
     initialize: function() {
         View.__super__.initialize.apply(this);
@@ -25,4 +25,3 @@ var View = ScrollView.extend({
 });
 
 module.exports = View;
-

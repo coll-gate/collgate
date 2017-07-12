@@ -19,7 +19,7 @@ var View = Marionette.View.extend({
             'element-id': this.model.get('id')
         }
     },
-    template: require('../templates/batch.html'),
+    template: require('../../descriptor/templates/entity.html'),
 
     templateContext: function () {
         return {
