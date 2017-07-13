@@ -11,15 +11,14 @@
 import json
 
 from django.contrib.contenttypes.models import ContentType
-from django.core.cache import cache
 from django.shortcuts import get_object_or_404
 
 from descriptor.descriptorformattype import DescriptorFormatTypeManager
 
 from igdectk.rest import Format, Method
 from igdectk.rest.response import HttpResponseRest
-from igdectk.common.cache import named_cache_page
-from main.cache import cache_manager
+# from igdectk.common.cache import named_cache_page
+from main.cache import cache_manager, named_cache
 
 from .descriptor import RestDescriptor
 from .models import DescriptorMetaModel, DescriptorModelType
@@ -30,25 +29,8 @@ class RestDescriptorColumnsForContentType(RestDescriptor):
     name = 'columns'
 
 
-# @todo how/where to invalidate
-def invalidate_cache_for_describable(model):
-    model_name = "%s.%s" % (model._meta.app_label, model._meta.model_name)
-
-    # VIEW cache
-    cache_key = 'get_columns_name_for_describable_content_type' + ':' + model_name
-
-    if cache.get(cache_key):
-        cache.set(cache_key, None, 0)
-
-    # API cache
-    cache_key = 'descriptor.get_description' + ':' + model_name
-
-    if cache.get(cache_key):
-        cache.set(cache_key, None, 0)
-
-
 @RestDescriptorColumnsForContentType.def_auth_request(Method.GET, Format.JSON)
-# @named_cache_page(60*60*24)
+@named_cache('descriptor', '{0}', 5)
 def get_columns_name_for_describable_content_type(request, content_type_name):
     """
     According to a specified model, retrieve any meta-models of descriptors, and
@@ -113,12 +95,11 @@ def get_description(model):
     """
     Returns information about columns for a specified model. All columns of any related meta-models.
     """
-    # cache_name = 'description:%s.%s' % (model._meta.app_label, model._meta.model_name)
-    # cache_entry = cache_manager.get('descriptor', cache_name)
-    #
-    # results = cache_entry.content
-    # if results and cache_entry.content:
-    #     return results
+    cache_name = 'description:%s.%s' % (model._meta.app_label, model._meta.model_name)
+    results = cache_manager.content('descriptor', cache_name)
+
+    if results:
+        return results
 
     content_type = get_object_or_404(ContentType, app_label=model._meta.app_label, model=model._meta.model_name)
 
@@ -140,6 +121,7 @@ def get_description(model):
             'format': descriptor_format
         }
 
-    # cache_manager.set('descriptor', cache_name, 60*60*24).content = results
+    # cache only for 5 seconds
+    cache_manager.set('descriptor', cache_name, 5).content = results
 
     return results

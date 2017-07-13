@@ -23,6 +23,13 @@ class RestCache(RestMain):
     name = 'cache'
 
 
+# @todo need a standalone service that will receive notification of changes on some models/instance.
+# each change can invalidate some caches entries. the solution can be using a UWSGI 1process/1thead simple application
+# width a file socket for communication between django services and cache service. The cache service could cache simply
+# in RAM using a structure, or dict, or uses of a Redis instance.
+# the communication with clients can be performed using channel and websocket. cache service will inform client of
+# invalidation.
+
 @RestCache.def_auth_request(Method.GET, Format.JSON, parameters=('status',))
 def get_cache_list(request):
     status = request.GET.get('status', 'valid')
@@ -110,6 +117,16 @@ class CacheManager(object):
         else:
             raise ValueError("Unregistered cache manager category")
 
+    def content(self, category, name):
+        if category in self.categories:
+            cache_entry = self.categories[category].get(name)
+            if cache_entry:
+                return cache_entry.content
+            else:
+                return None
+        else:
+            raise ValueError("Unregistered cache manager category")
+
     def all(self):
         """
         Convert the structure of the manager to a dict.
@@ -172,3 +189,28 @@ class CacheManager(object):
 
 # Singleton of cache
 cache_manager = CacheManager()
+
+
+def named_cache(category, name, cache_timeout):
+    """
+    Decorator for views that tries getting the page from the cache and
+    populates the cache if the page isn't in the cache yet.
+
+    The cache name have replacement characters :
+      - {0} : replaced by request.path
+      - any other named parameter formatted like %(param_name)s
+    """
+    def wrapper(func):
+        def foo(*args, **kwargs):
+            if isinstance(name, str):
+                key_name = name.replace('{0}', args[0].path) % kwargs
+            else:
+                key_name = name(kwargs)
+
+            response = cache_manager.content(category, key_name)
+            if not response:
+                response = func(*args, **kwargs)
+                cache_manager.set(category, key_name, cache_timeout).content = response
+            return response
+        return foo
+    return wrapper

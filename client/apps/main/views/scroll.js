@@ -311,7 +311,13 @@ var View = Marionette.CompositeView.extend({
                     .children('li.column').children('label').children('input').prop("checked", false);
             });
 
-            this.ui.add_column_menu.children('div.btn-group').children('span.select-close').on(
+            this.ui.add_column_menu.children('div.btn-group').children('span.select-cancel').on('click', function () {
+                // destroy the glass pane
+                application.main.glassPane('destroy');
+                self.ui.add_column_menu.hide(false);
+            });
+
+            this.ui.add_column_menu.children('div.btn-group').children('span.select-accept').on(
                 'click', $.proxy(this.onAddRemoveColumn, this));
 
             this.ui.add_column_menu.children('div.input-group').children('input[name=add-column-filter]').on('input', function (e) {
