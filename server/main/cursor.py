@@ -52,6 +52,8 @@ class CursorQuery(object):
 
     # need to escape % because of django raw
     OPERATORS_MAP = {
+        'isnull': '=',
+        'notnull': '!=',
         '=': '=',
         'eq': '=',
         '!=': '!=',
@@ -513,6 +515,8 @@ class CursorQuery(object):
                 if not op:
                     raise CursorQueryValueError('Unrecognized term operator')
 
+                if cmp in ('isnull', 'notnull'):
+                    value = 'NULL'
                 if cmp in ('contains', 'icontains'):
                     value = "%%" + value + "%%"
                 elif cmp in ('startswith', 'istartswith'):

@@ -319,7 +319,7 @@ td.action:hover > .label, th.action:hover > .label {
     opacity: 0.3;
 }
 
-th.action:hover, td.action:hover, span.action:not(.glyphicon):hover {
+th.action:hover, td.action:hover, span.action:not(.glyphicon):not(.parenthesis):hover {
     text-decoration: underline;
 }
 
@@ -499,6 +499,19 @@ div.glasspane.glasspane-full {
     border-radius: 8px;
 }
 
+span.parenthesis {
+    margin: -5px 5px;
+    font-size: 4em;
+    opacity: 0.025;
+}
+
+span.parenthesis:hover {
+    opacity: 0.13;
+}
+
+span.parenthesis.activated {
+    opacity: 1
+}
 div.add-column-menu {
     min-width: 200px;
     width: 80vw;

@@ -165,6 +165,10 @@ def get_accession_list_count(request):
     from main.cursor import CursorQuery
     cq = CursorQuery(Accession)
 
+    if request.GET.get('search'):
+        search = json.loads(request.GET['search'])
+        cq.filter(search)
+
     if request.GET.get('filters'):
         filters = json.loads(request.GET['filters'])
         cq.filter(filters)
@@ -176,7 +180,6 @@ def get_accession_list_count(request):
     }
 
     return HttpResponseRest(request, results)
-
 
 @RestAccessionAccession.def_auth_request(Method.GET, Format.JSON, perms={
     'accession.list_accession': _("You are not allowed to list the accessions")
@@ -201,6 +204,10 @@ def get_accession_list(request):
 
     from main.cursor import CursorQuery
     cq = CursorQuery(Accession)
+
+    if request.GET.get('search'):
+        search = json.loads(request.GET['search'])
+        cq.filter(search)
 
     if request.GET.get('filters'):
         filters = json.loads(request.GET['filters'])

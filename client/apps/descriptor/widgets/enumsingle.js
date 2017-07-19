@@ -93,7 +93,7 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
                     },
                     allowClear: true,
                     minimumInputLength: 3,
-                    placeholder: gt.gettext("Enter a value. 3 characters at least for auto-completion")
+                    placeholder: gt.gettext("Enter a value.")
                 };
 
                 select.select2(params).fixSelect2Position();
@@ -266,7 +266,7 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
                         },
                         allowClear: true,
                         minimumInputLength: 3,
-                        placeholder: gt.gettext("Enter a value. 3 characters at least for auto-completion")
+                        placeholder: gt.gettext("Enter a value.")
                     };
 
                     // defines temporary value (before waiting)

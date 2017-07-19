@@ -35,8 +35,8 @@ var View = Marionette.View.extend({
     updateProfile: function () {
         this.model.save({
             first_name: this.ui.first_name.val(),
-            last_name: this.ui.last_name.val(),
-        }).done(function() { $.alert.success(gt.gettext("Done")); });;
+            last_name: this.ui.last_name.val()
+        }).done(function() { $.alert.success(gt.gettext("Done")); });
     }
 });
 

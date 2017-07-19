@@ -80,6 +80,9 @@ var View = Marionette.View.extend({
     },
 
     parentCell: function(td) {
+        if (!this.model.get('parent_details')) {
+            return
+        }
         var parent_name = this.model.get('parent_details').name || "";
         var parent_rank = this.model.get('parent_details').rank;
 

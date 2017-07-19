@@ -12,74 +12,52 @@
     <div class="modal-content">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h4 class="modal-title"><%= gt.gettext("Advanced search") %></h4>
+            <h4 class="modal-title"><span class="glyphicon glyphicon-search"></span> <%= gt.gettext("Advanced search")
+                %></h4>
         </div>
         <div class="modal-body">
             <form>
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label class="control-label" for="entity_type"><%= gt.gettext("Search into") %></label>
+                            <label class="control-label" for="entity_type"><%= gt.gettext("Entity") %></label>
                             <select id="entity_type" class="form-control">
                                 <% _.each(entity_types, function(entity_type) { %>
-                                    <option value="<%= entity_type.id %>"><%= entity_type.label %></option>
+                                <option value="<%= entity_type.id %>"><%= entity_type.label %></option>
                                 <% }) %>
                             </select>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label class="control-label" for="meta_model"><%= gt.gettext("... of model") %></label>
-                            <select id="meta_model" class="form-control">
+                            <label class="control-label" for="meta_model"><%= gt.gettext("Descriptors model") %></label>
+                            <select id="meta_model" class="form-control" multiple>
                                 <% _.each(meta_models, function(meta_model) { %>
-                                    <option value="<%= meta_model.id %>"><%= meta_model.label %></option>
+                                <option value="<%= meta_model.id %>"><%= meta_model.label %></option>
                                 <% }) %>
                             </select>
                         </div>
                     </div>
                 </div>
-                <div class="row search-condition">
-                    <div class="col-md-3 field">
-                        <div class="form-group">
-                            <label class="control-label"><%= gt.gettext("Field/descriptor") %></label>
-                            <select class="form-control"></select>
-                        </div>
-                    </div>
-                    <div class="col-md-3 condition">
-                        <div class="form-group">
-                            <label class="control-label"><%= gt.gettext("Condition") %></label>
-                            <select class="form-control"></select>
-                        </div>
-                    </div>
-                    <div class="col-md-3 value">
-                        <div class="form-group">
-                            <label class="control-label"><%= gt.gettext("Value") %></label>
-                            <input class="form-control" type="text">
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="form-group">
-                        </div>
+
+                <div class="panel panel-default">
+                    <div id="conditions_part" class="panel-body"
+                         style="overflow-y: scroll; max-height:500px; padding-left: 30px"></div>
+                    <div class="panel-footer">
+                        <span class="action add glyphicon glyphicon-plus-sign" title=<%= gt.gettext("Add a condition")
+                        %>></span>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label class="control-label" for="results_entity_type"><%= gt.gettext("Returns all") %></label>
-                            <select id="results_entity_type" class="form-control">
-                                <% _.each(entity_types, function(entity_type) { %>
-                                    <option value="<%= entity_type.id %>"><%= entity_type.label %></option>
-                                <% }) %>
-                            </select>
-                        </div>
-                    </div>
-                </div>
+
+                <span id="error-msg" class="text-danger" hidden></span>
+
             </form>
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn btn-default save" style="float: left;"><%= gt.gettext("Save") %></button>
-            <button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= gt.gettext("Cancel") %></button>
-            <button type="button" class="btn btn-success continue"><%= gt.gettext("Search") %></button>
+            <button type="button" class="btn btn-default save pull-left"><%= gt.gettext("Save") %></button>
+            <button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= gt.gettext("Cancel") %>
+            </button>
+            <button type="button" class="btn btn-success search"><%= gt.gettext("Search") %></button>
         </div>
     </div><!-- /.modal-content -->
 </div><!-- /.modal-dialog -->

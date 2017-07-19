@@ -98,7 +98,7 @@ _.extend(CountryType.prototype, DescriptorFormatType.prototype, {
                 },
                 allowClear: true,
                 minimumInputLength: 3,
-                placeholder: gt.gettext("Enter a value. 3 characters at least for auto-completion")
+                placeholder: gt.gettext("Enter a value.")
             };
 
             select.select2(params).fixSelect2Position();
@@ -234,7 +234,7 @@ _.extend(CountryType.prototype, DescriptorFormatType.prototype, {
                     },
                     allowClear: true,
                     minimumInputLength: 3,
-                    placeholder: gt.gettext("Enter a value. 3 characters at least for auto-completion")
+                    placeholder: gt.gettext("Enter a value.")
                 };
 
                 // autoselect the initial value

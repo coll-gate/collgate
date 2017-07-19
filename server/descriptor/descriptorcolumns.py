@@ -48,8 +48,14 @@ def get_columns_name_for_describable_content_type(request, content_type_name):
     app_label, model = content_type_name.split('.')
     content_type = get_object_or_404(ContentType, app_label=app_label, model=model)
 
+    meta_model_id_list = request.GET.get('meta_model_list')
+
     dmms = DescriptorMetaModel.objects.filter(target=content_type).values_list(
         "descriptor_models__descriptor_model_types__id", flat=True)
+
+    if meta_model_id_list:
+        dmms = dmms.filter(pk__in=meta_model_id_list.split(','))
+
     dmts = DescriptorModelType.objects.filter(id__in=dmms).prefetch_related('descriptor_type')
 
     columns = {}

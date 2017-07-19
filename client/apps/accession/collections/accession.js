@@ -16,6 +16,12 @@ var Collection = Backbone.Collection.extend({
 
     // comparator: 'name',
 
+    initialize: function (options) {
+        options || (options = {});
+        this.filters = (options.filters || {});
+        this.search = (options.search || {});
+    },
+
     parse: function(data) {
         this.prev = data.prev;
         this.cursor = data.cursor;
@@ -34,6 +40,10 @@ var Collection = Backbone.Collection.extend({
 
         this.cursor = data.cursor;
         this.sort_by = data.sort_by;
+
+        if (this.search) {
+            opts.data.search = JSON.stringify(this.search)
+        }
 
         if (this.filters) {
             opts.data.filters = JSON.stringify(this.filters)
@@ -56,6 +66,10 @@ var Collection = Backbone.Collection.extend({
 
         var opts = _.clone(options);
         opts.data = data;
+
+        if (this.search) {
+            opts.data.search = JSON.stringify(this.search)
+        }
 
         if (this.filters) {
             opts.data.filters = JSON.stringify(this.filters)

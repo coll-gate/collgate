@@ -26,8 +26,13 @@ var Router = Marionette.AppRouter.extend({
         "app/accession/accession/:id/*tab": "getAccession"
     },
 
-    getAccessionList : function() {
-        var collection = new AccessionCollection();
+    getAccessionList : function(options) {
+        options || (options = {});
+
+        var collection = new AccessionCollection({
+            filters: (options.filters || {}),
+            search: (options.search || {})
+        });
 
         var defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
@@ -40,7 +45,7 @@ var Router = Marionette.AppRouter.extend({
             url: application.baseUrl + 'descriptor/columns/accession.accession/',
             contentType: "application/json; charset=utf-8"
         });
-        
+
         columns.done(function (data) {
             var accessionListView = new AccessionListView({collection : collection, columns: data.columns});
 

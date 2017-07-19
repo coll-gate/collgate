@@ -27,7 +27,6 @@ var View = Marionette.View.extend({
         this.listenTo(this.model, 'change', this.render, this);
     },
 
-
     onRemoveEventMessage: function() {
         this.model.destroy();
     }

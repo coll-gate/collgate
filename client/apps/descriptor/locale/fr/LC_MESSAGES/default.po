@@ -32,9 +32,8 @@ msgstr "Non"
 
 #: ../../../widgets/entity.js:90 ../../../widgets/entity.js:208
 #: ../../../widgets/enumsingle.js:96 ../../../widgets/enumsingle.js:269
-msgid "Enter a value. 3 characters at least for auto-completion"
-msgstr ""
-"Saisissez une valeur. Au moins 3 caractères pour avoir l'auto-complétion"
+msgid "Enter a value."
+msgstr "Entrez une valeur."
 
 #: ../../../widgets/imprecisedate.js:176
 msgid "Undefined"

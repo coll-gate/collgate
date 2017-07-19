@@ -88,7 +88,7 @@ _.extend(DescriptorMetaModel.prototype, DescriptorFormatType.prototype, {
                 },
                 allowClear: true,
                 minimumInputLength: 3,
-                placeholder: gt.gettext("Enter a value. 3 characters at least for auto-completion")
+                placeholder: gt.gettext("Enter a value.")
             };
 
             // make an autocomplete widget on simple_value
@@ -207,7 +207,7 @@ _.extend(DescriptorMetaModel.prototype, DescriptorFormatType.prototype, {
                     },
                     allowClear: true,
                     minimumInputLength: 3,
-                    placeholder: gt.gettext("Enter a value. 3 characters at least for auto-completion")
+                    placeholder: gt.gettext("Enter a value.")
                 };
 
                 // autoselect the initial value

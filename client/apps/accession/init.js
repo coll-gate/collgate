@@ -51,6 +51,13 @@ AccessionModule.prototype = {
             collection: this.collections.batchActionTypes
         });
 
+        this.collections.conditionList = new Backbone.Collection();
+        // this.search = {
+        //     entity: null,
+        //     models: null,
+        //     conditions: null
+        // };
+
         //
         // controllers
         //

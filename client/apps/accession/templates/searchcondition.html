@@ -1,0 +1,45 @@
+<!--
+ - @file searchcondition.html
+ - @brief 
+ - @author Medhi BOULNEMOUR (INRA UMR1095)
+ - @date 2017-07-03
+ - @copyright Copyright (c) 2016 INRA/CIRAD
+ - @license MIT (see LICENSE file)
+ - @details 
+-->
+
+
+<div class="search-condition">
+    <div class="row">
+        <div class="row">
+            <div class="col-xs-2 operator">
+                <div class="form-group">
+                    <select class="form-control"></select>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <span class="action remove glyphicon glyphicon-minus-sign pull-left" style="margin: 30px 15px" title=<%=
+                  gt.gettext("Remove this condition") %>></span>
+            <span class="action parenthesis parenthesis-left pull-left">[</span>
+            <div class="col-xs-4 field">
+                <div class="form-group">
+                    <label class="control-label"><%= gt.gettext("Field or Descriptor") %></label>
+                    <select class="form-control"></select>
+                </div>
+            </div>
+            <div class="col-xs-2 condition">
+                <div class="form-group">
+                    <label class="control-label"><%= gt.gettext("Condition") %></label>
+                    <select class="form-control"></select>
+                </div>
+            </div>
+            <div class="col-xs-4 field_value">
+                <div class="form-group">
+                    <label class="control-label"><%= gt.gettext("Value") %></label>
+                </div>
+            </div>
+            <span class="action parenthesis parenthesis-right pull-left">]</span>
+        </div>
+    </div>
+</div>
