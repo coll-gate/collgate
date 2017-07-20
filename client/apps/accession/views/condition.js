@@ -113,7 +113,7 @@ var View = Marionette.View.extend({
             this.ui.left_parenthesis.removeClass('activated');
         }
 
-        this.parent.checkParenthesis();
+        this.parent.validParenthesis();
 
     },
 
@@ -124,7 +124,7 @@ var View = Marionette.View.extend({
         } else {
             this.ui.right_parenthesis.removeClass('activated');
         }
-        this.parent.checkParenthesis();
+        this.parent.validParenthesis();
     },
 
     onChangeField: function () {
@@ -169,6 +169,7 @@ var View = Marionette.View.extend({
             new_first_view.$el.find('div.operator').parent().hide();
         }
         this.model.collection.remove(this.model.cid);
+        this.parent.validParenthesis();
     }
 });
 

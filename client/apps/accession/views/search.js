@@ -57,7 +57,7 @@ var View = Dialog.extend({
         this.ui.entity_type.selectpicker({}).selectpicker('val', 'accession.accession');
         this.ui.meta_model.selectpicker({});
 
-        this.getRegion('conditions').show(new ConditionCollection({collection: application.accession.collections.conditionList}));
+        this.getRegion('conditions').show(new ConditionCollection({collection: application.accession.collections.conditionList, parent:this}));
 
         // if (this.search.entity) {
         //     this.ui.entity_type.selectpicker('val', this.search.entity);
@@ -103,14 +103,14 @@ var View = Dialog.extend({
             view.ui.meta_model.selectpicker('refresh');
 
             application.accession.collections.conditionList = new Backbone.Collection();
-            view.getRegion('conditions').show(new ConditionCollection({collection: application.accession.collections.conditionList}));
+            view.getRegion('conditions').show(new ConditionCollection({collection: application.accession.collections.conditionList, parent:this}));
             view.onAddSearchRow();
         });
     },
 
     onChangeMetaModel: function () {
         application.accession.collections.conditionList = new Backbone.Collection();
-        this.getRegion('conditions').show(new ConditionCollection({collection: application.accession.collections.conditionList}));
+        this.getRegion('conditions').show(new ConditionCollection({collection: application.accession.collections.conditionList, parent:this}));
         this.onAddSearchRow();
     },
 
@@ -162,10 +162,7 @@ var View = Dialog.extend({
             view.onUIChange(); //update collection
         });
 
-        if (!this.getChildView('conditions').checkParenthesis()) {
-            this.ui.error_msg.show();
-            this.ui.error_msg.html('<b>' + gt.gettext('Error') + ':</b> ' + gt.gettext('invalid conditions groups'));
-            // this.$el.find('.panel').removeClass('panel-default').addClass('panel-danger');
+        if (!this.getChildView('conditions').validParenthesis()) {
             return
         }
 
