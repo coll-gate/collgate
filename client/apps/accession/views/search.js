@@ -57,7 +57,10 @@ var View = Dialog.extend({
         this.ui.entity_type.selectpicker({}).selectpicker('val', 'accession.accession');
         this.ui.meta_model.selectpicker({});
 
-        this.getRegion('conditions').show(new ConditionCollection({collection: application.accession.collections.conditionList, parent:this}));
+        this.getRegion('conditions').show(new ConditionCollection({
+            collection: application.accession.collections.conditionList,
+            parent: this
+        }));
 
         // if (this.search.entity) {
         //     this.ui.entity_type.selectpicker('val', this.search.entity);
@@ -103,14 +106,20 @@ var View = Dialog.extend({
             view.ui.meta_model.selectpicker('refresh');
 
             application.accession.collections.conditionList = new Backbone.Collection();
-            view.getRegion('conditions').show(new ConditionCollection({collection: application.accession.collections.conditionList, parent:this}));
+            view.getRegion('conditions').show(new ConditionCollection({
+                collection: application.accession.collections.conditionList,
+                parent: this
+            }));
             view.onAddSearchRow();
         });
     },
 
     onChangeMetaModel: function () {
         application.accession.collections.conditionList = new Backbone.Collection();
-        this.getRegion('conditions').show(new ConditionCollection({collection: application.accession.collections.conditionList, parent:this}));
+        this.getRegion('conditions').show(new ConditionCollection({
+            collection: application.accession.collections.conditionList,
+            parent: this
+        }));
         this.onAddSearchRow();
     },
 
@@ -147,7 +156,8 @@ var View = Dialog.extend({
             $.each(data.columns, function (field) {
                 selects.append($('<option>', {
                     value: field,
-                    text: data.columns[field].label
+                    text: data.columns[field].label,
+                    'data-type': data.columns[field].format.type
                 }));
             });
             selects.trigger('change');
@@ -186,40 +196,52 @@ var View = Dialog.extend({
         // this.destroy();
     },
 
-    getQuery: function (conditions, condition) {
+    getQuery: function (conditions, condition, parentheses_to_handle) {
         condition = (condition || 0);
         var result = [];
         for (var i = condition; i < conditions.length; ++i) {
-
-            if (conditions[i].attributes.open_group && conditions[i].attributes.close_group) {
-                conditions[i].attributes.open_group = conditions[i].attributes.close_group = false;
+            if (typeof parentheses_to_handle === 'undefined') {
+                parentheses_to_handle = conditions[i].attributes.open_group;
             }
-
-            if (conditions[i].attributes.row_operator !== null || (conditions[i].attributes.open_group && conditions[i].attributes.row_operator !== null)) {
+            // remove some useless parentheses
+            if ((conditions[i].attributes.open_group === 2 && conditions[i].attributes.close_group !== 0)
+                || (conditions[i].attributes.open_group === 1 && conditions[i].attributes.close_group === 2)) {
+                conditions[i].attributes.close_group--;
+                conditions[i].attributes.open_group--;
+            }
+            if ((conditions[i].attributes.open_group === 2 && conditions[i].attributes.close_group === 2)
+                || (conditions[i].attributes.open_group === 1 && conditions[i].attributes.close_group === 1)) {
+                conditions[i].attributes.close_group = 0;
+                conditions[i].attributes.open_group = 0;
+            }
+            // add operator
+            if (conditions[i].attributes.row_operator !== null && (parentheses_to_handle === conditions[i].attributes.open_group || parentheses_to_handle > 0 && conditions[i].attributes.open_group !== 2)) {
                 result.push({
                     'type': 'op',
                     'value': conditions[i].attributes.row_operator
                 });
             }
-            if (conditions[i].attributes.open_group) {
-                if (i + 1 < conditions.length) {
-                    var group = this.getQuery(conditions, i + 1);
-                }
-                group.result.unshift({
-                    'type': 'term',
-                    'field': conditions[i].attributes.field,
-                    'value': conditions[i].attributes.field_value,
-                    'op': conditions[i].attributes.condition
-                });
+            // add conditions group
+            if (conditions[i].attributes.open_group && parentheses_to_handle !== 0) {
+                var group = this.getQuery(conditions, i, parentheses_to_handle - 1);
                 result.push(group.result);
                 i = (group.end_index || i);
+
+                if (conditions[i].attributes.close_group === 2 && parentheses_to_handle - 1 === 0) {
+                    return {result: result, end_index: i};
+                }
             } else {
+                //add field condition
                 result.push({
                     'type': 'term',
                     'field': conditions[i].attributes.field,
                     'value': conditions[i].attributes.field_value,
                     'op': conditions[i].attributes.condition
                 });
+
+                if (i + 1 < conditions.length && conditions[i + 1].attributes.open_group) {
+                    parentheses_to_handle = conditions[i + 1].attributes.open_group;
+                }
 
                 if (conditions[i].attributes.close_group) {
                     return {result: result, end_index: i};
@@ -234,14 +256,10 @@ var View = Dialog.extend({
             //todo: Remove this code-block and try to update collection on input (from the childviews)
             view.onUIChange(); //update collection
         });
-
         const entityType = this.ui.entity_type.val();
-
         if (entityType === 'accession.accession') {
             var conditions = this.getChildView('conditions').collection.models;
-
             var query = this.getQuery(conditions);
-
             console.log(query.result);
         }
     },

@@ -34,14 +34,16 @@ var View = Marionette.CollectionView.extend({
         this.children.each(function (view) {
             view.ui.right_parenthesis.css('color', 'black').prop('title', '');
             view.ui.left_parenthesis.css('color', 'black').prop('title', '');
-            if (view.open_group) {
+
+            for (var i=0; i < view.open_group; i++ ) {
                 l_stack.push(view);
                 depth++;
                 if (depth >= 3) {
                     l_invalid_depth.push(view);
                 }
             }
-            if (view.close_group) {
+
+            for (var i=0; i < view.close_group; i++ ) {
                 if (l_stack.length === 0) {
                     r_stack.push(view);
                     return false;
@@ -94,8 +96,6 @@ var View = Marionette.CollectionView.extend({
             $save_btn.prop('disabled', true);
             return false;
         }
-
-
     }
 });
 
