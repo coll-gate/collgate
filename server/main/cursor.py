@@ -17,19 +17,16 @@ from descriptor.descriptorcolumns import get_description
 
 
 class CursorQueryError(Exception):
-
     def __init__(self, message):
         super(Exception, self).__init__(message)
 
 
 class CursorQueryValueError(CursorQueryError):
-
     def __init__(self, message):
         super(Exception, self).__init__("Value error: " + message)
 
 
 class CursorQueryOperatorError(CursorQueryError):
-
     def __init__(self, message):
         super(Exception, self).__init__("Operator error: " + message)
 
@@ -123,7 +120,7 @@ class CursorQuery(object):
                 self.model_fields[field.name] = ('TEXT', 'TEXT', field.null)
                 self.query_select.append('"%s"."%s"' % (db_table, field.name))
 
-            # @todo maybe for DATE (idem for join)
+                # @todo maybe for DATE (idem for join)
 
     def cursor(self, cursor, cursor_fields=('id',)):
         """
@@ -178,9 +175,11 @@ class CursorQuery(object):
                         if prev_is_descriptor:
                             if self.FIELDS_SEP in prev_field:
                                 pff = prev_field.split(self.FIELDS_SEP)
-                                lqs.append(self._cast_descriptor_sub_type(pff[0], pff[1], prev_ope, self._cursor[prev_i]))
+                                lqs.append(
+                                    self._cast_descriptor_sub_type(pff[0], pff[1], prev_ope, self._cursor[prev_i]))
                             else:
-                                clause = self._cast_descriptor_type(db_table, prev_field, prev_ope, self._cursor[prev_i])
+                                clause = self._cast_descriptor_type(db_table, prev_field, prev_ope,
+                                                                    self._cursor[prev_i])
                                 if clause:
                                     lqs.append(clause)
                         else:
@@ -188,7 +187,8 @@ class CursorQuery(object):
                                 pff = prev_field.split(self.FIELDS_SEP)
                                 lqs.append(self._cast_default_sub_type(pff[0], pff[1], prev_ope, self._cursor[prev_i]))
                             else:
-                                lqs.append(self._cast_default_type(db_table, prev_field, prev_ope, self._cursor[prev_i]))
+                                lqs.append(
+                                    self._cast_default_type(db_table, prev_field, prev_ope, self._cursor[prev_i]))
 
                     if is_descriptor:
                         if self.FIELDS_SEP in f:
@@ -249,15 +249,18 @@ class CursorQuery(object):
                     return "NULL"
 
         if field_data[1] == 'INTEGER':
-            try:
-                int(value)
-            except ValueError:
-                if field_data[2]:
-                    return "0"
-                else:
-                    return "NULL"
+            if isinstance(value, int):
+                return str(value)
+            elif isinstance(value, list):
+                try:
+                    return '(' + ','.join(str(int(v)) for v in value) + ')'
+                except ValueError:
+                    pass
 
-            return str(value)
+            if field_data[2]:
+                return "0"
+            else:
+                return "NULL"
         else:
             return "'" + value.replace("'", "''") + "'"
 
@@ -423,11 +426,12 @@ class CursorQuery(object):
 
         for lfilter in filters:
             lfilter_type = type(lfilter)
-            filter_type = lfilter.get('type', None) if lfilter_type is dict else 'sub' if lfilter_type in (tuple, list) else None
+            filter_type = lfilter.get('type', None) if lfilter_type is dict else 'sub' if lfilter_type in (
+            tuple, list) else None
 
             # sub
             if filter_type == 'sub':
-                self._parse_and_add_filters(lfilter, depth+1)
+                self._parse_and_add_filters(lfilter, depth + 1)
 
             # term
             elif filter_type == 'term':
@@ -490,7 +494,8 @@ class CursorQuery(object):
 
         for lfilter in filters:
             lfilter_type = type(lfilter)
-            filter_type = lfilter.get('type', None) if lfilter_type is dict else 'sub' if lfilter_type in (tuple, list) else None
+            filter_type = lfilter.get('type', None) if lfilter_type is dict else 'sub' if lfilter_type in (
+            tuple, list) else None
 
             if filter_type == 'sub':
                 res = self._process_filter(lfilter, depth + 1)
@@ -662,16 +667,20 @@ class CursorQuery(object):
             elif type(field) is models.fields.related.ForeignKey:
                 # @todo could be TEXT
                 model_fields[field.name + '_id'] = ('FK', 'INTEGER', field.null)
-                self.query_select.append('"%s"."%s_id" AS "%s_%s_id"' % (renamed_table, field.name, renamed_table, field.name))
+                self.query_select.append(
+                    '"%s"."%s_id" AS "%s_%s_id"' % (renamed_table, field.name, renamed_table, field.name))
             elif type(field) is models.fields.IntegerField or type(field) == models.fields.AutoField:
                 model_fields[field.name] = ('INTEGER', 'INTEGER', field.null)
-                self.query_select.append('"%s"."%s" AS "%s_%s"' % (renamed_table, field.name, renamed_table, field.name))
+                self.query_select.append(
+                    '"%s"."%s" AS "%s_%s"' % (renamed_table, field.name, renamed_table, field.name))
             elif type(field) is JSONField:
                 self.model_fields[field.name] = ('JSON', 'JSON', field.null)
-                self.query_select.append('"%s"."%s" AS "%s_%s"' % (renamed_table, field.name, renamed_table, field.name))
+                self.query_select.append(
+                    '"%s"."%s" AS "%s_%s"' % (renamed_table, field.name, renamed_table, field.name))
             else:
                 model_fields[field.name] = ('TEXT', 'TEXT', field.null)
-                self.query_select.append('"%s"."%s" AS "%s_%s"' % (renamed_table, field.name, renamed_table, field.name))
+                self.query_select.append(
+                    '"%s"."%s" AS "%s_%s"' % (renamed_table, field.name, renamed_table, field.name))
 
         self._related_tables[renamed_table] = (related_model, model_fields)
 
@@ -708,16 +717,20 @@ class CursorQuery(object):
                 elif type(field) is models.fields.related.ForeignKey:
                     # @todo could be TEXT
                     model_fields[field.name + '_id'] = ('FK', 'INTEGER', field.null)
-                    self.query_select.append('"%s"."%s_id" AS "%s_%s_id"' % (db_table_alias, field.name, related_field, field.name))
+                    self.query_select.append(
+                        '"%s"."%s_id" AS "%s_%s_id"' % (db_table_alias, field.name, related_field, field.name))
                 elif type(field) is models.fields.IntegerField or type(field) == models.fields.AutoField:
                     model_fields[field.name] = ('INTEGER', 'INTEGER', field.null)
-                    self.query_select.append('"%s"."%s" AS "%s_%s"' % (db_table_alias, field.name, related_field, field.name))
+                    self.query_select.append(
+                        '"%s"."%s" AS "%s_%s"' % (db_table_alias, field.name, related_field, field.name))
                 elif type(field) is JSONField:
                     self.model_fields[field.name] = ('JSON', 'JSON', field.null)
-                    self.query_select.append('"%s"."%s" AS "%s_%s"' % (db_table_alias, field.name, related_field, field.name))
+                    self.query_select.append(
+                        '"%s"."%s" AS "%s_%s"' % (db_table_alias, field.name, related_field, field.name))
                 else:
                     model_fields[field.name] = ('TEXT', 'TEXT', field.null)
-                    self.query_select.append('"%s"."%s" AS "%s_%s"' % (db_table_alias, field.name, related_field, field.name))
+                    self.query_select.append(
+                        '"%s"."%s" AS "%s_%s"' % (db_table_alias, field.name, related_field, field.name))
 
         self._related_tables[related_field] = (related_model.field.related_model, model_fields)
 
@@ -909,7 +922,7 @@ class CursorQuery(object):
         """
         # perform joins using select_related, like for normal SQL but does not perform the ORDER BY and LIMIT
         if type(self._select_related) is list:
-           for related_model, related_fields in self._select_related.items():
+            for related_model, related_fields in self._select_related.items():
                 self.join(related_model, related_fields)
 
         try:
@@ -918,7 +931,7 @@ class CursorQuery(object):
         except KeyError as e:
             raise CursorQueryError(e)
 
-        _select = "SELECT DISTINCT COUNT(*)" if self.query_distinct else "SELECT COUNT(*)"   # + ", ".join(self.query_select)
+        _select = "SELECT DISTINCT COUNT(*)" if self.query_distinct else "SELECT COUNT(*)"  # + ", ".join(self.query_select)
         _from = "FROM " + " ".join(self.query_from)
 
         if self.query_filters:
