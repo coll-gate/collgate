@@ -31,13 +31,12 @@ var View = Marionette.View.extend({
 
     events: {
         'click @ui.remove': 'onRemove',
-        'change @ui.condition': 'onUIChange',
+        'change @ui.condition': 'onConditionChange',
         'change @ui.field': 'onChangeField',
         'change @ui.field_value': 'onUIChange',
         'change @ui.row_operator': 'onUIChange',
         'click @ui.left_parenthesis': 'onOpenGroup',
         'click @ui.right_parenthesis': 'onCloseGroup'
-
     },
 
     initialize: function (options) {
@@ -60,23 +59,46 @@ var View = Marionette.View.extend({
             operator.selectpicker({}).selectpicker('val', this.model.get('operator'));
         }
 
-        // var condition = this.$el.find('div.search-condition').find('div.condition').children('div').children('select');
-        // var condition = this.ui.condition;
-        // console.log(this.model);
-        // condition.append('<option value="isnull">' + gt.gettext('Undefined') + '</option>');
-        // condition.append('<option value="notnull">' + gt.gettext('Defined') + '</option>');
-        // condition.append('<option value="icontains">' + gt.gettext('Contains') + '</option>');
-        // condition.append('<option value="eq">' + gt.gettext('Exact') + ' =' + '</option>');
-        // condition.append('<option value="neq">' + gt.gettext('Different from') + ' <>' + '</option>');
-        // condition.append('<option value="lte">' + gt.gettext('Lesser than') + ' <=' + '</option>');
-        // condition.append('<option value="gte">' + gt.gettext('Greater than') + ' >=' + '</option>');
-        // condition.selectpicker({container: 'body'}).selectpicker('val', 'eq');
-
-        // this.ui.field.selectpicker({});
+        this.ui.condition.selectpicker({container: '.modal'});
+        this.ui.field.selectpicker({
+            liveSearch: true,
+            container: '.modal'
+        });
 
         this.ui.field.val(this.model.get('field'));
         this.ui.condition.val(this.model.get('condition'));
         this.ui.field_value.val(this.model.get('field_value'));
+    },
+
+    onConditionChange: function () {
+
+        var field = this.ui.field.val();
+        var column = this.columns[field];
+
+        console.log(column);
+        console.log(this.widget);
+        if (this.widget.allow_multiple) {
+            this.widget.destroy();
+
+            if (this.ui.condition.val() === 'in' || this.ui.condition.val() === 'notin') {
+                this.widget.create(column.format, this.ui.field_value_group, false, column.group, column.type, {
+                    multiple: true,
+                    extended_search: false
+                });
+            } else {
+                this.widget.create(column.format, this.ui.field_value_group, false, column.group, column.type, {
+                    multiple: false,
+                    extended_search: false
+                });
+            }
+        } else {
+            if (this.ui.condition.val() === 'in' || this.ui.condition.val() === 'notin') {
+                this.ui.field_value_group.find('select').prop('multiple', true).selectpicker('destroy').selectpicker({container: '.modal'});
+            } else {
+                this.ui.field_value_group.find('select').prop('multiple', false).selectpicker('destroy').selectpicker({container: '.modal'});
+            }
+        }
+        this.onUIChange();
     },
 
     onUIChange: function () {
@@ -105,6 +127,12 @@ var View = Marionette.View.extend({
             open_group: this.open_group,
             close_group: this.close_group
         });
+
+        var field = this.ui.field.val();
+        var column = this.columns[field];
+
+        console.log(column.format);
+        console.log(this.widget);
     },
 
     onOpenGroup: function () {
@@ -172,7 +200,7 @@ var View = Marionette.View.extend({
         if (column.format) {
             this.widget = application.descriptor.widgets.newElement(column.format.type);
             if (this.widget) {
-                this.widget.create(column.format, this.ui.field_value_group, false, column.group, column.type);
+                this.widget.create(column.format, this.ui.field_value_group, false, column.group, column.type, {extended_search: false});
             }
         } else {
             var input = $('<input type="text" class="search-value form-control" name="search-value"/>');
@@ -181,14 +209,15 @@ var View = Marionette.View.extend({
 
         this.ui.condition.children('option').remove();
         var field_type = this.ui.field[0].selectedOptions[0].dataset.type;
-        console.log(field_type);
 
-        var options_set = 3;
+        var options_set = null;
 
-        if (['enum_pair', 'entity', 'descriptor_meta_model', 'country'].includes(field_type)) {
+        if (column.format.list_type === "dropdown" || column.format.list_type === "autocomplete" || ['entity', 'descriptor_meta_model', 'country', 'city'].includes(field_type)) {
             options_set = 2;
         } else if (['numeric_range'].includes(field_type)) {
             options_set = 1;
+        } else if (field_type === 'string') {
+            options_set = 3;
         }
 
         switch (options_set) {
@@ -206,6 +235,8 @@ var View = Marionette.View.extend({
                 this.ui.condition.append('<option value="notnull">' + gt.gettext('Defined') + '</option>');
                 this.ui.condition.append('<option value="eq">' + gt.gettext('Exact') + ' =' + '</option>');
                 this.ui.condition.append('<option value="neq">' + gt.gettext('Different from') + ' <>' + '</option>');
+                this.ui.condition.append('<option value="in">' + gt.gettext('Include') + '</option>');
+                this.ui.condition.append('<option value="notin">' + gt.gettext('Not include') + '</option>');
                 break;
 
             case 3:
@@ -215,10 +246,17 @@ var View = Marionette.View.extend({
                 this.ui.condition.append('<option value="neq">' + gt.gettext('Different from') + ' <>' + '</option>');
                 this.ui.condition.append('<option value="icontains">' + gt.gettext('Contains') + '</option>');
                 break;
+
+            default:
+                this.ui.condition.append('<option value="isnull">' + gt.gettext('Undefined') + '</option>');
+                this.ui.condition.append('<option value="notnull">' + gt.gettext('Defined') + '</option>');
+                this.ui.condition.append('<option value="eq">' + gt.gettext('Exact') + ' =' + '</option>');
+                this.ui.condition.append('<option value="neq">' + gt.gettext('Different from') + ' <>' + '</option>');
+                break;
         }
 
         this.ui.condition.selectpicker('refresh');
-        this.ui.condition.selectpicker({container: 'body'}).selectpicker('val', 'eq');
+        this.ui.condition.selectpicker({container: '.modal'}).selectpicker('val', 'eq');
 
         this.onUIChange();
     },

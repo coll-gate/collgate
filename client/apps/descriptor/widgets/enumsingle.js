@@ -16,11 +16,15 @@ var EnumSingle = function() {
 
     this.name = "enum_single";
     this.group = "list";
+    this.allow_multiple = true
 };
 
 _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
-    create: function(format, parent, readOnly, descriptorTypeGroup, descriptorTypeId) {
+    create: function(format, parent, readOnly, descriptorTypeGroup, descriptorTypeId, options) {
         readOnly || (readOnly = false);
+        options || (options = {
+            multiple: false
+        });
 
         if (readOnly) {
             var input = null;
@@ -39,7 +43,7 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
             if (format.list_type === "autocomplete") {
                 this.autocomplete = true;
 
-                var select = $('<select style="width: 100%;"></select>');
+                var select = $('<select style="width: 100%;" ' + (options.multiple ? "multiple" : "") + '></select>');
                 this.groupEl = this._createInputGroup(parent, "glyphicon-list", select);
 
                 // init the autocomplete
@@ -103,7 +107,7 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
             } else if (format.list_type === "dropdown") {
                 this.autocomplete = false;
 
-                var select = $('<select data-width="100%"></select>');
+                var select = $('<select style="width: 100%;" ' + (options.multiple ? "multiple" : "") + '></select>');
                 this.groupEl = this._createInputGroup(parent, "glyphicon-list", select);
 
                 select.selectpicker({container: 'body', style: 'btn-default'});

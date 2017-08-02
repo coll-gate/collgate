@@ -86,6 +86,7 @@ var View = Dialog.extend({
 
     onChangeEntityType: function () {
         var entityType = this.ui.entity_type.selectpicker('val');
+        this.ui.meta_model.prop('disabled', false);
         // this.search.entity = entityType;
         var view = this;
 
@@ -103,6 +104,12 @@ var View = Dialog.extend({
 
                 view.ui.meta_model.append(opt);
             }
+
+            if (data.length === 1) {
+                view.ui.meta_model.selectpicker('val', view.ui.meta_model.children("option:first").val());
+                view.ui.meta_model.prop('disabled', true)
+            }
+
             view.ui.meta_model.selectpicker('refresh');
 
             application.accession.collections.conditionList = new Backbone.Collection();
@@ -129,9 +136,11 @@ var View = Dialog.extend({
         var selects = null;
 
         if (childview) {
-            selects = childview.$el.find('div.search-condition').find('div.field').children('div').children('select');
+            // selects = childview.$el.find('div.search-condition').find('div.field').children('div').children('select');
+            selects = childview.ui.field;
         } else {
-            selects = this.getChildView('conditions').$el.find('div.search-condition').find('div.field').children('div').children('select');
+            // selects = this.getChildView('conditions').$el.find('div.search-condition').find('div.field').children('div').children('select');
+            selects = this.getChildView('conditions').ui.field;
         }
 
         const view = this;
@@ -161,6 +170,7 @@ var View = Dialog.extend({
                 }));
             });
             selects.trigger('change');
+            selects.selectpicker('refresh');
         });
         selects.change();
     },

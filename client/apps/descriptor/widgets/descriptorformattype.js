@@ -16,6 +16,7 @@ var DescriptorFormatType = function() {
     this.parent = null;     // direct parent
     this.el = null;         // element itself
     this.groupEl = null;    // group (container) element
+    this.allow_multiple = false; // true mean the widget can send a list of values
 
     // standard css style for span
     this.spanStyle = {"padding-top": "3px", "padding-bottom": "3px"};

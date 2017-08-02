@@ -10,17 +10,21 @@
 
 var DescriptorFormatType = require('./descriptorformattype');
 
-var DescriptorMetaModel = function() {
+var DescriptorMetaModel = function () {
     DescriptorFormatType.call(this);
 
     this.name = "descriptor_meta_model";
     this.group = "reference";
-    this.searchUrl = null
+    this.searchUrl = null;
+    this.allow_multiple = true
 };
 
 _.extend(DescriptorMetaModel.prototype, DescriptorFormatType.prototype, {
-    create: function(format, parent, readOnly) {
+    create: function (format, parent, readOnly, descriptorTypeGroup, descriptorTypeId, options) {
         readOnly || (readOnly = false);
+        options || (options = {
+            multiple: false
+        });
 
         if (readOnly) {
             var input = this._createStdInput(parent, "glyphicon-folder-open");
@@ -29,8 +33,8 @@ _.extend(DescriptorMetaModel.prototype, DescriptorFormatType.prototype, {
             this.readOnly = true;
             this.el = input;
         } else {
-            var select = $('<select style="width: 100%;"></select>');
-            this.groupEl = this._createInputGroup(parent, "glyphicon-folter-open", select);
+            var select = $('<select style="width: 100%;" ' + (options.multiple ? "multiple" : "") + '></select>');
+            this.groupEl = this._createInputGroup(parent, "glyphicon-th-large", select);
 
             // init the autocomplete
             var url = application.baseUrl + "descriptor/meta-model/";
@@ -42,6 +46,7 @@ _.extend(DescriptorMetaModel.prototype, DescriptorFormatType.prototype, {
             }
 
             var params = {
+                width: 'element',
                 data: initials,
                 dropdownParent: container,
                 ajax: {
@@ -99,7 +104,7 @@ _.extend(DescriptorMetaModel.prototype, DescriptorFormatType.prototype, {
         }
     },
 
-    destroy: function() {
+    destroy: function () {
         if (this.el && this.parent) {
             if (this.readOnly) {
                 this.el.parent().remove();
@@ -110,13 +115,13 @@ _.extend(DescriptorMetaModel.prototype, DescriptorFormatType.prototype, {
         }
     },
 
-    enable: function() {
+    enable: function () {
         if (this.el) {
             this.el.prop("disabled", false);
         }
     },
 
-    disable: function() {
+    disable: function () {
         if (this.el) {
             this.el.prop("disabled", true);
         }
@@ -227,20 +232,31 @@ _.extend(DescriptorMetaModel.prototype, DescriptorFormatType.prototype, {
         }
     },
 
-    values: function() {
+    values: function () {
         if (this.el && this.parent) {
             if (this.readOnly) {
-                return this.el.attr('value');
+                var value = parseInt(this.el.attr('value'));
+                return isNaN(value) ? null : value;
             } else {
-                if (this.el.val() !== "") {
-                    var value = parseInt(this.el.val());
+                if (this.el.attr('value') !== undefined) {
+                    var value = parseInt(this.el.attr('value'));
                     return isNaN(value) ? null : value;
                 } else {
-                    return null;
+                    if (Array.isArray(this.el.val())) {
+                        var values = this.el.val();
+                        return values.map(function (value) {
+                            value = parseInt(value);
+                            return isNaN(value) ? null : value
+                        })
+                    } else if (this.el.val() !== "") {
+                        var value = parseInt(this.el.val());
+                        return isNaN(value) ? null : value;
+                    } else {
+                        return null;
+                    }
                 }
             }
         }
-
         return null;
     },
 

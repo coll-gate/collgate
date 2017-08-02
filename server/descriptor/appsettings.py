@@ -25,3 +25,5 @@ HTTP_TEMPLATE_STRING = "main/%s.html"  # lookup into the main module
 
 APP_VERSION = (0, 1, 0)
 
+EXCLUDED_TYPES_FOR_COLUMN_VIEW = ['media', 'media_collection']
+

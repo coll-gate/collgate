@@ -5,22 +5,26 @@
  * @date 2017-02-23
  * @copyright Copyright (c) 2017 INRA/CIRAD
  * @license MIT (see LICENSE file)
- * @details 
+ * @details
  */
 
 var DescriptorFormatType = require('../../descriptor/widgets/descriptorformattype');
 var Marionette = require('backbone.marionette');
 
-var CountryType = function() {
+var CountryType = function () {
     DescriptorFormatType.call(this);
 
     this.name = "country";
     this.group = "country";
+    this.allow_multiple = true
 };
 
 _.extend(CountryType.prototype, DescriptorFormatType.prototype, {
-    create: function (format, parent, readOnly) {
+    create: function (format, parent, readOnly, descriptorTypeGroup, descriptorTypeId, options) {
         readOnly || (readOnly = false);
+        options || (options = {
+            multiple: false
+        });
 
         if (readOnly) {
             var input = this._createStdInput(parent, "glyphicon-map-marker");
@@ -30,7 +34,7 @@ _.extend(CountryType.prototype, DescriptorFormatType.prototype, {
             this.el = input;
 
         } else {
-            var select = $('<select style="width: 100%;"></select>');
+            var select = $('<select style="width: 100%;" ' + (options.multiple ? "multiple" : "") + '></select>');
             parent.append(select);
             this.groupEl = this._createInputGroup(parent, "glyphicon-map-marker", select);
 
@@ -44,6 +48,7 @@ _.extend(CountryType.prototype, DescriptorFormatType.prototype, {
             }
 
             var params = {
+                width: 'element',
                 data: initials,
                 dropdownParent: container,
                 ajax: {
@@ -108,7 +113,7 @@ _.extend(CountryType.prototype, DescriptorFormatType.prototype, {
         }
     },
 
-    destroy: function() {
+    destroy: function () {
         if (this.el && this.parent) {
             if (this.readOnly) {
                 this.el.parent().remove();
@@ -119,13 +124,13 @@ _.extend(CountryType.prototype, DescriptorFormatType.prototype, {
         }
     },
 
-    enable: function() {
+    enable: function () {
         if (this.el) {
             this.el.prop("disabled", false);
         }
     },
 
-    disable: function() {
+    disable: function () {
         if (this.el) {
             this.el.prop("disabled", true);
         }
@@ -269,7 +274,7 @@ _.extend(CountryType.prototype, DescriptorFormatType.prototype, {
         }
     },
 
-    values: function() {
+    values: function () {
         if (this.el && this.parent) {
             if (this.readOnly) {
                 var value = parseInt(this.el.attr('value'));
@@ -279,7 +284,13 @@ _.extend(CountryType.prototype, DescriptorFormatType.prototype, {
                     var value = parseInt(this.el.attr('value'));
                     return isNaN(value) ? null : value;
                 } else {
-                    if (this.el.val() !== "") {
+                    if (Array.isArray(this.el.val())) {
+                        var values = this.el.val();
+                        return values.map(function (value) {
+                            value = parseInt(value);
+                            return isNaN(value) ? null : value
+                        })
+                    } else if (this.el.val() !== "") {
                         var value = parseInt(this.el.val());
                         return isNaN(value) ? null : value;
                     } else {
@@ -306,7 +317,7 @@ _.extend(CountryType.prototype, DescriptorFormatType.prototype, {
         }
     },
 
-    bindConditionListener: function(listeners, condition, values) {
+    bindConditionListener: function (listeners, condition, values) {
         if (this.el && this.parent && !this.readOnly) {
             if (!this.bound) {
                 this.el.on("select2:select", $.proxy(this.onValueChanged, this));
@@ -321,7 +332,7 @@ _.extend(CountryType.prototype, DescriptorFormatType.prototype, {
         }
     },
 
-    onValueChanged: function(e) {
+    onValueChanged: function (e) {
         var display = this.checkCondition(this.conditionType, this.conditionValues);
 
         // show or hide the parent element
@@ -336,7 +347,7 @@ _.extend(CountryType.prototype, DescriptorFormatType.prototype, {
         }
     },
 
-    onValueUnselected: function(e) {
+    onValueUnselected: function (e) {
         var display = false;
 
         switch (this.conditionType) {
@@ -373,16 +384,15 @@ CountryType.DescriptorTypeDetailsView = Marionette.View.extend({
     className: 'descriptor-type-details-format',
     template: "<div></div>",
 
-    initialize: function() {
+    initialize: function () {
         this.listenTo(this.model, 'change', this.render, this);
     },
 
-    onRender: function() {
+    onRender: function () {
     },
 
-    getFormat: function() {
-        return {
-        }
+    getFormat: function () {
+        return {}
     }
 });
 

@@ -161,6 +161,11 @@ class DescriptorFormatType(object):
                     return "NULL"
 
             return str(value)
+
+        # values = json.loads(value)
+        # if isinstance(values, list):
+        #     return '("' + '","'.join(values) + '")'
+
         else:
             return "'" + value.replace("'", "''") + "'"
 
@@ -194,9 +199,9 @@ class DescriptorFormatType(object):
             return self.operator_gte(db_table, descriptor_name, value)
         elif operator == '>' or operator == 'gt':
             return self.operator_gt(db_table, descriptor_name, value)
-        elif operator == 'icontains':
+        elif operator == 'ILIKE':
             return self.operator_icontains(db_table, descriptor_name, value)
-        elif operator == 'contains':
+        elif operator == 'LIKE':
             return self.operator_contains(db_table, descriptor_name, value)
         elif operator == 'istartswith':
             return self.operator_istartswith(db_table, descriptor_name, value)
@@ -206,6 +211,10 @@ class DescriptorFormatType(object):
             return self.operator_iendswith(db_table, descriptor_name, value)
         elif operator == 'endswith':
             return self.operator_endswith(db_table, descriptor_name, value)
+        elif operator == 'IN':
+            return self.operator_in(db_table, descriptor_name, value)
+        elif operator == 'NOT IN':
+            return self.operator_notin(db_table, descriptor_name, value)
         else:
             raise ValueError('Unrecognized operator')
 
@@ -238,6 +247,34 @@ class DescriptorFormatType(object):
 
     def operator_icontains(self, db_table, descriptor_name, value):
         return self.operator_ilike(db_table, descriptor_name, "%%" + value + "%%")
+
+    def operator_in(self, db_table, descriptor_name, value):
+        if self.data == "INTEGER":
+            if isinstance(value, list):
+                value = '(' + ','.join(str(v) for v in value) + ')'
+            else:
+                value = '()'
+        else:
+            if isinstance(value, list):
+                value = '(\'' + '\',\''.join(value) + '\')'
+            else:
+                value = '()'
+        return '("%s"."descriptors"->>\'%s\')::%s IN %s' % (
+            db_table, descriptor_name, self.data, value)
+
+    def operator_notin(self, db_table, descriptor_name, value):
+        if self.data == "INTEGER":
+            if isinstance(value, list):
+                value = '(' + ','.join(str(v) for v in value) + ')'
+            else:
+                value = '()'
+        else:
+            if isinstance(value, list):
+                value = '(\'' + '\',\''.join(value) + '\')'
+            else:
+                value = '()'
+        return '("%s"."descriptors"->>\'%s\')::%s NOT IN %s' % (
+            db_table, descriptor_name, self.data, value)
 
     def operator_like(self, db_table, descriptor_name, value):
         """
@@ -1241,14 +1278,14 @@ class DescriptorFormatTypeImpreciseDate(DescriptorFormatType):
                     # month
                     clauses.append('((("%s"."descriptors"->\'%s\')->>1)::INTEGER = 0' % (
                         db_table, descriptor_name) + " OR "
-                                   '(("%s"."descriptors"->\'%s\')->>1)::INTEGER = %s)' % (
-                        db_table, descriptor_name, final_value[1]))
+                                                     '(("%s"."descriptors"->\'%s\')->>1)::INTEGER = %s)' % (
+                                       db_table, descriptor_name, final_value[1]))
 
                     # day of month
                     clauses.append('((("%s"."descriptors"->\'%s\')->>2)::INTEGER = 0' % (
                         db_table, descriptor_name) + " OR "
-                                     '(("%s"."descriptors"->\'%s\')->>2)::INTEGER = %s)' % (
-                       db_table, descriptor_name, final_value[2]))
+                                                     '(("%s"."descriptors"->\'%s\')->>2)::INTEGER = %s)' % (
+                                       db_table, descriptor_name, final_value[2]))
                 else:
                     # year
                     clauses.append('(("%s"."descriptors"->\'%s\')->>0)::INTEGER = %s' % (
@@ -1257,25 +1294,25 @@ class DescriptorFormatTypeImpreciseDate(DescriptorFormatType):
                     # month
                     clauses.append('((("%s"."descriptors"->\'%s\')->>1)::INTEGER = 0' % (
                         db_table, descriptor_name) + " OR "
-                                   '(("%s"."descriptors"->\'%s\')->>1)::INTEGER = %s)' % (
-                        db_table, descriptor_name, final_value[1]))
+                                                     '(("%s"."descriptors"->\'%s\')->>1)::INTEGER = %s)' % (
+                                       db_table, descriptor_name, final_value[1]))
             else:
                 # year
                 clauses.append('(("%s"."descriptors"->\'%s\')->>0)::INTEGER = %s' % (
                     db_table, descriptor_name, final_value[0]))
 
-        # clauses = [
-            # '(("%s"."descriptors"->\'%s\')->>0)::INTEGER = %s' % (db_table, descriptor_name, final_value[0]),
-            # '(("%s"."descriptors"->\'%s\')->>1)::INTEGER = %s' % (db_table, descriptor_name, final_value[1]),
-            # '(("%s"."descriptors"->\'%s\')->>2)::INTEGER = %s' % (db_table, descriptor_name, final_value[2])
-            # '("%s"."descriptors"->\'%s\')->>0 = \'%s\'' % (db_table, descriptor_name, final_value[0]),
-            # '("%s"."descriptors"->\'%s\')->>1 = \'%s\'' % (db_table, descriptor_name, final_value[1]),
-            # '("%s"."descriptors"->\'%s\')->>2 = \'%s\'' % (db_table, descriptor_name, final_value[2])
-            # '("%s"."descriptors"#>\'{%s,0}\')[0] = %s' % (db_table, descriptor_name, final_value[0]),
-            # '("%s"."descriptors"#>\'{%s,1}\')[0] = %s' % (db_table, descriptor_name, final_value[1]),
-            # '("%s"."descriptors"#>\'{%s,2}\')[0] = %s' % (db_table, descriptor_name, final_value[2])
-            # 'TRANSLATE(("%s"."descriptors"->>\'%s\'), \'[]\' ,\'{}\')::INT[] = \'{%s}\'' % (
-            #     db_table, descriptor_name, ','.join(final_value)),
+                # clauses = [
+                # '(("%s"."descriptors"->\'%s\')->>0)::INTEGER = %s' % (db_table, descriptor_name, final_value[0]),
+                # '(("%s"."descriptors"->\'%s\')->>1)::INTEGER = %s' % (db_table, descriptor_name, final_value[1]),
+                # '(("%s"."descriptors"->\'%s\')->>2)::INTEGER = %s' % (db_table, descriptor_name, final_value[2])
+                # '("%s"."descriptors"->\'%s\')->>0 = \'%s\'' % (db_table, descriptor_name, final_value[0]),
+                # '("%s"."descriptors"->\'%s\')->>1 = \'%s\'' % (db_table, descriptor_name, final_value[1]),
+                # '("%s"."descriptors"->\'%s\')->>2 = \'%s\'' % (db_table, descriptor_name, final_value[2])
+                # '("%s"."descriptors"#>\'{%s,0}\')[0] = %s' % (db_table, descriptor_name, final_value[0]),
+                # '("%s"."descriptors"#>\'{%s,1}\')[0] = %s' % (db_table, descriptor_name, final_value[1]),
+                # '("%s"."descriptors"#>\'{%s,2}\')[0] = %s' % (db_table, descriptor_name, final_value[2])
+                # 'TRANSLATE(("%s"."descriptors"->>\'%s\'), \'[]\' ,\'{}\')::INT[] = \'{%s}\'' % (
+                #     db_table, descriptor_name, ','.join(final_value)),
         # ]
 
         return "(%s)" % " AND ".join(clauses)
@@ -1297,14 +1334,14 @@ class DescriptorFormatTypeImpreciseDate(DescriptorFormatType):
                     # month
                     clauses.append('((("%s"."descriptors"->\'%s\')->>1)::INTEGER != 0' % (
                         db_table, descriptor_name) + " AND "
-                                   '(("%s"."descriptors"->\'%s\')->>1)::INTEGER != %s)' % (
-                        db_table, descriptor_name, final_value[1]))
+                                                     '(("%s"."descriptors"->\'%s\')->>1)::INTEGER != %s)' % (
+                                       db_table, descriptor_name, final_value[1]))
 
                     # day of month
                     clauses.append('((("%s"."descriptors"->\'%s\')->>2)::INTEGER != 0' % (
                         db_table, descriptor_name) + " AND "
-                                     '(("%s"."descriptors"->\'%s\')->>2)::INTEGER != %s)' % (
-                       db_table, descriptor_name, final_value[2]))
+                                                     '(("%s"."descriptors"->\'%s\')->>2)::INTEGER != %s)' % (
+                                       db_table, descriptor_name, final_value[2]))
                 else:
                     # year
                     clauses.append('(("%s"."descriptors"->\'%s\')->>0)::INTEGER != %s' % (
@@ -1313,8 +1350,8 @@ class DescriptorFormatTypeImpreciseDate(DescriptorFormatType):
                     # month
                     clauses.append('((("%s"."descriptors"->\'%s\')->>1)::INTEGER != 0' % (
                         db_table, descriptor_name) + " AND "
-                                   '(("%s"."descriptors"->\'%s\')->>1)::INTEGER != %s)' % (
-                        db_table, descriptor_name, final_value[1]))
+                                                     '(("%s"."descriptors"->\'%s\')->>1)::INTEGER != %s)' % (
+                                       db_table, descriptor_name, final_value[1]))
             else:
                 # year
                 clauses.append('(("%s"."descriptors"->\'%s\')->>0)::INTEGER != %s' % (
@@ -1343,14 +1380,14 @@ class DescriptorFormatTypeImpreciseDate(DescriptorFormatType):
                     # month
                     sub_clauses.append('((("%s"."descriptors"->\'%s\')->>1)::INTEGER = 0' % (
                         db_table, descriptor_name) + " OR "
-                                   '(("%s"."descriptors"->\'%s\')->>1)::INTEGER <= %s)' % (
-                        db_table, descriptor_name, final_value[1]))
+                                                     '(("%s"."descriptors"->\'%s\')->>1)::INTEGER <= %s)' % (
+                                           db_table, descriptor_name, final_value[1]))
 
                     # day of month
                     sub_clauses.append('((("%s"."descriptors"->\'%s\')->>2)::INTEGER = 0' % (
                         db_table, descriptor_name) + " OR "
-                                   '(("%s"."descriptors"->\'%s\')->>2)::INTEGER <= %s)' % (
-                        db_table, descriptor_name, final_value[2]))
+                                                     '(("%s"."descriptors"->\'%s\')->>2)::INTEGER <= %s)' % (
+                                           db_table, descriptor_name, final_value[2]))
                 else:
                     # year
                     sub_clauses.append('(("%s"."descriptors"->\'%s\')->>0)::INTEGER <= %s' % (
@@ -1359,8 +1396,8 @@ class DescriptorFormatTypeImpreciseDate(DescriptorFormatType):
                     # month
                     sub_clauses.append('((("%s"."descriptors"->\'%s\')->>1)::INTEGER = 0' % (
                         db_table, descriptor_name) + " OR "
-                                  '(("%s"."descriptors"->\'%s\')->>1)::INTEGER <= %s)' % (
-                        db_table, descriptor_name, final_value[1]))
+                                                     '(("%s"."descriptors"->\'%s\')->>1)::INTEGER <= %s)' % (
+                                           db_table, descriptor_name, final_value[1]))
             else:
                 # year
                 sub_clauses.append('(("%s"."descriptors"->\'%s\')->>0)::INTEGER <= %s' % (
@@ -1409,14 +1446,14 @@ class DescriptorFormatTypeImpreciseDate(DescriptorFormatType):
                     # month
                     sub_clauses.append('((("%s"."descriptors"->\'%s\')->>1)::INTEGER = 0' % (
                         db_table, descriptor_name) + " OR "
-                                   '(("%s"."descriptors"->\'%s\')->>1)::INTEGER < %s)' % (
-                        db_table, descriptor_name, final_value[1]))
+                                                     '(("%s"."descriptors"->\'%s\')->>1)::INTEGER < %s)' % (
+                                           db_table, descriptor_name, final_value[1]))
 
                     # day of month
                     sub_clauses.append('((("%s"."descriptors"->\'%s\')->>2)::INTEGER = 0' % (
                         db_table, descriptor_name) + " OR "
-                                   '(("%s"."descriptors"->\'%s\')->>2)::INTEGER < %s)' % (
-                        db_table, descriptor_name, final_value[2]))
+                                                     '(("%s"."descriptors"->\'%s\')->>2)::INTEGER < %s)' % (
+                                           db_table, descriptor_name, final_value[2]))
                 else:
                     # year
                     sub_clauses.append('(("%s"."descriptors"->\'%s\')->>0)::INTEGER < %s' % (
@@ -1425,8 +1462,8 @@ class DescriptorFormatTypeImpreciseDate(DescriptorFormatType):
                     # month
                     sub_clauses.append('((("%s"."descriptors"->\'%s\')->>1)::INTEGER = 0' % (
                         db_table, descriptor_name) + " OR "
-                                  '(("%s"."descriptors"->\'%s\')->>1)::INTEGER < %s)' % (
-                        db_table, descriptor_name, final_value[1]))
+                                                     '(("%s"."descriptors"->\'%s\')->>1)::INTEGER < %s)' % (
+                                           db_table, descriptor_name, final_value[1]))
             else:
                 # year
                 sub_clauses.append('(("%s"."descriptors"->\'%s\')->>0)::INTEGER < %s' % (
@@ -1462,14 +1499,14 @@ class DescriptorFormatTypeImpreciseDate(DescriptorFormatType):
                     # month
                     sub_clauses.append('((("%s"."descriptors"->\'%s\')->>1)::INTEGER = 0' % (
                         db_table, descriptor_name) + " OR "
-                                   '(("%s"."descriptors"->\'%s\')->>1)::INTEGER >= %s)' % (
-                        db_table, descriptor_name, final_value[1]))
+                                                     '(("%s"."descriptors"->\'%s\')->>1)::INTEGER >= %s)' % (
+                                           db_table, descriptor_name, final_value[1]))
 
                     # day of month
                     sub_clauses.append('((("%s"."descriptors"->\'%s\')->>2)::INTEGER = 0' % (
                         db_table, descriptor_name) + " OR "
-                                   '(("%s"."descriptors"->\'%s\')->>2)::INTEGER >= %s)' % (
-                        db_table, descriptor_name, final_value[2]))
+                                                     '(("%s"."descriptors"->\'%s\')->>2)::INTEGER >= %s)' % (
+                                           db_table, descriptor_name, final_value[2]))
                 else:
                     # year
                     sub_clauses.append('(("%s"."descriptors"->\'%s\')->>0)::INTEGER >= %s' % (
@@ -1478,8 +1515,8 @@ class DescriptorFormatTypeImpreciseDate(DescriptorFormatType):
                     # month
                     sub_clauses.append('((("%s"."descriptors"->\'%s\')->>1)::INTEGER = 0' % (
                         db_table, descriptor_name) + " OR "
-                                  '(("%s"."descriptors"->\'%s\')->>1)::INTEGER >= %s)' % (
-                        db_table, descriptor_name, final_value[1]))
+                                                     '(("%s"."descriptors"->\'%s\')->>1)::INTEGER >= %s)' % (
+                                           db_table, descriptor_name, final_value[1]))
             else:
                 # year
                 sub_clauses.append('(("%s"."descriptors"->\'%s\')->>0)::INTEGER >= %s' % (
@@ -1526,14 +1563,14 @@ class DescriptorFormatTypeImpreciseDate(DescriptorFormatType):
                     # month
                     clauses.append('((("%s"."descriptors"->\'%s\')->>1)::INTEGER != 0' % (
                         db_table, descriptor_name) + " OR "
-                                   '(("%s"."descriptors"->\'%s\')->>1)::INTEGER > %s)' % (
-                        db_table, descriptor_name, final_value[1]))
+                                                     '(("%s"."descriptors"->\'%s\')->>1)::INTEGER > %s)' % (
+                                       db_table, descriptor_name, final_value[1]))
 
                     # day of month
                     clauses.append('((("%s"."descriptors"->\'%s\')->>2)::INTEGER != 0' % (
                         db_table, descriptor_name) + " OR "
-                                   '(("%s"."descriptors"->\'%s\')->>2)::INTEGER > %s)' % (
-                        db_table, descriptor_name, final_value[2]))
+                                                     '(("%s"."descriptors"->\'%s\')->>2)::INTEGER > %s)' % (
+                                       db_table, descriptor_name, final_value[2]))
                 else:
                     # year
                     clauses.append('(("%s"."descriptors"->\'%s\')->>0)::INTEGER > %s' % (
@@ -1542,8 +1579,8 @@ class DescriptorFormatTypeImpreciseDate(DescriptorFormatType):
                     # month
                     clauses.append('((("%s"."descriptors"->\'%s\')->>1)::INTEGER != 0' % (
                         db_table, descriptor_name) + " OR "
-                                  '(("%s"."descriptors"->\'%s\')->>1)::INTEGER > %s)' % (
-                        db_table, descriptor_name, final_value[1]))
+                                                     '(("%s"."descriptors"->\'%s\')->>1)::INTEGER > %s)' % (
+                                       db_table, descriptor_name, final_value[1]))
             else:
                 # year
                 clauses.append('(("%s"."descriptors"->\'%s\')->>0)::INTEGER > %s' % (

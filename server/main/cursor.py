@@ -52,6 +52,8 @@ class CursorQuery(object):
 
     # need to escape % because of django raw
     OPERATORS_MAP = {
+        'in': 'IN',
+        'notin': 'NOT IN',
         'isnull': '=',
         'notnull': '!=',
         '=': '=',
@@ -517,8 +519,8 @@ class CursorQuery(object):
 
                 if cmp in ('isnull', 'notnull'):
                     value = 'NULL'
-                if cmp in ('contains', 'icontains'):
-                    value = "%%" + value + "%%"
+                # if cmp in ('contains', 'icontains'):
+                #     value = "%%" + value + "%%"
                 elif cmp in ('startswith', 'istartswith'):
                     value = value + "%%"
                 elif cmp in ('endswith', 'iendswith'):
@@ -869,7 +871,6 @@ class CursorQuery(object):
                 raise CursorQueryError('Invalid query arguments')
 
             prefetch_related_objects(self._query_set, *self._prefetch_related)
-
         return self._query_set
 
     def get(self):

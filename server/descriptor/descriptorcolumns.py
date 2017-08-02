@@ -22,6 +22,7 @@ from main.cache import cache_manager, named_cache
 
 from .descriptor import RestDescriptor
 from .models import DescriptorMetaModel, DescriptorModelType
+from .appsettings import EXCLUDED_TYPES_FOR_COLUMN_VIEW
 
 
 class RestDescriptorColumnsForContentType(RestDescriptor):
@@ -66,13 +67,14 @@ def get_columns_name_for_describable_content_type(request, content_type_name):
         descriptor_format = json.loads(dmt.descriptor_type.format)
         query = True if DescriptorFormatTypeManager.get(descriptor_format).related_model(descriptor_format) else False
 
-        columns['#' + dmt.name] = {
-            'group': dmt.descriptor_type.group_id,
-            'type': dmt.descriptor_type_id,
-            'label': dmt.get_label(),
-            'query': query,
-            'format': descriptor_format
-        }
+        if descriptor_format['type'] not in EXCLUDED_TYPES_FOR_COLUMN_VIEW:
+            columns['#' + dmt.name] = {
+                'group': dmt.descriptor_type.group_id,
+                'type': dmt.descriptor_type_id,
+                'label': dmt.get_label(),
+                'query': query,
+                'format': descriptor_format
+            }
 
     # and add standard columns information if the models defines a get_default_columns method
     model_class = content_type.model_class()

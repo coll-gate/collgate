@@ -16,6 +16,7 @@ var EnumOrdinal = function() {
 
     this.name = "enum_ordinal";
     this.group = "list";
+    this.allow_multiple = true
 };
 
 _.extend(EnumOrdinal.prototype, EnumSingle.prototype, {

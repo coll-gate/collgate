@@ -5,23 +5,27 @@
  * @date 2017-01-20
  * @copyright Copyright (c) 2017 INRA/CIRAD
  * @license MIT (see LICENSE file)
- * @details 
+ * @details
  */
 
 var DescriptorFormatType = require('./descriptorformattype');
 var Marionette = require('backbone.marionette');
 
-var Entity = function() {
+var Entity = function () {
     DescriptorFormatType.call(this);
 
     this.name = "entity";
     this.group = "reference";
-    this.searchUrl = null
+    this.searchUrl = null;
+    this.allow_multiple = true
 };
 
 _.extend(Entity.prototype, DescriptorFormatType.prototype, {
-    create: function(format, parent, readOnly) {
+    create: function (format, parent, readOnly, descriptorTypeGroup, descriptorTypeId, options) {
         readOnly || (readOnly = false);
+        options || (options = {
+            multiple: false
+        });
 
         if (readOnly) {
             var input = this._createStdInput(parent, "glyphicon-share");
@@ -30,7 +34,7 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
             this.readOnly = true;
             this.el = input;
         } else {
-            var select = $('<select style="width: 100%;"></select>');
+            var select = $('<select style="width: 100%;" ' + (options.multiple ? "multiple" : "") + '></select>');
             this.groupEl = this._createInputGroup(parent, "glyphicon-share", select);
 
             // init the autocomplete
@@ -43,6 +47,7 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
             }
 
             var params = {
+                width: 'element',
                 data: initials,
                 dropdownParent: container,
                 ajax: {
@@ -99,7 +104,7 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
         }
     },
 
-    destroy: function() {
+    destroy: function () {
         if (this.el && this.parent) {
             if (this.readOnly) {
                 this.el.parent().remove();
@@ -110,13 +115,13 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
         }
     },
 
-    enable: function() {
+    enable: function () {
         if (this.el) {
             this.el.prop("disabled", false);
         }
     },
 
-    disable: function() {
+    disable: function () {
         if (this.el) {
             this.el.prop("disabled", true);
         }
@@ -226,12 +231,18 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
         }
     },
 
-    values: function() {
+    values: function () {
         if (this.el && this.parent) {
             if (this.readOnly) {
                 return this.el.attr('value');
             } else {
-                if (this.el.val() !== "") {
+                if (Array.isArray(this.el.val())) {
+                    var values = this.el.val();
+                    return values.map(function (value) {
+                        value = parseInt(value);
+                        return isNaN(value) ? null : value
+                    })
+                } else if (this.el.val() !== "") {
                     var value = parseInt(this.el.val());
                     return isNaN(value) ? null : value;
                 } else {
@@ -267,16 +278,16 @@ Entity.DescriptorTypeDetailsView = Marionette.View.extend({
         format_model: '#format_model'
     },
 
-    initialize: function() {
+    initialize: function () {
         this.listenTo(this.model, 'change', this.render, this);
     },
 
-    onRender: function() {
+    onRender: function () {
         var format = this.model.get('format');
         application.descriptor.views.describables.drawSelect(this.ui.format_model, true, false, format.model);
     },
 
-    getFormat: function() {
+    getFormat: function () {
         return {
             'model': this.ui.format_model.val()
         }

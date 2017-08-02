@@ -921,7 +921,8 @@ def get_labels_for_descriptor_type_field(request, grp_id, typ_id, val_id, field)
 
         if format_type['trans']:
             for lang, lvalues in values.items():
-                results[lang] = lvalues[val_id][field]
+                if lvalues.get(val_id):
+                    results[lang] = lvalues[val_id].get(field)
         else:
             results['en'] = values[val_id][field]
     else:
@@ -976,7 +977,8 @@ def set_values_for_descriptor_type(request, grp_id, typ_id, val_id, field):
 
         if format_type['trans']:
             for lang, lvalues in values.items():
-                lvalues[val_id][field] = new_values[lang]
+                if lvalues.get(val_id):
+                    lvalues[val_id][field] = new_values[lang]
         else:
             values[val_id] = new_values['en']
 

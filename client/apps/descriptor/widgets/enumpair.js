@@ -18,6 +18,7 @@ var EnumPair = function() {
 
     this.name = "enum_pair";
     this.group = "list";
+    this.allow_multiple = true
 };
 
 _.extend(EnumPair.prototype, EnumSingle.prototype, {});
@@ -54,7 +55,7 @@ EnumPair.DescriptorTypeDetailsView = Marionette.View.extend({
     onRender: function() {
         this.ui.helper_display_fields.makePopover();
 
-        this.ui.format_trans.selectpicker({style: 'btn-default', container: 'body'});
+        this.ui.format_trans.selectpicker({style: 'btn-default'});
 
         this.ui.sort_by_field.selectpicker({style: 'btn-default'});
         this.ui.list_type.selectpicker({style: 'btn-default'});

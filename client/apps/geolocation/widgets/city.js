@@ -5,7 +5,7 @@
  * @date 2017-02-23
  * @copyright Copyright (c) 2017 INRA/CIRAD
  * @license MIT (see LICENSE file)
- * @details 
+ * @details
  */
 
 var DescriptorFormatType = require('../../descriptor/widgets/descriptorformattype');
@@ -16,18 +16,100 @@ var CityType = function () {
 
     this.name = "city";
     this.group = "city";
+    this.allow_multiple = true
 };
 
 _.extend(CityType.prototype, DescriptorFormatType.prototype, {
-    create: function (format, parent, readOnly) {
+    create: function (format, parent, readOnly, descriptorTypeGroup, descriptorTypeId, options) {
         readOnly || (readOnly = false);
+        options || (options = {});
+        options.multiple || (options.multiple = false);
+        options.extended_search === false || (options.extended_search = true);
 
         if (readOnly) {
             var input = this._createStdInput(parent, "glyphicon-map-marker");
+
             this.parent = parent;
             this.readOnly = true;
             this.el = input;
 
+        } else if (options.extended_search === false) {
+            var select = $('<select style="width: 100%;" ' + (options.multiple ? "multiple" : "") + '></select>');
+            parent.append(select);
+            this.groupEl = this._createInputGroup(parent, "glyphicon-map-marker", select);
+
+            // init the autocomplete
+            var url = application.baseUrl + 'geolocation/city/search';
+            var initials = [];
+
+            var container = parent.closest('div.modal-dialog').parent();
+            if (container.length === 0) {
+                container = this.groupEl;  // parent.closest('div.panel');
+            }
+
+            var params = {
+                width: 'element',
+                data: initials,
+                dropdownParent: container,
+                ajax: {
+                    url: url,
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        params.term || (params.term = '');
+
+                        return {
+                            cursor: params.next,
+                            term: params.term
+                        };
+                    },
+                    processResults: function (data, params) {
+                        params.next = null;
+
+                        if (data.items.length >= 30) {
+                            params.next = data.next || null;
+                        }
+
+                        var results = [];
+
+                        for (var i = 0; i < data.items.length; ++i) {
+
+                            var display = '';
+
+                            if (data.items[i].preferred_names) {
+                                display = data.items[i].preferred_names;
+                            } else if (data.items[i].short_names) {
+                                display = data.items[i].short_names;
+                            } else if (data.items[i].display_names) {
+                                display = data.items[i].display_names;
+                            } else {
+                                display = data.items[i].name;
+                            }
+
+                            results.push({
+                                id: data.items[i].id,
+                                text: display
+                            });
+                        }
+
+                        return {
+                            results: results,
+                            pagination: {
+                                more: params.next != null
+                            }
+                        };
+                    },
+                    cache: true
+                },
+                allowClear: true,
+                minimumInputLength: 3,
+                placeholder: gt.gettext("Enter a value.")
+            };
+
+            select.select2(params).fixSelect2Position();
+
+            this.parent = parent;
+            this.el = select;
         } else {
             var select = $('<select style="width: 100%;"></select>');
             parent.append(select);
@@ -201,6 +283,7 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
             };
 
             var params = {
+                width: 'element',
                 data: initials,
                 dropdownParent: container,
                 ajax: selectAjax(false),
@@ -711,7 +794,7 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
         }
     },
 
-    values: function() {
+    values: function () {
         if (this.el && this.parent) {
             if (this.readOnly) {
                 var value = parseInt(this.el.attr('value'));
@@ -721,7 +804,13 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
                     var value = parseInt(this.el.attr('value'));
                     return isNaN(value) ? null : value;
                 } else {
-                    if (this.el.val() !== "") {
+                    if (Array.isArray(this.el.val())) {
+                        var values = this.el.val();
+                        return values.map(function (value) {
+                            value = parseInt(value);
+                            return isNaN(value) ? null : value
+                        })
+                    } else if (this.el.val() !== "") {
                         var value = parseInt(this.el.val());
                         return isNaN(value) ? null : value;
                     } else {
@@ -748,7 +837,7 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
         }
     },
 
-    bindConditionListener: function(listeners, condition, values) {
+    bindConditionListener: function (listeners, condition, values) {
         if (this.el && this.parent && !this.readOnly) {
             if (!this.bound) {
                 this.el.on("select2:select", $.proxy(this.onValueChanged, this));
@@ -763,7 +852,7 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
         }
     },
 
-    onValueChanged: function(e) {
+    onValueChanged: function (e) {
         var display = this.checkCondition(this.conditionType, this.conditionValues);
 
         // show or hide the parent element
@@ -778,7 +867,7 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
         }
     },
 
-    onValueUnselected: function(e) {
+    onValueUnselected: function (e) {
         var display = false;
 
         switch (this.conditionType) {
@@ -815,16 +904,15 @@ CityType.DescriptorTypeDetailsView = Marionette.View.extend({
     className: 'descriptor-type-details-format',
     template: "<div></div>",
 
-    initialize: function() {
+    initialize: function () {
         this.listenTo(this.model, 'change', this.render, this);
     },
 
-    onRender: function() {
+    onRender: function () {
     },
 
-    getFormat: function() {
-        return {
-        }
+    getFormat: function () {
+        return {}
     }
 });
 
