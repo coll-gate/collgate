@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-01 17:35+0200\n"
+"POT-Creation-Date: 2017-08-16 10:23+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -30,12 +30,14 @@ msgstr "Oui"
 msgid "No"
 msgstr "Non"
 
-#: ../../../widgets/entity.js:90 ../../../widgets/entity.js:208
-#: ../../../widgets/enumsingle.js:96 ../../../widgets/enumsingle.js:269
+#: ../../../widgets/descriptormetamodel.js:96
+#: ../../../widgets/descriptormetamodel.js:215 ../../../widgets/entity.js:96
+#: ../../../widgets/entity.js:214 ../../../widgets/enumsingle.js:100
+#: ../../../widgets/enumsingle.js:273
 msgid "Enter a value."
 msgstr "Entrez une valeur."
 
-#: ../../../widgets/imprecisedate.js:176
+#: ../../../widgets/imprecisedate.js:184
 msgid "Undefined"
 msgstr "Indéfini"
 
@@ -55,53 +57,55 @@ msgstr "Format invalide"
 msgid "Field "
 msgstr "Champ "
 
-#: ../../../views/descriptorgroup.js:55
-msgid "Group of descriptors locked"
-msgstr "Groupe de descripteurs vérouillé"
+#: ../../../views/descriptorgroup.js:24
+#: ../../../views/descriptormetamodel.js:24
+#: ../../../views/descriptormodel.js:34
+msgid "Edit label"
+msgstr ""
 
-#: ../../../views/descriptorgroup.js:69
+#: ../../../views/descriptorgroup.js:74
 msgid "Some types of descriptor exists for this group"
 msgstr "Des types de descripteur existent pour ce groupe"
 
-#: ../../../views/descriptorgroup.js:76
+#: ../../../views/descriptorgroup.js:81
 msgid "Can't rename"
 msgstr "Impossible de renommer"
 
-#: ../../../views/descriptorgroup.js:108
+#: ../../../views/descriptorgroup.js:113
 #: ../../../views/descriptorgroupadd.js:45
 #: ../../../views/descriptorgrouptypeadd.js:51
-#: ../../../views/descriptormetamodeladd.js:132
+#: ../../../views/descriptormetamodeladd.js:131
 #: ../../../views/descriptormetamodeldetail.js:41
 #: ../../../views/descriptormodeladd.js:45
 #: ../../../views/descriptormodeldetail.js:43
-#: ../../../views/descriptormodeltype.js:190
-#: ../../../views/descriptormodeltype.js:367
+#: ../../../views/descriptormodeltype.js:201
+#: ../../../views/descriptormodeltype.js:378
 #: ../../../views/descriptormodeltypelist.js:198
-#: ../../../views/descriptortypedetailslayout.js:80
+#: ../../../views/descriptortypedetailslayout.js:84
 msgid "Invalid characters (alphanumeric, _ and - only)"
 msgstr "Caractères invalides (alphanumérique, _ et - seulement)"
 
-#: ../../../views/descriptorgroup.js:111
+#: ../../../views/descriptorgroup.js:116
 #: ../../../views/descriptorgroupadd.js:48
 #: ../../../views/descriptorgrouptypeadd.js:54
-#: ../../../views/descriptormetamodeladd.js:102
-#: ../../../views/descriptormetamodeladd.js:135
+#: ../../../views/descriptormetamodeladd.js:101
+#: ../../../views/descriptormetamodeladd.js:134
 #: ../../../views/descriptormetamodeldetail.js:43
 #: ../../../views/descriptormodeladd.js:48
 #: ../../../views/descriptormodeldetail.js:45
-#: ../../../views/descriptormodeltype.js:172
-#: ../../../views/descriptormodeltype.js:193
-#: ../../../views/descriptormodeltype.js:370
+#: ../../../views/descriptormodeltype.js:183
+#: ../../../views/descriptormodeltype.js:204
+#: ../../../views/descriptormodeltype.js:381
 #: ../../../views/descriptormodeltypelist.js:180
 #: ../../../views/descriptormodeltypelist.js:201
-#: ../../../views/descriptorpanel.js:175 ../../../views/descriptorpanel.js:357
-#: ../../../views/descriptorpanel.js:374
-#: ../../../views/descriptorpanellist.js:144
-#: ../../../views/descriptortypedetailslayout.js:82
-#: ../../../views/descriptorvalue.js:124
-#: ../../../views/descriptorvalueordinal.js:112
-#: ../../../views/descriptorvaluepair.js:127
-#: ../../../views/descriptorvaluepair.js:300
+#: ../../../views/descriptorpanel.js:189 ../../../views/descriptorpanel.js:371
+#: ../../../views/descriptorpanel.js:388
+#: ../../../views/descriptorpanellist.js:156
+#: ../../../views/descriptortypedetailslayout.js:86
+#: ../../../views/descriptorvalue.js:142
+#: ../../../views/descriptorvalueordinal.js:121
+#: ../../../views/descriptorvaluepair.js:146
+#: ../../../views/descriptorvaluepair.js:319
 msgid "3 characters min"
 msgstr "3 caractères minimum"
 
@@ -113,46 +117,38 @@ msgstr "Nom de groupe déjà utilisé"
 msgid "Descriptor type name already in usage"
 msgstr "Nom de type de descriptor déjà utilisé"
 
-#: ../../../views/descriptormetamodel.js:61
-msgid ""
-"It is not permitted to delete a meta-model of descriptor that contains some "
-"panels"
-msgstr ""
-"Il n'est pas permit de supprimer un méta-modèle de descripteur contenant des "
-"panels"
-
-#: ../../../views/descriptormetamodel.js:107
-#: ../../../views/descriptormetamodel.js:121
-#: ../../../views/descriptormodeltype.js:442
-#: ../../../views/descriptormodeltype.js:456
-#: ../../../views/descriptorpanel.js:360 ../../../views/descriptorpanel.js:377
-#: ../../../views/descriptorvalue.js:110 ../../../views/descriptorvalue.js:127
-#: ../../../views/descriptorvalueordinal.js:98
-#: ../../../views/descriptorvalueordinal.js:115
-#: ../../../views/descriptorvaluepair.js:113
-#: ../../../views/descriptorvaluepair.js:130
-#: ../../../views/descriptorvaluepair.js:286
-#: ../../../views/descriptorvaluepair.js:303
+#: ../../../views/descriptormetamodel.js:133
+#: ../../../views/descriptormetamodel.js:147
+#: ../../../views/descriptormodeltype.js:453
+#: ../../../views/descriptormodeltype.js:467
+#: ../../../views/descriptorpanel.js:374 ../../../views/descriptorpanel.js:391
+#: ../../../views/descriptorvalue.js:128 ../../../views/descriptorvalue.js:145
+#: ../../../views/descriptorvalueordinal.js:107
+#: ../../../views/descriptorvalueordinal.js:124
+#: ../../../views/descriptorvaluepair.js:132
+#: ../../../views/descriptorvaluepair.js:149
+#: ../../../views/descriptorvaluepair.js:305
+#: ../../../views/descriptorvaluepair.js:322
 msgid "64 characters max"
 msgstr "64 caractères maximum"
 
-#: ../../../views/descriptormetamodel.js:150
-#: ../../../views/descriptormodeltype.js:485
-#: ../../../views/descriptorpanel.js:406
+#: ../../../views/descriptormetamodel.js:176
+#: ../../../views/descriptormodeltype.js:496
+#: ../../../views/descriptorpanel.js:420
 msgid "Successfully labeled !"
 msgstr "Etiquette définie avec succès !"
 
-#: ../../../views/descriptormetamodeladd.js:92
+#: ../../../views/descriptormetamodeladd.js:91
 msgid "Unable to create the meta-model of descriptor !"
 msgstr "Impossible de créer le méta-modèle de descripteur !"
 
-#: ../../../views/descriptormetamodeladd.js:160
+#: ../../../views/descriptormetamodeladd.js:159
 msgid "Descriptor meta-model name already in usage"
 msgstr "Nom de méta-modèle de descripteur déjà utilisé"
 
 #: ../../../views/descriptormetamodeldetail.js:59
 #: ../../../views/descriptormodeldetail.js:63
-#: ../../../views/descriptortypedetailslayout.js:111
+#: ../../../views/descriptortypedetailslayout.js:115
 msgid "Done"
 msgstr "Terminé"
 
@@ -160,80 +156,82 @@ msgstr "Terminé"
 msgid "Name for model of descriptor already in usage"
 msgstr "Ce nom de modèle de descripteur est déjà utilisé"
 
-#: ../../../views/descriptormodeltype.js:233
+#: ../../../views/descriptormodeltype.js:244
 #: ../../../views/descriptormodeltypelist.js:241
 msgid "Unable to create the type of model of descriptor !"
 msgstr "Impossible de créer le type de modèle de descripteur !"
 
-#: ../../../views/descriptormodeltype.js:327
+#: ../../../views/descriptormodeltype.js:338
 #: ../../../views/descriptormodeltypelist.js:300
 msgid "Unable to reorder the types of model of descriptor"
 msgstr "Impossible de réordonner les types de modèle de descripteur"
 
-#: ../../../views/descriptormodeltype.js:676
-#: ../../../views/descriptormodeltype.js:679
+#: ../../../views/descriptormodeltype.js:687
+#: ../../../views/descriptormodeltype.js:690
 #: ../../../templates/describabledetails.html:27
 #: ../../../templates/describableedit.html:27
 msgid "Value"
 msgstr "Valeur"
 
-#: ../../../views/descriptormodeltype.js:717
+#: ../../../views/descriptormodeltype.js:728
 msgid "Successfully removed !"
 msgstr "Retiré avec succé !"
 
-#: ../../../views/descriptormodeltype.js:755
-#: ../../../views/descriptormodeltype.js:767
+#: ../../../views/descriptormodeltype.js:766
+#: ../../../views/descriptormodeltype.js:778
 msgid "Successfully defined !"
 msgstr "Définie avec succé !"
 
-#: ../../../views/descriptorpanel.js:308
-#: ../../../views/descriptorpanellist.js:242
+#: ../../../views/descriptorpanel.js:322
+#: ../../../views/descriptorpanellist.js:254
 msgid "Unable to reorder the panels of descriptor"
 msgstr "Impossible de réordonner les panels de descripters"
 
-#: ../../../views/descriptortype.js:72
+#: ../../../views/descriptortype.js:82
 msgid "Descriptor can not contain a list of values"
 msgstr "Le descripteur ne peut pas contenir une liste de valeurs"
 
-#: ../../../views/descriptortype.js:81
+#: ../../../views/descriptortype.js:91
 msgid "Some values exists for this type of descriptor"
 msgstr "Des valeurs existent pour ce type de descripteur"
 
-#: ../../../views/descriptorvalue.js:107 ../../../views/descriptorvalue.js:196
-#: ../../../views/descriptorvalueadd.js:47
-#: ../../../views/descriptorvalueordinal.js:95
-#: ../../../views/descriptorvalueordinal.js:184
-#: ../../../views/descriptorvaluepair.js:110
-#: ../../../views/descriptorvaluepair.js:199
-#: ../../../views/descriptorvaluepair.js:283
-#: ../../../views/descriptorvaluepair.js:372
-msgid "1 character min"
-msgstr "Au moins 1 caractère"
-
-#: ../../../views/descriptorvalue.js:156
-#: ../../../views/descriptorvalueordinal.js:144
-#: ../../../views/descriptorvaluepair.js:159
-#: ../../../views/descriptorvaluepair.js:332
-msgid "Successfully valued !"
-msgstr "Valeur définie avec succé !"
-
-#: ../../../views/descriptorvalue.js:215
-#: ../../../views/descriptorvalueordinal.js:203
-#: ../../../views/descriptorvaluepair.js:218
-#: ../../../views/descriptorvaluepair.js:391
-msgid "Successfully changed !"
-msgstr "Changement appliqué avec succès !"
-
-#: ../../../views/descriptorvalue.js:218
-#: ../../../views/descriptorvalueordinal.js:206
-#: ../../../views/descriptorvaluepair.js:221
-#: ../../../views/descriptorvaluepair.js:394
-msgid "Unable to change the value !"
-msgstr "Impossible de changer la valeur"
-
+#: ../../../views/descriptorvalue.js:43
+#: ../../../views/descriptorvalueordinal.js:31
 #: ../../../views/descriptorvaluepair.js:35
 msgid "Edit value0"
 msgstr "Editer valeur0"
+
+#: ../../../views/descriptorvalue.js:125 ../../../views/descriptorvalue.js:214
+#: ../../../views/descriptorvalueadd.js:47
+#: ../../../views/descriptorvalueordinal.js:104
+#: ../../../views/descriptorvalueordinal.js:193
+#: ../../../views/descriptorvaluepair.js:129
+#: ../../../views/descriptorvaluepair.js:218
+#: ../../../views/descriptorvaluepair.js:302
+#: ../../../views/descriptorvaluepair.js:391
+msgid "1 character min"
+msgstr "Au moins 1 caractère"
+
+#: ../../../views/descriptorvalue.js:174
+#: ../../../views/descriptorvalueordinal.js:153
+#: ../../../views/descriptorvaluepair.js:178
+#: ../../../views/descriptorvaluepair.js:351
+msgid "Successfully valued !"
+msgstr "Valeur définie avec succé !"
+
+#: ../../../views/descriptorvalue.js:233
+#: ../../../views/descriptorvalueordinal.js:212
+#: ../../../views/descriptorvaluepair.js:237
+#: ../../../views/descriptorvaluepair.js:410
+msgid "Successfully changed !"
+msgstr "Changement appliqué avec succès !"
+
+#: ../../../views/descriptorvalue.js:236
+#: ../../../views/descriptorvalueordinal.js:215
+#: ../../../views/descriptorvaluepair.js:240
+#: ../../../views/descriptorvaluepair.js:413
+msgid "Unable to change the value !"
+msgstr "Impossible de changer la valeur"
 
 #: ../../../views/descriptorvaluepair.js:36
 msgid "Edit value1"
@@ -278,6 +276,11 @@ msgstr "Détails pour le modèle de descripteur"
 #: ../../../routers/descriptormodel.js:74
 msgid "List of types of models of descriptor"
 msgstr "Liste des types de modèles de descripteur"
+
+#: ../../../mixins/descriptorscolumns.js:148
+#: ../../../mixins/descriptorscolumns.js:242
+msgid "Error"
+msgstr ""
 
 #: ../../../collections/formattype.js:68
 msgid "Single value"
@@ -681,6 +684,7 @@ msgstr "Modifier"
 #: ../../../templates/descriptorpanelcreate.html:26
 #: ../../../templates/descriptorvaluechangefield.html:26
 #: ../../../templates/descriptorvaluechangefieldmultiple.html:34
+#: ../../../templates/entitylist.html:63
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -750,7 +754,6 @@ msgstr "Etiquette pour le langage courant"
 
 #: ../../../templates/descriptormetamodelcreate.html:29
 #: ../../../templates/descriptormetamodeldetail.html:17
-#: ../../../templates/descriptormetamodellist.html:20
 #: ../../../templates/descriptormodeldetail.html:21
 #: ../../../templates/descriptortypedetailslayout.html:35
 msgid "Description"
@@ -799,6 +802,7 @@ msgid "Type of index or none"
 msgstr "Type d'index ou aucun"
 
 #: ../../../templates/descriptormodeltypechangeindex.html:22
+#: ../../../templates/entitylist.html:61
 msgid "None"
 msgstr "Aucun"
 
@@ -925,6 +929,14 @@ msgstr "Valeur0"
 msgid "Value1"
 msgstr "Valeur1"
 
+#: ../../../templates/entitylist.html:60
+msgid "All"
+msgstr ""
+
+#: ../../../templates/entitylist.html:62
+msgid "Accept"
+msgstr ""
+
 #: ../../../templates/widgets/entity.html:14
 msgid "Model of the entity"
 msgstr "Modèle de l'entité"
@@ -1038,3 +1050,13 @@ msgstr "Précision de la décimale"
 #: ../../../templates/widgets/string.html:14
 msgid "Regular expression"
 msgstr "Expression régulière"
+
+#~ msgid "Group of descriptors locked"
+#~ msgstr "Groupe de descripteurs vérouillé"
+
+#~ msgid ""
+#~ "It is not permitted to delete a meta-model of descriptor that contains "
+#~ "some panels"
+#~ msgstr ""
+#~ "Il n'est pas permit de supprimer un méta-modèle de descripteur contenant "
+#~ "des panels"

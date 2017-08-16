@@ -26,22 +26,20 @@ var Layout = Marionette.View.extend({
         'select:tab': function (region, child) {
             this.triggerMethod('select:tab', region, child);
         },
-        'dom:refresh': function(child) {
+        /*'dom:refresh': function(child) {
             var tab = this.$el.find('div.tab-pane.active').attr('name');
             var view = this.getChildView(tab);
-
-            console.log("test issue dont forget me", view);
-
+console.log(view, child, view === child, view == child)
             // update child of current tab
             if (view && view === child) {
-                // this.triggerMethod('select:tab', this.getRegion(tab), view);
-
+                this.triggerMethod('select:tab', this.getRegion(tab), view);
+console.log("passed !!!!!!")
                 if (view.onShowTab) {
-                    console.log("ohh but i'm fixed !!!!");
                     view.onShowTab(this);
+                    console.log("called !!!!!!!")
                 }
             }
-        }
+        }*/
     },
 
     constructor: function() {
@@ -80,7 +78,7 @@ var Layout = Marionette.View.extend({
 
         options || (options = {});
 
-        this.activeTab = undefined;
+        this.activeTab =     undefined;
         this.initialTab = options['initialTab'] || null;
 
         var self = this;
@@ -92,20 +90,21 @@ var Layout = Marionette.View.extend({
                 var currentRegion = self.getRegion(tab);
 
                 // only as possible (1 of 2) fixtures
-                if (currentRegion && currentRegion.currentView) {
+                if (currentRegion && currentRegion.currentView/* && region === currentRegion*/) {
                     if (currentRegion.currentView.onShowTab) {
                         currentRegion.currentView.onShowTab(currentRegion);
-
+// alert("1")
                         self.triggerMethod('select:tab', currentRegion, currentRegion.currentView);
                     }
                 }
-
+/*
                 // update child if region is region of the current tab
                 if (region === currentRegion) {
                     if (child && child.onShowTab) {
                         child.onShowTab(currentRegion);
+                        alert("x")
                     }
-                }
+                }*/
             });
         }
     },
@@ -155,8 +154,6 @@ var Layout = Marionette.View.extend({
             }
 
             // initial trigger for parents
-            // @todo for any of these similar trigger because Mn 3 region.currentView is not set as this time
-            // contrary to Mn 2
             this.triggerMethod('select:tab', region, region.currentView);
         }
     },

@@ -30,7 +30,7 @@ _.extend(BooleanType.prototype, DescriptorFormatType.prototype, {
             this.el = input;
         } else {
             var select = $('<select data-width="100%"></select>');
-            this.group = this._createInputGroup(parent, "glyphicon-check", select);
+            this.groupEl = this._createInputGroup(parent, "glyphicon-check", select);
 
             // true
             var option = $("<option></option>");

@@ -24,7 +24,7 @@ class RestCache(RestMain):
 
 
 # @todo need a standalone service that will receive notification of changes on some models/instance.
-# each change can invalidate some caches entries. the solution can be using a UWSGI 1process/1thead simple application
+# each change can invalidate some caches entries. the solution can be using a UWSGI 1process/1thread simple application
 # width a file socket for communication between django services and cache service. The cache service could cache simply
 # in RAM using a structure, or dict, or uses of a Redis instance.
 # the communication with clients can be performed using channel and websocket. cache service will inform client of

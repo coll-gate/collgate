@@ -17,16 +17,19 @@ from descriptor.descriptorcolumns import get_description
 
 
 class CursorQueryError(Exception):
+
     def __init__(self, message):
         super(Exception, self).__init__(message)
 
 
 class CursorQueryValueError(CursorQueryError):
+
     def __init__(self, message):
         super(Exception, self).__init__("Value error: " + message)
 
 
 class CursorQueryOperatorError(CursorQueryError):
+
     def __init__(self, message):
         super(Exception, self).__init__("Operator error: " + message)
 
@@ -61,6 +64,8 @@ class CursorQuery(object):
         'gt': '>',
         'lte': '<=',
         'lt': '<',
+        'exact': 'LIKE',
+        'iexact': 'ILIKE',
         'contains': 'LIKE',
         'icontains': 'ILIKE',
         'startswith': 'LIKE',
@@ -264,6 +269,19 @@ class CursorQuery(object):
         else:
             return "'" + value.replace("'", "''") + "'"
 
+    def _convert_value(self, value, cmp):
+        # adjust value in some cases
+        if cmp in ('isnull', 'notnull'):
+            return 'NULL'
+        elif cmp in ('contains', 'icontains'):
+            return "%%" + value + "%%"
+        elif cmp in ('startswith', 'istartswith'):
+            return value + "%%"
+        elif cmp in ('endswith', 'iendswith'):
+            return "%%" + value
+        else:
+            return value
+
     def order_by(self, *args):
         """
         Defines the order by fields. The order of the field is important.
@@ -426,8 +444,9 @@ class CursorQuery(object):
 
         for lfilter in filters:
             lfilter_type = type(lfilter)
-            filter_type = lfilter.get('type', None) if lfilter_type is dict else 'sub' if lfilter_type in (
-            tuple, list) else None
+            filter_type = (
+                lfilter.get('type', None) if lfilter_type is dict else 'sub' if lfilter_type in (tuple, list) else None
+            )
 
             # sub
             if filter_type == 'sub':
@@ -494,8 +513,9 @@ class CursorQuery(object):
 
         for lfilter in filters:
             lfilter_type = type(lfilter)
-            filter_type = lfilter.get('type', None) if lfilter_type is dict else 'sub' if lfilter_type in (
-            tuple, list) else None
+            filter_type = (
+                lfilter.get('type', None) if lfilter_type is dict else 'sub' if lfilter_type in (tuple, list) else None
+            )
 
             if filter_type == 'sub':
                 res = self._process_filter(lfilter, depth + 1)
@@ -519,17 +539,9 @@ class CursorQuery(object):
                 cmp = lfilter.get('op', '=').lower()
                 op = self.OPERATORS_MAP.get(cmp)
 
+                # cmp is used with descriptor, otherwise map to a SQL operator
                 if not op:
                     raise CursorQueryValueError('Unrecognized term operator')
-
-                if cmp in ('isnull', 'notnull'):
-                    value = 'NULL'
-                # if cmp in ('contains', 'icontains'):
-                #     value = "%%" + value + "%%"
-                elif cmp in ('startswith', 'istartswith'):
-                    value = value + "%%"
-                elif cmp in ('endswith', 'iendswith'):
-                    value = "%%" + value
 
                 f = field.lstrip('#')
                 is_descriptor = field[0] == '#' or field[1] == '#'
@@ -537,17 +549,18 @@ class CursorQuery(object):
                 if is_descriptor:
                     if self.FIELDS_SEP in f:
                         ff = f.split(self.FIELDS_SEP)
-                        lqs.append(self._cast_descriptor_sub_type(ff[0], ff[1], op, value))
+                        lqs.append(self._cast_descriptor_sub_type(ff[0], ff[1], op, self._convert_value(value, cmp)))
                     else:
-                        clause = self._cast_descriptor_type(db_table, f, op, value)
+                        # use cmp with descriptor format type
+                        clause = self._cast_descriptor_type(db_table, f, cmp, value)
                         if clause:
                             lqs.append(clause)
                 else:
                     if self.FIELDS_SEP in f:
                         ff = f.split(self.FIELDS_SEP)
-                        lqs.append(self._cast_default_sub_type(ff[0], ff[1], op, value))
+                        lqs.append(self._cast_default_sub_type(ff[0], ff[1], op, self._convert_value(value, cmp)))
                     else:
-                        lqs.append(self._cast_default_type(db_table, f, op, value))
+                        lqs.append(self._cast_default_type(db_table, f, op, self._convert_value(value, cmp)))
             # operator
             elif filter_type == 'op':
                 # two consecutive operators, raise a value error

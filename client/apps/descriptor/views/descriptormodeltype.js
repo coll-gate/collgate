@@ -641,11 +641,16 @@ var View = Marionette.View.extend({
                     this.ui.condition.selectpicker('destroy');
                     this.ui.target.selectpicker('destroy');
 
+                    if (this.descriptorType && this.descriptorType.widget) {
+                        this.descriptorType.widget.destroy();
+                        this.descriptorType.widget = null;
+                    }
+
                     ChangeCondition.__super__.onBeforeDestroy.apply(this);
                 },
 
                 toggleCondition: function (condition) {
-                    if (condition == 0 || condition == 1) {
+                    if (condition === 0 || condition === 1) {
                         this.ui.condition_values.hide(false);
                     } else {
                         this.ui.condition_values.show(false);
@@ -653,7 +658,7 @@ var View = Marionette.View.extend({
                 },
 
                 onSelectCondition: function () {
-                    var val = this.ui.condition.val();
+                    var val = parseInt(this.ui.condition.val());
                     this.toggleCondition(val);
                 },
 
@@ -677,7 +682,7 @@ var View = Marionette.View.extend({
                         this.descriptorType.fetch().then(function() {
                             var format = view.descriptorType.get('format');
 
-                            var condition = view.ui.condition.val();
+                            var condition = parseInt(view.ui.condition.val());
                             view.toggleCondition(condition);
 
                             // unit label
@@ -745,14 +750,14 @@ var View = Marionette.View.extend({
                         return this.onDestroyCondition();
                     }
 
-                    // destroy the widget
-                    this.descriptorType.widget.destroy();
-
-                    if (data.condition == 2 || data.condition == 3) {
+                    if (data.condition === 2 || data.condition === 3) {
                         data.values = this.descriptorType.widget.values();
                     } else {
                         data.values = null;
                     }
+
+                    // destroy the widget
+                    this.descriptorType.widget.destroy();
 
                     // depending if the condition previously existed: post or put.
                     if (condition.defined) {

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-17 10:26+0200\n"
+"POT-Creation-Date: 2017-08-16 10:23+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,11 +17,11 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../../views/addgroup.js:45 ../../../views/group.js:85
+#: ../../../views/addgroup.js:45 ../../../views/group.js:96
 msgid "Invalid characters (alphanumeric, _ and - only)"
 msgstr ""
 
-#: ../../../views/addgroup.js:48 ../../../views/group.js:88
+#: ../../../views/addgroup.js:48 ../../../views/group.js:99
 msgid "3 characters min"
 msgstr ""
 
@@ -31,6 +31,18 @@ msgstr ""
 
 #: ../../../views/addusergroup.js:81
 msgid "Select a username"
+msgstr ""
+
+#: ../../../views/group.js:37
+msgid "Manage permissions"
+msgstr ""
+
+#: ../../../views/group.js:38
+msgid "Edit label"
+msgstr ""
+
+#: ../../../views/group.js:39
+msgid "Manage users"
 msgstr ""
 
 #: ../../../routers/permission.js:47
@@ -53,16 +65,16 @@ msgstr ""
 msgid "List of users for group"
 msgstr ""
 
-#: ../../../templates/grouplist.html:16 ../../../templates/grouprename.html:20
+#: ../../../templates/grouplist.html:15 ../../../templates/grouprename.html:20
 #: ../../../templates/permission.html:24
 msgid "Name"
 msgstr ""
 
-#: ../../../templates/grouplist.html:17
+#: ../../../templates/grouplist.html:16
 msgid "Users"
 msgstr ""
 
-#: ../../../templates/grouplist.html:18 ../../../templates/userlist.html:22
+#: ../../../templates/grouplist.html:17 ../../../templates/userlist.html:22
 msgid "Permissions"
 msgstr ""
 

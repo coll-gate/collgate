@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-23 15:43+0200\n"
+"POT-Creation-Date: 2017-08-16 10:25+0200\n"
 "PO-Revision-Date:  2016-02-03 11:38+0100\n"
 "Last-Translator: Frederic SCHERMA <frederic.scherma@clermont.inra.fr>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -146,33 +146,39 @@ msgstr "taxon"
 msgid "taxon synonym"
 msgstr "synonyme de taxon"
 
-#: taxon.py:84
+#: taxon.py:94
 msgid "You are not allowed to create a taxon"
 msgstr "Vous n'êtes pas autorisé à créer un taxon"
 
-#: taxon.py:104
+#: taxon.py:114
 msgid "The language is not supported"
 msgstr "La langue n'est pas supportée"
 
-#: taxon.py:375 taxonsynonym.py:148 taxonsynonym.py:206 taxonsynonym.py:260
+#: taxon.py:159 taxon.py:232 taxon.py:541 taxon.py:698
+#, fuzzy
+#| msgid "You are not allowed to create a taxon"
+msgid "You are not allowed to list the classification"
+msgstr "Vous n'êtes pas autorisé à créer un taxon"
+
+#: taxon.py:387 taxonsynonym.py:148 taxonsynonym.py:206 taxonsynonym.py:260
 msgid "You are not allowed to modify a taxon"
 msgstr "Vous n'êtes pas autorisé à modifier un taxon"
 
-#: taxon.py:399
+#: taxon.py:411
 msgid "The rank of the parent must be lowest than the taxon itself"
 msgstr "Le rang du parent doit être inférieur au taxon lui même"
 
-#: taxon.py:493
+#: taxon.py:505
 msgid "You are not allowed to remove a taxon"
 msgstr "Vous n'êtes pas autorisé à supprimer un taxon"
 
-#: taxon.py:500
+#: taxon.py:512
 msgid "This taxon is referred by one or more entities. It cannot be deleted."
 msgstr ""
 "Ce taxon est reférencé par une ou plusieurs entités. Il ne peut pas être "
 "supprimé."
 
-#: taxon.py:504
+#: taxon.py:516
 msgid "This taxon has sub-ranks. It cannot be deleted."
 msgstr "Ce taxon à des sous-rangs. Il ne peut pas être supprimé."
 

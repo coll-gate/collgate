@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-23 15:43+0200\n"
+"POT-Creation-Date: 2017-08-16 10:25+0200\n"
 "PO-Revision-Date: 2016-02-01 11:53+0100\n"
 "Last-Translator: Frederic SCHERMA <frederic.scherma@clermont.inra.fr>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -56,71 +56,71 @@ msgstr ""
 msgid "Unsupported language identifier"
 msgstr ""
 
-#: home.py:49
+#: home.py:46
 msgid "You are not authenticated."
 msgstr ""
 
-#: home.py:59
+#: home.py:56
 msgid "Please, you must enable your cookies."
 msgstr ""
 
-#: models.py:62
+#: models.py:63
 msgid "English"
 msgstr ""
 
-#: models.py:63
+#: models.py:64
 msgid "French"
 msgstr ""
 
-#: models.py:114
+#: models.py:111
 msgid "Pending"
 msgstr ""
 
-#: models.py:115
+#: models.py:112
 msgid "Valid"
 msgstr ""
 
-#: models.py:116
+#: models.py:113
 msgid "Archived"
 msgstr ""
 
-#: models.py:117
+#: models.py:114
 msgid "Removed"
 msgstr ""
 
-#: models.py:279
+#: models.py:276
 msgid ""
 "It is not allowed to change the status of an entity from valid to pending"
 msgstr ""
 
-#: models.py:282
+#: models.py:279
 msgid "It is not allowed to change the status of a removed entity"
 msgstr ""
 
-#: models.py:285
+#: models.py:282
 msgid "It is not allowed to change the status of an archived entity"
 msgstr ""
 
-#: profile.py:73
+#: profile.py:87
 msgid ""
 "Your account is pending for activation. Please be patient or contact an "
 "administrator."
 msgstr ""
 
-#: profile.py:78
+#: profile.py:92
 msgid "Successfully logged"
 msgstr ""
 
-#: profile.py:85
+#: profile.py:99
 msgid ""
 "Your account is closed. Please contact an administrator to re-activate it."
 msgstr ""
 
-#: profile.py:88
+#: profile.py:102
 msgid "Invalid username or password"
 msgstr ""
 
-#: profile.py:101
+#: profile.py:115
 msgid "Logged out"
 msgstr ""
 

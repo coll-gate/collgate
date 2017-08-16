@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-07 09:53+0200\n"
+"POT-Creation-Date: 2017-08-16 10:23+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -30,12 +30,12 @@ msgstr ""
 msgid "Successfully inserted !"
 msgstr ""
 
-#: ../../../views/language.js:85 ../../../views/language.js:99
+#: ../../../views/language.js:96 ../../../views/language.js:110
 #: ../../../views/languageadd.js:73
 msgid "128 characters max"
 msgstr ""
 
-#: ../../../views/language.js:128
+#: ../../../views/language.js:139
 msgid "Successfully labeled !"
 msgstr ""
 
@@ -91,23 +91,28 @@ msgstr ""
 msgid "Latin"
 msgstr ""
 
-#: ../../../behaviors/actionbuttonevents.js:16
-msgid "show"
-msgstr ""
-
 #: ../../../behaviors/actionbuttonevents.js:17
-msgid "Edit"
+msgid "Show"
 msgstr ""
 
 #: ../../../behaviors/actionbuttonevents.js:18
-msgid "Edit2"
+msgid "Edit"
 msgstr ""
 
 #: ../../../behaviors/actionbuttonevents.js:19
-msgid "Manage"
+msgid "Edit2"
 msgstr ""
 
 #: ../../../behaviors/actionbuttonevents.js:20
+#: ../../../templates/languagelist.html:16
+msgid "Label"
+msgstr ""
+
+#: ../../../behaviors/actionbuttonevents.js:21
+msgid "Manage"
+msgstr ""
+
+#: ../../../behaviors/actionbuttonevents.js:22
 msgid "Delete"
 msgstr ""
 
@@ -175,7 +180,7 @@ msgid "Add a language for data"
 msgstr ""
 
 #: ../../../templates/languagecreate.html:22
-#: ../../../templates/languagelist.html:16
+#: ../../../templates/languagelist.html:15
 msgid "Code"
 msgstr ""
 
@@ -187,10 +192,14 @@ msgstr ""
 msgid "Add"
 msgstr ""
 
-#: ../../../templates/languagelist.html:17
-msgid "Label"
-msgstr ""
-
 #: ../../../templates/leftbar.html:11
 msgid "Welcome"
+msgstr ""
+
+#: ../../../templates/scrollingmore.html:15
+msgid "from"
+msgstr ""
+
+#: ../../../templates/scrollingmore.html:16
+msgid "total results"
 msgstr ""

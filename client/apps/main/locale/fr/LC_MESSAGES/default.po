@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-07 09:53+0200\n"
+"POT-Creation-Date: 2017-08-16 10:23+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,12 +29,12 @@ msgstr "Ne devrait pas être vide"
 msgid "Successfully inserted !"
 msgstr "Inséré avec succé !"
 
-#: ../../../views/language.js:85 ../../../views/language.js:99
+#: ../../../views/language.js:96 ../../../views/language.js:110
 #: ../../../views/languageadd.js:73
 msgid "128 characters max"
 msgstr "128 caractèrs max"
 
-#: ../../../views/language.js:128
+#: ../../../views/language.js:139
 msgid "Successfully labeled !"
 msgstr "Renommé avec succès !"
 
@@ -90,23 +90,28 @@ msgstr "Français"
 msgid "Latin"
 msgstr "Latin"
 
-#: ../../../behaviors/actionbuttonevents.js:16
-msgid "show"
-msgstr "voir"
-
 #: ../../../behaviors/actionbuttonevents.js:17
+msgid "Show"
+msgstr ""
+
+#: ../../../behaviors/actionbuttonevents.js:18
 msgid "Edit"
 msgstr "Editer"
 
-#: ../../../behaviors/actionbuttonevents.js:18
+#: ../../../behaviors/actionbuttonevents.js:19
 msgid "Edit2"
 msgstr "Edition2"
 
-#: ../../../behaviors/actionbuttonevents.js:19
+#: ../../../behaviors/actionbuttonevents.js:20
+#: ../../../templates/languagelist.html:16
+msgid "Label"
+msgstr "Etiquette"
+
+#: ../../../behaviors/actionbuttonevents.js:21
 msgid "Manage"
 msgstr "Gérer"
 
-#: ../../../behaviors/actionbuttonevents.js:20
+#: ../../../behaviors/actionbuttonevents.js:22
 msgid "Delete"
 msgstr "Supprimer"
 
@@ -174,7 +179,7 @@ msgid "Add a language for data"
 msgstr "Ajouter une langue pour les données"
 
 #: ../../../templates/languagecreate.html:22
-#: ../../../templates/languagelist.html:16
+#: ../../../templates/languagelist.html:15
 msgid "Code"
 msgstr "Code"
 
@@ -186,10 +191,17 @@ msgstr "Etiquette pour le language courant"
 msgid "Add"
 msgstr "Ajouter"
 
-#: ../../../templates/languagelist.html:17
-msgid "Label"
-msgstr "Etiquette"
-
 #: ../../../templates/leftbar.html:11
 msgid "Welcome"
 msgstr "Bienvenue"
+
+#: ../../../templates/scrollingmore.html:15
+msgid "from"
+msgstr ""
+
+#: ../../../templates/scrollingmore.html:16
+msgid "total results"
+msgstr ""
+
+#~ msgid "show"
+#~ msgstr "voir"

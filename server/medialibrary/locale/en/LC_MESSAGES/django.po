@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-23 15:43+0200\n"
+"POT-Creation-Date: 2017-08-16 10:25+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -92,6 +92,6 @@ msgstr ""
 msgid "Trying to update a non-existing file"
 msgstr ""
 
-#: models.py:66
+#: models.py:68
 msgid "media"
 msgstr ""

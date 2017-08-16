@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-01 17:35+0200\n"
+"POT-Creation-Date: 2017-08-16 10:23+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -41,7 +41,7 @@ msgstr ""
 msgid "Cancel"
 msgstr ""
 
-#: ../../../views/establishment.js:48 ../../../views/organisation.js:51
+#: ../../../views/establishment.js:59 ../../../views/organisation.js:62
 msgid "Successfully removed !"
 msgstr ""
 
@@ -52,7 +52,7 @@ msgstr ""
 
 #: ../../../views/establishmentdetails.js:135
 #: ../../../views/establishmentlistfilter.js:154
-#: ../../../views/organisationdetails.js:116
+#: ../../../views/organisationdetails.js:115
 #: ../../../controllers/organisation.js:103
 msgid "255 characters max"
 msgstr ""
@@ -60,26 +60,26 @@ msgstr ""
 #: ../../../views/establishmentdetails.js:138
 #: ../../../views/establishmentlistfilter.js:59
 #: ../../../views/establishmentlistfilter.js:157
-#: ../../../views/organisationdetails.js:119
+#: ../../../views/organisationdetails.js:118
 #: ../../../views/organisationlistfilter.js:54
 #: ../../../controllers/organisation.js:106
 msgid "3 characters min"
 msgstr ""
 
-#: ../../../views/establishmentlist.js:45 ../../../views/organisationlist.js:46
+#: ../../../views/establishmentlist.js:47 ../../../views/organisationlist.js:47
 #: ../../../templates/grcdetails.html:14
 msgid "Name"
 msgstr ""
 
-#: ../../../views/establishmentlist.js:46 ../../../views/organisationlist.js:49
+#: ../../../views/establishmentlist.js:48 ../../../views/organisationlist.js:50
 msgid "Code"
 msgstr ""
 
-#: ../../../views/establishmentlist.js:47
+#: ../../../views/establishmentlist.js:49
 msgid "Zipcode"
 msgstr ""
 
-#: ../../../views/establishmentlist.js:49
+#: ../../../views/establishmentlist.js:51
 msgid "Location"
 msgstr ""
 
@@ -92,26 +92,26 @@ msgstr ""
 msgid "Done"
 msgstr ""
 
-#: ../../../views/organisation.js:70
+#: ../../../views/organisation.js:81
 msgid "Manage establishments of the organisation"
 msgstr ""
 
-#: ../../../views/organisationdetails.js:100
+#: ../../../views/organisationdetails.js:99
 #: ../../../controllers/organisation.js:87
 msgid "Organisation name already in usage"
 msgstr ""
 
-#: ../../../views/organisationlist.js:47
+#: ../../../views/organisationlist.js:48
 #: ../../../templates/organisationcreate.html:31
 #: ../../../templates/organisationedit.html:24
 msgid "Type"
 msgstr ""
 
-#: ../../../views/organisationlist.js:48
+#: ../../../views/organisationlist.js:49
 msgid "Acronym"
 msgstr ""
 
-#: ../../../views/organisationlist.js:51
+#: ../../../views/organisationlist.js:52
 #: ../../../templates/organisationlayout.html:16
 msgid "Establishments"
 msgstr ""

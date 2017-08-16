@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-20 14:09+0100\n"
+"POT-Creation-Date: 2017-08-16 10:26+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,14 +16,12 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../../widgets/city.js:52 ../../../widgets/city.js:401
-msgid "Extended search..."
-msgstr "Étendre la recherche..."
-
-#: ../../../widgets/city.js:210 ../../../widgets/city.js:558
+#: ../../../widgets/city.js:106 ../../../widgets/city.js:293
+#: ../../../widgets/city.js:641 ../../../widgets/country.js:106
+#: ../../../widgets/country.js:242
 msgid "Enter a value."
 msgstr "Saisissez une valeur"
 
-#: ../../../widgets/country.js:101 ../../../widgets/country.js:237
-msgid "Enter a value."
-msgstr "Entrez une valeur."
+#: ../../../widgets/city.js:134 ../../../widgets/city.js:484
+msgid "Extended search..."
+msgstr "Étendre la recherche..."

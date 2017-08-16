@@ -182,7 +182,7 @@ class DescriptorFormatType(object):
         if operator == 'exists':
             return self.operator_exists(db_table, descriptor_name)
         elif operator == 'notexists':
-            return self.operator_exists(db_table, descriptor_name)
+            return self.operator_notexists(db_table, descriptor_name)
         elif operator == 'isnull':
             return self.operator_isnull(db_table, descriptor_name)
         elif operator == 'notnull':
@@ -199,9 +199,13 @@ class DescriptorFormatType(object):
             return self.operator_gte(db_table, descriptor_name, value)
         elif operator == '>' or operator == 'gt':
             return self.operator_gt(db_table, descriptor_name, value)
-        elif operator == 'ILIKE':
+        elif operator == 'iexact':
+            return self.operator_iexact(db_table, descriptor_name, value)
+        elif operator == 'exact':
+            return self.operator_exact(db_table, descriptor_name, value)
+        elif operator == 'icontains':
             return self.operator_icontains(db_table, descriptor_name, value)
-        elif operator == 'LIKE':
+        elif operator == 'contains':
             return self.operator_contains(db_table, descriptor_name, value)
         elif operator == 'istartswith':
             return self.operator_istartswith(db_table, descriptor_name, value)
@@ -211,9 +215,9 @@ class DescriptorFormatType(object):
             return self.operator_iendswith(db_table, descriptor_name, value)
         elif operator == 'endswith':
             return self.operator_endswith(db_table, descriptor_name, value)
-        elif operator == 'IN':
+        elif operator == 'in':
             return self.operator_in(db_table, descriptor_name, value)
-        elif operator == 'NOT IN':
+        elif operator == 'notin':
             return self.operator_notin(db_table, descriptor_name, value)
         else:
             raise ValueError('Unrecognized operator')
@@ -229,6 +233,15 @@ class DescriptorFormatType(object):
 
     def operator_notnull(self, db_table, descriptor_name):
         return '("%s"."descriptors"->>\'%s\') IS NOT NULL' % (db_table, descriptor_name)
+
+    def operator_iexact(self, db_table, descriptor_name, value):
+        return self.operator_ilike(db_table, descriptor_name, value)
+
+    def operator_exact(self, db_table, descriptor_name, value):
+        return self.operator_like(db_table, descriptor_name, value)
+
+    def operator_istartswith(self, db_table, descriptor_name, value):
+        return self.operator_ilike(db_table, descriptor_name, value + "%%")
 
     def operator_startswith(self, db_table, descriptor_name, value):
         return self.operator_like(db_table, descriptor_name, value + "%%")

@@ -181,6 +181,7 @@ def get_accession_list_count(request):
 
     return HttpResponseRest(request, results)
 
+
 @RestAccessionAccession.def_auth_request(Method.GET, Format.JSON, perms={
     'accession.list_accession': _("You are not allowed to list the accessions")
 })

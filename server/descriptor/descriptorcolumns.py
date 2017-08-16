@@ -54,6 +54,7 @@ def get_columns_name_for_describable_content_type(request, content_type_name):
     dmms = DescriptorMetaModel.objects.filter(target=content_type).values_list(
         "descriptor_models__descriptor_model_types__id", flat=True)
 
+    # @todo must be in parameters list with VALIDATION
     if meta_model_id_list:
         dmms = dmms.filter(pk__in=meta_model_id_list.split(','))
 

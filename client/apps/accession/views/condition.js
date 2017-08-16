@@ -71,12 +71,12 @@ var View = Marionette.View.extend({
     },
 
     onConditionChange: function () {
-
         var field = this.ui.field.val();
         var column = this.columns[field];
 
         console.log(column);
         console.log(this.widget);
+
         if (this.widget.allow_multiple) {
             this.widget.destroy();
 
@@ -212,9 +212,10 @@ var View = Marionette.View.extend({
 
         var options_set = null;
 
+        // @todo mustn't be hard coded
         if (column.format.list_type === "dropdown" || column.format.list_type === "autocomplete" || ['entity', 'descriptor_meta_model', 'country', 'city'].includes(field_type)) {
             options_set = 2;
-        } else if (['numeric_range'].includes(field_type)) {
+        } else if (['numeric_range', 'date', 'time', 'datetime', 'imprecise_date'].includes(field_type)) {
             options_set = 1;
         } else if (field_type === 'string') {
             options_set = 3;
@@ -276,6 +277,13 @@ var View = Marionette.View.extend({
         }
         this.model.collection.remove(this.model.cid);
         this.parent.validParenthesis();
+    },
+
+    onBeforeDetach: function () {
+        if (this.widget) {
+            this.widget.destroy();
+            this.widget = null;
+        }
     }
 });
 

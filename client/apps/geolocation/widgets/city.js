@@ -48,7 +48,7 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
             }
 
             var params = {
-                width: 'element',
+                // width: 'element',
                 data: initials,
                 dropdownParent: container,
                 ajax: {
@@ -283,7 +283,7 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
             };
 
             var params = {
-                width: 'element',
+                // width: 'element',
                 data: initials,
                 dropdownParent: container,
                 ajax: selectAjax(false),

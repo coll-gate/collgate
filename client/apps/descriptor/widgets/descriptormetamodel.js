@@ -46,7 +46,7 @@ _.extend(DescriptorMetaModel.prototype, DescriptorFormatType.prototype, {
             }
 
             var params = {
-                width: 'element',
+                // width: 'element',
                 data: initials,
                 dropdownParent: container,
                 ajax: {
