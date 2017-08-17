@@ -26,20 +26,20 @@ var Layout = Marionette.View.extend({
         'select:tab': function (region, child) {
             this.triggerMethod('select:tab', region, child);
         },
-        /*'dom:refresh': function(child) {
+        'dom:refresh': function(child) {
             var tab = this.$el.find('div.tab-pane.active').attr('name');
             var view = this.getChildView(tab);
-console.log(view, child, view === child, view == child)
+            var region = this.getRegion(tab);
+
             // update child of current tab
             if (view && view === child) {
-                this.triggerMethod('select:tab', this.getRegion(tab), view);
-console.log("passed !!!!!!")
+                this.triggerMethod('select:tab', region, view);
+
                 if (view.onShowTab) {
-                    view.onShowTab(this);
-                    console.log("called !!!!!!!")
+                    view.onShowTab(region);
                 }
             }
-        }*/
+        }
     },
 
     constructor: function() {
@@ -78,35 +78,8 @@ console.log("passed !!!!!!")
 
         options || (options = {});
 
-        this.activeTab =     undefined;
+        this.activeTab = undefined;
         this.initialTab = options['initialTab'] || null;
-
-        var self = this;
-
-        // @todo uses this fix for the moment wait Mn 3 next version
-        for (var region in this.getRegions()) {
-            this.getRegion(region).on('show', function (region, child) {
-                var tab = self.activeTab;  // self.$el.find('div.tab-pane.active').attr('name');
-                var currentRegion = self.getRegion(tab);
-
-                // only as possible (1 of 2) fixtures
-                if (currentRegion && currentRegion.currentView/* && region === currentRegion*/) {
-                    if (currentRegion.currentView.onShowTab) {
-                        currentRegion.currentView.onShowTab(currentRegion);
-// alert("1")
-                        self.triggerMethod('select:tab', currentRegion, currentRegion.currentView);
-                    }
-                }
-/*
-                // update child if region is region of the current tab
-                if (region === currentRegion) {
-                    if (child && child.onShowTab) {
-                        child.onShowTab(currentRegion);
-                        alert("x")
-                    }
-                }*/
-            });
-        }
     },
 
     onBeforeAttach: function() {

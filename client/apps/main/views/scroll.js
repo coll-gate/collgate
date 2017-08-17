@@ -1295,7 +1295,10 @@ var View = Marionette.CompositeView.extend({
                     'tab-index': 0
                 }).addClass('glasspane-top-of');
 
-                // inside of the window
+                // focus on text field
+                contextMenu.find('input[name="add-column-filter"]').val("").focus();
+
+                // height must be inside of the window
                 var maxHeight = $(window).height() - (this.ui.add_column.parent().offset().top + this.ui.add_column.height()) - 20;
                 maxHeight -= contextMenu.children('div.input-group').outerHeight() + contextMenu.children('div.btn-group').outerHeight();
                 maxHeight -= ul.outerHeight() - ul.height();
@@ -1507,133 +1510,6 @@ var View = Marionette.CompositeView.extend({
                 this.getUserSettingVersion()
             );
         }
-
-        /*var columnName = a.attr('name');
-
-        if (a.prop("displayed")) {
-            var columnId = -1;
-
-            for (var i = 0; i < this.displayedColumns.length; ++i) {
-                if (this.displayedColumns[i] === columnName) {
-                    columnId = i;
-                    break;
-                }
-            }
-
-            if (columnId !== -1) {
-                this.displayedColumns.splice(i, 1);
-
-                var headerCol = this.ui.thead.children('tr').children('th[name="' + columnName + '"]');
-                headerCol.remove();
-
-                var bodyCol = this.ui.tbody.children('tr').children('td[name="' + columnName + '"]');
-                bodyCol.remove();
-
-                // update user setting
-                for (var i = 0; i < this.selectedColumns.length; ++i) {
-                    if (this.selectedColumns[i].name === columnName) {
-                        this.selectedColumns.splice(i, 1);
-                        break;
-                    }
-                }
-
-                this.updateColumnsWidth(true);
-
-                if (this.getUserSettingName()) {
-                    application.updateUserSetting(
-                        this.getUserSettingName(),
-                        this.selectedColumns,
-                        this.getUserSettingVersion());
-                }
-            }
-        } else {
-            var column = this.getOption('columns')[columnName];
-
-            this.displayedColumns.push(columnName);
-
-            // insert the new column dynamically
-            var th = $('<th></th>');
-            th.attr('name', columnName);
-            th.addClass('unselectable');
-
-            var labelOrGlyph = $('<span>' + (this.getOption('columns')[columnName].label || columnName) + '</span>');
-            if (!column.fixed) {
-                labelOrGlyph.prop('draggable', true);
-            }
-
-            if (column.minWidth) {
-                th.addClass("title-column");
-            }
-
-            var sorter = $('<span class="column-sorter glyphicon glyphicon-sort action sortby-asc-column column-action"></span>');
-            th.append(sorter);
-
-            if (typeof(column.glyphicon) === "string") {
-                labelOrGlyph.addClass("glyphicon " + column.glyphicon);
-                th.addClass('glyph-fixed-column');
-            }
-
-            var cellClassName = "";
-            if (typeof(column.event) === "string") {
-                cellClassName = "action " + column.event;
-            }
-
-            if (column.fixed) {
-                th.addClass('fixed-column');
-            }
-
-            th.append(labelOrGlyph);
-
-            this.ui.thead.children('tr').append(th);
-
-            var collection = this.collection;
-            var rows = this.ui.tbody.children('tr');
-
-            $.each(rows, function (i, element) {
-                var el = $(element);
-                var item = collection.get(el.attr('element-id'));
-                var cell = $('<td></td>');
-                cell.attr('name', columnName);
-                cell.addClass(cellClassName);
-
-                if (column.custom) {
-                    // deferred
-                } else if (column.glyphicon) {
-                    var span = $('<span class="glyphicon"></span>');
-                    span.addClass(column.glyphicon[1]);
-                    cell.html(span);
-                } else if (!column.format) {
-                    cell.html(item.get(columnName.replace(/^#/, '')));
-                } else if (column.query) {
-                    // deferred
-                } else if (columnName.startsWith('#')) {
-                    cell.html(item.get('descriptors')[columnName.replace(/^#/, '')] || "");
-                }
-
-                el.append(cell);
-            });
-
-            // update user setting
-            this.selectedColumns.push({
-                name: columnName,
-                width: null,
-                sort_by: null
-            });
-
-            var view = this;
-
-            // refresh only the new column on every row
-            this.onRefreshChildren(true, this.displayedColumns.slice(-1)).done(function() {
-                // save once refresh is done completely
-                if (view.getUserSettingName()) {
-                    application.updateUserSetting(
-                        view.getUserSettingName(),
-                        view.selectedColumns,
-                        view.getUserSettingVersion()
-                    );
-                }
-            });
-        }*/
     },
 
     getSortField: function(columnName) {
@@ -1806,6 +1682,10 @@ var View = Marionette.CompositeView.extend({
                 this.controlKeyDown = true;
                 this.highlightLabels(true);
             }
+        } else if (e.key === 'Escape') {
+            // hide the context menu on ESCAPE key (and the glass-pane)
+            application.main.glassPane('destroy');
+            this.ui.add_column_menu.hide();
         }
     },
 

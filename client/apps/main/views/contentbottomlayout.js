@@ -29,12 +29,16 @@ var View = Marionette.View.extend({
         'dom:refresh': function(child) {
             // call onShowTab when the view is inserted and directly visible
             if (child && child.onShowTab && this.$el.isInViewport() && child.$el.isInViewport()) {
-                // child.onShowTab();
+                if (this._lastRegion && this._lastRegion.currentView === this) {
+                    child.onShowTab(this._lastRegion);
+                }
             }
         }
     },
 
     onShowTab: function(tabView) {
+        this._lastRegion = tabView;
+
         var view = this.getChildView('content');
         if (view && view.onShowTab) {
             view.onShowTab(tabView);
@@ -47,6 +51,8 @@ var View = Marionette.View.extend({
     },
 
     onHideTab: function(tabView) {
+        this._lastRegion = null;
+
         var view = this.getChildView('content');
         if (view && view.onHideTab) {
             view.onHideTab(tabView);

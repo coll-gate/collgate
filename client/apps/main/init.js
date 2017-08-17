@@ -161,8 +161,9 @@ MainModule.prototype = {
             $('body').append(this.glassPaneElement);
 
             this.glassPaneElement.on('click', function() {
-               this.remove();
-               return true;
+                // remove and all bound events
+                $(this).remove();
+                return true;
             });
         } else if (foo === 'destroy' && $('body').children('div.glasspane').length !== 0) {
             this.glassPaneElement.remove();
