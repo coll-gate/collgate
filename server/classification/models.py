@@ -81,6 +81,47 @@ class Taxon(Entity):
     # to a taxon.
     descriptor_meta_model = models.ForeignKey(DescriptorMetaModel, null=True)
 
+    @classmethod
+    def get_defaults_columns(cls):
+        return {
+            'rank': {  # @todo defined by classification later, dynamically
+                'label': _('Rank'),
+                'field': 'name',
+                'query': False,
+                'format': {
+                    'type': 'classification_rank',  # @todo create this type or use enum_ordinal
+                    'model': 'classification.rank'
+                }
+            },
+            'parent': {  # @todo to be replaced by a multiple classification
+                'label': _('Classification'),
+                'field': 'name',
+                'query': False,   # could be later, for the moment LEFT JOIN into the queryset
+                'format': {
+                    'type': 'entity',
+                    'model': 'classification.taxon'
+                }
+            },
+            'descriptor_meta_model': {
+                'label': _('Model'),
+                'field': 'name',
+                'query': True,
+                'format': {
+                    'type': 'descriptor_meta_model',
+                    'model': 'classification.taxon'
+                }
+            },
+            'synonym': {  # @todo how to manage cursor on a M2M ??
+                'label': _('Synonym'),
+                'field': 'name',
+                'query': False,   # done by a prefetch related
+                'format': {
+                    'type': 'synonym',
+                    'model': 'taxon.synonym'
+                }
+            }
+        }
+
     class Meta:
         verbose_name = _("taxon")
 

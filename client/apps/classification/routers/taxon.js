@@ -12,7 +12,7 @@ var Marionette = require('backbone.marionette');
 var TaxonModel = require('../models/taxon');
 
 var TaxonListView = require('../views/taxonlist');
-var TaxonListFilterView = require('../views/taxonlistfilter');
+var EntityListFilterView = require('../../descriptor/views/entitylistfilter');
 var CultivarListView = require('../views/cultivarlist');
 var CultivarListFilterView = require('../views/cultivarlistfilter');
 
@@ -80,7 +80,7 @@ var TaxonRouter = Marionette.AppRouter.extend({
                 collection: collection
             }));
 
-            defaultLayout.showChildView('bottom', new TaxonListFilterView({
+            defaultLayout.showChildView('bottom', new EntityListFilterView({
                 collection: collection, columns: data.columns}));
 
             taxonListView.query();
@@ -95,7 +95,7 @@ var TaxonRouter = Marionette.AppRouter.extend({
                 collection: collection
             }));
 
-            defaultLayout.showChildView('bottom', new TaxonListFilterView({
+            defaultLayout.showChildView('bottom', new EntityListFilterView({
                 collection: collection, columns: data[0].columns}));
         });*/
     },

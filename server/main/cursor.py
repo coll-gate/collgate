@@ -149,8 +149,10 @@ class CursorQuery(object):
                 if self.FIELDS_SEP in f:
                     select_related.append('#' + f)
             elif f in self.model_fields:
-                if self.model_fields[f][0] == 'FK':
-                    if self.FIELDS_SEP in f:
+                ff = f.split(self.FIELDS_SEP)
+
+                if ff[0] in self.model_fields:
+                    if self.model_fields[ff[0]][0] == 'FK':
                         select_related.append(f)
 
         self.add_select_related(select_related)
@@ -319,8 +321,8 @@ class CursorQuery(object):
                     ff = f.split(self.FIELDS_SEP)
 
                     if ff[0] in self.model_fields:
-                        # if self.model_fields[f][0] == 'FK':
-                        select_related.append(f)
+                        if self.model_fields[ff[0]][0] == 'FK':
+                            select_related.append(f)
 
         self.add_select_related(select_related)
         return self
@@ -944,7 +946,7 @@ class CursorQuery(object):
         except KeyError as e:
             raise CursorQueryError(e)
 
-        _select = "SELECT DISTINCT COUNT(*)" if self.query_distinct else "SELECT COUNT(*)"  # + ", ".join(self.query_select)
+        _select = "SELECT DISTINCT COUNT(*)" if self.query_distinct else "SELECT COUNT(*)"
         _from = "FROM " + " ".join(self.query_from)
 
         if self.query_filters:

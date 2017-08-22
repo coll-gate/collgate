@@ -21,7 +21,7 @@ from igdectk.rest.response import HttpResponseRest
 from main.cache import cache_manager, named_cache
 
 from .descriptor import RestDescriptor
-from .models import DescriptorMetaModel, DescriptorModelType
+from .models import DescriptorMetaModel, DescriptorModelType, DescriptorType
 from .appsettings import EXCLUDED_TYPES_FOR_COLUMN_VIEW
 
 
@@ -83,9 +83,19 @@ def get_columns_name_for_describable_content_type(request, content_type_name):
         for name, column in model_class.get_defaults_columns().items():
             descriptor_format = column.get('format')
 
+            # get group id and type id from descriptor type code
+            code = column.get('code')
+            if code:
+                descriptor_type = DescriptorType.objects.get(code=code)
+                descriptor_type_group_id = descriptor_type.group_id
+                descriptor_type_id = descriptor_type.id
+            else:
+                descriptor_type_group_id = 0
+                descriptor_type_id = 0
+
             columns[name] = {
-                'group': 0,
-                'type': 0,
+                'group': descriptor_type_group_id,
+                'type': descriptor_type_id,
                 'field': column.get('field', None),
                 'label': column.get('label', name),
                 'query': column.get('query', False),

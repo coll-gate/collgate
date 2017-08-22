@@ -43,7 +43,7 @@ var View = Marionette.View.extend({
             var column = columns[columnName];
             columnsByLabel.push({
                 name: columnName,
-                label: column.label
+                label: column.label || columnName
             });
         }
 
@@ -64,6 +64,9 @@ var View = Marionette.View.extend({
             style: 'btn-default',
             container: 'body'
         }).selectpicker('val', 'name');
+
+        // initial
+        this.onChangeField();
     },
 
     onFilter: function () {
@@ -104,14 +107,12 @@ var View = Marionette.View.extend({
     },
 
     validateSearchValue: function() {
-        var field = this.ui.entity_field.val();
-
-        if (field === 'name' || field === 'code') {
+        if (!this.widget) {
             var v = this.$el.find(".search-value").val().trim();
 
             if (v.length > 0 && v.length < 3) {
-                this.$el.find(".search-value").validateField('failed', gt.gettext('3 characters min'));
-                return false;
+                this.$el.find(".search-value").validateField('ok');
+                return true;
             } else if (this.$el.find(".search-value").val().length === 0) {
                 this.$el.find(".search-value").cleanField();
                 return true;
@@ -144,11 +145,14 @@ var View = Marionette.View.extend({
             this.widget = application.descriptor.widgets.newElement(column.format.type);
             if (this.widget) {
                 this.widget.create(column.format, this.ui.search_group, false, column.group, column.type);
+                return;
             }
-        } else {
-            var input = $('<input type="text" class="search-value form-control" name="search-value"/>');
-            this.ui.search_group.append(input);
+
+            this.widget = null;
         }
+
+        var input = $('<input type="text" class="search-value form-control" name="search-value"/>');
+        this.ui.search_group.append(input);
     }
 });
 

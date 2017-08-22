@@ -149,7 +149,7 @@ def create_taxon(request):
             'id': s.id,
             'name': s.name,
             'type': s.type,
-            'language': s.language,
+            'language': s.language
         })
 
     return HttpResponseRest(request, response)

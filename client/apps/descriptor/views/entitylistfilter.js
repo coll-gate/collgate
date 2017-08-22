@@ -1,19 +1,19 @@
 /**
- * @file accessionlistfooter.js
- * @brief Filter and configuration for the list of accession
+ * @file entitylistfilter.js
+ * @brief Filter the list of describable entity
  * @author Frédéric SCHERMA (INRA UMR1095)
- * @date 2017-03-22
- * @copyright Copyright (c) 2017 INRA/CIRAD
+ * @date 2016-10-03
+ * @copyright Copyright (c) 2016 INRA/CIRAD
  * @license MIT (see LICENSE file)
- * @details 
+ * @details
  */
 
 var Marionette = require('backbone.marionette');
 
 var View = Marionette.View.extend({
     tagName: 'div',
-    className: 'accession-footer',
-    template: require('../../descriptor/templates/entitylistfilter.html'),
+    className: 'entity-list-filter',
+    template: require('../templates/entitylistfilter.html'),
 
     ui: {
         filter_btn: 'button.entity-filter',
@@ -96,29 +96,6 @@ var View = Marionette.View.extend({
                 this.collection.filters = null;
             }
 
-            // this.collection.filters = [{
-            //     type: 'term',
-            //     field: 'name',
-            //     value: this.ui.entity_name.val().trim(),
-            //     op: "icontains"
-            // }, {
-            //     type: 'op',
-            //     value: 'and'
-            // }, [{
-            //     type: 'term',
-            //     field: '#MCPD_ORIGCTY->name',
-            //     value: 'France',
-            //     op: "neq"
-            // }, {
-            //     type: 'op',
-            //     value: 'or'
-            // }, {
-            //     type: 'term',
-            //     field: '#IPGRI_4.1.1->value1',
-            //     value: 'Hiver',
-            //     op: "eq"
-            // }, []]];
-
             this.collection.fetch({
                 reset: true,
                 data: {
@@ -136,8 +113,6 @@ var View = Marionette.View.extend({
             if (v.length > 0 && v.length < 3) {
                 this.$el.find(".search-value").validateField('ok');
                 return true;
-                // this.$el.find(".search-value").validateField('failed', gt.gettext('3 characters min'));
-                // return false;
             } else if (this.$el.find(".search-value").val().length === 0) {
                 this.$el.find(".search-value").cleanField();
                 return true;

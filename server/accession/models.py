@@ -85,6 +85,15 @@ class Accession(DescribableEntity):
                     'type': 'descriptor_meta_model',
                     'model': 'accession.accession'
                 }
+            },
+            'synonym': {
+                'label': _('Synonym'),
+                'field': 'name',
+                'query': False,   # done by a prefetch related
+                'format': {
+                    'type': 'synonym',
+                    'model': 'accession.synonym'
+                }
             }
         }
 

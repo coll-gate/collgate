@@ -1,16 +1,12 @@
 # -*- coding: utf-8; -*-
 #
 # @file models.py
-# @brief 
+# @brief coll-gate organisation models.
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2017-01-03
 # @copyright Copyright (c) 2017 INRA/CIRAD
 # @license MIT (see LICENSE file)
 # @details 
-
-"""
-coll-gate organisation models.
-"""
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
@@ -47,6 +43,20 @@ class Organisation(DescribableEntity):
 
     # type of organisation is related to the type of descriptor IN_002 that is an 'enum_single'.
     type = models.CharField(max_length=16, default=TYPE_UNDEFINED)
+
+    @classmethod
+    def get_defaults_columns(cls):
+        return {
+            'type': {
+                'label': _('Type'),
+                'field': 'name',
+                'query': False,
+                'format': {
+                    'type': 'enum_single',
+                    'code': Organisation.TYPE_CODE
+                }
+            }
+        }
 
     class Meta:
         verbose_name = _("Organisation")
@@ -200,4 +210,4 @@ class GRC(models.Model):
     objects = GRCManager()
 
 # @todo Contact for an establishment
-
+# @todo Conservatory for an establishment
