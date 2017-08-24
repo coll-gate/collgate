@@ -57,6 +57,9 @@ class TemplateAppValue(Node):
         elif arg_repr == "modules":
             from igdectk.module.manager import module_manager
             ret_val = [module.name for module in module_manager.modules if module.has_client()]
+        elif arg_repr == "menus":
+            from igdectk.module.manager import module_manager
+            ret_val = [menu.to_json() for menu in module_manager.menus]
         elif arg_repr == "development":
             ret_val = hasattr(settings, 'WEBPACK')
         elif arg_repr == "webpack_host":

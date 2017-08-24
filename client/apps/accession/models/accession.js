@@ -24,7 +24,8 @@ var Model = Backbone.Model.extend({
         name: '',
         parent: undefined,
         descriptor_meta_model: undefined,
-        descriptors: {}
+        descriptors: {},
+        synonyms: []
     },
 
     parse: function(data) {

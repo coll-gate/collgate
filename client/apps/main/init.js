@@ -112,6 +112,10 @@ MainModule.prototype = {
         // drag'n'drop manager
         var DragAndDrop = require('./utils/dnd');
         this.dnd = new DragAndDrop();
+
+        // global menu manager
+        var MenuManager = require('./utils/menumanager');
+        this.menu = new MenuManager();
     },
 
     start: function(options) {

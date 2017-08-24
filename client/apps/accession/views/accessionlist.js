@@ -24,7 +24,8 @@ var View = ScrollView.extend({
         {name: 'code', width: 'auto', sort_by: null},
         {name: 'name', width: 'auto', sort_by: '+0'},
         {name: 'parent', width: 'auto', sort_by: null},
-        {name: 'descriptor_meta_model', width: 'auto', sort_by: null}
+        {name: 'descriptor_meta_model', width: 'auto', sort_by: null},
+        {name: 'synonym', width: 'auto', sort_by: null}
     ],
 
     columnsOptions: {
@@ -38,7 +39,14 @@ var View = ScrollView.extend({
             custom: 'parentCell',
             field: 'name'
         },
-        'descriptor_meta_model': {label: gt.gettext('Model'), width: 'auto', minWidth: true}
+        'descriptor_meta_model': {label: gt.gettext('Model'), width: 'auto', minWidth: true},
+        'synonym': {
+            label: gt.gettext('Synonym'),
+            width: 'auto',
+            minWidth: true,
+            custom: 'synonymCell',
+            field: 'name'
+        }
     },
 
     templateContext: function () {

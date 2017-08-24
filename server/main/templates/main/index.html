@@ -181,6 +181,9 @@ initials_alerts = [{% spaceless %}
 {% endfor %}
 {% endspaceless %}];
 
+// initials menu coming from django templating
+initials_menus = {% collgate "menus" %};
+
 // client session
 session = function() {
     if (typeof session !== 'undefined') {

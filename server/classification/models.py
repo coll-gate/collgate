@@ -86,7 +86,7 @@ class Taxon(Entity):
         return {
             'rank': {  # @todo defined by classification later, dynamically
                 'label': _('Rank'),
-                'field': 'name',
+                # 'field': 'name',
                 'query': False,
                 'format': {
                     'type': 'classification_rank',  # @todo create this type or use enum_ordinal

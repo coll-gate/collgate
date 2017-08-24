@@ -83,11 +83,12 @@ var View = Marionette.View.extend({
         if (!this.model.get('parent_details')) {
             return
         }
-        var parent_name = this.model.get('parent_details').name || "";
-        var parent_rank = this.model.get('parent_details').rank;
 
-        var el = $('<span class="parent taxon-rank" title="">' + parent_name + '</span>');
-        if (parent_rank) {
+        var parentName = this.model.get('parent_details').name || "";
+        var parentRank = this.model.get('parent_details').rank;
+
+        var el = $('<span class="parent taxon-rank" title="">' + parentName + '</span>');
+        if (parentRank) {
             var rank = application.classification.collections.taxonRanks.findLabel(this.model.get('parent_details').rank);
 
             el.attr('value', this.model.get('parent_details').rank);
@@ -95,6 +96,16 @@ var View = Marionette.View.extend({
         }
 
         td.html(el);
+    },
+
+    synonymCell: function(td) {
+        var synonyms = this.model.get('synonyms');
+
+        if (synonyms.length > 2) {
+            var text = this.model.get('synonyms')[2].name;
+
+            td.html(text);
+        }
     },
 
     onDeleteAccession: function() {
