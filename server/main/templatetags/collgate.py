@@ -11,6 +11,7 @@
 """
 The related tag.
 """
+import json
 
 from django.conf import settings
 from django.template import TemplateSyntaxError, Variable, Node, Library
@@ -56,10 +57,10 @@ class TemplateAppValue(Node):
             ret_val = '.'.join([str(x) for x in appsettings.APP_VERSION])
         elif arg_repr == "modules":
             from igdectk.module.manager import module_manager
-            ret_val = [module.name for module in module_manager.modules if module.has_client()]
+            ret_val = json.dumps([module.name for module in module_manager.modules if module.has_client()])
         elif arg_repr == "menus":
             from igdectk.module.manager import module_manager
-            ret_val = [menu.to_json() for menu in module_manager.menus]
+            ret_val = json.dumps([menu.dump() for menu in module_manager.menus])
         elif arg_repr == "development":
             ret_val = hasattr(settings, 'WEBPACK')
         elif arg_repr == "webpack_host":

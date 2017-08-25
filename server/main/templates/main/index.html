@@ -69,7 +69,7 @@
             <a class="navbar-brand url" href="#home/" style="color: white;">Coll-Gate IS</a>
         </div>
         <div class="navbar-collapse collapse">
-            <ul class="nav navbar-nav">
+            <ul class="nav navbar-nav application-menu">
                 {% include 'bootstrap/menu.html' %}
             </ul>
             <div class="btn-group access-buttons">
@@ -350,7 +350,7 @@ if (session.languageDirection === "rtl") {
 
             // href starting with ~ are actions that directly call a controller,
             // but doesn't modify the URL neither the history
-            if (href.startsWith("~")) {
+            if (href.startsWith("~") && href.length > 1) {
                 $(this).attr("href", "#");
                 $(this).on("click", function(e) {
                     // close the menu and prevent default to open the url
@@ -379,13 +379,11 @@ if (session.languageDirection === "rtl") {
 
                     return false;
                 });
-            } else {
-                // href starting with # are route that must be called
-                // using the navigation mechanism
+            } else if (href.startsWith("#") && href.length > 1) {
+                // href starting with # are route that must be called using the navigation mechanism
                 href = href.replace('#', application.baseUrl + 'app/');
                 $(this).attr("href", href);
-
-                $(this).click(function (e) {
+                $(this).on("click", function (e) {
                     // close the menu and prevent default to open the url
                     $(".dropdown").removeClass("open");
                     $(".dropdown-toggle").attr("aria-expanded", false);

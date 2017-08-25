@@ -9,51 +9,66 @@
  */
 
 var Menu = require('./menu');
-var MenuEntry = require('./menuentry');
-var MenuSeparator = require('./menuseparator');
 
 var MenuManager = function() {
-    this.menus = {};
+    this.menus = [];
 };
 
 MenuManager.prototype = {
+    /**
+     * Merge a menu to original menu.
+     * @param org
+     * @param menu
+     */
     merge: function(org, menu) {
-
+        for (var i = 0; i < menu.entries.length; ++i) {
+            org.entry(menu.entries[i]);
+        }
     },
 
+    /**
+     * Add a new menu to this module. If the menu already exists it is merged with the previous one.
+     * @param menu A valid module menu.
+     */
     add: function(menu) {
+        if (!menu) {
+            return;
+        }
 
+        if (!(menu instanceof Menu)) {
+            throw "menu Must be a Menu object"
+        }
+
+        for (var i = 0; i < this.menus.length; ++i) {
+            if (this.menus[i].name === menu.name) {
+                this.merge(this.menus[i], menu);
+                return;
+            }
+        }
+
+        var pos = 0;
+        for (var i = 0; i < this.menus.length; ++i) {
+            if (this.menus[i].order <= menu.order) {
+                ++pos;
+            } else {
+                break;
+            }
+        }
+
+        this.menus.splice(pos, 0, menu);
     },
 
-    /*
-        def merge_menu(self, org, menu):
-        for entry in menu.entries:
-            org.add_entry(entry)
+    /**
+     * Render all menu
+     * @param parent
+     */
+    render: function(parent) {
+        parent.find('li.dropdown').remove();
 
-    def add_menu(self, menu):
-        """
-        Add a new menu to this module. If the menu already exists
-        it is merged with the previous one.
-        :param menu: A valid module menu.
-        """
-        if not menu:
-            return
-        if not isinstance(menu, ModuleMenu):
-            raise ModuleException('menu Must be a ModuleMenu')
-
-        for m in self.menus:
-            if m.name == menu.name:
-                # merge menu on existing
-                self.merge_menu(m, menu)
-                return
-
-        i = 0
-        for m in self.menus:
-            if m.order <= menu.order:
-                i += 1
-            else:
-                break
-        self.menus.insert(i, menu)*/
+        for (var i = 0; i < this.menus.length; ++i) {
+            this.menus[i].render(parent);
+        }
+    }
 };
 
 module.exports = MenuManager;

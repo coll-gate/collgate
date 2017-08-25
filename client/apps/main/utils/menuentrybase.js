@@ -17,6 +17,34 @@ var MenuEntryBase = function(name, order, auth) {
 MenuEntryBase.prototype = {
     hasLabel: function() {
         return false;
+    },
+
+    /**
+     * Get authentication type class name
+     * @returns {*}
+     */
+    authTypeClassName: function() {
+        if (this.auth === "any") {
+            return "auth-any"
+        } else if (this.auth === "guest") {
+            return "auth-guest"
+        } else if (this.auth === "user") {
+            return "auth-user"
+        } else if (this.auth === "staff") {
+            return "auth-staff"
+        } else if (this.auth === "superuser") {
+            return "auth-superuser"
+        } else {
+            return "";
+        }
+    },
+
+    /**
+     * Render the menu entry.
+     * @param parent
+     */
+    render: function(parent) {
+        /* nothing */
     }
 };
 

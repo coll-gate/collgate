@@ -417,7 +417,7 @@ var Application = Marionette.Application.extend({
         // starts the URL handling framework and automatically route as possible
         Backbone.history.start({pushState: true, silent: false, root: '/coll-gate'});
 
-        // add alerted initiated by django server side
+        // add alerts initiated by django server side
         if (typeof initials_alerts !== "undefined") {
             for (var alert in initials_alerts) {
                 $.alert.message(initials_alerts[alert].type, initials_alerts[alert].msg);

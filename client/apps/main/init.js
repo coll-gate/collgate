@@ -115,7 +115,43 @@ MainModule.prototype = {
 
         // global menu manager
         var MenuManager = require('./utils/menumanager');
-        this.menu = new MenuManager();
+        this.menus = new MenuManager();
+
+        // add menu initiated by django server side
+        if (typeof initials_menus !== "undefined") {
+            var Menu = require('./utils/menu');
+            var MenuEntry = require('./utils/menuentry');
+            var MenuSeparator = require('./utils/menuseparator');
+
+            for (var i = 0; i < initials_menus.length; ++i) {
+                var iMenu = initials_menus[i];
+
+                // menu
+                var menu = new Menu(iMenu.name, iMenu.label, iMenu.order, iMenu.auth);
+
+                // and entries
+                for (var j = 0; j < iMenu.entries.length; ++j) {
+                    var iMenuEntry = iMenu.entries[j];
+
+                    if (iMenuEntry.type === 'entry') {
+                        var menuEntry = new MenuEntry(
+                            iMenuEntry.name,
+                            iMenuEntry.label,
+                            iMenuEntry.url,
+                            iMenuEntry.icon,
+                            iMenuEntry.order,
+                            iMenuEntry.auth);
+
+                        menu.entry(menuEntry);
+                    } else if (iMenuEntry.type === 'separator') {
+                        var menuSeparator = new MenuSeparator(iMenuEntry.order, iMenuEntry.auth);
+                        menu.entry(menuSeparator);
+                    }
+                }
+
+                this.menus.add(menu);
+            }
+        }
     },
 
     start: function(options) {
@@ -126,6 +162,9 @@ MainModule.prototype = {
 
         var LeftBarView = require('./views/leftbar');
         mainView.showChildView('left', new LeftBarView());
+
+        // render menus
+        this.menus.render($('ul.application-menu'));
     },
 
     stop: function(options) {
