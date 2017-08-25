@@ -10,7 +10,8 @@
 
 var Menu = require('./menu');
 
-var MenuManager = function() {
+var MenuManager = function(parent) {
+    this.$el = parent;
     this.menus = [];
 };
 
@@ -20,7 +21,7 @@ MenuManager.prototype = {
      * @param org
      * @param menu
      */
-    merge: function(org, menu) {
+    mergeMenu: function(org, menu) {
         for (var i = 0; i < menu.entries.length; ++i) {
             org.entry(menu.entries[i]);
         }
@@ -30,7 +31,9 @@ MenuManager.prototype = {
      * Add a new menu to this module. If the menu already exists it is merged with the previous one.
      * @param menu A valid module menu.
      */
-    add: function(menu) {
+    addMenu: function(menu, update) {
+        typeof update !== "undefined" || (update = true);
+
         if (!menu) {
             return;
         }
@@ -41,7 +44,7 @@ MenuManager.prototype = {
 
         for (var i = 0; i < this.menus.length; ++i) {
             if (this.menus[i].name === menu.name) {
-                this.merge(this.menus[i], menu);
+                this.mergeMenu(this.menus[i], menu);
                 return;
             }
         }
@@ -56,17 +59,62 @@ MenuManager.prototype = {
         }
 
         this.menus.splice(pos, 0, menu);
+
+        if (this.$el && update) {
+            menu.render(this.$el, pos);
+        }
+    },
+
+    destroy: function() {
+        if (this.$el) {
+            this.$el.find('li.dropdown').remove();
+        }
     },
 
     /**
      * Render all menu
      * @param parent
      */
-    render: function(parent) {
-        parent.find('li.dropdown').remove();
+    render: function() {
+        if (this.$el) {
+            this.destroy();
+
+            for (var i = 0; i < this.menus.length; ++i) {
+                this.menus[i].render(this.$el, -1);
+            }
+        }
+    },
+
+    /**
+     * Get a menu according to its name.
+     */
+    getMenu: function(name) {
+        for (var i = 0; i < this.menus.length; ++i) {
+            if (this.menus[i].name === name) {
+                return this.menus[i];
+            }
+        }
+
+        return null;
+    },
+
+    /**
+     * Remove a complete menu according to its name.
+     */
+    removeMenu: function(name, destroy) {
+        typeof destroy !== "undefined" || (destroy = true);
 
         for (var i = 0; i < this.menus.length; ++i) {
-            this.menus[i].render(parent);
+            var menu = this.menus[i];
+
+            if (menu.name === name) {
+                if (destroy) {
+                    menu.destroy();
+                }
+
+                this.menus.splice(i, 1);
+                return;
+            }
         }
     }
 };

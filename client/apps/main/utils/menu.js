@@ -17,10 +17,18 @@ var Menu = function(name, label, order, auth) {
     this.order = order || -1;
     this.auth = auth || 'any';
     this.entries = [];
+    this.$el = null;
 };
 
 Menu.prototype = {
-    entry: function(entry) {
+    /**
+     * Add a menu entry and update or not the view.
+     * @param entry Menu entry or separator.
+     * @param update If true the menu view is update.
+     */
+    addEntry: function(entry, update) {
+        typeof update !== "undefined" || (update = true);
+
         if (entry) {
             if (!(entry instanceof MenuEntryBase)) {
                 throw "entry Must be a MenuEntryBase instance or derived";
@@ -43,9 +51,18 @@ Menu.prototype = {
                 }
             }
 
-            this.entries.splice(pos, 0, entry)
+            this.entries.splice(pos, 0, entry);
+
+            if (update && this.$el) {
+                entry.render(this.$el.children('ul.dropdown-menu'));
+            }
         } else {
-            this.entries.push(new MenuSeparator())
+            entry = new MenuSeparator();
+            this.entries.push(entry);
+
+            if (update && this.$el) {
+                entry.render(this.$el.children('ul.dropdown-menu'));
+            }
         }
     },
 
@@ -73,7 +90,9 @@ Menu.prototype = {
      * Render bootstrap menu.
      * @param parent
      */
-    render: function(parent) {
+    render: function(parent, pos) {
+        pos >= 0 || (pos = -1);
+
         var menuEl = $('<li class="dropdown"></li>');
         menuEl.addClass(this.authTypeClassName());
         menuEl.attr('name', this.name);
@@ -90,11 +109,49 @@ Menu.prototype = {
         var menuEntries = $('<ul class="dropdown-menu" role="menu" aria-labelledby="menu-drop-' + this.name + '">');
         menuEl.append(menuEntries);
 
-        parent.append(menuEl);
+        if (pos >= 0 && pos < parent.children('li.dropdown').length) {
+            var nextEl = $(parent.children('li.dropdown').get(pos));
+            menuEl.insertBefore(nextEl);
+        } else {
+            parent.append(menuEl);
+        }
 
         // with any entries
         for (var i = 0; i < this.entries.length; ++i) {
             this.entries[i].render(menuEntries);
+        }
+
+        this.$el = menuEl;
+    },
+
+    /**
+     * Remove a menu entry and update the view.
+     * @param name Name of the entry to remove.
+     * @param destroy By default destroy the view.
+     */
+    removeEntry: function(name, destroy) {
+        typeof destroy !== "undefined" || (destroy = true);
+
+        for (var i = 0; i < this.entries.length; ++i) {
+            var entry = this.entries[i];
+            if (entry.name === name) {
+                if (destroy) {
+                    entry.destroy();
+                }
+
+                this.entries.splice(i, 1);
+                break;
+            }
+        }
+    },
+
+    /**
+     * Destroy the view.
+     */
+    destroy: function () {
+        if (this.$el) {
+            this.$el.remove();
+            this.$el = null;
         }
     }
 };

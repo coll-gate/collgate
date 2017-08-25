@@ -14,7 +14,7 @@ var MenuEntry = function(name, label, url, icon, order, auth) {
     MenuEntryBase.call(this, name, order, auth);
 
     this.label = label || null;
-    this.url = url || null;
+    this.url = url || "#";
     this.icon = icon || null;
     this.$el = null;
 };
@@ -44,7 +44,7 @@ MenuEntry.prototype.render = function(parent) {
         aEl.append(noIconEl);
     }
 
-    aEl.append('&nbsp;' + gt.gettext(this.label));
+    aEl.append('&nbsp;' + gt.gettext(this.label || ""));
 
     entry.append(aEl);
     parent.append(entry);

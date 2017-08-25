@@ -45,6 +45,16 @@ MenuEntryBase.prototype = {
      */
     render: function(parent) {
         /* nothing */
+    },
+
+    /**
+     * Destroy the view.
+     */
+    destroy: function() {
+        if (this.$el) {
+            this.$el.remove();
+            this.$el = null;
+        }
     }
 };
 

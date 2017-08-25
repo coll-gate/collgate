@@ -115,7 +115,8 @@ MainModule.prototype = {
 
         // global menu manager
         var MenuManager = require('./utils/menumanager');
-        this.menus = new MenuManager();
+        this.menus = new MenuManager($('ul.application-menu'));
+        this.menus.destroy();
 
         // add menu initiated by django server side
         if (typeof initials_menus !== "undefined") {
@@ -142,14 +143,14 @@ MainModule.prototype = {
                             iMenuEntry.order,
                             iMenuEntry.auth);
 
-                        menu.entry(menuEntry);
+                        menu.addEntry(menuEntry);
                     } else if (iMenuEntry.type === 'separator') {
                         var menuSeparator = new MenuSeparator(iMenuEntry.order, iMenuEntry.auth);
-                        menu.entry(menuSeparator);
+                        menu.addEntry(menuSeparator);
                     }
                 }
 
-                this.menus.add(menu);
+                this.menus.addMenu(menu);
             }
         }
     },
@@ -164,7 +165,16 @@ MainModule.prototype = {
         mainView.showChildView('left', new LeftBarView());
 
         // render menus
-        this.menus.render($('ul.application-menu'));
+        this.menus.render();
+
+        // this.menus.getMenu('classification').removeEntry('create-taxon');
+        // this.menus.removeMenu('help');
+
+        // var Menu = require('./utils/menu');
+        // var MenuEntry = require('./utils/menuentry');
+
+        // this.menus.addMenu(new Menu('testmenu', 'TestMenu'));
+        // this.menus.getMenu('testmenu').addEntry(new MenuEntry('test', 'Test1', '#', 'glyphicon-check'));
     },
 
     stop: function(options) {
