@@ -135,10 +135,10 @@ class DescriptorType(Entity):
 
     # JSON encoded values (mostly a dict or empty). Value are classified by language at the first
     # level of JSON dict.
-    values = models.TextField(default="")
+    values = JSONField(default=None, null=True, blank=True)
 
     # JSON encoded format of the descriptor
-    format = models.TextField(default='{"type": "undefined"}')
+    format = JSONField(default={"type": "undefined"})
 
     # Is this descriptor can be deleted by an authorised staff people
     can_delete = models.BooleanField(default=True)
@@ -222,17 +222,14 @@ class DescriptorType(Entity):
         :return: Number of values
         :rtype: Integer
         """
-        descriptor_format = json.loads(self.format)
         lang = translation.get_language()
-        trans = descriptor_format.get('trans', False)
+        trans = self.format.get('trans', False)
 
-        if self.values:
-            values = json.loads(self.values)
-
+        if self.values is not None:
             if trans:
-                count = len(values.get(lang, {}))
+                count = len(self.values.get(lang, {}))
             else:
-                count = len(values)
+                count = len(self.values)
         else:
             if trans:
                 count = self.values_set.filter(language=lang).count()
@@ -248,10 +245,8 @@ class DescriptorType(Entity):
         :return: True if there is some values
         :rtype: Boolean
         """
-        if self.values:
-            values = json.loads(self.values)
-
-            return len(values) == 0
+        if self.values is not None:
+            return len(self.values) == 0
         else:
             return self.values_set.all().exists()
 
@@ -261,16 +256,6 @@ class DescriptorType(Entity):
         """
         return self.descriptor_model_types.all().exists()
 
-    # @property
-    # def _format_cache(self):
-    #     """
-    #     Format cache.
-    #     @todo reload if self.format changes.
-    #     """
-    #     if not self._format_cache:
-    #         self._format_cache = json.load(self.format)
-    #     return self._format_cache
-
     def get_values(self, sort_by='id', reverse=False, cursor=None, limit=30):
         """
         Query for a list of value ordered by id or name, with a limit of number of results.
@@ -279,16 +264,15 @@ class DescriptorType(Entity):
                 like {'name', 'value'} with value can be a dict.
         :rtype: tuple
         """
-        format_type = json.loads(self.format)
         lang = translation.get_language()
-        trans = format_type.get('trans', False)
+        trans = self.format.get('trans', False)
 
         prev_cursor = None
         next_cursor = None
         values_list = []
 
         # map fields name with columns
-        fields = format_type.get('fields')
+        fields = self.format.get('fields')
         if fields:
             if len(fields) >= 1 and sort_by == fields[0]:
                 sort_by = "value0"
@@ -300,15 +284,15 @@ class DescriptorType(Entity):
             sort_by = "id"
 
         # internally stored values
-        if self.values:
+        if self.values is not None:
             if trans:
-                pre_values = json.loads(self.values)
+                pre_values = self.values
                 if lang in pre_values:
                     values = pre_values[lang]
                 else:
                     values = {}
             else:
-                values = json.loads(self.values)
+                values = self.values
 
             if sort_by == 'id':
                 # sort by id (code)
@@ -684,19 +668,18 @@ class DescriptorType(Entity):
         """
         Get the ordinal, value0, value1, and parent code for a given value code
         """
-        format_type = json.loads(self.format)
         lang = translation.get_language()
-        trans = format_type.get('trans', False)
+        trans = self.format.get('trans', False)
 
-        if self.values:
+        if self.values is not None:
             if trans:
-                pre_values = json.loads(self.values)
+                pre_values = self.values
                 if lang in pre_values:
                     values = pre_values[lang]
                 else:
                     values = {}
             else:
-                values = json.loads(self.values)
+                values = self.values
 
             val = values.get(code)
             if val:
@@ -722,23 +705,22 @@ class DescriptorType(Entity):
         :param int limit: Number max of results
         :return: The list of values with name starting with field_value on field_name.
         """
-        format_type = json.loads(self.format)
         lang = translation.get_language()
-        trans = format_type.get('trans', False)
+        trans = self.format.get('trans', False)
 
         cursor_value, cursor_code = cursor.rsplit('/', 1) if cursor else (None, None)
 
         values_list = []
 
-        if self.values:
+        if self.values is not None:
             if trans:
-                pre_values = json.loads(self.values)
+                pre_values = self.values
                 if lang in pre_values:
                     values = pre_values[lang]
                 else:
                     values = {}
             else:
-                values = json.loads(self.values)
+                values = self.values
 
             # ordinal means unique result, so no cursor/limit
             if field_name == "ordinal":
@@ -872,21 +854,20 @@ class DescriptorType(Entity):
         :param int limit: Number max of results
         :return: The list of values.
         """
-        format_type = json.loads(self.format)
         lang = translation.get_language()
-        trans = format_type.get('trans', False)
+        trans = self.format.get('trans', False)
 
         values_list = []
 
-        if self.values:
+        if self.values is not None:
             if trans:
-                pre_values = json.loads(self.values)
+                pre_values = self.values
                 if lang in pre_values:
                     data_values = pre_values[lang]
                 else:
                     data_values = {}
             else:
-                data_values = json.loads(self.values)
+                data_values = self.values
 
             for value in values:
                 v = data_values.get(value)
@@ -1071,7 +1052,6 @@ class DescriptorPanel(Entity):
                 'label': self.label,
                 'position': self.position
             }
-
 
     def audit_delete(self, user):
         return {
@@ -1458,6 +1438,9 @@ class DescriptorMetaModel(Entity):
         related_name='descriptor_meta_models',
         through=DescriptorPanel)
 
+    # meta-model parameters
+    parameters = JSONField(default={"type": "undefined"})
+
     class Meta:
         verbose_name = _("descriptor meta model")
 
@@ -1567,10 +1550,9 @@ class DescriptorModelTypeCondition(Entity):
     # target descriptor model type (of the same descriptor model)
     target = models.ForeignKey(DescriptorModelType, related_name='conditions_as_target')
 
-    # values of the conditions (JSON formatted field). It can be empty,
-    # or a single value, or an array of values. The value can be true or false
-    # if the target is boolean, or can be a value code if the target is an enum
-    values = models.TextField(default="")
+    # JSON encoded values. It can be empty, # or a single value, or an array of values.
+    # The value can be true or false if the target is boolean, or can be a value code if the target is an enum
+    values = JSONField(default=None, null=True, blank=True)
 
     class Meta:
         verbose_name = _("descriptor model type condition")

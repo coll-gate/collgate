@@ -65,7 +65,7 @@ def get_columns_name_for_describable_content_type(request, content_type_name):
     # add descriptor model type information for each descriptors attached to any meta-model related to the
     # entity model
     for dmt in dmts:
-        descriptor_format = json.loads(dmt.descriptor_type.format)
+        descriptor_format = dmt.descriptor_type.format
         query = True if DescriptorFormatTypeManager.get(descriptor_format).related_model(descriptor_format) else False
 
         if descriptor_format['type'] not in EXCLUDED_TYPES_FOR_COLUMN_VIEW:
@@ -129,7 +129,7 @@ def get_description(model):
     results = {}
 
     for dmt in dmts:
-        descriptor_format = json.loads(dmt.descriptor_type.format)
+        descriptor_format = dmt.descriptor_type.format
         dft = DescriptorFormatTypeManager.get(descriptor_format)
 
         results[dmt.name] = {

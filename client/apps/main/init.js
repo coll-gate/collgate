@@ -116,9 +116,11 @@ MainModule.prototype = {
         // global menu manager
         var MenuManager = require('./utils/menumanager');
         this.menus = new MenuManager($('ul.application-menu'));
+
+        // cleanup initial menu
         this.menus.destroy();
 
-        // add menu initiated by django server side
+        // and add them initiated by django server side
         if (typeof initials_menus !== "undefined") {
             var Menu = require('./utils/menu');
             var MenuEntry = require('./utils/menuentry');

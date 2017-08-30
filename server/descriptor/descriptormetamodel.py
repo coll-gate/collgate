@@ -328,7 +328,7 @@ def get_descriptor_meta_model_layout(request, dmm_id):
             descriptor_type = dmt.descriptor_type
 
             # values are loaded on demand (displaying the panel or opening the dropdown)
-            format_type = json.loads(descriptor_type.format)
+            format_type = descriptor_type.format
 
             conditions = DescriptorModelTypeCondition.objects.filter(descriptor_model_type_id=dmt.id)
 
@@ -339,7 +339,7 @@ def get_descriptor_meta_model_layout(request, dmm_id):
                     'defined': True,
                     'condition': dmtc.condition,
                     'target': dmtc.target_id,
-                    'values': json.loads(dmtc.values)
+                    'values': dmtc.values
                 }
             else:
                 condition = {

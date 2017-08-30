@@ -199,6 +199,7 @@ class GRC(models.Model):
     identifier = models.CharField(max_length=255, default="undefined", blank=False)
 
     # general description (JSON stored dict with multiple languages codes)
+    # at this day only used as a simple text field without i18n
     description = models.TextField(default="", blank=True, null=False)
 
     # list of managers organisations

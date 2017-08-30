@@ -1,16 +1,12 @@
 # -*- coding: utf-8; -*-
 #
 # @file grc.py
-# @brief 
+# @brief coll-gate organisation REST API
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2017-01-03
 # @copyright Copyright (c) 2017 INRA/CIRAD
 # @license MIT (see LICENSE file)
 # @details 
-
-"""
-coll-gate organisation REST API
-"""
 
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
@@ -100,4 +96,3 @@ def get_grc_organisation_list(request):
 
     results = filter_organisation(filters, cursor, limit, True)
     return HttpResponseRest(request, results)
-

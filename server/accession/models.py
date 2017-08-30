@@ -21,6 +21,7 @@ from igdectk.common.models import ChoiceEnum, IntegerChoice
 from main.models import Entity
 from descriptor.models import DescribableEntity, DescriptorType
 from classification.models import Taxon
+from classification.models import ClassificationEntry
 
 
 class Asset(Entity):
@@ -62,6 +63,12 @@ class Accession(DescribableEntity):
     # unique GRC code of the accession
     code = models.CharField(unique=True, max_length=255, db_index=True)
 
+    # primary classification + M2M through or only M2M through ?
+    # primary_classification = models.ForeignKey(ClassificationEntry, on_delete=models.PROTECT)
+
+    # accession can have many classification but at least a primary
+    # classifications = models.ManyToManyField(through=)
+
     # inherit of a taxon rank
     parent = models.ForeignKey(Taxon)
 
@@ -92,7 +99,7 @@ class Accession(DescribableEntity):
                 'query': False,   # done by a prefetch related
                 'format': {
                     'type': 'synonym',
-                    'model': 'accession.synonym'
+                    'model': 'accession.accessionsynonym'
                 }
             }
         }
@@ -186,7 +193,7 @@ class AccessionSynonym(Entity):
     accession = models.ForeignKey(Accession, related_name="synonyms")
 
     # synonym display name
-    name = models.CharField(max_length=255, db_index=True)
+    name = models.CharField(max_length=128, db_index=True)
 
     # language code
     language = models.CharField(max_length=5, default="en")

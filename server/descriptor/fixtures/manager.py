@@ -143,7 +143,7 @@ class FixtureManager:
                 'code': descriptor_data.get('code', ''),
                 'description': descriptor_data.get('description', ''),
                 'group_id': self.get_descriptor_group_id(descriptor_data.get('group', 'common')),
-                'format': json.dumps(type_format),
+                'format': type_format,
                 'can_delete': descriptor_data.get('can_delete', False),
                 'can_modify': descriptor_data.get('can_modify', False)
             })
@@ -189,7 +189,7 @@ class FixtureManager:
                 descriptor_model_type, created = DescriptorModelType.objects.update_or_create(
                     name=model_type_name, defaults={
                         'descriptor_model': descriptor_model,
-                        'label': json.dumps(model_type_data.get('label', {})),
+                        'label': model_type_data.get('label', {}),
                         'mandatory': model_type_data.get('mandatory', False),
                         'set_once': model_type_data.get('set_once', False),
                         'position': position,
@@ -215,7 +215,7 @@ class FixtureManager:
             descriptor_meta_model, created = DescriptorMetaModel.objects.update_or_create(
                 name=meta_model_name,
                 defaults={
-                    'label': json.dumps(v['label']),
+                    'label': v['label'],
                     'description': v['description'],
                     'target': content_type}
             )
@@ -229,7 +229,7 @@ class FixtureManager:
                     descriptor_meta_model=descriptor_meta_model,
                     descriptor_model_id=descriptor_model_id,
                     defaults={
-                        'label': json.dumps(panel['label']),
+                        'label': panel['label'],
                         'position': position
                     }
                 )

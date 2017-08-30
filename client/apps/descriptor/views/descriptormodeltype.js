@@ -637,7 +637,7 @@ var View = Marionette.View.extend({
                     }
                 },
 
-                onBeforeDestroy: function() {
+                onBeforeDetach: function() {
                     this.ui.condition.selectpicker('destroy');
                     this.ui.target.selectpicker('destroy');
 
@@ -645,8 +645,6 @@ var View = Marionette.View.extend({
                         this.descriptorType.widget.destroy();
                         this.descriptorType.widget = null;
                     }
-
-                    ChangeCondition.__super__.onBeforeDestroy.apply(this);
                 },
 
                 toggleCondition: function (condition) {

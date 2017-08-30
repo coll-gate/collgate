@@ -618,7 +618,7 @@ def get_condition_for_descriptor_model_type(request, des_id, typ_id):
             'defined': True,
             'condition': dmtc.condition,
             'target': dmtc.target.id,
-            'values': json.loads(dmtc.values)
+            'values': dmtc.values
         }
     else:
         result = {
@@ -667,7 +667,7 @@ def create_condition_for_descriptor_model_type(request, des_id, typ_id):
     values = request.data['values']
 
     # validate the values[0]
-    format_type = json.loads(target.descriptor_type.format)
+    format_type = target.descriptor_type.format
 
     if condition == DescriptorCondition.EQUAL or condition == DescriptorCondition.NOT_EQUAL:
         DescriptorFormatTypeManager.validate(format_type, values, target)
@@ -677,7 +677,7 @@ def create_condition_for_descriptor_model_type(request, des_id, typ_id):
     dmtc.descriptor_model_type = dmt
     dmtc.condition = condition.value
     dmtc.target = target
-    dmtc.values = json.dumps(values)
+    dmtc.values = values
 
     dmtc.save()
 
@@ -722,7 +722,7 @@ def modify_condition_for_descriptor_model_type(request, des_id, typ_id):
         values = request.data['values']
 
         # validate the values
-        format_type = json.loads(target.descriptor_type.format)
+        format_type = target.descriptor_type.format
 
         condition = DescriptorCondition(request.data['condition'])
 
@@ -733,7 +733,7 @@ def modify_condition_for_descriptor_model_type(request, des_id, typ_id):
 
         dmtc.condition = condition.value
         dmtc.target = target
-        dmtc.values = json.dumps(values)
+        dmtc.values = values
 
         dmtc.save()
     else:
@@ -777,7 +777,7 @@ def get_some_display_values_for_descriptor_model_type(request, dmt_name):
     dmt = DescriptorModelType.objects.select_related('descriptor_type').get(name=dmt_name)
 
     limit = 100
-    format_type = json.loads(dmt.descriptor_type.format)
+    format_type = dmt.descriptor_type.format
 
     # json array
     values = json.loads(request.GET['values'])

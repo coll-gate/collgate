@@ -1,16 +1,13 @@
 # -*- coding: utf-8; -*-
 #
 # @file models.py
-# @brief 
+# @brief coll-gate medialibrary models.
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2017-01-03
 # @copyright Copyright (c) 2017 INRA/CIRAD
 # @license MIT (see LICENSE file)
 # @details 
 
-"""
-coll-gate medialibrary models.
-"""
 import json
 
 from django.contrib.contenttypes.models import ContentType
@@ -53,10 +50,10 @@ class Media(Entity):
 
     # Document label.
     # It is i18nized used JSON dict with language code as key and label as string value.
-    label = JSONField(default={}, blank=False, null=False)
+    label = JSONField(default={})
 
     # general description (JSON stored dict with multiple languages codes)
-    description = models.TextField(default="{}", blank=False, null=False)
+    description = JSONField(default={})
 
     # copyright text (organisation, authors names...)
     copyright = models.CharField(max_length=1024, default="", blank=True)
@@ -72,21 +69,27 @@ class Media(Entity):
 
     def get_label(self):
         """
-        Get the label for this panel in the current regional.
+        Get the label in the current regional.
         """
-        data = json.loads(self.label)
         lang = translation.get_language()
+        return self.label.get(lang, "")
 
-        return data.get(lang, "")
+    def set_label(self, lang, label):
+        """
+        Set the label for a specific language.
+        :param str lang: language code string
+        :param str label: Localized label
+        :note Model instance save() is not called.
+        """
+        self.label[lang] = label
 
     def get_description(self):
         """
         Get the label for this panel in the current regional.
         """
-        data = json.loads(self.description)
         lang = translation.get_language()
 
-        return data.get(lang, "")
+        return self.description.get(lang, "")
 
     @classmethod
     def make_search_by_name(cls, term):

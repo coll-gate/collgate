@@ -107,7 +107,10 @@ class Command(BaseCommand):
             dataMigration.migrate()
         except Exception as e:
             import traceback
-            sys.stdout.write(traceback.print_exc() + '\n')
+            trace = traceback.print_exc()
+            if trace:
+                sys.stdout.write(trace + '\n')
+
             error = True
 
         if error:

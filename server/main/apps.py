@@ -80,13 +80,13 @@ class CollGateMain(ApplicationMain):
             # add defaults languages if they doesn't exists
             from main.models import Language
             if not Language.objects.filter(code='en').exists():
-                language = Language(code='en', label=json.dumps({'en': 'English', 'fr': 'Anglais'}))
+                language = Language(code='en', label={'en': 'English', 'fr': 'Anglais'})
                 language.save()
 
             if not Language.objects.filter(code='fr').exists():
-                language = Language(code='fr', label=json.dumps({'en': 'French', 'fr': 'Français'}))
+                language = Language(code='fr', label={'en': 'French', 'fr': 'Français'})
                 language.save()
 
             if not Language.objects.filter(code='la').exists():
-                language = Language(code='la', label=json.dumps({'en': 'Latin', 'fr': 'Latin'}))
+                language = Language(code='la', label={'en': 'Latin', 'fr': 'Latin'})
                 language.save()

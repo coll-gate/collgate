@@ -308,7 +308,7 @@ def get_descriptor_types_for_group(request, grp_id):
             'num_descriptor_values': count,
             'can_delete': descr_type.can_delete,
             'can_modify': descr_type.can_modify,
-            'format': json.loads(descr_type.format)
+            'format': descr_type.format
         })
 
     if len(types_list) > 0:
@@ -364,7 +364,7 @@ def search_descriptor_types_for_group(request, grp_id):
                 'description': descr_type.description,
                 'group': group.id,
                 'num_descriptor_values': count,
-                'format': json.loads(descr_type.format),
+                'format': descr_type.format,
                 'can_delete': descr_type.can_delete,
                 'can_modify': descr_type.can_modify
             })
@@ -391,7 +391,7 @@ def get_descriptor_type_for_group(request, grp_id, typ_id):
         'description': descr_type.description,
         'group': group.id,
         'num_descriptor_values': count,
-        'format': json.loads(descr_type.format),
+        'format': descr_type.format,
         'can_delete': descr_type.can_delete,
         'can_modify': descr_type.can_modify
     }
@@ -498,7 +498,7 @@ def update_descriptor_type(request, grp_id, typ_id):
 
     group = get_object_or_404(DescriptorGroup, id=int(grp_id))
     descr_type = get_object_or_404(DescriptorType, id=int(typ_id), group=group)
-    org_format = json.loads(descr_type.format)
+    org_format = descr_type.format
 
     if not descr_type.can_modify:
         raise SuspiciousOperation(_("It is not permit to modify this type of descriptor"))
@@ -514,15 +514,15 @@ def update_descriptor_type(request, grp_id, typ_id):
     # had values -> has no values
     if not format_type['type'].startswith('enum_') and org_format['type'].startswith('enum_'):
         # overwrite values
-        descr_type.values = ""
+        descr_type.values = None
         descr_type.values_set.all().delete()
 
     # single enumeration
     if format_type['type'] == 'enum_single':
         # reset if type or translation differs
         if org_format['type'] != 'enum_single' or format_type['trans'] != org_format.get('trans', False):
-            # rest values
-            descr_type.values = ""
+            # reset values
+            descr_type.values = None
             descr_type.values_set.all().delete()
 
     # pair enumeration
@@ -530,7 +530,7 @@ def update_descriptor_type(request, grp_id, typ_id):
         # reset if type or translation differs
         if org_format['type'] != 'enum_pair' or format_type['trans'] != org_format.get('trans', False):
             # reset values
-            descr_type.values = ""
+            descr_type.values = None
             descr_type.values_set.all().delete()
 
     # ordinal enumeration
@@ -541,7 +541,7 @@ def update_descriptor_type(request, grp_id, typ_id):
 
         # reset values because it changes of type
         if org_format['type'] != 'enum_ordinal':
-            descr_type.values = ""
+            descr_type.values = None
             descr_type.values_set.all().delete()
 
         # regenerate values only if difference in range or translation
@@ -568,10 +568,10 @@ def update_descriptor_type(request, grp_id, typ_id):
                     values[code] = {'ordinal': ordinal, 'value0': 'Undefined(%i)' % ordinal}
                     i += 1
 
-            descr_type.values = json.dumps(values)
+            descr_type.values = values
 
     descr_type.name = descr_type_params['name']
-    descr_type.format = json.dumps(format_type)
+    descr_type.format = format_type
     descr_type.description = description
 
     count = descr_type.count_num_values()
@@ -583,7 +583,7 @@ def update_descriptor_type(request, grp_id, typ_id):
         'name': descr_type.name,
         'code': descr_type.code,
         'description': descr_type.description,
-        'format': json.loads(descr_type.format),
+        'format': descr_type.format,
         'group': group.id,
         'num_descriptor_values': count,
         'can_delete': descr_type.can_delete,
@@ -623,7 +623,7 @@ def get_descriptor_values_for_type(request, grp_id, typ_id):
         'prev': prev_cursor,
         'cursor': cursor,
         'next': next_cursor,
-        'format': json.loads(descr_type.format),
+        'format': descr_type.format,
         'items': values_list,
     }
 
@@ -660,7 +660,7 @@ def create_descriptor_values_for_type(request, grp_id, typ_id):
 
     code = '%s:%07i' % (descr_type.code, suffix)
 
-    format_type = json.loads(descr_type.format)
+    format_type = descr_type.format
 
     if format_type.get('trans', False):
         for lang in InterfaceLanguages.choices():
@@ -723,7 +723,7 @@ def patch_value_for_descriptor_model(request, grp_id, typ_id, val_id):
     """
     descr_type = get_object_or_404(DescriptorType, id=int(typ_id), group_id=int(grp_id))
 
-    format_type = json.loads(descr_type.format)
+    format_type = descr_type.format
 
     if not format_type['type'].startswith("enum_"):
         raise SuspiciousOperation(_("There is no values for this type of descriptor"))
@@ -739,8 +739,8 @@ def patch_value_for_descriptor_model(request, grp_id, typ_id, val_id):
         raise SuspiciousOperation(_("Second value field is only defined for enumeration of pairs"))
 
     # data stored in type of descriptor
-    if descr_type.values != "":
-        values = json.loads(descr_type.values)
+    if descr_type.values is not None:
+        values = descr_type.values
 
         if format_type.get('trans', False):
             lang = translation.get_language()
@@ -755,7 +755,7 @@ def patch_value_for_descriptor_model(request, grp_id, typ_id, val_id):
         if value1 is not None:
             lvalues[val_id]['value1'] = value1
 
-        descr_type.values = json.dumps(values)
+        descr_type.values = values
         descr_type.save()
     else:
         # data stored in table of values
@@ -807,11 +807,11 @@ def delete_value_for_descriptor_type(request, grp_id, typ_id, val_id):
         if dmt.descriptor_model.in_usage():
             raise SuspiciousOperation(_("There is some data using the type of descriptor"))
 
-    format_type = json.loads(descr_type.format)
+    format_type = descr_type.format
 
     # internally stored values
-    if descr_type.values != "":
-        values = json.loads(descr_type.values)
+    if descr_type.values is not None:
+        values = descr_type.values
 
         if format_type['trans']:
             for lvalues in values:
@@ -819,7 +819,7 @@ def delete_value_for_descriptor_type(request, grp_id, typ_id, val_id):
         else:
             del values[val_id]
 
-        descr_type.values = json.loads(values)
+        descr_type.values = values
     else:
         # table stored values
         values = descr_type.values_set.filter(code=val_id)
@@ -853,7 +853,7 @@ def get_display_value_for_descriptor_type(request, grp_id, typ_id, val_id):
     """
     descr_type = get_object_or_404(DescriptorType, id=int(typ_id), group_id=int(grp_id))
 
-    format_type = json.loads(descr_type.format)
+    format_type = descr_type.format
     list_type = format_type.get('list_type', '')
 
     if not list_type:
@@ -911,13 +911,13 @@ def get_labels_for_descriptor_type_field(request, grp_id, typ_id, val_id, field)
 
     descr_type = get_object_or_404(DescriptorType, id=int(typ_id), group_id=int(grp_id))
 
-    format_type = json.loads(descr_type.format)
+    format_type = descr_type.format
 
     results = {}
 
     # internally stored values
-    if descr_type.values != "":
-        values = json.loads(descr_type.values)
+    if descr_type.values is not None:
+        values = descr_type.values
 
         if format_type['trans']:
             for lang, lvalues in values.items():
@@ -969,11 +969,11 @@ def set_values_for_descriptor_type(request, grp_id, typ_id, val_id, field):
         if lang not in languages_values:
             raise SuspiciousOperation(_("Unsupported language identifier"))
 
-    format_type = json.loads(descr_type.format)
+    format_type = descr_type.format
 
     # internally stored values
-    if descr_type.values != "":
-        values = json.loads(descr_type.values)
+    if descr_type.values is not None:
+        values = descr_type.values
 
         if format_type['trans']:
             for lang, lvalues in values.items():
@@ -982,7 +982,7 @@ def set_values_for_descriptor_type(request, grp_id, typ_id, val_id, field):
         else:
             values[val_id] = new_values['en']
 
-        descr_type.values = json.dumps(values)
+        descr_type.values = values
 
         descr_type.update_field('values')
         descr_type.save()
@@ -1019,7 +1019,7 @@ def get_all_display_values_for_descriptor_type(request, grp_id, typ_id):
 
     limit = 30
 
-    format_type = json.loads(dt.format)
+    format_type = dt.format
     list_type = format_type.get('list_type', '')
 
     # safe limitation
@@ -1088,7 +1088,7 @@ def search_display_value_for_descriptor_type(request, grp_id, typ_id):
 
     dt = get_object_or_404(DescriptorType, id=int(typ_id), group_id=int(grp_id))
 
-    format_type = json.loads(dt.format)
+    format_type = dt.format
     list_type = format_type.get('list_type', '')
 
     if not list_type:

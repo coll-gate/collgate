@@ -57,14 +57,14 @@ var View = ScrollView.extend({
             } else {
                 sort_el.addClass('glyphicon-sort-by-alphabet-alt');
             }
-            sort_el.data('sort', 'desc');
+            sort_el.attr('sort-direction', 'desc');
         } else {
             if ((sort_el.attr('column-type') || "alpha") === "numeric") {
                 sort_el.addClass('glyphicon-sort-by-order');
             } else {
                 sort_el.addClass('glyphicon-sort-by-alphabet');
             }
-            sort_el.data('sort', 'asc');
+            sort_el.attr('sort-direction', 'asc');
         }
 
         // reset scrolling
@@ -73,7 +73,7 @@ var View = ScrollView.extend({
 
     sortColumn: function (e) {
         var column = $(e.target).attr('column-name') || "id";
-        var order = $(e.target).data('sort') || "none";
+        var order = $(e.target).attr('sort-direction') || "none";
 
         if (order === "asc") {
             sort_by = "-" + column;
@@ -91,4 +91,3 @@ var View = ScrollView.extend({
 });
 
 module.exports = View;
-

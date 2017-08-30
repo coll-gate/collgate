@@ -87,7 +87,7 @@ class DescriptorsBuilder(object):
                 descriptor_type = dmt.descriptor_type
 
                 # values are loaded on demand (displaying the panel or opening the dropdown)
-                dt_format = json.loads(descriptor_type.format)
+                dt_format = descriptor_type.format
 
                 src_name = str(dmt.name)
 
@@ -123,7 +123,7 @@ class DescriptorsBuilder(object):
                 descriptor_type = dmt.descriptor_type
 
                 # values are loaded on demand (displaying the panel or opening the dropdown)
-                dt_format = json.loads(descriptor_type.format)
+                dt_format = descriptor_type.format
 
                 conditions = DescriptorModelTypeCondition.objects.filter(descriptor_model_type_id=dmt.id)
                 src_name = dmt.name
@@ -183,10 +183,8 @@ class DescriptorsBuilder(object):
                             raise ValueError(_("A conditional descriptor is defined but the condition is not true") +
                                              " (%s)" % dmt.get_label())
 
-                        values = json.loads(dmtc.values)
-
                         # and be equal to
-                        if merged_value is not None and merged_target_value is not None and merged_target_value != values:
+                        if merged_value is not None and merged_target_value is not None and merged_target_value != dmtc.values:
                             raise ValueError(_("A conditional descriptor is defined but the condition is not true") +
                                              " (%s)" % dmt.get_label())
 
@@ -200,10 +198,8 @@ class DescriptorsBuilder(object):
                                 _("A conditional descriptor is defined but the condition is not true") +
                                 " (%s)" % dmt.get_label())
 
-                        values = json.loads(dmtc.values)
-
                         # and be different from
-                        if merged_value is not None and merged_target_value is not None and merged_target_value == values:
+                        if merged_value is not None and merged_target_value is not None and merged_target_value == dmtc.values:
                             raise ValueError(
                                 _("A conditional descriptor is defined but the condition is not true") +
                                 " (%s)" % dmt.get_label())

@@ -383,4 +383,3 @@ def delete_organisation(request, org_id):
     organisation.delete()
 
     return HttpResponseRest(request, {})
-
