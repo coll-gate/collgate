@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-16 10:25+0200\n"
+"POT-Creation-Date: 2017-08-31 18:17+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,182 +17,225 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: apps.py:59
-msgid "Classification"
-msgstr ""
-
-#: apps.py:61
-msgid "Create classificationEntry"
-msgstr ""
-
-#: apps.py:63
-msgid "Create cultivar"
+#: apps.py:60
+msgid "Administration"
 msgstr ""
 
 #: apps.py:66
-msgid "List taxons"
+msgid "List of classifications"
 msgstr ""
 
-#: apps.py:68
-msgid "List cultivars"
+#: apps.py:72 models.py:198
+msgid "Classification"
 msgstr ""
 
-#: controller.py:59
-msgid "A classificationEntry with this name already exists"
+#: apps.py:76
+msgid "Create classification entry"
 msgstr ""
 
-#: controller.py:64
-msgid "The rank of the parent must be lesser than the new classificationEntry"
+#: apps.py:85
+msgid "List classifications entries"
 msgstr ""
 
-#: controller.py:149
-msgid "Empty synonym data"
+#: classificationentry.py:90
+msgid "You are not allowed to create a classification entry"
 msgstr ""
 
-#: controller.py:152
-msgid "Undefined synonym name"
-msgstr ""
-
-#: controller.py:155
-msgid "Undefined synonym language"
-msgstr ""
-
-#: controller.py:159 taxonsynonym.py:165
-msgid "Unsupported type of synonym"
-msgstr ""
-
-#: controller.py:167 taxonsynonym.py:173 taxonsynonym.py:226
-msgid "The primary name could not be used by another synonym of classificationEntry"
-msgstr ""
-
-#: controller.py:171 taxonsynonym.py:177 taxonsynonym.py:230
-msgid "Synonym already used as a primary name"
-msgstr ""
-
-#: controller.py:175 taxonsynonym.py:181 taxonsynonym.py:234
-msgid "Synonym already used into this classificationEntry"
-msgstr ""
-
-#: models.py:29
-msgid "Primary"
-msgstr ""
-
-#: models.py:30
-msgid "Synonym"
-msgstr ""
-
-#: models.py:31
-msgid "Code"
-msgstr ""
-
-#: models.py:36
-msgid "Family"
-msgstr ""
-
-#: models.py:37
-msgid "Subfamily"
-msgstr ""
-
-#: models.py:38
-msgid "Tribe"
-msgstr ""
-
-#: models.py:39
-msgid "Subtribe"
-msgstr ""
-
-#: models.py:40
-msgid "Genus"
-msgstr ""
-
-#: models.py:41
-msgid "Subgenus"
-msgstr ""
-
-#: models.py:42
-msgid "Section"
-msgstr ""
-
-#: models.py:43
-msgid "Subsection"
-msgstr ""
-
-#: models.py:44
-msgid "Specie"
-msgstr ""
-
-#: models.py:45
-msgid "Subspecie"
-msgstr ""
-
-#: models.py:46
-msgid "Variety"
-msgstr ""
-
-#: models.py:47
-msgid "Subvariety"
-msgstr ""
-
-#: models.py:48
-msgid "Cultivar"
-msgstr ""
-
-#: models.py:85
-msgid "classificationEntry"
-msgstr ""
-
-#: models.py:175
-msgid "classificationEntry synonym"
-msgstr ""
-
-#: taxon.py:94
-msgid "You are not allowed to create a classificationEntry"
-msgstr ""
-
-#: taxon.py:114
+#: classificationentry.py:109
 msgid "The language is not supported"
 msgstr ""
 
-#: taxon.py:159 taxon.py:232 taxon.py:541 taxon.py:698
-msgid "You are not allowed to list the classification"
+#: classificationentry.py:154 classificationentry.py:227
+#: classificationentry.py:525 classificationentry.py:682
+msgid "You are not allowed to list the classifications entries"
 msgstr ""
 
-#: taxon.py:387 taxonsynonym.py:148 taxonsynonym.py:206 taxonsynonym.py:260
-msgid "You are not allowed to modify a classificationEntry"
+#: classificationentry.py:384 classificationentrysynonym.py:144
+#: classificationentrysynonym.py:204 classificationentrysynonym.py:260
+msgid "You are not allowed to modify a classification entry"
 msgstr ""
 
-#: taxon.py:411
-msgid "The rank of the parent must be lowest than the classificationEntry itself"
+#: classificationentry.py:409
+msgid ""
+"The rank of the parent must be lowest than the classification entry itself"
 msgstr ""
 
-#: taxon.py:505
-msgid "You are not allowed to remove a classificationEntry"
+#: classificationentry.py:505
+msgid "You are not allowed to remove a classification entry"
 msgstr ""
 
-#: taxon.py:512
-msgid "This classificationEntry is referred by one or more entities. It cannot be deleted."
+#: classificationentry.py:513
+msgid ""
+"This classification entry is referred by one or more entities. It cannot be "
+"deleted."
 msgstr ""
 
-#: taxon.py:516
-msgid "This classificationEntry has sub-ranks. It cannot be deleted."
+#: classificationentry.py:517
+msgid "This classification entry has sub-ranks. It cannot be deleted."
 msgstr ""
 
-#: taxonsynonym.py:149
-msgid "You are not allowed to add a synonym to a classificationEntry"
+#: classificationentrysynonym.py:145
+msgid "You are not allowed to add a synonym to a classification entry"
 msgstr ""
 
-#: taxonsynonym.py:207
-msgid "You are not allowed to modify a synonym to a classificationEntry"
+#: classificationentrysynonym.py:161 controller.py:169
+msgid "Unsupported type of synonym"
 msgstr ""
 
-#: taxonsynonym.py:252
-msgid "Unable to rename a synonym of a classificationEntry"
+#: classificationentrysynonym.py:171 classificationentrysynonym.py:226
+msgid ""
+"The primary name could not be used by another synonym of classification entry"
 msgstr ""
 
-#: taxonsynonym.py:261
-msgid "You are not allowed to delete a synonym from a classificationEntry"
+#: classificationentrysynonym.py:175 classificationentrysynonym.py:230
+#: controller.py:183
+msgid "Synonym already used as a primary name"
 msgstr ""
 
-#: taxonsynonym.py:268
+#: classificationentrysynonym.py:179 classificationentrysynonym.py:234
+msgid "Synonym already used into this classification entry"
+msgstr ""
+
+#: classificationentrysynonym.py:206
+msgid "You are not allowed to modify a synonym to a classification entry"
+msgstr ""
+
+#: classificationentrysynonym.py:252
+msgid "Unable to rename a synonym of a classification entry"
+msgstr ""
+
+#: classificationentrysynonym.py:262
+msgid "You are not allowed to delete a synonym from a classification entry"
+msgstr ""
+
+#: classificationentrysynonym.py:269
 msgid "It is not possible to remove a primary synonym"
+msgstr ""
+
+#: controller.py:60
+msgid "A classification entry with this name already exists"
+msgstr ""
+
+#: controller.py:65
+msgid "The given classification rank does not exists"
+msgstr ""
+
+#: controller.py:69
+msgid ""
+"The parent and the children classification rank must be of the same nature"
+msgstr ""
+
+#: controller.py:73
+msgid ""
+"The rank level of the parent must be lesser than the rank level of the new "
+"classification entry"
+msgstr ""
+
+#: controller.py:159
+msgid "Empty synonym data"
+msgstr ""
+
+#: controller.py:162
+msgid "Undefined synonym name"
+msgstr ""
+
+#: controller.py:165
+msgid "Undefined synonym language"
+msgstr ""
+
+#: controller.py:179
+msgid ""
+"The primary name could not be used by another synonym of classificationEntry"
+msgstr ""
+
+#: controller.py:187
+msgid "Synonym already used into this classificationEntry"
+msgstr ""
+
+#: models.py:32
+msgid "Family"
+msgstr ""
+
+#: models.py:33
+msgid "Subfamily"
+msgstr ""
+
+#: models.py:34
+msgid "Tribe"
+msgstr ""
+
+#: models.py:35
+msgid "Subtribe"
+msgstr ""
+
+#: models.py:36
+msgid "Genus"
+msgstr ""
+
+#: models.py:37
+msgid "Subgenus"
+msgstr ""
+
+#: models.py:38
+msgid "Section"
+msgstr ""
+
+#: models.py:39
+msgid "Subsection"
+msgstr ""
+
+#: models.py:40
+msgid "Specie"
+msgstr ""
+
+#: models.py:41
+msgid "Subspecie"
+msgstr ""
+
+#: models.py:42
+msgid "Variety"
+msgstr ""
+
+#: models.py:43
+msgid "Subvariety"
+msgstr ""
+
+#: models.py:44
+msgid "Cultivar"
+msgstr ""
+
+#: models.py:52
+msgid "Primary"
+msgstr ""
+
+#: models.py:53 models.py:216
+msgid "Synonym"
+msgstr ""
+
+#: models.py:54
+msgid "Code"
+msgstr ""
+
+#: models.py:77
+msgid "classification"
+msgstr ""
+
+#: models.py:125
+msgid "classification rank"
+msgstr ""
+
+#: models.py:189
+msgid "Rank"
+msgstr ""
+
+#: models.py:207
+msgid "Model"
+msgstr ""
+
+#: models.py:227
+msgid "classification entry"
+msgstr ""
+
+#: models.py:317
+msgid "classification entry synonym"
 msgstr ""

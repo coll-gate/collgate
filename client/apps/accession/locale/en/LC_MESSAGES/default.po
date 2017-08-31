@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-16 10:23+0200\n"
+"POT-Creation-Date: 2017-08-31 18:17+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -52,22 +52,26 @@ msgstr ""
 msgid "Cancel"
 msgstr ""
 
-#: ../../../views/accessionlist.js:31
+#: ../../../views/accessionlist.js:32
 msgid "Code"
 msgstr ""
 
-#: ../../../views/accessionlist.js:32 ../../../views/batchlist.js:44
+#: ../../../views/accessionlist.js:33 ../../../views/batchlist.js:44
 #: ../../../templates/accessionchangesynonym.html:20
 #: ../../../templates/accessionsynonyms.html:16
 msgid "Name"
 msgstr ""
 
-#: ../../../views/accessionlist.js:34
+#: ../../../views/accessionlist.js:35
 msgid "Classification"
 msgstr ""
 
-#: ../../../views/accessionlist.js:41
+#: ../../../views/accessionlist.js:42
 msgid "Model"
+msgstr ""
+
+#: ../../../views/accessionlist.js:44
+msgid "Synonym"
 msgstr ""
 
 #: ../../../views/accessionsynonyms.js:57
@@ -125,43 +129,43 @@ msgstr ""
 msgid "OR"
 msgstr ""
 
-#: ../../../views/condition.js:225 ../../../views/condition.js:234
-#: ../../../views/condition.js:243 ../../../views/condition.js:251
-msgid "Undefined"
-msgstr ""
-
 #: ../../../views/condition.js:226 ../../../views/condition.js:235
 #: ../../../views/condition.js:244 ../../../views/condition.js:252
-msgid "Defined"
+msgid "Undefined"
 msgstr ""
 
 #: ../../../views/condition.js:227 ../../../views/condition.js:236
 #: ../../../views/condition.js:245 ../../../views/condition.js:253
-msgid "Exact"
+msgid "Defined"
 msgstr ""
 
 #: ../../../views/condition.js:228 ../../../views/condition.js:237
 #: ../../../views/condition.js:246 ../../../views/condition.js:254
+msgid "Exact"
+msgstr ""
+
+#: ../../../views/condition.js:229 ../../../views/condition.js:238
+#: ../../../views/condition.js:247 ../../../views/condition.js:255
 msgid "Different from"
 msgstr ""
 
-#: ../../../views/condition.js:229
+#: ../../../views/condition.js:230
 msgid "Lesser than"
 msgstr ""
 
-#: ../../../views/condition.js:230
+#: ../../../views/condition.js:231
 msgid "Greater than"
 msgstr ""
 
-#: ../../../views/condition.js:238
+#: ../../../views/condition.js:239
 msgid "Include"
 msgstr ""
 
-#: ../../../views/condition.js:239
+#: ../../../views/condition.js:240
 msgid "Not include"
 msgstr ""
 
-#: ../../../views/condition.js:247
+#: ../../../views/condition.js:248
 msgid "Contains"
 msgstr ""
 
@@ -223,7 +227,7 @@ msgid "1 characters min"
 msgstr ""
 
 #: ../../../controllers/accession.js:231
-msgid "The parent must be defined"
+msgid "The primary classification must be defined"
 msgstr ""
 
 #: ../../../controllers/batch.js:103

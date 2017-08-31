@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-16 10:23+0200\n"
+"POT-Creation-Date: 2017-08-31 18:17+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -166,19 +166,19 @@ msgstr "Impossible de créer le type de modèle de descripteur !"
 msgid "Unable to reorder the types of model of descriptor"
 msgstr "Impossible de réordonner les types de modèle de descripteur"
 
-#: ../../../views/descriptormodeltype.js:687
 #: ../../../views/descriptormodeltype.js:690
+#: ../../../views/descriptormodeltype.js:693
 #: ../../../templates/describabledetails.html:27
 #: ../../../templates/describableedit.html:27
 msgid "Value"
 msgstr "Valeur"
 
-#: ../../../views/descriptormodeltype.js:728
+#: ../../../views/descriptormodeltype.js:731
 msgid "Successfully removed !"
 msgstr "Retiré avec succé !"
 
-#: ../../../views/descriptormodeltype.js:766
-#: ../../../views/descriptormodeltype.js:778
+#: ../../../views/descriptormodeltype.js:769
+#: ../../../views/descriptormodeltype.js:781
 msgid "Successfully defined !"
 msgstr "Définie avec succé !"
 
@@ -277,8 +277,8 @@ msgstr "Détails pour le modèle de descripteur"
 msgid "List of types of models of descriptor"
 msgstr "Liste des types de modèles de descripteur"
 
-#: ../../../mixins/descriptorscolumns.js:148
-#: ../../../mixins/descriptorscolumns.js:242
+#: ../../../mixins/descriptorscolumns.js:182
+#: ../../../mixins/descriptorscolumns.js:276
 msgid "Error"
 msgstr ""
 

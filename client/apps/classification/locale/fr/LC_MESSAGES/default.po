@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-16 10:23+0200\n"
+"POT-Creation-Date: 2017-08-31 18:17+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,226 +16,220 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../../views/cultivar.js:85 ../../../views/taxon.js:94
+#: ../../../views/classificationentry.js:94
 msgid "Successfully removed !"
 msgstr "Retiré avec succès !"
 
-#: ../../../views/cultivarlistfilter.js:69
-#: ../../../views/taxonlistfilter.js:113 ../../../views/taxonsynonyms.js:58
-#: ../../../views/taxonsynonyms.js:221 ../../../controllers/taxon.js:168
-#: ../../../controllers/taxon.js:370
-msgid "3 characters min"
-msgstr "3 caractères minimum"
-
-#: ../../../views/entitypath.js:142 ../../../views/taxondetails.js:117
-#: ../../../controllers/taxon.js:101 ../../../controllers/taxon.js:313
-msgid "Enter a classificationEntry name. 3 characters at least for auto-completion"
-msgstr "Saisissez un nom de classificationEntry. 3 caractères minimum pour l'auto-complétion"
-
-#: ../../../views/taxonchildren.js:34 ../../../views/taxonlist.js:34
-#: ../../../templates/cultivarlist.html:15
-#: ../../../templates/taxonchangesynonym.html:20
-#: ../../../templates/taxonentitieslist.html:17
-#: ../../../templates/taxonsynonyms.html:16
+#: ../../../views/classificationentrychildren.js:34
+#: ../../../views/classificationentrylist.js:34
+#: ../../../templates/classificationentrychangesynonym.html:20
+#: ../../../templates/classificationentryentitieslist.html:17
+#: ../../../templates/classificationentrysynonyms.html:16
 msgid "Name"
 msgstr "Nom"
 
-#: ../../../views/taxonchildren.js:35 ../../../views/taxonlist.js:35
+#: ../../../views/classificationentrychildren.js:35
+#: ../../../views/classificationentrylist.js:35
 msgid "Rank"
 msgstr "Rang"
 
-#: ../../../views/taxonchildren.js:37 ../../../views/taxonlist.js:37
+#: ../../../views/classificationentrychildren.js:37
+#: ../../../views/classificationentrylist.js:37
 msgid "Parent"
 msgstr "Parent"
 
-#: ../../../views/taxonchildren.js:45 ../../../views/taxonlist.js:45
-#: ../../../templates/cultivarlist.html:17
+#: ../../../views/classificationentrychildren.js:45
+#: ../../../views/classificationentrylist.js:45
 msgid "Synonym"
 msgstr "Synonyme"
 
-#: ../../../views/taxondescriptor.js:26
-#: ../../../views/taxondescriptorcreate.js:123
-#: ../../../views/taxondescriptoredit.js:75
-#: ../../../templates/taxonlayout.html:16
+#: ../../../views/classificationentrydescriptor.js:26
+#: ../../../views/classificationentrydescriptorcreate.js:123
+#: ../../../views/classificationentrydescriptoredit.js:75
+#: ../../../templates/classificationentrylayout.html:16
 msgid "Descriptors"
 msgstr "Descripteurs"
 
-#: ../../../views/taxondescriptor.js:57
+#: ../../../views/classificationentrydescriptor.js:57
 msgid "Delete descriptors"
 msgstr "Supprimer les descripteurs"
 
-#: ../../../views/taxondescriptor.js:58
-msgid "Are you sure you want to delete any descriptors for this classificationEntry ?"
+#: ../../../views/classificationentrydescriptor.js:58
+msgid ""
+"Are you sure you want to delete any descriptors for this classification "
+"entry ?"
 msgstr ""
-"Etes-vous sûr de vouloir supprimer tous les descripteurs pour ce classificationEntry ?"
+"Etes-vous sûr de vouloir supprimer tout les les descripteurs pour cette "
+"entrée de classification ?"
 
-#: ../../../views/taxondescriptorcontext.js:21
-#: ../../../templates/taxondescriptorcreate.html:13
+#: ../../../views/classificationentrydescriptorcontext.js:21
+#: ../../../templates/classificationentrydescriptorcreate.html:13
 msgid "Defines"
 msgstr "Définir"
 
-#: ../../../views/taxondescriptorcontext.js:22
+#: ../../../views/classificationentrydescriptorcontext.js:22
 msgid "Modify"
 msgstr "Modifier"
 
-#: ../../../views/taxondescriptorcontext.js:23
+#: ../../../views/classificationentrydescriptorcontext.js:23
 msgid "Replace all"
 msgstr "Remplacer tous"
 
-#: ../../../views/taxondescriptorcontext.js:24
+#: ../../../views/classificationentrydescriptorcontext.js:24
 msgid "Delete all"
 msgstr "Supprimer tous"
 
-#: ../../../views/taxondescriptorcontext.js:25
-#: ../../../templates/taxonchangeparent.html:27
-#: ../../../templates/taxonchangesynonym.html:27
+#: ../../../views/classificationentrydescriptorcontext.js:25
+#: ../../../templates/classificationentrychangeparent.html:27
+#: ../../../templates/classificationentrychangesynonym.html:27
 msgid "Apply"
 msgstr "Appliquer"
 
-#: ../../../views/taxondescriptorcontext.js:26
-#: ../../../templates/taxonchangeparent.html:26
-#: ../../../templates/taxonchangesynonym.html:26
-#: ../../../templates/taxoncreate.html:45
-#: ../../../templates/taxoncreatecultivar.html:48
-#: ../../../templates/taxondescriptorcreatedialog.html:30
+#: ../../../views/classificationentrydescriptorcontext.js:26
+#: ../../../templates/classificationentrychangeparent.html:26
+#: ../../../templates/classificationentrychangesynonym.html:26
+#: ../../../templates/classificationentrycreate.html:44
+#: ../../../templates/classificationentrydescriptorcreatedialog.html:30
 msgid "Cancel"
 msgstr "Annuler"
 
-#: ../../../views/taxonsynonyms.js:55 ../../../views/taxonsynonyms.js:224
+#: ../../../views/classificationentrydetails.js:119
+#: ../../../controllers/classificationentry.js:98
+msgid ""
+"Enter a classification entry name. 3 characters at least for auto-completion"
+msgstr ""
+"Saisissez un nom pour l'entré de classification. 3 caractères minimum pour l'auto-complétion"
+
+#: ../../../views/classificationentrysynonyms.js:55
+#: ../../../views/classificationentrysynonyms.js:224
 msgid "64 characters max"
 msgstr "64 caractères maximum"
 
-#: ../../../views/taxonsynonyms.js:91 ../../../views/taxonsynonyms.js:204
+#: ../../../views/classificationentrysynonyms.js:58
+#: ../../../views/classificationentrysynonyms.js:221
+#: ../../../controllers/classificationentry.js:166
+msgid "3 characters min"
+msgstr "3 caractères minimum"
+
+#: ../../../views/classificationentrysynonyms.js:91
+#: ../../../views/classificationentrysynonyms.js:204
 msgid "Synonym of classificationEntry already used"
 msgstr "Synonyme de classificationEntry existant"
 
-#: ../../../views/taxonsynonyms.js:197
+#: ../../../views/classificationentrysynonyms.js:197
 msgid "Primary synonym must be unique"
 msgstr "Le synonyme principale doit être unique"
 
-#: ../../../views/taxonsynonyms.js:252
+#: ../../../views/classificationentrysynonyms.js:252
 msgid "Unable to rename the synonym !"
 msgstr "Impossible de renommer le synonyme !"
 
-#: ../../../routers/taxon.js:65
-msgid "List of taxons"
-msgstr "Liste des taxons"
+#: ../../../views/entitypath.js:143
+msgid ""
+"Enter a classificationEntry name. 3 characters at least for auto-completion"
+msgstr ""
+"Saisissez un nom de classificationEntry. 3 caractères minimum pour l'auto-"
+"complétion"
 
-#: ../../../routers/taxon.js:109
-msgid "List of cultivars"
-msgstr "Liste de cultivars"
+#: ../../../routers/classification.js:38
+msgid "List of classifications"
+msgstr "Liste des classifications"
 
-#: ../../../routers/taxon.js:135
-msgid "Taxon details"
-msgstr "Détails du classificationEntry"
+#: ../../../routers/classificationentry.js:61
+msgid "List of classifications entries"
+msgstr "Liste des entrées de classification"
 
-#: ../../../controllers/taxon.js:149 ../../../controllers/taxon.js:351
-msgid "Taxon name already in usage"
-msgstr "Ce nom de classificationEntry est déjà utilisé"
+#: ../../../routers/classificationentry.js:110
+msgid "Classification entry details"
+msgstr "Détails de l'entrée de classification"
 
-#: ../../../controllers/taxon.js:165 ../../../controllers/taxon.js:367
+#: ../../../controllers/classificationentry.js:147
+msgid "Classification entry name already in usage"
+msgstr "Nom d'entrée de classification déjà utilisé"
+
+#: ../../../controllers/classificationentry.js:163
 msgid "128 characters max"
 msgstr "128 caractères max"
 
-#: ../../../controllers/taxon.js:187
-msgid "Family rank cannot have a parent classificationEntry"
-msgstr "Le rang taxinomique famille ne peut pas avoir de parent"
+#: ../../../controllers/classificationentry.js:186
+msgid "Family rank cannot have a parent classification entry"
+msgstr ""
 
-#: ../../../controllers/taxon.js:192
-msgid "This rank must have a parent classificationEntry"
-msgstr "Ce rang taxinomique doit avoir un parent"
+#: ../../../controllers/classificationentry.js:191
+msgid "This rank must have a parent classification entry"
+msgstr "Ce rang doit avoir un parent d'entrée de classification"
 
-#: ../../../controllers/taxon.js:221
-msgid "Taxon successfully created !"
-msgstr "Taxon créé avec succès !"
+#: ../../../controllers/classificationentry.js:220
+msgid "Classification entry successfully created !"
+msgstr "Entrée de classification créée avec succès !"
 
-#: ../../../controllers/taxon.js:413
-msgid "Cultivar"
-msgstr "Cultivar"
+#: ../../../templates/classificationentrychangeparent.html:15
+msgid "Change the direct parent of classification entry"
+msgstr "Changer le parent immédiat de l'entrée de classification"
 
-#: ../../../templates/cultivarlist.html:16
-msgid "Taxon"
-msgstr "Taxon"
-
-#: ../../../templates/taxonchangeparent.html:15
-msgid "Change the direct parent of classificationEntry"
-msgstr "Changer le parent immédiat du classificationEntry"
-
-#: ../../../templates/taxonchangeparent.html:20
-#: ../../../templates/taxoncreate.html:38
-#: ../../../templates/taxoncreatecultivar.html:42
+#: ../../../templates/classificationentrychangeparent.html:20
+#: ../../../templates/classificationentrycreate.html:38
 msgid "Direct parent"
 msgstr "Parent direct"
 
-#: ../../../templates/taxonchangesynonym.html:15
-msgid "Change the name for a synonym of classificationEntry"
-msgstr "Changer le nom d'un synonyme de classificationEntry"
+#: ../../../templates/classificationentrychangesynonym.html:15
+msgid "Change the name for a synonym of classification entry"
+msgstr "Changer le nom d'un synonyme d'entrée de classification"
 
-#: ../../../templates/taxoncreate.html:15
-msgid "Create a classificationEntry"
-msgstr "Créer un classificationEntry"
+#: ../../../templates/classificationentrycreate.html:15
+msgid "Create a classification entry"
+msgstr "Créer une entrée de classification"
 
-#: ../../../templates/taxoncreate.html:22
-msgid "Principal name of the classificationEntry (must be unique)"
-msgstr "Nom principal du classificationEntry (doit être unique)"
+#: ../../../templates/classificationentrycreate.html:22
+msgid "Principal name of the classification entry"
+msgstr "Nom principal de l'entrée de classification"
 
-#: ../../../templates/taxoncreate.html:28
-#: ../../../templates/taxoncreatecultivar.html:36
-#: ../../../templates/taxonsynonyms.html:17
+#: ../../../templates/classificationentrycreate.html:28
+#: ../../../templates/classificationentrysynonyms.html:17
 msgid "Language"
 msgstr "Language"
 
-#: ../../../templates/taxoncreate.html:34
-msgid "Taxon rank"
-msgstr "Rank taxinomique"
+#: ../../../templates/classificationentrycreate.html:34
+msgid "Classification rank"
+msgstr "Rank de classification"
 
-#: ../../../templates/taxoncreate.html:46
-#: ../../../templates/taxoncreatecultivar.html:49
+#: ../../../templates/classificationentrycreate.html:45
 msgid "Create"
 msgstr "Créer"
 
-#: ../../../templates/taxoncreatecultivar.html:15
-msgid "Create a cultivar"
-msgstr "Créer un cultivar"
+#: ../../../templates/classificationentrydescriptorcreate.html:12
+msgid "No descriptor meta-model is defined for this classification entry."
+msgstr "Aucun méta-modèle de descripteur n'est définie pour cette entrée de classification"
 
-#: ../../../templates/taxoncreatecultivar.html:20
-#: ../../../templates/taxondescriptorcreatedialog.html:20
-msgid "Template"
-msgstr "Modèle"
-
-#: ../../../templates/taxoncreatecultivar.html:30
-msgid "Principal name of the cultivar (must be unique)"
-msgstr "Nom principal du cultivar (doit être unique)"
-
-#: ../../../templates/taxondescriptorcreate.html:12
-msgid "No descriptor meta-model is defined for this classificationEntry."
-msgstr "Aucun méta-modèle de descripteur n'est définit pour ce classificationEntry."
-
-#: ../../../templates/taxondescriptorcreatedialog.html:15
+#: ../../../templates/classificationentrydescriptorcreatedialog.html:15
 msgid "Defines a meta-model of descriptors"
 msgstr "Définir un méta-model de descripteurs"
 
-#: ../../../templates/taxondescriptorcreatedialog.html:31
+#: ../../../templates/classificationentrydescriptorcreatedialog.html:20
+msgid "Template"
+msgstr "Modèle"
+
+#: ../../../templates/classificationentrydescriptorcreatedialog.html:31
 msgid "Continue"
 msgstr "Continue"
 
-#: ../../../templates/taxonentitieslist.html:15
-#: ../../../templates/taxonsynonyms.html:15
+#: ../../../templates/classificationentryentitieslist.html:15
+#: ../../../templates/classificationentrysynonyms.html:15
 msgid "Type"
 msgstr "Type"
 
-#: ../../../templates/taxonentitieslist.html:16
+#: ../../../templates/classificationentryentitieslist.html:16
 msgid "Code"
 msgstr "Code"
 
-#: ../../../templates/taxonlayout.html:15
+#: ../../../templates/classificationentrylayout.html:15
 msgid "Synonyms"
 msgstr "Synonymes"
 
-#: ../../../templates/taxonlayout.html:17
+#: ../../../templates/classificationentrylayout.html:17
 msgid "Sub-ranks"
 msgstr "Sous-rangs"
 
-#: ../../../templates/taxonlayout.html:18
+#: ../../../templates/classificationentrylayout.html:18
 msgid "Accessions"
 msgstr "Accessions"

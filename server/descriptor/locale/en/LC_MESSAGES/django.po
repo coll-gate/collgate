@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-16 10:25+0200\n"
+"POT-Creation-Date: 2017-08-31 18:17+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -43,8 +43,8 @@ msgstr ""
 msgid "Already defined set once descriptor %s"
 msgstr ""
 
-#: describable.py:168 describable.py:174 describable.py:183 describable.py:190
-#: describable.py:200 describable.py:208
+#: describable.py:168 describable.py:174 describable.py:183 describable.py:188
+#: describable.py:198 describable.py:204
 msgid "A conditional descriptor is defined but the condition is not true"
 msgstr ""
 
@@ -92,8 +92,8 @@ msgstr ""
 msgid "Only unused types of descriptor can be deleted"
 msgstr ""
 
-#: descriptor.py:490 descriptor.py:644 descriptor.py:714 descriptor.py:794
-#: descriptor.py:951
+#: descriptor.py:490 descriptor.py:643 descriptor.py:713 descriptor.py:793
+#: descriptor.py:950
 msgid "You are not allowed to modify a type of descriptor"
 msgstr ""
 
@@ -101,236 +101,236 @@ msgstr ""
 msgid "It is not permit to modify this type of descriptor"
 msgstr ""
 
-#: descriptor.py:645
+#: descriptor.py:644
 msgid "You are not allowed to create a value of descriptor"
 msgstr ""
 
-#: descriptor.py:715 descriptor.py:952
+#: descriptor.py:714 descriptor.py:951
 msgid "You are not allowed to modify a value of type of descriptor"
 msgstr ""
 
-#: descriptor.py:729
+#: descriptor.py:728
 msgid "There is no values for this type of descriptor"
 msgstr ""
 
-#: descriptor.py:736
+#: descriptor.py:735
 msgid "Ordinal field is only defined for enumeration with ordinal"
 msgstr ""
 
-#: descriptor.py:739
+#: descriptor.py:738
 msgid "Second value field is only defined for enumeration of pairs"
 msgstr ""
 
-#: descriptor.py:795
+#: descriptor.py:794
 msgid "You are not allowed to remove a value of type of descriptor"
 msgstr ""
 
-#: descriptor.py:808
+#: descriptor.py:807
 msgid "There is some data using the type of descriptor"
 msgstr ""
 
-#: descriptor.py:860 descriptor.py:1027 descriptor.py:1095
+#: descriptor.py:859 descriptor.py:1026 descriptor.py:1094
 msgid "This type of descriptor does not contains a list"
 msgstr ""
 
-#: descriptor.py:910 descriptor.py:960
+#: descriptor.py:909 descriptor.py:959
 msgid "Field name must be value0 or value1"
 msgstr ""
 
-#: descriptor.py:970 descriptormetamodel.py:746 descriptormetamodel.py:802
+#: descriptor.py:969 descriptormetamodel.py:747 descriptormetamodel.py:803
 #: descriptormodel.py:593
 msgid "Unsupported language identifier"
 msgstr ""
 
-#: descriptor.py:1031
+#: descriptor.py:1030
 msgid "List of values are not available for drop-down"
 msgstr ""
 
-#: descriptorformattype.py:536
+#: descriptorformattype.py:550
 msgid "Single value"
 msgstr ""
 
-#: descriptorformattype.py:545
+#: descriptorformattype.py:559
 msgid "List of values"
 msgstr ""
 
-#: descriptorformattype.py:554
+#: descriptorformattype.py:568
 msgid "Reference to"
 msgstr ""
 
-#: descriptorformattype.py:567
+#: descriptorformattype.py:581
 msgid "Single enumeration"
 msgstr ""
 
-#: descriptorformattype.py:576 descriptorformattype.py:656
-#: descriptorformattype.py:747 descriptorformattype.py:1066
+#: descriptorformattype.py:590 descriptorformattype.py:671
+#: descriptorformattype.py:763 descriptorformattype.py:1083
 msgid "The descriptor value must be a string"
 msgstr ""
 
-#: descriptorformattype.py:582 descriptorformattype.py:662
-#: descriptorformattype.py:753
+#: descriptorformattype.py:596 descriptorformattype.py:677
+#: descriptorformattype.py:769
 msgid "The descriptor value must exists"
 msgstr ""
 
-#: descriptorformattype.py:647
+#: descriptorformattype.py:662
 msgid "Pair enumeration"
 msgstr ""
 
-#: descriptorformattype.py:738
+#: descriptorformattype.py:754
 msgid "Ordinal with text"
 msgstr ""
 
-#: descriptorformattype.py:786
+#: descriptorformattype.py:802
 msgid "Range limits are [-127, 127]"
 msgstr ""
 
-#: descriptorformattype.py:822
+#: descriptorformattype.py:839
 msgid "Boolean"
 msgstr ""
 
-#: descriptorformattype.py:829
+#: descriptorformattype.py:846
 msgid "The descriptor value must be a boolean"
 msgstr ""
 
-#: descriptorformattype.py:847
+#: descriptorformattype.py:864
 msgid "Numeric"
 msgstr ""
 
-#: descriptorformattype.py:854
+#: descriptorformattype.py:871
 msgid "The descriptor value must be a decimal string"
 msgstr ""
 
-#: descriptorformattype.py:860 descriptorformattype.py:915
-#: descriptorformattype.py:921
+#: descriptorformattype.py:877 descriptorformattype.py:932
+#: descriptorformattype.py:938
 msgid "The descriptor value must be a decimal"
 msgstr ""
 
-#: descriptorformattype.py:864
+#: descriptorformattype.py:881
 msgid "The descriptor value must be a decimal with a precision of "
 msgstr ""
 
-#: descriptorformattype.py:886 descriptorformattype.py:960
-#: descriptorformattype.py:1027
+#: descriptorformattype.py:903 descriptorformattype.py:977
+#: descriptorformattype.py:1044
 msgid ""
 "Custom unit can only be defined is unit is set to custom (unit, custom_unit)"
 msgstr ""
 
-#: descriptorformattype.py:892
+#: descriptorformattype.py:909
 msgid "The unit must refers to a valid predefined value (unit)"
 msgstr ""
 
-#: descriptorformattype.py:907
+#: descriptorformattype.py:924
 msgid "Numeric range"
 msgstr ""
 
-#: descriptorformattype.py:925
+#: descriptorformattype.py:942
 msgid "The descriptor value must be a decimal with a precision of"
 msgstr ""
 
-#: descriptorformattype.py:932
+#: descriptorformattype.py:949
 msgid "The descriptor value must be a decimal between"
 msgstr ""
 
-#: descriptorformattype.py:966 descriptorformattype.py:972
+#: descriptorformattype.py:983 descriptorformattype.py:989
 msgid "Range min must be a decimal"
 msgstr ""
 
-#: descriptorformattype.py:975 descriptorformattype.py:1042
+#: descriptorformattype.py:992 descriptorformattype.py:1059
 msgid "Range min must be lesser than range max"
 msgstr ""
 
-#: descriptorformattype.py:990
+#: descriptorformattype.py:1007
 msgid "Ordinal"
 msgstr ""
 
-#: descriptorformattype.py:997 descriptorformattype.py:1654
+#: descriptorformattype.py:1014 descriptorformattype.py:1671
 msgid "The descriptor value must be an integer"
 msgstr ""
 
-#: descriptorformattype.py:1001
+#: descriptorformattype.py:1018
 msgid "The descriptor value must be an integer between "
 msgstr ""
 
-#: descriptorformattype.py:1033 descriptorformattype.py:1039
+#: descriptorformattype.py:1050 descriptorformattype.py:1056
 msgid "Range min must be an integer"
 msgstr ""
 
-#: descriptorformattype.py:1057
+#: descriptorformattype.py:1074
 msgid "Text"
 msgstr ""
 
-#: descriptorformattype.py:1070
+#: descriptorformattype.py:1087
 msgid ""
 "The descriptor value must be a string with a maximum length of 1024 "
 "characters"
 msgstr ""
 
-#: descriptorformattype.py:1076
+#: descriptorformattype.py:1093
 msgid "The descriptor value must be a string matching the defined format"
 msgstr ""
 
-#: descriptorformattype.py:1115 descriptorformatunit.py:239
+#: descriptorformattype.py:1132 descriptorformatunit.py:239
 msgid "Date"
 msgstr ""
 
-#: descriptorformattype.py:1121
+#: descriptorformattype.py:1138
 msgid "The descriptor value must be a date string (YYYYMMDD)"
 msgstr ""
 
-#: descriptorformattype.py:1142 descriptorformatunit.py:150
+#: descriptorformattype.py:1159 descriptorformatunit.py:150
 msgctxt "concept"
 msgid "Time"
 msgstr ""
 
-#: descriptorformattype.py:1148
+#: descriptorformattype.py:1165
 msgid "The descriptor value must be a time string (HH:MM:SS)"
 msgstr ""
 
-#: descriptorformattype.py:1166
+#: descriptorformattype.py:1183
 msgid "Imprecise date"
 msgstr ""
 
-#: descriptorformattype.py:1179
+#: descriptorformattype.py:1196
 msgid "The descriptor value must be an array of 3 string values"
 msgstr ""
 
-#: descriptorformattype.py:1182
+#: descriptorformattype.py:1199
 msgid "The descriptor value must contain a valid year (format:YYYY)"
 msgstr ""
 
-#: descriptorformattype.py:1185
+#: descriptorformattype.py:1202
 msgid "The descriptor value of month is invalid"
 msgstr ""
 
-#: descriptorformattype.py:1188
+#: descriptorformattype.py:1205
 msgid "The descriptor value of day is invalid"
 msgstr ""
 
-#: descriptorformattype.py:1191
+#: descriptorformattype.py:1208
 msgid "The descriptor value is invalid"
 msgstr ""
 
-#: descriptorformattype.py:1623
+#: descriptorformattype.py:1640
 msgid "Date+time"
 msgstr ""
 
-#: descriptorformattype.py:1629
+#: descriptorformattype.py:1646
 msgid "The descriptor value must be a datetime string (ISO 8601)"
 msgstr ""
 
-#: descriptorformattype.py:1647
+#: descriptorformattype.py:1664
 msgid "Entity"
 msgstr ""
 
-#: descriptorformattype.py:1662
+#: descriptorformattype.py:1679
 msgid "The descriptor value must refers to an existing entity"
 msgstr ""
 
-#: descriptorformattype.py:1686
+#: descriptorformattype.py:1703
 msgid "Invalid describable entity model type name"
 msgstr ""
 
-#: descriptorformattype.py:1698
+#: descriptorformattype.py:1715
 msgid "The descriptor doesn't refers to a valid entity model"
 msgstr ""
 
@@ -646,47 +646,47 @@ msgstr ""
 msgid "You are not allowed to create a meta-model of descriptor"
 msgstr ""
 
-#: descriptormetamodel.py:234
+#: descriptormetamodel.py:235
 msgid "You are not allowed to remove a meta-model of descriptor"
 msgstr ""
 
-#: descriptormetamodel.py:241
+#: descriptormetamodel.py:242
 msgid ""
 "It is not possible to remove a meta-model of descriptor that contains models "
 "of descriptor"
 msgstr ""
 
-#: descriptormetamodel.py:244
+#: descriptormetamodel.py:245
 msgid "There is some data using the meta-model of descriptor"
 msgstr ""
 
-#: descriptormetamodel.py:259 descriptormetamodel.py:287
-#: descriptormetamodel.py:504 descriptormetamodel.py:584
-#: descriptormetamodel.py:646 descriptormetamodel.py:668
-#: descriptormetamodel.py:730 descriptormetamodel.py:785
+#: descriptormetamodel.py:260 descriptormetamodel.py:288
+#: descriptormetamodel.py:505 descriptormetamodel.py:585
+#: descriptormetamodel.py:647 descriptormetamodel.py:669
+#: descriptormetamodel.py:731 descriptormetamodel.py:786
 msgid "You are not allowed to modify a meta-model of descriptor"
 msgstr ""
 
-#: descriptormetamodel.py:505
+#: descriptormetamodel.py:506
 msgid "You are not allowed to create a panel of descriptor"
 msgstr ""
 
-#: descriptormetamodel.py:520
+#: descriptormetamodel.py:521
 msgid ""
 "A panel of descriptor for this model already exists into this meta-model of "
 "descriptor"
 msgstr ""
 
-#: descriptormetamodel.py:585 descriptormetamodel.py:647
-#: descriptormetamodel.py:786
+#: descriptormetamodel.py:586 descriptormetamodel.py:648
+#: descriptormetamodel.py:787
 msgid "You are not allowed to modify a panel of descriptor"
 msgstr ""
 
-#: descriptormetamodel.py:669
+#: descriptormetamodel.py:670
 msgid "You are not allowed to remove a panel of descriptor"
 msgstr ""
 
-#: descriptormetamodel.py:676
+#: descriptormetamodel.py:677
 msgid "There is some entities attached to this panel"
 msgstr ""
 
@@ -771,57 +771,57 @@ msgstr ""
 msgid "descriptor type"
 msgstr ""
 
-#: models.py:954
+#: models.py:935
 msgid "descriptor value"
 msgstr ""
 
-#: models.py:1040
+#: models.py:1021
 msgid "descriptor panel"
 msgstr ""
 
-#: models.py:1150
+#: models.py:1130
 msgid "descriptor model type"
 msgstr ""
 
-#: models.py:1345
+#: models.py:1325
 #, python-format
 msgid "Unable to update the %s"
 msgstr ""
 
-#: models.py:1347
+#: models.py:1327
 #, python-format
 msgid "The value of the descriptor %s must be unique."
 msgstr ""
 
-#: models.py:1349
+#: models.py:1329
 #, python-format
 msgid "Unable to save the %s"
 msgstr ""
 
-#: models.py:1369
+#: models.py:1349
 msgid "descriptor model"
 msgstr ""
 
-#: models.py:1462
+#: models.py:1445
 msgid "descriptor meta model"
 msgstr ""
 
-#: models.py:1550
+#: models.py:1533
 msgid "Undefined"
 msgstr ""
 
-#: models.py:1551
+#: models.py:1534
 msgid "Defined"
 msgstr ""
 
-#: models.py:1552
+#: models.py:1535
 msgid "Equal to"
 msgstr ""
 
-#: models.py:1553
+#: models.py:1536
 msgid "Different from"
 msgstr ""
 
-#: models.py:1576
+#: models.py:1558
 msgid "descriptor model type condition"
 msgstr ""
