@@ -9,14 +9,14 @@
 -->
 
 <span style="font-weight:bold; font-size:18px; margin-bottom: 15px;">
-        <% for (var i = taxon.get('parent_details').length-1; i >= 0; --i) { %>
+        <% for (var i = classificationEntry.get('parent_details').length-1; i >= 0; --i) { %>
         <span>
-            <span class="action view-taxon taxon-rank" data-taxon-id="<%= taxon.get('parent_details')[i].id %>" value="<%= taxon.get('parent_details')[i].rank %>"><%= taxon.get('parent_details')[i].name %></span>
+            <span class="action view-classification-entry classification-rank" data-classification-entry-id="<%= classificationEntry.get('parent_details')[i].id %>" value="<%= classificationEntry.get('parent_details')[i].rank %>"><%= classificationEntry.get('parent_details')[i].name %></span>
         </span>
         <span class="glyphicon glyphicon-chevron-right"></span>
     <% } %>
     <span>
-        <span class="action view-taxon taxon-rank" data-taxon-id="<%= taxon.get('id') %>" value="<%= taxon.get('rank') %>"><%= taxon.get('name') %></span>
+        <span class="action view-classification-entry classification-rank" data-classification-entry-id="<%= classificationEntry.get('id') %>" value="<%= classificationEntry.get('rank') %>"><%= classificationEntry.get('name') %></span>
     </span>
     <span class="glyphicon glyphicon-chevron-right"></span>
     <span>

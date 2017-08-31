@@ -82,6 +82,7 @@ class DescriptorFormatTypeCountry(DescriptorFormatType):
 
         return {
             'cacheable': True,
+            'validity': None,
             'items': items
         }
 
@@ -155,6 +156,7 @@ class DescriptorFormatTypeCity(DescriptorFormatType):
 
         return {
             'cacheable': True,
+            'validity': None,
             'items': items
         }
 

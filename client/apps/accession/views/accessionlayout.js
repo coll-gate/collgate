@@ -9,7 +9,7 @@
  */
 
 var LayoutView = require('../../main/views/layout');
-var TaxonModel = require('../../classification/models/taxon');
+var TaxonModel = require('../../classification/models/classificationentry');
 
 var ScrollingMoreView = require('../../main/views/scrollingmore');
 var ContentBottomLayout = require('../../main/views/contentbottomlayout');
@@ -89,12 +89,12 @@ var Layout = LayoutView.extend({
 
         // details view
         if (!this.model.isNew()) {
-            // taxon parent
+            // classificationEntry parent
             var taxon = new TaxonModel({id: this.model.get('parent')});
-            taxon.fetch().then(function () {
+            classificationEntry.fetch().then(function () {
                 accessionLayout.showChildView('details', new EntityPathView({
                     model: accessionLayout.model,
-                    taxon: taxon
+                    classificationEntry: classificationEntry
                 }));
             });
 
@@ -130,9 +130,9 @@ var Layout = LayoutView.extend({
         } else {
             // details
             var taxon = new TaxonModel({id: this.model.get('parent')});
-            taxon.fetch().then(function() {
+            classificationEntry.fetch().then(function() {
                 accessionLayout.showChildView('details', new EntityPathView({
-                    model: accessionLayout.model, taxon: taxon, noLink: true}));
+                    model: accessionLayout.model, classificationEntry: classificationEntry, noLink: true}));
             });
 
             // descriptors edit tab

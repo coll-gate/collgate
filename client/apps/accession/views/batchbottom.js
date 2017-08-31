@@ -17,7 +17,7 @@ var View = Marionette.View.extend({
 
     ui: {
         filter_btn: 'button.batch-filter',
-        batch_name: 'input.taxon-name',
+        batch_name: 'input.classification-entry-name',
         action: 'select.batch-action-type'
     },
 

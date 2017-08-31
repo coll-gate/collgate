@@ -20,7 +20,6 @@ from igdectk.common.models import ChoiceEnum, IntegerChoice
 
 from main.models import Entity
 from descriptor.models import DescribableEntity, DescriptorType
-from classification.models import Taxon
 from classification.models import ClassificationEntry
 
 
@@ -46,6 +45,27 @@ class Asset(Entity):
         return Q(name__istartswith=term)
 
 
+class AccessionClassificationEntry(models.Model):
+    """
+    M2M accession to classification entry with additional flags.
+    """
+
+    # accession object
+    accession = models.ForeignKey('Accession', on_delete=models.CASCADE)
+
+    # classification entry object
+    classification_entry = models.ForeignKey(ClassificationEntry, on_delete=models.CASCADE)
+
+    # is a primary or secondary classification association
+    primary = models.BooleanField(default=False, db_index=True)
+
+    class Meta:
+        index_together = (
+            ('accession', 'classification_entry'),
+            ('accession', 'primary')
+        )
+
+
 class Accession(DescribableEntity):
     """
     Accession entity defines a physical or virtual accession.
@@ -63,25 +83,27 @@ class Accession(DescribableEntity):
     # unique GRC code of the accession
     code = models.CharField(unique=True, max_length=255, db_index=True)
 
-    # primary classification + M2M through or only M2M through ?
-    # primary_classification = models.ForeignKey(ClassificationEntry, on_delete=models.PROTECT)
+    # primary classification as simple FK for a simple join
+    primary_classification_entry = models.ForeignKey(
+        ClassificationEntry, on_delete=models.PROTECT, related_name='primary_accessions', null=True)
 
     # accession can have many classification but at least a primary
-    # classifications = models.ManyToManyField(through=)
+    classifications_entries = models.ManyToManyField(
+        through=AccessionClassificationEntry, to=ClassificationEntry, related_name='accession_set')
 
-    # inherit of a taxon rank
-    parent = models.ForeignKey(Taxon)
+    # inherit of a classificationEntry rank
+    # parent = models.ForeignKey(Taxon)
 
     @classmethod
     def get_defaults_columns(cls):
         return {
-            'parent': {
+            'primary_classification_entry': {
                 'label': _('Classification'),
                 'field': 'name',
                 'query': False,   # could be later, for the moment LEFT JOIN into the queryset
                 'format': {
                     'type': 'entity',
-                    'model': 'classification.taxon'
+                    'model': 'classification.classificationentry'
                 }
             },
             'descriptor_meta_model': {
@@ -124,7 +146,7 @@ class Accession(DescribableEntity):
         return {
             'name': self.name,
             'code': self.code,
-            'parent': self.parent_id,
+            'primary_classification_entry': self.primary_classification_entry_id,
             'descriptor_meta_model': self.descriptor_meta_model_id,
             'descriptors': self.descriptors
         }
@@ -139,8 +161,8 @@ class Accession(DescribableEntity):
             if 'name' in self.updated_fields:
                 result['name'] = self.name
 
-            if 'parent' in self.updated_fields:
-                result['parent'] = self.parent_id
+            if 'primary_classification_entry' in self.updated_fields:
+                result['primary_classification_entry'] = self.primary_classification_entry_id
 
             if 'descriptors' in self.updated_fields:
                 if hasattr(self, 'descriptors_diff'):
@@ -153,7 +175,7 @@ class Accession(DescribableEntity):
             return {
                 'name': self.name,
                 'code': self.code,
-                'parent': self.parent_id,
+                'primary_classification_entry': self.primary_classification_entry_id,
                 'descriptors': self.descriptors
             }
 
@@ -437,6 +459,8 @@ class BatchAction(models.Model):
     output_batches = models.ManyToManyField(Batch, related_name='+')
 
     class Meta:
+        verbose_name = _("batch action")
+
         index_together = (("accession", "type"),)
 
         default_permissions = list()

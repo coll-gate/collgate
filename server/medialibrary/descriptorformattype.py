@@ -222,6 +222,7 @@ class DescriptorFormatTypeMediaCollection(DescriptorFormatType):
         # @todo
 
         return {
+            'validity': None,
             'cacheable': True,
             'items': items
         }

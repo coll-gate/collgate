@@ -58,7 +58,7 @@ class CollGateAccession(ApplicationMain):
             Sample
         ]
 
-        # add the taxon entities models, classification_module
+        # add the classificationEntry entities models, classification_module
         classification_app = apps.get_app_config('classification')
         classification_app.children_entities += [
             Accession

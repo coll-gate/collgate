@@ -112,6 +112,8 @@ class CursorQuery(object):
                 self.model_fields[field.name] = ('M2M', '', field.null)
             elif type(field) is models.fields.reverse_related.ManyToOneRel:
                 self.model_fields[field.name] = ('M2O', '', field.null)
+            elif type(field) is models.fields.related.ManyToManyField:
+                self.model_fields[field.name] = ('M2M', '', field.null)
             elif type(field) is models.fields.related.ForeignKey:
                 self.model_fields[field.name] = ('FK', 'INTEGER', field.null)
                 self.query_select.append('"%s"."%s_id"' % (db_table, field.name))
@@ -679,6 +681,9 @@ class CursorQuery(object):
             elif type(field) is models.fields.reverse_related.ManyToOneRel:
                 # model_fields[field.name] = ('M2O', '', field.null)
                 pass
+            elif type(field) is models.fields.related.ManyToManyField:
+                # model_fields[field.name] = ('M2M', '', field.null)
+                pass
             elif type(field) is models.fields.related.ForeignKey:
                 # @todo could be TEXT
                 model_fields[field.name + '_id'] = ('FK', 'INTEGER', field.null)
@@ -859,8 +864,16 @@ class CursorQuery(object):
 
         _select = "SELECT DISTINCT " if self.query_distinct else "SELECT " + ", ".join(self.query_select)
         _from = "FROM " + " ".join(self.query_from)
-        _order_by = "ORDER BY " + ", ".join(self.query_order_by)
-        _limit = "LIMIT %i" % self.query_limit
+
+        if self.query_order_by:
+            _order_by = "ORDER BY " + ", ".join(self.query_order_by)
+        else:
+            _order_by = ""
+
+        if self.query_limit:
+            _limit = "LIMIT %i" % self.query_limit
+        else:
+            _limit = ""
 
         if self.query_filters:
             if self.query_where:
@@ -912,7 +925,7 @@ class CursorQuery(object):
             self.sql()
 
         if len(self._query_set) == 0:
-            raise self._model.DoesNotExists()
+            raise self._model.DoesNotExist()
         elif len(self._query_set) > 1:
             raise self.MultipleObjectsReturned()
 

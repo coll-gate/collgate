@@ -16,7 +16,7 @@ var View = Dialog.extend({
     templateContext: function () {
         return {
             entity_types: [
-                {id: 'classification.taxon', label: gt.gettext('Cultivar')},
+                {id: 'classification.classificationEntry', label: gt.gettext('Cultivar')},
                 {id: 'accession.accession', label: gt.gettext('Accession')},
                 {id: 'accession.batch', label: gt.gettext('Batch')}
             ],
@@ -199,7 +199,7 @@ var View = Dialog.extend({
         } else if (entityType === 'accession.batch') {
             // todo
             alert('Not yet implemented!')
-        } else if (entityType === 'classification.taxon') {
+        } else if (entityType === 'classification.classificationEntry') {
             // todo
             alert('Not yet implemented!')
         }

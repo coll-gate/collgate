@@ -104,6 +104,7 @@ def get_columns_name_for_describable_content_type(request, content_type_name):
 
     results = {
         'cacheable': True,
+        'validity': None,
         'columns': columns
     }
 

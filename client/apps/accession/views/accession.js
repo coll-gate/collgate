@@ -30,12 +30,12 @@ var View = Marionette.View.extend({
 
     ui: {
         details: 'td.view-accession-details',
-        parent: 'td.view-parent-details'
+        primary_classification_entry: 'td.view-primary-classification-entry-details'
     },
 
     events: {
         'click @ui.details': 'viewDetails',
-        'click @ui.parent': 'viewParent'
+        'click @ui.primary_classification_entry': 'viewPrimaryClassificationEntry'
     },
 
     behaviors: {
@@ -75,23 +75,25 @@ var View = Marionette.View.extend({
         Backbone.history.navigate('app/accession/accession/' + this.model.get('id') + '/', {trigger: true});
     },
 
-    viewParent: function () {
-        Backbone.history.navigate('app/classification/taxon/' + this.model.get('parent') + '/', {trigger: true});
+    viewPrimaryClassificationEntry: function () {
+        Backbone.history.navigate('app/classification/classificationentry/' + this.model.get('primary_classification_entry') + '/', {trigger: true});
     },
 
-    parentCell: function(td) {
-        if (!this.model.get('parent_details')) {
+    primaryClassificationEntryCell: function(td) {
+        if (!this.model.get('primary_classification_entry_details')) {
             return
         }
 
-        var parentName = this.model.get('parent_details').name || "";
-        var parentRank = this.model.get('parent_details').rank;
+        var classificationEntryName = this.model.get('primary_classification_entry_details').name || "";
+        var classificationRank = this.model.get('primary_classification_entry_details').rank;
 
-        var el = $('<span class="parent taxon-rank" title="">' + parentName + '</span>');
-        if (parentRank) {
-            var rank = application.classification.collections.taxonRanks.findLabel(this.model.get('parent_details').rank);
+        var el = $('<span class="classification-entry classification-rank" title="">' + classificationEntryName + '</span>');
+        if (classificationRank) {
+            // @todo cache
+            var rank = application.classification.collections.classificationRanks.findLabel(classificationRank);
+            // var rank = application.main.cache.get('classification', classificationRank);
 
-            el.attr('value', this.model.get('parent_details').rank);
+            el.attr('value', classificationRank);
             el.attr('title', rank);
         }
 

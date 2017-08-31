@@ -12,29 +12,30 @@ from django.core.exceptions import SuspiciousOperation, PermissionDenied
 from django.db import transaction
 
 from descriptor.describable import DescriptorsBuilder
-from .models import Taxon, TaxonSynonym, TaxonSynonymType, TaxonRank
+from .models import ClassificationEntry, ClassificationRank
+from .models import ClassificationEntrySynonym, ClassificationEntrySynonymType
 
 from django.utils.translation import ugettext_lazy as _
 
 
-class Taxonomy(object):
+class ClassificationEntryManager(object):
 
     @classmethod
-    def update_parents(cls, taxon, parent=None):
+    def update_parents(cls, classification_entry, parent=None):
         """
-        Internally defines the list of parent for a given taxon
-        and parent (does not save the taxon).
-        :param taxon: Valid Taxon instance.
-        :param parent: None or valid Taxon instance.
+        Internally defines the list of parent for a given classification entry
+        and parent (does not save the entry).
+        :param classification_entry: Valid Classification entry instance.
+        :param parent: None or valid Classification entry instance.
         """
-        taxon.parent_list = ""
+        classification_entry.parent_list = []
 
         if not parent:
             return
 
         curr_parent = parent
         while curr_parent is not None:
-            taxon.parent_list += str(curr_parent.id) + ','
+            classification_entry.parent_list.append(curr_parent.id)
 
             if curr_parent.parent:
                 curr_parent = curr_parent.parent
@@ -43,107 +44,116 @@ class Taxonomy(object):
 
     @classmethod
     @transaction.atomic
-    def create_taxon(cls, name, rank_id, parent, language, descriptor_meta_model=None, descriptors=None):
+    def create_classification_entry(cls, name, rank_id, parent, language, descriptor_meta_model=None, descriptors=None):
         """
-        Create a new taxon with a unique name. The level must be
+        Create a new classification entry with a unique name. The level must be
         greater than its parent level.
-        :param name: Unique taxon name.
-        :param rank_id: Taxon rank greater than parent rank.
-        :param parent: None or valid Taxon instance.
+        :param name: Unique classification entry name.
+        :param rank_id: Classification rank with a greater level than its parent rank.
+        :param parent: None or valid Classification entry instance.
         :param language: Language code of the primary synonym created with name.
         :param descriptor_meta_model: Descriptor meta model instance or None.
         :param descriptors: Descriptors values or None if no descriptor meta model.
-        :return: None or new Taxon instance.
+        :return: None or new Classification entry instance.
         """
-        if Taxon.objects.filter(name=name).exists():
-            raise SuspiciousOperation(_("A taxon with this name already exists"))
+        if ClassificationEntry.objects.filter(name=name).exists():
+            raise SuspiciousOperation(_("A classification entry with this name already exists"))
 
-        rank = TaxonRank(rank_id)
+        try:
+            classification_rank = ClassificationRank.objects.get(id=rank_id)
+        except ClassificationRank.DoesNotExist:
+            raise SuspiciousOperation(_("The given classification rank does not exists"))
 
-        if parent and rank.value <= parent.rank:
-            raise SuspiciousOperation(_("The rank of the parent must be lesser than the new taxon"))
+        if parent:
+            if parent.classification_id != classification_rank.classification_id:
+                raise SuspiciousOperation(_("The parent and the children classification rank must be of the same nature"))
 
-        taxon = Taxon()
-        taxon.name = name
-        taxon.rank = rank_id
-        taxon.parent = parent
-        taxon.parent_list = ""
-        taxon.descriptor_meta_model = descriptor_meta_model
+            if parent.level >= classification_rank.level:
+                raise SuspiciousOperation(_(
+                    "The rank level of the parent must be lesser than the rank level of the new classification entry"))
+
+        classification_entry = ClassificationEntry()
+        classification_entry.name = name
+        classification_entry.rank = classification_rank
+        classification_entry.parent = parent
+        classification_entry.parent_list = []
+        classification_entry.descriptor_meta_model = descriptor_meta_model
 
         if parent:
             try:
-                Taxonomy.update_parents(taxon, parent)
-            except Taxon.DoesNotExist:
+                ClassificationEntryManager.update_parents(classification_entry, parent)
+            except ClassificationEntry.DoesNotExist:
                 return None
 
         # descriptors
         if descriptor_meta_model is not None:
-            descriptors_builder = DescriptorsBuilder(taxon)
+            descriptors_builder = DescriptorsBuilder(classification_entry)
 
             descriptors_builder.check_and_update(descriptor_meta_model, descriptors)
-            taxon.descriptors = descriptors_builder.descriptors
+            classification_entry.descriptors = descriptors_builder.descriptors
 
-        taxon.save()
+        classification_entry.save()
 
         # first name a primary synonym
-        primary = TaxonSynonym(
-            taxon_id=taxon.id,
+        primary_synonym = ClassificationEntrySynonym(
+            classification_entry_id=classification_entry.id,
             name=name,
-            type=TaxonSynonymType.PRIMARY.value,
-            language=language)
+            type=ClassificationEntrySynonymType.PRIMARY.value,
+            language=language
+        )
 
-        primary.save()
+        primary_synonym.save()
 
-        return taxon
+        return classification_entry
 
     @classmethod
-    def get_taxon_by_name(cls, name):
+    def get_classification_entry_by_name(cls, name):
         """
-        Return a unique taxon by its name (unique).
-        :param name: Valid taxon name.
-        :return: None or valid Taxon instance.
+        Return a unique classification entry by its name (unique).
+        :param name: Valid classification entry name.
+        :return: None or valid Classification entry instance.
         """
         try:
-            return Taxon.objects.get(name=name)
-        except Taxon.DoesNotExist:
+            return ClassificationEntry.objects.get(name=name)
+        except ClassificationEntry.DoesNotExist:
             return None
-        except Taxon.MultipleObjectsReturned:
+        except ClassificationEntry.MultipleObjectsReturned:
             return None
 
     @classmethod
-    def search_taxon_by_name(cls, name_part):
+    def search_classification_entry_by_name(cls, name_part):
         """
-        Return a list of taxon containing name_part.
-        :param name: Partial or complete taxon name.
-        :return: QuerySet of Taxon
+        Return a list of classification entry containing name_part.
+        :param name: Partial or complete classification entry name.
+        :return: QuerySet of Classification entry
         """
-        return Taxon.objects.filter(name__icontains=name_part)
+        return ClassificationEntry.objects.filter(name__icontains=name_part)
 
     @classmethod
-    def list_taxon_by_parent(cls, parent):
+    def list_classification_entry_by_parent(cls, parent):
         """
-        List all taxon having parent has direct parent.
+        List all classification entry having parent has direct parent.
         :param parent: Valid parent or None for root
-        :return: Array of Taxon
+        :return: Array of Classification entry
         """
-        return Taxon.objects.filter(parent=parent)
+        return ClassificationEntry.objects.filter(parent=parent)
 
     @classmethod
-    def list_taxon_having_parent(cls, parent):
+    def list_classification_entry_having_parent(cls, parent):
         """
-        List all taxon having parent as direct or indirect parent.
+        List all classification entry having parent as direct or indirect parent.
         :param parent: Valid parent, None for root, or an array of parent
-        :return: Array of Taxon
+        :return: Array of Classification entry
         """
-        if isinstance(parent, Taxon):
-            return Taxon.objects.filter(parent_list__in=[parent])
+        if isinstance(parent, ClassificationEntry):
+            return ClassificationEntry.objects.filter(parent_list__in=[parent])
         elif isinstance(parent, list):
-            return Taxon.objects.filter(parent_list__in=parent)
+            return ClassificationEntry.objects.filter(parent_list__in=parent)
 
     @classmethod
-    def add_synonym(cls, taxon, synonym):
+    def add_synonym(cls, classification_entry, synonym):
         """
-        Add one synonym to the given taxon.
+        Add one synonym to the given classification entry.
         """
         if not synonym:
             raise SuspiciousOperation(_('Empty synonym data'))
@@ -155,28 +165,33 @@ class Taxonomy(object):
             raise SuspiciousOperation(_('Undefined synonym language'))
 
         # check that type is in the values of descriptor
-        if not TaxonSynonym.is_synonym_type(synonym['type']):
+        if not ClassificationEntrySynonym.is_synonym_type(synonym['type']):
             raise SuspiciousOperation(_("Unsupported type of synonym"))
 
-        # check if a similar synonyms exists into the taxon or as primary name for another taxon
-        synonyms = TaxonSynonym.objects.filter(synonym__iexact=synonym['name'])
+        # check if a similar synonyms exists into the classification entry or as primary name
+        # for another classificationEntry
+        synonyms = ClassificationEntrySynonym.objects.filter(synonym__iexact=synonym['name'])
 
         for synonym in synonyms:
             # at least one usage, not compatible with primary synonym
-            if synonym['type'] == TaxonSynonymType.PRIMARY.value:
-                raise SuspiciousOperation(_("The primary name could not be used by another synonym of taxon"))
+            if synonym['type'] == ClassificationEntrySynonymType.PRIMARY.value:
+                raise SuspiciousOperation(
+                    _("The primary name could not be used by another synonym of classificationEntry"))
 
-            # already used by another taxon as primary name
+            # already used by another classificationEntry as primary name
             if synonym.is_primary():
                 raise SuspiciousOperation(_("Synonym already used as a primary name"))
 
-            # already used by this taxon
-            if synonym.taxon_id == taxon.id:
-                raise SuspiciousOperation(_("Synonym already used into this taxon"))
+            # already used by this classificationEntry
+            if synonym.classification_entry_id == classification_entry.id:
+                raise SuspiciousOperation(_("Synonym already used into this classificationEntry"))
 
-        synonym = TaxonSynonym(taxon=taxon,
-                               name="%s_%s" % (taxon.name, synonym['name']),
-                               synonym=synonym['name'],
-                               type=synonym['type'],
-                               language=synonym['language'])
+        synonym = ClassificationEntrySynonym(
+            classification_entry=classification_entry,
+            name="%s_%s" % (classification_entry.name, synonym['name']),
+            synonym=synonym['name'],
+            type=synonym['type'],
+            language=synonym['language']
+        )
+
         synonym.save()

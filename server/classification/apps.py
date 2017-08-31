@@ -11,7 +11,7 @@
 from django.utils.translation import ugettext_lazy as _
 
 from igdectk.common.apphelpers import ApplicationMain
-from igdectk.module import AUTH_USER
+from igdectk.module import AUTH_USER, AUTH_STAFF, AUTH_SUPER_USER
 from igdectk.module.manager import module_manager
 from igdectk.module.menu import MenuEntry, MenuSeparator
 from igdectk.module.module import Module, ModuleMenu
@@ -27,6 +27,9 @@ class CollGateClassification(ApplicationMain):
         # different types of format for type of descriptors for this module
         self.format_types = []
 
+        # defines the list of entities models that uses of a classification entry as parent
+        self.children_entities = []
+
     def ready(self):
         super().ready()
 
@@ -37,35 +40,53 @@ class CollGateClassification(ApplicationMain):
         classification_module = Module('classification', base_url='coll-gate')
         classification_module.include_urls((
             'base',
-            'taxon',
-            'taxonsynonym'
+            'classification',
+            'classificationentry',
+            'classificationentrysynonym'
             )
         )
 
-        # defines the list of entities models that uses of a taxon as parent
-        self.children_entities = []
-
         # add the describable entities models
-        from .models import Taxon
+        from .models import ClassificationEntry
 
         # descriptor_module
         from django.apps import apps
         descriptor_app = apps.get_app_config('descriptor')
         descriptor_app.describable_entities += [
-            Taxon
+            ClassificationEntry
         ]
+
+        # administration menu
+        menu_administration = ModuleMenu('administration', _('Administration'), order=999, auth=AUTH_STAFF)
+
+        menu_administration.add_entry(MenuSeparator(400))
+
+        # administration related menus
+        menu_administration.add_entry(
+            MenuEntry('classification-list', _('List of classifications'), "#classification/classification/",
+                      icon=Glyph.TAGS, order=401, auth=AUTH_SUPER_USER))
+
+        classification_module.add_menu(menu_administration)
 
         # classification menu
         menu_classification = ModuleMenu('classification', _('Classification'), auth=AUTH_USER)
         menu_classification.add_entry(
-            MenuEntry('create-taxon', _('Create taxon'), "~classification/taxon/create", icon=Glyph.PLUS_SIGN, order=1))
-        menu_classification.add_entry(
-            MenuEntry('create-cultivar', _('Create cultivar'), "~classification/taxon/createCultivar", icon=Glyph.PLUS_SIGN, order=2))
+            MenuEntry(
+                'create-classification-entry',
+                _('Create classification entry'),
+                "~classification/classificationEntry/create",
+                icon=Glyph.PLUS_SIGN,
+                order=1))
+
         menu_classification.add_entry(MenuSeparator(100))
         menu_classification.add_entry(
-            MenuEntry('list-taxon', _('List taxons'), "#classification/taxon/", icon=Glyph.LIST, order=101))
-        menu_classification.add_entry(
-            MenuEntry('list-taxon-cultivar', _('List cultivars'), "#classification/cultivar/", icon=Glyph.LIST_ALT, order=102))
+            MenuEntry(
+                'list-classification-entry',
+                _('List classifications entries'),
+                "#classification/classificationentry/",
+                icon=Glyph.LIST,
+                order=101))
+
         classification_module.add_menu(menu_classification)
 
         module_manager.register_module(classification_module)

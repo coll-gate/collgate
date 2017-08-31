@@ -43,7 +43,7 @@ var Controller = Marionette.Object.extend({
                     name: "#accession_name",
                     language: "#accession_language",
                     meta_model: "#meta_model",
-                    parent: "#accession_parent"
+                    primary_classification_entry: "#primary_classification_entry"
                 },
 
                 events: {
@@ -58,10 +58,10 @@ var Controller = Marionette.Object.extend({
                     application.main.views.languages.drawSelect(this.ui.language);
                     this.ui.meta_model.selectpicker({});
 
-                    $(this.ui.parent).select2({
-                        dropdownParent: this.ui.parent.parent(),
+                    $(this.ui.primary_classification_entry).select2({
+                        dropdownParent: this.ui.primary_classification_entry.parent(),
                         ajax: {
-                            url: application.baseUrl + "classification/taxon/search/",
+                            url: application.baseUrl + "classification/entry/search/",
                             dataType: 'json',
                             delay: 250,
                             data: function (params) {
@@ -109,7 +109,7 @@ var Controller = Marionette.Object.extend({
                 onBeforeDestroy: function() {
                     this.ui.language.selectpicker('destroy');
                     this.ui.meta_model.selectpicker('destroy');
-                    this.ui.parent.select2('destroy');
+                    this.ui.primary_classification_entry.select2('destroy');
 
                     CreateAccessionView.__super__.onBeforeDestroy.apply(this);
                 },
@@ -221,14 +221,14 @@ var Controller = Marionette.Object.extend({
                 validate: function() {
                     var valid = this.validateName();
 
-                    var parentId = 0;
+                    var primaryClassificationEntryId = 0;
 
-                    if (this.ui.parent.val()) {
-                        parentId = parseInt(this.ui.parent.val());
+                    if (this.ui.primary_classification_entry.val()) {
+                        primaryClassificationEntryId = parseInt(this.ui.primary_classification_entry.val());
                     }
 
-                    if (!parentId) {
-                        $.alert.error(gt.gettext("The parent must be defined"));
+                    if (!primaryClassificationEntryId) {
+                        $.alert.error(gt.gettext("The primary classification must be defined"));
                         valid = false;
                     }
 
@@ -239,7 +239,7 @@ var Controller = Marionette.Object.extend({
 
                      if (this.ui.code.hasClass('invalid') ||
                          this.ui.name.hasClass('invalid') ||
-                         this.ui.parent.hasClass('invalid')) {
+                         this.ui.primary_classification_entry.hasClass('invalid')) {
                         valid = false;
                     }
 
@@ -252,15 +252,15 @@ var Controller = Marionette.Object.extend({
                     if (this.validate()) {
                         var code = this.ui.code.val().trim();
                         var name = this.ui.name.val().trim();
-                        var parent = parseInt(this.ui.parent.val());
-                        var metaModel = parseInt(this.ui.meta_model.val());
+                        var primaryClassificationEntryId = parseInt(this.ui.primary_classification_entry.val());
+                        var metaModelId = parseInt(this.ui.meta_model.val());
 
                         // create a new local model and open an edit view with this model
                         var model = new AccessionModel({
                             code: code,
                             name: name,
-                            parent: parent,
-                            descriptor_meta_model: metaModel,
+                            primary_classification_entry: primaryClassificationEntryId,
+                            descriptor_meta_model: metaModelId,
                             language: this.ui.language.val()
                         });
 

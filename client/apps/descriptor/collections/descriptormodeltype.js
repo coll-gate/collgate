@@ -16,6 +16,7 @@ var Collection = Backbone.Collection.extend({
     },
 
     model: DescriptorModelTypeModel,
+    comparator: 'position',
 
     initialize: function(models, options) {
         options || (options = {});
@@ -28,10 +29,7 @@ var Collection = Backbone.Collection.extend({
         this.next = data.next;
 
         return data.items;
-    },
-
-    comparator: 'position'
+    }
 });
 
 module.exports = Collection;
-

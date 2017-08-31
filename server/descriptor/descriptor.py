@@ -545,8 +545,7 @@ def update_descriptor_type(request, grp_id, typ_id):
             descr_type.values_set.all().delete()
 
         # regenerate values only if difference in range or translation
-        if org_min_range != min_range or org_max_range != max_range or format_type['trans'] != org_format.get('trans',
-                                                                                                              False):
+        if org_min_range != min_range or org_max_range != max_range or format_type['trans'] != org_format.get('trans', False):
             values = {}
 
             i = 1  # begin to 1

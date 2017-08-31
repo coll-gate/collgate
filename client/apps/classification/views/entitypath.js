@@ -1,6 +1,6 @@
 /**
  * @file entitypath.js
- * @brief Taxon path + entity name item view
+ * @brief Classification entry path + entity name item view
  * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2016-12-29
  * @copyright Copyright (c) 2016 INRA/CIRAD
@@ -11,18 +11,18 @@
 var Marionette = require('backbone.marionette');
 var Dialog = require('../../main/views/dialog');
 
-var TaxonModel = require('../models/taxon');
+var ClassificationEntryModel = require('../models/classificationentry');
 
 var View = Marionette.View.extend({
     tagName: 'div',
     template: require('../templates/entitypath.html'),
     templateContext: function () {
         return {
-            taxon: this.taxon
+            classificationEntry: this.classificationEntry
         };
     },
 
-    taxon: {name: '', rank: 0, parent_details: []},
+    classificationEntry: {name: '', rank: 0, parent_details: []},
     noLink: false,
 
     attributes: {
@@ -30,18 +30,17 @@ var View = Marionette.View.extend({
     },
 
     ui: {
-        view_taxon: ".view-taxon",
-        taxon_rank: ".taxon-ranks",
+        view_classification_entry: ".view-classification-entry",
         change_parent: ".change-parent"
     },
 
     events: {
-        'click @ui.view_taxon': 'onViewTaxon',
+        'click @ui.view_classification_entry': 'onViewClassificationEntry',
         'click @ui.change_parent': 'onChangeParent'
     },
 
     initialize: function(options) {
-        this.mergeOptions(options, ['taxon']);
+        this.mergeOptions(options, ['classificationEntry']);
 
         this.listenTo(this.model, 'change:name', this.render, this);
         this.listenTo(this.model, 'change:parent', this.updateParent, this);
@@ -50,40 +49,40 @@ var View = Marionette.View.extend({
     updateParent: function(model, value) {
         var view = this;
 
-        // update the taxon
-        this.taxon = new TaxonModel({id: value});
-        this.taxon.fetch().then(function() {
+        // update the classificationEntry
+        this.classificationEntry = new ClassificationEntryModel({id: value});
+        this.classificationEntry.fetch().then(function() {
             view.render();
         });
     },
 
     onRender: function() {
-        application.classification.views.taxonRanks.attributeFromValue(this.el, 'title');
+        application.classification.views.classificationRanks.attributeFromValue(this.el, 'title', 'id');
 
         if (this.getOption('noLink')) {
-            this.ui.view_taxon.removeClass('action');
+            this.ui.view_classification_entry.removeClass('action');
         }
     },
 
-    onViewTaxon: function(e) {
+    onViewClassificationEntry: function(e) {
         if (this.getOption('noLink')) {
             return;
         }
 
-        var taxon_id = $(e.target).data('taxon-id');
-        Backbone.history.navigate("app/classification/taxon/" + taxon_id + "/", {trigger: true});
+        var cls_id = $(e.target).data('classification-entry-id');
+        Backbone.history.navigate("app/classification/classificationentry/" + cls_id + "/", {trigger: true});
     },
 
     onChangeParent: function() {
         var ChangeParent = Dialog.extend({
-            template: require('../templates/taxonchangeparent.html'),
+            template: require('../templates/classificationentrychangeparent.html'),
 
             attributes: {
                 id: "dlg_change_parent"
             },
 
             ui: {
-                parent: "#taxon_parent"
+                parent: "#classification_entry_parent"
             },
 
             initialize: function (options) {
@@ -93,12 +92,14 @@ var View = Marionette.View.extend({
             onRender: function () {
                 ChangeParent.__super__.onRender.apply(this);
 
-                var rank = 100;
+                var model = this.getOption('model');
+                var rank_id = model.get('id');
+                var level = model.get('level');
 
                 $(this.ui.parent).select2({
                     dropdownParent: $(this.el),
                     ajax: {
-                        url: application.baseUrl + "classification/taxon/search/",
+                        url: application.baseUrl + "classification/classificationentry/search/",
                         dataType: 'json',
                         delay: 250,
                         data: function (params) {
@@ -108,7 +109,7 @@ var View = Marionette.View.extend({
                                 method: 'icontains',
                                 fields: ['name', 'rank'],
                                 'name': params.term,
-                                'rank': rank
+                                'rank': rank_id
                             };
 
                             return {
@@ -139,7 +140,7 @@ var View = Marionette.View.extend({
                         cache: true
                     },
                     minimumInputLength: 3,
-                    placeholder: gt.gettext("Enter a taxon name. 3 characters at least for auto-completion"),
+                    placeholder: gt.gettext("Enter a classificationEntry name. 3 characters at least for auto-completion"),
                 });
             },
 

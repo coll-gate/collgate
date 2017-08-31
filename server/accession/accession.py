@@ -23,9 +23,9 @@ from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
 from main.models import Language
 from permission.utils import get_permissions_for
-from classification.models import Taxon
+from classification.models import ClassificationEntry
 
-from .models import Accession, AccessionSynonym
+from .models import Accession, AccessionSynonym, AccessionClassificationEntry
 from .base import RestAccession
 
 
@@ -55,7 +55,7 @@ class RestAccessionId(RestAccessionAccession):
             "name": AccessionSynonym.NAME_VALIDATOR,
             "code": AccessionSynonym.CODE_VALIDATOR,
             "descriptor_meta_model": {"type": "number"},
-            "parent": {"type": "number"},
+            "primary_classification_entry": {"type": "number"},
             "descriptors": {"type": "object"},
             "language": AccessionSynonym.LANGUAGE_VALIDATOR
         },
@@ -67,7 +67,7 @@ def create_accession(request):
     name = request.data['name']
     code = request.data['code']
     dmm_id = int_arg(request.data['descriptor_meta_model'])
-    parent_id = int_arg(request.data['parent'])
+    primary_classification_entry_id = int_arg(request.data['primary_classification_entry'])
     descriptors = request.data['descriptors']
     language = request.data['language']
 
@@ -96,9 +96,9 @@ def create_accession(request):
             accession.code = code
             accession.descriptor_meta_model = dmm
 
-            # parent taxon or variety
-            parent = get_object_or_404(Taxon, id=parent_id)
-            accession.parent = parent
+            # primary classification entry
+            primary_classification_entry = get_object_or_404(ClassificationEntry, id=primary_classification_entry_id)
+            accession.primary_classification_entry = primary_classification_entry
 
             # descriptors
             descriptors_builder = DescriptorsBuilder(accession)
@@ -110,6 +110,10 @@ def create_accession(request):
 
             # update owner on external descriptors
             descriptors_builder.update_associations()
+
+            # primary classifications in M2M
+            AccessionClassificationEntry.objects.create(
+                accession=accession, classification_entry=primary_classification_entry, primary=True)
 
             # initial synonym GRC code
             grc_code = AccessionSynonym(
@@ -137,7 +141,7 @@ def create_accession(request):
         'name': accession.name,
         'code': accession.code,
         'descriptor_meta_model': dmm.id,
-        'parent': parent.id,
+        'primary_classification_entry': primary_classification_entry.id,
         'descriptors': descriptors,
         'synonyms': [
             {
@@ -192,7 +196,7 @@ def get_accession_list(request):
     sort_by = json.loads(request.GET.get('sort_by', '[]'))
 
     # order_by = ['name', 'id']
-    # order_by = ['parent->name', 'id']
+    # order_by = ['primary_classification_entry->name', 'id']
     # order_by = ['#MCPD_ORIGCTY->name', 'name', 'id']
     # order_by = ['-#IPGRI_4.1.1->value1', 'name', 'id']
     # order_by = ['#test_accession->name', '#MCPD_ORIGCTY->name', '#IPGRI_4.1.1->value1', 'name', 'id']
@@ -218,7 +222,7 @@ def get_accession_list(request):
             "synonyms",
             queryset=AccessionSynonym.objects.all().order_by('type', 'language')))
 
-    cq.select_related('parent->name', 'parent->rank')
+    cq.select_related('primary_classification_entry->name', 'primary_classification_entry->rank')
     # cq.select_related('#test_accession->code')
 
     cq.cursor(cursor, order_by)
@@ -231,14 +235,14 @@ def get_accession_list(request):
             'id': accession.pk,
             'name': accession.name,
             'code': accession.code,
-            'parent': accession.parent_id,
+            'primary_classification_entry': accession.primary_classification_entry_id,
             'descriptor_meta_model': accession.descriptor_meta_model_id,
             'descriptors': accession.descriptors,
             'synonyms': [],
-            'parent_details': {
-                'id': accession.parent.id,
-                'name': accession.parent.name,
-                'rank': accession.parent.rank,
+            'primary_classification_entry_details': {
+                'id': accession.primary_classification_entry.id,
+                'name': accession.primary_classification_entry.name,
+                'rank': accession.primary_classification_entry.rank_id,
             }
         }
 
@@ -352,8 +356,7 @@ def get_accession_details_json(request, acc_id):
     accession = Accession.objects.get(id=int(acc_id))
 
     # check permission on this object
-    perms = get_permissions_for(request.user, accession.content_type.app_label, accession.content_type.model,
-                                accession.pk)
+    perms = get_permissions_for(request.user, accession.content_type.app_label, accession.content_type.model, accession.pk)
     if 'accession.get_accession' not in perms:
         raise PermissionDenied(_('Invalid permission to access to this accession'))
 
@@ -361,9 +364,9 @@ def get_accession_details_json(request, acc_id):
         'id': accession.id,
         'name': accession.name,
         'code': accession.code,
-        'parent': accession.parent.id,
+        'primary_classification_entry': accession.primary_classification_entry_id,
         'synonyms': [],
-        'descriptor_meta_model': accession.descriptor_meta_model.id,
+        'descriptor_meta_model': accession.descriptor_meta_model_id,
         'descriptors': accession.descriptors
     }
 
@@ -475,7 +478,7 @@ def search_accession(request):
 @RestAccessionId.def_auth_request(Method.PATCH, Format.JSON, content={
         "type": "object",
         "properties": {
-            "parent": {"type": "integer", "required": False},
+            "primary_classification_entry": {"type": "integer", "required": False},
             "entity_status": Accession.ENTITY_STATUS_VALIDATOR_OPTIONAL,
             "descriptors": {"type": "object", "required": False},
         },
@@ -495,14 +498,22 @@ def patch_accession(request, acc_id):
 
     try:
         with transaction.atomic():
-            if 'parent' in request.data:
-                parent = int(request.data['parent'])
-                taxon = get_object_or_404(Taxon, id=parent)
+            if 'primary_classification_entry' in request.data:
+                primary_classification_entry_id = int(request.data['primary_classification_entry'])
+                primary_classification_entry = get_object_or_404(ClassificationEntry, id=primary_classification_entry_id)
 
-                accession.parent = taxon
-                result['parent'] = taxon.id
+                # update FK
+                accession.primary_classification_entry = primary_classification_entry
+                result['primary_classification_entry'] = primary_classification_entry.id
 
-                accession.update_field('parent')
+                # and replace from classification entry M2M previous primary
+                accession_classification_entry = get_object_or_404(
+                    AccessionClassificationEntry, accession=accession, primary=True)
+
+                accession_classification_entry.classification_entry = primary_classification_entry
+                accession_classification_entry.save()
+
+                accession.update_field('primary_classification_entry')
 
             if entity_status is not None and accession.entity_status != entity_status:
                 accession.set_status(entity_status)

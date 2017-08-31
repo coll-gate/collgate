@@ -23,7 +23,7 @@ var View = ScrollView.extend({
     defaultColumns: [
         {name: 'code', width: 'auto', sort_by: null},
         {name: 'name', width: 'auto', sort_by: '+0'},
-        {name: 'parent', width: 'auto', sort_by: null},
+        {name: 'primary_classification_entry', width: 'auto', sort_by: null},
         {name: 'descriptor_meta_model', width: 'auto', sort_by: null},
         {name: 'synonym', width: 'auto', sort_by: null}
     ],
@@ -31,12 +31,12 @@ var View = ScrollView.extend({
     columnsOptions: {
         'code': {label: gt.gettext('Code'), width: 'auto', minWidth: true, event: 'view-accession-details'},
         'name': {label: gt.gettext('Name'), width: 'auto', minWidth: true, event: 'view-accession-details'},
-        'parent': {
+        'primary_classification_entry': {
             label: gt.gettext('Classification'),
             width: 'auto',
             minWidth: true,
-            event: 'view-parent-details',
-            custom: 'parentCell',
+            event: 'view-primary-classification-entry-details',
+            custom: 'primaryClassificationEntryCell',
             field: 'name'
         },
         'descriptor_meta_model': {label: gt.gettext('Model'), width: 'auto', minWidth: true},

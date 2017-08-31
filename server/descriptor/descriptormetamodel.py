@@ -189,6 +189,7 @@ def get_descriptor_meta_model_values(request):
 
     results = {
         'cacheable': True,
+        'validity': None,
         'items': items
     }
 

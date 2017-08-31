@@ -30,7 +30,7 @@ msgstr ""
 
 #: ../../../views/entitypath.js:142 ../../../views/taxondetails.js:117
 #: ../../../controllers/taxon.js:101 ../../../controllers/taxon.js:313
-msgid "Enter a taxon name. 3 characters at least for auto-completion"
+msgid "Enter a classificationEntry name. 3 characters at least for auto-completion"
 msgstr ""
 
 #: ../../../views/taxonchildren.js:34 ../../../views/taxonlist.js:34
@@ -66,7 +66,7 @@ msgid "Delete descriptors"
 msgstr ""
 
 #: ../../../views/taxondescriptor.js:58
-msgid "Are you sure you want to delete any descriptors for this taxon ?"
+msgid "Are you sure you want to delete any descriptors for this classificationEntry ?"
 msgstr ""
 
 #: ../../../views/taxondescriptorcontext.js:21
@@ -106,7 +106,7 @@ msgid "64 characters max"
 msgstr ""
 
 #: ../../../views/taxonsynonyms.js:91 ../../../views/taxonsynonyms.js:204
-msgid "Synonym of taxon already used"
+msgid "Synonym of classificationEntry already used"
 msgstr ""
 
 #: ../../../views/taxonsynonyms.js:197
@@ -138,11 +138,11 @@ msgid "128 characters max"
 msgstr ""
 
 #: ../../../controllers/taxon.js:187
-msgid "Family rank cannot have a parent taxon"
+msgid "Family rank cannot have a parent classificationEntry"
 msgstr ""
 
 #: ../../../controllers/taxon.js:192
-msgid "This rank must have a parent taxon"
+msgid "This rank must have a parent classificationEntry"
 msgstr ""
 
 #: ../../../controllers/taxon.js:221
@@ -158,7 +158,7 @@ msgid "Taxon"
 msgstr ""
 
 #: ../../../templates/taxonchangeparent.html:15
-msgid "Change the direct parent of taxon"
+msgid "Change the direct parent of classificationEntry"
 msgstr ""
 
 #: ../../../templates/taxonchangeparent.html:20
@@ -168,15 +168,15 @@ msgid "Direct parent"
 msgstr ""
 
 #: ../../../templates/taxonchangesynonym.html:15
-msgid "Change the name for a synonym of taxon"
+msgid "Change the name for a synonym of classificationEntry"
 msgstr ""
 
 #: ../../../templates/taxoncreate.html:15
-msgid "Create a taxon"
+msgid "Create a classificationEntry"
 msgstr ""
 
 #: ../../../templates/taxoncreate.html:22
-msgid "Principal name of the taxon (must be unique)"
+msgid "Principal name of the classificationEntry (must be unique)"
 msgstr ""
 
 #: ../../../templates/taxoncreate.html:28
@@ -208,7 +208,7 @@ msgid "Principal name of the cultivar (must be unique)"
 msgstr ""
 
 #: ../../../templates/taxondescriptorcreate.html:12
-msgid "No descriptor meta-model is defined for this taxon."
+msgid "No descriptor meta-model is defined for this classificationEntry."
 msgstr ""
 
 #: ../../../templates/taxondescriptorcreatedialog.html:15

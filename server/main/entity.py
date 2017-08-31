@@ -120,6 +120,7 @@ def get_entity_values_for_content_type_name(request, content_type_name):
 
     results = {
         'cacheable': True,
+        'validity': None,
         'items': items
     }
 

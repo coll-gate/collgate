@@ -29,8 +29,8 @@ msgstr "3 caractères minimum"
 
 #: ../../../views/entitypath.js:142 ../../../views/taxondetails.js:117
 #: ../../../controllers/taxon.js:101 ../../../controllers/taxon.js:313
-msgid "Enter a taxon name. 3 characters at least for auto-completion"
-msgstr "Saisissez un nom de taxon. 3 caractères minimum pour l'auto-complétion"
+msgid "Enter a classificationEntry name. 3 characters at least for auto-completion"
+msgstr "Saisissez un nom de classificationEntry. 3 caractères minimum pour l'auto-complétion"
 
 #: ../../../views/taxonchildren.js:34 ../../../views/taxonlist.js:34
 #: ../../../templates/cultivarlist.html:15
@@ -65,9 +65,9 @@ msgid "Delete descriptors"
 msgstr "Supprimer les descripteurs"
 
 #: ../../../views/taxondescriptor.js:58
-msgid "Are you sure you want to delete any descriptors for this taxon ?"
+msgid "Are you sure you want to delete any descriptors for this classificationEntry ?"
 msgstr ""
-"Etes-vous sûr de vouloir supprimer tous les descripteurs pour ce taxon ?"
+"Etes-vous sûr de vouloir supprimer tous les descripteurs pour ce classificationEntry ?"
 
 #: ../../../views/taxondescriptorcontext.js:21
 #: ../../../templates/taxondescriptorcreate.html:13
@@ -106,8 +106,8 @@ msgid "64 characters max"
 msgstr "64 caractères maximum"
 
 #: ../../../views/taxonsynonyms.js:91 ../../../views/taxonsynonyms.js:204
-msgid "Synonym of taxon already used"
-msgstr "Synonyme de taxon existant"
+msgid "Synonym of classificationEntry already used"
+msgstr "Synonyme de classificationEntry existant"
 
 #: ../../../views/taxonsynonyms.js:197
 msgid "Primary synonym must be unique"
@@ -127,22 +127,22 @@ msgstr "Liste de cultivars"
 
 #: ../../../routers/taxon.js:135
 msgid "Taxon details"
-msgstr "Détails du taxon"
+msgstr "Détails du classificationEntry"
 
 #: ../../../controllers/taxon.js:149 ../../../controllers/taxon.js:351
 msgid "Taxon name already in usage"
-msgstr "Ce nom de taxon est déjà utilisé"
+msgstr "Ce nom de classificationEntry est déjà utilisé"
 
 #: ../../../controllers/taxon.js:165 ../../../controllers/taxon.js:367
 msgid "128 characters max"
 msgstr "128 caractères max"
 
 #: ../../../controllers/taxon.js:187
-msgid "Family rank cannot have a parent taxon"
+msgid "Family rank cannot have a parent classificationEntry"
 msgstr "Le rang taxinomique famille ne peut pas avoir de parent"
 
 #: ../../../controllers/taxon.js:192
-msgid "This rank must have a parent taxon"
+msgid "This rank must have a parent classificationEntry"
 msgstr "Ce rang taxinomique doit avoir un parent"
 
 #: ../../../controllers/taxon.js:221
@@ -158,8 +158,8 @@ msgid "Taxon"
 msgstr "Taxon"
 
 #: ../../../templates/taxonchangeparent.html:15
-msgid "Change the direct parent of taxon"
-msgstr "Changer le parent immédiat du taxon"
+msgid "Change the direct parent of classificationEntry"
+msgstr "Changer le parent immédiat du classificationEntry"
 
 #: ../../../templates/taxonchangeparent.html:20
 #: ../../../templates/taxoncreate.html:38
@@ -168,16 +168,16 @@ msgid "Direct parent"
 msgstr "Parent direct"
 
 #: ../../../templates/taxonchangesynonym.html:15
-msgid "Change the name for a synonym of taxon"
-msgstr "Changer le nom d'un synonyme de taxon"
+msgid "Change the name for a synonym of classificationEntry"
+msgstr "Changer le nom d'un synonyme de classificationEntry"
 
 #: ../../../templates/taxoncreate.html:15
-msgid "Create a taxon"
-msgstr "Créer un taxon"
+msgid "Create a classificationEntry"
+msgstr "Créer un classificationEntry"
 
 #: ../../../templates/taxoncreate.html:22
-msgid "Principal name of the taxon (must be unique)"
-msgstr "Nom principal du taxon (doit être unique)"
+msgid "Principal name of the classificationEntry (must be unique)"
+msgstr "Nom principal du classificationEntry (doit être unique)"
 
 #: ../../../templates/taxoncreate.html:28
 #: ../../../templates/taxoncreatecultivar.html:36
@@ -208,8 +208,8 @@ msgid "Principal name of the cultivar (must be unique)"
 msgstr "Nom principal du cultivar (doit être unique)"
 
 #: ../../../templates/taxondescriptorcreate.html:12
-msgid "No descriptor meta-model is defined for this taxon."
-msgstr "Aucun méta-modèle de descripteur n'est définit pour ce taxon."
+msgid "No descriptor meta-model is defined for this classificationEntry."
+msgstr "Aucun méta-modèle de descripteur n'est définit pour ce classificationEntry."
 
 #: ../../../templates/taxondescriptorcreatedialog.html:15
 msgid "Defines a meta-model of descriptors"

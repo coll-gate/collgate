@@ -106,6 +106,7 @@ class DescriptorFormatType(object):
         """
         return {
             'cacheable': True,
+            'validity': None,
             'items': {}
         }
 
@@ -630,6 +631,7 @@ class DescriptorFormatTypeEnumSingle(DescriptorFormatType):
 
         return {
             'cacheable': True,
+            'validity': None,
             'items': items
         }
 
@@ -721,6 +723,7 @@ class DescriptorFormatTypeEnumPair(DescriptorFormatType):
 
         return {
             'cacheable': True,
+            'validity': None,
             'items': items
         }
 
@@ -805,6 +808,7 @@ class DescriptorFormatTypeEnumOrdinal(DescriptorFormatType):
 
         return {
             'cacheable': True,
+            'validity': None,
             'items': items
         }
 
@@ -1717,6 +1721,7 @@ class DescriptorFormatTypeEntity(DescriptorFormatType):
 
         return {
             'cacheable': False,
+            'validity': None,
             'items': items
         }
 

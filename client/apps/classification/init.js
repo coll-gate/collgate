@@ -8,8 +8,6 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
-
 var ClassificationModule = function() {
     this.name = "classification";
 };
@@ -37,38 +35,39 @@ ClassificationModule.prototype = {
 
         var SelectOption = require('../main/renderers/selectoption');
 
-        var TaxonRankCollection = require('./collections/taxonrank');
-        this.collections.taxonRanks = new TaxonRankCollection();
+        // @todo must be cached globally
+        var ClassificationRankCollection = require('./collections/classificationrank');
+        this.collections.classificationRanks = new ClassificationRankCollection([], {classification_id: 7});
 
-        this.views.taxonRanks = new SelectOption({
-            className: "taxon-rank",
-            collection: this.collections.taxonRanks
+        this.views.classificationRanks = new SelectOption({
+            className: "classification-rank",
+            collection: this.collections.classificationRanks
         });
 
-        var TaxonSynonymTypeCollection = require('./collections/taxonsynonymtype');
-        this.collections.taxonSynonymTypes = new TaxonSynonymTypeCollection();
+        var CollectionEntrySynonymTypeCollection = require('./collections/classificationentrysynonymtype');
+        this.collections.classificationEntrySynonymTypes = new CollectionEntrySynonymTypeCollection();
 
-        this.views.taxonSynonymTypes = new SelectOption({
-            className: 'taxon-synonym-type',
-            collection: this.collections.taxonSynonymTypes
+        this.views.classificationEntrySynonymTypes = new SelectOption({
+            className: 'classification-entry-synonym-type',
+            collection: this.collections.classificationEntrySynonymTypes
         });
 
         //
         // controllers
         //
 
-        var TaxonController = require('./controllers/taxon');
-        this.controllers.taxon = new TaxonController();
+        var ClassificationEntryController = require('./controllers/classificationentry');
+        this.controllers.classificationEntry = new ClassificationEntryController();
 
         //
         // routers
         //
 
-        var TaxonRouter = require('./routers/taxon');
-        this.routers.taxon = new TaxonRouter();
+        var ClassificationEntryRouter = require('./routers/classificationentry');
+        this.routers.classificationEntry = new ClassificationEntryRouter();
 
-        var TaxonCollection = require('./collections/taxon');
-        this.collections.taxons = new TaxonCollection();
+        var ClassificationEntryCollection = require('./collections/classificationentry');
+        this.collections.classificationEntries = new ClassificationEntryCollection();
     },
 
     start: function(options) {

@@ -22,8 +22,8 @@ msgid "Classification"
 msgstr "Classification"
 
 #: apps.py:61
-msgid "Create taxon"
-msgstr "Créer un taxon"
+msgid "Create classificationEntry"
+msgstr "Créer un classificationEntry"
 
 #: apps.py:63
 msgid "Create cultivar"
@@ -38,12 +38,12 @@ msgid "List cultivars"
 msgstr "Liste des cultivars"
 
 #: controller.py:59
-msgid "A taxon with this name already exists"
-msgstr "Ce nom de taxon est déjà utilisé"
+msgid "A classificationEntry with this name already exists"
+msgstr "Ce nom de classificationEntry est déjà utilisé"
 
 #: controller.py:64
-msgid "The rank of the parent must be lesser than the new taxon"
-msgstr "Le rang du parent doit être inférieur à celui du nouveau taxon"
+msgid "The rank of the parent must be lesser than the new classificationEntry"
+msgstr "Le rang du parent doit être inférieur à celui du nouveau classificationEntry"
 
 #: controller.py:149
 msgid "Empty synonym data"
@@ -62,17 +62,17 @@ msgid "Unsupported type of synonym"
 msgstr "Type de synonym non supporté"
 
 #: controller.py:167 taxonsynonym.py:173 taxonsynonym.py:226
-msgid "The primary name could not be used by another synonym of taxon"
+msgid "The primary name could not be used by another synonym of classificationEntry"
 msgstr ""
-"Le nom principal ne peut pas être utilisé par un autre synonyme de taxon"
+"Le nom principal ne peut pas être utilisé par un autre synonyme de classificationEntry"
 
 #: controller.py:171 taxonsynonym.py:177 taxonsynonym.py:230
 msgid "Synonym already used as a primary name"
 msgstr "Synonyme déjà utilisé comme nom principal"
 
 #: controller.py:175 taxonsynonym.py:181 taxonsynonym.py:234
-msgid "Synonym already used into this taxon"
-msgstr "Synonyme déjà utilisé pour ce taxon"
+msgid "Synonym already used into this classificationEntry"
+msgstr "Synonyme déjà utilisé pour ce classificationEntry"
 
 #: models.py:29
 msgid "Primary"
@@ -139,16 +139,16 @@ msgid "Cultivar"
 msgstr "Cultivar"
 
 #: models.py:85
-msgid "taxon"
-msgstr "taxon"
+msgid "classificationEntry"
+msgstr "classificationEntry"
 
 #: models.py:175
-msgid "taxon synonym"
-msgstr "synonyme de taxon"
+msgid "classificationEntry synonym"
+msgstr "synonyme de classificationEntry"
 
 #: taxon.py:94
-msgid "You are not allowed to create a taxon"
-msgstr "Vous n'êtes pas autorisé à créer un taxon"
+msgid "You are not allowed to create a classificationEntry"
+msgstr "Vous n'êtes pas autorisé à créer un classificationEntry"
 
 #: taxon.py:114
 msgid "The language is not supported"
@@ -158,45 +158,45 @@ msgstr "La langue n'est pas supportée"
 #, fuzzy
 #| msgid "You are not allowed to create a taxon"
 msgid "You are not allowed to list the classification"
-msgstr "Vous n'êtes pas autorisé à créer un taxon"
+msgstr "Vous n'êtes pas autorisé à créer un classificationEntry"
 
 #: taxon.py:387 taxonsynonym.py:148 taxonsynonym.py:206 taxonsynonym.py:260
-msgid "You are not allowed to modify a taxon"
-msgstr "Vous n'êtes pas autorisé à modifier un taxon"
+msgid "You are not allowed to modify a classificationEntry"
+msgstr "Vous n'êtes pas autorisé à modifier un classificationEntry"
 
 #: taxon.py:411
-msgid "The rank of the parent must be lowest than the taxon itself"
-msgstr "Le rang du parent doit être inférieur au taxon lui même"
+msgid "The rank of the parent must be lowest than the classificationEntry itself"
+msgstr "Le rang du parent doit être inférieur au classificationEntry lui même"
 
 #: taxon.py:505
-msgid "You are not allowed to remove a taxon"
-msgstr "Vous n'êtes pas autorisé à supprimer un taxon"
+msgid "You are not allowed to remove a classificationEntry"
+msgstr "Vous n'êtes pas autorisé à supprimer un classificationEntry"
 
 #: taxon.py:512
-msgid "This taxon is referred by one or more entities. It cannot be deleted."
+msgid "This classificationEntry is referred by one or more entities. It cannot be deleted."
 msgstr ""
-"Ce taxon est reférencé par une ou plusieurs entités. Il ne peut pas être "
+"Ce classificationEntry est reférencé par une ou plusieurs entités. Il ne peut pas être "
 "supprimé."
 
 #: taxon.py:516
-msgid "This taxon has sub-ranks. It cannot be deleted."
-msgstr "Ce taxon à des sous-rangs. Il ne peut pas être supprimé."
+msgid "This classificationEntry has sub-ranks. It cannot be deleted."
+msgstr "Ce classificationEntry à des sous-rangs. Il ne peut pas être supprimé."
 
 #: taxonsynonym.py:149
-msgid "You are not allowed to add a synonym to a taxon"
-msgstr "Vous n'êtes pas autorisé à créer un taxon"
+msgid "You are not allowed to add a synonym to a classificationEntry"
+msgstr "Vous n'êtes pas autorisé à créer un classificationEntry"
 
 #: taxonsynonym.py:207
-msgid "You are not allowed to modify a synonym to a taxon"
-msgstr "Vous n'êtes pas autorisé à modifier un synonym d'un taxon"
+msgid "You are not allowed to modify a synonym to a classificationEntry"
+msgstr "Vous n'êtes pas autorisé à modifier un synonym d'un classificationEntry"
 
 #: taxonsynonym.py:252
-msgid "Unable to rename a synonym of a taxon"
-msgstr "Impossible de renommer un synonym de taxon"
+msgid "Unable to rename a synonym of a classificationEntry"
+msgstr "Impossible de renommer un synonym de classificationEntry"
 
 #: taxonsynonym.py:261
-msgid "You are not allowed to delete a synonym from a taxon"
-msgstr "Vous n'êtes pas autorisé à créer un taxon"
+msgid "You are not allowed to delete a synonym from a classificationEntry"
+msgstr "Vous n'êtes pas autorisé à créer un classificationEntry"
 
 #: taxonsynonym.py:268
 msgid "It is not possible to remove a primary synonym"

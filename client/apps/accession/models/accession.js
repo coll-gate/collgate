@@ -22,7 +22,7 @@ var Model = Backbone.Model.extend({
         id: null,
         code: '',
         name: '',
-        parent: undefined,
+        primary_classification_entry: undefined,
         descriptor_meta_model: undefined,
         descriptors: {},
         synonyms: []
@@ -47,4 +47,3 @@ var Model = Backbone.Model.extend({
 });
 
 module.exports = Model;
-

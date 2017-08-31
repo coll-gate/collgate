@@ -17,7 +17,7 @@ var Collection = Backbone.Collection.extend({
     findValue: function(id) {
         for (var r in this.models) {
             var m = this.models[r];
-            if (m.get('id') == id)
+            if (m.get('id') === id)
                 return m.get('value');
         }
     },
@@ -25,7 +25,7 @@ var Collection = Backbone.Collection.extend({
     findLabel: function(value) {
         for (var r in this.models) {
             var m = this.models[r];
-            if (m.get('value') == value)
+            if (m.get('value') === value)
                 return m.get('label');
         }
     }

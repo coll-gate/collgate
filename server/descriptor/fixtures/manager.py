@@ -16,6 +16,7 @@ import sys
 
 from django.contrib.contenttypes.models import ContentType
 
+from classification.models import Classification
 from ..models import DescriptorGroup, DescriptorType, DescriptorModel, DescriptorModelType, \
     DescriptorMetaModel, DescriptorPanel, DescriptorValue
 
@@ -207,6 +208,7 @@ class FixtureManager:
     def create_or_update_meta_models(self, descriptor_meta_models):
         sys.stdout.write("   + Create descriptor meta-models...\n")
 
+        # first pass, create/update any meta-models without parameters (let to default)
         for k, v in descriptor_meta_models.items():
             meta_model_name = v['name']
 
@@ -217,7 +219,8 @@ class FixtureManager:
                 defaults={
                     'label': v['label'],
                     'description': v['description'],
-                    'target': content_type}
+                    'target': content_type
+                }
             )
 
             position = 0
@@ -248,6 +251,71 @@ class FixtureManager:
 
             # lookup table
             self.set_descriptor_meta_model(meta_model_name, descriptor_meta_model.id)
+
+        # second pass, update parameters and make relations with foreign keys
+        for k, v in descriptor_meta_models.items():
+            meta_model_name = v['name']
+            has_updated = False
+
+            try:
+                descriptor_meta_model = DescriptorMetaModel.objects.get(name=meta_model_name)
+            except DescriptorMetaModel.DoesNotExist:
+                raise
+
+            parameters = v.get('parameters', {'type': 'undefined'})
+            parameters_type = parameters.get('type', 'undefined')
+
+            if parameters.get('data') is None:
+                continue
+
+            # @todo a DescriptorMetaModelParameter management according to type
+            # DescriptorMetaModelManager.update_parameters(descriptor_meta_model, parameters)
+
+            final_parameters = {
+                'type': parameters_type,
+                'data': {}
+            }
+
+            if parameters_type == 'accession.accession':
+                # primary classification model
+                primary_classification_name = parameters['data'].get('primary_classification')
+
+                if primary_classification_name is None:
+                    continue
+
+                try:
+                    primary_classification = Classification.objects.get(name=primary_classification_name)
+                except Classification.DoesNotExist:
+                    raise
+
+                final_parameters['data']['primary_classification'] = primary_classification.id
+
+                # allow batches meta-model list
+                batch_meta_model_list = parameters['data'].get('batch_descriptor_meta_models', [])
+                batch_meta_model_id_list = []
+
+                for batch_meta_model_name in batch_meta_model_list:
+                    batch_meta_model_id = self.get_descriptor_meta_model_id(batch_meta_model_name)
+
+                    if batch_meta_model_id is None:
+                        try:
+                            batch_meta_model = DescriptorMetaModel.objects.get(name=batch_meta_model_name)
+                        except DescriptorMetaModel.DoesNotExist:
+                            raise
+
+                        batch_meta_model_id = batch_meta_model.id
+
+                    batch_meta_model_id_list.append(batch_meta_model_id)
+
+                final_parameters['data']['batch_descriptor_meta_models'] = batch_meta_model_id_list
+
+                descriptor_meta_model.parameters = final_parameters
+                has_updated = True
+            else:
+                pass
+
+            if has_updated:
+                descriptor_meta_model.save()
 
     def create_or_update_values(self, descriptor_type_name, data, trans=False, inline=False):
         sys.stdout.write("   + Create descriptors values for %s...\n" % descriptor_type_name)
