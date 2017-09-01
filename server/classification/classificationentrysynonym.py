@@ -170,11 +170,11 @@ def classification_entry_add_synonym(request, cls_id):
             raise SuspiciousOperation(
                 _("The primary name could not be used by another synonym of classification entry"))
 
-        # already used by another classificationEntry as primary name
+        # already used by another classification entry as primary name
         if synonym.is_primary():
             raise SuspiciousOperation(_("Synonym already used as a primary name"))
 
-        # already used by this classificationEntry
+        # already used by this classification entry
         if synonym.taxon_id == int(cls_id):
             raise SuspiciousOperation(_("Synonym already used into this classification entry"))
 
@@ -225,12 +225,12 @@ def classification_entry_change_synonym(request, cls_id, syn_id):
             raise SuspiciousOperation(
                 _("The primary name could not be used by another synonym of classification entry"))
 
-        # already used by another classificationEntry as primary name
+        # already used by another classification entry as primary name
         if synonym.is_primary():
             raise SuspiciousOperation(_("Synonym already used as a primary name"))
 
-        # already used by this classificationEntry
-        if synonym.taxon_id == cls_id:
+        # already used by this classification entry
+        if synonym.classification_id == cls_id:
             raise SuspiciousOperation(_("Synonym already used into this classification entry"))
 
     try:

@@ -103,7 +103,7 @@ DescriptorModule.prototype = {
         }
 
         //
-        // Cache
+        // cache
         //
 
         app.main.cache.register('descriptors');

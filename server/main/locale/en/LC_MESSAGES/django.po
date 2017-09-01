@@ -3,12 +3,11 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-31 18:17+0200\n"
+"POT-Creation-Date: 2017-09-01 10:27+0200\n"
 "PO-Revision-Date: 2016-02-01 11:53+0100\n"
 "Last-Translator: Frederic SCHERMA <frederic.scherma@clermont.inra.fr>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,10 +18,8 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: apps.py:51
-#, fuzzy
-#| msgid "Edit information"
 msgid "Administration"
-msgstr "Edit information"
+msgstr ""
 
 #: apps.py:55
 msgid "Server configuration"
@@ -142,8 +139,8 @@ msgstr ""
 
 #: templates/main/index.html:124
 msgid "Edit information"
-msgstr "Edit information"
+msgstr ""
 
 #: templates/main/index.html:130
 msgid "Logout"
-msgstr "Logout"
+msgstr ""

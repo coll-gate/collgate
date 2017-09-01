@@ -60,6 +60,12 @@ ClassificationModule.prototype = {
         this.controllers.classificationEntry = new ClassificationEntryController();
 
         //
+        // cache
+        //
+
+        app.main.cache.register('classification');
+
+        //
         // routers
         //
 

@@ -3,12 +3,11 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-31 18:17+0200\n"
+"POT-Creation-Date: 2017-09-01 11:50+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -93,6 +92,7 @@ msgid "Cancel"
 msgstr ""
 
 #: ../../../views/classificationentrydetails.js:119
+#: ../../../views/entitypath.js:143
 #: ../../../controllers/classificationentry.js:98
 msgid ""
 "Enter a classification entry name. 3 characters at least for auto-completion"
@@ -120,11 +120,6 @@ msgstr ""
 
 #: ../../../views/classificationentrysynonyms.js:252
 msgid "Unable to rename the synonym !"
-msgstr ""
-
-#: ../../../views/entitypath.js:143
-msgid ""
-"Enter a classificationEntry name. 3 characters at least for auto-completion"
 msgstr ""
 
 #: ../../../routers/classification.js:38

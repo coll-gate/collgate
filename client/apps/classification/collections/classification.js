@@ -17,10 +17,6 @@ var Collection = Backbone.Collection.extend({
     // comparator: 'name',
 
     parse: function(data) {
-        this.prev = data.prev;
-        this.cursor = data.cursor;
-        this.next = data.next;
-
         return data.items;
     },
 
@@ -31,15 +27,10 @@ var Collection = Backbone.Collection.extend({
         var opts = _.clone(options);
         opts.data = data;
 
-        this.cursor = data.cursor;
         this.sort_by = data.sort_by;
 
         if (this.filters) {
             opts.data.filters = JSON.stringify(this.filters)
-        }
-
-        if (data.cursor && typeof data.cursor !== 'string') {
-            opts.data.cursor = JSON.stringify(data.cursor);
         }
 
         if (data.sort_by && typeof data.sort_by !== 'string') {

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-31 18:17+0200\n"
+"POT-Creation-Date: 2017-09-01 10:27+0200\n"
 "PO-Revision-Date:  2016-02-03 11:38+0100\n"
 "Last-Translator: Frederic SCHERMA <frederic.scherma@clermont.inra.fr>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -47,70 +47,53 @@ msgstr "La langue n'est pas supportée"
 
 #: classificationentry.py:154 classificationentry.py:227
 #: classificationentry.py:525 classificationentry.py:682
-#, fuzzy
-#| msgid "You are not allowed to create a taxon"
 msgid "You are not allowed to list the classifications entries"
-msgstr "Vous n'êtes pas autorisé à créer un classificationEntry"
+msgstr "Vous n'êtes pas autorisé à lister les entrées de classifications"
 
 #: classificationentry.py:384 classificationentrysynonym.py:144
 #: classificationentrysynonym.py:204 classificationentrysynonym.py:260
-#, fuzzy
-#| msgid "You are not allowed to modify a classificationEntry"
 msgid "You are not allowed to modify a classification entry"
-msgstr "Vous n'êtes pas autorisé à modifier un classificationEntry"
+msgstr "Vous n'êtes pas autorisé à modifier une entrée de classification"
 
 #: classificationentry.py:409
-#, fuzzy
-#| msgid ""
-#| "The rank of the parent must be lowest than the classificationEntry itself"
 msgid ""
 "The rank of the parent must be lowest than the classification entry itself"
-msgstr "Le rang du parent doit être inférieur au classificationEntry lui même"
+msgstr ""
+"Le rang du parent doit être inférieur a celui de l'entrée de classification"
 
 #: classificationentry.py:505
-#, fuzzy
-#| msgid "You are not allowed to remove a classificationEntry"
 msgid "You are not allowed to remove a classification entry"
-msgstr "Vous n'êtes pas autorisé à supprimer un classificationEntry"
+msgstr "Vous n'êtes pas autorisé à supprimer une entrée de classification"
 
 #: classificationentry.py:513
-#, fuzzy
-#| msgid ""
-#| "This classificationEntry is referred by one or more entities. It cannot "
-#| "be deleted."
 msgid ""
 "This classification entry is referred by one or more entities. It cannot be "
 "deleted."
 msgstr ""
-"Ce classificationEntry est reférencé par une ou plusieurs entités. Il ne "
-"peut pas être supprimé."
+"Cette entré de classification est reférencée par une ou plusieures entitées. "
+"Il ne peut pas être supprimé."
 
 #: classificationentry.py:517
-#, fuzzy
-#| msgid "This classificationEntry has sub-ranks. It cannot be deleted."
 msgid "This classification entry has sub-ranks. It cannot be deleted."
-msgstr "Ce classificationEntry à des sous-rangs. Il ne peut pas être supprimé."
+msgstr ""
+"Cette entrée de classification à des sous-rangs. Elle ne peut pas être "
+"supprimée."
 
 #: classificationentrysynonym.py:145
-#, fuzzy
-#| msgid "You are not allowed to add a synonym to a classificationEntry"
 msgid "You are not allowed to add a synonym to a classification entry"
-msgstr "Vous n'êtes pas autorisé à créer un classificationEntry"
+msgstr "Vous n'êtes pas autorisé à créer une entrée de classification"
 
 #: classificationentrysynonym.py:161 controller.py:169
 msgid "Unsupported type of synonym"
 msgstr "Type de synonym non supporté"
 
 #: classificationentrysynonym.py:171 classificationentrysynonym.py:226
-#, fuzzy
-#| msgid ""
-#| "The primary name could not be used by another synonym of "
-#| "classificationEntry"
+#: controller.py:179
 msgid ""
 "The primary name could not be used by another synonym of classification entry"
 msgstr ""
-"Le nom principal ne peut pas être utilisé par un autre synonyme de "
-"classificationEntry"
+"Le nom principal ne peut pas être utilisé par un autre synonyme d'entrée de "
+"classification"
 
 #: classificationentrysynonym.py:175 classificationentrysynonym.py:230
 #: controller.py:183
@@ -118,58 +101,49 @@ msgid "Synonym already used as a primary name"
 msgstr "Synonyme déjà utilisé comme nom principal"
 
 #: classificationentrysynonym.py:179 classificationentrysynonym.py:234
-#, fuzzy
-#| msgid "Synonym already used into this classificationEntry"
+#: controller.py:187
 msgid "Synonym already used into this classification entry"
-msgstr "Synonyme déjà utilisé pour ce classificationEntry"
+msgstr "Synonyme déjà utilisé pour cette entrée de classification"
 
 #: classificationentrysynonym.py:206
-#, fuzzy
-#| msgid "You are not allowed to modify a synonym to a classificationEntry"
 msgid "You are not allowed to modify a synonym to a classification entry"
 msgstr ""
-"Vous n'êtes pas autorisé à modifier un synonym d'un classificationEntry"
+"Vous n'êtes pas autorisé à modifier un synonym d'une entrée de classification"
 
 #: classificationentrysynonym.py:252
-#, fuzzy
-#| msgid "Unable to rename a synonym of a classificationEntry"
 msgid "Unable to rename a synonym of a classification entry"
-msgstr "Impossible de renommer un synonym de classificationEntry"
+msgstr "Impossible de renommer un synonyme d'une entrée de classification"
 
 #: classificationentrysynonym.py:262
-#, fuzzy
-#| msgid "You are not allowed to delete a synonym from a classificationEntry"
 msgid "You are not allowed to delete a synonym from a classification entry"
-msgstr "Vous n'êtes pas autorisé à créer un classificationEntry"
+msgstr ""
+"Vous n'êtes pas autorisé à supprimer un synonyme d'une entrée de "
+"classification"
 
 #: classificationentrysynonym.py:269
 msgid "It is not possible to remove a primary synonym"
 msgstr "Il n'est pas possible de retirer un synonyme principal"
 
 #: controller.py:60
-#, fuzzy
-#| msgid "A classificationEntry with this name already exists"
 msgid "A classification entry with this name already exists"
-msgstr "Ce nom de classificationEntry est déjà utilisé"
+msgstr "Ce nom d'entrée de classification est déjà utilisé"
 
 #: controller.py:65
 msgid "The given classification rank does not exists"
-msgstr ""
+msgstr "Le rang de classification n'existe pas"
 
 #: controller.py:69
 msgid ""
 "The parent and the children classification rank must be of the same nature"
-msgstr ""
+msgstr "Le rang de classification parent et enfant doivent être de même nature"
 
 #: controller.py:73
-#, fuzzy
-#| msgid ""
-#| "The rank of the parent must be lesser than the new classificationEntry"
 msgid ""
 "The rank level of the parent must be lesser than the rank level of the new "
 "classification entry"
 msgstr ""
-"Le rang du parent doit être inférieur à celui du nouveau classificationEntry"
+"Le niveau du rang du parent doit être inférieur à celui choisit pour la "
+"nouvelle entrée de classification"
 
 #: controller.py:159
 msgid "Empty synonym data"
@@ -182,17 +156,6 @@ msgstr "Nom de synonyme indéfini"
 #: controller.py:165
 msgid "Undefined synonym language"
 msgstr "Langue du synonym indéfinie"
-
-#: controller.py:179
-msgid ""
-"The primary name could not be used by another synonym of classificationEntry"
-msgstr ""
-"Le nom principal ne peut pas être utilisé par un autre synonyme de "
-"classificationEntry"
-
-#: controller.py:187
-msgid "Synonym already used into this classificationEntry"
-msgstr "Synonyme déjà utilisé pour ce classificationEntry"
 
 #: models.py:32
 msgid "Family"
@@ -259,16 +222,12 @@ msgid "Code"
 msgstr "Code"
 
 #: models.py:77
-#, fuzzy
-#| msgid "Classification"
 msgid "classification"
-msgstr "Classification"
+msgstr "classification"
 
 #: models.py:125
-#, fuzzy
-#| msgid "classificationEntry"
 msgid "classification rank"
-msgstr "classificationEntry"
+msgstr "rank de classification"
 
 #: models.py:189
 msgid "Rank"
@@ -279,13 +238,9 @@ msgid "Model"
 msgstr "Modèle"
 
 #: models.py:227
-#, fuzzy
-#| msgid "classificationEntry"
 msgid "classification entry"
-msgstr "classificationEntry"
+msgstr "entrée de classification"
 
 #: models.py:317
-#, fuzzy
-#| msgid "classificationEntry synonym"
 msgid "classification entry synonym"
-msgstr "synonyme de classificationEntry"
+msgstr "synonyme d'entrée de classification"

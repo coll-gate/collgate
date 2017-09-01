@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-31 18:17+0200\n"
+"POT-Creation-Date: 2017-09-01 10:27+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -319,10 +319,8 @@ msgid "The descriptor value is invalid"
 msgstr "La valeur du descripteur est invalide"
 
 #: descriptorformattype.py:1640
-#, fuzzy
-#| msgid "Date+Time"
 msgid "Date+time"
-msgstr "Date+Temps"
+msgstr "Date+temps"
 
 #: descriptorformattype.py:1646
 msgid "The descriptor value must be a datetime string (ISO 8601)"

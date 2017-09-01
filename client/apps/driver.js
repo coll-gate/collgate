@@ -47,6 +47,12 @@ _.deepClone = function(obj) {
         _.mapObject(obj, function(val, key) {return _.deepClone(val)});
 };
 
+Object.resolve = function(path, obj) {
+    return path.split('.').reduce(function(prev, curr) {
+        return prev ? prev[curr] : undefined
+    }, obj || self)
+};
+
 // global application
 var Application = Marionette.Application.extend({
 

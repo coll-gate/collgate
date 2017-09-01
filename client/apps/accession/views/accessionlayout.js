@@ -9,7 +9,7 @@
  */
 
 var LayoutView = require('../../main/views/layout');
-var TaxonModel = require('../../classification/models/classificationentry');
+var ClassificationEntryModel = require('../../classification/models/classificationentry');
 
 var ScrollingMoreView = require('../../main/views/scrollingmore');
 var ContentBottomLayout = require('../../main/views/contentbottomlayout');
@@ -90,7 +90,7 @@ var Layout = LayoutView.extend({
         // details view
         if (!this.model.isNew()) {
             // classificationEntry parent
-            var taxon = new TaxonModel({id: this.model.get('parent')});
+            var classificationEntry = new ClassificationEntryModel({id: this.model.get('primary_classification_entry')});
             classificationEntry.fetch().then(function () {
                 accessionLayout.showChildView('details', new EntityPathView({
                     model: accessionLayout.model,
@@ -129,7 +129,7 @@ var Layout = LayoutView.extend({
             this.enableTabs();
         } else {
             // details
-            var taxon = new TaxonModel({id: this.model.get('parent')});
+            var classificationEntry = new ClassificationEntryModel({id: this.model.get('primary_classification_entry')});
             classificationEntry.fetch().then(function() {
                 accessionLayout.showChildView('details', new EntityPathView({
                     model: accessionLayout.model, classificationEntry: classificationEntry, noLink: true}));

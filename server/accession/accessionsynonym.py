@@ -242,7 +242,7 @@ def accession_change_synonym(request, acc_id, syn_id):
         if accession_synonym.type == AccessionSynonym.TYPE_GRC_CODE:
             raise SuspiciousOperation(_("The GRC code of accession could not be used by another synonym of accession"))
 
-        # already used by another classificationEntry as GRC code
+        # already used by another classification entry as GRC code
         if synonym.is_grc_code():
             raise SuspiciousOperation(_("Synonym already used as a GRC code of accession"))
 

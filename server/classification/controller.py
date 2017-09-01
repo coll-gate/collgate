@@ -176,7 +176,7 @@ class ClassificationEntryManager(object):
             # at least one usage, not compatible with primary synonym
             if synonym['type'] == ClassificationEntrySynonymType.PRIMARY.value:
                 raise SuspiciousOperation(
-                    _("The primary name could not be used by another synonym of classificationEntry"))
+                    _("The primary name could not be used by another synonym of classification entry"))
 
             # already used by another classificationEntry as primary name
             if synonym.is_primary():
@@ -184,7 +184,7 @@ class ClassificationEntryManager(object):
 
             # already used by this classificationEntry
             if synonym.classification_entry_id == classification_entry.id:
-                raise SuspiciousOperation(_("Synonym already used into this classificationEntry"))
+                raise SuspiciousOperation(_("Synonym already used into this classification entry"))
 
         synonym = ClassificationEntrySynonym(
             classification_entry=classification_entry,

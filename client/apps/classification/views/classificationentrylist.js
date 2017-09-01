@@ -32,7 +32,13 @@ var View = ScrollView.extend({
 
     columnsOptions: {
         'name': {label: gt.gettext('Name'), width: 'auto', minWidth: true, event: 'view-classification-entry-details'},
-        'rank': {label: gt.gettext('Rank'), width: 'auto', minWidth: true, custom: 'rankCell'},
+        'rank': {
+            label: gt.gettext('Rank'),
+            width: 'auto',
+            minWidth: true,
+            custom: 'rankCell',
+            field: 'level'
+        },
         'parent': {
             label: gt.gettext('Parent'),
             width: 'auto',

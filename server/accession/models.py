@@ -91,7 +91,7 @@ class Accession(DescribableEntity):
     classifications_entries = models.ManyToManyField(
         through=AccessionClassificationEntry, to=ClassificationEntry, related_name='accession_set')
 
-    # inherit of a classificationEntry rank
+    # inherit of a classification rank
     # parent = models.ForeignKey(Taxon)
 
     @classmethod

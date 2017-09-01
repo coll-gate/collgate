@@ -3,12 +3,11 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-31 18:17+0200\n"
+"POT-Creation-Date: 2017-09-01 10:27+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -83,6 +82,7 @@ msgid "Unsupported type of synonym"
 msgstr ""
 
 #: classificationentrysynonym.py:171 classificationentrysynonym.py:226
+#: controller.py:179
 msgid ""
 "The primary name could not be used by another synonym of classification entry"
 msgstr ""
@@ -93,6 +93,7 @@ msgid "Synonym already used as a primary name"
 msgstr ""
 
 #: classificationentrysynonym.py:179 classificationentrysynonym.py:234
+#: controller.py:187
 msgid "Synonym already used into this classification entry"
 msgstr ""
 
@@ -141,15 +142,6 @@ msgstr ""
 
 #: controller.py:165
 msgid "Undefined synonym language"
-msgstr ""
-
-#: controller.py:179
-msgid ""
-"The primary name could not be used by another synonym of classificationEntry"
-msgstr ""
-
-#: controller.py:187
-msgid "Synonym already used into this classificationEntry"
 msgstr ""
 
 #: models.py:32

@@ -19,6 +19,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from descriptor.describable import DescriptorsBuilder
 from descriptor.models import DescriptorMetaModel, DescriptorModelType
+from main.cursor import CursorQuery
 from main.models import Language
 
 from igdectk.rest.handler import *
@@ -164,7 +165,6 @@ def get_classification_entry_list(request):
     else:
         order_by = sort_by
 
-    from main.cursor import CursorQuery
     cq = CursorQuery(ClassificationEntry)
 
     if request.GET.get('filters'):
@@ -180,29 +180,29 @@ def get_classification_entry_list(request):
     cq.cursor(cursor, order_by)
     cq.order_by(order_by).limit(limit)
 
-    classification_items = []
+    classification_entry_items = []
 
-    for classification in cq:
+    for classification_entry in cq:
         c = {
-            'id': classification.id,
-            'name': classification.name,
-            'parent': classification.parent_id,
-            'rank': classification.rank_id,
-            'descriptor_meta_model': classification.descriptor_meta_model_id,
-            'descriptors': classification.descriptors,
-            'parent_list': classification.parent_list,
+            'id': classification_entry.id,
+            'name': classification_entry.name,
+            'parent': classification_entry.parent_id,
+            'rank': classification_entry.rank_id,
+            'descriptor_meta_model': classification_entry.descriptor_meta_model_id,
+            'descriptors': classification_entry.descriptors,
+            'parent_list': classification_entry.parent_list,
             'parent_details': None,
             'synonyms': []
         }
 
-        if classification.parent:
+        if classification_entry.parent:
             c['parent_details'] = {
-                'id': classification.parent.id,
-                'name': classification.parent.name,
-                'rank': classification.parent.rank_id
+                'id': classification_entry.parent.id,
+                'name': classification_entry.parent.name,
+                'rank': classification_entry.parent.rank_id
             }
 
-        for synonym in classification.synonyms.all():
+        for synonym in classification_entry.synonyms.all():
             c['synonyms'].append({
                 'id': synonym.id,
                 'name': synonym.name,
@@ -210,11 +210,11 @@ def get_classification_entry_list(request):
                 'language': synonym.language
             })
 
-        classification_items.append(c)
+        classification_entry_items.append(c)
 
     results = {
         'perms': [],
-        'items': classification_items,
+        'items': classification_entry_items,
         'prev': cq.prev_cursor,
         'cursor': cursor,
         'next': cq.next_cursor,
@@ -307,21 +307,28 @@ def search_classification_entry(request):
         elif name_method == 'icontains':
             qs = qs.filter(synonyms__name__icontains=filters['name'])
 
-    # @todo rank
+    if 'classification' in filters['fields']:
+        classification_method = filters.get('classification_method', 'eq')
+
+        if classification_method == 'eq':
+            qs = qs.filter(rank__classification_id=int_arg(filters['classification']))
+        elif classification_method == 'neq':
+            qs = qs.exclude(rank__classification_id=int_arg(filters['classification']))
+
     if 'rank' in filters['fields']:
         rank = int_arg(filters['rank'])
         rank_method = filters.get('rank_method', 'lt')
 
         if rank_method == 'eq':
-            qs = qs.filter(Q(rank=rank))
+            qs = qs.filter(Q(rank__level=rank))
         elif rank_method == 'lt':
-            qs = qs.filter(Q(rank__lt=rank))
+            qs = qs.filter(Q(rank__level__lt=rank))
         elif rank_method == 'lte':
-            qs = qs.filter(Q(rank__lte=rank))
+            qs = qs.filter(Q(rank__level__lte=rank))
         elif rank_method == 'gt':
-            qs = qs.filter(Q(rank__gt=rank))
+            qs = qs.filter(Q(rank__level__gt=rank))
         elif rank_method == 'gte':
-            qs = qs.filter(Q(rank__gte=rank))
+            qs = qs.filter(Q(rank__level__gte=rank))
 
     qs = qs.prefetch_related(
         Prefetch(

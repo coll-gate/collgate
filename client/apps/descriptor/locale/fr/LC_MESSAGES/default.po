@@ -61,7 +61,7 @@ msgstr "Champ "
 #: ../../../views/descriptormetamodel.js:24
 #: ../../../views/descriptormodel.js:34
 msgid "Edit label"
-msgstr ""
+msgstr "Editer le label"
 
 #: ../../../views/descriptorgroup.js:74
 msgid "Some types of descriptor exists for this group"
@@ -280,7 +280,7 @@ msgstr "Liste des types de modèles de descripteur"
 #: ../../../mixins/descriptorscolumns.js:182
 #: ../../../mixins/descriptorscolumns.js:276
 msgid "Error"
-msgstr ""
+msgstr "Erreur"
 
 #: ../../../collections/formattype.js:68
 msgid "Single value"
@@ -931,11 +931,11 @@ msgstr "Valeur1"
 
 #: ../../../templates/entitylist.html:60
 msgid "All"
-msgstr ""
+msgstr "Tous"
 
 #: ../../../templates/entitylist.html:62
 msgid "Accept"
-msgstr ""
+msgstr "Ok"
 
 #: ../../../templates/widgets/entity.html:14
 msgid "Model of the entity"
@@ -1051,12 +1051,3 @@ msgstr "Précision de la décimale"
 msgid "Regular expression"
 msgstr "Expression régulière"
 
-#~ msgid "Group of descriptors locked"
-#~ msgstr "Groupe de descripteurs vérouillé"
-
-#~ msgid ""
-#~ "It is not permitted to delete a meta-model of descriptor that contains "
-#~ "some panels"
-#~ msgstr ""
-#~ "Il n'est pas permit de supprimer un méta-modèle de descripteur contenant "
-#~ "des panels"

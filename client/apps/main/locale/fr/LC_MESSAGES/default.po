@@ -75,7 +75,7 @@ msgid "List of languages for data"
 msgstr "Liste des langues des données"
 
 #: ../../../routers/profile.js:39
-msgid "Edit my profile informations"
+msgid "Edit my profile details"
 msgstr "Mettre à jour mon profil"
 
 #: ../../../collections/language.js:24 ../../../collections/uilanguage.js:22

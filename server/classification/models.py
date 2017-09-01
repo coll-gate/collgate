@@ -179,19 +179,23 @@ class ClassificationEntry(Entity):
 
     # It refers to a set of models of type of descriptors through a meta-model of descriptor.
     # It can be null because it is possible to have the choice to defines or not some descriptors
-    # to a classificationEntry.
+    # to a classification entry.
     descriptor_meta_model = models.ForeignKey(DescriptorMetaModel, null=True)
 
     @classmethod
     def get_defaults_columns(cls):
         return {
-            'rank': {  # @todo defined by classification later, dynamically
+            'rank': {
                 'label': _('Rank'),
-                # 'field': 'name',  # label[:lang_code:]
-                'query': False,
+                # 'field': 'name',  # @todo classification->rank_level special sort (need a GROUP BY classification)
+                'query': True,
                 'format': {
-                    'type': 'classification_rank',  # @todo create this type/widget
-                    'model': 'classification.rank'
+                    'type': 'entity',  # @todo create this widget with dropdown
+                    'model': 'classification.classificationrank',
+                    'custom': True,
+                    'option': 'dropdown'
+                    # 'type': 'entity',
+                    # 'model': 'classification.classificationrank'
                 }
             },
             'parent': {
@@ -209,7 +213,7 @@ class ClassificationEntry(Entity):
                 'query': True,
                 'format': {
                     'type': 'descriptor_meta_model',
-                    'model': 'classification.classificationEntry'
+                    'model': 'classification.classificationentry'
                 }
             },
             'synonym': {  # cannot be managed for table or only a preferred one

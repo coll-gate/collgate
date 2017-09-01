@@ -95,11 +95,13 @@ var ClassificationEntryView = Marionette.View.extend({
         });
     },
 
-    rankCell: function(td) {
-        var rank = this.model.get('rank');
+    rankCell: function(td, value) {
+        //var rank = this.model.get('rank');
 
         // @todo how to manage multiple classifications, main.cache ?
-        var text = application.classification.collections.classificationRanks.findLabel(rank);
+        //var text = application.classification.collections.classificationRanks.findLabel(rank);
+
+        var text = value.label;
 
         td.html(text);
     },

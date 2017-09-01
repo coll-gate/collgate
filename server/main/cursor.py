@@ -565,6 +565,7 @@ class CursorQuery(object):
                         lqs.append(self._cast_default_sub_type(ff[0], ff[1], op, self._convert_value(value, cmp)))
                     else:
                         lqs.append(self._cast_default_type(db_table, f, op, self._convert_value(value, cmp)))
+
             # operator
             elif filter_type == 'op':
                 # two consecutive operators, raise a value error
@@ -615,6 +616,10 @@ class CursorQuery(object):
         field_model = self.model_fields[field_name]
         final_value = self._make_value(value, field_model)
         coalesce_value = self._make_value(None, field_model)
+
+        # invalid empty set
+        if final_value == '()':
+            return 'FALSE'
 
         if field_model[2]:  # is null
             if field_model[0] == 'FK':  # @todo and lookup on db model field name ?

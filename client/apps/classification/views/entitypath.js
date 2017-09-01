@@ -43,7 +43,7 @@ var View = Marionette.View.extend({
         this.mergeOptions(options, ['classificationEntry']);
 
         this.listenTo(this.model, 'change:name', this.render, this);
-        this.listenTo(this.model, 'change:parent', this.updateParent, this);
+        this.listenTo(this.model, 'change:primary_classification_entry', this.updateParent, this);
     },
 
     updateParent: function(model, value) {
@@ -92,9 +92,7 @@ var View = Marionette.View.extend({
             onRender: function () {
                 ChangeParent.__super__.onRender.apply(this);
 
-                var model = this.getOption('model');
-                var rank_id = model.get('id');
-                var level = model.get('level');
+                var classificationRankId = this.getOption('classificationEntry').get('id');
 
                 $(this.ui.parent).select2({
                     dropdownParent: $(this.el),
@@ -109,7 +107,7 @@ var View = Marionette.View.extend({
                                 method: 'icontains',
                                 fields: ['name', 'rank'],
                                 'name': params.term,
-                                'rank': rank_id
+                                'rank': classificationRankId
                             };
 
                             return {
@@ -140,7 +138,7 @@ var View = Marionette.View.extend({
                         cache: true
                     },
                     minimumInputLength: 3,
-                    placeholder: gt.gettext("Enter a classificationEntry name. 3 characters at least for auto-completion"),
+                    placeholder: gt.gettext("Enter a classification entry name. 3 characters at least for auto-completion"),
                 });
             },
 
@@ -152,16 +150,17 @@ var View = Marionette.View.extend({
 
             onApply: function() {
                 var model = this.getOption('model');
-                var parent = null;
+                var classificationEntryId = parseInt($(this.ui.parent).val());
 
-                if ($(this.ui.parent).val()) {
-                    parent = parseInt($(this.ui.parent).val());
+                if (isNaN(classificationEntryId)) {
+                    $.alert.error(gt.gettext('Undefined classification entry.'));
+                    return false;
                 }
 
                 if (model.isNew()) {
-                    model.set('parent', parent);
+                    model.set('primary_classification_entry', classificationEntryId);
                 } else {
-                    model.save({parent: parent}, {patch: true, wait: true});
+                    model.save({primary_classification_entry: classificationEntryId}, {patch: true, wait: true});
                 }
 
                 this.destroy();
@@ -169,7 +168,8 @@ var View = Marionette.View.extend({
         });
 
         var changeParent = new ChangeParent({
-            model: this.model
+            model: this.model,
+            classificationEntry: this.classificationEntry
         });
 
         changeParent.render();

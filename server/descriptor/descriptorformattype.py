@@ -110,6 +110,23 @@ class DescriptorFormatType(object):
             'items': {}
         }
 
+    def get_detailed_values_for(self, descriptor_type, descriptor_type_format, values, limit):
+        """
+        For a list of values, lookup those values into the descriptor object and
+        returns them as dict of value_id:{details...}.
+
+        :param descriptor_type: Descriptor type instance
+        :param descriptor_type_format: Related format of the descriptor type (parsed in Python object, not in JSON)
+        :param values: List a of values (str or integer, depending of the descriptor)
+        :param limit: Max results
+        :return: A dict containing a cache-able status and a items dict of pair(value_id:{details...})
+        """
+        return {
+            'cacheable': True,
+            'validity': None,
+            'items': {}
+        }
+
     def related_model(self, descriptor_type_format):
         """
         Get the related model, on which the value (a foreign key) is a reference.

@@ -3,7 +3,6 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
@@ -76,7 +75,7 @@ msgid "List of languages for data"
 msgstr ""
 
 #: ../../../routers/profile.js:39
-msgid "Edit my profile informations"
+msgid "Edit my profile details"
 msgstr ""
 
 #: ../../../collections/language.js:24 ../../../collections/uilanguage.js:22

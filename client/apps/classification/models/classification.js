@@ -20,7 +20,8 @@ var ClassificationModel = Backbone.Model.extend({
     defaults: {
         id: null,
         name: '',
-        label: {}
+        label: '',
+        num_ranks: 0
     },
 
     parse: function(data) {

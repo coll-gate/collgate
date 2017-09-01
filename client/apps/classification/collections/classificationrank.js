@@ -13,9 +13,9 @@ var ClassificationRankModel = require('../models/classificationrank');
 var Collection = Backbone.Collection.extend({
     url: function() {
         if (this.classification_id) {
-            return application.baseUrl + 'classification/classification/' + this.classification_id +'/rank/';
+            return application.baseUrl + 'classification/classification/' + this.classification_id +'/classificationrank/';
         } else {
-            return application.baseUrl + 'classification/classification/rank/';
+            return application.baseUrl + 'classification/classification/classificationrank/';
         }
     },
     model: ClassificationRankModel,

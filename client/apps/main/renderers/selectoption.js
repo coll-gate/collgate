@@ -24,7 +24,12 @@ var Renderer = Marionette.Object.extend({
         if (!!options.sync) {
             this.render();
         } else {
-            this.collection.fetch();  // lazy loading
+            // lazy loading
+            if ('filters' in options) {
+                this.collection.fetch({data: {filters: JSON.stringify(options.filters)}});
+            } else {
+                this.collection.fetch();
+            }
 
             this.collection.on("sync", this.render, this);  // render the template once got
             this.collection.on("add", this.render, this);
@@ -35,6 +40,8 @@ var Renderer = Marionette.Object.extend({
 
     render: function() {
         this.html = Marionette.Renderer.render(this.template, {items: this.collection.toJSON()});
+        // @todo could trigger an event captured by renderer view methods (not using collection:sync)
+        // or directly create a select2 and a selectpicker view, bound to collection managed with region in parent
     },
 
     /**
@@ -183,20 +190,21 @@ var Renderer = Marionette.Object.extend({
      * @param widget If true create a bootstrap select picker in front of this select
      * @param emptyValue If true prepend an empty choice value
      * @param initialValue If defined set the current value to its
+     * @return A promise when select is rendered.
      */
     drawSelect: function(sel, widget, emptyValue, initialValue) {
         widget != undefined || (widget = true);
         emptyValue != undefined || (emptyValue = false);
 
-        var self = this;
+        var deferred = $.Deferred();
 
         if (this.collection.size() > 0) {
             var s = $(sel);
             if (emptyValue) {
                 var emptyOption = "<option value=''></option>";
-                s.html(emptyOption + self.html);
+                s.html(emptyOption + this.html);
             } else {
-                s.html(self.html);
+                s.html(this.html);
             }
 
             if (widget) {
@@ -209,7 +217,11 @@ var Renderer = Marionette.Object.extend({
             if (initialValue) {
                 s.selectpicker('val', initialValue);
             }
+
+            deferred.resolve();
         } else {
+            var self = this;
+
             this.collection.on("sync", function () {
                 var s = $(sel);
                 if (emptyValue) {
@@ -229,8 +241,12 @@ var Renderer = Marionette.Object.extend({
                 if (initialValue) {
                     s.selectpicker('val', initialValue);
                 }
+
+                deferred.resolve();
             }, this);
         }
+
+        return deferred.promise();
     }
 });
 

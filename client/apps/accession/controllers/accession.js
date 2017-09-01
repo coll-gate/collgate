@@ -42,26 +42,106 @@ var Controller = Marionette.Object.extend({
                     code: "#accession_code",
                     name: "#accession_name",
                     language: "#accession_language",
-                    meta_model: "#meta_model",
+                    descriptor_meta_model: "#meta_model",
+                    primary_classification: "#primary_classification",
                     primary_classification_entry: "#primary_classification_entry"
                 },
 
                 events: {
                     'click @ui.validate': 'onContinue',
                     'input @ui.code': 'onCodeInput',
-                    'input @ui.name': 'onNameInput'
+                    'input @ui.name': 'onNameInput',
+                    'change @ui.descriptor_meta_model': 'onChangeDescriptorMetaModel',
+                    'change @ui.primary_classification': 'onChangePrimaryClassification'
+                },
+
+                initialize: function (options) {
+                    CreateAccessionView.__super__.initialize.apply(this);
+
+                    // map descriptor meta models by theirs ids
+                    this.descriptorMetaModels = {};
+
+                    for (var i = 0; i < data.length; ++i) {
+                        var dmm = data[i];
+                        this.descriptorMetaModels[dmm.id] = dmm;
+                    }
                 },
 
                 onRender: function () {
                     CreateAccessionView.__super__.onRender.apply(this);
 
                     application.main.views.languages.drawSelect(this.ui.language);
-                    this.ui.meta_model.selectpicker({});
+                    this.ui.descriptor_meta_model.selectpicker({});
+                    this.ui.primary_classification.selectpicker({});
 
-                    $(this.ui.primary_classification_entry).select2({
+                    // on default descriptor meta-model
+                    this.onChangeDescriptorMetaModel();
+                },
+
+                getDescriptorMetaModelClassifications: function () {
+                    var descriptorMetaModelId = parseInt(this.ui.descriptor_meta_model.val());
+
+                    var value = Object.resolve(descriptorMetaModelId + ".parameters.data.primary_classification", this.descriptorMetaModels);
+                    if (value) {
+                        return [value];
+                    }
+
+                    return [];
+                },
+
+                onBeforeDetach: function() {
+                    this.ui.language.selectpicker('destroy');
+                    this.ui.descriptor_meta_model.selectpicker('destroy');
+                    this.ui.primary_classification.selectpicker('destroy');
+                    this.ui.primary_classification_entry.select2('destroy');
+                },
+
+                onChangeDescriptorMetaModel: function() {
+                    var select = this.ui.primary_classification;
+
+                    select.children().remove();
+                    select.selectpicker('destroy');
+
+                    // classifications list according to the related meta model of accession
+                    var ClassificationCollection = require('../../classification/collections/classification');
+                    var classificationCollection = new ClassificationCollection();
+
+                    var SelectOption = require('../../main/renderers/selectoption');
+                    var classifications = new SelectOption({
+                        className: "classification",
+                        collection: classificationCollection,
+                        filters: [{
+                            type: 'term',
+                            field: 'id',
+                            value: this.getDescriptorMetaModelClassifications(),
+                            op: 'in'
+                        }]
+                    });
+
+                    var self = this;
+
+                    classifications.drawSelect(this.ui.primary_classification).done(function () {
+                        self.onChangePrimaryClassification();
+                    });
+                },
+
+                onChangePrimaryClassification: function () {
+                    var classificationId = parseInt(this.ui.primary_classification.val());
+                    var select = $(this.ui.primary_classification_entry);
+
+                    if (select.data('select2')) {
+                        select.select2('destroy');
+                        select.children().remove();
+                    }
+
+                    if (isNaN(classificationId)) {
+                        return;
+                    }
+
+                    select.select2({
                         dropdownParent: this.ui.primary_classification_entry.parent(),
                         ajax: {
-                            url: application.baseUrl + "classification/entry/search/",
+                            url: application.baseUrl + "classification/classificationentry/search/",
                             dataType: 'json',
                             delay: 250,
                             data: function (params) {
@@ -70,8 +150,10 @@ var Controller = Marionette.Object.extend({
                                 return {
                                     filters: JSON.stringify({
                                         method: 'icontains',
-                                        fields: ['name'],
-                                        'name': params.term.trim()
+                                        classification_method: 'eq',
+                                        fields: ['name', 'classification'],
+                                        'name': params.term.trim(),
+                                        'classification': classificationId
                                     }),
                                     cursor: params.next
                                 };
@@ -101,17 +183,9 @@ var Controller = Marionette.Object.extend({
                             },
                             cache: true
                         },
-                        minimumInputLength: 3,
-                        placeholder: gt.gettext("Enter a classification name. 3 characters at least for auto-completion")
+                        minimumInputLength: 1,
+                        placeholder: gt.gettext("Enter a classification entry name.")
                     }).fixSelect2Position();
-                },
-
-                onBeforeDestroy: function() {
-                    this.ui.language.selectpicker('destroy');
-                    this.ui.meta_model.selectpicker('destroy');
-                    this.ui.primary_classification_entry.select2('destroy');
-
-                    CreateAccessionView.__super__.onBeforeDestroy.apply(this);
                 },
 
                 onCodeInput: function () {
@@ -150,6 +224,7 @@ var Controller = Marionette.Object.extend({
                 onNameInput: function () {
                     var name = this.ui.name.val().trim();
 
+                    // @todo must respect the nomenclature from the meta-model
                     if (this.validateName()) {
                         var filters = {
                             method: 'ieq',
@@ -220,14 +295,15 @@ var Controller = Marionette.Object.extend({
 
                 validate: function() {
                     var valid = this.validateName();
+                    var descriptorMetaModelId = parseInt(this.ui.descriptor_meta_model.val());
+                    var primaryClassificationEntryId = parseInt(this.ui.primary_classification_entry.val());
 
-                    var primaryClassificationEntryId = 0;
-
-                    if (this.ui.primary_classification_entry.val()) {
-                        primaryClassificationEntryId = parseInt(this.ui.primary_classification_entry.val());
+                    if (isNaN(descriptorMetaModelId)) {
+                        $.alert.error(gt.gettext("The meta-model of descriptors must be defined"));
+                        valid = false;
                     }
 
-                    if (!primaryClassificationEntryId) {
+                    if (isNaN(primaryClassificationEntryId)) {
                         $.alert.error(gt.gettext("The primary classification must be defined"));
                         valid = false;
                     }
@@ -252,15 +328,16 @@ var Controller = Marionette.Object.extend({
                     if (this.validate()) {
                         var code = this.ui.code.val().trim();
                         var name = this.ui.name.val().trim();
+
+                        var descriptorMetaModelId = parseInt(this.ui.descriptor_meta_model.val());
                         var primaryClassificationEntryId = parseInt(this.ui.primary_classification_entry.val());
-                        var metaModelId = parseInt(this.ui.meta_model.val());
 
                         // create a new local model and open an edit view with this model
                         var model = new AccessionModel({
                             code: code,
                             name: name,
                             primary_classification_entry: primaryClassificationEntryId,
-                            descriptor_meta_model: metaModelId,
+                            descriptor_meta_model: descriptorMetaModelId,
                             language: this.ui.language.val()
                         });
 
@@ -271,7 +348,8 @@ var Controller = Marionette.Object.extend({
 
                         defaultLayout.showChildView('title', new TitleView({
                             title: gt.gettext("Accession"),
-                            model: model}));
+                            model: model
+                        }));
 
                         var accessionLayout = new AccessionLayout({model: model});
                         defaultLayout.showChildView('content', accessionLayout);

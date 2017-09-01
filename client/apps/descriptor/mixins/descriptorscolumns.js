@@ -221,8 +221,13 @@ var DescriptorsColumnsView = {
                 var childView = this.children.findByModel(model);
                 var cell = childView.$el.find('td[name="' + columnName + '"]');
 
-                // simply replace the value
-                cell.html(value);
+                if (options.custom) {
+                    // manage custom cell for some complex cases
+                    childView[options.custom](cell, value);
+                } else {
+                    // simply replace the value
+                    cell.html(value);
+                }
             } else if (key !== null && key !== undefined && key !== "") {
                 keys.add(key);
                 models.push(model);
@@ -230,11 +235,28 @@ var DescriptorsColumnsView = {
         }
 
         var url = "";
+        var queryData = {};
 
+        // @todo url must be build more dynamically without knowledge of the module
+        // @todo attention pourquoi en mode custom entity la requete est appelee 2 fois par le client... ?
         if (options.format.type === "descriptor_meta_model") {
-            url = "descriptor/meta-model/";
+            url = "descriptor/meta-model/values/";
+            queryData = {values: JSON.stringify(Array.from(keys))};
         } else if (options.format.type === "entity") {
-            url = "main/entity/" + options.format.model + '/';
+            // @todo like this or with "main/entitydetailed" + ... and a method on entity model
+            if (options.format.custom) {
+                url = options.format.model.replace('.', '/') + '/';
+                queryData = {filters: JSON.stringify([{
+                        type: 'term',
+                        field: 'id',
+                        value: Array.from(keys),
+                        op: 'in'
+                    }]
+                )};
+            } else {
+                url = "main/entity/" + options.format.model + '/values/';
+                queryData = {values: JSON.stringify(Array.from(keys))};
+            }
         } else {
             // unknown type
             return null;
@@ -243,9 +265,9 @@ var DescriptorsColumnsView = {
         if (keys.size) {
             var promise = $.ajax({
                 type: "GET",
-                url: application.baseUrl + url + 'values/',
+                url: application.baseUrl + url,  // + 'values/',
                 contentType: 'application/json; charset=utf8',
-                data: {values: JSON.stringify(Array.from(keys))},
+                data: queryData,  // {values: JSON.stringify(Array.from(keys))},
                 columnName: columnName,
                 models: models,
                 view: this
@@ -260,9 +282,15 @@ var DescriptorsColumnsView = {
                     var key = model.get(this.columnName);
 
                     var cell = childView.$el.find('td[name="' + this.columnName + '"]');
+
                     if (key !== undefined) {
-                        // simply replace the value
-                        cell.html(data.items[key]);
+                        if (options.custom) {
+                            // manage custom cell for some complex cases
+                            childView[options.custom](cell, data.items[key]);
+                        } else {
+                            // simply replace the value
+                            cell.html(data.items[key]);
+                        }
                     }
 
                     // store in global cache

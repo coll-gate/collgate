@@ -108,6 +108,7 @@ def list_descriptor_meta_models(request):
             'label': dmm.get_label(),
             'description': dmm.description,
             'target': '.'.join(dmm.target.natural_key()),
+            'parameters': dmm.parameters,
             'num_descriptor_models': dmm.descriptor_models.all().count()
         })
 
@@ -168,6 +169,7 @@ def create_descriptor_meta_model(request):
         'name': dmm.name,
         'label': dmm.get_label(),
         'description': dmm.description,
+        'parameters': dmm.parameters,
         'target': '.'.join(content_type.natural_key()),
         'num_descriptor_models': 0
     }
@@ -209,7 +211,8 @@ def get_descriptor_meta_model_for_describable(request, content_type_name):
         descriptor_meta_models.append({
             'id': dmm.id,
             'name': dmm.name,
-            'label': dmm.get_label()
+            'label': dmm.get_label(),
+            'parameters': dmm.parameters
         })
 
     return HttpResponseRest(request, descriptor_meta_models)
@@ -224,6 +227,7 @@ def get_descriptor_meta_model(request, dmm_id):
         'name': dmm.name,
         'description': dmm.description,
         'target': '.'.join(dmm.target.natural_key()),
+        'parameters': dmm.parameters,
         'num_descriptor_models': dmm.descriptor_models.all().count()
     }
 
@@ -272,6 +276,7 @@ def modify_descriptor_meta_model(request, dmm_id):
         'name': dmm.name,
         'description': dmm.description,
         'target': '.'.join(dmm.target.natural_key()),
+        'parameters': dmm.parameters,
         'num_descriptor_models': dmm.descriptor_models.all().count()
     }
 
@@ -290,6 +295,7 @@ def modify_descriptor_meta_model(request, dmm_id):
 def patch_descriptor_meta_model(request, dmm_id):
     dmm = get_object_or_404(DescriptorMetaModel, id=int(dmm_id))
 
+    # @todo patch parameters
     label = request.data.get('label')
 
     if label is not None:
@@ -303,6 +309,7 @@ def patch_descriptor_meta_model(request, dmm_id):
         'name': dmm.name,
         'description': dmm.description,
         'target': '.'.join(dmm.target.natural_key()),
+        'parameters': dmm.parameters,
         'num_descriptor_models': dmm.descriptor_models.all().count()
     }
 
@@ -381,6 +388,7 @@ def get_descriptor_meta_model_layout(request, dmm_id):
         'label': dmm.get_label(),
         'description': dmm.description,
         'target': ".".join(dmm.target.natural_key()),
+        'parameters': dmm.parameters,
         'panels': panels
     }
 

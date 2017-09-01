@@ -12,10 +12,10 @@
     <% if (item.options != undefined) { %>
         <optgroup label="<%= item.label %>">
             <% _.each(item.options, function(subitem) { %>
-                <option value="<%= subitem.value %>"><%= subitem.label %></option>
+                <option value="<%= subitem.value || subitem.id %>"><%= subitem.label %></option>
             <% }) %>
         </optgroup>
     <% } else { %>
-        <option value="<%= item.value %>"><%= item.label %></option>
+        <option value="<%= item.value || item.id %>"><%= item.label %></option>
     <% } %>
 <% }) %>
