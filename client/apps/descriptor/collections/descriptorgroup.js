@@ -8,20 +8,19 @@
  * @details 
  */
 
+var CountableCollection = require('../../main/collections/countable');
 var DescriptorGroupModel = require('../models/descriptorgroup');
 
-var Collection = Backbone.Collection.extend({
+var Collection = CountableCollection.extend({
     url: application.baseUrl + 'descriptor/group/',
     model: DescriptorGroupModel,
 
-    parse: function(data) {
-        this.prev = data.prev;
-        this.cursor = data.cursor;
-        this.next = data.next;
+    comparator: function (item1, item2) {
+        var item1Name = item1.get('name');
+        var item2Name = item2.get('name');
 
-        return data.items;
-    },
+        return item1Name.localeCompare(item2Name /*, locale*/);
+    }
 });
 
 module.exports = Collection;
-

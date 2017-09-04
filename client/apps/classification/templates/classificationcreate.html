@@ -1,0 +1,38 @@
+<!--
+ - @file classificationcreate.html
+ - @brief
+ - @author Frédéric SCHERMA (INRA UMR1095)
+ - @date 2017-09-04
+ - @copyright Copyright (c) 2017 INRA/CIRAD
+ - @license MIT (see LICENSE file)
+ - @details
+-->
+
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title"><%= gt.gettext("Create a new classification") %></h4>
+        </div>
+        <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
+            <form>
+                <div class="form-group">
+                    <label class="control-label" for="classification_name"><%= gt.gettext("Unique name") %></label>
+                    <input class="form-control" type="text" id="classification_name" maxlength="128" autofocus="" autocomplete="off" style="width:100%;">
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for="classification_label"><%= gt.gettext("Label for the current language") %></label>
+                    <input class="form-control" type="text" id="classification_label" maxlength="128" autofocus="" autocomplete="off" style="width:100%;">
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for="classification_description"><%= gt.gettext("Description") %></label>
+                    <textarea class="form-control" id="classification_description" name="description" maxlength="1024" style="width:100%;"></textarea>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= gt.gettext("Cancel") %></button>
+            <button type="button" class="btn btn-success apply"><%= gt.gettext("Apply") %></button>
+        </div>
+    </div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->

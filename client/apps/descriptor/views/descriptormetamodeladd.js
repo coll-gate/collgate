@@ -42,7 +42,7 @@ var View = Marionette.View.extend({
             ui: {
                 label: "#label",
                 descriptor_meta_model_target: "#descriptor_meta_model_target",
-                description: "#description",
+                description: "#descriptor_meta_model_description",
             },
 
             events: {

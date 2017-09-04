@@ -169,7 +169,7 @@ MainModule.prototype = {
         // render menus
         this.menus.render();
 
-        // this.menus.getMenu('classification').removeEntry('create-classificationEntry');
+        // this.menus.getMenu('classification').removeEntry('create-classification-entry');
         // this.menus.removeMenu('help');
 
         // var Menu = require('./utils/menu');

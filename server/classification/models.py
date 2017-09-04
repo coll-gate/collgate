@@ -69,9 +69,18 @@ class Classification(Entity):
     # management name
     name = models.CharField(unique=True, max_length=128, db_index=True)
 
+    # Is this classification can be deleted when it is empty
+    can_delete = models.BooleanField(default=True)
+
+    # Is this classification can be modified (rename, add/remove ranks) by an authorized staff people
+    can_modify = models.BooleanField(default=True)
+
     # Label of the classification.
     # It is i18nized used JSON dict with language code as key and label as string value.
     label = JSONField(default={})
+
+    # general description
+    description = models.TextField(default="", blank=True, null=False)
 
     class Meta:
         verbose_name = _("classification")
@@ -94,6 +103,53 @@ class Classification(Entity):
         :note Model instance save() is not called.
         """
         self.label[lang] = label
+
+    def audit_create(self, user):
+        return {
+            'name': self.name,
+            'can_delete': self.can_delete,
+            'can_modify': self.can_modify,
+            'label': self.label,
+            'description': self.description
+        }
+
+    def audit_update(self, user):
+        if hasattr(self, 'updated_fields'):
+            result = {'updated_fields': self.updated_fields}
+
+            if 'name' in self.updated_fields:
+                result['name'] = self.name
+
+            if 'can_delete' in self.updated_fields:
+                result['can_delete'] = self.can_delete
+
+            if 'can_modify' in self.updated_fields:
+                result['can_modify'] = self.can_modify
+
+            if 'label' in self.updated_fields:
+                result['label'] = self.label
+
+            if 'description' in self.updated_fields:
+                result['description'] = self.description
+
+            return result
+        else:
+            return {
+                'name': self.name,
+                'can_delete': self.can_delete,
+                'can_modify': self.can_modify,
+                'label': self.label,
+                'description': self.description
+            }
+
+    def audit_delete(self, user):
+        return {
+            'name': self.name
+        }
+
+    def in_usage(self):
+        classification_ranks = self.ranks.all()
+        return classification_ranks.exists()
 
 
 class ClassificationRank(Entity):
@@ -142,6 +198,43 @@ class ClassificationRank(Entity):
         :note Model instance save() is not called.
         """
         self.label[lang] = label
+
+    def audit_create(self, user):
+        return {
+            'name': self.name,
+            'label': self.label,
+            'level': self.level
+        }
+
+    def audit_update(self, user):
+        if hasattr(self, 'updated_fields'):
+            result = {'updated_fields': self.updated_fields}
+
+            if 'name' in self.updated_fields:
+                result['name'] = self.name
+
+            if 'label' in self.updated_fields:
+                result['label'] = self.label
+
+            if 'level' in self.updated_fields:
+                result['level'] = self.level
+
+            return result
+        else:
+            return {
+                'name': self.name,
+                'label': self.label,
+                'level': self.level
+            }
+
+    def audit_delete(self, user):
+        return {
+            'name': self.name
+        }
+
+    def in_usage(self):
+        classification_entries = self.children.all()
+        return classification_entries.exists()
 
 
 class ClassificationEntry(Entity):

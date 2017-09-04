@@ -53,6 +53,13 @@ ClassificationModule.prototype = {
         });
 
         //
+        // collection (may be disapear)
+        //
+
+        var ClassificationEntryCollection = require('./collections/classificationentry');
+        this.collections.classificationEntries = new ClassificationEntryCollection();
+
+        //
         // controllers
         //
 
@@ -69,11 +76,11 @@ ClassificationModule.prototype = {
         // routers
         //
 
+        var ClassificationRouter = require('./routers/classification');
+        this.routers.classification = new ClassificationRouter();
+
         var ClassificationEntryRouter = require('./routers/classificationentry');
         this.routers.classificationEntry = new ClassificationEntryRouter();
-
-        var ClassificationEntryCollection = require('./collections/classificationentry');
-        this.collections.classificationEntries = new ClassificationEntryCollection();
     },
 
     start: function(options) {

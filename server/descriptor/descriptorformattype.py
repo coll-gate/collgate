@@ -1229,42 +1229,6 @@ class DescriptorFormatTypeImpreciseDate(DescriptorFormatType):
     def check(self, descriptor_type_format):
         return None
 
-    # def operator_gte(self, descriptor_type_format, value, descriptor_model_type):
-    #     validate_result = self.validate(descriptor_type_format, value, descriptor_model_type)
-    #     if validate_result is not None:
-    #         return validate_result
-    #
-    #     # return self.MyQ({'descriptors__%s__0__gte' % descriptor_model_type['descriptor_code']: value[0]}) & self.MyQ(
-    #     #     {'descriptors__%s__1__gte' % descriptor_model_type['descriptor_code']: value[1]}) & self.MyQ(
-    #     #     {'descriptors__%s__2__gte' % descriptor_model_type['descriptor_code']: value[2]})
-    #
-    #     return (Q(**{'descriptors__%s__0__gte' % descriptor_model_type['descriptor_code']: value[0]}) &
-    #             Q(**{'descriptors__%s__1__gte' % descriptor_model_type['descriptor_code']: value[1]}) &
-    #             Q(**{'descriptors__%s__2__gte' % descriptor_model_type['descriptor_code']: value[2]}))
-
-    # def operator_lte(self, descriptor_type_format, value, descriptor_model_type):
-    #     validate_result = self.validate(descriptor_type_format, value, descriptor_model_type)
-    #     if validate_result is not None:
-    #         return validate_result
-    #
-    #     if value[1] is 0:
-    #         value[1] = 12
-    #     if value[2] is 0:
-    #         value[2] = 31
-    #
-    #     return self.MyQ({'descriptors__%s__0__lte' % descriptor_model_type['descriptor_code']: value[0]}) & self.MyQ(
-    #         {'descriptors__%s__1__lte' % descriptor_model_type['descriptor_code']: value[1]}) & self.MyQ(
-    #         {'descriptors__%s__2__lte' % descriptor_model_type['descriptor_code']: value[2]})
-    #
-    # def operator_eq(self, descriptor_type_format, value, descriptor_model_type):
-    #     validate_result = self.validate(descriptor_type_format, value, descriptor_model_type)
-    #     if validate_result is not None:
-    #         return validate_result
-    #
-    #     return self.MyQ({'descriptors__%s__0' % descriptor_model_type['descriptor_code']: value[0]}) & self.MyQ(
-    #         {'descriptors__%s__1' % descriptor_model_type['descriptor_code']: value[1]}) & self.MyQ(
-    #         {'descriptors__%s__2' % descriptor_model_type['descriptor_code']: value[2]})
-
     def make_sql_value(self, value):
         """
         Convert the given value for a SQL query according to the format of the descriptor and about the

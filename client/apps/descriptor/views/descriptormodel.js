@@ -73,7 +73,7 @@ var View = Marionette.View.extend({
     },
 
     deleteDescriptorModel: function() {
-        if (this.model.get('num_descriptor_types') === 0) {
+        if (this.model.get('num_descriptor_model_types') === 0) {
             this.model.destroy({wait: true});
         }
     }

@@ -428,67 +428,6 @@ var View = Marionette.View.extend({
             var changeLabel = new ChangeLabel({model: model});
             changeLabel.render();
         });
-        /*
-        var ChangeLabel = Dialog.extend({
-            template: require('../templates/descriptorpanelchangelabel.html'),
-
-            attributes: {
-                id: "dlg_change_label",
-            },
-
-            ui: {
-                label: "#label",
-            },
-
-            events: {
-                'input @ui.label': 'onLabelInput',
-            },
-
-            initialize: function (options) {
-                ChangeLabel.__super__.initialize.apply(this);
-            },
-
-            onLabelInput: function () {
-                this.validateLabel();
-            },
-
-            validateLabel: function() {
-                var v = this.ui.label.val();
-
-                if (v.length < 3) {
-                    $(this.ui.label).validateField('failed', gt.gettext('3 characters min'));
-                    return false;
-                }
-
-                $(this.ui.label).validateField('ok');
-
-                return true;
-            },
-
-            onApply: function() {
-                var view = this;
-                var model = this.getOption('model');
-
-                if (this.validateLabel()) {
-                    model.save({label: this.ui.label.val()}, {
-                        patch: true,
-                        wait: true,
-                        success: function() {
-                            view.destroy();
-                            $.alert.success(gt.gettext("Successfully labeled !"));
-                        },
-                        error: function() {
-                            $.alert.error(gt.gettext("Unable to change label !"));
-                        }
-                    });
-                }
-            },
-        });
-
-        var changeLabel = new ChangeLabel({model: this.model});
-
-        changeLabel.render();
-        changeLabel.ui.label.val(this.model.get('label'));*/
     },
 
     deleteDescriptorPanel: function() {

@@ -1,0 +1,21 @@
+<!--
+ - @file classification.html
+ - @brief Template for a classification (model)
+ - @author Frédéric SCHERMA (INRA UMR1095)
+ - @date 2017-09-04
+ - @copyright Copyright (c) 2017 INRA/CIRAD
+ - @license MIT (see LICENSE file)
+ - @details
+-->
+
+<td class="glyph-fixed-column lock-status">
+    <% if (!can_delete) { %>
+        <span class="glyphicon glyphicon-lock" title="<%= gt.gettext('Classification locked') %>"></span>
+    <% } %>
+</td>
+<td name="description" class="glyph-fixed-column"><span class="glyphicon glyphicon-question-sign" title="<%= description %>" style="cursor: help;"></span></td>
+<td class="action manage" name="name" value="<%= name %>"><%= name %></td>
+<td class="action edit-label" name="label" value="<%= label %>"><%= label %></td>
+<td class="action manage last-column" name="num_classification_ranks">
+    <span class="badge" title="<%= gt.gettext('Manage ranks') %>"><%= num_classification_ranks %></span>
+</td>

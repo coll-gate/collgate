@@ -17,6 +17,8 @@ var View = ScrollView.extend({
     childView: DescriptorGroupView,
     childViewContainer: 'tbody.descriptor-group-list',
 
+    defaultSortBy: ['name'],
+
     initialize: function() {
         View.__super__.initialize.apply(this);
 
@@ -25,4 +27,3 @@ var View = ScrollView.extend({
 });
 
 module.exports = View;
-

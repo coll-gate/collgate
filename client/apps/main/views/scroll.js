@@ -254,6 +254,11 @@ var View = Marionette.CompositeView.extend({
                 }
             }
 
+            // for simplified columns view, specify a default sort by
+            if (sort_by.length === 0 && this.defaultSortBy) {
+                sort_by = this.defaultSortBy;
+            }
+
             this.collection.fetch({
                 reset: true, data: {
                     sort_by: sort_by

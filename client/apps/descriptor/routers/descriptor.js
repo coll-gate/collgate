@@ -46,13 +46,16 @@ var Router = Marionette.AppRouter.extend({
 
         defaultLayout.showChildView('title', new TitleView({title: gt.gettext("List of groups of descriptors")}));
 
-        collection.fetch().then(function () {
-            var descriptorGroupListView = new DescriptorGroupListView({read_only: true, collection: collection});
-            defaultLayout.showChildView('content', descriptorGroupListView);
-            defaultLayout.showChildView('content-bottom', new ScrollingMoreView({targetView: descriptorGroupListView}));
-        });
+        var descriptorGroupListView = new DescriptorGroupListView({read_only: true, collection: collection});
 
-        // @todo lookup for permission
+        defaultLayout.showChildView('content', descriptorGroupListView);
+        defaultLayout.showChildView('content-bottom', new ScrollingMoreView({
+            targetView: descriptorGroupListView,
+            collection: collection
+        }));
+
+        descriptorGroupListView.query();
+
         if (session.user.isAuth && (session.user.isSuperUser || session.user.isStaff)) {
             defaultLayout.showChildView('bottom', new DescriptorGroupAddView({collection: collection}));
         }

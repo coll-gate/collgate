@@ -1,21 +1,21 @@
 <!--
- - @file descriptormetamodelchangelabel.html
- - @brief 
+ - @file classificationchangelabel.html
+ - @brief
  - @author Frédéric SCHERMA (INRA UMR1095)
- - @date 2016-09-01
- - @copyright Copyright (c) 2016 INRA/CIRAD
+ - @date 2017-09-04
+ - @copyright Copyright (c) 2017 INRA/CIRAD
  - @license MIT (see LICENSE file)
- - @details 
+ - @details
 -->
 
 <div class="modal-dialog">
     <div class="modal-content">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h4 class="modal-title"><%= gt.gettext("Change the label for the meta-model of descriptor") %></h4>
+            <h4 class="modal-title"><%= gt.gettext("Change the label for the classification") %></h4>
         </div>
         <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
-            <form id="descriptor_meta_model_labels"><%
+            <form class="entity-labels"><%
                 var languages = application.main.collections.uilanguages;
 
                 for (var i = 0; i < languages.models.length; ++i) {

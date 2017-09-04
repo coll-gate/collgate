@@ -13,8 +13,6 @@ from django.db import models, ProgrammingError, connection
 from django.db.models import prefetch_related_objects
 from django.db.models.fields.related_descriptors import ForwardManyToOneDescriptor
 
-from descriptor.descriptorcolumns import get_description
-
 
 class CursorQueryError(Exception):
 
@@ -105,6 +103,7 @@ class CursorQuery(object):
 
         self.model_fields = {}
 
+        from descriptor.descriptorcolumns import get_description
         self._description = get_description(self._model)
 
         for field in model._meta.get_fields():

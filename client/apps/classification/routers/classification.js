@@ -11,8 +11,8 @@
 var Marionette = require('backbone.marionette');
 var ClassificationModel = require('../models/classification');
 
-// var ClassificationListView = require('../views/classificationlist');
-var EntityListFilterView = require('../../descriptor/views/entitylistfilter');
+var ClassificationListView = require('../views/classificationlist');
+var ClassificationCreateView = require('../views/classificationadd');
 
 // var ClassificationLayout = require('../views/classificationlayout');
 
@@ -37,19 +37,19 @@ var ClassificationRouter = Marionette.AppRouter.extend({
 
         defaultLayout.showChildView('title', new TitleView({title: gt.gettext("List of classifications")}));
 
-        // collection.fetch().done(function () {
-        //     var classificationListView = new ClassificationListView({collection : collection, columns: data.columns});
-        //
-        //     defaultLayout.showChildView('content', classificationListView);
-        //     defaultLayout.showChildView('content-bottom', new ScrollingMoreView({
-        //         targetView: classificationListView,
-        //         collection: collection
-        //     }));
-        //
-        //     defaultLayout.showChildView('bottom', new EntityListFilterView({collection: collection}));
-        //
-        //     classificationListView.query();
-        // });
+        var classificationListView = new ClassificationListView({collection : collection});
+
+        defaultLayout.showChildView('content', classificationListView);
+        defaultLayout.showChildView('content-bottom', new ScrollingMoreView({
+            targetView: classificationListView,
+            collection: collection
+        }));
+
+        classificationListView.query();
+
+        if (session.user.isAuth && (session.user.isSuperUser || session.user.isStaff)) {
+            defaultLayout.showChildView('bottom', new ClassificationCreateView({collection: collection}));
+        }
     },
 
     getClassification : function(id, tab) {

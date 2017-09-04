@@ -24,6 +24,7 @@ from igdectk.rest import Format, Method
 from igdectk.rest.response import HttpResponseRest
 from igdectk.rest.handler import RestHandler
 
+from main.cursor import CursorQuery
 from main.models import InterfaceLanguages
 from .models import DescriptorType, DescriptorGroup, DescriptorValue
 
@@ -36,6 +37,11 @@ class RestDescriptor(RestHandler):
 class RestDescriptorGroup(RestDescriptor):
     regex = r'^group/$'
     suffix = 'group'
+
+
+class RestDescriptorGroupCount(RestDescriptorGroup):
+    regex = r'^count/$'
+    suffix = 'count'
 
 
 class RestDescriptorGroupSearch(RestDescriptorGroup):
@@ -94,24 +100,35 @@ class RestDescriptorGroupIdTypeIdValueIdDisplay(RestDescriptorGroupIdTypeIdValue
 
 
 @RestDescriptorGroup.def_auth_request(Method.GET, Format.JSON)
-def get_descriptor_groups(request):
+def get_descriptor_group_list(request):
     """
     Descriptor group name is unique and indexed.
     """
     results_per_page = int_arg(request.GET.get('more', 30))
-    cursor = request.GET.get('cursor')
+    cursor = json.loads(request.GET.get('cursor', 'null'))
     limit = results_per_page
+    sort_by = json.loads(request.GET.get('sort_by', '[]'))
 
-    if cursor:
-        cursor_name, cursor_id = cursor.rsplit('/', 1)
-        qs = DescriptorGroup.objects.filter(Q(name__gt=cursor_name))
+    if not len(sort_by) or sort_by[-1] not in ('id', '+id', '-id'):
+        order_by = sort_by + ['id']
     else:
-        qs = DescriptorGroup.objects.all()
+        order_by = sort_by
 
-    dgs = qs.order_by('name')[:limit]
+    cq = CursorQuery(DescriptorGroup)
+
+    if request.GET.get('search'):
+        search = json.loads(request.GET['search'])
+        cq.filter(search)
+
+    if request.GET.get('filters'):
+        filters = json.loads(request.GET['filters'])
+        cq.filter(filters)
+
+    cq.cursor(cursor, order_by)
+    cq.order_by(order_by).limit(limit)
 
     group_list = []
-    for group in dgs:
+    for group in cq:
         group_list.append({
             'id': group.pk,
             'name': group.name,
@@ -120,24 +137,31 @@ def get_descriptor_groups(request):
             'can_modify': group.can_modify
         })
 
-    if len(group_list) > 0:
-        # prev cursor (asc order)
-        dm = group_list[0]
-        prev_cursor = "%s/%s" % (dm['name'], dm['id'])
-
-        # next cursor (asc order)
-        dm = group_list[-1]
-        next_cursor = "%s/%s" % (dm['name'], dm['id'])
-    else:
-        prev_cursor = None
-        next_cursor = None
-
     results = {
         'perms': [],
         'items': group_list,
-        'prev': prev_cursor,
+        'prev': cq.prev_cursor,
         'cursor': cursor,
-        'next': next_cursor,
+        'next': cq.next_cursor
+    }
+
+    return HttpResponseRest(request, results)
+
+
+@RestDescriptorGroupCount.def_auth_request(Method.GET, Format.JSON)
+def get_descriptor_group_list_count(request):
+    """
+    Get the count of number of group of descriptors in JSON
+    """
+    cq = CursorQuery(DescriptorGroup)
+
+    if request.GET.get('filters'):
+        filters = json.loads(request.GET['filters'])
+        cq.filter(filters)
+
+    results = {
+        'perms': [],
+        'count': cq.count()
     }
 
     return HttpResponseRest(request, results)

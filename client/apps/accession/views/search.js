@@ -270,7 +270,7 @@ var View = Dialog.extend({
         if (entityType === 'accession.accession') {
             var conditions = this.getChildView('conditions').collection.models;
             var query = this.getQuery(conditions);
-            console.log(query.result);
+            // console.log(query.result);
         }
     },
 

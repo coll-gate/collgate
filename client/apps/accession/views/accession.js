@@ -92,7 +92,7 @@ var View = Marionette.View.extend({
             // @todo cache
             var rank = application.classification.collections.classificationRanks.findLabel(classificationRank);
             var rank2 = application.main.cache.get('classification', classificationRank);
-            console.log(rank2)
+            // console.log(rank2)
 
             el.attr('value', classificationRank);
             el.attr('title', rank);

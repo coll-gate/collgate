@@ -472,6 +472,10 @@ def patch_descriptor_model_type_for_model(request, des_id, typ_id):
 
     dmt = get_object_or_404(DescriptorModelType, id=int(typ_id), descriptor_model_id=int(des_id))
 
+    result = {
+        'id': dmt.id
+    }
+
     # cannot change the mandatory field once there is some data
     if dmt.descriptor_model.in_usage() and (mandatory is not None or name is not None):
         raise SuspiciousOperation(_("There is some data using the model of descriptor"))
@@ -481,10 +485,15 @@ def patch_descriptor_model_type_for_model(request, des_id, typ_id):
             raise SuspiciousOperation(_("The name of descriptor model type already exists"))
 
         dmt.name = name
+        dmt.update_field('name')
+        result['name'] = dmt.name
 
     if label is not None:
         lang = translation.get_language()
+
         dmt.set_label(lang, label)
+        dmt.update_field('label')
+        dmt.label = dmt.get_label()
 
     if mandatory is not None:
         # mandatory is incompatible with a condition
@@ -493,11 +502,17 @@ def patch_descriptor_model_type_for_model(request, des_id, typ_id):
                                         "You must delete the condition before to set the required state"))
 
         dmt.mandatory = bool(mandatory)
+        dmt.update_field('mandatory')
+        result['mandatory'] = dmt.mandatory
     if set_once is not None:
         dmt.set_once = bool(set_once)
+        dmt.update_field('set_once')
+        result['set_once'] = dmt.set_once
 
     if index is not None:
         dmt.index = index.value
+        dmt.update_field('value')
+        result['index'] = dmt.index
 
     dmt.save()
 
@@ -508,7 +523,7 @@ def patch_descriptor_model_type_for_model(request, des_id, typ_id):
             content_type_model = dp.descriptor_meta_model.target.model_class()
             dmt.create_or_drop_index(content_type_model)
 
-    return HttpResponseRest(request, {})
+    return HttpResponseRest(request, result)
 
 
 @RestDescriptorModelIdTypeId.def_auth_request(Method.DELETE, Format.JSON,

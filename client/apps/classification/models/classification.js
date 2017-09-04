@@ -21,7 +21,9 @@ var ClassificationModel = Backbone.Model.extend({
         id: null,
         name: '',
         label: '',
-        num_ranks: 0
+        can_modify: true,
+        can_delete: true,
+        num_classification_ranks: 0
     },
 
     parse: function(data) {
