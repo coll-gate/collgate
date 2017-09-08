@@ -8,8 +8,11 @@
  * @details
  */
 
+var CacheFetcher = require('./cachefetcher');
+
 var Cache = function() {
     this.data = {};
+    this.fetcher = {};
 };
 
 Cache.prototype = {
@@ -73,6 +76,76 @@ Cache.prototype = {
             return key in category;
         } else {
             return false;
+        }
+    },
+
+    /**
+     * Register a specific cache fetcher.
+     * @param fetcher Valid cache fetcher instance.
+     */
+    registerFetcher: function(fetcher) {
+        if (!fetcher || !(fetcher instanceof CacheFetcher)) {
+            return;
+        }
+
+        if (fetcher.type in this.fetcher) {
+            throw "A cache fetcher is already registered with this type (" + fetcher.type + ")";
+        }
+
+        this.fetcher[fetcher.type] = fetcher;
+    },
+
+    /**
+     * If a fetcher is defined for a certain type.
+     */
+    hasFetcher: function (cacheType) {
+        return cacheType in this.fetcher;
+    },
+
+    /**
+     * Fetch from a specific cache type/value using a fetcher.
+     * @param options Cache determination and details.
+     * @param keys Keys of value to fetch
+     * @return A promise or null
+     */
+    fetch: function(options, keys) {
+        var cacheType = options.type;
+
+        if (cacheType in this.fetcher) {
+            return this.fetcher[cacheType].fetch(this, options, keys);
+        } else {
+            throw "Unregistered cache fetcher for this type (" + cacheType + ")"
+        }
+    },
+
+    /**
+     * Lookup for a single key and return a promise with a data object containing a reference to the key.
+     * @param cacheType Cache fetcher type
+     * @param format Cache options
+     * @param keys Array of keys
+     * @returns A promise
+     */
+    lookup: function(options, keys) {
+        var cacheType = options.type;
+
+        if (cacheType in this.fetcher) {
+            var fetcher = this.fetcher[cacheType];
+
+            var deferred = $.Deferred();
+            var self = this;
+
+            var promise = fetcher.fetch(this, options, keys);
+            if (promise) {
+                promise.done(function(data) {
+                    deferred.resolve(fetcher.get(self, options));
+                });
+            } else {
+                deferred.resolve(fetcher.get(this, options));
+            }
+
+            return deferred.promise();
+        } else {
+            throw "Unregistered cache fetcher for this type (" + cacheType + ")"
         }
     }
 };

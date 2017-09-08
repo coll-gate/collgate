@@ -175,7 +175,7 @@ def get_classification_entry_list(request):
             "synonyms",
             queryset=ClassificationEntrySynonym.objects.all().order_by('type', 'language')))
 
-    cq.select_related('parent->name', 'parent->rank')
+    # cq.select_related('parent->name', 'parent->rank')
 
     cq.cursor(cursor, order_by)
     cq.order_by(order_by).limit(limit)
@@ -191,16 +191,16 @@ def get_classification_entry_list(request):
             'descriptor_meta_model': classification_entry.descriptor_meta_model_id,
             'descriptors': classification_entry.descriptors,
             'parent_list': classification_entry.parent_list,
-            'parent_details': None,
+            # 'parent_details': None,
             'synonyms': []
         }
 
-        if classification_entry.parent:
-            c['parent_details'] = {
-                'id': classification_entry.parent.id,
-                'name': classification_entry.parent.name,
-                'rank': classification_entry.parent.rank_id
-            }
+        # if classification_entry.parent:
+        #     c['parent_details'] = {
+        #         'id': classification_entry.parent.id,
+        #         'name': classification_entry.parent.name,
+        #         'rank': classification_entry.parent.rank_id
+        #     }
 
         for synonym in classification_entry.synonyms.all():
             c['synonyms'].append({
@@ -614,75 +614,6 @@ def get_classification_entry_children(request, cls_id):
     }
 
     return HttpResponseRest(request, results)
-
-    # results_per_page = int_arg(request.GET.get('more', 30))
-    # cursor = request.GET.get('cursor')
-    # limit = results_per_page
-    #
-    # classificationEntry = get_object_or_404(Taxon, id=int(cls_id))
-    #
-    # if cursor:
-    #     cursor_name, cursor_id = cursor.rsplit('/', 1)
-    #     qs = classificationEntry.children.filter(Q(name__gt=cursor_name))
-    # else:
-    #     qs = classificationEntry.children.all()
-    #
-    # qs = qs.prefetch_related(Prefetch(
-    #         "synonyms",
-    #         queryset=TaxonSynonym.objects.all().order_by('type', 'language'))
-    # ).select_related('parent').order_by('name')[:limit]
-    #
-    # children = []
-    #
-    # for child in qs:
-    #     t = {
-    #         'id': child.id,
-    #         'name': child.name,
-    #         'parent': child.parent_id,
-    #         'rank': child.rank,
-    #         'parent_list': [int(x) for x in child.parent_list.rstrip(',').split(',')] if child.parent_list else [],
-    #         'parent_details': None,
-    #         'synonyms': [],
-    #     }
-    #
-    #     if classificationEntry.parent:
-    #         t['parent_details'] = {
-    #             'id': classificationEntry.parent.id,
-    #             'name': classificationEntry.parent.name,
-    #             'rank': classificationEntry.parent.rank
-    #         }
-    #
-    #     for synonym in child.synonyms.all():
-    #         t['synonyms'].append({
-    #             'id': synonym.id,
-    #             'name': synonym.name,
-    #             'type': synonym.type,
-    #             'language': synonym.language
-    #         })
-    #
-    #     children.append(t)
-    #
-    # if len(children) > 0:
-    #     # prev cursor (asc order)
-    #     classificationEntry = children[0]
-    #     prev_cursor = "%s/%s" % (classificationEntry['name'], classificationEntry['id'])
-    #
-    #     # next cursor (asc order)
-    #     classificationEntry = children[-1]
-    #     next_cursor = "%s/%s" % (classificationEntry['name'], classificationEntry['id'])
-    # else:
-    #     prev_cursor = None
-    #     next_cursor = None
-    #
-    # results = {
-    #     'perms': [],
-    #     'items': children,
-    #     'prev': prev_cursor,
-    #     'cursor': cursor,
-    #     'next': next_cursor,
-    # }
-    #
-    # return HttpResponseRest(request, results)
 
 
 @RestClassificationEntryIdChildrenCount.def_auth_request(Method.GET, Format.JSON, perms={

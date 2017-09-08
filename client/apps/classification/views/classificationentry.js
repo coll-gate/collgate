@@ -41,7 +41,8 @@ var ClassificationEntryView = Marionette.View.extend({
     events: {
         "click @ui.classification_entry": "onClassificationEntryDetails",
         "click @ui.parent": "onParentClassificationEntryDetails",
-        "click @ui.remove_classification_entry": "onRemoveClassificationEntry"
+        "click @ui.remove_classification_entry": "onRemoveClassificationEntry",
+        "mouseover @ui.parent": "onOverParent"
     },
 
     behaviors: {
@@ -76,7 +77,6 @@ var ClassificationEntryView = Marionette.View.extend({
 
     onRender: function() {
         application.main.views.languages.htmlFromValue(this.el);
-        // application.classification.views.classificationEntrySynonymTypes.htmlFromValue(this.el);
     },
 
     onClassificationEntryDetails: function() {
@@ -96,30 +96,9 @@ var ClassificationEntryView = Marionette.View.extend({
     },
 
     rankCell: function(td, value) {
-        //var rank = this.model.get('rank');
-
-        // @todo how to manage multiple classifications, main.cache ?
-        //var text = application.classification.collections.classificationRanks.findLabel(rank);
-
-        var text = value.label;
-
-        td.html(text);
-    },
-
-    parentCell: function(td) {
-        if (this.model.get('parent_details')) {
-            var parent_name = this.model.get('parent_details').name || "";
-            var parent_rank = this.model.get('parent_details').rank;
-
-            var el = $('<span class="parent classification-rank" title="">' + parent_name + '</span>');
-            if (parent_rank) {
-                var rank = application.classification.collections.classificationRanks.findLabel(this.model.get('parent_details').rank);
-
-                el.attr('value', this.model.get('parent_details').rank);
-                el.attr('title', rank);
-            }
-
-            td.html(el);
+        if (value && value.label) {
+            var text = value.label;
+            td.html(text);
         }
     },
 
@@ -128,8 +107,34 @@ var ClassificationEntryView = Marionette.View.extend({
 
         if (synonyms.length > 1) {
             var text = this.model.get('synonyms')[1].name;
-
             td.html(text);
+        }
+    },
+
+    parentCell: function(td, value) {
+        if (value && value.rank) {
+            // @todo an helper and for onOverParent...
+            var el = $('<span class="parent classification-rank popover-dismiss" data-toggle="popover" data-placement="bottom" data-container="body" data-content="">' + value.name + '</span>');
+            el.attr('rank', value.rank);
+            td.html(el);
+        }
+    },
+
+    onOverParent: function(e) {
+        // init the popover on the first mouse hover
+        var el = $(e.target);
+        var parentRank = parseInt(el.attr('rank'));
+
+        if (Number.isInteger(parentRank) && el.attr('data-content') === "") {
+            application.main.cache.lookup({type: 'entity', format: {model: 'classification.classificationrank', 'details': true}}, [parentRank]).done(function (data) {
+                el.attr('data-content', data[parentRank].value.label);
+                el.popover({'trigger': 'hover'});
+
+                // manually show it if still hover once data is synced
+                if (el.is(':hover')) {
+                    el.popover('show');
+                }
+            });
         }
     }
 });

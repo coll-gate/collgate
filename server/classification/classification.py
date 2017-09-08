@@ -368,25 +368,72 @@ def get_classification_rank_list(request):
     """
     Get a list of classification rank in JSON
     """
-    selection = json.loads(request.GET.get('filters', {}))[0]['value']
-    # @todo selection must be array or use Cursor without limit/order/cursor
+    results_per_page = int_arg(request.GET.get('more', 30))
+    cursor = json.loads(request.GET.get('cursor', 'null'))
+    limit = results_per_page
+    sort_by = json.loads(request.GET.get('sort_by', '["name"]'))
+    order_by = sort_by
 
-    classification_ranks = ClassificationRank.objects.filter(id__in=selection)
+    cq = CursorQuery(Classification)
 
-    classification_ranks_items = {}
-    for classification_rank in classification_ranks:
-        classification_ranks_items[classification_rank.id] = {
+    if request.GET.get('search'):
+        search = json.loads(request.GET['search'])
+        cq.filter(search)
+
+    if request.GET.get('filters'):
+        filters = json.loads(request.GET['filters'])
+        cq.filter(filters)
+
+    cq.cursor(cursor, order_by)
+    cq.order_by(order_by).limit(limit)
+
+    classification_rank_items = []
+
+    for classification_rank in cq:
+        c = {
             'id': classification_rank.id,
             'name': classification_rank.name,
             'label': classification_rank.get_label(),
             'level': classification_rank.level
         }
 
-    # @todo manage validity (short duration)
+        classification_rank_items.append(c)
+
     results = {
-        'cacheable': True,
-        'validity': None,
-        'items': classification_ranks_items
+        'perms': [],
+        'items': classification_rank_items,
+        'prev': cq.prev_cursor,
+        'cursor': cursor,
+        'next': cq.next_cursor
     }
 
     return HttpResponseRest(request, results)
+
+
+# @RestClassificationClassificationRank.def_request(Method.GET, Format.JSON, ('filters',))
+# def get_classification_rank_list(request):
+#     """
+#     Get a list of classification rank in JSON
+#     """
+#     selection = json.loads(request.GET.get('filters', {}))[0]['value']
+#     # @todo selection must be array or use Cursor without limit/order/cursor
+#
+#     classification_ranks = ClassificationRank.objects.filter(id__in=selection)
+#
+#     classification_ranks_items = {}
+#     for classification_rank in classification_ranks:
+#         classification_ranks_items[classification_rank.id] = {
+#             'id': classification_rank.id,
+#             'name': classification_rank.name,
+#             'label': classification_rank.get_label(),
+#             'level': classification_rank.level
+#         }
+#
+#     # @todo manage validity (short duration)
+#     results = {
+#         'cacheable': True,
+#         'validity': None,
+#         'items': classification_ranks_items
+#     }
+#
+#     return HttpResponseRest(request, results)

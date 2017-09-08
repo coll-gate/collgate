@@ -30,12 +30,16 @@ var View = Marionette.View.extend({
 
     ui: {
         details: 'td.view-accession-details',
-        primary_classification_entry: 'td.view-primary-classification-entry-details'
+        primary_classification_entry: 'td.view-primary-classification-entry-details',
+        primary_classification_rank: 'td[name=primary_classification_entry] span.classification-rank',
+        accession_select: 'td.accession-select span',
     },
 
     events: {
         'click @ui.details': 'viewDetails',
-        'click @ui.primary_classification_entry': 'viewPrimaryClassificationEntry'
+        'click @ui.primary_classification_entry': 'viewPrimaryClassificationEntry',
+        'click @ui.accession_select': 'onSelectAccession',
+        'mouseover @ui.primary_classification_rank': 'onOverPrimaryClassification'
     },
 
     behaviors: {
@@ -79,28 +83,6 @@ var View = Marionette.View.extend({
         Backbone.history.navigate('app/classification/classificationentry/' + this.model.get('primary_classification_entry') + '/', {trigger: true});
     },
 
-    primaryClassificationEntryCell: function(td) {
-        if (!this.model.get('primary_classification_entry_details')) {
-            return
-        }
-
-        var classificationEntryName = this.model.get('primary_classification_entry_details').name || "";
-        var classificationRank = this.model.get('primary_classification_entry_details').rank;
-
-        var el = $('<span class="classification-entry classification-rank" title="">' + classificationEntryName + '</span>');
-        if (classificationRank) {
-            // @todo cache
-            var rank = application.classification.collections.classificationRanks.findLabel(classificationRank);
-            var rank2 = application.main.cache.get('classification', classificationRank);
-            // console.log(rank2)
-
-            el.attr('value', classificationRank);
-            el.attr('title', rank);
-        }
-
-        td.html(el);
-    },
-
     synonymCell: function(td) {
         var synonyms = this.model.get('synonyms');
 
@@ -113,6 +95,37 @@ var View = Marionette.View.extend({
 
     onDeleteAccession: function() {
         alert("@todo");
+    },
+
+    onSelectAccession: function() {
+        // @todo
+    },
+
+    primaryClassificationEntryCell: function(td, value) {
+        if (value && value.rank) {
+            // @todo an helper and for onOverParent...
+            var el = $('<span class="classification-rank popover-dismiss" data-toggle="popover" data-placement="bottom" data-container="body" data-content="">' + value.name + '</span>');
+            el.attr('rank', value.rank);
+            td.html(el);
+        }
+    },
+
+    onOverPrimaryClassification: function(e) {
+        // init the popover on the first mouse hover
+        var el = $(e.target);
+        var parentRank = parseInt(el.attr('rank'));
+
+        if (Number.isInteger(parentRank) && el.attr('data-content') === "") {
+            application.main.cache.lookup({type: 'entity', format: {model: 'classification.classificationrank', 'details': true}}, [parentRank]).done(function (data) {
+                el.attr('data-content', data[parentRank].value.label);
+                el.popover({'trigger': 'hover'});
+
+                // manually show it if still hover once data is synced
+                if (el.is(':hover')) {
+                    el.popover('show');
+                }
+            });
+        }
     }
 });
 

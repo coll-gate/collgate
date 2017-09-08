@@ -97,10 +97,11 @@ class Accession(DescribableEntity):
             'primary_classification_entry': {
                 'label': _('Classification'),
                 'field': 'name',
-                'query': False,   # could be later, for the moment LEFT JOIN into the queryset
+                'query': True,  # False,   # could be later, for the moment LEFT JOIN into the queryset
                 'format': {
                     'type': 'entity',
-                    'model': 'classification.classificationentry'
+                    'model': 'classification.classificationentry',
+                    'details': True
                 }
             },
             'descriptor_meta_model': {

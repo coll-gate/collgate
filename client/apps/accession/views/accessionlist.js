@@ -18,9 +18,10 @@ var View = ScrollView.extend({
     childView: AccessionView,
     childViewContainer: 'tbody.entity-list',
     userSettingName: 'accessions_list_columns',
-    userSettingVersion: '1.0',
+    userSettingVersion: '1.1',
 
     defaultColumns: [
+        {name: 'select', width: 'auto', sort_by: null},
         {name: 'code', width: 'auto', sort_by: null},
         {name: 'name', width: 'auto', sort_by: '+0'},
         {name: 'primary_classification_entry', width: 'auto', sort_by: null},
@@ -29,6 +30,14 @@ var View = ScrollView.extend({
     ],
 
     columnsOptions: {
+        'select': {
+            label: '',
+            width: 'auto',
+            type: 'checkbox',
+            glyphicon: ['glyphicon-unchecked', 'glyphicon-unchecked'],
+            event: 'accession-select',
+            fixed: true
+        },
         'code': {label: gt.gettext('Code'), width: 'auto', minWidth: true, event: 'view-accession-details'},
         'name': {label: gt.gettext('Name'), width: 'auto', minWidth: true, event: 'view-accession-details'},
         'primary_classification_entry': {
@@ -67,6 +76,38 @@ var View = ScrollView.extend({
         View.__super__.initialize.apply(this, arguments);
 
         // this.listenTo(this.collection, 'reset', this.render, this);
+    },
+
+    onRender: function() {
+        var view = this;
+
+        var contextLayout = application.getView().getChildView('right');
+        if (!contextLayout) {
+            var DefaultLayout = require('../../main/views/defaultlayout');
+            contextLayout = new DefaultLayout();
+            application.getView().showChildView('right', contextLayout);
+        }
+
+        var TitleView = require('../../main/views/titleview');
+        contextLayout.showChildView('title', new TitleView({title: gt.gettext("Accessions list"), glyphicon: 'glyphicon-wrench'}));
+
+        var actions = ['create-panel'];
+
+        var AccessionListContextView = require('./accessionlistcontext');
+        var contextView = new AccessionListContextView({actions: actions});
+        contextLayout.showChildView('content', contextView);
+
+        contextView.on("panel:create", function () {
+            view.onCreatePanel();
+        });
+    },
+
+    onBeforeDetach: function() {
+        application.main.defaultRightView();
+    },
+
+    onCreatePanel: function () {
+        alert("todo");
     }
 });
 

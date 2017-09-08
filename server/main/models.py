@@ -290,6 +290,13 @@ class Entity(models.Model):
         """
         return self.uuid
 
+    def details(self):
+        """
+        Return the details field for the specialized entity. By default return an empty dict.
+        :return: A dict of details
+        """
+        return {}
+
     @classmethod
     def make_search_by_name(cls, term):
         """

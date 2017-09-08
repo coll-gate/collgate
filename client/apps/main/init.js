@@ -105,6 +105,10 @@ MainModule.prototype = {
         // global cache manager
         var Cache = require('./utils/cache');
         this.cache = new Cache();
+        this.cache.register('entity');
+
+        var EntityCacheFetcher = require('./utils/entitycachefetcher');
+        this.cache.registerFetcher(new EntityCacheFetcher());
 
         // temporary dictionary
         this.tmp = {};

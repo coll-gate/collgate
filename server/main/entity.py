@@ -32,6 +32,11 @@ class RestMainEntityValues(RestMainEntity):
     suffix = 'values'
 
 
+class RestMainEntityDetails(RestMainEntity):
+    regex = r'^(?P<content_type_name>[a-zA-Z\.-]+)/details/$'
+    suffix = 'details'
+
+
 @RestMainEntity.def_auth_request(Method.GET, Format.JSON, parameters=('app_label', 'model', 'object_id'))
 def get_entity(request):
     """
@@ -117,6 +122,30 @@ def get_entity_values_for_content_type_name(request, content_type_name):
 
     for entity in entities:
         items[entity.id] = entity.natural_name()
+
+    results = {
+        'cacheable': True,
+        'validity': None,
+        'items': items
+    }
+
+    return HttpResponseRest(request, results)
+
+
+@RestMainEntityDetails.def_auth_request(Method.GET, Format.JSON, parameters=('values',))
+def get_entity_details_for_content_type_name(request, content_type_name):
+    app_label, model = content_type_name.split('.')
+    content_type = get_object_or_404(ContentType, app_label=app_label, model=model)
+
+    # json array
+    values = json.loads(request.GET['values'])
+
+    entities = content_type.get_all_objects_for_this_type(id__in=values)
+
+    items = {}
+
+    for entity in entities:
+        items[entity.id] = entity.details()
 
     results = {
         'cacheable': True,

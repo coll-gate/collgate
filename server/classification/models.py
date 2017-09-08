@@ -183,6 +183,13 @@ class ClassificationRank(Entity):
     def natural_name(self):
         return self.get_label()
 
+    def details(self):
+        return {
+            'name': self.name,
+            'label': self.get_label(),
+            'level': self.level
+        }
+
     def get_label(self):
         """
         Get the label for this classification rank in the current regional.
@@ -280,24 +287,23 @@ class ClassificationEntry(Entity):
         return {
             'rank': {
                 'label': _('Rank'),
-                # 'field': 'name',  # @todo classification->rank_level special sort (need a GROUP BY classification)
+                'field': 'level',  # @todo classification->rank_level special sort (need a GROUP BY classification)
                 'query': True,
                 'format': {
-                    'type': 'entity',  # @todo create this widget with dropdown
+                    'type': 'entity',
                     'model': 'classification.classificationrank',
-                    'custom': True,
-                    'option': 'dropdown'
-                    # 'type': 'entity',
-                    # 'model': 'classification.classificationrank'
+                    'details': True,
+                    'option': 'dropdown'  # @todo create this widget with dropdown
                 }
             },
             'parent': {
                 'label': _('Classification'),
                 'field': 'name',
-                'query': False,   # could be later, for the moment LEFT JOIN into the queryset
+                'query': True,
                 'format': {
                     'type': 'entity',
-                    'model': 'classification.classificationentry'
+                    'model': 'classification.classificationentry',
+                    'details': True
                 }
             },
             'descriptor_meta_model': {
@@ -325,6 +331,13 @@ class ClassificationEntry(Entity):
 
     def natural_name(self):
         return self.name
+
+    def details(self):
+        return {
+            'name': self.name,
+            'rank': self.rank_id,
+            'parent': self.parent_id
+        }
 
     @classmethod
     def make_search_by_name(cls, term):

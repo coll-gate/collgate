@@ -92,7 +92,7 @@ msgstr "Latin"
 
 #: ../../../behaviors/actionbuttonevents.js:17
 msgid "Show"
-msgstr ""
+msgstr "Voir"
 
 #: ../../../behaviors/actionbuttonevents.js:18
 msgid "Edit"
@@ -197,11 +197,8 @@ msgstr "Bienvenue"
 
 #: ../../../templates/scrollingmore.html:15
 msgid "from"
-msgstr ""
+msgstr "sur"
 
 #: ../../../templates/scrollingmore.html:16
 msgid "total results"
-msgstr ""
-
-#~ msgid "show"
-#~ msgstr "voir"
+msgstr "resultats totals"

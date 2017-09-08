@@ -35,11 +35,11 @@ var Collection = Backbone.Collection.extend({
         this.cursor = data.cursor;
         this.sort_by = data.sort_by;
 
-        if (this.search) {
+        if (this.search && this.search.length) {
             opts.data.search = JSON.stringify(this.search)
         }
 
-        if (this.filters) {
+        if (this.filters && this.filters.length) {
             opts.data.filters = JSON.stringify(this.filters)
         }
 
@@ -61,11 +61,11 @@ var Collection = Backbone.Collection.extend({
         var opts = _.clone(options);
         opts.data = data;
 
-        if (this.search) {
+        if (this.search && this.search.length) {
             opts.data.search = JSON.stringify(this.search)
         }
 
-        if (this.filters) {
+        if (this.filters && this.filters.length) {
             opts.data.filters = JSON.stringify(this.filters)
         }
 

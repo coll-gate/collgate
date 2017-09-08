@@ -50,6 +50,8 @@ var View = Marionette.CompositeView.extend({
     },
 
     events: {
+        'click @ui.thead': 'onClickHead',
+        'click @ui.tbody': 'onClickBody',
         'click @ui.add_column': 'onAddColumnAction',
         'click @ui.add_column_column': 'onAddColumn'
     },
@@ -207,7 +209,6 @@ var View = Marionette.CompositeView.extend({
 
             var sort_by = [];
             var numOrders = 0;
-            var columns = this.getOption('columns');
 
             for (var i = 0; i < this.selectedColumns.length; ++i) {
                 var selectColumn = this.selectedColumns[i];
@@ -1700,6 +1701,145 @@ var View = Marionette.CompositeView.extend({
                 this.controlKeyDown = false;
                 this.highlightLabels(false);
             }
+        }
+    },
+
+    onClickHead: function(e) {
+        var el = $(e.target);
+        var parent = null;
+
+        if (el.is('th')) {
+            parent = el;
+            el = el.children('div').children();
+        } else if (el.is('th div span')) {
+            parent = el.parent('div').parent('th');
+        }
+
+        var columnName = parent && parent.length ? parent.attr('name') : undefined;
+        if (!parent || !el || !columnName) {
+            return;
+        }
+
+        var columns = this.getOption('columns') || {};
+        if (!(columnName in columns)) {
+            return;
+        }
+
+        if (columns[columnName].type === "checkbox") {
+            var checkbox = el;
+
+            if (checkbox.hasClass('glyphicon-unchecked')) {
+                checkbox.removeClass('glyphicon-unchecked');
+                checkbox.addClass('glyphicon-check');
+
+                // check every ones
+                this.ui.tbody.children('tr').children('td[name=' + columnName + ']').children('span.glyphicon-unchecked')
+                    .removeClass('glyphicon-unchecked')
+                    .addClass('glyphicon-check');
+
+                columns[columnName].selection = true;
+            } else {
+                checkbox.removeClass('glyphicon-check');
+                checkbox.addClass('glyphicon-unchecked');
+
+                // uncheck every ones
+                this.ui.tbody.children('tr').children('td[name=' + columnName + ']').children('span.glyphicon-check')
+                    .removeClass('glyphicon-check')
+                    .addClass('glyphicon-unchecked');
+
+                delete columns[columnName].selection;
+            }
+
+            console.log(this.getSelection(columnName))
+        }
+    },
+
+    onClickBody: function(e) {
+        var el = $(e.target);
+        var parent = null;
+
+        if (el.is('td')) {
+            parent = el;
+            el = el.children();
+        } else if (el.is('td span')) {
+            parent = el.parent('td');
+        }
+
+        var columnName = parent && parent.length ? parent.attr('name') : undefined;
+        if (!parent || !el || !columnName) {
+            return;
+        }
+
+        var columns = this.getOption('columns') || {};
+        if (!(columnName in columns)) {
+            return;
+        }
+
+        var id = parseInt(parent.parent('tr').attr('element-id'));
+
+        // manage checkbox columns for selection
+        if (columns[columnName].type === "checkbox") {
+            var checkbox = el;
+
+            if (checkbox.hasClass('glyphicon-unchecked')) {
+                checkbox.removeClass('glyphicon-unchecked');
+                checkbox.addClass('glyphicon-check');
+
+                if (!(columns[columnName].selection instanceof Set)) {
+                    columns[columnName].selection = new Set();
+                }
+
+                columns[columnName].selection.add(id);
+            } else {
+                checkbox.removeClass('glyphicon-check');
+                checkbox.addClass('glyphicon-unchecked');
+
+                if (columns[columnName].selection instanceof Set) {
+                    columns[columnName].selection.delete(id);
+
+                    if (columns[columnName].selection.size === 0) {
+                        delete columns[columnName].selection;
+                    }
+                }
+            }
+
+            var headCheckbox = this.ui.thead.children('tr').children('th[name=' + columnName + ']').children('div').children('span');
+
+            if (!columns[columnName].selection) {
+                // none check on head
+                if (!headCheckbox.hasClass('glyphicon-uncheck')) {
+                    headCheckbox.removeClass('glyphicon-check')
+                        .removeClass('glyphicon-edit')
+                        .addClass('glyphicon-unchecked');
+                }
+            } else {
+                // partial check on head
+                if (!headCheckbox.hasClass('glyphicon-edit')) {
+                    headCheckbox.removeClass('glyphicon-check')
+                        .removeClass('glyphicon-unchecked')
+                        .addClass('glyphicon-edit');
+                }
+            }
+
+            console.log(this.getSelection(columnName))
+        }
+    },
+
+    /**
+     * Get the list or state of selection for a compatible column.
+     * @param columnName Column name.
+     * @returns boolean Boolean or a Set object. true mean all objects are selected, false none.
+     */
+    getSelection: function(columnName) {
+        var columns = this.getOption('columns') || {};
+        if (!(columnName in columns)) {
+            return false;
+        }
+
+        if (columns[columnName].type === "checkbox") {
+            return columns[columnName].selection || false;
+        } else {
+            return false;
         }
     }
 });

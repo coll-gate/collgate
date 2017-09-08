@@ -31,7 +31,7 @@ var DescriptorsColumnsView = {
 
             if (options.query) {
                 if (columnName.startsWith('#')) {
-                    var promise = this._fetchDescriptorsValue(modelList, columnName);
+                    var promise = this._fetchDescriptorsValue(modelList, columnName, options);
                     if (promise) {
                         promises.push(promise);
                     }
@@ -101,7 +101,12 @@ var DescriptorsColumnsView = {
                         var childView = this.children.findByModel(model);
                         var cell = childView.$el.find('td[name="' + columnName + '"]');
 
-                        cell.addClass(cellClassName)
+                        cell.addClass(cellClassName);
+
+                        // auto-selection
+                        if (options.selection === true) {
+                            cell.children('span').removeClass('glyphicon-unchecked').addClass('glyphicon-check');
+                        }
                     }
                 }
             }
@@ -117,209 +122,211 @@ var DescriptorsColumnsView = {
         });
     },
 
-    _fetchDescriptorsValue: function(modelList, columnName) {
-        // make the list of values
+    _fetchDescriptorsValue: function(modelList, columnName, options) {
+        var descriptorName = columnName.replace(/^#/, '');
+        var cache = application.main.cache.get('descriptors', descriptorName);
+
+        var toFetch = false;
+        var now = Date.now();
+
+        // make the list of keys
         var keys = new Set();
         var models = [];
 
-        var cache = application.main.cache.get('descriptors', columnName.replace(/^#/, ''));
+        for (var i = 0; i < modelList.length; ++i) {
+            var model = modelList[i];
+            var key = model.get('descriptors')[descriptorName];
+            var entry = undefined;
 
-        // lookup into the global cache
-        for (var j = 0; j < modelList.length; ++j) {
-            var model = modelList[j];
-            var key = model.get('descriptors')[columnName.slice(1)];
-            var value = undefined;
+            toFetch = false;
 
             if (key !== null && key !== undefined && key !== "") {
-                value = cache[key];
+                entry = cache[key];
             }
 
-            if (value !== undefined) {
-                var childView = this.children.findByModel(model);
-                var cell = childView.$el.find('td[name="' + columnName + '"]');
+            if (entry !== undefined) {
+                // found. look for validity
+                if (entry.expire !== null && entry.expire <= now) {
+                    toFetch = true;
+                } else {
+                    var childView = this.children.findByModel(model);
+                    var cell = childView.$el.find('td[name="' + columnName + '"]');
 
-                // simply replace the value
-                cell.html(value);
+                    if (options.custom) {
+                        // manage custom cell for some complex cases
+                        childView[options.custom](cell, entry.value);
+                    } else {
+                        // simply replace the value
+                        cell.html(entry.value);
+                    }
+                }
             } else if (key !== null && key !== undefined && key !== "") {
+                toFetch = true;
+            }
+
+            if (toFetch) {
                 keys.add(key);
                 models.push(model);
             }
         }
 
-        if (keys.size) {
-            var promise = $.ajax({
-                type: "GET",
-                url: application.baseUrl + 'descriptor/descriptor-model-type/' + columnName.replace(/^#/, '') + '/',
-                contentType: 'application/json; charset=utf8',
-                data: {values: JSON.stringify(Array.from(keys))},
-                columnName: columnName,
-                models: models,
-                view: this
-            });
+        var self = this;
+        var parameters = {
+            'type': 'descriptors',
+            'format': {
+                'name': descriptorName
+            }
+        };
 
+        var promise = application.main.cache.fetch(parameters, Array.from(keys), false);
+
+        if (promise) {
             promise.done(function (data) {
-                var cache = application.main.cache.get('descriptors', this.columnName.replace(/^#/, ''));
+                // process cell for value newly cached
+                for (var i = 0; i < models.length; ++i) {
+                    var model = models[i];
+                    var childView = self.children.findByModel(model);
+                    var key = model.get('descriptors')[descriptorName];
 
-                for (var j = 0; j < this.models.length; ++j) {
-                    var model = this.models[j];
-                    var childView = this.view.children.findByModel(model);
-                    var key = model.get('descriptors')[this.columnName.replace(/^#/, '')];
-
-                    var cell = childView.$el.find('td[name="' + this.columnName + '"]');
+                    var cell = childView.$el.find('td[name="' + columnName + '"]');
                     if (key !== undefined) {
-                        // simply replace the value
-                        cell.html(data.items[key]);
-                    }
-
-                    // store in global cache
-                    if (data.cacheable) {
-                        cache[key] = data.items[key];
+                        if (options.custom) {
+                            // manage custom cell for some complex cases
+                            childView[options.custom](cell, cache[key].value);
+                        } else {
+                            // simply replace the value
+                            cell.html(cache[key].value);
+                        }
                     }
                 }
-
-                session.logger.debug("Cache miss for descriptor " + this.columnName.replace(/^#/, '') + ".");
             }).fail(function () {
+                // add an Error message to un-fetched cells
                 var message = gt.gettext("Error");
 
-                for (var j = 0; j < this.models.length; ++j) {
-                    var model = this.models[j];
+                for (var i = 0; i < models.length; ++i) {
+                    var model = models[i];
                     var childView = this.view.children.findByModel(model);
-                    var key = model.get('descriptors')[this.columnName.replace(/^#/, '')];
+                    var key = model.get('descriptors')[descriptorName];
 
-                    var cell = childView.$el.find('td[name="' + this.columnName + '"]');
+                    var cell = childView.$el.find('td[name="' + columnName + '"]');
                     if (key !== undefined) {
                         var span = $('<span class="label label-danger">' + message + '</span>');
                         cell.append(span)
                     }
                 }
             });
-
-            return promise;
-        } else {
-            return null;
         }
+
+        return promise;
     },
 
     _fetchStandardValue: function(modelList, columnName, options) {
-        // make the list of values
+        var parameters = {};
+
+        if (options.format.type === "descriptor_meta_model" && application.main.cache.hasFetcher('descriptor_meta_model')) {
+            parameters.type = 'descriptor_meta_model';
+            parameters.format = {
+                'model': options.format.model
+            }
+        } else if (options.format.type === "entity" && application.main.cache.hasFetcher('entity')) {
+            parameters.type = 'entity';
+            parameters.format = {
+                'model': options.format.model,
+                'details': !!options.format.details
+            }
+        } else {
+            // unsupported
+            return null;
+        }
+
+        var cache = application.main.cache.get(parameters.type, options.format.model);
+
+        var toFetch = false;
+        var now = Date.now();
+
+        // make the list of keys
         var keys = new Set();
         var models = [];
-
-        var cache = application.main.cache.get(options.format.type, options.format.model);
 
         // lookup into the global cache
         for (var j = 0; j < modelList.length; ++j) {
             var model = modelList[j];
             var key = model.get(columnName);
-            var value = undefined;
+            var entry = undefined;
+
+            toFetch = false;
 
             if (key !== null && key !== undefined && key !== "") {
-                value = cache[key];
+                entry = cache[key];
             }
 
-            if (value !== undefined) {
-                var childView = this.children.findByModel(model);
-                var cell = childView.$el.find('td[name="' + columnName + '"]');
-
-                if (options.custom) {
-                    // manage custom cell for some complex cases
-                    childView[options.custom](cell, value);
+            if (entry !== undefined) {
+                // found. look for validity
+                if (entry.expire !== null && entry.expire <= now) {
+                    toFetch = true;
                 } else {
-                    // simply replace the value
-                    cell.html(value);
+                    var childView = this.children.findByModel(model);
+                    var cell = childView.$el.find('td[name="' + columnName + '"]');
+
+                    if (options.custom) {
+                        // manage custom cell for some complex cases
+                        childView[options.custom](cell, entry.value);
+                    } else {
+                        // simply replace the value
+                        cell.html(entry.value);
+                    }
                 }
             } else if (key !== null && key !== undefined && key !== "") {
+                toFetch = true;
+            }
+
+            if (toFetch) {
                 keys.add(key);
                 models.push(model);
             }
         }
 
-        var url = "";
-        var queryData = {};
+        var self = this;
+        var promise = application.main.cache.fetch(parameters, Array.from(keys), false);
 
-        // @todo url must be build more dynamically without knowledge of the module
-        // @todo attention pourquoi en mode custom entity la requete est appelee 2 fois par le client... ?
-        if (options.format.type === "descriptor_meta_model") {
-            url = "descriptor/meta-model/values/";
-            queryData = {values: JSON.stringify(Array.from(keys))};
-        } else if (options.format.type === "entity") {
-            // @todo like this or with "main/entitydetailed" + ... and a method on entity model
-            if (options.format.custom) {
-                url = options.format.model.replace('.', '/') + '/';
-                queryData = {filters: JSON.stringify([{
-                        type: 'term',
-                        field: 'id',
-                        value: Array.from(keys),
-                        op: 'in'
-                    }]
-                )};
-            } else {
-                url = "main/entity/" + options.format.model + '/values/';
-                queryData = {values: JSON.stringify(Array.from(keys))};
-            }
-        } else {
-            // unknown type
-            return null;
-        }
-
-        if (keys.size) {
-            var promise = $.ajax({
-                type: "GET",
-                url: application.baseUrl + url,  // + 'values/',
-                contentType: 'application/json; charset=utf8',
-                data: queryData,  // {values: JSON.stringify(Array.from(keys))},
-                columnName: columnName,
-                models: models,
-                view: this
-            });
-
+        if (promise) {
             promise.done(function (data) {
-                var cache = application.main.cache.get(options.format.type, options.format.model);
+                // process cell for value newly cached
+                for (var i = 0; i < models.length; ++i) {
+                    var model = models[i];
+                    var childView = self.children.findByModel(model);
+                    var key = model.get(columnName);
 
-                for (var j = 0; j < this.models.length; ++j) {
-                    var model = this.models[j];
-                    var childView = this.view.children.findByModel(model);
-                    var key = model.get(this.columnName);
-
-                    var cell = childView.$el.find('td[name="' + this.columnName + '"]');
-
+                    var cell = childView.$el.find('td[name="' + columnName + '"]');
                     if (key !== undefined) {
                         if (options.custom) {
                             // manage custom cell for some complex cases
-                            childView[options.custom](cell, data.items[key]);
+                            childView[options.custom](cell, cache[key].value);
                         } else {
                             // simply replace the value
-                            cell.html(data.items[key]);
+                            cell.html(cache[key].value);
                         }
                     }
-
-                    // store in global cache
-                    if (data.cacheable) {
-                        cache[key] = data.items[key];
-                    }
                 }
-
-                session.logger.debug("Cache miss for column " + this.columnName + ".");
             }).fail(function () {
+                // add an Error message to un-fetched cells
                 var message = gt.gettext("Error");
 
-                for (var j = 0; j < this.models.length; ++j) {
-                    var model = this.models[j];
+                for (var i = 0; i < models.length; ++i) {
+                    var model = models[i];
                     var childView = this.view.children.findByModel(model);
-                    var key = model.get(this.columnName);
+                    var key = model.get(columnName);
 
-                    var cell = childView.$el.find('td[name="' + this.columnName + '"]');
+                    var cell = childView.$el.find('td[name="' + columnName + '"]');
                     if (key !== undefined) {
                         var span = $('<span class="label label-danger">' + message + '</span>');
                         cell.append(span)
                     }
                 }
             });
-
-            return promise;
-        } else {
-            return null;
         }
+
+        return promise;
     }
 };
 

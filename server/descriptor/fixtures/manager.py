@@ -398,4 +398,4 @@ class FixtureManager:
 
             # empty any previous inline values
             if descriptor is not None:
-                DescriptorType.objects.filter(name=descriptor['name']).update(values="")
+                DescriptorType.objects.filter(name=descriptor['name']).update(values=None)

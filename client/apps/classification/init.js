@@ -53,7 +53,7 @@ ClassificationModule.prototype = {
         });
 
         //
-        // collection (may be disapear)
+        // collection (may be disappear)
         //
 
         var ClassificationEntryCollection = require('./collections/classificationentry');

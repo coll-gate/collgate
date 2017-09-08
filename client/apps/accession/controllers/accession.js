@@ -26,7 +26,7 @@ var Controller = Marionette.Object.extend({
             url: application.baseUrl + 'descriptor/meta-model/for-describable/' + 'accession.accession/',
             dataType: 'json'
         }).done(function(data) {
-            var CreateAccessionView = Dialog.extend({
+            var CreateAccessionDialog = Dialog.extend({
                 attributes: {
                     'id': 'dlg_create_accession'
                 },
@@ -56,7 +56,7 @@ var Controller = Marionette.Object.extend({
                 },
 
                 initialize: function (options) {
-                    CreateAccessionView.__super__.initialize.apply(this);
+                    CreateAccessionDialog.__super__.initialize.apply(this);
 
                     // map descriptor meta models by theirs ids
                     this.descriptorMetaModels = {};
@@ -68,7 +68,7 @@ var Controller = Marionette.Object.extend({
                 },
 
                 onRender: function () {
-                    CreateAccessionView.__super__.onRender.apply(this);
+                    CreateAccessionDialog.__super__.onRender.apply(this);
 
                     application.main.views.languages.drawSelect(this.ui.language);
                     this.ui.descriptor_meta_model.selectpicker({});
@@ -89,11 +89,16 @@ var Controller = Marionette.Object.extend({
                     return [];
                 },
 
-                onBeforeDetach: function() {
+                onBeforeDestroy: function() {
                     this.ui.language.selectpicker('destroy');
                     this.ui.descriptor_meta_model.selectpicker('destroy');
                     this.ui.primary_classification.selectpicker('destroy');
-                    this.ui.primary_classification_entry.select2('destroy');
+
+                    if (this.ui.primary_classification_entry.data('select2')) {
+                        this.ui.primary_classification_entry.select2('destroy');
+                    }
+
+                    CreateAccessionDialog.__super__.onBeforeDestroy.apply(this);
                 },
 
                 onChangeDescriptorMetaModel: function() {
@@ -120,7 +125,7 @@ var Controller = Marionette.Object.extend({
 
                     var self = this;
 
-                    classifications.drawSelect(this.ui.primary_classification).done(function () {
+                    classifications.drawSelect(select).done(function () {
                         self.onChangePrimaryClassification();
                     });
                 },
@@ -357,7 +362,7 @@ var Controller = Marionette.Object.extend({
                 }
             });
 
-            var createAccessionView = new CreateAccessionView();
+            var createAccessionView = new CreateAccessionDialog();
             createAccessionView.render();
         });
     },
