@@ -35,14 +35,13 @@ var ClassificationEntryView = Marionette.View.extend({
         "synonym_language": ".synonym-languages",
         "classification_entry_synonym_type": ".classification-entry-synonym-types",
         "classification_rank": ".classification-rank",
-        "parent": ".parent"
+        "parent_details": ".view-parent-details"
     },
 
     events: {
         "click @ui.classification_entry": "onClassificationEntryDetails",
-        "click @ui.parent": "onParentClassificationEntryDetails",
-        "click @ui.remove_classification_entry": "onRemoveClassificationEntry",
-        "mouseover @ui.parent": "onOverParent"
+        "click @ui.parent_details": "onParentClassificationEntryDetails",
+        "click @ui.remove_classification_entry": "onRemoveClassificationEntry"
     },
 
     behaviors: {
@@ -113,28 +112,18 @@ var ClassificationEntryView = Marionette.View.extend({
 
     parentCell: function(td, value) {
         if (value && value.rank) {
-            // @todo an helper and for onOverParent...
-            var el = $('<span class="parent classification-rank popover-dismiss" data-toggle="popover" data-placement="bottom" data-container="body" data-content="">' + value.name + '</span>');
-            el.attr('rank', value.rank);
-            td.html(el);
-        }
-    },
-
-    onOverParent: function(e) {
-        // init the popover on the first mouse hover
-        var el = $(e.target);
-        var parentRank = parseInt(el.attr('rank'));
-
-        if (Number.isInteger(parentRank) && el.attr('data-content') === "") {
-            application.main.cache.lookup({type: 'entity', format: {model: 'classification.classificationrank', 'details': true}}, [parentRank]).done(function (data) {
-                el.attr('data-content', data[parentRank].value.label);
-                el.popover({'trigger': 'hover'});
-
-                // manually show it if still hover once data is synced
-                if (el.is(':hover')) {
-                    el.popover('show');
-                }
-            });
+            if (value && value.rank) {
+                td.popupcell('init', {
+                    label: value.name,
+                    className: 'classification-rank',
+                    type: 'entity',
+                    format: {
+                        model: 'classification.classificationrank',
+                        details: true
+                    },
+                    value: value.rank
+                });
+            }
         }
     }
 });

@@ -28,7 +28,6 @@ EnumPair.DescriptorTypeDetailsView = Marionette.View.extend({
     template: require('../templates/widgets/enumpair.html'),
 
     ui: {
-        helper_display_fields: '#helper_display_fields',
         format_trans: "#format_trans",
         field0: '#type_field0',
         field1: '#type_field1',
@@ -53,8 +52,6 @@ EnumPair.DescriptorTypeDetailsView = Marionette.View.extend({
     },
 
     onRender: function() {
-        this.ui.helper_display_fields.makePopover();
-
         this.ui.format_trans.selectpicker({style: 'btn-default'});
 
         this.ui.sort_by_field.selectpicker({style: 'btn-default'});

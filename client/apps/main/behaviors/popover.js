@@ -1,6 +1,6 @@
 /**
  * @file popover.js
- * @brief Initiate a boostrap popover for Marionette views.
+ * @brief Initiate a bootstrap popover for Marionette views.
  * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2017-01-30
  * @copyright Copyright (c) 2017 INRA/CIRAD
@@ -73,11 +73,11 @@ var Popover = Marionette.Behavior.extend({
         }
 
         // because popover button are manually triggered we have to manage it
-        if (trigger == null) {
+        if (!trigger) {
             this.ui.popover.click(function(e) {
                 // close any other popovers
                 $(".popover-dismiss").each(function(i) {
-                    if (this != e.target) {
+                    if (this !== e.target) {
                         $(this).popover('hide');
                     }
                 });

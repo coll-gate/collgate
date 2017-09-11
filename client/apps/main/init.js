@@ -11,6 +11,9 @@
 // style
 require('./css/main.css');
 
+// jQuery functionality
+require('./utils/popupcell');
+
 var MainModule = function() {
     this.name = "main";
 };

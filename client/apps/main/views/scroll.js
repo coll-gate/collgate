@@ -1728,6 +1728,8 @@ var View = Marionette.CompositeView.extend({
         if (columns[columnName].type === "checkbox") {
             var checkbox = el;
 
+            checkbox.parent().css('background-color', 'initial');
+
             if (checkbox.hasClass('glyphicon-unchecked')) {
                 checkbox.removeClass('glyphicon-unchecked');
                 checkbox.addClass('glyphicon-check');
@@ -1737,6 +1739,7 @@ var View = Marionette.CompositeView.extend({
                     .removeClass('glyphicon-unchecked')
                     .addClass('glyphicon-check');
 
+                columns[columnName].autoSelect = true;
                 columns[columnName].selection = true;
             } else {
                 checkbox.removeClass('glyphicon-check');
@@ -1747,6 +1750,7 @@ var View = Marionette.CompositeView.extend({
                     .removeClass('glyphicon-check')
                     .addClass('glyphicon-unchecked');
 
+                columns[columnName].autoSelect = false;
                 delete columns[columnName].selection;
             }
 
@@ -1785,50 +1789,72 @@ var View = Marionette.CompositeView.extend({
                 checkbox.removeClass('glyphicon-unchecked');
                 checkbox.addClass('glyphicon-check');
 
-                if (!(columns[columnName].selection instanceof Set)) {
-                    columns[columnName].selection = new Set();
+                if (!(columns[columnName].selection instanceof Object)) {
+                    columns[columnName].selection = {
+                        'type': columns[columnName].autoSelect ? 'exclude' : 'include',
+                        'list': new Set()
+                    }
                 }
 
-                columns[columnName].selection.add(id);
+                if (columns[columnName].autoSelect) {
+                    columns[columnName].selection.list.delete(id);
+                } else {
+                    columns[columnName].selection.list.add(id);
+                }
+
+                if (columns[columnName].selection.list.size === 0) {
+                    columns[columnName].selection = columns[columnName].autoSelect || false;
+                }
             } else {
                 checkbox.removeClass('glyphicon-check');
                 checkbox.addClass('glyphicon-unchecked');
 
-                if (columns[columnName].selection instanceof Set) {
-                    columns[columnName].selection.delete(id);
-
-                    if (columns[columnName].selection.size === 0) {
-                        delete columns[columnName].selection;
+                if (!(columns[columnName].selection instanceof Object)) {
+                    columns[columnName].selection = {
+                        'type': columns[columnName].autoSelect ? 'exclude' : 'include',
+                        'list': new Set()
                     }
+                }
+
+                if (columns[columnName].autoSelect) {
+                    columns[columnName].selection.list.add(id);
+                } else {
+                    columns[columnName].selection.list.delete(id);
+                }
+
+                if (columns[columnName].selection.list.size === 0) {
+                    columns[columnName].selection = columns[columnName].autoSelect || false;
                 }
             }
 
             var headCheckbox = this.ui.thead.children('tr').children('th[name=' + columnName + ']').children('div').children('span');
 
-            if (!columns[columnName].selection) {
+            if (columns[columnName].selection === false) {
+                headCheckbox.parent().css('background-color', 'initial');
+
                 // none check on head
-                if (!headCheckbox.hasClass('glyphicon-uncheck')) {
+                if (!headCheckbox.hasClass('glyphicon-unchecked')) {
                     headCheckbox.removeClass('glyphicon-check')
-                        .removeClass('glyphicon-edit')
                         .addClass('glyphicon-unchecked');
                 }
-            } else {
-                // partial check on head
-                if (!headCheckbox.hasClass('glyphicon-edit')) {
-                    headCheckbox.removeClass('glyphicon-check')
-                        .removeClass('glyphicon-unchecked')
-                        .addClass('glyphicon-edit');
-                }
-            }
+            } else if (columns[columnName].selection === true) {
+                headCheckbox.parent().css('background-color', 'initial');
 
-            console.log(this.getSelection(columnName))
+                // none check on head
+                if (!headCheckbox.hasClass('glyphicon-check')) {
+                    headCheckbox.removeClass('glyphicon-unchecked')
+                        .addClass('glyphicon-check');
+                }
+            } else {
+                headCheckbox.parent().css('background-color', '#5cb85c');
+            }
         }
     },
 
     /**
      * Get the list or state of selection for a compatible column.
      * @param columnName Column name.
-     * @returns boolean Boolean or a Set object. true mean all objects are selected, false none.
+     * @returns {term: string, op: string, value: Array} Boolean or a Object. true mean all objects are selected, false none.
      */
     getSelection: function(columnName) {
         var columns = this.getOption('columns') || {};
@@ -1837,7 +1863,15 @@ var View = Marionette.CompositeView.extend({
         }
 
         if (columns[columnName].type === "checkbox") {
-            return columns[columnName].selection || false;
+            if (columns[columnName].selection instanceof Object) {
+                return {
+                    'term': 'id',
+                    'op': columns[columnName].selection.type === 'include' ? 'in' : 'notin',
+                    'value': Array.from(columns[columnName].selection.list)
+                }
+            } else {
+                return columns[columnName].selection || false;
+            }
         } else {
             return false;
         }

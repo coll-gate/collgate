@@ -38,11 +38,30 @@ var View = Marionette.View.extend({
 
     onRender: function() {
         application.main.views.languages.htmlFromValue(this.el);
-
         application.classification.views.classificationEntrySynonymTypes.htmlFromValue(this.el);
 
-        application.classification.views.classificationRanks.elHtmlFromValue(this.ui.classification_rank, 'id');
-        application.classification.views.classificationRanks.attributeFromValue(this.el, 'title', 'id');
+        // @todo factorize
+        var values = [];
+        var self = this;
+
+        this.$el.find('span.classification-rank').each(function(i, element) {
+            values.push(parseInt($(this).attr('value')));
+        });
+
+        application.main.cache.lookup({
+            type: 'entity',
+            format: {
+                model: 'classification.classificationrank',
+                details: true
+            }
+        }, values).done(function (data) {
+            self.$el.find('span.classification-rank').each(function(i, element) {
+                var value = $(this).attr('value');
+
+                $(this).attr('data-content', data[value].value.label)
+                    .popover({trigger: 'hover', placement: 'bottom'});
+            });
+        });
     },
 
     onViewClassificationEntry: function(e) {

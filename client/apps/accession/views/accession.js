@@ -30,16 +30,12 @@ var View = Marionette.View.extend({
 
     ui: {
         details: 'td.view-accession-details',
-        primary_classification_entry: 'td.view-primary-classification-entry-details',
-        primary_classification_rank: 'td[name=primary_classification_entry] span.classification-rank',
-        accession_select: 'td.accession-select span',
+        primary_classification_entry: 'td.view-primary-classification-entry-details'
     },
 
     events: {
         'click @ui.details': 'viewDetails',
-        'click @ui.primary_classification_entry': 'viewPrimaryClassificationEntry',
-        'click @ui.accession_select': 'onSelectAccession',
-        'mouseover @ui.primary_classification_rank': 'onOverPrimaryClassification'
+        'click @ui.primary_classification_entry': 'viewPrimaryClassificationEntry'
     },
 
     behaviors: {
@@ -97,33 +93,17 @@ var View = Marionette.View.extend({
         alert("@todo");
     },
 
-    onSelectAccession: function() {
-        // @todo
-    },
-
     primaryClassificationEntryCell: function(td, value) {
         if (value && value.rank) {
-            // @todo an helper and for onOverParent...
-            var el = $('<span class="classification-rank popover-dismiss" data-toggle="popover" data-placement="bottom" data-container="body" data-content="">' + value.name + '</span>');
-            el.attr('rank', value.rank);
-            td.html(el);
-        }
-    },
-
-    onOverPrimaryClassification: function(e) {
-        // init the popover on the first mouse hover
-        var el = $(e.target);
-        var parentRank = parseInt(el.attr('rank'));
-
-        if (Number.isInteger(parentRank) && el.attr('data-content') === "") {
-            application.main.cache.lookup({type: 'entity', format: {model: 'classification.classificationrank', 'details': true}}, [parentRank]).done(function (data) {
-                el.attr('data-content', data[parentRank].value.label);
-                el.popover({'trigger': 'hover'});
-
-                // manually show it if still hover once data is synced
-                if (el.is(':hover')) {
-                    el.popover('show');
-                }
+            td.popupcell('init', {
+                label: value.name,
+                className: 'classification-rank',
+                type: 'entity',
+                format: {
+                    model: 'classification.classificationrank',
+                    details: true
+                },
+                value: value.rank
             });
         }
     }

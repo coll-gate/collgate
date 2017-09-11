@@ -35,15 +35,6 @@ ClassificationModule.prototype = {
 
         var SelectOption = require('../main/renderers/selectoption');
 
-        // @todo must be cached globally
-        var ClassificationRankCollection = require('./collections/classificationrank');
-        this.collections.classificationRanks = new ClassificationRankCollection([], {classification_id: 7});
-
-        this.views.classificationRanks = new SelectOption({
-            className: "classification-rank",
-            collection: this.collections.classificationRanks
-        });
-
         var CollectionEntrySynonymTypeCollection = require('./collections/classificationentrysynonymtype');
         this.collections.classificationEntrySynonymTypes = new CollectionEntrySynonymTypeCollection();
 

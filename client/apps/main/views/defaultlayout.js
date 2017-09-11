@@ -30,6 +30,8 @@ var DefaultLayout = Marionette.View.extend({
     },
 
     onBeforeDestroy: function () {
+        // destroy any body popovers
+        $('body div.popover').remove();
     },
 
     onResize: function() {

@@ -23,6 +23,7 @@ var DescriptorsColumnsView = {
             // make the list of values
             var columnName = columns[i];
             var options = this.getOption('columns')[columnName];
+            var done = false;
 
             var cellClassName = "";
             if (typeof(options.event) === "string") {
@@ -30,6 +31,7 @@ var DescriptorsColumnsView = {
             }
 
             if (options.query) {
+                // and fetch data (standard or descriptor)
                 if (columnName.startsWith('#')) {
                     var promise = this._fetchDescriptorsValue(modelList, columnName, options);
                     if (promise) {
@@ -41,6 +43,8 @@ var DescriptorsColumnsView = {
                         promises.push(promise);
                     }
                 }
+
+                done = true;
             } else if ("custom" in options && options.custom) {
                 for (var j = 0; j < modelList.length; ++j) {
                     var model = modelList[j];
@@ -55,6 +59,8 @@ var DescriptorsColumnsView = {
                         cell.addClass(cellClassName)
                     }
                 }
+
+                done = true;
             } else if ("format" in options && options.format) {
                 var dft = application.descriptor.widgets.getElement(options.format.type);
                 if (dft && dft.format) {
@@ -72,39 +78,26 @@ var DescriptorsColumnsView = {
                                 cell.addClass(cellClassName)
                             }
                         }
-                    } else {
-                        if (cellClassName) {
-                            for (var j = 0; j < modelList.length; ++j) {
-                                var model = modelList[j];
-                                var childView = this.children.findByModel(model);
-                                var cell = childView.$el.find('td[name="' + columnName + '"]');
 
-                                cell.addClass(cellClassName)
-                            }
-                        }
-                    }
-                } else {
-                    if (cellClassName) {
-                        for (var j = 0; j < modelList.length; ++j) {
-                            var model = modelList[j];
-                            var childView = this.children.findByModel(model);
-                            var cell = childView.$el.find('td[name="' + columnName + '"]');
-
-                            cell.addClass(cellClassName)
-                        }
+                        done = true;
                     }
                 }
-            } else {
-                if (cellClassName) {
+            }
+
+            // default if not continue
+            if (!done) {
+                if (cellClassName || options.autoSelect) {
                     for (var j = 0; j < modelList.length; ++j) {
                         var model = modelList[j];
                         var childView = this.children.findByModel(model);
                         var cell = childView.$el.find('td[name="' + columnName + '"]');
 
-                        cell.addClass(cellClassName);
+                        if (cellClassName) {
+                            cell.addClass(cellClassName);
+                        }
 
                         // auto-selection
-                        if (options.selection === true) {
+                        if (options.autoSelect) {
                             cell.children('span').removeClass('glyphicon-unchecked').addClass('glyphicon-check');
                         }
                     }
@@ -133,6 +126,11 @@ var DescriptorsColumnsView = {
         var keys = new Set();
         var models = [];
 
+        var cellClassName = "";
+        if (typeof(options.event) === "string") {
+            cellClassName = "action " + options.event;
+        }
+
         for (var i = 0; i < modelList.length; ++i) {
             var model = modelList[i];
             var key = model.get('descriptors')[descriptorName];
@@ -159,6 +157,10 @@ var DescriptorsColumnsView = {
                         // simply replace the value
                         cell.html(entry.value);
                     }
+
+                    if (cellClassName) {
+                        cell.addClass(cellClassName);
+                    }
                 }
             } else if (key !== null && key !== undefined && key !== "") {
                 toFetch = true;
@@ -182,6 +184,11 @@ var DescriptorsColumnsView = {
 
         if (promise) {
             promise.done(function (data) {
+                var cellClassName = "";
+                if (typeof(options.event) === "string") {
+                    cellClassName = "action " + options.event;
+                }
+
                 // process cell for value newly cached
                 for (var i = 0; i < models.length; ++i) {
                     var model = models[i];
@@ -196,6 +203,10 @@ var DescriptorsColumnsView = {
                         } else {
                             // simply replace the value
                             cell.html(cache[key].value);
+                        }
+
+                        if (cellClassName) {
+                            cell.addClass(cellClassName);
                         }
                     }
                 }
@@ -248,6 +259,11 @@ var DescriptorsColumnsView = {
         var keys = new Set();
         var models = [];
 
+        var cellClassName = "";
+        if (typeof(options.event) === "string") {
+            cellClassName = "action " + options.event;
+        }
+
         // lookup into the global cache
         for (var j = 0; j < modelList.length; ++j) {
             var model = modelList[j];
@@ -275,6 +291,10 @@ var DescriptorsColumnsView = {
                         // simply replace the value
                         cell.html(entry.value);
                     }
+
+                    if (cellClassName) {
+                        cell.addClass(cellClassName);
+                    }
                 }
             } else if (key !== null && key !== undefined && key !== "") {
                 toFetch = true;
@@ -291,6 +311,11 @@ var DescriptorsColumnsView = {
 
         if (promise) {
             promise.done(function (data) {
+                var cellClassName = "";
+                if (typeof(options.event) === "string") {
+                    cellClassName = "action " + options.event;
+                }
+
                 // process cell for value newly cached
                 for (var i = 0; i < models.length; ++i) {
                     var model = models[i];
@@ -305,6 +330,10 @@ var DescriptorsColumnsView = {
                         } else {
                             // simply replace the value
                             cell.html(cache[key].value);
+                        }
+
+                        if (cellClassName) {
+                            cell.addClass(cellClassName);
                         }
                     }
                 }
