@@ -208,52 +208,22 @@ var View = Marionette.View.extend({
         }
 
         this.ui.condition.children('option').remove();
-        var field_type = this.ui.field[0].selectedOptions[0].dataset.type;
 
-        var options_set = null;
+        var operators_labels = {
+            'isnull': gt.gettext('Undefined'),
+            'notnull': gt.gettext('Defined'),
+            'eq': gt.gettext('Exact'),
+            'neq': gt.gettext('Different from'),
+            'in': gt.gettext('Include'),
+            'notin': gt.gettext('Not include'),
+            'icontains': gt.gettext('Contains'),
+            'lte': gt.gettext('Lesser than'),
+            'gte': gt.gettext('Greater than')
+        };
 
-        // @todo mustn't be hard coded
-        if (column.format.list_type === "dropdown" || column.format.list_type === "autocomplete" || ['entity', 'descriptor_meta_model', 'country', 'city'].includes(field_type)) {
-            options_set = 2;
-        } else if (['numeric_range', 'date', 'time', 'datetime', 'imprecise_date'].includes(field_type)) {
-            options_set = 1;
-        } else if (field_type === 'string') {
-            options_set = 3;
-        }
-
-        switch (options_set) {
-            case 1:
-                this.ui.condition.append('<option value="isnull">' + gt.gettext('Undefined') + '</option>');
-                this.ui.condition.append('<option value="notnull">' + gt.gettext('Defined') + '</option>');
-                this.ui.condition.append('<option value="eq">' + gt.gettext('Exact') + ' =' + '</option>');
-                this.ui.condition.append('<option value="neq">' + gt.gettext('Different from') + ' <>' + '</option>');
-                this.ui.condition.append('<option value="lte">' + gt.gettext('Lesser than') + ' <=' + '</option>');
-                this.ui.condition.append('<option value="gte">' + gt.gettext('Greater than') + ' >=' + '</option>');
-                break;
-
-            case 2:
-                this.ui.condition.append('<option value="isnull">' + gt.gettext('Undefined') + '</option>');
-                this.ui.condition.append('<option value="notnull">' + gt.gettext('Defined') + '</option>');
-                this.ui.condition.append('<option value="eq">' + gt.gettext('Exact') + ' =' + '</option>');
-                this.ui.condition.append('<option value="neq">' + gt.gettext('Different from') + ' <>' + '</option>');
-                this.ui.condition.append('<option value="in">' + gt.gettext('Include') + '</option>');
-                this.ui.condition.append('<option value="notin">' + gt.gettext('Not include') + '</option>');
-                break;
-
-            case 3:
-                this.ui.condition.append('<option value="isnull">' + gt.gettext('Undefined') + '</option>');
-                this.ui.condition.append('<option value="notnull">' + gt.gettext('Defined') + '</option>');
-                this.ui.condition.append('<option value="eq">' + gt.gettext('Exact') + ' =' + '</option>');
-                this.ui.condition.append('<option value="neq">' + gt.gettext('Different from') + ' <>' + '</option>');
-                this.ui.condition.append('<option value="icontains">' + gt.gettext('Contains') + '</option>');
-                break;
-
-            default:
-                this.ui.condition.append('<option value="isnull">' + gt.gettext('Undefined') + '</option>');
-                this.ui.condition.append('<option value="notnull">' + gt.gettext('Defined') + '</option>');
-                this.ui.condition.append('<option value="eq">' + gt.gettext('Exact') + ' =' + '</option>');
-                this.ui.condition.append('<option value="neq">' + gt.gettext('Different from') + ' <>' + '</option>');
-                break;
+        for (var i = 0; i < column.available_operators.length; i++) {
+            var operator_code = column.available_operators[i];
+            this.ui.condition.append('<option value="' + operator_code + '">' + operators_labels[operator_code] + '</option>');
         }
 
         this.ui.condition.selectpicker('refresh');

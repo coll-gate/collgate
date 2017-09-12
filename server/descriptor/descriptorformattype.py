@@ -62,6 +62,12 @@ class DescriptorFormatType(object):
         # or it can defines an array or a dict of one level maximum.
         self.data = "TEXT"
 
+        # defines the operators can be used by the descriptor type
+        self.available_operators = ['isnull', 'notnull', 'eq', 'neq']
+
+        # defines if the descriptor type can be displayed on the table views
+        self.column_display = True
+
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         """
         Validate the value according the format.
@@ -600,6 +606,7 @@ class DescriptorFormatTypeEnumSingle(DescriptorFormatType):
             "type", "trans", "fields", "list_type", "sortby_field", "display_fields", "search_field"
         ]
         self.data = "TEXT"
+        self.available_operators = ['isnull', 'notnull', 'eq', 'neq', 'in', 'notin']
 
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         # check if the value is a string and exists into the type of descriptor
@@ -681,6 +688,7 @@ class DescriptorFormatTypeEnumPair(DescriptorFormatType):
             "type", "trans", "fields", "list_type", "sortby_field", "display_fields", "search_field"
         ]
         self.data = "TEXT"
+        self.available_operators = ['isnull', 'notnull', 'eq', 'neq', 'in', 'notin']
 
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         # check if the value is a string and exists into the type of descriptor
@@ -773,6 +781,7 @@ class DescriptorFormatTypeEnumOrdinal(DescriptorFormatType):
             "type", "trans", "fields", "list_type", "sortby_field", "display_fields", "search_field"
         ]
         self.data = "TEXT"
+        self.available_operators = ['isnull', 'notnull', 'eq', 'neq', 'in', 'notin']
 
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         # check if the value is a string and exists into the type of descriptor
@@ -881,6 +890,7 @@ class DescriptorFormatTypeNumeric(DescriptorFormatType):
         self.verbose_name = _("Numeric")
         self.format_fields = ["type", "precision", "unit", "custom_unit"]
         self.data = "TEXT"
+        self.available_operators = ['isnull', 'notnull', 'eq', 'neq', 'lte', 'gte']
 
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         # check if the value is a decimal (string with digits - and .) with the according precision of decimals
@@ -941,6 +951,7 @@ class DescriptorFormatTypeNumericRange(DescriptorFormatType):
         self.verbose_name = _("Numeric range")
         self.format_fields = ["type", "range", "precision", "unit", "custom_unit"]
         self.data = ["TEXT", "TEXT"]
+        self.available_operators = ['isnull', 'notnull', 'eq', 'neq', 'lte', 'gte']
 
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         # check if the value is a decimal (string with digits - and .) with the according precision of
@@ -1024,6 +1035,7 @@ class DescriptorFormatTypeOrdinal(DescriptorFormatType):
         self.verbose_name = _("Ordinal")
         self.format_fields = ["type", "range", "unit", "custom_unit"]
         self.data = "INTEGER"
+        self.available_operators = ['isnull', 'notnull', 'eq', 'neq', 'lte', 'gte']
 
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         # check if the value is an integer into the range min/max
@@ -1093,6 +1105,7 @@ class DescriptorFormatTypeString(DescriptorFormatType):
             "regexp"
         ]
         self.data = "TEXT"
+        self.available_operators = ['isnull', 'notnull', 'eq', 'neq', 'icontains']
 
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         # check if the value is a string matching the regexp and the max length of 1024 characters
@@ -1148,6 +1161,7 @@ class DescriptorFormatTypeDate(DescriptorFormatType):
         self.group = DescriptorFormatTypeGroupSingle()
         self.verbose_name = _("Date")
         self.data = "TEXT"
+        self.available_operators = ['isnull', 'notnull', 'eq', 'neq', 'lte', 'gte']
 
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         # check if the value is a YYYYMMDD date
@@ -1175,6 +1189,7 @@ class DescriptorFormatTypeTime(DescriptorFormatType):
         self.group = DescriptorFormatTypeGroupSingle()
         self.verbose_name = pgettext_lazy("concept", "Time")
         self.data = "TEXT"
+        self.available_operators = ['isnull', 'notnull', 'eq', 'neq', 'lte', 'gte']
 
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         # check if the value is a HH:MM:SS time
@@ -1199,6 +1214,7 @@ class DescriptorFormatTypeImpreciseDate(DescriptorFormatType):
         self.group = DescriptorFormatTypeGroupSingle()
         self.verbose_name = _("Imprecise date")
         self.data = "TEXT"
+        self.available_operators = ['isnull', 'notnull', 'eq', 'neq', 'lte', 'gte']
 
     class MyQ(Q):
         def __init__(self, kwargs=None):
@@ -1620,6 +1636,7 @@ class DescriptorFormatTypeDateTime(DescriptorFormatType):
         self.group = DescriptorFormatTypeGroupSingle()
         self.verbose_name = _("Date+time")
         self.data = "TEXT"
+        self.available_operators = ['isnull', 'notnull', 'eq', 'neq', 'lte', 'gte']
 
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         # check if the value is an ISO and UTC (convert to UTC if necessary)
@@ -1645,6 +1662,7 @@ class DescriptorFormatTypeEntity(DescriptorFormatType):
         self.verbose_name = _("Entity")
         self.value_is_code = True
         self.data = "INTEGER"
+        self.available_operators = ['isnull', 'notnull', 'eq', 'neq', 'in', 'notin']
 
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         # check if the value is an integer and if the related entity exists

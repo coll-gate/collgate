@@ -23,28 +23,6 @@ from descriptor.models import DescribableEntity, DescriptorType
 from classification.models import ClassificationEntry
 
 
-class Asset(Entity):
-    """
-    Defines a collection of accessions, with particular permissions on it.
-    """
-
-    # unique name of the asset
-    name = models.CharField(unique=True, max_length=255, db_index=True)
-
-    # related accession
-    accessions = models.ManyToManyField('Accession', related_name='assets')
-
-    class Meta:
-        verbose_name = _("panel")
-
-    def natural_name(self):
-        return self.name
-
-    @classmethod
-    def make_search_by_name(cls, term):
-        return Q(name__istartswith=term)
-
-
 class AccessionClassificationEntry(models.Model):
     """
     M2M accession to classification entry with additional flags.
@@ -102,7 +80,8 @@ class Accession(DescribableEntity):
                     'type': 'entity',
                     'model': 'classification.classificationentry',
                     'details': True
-                }
+                },
+                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'in', 'notin']
             },
             'descriptor_meta_model': {
                 'label': _('Model'),
@@ -111,16 +90,36 @@ class Accession(DescribableEntity):
                 'format': {
                     'type': 'descriptor_meta_model',
                     'model': 'accession.accession'
-                }
+                },
+                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'in', 'notin']
             },
             'synonym': {
                 'label': _('Synonym'),
                 'field': 'name',
-                'query': False,   # done by a prefetch related
+                'query': False,  # done by a prefetch related
                 'format': {
-                    'type': 'synonym',
+                    'type': 'string',
                     'model': 'accession.accessionsynonym'
-                }
+                },
+                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
+            },
+            'name': {
+                'label': _('Name'),
+                'query': False,  # done by a prefetch related
+                'format': {
+                    'type': 'string',
+                    'model': 'accession.accession'
+                },
+                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
+            },
+            'code': {
+                'label': _('Code'),
+                'query': False,  # done by a prefetch related
+                'format': {
+                    'type': 'string',
+                    'model': 'accession.accession'
+                },
+                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
             }
         }
 
@@ -462,3 +461,56 @@ class BatchAction(models.Model):
         index_together = (("accession", "type"),)
 
         default_permissions = list()
+
+
+class Panel(Entity):
+    """
+    A Panel...
+    """
+
+    # unique name of the panel
+    name = models.CharField(unique=True, max_length=255, db_index=True)
+
+    class Meta:
+        abstract = True
+
+    def natural_name(self):
+        return self.name
+
+    @classmethod
+    def make_search_by_name(cls, term):
+        return Q(name__istartswith=term)
+
+
+class BatchPanel(Panel):
+    """
+    Defines a collection of batches
+    """
+
+    # list of batches
+    batches = models.ManyToManyField(Batch)
+
+    class Meta:
+        verbose_name = _("batch panel")
+
+        permissions = (
+            ("get_batchpanel", "Can get a batch panel"),
+            ("list_batchpanel", "Can list batch panel"),
+        )
+
+
+class AccessionPanel(Panel):
+    """
+    Defines a collection of accessions
+    """
+
+    # related accessions
+    accessions = models.ManyToManyField(Accession)
+
+    class Meta:
+        verbose_name = _("accession panel")
+
+        permissions = (
+            ("get_accessionpanel", "Can get a accession panel"),
+            ("list_accessionpanel", "Can list accession panel"),
+        )

@@ -24,6 +24,3 @@ APP_SETTINGS_MODEL = 'main.models.Settings'
 HTTP_TEMPLATE_STRING = "main/%s.html"  # lookup into the main module
 
 APP_VERSION = (0, 1, 0)
-
-# @todo impossible here, because it is module dependent
-EXCLUDED_TYPES_FOR_COLUMN_VIEW = ['media', 'media_collection']

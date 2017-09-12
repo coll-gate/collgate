@@ -42,6 +42,7 @@ class DescriptorFormatTypeCountry(DescriptorFormatType):
         self.data = "INTEGER"
         self.display_field = "name"
         self.allow_multiple = True
+        self.available_operators = ['isnull', 'notnull', 'eq', 'neq', 'in', 'notin']
 
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         return instance.geolocation_app.geolocation_manager.country_format_type_validator(value)
@@ -107,6 +108,7 @@ class DescriptorFormatTypeCity(DescriptorFormatType):
         ]
         self.data = "INTEGER"
         self.allow_multiple = True
+        self.available_operators = ['isnull', 'notnull', 'eq', 'neq', 'in', 'notin']
 
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         return instance.geolocation_app.geolocation_manager.city_format_type_validator(value)

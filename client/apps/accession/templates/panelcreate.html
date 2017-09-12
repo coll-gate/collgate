@@ -1,0 +1,32 @@
+<!--
+ - @file panelcreate.html
+ - @brief 
+ - @author Medhi BOULNEMOUR (INRA UMR1095)
+ - @date 2017-09-11
+ - @copyright Copyright (c) 2016 INRA/CIRAD
+ - @license MIT (see LICENSE file)
+ - @details 
+-->
+
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title"><%= gt.gettext("Create a panel from the selection") %></h4>
+        </div>
+        <div class="modal-body">
+            <form>
+                <div class="form-group">
+                    <label class="control-label" for="panel_name"><%= gt.gettext("Panel name") %></label>
+                    <input class="form-control name" id="panel_name" type="text" name="panel" value="" maxlength="128"
+                           autocomplete="off" style="width:100%;">
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= gt.gettext("Cancel") %>
+            </button>
+            <button type="button" class="btn btn-success continue"><%= gt.gettext("Create") %></button>
+        </div>
+    </div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->

@@ -13,7 +13,7 @@ var Marionette = require('backbone.marionette');
 var View = Marionette.View.extend({
     tagName: 'tr',
     className: 'object accession element',
-    attributes: function() {
+    attributes: function () {
         return {
             'scope': 'row',
             'element-id': this.model.get('id')
@@ -49,11 +49,11 @@ var View = Marionette.View.extend({
         }
     },
 
-    initialize: function() {
+    initialize: function () {
         this.listenTo(this.model, 'change', this.render, this);
     },
 
-    actionsProperties: function() {
+    actionsProperties: function () {
         var properties = {
             manage: {disabled: false},
             remove: {disabled: false}
@@ -68,7 +68,7 @@ var View = Marionette.View.extend({
         return properties;
     },
 
-    onRender: function() {
+    onRender: function () {
     },
 
     viewDetails: function () {
@@ -89,7 +89,7 @@ var View = Marionette.View.extend({
         }
     },
 
-    onDeleteAccession: function() {
+    onDeleteAccession: function () {
         alert("@todo");
     },
 

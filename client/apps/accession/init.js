@@ -5,15 +5,15 @@
  * @date 2016-05-26
  * @copyright Copyright (c) 2016 INRA/CIRAD
  * @license MIT (see LICENSE file)
- * @details 
+ * @details
  */
 
-var AccessionModule = function() {
+var AccessionModule = function () {
     this.name = "accession";
 };
 
 AccessionModule.prototype = {
-    initialize: function(app, options) {
+    initialize: function (app, options) {
         this.models = {};
         this.collections = {};
         this.views = {};
@@ -52,11 +52,6 @@ AccessionModule.prototype = {
         });
 
         this.collections.conditionList = new Backbone.Collection();
-        // this.search = {
-        //     entity: null,
-        //     models: null,
-        //     conditions: null
-        // };
 
         //
         // controllers
@@ -64,8 +59,10 @@ AccessionModule.prototype = {
 
         var AccessionController = require('./controllers/accession');
         var BatchController = require('./controllers/batch');
+        var PanelController = require('./controllers/panel');
         this.controllers.accession = new AccessionController();
         this.controllers.batch = new BatchController();
+        this.controllers.panel = new PanelController();
 
         //
         // routers
@@ -76,13 +73,17 @@ AccessionModule.prototype = {
 
         var BatchRouter = require('./routers/batch');
         this.routers.batch = new BatchRouter();
+
+        var PanelRouter = require('./routers/panel');
+        this.routers.panel = new PanelRouter();
+
     },
 
-    start: function(options) {
+    start: function (options) {
         // nothing to do
     },
 
-    stop: function(options) {
+    stop: function (options) {
 
     }
 };
