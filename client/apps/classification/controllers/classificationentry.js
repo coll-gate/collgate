@@ -57,7 +57,7 @@ var Controller = Marionette.Object.extend({
                 },
 
                 initialize: function (options) {
-                    CreateClassificationEntryDialog.__super__.initialize.apply(this);
+                    CreateClassificationEntryDialog.__super__.initialize.apply(this, arguments);
 
                     // map descriptor meta models by theirs ids
                     this.descriptorMetaModels = {};
@@ -75,68 +75,12 @@ var Controller = Marionette.Object.extend({
 
                     application.main.views.languages.drawSelect(this.ui.language);
 
-                    // @todo add a classification select
                     this.ui.descriptor_meta_model.selectpicker({});
                     this.ui.classification.selectpicker({});
                     this.ui.rank.selectpicker({});
 
                     // on default descriptor meta-model
                     this.onChangeDescriptorMetaModel();
-/*
-                    // @todo draw select from list of rank from the current classification
-                    // application.classification.views.classificationRanks.drawSelect(this.ui.rank);
-
-                    $(this.ui.parent).select2({
-                        dropdownParent: $(this.el),
-                        ajax: {
-                            url: application.baseUrl + "classification/classificationentry/search/",
-                            dataType: 'json',
-                            delay: 250,
-                            data: function (params) {
-                                params.term || (params.term = '');
-
-                                return {
-                                    filters: JSON.stringify({
-                                        method: 'icontains',
-                                        fields: ['name', 'rank'],
-                                        'name': params.term.trim(),
-                                        'rank': parseInt($("#classification_rank").val())
-                                    }),
-                                    cursor: params.next
-                                };
-                            },
-                            processResults: function (data, params) {
-                                params.next = null;
-
-                                if (data.items.length >= 30) {
-                                    params.next = data.next || null;
-                                }
-
-                                var results = [];
-
-                                for (var i = 0; i < data.items.length; ++i) {
-                                    results.push({
-                                        id: data.items[i].id,
-                                        text: data.items[i].label
-                                    });
-                                }
-
-                                return {
-                                    results: results,
-                                    pagination: {
-                                        more: params.next != null
-                                    }
-                                };
-                            },
-                            cache: true
-                        },
-                        minimumInputLength: 3,
-                        placeholder: gt.gettext("Enter a classification entry name. 3 characters at least for auto-completion"),
-                    });
-
-                    $(this.ui.parent).on('select2:select', function (e) {
-                        //var id = e.params.data.id;
-                    });*/
                 },
 
                 onBeforeDestroy: function () {
@@ -154,7 +98,7 @@ var Controller = Marionette.Object.extend({
                 getDescriptorMetaModelClassifications: function () {
                     var descriptorMetaModelId = parseInt(this.ui.descriptor_meta_model.val());
 
-                    var value = Object.resolve(descriptorMetaModelId + ".parameters.data.primary_classification", this.descriptorMetaModels);
+                    var value = Object.resolve(descriptorMetaModelId + ".parameters.data.classification", this.descriptorMetaModels);
                     if (value) {
                         return [value];
                     }
@@ -193,19 +137,61 @@ var Controller = Marionette.Object.extend({
 
                 onChangeClassification: function () {
                     var classificationId = parseInt(this.ui.classification.val());
-                    var select = $(this.ui.classification_entry);
+                    var select = $(this.ui.rank);
+
+                    select.children().remove();
+                    select.selectpicker('destroy');
+
+                    if (isNaN(classificationId)) {
+                        return;
+                    }
+
+                    // classifications rank list according to the related classification
+                    var ClassificationRankCollection = require('../../classification/collections/classificationrank');
+                    var classificationRankCollection = new ClassificationRankCollection([], {classification_id: classificationId});
+
+                    var SelectOption = require('../../main/renderers/selectoption');
+                    var classificationRanks = new SelectOption({
+                        className: "classification-rank",
+                        collection: classificationRankCollection
+                    });
+
+                    var self = this;
+
+                    classificationRanks.drawSelect(select).done(function () {
+                        self.classificationRanks = {};
+
+                        for (var i = 0; i < classificationRankCollection.models.length; ++i) {
+                            self.classificationRanks[classificationRankCollection.models[i].get('id')] =
+                                classificationRankCollection.models[i].get('level');
+                        }
+
+                        self.onChangeRank();
+                    });
+                },
+
+                onChangeRank: function () {
+                    var classificationId = parseInt(this.ui.classification.val());
+                    var classificationRankId = parseInt(this.ui.rank.val());
+                    var select = $(this.ui.parent);
+
+                    if (this.classificationRanks[classificationRankId] === 0) {
+                        this.ui.parent_group.hide(false);
+                    } else {
+                        this.ui.parent_group.show(false);
+                    }
 
                     if (select.data('select2')) {
                         select.select2('destroy');
                         select.children().remove();
                     }
 
-                    if (isNaN(classificationId)) {
+                    if (isNaN(classificationId) || isNaN(classificationRankId)) {
                         return;
                     }
 
                     select.select2({
-                        dropdownParent: this.ui.classification_entry.parent(),
+                        dropdownParent: select.parent(),
                         ajax: {
                             url: application.baseUrl + "classification/classificationentry/search/",
                             dataType: 'json',
@@ -217,9 +203,10 @@ var Controller = Marionette.Object.extend({
                                     filters: JSON.stringify({
                                         method: 'icontains',
                                         classification_method: 'eq',
-                                        fields: ['name', 'classification'],
+                                        fields: ['name', 'classification', 'rank'],
                                         'name': params.term.trim(),
-                                        'classification': classificationId
+                                        'classification': classificationId,
+                                        'rank': classificationRankId
                                     }),
                                     cursor: params.next
                                 };
@@ -252,18 +239,6 @@ var Controller = Marionette.Object.extend({
                         minimumInputLength: 1,
                         placeholder: gt.gettext("Enter a classification entry name.")
                     }).fixSelect2Position();
-                },
-
-                // @todo
-                onChangeRank: function () {
-                    // reset parent
-                    $(this.ui.parent).val('').trigger('change');
-
-                    // @todo with rank level !!!
-                    if (this.ui.rank.val() === "60")
-                        this.ui.parent_group.hide();
-                    else
-                        this.ui.parent_group.show();
                 },
 
                 onNameInput: function () {
@@ -322,22 +297,23 @@ var Controller = Marionette.Object.extend({
                     var rankId = parseInt(this.ui.rank.val());
                     var parentId = 0;
 
-                    if ($(this.ui.parent).val()) {
-                        parentId = parseInt($(this.ui.parent).val());
+                    if (this.ui.parent.val()) {
+                        parentId = parseInt(this.ui.parent.val());
                     }
 
-                    // @todo rank/level
-                    if (rankId === 60 && parentId !== 0) {
-                        $.alert.error(gt.gettext("Family rank cannot have a parent classification entry"));
+                    if (this.classificationRanks[rankId] === 0 && parentId !== 0) {
+                        $.alert.error(gt.gettext("Root rank cannot have a parent"));
                         valid = false;
                     }
 
-                    if (rankId > 60 && parentId <= 0) {
-                        $.alert.error(gt.gettext("This rank must have a parent classification entry"));
+                    if (this.classificationRanks[rankId] > 0 && parentId === 0) {
+                        $.alert.error(gt.gettext("A parent must be specified"));
                         valid = false;
                     }
 
-                    if (this.ui.name.hasClass('invalid') || this.ui.parent.hasClass('invalid') || this.ui.rank.hasClass('invalid')) {
+                    if (this.ui.name.hasClass('invalid') ||
+                        this.ui.parent.hasClass('invalid') ||
+                        this.ui.rank.hasClass('invalid')) {
                         valid = false;
                     }
 
@@ -349,10 +325,12 @@ var Controller = Marionette.Object.extend({
                     var name = this.ui.name.val().trim();
 
                     if (this.validate()) {
+                        // @todo like accession with a dedicated view
                         application.classification.collections.classificationEntries.create({
                             name: name,
+                            descriptor_meta_model: parseInt(this.ui.descriptor_meta_model.val()),
                             rank: parseInt(this.ui.rank.val()),
-                            parent: parseInt($(this.ui.parent).val() || '0'),
+                            parent: parseInt(this.ui.parent.val() || '0'),
                             synonyms: [{
                                 name: this.ui.name.val(),
                                 type: 0,  // primary

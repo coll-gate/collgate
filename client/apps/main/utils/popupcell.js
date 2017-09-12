@@ -1,6 +1,6 @@
 /**
  * @file popover.js
- * @brief Initiate a bootstrap popover into a div.
+ * @brief Initiate a bootstrap popover into a parent element.
  * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2017-09-11
  * @copyright Copyright (c) 2017 INRA/CIRAD
@@ -9,26 +9,96 @@
  */
 
 (function($) {
+    // @todo for now once async initialisation, manual update, could be more synced to cache invalidation
+    // @todo could be merger into asyncvalue with a popover option (style)
     $.fn.popupcell = function (method, options) {
         options || (options = {});
 
-        if (this.length) {
-            console.log(this.length)
-            this.each(function() {
-                // @todo batch
-            });
-        }
+        this.each(function() {
+            var el = $(this);
 
-        if (method === 'init') {
-            var span = $('<span class="popover-dismiss" data-toggle="popover" data-placement="bottom" data-container="body" data-content="">' + options.label + '</span>');
+            if (method === 'init') {
+                // batch over children having span.className
+                if (options.children) {
+                    var spans = el.find('span.' + options.className);
+                    var values = [];
 
-            span.addClass(options.className);
-            span.attr('value', options.value);
-            span.attr('data-type', options.type);
-            span.data('data-format', options.format);
+                    spans.each(function(i, element) {
+                        var span = $(this);
 
-            span.one('mouseover', function(e) {
-                var el = $(this);
+                        values.push(span.attr('value'));
+
+                        span.attr('data-type', options.type);
+                        span.attr('data-placement', 'bottom');
+                        span.data('data-format', options.format);
+                    });
+
+                    // process mouseover on the container to avoid multiple initializations
+                    el.one('mouseover', function (e) {
+                        application.main.cache.lookup({
+                            type: options.type,
+                            format: options.format
+                        }, values).done(function (data) {
+                            // init each popover span
+                            spans.each(function(i, element) {
+                                var span = $(this);
+                                var value = parseInt(span.attr('value'));
+
+                                span.attr('data-content', data[value].value.label);
+                                span.popover({'trigger': 'hover'});
+
+                                // manually show it if still hover once data is synced
+                                if (span.is(':hover')) {
+                                    span.popover('show');
+                                }
+                            });
+                        });
+                    });
+                } else {
+                    var span = el.children('span.' + options.className);
+                    var created = false;
+
+                    if (!span.length) {
+                        span = $('<span class="popover-dismiss" data-toggle="popover" data-popupcell="managed" data-placement="bottom" data-container="body" data-content="" value="">' + (options.label || "") + '</span>');
+                        created = true;
+
+                        if (options.className) {
+                            span.addClass(options.className);
+                        }
+                    }
+
+                    if ("value" in options) {
+                        span.attr('value', options.value);
+                    }
+
+                    span.attr('data-type', options.type);
+                    span.data('data-format', options.format);
+
+                    if (created) {
+                        el.html(span);
+                    }
+
+                    span.one('mouseover', function (e) {
+                        var el = $(this);
+                        var value = parseInt(el.attr('value'));
+
+                        if (Number.isInteger(value)) {
+                            application.main.cache.lookup({
+                                type: el.attr('data-type'),
+                                format: el.data('data-format')
+                            }, [value]).done(function (data) {
+                                el.attr('data-content', data[value].value.label);
+                                el.popover({'trigger': 'hover'});
+
+                                // manually show it if still hover once data is synced
+                                if (el.is(':hover')) {
+                                    el.popover('show');
+                                }
+                            });
+                        }
+                    });
+                }
+            } else if (method === 'update') {
                 var value = parseInt(el.attr('value'));
 
                 if (Number.isInteger(value)) {
@@ -37,31 +107,15 @@
                         format: el.data('data-format')
                     }, [value]).done(function (data) {
                         el.attr('data-content', data[value].value.label);
-                        el.popover({'trigger': 'hover'});
-
-                        // manually show it if still hover once data is synced
-                        if (el.is(':hover')) {
-                            el.popover('show');
-                        }
                     });
                 }
-            });
-
-            return $(this).html(span);
-        } else if (method === 'update') {
-            var el = $(this);
-            var value = parseInt(el.attr('value'));
-
-            if (Number.isInteger(value)) {
-                application.main.cache.lookup({
-                    type: el.attr('data-type'),
-                    format: el.data('data-format')
-                }, [value]).done(function (data) {
-                    el.attr('data-content', data[value].value.label);
-                });
+            } else if (method === 'destroy') {
+                if (el.attr('data-popupcell') === 'managed') {
+                    el.children('span').popover('destroy').destroy();
+                }
             }
-        } else if (method === 'destroy') {
-            $(this).children('span').popover('destroy').destroy();
-        }
+        });
+
+        return this;
     };
 })(jQuery);

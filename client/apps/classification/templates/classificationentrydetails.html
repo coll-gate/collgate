@@ -9,14 +9,16 @@
 -->
 
 <span style="font-weight:bold; font-size:18px;">
+    <span name="parents">
     <% for (var i = parent_details.length-1; i >= 0; --i) { %>
-        <span>
+        <span name="parent">
             <span class="action view-classification-entry classification-rank" data-classification-entry-id="<%= parent_details[i].id %>" value="<%= parent_details[i].rank %>"><%= parent_details[i].name %></span>
         </span>
         <span class="glyphicon glyphicon-chevron-right"></span>
     <% } %>
-    <span>
-        <span class="name classification-entry" classification_entry_id="<%= id %>"><%- name %></span>
+    </span>
+    <span name="details">
+        <span class="classification-entry" classification_entry_id="<%= id %>" name="name"><%- name %></span>
         <span class="classification-rank badge left-margin" name="classification-rank" value="<%= rank %>"></span>
     </span>
     <span class="glyphicon glyphicon-edit action change-parent"></span>

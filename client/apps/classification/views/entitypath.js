@@ -57,19 +57,19 @@ var View = Marionette.View.extend({
     },
 
     onRender: function() {
-        var values = [];
-        var self = this;
-/*
-        this.$el.find('span.classification-rank').popupcell('init', {
+        this.$el.popupcell('init', {
+            className: 'classification-rank',
             type: 'entity',
-            className: ''
+            children: true,
             format: {
                 model: 'classification.classificationrank',
                 details: true
             }
-        });*/
+        });
+/*
+        var values = [];
+        var self = this;
 
-        // @todo factorize
         this.$el.find('span.classification-rank').each(function(i, element) {
             values.push(parseInt($(this).attr('value')));
         });
@@ -88,7 +88,7 @@ var View = Marionette.View.extend({
                     .popover({trigger: 'hover', placement: 'bottom'});
             });
         });
-
+*/
         if (this.getOption('noLink')) {
             this.ui.view_classification_entry.removeClass('action');
         }

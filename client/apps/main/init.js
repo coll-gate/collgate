@@ -13,6 +13,7 @@ require('./css/main.css');
 
 // jQuery functionality
 require('./utils/popupcell');
+require('./utils/asyncvalue');
 
 var MainModule = function() {
     this.name = "main";

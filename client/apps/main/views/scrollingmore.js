@@ -69,6 +69,10 @@ var View = Marionette.View.extend({
     },
 
     updatePosition: function() {
+        if (!this.targetView.ui.tbody.length) {
+            return;
+        }
+
         var top = this.targetView.ui.tbody.parent().parent().offset().top;
         var found = false;
 
