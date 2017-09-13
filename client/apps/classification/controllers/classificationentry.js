@@ -324,21 +324,6 @@ var Controller = Marionette.Object.extend({
                     var view = this;
 
                     if (this.validate()) {
-                        /*// @todo like accession with a dedicated view
-                        application.classification.collections.classificationEntries.create({
-                            name: name,
-                            descriptor_meta_model: parseInt(this.ui.descriptor_meta_model.val()),
-                            rank: parseInt(this.ui.rank.val()),
-                            parent: parseInt(this.ui.parent.val() || '0'),
-                            language: this.ui.language.val()
-                        }, {
-                            wait: true,
-                            success: function (model, resp, options) {
-                                view.destroy();
-                                $.alert.success(gt.gettext("Classification entry successfully created !"));
-                            }
-                        });*/
-
                         var name = this.ui.name.val().trim();
 
                         var descriptorMetaModelId = parseInt(this.ui.descriptor_meta_model.val());

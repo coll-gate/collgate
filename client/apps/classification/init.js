@@ -44,13 +44,6 @@ ClassificationModule.prototype = {
         });
 
         //
-        // collection (may be disappear)
-        //
-
-        var ClassificationEntryCollection = require('./collections/classificationentry');
-        this.collections.classificationEntries = new ClassificationEntryCollection();
-
-        //
         // controllers
         //
 
