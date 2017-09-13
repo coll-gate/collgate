@@ -42,7 +42,6 @@ var View = DescribableDetails.extend({
 
     onModify: function () {
         // does not reload models, just redo the views
-        var name = this.model.get('name');
 
         // update the layout content
         var accessionLayout = application.main.viewContent().getChildView('content');

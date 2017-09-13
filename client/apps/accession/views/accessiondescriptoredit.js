@@ -23,7 +23,6 @@ var View = DescribableEdit.extend({
 
         // does not reload models, just redo the views
         var view = this;
-        var name = this.model.get('name');
 
         // update the layout content
         var accessionLayout = application.main.viewContent().getChildView('content');
@@ -46,13 +45,11 @@ var View = DescribableEdit.extend({
             return;
         }
 
-        var isNew = this.model.isNew();
-
-        this.model.save({descriptors: descriptors}, {wait: true, patch: !isNew}).then(function () {
+        this.model.save({descriptors: descriptors}, {wait: true, patch: !model.isNew()}).then(function () {
             var accessionLayout = application.main.viewContent().getChildView('content');
 
             // update the layout content
-            var AccessionDescriptorView = require('../views/accessiondescriptor');
+            var AccessionDescriptorView = require('./accessiondescriptor');
             var accessionDescriptorView = new AccessionDescriptorView({
                 model: model,
                 descriptorMetaModelLayout: view.descriptorMetaModelLayout});

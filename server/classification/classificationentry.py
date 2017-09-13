@@ -70,23 +70,13 @@ class RestClassificationEntryIdEntities(RestClassificationEntryId):
     "type": "object",
     "properties": {
         "name": ClassificationEntrySynonym.NAME_VALIDATOR,
+        "descriptor_meta_model": {"type": "number"},
+        # "descriptor_meta_model": {"type": ["number", "null"], "required": False},
         "rank": {"type": "number", 'minimum': 0},
-        "parent": {"type": "number", 'minimum': 0},
-        "synonyms": {
-            "type": "array",
-            "items": [
-                {
-                    "type": "object",
-                    "properties": {
-                        "name": ClassificationEntrySynonym.NAME_VALIDATOR,
-                        "language": ClassificationEntrySynonym.LANGUAGE_VALIDATOR,
-                        "type": {"type": "number"}
-                    }
-                }
-            ]
-        },
-        "descriptor_meta_model": {"type": ["number", "null"], "required": False},
-        "descriptors": {"type": "object", "required": False}
+        "parent": {"type": ["number", "null"], "required": False},
+        "descriptors": {"type": "object"},
+        # "descriptors": {"type": "object", "required": False}
+        "language": ClassificationEntrySynonym.LANGUAGE_VALIDATOR
     },
 }, perms={'classification.add_classificationentry': _('You are not allowed to create a classification entry')}
                                           )
@@ -96,13 +86,13 @@ def create_classification_entry(request):
     """
     parameters = request.data
 
-    parent_id = int(parameters['parent'])
     parent = None
-    if parent_id > 0:
+    if parameters.get('parent'):
+        parent_id = int_arg(parameters['parent'])
         parent = get_object_or_404(ClassificationEntry, id=parent_id)
 
-    rank_id = int(parameters['rank'])
-    language = parameters['synonyms'][0]['language']
+    rank_id = int_arg(parameters['rank'])
+    language = parameters['language']
     descriptor_meta_model = request.data.get('descriptor_meta_model')
     descriptors = request.data.get('descriptors')
 
@@ -115,6 +105,7 @@ def create_classification_entry(request):
         content_type = get_object_or_404(ContentType, app_label="classification", model="classificationentry")
         dmm = get_object_or_404(DescriptorMetaModel, id=dmm_id, target=content_type)
     else:
+        # @todo do we allow that ?
         dmm = None
 
     try:
@@ -133,10 +124,10 @@ def create_classification_entry(request):
         'id': classification_entry.id,
         'name': classification_entry.name,
         'rank': classification_entry.rank_id,
-        'parent': classification_entry.parent_id if parent_id > 0 else None,
+        'parent': classification_entry.parent_id if parent else None,
         'parent_list': classification_entry.parent_list,
         'synonyms': [],
-        'descriptor_meta_model': classification_entry.descriptor_meta_model,
+        'descriptor_meta_model': classification_entry.descriptor_meta_model_id if dmm else None,
         'descriptors': classification_entry.descriptors
     }
 

@@ -202,11 +202,27 @@ MainModule.prototype = {
     },
 
     /**
+     * Get current left view.
+     */
+    getLeftView: function() {
+        var mainView = application.getView();
+        return mainView.getChildView('left');
+    },
+
+    /**
      * Setup the default right view, meaning an empty area.
      */
     defaultRightView: function() {
         var mainView = application.getView();
         mainView.getRegion('right').empty();
+    },
+
+    /**
+     * Get current right view.
+     */
+    getRightView: function() {
+        var mainView = application.getView();
+        return mainView.getChildView('right');
     },
 
     /**

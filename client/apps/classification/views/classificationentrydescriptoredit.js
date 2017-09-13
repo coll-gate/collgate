@@ -23,8 +23,6 @@ var View = DescribableEdit.extend({
 
         // does not reload models, just redo the views
         var view = this;
-        var model = this.model;
-        var name = model.get('name');
 
         // update the descriptor part of the classification entry layout
         var classificationEntryLayout = application.main.viewContent().getChildView('content');

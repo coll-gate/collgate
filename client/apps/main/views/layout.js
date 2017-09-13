@@ -37,6 +37,8 @@ var Layout = Marionette.View.extend({
 
                 if (view.onShowTab) {
                     view.onShowTab(region);
+                } else if (application.main.getRightView()) {
+                    application.main.defaultRightView();
                 }
             }
         }
@@ -82,7 +84,7 @@ var Layout = Marionette.View.extend({
         this.initialTab = options['initialTab'] || null;
     },
 
-    onBeforeAttach: function() {
+    /*onBeforeAttach*/updateTabState: function() {
         this.activeTab = this.ui.initial_pane.attr('name');
 
         // initial tab is defined by the initializer of the view, and is the last part of the url path
@@ -120,10 +122,14 @@ var Layout = Marionette.View.extend({
     },
 
     onDomRefresh: function() {
+        this.updateTabState();
+
         var region = this.getRegion(this.activeTab);
         if (region) {
             if (region.currentView && region.currentView.onShowTab) {
                 region.currentView.onShowTab(this);
+            } else if (application.main.getRightView()) {
+                application.main.defaultRightView();
             }
 
             // initial trigger for parents
@@ -151,6 +157,8 @@ var Layout = Marionette.View.extend({
             if (region) {
                 if (region.currentView && region.currentView.onShowTab) {
                     region.currentView.onShowTab(this);
+                } else if (application.main.getRightView()) {
+                   application.main.defaultRightView();
                 }
 
                 // trigger for parents
@@ -181,6 +189,8 @@ var Layout = Marionette.View.extend({
         if (region) {
             if (region.currentView && region.currentView.onShowTab) {
                 region.currentView.onShowTab(this);
+            } else if (application.main.getRightView()) {
+                application.main.defaultRightView();
             }
 
             // trigger for parents
