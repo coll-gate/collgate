@@ -81,19 +81,6 @@ var ClassificationEntryRouter = Marionette.AppRouter.extend({
 
             classificationEntryListView.query();
         });
-
-        /*$.when(columns, collection.fetch()).done(function (data) {
-            var classificationEntryListView = new ClassificationEntryListView({collection : collection, columns: data[0].columns});
-
-            defaultLayout.showChildView('content', classificationEntryListView);
-            defaultLayout.showChildView('content-bottom', new ScrollingMoreView({
-                targetView: classificationEntryListView,
-                collection: collection
-            }));
-
-            defaultLayout.showChildView('bottom', new EntityListFilterView({
-                collection: collection, columns: data[0].columns}));
-        });*/
     },
 
     getClassificationEntry : function(id, tab) {

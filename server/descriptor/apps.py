@@ -33,6 +33,9 @@ class CollGateDescriptor(ApplicationMain):
         # different units of format for type of descriptors
         self.format_units = []
 
+        # different types of meta-model of descriptors for this module
+        self.meta_model_types = []
+
     def ready(self):
         super().ready()
 
@@ -46,13 +49,14 @@ class CollGateDescriptor(ApplicationMain):
         # create a module accession
         descriptor_module = Module('descriptor', base_url='coll-gate')
         descriptor_module.include_urls((
-            'formattype',
+            'descriptorformat',
             'condition',
             'describable',
             'descriptor',
             'descriptormodel',
             'descriptormetamodel',
-            'descriptorcolumns'
+            'descriptorcolumns',
+            'descriptormetamodelparameters'
             )
         )
 
@@ -88,6 +92,17 @@ class CollGateDescriptor(ApplicationMain):
 
         # and register them
         descriptorformatunit.DescriptorFormatUnitManager.register(self.format_units)
+
+        # registers standard types of descriptors meta-models
+        from . import descriptormetamodeltype
+
+        for element in dir(descriptormetamodeltype):
+            attr = getattr(descriptormetamodeltype, element)
+            if type(attr) is type and descriptormetamodeltype.DescriptorMetaModelType in attr.__bases__:
+                self.meta_model_types.append(attr())
+
+        # and register them
+        descriptormetamodeltype.DescriptorMetaModelTypeManager.register(self.meta_model_types)
 
         # descriptor menu
         menu_descriptor = ModuleMenu('administration', _('Administration'), order=999, auth=AUTH_STAFF)

@@ -5,7 +5,7 @@
  * @date 2016-12-19
  * @copyright Copyright (c) 2016 INRA/CIRAD
  * @license MIT (see LICENSE file)
- * @details 
+ * @details
  */
 
 var Marionette = require('backbone.marionette');
@@ -79,7 +79,7 @@ var View = Marionette.View.extend({
         Backbone.history.navigate('app/classification/classificationentry/' + this.model.get('primary_classification_entry') + '/', {trigger: true});
     },
 
-    synonymCell: function(td) {
+    synonymCell: function (td) {
         var synonyms = this.model.get('synonyms');
 
         if (synonyms.length > 2) {
@@ -93,7 +93,7 @@ var View = Marionette.View.extend({
         alert("@todo");
     },
 
-    primaryClassificationEntryCell: function(td, value) {
+    primaryClassificationEntryCell: function (td, value) {
         if (value && value.rank) {
             td.popupcell('init', {
                 label: value.name,

@@ -24,6 +24,7 @@ var Model = Backbone.Model.extend({
         label: '',
         description: '',
         target: '',
+        parameters: {},
         num_descriptor_models: 0,
     },
 

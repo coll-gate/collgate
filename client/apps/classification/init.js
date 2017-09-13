@@ -29,6 +29,16 @@ ClassificationModule.prototype = {
             }
         }
 
+        // register the meta-model type of descriptors
+        var metaModelTypes = [
+            'classification_entry'
+        ];
+
+        for (var i = 0; i < metaModelTypes.length; ++i) {
+            var moduleName = metaModelTypes[i].replace(/_/g, '').toLowerCase();
+            app.descriptor.descriptorMetaModelTypes.registerElement(metaModelTypes[i], require('./descriptormetamodeltypes/' + moduleName));
+        }
+
         //
         // main collections
         //

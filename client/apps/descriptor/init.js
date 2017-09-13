@@ -103,6 +103,13 @@ DescriptorModule.prototype = {
         }
 
         //
+        // descriptor meta-model types
+        //
+
+        var DescriptorMetaModelTypeManager = require('./descriptormetamodeltypes/descriptormetamodeltypemanager');
+        this.descriptorMetaModelTypes = new DescriptorMetaModelTypeManager();
+
+        //
         // cache
         //
 

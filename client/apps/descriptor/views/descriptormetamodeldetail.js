@@ -15,6 +15,10 @@ var View = Marionette.View.extend({
     className: 'object descriptor-meta-model-detail',
     template: require('../templates/descriptormetamodeldetail.html'),
 
+    regions: {
+        'content': "div.contextual-region"
+    },
+
     ui: {
         name: '#descriptor_meta_model_name',
         description: '#descriptor_meta_model_description',
@@ -31,6 +35,15 @@ var View = Marionette.View.extend({
     },
 
     onRender: function() {
+        var target = this.model.get('target');
+
+        // update the contextual region according to the format
+        var Element = application.descriptor.descriptorMetaModelTypes.getElement(target);
+        if (Element) {
+            this.showChildView('content', new Element({model: this.model}));
+        } else {
+            this.getRegion('content').empty();
+        }
     },
 
     inputName: function () {
@@ -50,12 +63,19 @@ var View = Marionette.View.extend({
         if (!$(this.ui.name.isValidField()))
             return;
 
+        var target = this.model.get('target');
         var name = this.ui.name.val();
         var description = this.ui.description.val();
 
+        var parameters = {
+            'type': target,
+            'data': this.getChildView('content') ? this.getChildView('content').getData() : {}
+        };
+
         this.model.save({
             name: name,
-            description: description
+            description: description,
+            parameters: parameters
         }, {wait: true}).done(function() { $.alert.success(gt.gettext("Done")); });
     }
 });

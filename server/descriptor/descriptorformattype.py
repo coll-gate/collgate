@@ -625,10 +625,11 @@ class DescriptorFormatTypeEnumSingle(DescriptorFormatType):
         schema = {
             "type": "object",
             "properties": {
-                "fields": {"type": "array", 'minLength': 1, 'maxLength': 1, 'items': [
-                    {'type': 'string', 'minLength': 0, 'maxLength': 32, 'blank': True}
-                ]
-                           },
+                "fields": {
+                    "type": "array", 'minLength': 1, 'maxLength': 1, 'items': [
+                        {'type': 'string', 'minLength': 0, 'maxLength': 32, 'blank': True}
+                    ]
+                },
                 "trans": {"type": "boolean"},
                 "sortby_field": {"type": "string", "enum": ['code', 'value0']},
                 "display_fields": {"type": "string", "enum": ['value0']},

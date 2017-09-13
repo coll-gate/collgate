@@ -13,16 +13,16 @@ var Marionette = require('backbone.marionette');
 var Layout = Marionette.View.extend({
     template: require("../templates/descriptortypedetailslayout.html"),
 
+    regions: {
+        'content': "div.contextual-region"
+    },
+
     ui: {
         name: '#descriptor_type_name',
         code: '#descriptor_type_code',
         description: '#descriptor_type_description',
         format_type: '#format_type',
         save: '#save'
-    },
-
-    regions: {
-        'content': "div.contextual-region"
     },
 
     events: {

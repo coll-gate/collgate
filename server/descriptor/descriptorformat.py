@@ -1,6 +1,6 @@
 # -*- coding: utf-8; -*-
 #
-# @file formattype.py
+# @file descriptorformat.py
 # @brief coll-gate descriptor module, descriptor format
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2016-09-01

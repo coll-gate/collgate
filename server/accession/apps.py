@@ -10,6 +10,7 @@
 
 from django.utils.translation import ugettext_lazy as _
 
+from descriptor.descriptormetamodeltype import DescriptorMetaModelTypeManager
 from igdectk.common.apphelpers import ApplicationMain
 from igdectk.module import AUTH_USER, AUTH_STAFF
 from igdectk.module.manager import module_manager
@@ -27,6 +28,9 @@ class CollGateAccession(ApplicationMain):
 
         # different types of format for type of descriptors for this module
         self.format_types = []
+
+        # different types of format for meta-model of descriptors for this module
+        self.meta_model_types = []
 
     def ready(self):
         super().ready()
@@ -64,6 +68,17 @@ class CollGateAccession(ApplicationMain):
         classification_app.children_entities += [
             Accession
         ]
+
+        # registers standard format type of descriptors meta-models
+        from . import descriptormetamodeltype
+
+        for element in dir(descriptormetamodeltype):
+            attr = getattr(descriptormetamodeltype, element)
+            if type(attr) is type and descriptormetamodeltype.DescriptorMetaModelType in attr.__bases__:
+                self.meta_model_types.append(attr())
+
+        # and register them
+        DescriptorMetaModelTypeManager.register(self.meta_model_types)
 
         # accession menu
         menu_accession = ModuleMenu('accession', _('Accession'), auth=AUTH_USER)

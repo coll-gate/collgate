@@ -10,6 +10,7 @@
 
 from django.utils.translation import ugettext_lazy as _
 
+from descriptor.descriptormetamodeltype import DescriptorMetaModelTypeManager
 from igdectk.common.apphelpers import ApplicationMain
 from igdectk.module import AUTH_USER, AUTH_STAFF, AUTH_SUPER_USER
 from igdectk.module.manager import module_manager
@@ -29,6 +30,9 @@ class CollGateClassification(ApplicationMain):
 
         # defines the list of entities models that uses of a classification entry as parent
         self.children_entities = []
+
+        # different types of meta-model of descriptors for this module
+        self.meta_model_types = []
 
     def ready(self):
         super().ready()
@@ -55,6 +59,17 @@ class CollGateClassification(ApplicationMain):
         descriptor_app.describable_entities += [
             ClassificationEntry
         ]
+
+        # registers standard format type of descriptors meta-models
+        from . import descriptormetamodeltype
+
+        for element in dir(descriptormetamodeltype):
+            attr = getattr(descriptormetamodeltype, element)
+            if type(attr) is type and descriptormetamodeltype.DescriptorMetaModelType in attr.__bases__:
+                self.meta_model_types.append(attr())
+
+        # and register them
+        DescriptorMetaModelTypeManager.register(self.meta_model_types)
 
         # administration menu
         menu_administration = ModuleMenu('administration', _('Administration'), order=999, auth=AUTH_STAFF)

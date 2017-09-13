@@ -17,6 +17,7 @@ from django.shortcuts import get_object_or_404
 from django.utils import translation
 from django.utils.translation import ugettext_lazy as _
 
+from descriptor.descriptormetamodeltype import DescriptorMetaModelTypeManager
 from igdectk.common.helpers import int_arg
 from igdectk.rest import Format, Method
 from igdectk.rest.response import HttpResponseRest
@@ -259,6 +260,13 @@ def delete_descriptor_meta_model(request, dmm_id):
         "properties": {
             "name": DescriptorMetaModel.NAME_VALIDATOR,
             "description": {"type": "string", 'minLength': 0, 'maxLength': 1024, 'blank': True},
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "type": {"type": "string", 'minLength': 3, 'maxLength': 128},
+                    "data": {"type": "object"}
+                }
+            }
         },
     },
     perms={'descriptor.change_descriptormetamodel': _('You are not allowed to modify a meta-model of descriptor')},
@@ -266,8 +274,17 @@ def delete_descriptor_meta_model(request, dmm_id):
 def modify_descriptor_meta_model(request, dmm_id):
     dmm = get_object_or_404(DescriptorMetaModel, id=int(dmm_id))
 
+    # parameters type must be target name
+    if request.data['parameters']['type'] != ".".join([dmm.target.app_label, dmm.target.model]):
+        raise SuspiciousOperation(_("Inconsistent parameters->type with target model"))
+
+    # check parameters
+    if DescriptorMetaModelTypeManager.has(dmm.target.model_class()):  # request.data['parameters']['type']):
+        DescriptorMetaModelTypeManager.check(dmm.target.model_class(), request.data['parameters']['data'])
+
     dmm.name = request.data['name']
     dmm.description = request.data['description'].strip()
+    dmm.parameters = request.data['parameters']
 
     dmm.save()
 
