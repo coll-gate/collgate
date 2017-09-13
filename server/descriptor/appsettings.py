@@ -1,16 +1,12 @@
 # -*- coding: utf-8; -*-
 #
 # @file appsettings.py
-# @brief 
+# @brief coll-gate descriptor settings
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2016-09-01
 # @copyright Copyright (c) 2016 INRA/CIRAD
 # @license MIT (see LICENSE file)
 # @details 
-
-"""
-coll-gate descriptor settings
-"""
 
 # Default settings of the application
 APP_DB_DEFAULT_SETTINGS = {
