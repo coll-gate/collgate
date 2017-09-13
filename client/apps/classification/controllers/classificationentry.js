@@ -322,27 +322,35 @@ var Controller = Marionette.Object.extend({
 
                 onCreate: function () {
                     var view = this;
-                    var name = this.ui.name.val().trim();
 
                     if (this.validate()) {
-                        // @todo like accession with a dedicated view
-                        application.classification.collections.classificationEntries.create({
+                        var name = this.ui.name.val().trim();
+
+                        var descriptorMetaModelId = parseInt(this.ui.descriptor_meta_model.val());
+                        var rankId = parseInt(this.ui.rank.val());
+                        var parentId = parseInt(this.ui.parent.val()) || null;
+
+                        // create a new local model and open an edit view with this model
+                        var model = new ClassificationEntryModel({
                             name: name,
-                            descriptor_meta_model: parseInt(this.ui.descriptor_meta_model.val()),
-                            rank: parseInt(this.ui.rank.val()),
-                            parent: parseInt(this.ui.parent.val() || '0'),
-                            synonyms: [{
-                                name: this.ui.name.val(),
-                                type: 0,  // primary
-                                language: this.ui.language.val()
-                            }]
-                        }, {
-                            wait: true,
-                            success: function (model, resp, options) {
-                                view.destroy();
-                                $.alert.success(gt.gettext("Classification entry successfully created !"));
-                            }
+                            descriptor_meta_model: descriptorMetaModelId,
+                            parent: parentId,
+                            rank: rankId,
+                            language: this.ui.language.val()
                         });
+
+                        view.destroy();
+
+                        var defaultLayout = new DefaultLayout();
+                        application.main.showContent(defaultLayout);
+
+                        defaultLayout.showChildView('title', new TitleView({
+                            title: gt.gettext("Classification entry"),
+                            model: model
+                        }));
+
+                        var classificationEntryLayout = new ClassificationEntryLayout({model: model});
+                        defaultLayout.showChildView('content', classificationEntryLayout);
                     }
                 }
             });

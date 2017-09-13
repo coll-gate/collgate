@@ -27,12 +27,12 @@ var View = DescribableDetails.extend({
 
         var actions = [];
 
-        if (this.model.get('descriptor_meta_model') == null) {
+        if (!this.model.get('descriptor_meta_model')) {
             actions.push('add');
         } else {
             actions.push('modify');
-            actions.push('replace');
-            actions.push('delete');
+            // actions.push('replace');
+            // actions.push('delete');
         }
 
         var ClassificationEntryDescriptorContextView = require('./classificationentrydescriptorcontext');
@@ -43,27 +43,27 @@ var View = DescribableDetails.extend({
             view.onModify();
         });
 
-        contextView.on("descriptormetamodel:replace", function () {
-            // this will update the model and so on the view
-            var ClassificationEntryDescriptorCreateView = require('./classificationentrydescriptorcreate');
-            var classificationEntryDescriptorCreateView = new ClassificationEntryDescriptorCreateView({model: view.model});
-
-            classificationEntryDescriptorCreateView.onDefine();
-        });
-
-        contextView.on("descriptormetamodel:delete", function () {
-            var ConfirmDialog = require('../../main/views/confirmdialog');
-            var confirmDialog = new ConfirmDialog({
-                title: gt.gettext('Delete descriptors'),
-                label: gt.gettext('Are you sure you want to delete any descriptors for this classification entry ?')
-            });
-            confirmDialog.render();
-
-            confirmDialog.on('dialog:confirm', function() {
-                // this will update the model and so on the view
-                view.model.save({descriptor_meta_model: null}, {patch: true, trigger: true});
-            });
-        });
+        // contextView.on("descriptormetamodel:replace", function () {
+        //     // this will update the model and so on the view
+        //     var ClassificationEntryDescriptorCreateView = require('./classificationentrydescriptorcreate');
+        //     var classificationEntryDescriptorCreateView = new ClassificationEntryDescriptorCreateView({model: view.model});
+        //
+        //     classificationEntryDescriptorCreateView.onDefine();
+        // });
+        //
+        // contextView.on("descriptormetamodel:delete", function () {
+        //     var ConfirmDialog = require('../../main/views/confirmdialog');
+        //     var confirmDialog = new ConfirmDialog({
+        //         title: gt.gettext('Delete descriptors'),
+        //         label: gt.gettext('Are you sure you want to delete any descriptors for this classification entry ?')
+        //     });
+        //     confirmDialog.render();
+        //
+        //     confirmDialog.on('dialog:confirm', function() {
+        //         // this will update the model and so on the view
+        //         view.model.save({descriptor_meta_model: null}, {patch: true, trigger: true});
+        //     });
+        // });
     },
 
     onHideTab: function() {
@@ -72,8 +72,6 @@ var View = DescribableDetails.extend({
 
     onModify: function() {
         // does not reload models, just redo the views
-        var model = this.model;
-        var name = model.get('name');
 
         // update the descriptor part of the classificationEntry layout
         var classificationEntryLayout = application.main.viewContent().getChildView('content');

@@ -66,29 +66,7 @@ var View = Marionette.View.extend({
                 details: true
             }
         });
-/*
-        var values = [];
-        var self = this;
 
-        this.$el.find('span.classification-rank').each(function(i, element) {
-            values.push(parseInt($(this).attr('value')));
-        });
-
-        application.main.cache.lookup({
-            type: 'entity',
-            format: {
-                model: 'classification.classificationrank',
-                details: true
-            }
-        }, values).done(function (data) {
-            self.$el.find('span.classification-rank').each(function(i, element) {
-                var value = $(this).attr('value');
-
-                $(this).attr('data-content', data[value].value.label)
-                    .popover({trigger: 'hover', placement: 'bottom'});
-            });
-        });
-*/
         if (this.getOption('noLink')) {
             this.ui.view_classification_entry.removeClass('action');
         }

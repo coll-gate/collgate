@@ -53,7 +53,7 @@ var ClassificationEntryRouter = Marionette.AppRouter.extend({
     },
 */
     getClassificationEntryList : function() {
-        var collection = application.classification.collections.classificationEntries;
+        var collection = new ClassificationEntryCollection();
 
         var defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);

@@ -1,3 +1,4 @@
+
 /**
  * @file contentbottomlayout.js
  * @brief Two rows content+bottom layout

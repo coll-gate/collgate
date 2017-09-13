@@ -68,10 +68,11 @@ var Layout = LayoutView.extend({
 
     onDescriptorMetaModelChange: function(model, value) {
         if (value == null) {
-            var ClassificationEntryDescriptorCreateView = require('./classificationentrydescriptorcreate');
-            var classificationEntryDescriptorCreateView = new ClassificationEntryDescriptorCreateView({model: model});
-
-            this.showChildView('descriptors', classificationEntryDescriptorCreateView);
+            this.getRegion('descriptors').empty();
+            // var ClassificationEntryDescriptorCreateView = require('./classificationentrydescriptorcreate');
+            // var classificationEntryDescriptorCreateView = new ClassificationEntryDescriptorCreateView({model: model});
+            //
+            // this.showChildView('descriptors', classificationEntryDescriptorCreateView);
         } else {
             var classificationEntryLayout = this;
 
@@ -115,7 +116,6 @@ var Layout = LayoutView.extend({
                 contentType: "application/json; charset=utf-8"
             });
 
-            // @todo with a cached columns
             columns.done(function(data) {
                 var ClassificationEntryChildrenView = require('./classificationentrychildren');
                 var classificationEntryChildrenView = new ClassificationEntryChildrenView({
@@ -132,17 +132,6 @@ var Layout = LayoutView.extend({
 
                 classificationEntryChildrenView.query();
             });
-
-            // classificationEntryChildren.fetch().then(function () {
-            //     var ClassificationEntryChildrenView = require('../views/classificationentrychildren');
-            //     var classificationEntryChildrenView = new ClassificationEntryChildrenView({collection: classificationEntryChildren, model: classificationEntryLayout.model});
-            //
-            //     var contentBottomLayout = new ContentBottomLayout();
-            //     classificationEntryLayout.showChildView('children', contentBottomLayout);
-            //
-            //     contentBottomLayout.showChildView('content', classificationEntryChildrenView);
-            //     contentBottomLayout.showChildView('bottom', new ScrollingMoreView({targetView: classificationEntryChildrenView}));
-            // });
 
             // entities relating this classificationEntry tab
             var ClassificationEntryEntitiesCollection = require('../collections/classificationentryentities');
