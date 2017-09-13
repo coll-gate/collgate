@@ -153,20 +153,38 @@ var View = Dialog.extend({
         $.ajax({
             type: "GET",
             url: application.baseUrl + 'descriptor/columns/' + entityType + '/',
+            contentType: "application/json; charset=utf-8",
             dataType: 'json',
             data: models_data
         }).done(function (data) {
-            view.getChildView('conditions').children.each(function (childview) {
-                childview.columns = data.columns;
-            });
-
             $(selects).children('option').remove().end();
 
-            $.each(data.columns, function (field) {
+            // var columns_extension = {
+            //     'code': {label: gt.gettext('Code'), format: {type: 'string'}},
+            //     'name': {label: gt.gettext('Name'), format: {type: 'string'}}
+            //     // 'parent': {
+            //     //     label: gt.gettext('Classification'),
+            //     //     width: 'auto',
+            //     //     minWidth: true,
+            //     //     event: 'view-parent-details',
+            //     //     custom: 'parentCell',
+            //     //     field: 'name'
+            //     // },
+            //     // 'descriptor_meta_model': {label: gt.gettext('Model'), width: 'auto', minWidth: true}
+            // };
+            //
+            var columns = data.columns;
+            // for(var col in columns_extension) columns[col]=columns_extension[col]; // add columns_extension properties in the same object "columns"
+
+            view.getChildView('conditions').children.each(function (childview) {
+                childview.columns = columns;
+            });
+
+            $.each(columns, function (field) {
                 selects.append($('<option>', {
                     value: field,
-                    text: data.columns[field].label,
-                    'data-type': data.columns[field].format.type
+                    text: columns[field].label,
+                    'data-type': columns[field].format.type
                 }));
             });
             selects.trigger('change');
@@ -197,13 +215,23 @@ var View = Dialog.extend({
             this.destroy();
 
         } else if (entityType === 'accession.batch') {
-            // todo
-            alert('Not yet implemented!')
+            const conditions = this.getChildView('conditions').collection.models;
+            const query = this.getQuery(conditions);
+            const options = {search: query.result};
+            console.log(options);
+            application.accession.routers.batch.getBatchList(options);
+
+            this.destroy();
+
         } else if (entityType === 'classification.classificationEntry') {
             // todo
             alert('Not yet implemented!')
         }
         // this.destroy();
+    },
+
+    setQuery: function () {
+        // todo: display a saved query on the UI
     },
 
     getQuery: function (conditions, condition, parentheses_to_handle) {

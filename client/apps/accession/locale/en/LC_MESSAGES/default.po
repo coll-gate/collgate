@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-31 18:17+0200\n"
+"POT-Creation-Date: 2017-09-07 10:04+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -45,17 +45,18 @@ msgstr ""
 #: ../../../views/accessiondescriptorcontext.js:23
 #: ../../../views/batchdescriptorcontext.js:23
 #: ../../../templates/accessionchangesynonym.html:26
-#: ../../../templates/accessioncreate.html:54
+#: ../../../templates/accessioncreate.html:58
 #: ../../../templates/batchcreate.html:46
 #: ../../../templates/navbatchcreate.html:39 ../../../templates/search.html:58
 msgid "Cancel"
 msgstr ""
 
-#: ../../../views/accessionlist.js:32
+#: ../../../views/accessionlist.js:32 ../../../views/search.js:163
 msgid "Code"
 msgstr ""
 
 #: ../../../views/accessionlist.js:33 ../../../views/batchlist.js:44
+#: ../../../views/search.js:164
 #: ../../../templates/accessionchangesynonym.html:20
 #: ../../../templates/accessionsynonyms.html:16
 msgid "Name"
@@ -110,8 +111,8 @@ msgstr ""
 msgid "Batch name already in usage"
 msgstr ""
 
-#: ../../../views/batchlist.js:199 ../../../controllers/accession.js:187
-#: ../../../controllers/accession.js:206 ../../../controllers/batch.js:150
+#: ../../../views/batchlist.js:199 ../../../controllers/accession.js:262
+#: ../../../controllers/accession.js:281 ../../../controllers/batch.js:150
 msgid "128 characters max"
 msgstr ""
 
@@ -128,44 +129,40 @@ msgstr ""
 msgid "OR"
 msgstr ""
 
-#: ../../../views/condition.js:226 ../../../views/condition.js:235
-#: ../../../views/condition.js:244 ../../../views/condition.js:252
+#: ../../../views/condition.js:263
 msgid "Undefined"
 msgstr ""
 
-#: ../../../views/condition.js:227 ../../../views/condition.js:236
-#: ../../../views/condition.js:245 ../../../views/condition.js:253
+#: ../../../views/condition.js:264
 msgid "Defined"
 msgstr ""
 
-#: ../../../views/condition.js:228 ../../../views/condition.js:237
-#: ../../../views/condition.js:246 ../../../views/condition.js:254
+#: ../../../views/condition.js:265
 msgid "Exact"
 msgstr ""
 
-#: ../../../views/condition.js:229 ../../../views/condition.js:238
-#: ../../../views/condition.js:247 ../../../views/condition.js:255
+#: ../../../views/condition.js:266
 msgid "Different from"
 msgstr ""
 
-#: ../../../views/condition.js:230
-msgid "Lesser than"
-msgstr ""
-
-#: ../../../views/condition.js:231
-msgid "Greater than"
-msgstr ""
-
-#: ../../../views/condition.js:239
+#: ../../../views/condition.js:267
 msgid "Include"
 msgstr ""
 
-#: ../../../views/condition.js:240
+#: ../../../views/condition.js:268
 msgid "Not include"
 msgstr ""
 
-#: ../../../views/condition.js:248
+#: ../../../views/condition.js:269
 msgid "Contains"
+msgstr ""
+
+#: ../../../views/condition.js:270
+msgid "Lesser than"
+msgstr ""
+
+#: ../../../views/condition.js:271
+msgid "Greater than"
 msgstr ""
 
 #: ../../../views/conditioncollection.js:61
@@ -192,7 +189,7 @@ msgid "Cultivar"
 msgstr ""
 
 #: ../../../views/search.js:20 ../../../routers/accession.js:74
-#: ../../../controllers/accession.js:273 ../../../templates/batchcreate.html:30
+#: ../../../controllers/accession.js:350 ../../../templates/batchcreate.html:30
 #: ../../../templates/navbatchcreate.html:25
 msgid "Accession"
 msgstr ""
@@ -209,23 +206,27 @@ msgstr ""
 msgid "List of batches for the accession"
 msgstr ""
 
-#: ../../../controllers/accession.js:105
-msgid "Enter a classification name. 3 characters at least for auto-completion"
+#: ../../../controllers/accession.js:187
+msgid "Enter a classification entry name."
 msgstr ""
 
-#: ../../../controllers/accession.js:139
+#: ../../../controllers/accession.js:213
 msgid "Code of accession already used"
 msgstr ""
 
-#: ../../../controllers/accession.js:172
+#: ../../../controllers/accession.js:247
 msgid "Synonym used as accession code"
 msgstr ""
 
-#: ../../../controllers/accession.js:190 ../../../controllers/accession.js:209
+#: ../../../controllers/accession.js:265 ../../../controllers/accession.js:284
 msgid "1 characters min"
 msgstr ""
 
-#: ../../../controllers/accession.js:231
+#: ../../../controllers/accession.js:302
+msgid "The meta-model of descriptors must be defined"
+msgstr ""
+
+#: ../../../controllers/accession.js:307
 msgid "The primary classification must be defined"
 msgstr ""
 
@@ -269,10 +270,14 @@ msgid "Language"
 msgstr ""
 
 #: ../../../templates/accessioncreate.html:48
-msgid "Primary classification (specie, variety, cultivar...)"
+msgid "Primary classification"
 msgstr ""
 
-#: ../../../templates/accessioncreate.html:55
+#: ../../../templates/accessioncreate.html:52
+msgid "Primary classification entry"
+msgstr ""
+
+#: ../../../templates/accessioncreate.html:59
 #: ../../../templates/batchcreate.html:47
 #: ../../../templates/navbatchcreate.html:41
 msgid "Continue"

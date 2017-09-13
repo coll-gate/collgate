@@ -42,7 +42,8 @@ class CollGateAccession(ApplicationMain):
             'batchaction',
             'accession',
             'accessionbatch',
-            'batch'
+            'batch',
+            'accessionpanel'
             )
         )
 
@@ -74,6 +75,9 @@ class CollGateAccession(ApplicationMain):
         menu_accession.add_entry(MenuSeparator(100))
         menu_accession.add_entry(
             MenuEntry('list-accession', _('List accessions'), "#accession/accession/", icon=Glyph.LIST, order=101))
+        menu_accession.add_entry(
+            MenuEntry('panel-accession', _('Panel accessions'), "#accession/panel/",
+                      icon=Glyph.BOOK, order=102))
 
         menu_accession.add_entry(MenuSeparator(200))
         menu_accession.add_entry(

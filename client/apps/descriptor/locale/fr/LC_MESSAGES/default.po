@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-31 18:17+0200\n"
+"POT-Creation-Date: 2017-09-06 18:02+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -166,19 +166,19 @@ msgstr "Impossible de créer le type de modèle de descripteur !"
 msgid "Unable to reorder the types of model of descriptor"
 msgstr "Impossible de réordonner les types de modèle de descripteur"
 
-#: ../../../views/descriptormodeltype.js:690
-#: ../../../views/descriptormodeltype.js:693
+#: ../../../views/descriptormodeltype.js:692
+#: ../../../views/descriptormodeltype.js:695
 #: ../../../templates/describabledetails.html:27
 #: ../../../templates/describableedit.html:27
 msgid "Value"
 msgstr "Valeur"
 
-#: ../../../views/descriptormodeltype.js:731
+#: ../../../views/descriptormodeltype.js:733
 msgid "Successfully removed !"
 msgstr "Retiré avec succé !"
 
-#: ../../../views/descriptormodeltype.js:769
-#: ../../../views/descriptormodeltype.js:781
+#: ../../../views/descriptormodeltype.js:771
+#: ../../../views/descriptormodeltype.js:783
 msgid "Successfully defined !"
 msgstr "Définie avec succé !"
 
@@ -241,15 +241,15 @@ msgstr "Editer valeur1"
 msgid "List of groups of descriptors"
 msgstr "Liste de groupes de descripteurs"
 
-#: ../../../routers/descriptor.js:69
+#: ../../../routers/descriptor.js:72
 msgid "Types of descriptors for the group"
 msgstr "Types de descripteurs pour le groupe"
 
-#: ../../../routers/descriptor.js:92
+#: ../../../routers/descriptor.js:95
 msgid "Details for the type of descriptor"
 msgstr "Détails pour le type de descripteur"
 
-#: ../../../routers/descriptor.js:105
+#: ../../../routers/descriptor.js:108
 msgid "Values for the type of descriptor"
 msgstr "Valeurs pour le type de descripteur"
 
@@ -278,7 +278,7 @@ msgid "List of types of models of descriptor"
 msgstr "Liste des types de modèles de descripteur"
 
 #: ../../../mixins/descriptorscolumns.js:182
-#: ../../../mixins/descriptorscolumns.js:276
+#: ../../../mixins/descriptorscolumns.js:304
 msgid "Error"
 msgstr "Erreur"
 
@@ -711,7 +711,7 @@ msgstr "Appliquer"
 #: ../../../templates/descriptormodellistalt.html:15
 #: ../../../templates/descriptormodeltypelist.html:17
 #: ../../../templates/descriptormodeltyperename.html:20
-#: ../../../templates/descriptortypelist.html:16
+#: ../../../templates/descriptortypelist.html:17
 msgid "Name"
 msgstr "Nom"
 
@@ -721,10 +721,6 @@ msgstr "Nom"
 #: ../../../templates/descriptormodellistalt.html:17
 msgid "Types"
 msgstr "Types"
-
-#: ../../../templates/descriptorgrouplist.html:18
-msgid "Actions"
-msgstr "Actions"
 
 #: ../../../templates/descriptorgrouplistalt.html:15
 msgid "Group of descriptors"
@@ -847,7 +843,7 @@ msgid "Unique name"
 msgstr "Nom unique"
 
 #: ../../../templates/descriptormodeltypelist.html:16
-#: ../../../templates/descriptortypelist.html:18
+#: ../../../templates/descriptortypelist.html:19
 #: ../../../templates/descriptortypelistalt.html:15
 msgid "Type"
 msgstr "Type"
@@ -884,7 +880,7 @@ msgstr "Code du type de descripteur"
 msgid "Type of format"
 msgstr "Type de format"
 
-#: ../../../templates/descriptortypelist.html:17
+#: ../../../templates/descriptortypelist.html:18
 #: ../../../templates/descriptortypelistalt.html:16
 #: ../../../templates/descriptorvaluelist.html:16
 #: ../../../templates/descriptorvalueordinallist.html:16
@@ -895,7 +891,7 @@ msgstr "Type de format"
 msgid "Code"
 msgstr "Code"
 
-#: ../../../templates/descriptortypelist.html:19
+#: ../../../templates/descriptortypelist.html:20
 #: ../../../templates/descriptortypelistalt.html:17
 msgid "Values"
 msgstr "Valeurs"
@@ -1051,3 +1047,5 @@ msgstr "Précision de la décimale"
 msgid "Regular expression"
 msgstr "Expression régulière"
 
+#~ msgid "Actions"
+#~ msgstr "Actions"

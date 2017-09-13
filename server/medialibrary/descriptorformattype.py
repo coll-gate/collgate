@@ -44,6 +44,8 @@ class DescriptorFormatTypeMedia(DescriptorFormatType):
         self.format_fields = ["media_types", "media_inline"]
         self.external = True
         self.data = "INTEGER"
+        self.available_operators = None
+        self.column_display = False
 
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         # check if the value is a string and if the related entity exists
@@ -133,6 +135,8 @@ class DescriptorFormatTypeMediaCollection(DescriptorFormatType):
         self.format_fields = ["media_types", "max_items", "media_inline"]
         self.external = True
         self.data = "INTEGER_ARRAY"
+        self.available_operators = None
+        self.column_display = False
 
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         # check if the value is a string and if the related entity exists
