@@ -162,7 +162,7 @@ _.extend(DescriptorMetaModel.prototype, DescriptorFormatType.prototype, {
 
                 var container = this.parent.closest('div.modal-dialog').parent();
                 if (container.length === 0) {
-                    container = this.parent.closest('div.panel');
+                    container = this.groupEl;  // this.parent.closest('div.panel');
                 }
 
                 var params = {

@@ -68,7 +68,7 @@ class DescriptorFormatTypeMedia(DescriptorFormatType):
         schema = {
             "type": "object",
             "properties": {
-                "media_types": {"type": "array", 'minLength': 1, 'maxLength': 16},
+                "media_types": {"type": "array", 'minItems': 1, 'maxItems': 16},
                 "media_inline": {"type": "boolean"}
             }
         }
@@ -163,7 +163,7 @@ class DescriptorFormatTypeMediaCollection(DescriptorFormatType):
         schema = {
             "type": "object",
             "properties": {
-                "media_types": {"type": "array", 'minLength': 1, 'maxLength': 16},
+                "media_types": {"type": "array", 'minItems': 1, 'maxItems': 16},
                 "max_items": {"type": "integer", 'minimum': 2, 'maximum': 256},
                 "media_inline": {"type": "boolean"}
             }

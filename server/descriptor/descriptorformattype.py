@@ -626,7 +626,7 @@ class DescriptorFormatTypeEnumSingle(DescriptorFormatType):
             "type": "object",
             "properties": {
                 "fields": {
-                    "type": "array", 'minLength': 1, 'maxLength': 1, 'items': [
+                    "type": "array", 'minItems': 1, 'maxItems': 1, 'items': [
                         {'type': 'string', 'minLength': 0, 'maxLength': 32, 'blank': True}
                     ]
                 },
@@ -708,7 +708,7 @@ class DescriptorFormatTypeEnumPair(DescriptorFormatType):
         schema = {
             "type": "object",
             "properties": {
-                "fields": {"type": "array", 'minLength': 2, 'maxLength': 2, 'items': [
+                "fields": {"type": "array", 'minItems': 2, 'maxItems': 2, 'items': [
                     {'type': 'string', 'minLength': 0, 'maxLength': 32, 'blank': True},
                     {'type': 'string', 'minLength': 0, 'maxLength': 32, 'blank': True}
                 ]
@@ -801,7 +801,7 @@ class DescriptorFormatTypeEnumOrdinal(DescriptorFormatType):
         schema = {
             "type": "object",
             "properties": {
-                "fields": {"type": "array", 'minLength': 1, 'maxLength': 1, 'items': [
+                "fields": {"type": "array", 'minItems': 1, 'maxItems': 1, 'items': [
                     {'type': 'string', 'minLength': 0, 'maxLength': 32, 'blank': True}
                 ]
                            },
@@ -810,7 +810,7 @@ class DescriptorFormatTypeEnumOrdinal(DescriptorFormatType):
                 "display_fields": {"type": "string", "enum": ['value0', 'ordinal-value0']},
                 "list_type": {"type": "string", "enum": ['automatic', 'dropdown', 'autocomplete']},
                 "search_field": {"type": "string", "enum": ['ordinal', 'value0']},
-                "range": {"type": "array", 'minLength': 2, 'maxLength': 2, 'items': [
+                "range": {"type": "array", 'minItems': 2, 'maxItems': 2, 'items': [
                     {"type": "string", 'minLength': 1, 'maxLength': 9},
                     {"type": "string", 'minLength': 1, 'maxLength': 9}
                 ]},
@@ -988,7 +988,7 @@ class DescriptorFormatTypeNumericRange(DescriptorFormatType):
                 "custom_unit": {"type": "string", 'minLength': 0, 'maxLength': 32, 'blank': True},
                 "precision": {"type": "string",
                               'enum': ["0.0", "1.0", "2.0", "3.0", "4.0", "5.0", "6.0", "7.0", "8.0", "9.0"]},
-                "range": {"type": "array", 'minLength': 2, 'maxLength': 2, 'items': [
+                "range": {"type": "array", 'minItems': 2, 'maxItems': 2, 'items': [
                     {"type": "string", 'minLength': 1, 'maxLength': 99},
                     {"type": "string", 'minLength': 1, 'maxLength': 99}
                 ]},
@@ -1056,7 +1056,7 @@ class DescriptorFormatTypeOrdinal(DescriptorFormatType):
             "properties": {
                 "unit": {"type": "string", 'minLength': 1, 'maxLength': 32},
                 "custom_unit": {"type": "string", 'minLength': 0, 'maxLength': 32, 'blank': True},
-                "range": {"type": "array", 'minLength': 2, 'maxLength': 2, 'items': [
+                "range": {"type": "array", 'minItems': 2, 'maxItems': 2, 'items': [
                     {"type": "string", 'minLength': 1, 'maxLength': 99},
                     {"type": "string", 'minLength': 1, 'maxLength': 99}
                 ]},

@@ -11,15 +11,10 @@
 var DescriptorMetaModelType = require('../../descriptor/descriptormetamodeltypes/descriptormetamodeltype');
 
 var ClassificationEntry = DescriptorMetaModelType.extend({
-    className: 'descriptor-meta-model-type-details-data',
     template: require('../templates/descriptormetamodeltypes/classificationentry.html'),
 
     ui: {
         'classification': '#classification'
-    },
-
-    initialize: function() {
-        this.listenTo(this.model, 'change', this.render, this);
     },
 
     onRender: function() {
@@ -35,7 +30,7 @@ var ClassificationEntry = DescriptorMetaModelType.extend({
             collection: classificationCollection
         });
 
-        var value = this.model.get('parameters')['data']['classification'];
+        var value = Object.resolve('data.classification', this.model.get('parameters'));
 
         classifications.drawSelect(select, true, false, value).done(function () {
         });

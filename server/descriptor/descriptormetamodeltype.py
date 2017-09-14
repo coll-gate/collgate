@@ -35,7 +35,7 @@ class DescriptorMetaModelType(object):
         return None
 
 
-class DescriptorMetaModelTypeManager(object):
+class   DescriptorMetaModelTypeManager(object):
     """
     Singleton manager of set of descriptor meta-model format type.
     """

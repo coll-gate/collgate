@@ -11,12 +11,7 @@
 var DescriptorMetaModelType = require('../../descriptor/descriptormetamodeltypes/descriptormetamodeltype');
 
 var Batch = DescriptorMetaModelType.extend({
-    className: 'descriptor-meta-model-type-details-data',
     template: "<div></div>",
-
-    initialize: function() {
-        this.listenTo(this.model, 'change', this.render, this);
-    },
 
     onRender: function() {
     },

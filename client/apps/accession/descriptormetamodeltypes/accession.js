@@ -11,16 +11,12 @@
 var DescriptorMetaModelType = require('../../descriptor/descriptormetamodeltypes/descriptormetamodeltype');
 
 var Accession = DescriptorMetaModelType.extend({
-    className: 'descriptor-meta-model-type-details-data',
     template: require('../templates/descriptormetamodeltypes/accession.html'),
 
     ui: {
         'primary_classification': '#primary_classification',
+        'batch_descriptor_meta_models_group': 'div.batch-descriptor-meta-models-group',
         'batch_descriptor_meta_models': '#batch_descriptor_meta_models'
-    },
-
-    initialize: function() {
-        this.listenTo(this.model, 'change', this.render, this);
     },
 
     onRender: function() {
@@ -36,18 +32,37 @@ var Accession = DescriptorMetaModelType.extend({
             collection: classificationCollection
         });
 
-        var primaryClassificationValue = this.model.get('parameters')['data']['primary_classification'];
+        var primaryClassificationValue = Object.resolve('data.primary_classification', this.model.get('parameters'));
 
         classifications.drawSelect(primaryClassification, true, false, primaryClassificationValue).done(function () {
         });
 
-        // @todo batch list
+        // batches list
+        var batchesListValues = Object.resolve('data.batch_descriptor_meta_models', this.model.get('parameters')) || [];
+
+        this.batchesWidget = application.descriptor.widgets.newElement('descriptor_meta_model');
+        this.batchesWidget.create(
+            {model: 'accession.batch'},
+            this.ui.batch_descriptor_meta_models_group,
+            false,
+            0, 0, {multiple: true});
+
+        if (batchesListValues.length) {
+            this.batchesWidget.set({model: 'accession.batch'}, true, batchesListValues);
+        }
     },
 
     getData: function() {
         return {
             'primary_classification': parseInt(this.ui.primary_classification.val()),
-            'batch_descriptor_meta_models': [19]  // @todo
+            'batch_descriptor_meta_models': this.batchesWidget.values() || []
+        }
+    },
+
+    onBeforeDestroy: function () {
+        if (this.batchesWidget) {
+            this.batchesWidget.destroy();
+            delete this.batchesWidget;
         }
     }
 });

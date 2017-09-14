@@ -45,7 +45,7 @@ class DescriptorMetaModelTypeAccession(DescriptorMetaModelType):
             "properties": {
                 "primary_classification": {"type": "number"},
                 "batch_descriptor_meta_models": {
-                    "type": "array", 'minLength': 1, 'maxLength': 100, 'items': [{'type': 'number'}]
+                    "type": "array", 'minItems': 0, 'maxItems': 100, 'additionalItems': {'type': 'number'}, 'items': []
                 }
             }
         }
