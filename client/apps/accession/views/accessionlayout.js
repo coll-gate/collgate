@@ -21,14 +21,16 @@ var Layout = LayoutView.extend({
 
     ui: {
         synonyms_tab: 'a[aria-controls=synonyms]',
-        batches_tab: 'a[aria-controls=batches]'
+        batches_tab: 'a[aria-controls=batches]',
+        classifications_tab: 'a[aria-controls=classifications]'
     },
 
     regions: {
         'details': "div[name=details]",
         'descriptors': "div.tab-pane[name=descriptors]",
         'synonyms': "div.tab-pane[name=synonyms]",
-        'batches': "div.tab-pane[name=batches]"
+        'batches': "div.tab-pane[name=batches]",
+        'classifications': "div.tab-pane[name=classifications]"
     },
 
     initialize: function(options) {
@@ -57,9 +59,14 @@ var Layout = LayoutView.extend({
         this.ui.batches_tab.parent().addClass('disabled');
     },
 
+    disableClassificationsTab: function () {
+        this.ui.classifications_tab.parent().addClass('disabled');
+    },
+
     enableTabs: function() {
         this.ui.synonyms_tab.parent().removeClass('disabled');
         this.ui.batches_tab.parent().removeClass('disabled');
+        this.ui.classifications_tab.parent().removeClass('disabled');
     },
 
     onDescriptorMetaModelChange: function(model, value) {
@@ -74,6 +81,10 @@ var Layout = LayoutView.extend({
                 url: application.baseUrl + 'descriptor/meta-model/' + value + '/layout/',
                 dataType: 'json'
             }).done(function (data) {
+                if (!accessionLayout.isRendered()) {
+                    return;
+                }
+
                 var AccessionDescriptorView = require('../views/accessiondescriptor');
                 var accessionDescriptorView = new AccessionDescriptorView({
                     model: model,
@@ -92,6 +103,10 @@ var Layout = LayoutView.extend({
             // classificationEntry parent
             var classificationEntry = new ClassificationEntryModel({id: this.model.get('primary_classification_entry')});
             classificationEntry.fetch().then(function () {
+                if (!accessionLayout.isRendered()) {
+                    return;
+                }
+
                 accessionLayout.showChildView('details', new EntityPathView({
                     model: accessionLayout.model,
                     classificationEntry: classificationEntry
@@ -113,18 +128,20 @@ var Layout = LayoutView.extend({
                 contentType: "application/json; charset=utf-8"
             });
 
-            columns.done(function (data) {
+            $.when(columns, accessionBatches.fetch()).done(function (data) {
+                if (!accessionLayout.isRendered()) {
+                    return;
+                }
+
                 var BatchListView = require('../views/batchlist');
                 var batchListView  = new BatchListView({
-                    collection: accessionBatches, model: accessionLayout.model, columns: data.columns});
+                    collection: accessionBatches, model: accessionLayout.model, columns: data[0].columns});
 
                 var contentBottomLayout = new ContentBottomLayout();
                 accessionLayout.showChildView('batches', contentBottomLayout);
 
                 contentBottomLayout.showChildView('content', batchListView);
                 contentBottomLayout.showChildView('bottom', new ScrollingMoreView({targetView: batchListView}));
-
-                batchListView.query();
             });
 
             this.onDescriptorMetaModelChange(this.model, this.model.get('descriptor_meta_model'));
@@ -133,6 +150,10 @@ var Layout = LayoutView.extend({
             // details
             var classificationEntry = new ClassificationEntryModel({id: this.model.get('primary_classification_entry')});
             classificationEntry.fetch().then(function() {
+                if (!accessionLayout.isRendered()) {
+                    return;
+                }
+
                 accessionLayout.showChildView('details', new EntityPathView({
                     model: accessionLayout.model, classificationEntry: classificationEntry, noLink: true}));
             });
@@ -143,6 +164,10 @@ var Layout = LayoutView.extend({
                 url: application.baseUrl + 'descriptor/meta-model/' + this.model.get('descriptor_meta_model') + '/layout/',
                 dataType: 'json'
             }).done(function(data) {
+                if (!accessionLayout.isRendered()) {
+                    return;
+                }
+
                 var accessionDescriptorView = new AccessionDescriptorEditView({
                     model: accessionLayout.model, descriptorMetaModelLayout: data});
 
@@ -152,6 +177,7 @@ var Layout = LayoutView.extend({
             // not available tabs
             this.disableSynonymsTab();
             this.disableBatchesTab();
+            this.disableClassificationsTab();
         }
     }
 });

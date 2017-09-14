@@ -80,6 +80,10 @@ var Layout = LayoutView.extend({
                 url: application.baseUrl + 'descriptor/meta-model/' + value + '/layout/',
                 dataType: 'json'
             }).done(function (data) {
+                if (!batchLayout.isRendered()) {
+                    return;
+                }
+
                 var BatchDescriptorView = require('../views/batchdescriptor');
                 var batchDescriptorView = new BatchDescriptorView({
                     model: model,
@@ -102,6 +106,10 @@ var Layout = LayoutView.extend({
             // details
             var accession = new AccessionModel({id: this.model.get('accession')});
             accession.fetch().then(function () {
+                if (!batchLayout.isRendered()) {
+                    return;
+                }
+
                 batchLayout.showChildView('details', new BatchPathView({
                     model: batchLayout.model,
                     accession: accession
@@ -120,6 +128,10 @@ var Layout = LayoutView.extend({
             var parentBatches = new BatchCollection([], {batch_id: this.model.get('id'), batch_type: 'parents'});
 
             $.when(columns, parentBatches.fetch()).done(function (data) {
+                if (!batchLayout.isRendered()) {
+                    return;
+                }
+
                 var BatchListView = require('../views/batchlist');
                 var batchListView = new BatchListView({
                     collection: parentBatches, model: batchLayout.model, columns: data[0].columns});
@@ -135,6 +147,10 @@ var Layout = LayoutView.extend({
             var childrenBatches = new BatchCollection([], {batch_id: this.model.get('id'), batch_type: 'children'});
 
             $.when(columns, childrenBatches.fetch()).done(function (data) {
+                if (!batchLayout.isRendered()) {
+                    return;
+                }
+
                 var BatchListView = require('../views/batchlist');
                 var batchListView = new BatchListView({
                     collection: childrenBatches, model: batchLayout.model, columns: data[0].columns});
@@ -149,6 +165,10 @@ var Layout = LayoutView.extend({
             // details
             var accession = new AccessionModel({id: this.model.get('accession')});
             accession.fetch().then(function() {
+                if (!batchLayout.isRendered()) {
+                    return;
+                }
+
                 batchLayout.showChildView('details', new BatchPathView({
                     model: batchLayout.model, accession: accession, noLink: true}));
             });
@@ -159,6 +179,10 @@ var Layout = LayoutView.extend({
                 url: application.baseUrl + 'descriptor/meta-model/' + this.model.get('descriptor_meta_model') + '/layout/',
                 dataType: 'json'
             }).done(function(data) {
+                if (!batchLayout.isRendered()) {
+                    return;
+                }
+
                 var batchDescriptorView = new BatchDescriptorEditView({
                     model: batchLayout.model, descriptorMetaModelLayout: data});
 

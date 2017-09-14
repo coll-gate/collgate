@@ -71,6 +71,10 @@ var Router = Marionette.AppRouter.extend({
         application.main.showContent(defaultLayout);
 
         accession.fetch().then(function() {
+            if (!defaultLayout.isRendered()) {
+                return;
+            }
+
             defaultLayout.showChildView('title', new TitleView({title: gt.gettext("Accession"), model: accession}));
 
             var accessionLayout = new AccessionLayout({model: accession, initialTab: tab.replace('/', '')});

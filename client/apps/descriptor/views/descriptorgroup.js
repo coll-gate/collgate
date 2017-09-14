@@ -37,7 +37,7 @@ var View = Marionette.View.extend({
 
     events: {
        // 'click @ui.delete_btn': 'deleteDescriptorGroup',
-       // 'click @ui.edit_btn': 'onRenameGroup',
+       'click @ui.rename_btn': 'onRenameGroup',
        'click @ui.manage_btn': 'viewDescriptorType'
     },
 

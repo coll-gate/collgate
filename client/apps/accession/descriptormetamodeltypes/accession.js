@@ -14,9 +14,8 @@ var Accession = DescriptorMetaModelType.extend({
     template: require('../templates/descriptormetamodeltypes/accession.html'),
 
     ui: {
-        'primary_classification': '#primary_classification',
-        'batch_descriptor_meta_models_group': 'div.batch-descriptor-meta-models-group',
-        'batch_descriptor_meta_models': '#batch_descriptor_meta_models'
+        'primary_classification': 'select.primary-classification',
+        'batch_descriptor_meta_models_group': 'div.batch-descriptor-meta-models-group'
     },
 
     onRender: function() {

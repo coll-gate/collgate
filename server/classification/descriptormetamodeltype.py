@@ -46,4 +46,7 @@ class DescriptorMetaModelTypeClassificationEntry(DescriptorMetaModelType):
         except Classification.DoesNotExist:
             return _("The classification must refers to an existing object")
 
+        # changes is not possible if there is some existing classifications entries using this meta-model
+        # @todo check
+
         return None

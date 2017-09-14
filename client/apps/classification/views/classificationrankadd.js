@@ -1,8 +1,8 @@
 /**
- * @file classificationadd.js
- * @brief Create a new classification.
+ * @file classificationrankadd.js
+ * @brief Create a new classification rank.
  * @author Frédéric SCHERMA (INRA UMR1095)
- * @date 2017-09-04
+ * @date 2017-09-14
  * @copyright Copyright (c) 2017 INRA/CIRAD
  * @license MIT (see LICENSE file)
  * @details
@@ -13,36 +13,37 @@ var Dialog = require('../../main/views/dialog');
 
 var View = Marionette.View.extend({
     tagName: 'div',
-    className: 'classification-add',
-    template: require('../templates/classificationadd.html'),
+    className: 'classification-rank-add',
+    template: require('../templates/classificationrankadd.html'),
 
     ui: {
-        add_classification_btn: 'span.add-classification',
-        add_classification_name: 'input.classification-name',
+        add_classification_rank_btn: 'span.add-classification-rank',
+        add_classification_rank_name: 'input.classification-rank-name',
     },
 
     events: {
-        'click @ui.add_classification_btn': 'addClassification',
-        'input @ui.add_classification_name': 'onClassificationNameInput',
+        'click @ui.add_classification_rank_btn': 'addClassificationRank',
+        'input @ui.add_classification_rank_name': 'onClassificationRankNameInput',
     },
 
     initialize: function(options) {
         options || (options = {});
+        this.classification = options.classification;
         this.collection = options.collection;
     },
 
-    addClassification: function () {
-        var ClassificationCreate = Dialog.extend({
-            template: require('../templates/classificationcreate.html'),
+    addClassificationRank: function () {
+        var ClassificationRankCreate = Dialog.extend({
+            template: require('../templates/classificationrankcreate.html'),
 
             attributes: {
-                id: "dlg_create_classification",
+                id: "dlg_create_classification_rank",
             },
 
             ui: {
-                name: "#classification_name",
-                label: "#classification_label",
-                description: "#classification_description"
+                name: "input.classification-rank-name",
+                label: "input.classification-rank-label",
+                level: "input.classification-rank-level"
             },
 
             events: {
@@ -50,13 +51,13 @@ var View = Marionette.View.extend({
             },
 
             initialize: function (options) {
-                ClassificationCreate.__super__.initialize.apply(this);
+                ClassificationRankCreate.__super__.initialize.apply(this, arguments);
             },
 
             onRender: function () {
                 this.ui.name.val(this.getOption('name'));
 
-                ClassificationCreate.__super__.onRender.apply(this);
+                ClassificationRankCreate.__super__.onRender.apply(this);
             },
 
             onApply: function () {
@@ -68,19 +69,19 @@ var View = Marionette.View.extend({
                 var collection = this.getOption('collection');
                 var name = this.getOption('name');
                 var label = this.ui.label.val();
-                var description = this.ui.description.val();
+                // var level = this.ui.level.val();
 
                 collection.create({
                     name: name,
                     label: label,
-                    description: description
+                    // level: level
                 }, {
                     wait: true,
                     success: function () {
                         view.destroy();
                     },
                     error: function () {
-                        $.alert.error(gt.gettext("Unable to create the classification !"));
+                        $.alert.error(gt.gettext("Unable to create the classification rank !"));
                     }
                 });
             },
@@ -103,47 +104,48 @@ var View = Marionette.View.extend({
             }
         });
 
-        if (!this.ui.add_classification_name.hasClass('invalid')) {
-            var classificationCreate = new ClassificationCreate({
+        if (!this.ui.add_classification_rank_name.hasClass('invalid')) {
+            var classificationRankCreate = new ClassificationRankCreate({
                 collection: this.collection,
-                name: this.ui.add_classification_name.val()
+                classification: this.classification,
+                name: this.ui.add_classification_rank_name.val()
             });
 
-            this.ui.add_classification_name.cleanField();
-            classificationCreate.render();
-            classificationCreate.ui.name.prop('readonly', true);
+            this.ui.add_classification_rank_name.cleanField();
+            classificationRankCreate.render();
+            classificationRankCreate.ui.name.prop('readonly', true);
         }
     },
 
-    validateClassificationName: function() {
-        var v = this.ui.add_classification_name.val();
+    validateClassificationRankName: function() {
+        var v = this.ui.add_classification_rank_name.val();
         var re = /^[a-zA-Z0-9_\-]+$/i;
 
         if (v.length > 0 && !re.test(v)) {
-            this.ui.add_classification_name.validateField('failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
+            this.ui.add_classification_rank_name.validateField('failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
             return false;
         } else if (v.length < 3) {
-            this.ui.add_classification_name.validateField('failed', gt.gettext('3 characters min'));
+            this.ui.add_classification_rank_name.validateField('failed', gt.gettext('3 characters min'));
             return false;
         } else if (v.length > 128) {
-            this.ui.add_classification_name.validateField('failed', gt.gettext('128 characters max'));
+            this.ui.add_classification_rank_name.validateField('failed', gt.gettext('128 characters max'));
             return false;
         }
 
         return true;
     },
 
-    onClassificationNameInput: function () {
-        if (this.validateClassificationName()) {
+    onClassificationRankNameInput: function () {
+        if (this.validateClassificationRankName()) {
             $.ajax({
                 type: "GET",
-                url: application.baseUrl + 'classification/classification/search/',
+                url: application.baseUrl + 'classification/classificationrank/search/',
                 dataType: 'json',
                 data: {
                     filters: JSON.stringify({
                         method: 'ieq',
                         fields: 'name',
-                        name: this.ui.add_classification_name.val()
+                        name: this.ui.add_classification_rank_name.val()
                     })
                 },
                 view: this,
@@ -152,13 +154,13 @@ var View = Marionette.View.extend({
                     for (var i in data.items) {
                         var t = data.items[i];
 
-                        if (t.name.toUpperCase() === this.view.ui.add_classification_name.val().toUpperCase()) {
-                            this.view.ui.add_classification_name.validateField('failed', gt.gettext('Classification name already in usage'));
+                        if (t.name.toUpperCase() === this.view.ui.add_classification_rank_name.val().toUpperCase()) {
+                            this.view.ui.add_classification_rank_name.validateField('failed', gt.gettext('Classification rank name already in usage'));
                             break;
                         }
                     }
                 } else {
-                    this.view.ui.add_classification_name.validateField('ok');
+                    this.view.ui.add_classification_rank_name.validateField('ok');
                 }
             });
         }

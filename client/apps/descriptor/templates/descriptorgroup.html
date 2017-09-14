@@ -8,12 +8,14 @@
  - @details 
 -->
 
+<% var className = "action"; %>
 <td class="glyph-fixed-column lock-status">
     <% if (!can_delete) { %>
+        <% className = ""; %>
         <span class="glyphicon glyphicon-lock" title="<%= gt.gettext('Group of descriptors locked') %>"></span>
     <% } %>
 </td>
-<td class="action manage" name="name" value="<%= name %>"><%= name %></td>
+<td class="<%= className %> rename" name="name" value="<%= name %>"><%= name %></td>
 <td class="action manage last-column" name="num_descriptor_types">
     <span class="badge" title="<%= gt.gettext('Manage types of descriptor') %>"><%= num_descriptor_types %></span>
 </td>

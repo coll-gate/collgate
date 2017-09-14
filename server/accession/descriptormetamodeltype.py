@@ -68,6 +68,9 @@ class DescriptorMetaModelTypeAccession(DescriptorMetaModelType):
         if dmms.count() != len(dmm_ids):
             return _("The list of descriptor meta-models of batches must refers to existing objects")
 
+        # changes is not possible if there is some existing accessions entries using this meta-model
+        # @todo check
+
         return None
 
 

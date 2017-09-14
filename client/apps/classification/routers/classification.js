@@ -14,19 +14,21 @@ var ClassificationModel = require('../models/classification');
 var ClassificationListView = require('../views/classificationlist');
 var ClassificationCreateView = require('../views/classificationadd');
 
-// var ClassificationLayout = require('../views/classificationlayout');
+var ClassificationRankListView = require('../views/classificationranklist');
+var ClassificationRankCreateView = require('../views/classificationrankadd');
 
 var DefaultLayout = require('../../main/views/defaultlayout');
 var TitleView = require('../../main/views/titleview');
 var ScrollingMoreView = require('../../main/views/scrollingmore');
 
 var ClassificationCollection = require('../collections/classification');
+var ClassificationRankCollection = require('../collections/classificationrank');
 
 
 var ClassificationRouter = Marionette.AppRouter.extend({
     routes : {
         "app/classification/classification/": "getClassificationList",
-        "app/classification/classification/:id/*tab": "getClassification"
+        "app/classification/classification/:id/classificationrank/": "getClassificationIdRanksList"
     },
 
     getClassificationList : function() {
@@ -52,20 +54,39 @@ var ClassificationRouter = Marionette.AppRouter.extend({
         }
     },
 
-    getClassification : function(id, tab) {
-        tab || (tab = "");
-
+    getClassificationIdRanksList : function(id) {
         var classification = new ClassificationModel({id: id});
 
         var defaultLayout = new DefaultLayout();
         application.main.showContent(defaultLayout);
 
-        // var classificationLayout = new ClassificationLayout({model: classification, initialTab: tab.replace('/', '')});
+        var collection = new ClassificationRankCollection([], {classification_id: id});
 
-        // classification.fetch().then(function () {
-        //     defaultLayout.showChildView('title', new TitleView({title: gt.gettext("Classification details"), model: classification}));
-        //     defaultLayout.showChildView('content', classificationLayout);
-        // });
+        var classificationRankListView = new ClassificationRankListView({
+                classification: classification,
+                collection: collection
+            });
+
+        defaultLayout.showChildView('content', classificationRankListView);
+        defaultLayout.showChildView('content-bottom', new ScrollingMoreView({
+            targetView: classificationRankListView,
+            collection: collection
+        }));
+
+        classification.fetch().then(function () {
+            defaultLayout.showChildView('title', new TitleView({
+                title: gt.gettext("Classification rank"),
+                model: classification
+            }));
+
+            // need classification permission details
+            classificationRankListView.query();
+
+            if (classification.get('can_modify') && session.user.isAuth && (session.user.isSuperUser || session.user.isStaff)) {
+                defaultLayout.showChildView('bottom', new ClassificationRankCreateView({
+                    model: classification, collection: collection}));
+            }
+        });
     }
 });
 

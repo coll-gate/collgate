@@ -67,7 +67,11 @@ var ClassificationEntryRouter = Marionette.AppRouter.extend({
             contentType: "application/json; charset=utf-8"
         });
 
-        columns.done(function(data) {
+        $.when(columns, collection.fetch()).done(function(data) {
+            if (!defaultLayout.isRendered()) {
+                return;
+            }
+
             var classificationEntryListView = new ClassificationEntryListView({collection : collection, columns: data.columns});
 
             defaultLayout.showChildView('content', classificationEntryListView);
@@ -78,8 +82,6 @@ var ClassificationEntryRouter = Marionette.AppRouter.extend({
 
             defaultLayout.showChildView('bottom', new EntityListFilterView({
                 collection: collection, columns: data.columns}));
-
-            classificationEntryListView.query();
         });
     },
 

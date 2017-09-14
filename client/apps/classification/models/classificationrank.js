@@ -11,9 +11,9 @@
 var ClassificationRankModel = Backbone.Model.extend({
     url: function() {
         if (this.isNew())
-            return application.baseUrl + 'classification/classification/' + this.getClassificationId() + '/rank/';
+            return application.baseUrl + 'classification/classification/' + this.getClassificationId() + '/classificationrank/';
         else
-            return application.baseUrl + 'classification/classification/' + this.getClassificationId() + '/rank/' + this.get('id') + '/';
+            return application.baseUrl + 'classification/classification/' + this.getClassificationId() + '/classificationrank/' + this.get('id') + '/';
     },
 
     defaults: function() {

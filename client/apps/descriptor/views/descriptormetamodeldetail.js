@@ -9,7 +9,6 @@
  */
 
 var Marionette = require('backbone.marionette');
-var DescriptorMetaModelModel = require('../models/descriptormetamodel');
 
 var View = Marionette.View.extend({
     className: 'object descriptor-meta-model-detail',

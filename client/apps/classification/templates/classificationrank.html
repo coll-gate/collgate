@@ -1,8 +1,8 @@
 <!--
- - @file classificationentry.html
- - @brief Template for a classification (model)
+ - @file classificationrank.html
+ - @brief Template for a classification rank (model)
  - @author Frédéric SCHERMA (INRA UMR1095)
- - @date 2017-09-04
+ - @date 2017-09-13
  - @copyright Copyright (c) 2017 INRA/CIRAD
  - @license MIT (see LICENSE file)
  - @details
@@ -10,14 +10,13 @@
 
 <% var className = "action"; %>
 <td class="glyph-fixed-column lock-status">
-    <% if (!can_delete) { %>
+    <% if (!classification.get('can_modify')) { %>
         <% className = ""; %>
         <span class="glyphicon glyphicon-lock" title="<%= gt.gettext('Classification locked') %>"></span>
     <% } %>
 </td>
-<td name="description" class="glyph-fixed-column"><span class="glyphicon glyphicon-question-sign" title="<%= description %>" style="cursor: help;"></span></td>
 <td class="<%= className %> rename" name="name" value="<%= name %>"><%= name %></td>
 <td class="<%= className %> edit-label" name="label" value="<%= label %>"><%= label %></td>
-<td class="action manage last-column" name="num_classification_ranks">
-    <span class="badge" title="<%= gt.gettext('Manage ranks') %>"><%= num_classification_ranks %></span>
+<td class="last-column" name="level">
+    <span class="badge"><%= level %></span>
 </td>

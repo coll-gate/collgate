@@ -82,11 +82,16 @@ var Layout = LayoutView.extend({
                 url: application.baseUrl + 'descriptor/meta-model/' + value + '/layout/',
                 dataType: 'json'
             }).done(function (data) {
+                if (!classificationEntryLayout.isRendered()) {
+                    return;
+                }
+
                 var ClassificationEntryDescriptorView = require('./classificationentrydescriptor');
                 var classificationEntryDescriptorView = new ClassificationEntryDescriptorView({
                     model: model,
                     descriptorMetaModelLayout: data
                 });
+
                 classificationEntryLayout.showChildView('descriptors', classificationEntryDescriptorView);
             });
         }
@@ -116,12 +121,16 @@ var Layout = LayoutView.extend({
                 contentType: "application/json; charset=utf-8"
             });
 
-            columns.done(function(data) {
+            $.when(columns, classificationEntryChildren.fetch()).done(function(data) {
+                if (!classificationEntryLayout.isRendered()) {
+                    return;
+                }
+
                 var ClassificationEntryChildrenView = require('./classificationentrychildren');
                 var classificationEntryChildrenView = new ClassificationEntryChildrenView({
                     collection: classificationEntryChildren,
                     model: classificationEntryLayout.model,
-                    columns: data.columns});
+                    columns: data[0].columns});
 
                 var contentBottomLayout = new ContentBottomLayout();
                 classificationEntryLayout.showChildView('children', contentBottomLayout);
@@ -129,8 +138,6 @@ var Layout = LayoutView.extend({
                 contentBottomLayout.showChildView('content', classificationEntryChildrenView);
                 contentBottomLayout.showChildView('bottom', new ScrollingMoreView({
                     targetView: classificationEntryChildrenView, collection: classificationEntryChildren}));
-
-                classificationEntryChildrenView.query();
             });
 
             // entities relating this classificationEntry tab
@@ -138,6 +145,10 @@ var Layout = LayoutView.extend({
             var classificationEntryEntities = new ClassificationEntryEntitiesCollection([], {model_id: this.model.id});
 
             classificationEntryEntities.fetch().then(function () {
+                if (!classificationEntryLayout.isRendered()) {
+                    return;
+                }
+
                 var ClassificationEntryEntitiesView = require('./classificationentryentities');
                 var classificationEntryEntitiesView = new ClassificationEntryEntitiesView({
                     collection: classificationEntryEntities, model: classificationEntryLayout.model});
@@ -162,6 +173,10 @@ var Layout = LayoutView.extend({
                 url: application.baseUrl + 'descriptor/meta-model/' + this.model.get('descriptor_meta_model') + '/layout/',
                 dataType: 'json'
             }).done(function(data) {
+                if (!classificationEntryLayout.isRendered()) {
+                    return;
+                }
+
                 var classificationEntryDescriptorView = new ClassificationEntryDescriptorEditView({
                     model: classificationEntryLayout.model, descriptorMetaModelLayout: data});
 

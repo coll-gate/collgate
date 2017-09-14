@@ -52,14 +52,24 @@ class RestClassificationClassificationIdRank(RestClassificationClassificationId)
     suffix = 'classificationrank'
 
 
-class RestClassificationClassificationIdRankId(RestClassificationClassificationIdRank):
-    regex = r'^(?P<ran_id>[0-9]+)/$'
-    suffix = 'id'
-
-
 class RestClassificationClassificationRank(RestClassification):
     regex = r'^classificationrank/$'
     suffix = 'classificationrank'
+
+
+class RestClassificationClassificationRankSearch(RestClassificationClassificationRank):
+    regex = r'^search/$'
+    suffix = 'search'
+
+
+class RestClassificationClassificationRankId(RestClassificationClassificationRank):
+    regex = r'^(?P<crk_id>[0-9]+)/$'
+    suffix = 'id'
+
+
+class RestClassificationClassificationRankIdLabel(RestClassificationClassificationRankId):
+    regex = r'^label/$'
+    suffix = 'label'
 
 
 @RestClassificationClassification.def_auth_request(Method.GET, Format.JSON)
@@ -178,7 +188,10 @@ def get_classification_details(request, cls_id):
     results = {
         'id': classification.id,
         'name': classification.name,
-        'label': classification.get_label()
+        'label': classification.get_label(),
+        'can_modify': classification.can_modify,
+        'can_delete': classification.can_delete,
+        'num_classification_ranks': classification.ranks.all().count()
     }
 
     return HttpResponseRest(request, results)
@@ -204,6 +217,9 @@ def create_classification(request):
 
     if not Language.objects.filter(code=language).exists():
         raise SuspiciousOperation(_("The language is not supported"))
+
+    if Classification.objects.filter(name=parameters['name']).exists():
+        raise SuspiciousOperation(_("A classification already exists with this name"))
 
     classification = Classification()
 
@@ -314,7 +330,7 @@ def get_all_labels_of_classification(request, cls_id):
     },
     perms={'classification.change_classification': _('You are not allowed to modify a classification')},
     staff=True)
-def change_all_labels_of_descriptor_model_type(request, cls_id):
+def change_all_labels_of_classification(request, cls_id):
     """
     Changes all the label, for each language related to the user interface.
     Returns only the local label.
@@ -341,8 +357,7 @@ def change_all_labels_of_descriptor_model_type(request, cls_id):
     return HttpResponseRest(request, result)
 
 
-# @todo change to def_auth_request after dynamic on client side
-@RestClassificationClassificationIdRank.def_request(Method.GET, Format.JSON)
+@RestClassificationClassificationIdRank.def_auth_request(Method.GET, Format.JSON)
 def get_classification_classification_rank_list(request, cls_id):
     """
     Get a list of classification rank in JSON
@@ -360,10 +375,8 @@ def get_classification_classification_rank_list(request, cls_id):
 
     return HttpResponseRest(request, ranks)
 
-# @todo POST, PUT, PATCH, DELETE classification rank
 
-
-@RestClassificationClassificationRank.def_request(Method.GET, Format.JSON, ('filters',))
+@RestClassificationClassificationRank.def_auth_request(Method.GET, Format.JSON, ('filters',))
 def get_classification_rank_list(request):
     """
     Get a list of classification rank in JSON
@@ -410,30 +423,222 @@ def get_classification_rank_list(request):
     return HttpResponseRest(request, results)
 
 
-# @RestClassificationClassificationRank.def_request(Method.GET, Format.JSON, ('filters',))
-# def get_classification_rank_list(request):
-#     """
-#     Get a list of classification rank in JSON
-#     """
-#     selection = json.loads(request.GET.get('filters', {}))[0]['value']
-#     # @todo selection must be array or use Cursor without limit/order/cursor
-#
-#     classification_ranks = ClassificationRank.objects.filter(id__in=selection)
-#
-#     classification_ranks_items = {}
-#     for classification_rank in classification_ranks:
-#         classification_ranks_items[classification_rank.id] = {
-#             'id': classification_rank.id,
-#             'name': classification_rank.name,
-#             'label': classification_rank.get_label(),
-#             'level': classification_rank.level
-#         }
-#
-#     # @todo manage validity (short duration)
-#     results = {
-#         'cacheable': True,
-#         'validity': None,
-#         'items': classification_ranks_items
-#     }
-#
-#     return HttpResponseRest(request, results)
+@RestClassificationClassificationRankSearch.def_auth_request(Method.GET, Format.JSON, ('filters',), staff=True)
+def search_classification_rank(request):
+    """
+    Filters the classification rank by name.
+    """
+    filters = json.loads(request.GET['filters'])
+    page = int_arg(request.GET.get('page', 1))
+
+    classification_ranks = None
+
+    if filters['method'] == 'ieq' and 'name' in filters['fields']:
+        classification_ranks = ClassificationRank.objects.filter(name__iexact=filters['name'])
+    elif filters['method'] == 'icontains' and 'name' in filters['fields']:
+        classification_ranks = ClassificationRank.objects.filter(name__icontains=filters['name'])
+
+    classification_ranks_list = []
+
+    if classification_ranks:
+        for classification_rank in classification_ranks:
+            classification_ranks_list.append({
+                "id": classification_rank.id,
+                "name": classification_rank.name,
+                'label': classification_rank.get_label(),
+                'level': classification_rank.level
+            })
+
+    response = {
+        'items': classification_ranks_list,
+        'page': page
+    }
+
+    return HttpResponseRest(request, response)
+
+
+@RestClassificationClassificationIdRank.def_auth_request(Method.POST, Format.JSON, content={
+        "type": "object",
+        "properties": {
+            "name": Classification.NAME_VALIDATOR,
+            "label": Classification.LABEL_VALIDATOR
+        },
+    },
+    perms={
+        'classification.modifiy_classification': _('You are not allowed to modify a classification'),
+        'classification.add_classificationrank': _('You are not allowed to create a classification rank')
+    }, staff=True)
+def create_classification_classification_rank(request, cls_id):
+    """
+    Create a classification rank for a specific classification at the latest level.
+    """
+    parameters = request.data
+
+    language = translation.get_language()
+
+    if not Language.objects.filter(code=language).exists():
+        raise SuspiciousOperation(_("The language is not supported"))
+
+    classification = get_object_or_404(Classification, id=int(cls_id))
+
+    if ClassificationRank.objects.filter(name=parameters['name']).exists():
+        raise SuspiciousOperation(_("A rank of classification already exists with this name"))
+
+    try:
+        auto_level = classification.ranks.latest('level').level + 1
+    except ClassificationRank.DoesNotExist:
+        auto_level = 0
+
+    classification_rank = ClassificationRank()
+
+    classification_rank.classification = classification
+    classification_rank.name = parameters['name']
+    classification_rank.set_label(language, parameters['label'])
+    classification_rank.level = auto_level
+
+    classification_rank.save()
+
+    response = {
+        'id': classification_rank.pk,
+        'name': classification_rank.name,
+        'label': classification_rank.get_label(),
+        'level': classification_rank.level
+    }
+
+    return HttpResponseRest(request, response)
+
+
+@RestClassificationClassificationRankId.def_auth_request(Method.PATCH, Format.JSON, content={
+        "type": "object",
+        "properties": {
+            "name": ClassificationRank.NAME_VALIDATOR_OPTIONAL,
+            "label": ClassificationRank.LABEL_VALIDATOR_OPTIONAL
+        },
+    },
+    perms={
+        'classification.change_classification': _('You are not allowed to modify a classification'),
+        'classification.change_classificationrank': _('You are not allowed to modify a classification rank')
+    }, staff=True)
+def patch_classification_rank(request, crk_id):
+    """
+    Change the 'name' or 'label' of a classification rank.
+    """
+    name = request.data.get('name')
+    label = request.data.get('label')
+
+    classification_rank = get_object_or_404(ClassificationRank, id=int(crk_id))
+
+    if not classification_rank.classification.can_modify:
+        raise PermissionDenied(_("The classification managing this rank is locked"))
+
+    result = {
+        'id': classification_rank.id
+    }
+
+    if name is not None:
+        if name != classification_rank.name and ClassificationRank.objects.filter(name=name).exists():
+            raise SuspiciousOperation(_("The name of classification rank already exists"))
+
+        classification_rank.update_field('name')
+        classification_rank.name = name
+
+        result['name'] = classification_rank.name
+
+    if label is not None:
+        lang = translation.get_language()
+
+        classification_rank.update_field('label')
+        classification_rank.set_label(lang, label)
+
+        result['label'] = classification_rank.get_label()
+
+    classification_rank.save()
+
+    return HttpResponseRest(request, result)
+
+
+@RestClassificationClassificationRankId.def_auth_request(Method.DELETE, Format.JSON, perms={
+    'classification.change_classification': _('You are not allowed to remove a classification'),
+    'classification.delete_classification': _('You are not allowed to remove a classification rank')
+}, staff=True)
+def delete_classification_rank(request, crk_id):
+    """
+    If possible delete a classification.
+    It is not possible if there is data using the classification or the status is valid.
+    """
+    classification_rank = get_object_or_404(ClassificationRank, id=int(crk_id))
+
+    if not classification_rank.classification.can_modify:
+        raise PermissionDenied(_("The classification managing this rank is locked"))
+
+    if classification_rank.in_usage():
+        raise SuspiciousOperation(_("There is one or more entities using this classification rank"))
+
+    # @todo must manage other rank levels
+
+    classification_rank.delete()
+
+    return HttpResponseRest(request, {})
+
+
+@RestClassificationClassificationRankIdLabel.def_auth_request(Method.GET, Format.JSON)
+def get_all_labels_of_classification_rank(request, crk_id):
+    """
+    Returns labels for each language related to the user interface.
+    """
+    classification_rank = get_object_or_404(ClassificationRank, id=int(crk_id))
+
+    label_dict = classification_rank.label
+
+    # complete with missing languages
+    for lang, lang_label in InterfaceLanguages.choices():
+        if lang not in label_dict:
+            label_dict[lang] = ""
+
+    results = label_dict
+
+    return HttpResponseRest(request, results)
+
+
+@RestClassificationClassificationRankIdLabel.def_auth_request(
+    Method.PUT, Format.JSON, content={
+        "type": "object",
+        "additionalProperties": Classification.LABEL_VALIDATOR
+    },
+    perms={
+        'classification.change_classification': _('You are not allowed to modify a classification'),
+        'classification.change_classificationrank': _('You are not allowed to modify a classification rank')
+    },
+    staff=True)
+def change_all_labels_of_classification_rank(request, crk_id):
+    """
+    Changes all the label, for each language related to the user interface.
+    Returns only the local label.
+    """
+    classification_rank = get_object_or_404(ClassificationRank, id=int(crk_id))
+
+    if not classification_rank.classification.can_modify:
+        raise PermissionDenied(_("The classification managing this rank is locked"))
+
+    labels = request.data
+
+    languages_values = [lang[0] for lang in InterfaceLanguages.choices()]
+
+    for lang, label in labels.items():
+        if lang not in languages_values:
+            raise SuspiciousOperation(_("Unsupported language identifier"))
+
+    classification_rank.label = labels
+
+    classification_rank.update_field('label')
+    classification_rank.save()
+
+    result = {
+        'label': classification_rank.get_label()
+    }
+
+    return HttpResponseRest(request, result)
+
+
+# @todo change level of a rank, this must be done on PATCH classificationId it will change every ranks
+# can impact the list view too...

@@ -179,6 +179,7 @@ class ClassificationRank(Entity):
 
     class Meta:
         verbose_name = _("classification rank")
+        unique_together = (('classification', 'level'),)
 
     def natural_name(self):
         return self.get_label()

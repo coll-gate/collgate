@@ -14,7 +14,7 @@ var ClassificationEntry = DescriptorMetaModelType.extend({
     template: require('../templates/descriptormetamodeltypes/classificationentry.html'),
 
     ui: {
-        'classification': '#classification'
+        'classification': 'select.classification'
     },
 
     onRender: function() {
