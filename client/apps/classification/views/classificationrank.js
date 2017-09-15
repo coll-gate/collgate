@@ -27,7 +27,7 @@ var View = Marionette.View.extend({
             behaviorClass: require('../../main/behaviors/actionbuttonevents'),
             actions: {
                 edit: {display: false},
-                tag: {display: true, title: gt.gettext("Edit label"), event: 'onRenameClassificationRank'},
+                tag: {display: true, title: gt.gettext("Edit label"), event: 'renameClassificationRank'},
                 manage: {display: true, event: 'viewClassificationEntry'},
                 remove: {display: true, event: 'deleteClassificationRank'}
             }
@@ -38,13 +38,15 @@ var View = Marionette.View.extend({
         status_icon: 'td.lock-status',
         delete_btn: 'td.action.remove',
         edit_label_btn: 'td.action.edit-label',
-        manage_btn: 'td.action.manage'
+        manage_btn: 'td.action.manage',
+        rename_btn: 'td.action.rename'
     },
 
     events: {
-       // 'click @ui.delete_btn': 'deleteClassification',
-       'click @ui.edit_label_btn': 'editLabel',
-       'click @ui.manage_btn': 'viewClassificationEntry'
+        // 'click @ui.delete_btn': 'deleteClassification',
+        'click @ui.edit_label_btn': 'editLabel',
+        'click @ui.manage_btn': 'viewClassificationEntry',
+        'click @ui.rename_btn': 'renameClassificationRank'
     },
 
     initialize: function (options) {
@@ -77,6 +79,7 @@ var View = Marionette.View.extend({
     },
 
     deleteClassificationRank: function () {
+        this.model.destroy({wait: true});
         /*if (this.model.get('num_classification_entries') === 0) {
             this.model.destroy({wait: true});
         } else {
@@ -88,7 +91,6 @@ var View = Marionette.View.extend({
     editLabel: function() {
         var model = this.model;
 
-        // @todo do we want can_modify/can_delete like for descriptor ?
         if (!this.getOption('classification').get('can_modify') || !session.user.isSuperUser || !session.user.isStaff) {
             return false;
         }
@@ -192,6 +194,19 @@ var View = Marionette.View.extend({
             var changeLabel = new ChangeLabel({model: model});
             changeLabel.render();
         });
+    },
+
+    renameClassificationRank: function() {
+        var ChangeName = require('../../main/views/entityrename');
+        var changeName = new ChangeName({
+            model: this.model,
+            title: gt.gettext("Rename classification rank")
+        });
+
+        changeName.render();
+        changeName.ui.name.val(this.model.get('name'));
+
+        return false;
     }
 });
 

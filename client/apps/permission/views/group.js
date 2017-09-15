@@ -65,65 +65,16 @@ var View = Marionette.View.extend({
     },
 
     onRenameGroup: function(e) {
-        var ChangeName = Dialog.extend({
-            template: require('../templates/grouprename.html'),
-
-            attributes: {
-                id: "dlg_change_name"
-            },
-
-            ui: {
-                name: "#group_name"
-            },
-
-            events: {
-                'input @ui.name': 'onNameInput'
-            },
-
-            initialize: function (options) {
-                ChangeName.__super__.initialize.apply(this);
-            },
-
-            onNameInput: function () {
-                this.validateName();
-            },
-
-            validateName: function() {
-                var v = this.ui.name.val();
-                var re = /^[a-zA-Z0-9_\-]+$/i;
-
-                if (v.length > 0 && !re.test(v)) {
-                    $(this.ui.name).validateField('failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
-                    return false;
-                } else if (v.length < 3) {
-                    $(this.ui.name).validateField('failed', gt.gettext('3 characters min'));
-                    return false;
-                }
-
-                $(this.ui.name).validateField('ok');
-
-                return true;
-            },
-
-            onApply: function() {
-                var name = this.ui.name.val();
-                var model = this.getOption('model');
-
-                if (this.validateName()) {
-                    model.save({name: name}, {patch: true, wait:true, success: function() {
-                        $.alert.success('Done');
-                    }});
-                    this.destroy();
-                }
-            },
-        });
-
+        var ChangeName = require('../../main/views/entityrename');
         var changeName = new ChangeName({
-            model: this.model
+            model: this.model,
+            title: gt.gettext("Rename the group of users")
         });
 
         changeName.render();
         changeName.ui.name.val(this.model.get('name'));
+
+        return false;
     }
 });
 

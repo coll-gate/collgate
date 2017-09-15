@@ -192,66 +192,10 @@ var View = Marionette.View.extend({
     },
 
     renameClassification: function() {
-        var ChangeName = Dialog.extend({
-            template: require('../templates/classificationrename.html'),
-
-            attributes: {
-                id: "dlg_change_name"
-            },
-
-            ui: {
-                name: "input.classification-name"
-            },
-
-            events: {
-                'input @ui.name': 'onNameInput'
-            },
-
-            initialize: function (options) {
-                ChangeName.__super__.initialize.apply(this ,arguments);
-            },
-
-            onNameInput: function () {
-                this.validateName();
-            },
-
-            validateName: function () {
-                var v = this.ui.name.val();
-                var re = /^[a-zA-Z0-9_\-]+$/i;
-
-                if (v.length > 0 && !re.test(v)) {
-                    this.ui.name.validateField('failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
-                    return false;
-                } else if (v.length < 3) {
-                    this.ui.name.validateField('failed', gt.gettext('3 characters min'));
-                    return false;
-                } else if (v.length > 128) {
-                    this.ui.name.validateField('failed', gt.gettext('128 characters max'));
-                    return false;
-                }
-
-                this.ui.name.validateField('ok');
-
-                return true;
-            },
-
-            onApply: function () {
-                var name = this.ui.name.val();
-                var model = this.getOption('model');
-
-                if (this.validateName()) {
-                    model.save({name: name}, {
-                        patch: true, wait: true, success: function () {
-                            $.alert.success('Done');
-                        }
-                    });
-                    this.destroy();
-                }
-            }
-        });
-
+        var ChangeName = require('../../main/views/entityrename');
         var changeName = new ChangeName({
-            model: this.model
+            model: this.model,
+            title: gt.gettext("Rename the classification")
         });
 
         changeName.render();

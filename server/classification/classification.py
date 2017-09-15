@@ -563,7 +563,7 @@ def patch_classification_rank(request, crk_id):
 }, staff=True)
 def delete_classification_rank(request, crk_id):
     """
-    If possible delete a classification.
+    If possible delete a classification rank.
     It is not possible if there is data using the classification or the status is valid.
     """
     classification_rank = get_object_or_404(ClassificationRank, id=int(crk_id))
