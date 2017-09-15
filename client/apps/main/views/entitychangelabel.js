@@ -67,8 +67,8 @@ var View = Dialog.extend({
     validateLabel: function (e) {
         var v = $(e.target).val();
 
-        if (v.length < 3) {
-            $(e.target).validateField('failed', gt.gettext('3 characters min'));
+        if (v.length < 1) {
+            $(e.target).validateField('failed', gt.gettext('1 character min'));
             return false;
         } else if (v.length > 128) {
             $(e.target).validateField('failed', gt.gettext('128 characters max'));
@@ -84,8 +84,8 @@ var View = Dialog.extend({
         $.each($(this.ui.label), function (i, label) {
             var v = $(this).val();
 
-            if (v.length < 3) {
-                $(this).validateField('failed', gt.gettext('3 characters min'));
+            if (v.length < 1) {
+                $(this).validateField('failed', gt.gettext('1 character min'));
                 return false;
             } else if (v.length > 128) {
                 $(this).validateField('failed', gt.gettext('128 characters max'));

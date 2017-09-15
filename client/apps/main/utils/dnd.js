@@ -12,6 +12,7 @@ var DragAndDrop = function() {
     this.dndType = 'undefined';
     this.classification = [];
     this.dnd = null;
+    this.dndTarget = null;
 
     this.SELECTOR = 'selector';
     this.VIEW = 'view';
@@ -64,12 +65,17 @@ DragAndDrop.prototype = {
         return this.dnd;
     },
 
+    getTarget: function() {
+        return this.dndTarget;
+    },
+
     /**
      * Unset previously DND object.
      */
     unset: function() {
         if (this.dnd) {
             this.dnd = null;
+            this.dndTarget = null;
             this.dndType = this.UNDEFINED;
             this.classification = [];
         }
@@ -150,6 +156,50 @@ DragAndDrop.prototype = {
      */
     hasView: function(classifications) {
         return this.has(this.VIEW, classifications);
+    },
+
+    /**
+     * Set the target element of the current dnd.
+     * @param target Must be of the same type than dnd.
+     */
+    setTarget: function(target) {
+        if (this.dnd) {
+            var targetType = undefined;
+
+            if (target instanceof jQuery) {
+                targetType = this.SELECTOR;
+            } else if (target instanceof Backbone.View) {
+                targetType = this.VIEW;
+            } else if (target instanceof Array) {
+                targetType = this.ARRAY;
+            } else if (target instanceof Object) {
+                targetType = this.OBJECT;
+            } else {
+                if (typeof target === Number) {
+                    if (Number.isInteger(target)) {
+                        targetType = this.INTEGER;
+                    } else {
+                        targetType = this.NUMBER;
+                    }
+                } else if (typeof target === 'string') {
+                    targetType = this.STRING;
+                } else {
+                    targetType = this.UNDEFINED;
+                }
+            }
+
+            if (this.dndType === targetType) {
+                this.dndTarget = target;
+            } else {
+                throw "Dnd source and target differs";
+            }
+        }
+    },
+
+    unsetTarget: function() {
+        if (this.dnd) {
+            this.dndTarget = null;
+        }
     }
 };
 

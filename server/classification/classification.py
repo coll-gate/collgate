@@ -52,6 +52,11 @@ class RestClassificationClassificationIdRank(RestClassificationClassificationId)
     suffix = 'classificationrank'
 
 
+# class RestClassificationClassificationIdRankCount(RestClassificationClassificationIdRank):
+#     regex = r'^count/$'
+#     suffix = 'count'
+
+
 class RestClassificationClassificationRank(RestClassification):
     regex = r'^classificationrank/$'
     suffix = 'classificationrank'
@@ -358,7 +363,7 @@ def change_all_labels_of_classification(request, cls_id):
 
 
 @RestClassificationClassificationIdRank.def_auth_request(Method.GET, Format.JSON)
-def get_classification_classification_rank_list(request, cls_id):
+def get_classification_id_classification_rank_list(request, cls_id):
     """
     Get a list of classification rank in JSON
     """
@@ -374,6 +379,28 @@ def get_classification_classification_rank_list(request, cls_id):
         })
 
     return HttpResponseRest(request, ranks)
+
+
+# @RestClassificationClassificationIdRankCount.def_auth_request(Method.GET, Format.JSON)
+# def get_classification_id_classification_rank_list_count(request, cls_id):
+#     """
+#     Get the count of number of classifications in JSON
+#     """
+#     classification = get_object_or_404(Classification, id=int(cls_id))
+#
+#     cq = CursorQuery(Classification)
+#     cq.filter({'type': 'term', 'field': 'classification_id', 'value': int(cls_id), 'op': 'eq'})
+#
+#     if request.GET.get('filters'):
+#         filters = json.loads(request.GET['filters'])
+#         cq.filter(filters)
+#
+#     results = {
+#         'perms': [],
+#         'count': cq.count()
+#     }
+#
+#     return HttpResponseRest(request, results)
 
 
 @RestClassificationClassificationRank.def_auth_request(Method.GET, Format.JSON, ('filters',))

@@ -18,5 +18,9 @@
 <td class="<%= className %> rename" name="name" value="<%= name %>"><%= name %></td>
 <td class="<%= className %> edit-label" name="label" value="<%= label %>"><%= label %></td>
 <td class="last-column" name="level">
-    <span class="badge"><%= level %></span>
+    <% if (!classification.get('can_modify')) { %>
+        <span class="badge"><%= level %></span>
+    <% } else { %>
+        <span class="badge" title="drag'n'drop to change level"><%= level %></span>
+    <% } %>
 </td>

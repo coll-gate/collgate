@@ -39,7 +39,7 @@ var View = Marionette.View.extend({
     dragEnd: function(e) {
         this.$el.css('opacity', '1.0');
         application.main.dnd.unset();
-    },
+    }
 });
 
 module.exports = View;

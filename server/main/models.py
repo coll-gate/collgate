@@ -73,11 +73,11 @@ class Language(models.Model):
     CODE_VALIDATOR = {"type": "string", "minLength": 2, "maxLength": 5, "pattern": "^[a-zA-Z]{2}([_-][a-zA-Z]{2})*$"}
 
     # label validator
-    LABEL_VALIDATOR = {"type": "string", "minLength": 1, "maxLength": 128, "pattern": r"^\S+.+\S+$"}
+    LABEL_VALIDATOR = {"type": "string", "minLength": 1, "maxLength": 128, "pattern": r"^[^\s]+(\s+[^\s]+)*$"}
 
     # label validator optional
     LABEL_VALIDATOR_OPTIONAL = {
-        "type": "string", "minLength": 1, "maxLength": 128, "pattern": r"^\S+.+\S+$", "required": False}
+        "type": "string", "minLength": 1, "maxLength": 128, "pattern": r"^[^\s]+(\s+[^\s]+)*$", "required": False}
 
     # language code
     code = models.CharField(max_length=5, null=False, blank=False)
@@ -160,11 +160,11 @@ class Entity(models.Model):
     ENTITY_STATUS_VALIDATOR_OPTIONAL = {"type": "integer", "minimum": 0, "maximum": 3, "required": False}
 
     # label validator
-    LABEL_VALIDATOR = {"type": "string", "minLength": 1, "maxLength": 128, "pattern": r"^\S+.+\S+$"}
+    LABEL_VALIDATOR = {"type": "string", "minLength": 1, "maxLength": 128, "pattern": r"^[^\s]+(\s+[^\s]+)*$"}
 
     # label validator optional
     LABEL_VALIDATOR_OPTIONAL = {
-        "type": "string", "minLength": 1, "maxLength": 128, "pattern": r"^\S+.+\S+$", "required": False}
+        "type": "string", "minLength": 1, "maxLength": 128, "pattern": r"^[^\s]+(\s+[^\s]+)*$", "required": False}
 
     # content type of the entity
     content_type = models.ForeignKey(ContentType, editable=False)

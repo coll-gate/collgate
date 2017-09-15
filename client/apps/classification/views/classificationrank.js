@@ -14,7 +14,12 @@ var View = Marionette.View.extend({
     tagName: 'tr',
     className: 'element object classification-rank actions',
     template: require('../templates/classificationrank.html'),
-
+    attributes: function () {
+        return {
+            'scope': 'row',
+            'element-id': this.model.get('id')
+        }
+    },
     templateContext: function () {
         return {
             classification: this.getOption('classification')
@@ -42,6 +47,12 @@ var View = Marionette.View.extend({
     },
 
     events: {
+        'dragstart': 'dragStart',
+        'dragend': 'dragEnd',
+        'dragover': 'dragOver',
+        'dragenter': 'dragEnter',
+        'dragleave': 'dragLeave',
+        'drop': 'drop',
         // 'click @ui.delete_btn': 'deleteClassification',
         'click @ui.edit_label_btn': 'editLabel',
         'click @ui.manage_btn': 'viewClassificationEntry',
@@ -63,6 +74,8 @@ var View = Marionette.View.extend({
         // @todo do we want can_modify/can_delete like for descriptor ?
         if (!this.getOption('classification').get('can_modify') || !session.user.isSuperUser || !session.user.isStaff) {
             properties.tag.disabled = true;
+        } else {
+            this.$el.prop('draggable', true);
         }
 
         if (!this.getOption('classification').get('can_delete') || !session.user.isSuperUser || !session.user.isStaff) {
@@ -111,6 +124,98 @@ var View = Marionette.View.extend({
 
         changeName.render();
         changeName.ui.name.val(this.model.get('name'));
+
+        return false;
+    },
+
+    dragStart: function(e) {
+        // fix for firefox...
+        e.originalEvent.dataTransfer.setData('text/plain', null);
+
+        this.$el.css('opacity', '0.4');
+        application.main.dnd.set(this, 'classification-rank');
+    },
+
+    dragEnd: function(e) {
+        this.$el.css('opacity', '1.0');
+        application.main.dnd.unset();
+    },
+
+    dragOver: function (e) {
+        if (e.originalEvent.preventDefault) {
+            e.originalEvent.preventDefault();
+        }
+
+        //e.originalEvent.dataTransfer.dropEffect = 'move';
+        return false;
+    },
+
+    dragEnter: function (e) {
+        if (e.originalEvent.preventDefault) {
+            e.originalEvent.preventDefault();
+        }
+
+        if (!application.main.dnd.hasView('classification-rank')) {
+            return false;
+        }
+
+        if (application.main.dnd.get().$el.hasClass('classification-rank')) {
+            application.main.dnd.setTarget(this);
+
+            if (this.model.get('level') < application.main.dnd.get().model.get('level')) {
+                this.$el.css('border-top', '5px dashed #ddd');
+            } else if (this.model.get('level') > application.main.dnd.get().model.get('level')) {
+                this.$el.css('border-bottom', '5px dashed #ddd');
+            }
+        }
+
+        return false;
+    },
+
+    dragLeave: function (e) {
+        if (e.originalEvent.preventDefault) {
+            e.originalEvent.preventDefault();
+        }
+
+        if (!application.main.dnd.hasView('classification-rank')) {
+            return false;
+        }
+
+        if (application.main.dnd.get().$el.hasClass('classification-rank')) {
+            if (this.model.get('level') < application.main.dnd.get().model.get('level')) {
+                this.$el.css('border-top', 'initial');
+            } else if (this.model.get('level') > application.main.dnd.get().model.get('level')) {
+                this.$el.css('border-bottom', 'initial');
+            }
+        }
+
+        return false;
+    },
+
+    drop: function (e) {
+        if (e.originalEvent.stopPropagation) {
+            e.originalEvent.stopPropagation();
+        }
+
+        if (!application.main.dnd.hasView('classification-rank')) {
+            return false;
+        }
+
+        var elt = application.main.dnd.get();
+        if (elt.$el.hasClass('classification-rank')) {
+            // reset borders
+            this.$el.css('border-top', 'initial');
+            this.$el.css('border-bottom', 'initial');
+
+            if (this.model.collection) {
+                // var dst = $(e.originalEvent.target).parent('tr');
+                // var dstId = parseInt(dst.attr('element-id'));
+
+                this.model.collection.moveClassificationRankAfter(
+                    elt.model.get('id'),
+                    application.main.dnd.getTarget().model.get('id'));
+            }
+        }
 
         return false;
     }
