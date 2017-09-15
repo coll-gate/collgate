@@ -9,7 +9,6 @@
  */
 
 var Marionette = require('backbone.marionette');
-var Dialog = require('../../main/views/dialog');
 
 var View = Marionette.View.extend({
     tagName: 'tr',
@@ -64,7 +63,7 @@ var View = Marionette.View.extend({
         this.model.destroy({wait: true});
     },
 
-    onRenameGroup: function(e) {
+    onRenameGroup: function() {
         var ChangeName = require('../../main/views/entityrename');
         var changeName = new ChangeName({
             model: this.model,

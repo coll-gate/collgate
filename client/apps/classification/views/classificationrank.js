@@ -9,7 +9,6 @@
  */
 
 var Marionette = require('backbone.marionette');
-var Dialog = require('../../main/views/dialog');
 
 var View = Marionette.View.extend({
     tagName: 'tr',
@@ -89,111 +88,18 @@ var View = Marionette.View.extend({
     },
 
     editLabel: function() {
-        var model = this.model;
-
         if (!this.getOption('classification').get('can_modify') || !session.user.isSuperUser || !session.user.isStaff) {
             return false;
         }
 
-        $.ajax({
-            type: "GET",
-            url: this.model.url() + 'label/',
-            dataType: 'json'
-        }).done(function (data) {
-            var labels = data;
+        var ChangeLabel = require('../../main/views/entitychangelabel');
+        var changeLabel = new ChangeLabel({
+            model: this.model,
+            title: gt.gettext("Change the labels for the classification rank")});
 
-            var ChangeLabel = Dialog.extend({
-                template: require('../templates/classificationchangelabel.html'),
-                templateContext: function () {
-                    return {
-                        labels: labels
-                    };
-                },
+        changeLabel.render();
 
-                attributes: {
-                    id: "dlg_change_labels"
-                },
-
-                ui: {
-                    label: "form.entity-labels input"
-                },
-
-                events: {
-                    'input @ui.label': 'onLabelInput'
-                },
-
-                initialize: function (options) {
-                    ChangeLabel.__super__.initialize.apply(this);
-                },
-
-                onLabelInput: function (e) {
-                    this.validateLabel(e);
-                },
-
-                validateLabel: function (e) {
-                    var v = $(e.target).val();
-
-                    if (v.length < 3) {
-                        $(e.target).validateField('failed', gt.gettext('3 characters min'));
-                        return false;
-                    } else if (v.length > 128) {
-                        $(e.target).validateField('failed', gt.gettext('128 characters max'));
-                        return false;
-                    }
-
-                    $(e.target).validateField('ok');
-
-                    return true;
-                },
-
-                validateLabels: function () {
-                    $.each($(this.ui.label), function (i, label) {
-                        var v = $(this).val();
-
-                        if (v.length < 3) {
-                            $(this).validateField('failed', gt.gettext('3 characters min'));
-                            return false;
-                        } else if (v.length > 128) {
-                            $(this).validateField('failed', gt.gettext('128 characters max'));
-                            return false;
-                        }
-                    });
-
-                    return true;
-                },
-
-                onApply: function () {
-                    var view = this;
-                    var model = this.getOption('model');
-
-                    var labels = {};
-
-                    $.each($(this.ui.label), function (i, label) {
-                        var v = $(this).val();
-                        labels[$(label).attr("language")] = v;
-                    });
-
-                    if (this.validateLabels()) {
-                        $.ajax({
-                            type: "PUT",
-                            url: model.url() + "label/",
-                            dataType: 'json',
-                            contentType: "application/json; charset=utf-8",
-                            data: JSON.stringify(labels)
-                        }).done(function () {
-                            // manually update the current context label
-                            model.set('label', labels[session.language]);
-                            $.alert.success(gt.gettext("Successfully labeled !"));
-                        }).always(function () {
-                            view.destroy();
-                        });
-                    }
-                }
-            });
-
-            var changeLabel = new ChangeLabel({model: model});
-            changeLabel.render();
-        });
+        return false;
     },
 
     renameClassificationRank: function() {

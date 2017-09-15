@@ -15,6 +15,7 @@ var View = Dialog.extend({
         'id': 'dlg_change_rename'
     },
     template: require('../templates/entityrename.html'),
+
     templateContext: function () {
         return {
             title: this.title
