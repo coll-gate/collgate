@@ -5,7 +5,7 @@
  * @date 2016-12-09
  * @copyright Copyright (c) 2016 INRA/CIRAD
  * @license MIT (see LICENSE file)
- * @details 
+ * @details
  */
 
 var AccessionModel = require('../models/accession');
@@ -18,11 +18,15 @@ var Collection = Backbone.Collection.extend({
 
     initialize: function (options) {
         options || (options = {});
+        this.panel_id = (options.panel_id || null);
+        if (this.panel_id) {
+            this.url = application.baseUrl + 'accession/panel/' + this.panel_id + '/accession/';
+        }
         this.filters = (options.filters || {});
         this.search = (options.search || {});
     },
 
-    parse: function(data) {
+    parse: function (data) {
         this.prev = data.prev;
         this.cursor = data.cursor;
         this.next = data.next;
@@ -31,7 +35,7 @@ var Collection = Backbone.Collection.extend({
         return data.items;
     },
 
-    fetch: function(options) {
+    fetch: function (options) {
         options || (options = {});
         var data = (options.data || {});
 
@@ -60,7 +64,7 @@ var Collection = Backbone.Collection.extend({
         return Backbone.Collection.prototype.fetch.call(this, opts);
     },
 
-    count: function(options) {
+    count: function (options) {
         options || (options = {});
         var data = (options.data || {});
 

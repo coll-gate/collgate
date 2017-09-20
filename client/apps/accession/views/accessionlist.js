@@ -5,7 +5,7 @@
  * @date 2016-12-19
  * @copyright Copyright (c) 2016 INRA/CIRAD
  * @license MIT (see LICENSE file)
- * @details 
+ * @details
  */
 
 var AccessionView = require('../views/accession');
@@ -74,10 +74,11 @@ var View = ScrollView.extend({
 
     initialize: function(options) {
         View.__super__.initialize.apply(this, arguments);
+        // var context_menu = options.context_menu;
         // this.listenTo(this.collection, 'reset', this.render, this);
     },
 
-    onRender: function() {
+    onShowTab: function() {
         var view = this;
 
         var contextLayout = application.getView().getChildView('right');

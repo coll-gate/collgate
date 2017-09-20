@@ -11,7 +11,7 @@
 var Backbone = require('backbone');
 
 var Model = Backbone.Model.extend({
-    url: function() {
+    url: function () {
         if (this.isNew())
             return application.baseUrl + 'accession/panel/';
         else
@@ -20,25 +20,28 @@ var Model = Backbone.Model.extend({
 
     defaults: {
         id: null,
-        name: ''
+        name: '',
+        selection: {},
+        descriptor_meta_model: null,
+        descriptors: {}
     },
 
-    parse: function(data) {
+    parse: function (data) {
         return data;
     },
 
-    // validate: function(attrs) {
-    //     var errors = {};
-    //     var hasError = false;
-    //     if (!attrs.name) {
-    //         errors.name = 'Name must be valid and at least 3 characters length';
-    //         hasError = true;
-    //     }
-    //
-    //     if (hasError) {
-    //       return errors;
-    //     }
-    // }
+    validate: function (attrs) {
+        var errors = {};
+        var hasError = false;
+        if (!attrs.name) {
+            errors.name = 'Name must be valid and at least 3 characters length';
+            hasError = true;
+        }
+
+        if (hasError) {
+            return errors;
+        }
+    }
 });
 
 module.exports = Model;

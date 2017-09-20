@@ -50,19 +50,19 @@ class RestAccessionId(RestAccessionAccession):
 
 
 @RestAccessionAccession.def_auth_request(Method.POST, Format.JSON, content={
-        "type": "object",
-        "properties": {
-            "name": AccessionSynonym.NAME_VALIDATOR,
-            "code": AccessionSynonym.CODE_VALIDATOR,
-            "descriptor_meta_model": {"type": "number"},
-            "primary_classification_entry": {"type": "number"},
-            "descriptors": {"type": "object"},
-            "language": AccessionSynonym.LANGUAGE_VALIDATOR
-        },
-    }, perms={
-        'accession.add_accession': _("You are not allowed to create an accession")
-    }
-)
+    "type": "object",
+    "properties": {
+        "name": AccessionSynonym.NAME_VALIDATOR,
+        "code": AccessionSynonym.CODE_VALIDATOR,
+        "descriptor_meta_model": {"type": "number"},
+        "primary_classification_entry": {"type": "number"},
+        "descriptors": {"type": "object"},
+        "language": AccessionSynonym.LANGUAGE_VALIDATOR
+    },
+}, perms={
+    'accession.add_accession': _("You are not allowed to create an accession")
+}
+                                         )
 def create_accession(request):
     name = request.data['name']
     code = request.data['code']
@@ -219,8 +219,8 @@ def get_accession_list(request):
         cq.filter(filters)
 
     cq.prefetch_related(Prefetch(
-            "synonyms",
-            queryset=AccessionSynonym.objects.all().order_by('type', 'language')))
+        "synonyms",
+        queryset=AccessionSynonym.objects.all().order_by('type', 'language')))
 
     cq.select_related('primary_classification_entry->name', 'primary_classification_entry->rank')
     # cq.select_related('#test_accession->code')
@@ -356,7 +356,8 @@ def get_accession_details_json(request, acc_id):
     accession = Accession.objects.get(id=int(acc_id))
 
     # check permission on this object
-    perms = get_permissions_for(request.user, accession.content_type.app_label, accession.content_type.model, accession.pk)
+    perms = get_permissions_for(request.user, accession.content_type.app_label, accession.content_type.model,
+                                accession.pk)
     if 'accession.get_accession' not in perms:
         raise PermissionDenied(_('Invalid permission to access to this accession'))
 
@@ -476,15 +477,15 @@ def search_accession(request):
 
 
 @RestAccessionId.def_auth_request(Method.PATCH, Format.JSON, content={
-        "type": "object",
-        "properties": {
-            "primary_classification_entry": {"type": "integer", "required": False},
-            "entity_status": Accession.ENTITY_STATUS_VALIDATOR_OPTIONAL,
-            "descriptors": {"type": "object", "required": False},
-        },
+    "type": "object",
+    "properties": {
+        "primary_classification_entry": {"type": "integer", "required": False},
+        "entity_status": Accession.ENTITY_STATUS_VALIDATOR_OPTIONAL,
+        "descriptors": {"type": "object", "required": False},
     },
+},
     perms={
-        'accession.change_accession': _("You are not allowed to modify an accession"),
+      'accession.change_accession': _("You are not allowed to modify an accession"),
     })
 def patch_accession(request, acc_id):
     accession = get_object_or_404(Accession, id=int(acc_id))
@@ -500,7 +501,8 @@ def patch_accession(request, acc_id):
         with transaction.atomic():
             if 'primary_classification_entry' in request.data:
                 primary_classification_entry_id = int(request.data['primary_classification_entry'])
-                primary_classification_entry = get_object_or_404(ClassificationEntry, id=primary_classification_entry_id)
+                primary_classification_entry = get_object_or_404(ClassificationEntry,
+                                                                 id=primary_classification_entry_id)
 
                 # update FK
                 accession.primary_classification_entry = primary_classification_entry

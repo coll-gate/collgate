@@ -17,15 +17,15 @@ var EntityListFilterView = require('../../descriptor/views/entitylistfilter');
 var DefaultLayout = require('../../main/views/defaultlayout');
 var ScrollingMoreView = require('../../main/views/scrollingmore');
 var TitleView = require('../../main/views/titleview');
-// var PanelLayout = require('../views/panellayout');
+var PanelLayout = require('../views/panellayout');
 
 var Router = Marionette.AppRouter.extend({
-    routes : {
+    routes: {
         "app/accession/panel/": "getPanelList",
         "app/accession/panel/:id/*tab": "getPanel"
     },
 
-    getPanelList : function(options) {
+    getPanelList: function (options) {
         options || (options = {});
 
         var collection = new PanelCollection({
@@ -45,7 +45,7 @@ var Router = Marionette.AppRouter.extend({
         });
 
         columns.done(function (data) {
-            var panelListView = new PanelListView({collection : collection, columns: data.columns});
+            var panelListView = new PanelListView({collection: collection, columns: data.columns});
 
             defaultLayout.showChildView('content', panelListView);
             defaultLayout.showChildView('content-bottom', new ScrollingMoreView({
@@ -54,13 +54,14 @@ var Router = Marionette.AppRouter.extend({
             }));
 
             defaultLayout.showChildView('bottom', new EntityListFilterView({
-                collection: collection, columns: data.columns}));
+                collection: collection, columns: data.columns
+            }));
 
             panelListView.query();
         });
     },
 
-    getPanel : function(id, tab) {
+    getPanel: function (id, tab) {
         tab || (tab = "");
 
         var panel = new PanelModel({id: id});
@@ -68,11 +69,11 @@ var Router = Marionette.AppRouter.extend({
         var defaultLayout = new DefaultLayout();
         application.main.showContent(defaultLayout);
 
-        panel.fetch().then(function() {
+        panel.fetch().then(function () {
             defaultLayout.showChildView('title', new TitleView({title: gt.gettext("Panel"), model: panel}));
 
-            // var panelLayout = new PanelLayout({model: panel, initialTab: tab.replace('/', '')});
-            // defaultLayout.showChildView('content', panelLayout);
+            var panelLayout = new PanelLayout({model: panel, initialTab: tab.replace('/', '')});
+            defaultLayout.showChildView('content', panelLayout);
         });
     }
 });

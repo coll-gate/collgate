@@ -11,17 +11,23 @@
 var Dialog = require('../../main/views/dialog');
 var Marionette = require('backbone.marionette');
 
+var DefaultLayout = require('../../main/views/defaultlayout');
+var TitleView = require('../../main/views/titleview');
+var AccessionPanelModel = require('../models/panel');
+var AccessionPanelLayout = require('../views/panellayout');
+
 var Controller = Marionette.Object.extend({
     create: function (data) {
         var CreatePanelDialog = Dialog.extend({
             template: require('../templates/panelcreate.html'),
             ui: {
                 validate: "button.continue",
-                name: "#panel_name"
+                name: "#panel_name",
+                descriptor_meta_model: "#meta_model"
             },
 
             events: {
-                'click @ui.validate': 'onCreate',
+                'click @ui.validate': 'onContinue',
                 'input @ui.name': 'onNameInput'
             },
 
@@ -42,54 +48,34 @@ var Controller = Marionette.Object.extend({
                 return true;
             },
 
-            // validate: function () {
-            //     var valid = this.validateName();
-            //     if (this.ui.name.hasClass('invalid')) {
-            //         valid = false;
-            //     }
-            //
-            //     return valid;
-            // },
+            onContinue: function () {
+                var view = this;
 
-            onCreate: function () {
                 if (this.validateName()) {
                     var name = this.ui.name.val().trim();
-                    console.log(name);
-                    console.log(data);
 
-                    $.ajax({
-                        type: "POST",
-                        url: application.baseUrl + 'accession/panel/',
-                        dataType: 'json',
-                        contentType: 'application/json; charset=utf8',
-                        data: JSON.stringify({name: name, selection: data}),
-                        success: function (response) {
-                            console.log(response)
-                        }
+                    // create a new local model and open an edit view with this model
+                    var model = new AccessionPanelModel({
+                        name: name,
+                        selection: data,
+                        descriptors: {},
+                        descriptor_meta_model: null
                     });
 
+                    view.destroy();
+
+                    var defaultLayout = new DefaultLayout();
+                    application.main.showContent(defaultLayout);
+
+                    defaultLayout.showChildView('title', new TitleView({
+                        title: gt.gettext("Classification entry"),
+                        model: model
+                    }));
+
+                    var accessionPanelLayout = new AccessionPanelLayout({model: model});
+                    defaultLayout.showChildView('content', accessionPanelLayout);
                 }
-
-                // create a new local model and open an edit view with this model
-                // var model = new PanelModel({
-                //     name: name,
-                //     accession_list: data
-                // });
-                //
-                // this.destroy();
-                //
-                // var defaultLayout = new DefaultLayout();
-                // application.main.showContent(defaultLayout);
-                //
-                // defaultLayout.showChildView('title', new TitleView({
-                //     title: gt.gettext("Accession"),
-                //     model: model
-                // }));
-                //
-                // var accessionLayout = new AccessionLayout({model: model});
-                // defaultLayout.showChildView('content', accessionLayout);
             }
-
         });
 
         var createPanelDialog = new CreatePanelDialog();
