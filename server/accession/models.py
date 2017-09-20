@@ -10,6 +10,7 @@
 
 import re
 
+from django.contrib.postgres.fields import JSONField
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
@@ -21,6 +22,7 @@ from igdectk.common.models import ChoiceEnum, IntegerChoice
 from main.models import Entity, EntitySynonym
 from descriptor.models import DescribableEntity, DescriptorType
 from classification.models import ClassificationEntry
+from descriptor.models import DescriptorMetaModel
 
 
 class AccessionClassificationEntry(models.Model):
@@ -380,6 +382,13 @@ class Panel(Entity):
     # unique name of the panel
     name = models.CharField(unique=True, max_length=255, db_index=True)
 
+    # JSONB field containing the list of descriptors model type id as key, with a descriptor value or value code.
+    descriptors = JSONField(default={})
+
+    # It refers to a set of models of type of descriptors through a meta-model of descriptor.
+    # It can be null because it is possible to have the choice to defines or not some descriptors
+    descriptor_meta_model = models.ForeignKey(DescriptorMetaModel, null=True)
+
     class Meta:
         abstract = True
 
@@ -399,6 +408,30 @@ class BatchPanel(Panel):
     # list of batches
     batches = models.ManyToManyField(Batch)
 
+    @classmethod
+    def get_defaults_columns(cls):
+        return {
+            'descriptor_meta_model': {
+                'label': _('Model'),
+                'field': 'name',
+                'query': True,
+                'format': {
+                    'type': 'descriptor_meta_model',
+                    'model': 'accession.batchpanel'
+                },
+                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'in', 'notin']
+            },
+            'name': {
+                'label': _('Name'),
+                'query': False,  # done by a prefetch related
+                'format': {
+                    'type': 'string',
+                    'model': 'accession.batchpanel'
+                },
+                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
+            }
+        }
+
     class Meta:
         verbose_name = _("batch panel")
 
@@ -415,6 +448,30 @@ class AccessionPanel(Panel):
 
     # related accessions
     accessions = models.ManyToManyField(Accession)
+
+    @classmethod
+    def get_defaults_columns(cls):
+        return {
+            'descriptor_meta_model': {
+                'label': _('Model'),
+                'field': 'name',
+                'query': True,
+                'format': {
+                    'type': 'descriptor_meta_model',
+                    'model': 'accession.accessionpanel'
+                },
+                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'in', 'notin']
+            },
+            'name': {
+                'label': _('Name'),
+                'query': False,  # done by a prefetch related
+                'format': {
+                    'type': 'string',
+                    'model': 'accession.accessionpanel'
+                },
+                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
+            }
+        }
 
     class Meta:
         verbose_name = _("accession panel")

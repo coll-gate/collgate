@@ -52,7 +52,7 @@ class CollGateAccession(ApplicationMain):
         )
 
         # add the describable entities models
-        from .models import Accession, Batch, Sample
+        from .models import Accession, Batch, Sample, AccessionPanel, BatchPanel
 
         # descriptor_module
         from django.apps import apps
@@ -60,7 +60,9 @@ class CollGateAccession(ApplicationMain):
         descriptor_app.describable_entities += [
             Accession,
             Batch,
-            Sample
+            Sample,
+            AccessionPanel,
+            BatchPanel
         ]
 
         # add the classificationEntry entities models, classification_module
@@ -92,7 +94,7 @@ class CollGateAccession(ApplicationMain):
             MenuEntry('list-accession', _('List accessions'), "#accession/accession/", icon=Glyph.LIST, order=101))
         menu_accession.add_entry(
             MenuEntry('panel-accession', _('Panel accessions'), "#accession/panel/",
-                      icon=Glyph.BOOK, order=102))
+                      icon=Glyph.LIST_ALT, order=102))
 
         menu_accession.add_entry(MenuSeparator(200))
         menu_accession.add_entry(

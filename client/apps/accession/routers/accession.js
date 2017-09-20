@@ -5,7 +5,7 @@
  * @date 2016-07-19
  * @copyright Copyright (c) 2016 INRA/CIRAD
  * @license MIT (see LICENSE file)
- * @details 
+ * @details
  */
 
 var Marionette = require('backbone.marionette');
@@ -47,7 +47,12 @@ var Router = Marionette.AppRouter.extend({
         });
 
         columns.done(function (data) {
-            var accessionListView = new AccessionListView({collection : collection, columns: data.columns});
+            var accessionListView = new AccessionListView({
+                collection : collection, columns: data.columns,
+                onRender: function () {
+                    this.onShowTab();
+                }
+            });
 
             defaultLayout.showChildView('content', accessionListView);
             defaultLayout.showChildView('content-bottom', new ScrollingMoreView({

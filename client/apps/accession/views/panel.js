@@ -74,7 +74,8 @@ var View = Marionette.View.extend({
     },
 
     onDeletePanel: function () {
-        alert("@todo");
+        this.model.destroy({wait: true});
+        return false;
     }
 });
 
