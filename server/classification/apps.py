@@ -17,6 +17,7 @@ from igdectk.module.manager import module_manager
 from igdectk.module.menu import MenuEntry, MenuSeparator
 from igdectk.module.module import Module, ModuleMenu
 from igdectk.bootstrap.glyphs import Glyph
+from main.config import configuration
 
 
 class CollGateClassification(ApplicationMain):
@@ -105,3 +106,32 @@ class CollGateClassification(ApplicationMain):
         classification_module.add_menu(menu_classification)
 
         module_manager.register_module(classification_module)
+
+        if self.is_run_mode():
+            self.post_ready()
+
+    def post_ready(self):
+        from classification import localsettings
+        from main.models import EntitySynonymType
+        if self.is_table_exists(EntitySynonymType):
+            builtins_types = ["classification_entry_name",
+                              "classification_entry_code",
+                              "classification_entry_alternate_name"]
+
+            if EntitySynonymType.objects.filter(name__in=builtins_types).count() != len(builtins_types):
+                configuration.wrong(
+                    "classification",
+                    "classification_entry_synonym_types",
+                    "Missing builtins classification entry synonym types. Be sure to have installed fixtures.")
+            else:
+                configuration.validate("classification",
+                                       "classification_entry_synonym_types",
+                                       "classification entry synonym types detected.")
+
+                # keep models id in cache
+                localsettings.synonym_type_classification_entry_name = EntitySynonymType.objects.get(
+                    name="classification_entry_name").pk
+                localsettings.synonym_type_classification_entry_code = EntitySynonymType.objects.get(
+                    name="classification_entry_code").pk
+                localsettings.synonym_type_classification_entry_alternate_name = EntitySynonymType.objects.get(
+                    name="classification_entry_alternate_name").pk

@@ -69,7 +69,7 @@ var View = Marionette.View.extend({
                         for (var i in data.items) {
                             var t = data.items[i];
 
-                            if (t.value.toUpperCase() == this.el.val().toUpperCase()) {
+                            if (t.value.toUpperCase() === this.el.val().toUpperCase()) {
                                 $(this.el).validateField('failed', gt.gettext('Group name already in usage'));
                                 break;
                             }
@@ -84,4 +84,3 @@ var View = Marionette.View.extend({
 });
 
 module.exports = View;
-

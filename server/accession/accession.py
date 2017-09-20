@@ -147,13 +147,13 @@ def create_accession(request):
             {
                 'id': grc_code.id,
                 'name': grc_code.name,
-                'type': grc_code.type,
+                'synonym_type': grc_code.synonym_type_id,
                 'language': grc_code.language
             },
             {
                 'id': primary_name.id,
                 'name': primary_name.name,
-                'type': primary_name.type,
+                'synonym_type': primary_name.synonym_type_id,
                 'language': primary_name.language
             }
         ]
@@ -220,7 +220,7 @@ def get_accession_list(request):
 
     cq.prefetch_related(Prefetch(
             "synonyms",
-            queryset=AccessionSynonym.objects.all().order_by('type', 'language')))
+            queryset=AccessionSynonym.objects.all().order_by('synonym_type', 'language')))
 
     cq.select_related('primary_classification_entry->name', 'primary_classification_entry->rank')
     # cq.select_related('#test_accession->code')
@@ -250,7 +250,7 @@ def get_accession_list(request):
             a['synonyms'].append({
                 'id': synonym.id,
                 'name': synonym.name,
-                'type': synonym.type,
+                'synonym_type': synonym.synonym_type_id,
                 'language': synonym.language
             })
 
@@ -291,7 +291,7 @@ def get_accession_list(request):
     # qs = qs.select_related('parent').prefetch_related(
     #     Prefetch(
     #         "synonyms",
-    #         queryset=AccessionSynonym.objects.all().order_by('type', 'language'))
+    #         queryset=AccessionSynonym.objects.all().order_by('synonym_type', 'language'))
     # ).distinct().order_by(*order_by)[:limit]
     # print(qs.query)
     #
@@ -317,7 +317,7 @@ def get_accession_list(request):
     #         a['synonyms'].append({
     #             'id': synonym.id,
     #             'name': synonym.name,
-    #             'type': synonym.type,
+    #             'synonym_type': synonym.synonym_type_id,
     #             'language': synonym.language
     #         })
     #
@@ -370,11 +370,11 @@ def get_accession_details_json(request, acc_id):
         'descriptors': accession.descriptors
     }
 
-    for s in accession.synonyms.all().order_by('type', 'language'):
+    for s in accession.synonyms.all().order_by('synonym_type', 'language'):
         result['synonyms'].append({
             'id': s.id,
             'name': s.name,
-            'type': s.type,
+            'synonym_type': s.synonym_type_id,
             'language': s.language,
         })
 
@@ -431,7 +431,7 @@ def search_accession(request):
     qs = qs.prefetch_related(
         Prefetch(
             "synonyms",
-            queryset=AccessionSynonym.objects.exclude(type=AccessionSynonym.TYPE_GRC_CODE).order_by('type', 'language'))
+            queryset=AccessionSynonym.objects.exclude(type=AccessionSynonym.TYPE_GRC_CODE).order_by('synonym_type', 'language'))
     )
 
     qs = qs.order_by('name').distinct()[:limit]

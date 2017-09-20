@@ -13,7 +13,7 @@ from django.db import transaction
 
 from descriptor.describable import DescriptorsBuilder
 from .models import ClassificationEntry, ClassificationRank
-from .models import ClassificationEntrySynonym, ClassificationEntrySynonymType
+from .models import ClassificationEntrySynonym
 
 from django.utils.translation import ugettext_lazy as _
 
@@ -98,7 +98,7 @@ class ClassificationEntryManager(object):
         primary_synonym = ClassificationEntrySynonym(
             classification_entry_id=classification_entry.id,
             name=name,
-            type=ClassificationEntrySynonymType.PRIMARY.value,
+            type=0,
             language=language
         )
 
@@ -174,7 +174,7 @@ class ClassificationEntryManager(object):
 
         for synonym in synonyms:
             # at least one usage, not compatible with primary synonym
-            if synonym['type'] == ClassificationEntrySynonymType.PRIMARY.value:
+            if synonym['type'] == 0:
                 raise SuspiciousOperation(
                     _("The primary name could not be used by another synonym of classification entry"))
 

@@ -18,7 +18,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from igdectk.common.models import ChoiceEnum, IntegerChoice
 
-from main.models import Entity
+from main.models import Entity, EntitySynonym
 from descriptor.models import DescribableEntity, DescriptorType
 from classification.models import ClassificationEntry
 
@@ -182,112 +182,21 @@ class Accession(DescribableEntity):
         }
 
 
-class AccessionSynonym(Entity):
+class AccessionSynonym(EntitySynonym):
     """
-    Table specific to accession to defines the synonyms.
+    Synonym of accession model.
     """
 
     # name validator, used with content validation, to avoid any whitespace before and after
-    NAME_VALIDATOR = {"type": "string", "minLength": 1, "maxLength": 128, "pattern": r"^\S+.+\S+$"}
+    NAME_VALIDATOR = {"type": "string", "minLength": 1, "maxLength": 32, "pattern": "^[a-zA-Z0-9\-\_]+$"}
 
     # code validator, used with content validation, to avoid any whitespace before and after
     CODE_VALIDATOR = {"type": "string", "minLength": 1, "maxLength": 128, "pattern": r"^\S+.+\S+$"}
 
-    # accession synonym type validator
-    TYPE_VALIDATOR = {"type:": "string", 'minLength': 9, 'maxLength': 17, "pattern": r"^ACC_SYN:[0-9]{1,9}$"}
-
-    # static : Descriptor type code
-    DESCRIPTOR_TYPE_CODE = "ACC_SYN"
-
-    # static : unique code type as constant
-    TYPE_GRC_CODE = "ACC_SYN:01"
-
-    # static : primary name type as constant
-    TYPE_PRIMARY = "ACC_SYN:02"
-
-    # static : synonym name type as constant
-    TYPE_SYNONYM = "ACC_SYN:03"
-
-    # related accession
-    accession = models.ForeignKey(Accession, related_name="synonyms")
-
-    # synonym display name
-    name = models.CharField(max_length=128, db_index=True)
-
-    # language code
-    language = models.CharField(max_length=5, default="en")
-
-    # type of synonym is related to the type of descriptor TYPE_CODE that is an 'enum_single'.
-    type = models.CharField(max_length=64, default=TYPE_SYNONYM)
+    entity = models.ForeignKey(Accession, related_name='synonyms')
 
     class Meta:
         verbose_name = _("accession synonym")
-
-    @classmethod
-    def is_synonym_type(cls, synonym_type):
-        descriptor_type = DescriptorType.objects.get(code=AccessionSynonym.DESCRIPTOR_TYPE_CODE)
-
-        try:
-            descriptor_type.get_value(synonym_type)
-        except ObjectDoesNotExist:
-            return False
-
-        return True
-
-    def is_grc_code(self):
-        """
-        Is a GRC code type of synonym.
-        :return: True if GRC code
-        """
-        return self.type == AccessionSynonym.TYPE_GRC_CODE
-
-    def is_primary(self):
-        """
-        Is a primary name type of synonym.
-        :return: True if primary name
-        """
-        return self.type == AccessionSynonym.TYPE_PRIMARY
-
-    def natural_name(self):
-        return self.name
-
-    @classmethod
-    def make_search_by_name(cls, term):
-        return Q(name__istartswith=term)
-
-    def audit_create(self, user):
-        return {
-            'accession': self.accession_id,
-            'name': self.name,
-            'type': self.type,
-            'language': self.language
-        }
-
-    def audit_update(self, user):
-        if hasattr(self, 'updated_fields'):
-            result = {'updated_fields': self.updated_fields}
-
-            if 'name' in self.updated_fields:
-                result['name'] = self.name
-
-            if 'type' in self.updated_fields:
-                result['type'] = self.type
-
-            if 'language' in self.updated_fields:
-                result['language'] = self.language
-
-            return result
-        else:
-            return {
-                'name': self.name,
-                'type': self.type,
-                'language': self.language,
-            }
-
-    def audit_delete(self, user):
-        return {
-            'name': self.name
-        }
 
 
 class Batch(DescribableEntity):

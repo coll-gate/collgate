@@ -1,16 +1,12 @@
 # -*- coding: utf-8; -*-
 #
 # @file models.py
-# @brief 
+# @brief coll-gate application models.
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2016-09-01
 # @copyright Copyright (c) 2016 INRA/CIRAD
 # @license MIT (see LICENSE file)
 # @details 
-
-"""
-coll-gate application models.
-"""
 
 import json
 
@@ -326,4 +322,3 @@ def unregister_models(app_name):
         models.signals.post_save.disconnect(entity_post_save, sender=model)
         models.signals.post_delete.disconnect(entity_post_delete, sender=model)
         models.signals.m2m_changed.disconnect(entity_m2m_changed, sender=model)
-

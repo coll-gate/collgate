@@ -1,16 +1,13 @@
 # -*- coding: utf-8; -*-
 #
 # @file establishment.py
-# @brief 
+# @brief coll-gate organisation establishment model REST API
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2017-01-03
 # @copyright Copyright (c) 2017 INRA/CIRAD
 # @license MIT (see LICENSE file)
 # @details 
 
-"""
-coll-gate organisation establishment model REST API
-"""
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import SuspiciousOperation
 from django.db import transaction, IntegrityError
@@ -331,4 +328,3 @@ def delete_establishment(request, est_id):
     establishment.delete()
 
     return HttpResponseRest(request, {})
-

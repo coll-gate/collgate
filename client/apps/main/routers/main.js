@@ -15,9 +15,11 @@ var DefaultLayout = require('../views/defaultlayout');
 var QuarterLayout = require('../views/quarterlayout');
 var TitleView = require('../views/titleview');
 
-var LanguageCollection = require('../collections/language');
 var LanguageListView = require('../views/languagelist');
 var LanguageAddView = require('../views/languageadd');
+
+var EntitySynonymTypeListView = require('../views/entitysynonymtypelist');
+var EntitySynonymTypeAddView = require('../views/entitysynonymtypeadd');
 
 var Router = Marionette.AppRouter.extend({
     routes : {
@@ -26,6 +28,7 @@ var Router = Marionette.AppRouter.extend({
         "app/main/help/": "help",
         "app/main/config/": "config",
         "app/main/language/": "getLanguagesList",
+        "app/main/entity-synonym-type/": "getEntitySynonymTypesList",
         "app/*actions": "default"
     },
 
@@ -109,6 +112,25 @@ var Router = Marionette.AppRouter.extend({
         });
 
         defaultLayout.showChildView('bottom', new LanguageAddView({collection: collection}));
+    },
+
+    getEntitySynonymTypesList: function() {
+        var EntitySynonymTypeCollection = require('../collections/entitysynonymtype');
+        var collection = new EntitySynonymTypeCollection();
+
+        var defaultLayout = new DefaultLayout({});
+        application.main.showContent(defaultLayout);
+
+        defaultLayout.showChildView('title', new TitleView({title: gt.gettext("List of type of synonyms for entities")}));
+
+        collection.fetch().done(function (data) {
+            var entitySynonymTypeListView = new EntitySynonymTypeListView({collection : collection});
+
+            defaultLayout.showChildView('content', entitySynonymTypeListView);
+            // defaultLayout.showChildView('content-bottom', new ScrollingMoreView({targetView: entitySynonymTypeListView}));
+        });
+
+        defaultLayout.showChildView('bottom', new EntitySynonymTypeAddView({collection: collection}));
     }
 });
 

@@ -312,23 +312,21 @@ def modify_descriptor_meta_model(request, dmm_id):
 def patch_descriptor_meta_model(request, dmm_id):
     dmm = get_object_or_404(DescriptorMetaModel, id=int(dmm_id))
 
-    # @todo patch parameters
+    update = False
+    result = {'id': dmm.pk}
+
     label = request.data.get('label')
 
     if label is not None:
+        update = True
+
         lang = translation.get_language()
         dmm.set_label(lang, label)
 
-    dmm.save()
+        result['label'] = label
 
-    result = {
-        'id': dmm.id,
-        'name': dmm.name,
-        'description': dmm.description,
-        'target': '.'.join(dmm.target.natural_key()),
-        'parameters': dmm.parameters,
-        'num_descriptor_models': dmm.descriptor_models.all().count()
-    }
+    if update:
+        dmm.save()
 
     return HttpResponseRest(request, result)
 
@@ -678,14 +676,22 @@ def modify_descriptor_panel_for_meta_model(request, dmm_id, pan_id):
 
     panel = get_object_or_404(DescriptorPanel, id=int(pan_id), descriptor_meta_model_id=int(dmm_id))
 
+    update = False
+    result = {'id': panel.pk}
+
     if label is not None:
+        update = True
+
         lang = translation.get_language()
         panel.set_label(lang, label)
+        panel.full_clean()
 
-    panel.full_clean()
-    panel.save()
+        result['label'] = label
 
-    return HttpResponseRest(request, {})
+    if update:
+        panel.save()
+
+    return HttpResponseRest(request, result)
 
 
 @RestDescriptorMetaModelIdPanelId.def_auth_request(

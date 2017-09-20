@@ -87,12 +87,12 @@ var View = Marionette.View.extend({
                             var t = data.items[i];
 
                             // invalid if GRC code exists with the same name or if exists into the same accession
-                            if (t.label.toUpperCase() == name.toUpperCase()) {
-                                if (t.type == "ACC_SYN:01") {
+                            if (t.label.toUpperCase() === name.toUpperCase()) {
+                                if (t.synonym_type == "ACC_SYN:01") {
                                     view.ui.synonym_name.validateField(
                                         'failed', gt.gettext('It is not possible to use a GRC code of accession as synonym'));
                                     return;
-                                } else if (t.accession == view.model.get('id')) {
+                                } else if (t.accession === view.model.get('id')) {
                                     view.ui.synonym_name.validateField(
                                         'failed', gt.gettext('Synonym of accession already defined into this accession'));
                                     return;
@@ -195,7 +195,7 @@ var View = Marionette.View.extend({
                                             view.ui.synonym_name.validateField(
                                                 'failed', gt.gettext('Accession GRC code must be unique'));
                                             break;
-                                        } else if (t.type == "ACC_SYN:01") {
+                                        } else if (t.synonym_type == "ACC_SYN:01") {
                                             // invalid if GRC code exists with the same name
                                             view.ui.synonym_name.validateField(
                                                 'failed', gt.gettext('It is not possible to use a GRC code of accession as synonym'));

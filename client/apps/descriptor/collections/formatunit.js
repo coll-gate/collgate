@@ -15,7 +15,7 @@ var Collection = Backbone.Collection.extend({
     model: FormatUnitModel,
 
     initialize: function(models, options) {
-        Collection.__super__.initialize.apply(this);
+        Collection.__super__.initialize.apply(this, arguments);
 
         this.models = [];
         this.lookup = {};

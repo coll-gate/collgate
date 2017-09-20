@@ -75,7 +75,7 @@ var View = Marionette.View.extend({
         return false;
     },
 
-    onRenameGroup: function (e) {
+    onRenameGroup: function () {
         if (!this.model.get('can_modify') || !session.user.isSuperUser || !session.user.isStaff) {
             return false;
         }

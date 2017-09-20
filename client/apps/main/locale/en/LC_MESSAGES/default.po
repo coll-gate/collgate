@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-31 18:17+0200\n"
+"POT-Creation-Date: 2017-09-20 18:26+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,6 +20,54 @@ msgstr ""
 msgid "Done"
 msgstr ""
 
+#: ../../../views/entitychangelabel.js:71
+#: ../../../views/entitychangelabel.js:88
+msgid "1 character min"
+msgstr ""
+
+#: ../../../views/entitychangelabel.js:74
+#: ../../../views/entitychangelabel.js:91
+#: ../../../views/entitysynonymtypeadd.js:73 ../../../views/languageadd.js:73
+msgid "128 characters max"
+msgstr ""
+
+#: ../../../views/entitychangelabel.js:120
+msgid "Successfully labeled !"
+msgstr ""
+
+#: ../../../views/entityrename.js:67 ../../../views/entitysynonymtypeadd.js:119
+msgid "Invalid characters (alphanumeric, _ and - only)"
+msgstr ""
+
+#: ../../../views/entityrename.js:72
+msgid "character_min"
+msgid_plural "characters_min"
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../../../views/entityrename.js:77
+msgid "character_max"
+msgid_plural "characters_max"
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../../../views/entitysynonymtype.js:69
+msgid "Change the labels for the type of synonym"
+msgstr ""
+
+#: ../../../views/entitysynonymtype.js:84
+msgid "Rename the type of synonym"
+msgstr ""
+
+#: ../../../views/entitysynonymtypeadd.js:76
+#: ../../../views/entitysynonymtypeadd.js:122 ../../../views/languageadd.js:76
+msgid "3 characters min"
+msgstr ""
+
+#: ../../../views/entitysynonymtypeadd.js:132
+msgid "Entity synonym type name already in usage"
+msgstr ""
+
 #: ../../../views/eventmessagepanel.js:76
 #: ../../../views/eventmessagepanel.js:90
 msgid "Should not be empty"
@@ -29,17 +77,8 @@ msgstr ""
 msgid "Successfully inserted !"
 msgstr ""
 
-#: ../../../views/language.js:96 ../../../views/language.js:110
-#: ../../../views/languageadd.js:73
-msgid "128 characters max"
-msgstr ""
-
-#: ../../../views/language.js:139
-msgid "Successfully labeled !"
-msgstr ""
-
-#: ../../../views/languageadd.js:76
-msgid "3 characters min"
+#: ../../../views/language.js:57
+msgid "Change the labels for the language"
 msgstr ""
 
 #: ../../../views/languageadd.js:119
@@ -54,24 +93,28 @@ msgstr ""
 msgid "Language code already in usage"
 msgstr ""
 
-#: ../../../routers/main.js:47
+#: ../../../routers/main.js:50
 msgid "Home"
 msgstr ""
 
-#: ../../../routers/main.js:67
+#: ../../../routers/main.js:70
 msgid "About..."
 msgstr ""
 
-#: ../../../routers/main.js:75
+#: ../../../routers/main.js:78
 msgid "Help..."
 msgstr ""
 
-#: ../../../routers/main.js:86
+#: ../../../routers/main.js:89
 msgid "Configuration state"
 msgstr ""
 
-#: ../../../routers/main.js:102
+#: ../../../routers/main.js:105
 msgid "List of languages for data"
+msgstr ""
+
+#: ../../../routers/main.js:124
+msgid "List of type of synonyms for entities"
 msgstr ""
 
 #: ../../../routers/profile.js:39
@@ -103,6 +146,7 @@ msgid "Edit2"
 msgstr ""
 
 #: ../../../behaviors/actionbuttonevents.js:20
+#: ../../../templates/entitysynonymtypelist.html:20
 #: ../../../templates/languagelist.html:16
 msgid "Label"
 msgstr ""
@@ -136,14 +180,37 @@ msgid "Undefined"
 msgstr ""
 
 #: ../../../templates/confirmdialog.html:21
+#: ../../../templates/entitychangelabel.html:34
+#: ../../../templates/entityrename.html:26
 #: ../../../templates/eventmessagecreate.html:34
-#: ../../../templates/languagechangelabel.html:34
 #: ../../../templates/languagecreate.html:38
 msgid "Cancel"
 msgstr ""
 
 #: ../../../templates/confirmdialog.html:22
 msgid "Confirm"
+msgstr ""
+
+#: ../../../templates/entitychangelabel.html:15
+msgid "Change the labels"
+msgstr ""
+
+#: ../../../templates/entitychangelabel.html:35
+#: ../../../templates/entityrename.html:27
+msgid "Apply"
+msgstr ""
+
+#: ../../../templates/entityrename.html:15
+msgid "Rename"
+msgstr ""
+
+#: ../../../templates/entityrename.html:20
+#: ../../../templates/entitysynonymtypelist.html:18
+msgid "Name"
+msgstr ""
+
+#: ../../../templates/entitysynonymtypelist.html:19
+msgid "Target"
 msgstr ""
 
 #: ../../../templates/eventmessagecreate.html:15
@@ -164,14 +231,6 @@ msgstr ""
 
 #: ../../../templates/home.html:17
 msgid "Welcome to Coll-Gate"
-msgstr ""
-
-#: ../../../templates/languagechangelabel.html:15
-msgid "Change the label for the language"
-msgstr ""
-
-#: ../../../templates/languagechangelabel.html:35
-msgid "Apply"
 msgstr ""
 
 #: ../../../templates/languagecreate.html:15

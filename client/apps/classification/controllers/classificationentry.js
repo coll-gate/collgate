@@ -19,7 +19,6 @@ var ClassificationEntryModel = require('../models/classificationentry');
 
 
 var Controller = Marionette.Object.extend({
-    // @todo must select the classification and then the rank
     create: function() {
         $.ajax({
             type: "GET",
@@ -173,9 +172,10 @@ var Controller = Marionette.Object.extend({
                 onChangeRank: function () {
                     var classificationId = parseInt(this.ui.classification.val());
                     var classificationRankId = parseInt(this.ui.rank.val());
+                    var level = this.classificationRanks[classificationRankId];
                     var select = $(this.ui.parent);
 
-                    if (this.classificationRanks[classificationRankId] === 0) {
+                    if (level === 0) {
                         this.ui.parent_group.hide(false);
                     } else {
                         this.ui.parent_group.show(false);
@@ -203,10 +203,10 @@ var Controller = Marionette.Object.extend({
                                     filters: JSON.stringify({
                                         method: 'icontains',
                                         classification_method: 'eq',
-                                        fields: ['name', 'classification', 'rank'],
+                                        fields: ['name', 'classification', 'level'],
                                         'name': params.term.trim(),
                                         'classification': classificationId,
-                                        'rank': classificationRankId
+                                        'level': level
                                     }),
                                     cursor: params.next
                                 };

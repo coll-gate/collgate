@@ -46,8 +46,9 @@ AccessionModule.prototype = {
 
         var SelectOption = require('../main/renderers/selectoption');
 
-        var AccessionSynonymTypeCollection = require('./collections/accessionsynonymtype');
-        this.collections.accessionSynonymTypes = new AccessionSynonymTypeCollection();
+        var EntitySynonymTypeCollection = require('../main/collections/entitysynonymtype');
+        this.collections.accessionSynonymTypes = new EntitySynonymTypeCollection([], {
+            target_model: 'classification.classificationentry'});
 
         this.views.accessionSynonymTypes = new SelectOption({
             className: 'accession-synonym-type',

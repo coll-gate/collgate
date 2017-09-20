@@ -9,9 +9,9 @@
 # @details coll-gate accession fixtures initialisation
 
 ORDER = [
+    'synonymtypes',
     'descriptorsgroups',
     'descriptorstypes',
-    'accessionsynonymtypes',
     'mcpdtypes',
     'descriptorsmodels'
 ]

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-09-07 10:04+0200\n"
+"POT-Creation-Date: 2017-09-20 17:30+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,7 +23,7 @@ msgid "Introduce a batch"
 msgstr "Introduire un lot"
 
 #: ../../../views/accessiondescriptor.js:26
-#: ../../../views/accessiondescriptoredit.js:76
+#: ../../../views/accessiondescriptoredit.js:73
 #: ../../../views/batchdescriptor.js:26
 #: ../../../views/batchdescriptoredit.js:75
 #: ../../../templates/accessionlayout.html:16
@@ -47,32 +47,41 @@ msgstr "Appliquer"
 #: ../../../templates/accessionchangesynonym.html:26
 #: ../../../templates/accessioncreate.html:58
 #: ../../../templates/batchcreate.html:46
-#: ../../../templates/navbatchcreate.html:39 ../../../templates/search.html:58
+#: ../../../templates/navbatchcreate.html:39
+#: ../../../templates/panelcreate.html:27 ../../../templates/search.html:58
 msgid "Cancel"
 msgstr "Annuler"
 
-#: ../../../views/accessionlist.js:32 ../../../views/search.js:163
+#: ../../../views/accessionlist.js:41
 msgid "Code"
 msgstr "Code"
 
-#: ../../../views/accessionlist.js:33 ../../../views/batchlist.js:44
-#: ../../../views/search.js:164
+#: ../../../views/accessionlist.js:42 ../../../views/batchlist.js:44
+#: ../../../views/panellist.js:35
 #: ../../../templates/accessionchangesynonym.html:20
 #: ../../../templates/accessionsynonyms.html:16
 msgid "Name"
 msgstr "Nom"
 
-#: ../../../views/accessionlist.js:35
+#: ../../../views/accessionlist.js:44
 msgid "Classification"
 msgstr "Classification"
 
-#: ../../../views/accessionlist.js:42
+#: ../../../views/accessionlist.js:51
 msgid "Model"
 msgstr "Modèle"
 
-#: ../../../views/accessionlist.js:44
+#: ../../../views/accessionlist.js:53
 msgid "Synonym"
 msgstr "Synonyme"
+
+#: ../../../views/accessionlist.js:91
+msgid "Accession actions"
+msgstr "Actions d'accession"
+
+#: ../../../views/accessionlistcontext.js:21
+msgid "Create panel"
+msgstr "Créer un panel"
 
 #: ../../../views/accessionsynonyms.js:57
 #: ../../../views/accessionsynonyms.js:226
@@ -113,8 +122,9 @@ msgstr "Actions sur les lots"
 msgid "Batch name already in usage"
 msgstr "Nom de lot déjà utilisé"
 
-#: ../../../views/batchlist.js:199 ../../../controllers/accession.js:262
-#: ../../../controllers/accession.js:281 ../../../controllers/batch.js:150
+#: ../../../views/batchlist.js:199 ../../../controllers/accession.js:267
+#: ../../../controllers/accession.js:286 ../../../controllers/batch.js:150
+#: ../../../controllers/panel.js:36
 msgid "128 characters max"
 msgstr "128 caractères maximum"
 
@@ -131,39 +141,39 @@ msgstr "ET"
 msgid "OR"
 msgstr "OU"
 
-#: ../../../views/condition.js:263
+#: ../../../views/condition.js:213
 msgid "Undefined"
 msgstr "Indéfini"
 
-#: ../../../views/condition.js:264
+#: ../../../views/condition.js:214
 msgid "Defined"
 msgstr "Défini"
 
-#: ../../../views/condition.js:265
+#: ../../../views/condition.js:215
 msgid "Exact"
 msgstr "Exactement"
 
-#: ../../../views/condition.js:266
+#: ../../../views/condition.js:216
 msgid "Different from"
 msgstr "Différent de"
 
-#: ../../../views/condition.js:267
+#: ../../../views/condition.js:217
 msgid "Include"
 msgstr "Inclus"
 
-#: ../../../views/condition.js:268
+#: ../../../views/condition.js:218
 msgid "Not include"
 msgstr "Non inclus"
 
-#: ../../../views/condition.js:269
+#: ../../../views/condition.js:219
 msgid "Contains"
 msgstr "Contient"
 
-#: ../../../views/condition.js:270
+#: ../../../views/condition.js:220
 msgid "Lesser than"
 msgstr "Inférieur à"
 
-#: ../../../views/condition.js:271
+#: ../../../views/condition.js:221
 msgid "Greater than"
 msgstr "Supérieur à"
 
@@ -190,8 +200,8 @@ msgstr "groupes de conditions invalides"
 msgid "Cultivar"
 msgstr "Cultivar"
 
-#: ../../../views/search.js:20 ../../../routers/accession.js:74
-#: ../../../controllers/accession.js:350 ../../../templates/batchcreate.html:30
+#: ../../../views/search.js:20 ../../../routers/accession.js:78
+#: ../../../controllers/accession.js:355 ../../../templates/batchcreate.html:30
 #: ../../../templates/navbatchcreate.html:25
 msgid "Accession"
 msgstr "Accession"
@@ -208,29 +218,40 @@ msgstr "Liste de tout les lots"
 msgid "List of batches for the accession"
 msgstr "Liste des lots pour l'accession"
 
-#: ../../../controllers/accession.js:187
-msgid "Enter a classification entry name."
-msgstr ""
+#: ../../../routers/panel.js:38
+msgid "List of panels"
+msgstr "Liste des panels"
 
-#: ../../../controllers/accession.js:213
+#: ../../../routers/panel.js:72
+msgid "Panel"
+msgstr "Panel"
+
+#: ../../../controllers/accession.js:192
+msgid "Enter a classification entry name."
+msgstr "Saisissez un nom d'entrée de classification"
+
+#: ../../../controllers/accession.js:218
 msgid "Code of accession already used"
 msgstr "Code d'accession déjà utilisé"
 
-#: ../../../controllers/accession.js:247
+#: ../../../controllers/accession.js:252
 msgid "Synonym used as accession code"
 msgstr "Synonyme utilisé comme code d'accession"
 
-#: ../../../controllers/accession.js:265 ../../../controllers/accession.js:284
+#: ../../../controllers/accession.js:270 ../../../controllers/accession.js:289
+#: ../../../controllers/panel.js:39
 msgid "1 characters min"
-msgstr "Au moins un caractère"
+msgstr "Au moins 1 caractère"
 
-#: ../../../controllers/accession.js:302
-msgid "The meta-model of descriptors must be defined"
-msgstr ""
-
+# msgid "1 characters min"
+# msgstr "Au moins un caractère"
 #: ../../../controllers/accession.js:307
+msgid "The meta-model of descriptors must be defined"
+msgstr "The méta-modèle de déscripteurs doit être définit"
+
+#: ../../../controllers/accession.js:312
 msgid "The primary classification must be defined"
-msgstr ""
+msgstr "La classification principal doit être définie"
 
 #: ../../../controllers/batch.js:103
 msgid "Enter a accession name. 3 characters at least for auto-completion"
@@ -274,11 +295,11 @@ msgstr "Langue"
 
 #: ../../../templates/accessioncreate.html:48
 msgid "Primary classification"
-msgstr ""
+msgstr "Classification principale"
 
 #: ../../../templates/accessioncreate.html:52
 msgid "Primary classification entry"
-msgstr ""
+msgstr "Principale entrée de classification"
 
 #: ../../../templates/accessioncreate.html:59
 #: ../../../templates/batchcreate.html:47
@@ -294,6 +315,10 @@ msgstr "Synonymes"
 #: ../../../templates/batchlayout.html:17
 msgid "Batches"
 msgstr "Lots"
+
+#: ../../../templates/accessionlayout.html:18
+msgid "Classifications"
+msgstr "Classifications"
 
 #: ../../../templates/accessionsynonyms.html:15
 msgid "Type"
@@ -311,6 +336,18 @@ msgstr "Parents"
 #: ../../../templates/batchlayout.html:18
 msgid "Actions"
 msgstr "Actions"
+
+#: ../../../templates/panelcreate.html:15
+msgid "Create a panel from the selection"
+msgstr "Créer un panel depuis la sélection"
+
+#: ../../../templates/panelcreate.html:20
+msgid "Panel name"
+msgstr "Nom du panel"
+
+#: ../../../templates/panelcreate.html:29
+msgid "Create"
+msgstr "Créer"
 
 #: ../../../templates/search.html:15
 msgid "Advanced search"
@@ -352,11 +389,10 @@ msgstr "Condition"
 msgid "Value"
 msgstr "Valeur"
 
-#~ msgid ""
-#~ "Enter a classification name. 3 characters at least for auto-completion"
-#~ msgstr ""
-#~ "Saisissez un nom de classification. Au moins 3 caractères pour l'auto-"
-#~ "complétion"
+#: ../../../templates/descriptormetamodeltypes/accession.html:12
+msgid "Related primary classification"
+msgstr "Classification principale associée"
 
-#~ msgid "Primary classification (specie, variety, cultivar...)"
-#~ msgstr "Classification principale (espèce, variété, cultivar...)"
+#: ../../../templates/descriptormetamodeltypes/accession.html:16
+msgid "Available batches meta-models"
+msgstr "Méta-modèles de lots disponnibles"

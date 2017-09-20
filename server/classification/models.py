@@ -12,7 +12,6 @@ import re
 
 from django.contrib.postgres.fields import JSONField, ArrayField
 from django.db import models
-from django.core.validators import validate_comma_separated_integer_list
 from django.db.models import Q
 from django.utils import translation
 
@@ -21,7 +20,7 @@ from django.utils.translation import ugettext_lazy as _
 from descriptor.models import DescriptorMetaModel
 from igdectk.common.models import ChoiceEnum, IntegerChoice
 
-from main.models import Entity
+from main.models import Entity, EntitySynonym
 
 
 class BotanicalRank(ChoiceEnum):
@@ -42,16 +41,6 @@ class BotanicalRank(ChoiceEnum):
     VARIETY = IntegerChoice(10, _("Variety"))
     SUB_VARIETY = IntegerChoice(11, _("Subvariety"))
     CULTIVAR = IntegerChoice(12, _("Cultivar"))
-
-
-class ClassificationEntrySynonymType(ChoiceEnum):
-    """
-    Statically defined type of synonyms for classification entry.
-    """
-
-    PRIMARY = IntegerChoice(0, _('Primary'))
-    SYNONYM = IntegerChoice(1, _('Synonym'))
-    CODE = IntegerChoice(2, _('Code'))
 
 
 class Classification(Entity):
@@ -314,7 +303,8 @@ class ClassificationEntry(Entity):
                 'format': {
                     'type': 'descriptor_meta_model',
                     'model': 'classification.classificationentry'
-                }
+                },
+                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'in', 'notin']
             },
             'synonym': {  # cannot be managed for table or only a preferred one
                 'label': _('Synonym'),
@@ -407,77 +397,18 @@ class ClassificationEntry(Entity):
         return False
 
 
-class ClassificationEntrySynonym(Entity):
+class ClassificationEntrySynonym(EntitySynonym):
+    """
+    Synonym of classification entry.
+    """
 
     # name validator, used with content validation, to avoid any whitespace before and after
-    NAME_VALIDATOR = {"type": "string", "minLength": 3, "maxLength": 128, "pattern": r"^\S+.+\S+$"}
+    NAME_VALIDATOR = {"type": "string", "minLength": 1, "maxLength": 32, "pattern": "^[a-zA-Z0-9\-\_]+$"}
 
-    # related classification entry
-    classification_entry = models.ForeignKey(ClassificationEntry, related_name="synonyms", on_delete=models.CASCADE)
+    # code validator, used with content validation, to avoid any whitespace before and after
+    CODE_VALIDATOR = {"type": "string", "minLength": 1, "maxLength": 128, "pattern": r"^\S+.+\S+$"}
 
-    # display name of the synonym
-    name = models.CharField(max_length=128, db_index=True)
-
-    # language code
-    language = models.CharField(max_length=5, default="en")
-
-    # type of synonym is related to ClassificationEntrySynonymType values
-    type = models.IntegerField(choices=ClassificationEntrySynonymType.choices())
+    entity = models.ForeignKey(ClassificationEntry, related_name='synonyms')
 
     class Meta:
         verbose_name = _("classification entry synonym")
-
-    def natural_name(self):
-        return self.name
-
-    @classmethod
-    def make_search_by_name(cls, term):
-        return Q(name__istartswith=term)
-
-    def audit_create(self, user):
-        return {
-            'name': self.name,
-            'language': self.language,
-            'type': self.type,
-            'classification_entry': self.classification_entry_id
-        }
-
-    def audit_update(self, user):
-        if hasattr(self, 'updated_fields'):
-            result = {'updated_fields': self.updated_fields}
-
-            if 'name' in self.updated_fields:
-                result['name'] = self.name
-
-            if 'language' in self.updated_fields:
-                result['language'] = self.language
-
-            if 'type' in self.updated_fields:
-                result['type'] = self.type
-        else:
-            return {
-                'name': self.name,
-                'language': self.language,
-                'type': self.type
-            }
-
-    def audit_delete(self, user):
-        return {
-            'name': self.name
-        }
-
-    def is_primary(self):
-        """
-        Is a primary type of synonym.
-        :return: True if primary
-        """
-        return self.type == ClassificationEntrySynonymType.PRIMARY.value
-
-    @classmethod
-    def is_synonym_type(cls, synonym_type):
-        try:
-            ClassificationEntrySynonymType(synonym_type)
-        except ValueError:
-            return False
-
-        return True

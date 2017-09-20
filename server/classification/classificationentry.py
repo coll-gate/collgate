@@ -26,8 +26,8 @@ from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
 
 from .controller import ClassificationEntryManager
-from .models import Classification, ClassificationRank
-from .models import ClassificationEntry, ClassificationEntrySynonym, ClassificationEntrySynonymType
+from .models import Classification, ClassificationRank, ClassificationEntrySynonym
+from .models import ClassificationEntry
 from .base import RestClassification
 
 
@@ -135,7 +135,7 @@ def create_classification_entry(request):
         response['synonyms'].append({
             'id': s.id,
             'name': s.name,
-            'type': s.type,
+            'synonym_type': s.synonym_type_id,
             'language': s.language
         })
 
@@ -164,7 +164,7 @@ def get_classification_entry_list(request):
 
     cq.prefetch_related(Prefetch(
             "synonyms",
-            queryset=ClassificationEntrySynonym.objects.all().order_by('type', 'language')))
+            queryset=ClassificationEntrySynonym.objects.all().order_by('synonym_type', 'language')))
 
     # cq.select_related('parent->name', 'parent->rank')
 
@@ -197,7 +197,7 @@ def get_classification_entry_list(request):
             c['synonyms'].append({
                 'id': synonym.id,
                 'name': synonym.name,
-                'type': synonym.type,
+                'synonym_type': synonym.synonym_type_id,
                 'language': synonym.language
             })
 
@@ -262,11 +262,11 @@ def get_classification_entry_details_json(request, cls_id):
         'descriptors': classification_entry.descriptors,
     }
 
-    for s in classification_entry.synonyms.all().order_by('type', 'language'):
+    for s in classification_entry.synonyms.all().order_by('synonym_type', 'language'):
         result['synonyms'].append({
             'id': s.id,
             'name': s.name,
-            'type': s.type,
+            'synonym_type': s.synonym_type_id,
             'language': s.language,
         })
 
@@ -306,26 +306,26 @@ def search_classification_entry(request):
         elif classification_method == 'neq':
             qs = qs.exclude(rank__classification_id=int_arg(filters['classification']))
 
-    if 'rank' in filters['fields']:
-        rank = int_arg(filters['rank'])
-        rank_method = filters.get('rank_method', 'lt')
+    if 'level' in filters['fields']:
+        level = int_arg(filters['level'])
+        level_method = filters.get('level_method', 'lt')
 
-        if rank_method == 'eq':
-            qs = qs.filter(Q(rank__level=rank))
-        elif rank_method == 'lt':
-            qs = qs.filter(Q(rank__level__lt=rank))
-        elif rank_method == 'lte':
-            qs = qs.filter(Q(rank__level__lte=rank))
-        elif rank_method == 'gt':
-            qs = qs.filter(Q(rank__level__gt=rank))
-        elif rank_method == 'gte':
-            qs = qs.filter(Q(rank__level__gte=rank))
+        if level_method == 'eq':
+            qs = qs.filter(Q(rank__level=level))
+        elif level_method == 'lt':
+            qs = qs.filter(Q(rank__level__lt=level))
+        elif level_method == 'lte':
+            qs = qs.filter(Q(rank__level__lte=level))
+        elif level_method == 'gt':
+            qs = qs.filter(Q(rank__level__gt=level))
+        elif level_method == 'gte':
+            qs = qs.filter(Q(rank__level__gte=level))
 
     qs = qs.prefetch_related(
         Prefetch(
             "synonyms",
             queryset=ClassificationEntrySynonym.objects.exclude(
-                type=ClassificationEntrySynonymType.PRIMARY.value).order_by('type', 'language'))
+                type=0).order_by('synonym_type', 'language'))
     )
 
     qs = qs.order_by('name').distinct()[:limit]
@@ -557,7 +557,7 @@ def get_classification_entry_children(request, cls_id):
 
     cq.prefetch_related(Prefetch(
             "synonyms",
-            queryset=ClassificationEntrySynonym.objects.all().order_by('type', 'language')))
+            queryset=ClassificationEntrySynonym.objects.all().order_by('synonym_type', 'language')))
 
     cq.select_related('parent->name', 'parent->rank')
 
@@ -590,7 +590,7 @@ def get_classification_entry_children(request, cls_id):
             c['synonyms'].append({
                 'id': synonym.id,
                 'name': synonym.name,
-                'type': synonym.type,
+                'synonym_type': synonym.synonym_type_id,
                 'language': synonym.language
             })
 

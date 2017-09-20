@@ -18,7 +18,8 @@ var View = Dialog.extend({
 
     templateContext: function () {
         return {
-            title: this.title
+            title: this.title,
+            maxlength: this.maxlength
         };
     },
 
@@ -34,11 +35,14 @@ var View = Dialog.extend({
     },
 
     title: 'Rename',
+    minlength: 3,
+    maxlength: 128,
+    pattern: '.*',  // @todo
 
     initialize: function(options) {
         View.__super__.initialize.apply(this, arguments);
 
-        this.mergeOptions(options, ['title']);
+        this.mergeOptions(options, ['title', 'minlength', 'maxlength', 'pattern']);
     },
 
     onRender: function () {
@@ -62,11 +66,15 @@ var View = Dialog.extend({
         if (v.length > 0 && !re.test(v)) {
             this.ui.name.validateField('failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
             return false;
-        } else if (v.length < 3) {
-            this.ui.name.validateField('failed', gt.gettext('3 characters min'));
+        } else if (v.length < this.minlength && this.minlength > 0) {
+            this.ui.name.validateField(
+                'failed',
+                gt.ngettext('characters_min', 'characters_min', {count: this.minlength}));
             return false;
-        } else if (v.length > 128) {
-            this.ui.name.validateField('failed', gt.gettext('128 characters max'));
+        } else if (v.length > this.maxlength && this.maxlength > 0) {
+            this.ui.name.validateField(
+                'failed',
+                gt.ngettext('characters_max', 'characters_max', {count: this.maxlength}));
             return false;
         }
 

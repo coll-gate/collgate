@@ -320,3 +320,137 @@ class EventMessage(models.Model):
 
     # message in a JSON text field with an object where key are language code and value are message in locale
     message = models.CharField(max_length=4096)
+
+
+class EntitySynonymType(models.Model):
+    """
+    Type of a synonym for a concrete entity model.
+    """
+
+    # name pattern
+    NAME_VALIDATOR = {"type": "string", "minLength": 3, "maxLength": 128, "pattern": "^[a-zA-Z0-9\-\_]+$"}
+
+    # name pattern
+    NAME_VALIDATOR_OPTIONAL = {"type": "string", "minLength": 3, "maxLength": 128, "pattern": "^[a-zA-Z0-9\-\_]+$",
+                               "require": False}
+
+    # label validator
+    LABEL_VALIDATOR = {"type": "string", "minLength": 1, "maxLength": 128, "pattern": r"^[^\s]+(\s+[^\s]+)*$"}
+
+    # label validator optional
+    LABEL_VALIDATOR_OPTIONAL = {
+        "type": "string", "minLength": 1, "maxLength": 128, "pattern": r"^[^\s]+(\s+[^\s]+)*$", "required": False}
+
+    # content type validator
+    TARGET_MODEL_VALIDATOR = {"type": "string", "minLength": 3, "maxLength": 64, "pattern": r"^[a-z]{3,}\.[a-z]{3,}$"}
+
+    # synonym display name (default for each entity is 'code', 'primary' and 'alternate_name'
+    name = models.CharField(max_length=128, db_index=True)
+
+    # unique means only one of this type per entity
+    unique = models.BooleanField(default=False)
+
+    # if true the language code is necessary to the synonym. in practice uses false for type like codes
+    has_language = models.BooleanField(default=True)
+
+    # target model
+    target_model = models.ForeignKey(ContentType)
+
+    # Is this type of synonym can be deleted when it is empty
+    can_delete = models.BooleanField(default=True)
+
+    # Is this type of synonym can be modified (rename, add/remove ranks) by an authorized staff people
+    can_modify = models.BooleanField(default=True)
+
+    # Display labels
+    # It is i18nized used JSON dict with language code as key and label as string value.
+    label = JSONField(default={})
+
+    def natural_name(self):
+        return self.name
+
+    def get_label(self):
+        """
+        Get the label for this meta model in the current regional.
+        """
+        lang = translation.get_language()
+        return self.label.get(lang, "")
+
+    def set_label(self, lang, label):
+        """
+        Set the label for a specific language.
+        :param str lang: language code string
+        :param str label: Localized label
+        :note Model instance save() is not called.
+        """
+        self.label[lang] = label
+
+
+class EntitySynonym(Entity):
+    """
+    Abstract model for synonym of entity.
+    """
+
+    # entity must be defined to the foreign model when specialized
+    entity = None  # models.ForeignKey(ConcreteEntityModel, related_name='synonyms')
+
+    # synonym display name
+    name = models.CharField(max_length=128, db_index=True)
+
+    # related type of synonym
+    synonym_type = models.ForeignKey(EntitySynonymType)
+
+    # language code
+    language = models.CharField(max_length=5, default="", blank=True, null=False)
+
+    class Meta:
+        abstract = True
+
+    def natural_name(self):
+        return self.name
+
+    @classmethod
+    def make_search_by_name(cls, term):
+        return Q(name__istartswith=term)
+
+    def audit_create(self, user):
+        return {
+            'entity': self.entity_id,
+            'name': self.name,
+            'synonym_type': self.synonym_type_id,
+            'language': self.language
+        }
+
+    def audit_update(self, user):
+        if hasattr(self, 'updated_fields'):
+            result = {'updated_fields': self.updated_fields}
+
+            if 'name' in self.updated_fields:
+                result['name'] = self.name
+
+            if 'synonym_type' in self.updated_fields:
+                result['type'] = self.synonym_type_id
+
+            if 'language' in self.updated_fields:
+                result['language'] = self.language
+
+            return result
+        else:
+            return {
+                'name': self.name,
+                'synonym_type': self.synonym_type_id,
+                'language': self.language,
+            }
+
+    def audit_delete(self, user):
+        return {
+            'name': self.name
+        }
+
+    # def is_primary(self):
+    #     """
+    #     Is a primary type of synonym.
+    #     :return: True if primary
+    #     """
+    #     # @todo optimize caching the query
+    #     return self.synonym_type_id == EntitySynonymType.object.get('accession_name').id

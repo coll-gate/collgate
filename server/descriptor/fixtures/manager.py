@@ -17,13 +17,14 @@ import sys
 from django.contrib.contenttypes.models import ContentType
 
 from classification.models import Classification
+from main.models import EntitySynonymType
 from ..models import DescriptorGroup, DescriptorType, DescriptorModel, DescriptorModelType, \
     DescriptorMetaModel, DescriptorPanel, DescriptorValue
 
 
 class FixtureManager:
     """
-    Lookup tables for descriptor like instances.
+    API to help making per module fixtures on descriptors and on type of synonyms.
     """
 
     def __init__(self):
@@ -399,3 +400,28 @@ class FixtureManager:
             # empty any previous inline values
             if descriptor is not None:
                 DescriptorType.objects.filter(name=descriptor['name']).update(values=None)
+
+    def create_or_update_synonym_types(self, app_label, model_name, synonym_types):
+        sys.stdout.write("   + Create types of synonym...\n")
+
+        # get related model
+        related_model = ContentType.objects.get_by_natural_key(app_label, model_name)
+
+        # create/update any type of synonym
+        for k, v in synonym_types.items():
+            synonym_type_name = v['name']
+
+            synonym_type_model, created = EntitySynonymType.objects.update_or_create(
+                name=synonym_type_name,
+                defaults={
+                    'label': v['label'],
+                    'unique': v.get('unique', False),
+                    'has_language': v.get('has_language', True),
+                    'target_model': related_model,
+                    'can_delete': v.get('can_delete', True),
+                    'can_modify': v.get('can_modify', True)
+                }
+            )
+
+            # keep id for others fixtures
+            v['id'] = synonym_type_model.id

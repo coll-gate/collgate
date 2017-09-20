@@ -72,7 +72,7 @@ var ClassificationEntryRouter = Marionette.AppRouter.extend({
                 return;
             }
 
-            var classificationEntryListView = new ClassificationEntryListView({collection : collection, columns: data.columns});
+            var classificationEntryListView = new ClassificationEntryListView({collection : collection, columns: data[0].columns});
 
             defaultLayout.showChildView('content', classificationEntryListView);
             defaultLayout.showChildView('content-bottom', new ScrollingMoreView({
@@ -81,7 +81,7 @@ var ClassificationEntryRouter = Marionette.AppRouter.extend({
             }));
 
             defaultLayout.showChildView('bottom', new EntityListFilterView({
-                collection: collection, columns: data.columns}));
+                collection: collection, columns: data[0].columns}));
         });
     },
 

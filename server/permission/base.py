@@ -89,7 +89,11 @@ class RestPermissionGroupNamePermission(RestPermissionGroupId):
 
 
 # Group name validator
-GROUP_NAME_VALIDATOR = {"type": "string", "minLength": 3, "maxLength": 64, "pattern": "^[a-zA-Z0-9\-\_]+$"}
+GROUP_NAME_VALIDATOR = {"type": "string", "minLength": 3, "maxLength": 80, "pattern": "^[a-zA-Z0-9\-\_]+$"}
+
+# Group name validator optional
+GROUP_NAME_VALIDATOR_OPTIONAL = {"type": "string", "minLength": 3, "maxLength": 80, "pattern": "^[a-zA-Z0-9\-\_]+$",
+                                 "required": False}
 
 
 @RestPermissionType.def_request(Method.GET, Format.JSON)
@@ -287,30 +291,29 @@ def delete_group(request, grp_id):
     Method.PATCH, Format.JSON, content={
         "type": "object",
         "properties": {
-            "name": GROUP_NAME_VALIDATOR
+            "name": GROUP_NAME_VALIDATOR_OPTIONAL
         },
     },
     staff=True)
 def patch_group(request, grp_id):
     group = get_object_or_404(Group, id=int(grp_id))
-    group_name = request.data['name']
+    group_name = request.data.get('name')
 
-    if group_name == group.name:
-        return HttpResponseRest(request, {})
+    update = False
+    result = {'id': group.pk, 'perms': get_permissions_for(request.user, "auth", "group")}
 
-    if Group.objects.filter(name__exact=group_name).exists():
-        raise SuspiciousOperation(_("Group name already in usage"))
+    if group_name and group_name != group.name:
+        if Group.objects.filter(name__exact=group_name).exists():
+            raise SuspiciousOperation(_("Group name already in usage"))
 
-    group.name = group_name
+        group.name = group_name
+        group.full_clean()
+        result['name'] = group.name
 
-    group.full_clean()
-    group.save()
+        update = True
 
-    result = {
-        'id': group.id,
-        'name': group.name,
-        'perms': get_permissions_for(request.user, "auth", "group")
-    }
+    if update:
+        group.save()
 
     return HttpResponseRest(request, result)
 
@@ -450,28 +453,36 @@ def patch_user(request, username):
     user = get_object_or_404(User, username=username)
     update = False
 
+    result = {'id': user.pk}
+
     if 'is_active' in request.data:
         update = True
         user.is_active = request.data['is_active']
+        result['is_active'] = user.is_active
 
         # update the pending state if necessary
-        profile = get_object_or_404(Profile, user=user)
-        if user.is_active and profile.pending:
-            profile.pending = False
-            profile.save()
+        try:
+            profile = Profile.objects.get(user=user)
+            if user.is_active and profile.pending:
+                profile.pending = False
+                profile.save()
+        except Profile.DoesNotExist:
+            pass
 
     if 'is_staff' in request.data:
         update = True
         user.is_staff = request.data['is_staff']
+        result['is_staff'] = user.is_staff
 
     if 'is_superuser' in request.data:
         update = True
         user.is_superuser = request.data['is_superuser']
+        result['is_superuser'] = user.is_superuser
 
     if update:
         user.save()
 
-    return HttpResponseRest(request, {})
+    return HttpResponseRest(request, result)
 
 
 @RestPermissionUserNamePermission.def_auth_request(

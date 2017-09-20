@@ -218,7 +218,7 @@ def delete_descriptor_group(request, grp_id):
     Method.PATCH, Format.JSON, content={
         "type": "object",
         "properties": {
-            "name": DescriptorGroup.NAME_VALIDATOR
+            "name": DescriptorGroup.NAME_VALIDATOR_OPTIONAL
         },
     },
     perms={
@@ -228,26 +228,26 @@ def delete_descriptor_group(request, grp_id):
 )
 def patch_descriptor_group(request, grp_id):
     group = get_object_or_404(DescriptorGroup, id=int(grp_id))
-    group_name = request.data['name']
+    group_name = request.data.get('name')
 
-    if group_name == group.name:
-        return HttpResponseRest(request, {})
-
-    if DescriptorGroup.objects.filter(name__exact=group_name).exists():
-        raise SuspiciousOperation(_("Name of group of descriptor already in usage"))
+    update = False
+    result = {'id': group.pk}
 
     if not group.can_modify:
         raise SuspiciousOperation(_("It is not permit to modify this group of type of descriptors"))
 
-    group.name = group_name
+    if group_name and group_name != group.name:
+        if DescriptorGroup.objects.filter(name__exact=group_name).exists():
+            raise SuspiciousOperation(_("Name of group of descriptor already in usage"))
 
-    group.full_clean()
-    group.save()
+        group.name = group_name
+        group.full_clean()
+        result['name'] = group.name
 
-    result = {
-        'id': group.id,
-        'name': group.name
-    }
+        update = True
+
+    if update:
+        group.save()
 
     return HttpResponseRest(request, result)
 

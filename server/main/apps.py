@@ -58,6 +58,10 @@ class CollGateMain(ApplicationMain):
         menu_administration.add_entry(
             MenuEntry('language-list', _('Configured languages'), "#main/language/",
                       icon=Glyph.LIST, order=-198, auth=AUTH_SUPER_USER))
+
+        menu_administration.add_entry(
+            MenuEntry('entity-synonym-type-list', _('Configured types of synonyms'), "#main/entity-synonym-type/",
+                      icon=Glyph.TH_LIST, order=-197, auth=AUTH_SUPER_USER))
         menu_administration.add_entry(MenuSeparator(-100, auth=AUTH_SUPER_USER))
         main_module.add_menu(menu_administration)
 

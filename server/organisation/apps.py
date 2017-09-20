@@ -19,7 +19,7 @@ from igdectk.module.manager import module_manager
 from igdectk.module.menu import MenuEntry, MenuSeparator
 from igdectk.module.module import Module, ModuleMenu
 from igdectk.bootstrap.glyphs import Glyph
-from main.config import Configuration, configuration
+from main.config import configuration
 
 
 class CollGateOrganisation(ApplicationMain):

@@ -1,16 +1,13 @@
 # -*- coding: utf-8; -*-
 #
 # @file contenttype.py
-# @brief 
+# @brief Rest handlers.
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2016-09-01
 # @copyright Copyright (c) 2016 INRA/CIRAD
 # @license MIT (see LICENSE file)
 # @details 
 
-"""
-Rest handlers.
-"""
 from django.contrib.contenttypes.models import ContentType
 from django.core.cache import cache
 from django.core.exceptions import SuspiciousOperation
@@ -71,4 +68,3 @@ def get_content_types(request):
     types = sorted(types, key=lambda x: x['value'].split('.')[0] + '.' + x['label'])
 
     return HttpResponseRest(request, types)
-

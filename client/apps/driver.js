@@ -346,6 +346,13 @@ var Application = Marionette.Application.extend({
         window.gt.gettext = i18next.t;
         window.gt._ = i18next.t;
         window.gt.pgettext = function(context, msg) { return i18next.t(msg, {context: context}); };
+        window.gt.ngettext = function(msg1, msg2, vargs) { return i18next.t(msg2, vargs); };
+        window.gt.npgettext = function(context, msg1, msg2, vargs) {
+            var params = _.clone(vargs);
+            params.context = context;
+
+            return i18next.t(msg1, msg2, params);
+        };
 
         // select2
         if (session.language === "fr") {

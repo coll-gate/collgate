@@ -1,16 +1,12 @@
 # -*- coding: utf-8; -*-
 #
 # @file organisationtype.py
-# @brief 
+# @brief Views related to the organisation type.
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2017-01-03
 # @copyright Copyright (c) 2017 INRA/CIRAD
 # @license MIT (see LICENSE file)
 # @details 
-
-"""
-Views related to the organisation type.
-"""
 
 from django.shortcuts import get_object_or_404
 from django.views.decorators.cache import cache_page
@@ -50,4 +46,3 @@ def organisation_type(request):
         })
 
     return HttpResponseRest(request, organisation_types)
-

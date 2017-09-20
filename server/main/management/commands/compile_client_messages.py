@@ -53,8 +53,9 @@ class Command(BaseCommand):
                         cmd = 'node %s -l default -s default.po -t default.json' % (os.path.join(npm_bin, 'i18next-conv'))
                         process = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
                         output = process.communicate()[0]
+                        print(output)
 
-                        print("i18next-iconv on %s for local %s" % (os.getcwd(), sdir))
+                        print("i18next-conv on %s for local %s" % (os.getcwd(), sdir))
                         os.chdir("../..")
 
                 os.chdir("../..")

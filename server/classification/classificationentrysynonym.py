@@ -16,17 +16,16 @@ from django.shortcuts import get_object_or_404
 from django.views.decorators.cache import cache_page
 from django.utils.translation import ugettext_lazy as _
 
+from classification import localsettings
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
-from .models import ClassificationEntrySynonymType, ClassificationEntrySynonym, ClassificationEntry
+
+from main.models import EntitySynonymType
+
+from .models import ClassificationEntrySynonym, ClassificationEntry
 
 from .base import RestClassification
 from .classificationentry import RestClassificationEntry, RestClassificationEntryId
-
-
-class RestClassificationEntrySynonymType(RestClassification):
-    regex = r'^classification-entry-synonym-type/$'
-    name = 'classification-entry-synonym-type'
 
 
 class RestClassificationEntrySynonym(RestClassificationEntry):
@@ -47,24 +46,6 @@ class RestClassificationEntryIdSynonym(RestClassificationEntryId):
 class RestClassificationEntryIdSynonymId(RestClassificationEntryIdSynonym):
     regex = r'^(?P<syn_id>[0-9]+)/$'
     suffix = 'id'
-
-
-@cache_page(60*60*24)
-@RestClassificationEntrySynonymType.def_request(Method.GET, Format.JSON)
-def get_synonym_type(request):
-    """
-    Get the list of type of synonym in JSON
-    """
-    synonym_types = []
-
-    for st in ClassificationEntrySynonymType:
-        synonym_types.append({
-            'id': st.value,
-            'value': st.value,
-            'label': str(st.label)
-        })
-
-    return HttpResponseRest(request, synonym_types)
 
 
 @RestClassificationEntrySynonymSearch.def_auth_request(Method.GET, Format.JSON, ('filters',))
@@ -166,7 +147,7 @@ def classification_entry_add_synonym(request, cls_id):
 
     for synonym in synonyms:
         # at least one usage, not compatible with primary synonym
-        if result['type'] == ClassificationEntrySynonymType.PRIMARY.value:
+        if result['synonym_type'] == localsettings.synonym_type_classification_entry_name:
             raise SuspiciousOperation(
                 _("The primary name could not be used by another synonym of classification entry"))
 
@@ -221,7 +202,7 @@ def classification_entry_change_synonym(request, cls_id, syn_id):
 
     for synonym in synonyms:
         # at least one usage, not compatible with primary synonym
-        if classification_entry_synonym.type == ClassificationEntrySynonymType.PRIMARY.value:
+        if classification_entry_synonym.synonym_type == localsettings.synonym_type_classification_entry_name:
             raise SuspiciousOperation(
                 _("The primary name could not be used by another synonym of classification entry"))
 
@@ -265,7 +246,7 @@ def classification_entry_change_synonym(request, cls_id, syn_id):
 def classification_entry_remove_synonym(request, cls_id, syn_id):
     synonym = get_object_or_404(ClassificationEntrySynonym, Q(id=int(syn_id)), Q(taxon=int(cls_id)))
 
-    if synonym.type == ClassificationEntrySynonymType.PRIMARY.value:
+    if synonym.synonym_type == localsettings.synonym_type_classification_entry_name:
         raise SuspiciousOperation(_("It is not possible to remove a primary synonym"))
 
     synonym.delete()

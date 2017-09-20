@@ -45,8 +45,9 @@ ClassificationModule.prototype = {
 
         var SelectOption = require('../main/renderers/selectoption');
 
-        var CollectionEntrySynonymTypeCollection = require('./collections/classificationentrysynonymtype');
-        this.collections.classificationEntrySynonymTypes = new CollectionEntrySynonymTypeCollection();
+        var EntitySynonymTypeCollection = require('../main/collections/entitysynonymtype');
+        this.collections.classificationEntrySynonymTypes = new EntitySynonymTypeCollection([], {
+            target_model: 'classification.classificationentry'});
 
         this.views.classificationEntrySynonymTypes = new SelectOption({
             className: 'classification-entry-synonym-type',

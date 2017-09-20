@@ -128,7 +128,7 @@ var View = Marionette.View.extend({
 
     onCodeNameInput: function () {
         if (this.validateCodeName()) {
-            if (this.collection.get(this.ui.add_language_code.val()) != null) {
+            if (this.collection.get(this.ui.add_language_code.val())) {
                 this.ui.add_language_code.validateField('failed', gt.gettext('Language code already in usage'));
             } else {
                 this.ui.add_language_code.validateField('ok');

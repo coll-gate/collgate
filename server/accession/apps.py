@@ -130,14 +130,28 @@ class CollGateAccession(ApplicationMain):
             self.post_ready()
 
     def post_ready(self):
-        from descriptor.models import DescriptorType
-        if self.is_table_exists(DescriptorType):
-            if not DescriptorType.objects.filter(name="accession_synonym_types").exists():
+        from accession import localsettings
+        from main.models import EntitySynonymType
+        if self.is_table_exists(EntitySynonymType):
+            builtins_types = ["accession_name",
+                              "accession_code",
+                              "accession_alternate_name",
+                              "accession_geves_code"]
+
+            if EntitySynonymType.objects.filter(name__in=builtins_types).count() != len(builtins_types):
                 configuration.wrong(
                     "accession",
-                    "accession_synonym_types descriptor type",
-                    "Missing accession_synonym_types descriptor type. Be sure to have installed fixtures.")
+                    "accession_synonym_types",
+                    "Missing builtins accession synonym types. Be sure to have installed fixtures.")
             else:
                 configuration.validate("accession",
-                                       "accession_synonym_types descriptor type",
-                                       "accession_synonym_types descriptor type detected.")
+                                       "accession_synonym_types",
+                                       "accession synonym types detected.")
+
+                # keep models id in cache
+                localsettings.synonym_type_accession_name = EntitySynonymType.objects.get(name="accession_name").pk
+                localsettings.synonym_type_accession_code = EntitySynonymType.objects.get(name="accession_code").pk
+                localsettings.synonym_type_accession_alternate_name = EntitySynonymType.objects.get(
+                    name="accession_alternate_name").pk
+                localsettings.synonym_type_accession_geves_code = EntitySynonymType.objects.get(
+                    name="accession_geves_code").pk

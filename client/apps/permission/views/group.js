@@ -67,7 +67,8 @@ var View = Marionette.View.extend({
         var ChangeName = require('../../main/views/entityrename');
         var changeName = new ChangeName({
             model: this.model,
-            title: gt.gettext("Rename the group of users")
+            title: gt.gettext("Rename the group of users"),
+            maxlength: 80
         });
 
         changeName.render();

@@ -1,16 +1,12 @@
 # -*- coding: utf-8; -*-
 #
 # @file accessionsynonym.py
-# @brief 
+# @brief Views related to the accession synonym model.
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2016-09-01
 # @copyright Copyright (c) 2016 INRA/CIRAD
 # @license MIT (see LICENSE file)
 # @details 
-
-"""
-Views related to the accession synonym model.
-"""
 
 from django.core.exceptions import SuspiciousOperation
 from django.db import IntegrityError
@@ -22,16 +18,13 @@ from django.utils.translation import ugettext_lazy as _
 
 from accession.models import AccessionSynonym, Accession
 from descriptor.models import DescriptorType
+from main.models import EntitySynonymType
+
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
 
 from .base import RestAccession
 from .accession import RestAccessionAccession, RestAccessionId
-
-
-class RestAccessionSynonymType(RestAccession):
-    regex = r'^accession-synonym-type/$'
-    name = 'accession-synonym-type'
 
 
 class RestAccessionSynonym(RestAccessionAccession):
@@ -52,30 +45,6 @@ class RestAccessionIdSynonym(RestAccessionId):
 class RestAccessionIdSynonymId(RestAccessionIdSynonym):
     regex = r'^(?P<syn_id>[0-9]+)/$'
     suffix = 'id'
-
-
-@cache_page(60*60*24)
-@RestAccessionSynonymType.def_request(Method.GET, Format.JSON)
-def synonym_type(request):
-    """
-    Get the list of type of synonym in JSON
-    @todo how to refresh the cache and clients if values of descriptors changed ?
-    """
-    synonym_types = []
-
-    # stored in a type of descriptor
-    descriptor_type = get_object_or_404(DescriptorType, code=AccessionSynonym.DESCRIPTOR_TYPE_CODE)
-
-    cursor_prev, cursor_next, values = descriptor_type.get_values(sort_by='id')
-
-    for st in values:
-        synonym_types.append({
-            'id': st['id'],
-            'value': st['id'],
-            'label': st['value0']
-        })
-
-    return HttpResponseRest(request, synonym_types)
 
 
 @RestAccessionSynonymSearch.def_auth_request(Method.GET, Format.JSON, ('filters',))
@@ -119,7 +88,7 @@ def search_accession_synonyms(request):
             'id': synonym.id,
             'value': synonym.id,
             'label': synonym.name,
-            'type': synonym.type,
+            'synonym_type': synonym.synonym_type_id,
             'accession': synonym.accession_id
         }
 
@@ -152,7 +121,7 @@ def search_accession_synonyms(request):
     Method.POST, Format.JSON, content={
         "type": "object",
         "properties": {
-            "type": AccessionSynonym.TYPE_VALIDATOR,
+            "synonym_type": {"type": "number"},
             "language": AccessionSynonym.LANGUAGE_VALIDATOR,
             "name": AccessionSynonym.NAME_VALIDATOR
         },
@@ -297,4 +266,3 @@ def accession_remove_synonym(request, acc_id, syn_id):
     synonym.delete()
 
     return HttpResponseRest(request, {})
-
