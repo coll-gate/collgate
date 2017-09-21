@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-09-21 12:49+0200\n"
+"POT-Creation-Date: 2017-09-21 18:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -73,8 +73,8 @@ msgid "Change the labels for the language"
 msgstr "Changer les étiquettes pour la langue"
 
 #: ../../../views/languageadd.js:119
-msgid "Invalid characters (alphabet, _ and - only)"
-msgstr "Caractères invalides (alphabet, _ et - seulement)"
+msgid "Invalid format"
+msgstr ""
 
 #: ../../../views/languageadd.js:132
 msgid "Language code already in usage"
@@ -248,3 +248,6 @@ msgstr "sur"
 #: ../../../templates/scrollingmore.html:16
 msgid "total results"
 msgstr "resultats totals"
+
+#~ msgid "Invalid characters (alphabet, _ and - only)"
+#~ msgstr "Caractères invalides (alphabet, _ et - seulement)"

@@ -11,12 +11,11 @@
 from django.core.exceptions import SuspiciousOperation
 from django.shortcuts import get_object_or_404
 from django.utils import translation
-from django.views.decorators.cache import cache_page
 from django.utils.translation import ugettext_lazy as _
 
-from igdectk.common.cache import named_cache_page, invalidate_cache
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
+from main.cache import cache_manager
 
 from .models import InterfaceLanguages, Language
 from .main import RestMain
@@ -48,11 +47,18 @@ class RestUILanguage(RestUI):
 
 
 @RestLanguage.def_request(Method.GET, Format.JSON)
-@named_cache_page(60*60*24)
 def get_languages(request):
     """
     Get the list of languages for the entities in JSON
     """
+    lang = translation.get_language()
+    cache_name = 'languages:%s' % lang
+
+    languages = cache_manager.content('main', cache_name)
+
+    if languages:
+        return HttpResponseRest(request, languages)
+
     languages = []
 
     for language in Language.objects.all().order_by('code'):
@@ -61,6 +67,9 @@ def get_languages(request):
             'value': language.code,
             'label': language.get_label()
         })
+
+    # cache for 24h
+    cache_manager.set('main', cache_name, 60*60*24).content = languages
 
     return HttpResponseRest(request, languages)
 
@@ -94,7 +103,7 @@ def post_language(request):
         'label': label
     }
 
-    invalidate_cache('get_languages')
+    cache_manager.unset('main', 'languages:*')
 
     return HttpResponseRest(request, results)
 
@@ -107,7 +116,7 @@ def delete_language(request, code):
     # it is not really a problem because the code is a standard
     language.delete()
 
-    invalidate_cache('get_languages')
+    cache_manager.unset('main', 'languages:*')
 
     return HttpResponseRest(request, {})
 
@@ -153,17 +162,24 @@ def change_language_labels(request, code):
         'label': language.get_label()
     }
 
-    invalidate_cache('get_languages')
+    cache_manager.unset('main', 'languages:*')
 
     return HttpResponseRest(request, result)
 
 
 @RestUILanguage.def_request(Method.GET, Format.JSON)
-@cache_page(60*60*24)
 def get_ui_languages(request):
     """
     Get the list of languages for the UI in JSON
     """
+    lang = translation.get_language()
+    cache_name = 'ui-languages:%s' % lang
+
+    results = cache_manager.content('main', cache_name)
+
+    if results:
+        return results
+
     languages = []
 
     for language in InterfaceLanguages:
@@ -172,5 +188,8 @@ def get_ui_languages(request):
             'value': language.value,
             'label': str(language.label)
         })
+
+    # cache for 24h
+    cache_manager.set('main', cache_name, 60*60*24).content = results
 
     return HttpResponseRest(request, languages)

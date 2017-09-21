@@ -17,7 +17,6 @@ from descriptor.descriptorformattype import DescriptorFormatTypeManager
 
 from igdectk.rest import Format, Method
 from igdectk.rest.response import HttpResponseRest
-# from igdectk.common.cache import named_cache_page
 from main.cache import cache_manager, named_cache
 
 from .descriptor import RestDescriptor

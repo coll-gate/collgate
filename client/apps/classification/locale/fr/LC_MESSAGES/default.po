@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-09-21 12:49+0200\n"
+"POT-Creation-Date: 2017-09-21 18:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -42,8 +42,8 @@ msgstr "Impossible de créer la classification !"
 
 #: ../../../views/classificationadd.js:92
 #: ../../../views/classificationadd.js:126
-#: ../../../views/classificationentrysynonyms.js:58
-#: ../../../views/classificationentrysynonyms.js:221
+#: ../../../views/classificationentrysynonyms.js:65
+#: ../../../views/classificationentrysynonyms.js:230
 #: ../../../views/classificationrankadd.js:93
 #: ../../../views/classificationrankadd.js:128
 #: ../../../controllers/classificationentry.js:286
@@ -58,8 +58,8 @@ msgid "Invalid characters (alphanumeric, _ and - only)"
 msgstr "Caractères invalident (alphanumérique, _ et -)"
 
 #: ../../../views/classificationadd.js:129
-#: ../../../views/classificationentrysynonyms.js:55
-#: ../../../views/classificationentrysynonyms.js:224
+#: ../../../views/classificationentrysynonyms.js:62
+#: ../../../views/classificationentrysynonyms.js:233
 #: ../../../views/classificationrankadd.js:131
 #: ../../../controllers/classificationentry.js:283
 msgid "characters_max"
@@ -137,16 +137,16 @@ msgstr ""
 "Saisissez un nom pour l'entré de classification. 3 caractères minimum pour "
 "l'auto-complétion"
 
-#: ../../../views/classificationentrysynonyms.js:91
-#: ../../../views/classificationentrysynonyms.js:204
+#: ../../../views/classificationentrysynonyms.js:100
+#: ../../../views/classificationentrysynonyms.js:214
 msgid "Synonym of classification entry already used"
 msgstr ""
 
-#: ../../../views/classificationentrysynonyms.js:197
+#: ../../../views/classificationentrysynonyms.js:207
 msgid "Primary synonym must be unique"
 msgstr "Le synonyme principale doit être unique"
 
-#: ../../../views/classificationentrysynonyms.js:252
+#: ../../../views/classificationentrysynonyms.js:258
 msgid "Unable to rename the synonym !"
 msgstr "Impossible de renommer le synonyme !"
 

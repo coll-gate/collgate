@@ -27,6 +27,10 @@ class CollGateMain(ApplicationMain):
     def ready(self):
         super().ready()
 
+        # register main cache category
+        from main.cache import cache_manager
+        cache_manager.register('main')
+
         main_module = Module('main', base_url='coll-gate')
         main_module.include_urls((
             'base',

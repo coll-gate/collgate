@@ -404,7 +404,7 @@ class ClassificationEntrySynonym(EntitySynonym):
     """
 
     # name validator, used with content validation, to avoid any whitespace before and after
-    NAME_VALIDATOR = {"type": "string", "minLength": 1, "maxLength": 32, "pattern": "^[a-zA-Z0-9\-\_]+$"}
+    NAME_VALIDATOR = {"type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9\-\_]+$"}
 
     # code validator, used with content validation, to avoid any whitespace before and after
     CODE_VALIDATOR = {"type": "string", "minLength": 1, "maxLength": 128, "pattern": r"^\S+.+\S+$"}

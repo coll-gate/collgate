@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-09-21 12:48+0200\n"
+"POT-Creation-Date: 2017-09-21 18:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -97,38 +97,38 @@ msgstr "Créer un panel"
 msgid "Defines"
 msgstr ""
 
-#: ../../../views/accessionsynonyms.js:57
-#: ../../../views/accessionsynonyms.js:226 ../../../views/batchlist.js:199
-#: ../../../controllers/accession.js:267 ../../../controllers/accession.js:286
+#: ../../../views/accessionsynonyms.js:64
+#: ../../../views/accessionsynonyms.js:235 ../../../views/batchlist.js:199
+#: ../../../controllers/accession.js:268 ../../../controllers/accession.js:287
 #: ../../../controllers/batch.js:150 ../../../controllers/panel.js:42
 msgid "characters_max"
 msgid_plural "characters_max"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../../../views/accessionsynonyms.js:60
-#: ../../../views/accessionsynonyms.js:223 ../../../views/batchbottom.js:57
-#: ../../../views/batchlist.js:202 ../../../controllers/accession.js:270
-#: ../../../controllers/accession.js:289 ../../../controllers/batch.js:153
+#: ../../../views/accessionsynonyms.js:67
+#: ../../../views/accessionsynonyms.js:232 ../../../views/batchbottom.js:57
+#: ../../../views/batchlist.js:202 ../../../controllers/accession.js:271
+#: ../../../controllers/accession.js:290 ../../../controllers/batch.js:153
 #: ../../../controllers/panel.js:45
 msgid "characters_min"
 msgid_plural "characters_min"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../../../views/accessionsynonyms.js:93
-#: ../../../views/accessionsynonyms.js:201
+#: ../../../views/accessionsynonyms.js:102
+#: ../../../views/accessionsynonyms.js:211
 msgid "It is not possible to use a GRC code of accession as synonym"
 msgstr ""
 "Il n'est pas possible d'utiliser un code de CRB d'accession en tant que "
 "synonyme"
 
-#: ../../../views/accessionsynonyms.js:97
-#: ../../../views/accessionsynonyms.js:206
+#: ../../../views/accessionsynonyms.js:106
+#: ../../../views/accessionsynonyms.js:216
 msgid "Synonym of accession already defined into this accession"
 msgstr "Synonyme d'accession déjà défini dans cette accession"
 
-#: ../../../views/accessionsynonyms.js:196
+#: ../../../views/accessionsynonyms.js:206
 msgid "Accession GRC code must be unique"
 msgstr "Le code CRB de l'accession doit être unique"
 
@@ -217,7 +217,7 @@ msgid "Cultivar"
 msgstr "Cultivar"
 
 #: ../../../views/search.js:20 ../../../routers/accession.js:83
-#: ../../../controllers/accession.js:355 ../../../templates/batchcreate.html:30
+#: ../../../controllers/accession.js:356 ../../../templates/batchcreate.html:30
 #: ../../../templates/navbatchcreate.html:25
 msgid "Accession"
 msgstr "Accession"
@@ -250,17 +250,21 @@ msgstr "Saisissez un nom d'entrée de classification"
 msgid "Code of accession already used"
 msgstr "Code d'accession déjà utilisé"
 
-#: ../../../controllers/accession.js:252
+#: ../../../controllers/accession.js:254
 msgid "Synonym used as accession code"
 msgstr "Synonyme utilisé comme code d'accession"
 
-#: ../../../controllers/accession.js:307
+#: ../../../controllers/accession.js:308
 msgid "The meta-model of descriptors must be defined"
 msgstr "The méta-modèle de déscripteurs doit être définit"
 
-#: ../../../controllers/accession.js:312
+#: ../../../controllers/accession.js:313
 msgid "The primary classification must be defined"
 msgstr "La classification principal doit être définie"
+
+#: ../../../controllers/accession.js:318 ../../../controllers/accession.js:319
+msgid "Code and name must be different"
+msgstr ""
 
 #: ../../../controllers/batch.js:103
 msgid "Enter a accession name. 3 characters at least for auto-completion"

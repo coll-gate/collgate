@@ -57,6 +57,10 @@ class CacheEntry(object):
         self.datetime = datetime.datetime.utcnow()
         self.validity = validity if validity is not None else CacheEntry.DEFAULT_VALIDITY
 
+    def __del__(self):
+        cache.set(self.category + '__' + self.name, None)
+        # @todo send a notification on messaging service to CacheWebService
+
     @property
     def expires(self):
         return self.datetime + datetime.timedelta(seconds=self.validity)
@@ -97,35 +101,66 @@ class CacheManager(object):
         :param validity: During in seconds of the validity of the cache.
         :return:
         """
-        if category in self.categories:
-            cache_entry = CacheEntry(category, name, validity)
-            self.categories[category][name] = cache_entry
+        cache_category = self.categories.get(category)
 
-            return cache_entry
-        else:
+        if cache_category is None:
             raise ValueError("Unregistered cache manager category")
+
+        cache_entry = CacheEntry(category, name, validity)
+        cache_category[name] = cache_entry
+
+        return cache_entry
 
     def get(self, category, name):
-        if category in self.categories:
-            return self.categories[category].get(name, None)
-        else:
+        cache_category = self.categories.get(category)
+
+        if cache_category is None:
             raise ValueError("Unregistered cache manager category")
+
+        return cache_category.get(name)
 
     def unset(self, category, name):
-        if category in self.categories:
-            del self.categories[category][name]
-        else:
+        cache_category = self.categories.get(category)
+
+        if cache_category is None:
             raise ValueError("Unregistered cache manager category")
 
+        if name.endswith('*'):
+            match = name.rstrip('*')
+            rm_list = []
+
+            for cache_entry in cache_category:
+                if cache_entry.startswith(match):
+                    rm_list.append(cache_entry)
+
+            for cache_entry in rm_list:
+                del cache_category[cache_entry]
+
+        elif name.startswith('*'):
+            match = name.lstrip('*')
+            rm_list = []
+
+            for cache_entry in cache_category:
+                if cache_entry.endswith(match):
+                    rm_list.append(cache_entry)
+
+            for cache_entry in rm_list:
+                del cache_category[cache_entry]
+
+        elif name in cache_category:
+            del cache_category[name]
+
     def content(self, category, name):
-        if category in self.categories:
-            cache_entry = self.categories[category].get(name)
-            if cache_entry:
-                return cache_entry.content
-            else:
-                return None
-        else:
+        cache_category = self.categories.get(category)
+
+        if cache_category is None:
             raise ValueError("Unregistered cache manager category")
+
+        cache_entry = cache_category.get(name)
+        if cache_entry:
+            return cache_entry.content
+        else:
+            return None
 
     def all(self):
         """

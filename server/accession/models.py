@@ -56,7 +56,7 @@ class Accession(DescribableEntity):
     NAME_RE = re.compile(r'^[a-zA-Z0-9_-]+$', re.IGNORECASE)
 
     # default name validator
-    NAME_VALIDATOR = {"type": "string", "minLength": 1, "maxLength": 32, "pattern": "^[a-zA-Z0-9\-\_]+$"}
+    NAME_VALIDATOR = {"type": "string", "minLength": 1, "maxLength": 182, "pattern": "^[a-zA-Z0-9\-\_]+$"}
 
     # non-unique primary name of the accession
     name = models.CharField(max_length=255, db_index=True)
@@ -191,7 +191,7 @@ class AccessionSynonym(EntitySynonym):
     """
 
     # name validator, used with content validation, to avoid any whitespace before and after
-    NAME_VALIDATOR = {"type": "string", "minLength": 1, "maxLength": 32, "pattern": "^[a-zA-Z0-9\-\_]+$"}
+    NAME_VALIDATOR = {"type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9\-\_]+$"}
 
     # code validator, used with content validation, to avoid any whitespace before and after
     CODE_VALIDATOR = {"type": "string", "minLength": 1, "maxLength": 128, "pattern": r"^\S+.+\S+$"}
