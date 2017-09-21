@@ -83,8 +83,8 @@ def search_taxon_synonym(request):
             'id': synonym.id,
             'value': synonym.id,
             'label': synonym.name,
-            'type': synonym.type,
-            'classification_entry': synonym.classification_entry_id
+            'synonym_type': synonym.synonym_type_id,
+            'classification_entry': synonym.entity_id
         }
 
         items_list.append(s)
@@ -116,7 +116,7 @@ def search_taxon_synonym(request):
     Method.POST, Format.JSON, content={
         "type": "object",
         "properties": {
-            "type": {"type:": "number"},
+            "synonym_type": {"type:": "number"},
             "language": ClassificationEntrySynonym.LANGUAGE_VALIDATOR,
             "name": ClassificationEntrySynonym.NAME_VALIDATOR
         },
@@ -129,25 +129,18 @@ def search_taxon_synonym(request):
 def classification_entry_add_synonym(request, cls_id):
     classification_entry = get_object_or_404(ClassificationEntry, id=int(cls_id))
 
-    result = {
-        'type': int(request.data['type']),
-        'name': request.data['name'],
-        'language': request.data['language']
-    }
-
-    # Taxonomy.add_synonym(classificationEntry, result)
-
     # check that type is in the values of descriptor
-    if not ClassificationEntrySynonym.is_synonym_type(result['type']):
-        raise SuspiciousOperation(_("Unsupported type of synonym"))
+    synonym_type = get_object_or_404(EntitySynonymType, id=int_arg(request.data['synonym_type']))
 
     # check if a similar synonyms exists into the classification entry
     # or as primary name for another classification entry
-    synonyms = ClassificationEntrySynonym.objects.filter(name__iexact=result['name'])
+    synonyms = ClassificationEntrySynonym.objects.filter(name__iexact=request.data['name'])
+
+    # @todo unique / has_language
 
     for synonym in synonyms:
         # at least one usage, not compatible with primary synonym
-        if result['synonym_type'] == localsettings.synonym_type_classification_entry_name:
+        if synonym_type.pk == localsettings.synonym_type_classification_entry_name:
             raise SuspiciousOperation(
                 _("The primary name could not be used by another synonym of classification entry"))
 
@@ -156,22 +149,26 @@ def classification_entry_add_synonym(request, cls_id):
             raise SuspiciousOperation(_("Synonym already used as a primary name"))
 
         # already used by this classification entry
-        if synonym.taxon_id == int(cls_id):
+        if synonym.entity_id == int(cls_id):
             raise SuspiciousOperation(_("Synonym already used into this classification entry"))
 
     classification_entry_synonym = ClassificationEntrySynonym(
-        classification_entry=classification_entry,
-        name=result['name'],
-        language=result['language'],
-        type=result['type'])
+        entity=classification_entry,
+        name=request.data['name'],
+        language=request.data['language'],
+        synonym_type=synonym_type)
 
     classification_entry_synonym.save()
-
     classification_entry.synonyms.add(classification_entry_synonym)
 
-    result['id'] = classification_entry_synonym.id
+    result = {
+        'id': classification_entry_synonym.pk,
+        'synonym_type': int(request.data['synonym_type']),
+        'name': request.data['name'],
+        'language': request.data['language']
+    }
 
-    return HttpResponseRest(request, {})
+    return HttpResponseRest(request, result)
 
 
 @RestClassificationEntryIdSynonymId.def_auth_request(
@@ -219,9 +216,11 @@ def classification_entry_change_synonym(request, cls_id, syn_id):
             # rename the classification entry if the synonym name is the classification entry name
             if classification_entry.name == classification_entry_synonym.name:
                 classification_entry.name = name
+                classification_entry.update_field('name')
                 classification_entry.save()
 
             classification_entry_synonym.name = name
+            classification_entry_synonym.update_field('name')
             classification_entry_synonym.save()
 
             result = {
@@ -244,9 +243,9 @@ def classification_entry_change_synonym(request, cls_id, syn_id):
     }
 )
 def classification_entry_remove_synonym(request, cls_id, syn_id):
-    synonym = get_object_or_404(ClassificationEntrySynonym, Q(id=int(syn_id)), Q(taxon=int(cls_id)))
+    synonym = get_object_or_404(ClassificationEntrySynonym, Q(id=int(syn_id)), Q(entity=int(cls_id)))
 
-    if synonym.synonym_type == localsettings.synonym_type_classification_entry_name:
+    if synonym.synonym_type_id == localsettings.synonym_type_classification_entry_name:
         raise SuspiciousOperation(_("It is not possible to remove a primary synonym"))
 
     synonym.delete()

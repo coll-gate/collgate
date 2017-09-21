@@ -44,7 +44,7 @@ var View = Marionette.View.extend({
         var v = this.ui.value.val();
 
         if (v.length < 1) {
-            $(this.ui.value).validateField('failed', gt.gettext('1 character min'));
+            $(this.ui.value).validateField('failed', gt.ngettext('characters_min', 'characters_min', {count: 1}));
             return false;
         }
 

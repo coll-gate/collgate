@@ -17,6 +17,7 @@ from django.db.models import Q
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
+from accession import localsettings
 from igdectk.common.models import ChoiceEnum, IntegerChoice
 
 from main.models import Entity, EntitySynonym
@@ -199,6 +200,20 @@ class AccessionSynonym(EntitySynonym):
 
     class Meta:
         verbose_name = _("accession synonym")
+
+    def is_primary(self):
+        """
+        Is a primary name synonym.
+        :return: True if primary
+        """
+        return self.synonym_type_id == localsettings.synonym_type_accession_name
+
+    def is_code(self):
+        """
+        Is a code synonym.
+        :return: True if primary
+        """
+        return self.synonym_type_id == localsettings.synonym_type_accession_code
 
 
 class Batch(DescribableEntity):

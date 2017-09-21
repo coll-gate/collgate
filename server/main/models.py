@@ -446,11 +446,3 @@ class EntitySynonym(Entity):
         return {
             'name': self.name
         }
-
-    # def is_primary(self):
-    #     """
-    #     Is a primary type of synonym.
-    #     :return: True if primary
-    #     """
-    #     # @todo optimize caching the query
-    #     return self.synonym_type_id == EntitySynonymType.object.get('accession_name').id

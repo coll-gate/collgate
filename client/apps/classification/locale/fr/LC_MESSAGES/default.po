@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-09-20 16:07+0200\n"
+"POT-Creation-Date: 2017-09-21 12:49+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -47,8 +47,10 @@ msgstr "Impossible de créer la classification !"
 #: ../../../views/classificationrankadd.js:93
 #: ../../../views/classificationrankadd.js:128
 #: ../../../controllers/classificationentry.js:286
-msgid "3 characters min"
-msgstr "3 caractères minimum"
+msgid "characters_min"
+msgid_plural "characters_min"
+msgstr[0] ""
+msgstr[1] ""
 
 #: ../../../views/classificationadd.js:123
 #: ../../../views/classificationrankadd.js:125
@@ -56,10 +58,14 @@ msgid "Invalid characters (alphanumeric, _ and - only)"
 msgstr "Caractères invalident (alphanumérique, _ et -)"
 
 #: ../../../views/classificationadd.js:129
+#: ../../../views/classificationentrysynonyms.js:55
+#: ../../../views/classificationentrysynonyms.js:224
 #: ../../../views/classificationrankadd.js:131
 #: ../../../controllers/classificationentry.js:283
-msgid "128 characters max"
-msgstr "128 caractères max"
+msgid "characters_max"
+msgid_plural "characters_max"
+msgstr[0] ""
+msgstr[1] ""
 
 #: ../../../views/classificationadd.js:156
 msgid "Classification name already in usage"
@@ -131,14 +137,9 @@ msgstr ""
 "Saisissez un nom pour l'entré de classification. 3 caractères minimum pour "
 "l'auto-complétion"
 
-#: ../../../views/classificationentrysynonyms.js:55
-#: ../../../views/classificationentrysynonyms.js:224
-msgid "64 characters max"
-msgstr "64 caractères maximum"
-
 #: ../../../views/classificationentrysynonyms.js:91
 #: ../../../views/classificationentrysynonyms.js:204
-msgid "Synonym of classificationEntry already used"
+msgid "Synonym of classification entry already used"
 msgstr ""
 
 #: ../../../views/classificationentrysynonyms.js:197

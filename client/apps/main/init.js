@@ -29,26 +29,18 @@ MainModule.prototype = {
         this.views = {};
         this.routers = {};
 
-        // i18n if not english
-        if (session.language !== "en") {
-            try {
-                i18next.default.addResources(session.language, 'default', require('./locale/' + session.language + '/LC_MESSAGES/default.json'));
-            } catch (e) {
-                console.warn("No translation found for the current language. Fallback to english language");
-            }
-        }
-
-        /*if (session.language === "fr") {
-            i18next.default.addResources('fr', 'default', require('./locale/fr/LC_MESSAGES/default.json'));
+        try {
+            i18next.default.addResources(session.language, 'default', require('./locale/' + session.language + '/LC_MESSAGES/default.json'));
+            i18next.default.addResources(session.language, 'default', require('./locale/' + session.language + '/LC_MESSAGES/plural.json'));
 
             // inject django json catalog
             //$.get(application.baseUrl + 'jsoni18n/main/django').done(function (data) {
-            //    i18next.default.addResources('fr', 'default', data.catalog);
+            //    i18next.default.addResources(session.language, 'default', data.catalog);
             //    deferred.resolve("jsoni18n");
             //});
-        } else {  // default to english
-            //i18next.default.addResources('en', 'default', require('./locale/en/LC_MESSAGES/default.json'));
-        }*/
+        } catch (e) {
+            console.warn("No translation found for the current language.");
+        }
 
         //
         // defaults settings

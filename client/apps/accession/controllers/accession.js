@@ -5,7 +5,7 @@
  * @date 2016-12-07
  * @copyright Copyright (c) 2016 INRA/CIRAD
  * @license MIT (see LICENSE file)
- * @details 
+ * @details
  */
 
 var Marionette = require('backbone.marionette');
@@ -228,6 +228,7 @@ var Controller = Marionette.Object.extend({
 
                 onNameInput: function () {
                     var name = this.ui.name.val().trim();
+                    var self = this;
 
                     // @todo must respect the nomenclature from the meta-model
                     if (this.validateName()) {
@@ -243,19 +244,19 @@ var Controller = Marionette.Object.extend({
                             dataType: 'json',
                             contentType: 'application/json; charset=utf8',
                             data: {filters: JSON.stringify(filters)},
-                            el: this.ui.name,
-                            success: function(data) {
-                                for (var i in data.items) {
-                                    var t = data.items[i];
+                        }).done(function (data) {
+                            var accessionCodeId = application.accession.collections.accessionSynonymTypes.findWhere({name: "accession_code"}).get('id');
 
-                                    if (t.type === "ACC_SYN:01" && t.label.toUpperCase() === name.toUpperCase()) {
-                                        $(this.el).validateField('failed', gt.gettext('Synonym used as accession code'));
-                                        return;
-                                    }
+                            for (var i in data.items) {
+                                var t = data.items[i];
+
+                                if (t.synonym_type === accessionCodeId && t.label.toUpperCase() === name.toUpperCase()) {
+                                    self.ui.name.validateField('failed', gt.gettext('Synonym used as accession code'));
+                                    return;
                                 }
-
-                                $(this.el).validateField('ok');
                             }
+
+                            self.ui.name.validateField('ok');
                         });
                     }
                 },
@@ -264,10 +265,10 @@ var Controller = Marionette.Object.extend({
                     var v = this.ui.code.val().trim();
 
                     if (v.length > 128) {
-                        this.ui.code.validateField('failed', gt.gettext("128 characters max"));
+                        this.ui.code.validateField('failed', gt.ngettext('characters_max', 'characters_max', {count: 128}));
                         return false;
                     } else if (v.length < 1) {
-                        this.ui.code.validateField('failed', gt.gettext('1 characters min'));
+                        this.ui.code.validateField('failed', gt.ngettext('characters_min', 'characters_min', {count: 1}));
                         return false;
                     }
 
@@ -283,10 +284,10 @@ var Controller = Marionette.Object.extend({
                     var v = this.ui.name.val().trim();
 
                     if (v.length > 128) {
-                        this.ui.name.validateField('failed', gt.gettext("128 characters max"));
+                        this.ui.name.validateField('failed', gt.ngettext('characters_max', 'characters_max', {count: 128}));
                         return false;
                     } else if (v.length < 1) {
-                        this.ui.name.validateField('failed', gt.gettext('1 characters min'));
+                        this.ui.name.validateField('failed', gt.ngettext('characters_min', 'characters_min', {count: 1}));
                         return false;
                     }
 
@@ -314,8 +315,8 @@ var Controller = Marionette.Object.extend({
                     }
 
                     if (this.ui.code.val().trim() === this.ui.name.val().trim()) {
-                        this.ui.code.validateField('failed', 'Code and name must be different');
-                        this.ui.name.validateField('failed', 'Code and name must be different');
+                        this.ui.code.validateField('failed', gt.gettext('Code and name must be different'));
+                        this.ui.name.validateField('failed', gt.gettext('Code and name must be different'));
                     }
 
                      if (this.ui.code.hasClass('invalid') ||

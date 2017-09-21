@@ -13,17 +13,15 @@ from django.db import IntegrityError
 from django.db import transaction
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
-from django.views.decorators.cache import cache_page
 from django.utils.translation import ugettext_lazy as _
 
+from accession import localsettings
 from accession.models import AccessionSynonym, Accession
-from descriptor.models import DescriptorType
-from main.models import EntitySynonymType
 
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
+from main.models import EntitySynonymType
 
-from .base import RestAccession
 from .accession import RestAccessionAccession, RestAccessionId
 
 
@@ -134,49 +132,48 @@ def search_accession_synonyms(request):
 def accession_add_synonym(request, acc_id):
     accession = get_object_or_404(Accession, id=int(acc_id))
 
-    result = {
-        'type': request.data['type'],
-        'name': request.data['name'],
-        'language': request.data['language']
-    }
-
     # check that type is in the values of descriptor
-    if not AccessionSynonym.is_synonym_type(result['type']):
-        raise SuspiciousOperation(_("Unsupported type of synonym"))
+    synonym_type = get_object_or_404(EntitySynonymType, id=int_arg(request.data['synonym_type']))
 
-    if result['type'] == AccessionSynonym.TYPE_GRC_CODE:
+    # @todo unique / has_language
+
+    if request.data['synonym_type'] == localsettings.synonym_type_accession_code:
         raise SuspiciousOperation(_("An accession cannot have more than one GRC code"))
 
-    if result['type'] == AccessionSynonym.TYPE_PRIMARY:
+    if request.data['synonym_type'] == localsettings.synonym_type_accession_name:
         raise SuspiciousOperation(_("An accession cannot have more than one primary name"))
 
     # check if a similar synonyms exists into the accession or as primary name for another accession
-    synonyms = AccessionSynonym.objects.filter(name__iexact=result['name'])
+    synonyms = AccessionSynonym.objects.filter(name__iexact=request.data['name'])
 
     for synonym in synonyms:
         # at least one usage, not compatible with primary synonym
-        if result['type'] == AccessionSynonym.TYPE_GRC_CODE and synonym.accession_id != int(acc_id):
+        if request.data['synonym_type'] == localsettings.synonym_type_accession_code and synonym.entity_id != int(acc_id):
             raise SuspiciousOperation(_("The GRC code name of the accession could not be used as synonym"))
 
         # already used by another accession as a grc code name
-        if synonym.is_grc_code():
+        if synonym.is_code():
             raise SuspiciousOperation(_("Synonym already used as a primary name"))
 
         # already used by this accession
-        if synonym.accession_id == int(acc_id):
+        if synonym.entity_id == int(acc_id):
             raise SuspiciousOperation(_("Synonym already used into this accession"))
 
     accession_synonym = AccessionSynonym(
-        accession=accession,
-        name=result['name'],
-        language=result['language'],
-        type=result['type'])
+        entity=accession,
+        name=request.data['name'],
+        language=request.data['language'],
+        synonym_type=synonym_type)
 
     accession_synonym.save()
-
     accession.synonyms.add(accession_synonym)
 
-    result['id'] = accession_synonym.id
+    result = {
+        'id': accession_synonym.pk,
+        'synonym_type': accession_synonym.synonym_type_id,
+        'name': accession_synonym.name,
+        'language': accession_synonym.language
+    }
 
     return HttpResponseRest(request, result)
 
@@ -208,21 +205,21 @@ def accession_change_synonym(request, acc_id, syn_id):
 
     for synonym in synonyms:
         # at least one usage, not compatible with GRC code
-        if accession_synonym.type == AccessionSynonym.TYPE_GRC_CODE:
+        if accession_synonym.synonym_type == localsettings.synonym_type_accession_code:
             raise SuspiciousOperation(_("The GRC code of accession could not be used by another synonym of accession"))
 
         # already used by another classification entry as GRC code
-        if synonym.is_grc_code():
+        if synonym.is_code():
             raise SuspiciousOperation(_("Synonym already used as a GRC code of accession"))
 
         # already used by this accession
-        if synonym.accession_id == acc_id:
+        if synonym.entity_id == int(acc_id):
             raise SuspiciousOperation(_("Synonym already used into this accession"))
 
     try:
         with transaction.atomic():
             # rename the accession if the synonym is the GRC code name
-            if accession_synonym.is_grc_code():
+            if accession_synonym.is_code():
                 accession.code = name
                 accession.update_field('code')
                 accession.save()
@@ -233,6 +230,7 @@ def accession_change_synonym(request, acc_id, syn_id):
                 accession.save()
 
             accession_synonym.name = name
+            accession_synonym.update_field('name')
             accession_synonym.save()
 
             result = {
@@ -257,7 +255,7 @@ def accession_remove_synonym(request, acc_id, syn_id):
     accession = get_object_or_404(Accession, id=int(acc_id))
     synonym = accession.synonyms.get(id=int(syn_id))
 
-    if synonym.is_grc_code():
+    if synonym.is_code():
         raise SuspiciousOperation(_("It is not possible to remove a GRC code name"))
 
     if synonym.is_primary():

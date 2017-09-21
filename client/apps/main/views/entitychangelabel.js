@@ -68,10 +68,10 @@ var View = Dialog.extend({
         var v = $(e.target).val();
 
         if (v.length < 1) {
-            $(e.target).validateField('failed', gt.gettext('1 character min'));
+            $(e.target).validateField('failed', gt.ngettext('characters_min', 'characters_min', {count: 1}));
             return false;
         } else if (v.length > 128) {
-            $(e.target).validateField('failed', gt.gettext('128 characters max'));
+            $(e.target).validateField('failed', gt.ngettext('characters_max', 'characters_max', {count: 128}));
             return false;
         }
 
@@ -85,10 +85,10 @@ var View = Dialog.extend({
             var v = $(this).val();
 
             if (v.length < 1) {
-                $(this).validateField('failed', gt.gettext('1 character min'));
+                $(this).validateField('failed', gt.ngettext('characters_min', 'characters_min', {count: 1}));
                 return false;
             } else if (v.length > 128) {
-                $(this).validateField('failed', gt.gettext('128 characters max'));
+                $(this).validateField('failed', gt.ngettext('characters_max', 'characters_max', {count: 128}));
                 return false;
             }
         });

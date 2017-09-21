@@ -51,7 +51,7 @@ var View = Marionette.View.extend({
         var v = this.ui.organisation_name.val().trim();
 
         if (v.length > 0 && v.length < 3) {
-            $(this.ui.organisation_name).validateField('failed', gt.gettext('3 characters min'));
+            $(this.ui.organisation_name).validateField('failed', gt.ngettext('characters_min', 'characters_min', {count: 3}));
             return false;
         } else if (this.ui.organisation_name.val().length === 0) {
             $(this.ui.organisation_name).cleanField();

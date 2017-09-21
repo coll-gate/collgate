@@ -82,6 +82,7 @@ var View = Marionette.View.extend({
     synonymCell: function (td) {
         var synonyms = this.model.get('synonyms');
 
+        // @todo which one ?
         if (synonyms.length > 2) {
             var text = this.model.get('synonyms')[2].name;
 

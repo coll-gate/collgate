@@ -33,6 +33,13 @@ var View = Marionette.View.extend({
         'click @ui.rename_synonym': 'onRenameSynonym'
     },
 
+    templateContext: function () {
+        return {
+            classification_entry_code: application.classification.collections.classificationEntrySynonymTypes.findWhere({name: "classification_entry_code"}).get('id'),
+            classification_entry_name: application.classification.collections.classificationEntrySynonymTypes.findWhere({name: "classification_entry_name"}).get('id')
+        };
+    },
+
     initialize: function() {
         this.listenTo(this.model, 'change', this.render, this);
     },
@@ -44,18 +51,18 @@ var View = Marionette.View.extend({
         application.main.views.languages.htmlFromValue(this.el);
         application.classification.views.classificationEntrySynonymTypes.htmlFromValue(this.el);
 
-        this.ui.classification_entry_synonym_type.find('option[value="0"]').remove();
+        this.ui.classification_entry_synonym_type.find('option[name=classification_entry_name]').remove();
         $(this.ui.classification_entry_synonym_type).selectpicker('refresh');
     },
 
     validateName: function() {
         var v = this.ui.synonym_name.val().trim();
 
-        if (v.length > 64) {
-            $(this.ui.synonym_name).validateField('failed', gt.gettext("64 characters max"));
+        if (v.length > 128) {
+            $(this.ui.synonym_name).validateField('failed', gt.ngettext('characters_max', 'characters_max', {count: 128}));
             return false;
-        } else if (v.length < 3) {
-            $(this.ui.synonym_name).validateField('failed', gt.gettext('3 characters min'));
+        } else if (v.length < 1) {
+            $(this.ui.synonym_name).validateField('failed',gt.ngettext('characters_min', 'characters_min', {count: 1}));
             return false;
         }
 
@@ -64,7 +71,7 @@ var View = Marionette.View.extend({
 
     onSynonymNameInput: function () {
         if (this.validateName()) {
-            var view = this;
+            var self = this;
             var name = this.ui.synonym_name.val().trim();
 
             var filters = {
@@ -79,70 +86,71 @@ var View = Marionette.View.extend({
                 dataType: 'json',
                 data: {filters: JSON.stringify(filters)},
                 cache: false,
-                success: function(data) {
-                    if (data.items.length > 0) {
-                        for (var i in data.items) {
-                            var t = data.items[i];
+            }).done(function(data) {
+                var classificationEntryNameId = self.templateContext()['classification_entry_name'];
 
-                            // invalid if primary exists with the same name or if exists into the same classificationEntry
-                            if (t.label.toUpperCase() === name.toUpperCase()) {
-                                if ((t.classificationEntry === view.model.get('id')) || (t.type === 0)) {
-                                    view.ui.synonym_name.validateField(
-                                        'failed', gt.gettext('Synonym of classificationEntry already used'));
+                if (data.items.length > 0) {
+                    for (var i in data.items) {
+                        var t = data.items[i];
 
-                                    return;
-                                }
+                        // invalid if primary exists with the same name or if exists into the same classificationEntry
+                        if (t.label.toUpperCase() === name.toUpperCase()) {
+                            if ((t.classificationEntry === self.model.get('id')) || (t.synonym_type === classificationEntryNameId)) {
+                                self.ui.synonym_name.validateField(
+                                    'failed', gt.gettext('Synonym of classification entry already used'));
+
+                                return;
                             }
                         }
                     }
-
-                    // validate
-                    view.ui.synonym_name.validateField('ok');
                 }
+
+                // validate
+                self.ui.synonym_name.validateField('ok');
             });
         }
     },
 
     onAddSynonym: function () {
         if (this.validateName() && !this.ui.synonym_name.hasClass('invalid')) {
-            var type = $(this.ui.classification_entry_synonym_type).val();
+            var self = this;
+            var synonymType = parseInt(this.ui.classification_entry_synonym_type.val());
             var name = $(this.ui.synonym_name).val().trim();
             var language = $(this.ui.synonym_language).val();
 
             $.ajax({
-                view: this,
                 type: "POST",
                 url: this.model.url() + 'synonym/',
                 contentType: "application/json; charset=utf-8",
                 dataType: 'json',
-                data: JSON.stringify({type: type, name: name, language: language}),
-                success: function (data) {
-                    //this.view.model.addSynonym(type, name, language);
-                    //this.view.render();
-                    this.view.model.fetch({reset: true});
-                }
+                data: JSON.stringify({synonym_type: synonymType, name: name, language: language})
+            }).done(function (data) {
+                //self.model.addSynonym(type, name, language);
+                //self.render();
+                self.model.fetch({reset: true});
             });
         }
     },
 
     onRemoveSynonym: function (e) {
         var synonym = $(e.target.parentNode.parentNode);
-        var synonym_id = $(e.target).data('synonym-id');
+        var synonymId = $(e.target).data('synonym-id');
+        var self = this;
 
         $.ajax({
-            view: this,
             type: "DELETE",
-            url: this.model.url() + 'synonym/' + synonym_id + '/',
-            contentType: "application/json; charset=utf-8",
-            success: function(data) {
-                //this.view.model.removeSynonym(type, name, language);
-                //this.view.render();
-                this.view.model.fetch({reset: true});
-            }
+            url: this.model.url() + 'synonym/' + synonymId + '/',
+            contentType: "application/json; charset=utf-8"
+        }).done(function(data) {
+            //self.model.removeSynonym(type, name, language);
+            //self.render();
+            self.model.fetch({reset: true});
         });
     },
 
     onRenameSynonym: function(e) {
+        var parentSelf = this;
+
         var ChangeSynonym = Dialog.extend({
             template: require('../templates/classificationentrychangesynonym.html'),
 
@@ -151,7 +159,7 @@ var View = Marionette.View.extend({
             },
 
             ui: {
-                synonym_name: "#classification_entry_synonym_name"
+                synonym_name: "input[name=synonym-name]"
             },
 
             events: {
@@ -164,7 +172,7 @@ var View = Marionette.View.extend({
 
             onSynonymNameInput: function () {
                 if (this.validateName()) {
-                    var view = this;
+                    var self = this;
                     var name = this.ui.synonym_name.val().trim();
 
                     var filters = {
@@ -178,37 +186,38 @@ var View = Marionette.View.extend({
                         url: application.baseUrl + 'classification/classificationentry/synonym/search/',
                         dataType: 'json',
                         data: {filters: JSON.stringify(filters)},
-                        cache: false,
-                        success: function(data) {
-                            if (data.items.length > 0) {
-                                for (var i in data.items) {
-                                    var t = data.items[i];
+                        cache: false
+                    }).done(function (data) {
+                        var classificationEntryNameId = parentSelf.templateContext()['classification_entry_name'];
 
-                                    if (t.label.toUpperCase() === name.toUpperCase()) {
-                                        // valid if same classificationEntry and same synonym
-                                        if ((t.classificationEntry == view.model.get('id')) && (t.id == view.getOption('synonym_id'))) {
-                                            view.ui.synonym_name.validateField('ok');
-                                            break;
-                                        }
+                        if (data.items.length > 0) {
+                            for (var i in data.items) {
+                                var t = data.items[i];
 
-                                        // invalid if same name and modifying a primary synonym
-                                        if (view.getOption('type') == 0) {
-                                            view.ui.synonym_name.validateField(
-                                                'failed', gt.gettext('Primary synonym must be unique'));
-                                            break;
-                                        }
+                                if (t.label.toUpperCase() === name.toUpperCase()) {
+                                    // valid if same classificationEntry and same synonym
+                                    if ((t.classificationEntry === self.model.get('id')) && (t.id === self.getOption('synonym_id'))) {
+                                        self.ui.synonym_name.validateField('ok');
+                                        break;
+                                    }
 
-                                        // invalid if primary exists with the same name or if exists into the same classificationEntry
-                                        if ((t.classificationEntry == view.model.get('id')) || (t.type == 0)) {
-                                            view.ui.synonym_name.validateField(
-                                                'failed', gt.gettext('Synonym of classificationEntry already used'));
-                                            break;
-                                        }
+                                    // invalid if same name and modifying a primary synonym
+                                    if (self.getOption('synonym_type') === classificationEntryNameId) {
+                                        self.ui.synonym_name.validateField(
+                                            'failed', gt.gettext('Primary synonym must be unique'));
+                                        break;
+                                    }
+
+                                    // invalid if primary exists with the same name or if exists into the same classificationEntry
+                                    if ((t.classificationEntry === self.model.get('id')) || (t.synonym_type === classificationEntryNameId)) {
+                                        self.ui.synonym_name.validateField(
+                                            'failed', gt.gettext('Synonym of classification entry already used'));
+                                        break;
                                     }
                                 }
-                            } else {
-                                view.ui.synonym_name.validateField('ok');
                             }
+                        } else {
+                            self.ui.synonym_name.validateField('ok');
                         }
                     });
                 }
@@ -218,10 +227,10 @@ var View = Marionette.View.extend({
                 var v = this.ui.synonym_name.val().trim();
 
                 if (v.length < 3) {
-                    $(this.ui.synonym_name).validateField('failed', gt.gettext('3 characters min'));
+                    $(this.ui.synonym_name).validateField('failed', gt.ngettext('characters_min', 'characters_min', {count: 3}));
                     return false;
                 } else if (v.length > 64) {
-                    $(this.ui.synonym_name).validateField('failed', gt.gettext('64 characters max'));
+                    $(this.ui.synonym_name).validateField('failed', gt.ngettext('characters_max', 'characters_max', {count: 64}));
                     return false;
                 } else {
                     $(this.ui.synonym_name).validateField('ok');
@@ -230,44 +239,40 @@ var View = Marionette.View.extend({
             },
 
             onApply: function() {
-                var view = this;
-                var model = this.getOption('model');
-                var synonym_id = this.getOption('synonym_id');
+                var self = this;
+                var synonymId = this.getOption('synonym_id');
                 var name = this.ui.synonym_name.val().trim();
 
                 if (!this.ui.synonym_name.hasClass('invalid')) {
                     $.ajax({
                         type: "PUT",
-                        url: view.model.url() + 'synonym/' + synonym_id + '/',
+                        url: this.model.url() + 'synonym/' + synonymId + '/',
                         contentType: "application/json; charset=utf-8",
                         dataType: 'json',
-                        data: JSON.stringify({name: name}),
-                        success: function (data) {
-                            //view.model.renameSynonym(view.getOption('type'), name, view.getOption('language'), view.getOption('name'));
-                            view.destroy();
-
-                            model.fetch({reset: true});
-                        },
-                        error: function() {
-                            $.alert.error(gt.gettext("Unable to rename the synonym !"));
-                        }
+                        data: JSON.stringify({name: name})
+                    }).done(function (data) {
+                        //self.model.renameSynonym(self.getOption('type'), name, self.getOption('language'), self.getOption('name'));
+                        self.destroy();
+                        self.model.fetch({reset: true});
+                    }).fail(function() {
+                        $.alert.error(gt.gettext("Unable to rename the synonym !"));
                     });
                 }
             }
         });
 
         var synonym = $(e.target.parentNode);
-        var synonym_id = $(e.target).data('synonym-id');
+        var synonymId = $(e.target).data('synonym-id');
 
-        var type = synonym.find("[name='type']").attr('value');
+        var synonymType = parseInt(synonym.find("[name='synonym-type']").attr('value'));
         var name = synonym.find("[name='name']").text();
         var language = synonym.find("[name='language']").attr('value');
 
         var changeSynonym = new ChangeSynonym({
             model: this.model,
-            synonym_id: synonym_id,
+            synonym_id: synonymId,
             name: name,
-            type: type,
+            synonym_type: synonymType,
             language: language
         });
 

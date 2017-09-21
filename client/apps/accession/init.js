@@ -20,13 +20,10 @@ AccessionModule.prototype = {
         this.routers = {};
         this.controllers = {};
 
-        // i18n if not english
-        if (session.language !== "en") {
-            try {
-                i18next.default.addResources(session.language, 'default', require('./locale/' + session.language + '/LC_MESSAGES/default.json'));
-            } catch (e) {
-                console.warn("No translation found for the current language. Fallback to english language");
-            }
+        try {
+            i18next.default.addResources(session.language, 'default', require('./locale/' + session.language + '/LC_MESSAGES/default.json'));
+        } catch (e) {
+            console.warn("No translation found for the current language. Fallback to english language");
         }
 
         // register the meta-model type of descriptors
@@ -48,7 +45,7 @@ AccessionModule.prototype = {
 
         var EntitySynonymTypeCollection = require('../main/collections/entitysynonymtype');
         this.collections.accessionSynonymTypes = new EntitySynonymTypeCollection([], {
-            target_model: 'classification.classificationentry'});
+            target_model: 'accession.accession'});
 
         this.views.accessionSynonymTypes = new SelectOption({
             className: 'accession-synonym-type',

@@ -21,9 +21,9 @@
         <% _.each(synonyms, function(synonym) { %>
         <tr class="element">
             <th scope="row">
-                <% if (synonym.type != 'ACC_SYN:01' && synonym.type != 'ACC_SYN:02') { %><span data-synonym-id="<%= synonym.id %>" class="action remove-synonym glyphicon glyphicon-minus-sign"></span><% } %>
+                <% if (synonym.synonym_type !== accession_code && synonym.synonym_type !== accession_name) { %><span data-synonym-id="<%= synonym.id %>" class="action remove-synonym glyphicon glyphicon-minus-sign"></span><% } %>
             </th>
-            <td name="type" class="accession-synonym-type" value="<%- synonym.type %>"></td>
+            <td name="synonym-type" class="accession-synonym-type" value="<%- synonym.synonym_type %>"></td>
             <td name="name" class="action rename-synonym" data-synonym-id="<%= synonym.id %>"><%- synonym.name %></td>
             <td name="language" class="language" value="<%- synonym.language %>"></td>
         </tr>

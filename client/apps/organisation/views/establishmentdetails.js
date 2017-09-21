@@ -132,10 +132,10 @@ var View = Marionette.View.extend({
                 var v = this.ui.name.val().trim();
 
                 if (v.length > 255) {
-                    $(this.ui.name).validateField('failed', gt.gettext("255 characters max"));
+                    $(this.ui.name).validateField('failed', gt.ngettext('characters_max', 'characters_max', {count: 255}));
                     return false;
                 } else if (v.length < 3) {
-                    $(this.ui.name).validateField('failed', gt.gettext('3 characters min'));
+                    $(this.ui.name).validateField('failed', gt.ngettext('characters_min', 'characters_min', {count: 3}));
                     return false;
                 }
 

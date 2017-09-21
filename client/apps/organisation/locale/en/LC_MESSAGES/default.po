@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-16 10:23+0200\n"
+"POT-Creation-Date: 2017-09-21 12:51+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,6 +15,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: ../../../views/descriptor.js:26 ../../../views/descriptoredit.js:76
 #: ../../../templates/establishmentlayout.html:15
@@ -53,8 +54,10 @@ msgstr ""
 #: ../../../views/establishmentlistfilter.js:154
 #: ../../../views/organisationdetails.js:115
 #: ../../../controllers/organisation.js:103
-msgid "255 characters max"
-msgstr ""
+msgid "characters_max"
+msgid_plural "characters_max"
+msgstr[0] ""
+msgstr[1] ""
 
 #: ../../../views/establishmentdetails.js:138
 #: ../../../views/establishmentlistfilter.js:59
@@ -62,8 +65,10 @@ msgstr ""
 #: ../../../views/organisationdetails.js:118
 #: ../../../views/organisationlistfilter.js:54
 #: ../../../controllers/organisation.js:106
-msgid "3 characters min"
-msgstr ""
+msgid "characters_min"
+msgid_plural "characters_min"
+msgstr[0] ""
+msgstr[1] ""
 
 #: ../../../views/establishmentlist.js:47 ../../../views/organisationlist.js:47
 #: ../../../templates/grcdetails.html:14

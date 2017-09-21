@@ -186,7 +186,7 @@ var View = Marionette.View.extend({
                     var v = this.ui.label.val();
 
                     if (v.length < 3) {
-                        $(this.ui.label).validateField('failed', gt.gettext('3 characters min'));
+                        $(this.ui.label).validateField('failed', gt.ngettext('characters_min', 'characters_min', {count: 3}));
                         return false;
                     }
 

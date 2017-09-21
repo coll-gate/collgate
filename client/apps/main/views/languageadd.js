@@ -70,10 +70,10 @@ var View = Marionette.View.extend({
                     var v = this.ui.label.val().trim();
 
                     if (v.length > 128) {
-                        this.ui.label.validateField('failed', gt.gettext("128 characters max"));
+                        this.ui.label.validateField('failed', gt.ngettext('characters_max', 'characters_max', {count: 128}));
                         return false;
                     } else if (v.length < 3) {
-                        this.ui.label.validateField('failed', gt.gettext('3 characters min'));
+                        this.ui.label.validateField('failed', gt.ngettext('characters_min', 'characters_min', {count: 3}));
                         return false;
                     }
 
@@ -116,10 +116,10 @@ var View = Marionette.View.extend({
         var re = /^[a-zA-Z]{2}([_-][a-zA-Z]{2})*$/;
 
         if (v.length > 0 && !re.test(v)) {
-            this.ui.add_language_code.validateField('failed', gt.gettext("Invalid characters (alphabet, _ and - only)"));
+            this.ui.add_language_code.validateField('failed', gt.gettext("Invalid format"));
             return false;
         } else if (v.length < 2) {
-            this.ui.add_language_code.validateField('failed', gt.gettext('2 characters min'));
+            this.ui.add_language_code.validateField('failed', gt.ngettext('characters_min', 'characters_min', {count: 2}));
             return false;
         }
 

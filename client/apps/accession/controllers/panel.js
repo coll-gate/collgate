@@ -39,10 +39,10 @@ var Controller = Marionette.Object.extend({
                 var v = this.ui.name.val().trim();
 
                 if (v.length > 128) {
-                    this.ui.name.validateField('failed', gt.gettext("128 characters max"));
+                    this.ui.name.validateField('failed', gt.ngettext('characters_max', 'characters_max', {count: 128}));
                     return false;
                 } else if (v.length < 1) {
-                    this.ui.name.validateField('failed', gt.gettext('1 characters min'));
+                    this.ui.name.validateField('failed', gt.ngettext('characters_min', 'characters_min', {count: 1}));
                     return false;
                 }
                 return true;

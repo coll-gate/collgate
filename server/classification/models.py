@@ -17,6 +17,7 @@ from django.utils import translation
 
 from django.utils.translation import ugettext_lazy as _
 
+from accession import localsettings
 from descriptor.models import DescriptorMetaModel
 from igdectk.common.models import ChoiceEnum, IntegerChoice
 
@@ -412,3 +413,10 @@ class ClassificationEntrySynonym(EntitySynonym):
 
     class Meta:
         verbose_name = _("classification entry synonym")
+
+    def is_primary(self):
+        """
+        Is a primary name synonym.
+        :return: True if primary
+        """
+        return self.synonym_type_id == localsettings.synonym_type_classification_entry_name

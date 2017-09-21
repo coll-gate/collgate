@@ -17,6 +17,7 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 
+from accession import localsettings
 from descriptor.describable import DescriptorsBuilder
 from descriptor.models import DescriptorMetaModel, DescriptorModelType
 from igdectk.rest.handler import *
@@ -117,17 +118,17 @@ def create_accession(request):
 
             # initial synonym GRC code
             grc_code = AccessionSynonym(
-                accession=accession,
+                entity=accession,
                 name=code,
-                type=AccessionSynonym.TYPE_GRC_CODE,
+                synonym_type=localsettings.synonym_type_accession_code,
                 language='en')
             grc_code.save()
 
             # primary synonym if defined
             primary_name = AccessionSynonym(
-                accession=accession,
+                entity=accession,
                 name=name,
-                type=AccessionSynonym.TYPE_PRIMARY,
+                synonym_type=localsettings.synonym_type_accession_name,
                 language=language)
             primary_name.save()
 
@@ -432,7 +433,8 @@ def search_accession(request):
     qs = qs.prefetch_related(
         Prefetch(
             "synonyms",
-            queryset=AccessionSynonym.objects.exclude(type=AccessionSynonym.TYPE_GRC_CODE).order_by('synonym_type', 'language'))
+            queryset=AccessionSynonym.objects.exclude(
+                synonym_type=localsettings.synonym_type_accession_code).order_by('synonym_type', 'language'))
     )
 
     qs = qs.order_by('name').distinct()[:limit]

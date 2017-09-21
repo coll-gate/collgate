@@ -20,13 +20,10 @@ OrganisationModule.prototype = {
         this.routers = {};
         this.controllers = {};
 
-        // i18n if not english
-        if (session.language !== "en") {
-            try {
-                i18next.default.addResources(session.language, 'default', require('./locale/' + session.language + '/LC_MESSAGES/default.json'));
-            } catch (e) {
-                console.warn("No translation found for the current language. Fallback to english language");
-            }
+        try {
+            i18next.default.addResources(session.language, 'default', require('./locale/' + session.language + '/LC_MESSAGES/default.json'));
+        } catch (e) {
+            console.warn("No translation found for the current language. Fallback to english language");
         }
 
         //

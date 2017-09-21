@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-09-20 16:07+0200\n"
+"POT-Creation-Date: 2017-09-21 12:49+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -41,13 +41,19 @@ msgstr "Entrez une valeur."
 msgid "Undefined"
 msgstr ""
 
-#: ../../../widgets/numeric.js:219
-msgid "32 character max"
-msgstr ""
-
-#: ../../../widgets/string.js:55 ../../../widgets/string.js:71
-msgid "1024 characters max"
-msgstr ""
+#: ../../../widgets/numeric.js:219 ../../../widgets/string.js:55
+#: ../../../widgets/string.js:71 ../../../views/descriptorvalue.js:128
+#: ../../../views/descriptorvalue.js:145
+#: ../../../views/descriptorvalueordinal.js:107
+#: ../../../views/descriptorvalueordinal.js:124
+#: ../../../views/descriptorvaluepair.js:132
+#: ../../../views/descriptorvaluepair.js:149
+#: ../../../views/descriptorvaluepair.js:305
+#: ../../../views/descriptorvaluepair.js:322
+msgid "characters_max"
+msgid_plural "characters_max"
+msgstr[0] ""
+msgstr[1] ""
 
 #: ../../../widgets/string.js:57
 msgid "Invalid format"
@@ -90,18 +96,29 @@ msgstr ""
 #: ../../../views/descriptormetamodeldetail.js:55
 #: ../../../views/descriptormodeladd.js:48
 #: ../../../views/descriptormodeldetail.js:45
+#: ../../../views/descriptormodeltype.js:183
 #: ../../../views/descriptormodeltype.js:204
 #: ../../../views/descriptormodeltypelist.js:180
 #: ../../../views/descriptormodeltypelist.js:201
 #: ../../../views/descriptorpanel.js:189
 #: ../../../views/descriptorpanellist.js:156
 #: ../../../views/descriptortypedetailslayout.js:86
-#: ../../../views/descriptorvalue.js:142
+#: ../../../views/descriptorvalue.js:125 ../../../views/descriptorvalue.js:142
+#: ../../../views/descriptorvalue.js:214
+#: ../../../views/descriptorvalueadd.js:47
+#: ../../../views/descriptorvalueordinal.js:104
 #: ../../../views/descriptorvalueordinal.js:121
+#: ../../../views/descriptorvalueordinal.js:193
+#: ../../../views/descriptorvaluepair.js:129
 #: ../../../views/descriptorvaluepair.js:146
+#: ../../../views/descriptorvaluepair.js:218
+#: ../../../views/descriptorvaluepair.js:302
 #: ../../../views/descriptorvaluepair.js:319
-msgid "3 characters min"
-msgstr ""
+#: ../../../views/descriptorvaluepair.js:391
+msgid "characters_min"
+msgid_plural "characters_min"
+msgstr[0] ""
+msgstr[1] ""
 
 #: ../../../views/descriptorgroupadd.js:73
 msgid "Group name already in usage"
@@ -131,18 +148,6 @@ msgstr ""
 
 #: ../../../views/descriptormodeladd.js:73
 msgid "Name for model of descriptor already in usage"
-msgstr ""
-
-#: ../../../views/descriptormodeltype.js:183
-#: ../../../views/descriptorvalue.js:125 ../../../views/descriptorvalue.js:214
-#: ../../../views/descriptorvalueadd.js:47
-#: ../../../views/descriptorvalueordinal.js:104
-#: ../../../views/descriptorvalueordinal.js:193
-#: ../../../views/descriptorvaluepair.js:129
-#: ../../../views/descriptorvaluepair.js:218
-#: ../../../views/descriptorvaluepair.js:302
-#: ../../../views/descriptorvaluepair.js:391
-msgid "1 character min"
 msgstr ""
 
 #: ../../../views/descriptormodeltype.js:244
@@ -200,16 +205,6 @@ msgstr ""
 #: ../../../views/descriptorvalueordinal.js:31
 #: ../../../views/descriptorvaluepair.js:35
 msgid "Edit value0"
-msgstr ""
-
-#: ../../../views/descriptorvalue.js:128 ../../../views/descriptorvalue.js:145
-#: ../../../views/descriptorvalueordinal.js:107
-#: ../../../views/descriptorvalueordinal.js:124
-#: ../../../views/descriptorvaluepair.js:132
-#: ../../../views/descriptorvaluepair.js:149
-#: ../../../views/descriptorvaluepair.js:305
-#: ../../../views/descriptorvaluepair.js:322
-msgid "64 characters max"
 msgstr ""
 
 #: ../../../views/descriptorvalue.js:174

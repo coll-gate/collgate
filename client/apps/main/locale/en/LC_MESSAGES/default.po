@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-09-20 18:26+0200\n"
+"POT-Creation-Date: 2017-09-21 12:49+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,21 +15,29 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: ../../../views/editprofile.js:40
 msgid "Done"
 msgstr ""
 
 #: ../../../views/entitychangelabel.js:71
-#: ../../../views/entitychangelabel.js:88
-msgid "1 character min"
-msgstr ""
+#: ../../../views/entitychangelabel.js:88 ../../../views/entityrename.js:72
+#: ../../../views/entitysynonymtypeadd.js:76
+#: ../../../views/entitysynonymtypeadd.js:122 ../../../views/languageadd.js:76
+#: ../../../views/languageadd.js:122
+msgid "characters_min"
+msgid_plural "characters_min"
+msgstr[0] ""
+msgstr[1] ""
 
 #: ../../../views/entitychangelabel.js:74
-#: ../../../views/entitychangelabel.js:91
+#: ../../../views/entitychangelabel.js:91 ../../../views/entityrename.js:77
 #: ../../../views/entitysynonymtypeadd.js:73 ../../../views/languageadd.js:73
-msgid "128 characters max"
-msgstr ""
+msgid "characters_max"
+msgid_plural "characters_max"
+msgstr[0] ""
+msgstr[1] ""
 
 #: ../../../views/entitychangelabel.js:120
 msgid "Successfully labeled !"
@@ -39,29 +47,12 @@ msgstr ""
 msgid "Invalid characters (alphanumeric, _ and - only)"
 msgstr ""
 
-#: ../../../views/entityrename.js:72
-msgid "character_min"
-msgid_plural "characters_min"
-msgstr[0] ""
-msgstr[1] ""
-
-#: ../../../views/entityrename.js:77
-msgid "character_max"
-msgid_plural "characters_max"
-msgstr[0] ""
-msgstr[1] ""
-
 #: ../../../views/entitysynonymtype.js:69
 msgid "Change the labels for the type of synonym"
 msgstr ""
 
 #: ../../../views/entitysynonymtype.js:84
 msgid "Rename the type of synonym"
-msgstr ""
-
-#: ../../../views/entitysynonymtypeadd.js:76
-#: ../../../views/entitysynonymtypeadd.js:122 ../../../views/languageadd.js:76
-msgid "3 characters min"
 msgstr ""
 
 #: ../../../views/entitysynonymtypeadd.js:132
@@ -83,10 +74,6 @@ msgstr ""
 
 #: ../../../views/languageadd.js:119
 msgid "Invalid characters (alphabet, _ and - only)"
-msgstr ""
-
-#: ../../../views/languageadd.js:122
-msgid "2 characters min"
 msgstr ""
 
 #: ../../../views/languageadd.js:132

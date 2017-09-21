@@ -177,7 +177,7 @@ var View = ScrollView.extend({
                     var v = this.ui.label.val();
 
                     if (v.length < 3) {
-                        $(this.ui.label).validateField('failed', gt.gettext('3 characters min'));
+                        $(this.ui.label).validateField('failed', gt.ngettext('characters_min', 'characters_min', {count: 3}));
                         return false;
                     }
 
@@ -198,7 +198,7 @@ var View = ScrollView.extend({
                         $(this.ui.name).validateField('failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
                         return false;
                     } else if (v.length < 3) {
-                        $(this.ui.name).validateField('failed', gt.gettext('3 characters min'));
+                        $(this.ui.name).validateField('failed', gt.ngettext('characters_min', 'characters_min', {count: 3}));
                         return false;
                     }
 
