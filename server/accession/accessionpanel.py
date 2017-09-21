@@ -370,7 +370,7 @@ def get_panel_accession_list(request, panel_id):
             a['synonyms'].append({
                 'id': synonym.id,
                 'name': synonym.name,
-                'type': synonym.type,
+                'synonym_type': synonym.synonym_type_id,
                 'language': synonym.language
             })
 

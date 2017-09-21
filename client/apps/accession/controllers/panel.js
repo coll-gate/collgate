@@ -27,12 +27,46 @@ var Controller = Marionette.Object.extend({
             },
 
             events: {
-                'click @ui.validate': 'onContinue',
+                'click @ui.validate': 'onCreate',
                 'input @ui.name': 'onNameInput'
             },
 
             initialize: function (options) {
                 CreatePanelDialog.__super__.initialize.apply(this);
+            },
+
+            onNameInput: function () {
+                var name = this.ui.name.val().trim();
+
+                if (this.validateName()) {
+                    var filters = {
+                        method: 'ieq',
+                        fields: ['name'],
+                        'name': name
+                    };
+
+                    $.ajax({
+                        type: "GET",
+                        url: application.baseUrl + 'accession/accessionpanel/search/',
+                        dataType: 'json',
+                        data: {filters: JSON.stringify(filters)},
+                        el: this.ui.name,
+                        success: function (data) {
+                            if (data.items.length > 0) {
+                                for (var i in data.items) {
+                                    var t = data.items[i];
+
+                                    if (t.value.toUpperCase() === name.toUpperCase()) {
+                                        $(this.el).validateField('failed', gt.gettext('Accession panel name already in usage'));
+                                        break;
+                                    }
+                                }
+                            } else {
+                                $(this.el).validateField('ok');
+                            }
+                        }
+                    });
+                }
             },
 
             validateName: function () {
@@ -48,7 +82,7 @@ var Controller = Marionette.Object.extend({
                 return true;
             },
 
-            onContinue: function () {
+            onCreate: function () {
                 var view = this;
 
                 if (this.validateName()) {
