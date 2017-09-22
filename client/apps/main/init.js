@@ -31,8 +31,6 @@ MainModule.prototype = {
 
         try {
             i18next.default.addResources(session.language, 'default', require('./locale/' + session.language + '/LC_MESSAGES/default.json'));
-            i18next.default.addResources(session.language, 'default', require('./locale/' + session.language + '/LC_MESSAGES/plural.json'));
-
             // inject django json catalog
             //$.get(application.baseUrl + 'jsoni18n/main/django').done(function (data) {
             //    i18next.default.addResources(session.language, 'default', data.catalog);

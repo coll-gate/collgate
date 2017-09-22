@@ -346,9 +346,6 @@ var Application = Marionette.Application.extend({
         window.i18n = i18next;
         window.i18next = i18next;
 
-        window.gt = i18next;
-        window.gt.gettext = i18next.t;
-
         // select2
         if (session.language === "fr") {
             require('select2/dist/js/i18n/fr');

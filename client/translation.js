@@ -67,6 +67,7 @@ function I18NextWebpackPlugin(options) {
  
 I18NextWebpackPlugin.prototype.apply = function(compiler) {
     let modules = {};
+    let self = this;
 
     readdirp({
         root: 'apps',
@@ -74,8 +75,6 @@ I18NextWebpackPlugin.prototype.apply = function(compiler) {
     }, function(file) {
         let fullPath = file.fullPath;
         let extension = path.extname(fullPath).toLowerCase();
-
-        //console.log(module, file.name)
 
         // detect module, make one parser per module
         var module = file.path.split('/')[0];
@@ -89,6 +88,8 @@ I18NextWebpackPlugin.prototype.apply = function(compiler) {
                 loadPath: './apps/' + module + '/locale/{{lng}}/LC_MESSAGES/{{ns}}.json',
                 savePath: './apps/' + module + '/locale/{{lng}}/LC_MESSAGES/{{ns}}.json',
             };
+
+            lparseOptions.debug = self.options.debug || false;
 
             modules[module] = {
                 parser: new Parser(lparseOptions)
@@ -123,10 +124,24 @@ I18NextWebpackPlugin.prototype.apply = function(compiler) {
                 // Ensure translations folder exists
                 // if (!fs.existsSync('default'))
                 //     fs.mkdirSync('default');
-
                 let translations = parser.get({sort: true})[lng][parser.options.ns];
 
                 delete translations[''];
+
+                if (self.options.verbose) {
+                    console.log("> Module " + module + " with language is " + lng + ":");
+                    console.log(">> Export " + Object.keys(translations).length + ':' + lng + ' items');
+
+                    let untranslated = 0;
+
+                    for (var tr in translations) {
+                        if (translations[tr] === "") {
+                            ++untranslated;
+                        }
+                    }
+
+                    console.log(">> Untranslated " + untranslated + ':' + lng + ' items');
+                }
 
                 // Pseudo json file
                 fs.writeFileSync('./apps/' + module + '/locale/' + lng + '/LC_MESSAGES/default.json',
