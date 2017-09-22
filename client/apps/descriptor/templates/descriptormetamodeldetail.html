@@ -10,15 +10,15 @@
 
 <div class="descriptor-meta-model-detail col-lg-offset-2 col-lg-8">
     <div class="descriptor-mata-model-name form-group">
-        <label for="descriptor_meta_model_name"><%- gt.gettext('Descriptor meta-model name') %></label>
+        <label for="descriptor_meta_model_name"><%- _t('Descriptor meta-model name') %></label>
         <input id="descriptor_meta_model_name" class="form-control" type="text" maxlength="255" value="<%= name %>">
     </div>
     <div class="contextual-region"></div>
     <div class="descriptor-meta-model-description form-group">
-        <label for="descriptor_meta_model_description"><%- gt.gettext('Description') %></label>
+        <label for="descriptor_meta_model_description"><%- _t('Description') %></label>
         <textarea id="descriptor_meta_model_description" class="form-control" maxlength="1024"><%= description %></textarea>
     </div>
     <div class="descriptor-model-update form-group text-center">
-        <button id="save" class="form-control btn btn-success"><%- gt.gettext('Update') %></button>
+        <button id="save" class="form-control btn btn-success"><%- _t('Update') %></button>
     </div>
 </div>

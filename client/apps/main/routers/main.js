@@ -47,7 +47,7 @@ var Router = Marionette.AppRouter.extend({
         var defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
-        defaultLayout.showChildView('title', new TitleView({title: gt.gettext("Home")}));
+        defaultLayout.showChildView('title', new TitleView({title: _t("Home")}));
 
         var quarterLayout = new QuarterLayout();
         defaultLayout.showChildView('content', quarterLayout);
@@ -67,7 +67,7 @@ var Router = Marionette.AppRouter.extend({
         var defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
-        defaultLayout.showChildView('title', new TitleView({title: gt.gettext("About...")}));
+        defaultLayout.showChildView('title', new TitleView({title: _t("About...")}));
         defaultLayout.showChildView('content', new AboutView());
     },
 
@@ -75,7 +75,7 @@ var Router = Marionette.AppRouter.extend({
         var defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
-        defaultLayout.showChildView('title', new TitleView({title: gt.gettext("Help...")}));
+        defaultLayout.showChildView('title', new TitleView({title: _t("Help...")}));
         defaultLayout.showChildView('content', new HelpIndexView());
     },
 
@@ -86,7 +86,7 @@ var Router = Marionette.AppRouter.extend({
         var defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
-        defaultLayout.showChildView('title', new TitleView({title: gt.gettext("Configuration state")}));
+        defaultLayout.showChildView('title', new TitleView({title: _t("Configuration state")}));
 
         collection.fetch().then(function () {
             var ConfigListView = require('../views/configlist');
@@ -102,7 +102,7 @@ var Router = Marionette.AppRouter.extend({
         var defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
-        defaultLayout.showChildView('title', new TitleView({title: gt.gettext("List of languages for data")}));
+        defaultLayout.showChildView('title', new TitleView({title: _t("List of languages for data")}));
 
         collection.fetch().done(function (data) {
             var languageListView = new LanguageListView({collection : collection});
@@ -121,7 +121,7 @@ var Router = Marionette.AppRouter.extend({
         var defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
-        defaultLayout.showChildView('title', new TitleView({title: gt.gettext("List of type of synonyms for entities")}));
+        defaultLayout.showChildView('title', new TitleView({title: _t("List of type of synonyms for entities")}));
 
         collection.fetch().done(function (data) {
             var entitySynonymTypeListView = new EntitySynonymTypeListView({collection : collection});

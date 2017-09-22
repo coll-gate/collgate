@@ -78,7 +78,7 @@ var View = Marionette.View.extend({
                 cache: true
             },
             minimumInputLength: 3,
-            placeholder: gt.gettext("Select a username"),
+            placeholder: _t("Select a username"),
         });
     },
 

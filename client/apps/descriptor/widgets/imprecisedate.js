@@ -181,7 +181,7 @@ _.extend(ImpreciseDateType.prototype, DescriptorFormatType.prototype, {
 
                 widget_picker = dateTimePicker;
 
-                var button = $('.OK').html(gt.gettext("Undefined")).css('display', 'none');
+                var button = $('.OK').html(_t("Undefined")).css('display', 'none');
                 button.on('click', function (e) {
                     if (accuracy === 1) {
                         el.data('DateTimePicker').format("YYYY");

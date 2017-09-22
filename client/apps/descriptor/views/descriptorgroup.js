@@ -20,7 +20,7 @@ var View = Marionette.View.extend({
             behaviorClass: require('../../main/behaviors/actionbuttonevents'),
             actions: {
                 edit: {display: false},
-                tag: {display: true, title: gt.gettext("Edit label"), event: 'onRenameGroup'},
+                tag: {display: true, title: _t("Edit label"), event: 'onRenameGroup'},
                 manage: {display: true, event: 'viewDescriptorType'},
                 remove: {display: true, event: 'deleteDescriptorGroup'}
             }
@@ -70,7 +70,7 @@ var View = Marionette.View.extend({
         if (this.model.get('num_descriptor_types') === 0) {
             this.model.destroy({wait: true});
         } else {
-            $.alert.error(gt.gettext("Some types of descriptor exists for this group"));
+            $.alert.error(_t("Some types of descriptor exists for this group"));
         }
         return false;
     },
@@ -83,7 +83,7 @@ var View = Marionette.View.extend({
         var ChangeName = require('../../main/views/entityrename');
         var changeName = new ChangeName({
             model: this.model,
-            title: gt.gettext("Rename the group of descriptors")
+            title: _t("Rename the group of descriptors")
         });
 
         changeName.render();

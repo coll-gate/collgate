@@ -180,7 +180,7 @@ var View = Marionette.View.extend({
                     var v = this.ui.label.val();
 
                     if (v.length < 1) {
-                        $(this.ui.label).validateField('failed', ggt.ngettext('characters_min', 'characters_min', {count: 1}));
+                        $(this.ui.label).validateField('failed', g_t('characters_min', {count: 1}));
                         return false;
                     }
 
@@ -198,10 +198,10 @@ var View = Marionette.View.extend({
                     var re = /^[a-zA-Z0-9_\-]+$/i;
 
                     if (v.length > 0 && !re.test(v)) {
-                        $(this.ui.name).validateField('failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
+                        $(this.ui.name).validateField('failed', _t("Invalid characters (alphanumeric, _ and - only)"));
                         return false;
                     } else if (v.length < 3) {
-                        $(this.ui.name).validateField('failed', gt.ngettext('characters_min', 'characters_min', {count: 3}));
+                        $(this.ui.name).validateField('failed', _t('characters_min', {count: 3}));
                         return false;
                     }
 
@@ -241,7 +241,7 @@ var View = Marionette.View.extend({
                                 view.destroy();
                             },
                             error: function () {
-                                $.alert.error(gt.gettext("Unable to create the type of model of descriptor !"));
+                                $.alert.error(_t("Unable to create the type of model of descriptor !"));
 
                                 // left shift (undo) for consistency with server
                                 for (var i = 0; i < to_rshift.length; ++i) {
@@ -335,7 +335,7 @@ var View = Marionette.View.extend({
                 // need to sort
                 collection.sort();
             }).fail(function () {
-                $.alert.error(gt.gettext('Unable to reorder the types of model of descriptor'));
+                $.alert.error(_t('Unable to reorder the types of model of descriptor'));
             })
         }
 
@@ -350,7 +350,7 @@ var View = Marionette.View.extend({
         var ChangeName = require('../../main/views/entityrename');
         var changeName = new ChangeName({
             model: this.model,
-            title: gt.gettext("Rename the type of model of descriptors")
+            title: _t("Rename the type of model of descriptors")
         });
 
         changeName.render();
@@ -363,7 +363,7 @@ var View = Marionette.View.extend({
         var ChangeLabel = require('../../main/views/entitychangelabel');
         var changeLabel = new ChangeLabel({
             model: this.model,
-            title: gt.gettext("Change the labels for the type of model of descriptor")});
+            title: _t("Change the labels for the type of model of descriptor")});
 
         changeLabel.render();
 
@@ -553,10 +553,10 @@ var View = Marionette.View.extend({
                             var unit = format.unit === "custom" ? 'custom_unit' in format ? format.custom_unit : "" : format.unit;
 
                             if (unit !== "") {
-                                var label = $('<label class="control-label">' + gt.gettext("Value") + '&nbsp;<span>(' + unit + ')</span></label>');
+                                var label = $('<label class="control-label">' + _t("Value") + '&nbsp;<span>(' + unit + ')</span></label>');
                                 view.ui.condition_values.append(label);
                             } else {
-                                var label = $('<label class="control-label">' + gt.gettext("Value") + '</label>');
+                                var label = $('<label class="control-label">' + _t("Value") + '</label>');
                                 view.ui.condition_values.append(label);
                             }
 
@@ -594,7 +594,7 @@ var View = Marionette.View.extend({
                         url: model.url() + "condition/",
                         contentType: "application/json; charset=utf-8"
                     }).done(function() {
-                        $.alert.success(gt.gettext("Successfully removed !"));
+                        $.alert.success(_t("Successfully removed !"));
                     }).always(function() {
                         view.destroy();
                     });
@@ -632,7 +632,7 @@ var View = Marionette.View.extend({
                             contentType: "application/json; charset=utf-8",
                             data: JSON.stringify(data)
                         }).done(function() {
-                            $.alert.success(gt.gettext("Successfully defined !"));
+                            $.alert.success(_t("Successfully defined !"));
                         }).always(function() {
                             view.destroy();
                         });
@@ -644,7 +644,7 @@ var View = Marionette.View.extend({
                             contentType: "application/json; charset=utf-8",
                             data: JSON.stringify(data)
                         }).done(function () {
-                            $.alert.success(gt.gettext("Successfully defined !"));
+                            $.alert.success(_t("Successfully defined !"));
                         }).always(function () {
                             view.destroy();
                         });

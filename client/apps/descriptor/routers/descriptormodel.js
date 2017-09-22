@@ -41,7 +41,7 @@ var Router = Marionette.AppRouter.extend({
         var defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
-        defaultLayout.showChildView('title', new TitleView({title: gt.gettext("List of models of descriptor")}));
+        defaultLayout.showChildView('title', new TitleView({title: _t("List of models of descriptor")}));
 
         collection.fetch().then(function () {
             var descriptorModelList = new DescriptorModelListView({collection : collection});
@@ -62,7 +62,7 @@ var Router = Marionette.AppRouter.extend({
         var model = new DescriptorModelModel({id: id});
 
         model.fetch().then(function () {
-            defaultLayout.showChildView('title', new TitleView({title: gt.gettext("Details for the model of descriptor"), object: model.get('name')}));
+            defaultLayout.showChildView('title', new TitleView({title: _t("Details for the model of descriptor"), object: model.get('name')}));
             defaultLayout.showChildView('content', new DescriptorModelDetailView({model : model}));
         });
     },
@@ -71,7 +71,7 @@ var Router = Marionette.AppRouter.extend({
         var defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
-        defaultLayout.showChildView('title', new TitleView({title: gt.gettext("List of types of models of descriptor")}));
+        defaultLayout.showChildView('title', new TitleView({title: _t("List of types of models of descriptor")}));
 
         var leftOneRightTwoLayout = new LeftOneRightTwoLayout({});
         defaultLayout.showChildView('content', leftOneRightTwoLayout);

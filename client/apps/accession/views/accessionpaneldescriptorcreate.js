@@ -131,7 +131,7 @@ var View = Marionette.View.extend({
 
             var TitleView = require('../../main/views/titleview');
             contextLayout.showChildView('title', new TitleView({
-                title: gt.gettext("Descriptors"),
+                title: _t("Descriptors"),
                 glyphicon: 'glyphicon-wrench'
             }));
             contextLayout.showChildView('content', contextView);

@@ -38,19 +38,19 @@ var View = ScrollView.extend({
             event: 'accession-select',
             fixed: true
         },
-        'code': {label: gt.gettext('Code'), width: 'auto', minWidth: true, event: 'view-accession-details'},
-        'name': {label: gt.gettext('Name'), width: 'auto', minWidth: true, event: 'view-accession-details'},
+        'code': {label: _t('Code'), width: 'auto', minWidth: true, event: 'view-accession-details'},
+        'name': {label: _t('Name'), width: 'auto', minWidth: true, event: 'view-accession-details'},
         'primary_classification_entry': {
-            label: gt.gettext('Classification'),
+            label: _t('Classification'),
             width: 'auto',
             minWidth: true,
             event: 'view-primary-classification-entry-details',
             custom: 'primaryClassificationEntryCell',
             field: 'name'
         },
-        'descriptor_meta_model': {label: gt.gettext('Model'), width: 'auto', minWidth: true},
+        'descriptor_meta_model': {label: _t('Model'), width: 'auto', minWidth: true},
         'synonym': {
-            label: gt.gettext('Synonym'),
+            label: _t('Synonym'),
             width: 'auto',
             minWidth: true,
             custom: 'synonymCell',
@@ -89,7 +89,7 @@ var View = ScrollView.extend({
         }
 
         var TitleView = require('../../main/views/titleview');
-        contextLayout.showChildView('title', new TitleView({title: gt.gettext("Accession actions"), glyphicon: 'glyphicon-wrench'}));
+        contextLayout.showChildView('title', new TitleView({title: _t("Accession actions"), glyphicon: 'glyphicon-wrench'}));
 
         var actions = ['create-panel'];
 

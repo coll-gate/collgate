@@ -25,7 +25,7 @@ var View = DescribableDetails.extend({
 
         var TitleView = require('../../main/views/titleview');
         contextLayout.showChildView('title', new TitleView({
-            title: gt.gettext("Descriptors"),
+            title: _t("Descriptors"),
             glyphicon: 'glyphicon-wrench'
         }));
 

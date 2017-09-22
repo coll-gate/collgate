@@ -1,4 +1,5 @@
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
+const I18NextWebpackPlugin = require('./translation');
 
 var fs = require("fs");
 var webpack = require('webpack');
@@ -70,6 +71,7 @@ module.exports = function(env) {
             publicPath: '/build'
         },
         plugins: [
+            new I18NextWebpackPlugin({}),
             new webpack.optimize.ModuleConcatenationPlugin(),
             new webpack.ProvidePlugin({_: 'underscore'})
         ],

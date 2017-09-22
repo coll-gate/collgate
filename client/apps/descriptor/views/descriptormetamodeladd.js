@@ -88,7 +88,7 @@ var View = Marionette.View.extend({
                             view.destroy();
                         },
                         error: function () {
-                            $.alert.error(gt.gettext("Unable to create the meta-model of descriptor !"));
+                            $.alert.error(_t("Unable to create the meta-model of descriptor !"));
                         }
                     });
                 }
@@ -98,7 +98,7 @@ var View = Marionette.View.extend({
                 var v = this.ui.label.val();
 
                 if (v.length < 3) {
-                    $(this.ui.label).validateField('failed', gt.ngettext('characters_min', 'characters_min', {count: 3}));
+                    $(this.ui.label).validateField('failed', _t('characters_min', {count: 3}));
                     return false;
                 }
 
@@ -128,10 +128,10 @@ var View = Marionette.View.extend({
         var re = /^[a-zA-Z0-9_\-]+$/i;
 
         if (v.length > 0 && !re.test(v)) {
-            $(this.ui.name).validateField('failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
+            $(this.ui.name).validateField('failed', _t("Invalid characters (alphanumeric, _ and - only)"));
             return false;
         } else if (v.length < 3) {
-            $(this.ui.name).validateField('failed', gt.ngettext('characters_min', 'characters_min', {count: 3}));
+            $(this.ui.name).validateField('failed', _t('characters_min', {count: 3}));
             return false;
         }
 
@@ -156,7 +156,7 @@ var View = Marionette.View.extend({
                             var t = data.items[i];
 
                             if (t.name.toUpperCase() === this.el.val().toUpperCase()) {
-                                $(this.el).validateField('failed', gt.gettext('Descriptor meta-model name already in usage'));
+                                $(this.el).validateField('failed', _t('Descriptor meta-model name already in usage'));
                                 break;
                             }
                         }

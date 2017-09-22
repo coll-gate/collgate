@@ -12,23 +12,23 @@
     <div class="modal-content">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h4 class="modal-title"><%= gt.gettext("Create an establishment") %></h4>
+            <h4 class="modal-title"><%= _t("Create an establishment") %></h4>
         </div>
         <div class="modal-body">
             <form>
                 <div class="form-group">
-                    <label class="control-label" for="organisation_name"><%= gt.gettext("Name of the organisation") %></label>
+                    <label class="control-label" for="organisation_name"><%= _t("Name of the organisation") %></label>
                     <input class="form-control name" id="organisation_name" type="text" name="name" value="" readonly="" autocomplete="off" style="width:100%;">
                 </div>
                 <div class="form-group">
-                    <label class="control-label" for="establishment_name"><%= gt.gettext("Name (must be unique)") %></label>
+                    <label class="control-label" for="establishment_name"><%= _t("Name (must be unique)") %></label>
                     <input class="form-control name" id="establishment_name" type="text" name="name" value="" maxlength="255" autofocus="" autocomplete="off" style="width:100%;">
                 </div>
             </form>
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= gt.gettext("Cancel") %></button>
-            <button type="button" class="btn btn-success create"><%= gt.gettext("Create") %></button>
+            <button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= _t("Cancel") %></button>
+            <button type="button" class="btn btn-success create"><%= _t("Create") %></button>
         </div>
     </div><!-- /.modal-content -->
 </div><!-- /.modal-dialog -->

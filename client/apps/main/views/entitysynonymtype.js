@@ -66,7 +66,7 @@ var View = Marionette.View.extend({
         var ChangeLabel = require('../../main/views/entitychangelabel');
         var changeLabel = new ChangeLabel({
             model: this.model,
-            title: gt.gettext("Change the labels for the type of synonym")});
+            title: _t("Change the labels for the type of synonym")});
 
         changeLabel.render();
 
@@ -81,7 +81,7 @@ var View = Marionette.View.extend({
         var ChangeName = require('./entityrename');
         var changeName = new ChangeName({
             model: this.model,
-            title: gt.gettext("Rename the type of synonym")
+            title: _t("Rename the type of synonym")
         });
 
         changeName.render();

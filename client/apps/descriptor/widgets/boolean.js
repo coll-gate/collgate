@@ -36,7 +36,7 @@ _.extend(BooleanType.prototype, DescriptorFormatType.prototype, {
             var option = $("<option></option>");
 
             option.attr("value", "true");
-            option.html(gt.gettext('Yes'));
+            option.html(_t('Yes'));
 
             select.append(option);
 
@@ -44,7 +44,7 @@ _.extend(BooleanType.prototype, DescriptorFormatType.prototype, {
             option = $("<option></option>");
 
             option.attr("value", "false");
-            option.html(gt.gettext('No'));
+            option.html(_t('No'));
 
             select.append(option);
 
@@ -87,7 +87,7 @@ _.extend(BooleanType.prototype, DescriptorFormatType.prototype, {
 
         if (this.readOnly) {
             if (definesValues) {
-                this.el.val(defaultValues ? gt.gettext('Yes') : gt.gettext('No')).attr('value', defaultValues);
+                this.el.val(defaultValues ? _t('Yes') : _t('No')).attr('value', defaultValues);
 
                 if (defaultValues) {
                     this.el.parent().children('span').children('span').addClass('glyphicon-check');

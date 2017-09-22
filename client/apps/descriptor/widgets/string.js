@@ -52,9 +52,9 @@ _.extend(StringType.prototype, DescriptorFormatType.prototype, {
                     var el = $(e.target);
 
                     if (val.length > 1024) {
-                        StringType.prototype._validationHelper(el, -1, gt.ngettext('characters_max', 'characters_max', {count: 1024}));
+                        StringType.prototype._validationHelper(el, -1, _t('characters_max', {count: 1024}));
                     } else if (!re.test(val)) {
-                        StringType.prototype._validationHelper(el, -1, gt.gettext("Invalid format"));
+                        StringType.prototype._validationHelper(el, -1, _t("Invalid format"));
                     } else {
                         StringType.prototype._validationHelper(el, 0, null);
                     }
@@ -68,7 +68,7 @@ _.extend(StringType.prototype, DescriptorFormatType.prototype, {
 
                     // hard limit to 1024 characters
                     if (val.length > 1024) {
-                        StringType.prototype._validationHelper(el, -1, gt.ngettext('characters_max', 'characters_max', {count: 1024}));
+                        StringType.prototype._validationHelper(el, -1, _t('characters_max', {count: 1024}));
                     } else {
                         StringType.prototype._validationHelper(el, 0, null);
                     }

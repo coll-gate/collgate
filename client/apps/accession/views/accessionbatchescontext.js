@@ -18,9 +18,9 @@ var View = Marionette.View.extend({
         return {
             actions: this.getOption('actions'),
             options: {
-                'create': {className: 'btn-default', label: gt.gettext('Introduce a batch')},
-                //'apply': {className: 'btn-success', label: gt.gettext('Apply')},
-                //'cancel': {className: 'btn-default', label: gt.gettext('...')}
+                'create': {className: 'btn-default', label: _t('Introduce a batch')},
+                //'apply': {className: 'btn-success', label: _t('Apply')},
+                //'cancel': {className: 'btn-default', label: _t('...')}
             }
         }
     },

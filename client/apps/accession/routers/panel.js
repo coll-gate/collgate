@@ -35,7 +35,7 @@ var Router = Marionette.AppRouter.extend({
         var defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
-        defaultLayout.showChildView('title', new TitleView({title: gt.gettext("List of panels")}));
+        defaultLayout.showChildView('title', new TitleView({title: _t("List of panels")}));
 
         // get available columns
         var columns = $.ajax({
@@ -70,7 +70,7 @@ var Router = Marionette.AppRouter.extend({
         application.main.showContent(defaultLayout);
 
         panel.fetch().then(function () {
-            defaultLayout.showChildView('title', new TitleView({title: gt.gettext("Panel"), model: panel}));
+            defaultLayout.showChildView('title', new TitleView({title: _t("Panel"), model: panel}));
 
             var panelLayout = new PanelLayout({model: panel, initialTab: tab.replace('/', '')});
             defaultLayout.showChildView('content', panelLayout);

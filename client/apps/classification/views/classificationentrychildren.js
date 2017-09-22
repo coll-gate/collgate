@@ -31,10 +31,10 @@ var View = ScrollView.extend({
     ],
 
     columnsOptions: {
-        'name': {label: gt.gettext('Name'), width: 'auto', minWidth: true, event: 'view-classification-entry-details'},
-        'rank': {label: gt.gettext('Rank'), width: 'auto', minWidth: true, custom: 'rankCell'},
+        'name': {label: _t('Name'), width: 'auto', minWidth: true, event: 'view-classification-entry-details'},
+        'rank': {label: _t('Rank'), width: 'auto', minWidth: true, custom: 'rankCell'},
         'parent': {
-            label: gt.gettext('Parent'),
+            label: _t('Parent'),
             width: 'auto',
             minWidth: true,
             event: 'view-parent-details',
@@ -42,7 +42,7 @@ var View = ScrollView.extend({
             field: 'name'
         },
         'synonym': {
-            label: gt.gettext('Synonym'),
+            label: _t('Synonym'),
             width: 'auto',
             minWidth: true,
             custom: 'synonymCell',

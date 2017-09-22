@@ -44,11 +44,11 @@ var View = ScrollView.extend({
     ],
 
     columnsOptions: {
-        'name': {label: gt.gettext('Name'), minWidth: true, event: 'view-establishment'},
-        '#establishment_code': {label: gt.gettext('Code'), minWidth: true, format: {type: 'string'}},
-        '#establishment_zipcode': {label: gt.gettext('Zipcode'), minWidth: true, format: {type: 'string'}},
+        'name': {label: _t('Name'), minWidth: true, event: 'view-establishment'},
+        '#establishment_code': {label: _t('Code'), minWidth: true, format: {type: 'string'}},
+        '#establishment_zipcode': {label: _t('Zipcode'), minWidth: true, format: {type: 'string'}},
         '#establishment_geolocation': {
-            label: gt.gettext('Location'), minWidth: true, event: 'view-establishments', query: true}
+            label: _t('Location'), minWidth: true, event: 'view-establishments', query: true}
     },
 
     initialize: function(options) {

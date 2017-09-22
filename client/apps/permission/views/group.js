@@ -33,9 +33,9 @@ var View = Marionette.View.extend({
         ActionBtnEvents: {
             behaviorClass: require('../../main/behaviors/actionbuttonevents'),
             actions: {
-                edit: {display: true, title: gt.gettext("Manage permissions"), event: 'viewPermissions'},
-                tag: {display: true, title: gt.gettext("Edit label"), event: 'onRenameGroup'},
-                manage: {display: true, title: gt.gettext("Manage users"), event: 'viewUsers'},
+                edit: {display: true, title: _t("Manage permissions"), event: 'viewPermissions'},
+                tag: {display: true, title: _t("Edit label"), event: 'onRenameGroup'},
+                manage: {display: true, title: _t("Manage users"), event: 'viewUsers'},
                 remove: {display: true, event: 'deleteGroup'}
             }
         }
@@ -67,7 +67,7 @@ var View = Marionette.View.extend({
         var ChangeName = require('../../main/views/entityrename');
         var changeName = new ChangeName({
             model: this.model,
-            title: gt.gettext("Rename the group of users"),
+            title: _t("Rename the group of users"),
             maxlength: 80
         });
 

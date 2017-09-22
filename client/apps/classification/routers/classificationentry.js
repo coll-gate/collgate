@@ -58,7 +58,7 @@ var ClassificationEntryRouter = Marionette.AppRouter.extend({
         var defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
-        defaultLayout.showChildView('title', new TitleView({title: gt.gettext("List of classifications entries")}));
+        defaultLayout.showChildView('title', new TitleView({title: _t("List of classifications entries")}));
 
         // get available columns
         var columns = $.ajax({
@@ -96,7 +96,7 @@ var ClassificationEntryRouter = Marionette.AppRouter.extend({
         var classificationEntryLayout = new ClassificationEntryLayout({model: classificationEntry, initialTab: tab.replace('/', '')});
 
         classificationEntry.fetch().then(function () {
-            defaultLayout.showChildView('title', new TitleView({title: gt.gettext("Classification entry details"), model: classificationEntry}));
+            defaultLayout.showChildView('title', new TitleView({title: _t("Classification entry details"), model: classificationEntry}));
             defaultLayout.showChildView('content', classificationEntryLayout);
         });
 

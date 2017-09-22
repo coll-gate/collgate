@@ -90,7 +90,7 @@ var ClassificationEntryView = Marionette.View.extend({
 
     onRemoveClassificationEntry: function() {
         this.model.destroy({wait: true}).then(function() {
-            $.alert.success(gt.gettext("Successfully removed !"));
+            $.alert.success(_t("Successfully removed !"));
         });
     },
 

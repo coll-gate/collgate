@@ -59,7 +59,7 @@ var View = Marionette.View.extend({
 
     onRemoveOrganisation: function() {
         this.model.destroy({wait: true}).then(function() {
-            $.alert.success(gt.gettext("Successfully removed !"));
+            $.alert.success(_t("Successfully removed !"));
         });
     },
 
@@ -78,7 +78,7 @@ var View = Marionette.View.extend({
 
     numEstablishmentsCell: function(td) {
         var el = $('<span class="badge" style="cursor: pointer;">' + this.model.get('num_establishments') + '</span>');
-        el.attr('title', gt.gettext('Manage establishments of the organisation'));
+        el.attr('title', _t('Manage establishments of the organisation'));
 
         td.html(el);
     }

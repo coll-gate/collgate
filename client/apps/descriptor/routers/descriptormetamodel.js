@@ -41,7 +41,7 @@ var Router = Marionette.AppRouter.extend({
         var defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
-        defaultLayout.showChildView('title', new TitleView({title: gt.gettext("List of meta-models of descriptor")}));
+        defaultLayout.showChildView('title', new TitleView({title: _t("List of meta-models of descriptor")}));
 
         collection.fetch().then(function () {
             var descriptorMetaModelList = new DescriptorMetaModelListView({collection : collection});
@@ -62,7 +62,7 @@ var Router = Marionette.AppRouter.extend({
         var model = new DescriptorMetaModelModel({id: id});
 
         model.fetch().then(function () {
-            defaultLayout.showChildView('title', new TitleView({title: gt.gettext("Details for the meta-model of descriptor"), object: model.get('name')}));
+            defaultLayout.showChildView('title', new TitleView({title: _t("Details for the meta-model of descriptor"), object: model.get('name')}));
             defaultLayout.showChildView('content', new DescriptorMetaModelDetailView({model : model}));
         });
     },
@@ -73,7 +73,7 @@ var Router = Marionette.AppRouter.extend({
         var defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
-        defaultLayout.showChildView('title', new TitleView({title: gt.gettext("List of panels of descriptor")}));
+        defaultLayout.showChildView('title', new TitleView({title: _t("List of panels of descriptor")}));
 
         var twoColumnsLayout = new TwoColumnsLayout({});
         defaultLayout.showChildView('content', twoColumnsLayout);

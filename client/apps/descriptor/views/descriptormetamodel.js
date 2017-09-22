@@ -21,7 +21,7 @@ var View = Marionette.View.extend({
         ActionBtnEvents: {
             behaviorClass: require('../../main/behaviors/actionbuttonevents'),
             actions: {
-                edit: {title: gt.gettext("Edit label"), event: 'viewDescriptorMetaModelDetails'},
+                edit: {title: _t("Edit label"), event: 'viewDescriptorMetaModelDetails'},
                 tag: {display: true, event: 'editLabel'},
                 manage: {display: true, event: 'viewDescriptorPanels'},
                 remove: {display: true, event: 'deleteDescriptorMetaModel'}
@@ -83,7 +83,7 @@ var View = Marionette.View.extend({
         // if (this.model.get('num_descriptor_models') === 0) {
         //     this.model.destroy({wait: true});
         // } else {
-        //     $.alert.error(gt.gettext("It is not permitted to delete a meta-model of descriptor that contains some panels"));
+        //     $.alert.error(_t("It is not permitted to delete a meta-model of descriptor that contains some panels"));
         // }
         this.model.destroy({wait: true});
     },
@@ -92,7 +92,7 @@ var View = Marionette.View.extend({
         var ChangeLabel = require('../../main/views/entitychangelabel');
         var changeLabel = new ChangeLabel({
             model: this.model,
-            title: gt.gettext("Change the labels for the meta-model of descriptor")});
+            title: _t("Change the labels for the meta-model of descriptor")});
 
         changeLabel.render();
 

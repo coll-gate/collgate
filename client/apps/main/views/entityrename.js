@@ -64,17 +64,17 @@ var View = Dialog.extend({
         var re = /^[a-zA-Z0-9_\-]+$/i;
 
         if (v.length > 0 && !re.test(v)) {
-            this.ui.name.validateField('failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
+            this.ui.name.validateField('failed', _t("Invalid characters (alphanumeric, _ and - only)"));
             return false;
         } else if (v.length < this.minlength && this.minlength > 0) {
             this.ui.name.validateField(
                 'failed',
-                gt.ngettext('characters_min', 'characters_min', {count: this.minlength}));
+                _t('characters_min', {count: this.minlength}));
             return false;
         } else if (v.length > this.maxlength && this.maxlength > 0) {
             this.ui.name.validateField(
                 'failed',
-                gt.ngettext('characters_max', 'characters_max', {count: this.maxlength}));
+                _t('characters_max', {count: this.maxlength}));
             return false;
         }
 

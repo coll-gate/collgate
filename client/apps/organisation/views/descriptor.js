@@ -23,7 +23,7 @@ var View = DescribableDetails.extend({
         }
 
         var TitleView = require('../../main/views/titleview');
-        contextLayout.showChildView('title', new TitleView({title: gt.gettext("Descriptors")}));
+        contextLayout.showChildView('title', new TitleView({title: _t("Descriptors")}));
 
         var actions = ['modify'];
 

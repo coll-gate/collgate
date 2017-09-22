@@ -80,7 +80,7 @@ var View = Marionette.View.extend({
                         view.destroy();
                     },
                     error: function () {
-                        $.alert.error(gt.gettext("Unable to create the classification !"));
+                        $.alert.error(_t("Unable to create the classification !"));
                     }
                 });
             },
@@ -89,7 +89,7 @@ var View = Marionette.View.extend({
                 var v = this.ui.label.val();
 
                 if (v.length < 3) {
-                    $(this.ui.label).validateField('failed', gt.ngettext('characters_min', 'characters_min', {count: 3}));
+                    $(this.ui.label).validateField('failed', _t('characters_min', {count: 3}));
                     return false;
                 }
 
@@ -120,13 +120,13 @@ var View = Marionette.View.extend({
         var re = /^[a-zA-Z0-9_\-]+$/i;
 
         if (v.length > 0 && !re.test(v)) {
-            this.ui.add_classification_name.validateField('failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
+            this.ui.add_classification_name.validateField('failed', _t("Invalid characters (alphanumeric, _ and - only)"));
             return false;
         } else if (v.length < 3) {
-            this.ui.add_classification_name.validateField('failed', gt.ngettext('characters_min', 'characters_min', {count: 3}));
+            this.ui.add_classification_name.validateField('failed', _t('characters_min', {count: 3}));
             return false;
         } else if (v.length > 128) {
-            this.ui.add_classification_name.validateField('failed', gt.ngettext('characters_max', 'characters_max', {count: 128}));
+            this.ui.add_classification_name.validateField('failed', _t('characters_max', {count: 128}));
             return false;
         }
 
@@ -153,7 +153,7 @@ var View = Marionette.View.extend({
                         var t = data.items[i];
 
                         if (t.name.toUpperCase() === this.view.ui.add_classification_name.val().toUpperCase()) {
-                            this.view.ui.add_classification_name.validateField('failed', gt.gettext('Classification name already in usage'));
+                            this.view.ui.add_classification_name.validateField('failed', _t('Classification name already in usage'));
                             break;
                         }
                     }

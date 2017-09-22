@@ -18,9 +18,9 @@ var View = Marionette.View.extend({
         return {
             actions: this.getOption('actions'),
             options: {
-                'create-panel': {className: 'btn-default', label: gt.gettext('Create panel')},
-                // 'xxx': {className: 'btn-success', label: gt.gettext('XXxx')},
-                // 'yyy': {className: 'btn-default', label: gt.gettext('YYyy')}
+                'create-panel': {className: 'btn-default', label: _t('Create panel')},
+                // 'xxx': {className: 'btn-success', label: _t('XXxx')},
+                // 'yyy': {className: 'btn-default', label: _t('YYyy')}
             }
         }
     },

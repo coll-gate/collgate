@@ -41,7 +41,7 @@ var View = ScrollView.extend({
 
     columnsOptions: {
         'glyph': {label: '', width: 'auto', glyphicon: ['glyphicon-unchecked', 'glyphicon-unchecked'], event: 'selectBatch', fixed: true},
-        'name': {label: gt.gettext('Name'), width: 'auto', minWidth: true, event: 'view-batch-details'},
+        'name': {label: _t('Name'), width: 'auto', minWidth: true, event: 'view-batch-details'},
     },
 
     templateContext: function () {
@@ -79,7 +79,7 @@ var View = ScrollView.extend({
             }
 
             var TitleView = require('../../main/views/titleview');
-            contextLayout.showChildView('title', new TitleView({title: gt.gettext("Batches actions")}));
+            contextLayout.showChildView('title', new TitleView({title: _t("Batches actions")}));
 
             var actions = ['create'];
 
@@ -181,7 +181,7 @@ var View = ScrollView.extend({
                                     var t = data.items[i];
 
                                     if (t.label.toUpperCase() === name.toUpperCase()) {
-                                        $(this.el).validateField('failed', gt.gettext('Batch name already in usage'));
+                                        $(this.el).validateField('failed', _t('Batch name already in usage'));
                                         return;
                                     }
                                 }
@@ -196,10 +196,10 @@ var View = ScrollView.extend({
                     var v = this.ui.name.val().trim();
 
                     if (v.length > 128) {
-                        $(this.ui.name).validateField('failed', gt.ngettext('characters_max', 'characters_max', {count: 128}));
+                        $(this.ui.name).validateField('failed', _t('characters_max', {count: 128}));
                         return false;
                     } else if (v.length < 3) {
-                        $(this.ui.name).validateField('failed', gt.ngettext('characters_min', 'characters_min', {count: 3}));
+                        $(this.ui.name).validateField('failed', _t('characters_min', {count: 3}));
                         return false;
                     }
 
@@ -236,7 +236,7 @@ var View = ScrollView.extend({
                         application.main.showContent(defaultLayout);
 
                         defaultLayout.showChildView('title', new TitleView({
-                            title: gt.gettext("Batch"),
+                            title: _t("Batch"),
                             model: model
                         }));
 

@@ -41,7 +41,7 @@ var Router = Marionette.AppRouter.extend({
         var grcDetails = new GRCDetailsView({model: grc});
 
         grc.fetch().then(function () {
-            defaultLayout.showChildView('title', new TitleView({title: gt.gettext("GRC details"), model: grc}));
+            defaultLayout.showChildView('title', new TitleView({title: _t("GRC details"), model: grc}));
             defaultLayout.showChildView('content', grcDetails);
         });
     },
@@ -52,7 +52,7 @@ var Router = Marionette.AppRouter.extend({
         var defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
-        defaultLayout.showChildView('title', new TitleView({title: gt.gettext("List of GRC partners")}));
+        defaultLayout.showChildView('title', new TitleView({title: _t("List of GRC partners")}));
 
         collection.fetch().then(function () {
             var organisationListView = new OrganisationListView({collection : collection});
@@ -70,7 +70,7 @@ var Router = Marionette.AppRouter.extend({
         var defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
-        defaultLayout.showChildView('title', new TitleView({title: gt.gettext("List of organisations")}));
+        defaultLayout.showChildView('title', new TitleView({title: _t("List of organisations")}));
 
         collection.fetch().then(function () {
             var organisationListView = new OrganisationListView({collection : collection});
@@ -93,7 +93,7 @@ var Router = Marionette.AppRouter.extend({
         var organisationLayout = new OrganisationLayout({model: organisation, initialTab: tab.replace('/', '')});
 
         organisation.fetch().then(function() {
-            defaultLayout.showChildView('title', new TitleView({title: gt.gettext("Organisation"), model: organisation}));
+            defaultLayout.showChildView('title', new TitleView({title: _t("Organisation"), model: organisation}));
             defaultLayout.showChildView('content', organisationLayout);
         });
     }

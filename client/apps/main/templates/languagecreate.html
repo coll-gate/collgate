@@ -12,14 +12,14 @@
     <div class="modal-content">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h4 class="modal-title"><%= gt.gettext("Add a language for data") %></h4>
+            <h4 class="modal-title"><%= _t("Add a language for data") %></h4>
         </div>
         <div class="modal-body">
             <form>
                 <div class="row">
                     <div class="col-xs-12">
                         <div class="form-group">
-                            <label class="control-label" for="language_code"><%= gt.gettext("Code") %></label>
+                            <label class="control-label" for="language_code"><%= _t("Code") %></label>
                             <input class="form-control code" id="language_code" type="text" name="code" value="" maxlength="5" readonly="true" autocomplete="off" style="width:100%;">
                         </div>
                     </div>
@@ -27,7 +27,7 @@
                 <div class="row">
                     <div class="col-xs-12">
                         <div class="form-group">
-                            <label class="control-label" for="language_label"><%= gt.gettext("Label for current language") %></label>
+                            <label class="control-label" for="language_label"><%= _t("Label for current language") %></label>
                             <input class="form-control language-label" id="language_label" type="text" name="label" value="" maxlength="128" autofocus="" autocomplete="off" style="width:100%;">
                         </div>
                     </div>
@@ -35,8 +35,8 @@
             </form>
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= gt.gettext("Cancel") %></button>
-            <button type="button" class="btn btn-success add"><%= gt.gettext("Add") %></button>
+            <button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= _t("Cancel") %></button>
+            <button type="button" class="btn btn-success add"><%= _t("Add") %></button>
         </div>
     </div><!-- /.modal-content -->
 </div><!-- /.modal-dialog -->

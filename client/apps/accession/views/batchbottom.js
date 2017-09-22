@@ -51,10 +51,10 @@ var View = Marionette.View.extend({
         var re = /^[a-zA-Z0-9_\-]+$/i;
 
         if (v.length > 0 && !re.test(v)) {
-            $(this.ui.batch_name).validateField('failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
+            $(this.ui.batch_name).validateField('failed', _t("Invalid characters (alphanumeric, _ and - only)"));
             return false;
         } else if (v.length > 0 && v.length < 3) {
-            $(this.ui.batch_name).validateField('failed', gt.ngettext('characters_min', 'characters_min', {count: 3}));
+            $(this.ui.batch_name).validateField('failed', _t('characters_min', {count: 3}));
             return false;
         } else if (this.ui.batch_name.val().length === 0) {
             $(this.ui.batch_name).cleanField();

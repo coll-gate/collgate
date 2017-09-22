@@ -214,11 +214,11 @@ Numeric.DescriptorTypeDetailsView = Marionette.View.extend({
         var re = /^[a-zA-Z0-9_\-%°⁼⁺⁻⁰¹²³⁴⁵⁶⁷⁸⁹/µ]+$/i;
 
         if (v.length > 0 && !re.test(v)) {
-            $(this.ui.format_unit_custom).validateField('failed', gt.gettext("Invalid characters (alphanumeric, _-°%°⁼⁺⁻⁰¹²³⁴⁵⁶⁷⁸⁹/µ allowed)"));
+            $(this.ui.format_unit_custom).validateField('failed', _t("Invalid characters (alphanumeric, _-°%°⁼⁺⁻⁰¹²³⁴⁵⁶⁷⁸⁹/µ allowed)"));
         } else if (v.length > 32) {
-            $(this.ui.format_unit_custom).validateField('failed', gt.ngettext('characters_max', 'characters_max', {count: 32}));
+            $(this.ui.format_unit_custom).validateField('failed', _t('characters_max', {count: 32}));
         } else if (v.length < 1) {
-            //$(this.ui.format_unit_custom).validateField('failed', gt.ngettext('characters_min', 'characters_min', {count: 1})););
+            //$(this.ui.format_unit_custom).validateField('failed', _t('characters_min', {count: 1})););
             $(this.ui.format_unit_custom).cleanField();
         } else {
             $(this.ui.format_unit_custom).validateField('ok');

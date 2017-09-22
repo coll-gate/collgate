@@ -342,17 +342,12 @@ var Application = Marionette.Application.extend({
         });
         i18next.setDefaultNamespace('default');
 
+        window._t = i18next.t;
+        window.i18n = i18next;
+        window.i18next = i18next;
+
         window.gt = i18next;
         window.gt.gettext = i18next.t;
-        window.gt._ = i18next.t;
-        window.gt.pgettext = function(context, msg) { return i18next.t(msg, {context: context}); };
-        window.gt.ngettext = function(msg1, msg2, vargs) { return i18next.t(msg2, vargs); };
-        window.gt.npgettext = function(context, msg1, msg2, vargs) {
-            var params = _.clone(vargs);
-            params.context = context;
-
-            return i18next.t(msg1, msg2, params);
-        };
 
         // select2
         if (session.language === "fr") {
@@ -380,8 +375,8 @@ var Application = Marionette.Application.extend({
                 var Module = require('./' + module + '/init');
                 this[module] = new Module();
             } catch (e) {
-                var msg = gt.gettext("Missing client module") + " : " + module + ". " +
-                          gt.gettext("Please contact your administrator.");
+                var msg = i18next.t("Missing client module") + " : " + module + ". " +
+                          _t("Please contact your administrator.");
 
                 console.error(e);
                 $.alert.error(msg);
@@ -393,8 +388,8 @@ var Application = Marionette.Application.extend({
                     this[module].initialize(this, {});
                     Logger.timeEnd("Init " + module + " module");
                 } catch (e) {
-                    var msg = gt.gettext("Module initialization failed") + " : " + module + ". " +
-                              gt.gettext("Please contact your administrator.");
+                    var msg = _t("Module initialization failed") + " : " + module + ". " +
+                              _t("Please contact your administrator.");
 
                     console.error(e);
                     $.alert.error(msg);
@@ -414,8 +409,8 @@ var Application = Marionette.Application.extend({
                     this[module].start({});
                     Logger.timeEnd("Start " + module + " module");
                 } catch (e) {
-                    var msg = gt.gettext("Module startup failed") + " : " + module + ". " +
-                              gt.gettext("Please contact your administrator.");
+                    var msg = _t("Module startup failed") + " : " + module + ". " +
+                              _t("Please contact your administrator.");
 
                     console.error(e);
                     window.alert(msg);

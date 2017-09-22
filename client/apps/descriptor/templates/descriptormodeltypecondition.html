@@ -12,12 +12,12 @@
     <div class="modal-content">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h4 class="modal-title"><%= gt.gettext("Condition of the type of model of descriptor") %></h4>
+            <h4 class="modal-title"><%= _t("Condition of the type of model of descriptor") %></h4>
         </div>
         <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
             <form>
                 <div class="form-group">
-                    <label class="control-label"><%= gt.gettext("Target") %></label>
+                    <label class="control-label"><%= _t("Target") %></label>
                     <select class="form-control" id="target">
                         <option value="undefined"></option>
                         <% _.each(targets, function(target) { %>
@@ -28,16 +28,16 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="condition" class="control-label"><%= gt.gettext("Condition") %></label>
+                    <label for="condition" class="control-label"><%= _t("Condition") %></label>
                     <select id="condition" class="form-control"></select>
                 </div>
                 <div class="condition-values"></div>
             </form>
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn btn-danger destroy pull-left"><%= gt.gettext("Remove condition") %></button>
-            <button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= gt.gettext("Cancel") %></button>
-            <button type="button" class="btn btn-success apply"><%= gt.gettext("Apply") %></button>
+            <button type="button" class="btn btn-danger destroy pull-left"><%= _t("Remove condition") %></button>
+            <button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= _t("Cancel") %></button>
+            <button type="button" class="btn btn-success apply"><%= _t("Apply") %></button>
         </div>
     </div><!-- /.modal-content -->
 </div><!-- /.modal-dialog -->

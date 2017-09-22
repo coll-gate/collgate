@@ -61,10 +61,10 @@ var View = Marionette.View.extend({
         var v = this.ui.synonym_name.val().trim();
 
         if (v.length > 128) {
-            $(this.ui.synonym_name).validateField('failed', gt.ngettext('characters_max', 'characters_max', {count: 128}));
+            $(this.ui.synonym_name).validateField('failed', _t('characters_max', {count: 128}));
             return false;
         } else if (v.length < 1) {
-            $(this.ui.synonym_name).validateField('failed', gt.ngettext('characters_min', 'characters_min', {count: 1}));
+            $(this.ui.synonym_name).validateField('failed', _t('characters_min', {count: 1}));
             return false;
         }
 
@@ -99,11 +99,11 @@ var View = Marionette.View.extend({
                         if (t.label.toUpperCase() === name.toUpperCase()) {
                             if (t.synonym_type === accessionCodeId) {
                                 self.ui.synonym_name.validateField(
-                                    'failed', gt.gettext('It is not possible to use a GRC code of accession as synonym'));
+                                    'failed', _t('It is not possible to use a GRC code of accession as synonym'));
                                 return;
                             } else if (t.accession === self.model.get('id')) {
                                 self.ui.synonym_name.validateField(
-                                    'failed', gt.gettext('Synonym of accession already defined into this accession'));
+                                    'failed', _t('Synonym of accession already defined into this accession'));
                                 return;
                             }
                         }
@@ -203,17 +203,17 @@ var View = Marionette.View.extend({
                                     } else if (self.getOption('synonym_type') === accessionCodeId) {
                                         // invalid if same name and modifying a GRC code synonym
                                         self.ui.synonym_name.validateField(
-                                            'failed', gt.gettext('Accession GRC code must be unique'));
+                                            'failed', _t('Accession GRC code must be unique'));
                                         break;
                                     } else if (t.synonym_type === accessionCodeId) {
                                         // invalid if GRC code exists with the same name
                                         self.ui.synonym_name.validateField(
-                                            'failed', gt.gettext('It is not possible to use a GRC code of accession as synonym'));
+                                            'failed', _t('It is not possible to use a GRC code of accession as synonym'));
                                         break;
                                     } else if (t.accession === self.model.get('id')) {
                                         // invalid if exists into the same accession
                                         self.ui.synonym_name.validateField(
-                                            'failed', gt.gettext('Synonym of accession already defined into this accession'));
+                                            'failed', _t('Synonym of accession already defined into this accession'));
                                         break;
                                     }
                                 }
@@ -229,10 +229,10 @@ var View = Marionette.View.extend({
                 var v = this.ui.synonym_name.val().trim();
 
                 if (v.length < 1) {
-                    $(this.ui.synonym_name).validateField('failed', gt.ngettext('characters_min', 'characters_min', {count: 1}));
+                    $(this.ui.synonym_name).validateField('failed', _t('characters_min', {count: 1}));
                     return false;
                 } else if (v.length > 128) {
-                    $(this.ui.synonym_name).validateField('failed', gt.ngettext('characters_max', 'characters_max', {count: 128}));
+                    $(this.ui.synonym_name).validateField('failed', _t('characters_max', {count: 128}));
                     return false;
                 } else {
                     $(this.ui.synonym_name).validateField('ok');

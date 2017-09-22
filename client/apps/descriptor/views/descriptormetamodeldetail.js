@@ -50,9 +50,9 @@ var View = Marionette.View.extend({
         var re = /^[a-zA-Z0-9_-]+$/i;
 
         if (v.length > 0 && !re.test(v)) {
-            $(this.ui.name).validateField('failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
+            $(this.ui.name).validateField('failed', _t("Invalid characters (alphanumeric, _ and - only)"));
         } else if (v.length < 3) {
-            $(this.ui.name).validateField('failed', gt.ngettext('characters_min', 'characters_min', {count: 3}));
+            $(this.ui.name).validateField('failed', _t('characters_min', {count: 3}));
         } else {
             $(this.ui.name).validateField('ok');
         }
@@ -75,7 +75,7 @@ var View = Marionette.View.extend({
             name: name,
             description: description,
             parameters: parameters
-        }, {wait: true}).done(function() { $.alert.success(gt.gettext("Done")); });
+        }, {wait: true}).done(function() { $.alert.success(_t("Done")); });
     }
 });
 

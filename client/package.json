@@ -8,7 +8,8 @@
     "dev": "./node_modules/.bin/webpack-dev-server",
     "browserify": "./node_modules/browserify/bin/cmd.js -t node-underscorify apps/driver.js -o static/js/app.js",
     "build": "./node_modules/.bin/webpack",
-    "build_prod": "./node_modules/.bin/webpack --env.minimized"
+    "build_prod": "./node_modules/.bin/webpack --env.minimized",
+    "build_trans": "node ./translation.js"
   },
   "repository": {
     "type": "git",

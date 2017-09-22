@@ -190,7 +190,7 @@ var View = ItemView.extend({
                 }
 
                 if (mandatory && values == null) {
-                    $.alert.error(gt.gettext("Field " + descriptorModelType.label + " is required"));
+                    $.alert.error(_t("Field " + descriptorModelType.label + " is required"));
                     return null;
                 }
 

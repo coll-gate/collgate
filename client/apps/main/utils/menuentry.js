@@ -44,7 +44,7 @@ MenuEntry.prototype.render = function(parent) {
         aEl.append(noIconEl);
     }
 
-    aEl.append('&nbsp;' + gt.gettext(this.label || ""));
+    aEl.append('&nbsp;' + _t(this.label || ""));
 
     entry.append(aEl);
     parent.append(entry);

@@ -11,7 +11,7 @@
 <div class="describable-header" style="width: 100%">
     <div class="btn-group-vertical" role="group" style="width: 100%">
         <% for (var i = 0; i < actions.length; ++i) { %>
-            <button type="button" class="btn <%= options[actions[i]].className %>" name="<%= actions[i] %>"><%= gt.gettext(options[actions[i]].label) %></button>
+            <button type="button" class="btn <%= options[actions[i]].className %>" name="<%= actions[i] %>"><%= _t(options[actions[i]].label) %></button>
         <% } %>
     </div>
 </div>

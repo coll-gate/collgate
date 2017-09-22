@@ -13,6 +13,6 @@
 <% if (format.type === "enum_single" || format.type === "enum_pair" || format.type === "enum_ordinal") { %>
 <td name="num_descriptor_values"><span class="badge"><%= num_descriptor_values %></span></td>
 <% } else { %>
-<td name="num_descriptor_values"><abbr class="badge" title="<%= gt.gettext('No values for this descriptor') %>">N/A</abbr></td>
+<td name="num_descriptor_values"><abbr class="badge" title="<%= _t('No values for this descriptor') %>">N/A</abbr></td>
 <% } %>
 <td name="description"><span class="glyphicon glyphicon-question-sign" title="<%= description %>" style="cursor: help;"></span></td>

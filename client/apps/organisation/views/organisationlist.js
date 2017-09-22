@@ -44,12 +44,12 @@ var View = ScrollView.extend({
     ],
 
     columnsOptions: {
-        'name': {label: gt.gettext('Name'), minWidth: true, event: 'view-organisation'},
-        'type': {label: gt.gettext('Type'), minWidth: true, custom: 'organisationTypeCell'},
-        '#organisation_acronym': {label: gt.gettext('Acronym'), minWidth: true, format: {type: 'string'}},
-        '#organisation_code': {label: gt.gettext('Code'), minWidth: true, format: {type: 'string'}},
+        'name': {label: _t('Name'), minWidth: true, event: 'view-organisation'},
+        'type': {label: _t('Type'), minWidth: true, custom: 'organisationTypeCell'},
+        '#organisation_acronym': {label: _t('Acronym'), minWidth: true, format: {type: 'string'}},
+        '#organisation_code': {label: _t('Code'), minWidth: true, format: {type: 'string'}},
         'num_establishments': {
-            label: gt.gettext('Establishments'), minWidth: true, event: 'view-establishments', custom: 'numEstablishmentsCell'
+            label: _t('Establishments'), minWidth: true, event: 'view-establishments', custom: 'numEstablishmentsCell'
         }
     },
 

@@ -56,7 +56,7 @@ var View = Marionette.View.extend({
         var v = this.ui.establishment_name.val().trim();
 
         if (v.length > 0 && v.length < 3) {
-            $(this.ui.establishment_name).validateField('failed', gt.ngettext('characters_min', 'characters_min', {count: 3}));
+            $(this.ui.establishment_name).validateField('failed', _t('characters_min', {count: 3}));
             return false;
         } else if (this.ui.establishment_name.val().length === 0) {
             $(this.ui.establishment_name).cleanField();
@@ -135,7 +135,7 @@ var View = Marionette.View.extend({
                                         var t = data.items[i];
 
                                         if (t.value.toUpperCase() === name.toUpperCase()) {
-                                            $(this.el).validateField('failed', gt.gettext('Establishment name already in usage'));
+                                            $(this.el).validateField('failed', _t('Establishment name already in usage'));
                                             break;
                                         }
                                     }
@@ -151,10 +151,10 @@ var View = Marionette.View.extend({
                     var v = this.ui.name.val().trim();
 
                     if (v.length > 255) {
-                        $(this.ui.name).validateField('failed', gt.ngettext('characters_max', 'characters_max', {count: 255}));
+                        $(this.ui.name).validateField('failed', _t('characters_max', {count: 255}));
                         return false;
                     } else if (v.length < 3) {
-                        $(this.ui.name).validateField('failed', gt.ngettext('characters_min', 'characters_min', {count: 3}));
+                        $(this.ui.name).validateField('failed', _t('characters_min', {count: 3}));
                         return false;
                     }
 
@@ -187,7 +187,7 @@ var View = Marionette.View.extend({
                         application.main.showContent(defaultLayout);
 
                         defaultLayout.showChildView('title', new TitleView({
-                            title: gt.gettext("Establishment"),
+                            title: _t("Establishment"),
                             model: model,
                             organisation: this.getOption('organisation').get('id')
                         }));

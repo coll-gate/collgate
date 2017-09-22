@@ -14,12 +14,12 @@ var RowActionButtons = require('../templates/rowactionsbuttons.html');
 var ActionBtnEvents = Marionette.Behavior.extend({
     defaults: {
         actions: {
-            show: {title: gt.gettext('Show'), display: false},
-            edit: {title: gt.gettext('Edit'), display: true},
-            edit2: {title: gt.gettext('Edit2'), display: false},
-            tag: {title: gt.gettext('Label'), display: false},
-            manage: {title: gt.gettext('Manage'), display: false},
-            remove: {title: gt.gettext('Delete'), display: true}
+            show: {title: _t('Show'), display: false},
+            edit: {title: _t('Edit'), display: true},
+            edit2: {title: _t('Edit2'), display: false},
+            tag: {title: _t('Label'), display: false},
+            manage: {title: _t('Manage'), display: false},
+            remove: {title: _t('Delete'), display: true}
         }
     },
 

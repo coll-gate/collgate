@@ -54,7 +54,7 @@ var View = Marionette.View.extend({
         var ChangeLabel = require('../../main/views/entitychangelabel');
         var changeLabel = new ChangeLabel({
             model: this.model,
-            title: gt.gettext("Change the labels for the language")});
+            title: _t("Change the labels for the language")});
 
         changeLabel.render();
 

@@ -58,7 +58,8 @@ class CacheEntry(object):
         self.validity = validity if validity is not None else CacheEntry.DEFAULT_VALIDITY
 
     def __del__(self):
-        cache.set(self.category + '__' + self.name, None)
+        if cache:
+            cache.set(self.category + '__' + self.name, None)
         # @todo send a notification on messaging service to CacheWebService
 
     @property

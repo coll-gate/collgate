@@ -68,10 +68,10 @@ var View = Dialog.extend({
         var v = $(e.target).val();
 
         if (v.length < 1) {
-            $(e.target).validateField('failed', gt.ngettext('characters_min', 'characters_min', {count: 1}));
+            $(e.target).validateField('failed', _t('characters_min', {count: 1}));
             return false;
         } else if (v.length > 128) {
-            $(e.target).validateField('failed', gt.ngettext('characters_max', 'characters_max', {count: 128}));
+            $(e.target).validateField('failed', _t('characters_max', {count: 128}));
             return false;
         }
 
@@ -85,10 +85,10 @@ var View = Dialog.extend({
             var v = $(this).val();
 
             if (v.length < 1) {
-                $(this).validateField('failed', gt.ngettext('characters_min', 'characters_min', {count: 1}));
+                $(this).validateField('failed', _t('characters_min', {count: 1}));
                 return false;
             } else if (v.length > 128) {
-                $(this).validateField('failed', gt.ngettext('characters_max', 'characters_max', {count: 128}));
+                $(this).validateField('failed', _t('characters_max', {count: 128}));
                 return false;
             }
         });
@@ -117,7 +117,7 @@ var View = Dialog.extend({
             }).done(function () {
                 // manually update the current context label
                 model.set('label', labels[session.language]);
-                $.alert.success(gt.gettext("Successfully labeled !"));
+                $.alert.success(_t("Successfully labeled !"));
             }).always(function () {
                 view.destroy();
             });
