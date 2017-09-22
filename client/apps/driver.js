@@ -338,7 +338,8 @@ var Application = Marionette.Application.extend({
             ns: ['default'],
             defaultNS: 'default',
             debug: false,
-            fallbackLng: 'en'
+            fallbackLng: 'en',
+            returnEmptyString: false
         });
         i18next.setDefaultNamespace('default');
 
