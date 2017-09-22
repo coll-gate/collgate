@@ -32,8 +32,8 @@ const parseOptions = {
         suffix: '}}'
     },
     resource: {
-        loadPath: '{{module}}/locale/{{lng}}/LC_MESSAGES/{{ns}}.json',
-        savePath: '{{module}}/locale/{{lng}}/LC_MESSAGES/{{ns}}.json',
+        loadPath: '{{module}}/locale/{{lng}}/{{ns}}.json',
+        savePath: '{{module}}/locale/{{lng}}/{{ns}}.json',
         jsonIndent: 2
     }
 };
@@ -85,8 +85,8 @@ I18NextWebpackPlugin.prototype.apply = function(compiler) {
         if (!(module in modules)) {
             var lparseOptions = _.clone(parseOptions);
             lparseOptions.resource = {
-                loadPath: './apps/' + module + '/locale/{{lng}}/LC_MESSAGES/{{ns}}.json',
-                savePath: './apps/' + module + '/locale/{{lng}}/LC_MESSAGES/{{ns}}.json',
+                loadPath: './apps/' + module + '/locale/{{lng}}/{{ns}}.json',
+                savePath: './apps/' + module + '/locale/{{lng}}/{{ns}}.json',
             };
 
             lparseOptions.debug = self.options.debug || false;
@@ -144,7 +144,7 @@ I18NextWebpackPlugin.prototype.apply = function(compiler) {
                 }
 
                 // Pseudo json file
-                fs.writeFileSync('./apps/' + module + '/locale/' + lng + '/LC_MESSAGES/default.json',
+                fs.writeFileSync('./apps/' + module + '/locale/' + lng + '/default.json',
                     JSON.stringify(translations, null, 2));
             }
         }

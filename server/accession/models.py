@@ -40,6 +40,9 @@ class AccessionClassificationEntry(models.Model):
     # is a primary or secondary classification association
     primary = models.BooleanField(default=False, db_index=True)
 
+    def natural_name(self):
+        return self.accession.name
+
     class Meta:
         index_together = (
             ('accession', 'classification_entry'),

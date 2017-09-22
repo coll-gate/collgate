@@ -24,7 +24,7 @@ DescriptorModule.prototype = {
         this.controllers = {};
 
         try {
-            i18next.default.addResources(session.language, 'default', require('./locale/' + session.language + '/LC_MESSAGES/default.json'));
+            i18next.default.addResources(session.language, 'default', require('./locale/' + session.language + '/default.json'));
         } catch (e) {
             console.warn("No translation found for the current language. Fallback to english language");
         }

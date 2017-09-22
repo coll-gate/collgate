@@ -12,7 +12,7 @@ __pycache__
 /static/
 /docs/_build/
 /client/npm-debug.log
-# /client/apps/**/locale/**/LC_MESSAGES/default.json
+/client/apps/**/locale/**/LC_MESSAGES/default.json
 /client/build/
 /client/node_modules/
 /server/logs/collgate.log
