@@ -113,19 +113,17 @@ var Collection = Backbone.Collection.extend({
         }
 
         this.sort();
-        console.log(levels);
 
-        // @todo
-        // $.ajax({
-        //     type: "PATCH",
-        //     url: application.baseUrl + 'classification/classification/' + this.classification_id,
-        //     dataType: 'json',
-        //     data: {
-        //         'levels': levels
-        //     }
-        // }).done(function (data) {
-        //     // @todo
-        // });
+        $.ajax({
+            type: "PATCH",
+            url: application.baseUrl + 'classification/classification/' + this.classification_id + '/',
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            data: JSON.stringify({
+                'levels': levels
+            })
+        }).done(function (data) {
+        });
     }
 });
 

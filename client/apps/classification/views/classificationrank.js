@@ -91,12 +91,16 @@ var View = Marionette.View.extend({
     },
 
     deleteClassificationRank: function () {
-        this.model.destroy({wait: true});
-        /*if (this.model.get('num_classification_entries') === 0) {
-            this.model.destroy({wait: true});
-        } else {
+        if (this.model.get('num_classification_entries') !== 0) {
             $.alert.error(_t("Some entries exists for this classification rank"));
-        }*/
+            return false;
+        }
+
+        var collection = this.model.collection;
+        this.model.destroy({wait: true}).done(function (model) {
+            collection.fetch({reset: true});
+        });
+
         return false;
     },
 

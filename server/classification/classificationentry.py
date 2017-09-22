@@ -17,6 +17,7 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 
+from classification import localsettings
 from descriptor.describable import DescriptorsBuilder
 from descriptor.models import DescriptorMetaModel, DescriptorModelType
 from main.cursor import CursorQuery
@@ -325,7 +326,7 @@ def search_classification_entry(request):
         Prefetch(
             "synonyms",
             queryset=ClassificationEntrySynonym.objects.exclude(
-                type=0).order_by('synonym_type', 'language'))
+                synonym_type=localsettings.synonym_type_classification_entry_name).order_by('synonym_type', 'language'))
     )
 
     qs = qs.order_by('name').distinct()[:limit]
@@ -709,7 +710,7 @@ def get_classification_entry_entities(request, cls_id):
                     t['code'] = item.code
 
                 # if hasattr(item, 'synonyms'):
-                #     t['synonym'] = items.synonyms.filter(type=)
+                #     t['synonym'] = items.synonyms.filter(synonym_type=)
 
                 items.append(t)
 

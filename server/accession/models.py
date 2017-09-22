@@ -10,20 +10,18 @@
 
 import re
 
-from django.contrib.postgres.fields import JSONField
 from django.contrib.auth.models import User
-from django.core.exceptions import ObjectDoesNotExist
-from django.db.models import Q
+from django.contrib.postgres.fields import JSONField
 from django.db import models
+from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 
 from accession import localsettings
-from igdectk.common.models import ChoiceEnum, IntegerChoice
-
-from main.models import Entity, EntitySynonym
-from descriptor.models import DescribableEntity, DescriptorType
 from classification.models import ClassificationEntry
+from descriptor.models import DescribableEntity
 from descriptor.models import DescriptorMetaModel
+from igdectk.common.models import ChoiceEnum, IntegerChoice
+from main.models import Entity, EntitySynonym
 
 
 class AccessionClassificationEntry(models.Model):
