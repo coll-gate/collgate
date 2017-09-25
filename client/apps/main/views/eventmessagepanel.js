@@ -73,7 +73,7 @@ var View = Marionette.View.extend({
                 var v = $(e.target).val();
 
                 if (v.length === 0) {
-                    $(e.target).validateField('failed', gt.gettext('Should not be empty'));
+                    $(e.target).validateField('failed', _t('Should not be empty'));
                     return false;
                 }
 
@@ -87,7 +87,7 @@ var View = Marionette.View.extend({
                     var v = $(this).val();
 
                    if (v.length === 0) {
-                       $(this).validateField('failed', gt.gettext('Should not be empty'));
+                       $(this).validateField('failed', _t('Should not be empty'));
                        return false;
                     }
                 });
@@ -115,7 +115,7 @@ var View = Marionette.View.extend({
                         data: JSON.stringify(messages)
                     }).done(function(data) {
                         collection.add([data]);
-                        $.alert.success(gt.gettext("Successfully inserted !"));
+                        $.alert.success(_t("Successfully inserted !"));
                     }).always(function() {
                         view.destroy();
                     });

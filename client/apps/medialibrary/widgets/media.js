@@ -54,7 +54,7 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
                     'padding': '0px'
                 });
 
-                var preview = $('<span class="media-preview btn btn-default"><span class="glyphicon glyphicon-eye-open"></span>&nbsp;' + gt.gettext('Preview') + '</span>');
+                var preview = $('<span class="media-preview btn btn-default"><span class="glyphicon glyphicon-eye-open"></span>&nbsp;' + _t('Preview') + '</span>');
                 preview.css({
                     'padding-top': '1px',
                     'padding-bottom': '1px',
@@ -63,7 +63,7 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
                 });
                 btnGroup.append(preview);
 
-                var download = $('<span class="media-download btn btn-default"><span class="glyphicon glyphicon-download"></span>&nbsp;' + gt.gettext('Download') + '</span>');
+                var download = $('<span class="media-download btn btn-default"><span class="glyphicon glyphicon-download"></span>&nbsp;' + _t('Download') + '</span>');
                 download.css({
                     'padding-top': '1px',
                     'padding-bottom': '1px',
@@ -138,7 +138,7 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
             var group = $('<div class="input-group"></div>');
 
             var btnGroup = $('<span class="input-group-btn"></span>');
-            var browse = $('<span class="btn btn-default btn-file">' + gt.gettext('Browse') + '</span>');
+            var browse = $('<span class="btn btn-default btn-file">' + _t('Browse') + '</span>');
             var erase = $('<span class="btn btn-default btn-file"><span class="glyphicon glyphicon-remove"></span></span>');
 
             var input = $('<input type="file" style="display: none;">');
@@ -215,7 +215,7 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
                     }
                 }).fail(function() {
                     widget.value = null;
-                    $.alert.error(gt.gettext("Error during file upload"));
+                    $.alert.error(_t("Error during file upload"));
                 });
             };
 
@@ -282,7 +282,7 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
                         widget.fileName.val("");
                         widget.value = null;
                     }).fail(function() {
-                        $.alert.error(gt.gettext("Unable to remove the media"));
+                        $.alert.error(_t("Unable to remove the media"));
                     });
                 }
 

@@ -33,7 +33,7 @@ var Router = Marionette.AppRouter.extend({
         var establishmentLayout = new EstablishmentLayout({model: establishment, initialTab: tab.replace('/', '')});
 
         establishment.fetch().then(function() {
-            defaultLayout.showChildView('title', new TitleView({title: gt.gettext("Establishment"), model: establishment}));
+            defaultLayout.showChildView('title', new TitleView({title: _t("Establishment"), model: establishment}));
             defaultLayout.showChildView('content', establishmentLayout);
         });
     }

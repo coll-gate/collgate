@@ -116,7 +116,7 @@ var View = Marionette.View.extend({
                                     var e = data.items[i];
 
                                     if (e.value.toUpperCase() === name.toUpperCase() && e.id !== establishment_id) {
-                                        $(this.el).validateField('failed', gt.gettext('Establishment name already in usage'));
+                                        $(this.el).validateField('failed', _t('Establishment name already in usage'));
                                         break;
                                     }
                                 }
@@ -132,10 +132,10 @@ var View = Marionette.View.extend({
                 var v = this.ui.name.val().trim();
 
                 if (v.length > 255) {
-                    $(this.ui.name).validateField('failed', gt.ngettext('characters_max', 'characters_max', {count: 255}));
+                    $(this.ui.name).validateField('failed', _t('characters_max', {count: 255}));
                     return false;
                 } else if (v.length < 3) {
-                    $(this.ui.name).validateField('failed', gt.ngettext('characters_min', 'characters_min', {count: 3}));
+                    $(this.ui.name).validateField('failed', _t('characters_min', {count: 3}));
                     return false;
                 }
 

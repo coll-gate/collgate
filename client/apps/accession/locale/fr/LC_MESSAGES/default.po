@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-09-21 18:33+0200\n"
+"POT-Creation-Date: 2017-09-22 12:44+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -100,7 +100,7 @@ msgstr ""
 #: ../../../views/accessionsynonyms.js:64
 #: ../../../views/accessionsynonyms.js:235 ../../../views/batchlist.js:199
 #: ../../../controllers/accession.js:268 ../../../controllers/accession.js:287
-#: ../../../controllers/batch.js:150 ../../../controllers/panel.js:42
+#: ../../../controllers/batch.js:150 ../../../controllers/panel.js:76
 msgid "characters_max"
 msgid_plural "characters_max"
 msgstr[0] ""
@@ -110,7 +110,7 @@ msgstr[1] ""
 #: ../../../views/accessionsynonyms.js:232 ../../../views/batchbottom.js:57
 #: ../../../views/batchlist.js:202 ../../../controllers/accession.js:271
 #: ../../../controllers/accession.js:290 ../../../controllers/batch.js:153
-#: ../../../controllers/panel.js:45
+#: ../../../controllers/panel.js:79
 msgid "characters_min"
 msgid_plural "characters_min"
 msgstr[0] ""
@@ -279,7 +279,11 @@ msgstr "Nom de lot déjà existant"
 msgid "The accession must be defined"
 msgstr "L'accession doit être définie"
 
-#: ../../../controllers/panel.js:71
+#: ../../../controllers/panel.js:60
+msgid "Accession panel name already in usage"
+msgstr ""
+
+#: ../../../controllers/panel.js:105
 msgid "Classification entry"
 msgstr ""
 
@@ -323,7 +327,6 @@ msgstr "Principale entrée de classification"
 #: ../../../templates/accessionpaneldescriptorcreatedialog.html:31
 #: ../../../templates/batchcreate.html:47
 #: ../../../templates/navbatchcreate.html:41
-#: ../../../templates/panelcreate.html:29
 msgid "Continue"
 msgstr "Continuer"
 
@@ -372,6 +375,10 @@ msgstr "Créer un panel depuis la sélection"
 #: ../../../templates/panelcreate.html:20
 msgid "Panel name"
 msgstr "Nom du panel"
+
+#: ../../../templates/panelcreate.html:29
+msgid "Create"
+msgstr ""
 
 #: ../../../templates/panellayout.html:17
 msgid "Accessions"

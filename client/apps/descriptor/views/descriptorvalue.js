@@ -40,7 +40,7 @@ var View = Marionette.View.extend({
         ActionBtnEvents: {
             behaviorClass: require('../../main/behaviors/actionbuttonevents'),
             actions: {
-                edit: {display: true, title: gt.gettext("Edit value0"), event: 'onEditValue0'},
+                edit: {display: true, title: _t("Edit value0"), event: 'onEditValue0'},
                 remove: {display: true, event: 'deleteDescriptorValue'}
             }
         }
@@ -122,10 +122,10 @@ var View = Marionette.View.extend({
                             var v = $(e.target).val();
 
                             if (v.length < 1) {
-                                $(e.target).validateField('failed', gt.ngettext('characters_min', 'characters_min', {count: 1}));
+                                $(e.target).validateField('failed', _t('characters_min', {count: 1}));
                                 return false;
                             } else if (v.length > 64) {
-                                $(e.target).validateField('failed', gt.ngettext('characters_max', 'characters_max', {count: 64}));
+                                $(e.target).validateField('failed', _t('characters_max', {count: 64}));
                                 return false;
                             }
 
@@ -139,10 +139,10 @@ var View = Marionette.View.extend({
                                 var v = $(this).val();
 
                                 if (v.length < 3) {
-                                    $(this).validateField('failed', gt.ngettext('characters_min', 'characters_min', {count: 3}));
+                                    $(this).validateField('failed', _t('characters_min', {count: 3}));
                                     return false;
                                 } else if (v.length > 64) {
-                                    $(this).validateField('failed', gt.ngettext('characters_max', 'characters_max', {count: 64}));
+                                    $(this).validateField('failed', _t('characters_max', {count: 64}));
                                     return false;
                                 }
                             });
@@ -171,7 +171,7 @@ var View = Marionette.View.extend({
                                 }).done(function () {
                                     // manually update the current context value
                                     model.set('value0', values[session.language]);
-                                    $.alert.success(gt.gettext("Successfully valued !"));
+                                    $.alert.success(_t("Successfully valued !"));
                                 }).always(function () {
                                     view.destroy();
                                 });
@@ -211,7 +211,7 @@ var View = Marionette.View.extend({
                         var v = this.ui.value.val();
 
                         if (v.length < 1) {
-                            $(this.ui.value).validateField('failed', gt.ngettext('characters_min', 'characters_min', {count: 1}));
+                            $(this.ui.value).validateField('failed', _t('characters_min', {count: 1}));
                             return false;
                         }
 
@@ -230,10 +230,10 @@ var View = Marionette.View.extend({
                                 wait: true,
                                 success: function () {
                                     view.destroy();
-                                    $.alert.success(gt.gettext("Successfully changed !"));
+                                    $.alert.success(_t("Successfully changed !"));
                                 },
                                 error: function () {
-                                    $.alert.error(gt.gettext("Unable to change the value !"));
+                                    $.alert.error(_t("Unable to change the value !"));
                                 }
                             });
                         }

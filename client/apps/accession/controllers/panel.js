@@ -59,7 +59,7 @@ var Controller = Marionette.Object.extend({
                                     var panel = data.items[i];
 
                                     if (panel.name.toUpperCase() === name.toUpperCase()) {
-                                        $(this.el).validateField('failed', gt.gettext('Accession panel name already in usage'));
+                                        $(this.el).validateField('failed', _t('Accession panel name already in usage'));
                                         break;
                                     }
                                 }
@@ -75,10 +75,10 @@ var Controller = Marionette.Object.extend({
                 var v = this.ui.name.val().trim();
 
                 if (v.length > 128) {
-                    this.ui.name.validateField('failed', gt.ngettext('characters_max', 'characters_max', {count: 128}));
+                    this.ui.name.validateField('failed', _t('characters_max', {count: 128}));
                     return false;
                 } else if (v.length < 3) {
-                    this.ui.name.validateField('failed', gt.ngettext('characters_min', 'characters_min', {count: 3}));
+                    this.ui.name.validateField('failed', _t('characters_min', {count: 3}));
                     return false;
                 }
 
@@ -108,7 +108,7 @@ var Controller = Marionette.Object.extend({
                     application.main.showContent(defaultLayout);
 
                     defaultLayout.showChildView('title', new TitleView({
-                        title: gt.gettext("Classification entry"),
+                        title: _t("Classification entry"),
                         model: model
                     }));
 

@@ -49,8 +49,8 @@ var View = Marionette.View.extend({
 
     onRender: function () {
         var operator = this.$el.find('div.search-condition').find('div.operator').children('div').children('select');
-        operator.append('<option value="and">' + gt.gettext('AND') + '</option>');
-        operator.append('<option value="or">' + gt.gettext('OR') + '</option>');
+        operator.append('<option value="and">' + _t('AND') + '</option>');
+        operator.append('<option value="or">' + _t('OR') + '</option>');
         operator.selectpicker({}).selectpicker('val', 'and');
 
         if (this.first_element) {
@@ -210,15 +210,15 @@ var View = Marionette.View.extend({
         this.ui.condition.children('option').remove();
 
         var operators_labels = {
-            'isnull': gt.gettext('Undefined'),
-            'notnull': gt.gettext('Defined'),
-            'eq': gt.gettext('Exact'),
-            'neq': gt.gettext('Different from'),
-            'in': gt.gettext('Include'),
-            'notin': gt.gettext('Not include'),
-            'icontains': gt.gettext('Contains'),
-            'lte': gt.gettext('Lesser than'),
-            'gte': gt.gettext('Greater than')
+            'isnull': _t('Undefined'),
+            'notnull': _t('Defined'),
+            'eq': _t('Exact'),
+            'neq': _t('Different from'),
+            'in': _t('Include'),
+            'notin': _t('Not include'),
+            'icontains': _t('Contains'),
+            'lte': _t('Lesser than'),
+            'gte': _t('Greater than')
         };
 
         for (var i = 0; i < column.available_operators.length; i++) {

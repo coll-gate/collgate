@@ -177,7 +177,7 @@ var View = ScrollView.extend({
                     var v = this.ui.label.val();
 
                     if (v.length < 3) {
-                        $(this.ui.label).validateField('failed', gt.ngettext('characters_min', 'characters_min', {count: 3}));
+                        $(this.ui.label).validateField('failed', _t('characters_min', {count: 3}));
                         return false;
                     }
 
@@ -195,10 +195,10 @@ var View = ScrollView.extend({
                     var re = /^[a-zA-Z0-9_\-]+$/i;
 
                     if (v.length > 0 && !re.test(v)) {
-                        $(this.ui.name).validateField('failed', gt.gettext("Invalid characters (alphanumeric, _ and - only)"));
+                        $(this.ui.name).validateField('failed', _t("Invalid characters (alphanumeric, _ and - only)"));
                         return false;
                     } else if (v.length < 3) {
-                        $(this.ui.name).validateField('failed', gt.ngettext('characters_min', 'characters_min', {count: 3}));
+                        $(this.ui.name).validateField('failed', _t('characters_min', {count: 3}));
                         return false;
                     }
 
@@ -238,7 +238,7 @@ var View = ScrollView.extend({
                                 view.destroy();
                             },
                             error: function () {
-                                $.alert.error(gt.gettext("Unable to create the type of model of descriptor !"));
+                                $.alert.error(_t("Unable to create the type of model of descriptor !"));
 
                                 // left shift (undo) for consistency with server
                                 for (var i = 0; i < to_rshift.length; ++i) {
@@ -297,7 +297,7 @@ var View = ScrollView.extend({
                 // need to sort
                 collection.sort();
             }).fail(function() {
-                $.alert.error(gt.gettext('Unable to reorder the types of model of descriptor'));
+                $.alert.error(_t('Unable to reorder the types of model of descriptor'));
             });
         }
 

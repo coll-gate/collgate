@@ -73,7 +73,7 @@ var View = DescribableEdit.extend({
         }
 
         var TitleView = require('../../main/views/titleview');
-        contextLayout.showChildView('title', new TitleView({title: gt.gettext("Descriptors"), glyphicon: 'glyphicon-wrench'}));
+        contextLayout.showChildView('title', new TitleView({title: _t("Descriptors"), glyphicon: 'glyphicon-wrench'}));
 
         var actions = ['apply', 'cancel'];
 

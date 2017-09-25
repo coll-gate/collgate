@@ -189,7 +189,7 @@ var Controller = Marionette.Object.extend({
                             cache: true
                         },
                         minimumInputLength: 1,
-                        placeholder: gt.gettext("Enter a classification entry name.")
+                        placeholder: _t("Enter a classification entry name.")
                     }).fixSelect2Position();
                 },
 
@@ -215,7 +215,7 @@ var Controller = Marionette.Object.extend({
                                     var t = data.items[i];
 
                                     if (t.value.toUpperCase() === code.toUpperCase()) {
-                                        $(this.el).validateField('failed', gt.gettext('Code of accession already used'));
+                                        $(this.el).validateField('failed', _t('Code of accession already used'));
                                         return;
                                     }
                                 }
@@ -251,7 +251,7 @@ var Controller = Marionette.Object.extend({
                                 var t = data.items[i];
 
                                 if (t.synonym_type === accessionCodeId && t.label.toUpperCase() === name.toUpperCase()) {
-                                    self.ui.name.validateField('failed', gt.gettext('Synonym used as accession code'));
+                                    self.ui.name.validateField('failed', _t('Synonym used as accession code'));
                                     return;
                                 }
                             }
@@ -265,10 +265,10 @@ var Controller = Marionette.Object.extend({
                     var v = this.ui.code.val().trim();
 
                     if (v.length > 128) {
-                        this.ui.code.validateField('failed', gt.ngettext('characters_max', 'characters_max', {count: 128}));
+                        this.ui.code.validateField('failed', _t('characters_max', {count: 128}));
                         return false;
                     } else if (v.length < 1) {
-                        this.ui.code.validateField('failed', gt.ngettext('characters_min', 'characters_min', {count: 1}));
+                        this.ui.code.validateField('failed', _t('characters_min', {count: 1}));
                         return false;
                     }
 
@@ -284,10 +284,10 @@ var Controller = Marionette.Object.extend({
                     var v = this.ui.name.val().trim();
 
                     if (v.length > 128) {
-                        this.ui.name.validateField('failed', gt.ngettext('characters_max', 'characters_max', {count: 128}));
+                        this.ui.name.validateField('failed', _t('characters_max', {count: 128}));
                         return false;
                     } else if (v.length < 1) {
-                        this.ui.name.validateField('failed', gt.ngettext('characters_min', 'characters_min', {count: 1}));
+                        this.ui.name.validateField('failed', _t('characters_min', {count: 1}));
                         return false;
                     }
 
@@ -305,18 +305,18 @@ var Controller = Marionette.Object.extend({
                     var primaryClassificationEntryId = parseInt(this.ui.primary_classification_entry.val());
 
                     if (isNaN(descriptorMetaModelId)) {
-                        $.alert.error(gt.gettext("The meta-model of descriptors must be defined"));
+                        $.alert.error(_t("The meta-model of descriptors must be defined"));
                         valid = false;
                     }
 
                     if (isNaN(primaryClassificationEntryId)) {
-                        $.alert.error(gt.gettext("The primary classification must be defined"));
+                        $.alert.error(_t("The primary classification must be defined"));
                         valid = false;
                     }
 
                     if (this.ui.code.val().trim() === this.ui.name.val().trim()) {
-                        this.ui.code.validateField('failed', gt.gettext('Code and name must be different'));
-                        this.ui.name.validateField('failed', gt.gettext('Code and name must be different'));
+                        this.ui.code.validateField('failed', _t('Code and name must be different'));
+                        this.ui.name.validateField('failed', _t('Code and name must be different'));
                     }
 
                      if (this.ui.code.hasClass('invalid') ||
@@ -353,7 +353,7 @@ var Controller = Marionette.Object.extend({
                         application.main.showContent(defaultLayout);
 
                         defaultLayout.showChildView('title', new TitleView({
-                            title: gt.gettext("Accession"),
+                            title: _t("Accession"),
                             model: model
                         }));
 

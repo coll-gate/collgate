@@ -1,6 +1,0 @@
-{
-    "characters_min": "At least one character",
-    "characters_min_plural": "At least {{count}} characters",
-    "characters_max": "At most one character",
-    "characters_max_plural": "At most {{count}} characters"
-}

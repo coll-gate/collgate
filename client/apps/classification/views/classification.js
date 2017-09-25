@@ -19,8 +19,8 @@ var View = Marionette.View.extend({
         ActionBtnEvents: {
             behaviorClass: require('../../main/behaviors/actionbuttonevents'),
             actions: {
-                edit: {display: true, title: gt.gettext("Rename classification"), event: 'renameClassification'},
-                tag: {display: true, title: gt.gettext("Edit label"), event: 'editLabel'},
+                edit: {display: true, title: _t("Rename classification"), event: 'renameClassification'},
+                tag: {display: true, title: _t("Edit label"), event: 'editLabel'},
                 manage: {display: true, event: 'viewClassificationRanks'},
                 remove: {display: true, event: 'deleteClassification'}
             }
@@ -77,7 +77,7 @@ var View = Marionette.View.extend({
         if (this.model.get('num_classification_ranks') === 0) {
             this.model.destroy({wait: true});
         } else {
-            $.alert.error(gt.gettext("Some ranks exists for this classification"));
+            $.alert.error(_t("Some ranks exists for this classification"));
         }
         return false;
     },
@@ -90,7 +90,7 @@ var View = Marionette.View.extend({
         var ChangeLabel = require('../../main/views/entitychangelabel');
         var changeLabel = new ChangeLabel({
             model: this.model,
-            title: gt.gettext("Change the labels for the classification")});
+            title: _t("Change the labels for the classification")});
 
         changeLabel.render();
 
@@ -101,7 +101,7 @@ var View = Marionette.View.extend({
         var ChangeName = require('../../main/views/entityrename');
         var changeName = new ChangeName({
             model: this.model,
-            title: gt.gettext("Rename the classification")
+            title: _t("Rename the classification")
         });
 
         changeName.render();

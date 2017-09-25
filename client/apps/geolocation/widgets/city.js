@@ -103,7 +103,7 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
                 },
                 allowClear: true,
                 minimumInputLength: 3,
-                placeholder: gt.gettext("Enter a value.")
+                placeholder: _t("Enter a value.")
             };
 
             select.select2(params).fixSelect2Position();
@@ -131,7 +131,7 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
             // Change display for the special option "Extend search"
             var formatOption = function (option) {
                 if (option.id === 'more') {
-                    return $('<span class="text-info">' + gt.gettext("Extended search...") + '</span>');
+                    return $('<span class="text-info">' + _t("Extended search...") + '</span>');
                 }
                 return option.text
             };
@@ -290,7 +290,7 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
                 allowClear: true,
                 minimumInputLength: 1,
                 templateResult: formatOption,
-                placeholder: gt.gettext("Enter a value.")
+                placeholder: _t("Enter a value.")
             };
 
             var initSelect2 = function (ajx_mode, reset_mode) {
@@ -481,7 +481,7 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
                 // Change display for the special option "Extend search"
                 var formatOption = function (option) {
                     if (option.id === 'more') {
-                        return $('<span class="text-info">' + gt.gettext("Extended search...") + '</span>');
+                        return $('<span class="text-info">' + _t("Extended search...") + '</span>');
                     }
                     return option.text
                 };
@@ -638,7 +638,7 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
                     allowClear: true,
                     minimumInputLength: 1,
                     templateResult: formatOption,
-                    placeholder: gt.gettext("Enter a value.")
+                    placeholder: _t("Enter a value.")
                 };
 
                 var initSelect2 = function (ajx_mode, reset_mode) {

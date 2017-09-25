@@ -32,7 +32,7 @@ var View = ScrollView.extend({
         //     event: 'panel-select',
         //     fixed: true
         // },
-        'name': {label: gt.gettext('Name'), width: 'auto', minWidth: true, event: 'view-panel-details'}
+        'name': {label: _t('Name'), width: 'auto', minWidth: true, event: 'view-panel-details'}
     },
 
     templateContext: function () {

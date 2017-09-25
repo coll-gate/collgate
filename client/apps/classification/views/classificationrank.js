@@ -31,7 +31,7 @@ var View = Marionette.View.extend({
             behaviorClass: require('../../main/behaviors/actionbuttonevents'),
             actions: {
                 edit: {display: false},
-                tag: {display: true, title: gt.gettext("Edit label"), event: 'renameClassificationRank'},
+                tag: {display: true, title: _t("Edit label"), event: 'renameClassificationRank'},
                 manage: {display: true, event: 'viewClassificationEntry'},
                 remove: {display: true, event: 'deleteClassificationRank'}
             }
@@ -91,12 +91,16 @@ var View = Marionette.View.extend({
     },
 
     deleteClassificationRank: function () {
-        this.model.destroy({wait: true});
-        /*if (this.model.get('num_classification_entries') === 0) {
-            this.model.destroy({wait: true});
-        } else {
-            $.alert.error(gt.gettext("Some entries exists for this classification rank"));
-        }*/
+        if (this.model.get('num_classification_entries') !== 0) {
+            $.alert.error(_t("Some entries exists for this classification rank"));
+            return false;
+        }
+
+        var collection = this.model.collection;
+        this.model.destroy({wait: true}).done(function (model) {
+            collection.fetch({reset: true});
+        });
+
         return false;
     },
 
@@ -108,7 +112,7 @@ var View = Marionette.View.extend({
         var ChangeLabel = require('../../main/views/entitychangelabel');
         var changeLabel = new ChangeLabel({
             model: this.model,
-            title: gt.gettext("Change the labels for the classification rank")});
+            title: _t("Change the labels for the classification rank")});
 
         changeLabel.render();
 
@@ -119,7 +123,7 @@ var View = Marionette.View.extend({
         var ChangeName = require('../../main/views/entityrename');
         var changeName = new ChangeName({
             model: this.model,
-            title: gt.gettext("Rename classification rank")
+            title: _t("Rename classification rank")
         });
 
         changeName.render();

@@ -153,7 +153,7 @@ var View = ScrollView.extend({
                     var v = this.ui.label.val();
 
                     if (v.length < 3) {
-                        $(this.ui.label).validateField('failed', gt.ngettext('characters_min', 'characters_min', {count: 3}));
+                        $(this.ui.label).validateField('failed', _t('characters_min', {count: 3}));
                         return false;
                     }
 
@@ -251,7 +251,7 @@ var View = ScrollView.extend({
                 // need to sort
                 collection.sort();
             }).fail(function() {
-                $.alert.error(gt.gettext('Unable to reorder the panels of descriptor'));
+                $.alert.error(_t('Unable to reorder the panels of descriptor'));
             });
         }
 

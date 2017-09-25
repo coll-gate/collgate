@@ -90,7 +90,7 @@ var Controller = Marionette.Object.extend({
                         cache: true
                     },
                     minimumInputLength: 3,
-                    placeholder: gt.gettext("Select a username")
+                    placeholder: _t("Select a username")
                 }).select2('open');
             },
 
@@ -120,7 +120,7 @@ var Controller = Marionette.Object.extend({
         var defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
-        defaultLayout.showChildView('title', new TitleView({title: gt.gettext("List of audit entries related to user"), object: username}));
+        defaultLayout.showChildView('title', new TitleView({title: _t("List of audit entries related to user"), object: username}));
 
         auditCollection.fetch({data: {cursor: null}, processData: true}).then(function () {
             var auditListView = new AuditListView({collection: auditCollection});
@@ -216,7 +216,7 @@ var Controller = Marionette.Object.extend({
                         cache: true
                     },
                     minimumInputLength: 3,
-                    placeholder: gt.gettext("Select an entity UUID or name")
+                    placeholder: _t("Select an entity UUID or name")
                 }).select2('open');
             },
 
@@ -262,13 +262,13 @@ var Controller = Marionette.Object.extend({
                 },
             }).done(function (data) {
                 defaultLayout.showChildView('title', new TitleView({
-                    title: gt.gettext("List of audit entries related to entity"),
+                    title: _t("List of audit entries related to entity"),
                     object: data.name
                 }));
             });
         } else {
             defaultLayout.showChildView('title', new TitleView({
-                title: gt.gettext("List of audit entries related to entity"),
+                title: _t("List of audit entries related to entity"),
                 object: object_name
             }));
         }

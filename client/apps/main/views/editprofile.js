@@ -37,7 +37,7 @@ var View = Marionette.View.extend({
             first_name: this.ui.first_name.val(),
             last_name: this.ui.last_name.val()
         }).done(function() {
-            $.alert.success(gt.gettext("Done"));
+            $.alert.success(_t("Done"));
         });
     }
 });

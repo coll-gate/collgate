@@ -14,7 +14,7 @@
         <% _.each(panels, function(panel) { %>
             <div class="panel panel panel-default" name="<%= panel.name %>" panel-id="<%= panel.id %>">
                 <% var collapsed = pi > 0 ? "collapsed" : ""; %>
-                <div class="panel-heading" data-toggle="tooltip" data-placement="left" title="<%= gt.gettext('Collapse/Expand') %>">
+                <div class="panel-heading" data-toggle="tooltip" data-placement="left" title="<%= _t('Collapse/Expand') %>">
                     <a class="accordion-toggle <%= collapsed %>" data-toggle="collapse" href="#collapse<%= pi %>"><%= panel.label %></a>
                 </div>
                 <% var inout = pi == 0 ? "in" : ""; %>
@@ -23,8 +23,8 @@
                         <table class="table table-striped">
                             <thead>
                                 <tr>
-                                    <th><%= gt.gettext("Descriptor") %></th>
-                                    <th><%= gt.gettext("Value") %></th>
+                                    <th><%= _t("Descriptor") %></th>
+                                    <th><%= _t("Value") %></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -59,6 +59,6 @@
         <% }) %>
     </div>
     <div class="footer pull-right">
-        <button type="button" class="btn btn-default modify"><%= gt.gettext("Modify") %></button>
+        <button type="button" class="btn btn-default modify"><%= _t("Modify") %></button>
     </div>
 </div>

@@ -40,7 +40,7 @@ var View = Marionette.View.extend({
             description: this.ui.description.val()
         }, {
             success: function() {
-                $.alert.success(gt.gettext("Done"));
+                $.alert.success(_t("Done"));
             }
         });
     }

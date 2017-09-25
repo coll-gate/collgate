@@ -19,8 +19,8 @@ var Collection = Backbone.Collection.extend({
     },
 
     default: [
-        {id: 'en', value: 'en', label: gt.gettext("English")},
-        {id: 'fr', value: 'fr', label: gt.gettext("French")}
+        {id: 'en', value: 'en', label: _t("English")},
+        {id: 'fr', value: 'fr', label: _t("French")}
     ],
 
     findLabel: function(value) {

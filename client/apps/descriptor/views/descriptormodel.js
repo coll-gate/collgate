@@ -31,7 +31,7 @@ var View = Marionette.View.extend({
         ActionBtnEvents: {
             behaviorClass: require('../../main/behaviors/actionbuttonevents'),
             actions: {
-                edit: {title: gt.gettext("Edit label"), event: 'viewDescriptorModelDetails'},
+                edit: {title: _t("Edit label"), event: 'viewDescriptorModelDetails'},
                 manage: {display: true, event: 'viewDescriptorModelTypes'},
                 remove: {display: true, event: 'deleteDescriptorModel'}
             }

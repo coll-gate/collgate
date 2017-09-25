@@ -37,7 +37,7 @@ var ClassificationRouter = Marionette.AppRouter.extend({
         var defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
-        defaultLayout.showChildView('title', new TitleView({title: gt.gettext("List of classifications")}));
+        defaultLayout.showChildView('title', new TitleView({title: _t("List of classifications")}));
 
         var classificationListView = new ClassificationListView({collection : collection});
 
@@ -75,7 +75,7 @@ var ClassificationRouter = Marionette.AppRouter.extend({
 
         classification.fetch().then(function () {
             defaultLayout.showChildView('title', new TitleView({
-                title: gt.gettext("Classification rank"),
+                title: _t("Classification rank"),
                 model: classification
             }));
 

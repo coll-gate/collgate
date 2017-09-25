@@ -40,6 +40,7 @@ var View = ScrollView.extend({
         View.__super__.initialize.apply(this, arguments);
 
         this.listenTo(this.collection, 'reset', this.render, this);
+        // this.listenTo(this.collection, 'remove', this.render, this);
     },
 
     dragEnterContent: function (e) {

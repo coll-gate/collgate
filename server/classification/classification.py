@@ -9,6 +9,8 @@
 # @details
 
 from django.core.exceptions import SuspiciousOperation
+from django.db import transaction
+from django.db.models import Count
 from django.shortcuts import get_object_or_404
 from django.utils import translation
 from django.utils.translation import ugettext_lazy as _
@@ -161,6 +163,7 @@ def search_classification(request):
     elif filters['method'] == 'icontains' and 'name' in filters['fields']:
         classifications = Classification.objects.filter(name__icontains=filters['name'])
 
+    classifications = classifications.annotate(Count('ranks'))
     classifications_list = []
 
     if classifications:
@@ -172,7 +175,7 @@ def search_classification(request):
                 'can_delete': classification.can_delete,
                 'label': classification.get_label(),
                 'description': classification.description,
-                'num_classification_ranks': classification.ranks.all().count()
+                'num_classification_ranks': classification.ranks__count
             })
 
     response = {
@@ -251,7 +254,16 @@ def create_classification(request):
         "type": "object",
         "properties": {
             "name": Classification.NAME_VALIDATOR_OPTIONAL,
-            "label": Classification.LABEL_VALIDATOR_OPTIONAL
+            "label": Classification.LABEL_VALIDATOR_OPTIONAL,
+            "levels": {"type": "array", 'items': [], 'additionalItems': {
+                "type": "object",
+                "minItems": 0,
+                "maxItems": 200,
+                "properties": {
+                    "id": {"type": "number"},
+                    "level": {"type": "number"}
+                }
+            }}
         },
     },
     perms={'classification.change_classification': _('You are not allowed to modify a classification')},
@@ -262,8 +274,14 @@ def patch_classification(request, cls_id):
     """
     name = request.data.get('name')
     label = request.data.get('label')
+    levels = request.data.get('levels')
+
+    update = False
 
     classification = get_object_or_404(Classification, id=int(cls_id))
+
+    if not classification.can_modify:
+        raise SuspiciousOperation(_("This classification is locked"))
 
     result = {
         'id': classification.id
@@ -276,6 +294,7 @@ def patch_classification(request, cls_id):
         classification.update_field('name')
         classification.name = name
 
+        update = True
         result['name'] = classification.name
 
     if label is not None:
@@ -284,9 +303,31 @@ def patch_classification(request, cls_id):
         classification.update_field('label')
         classification.set_label(lang, label)
 
+        update = True
         result['label'] = classification.get_label()
 
-    classification.save()
+    if update:
+        classification.save()
+
+    if levels is not None:
+        with transaction.atomic():
+            ranks = classification.ranks.filter(id__in=[x['id'] for x in levels])
+
+            # could use a set constraints level DEFERRED; but how with django and non raw ?
+            # fake with a minus level temporary
+            for level in levels:
+                for rank in ranks:
+                    if rank.id == level['id']:
+                        rank.level = -level['level']
+                        rank.save()
+                        break
+
+            for level in levels:
+                for rank in ranks:
+                    if rank.id == level['id']:
+                        rank.level = level['level']
+                        rank.save()
+                        break
 
     return HttpResponseRest(request, result)
 
@@ -300,6 +341,9 @@ def delete_classification(request, cls_id):
     It is not possible if there is data using the classification or the status is valid.
     """
     classification = get_object_or_404(Classification, id=int(cls_id))
+
+    if not classification.can_delete:
+        raise SuspiciousOperation(_("This classification is locked"))
 
     if classification.in_usage():
         raise SuspiciousOperation(_("There is some ranks into this classification"))
@@ -342,6 +386,9 @@ def change_all_labels_of_classification(request, cls_id):
     """
     classification = get_object_or_404(Classification, id=int(cls_id))
 
+    if not classification.can_modify:
+        raise SuspiciousOperation(_("This classification is locked"))
+
     labels = request.data
 
     languages_values = [lang[0] for lang in InterfaceLanguages.choices()]
@@ -370,12 +417,14 @@ def get_classification_id_classification_rank_list(request, cls_id):
     classification = get_object_or_404(Classification, id=int(cls_id))
 
     ranks = []
-    for rank in classification.ranks.all().order_by('level'):
+
+    for rank in classification.ranks.all().order_by('level').annotate(Count('classificationentry')):
         ranks.append({
             'id': rank.id,
             'name': rank.name,
             'label': rank.get_label(),
-            'level': rank.level
+            'level': rank.level,
+            'num_classification_entries': rank.classificationentry__count
         })
 
     return HttpResponseRest(request, ranks)
@@ -427,6 +476,8 @@ def get_classification_rank_list(request):
     cq.cursor(cursor, order_by)
     cq.order_by(order_by).limit(limit)
 
+    # @todo with CursorQuery .annotate(Count('classificationentry')): to have a count for a PREFETCH
+    # => COUNT("classification_classificationrank"."id") AS "ranks__count"
     classification_rank_items = []
 
     for classification_rank in cq:
@@ -434,7 +485,8 @@ def get_classification_rank_list(request):
             'id': classification_rank.id,
             'name': classification_rank.name,
             'label': classification_rank.get_label(),
-            'level': classification_rank.level
+            'level': classification_rank.level,
+            'num_classification_entries': classification_rank.classificationentry_set.all().count()
         }
 
         classification_rank_items.append(c)
@@ -465,6 +517,7 @@ def search_classification_rank(request):
     elif filters['method'] == 'icontains' and 'name' in filters['fields']:
         classification_ranks = ClassificationRank.objects.filter(name__icontains=filters['name'])
 
+    classification_ranks = classification_ranks.annotate(Count('classificationentry'))
     classification_ranks_list = []
 
     if classification_ranks:
@@ -473,7 +526,8 @@ def search_classification_rank(request):
                 "id": classification_rank.id,
                 "name": classification_rank.name,
                 'label': classification_rank.get_label(),
-                'level': classification_rank.level
+                'level': classification_rank.level,
+                'num_classification_entries': classification_rank.classificationentry__count
             })
 
     response = {
@@ -508,6 +562,9 @@ def create_classification_classification_rank(request, cls_id):
 
     classification = get_object_or_404(Classification, id=int(cls_id))
 
+    if not classification.can_modify:
+        raise SuspiciousOperation(_("This classification is locked"))
+
     if ClassificationRank.objects.filter(name=parameters['name']).exists():
         raise SuspiciousOperation(_("A rank of classification already exists with this name"))
 
@@ -529,7 +586,8 @@ def create_classification_classification_rank(request, cls_id):
         'id': classification_rank.pk,
         'name': classification_rank.name,
         'label': classification_rank.get_label(),
-        'level': classification_rank.level
+        'level': classification_rank.level,
+        'num_classification_entries': 0
     }
 
     return HttpResponseRest(request, response)
@@ -556,7 +614,7 @@ def patch_classification_rank(request, crk_id):
     classification_rank = get_object_or_404(ClassificationRank, id=int(crk_id))
 
     if not classification_rank.classification.can_modify:
-        raise PermissionDenied(_("The classification managing this rank is locked"))
+        raise PermissionDenied(_("The classification owning this rank is locked"))
 
     result = {
         'id': classification_rank.id
@@ -596,14 +654,22 @@ def delete_classification_rank(request, crk_id):
     classification_rank = get_object_or_404(ClassificationRank, id=int(crk_id))
 
     if not classification_rank.classification.can_modify:
-        raise PermissionDenied(_("The classification managing this rank is locked"))
+        raise PermissionDenied(_("The classification owning this rank is locked"))
 
     if classification_rank.in_usage():
         raise SuspiciousOperation(_("There is one or more entities using this classification rank"))
 
-    # @todo must manage other rank levels
+    # l-shift next ranks level
+    with transaction.atomic():
+        ranks = classification_rank.classification.ranks.filter(level__gt=classification_rank.level).order_by('level')
 
-    classification_rank.delete()
+        classification_rank.delete()
+
+        # could use a set constraints level DEFERRED; but how with django and non raw ?
+        # fake with a minus level temporary
+        for rank in ranks:
+            rank.level = rank.level - 1
+            rank.save()
 
     return HttpResponseRest(request, {})
 
@@ -645,7 +711,7 @@ def change_all_labels_of_classification_rank(request, crk_id):
     classification_rank = get_object_or_404(ClassificationRank, id=int(crk_id))
 
     if not classification_rank.classification.can_modify:
-        raise PermissionDenied(_("The classification managing this rank is locked"))
+        raise PermissionDenied(_("The classification owning this rank is locked"))
 
     labels = request.data
 
@@ -665,7 +731,3 @@ def change_all_labels_of_classification_rank(request, crk_id):
     }
 
     return HttpResponseRest(request, result)
-
-
-# @todo change level of a rank, this must be done on PATCH classificationId it will change every ranks
-# can impact the list view too...

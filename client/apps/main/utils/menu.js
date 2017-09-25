@@ -99,7 +99,7 @@ Menu.prototype = {
 
         var aEl = $(
             '<a href="#" role="button" class="dropdown-toggle" data-toggle="dropdown">' +
-            gt.gettext(this.label || "") + '<b class="caret"></b>' +
+            _t(this.label || "") + '<b class="caret"></b>' +
             '</a>');
 
         aEl.attr('id', 'drop-' + this.name);

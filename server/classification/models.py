@@ -231,8 +231,8 @@ class ClassificationRank(Entity):
         }
 
     def in_usage(self):
-        classification_entries = self.children.all()
-        return classification_entries.exists()
+        classificationentry_set = self.classificationentry_set.all()
+        return classificationentry_set.exists()
 
 
 class ClassificationEntry(Entity):

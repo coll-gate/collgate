@@ -97,7 +97,7 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
                     },
                     allowClear: true,
                     minimumInputLength: 3,
-                    placeholder: gt.gettext("Enter a value.")
+                    placeholder: _t("Enter a value.")
                 };
 
                 select.select2(params).fixSelect2Position();
@@ -270,7 +270,7 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
                         },
                         allowClear: true,
                         minimumInputLength: 3,
-                        placeholder: gt.gettext("Enter a value.")
+                        placeholder: _t("Enter a value.")
                     };
 
                     // defines temporary value (before waiting)

@@ -248,6 +248,3 @@ msgstr "sur"
 #: ../../../templates/scrollingmore.html:16
 msgid "total results"
 msgstr "resultats totals"
-
-#~ msgid "Invalid characters (alphabet, _ and - only)"
-#~ msgstr "Caractères invalides (alphabet, _ et - seulement)"

@@ -23,7 +23,7 @@ var View = DescribableDetails.extend({
         }
 
         var TitleView = require('../../main/views/titleview');
-        contextLayout.showChildView('title', new TitleView({title: gt.gettext("Descriptors"), glyphicon: 'glyphicon-wrench'}));
+        contextLayout.showChildView('title', new TitleView({title: _t("Descriptors"), glyphicon: 'glyphicon-wrench'}));
 
         var actions = [];
 
@@ -54,8 +54,8 @@ var View = DescribableDetails.extend({
         // contextView.on("descriptormetamodel:delete", function () {
         //     var ConfirmDialog = require('../../main/views/confirmdialog');
         //     var confirmDialog = new ConfirmDialog({
-        //         title: gt.gettext('Delete descriptors'),
-        //         label: gt.gettext('Are you sure you want to delete any descriptors for this classification entry ?')
+        //         title: _t('Delete descriptors'),
+        //         label: _t('Are you sure you want to delete any descriptors for this classification entry ?')
         //     });
         //     confirmDialog.render();
         //

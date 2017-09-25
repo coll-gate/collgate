@@ -32,7 +32,7 @@ var Router = Marionette.AppRouter.extend({
         var defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
-        defaultLayout.showChildView('title', new TitleView({title: gt.gettext("List of all batches")}));
+        defaultLayout.showChildView('title', new TitleView({title: _t("List of all batches")}));
 
         // get available columns
         var columns = $.ajax({
@@ -55,7 +55,7 @@ var Router = Marionette.AppRouter.extend({
         var defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
-        defaultLayout.showChildView('title', new TitleView({title: gt.gettext("List of batches for the accession")}));
+        defaultLayout.showChildView('title', new TitleView({title: _t("List of batches for the accession")}));
 
         // get available columns
         var columns = $.ajax({
@@ -83,7 +83,7 @@ var Router = Marionette.AppRouter.extend({
         var batchLayout = new BatchLayout({model: batch, initialTab: tab.replace('/', '')});
 
         batch.fetch().then(function() {
-            defaultLayout.showChildView('title', new TitleView({title: gt.gettext("Batch"), model: batch}));
+            defaultLayout.showChildView('title', new TitleView({title: _t("Batch"), model: batch}));
             defaultLayout.showChildView('content', batchLayout);
         });
     }

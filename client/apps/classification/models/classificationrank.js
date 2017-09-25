@@ -21,14 +21,15 @@ var ClassificationRankModel = Backbone.Model.extend({
             id: null,
             name: "",
             label: "",
-            level: 0
+            level: 0,
+            num_classification_entries: 0
         }
     },
 
    initialize: function(attributes, options) {
-        ClassificationRankModel.__super__.initialize.apply(this, arguments);
-
         options || (options = {});
+
+        ClassificationRankModel.__super__.initialize.apply(this, arguments);
 
         if (options.collection) {
             this.classification_id = options.collection.classification_id;

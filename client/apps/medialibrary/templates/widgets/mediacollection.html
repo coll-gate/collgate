@@ -9,25 +9,25 @@
 -->
 
 <div class="form-group" style="width: 50%;">
-    <label for="format_media_types"><%- gt.gettext('Type of media') %></label>
+    <label for="format_media_types"><%- _t('Type of media') %></label>
     <select id="format_media_types" class="form-control" multiple>
-        <option value="archives"><%- gt.gettext('Archives (zip, rar, 7z, tar, gz, bz, bz2)') %></option>
-        <option value="images"><%- gt.gettext('Images (gif, png, jpg, jpeg, tif, tiff, psd, svg)') %></option>
-        <option value="documents"><%- gt.gettext('Documents (doc, docx, ppt, pptx, odt, odp, pdf, ps)') %></option>
-        <option value="spreadsheets"><%- gt.gettext('Spreadsheets (xls, xlsx, ods, csv)') %></option>
+        <option value="archives"><%- _t('Archives (zip, rar, 7z, tar, gz, bz, bz2)') %></option>
+        <option value="images"><%- _t('Images (gif, png, jpg, jpeg, tif, tiff, psd, svg)') %></option>
+        <option value="documents"><%- _t('Documents (doc, docx, ppt, pptx, odt, odp, pdf, ps)') %></option>
+        <option value="spreadsheets"><%- _t('Spreadsheets (xls, xlsx, ods, csv)') %></option>
     </select>
 </div>
 <div class="form-group" style="width: 50%;">
     <div class="row">
         <div class="col-xs-6">
-            <label for="format_max_items"><%- gt.gettext('Max items number') %></label>
+            <label for="format_max_items"><%- _t('Max items number') %></label>
             <input id="format_max_items" class="form-control" type="number" min="2" max="256">
         </div>
         <div class="col-xs-6">
-            <label for="format_media_inline"><%- gt.gettext('Inline images') %></label>
+            <label for="format_media_inline"><%- _t('Inline images') %></label>
             <select id="format_media_inline" class="form-control">
-                <option value="true"><%- gt.gettext('Yes') %></option>
-                <option value="false"><%- gt.gettext('No') %></option>
+                <option value="true"><%- _t('Yes') %></option>
+                <option value="false"><%- _t('No') %></option>
             </select>
         </div>
     </div>

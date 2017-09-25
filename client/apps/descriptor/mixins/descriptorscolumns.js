@@ -212,7 +212,7 @@ var DescriptorsColumnsView = {
                 }
             }).fail(function () {
                 // add an Error message to un-fetched cells
-                var message = gt.gettext("Error");
+                var message = _t("Error");
 
                 for (var i = 0; i < models.length; ++i) {
                     var model = models[i];
@@ -339,7 +339,7 @@ var DescriptorsColumnsView = {
                 }
             }).fail(function () {
                 // add an Error message to un-fetched cells
-                var message = gt.gettext("Error");
+                var message = _t("Error");
 
                 for (var i = 0; i < models.length; ++i) {
                     var model = models[i];

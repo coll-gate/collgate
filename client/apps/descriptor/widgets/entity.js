@@ -93,7 +93,7 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
                 },
                 allowClear: true,
                 minimumInputLength: 3,
-                placeholder: gt.gettext("Enter a value.")
+                placeholder: _t("Enter a value.")
             };
 
             // make an autocomplete widget on simple_value
@@ -211,7 +211,7 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
                     },
                     allowClear: true,
                     minimumInputLength: 3,
-                    placeholder: gt.gettext("Enter a value.")
+                    placeholder: _t("Enter a value.")
                 };
 
                 // autoselect the initial value

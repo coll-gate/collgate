@@ -237,7 +237,7 @@ var Controller = Marionette.Object.extend({
                             cache: true
                         },
                         minimumInputLength: 1,
-                        placeholder: gt.gettext("Enter a classification entry name.")
+                        placeholder: _t("Enter a classification entry name.")
                     }).fixSelect2Position();
                 },
 
@@ -264,7 +264,7 @@ var Controller = Marionette.Object.extend({
                                         var t = data.items[i];
 
                                         if (t.label.toUpperCase() === name.toUpperCase()) {
-                                            $(this.el).validateField('failed', gt.gettext('Classification entry name already in usage'));
+                                            $(this.el).validateField('failed', _t('Classification entry name already in usage'));
                                             break;
                                         }
                                     }
@@ -280,10 +280,10 @@ var Controller = Marionette.Object.extend({
                     var v = this.ui.name.val().trim();
 
                     if (v.length > 128) {
-                        $(this.ui.name).validateField('failed', gt.ngettext('characters_max', 'characters_max', {count: 128}));
+                        $(this.ui.name).validateField('failed', _t('characters_max', {count: 128}));
                         return false;
                     } else if (v.length < 3) {
-                        $(this.ui.name).validateField('failed', gt.ngettext('characters_min', 'characters_min', {count: 3}));
+                        $(this.ui.name).validateField('failed', _t('characters_min', {count: 3}));
                         return false;
                     }
 
@@ -302,12 +302,12 @@ var Controller = Marionette.Object.extend({
                     }
 
                     if (this.classificationRanks[rankId] === 0 && parentId !== 0) {
-                        $.alert.error(gt.gettext("Root rank cannot have a parent"));
+                        $.alert.error(_t("Root rank cannot have a parent"));
                         valid = false;
                     }
 
                     if (this.classificationRanks[rankId] > 0 && parentId === 0) {
-                        $.alert.error(gt.gettext("A parent must be specified"));
+                        $.alert.error(_t("A parent must be specified"));
                         valid = false;
                     }
 
@@ -345,7 +345,7 @@ var Controller = Marionette.Object.extend({
                         application.main.showContent(defaultLayout);
 
                         defaultLayout.showChildView('title', new TitleView({
-                            title: gt.gettext("Classification entry"),
+                            title: _t("Classification entry"),
                             model: model
                         }));
 

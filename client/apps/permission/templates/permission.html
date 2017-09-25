@@ -9,8 +9,8 @@
 -->
 
 <div class="object permission" object-type="permission" style="width:100%;">
-    <span style="font-weight:bold; font-size:18px;"><%= gt.gettext("Model") %>
-        <span class="model permission label label-info" style="cursor: pointer;"><%= gt.gettext("Model") + ": " %><%= model %></span>
+    <span style="font-weight:bold; font-size:18px;"><%= _t("Model") %>
+        <span class="model permission label label-info" style="cursor: pointer;"><%= _t("Model") + ": " %><%= model %></span>
         <% if (object_name) { %><span class="model object badge left-margin" style="cursor: pointer;" object-id="<%- object %>"><%= object_name %></span><% } %>
         <br>
     </span>
@@ -20,9 +20,9 @@
             <thead>
                 <tr>
                     <th style="width: 5%;"><span class="glyphicon glyphicon-asterisk" /></th>
-                    <th style="width: 20%;"><%= gt.gettext("Module") %></th>
-                    <th style="width: 40%;"><%= gt.gettext("Name") %></th>
-                    <th style="width: 35%;"><%= gt.gettext("Code") %></th>
+                    <th style="width: 20%;"><%= _t("Module") %></th>
+                    <th style="width: 40%;"><%= _t("Name") %></th>
+                    <th style="width: 35%;"><%= _t("Code") %></th>
                 </tr>
             </thead>
             <tbody>

@@ -21,17 +21,19 @@
 <td><abbr class="content-type" title="<%- content_type %>" value="<%- content_type %>"></abbr></td>
 <td>
 <% if (type == 0) { %>
-    <abbr title="<%= gt.gettext('Created') %>"><span class="glyphicon glyphicon-plus-sign" style="color: #4cae4c;"></span></abbr>
+    <abbr title="<%= _t('Created') %>"><span class="glyphicon glyphicon-plus-sign" style="color: #4cae4c;"></span></abbr>
 <% } else if (type == 1) { %>
-    <abbr title="<%= gt.gettext('Modified') %>"><span class="glyphicon glyphicon-retweet" style="color: #c77405;"></span></abbr>
+    <abbr title="<%= _t('Modified') %>"><span class="glyphicon glyphicon-retweet" style="color: #c77405;"></span></abbr>
 <% } else if (type == 2) { %>
-    <abbr title="<%= gt.gettext('Deleted') %>"><span class="glyphicon glyphicon-remove-circle" style="color: #ac2925;"></span></abbr>
+    <abbr title="<%= _t('Deleted') %>"><span class="glyphicon glyphicon-remove-circle" style="color: #ac2925;"></span></abbr>
 <% } else if (type == 3) { %>
-    <abbr title="<%= gt.gettext('Removed') %>"><span class="glyphicon glyphicon-trash" style="color: #ac2925"></span></abbr>
+    <abbr title="<%= _t('Removed') %>"><span class="glyphicon glyphicon-trash" style="color: #ac2925"></span></abbr>
 <% } else if (type == 4) { %>
-    <abbr title="<%= gt.gettext('Action') %>"><span class="glyphicon glyphicon-tasks" style="color: #4cae4c;"></span></abbr>
+    <abbr title="<%= _t('Action') %>"><span class="glyphicon glyphicon-tasks" style="color: #4cae4c;"></span></abbr>
+<% } else if (type == 5) { %>
+    <abbr title="<%= _t('Relation changed') %>"><span class="glyphicon glyphicon-share" style="color: #c77405;"></span></abbr>
 <% } else { %>
-    <abbr title="<%= gt.gettext('Unkown') %>"><span class="glyphicon glyphicon-question-sign"></span></abbr>
+    <abbr title="<%= _t('Unkown') %>"><span class="glyphicon glyphicon-question-sign"></span></abbr>
 <% } %>
 </td>
 <td><span class="btn btn-xs btn-success show-entity">Show</span></td>

@@ -79,7 +79,7 @@ var View = Marionette.View.extend({
         if (_.contains(['enum_single', 'enum_pair', 'enum_ordinal'],this.model.get('format').type)) {
             Backbone.history.navigate("app/descriptor/group/" + this.model.get('group') + "/type/" + this.model.id + '/value/', {trigger: true});
         } else {
-            $.alert.error(gt.gettext("Descriptor can not contain a list of values"));
+            $.alert.error(_t("Descriptor can not contain a list of values"));
         }
         return false;
     },
@@ -88,7 +88,7 @@ var View = Marionette.View.extend({
         if (this.model.get('num_descriptor_values') === 0) {
             this.model.destroy({wait: true});
         } else {
-            $.alert.error(gt.gettext("Some values exists for this type of descriptor"));
+            $.alert.error(_t("Some values exists for this type of descriptor"));
         }
         return false;
     }

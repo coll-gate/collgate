@@ -44,7 +44,7 @@ var Router = Marionette.AppRouter.extend({
         var defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
-        defaultLayout.showChildView('title', new TitleView({title: gt.gettext("List of groups of descriptors")}));
+        defaultLayout.showChildView('title', new TitleView({title: _t("List of groups of descriptors")}));
 
         var descriptorGroupListView = new DescriptorGroupListView({read_only: true, collection: collection});
 
@@ -69,7 +69,7 @@ var Router = Marionette.AppRouter.extend({
 
         var model = new DescriptorGroupModel({id: id});
         model.fetch().then(function () {
-            defaultLayout.showChildView('title', new TitleView({title: gt.gettext("Types of descriptors for the group"), model: model}));
+            defaultLayout.showChildView('title', new TitleView({title: _t("Types of descriptors for the group"), model: model}));
 
             // @todo lookup for permission
             if (session.user.isAuth && (session.user.isSuperUser || session.user.isStaff) && model.get('can_modify')) {
@@ -92,7 +92,7 @@ var Router = Marionette.AppRouter.extend({
         var model = new DescriptorTypeModel({id: tid}, {group_id: gid});
 
         model.fetch().then(function () {
-            defaultLayout.showChildView('title', new TitleView({title: gt.gettext("Details for the type of descriptor"), model: model}));
+            defaultLayout.showChildView('title', new TitleView({title: _t("Details for the type of descriptor"), model: model}));
             defaultLayout.showChildView('content', new DescriptorTypeDetailsLayout({model: model}));
         });
     },
@@ -105,7 +105,7 @@ var Router = Marionette.AppRouter.extend({
 
         var model = new DescriptorTypeModel({id: tid}, {group_id: gid});
         model.fetch().then(function () {
-            defaultLayout.showChildView('title', new TitleView({title: gt.gettext("Values for the type of descriptor"), model: model}));
+            defaultLayout.showChildView('title', new TitleView({title: _t("Values for the type of descriptor"), model: model}));
 
             collection.fetch().then(function () {
                 var valueListView = null;

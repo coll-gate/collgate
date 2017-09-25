@@ -65,27 +65,27 @@ var Collection = Backbone.Collection.extend({
     },
 
     groups: [
-        {group: 'single', label: gt.gettext('Single value')},
-        {group: 'list', label: gt.gettext('List of values')}
+        {group: 'single', label: _t('Single value')},
+        {group: 'list', label: _t('List of values')}
     ],
 
     items: [
-        {id: 'boolean', group: 'single', label: gt.gettext('Boolean')},
-        {id: 'numeric', group: 'single', label: gt.gettext('Numeric')},
-        {id: 'numeric_range', group: 'single', label: gt.gettext('Numeric range')},
-        {id: 'ordinal', group: 'single', label: gt.gettext('Ordinal')},
-        {id: 'string', group: 'single', label: gt.gettext('Text')},
-        {id: 'date', group: 'single', label: gt.gettext('Date')},
-        {id: 'imprecise_date', group: 'single', label: gt.gettext('Imprecise date')},
-        {id: 'time', group: 'single', label: gt.gettext('Time')},
-        {id: 'datetime', group: 'single', label: gt.gettext('Date+time')},
-        {id: 'entity', group: 'single', label: gt.gettext('Entity')},
-        {id: 'media', group: 'single', label: gt.gettext('Media')},
-        {id: 'media_collection', group: 'single', label: gt.gettext('Media collection')},
+        {id: 'boolean', group: 'single', label: _t('Boolean')},
+        {id: 'numeric', group: 'single', label: _t('Numeric')},
+        {id: 'numeric_range', group: 'single', label: _t('Numeric range')},
+        {id: 'ordinal', group: 'single', label: _t('Ordinal')},
+        {id: 'string', group: 'single', label: _t('Text')},
+        {id: 'date', group: 'single', label: _t('Date')},
+        {id: 'imprecise_date', group: 'single', label: _t('Imprecise date')},
+        {id: 'time', group: 'single', label: _t('Time')},
+        {id: 'datetime', group: 'single', label: _t('Date+time')},
+        {id: 'entity', group: 'single', label: _t('Entity')},
+        {id: 'media', group: 'single', label: _t('Media')},
+        {id: 'media_collection', group: 'single', label: _t('Media collection')},
 
-        {id: 'enum_single', group: 'list', label: gt.gettext('Single enumeration')},
-        {id: 'enum_pair', group: 'list', label: gt.gettext('Pair enumeration')},
-        {id: 'enum_ordinal', group: 'list', label: gt.gettext('Ordinal with text')}
+        {id: 'enum_single', group: 'list', label: _t('Single enumeration')},
+        {id: 'enum_pair', group: 'list', label: _t('Pair enumeration')},
+        {id: 'enum_ordinal', group: 'list', label: _t('Ordinal with text')}
     ],
 
     findLabel: function(value) {

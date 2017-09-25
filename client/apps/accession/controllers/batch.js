@@ -100,7 +100,7 @@ var Controller = Marionette.Object.extend({
                             cache: true
                         },
                         minimumInputLength: 3,
-                        placeholder: gt.gettext("Enter a accession name. 3 characters at least for auto-completion")
+                        placeholder: _t("Enter a accession name. 3 characters at least for auto-completion")
                     });
                 },
 
@@ -132,7 +132,7 @@ var Controller = Marionette.Object.extend({
                                 for (var i in data.items) {
                                     var t = data.items[i];
                                     if (t.label.toUpperCase() === name.toUpperCase()) {
-                                        $(this.el).validateField('failed', gt.gettext('Batch name already exist'));
+                                        $(this.el).validateField('failed', _t('Batch name already exist'));
                                         return;
                                     }
                                 }
@@ -147,10 +147,10 @@ var Controller = Marionette.Object.extend({
                     var v = this.ui.name.val().trim();
 
                     if (v.length > 128) {
-                        $(this.ui.name).validateField('failed', gt.ngettext('characters_max', 'characters_max', {count: 128}));
+                        $(this.ui.name).validateField('failed', _t('characters_max', {count: 128}));
                         return false;
                     } else if (v.length < 3) {
-                        $(this.ui.name).validateField('failed', gt.ngettext('characters_min', 'characters_min', {count: 3}));
+                        $(this.ui.name).validateField('failed', _t('characters_min', {count: 3}));
                         return false;
                     }
                     return true;
@@ -163,7 +163,7 @@ var Controller = Marionette.Object.extend({
                         accessionId = parseInt(this.ui.accession.val());
 
                     if (accessionId === 0 || isNaN(accessionId)) {
-                        $(this.ui.accession).validateField('failed', gt.gettext('The accession must be defined'));
+                        $(this.ui.accession).validateField('failed', _t('The accession must be defined'));
                         return false;
                     } else {
                         $(this.ui.accession).validateField('ok');
@@ -198,7 +198,7 @@ var Controller = Marionette.Object.extend({
                         application.main.showContent(defaultLayout);
 
                         defaultLayout.showChildView('title', new TitleView({
-                            title: gt.gettext("Batch"),
+                            title: _t("Batch"),
                             model: model
                         }));
 

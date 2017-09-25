@@ -37,7 +37,7 @@ var Router = Marionette.AppRouter.extend({
         var defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
-        defaultLayout.showChildView('title', new TitleView({title: gt.gettext("List of accessions")}));
+        defaultLayout.showChildView('title', new TitleView({title: _t("List of accessions")}));
 
         // get available columns
         var columns = $.ajax({
@@ -80,7 +80,7 @@ var Router = Marionette.AppRouter.extend({
                 return;
             }
 
-            defaultLayout.showChildView('title', new TitleView({title: gt.gettext("Accession"), model: accession}));
+            defaultLayout.showChildView('title', new TitleView({title: _t("Accession"), model: accession}));
 
             var accessionLayout = new AccessionLayout({model: accession, initialTab: tab.replace('/', '')});
             defaultLayout.showChildView('content', accessionLayout);

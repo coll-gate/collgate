@@ -21,9 +21,9 @@ var LanguageCollection = Backbone.Collection.extend({
     comparator: 'code',
 
     default: [
-        {id: 'en', value: 'en', label: gt.gettext("English")},
-        {id: 'fr', value: 'fr', label: gt.gettext("French")},
-        {id: 'la', value: 'la', label: gt.gettext("Latin")}
+        {id: 'en', value: 'en', label: _t("English")},
+        {id: 'fr', value: 'fr', label: _t("French")},
+        {id: 'la', value: 'la', label: _t("Latin")}
     ],
 
     findLabel: function(value) {

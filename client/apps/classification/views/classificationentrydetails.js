@@ -131,7 +131,7 @@ var View = Marionette.View.extend({
                         cache: true
                     },
                     minimumInputLength: 3,
-                    placeholder: gt.gettext("Enter a classification entry name. 3 characters at least for auto-completion"),
+                    placeholder: _t("Enter a classification entry name. 3 characters at least for auto-completion"),
                 });
             },
 

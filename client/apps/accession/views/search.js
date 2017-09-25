@@ -16,9 +16,9 @@ var View = Dialog.extend({
     templateContext: function () {
         return {
             entity_types: [
-                {id: 'classification.classificationEntry', label: gt.gettext('Cultivar')},
-                {id: 'accession.accession', label: gt.gettext('Accession')},
-                {id: 'accession.batch', label: gt.gettext('Batch')}
+                {id: 'classification.classificationEntry', label: _t('Cultivar')},
+                {id: 'accession.accession', label: _t('Accession')},
+                {id: 'accession.batch', label: _t('Batch')}
             ],
             meta_models: []
         };
@@ -160,17 +160,17 @@ var View = Dialog.extend({
             $(selects).children('option').remove().end();
 
             // var columns_extension = {
-            //     'code': {label: gt.gettext('Code'), format: {type: 'string'}},
-            //     'name': {label: gt.gettext('Name'), format: {type: 'string'}}
+            //     'code': {label: _t('Code'), format: {type: 'string'}},
+            //     'name': {label: _t('Name'), format: {type: 'string'}}
             //     // 'parent': {
-            //     //     label: gt.gettext('Classification'),
+            //     //     label: _t('Classification'),
             //     //     width: 'auto',
             //     //     minWidth: true,
             //     //     event: 'view-parent-details',
             //     //     custom: 'parentCell',
             //     //     field: 'name'
             //     // },
-            //     // 'descriptor_meta_model': {label: gt.gettext('Model'), width: 'auto', minWidth: true}
+            //     // 'descriptor_meta_model': {label: _t('Model'), width: 'auto', minWidth: true}
             // };
             //
             var columns = data.columns;
