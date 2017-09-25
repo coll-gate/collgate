@@ -10,6 +10,7 @@
 
 var PanelView = require('../views/panel');
 var ScrollView = require('../../main/views/scroll');
+var DescriptorsColumnsView = require('../../descriptor/mixins/descriptorscolumns');
 
 var View = ScrollView.extend({
     template: require("../../descriptor/templates/entitylist.html"),
@@ -17,6 +18,7 @@ var View = ScrollView.extend({
     childView: PanelView,
     childViewContainer: 'tbody.entity-list',
     userSettingName: 'panel_list_columns',
+    userSettingVersion: '1.0',
 
     defaultColumns: [
         // {name: 'select', width: 'auto', sort_by: null},
@@ -53,5 +55,8 @@ var View = ScrollView.extend({
         View.__super__.initialize.apply(this, arguments);
     }
 });
+
+// support of descriptors columns extension
+_.extend(View.prototype, DescriptorsColumnsView);
 
 module.exports = View;
