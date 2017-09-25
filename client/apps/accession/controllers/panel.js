@@ -17,11 +17,13 @@ var AccessionPanelModel = require('../models/panel');
 var AccessionPanelLayout = require('../views/panellayout');
 
 var Controller = Marionette.Object.extend({
-    create: function (data) {
+    create: function (selection, related_entity) {
+        related_entity || (related_entity = null);
+
         var CreatePanelDialog = Dialog.extend({
             template: require('../templates/panelcreate.html'),
             ui: {
-                validate: "button.continue",
+                validate: "button.create",
                 name: "#panel_name",
                 descriptor_meta_model: "#meta_model"
             },
@@ -47,16 +49,16 @@ var Controller = Marionette.Object.extend({
 
                     $.ajax({
                         type: "GET",
-                        url: application.baseUrl + 'accession/accessionpanel/search/',
+                        url: application.baseUrl + 'accession/panel/search/',
                         dataType: 'json',
                         data: {filters: JSON.stringify(filters)},
                         el: this.ui.name,
                         success: function (data) {
                             if (data.items.length > 0) {
                                 for (var i in data.items) {
-                                    var t = data.items[i];
+                                    var panel = data.items[i];
 
-                                    if (t.value.toUpperCase() === name.toUpperCase()) {
+                                    if (panel.name.toUpperCase() === name.toUpperCase()) {
                                         $(this.el).validateField('failed', gt.gettext('Accession panel name already in usage'));
                                         break;
                                     }
@@ -75,23 +77,27 @@ var Controller = Marionette.Object.extend({
                 if (v.length > 128) {
                     this.ui.name.validateField('failed', gt.ngettext('characters_max', 'characters_max', {count: 128}));
                     return false;
-                } else if (v.length < 1) {
-                    this.ui.name.validateField('failed', gt.ngettext('characters_min', 'characters_min', {count: 1}));
+                } else if (v.length < 3) {
+                    this.ui.name.validateField('failed', gt.ngettext('characters_min', 'characters_min', {count: 3}));
                     return false;
                 }
+
                 return true;
             },
 
             onCreate: function () {
                 var view = this;
 
-                if (this.validateName()) {
+                if (this.ui.name.isValidField()) {
                     var name = this.ui.name.val().trim();
 
                     // create a new local model and open an edit view with this model
                     var model = new AccessionPanelModel({
                         name: name,
-                        selection: data,
+                        selection: {
+                            select: selection,
+                            from: related_entity
+                        },
                         descriptors: {},
                         descriptor_meta_model: null
                     });

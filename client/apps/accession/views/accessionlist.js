@@ -74,6 +74,7 @@ var View = ScrollView.extend({
 
     initialize: function(options) {
         View.__super__.initialize.apply(this, arguments);
+        this.related_entity = this.getOption('related_entity');
         // var context_menu = options.context_menu;
         // this.listenTo(this.collection, 'reset', this.render, this);
     },
@@ -108,7 +109,7 @@ var View = ScrollView.extend({
 
     onCreatePanel: function () {
         var selection_acc_id = this.getSelection('select');
-        application.accession.controllers.panel.create(selection_acc_id);
+        application.accession.controllers.panel.create(selection_acc_id, this.related_entity);
     }
 });
 

@@ -62,7 +62,7 @@ var Router = Marionette.AppRouter.extend({
     },
 
     getPanel: function (id, tab) {
-        tab || (tab = "");
+        tab || (tab = "descriptors");
 
         var panel = new PanelModel({id: id});
 
