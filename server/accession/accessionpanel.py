@@ -255,6 +255,7 @@ def delete_panel(request, panel_id):
                                        content={
                                            "type": "object",
                                            "properties": {
+                                               "name": AccessionPanel.NAME_VALIDATOR,
                                                # "entity_status": AccessionPanel.ENTITY_STATUS_VALIDATOR_OPTIONAL,
                                                "descriptor_meta_model": {"type": ["integer", "null"],
                                                                          'required': False},
@@ -275,6 +276,15 @@ def modify_panel(request, panel_id):
             # if entity_status is not None and panel.entity_status != entity_status:
             #     panel.set_status(entity_status)
             #     result['entity_status'] = entity_status
+
+            if 'name' in request.data:
+                name = request.data['name']
+
+                if AccessionPanel.objects.filter(name=name).exists():
+                    raise SuspiciousOperation(_("The name of the panel is already used"))
+
+                panel.name = name
+                result['name'] = name
 
             if 'descriptor_meta_model' in request.data:
                 dmm_id = request.data["descriptor_meta_model"]
@@ -318,7 +328,6 @@ def modify_panel(request, panel_id):
                     result['descriptors'] = {}
 
                     panel.update_field(['descriptor_meta_model', 'descriptors'])
-                    panel.save()
 
             if descriptors is not None:
                 # update descriptors
@@ -334,7 +343,7 @@ def modify_panel(request, panel_id):
                 panel.descriptors_diff = descriptors
                 panel.update_field('descriptors')
 
-                panel.save()
+            panel.save()
     except IntegrityError as e:
         DescriptorModelType.integrity_except(Accession, e)
 
@@ -421,6 +430,53 @@ def get_panel_accession_list(request, panel_id):
     }
 
     return HttpResponseRest(request, results)
+
+
+@RestAccessionPanelAccession.def_auth_request(Method.POST, Format.JSON, content={
+    "type": "object",
+    "properties": {
+        "select": {
+            "type": [
+                {
+                    "type": "object",
+                    "properties": {
+                        "op": {"enum": ['in', 'notin']},
+                        "term": {"type": "string"},
+                        "value": {"type": "array"},
+                    },
+                },
+                {
+                    "type": "boolean"
+                }
+            ]
+        }
+    }
+
+}, perms={
+    'accession.change_accessionpanel': _("You are not allowed to modify accession panel")
+})
+def unlink_panel_accessions(request, panel_id):
+    print(request)
+    selection = json.loads(request.data['select'])
+    panel = AccessionPanel.objects.get(id=int_arg(panel_id))
+
+    try:
+        with transaction.atomic():
+
+            if isinstance(selection, bool):
+                if selection is True:
+                    panel.accessions.remove(*panel.accessions.all())
+
+            elif selection['op'] == 'in':
+                panel.accessions.remove(*panel.accessions.filter(id__in=selection['value']))
+
+            elif selection['op'] == 'notin':
+                panel.accessions.remove(*panel.accessions.exclude(id__in=selection['value']))
+
+    except IntegrityError as e:
+        DescriptorModelType.integrity_except(AccessionPanel, e)
+
+    return HttpResponseRest(request, {'message': 'ok'})
 
 
 @RestAccessionPanelSearch.def_auth_request(Method.GET, Format.JSON, ('filters',))

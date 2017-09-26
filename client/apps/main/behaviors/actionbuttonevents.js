@@ -19,7 +19,8 @@ var ActionBtnEvents = Marionette.Behavior.extend({
             edit2: {title: _t('Edit2'), display: false},
             tag: {title: _t('Label'), display: false},
             manage: {title: _t('Manage'), display: false},
-            remove: {title: _t('Delete'), display: true}
+            remove: {title: _t('Delete'), display: true},
+            unlink: {title: _t('Unlink'), display: false}
         }
     },
 

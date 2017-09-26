@@ -110,7 +110,7 @@ var Layout = LayoutView.extend({
                 return;
             }
 
-            var AccessionListView = require('../views/accessionlist');
+            var AccessionListView = require('../views/panelaccessionlist');
             var accessionListView = new AccessionListView({
                 collection: accessionPanelAccessions,
                 model: panelLayout.model,
@@ -137,7 +137,6 @@ var Layout = LayoutView.extend({
 
         this.onDescriptorMetaModelChange(this.model, this.model.get('descriptor_meta_model'));
         this.enableTabs();
-
     }
 });
 
