@@ -16,6 +16,9 @@ underscore = require("underscore");
 i18next = require('i18next');
 Logger = require('js-logger');
 
+// Font Awesome
+require("font-awesome/css/font-awesome.min.css");
+
 // select2 as jquery plugin ($.select2)
 require("select2");
 require("select2/dist/css/select2.min.css");
