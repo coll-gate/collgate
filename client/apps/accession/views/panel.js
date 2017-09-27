@@ -40,6 +40,7 @@ var View = Marionette.View.extend({
         ActionBtnEvents: {
             behaviorClass: require('../../main/behaviors/actionbuttonevents'),
             actions: {
+                tag: {title: _t('Rename'), display: true, event: 'onRename'},
                 edit: {display: false},
                 manage: {display: true, event: 'viewDetails'},
                 remove: {display: true, event: 'onDeletePanel'}
@@ -71,6 +72,23 @@ var View = Marionette.View.extend({
 
     viewDetails: function () {
         Backbone.history.navigate('app/accession/panel/' + this.model.get('id') + '/', {trigger: true});
+    },
+
+    onRename: function () {
+        if (!session.user.isSuperUser || !session.user.isStaff) {
+            return false;
+        }
+
+        var ChangeName = require('../../main/views/entityrename');
+        var changeName = new ChangeName({
+            model: this.model,
+            title: _t("Rename the accession panel")
+        });
+
+        changeName.render();
+        changeName.ui.name.val(this.model.get('name'));
+
+        return false;
     },
 
     onDeletePanel: function () {

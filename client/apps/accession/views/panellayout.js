@@ -60,7 +60,11 @@ var Layout = LayoutView.extend({
             var AccessionPanelDescriptorCreateView = require('./accessionpaneldescriptorcreate');
             var accessionPanelDescriptorCreateView = new AccessionPanelDescriptorCreateView({model: model});
 
-            this.showChildView('descriptors', accessionPanelDescriptorCreateView);
+            panelLayout.showChildView('descriptors', accessionPanelDescriptorCreateView);
+
+            if (panelLayout.initialTab === 'descriptors') {
+                accessionPanelDescriptorCreateView.onShowTab();
+            }
 
         } else {
             // get the layout before creating the view
@@ -75,6 +79,10 @@ var Layout = LayoutView.extend({
                     descriptorMetaModelLayout: data
                 });
                 panelLayout.showChildView('descriptors', panelDescriptorView);
+
+                if (panelLayout.initialTab === 'descriptors') {
+                    panelDescriptorView.onShowTab();
+                }
             });
         }
     },
@@ -98,9 +106,20 @@ var Layout = LayoutView.extend({
         });
 
         columns.done(function (data) {
-            var AccessionListView = require('../views/accessionlist');
+            if (!panelLayout.isRendered()) {
+                return;
+            }
+
+            var AccessionListView = require('../views/panelaccessionlist');
             var accessionListView = new AccessionListView({
-                collection: accessionPanelAccessions, model: panelLayout.model, columns: data.columns
+                collection: accessionPanelAccessions,
+                model: panelLayout.model,
+                columns: data.columns,
+                related_entity: {
+                    'content_type': 'accession.accessionpanel',
+                    'id': panelLayout.model.id
+                }
+
             });
 
             var contentBottomLayout = new ContentBottomLayout();
@@ -110,11 +129,14 @@ var Layout = LayoutView.extend({
             contentBottomLayout.showChildView('bottom', new ScrollingMoreView({targetView: accessionListView}));
 
             accessionListView.query();
+
+            if (panelLayout.initialTab === 'accessions') {
+                accessionListView.onShowTab();
+            }
         });
 
         this.onDescriptorMetaModelChange(this.model, this.model.get('descriptor_meta_model'));
         this.enableTabs();
-
     }
 });
 

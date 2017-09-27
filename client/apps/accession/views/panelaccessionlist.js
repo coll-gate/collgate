@@ -1,7 +1,7 @@
 /**
- * @file accessionlist.js
- * @brief Accession list view
- * @author Frédéric SCHERMA (INRA UMR1095)
+ * @file panelaccessionlist.js
+ * @brief Panel accession list view
+ * @author Medhi BOULNEMOUR (INRA UMR1095)
  * @date 2016-12-19
  * @copyright Copyright (c) 2016 INRA/CIRAD
  * @license MIT (see LICENSE file)
@@ -17,8 +17,8 @@ var View = ScrollView.extend({
     className: 'advanced-table-container',
     childView: AccessionView,
     childViewContainer: 'tbody.entity-list',
-    userSettingName: 'accessions_list_columns',
-    userSettingVersion: '1.1',
+    userSettingName: 'panel_accessions_list_columns',
+    // userSettingVersion: '1.1',
 
     defaultColumns: [
         {name: 'select', width: 'auto', sort_by: null},
@@ -72,14 +72,14 @@ var View = ScrollView.extend({
         }
     },
 
-    initialize: function(options) {
+    initialize: function (options) {
         View.__super__.initialize.apply(this, arguments);
         this.related_entity = this.getOption('related_entity');
         // var context_menu = options.context_menu;
         // this.listenTo(this.collection, 'reset', this.render, this);
     },
 
-    onShowTab: function() {
+    onShowTab: function () {
         var view = this;
 
         var contextLayout = application.getView().getChildView('right');
@@ -90,26 +90,47 @@ var View = ScrollView.extend({
         }
 
         var TitleView = require('../../main/views/titleview');
-        contextLayout.showChildView('title', new TitleView({title: _t("Accession actions"), glyphicon: 'glyphicon-wrench'}));
+        contextLayout.showChildView('title', new TitleView({
+            title: _t("Accession actions"),
+            glyphicon: 'glyphicon-wrench'
+        }));
 
-        var actions = ['create-panel'];
+        var actions = [
+            'create-panel',
+            'unlink-accessions'
+        ];
 
-        var AccessionListContextView = require('./accessionlistcontext');
-        var contextView = new AccessionListContextView({actions: actions});
+        var PanelAccessionListContextView = require('./panelaccessionlistcontext');
+        var contextView = new PanelAccessionListContextView({actions: actions});
         contextLayout.showChildView('content', contextView);
 
         contextView.on("panel:create", function () {
             view.onCreatePanel();
         });
+
+        contextView.on("accessions:unlink", function () {
+            view.onUnlinkAccessions();
+        });
     },
 
-    onBeforeDetach: function() {
+    onBeforeDetach: function () {
         application.main.defaultRightView();
     },
 
+    onUnlinkAccessions: function () {
+        var view = this;
+        $.ajax({
+            type: 'POST',
+            url: application.baseUrl + 'accession/panel/' + this.model.id + '/accession/',
+            dataType: 'json',
+            data: {'select': JSON.stringify(view.getSelection('select'))}
+        }).done(function () {
+            view.collection.fetch();
+        });
+    },
+
     onCreatePanel: function () {
-        var selection_acc_id = this.getSelection('select');
-        application.accession.controllers.panel.create(selection_acc_id, this.related_entity);
+        application.accession.controllers.panel.create(this.getSelection('select'), this.related_entity);
     }
 });
 
