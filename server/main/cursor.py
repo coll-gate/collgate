@@ -864,6 +864,45 @@ class CursorQuery(object):
         self._prefetch_related.append(prefetch)
         return self
 
+    def inner_join(self, related_model, related_name=None, **kwargs):
+        """
+        Inner join a using related model, and a specified field name into the through model.
+        The specified field name is defined a argument name whereas the value is the id.
+
+        :param related_model: Model to inner join.
+        :param related_name: If specified uses this field name as join term in place of the self.modelname in plural form.
+        :param kwargs: FieldName=IntegerValue
+        """
+        if len(kwargs) < 1:
+            raise CursorQueryError("Unspecified related field and value")
+
+        db_table = self._model._meta.db_table
+        short_db_table = self._model._meta.model_name
+        model_name_alias = self._model._meta.model_name + 's'  # plural form (could be more dynamic)
+
+        if related_name is not None and type(related_name) is str:
+            model_name_alias = related_name
+
+        related_field_name, id_value = list(kwargs.items())[0]
+
+        related_field = getattr(related_model, model_name_alias)
+        if related_field is None:
+            raise CursorQueryError("Unknown related field %s" % related_field)
+
+        if type(related_field) is not models.fields.related_descriptors.ManyToManyDescriptor:
+            raise CursorQueryError("Invalid related field %s" % related_field)
+
+        if not hasattr(related_field.through, related_field_name):
+            raise CursorQueryError("Invalid related field name %s" % related_field_name)
+
+        join_db_table = related_field.through._meta.db_table
+
+        inner_join = 'INNER JOIN "%s" ON ("%s"."%s_id" = %i AND "%s"."id" = "%s"."%s_id")' % (
+            join_db_table, join_db_table, related_field_name, id_value, db_table, join_db_table, short_db_table
+        )
+
+        self.query_from.append(inner_join)
+
     def sql(self):
         """
         Build the SQL query that will be performed directly if there is some prefetch related,

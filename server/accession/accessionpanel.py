@@ -12,7 +12,7 @@ from descriptor.describable import DescriptorsBuilder
 from django.contrib.contenttypes.models import ContentType
 from descriptor.models import DescriptorMetaModel, DescriptorModelType
 from igdectk.rest.handler import *
-from django.db.models import Q
+from django.db.models import Q, Prefetch
 from igdectk.rest.response import HttpResponseRest
 from django.core.exceptions import SuspiciousOperation
 from django.db import transaction, IntegrityError
@@ -20,7 +20,7 @@ from django.shortcuts import get_object_or_404
 # from permission.utils import get_permissions_for
 from django.utils.translation import ugettext_lazy as _
 
-from .models import AccessionPanel, Accession
+from .models import AccessionPanel, Accession, AccessionSynonym
 from .base import RestAccession
 
 
@@ -368,23 +368,43 @@ def get_panel_accession_list_count(request, panel_id):
     'accession.list_accession': _("You are not allowed to list the accessions")
 })
 def get_panel_accession_list(request, panel_id):
+    # @todo check permission on this panel
+    # panel = get_object_or_404(AccessionPanel, id=int(panel_id))
+
     results_per_page = int_arg(request.GET.get('more', 30))
     cursor = json.loads(request.GET.get('cursor', 'null'))
     limit = results_per_page
-    # sort_by = json.loads(request.GET.get('sort_by', '[]'))
+    sort_by = json.loads(request.GET.get('sort_by', '[]'))
 
-    panel = get_object_or_404(AccessionPanel, id=int(panel_id))
-
-    if cursor:
-        qs = panel.accessions.filter(Q(id__gt=int_arg(cursor)))
+    if not len(sort_by) or sort_by[-1] not in ('id', '+id', '-id'):
+        order_by = sort_by + ['id']
     else:
-        qs = panel.accessions.all()
+        order_by = sort_by
 
-    qs = qs[:limit]
+    from main.cursor import CursorQuery
+    cq = CursorQuery(Accession)
+
+    if request.GET.get('search'):
+        search = json.loads(request.GET['search'])
+        cq.filter(search)
+
+    if request.GET.get('filters'):
+        filters = json.loads(request.GET['filters'])
+        cq.filter(filters)
+
+    cq.prefetch_related(Prefetch(
+        "synonyms",
+        queryset=AccessionSynonym.objects.all().order_by('synonym_type', 'language')))
+
+    cq.select_related('primary_classification_entry->name', 'primary_classification_entry->rank')
+
+    cq.cursor(cursor, order_by)
+    cq.inner_join(AccessionPanel, accessionpanel=int(panel_id))
+    cq.order_by(order_by).limit(limit)
 
     accession_items = []
 
-    for accession in qs:
+    for accession in cq:
         a = {
             'id': accession.pk,
             'name': accession.name,
@@ -410,23 +430,12 @@ def get_panel_accession_list(request, panel_id):
 
         accession_items.append(a)
 
-    if len(accession_items) > 0:
-        entity = accession_items[0]
-        prev_cursor = entity['id']
-
-        entity = accession_items[-1]
-        next_cursor = entity['id']
-
-    else:
-        prev_cursor = None
-        next_cursor = None
-
     results = {
         'perms': [],
         'items': accession_items,
-        'prev': prev_cursor,
+        'prev': cq.prev_cursor,
         'cursor': cursor,
-        'next': next_cursor,
+        'next': cq.next_cursor,
     }
 
     return HttpResponseRest(request, results)
