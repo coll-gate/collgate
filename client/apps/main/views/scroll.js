@@ -1547,7 +1547,7 @@ var View = Marionette.CompositeView.extend({
         var columnName = columnEl.attr('name');
         var sortField = this.getSortField(columnName);
         var order = '+';
-        var sorters = this.ui.thead.children('tr').children('th,td').find('div.table-advanced-label span.column-sorter');
+        var headers = this.ui.thead.children('tr').children('th,td').find('div.table-advanced-label'); //  span.column-sorter');
         var sortBy = _.clone(this.collection.sort_by) || [];
 
         var i = -1;
@@ -1566,7 +1566,7 @@ var View = Marionette.CompositeView.extend({
 
         if (!this.controlKeyDown) {
             // cleanup
-            sorters.removeClass(
+            headers.children('span.column-sorter').removeClass(
                 'sortby-asc-column sortby-desc-column glyphicon-sort-by-alphabet glyphicon-sort-by-alphabet-alt')
                 .attr('sort-position', null)
                 .empty();
@@ -1605,13 +1605,15 @@ var View = Marionette.CompositeView.extend({
                     el.empty().attr('sort-position', null);
 
                     // reorder previous
-                    $.each(sorters, function(n, el) {
-                        var element = $(el);
-                        var pos = parseInt(element.attr('sort-position') || -1);
+                    $.each(headers, function(n, el) {
+                        var sorter = $(el);
+                        if (sorter.length) {
+                            var pos = parseInt(sorter.attr('sort-position') || -1);
 
-                        if (pos > i) {
-                            --pos;
-                            element.attr('sort-position', pos);
+                            if (pos > i) {
+                                --pos;
+                                sorter.attr('sort-position', pos);
+                            }
                         }
                     });
                 } else {
@@ -1624,26 +1626,28 @@ var View = Marionette.CompositeView.extend({
             }
 
             // assign order
-            $.each(sorters, function (n, el) {
-                var element = $(el);
-                var pos = parseInt(element.attr('sort-position') || -1);
+            $.each(headers, function (n, el) {
+                var sorter = $(el).children('span.column-sorter');
+                if (sorter.length) {
+                    var pos = parseInt(sorter.attr('sort-position') || -1);
 
-                if (pos >= 0 && sortBy.length > 1) {
-                    $(element).text(EXPONENT_MAP[pos] || '');
-                } else {
-                    $(element).text('');
+                    if (pos >= 0 && sortBy.length > 1) {
+                        sorter.text(EXPONENT_MAP[pos] || '');
+                    } else {
+                        sorter.text('');
+                    }
                 }
             });
         }
 
         // update user columns setting
         for (var i = 0; i < this.selectedColumns.length; ++i) {
-            var el = $(sorters[i]);
-            var pos = el.attr('sort-position');
+            var sorter = $(headers[i]).children('span.column-sorter');
+            var pos = sorter.attr('sort-position');
 
-            if (el.hasClass('sortby-asc-column')) {
+            if (sorter.hasClass('sortby-asc-column')) {
                 this.selectedColumns[i].sort_by = '+' + pos;
-            } else if (el.hasClass('sortby-desc-column')) {
+            } else if (sorter.hasClass('sortby-desc-column')) {
                 this.selectedColumns[i].sort_by = '-' + pos;
             } else {
                 this.selectedColumns[i].sort_by = null;

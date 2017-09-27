@@ -47,7 +47,8 @@ class CollGateAccession(ApplicationMain):
             'accession',
             'accessionbatch',
             'batch',
-            'accessionpanel'
+            'accessionpanel',
+            'accessionclassificationentry'
             )
         )
 

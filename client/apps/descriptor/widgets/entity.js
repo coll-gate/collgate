@@ -154,65 +154,65 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
             if (definesValues) {
                 var type = this;
 
-                // need to re-init the select2 widget
-                this.el.select2('destroy');
-
+                // // need to re-init the select2 widget
+                // this.el.select2('destroy');
+                //
                 // init the autocomplete
                 var initials = [];
-
-                var container = this.parent.closest('div.modal-dialog').parent();
-                if (container.length === 0) {
-                    container = this.parent.closest('div.panel');
-                }
-
-                var params = {
-                    data: initials,
-                    dropdownParent: container,
-                    ajax: {
-                        url: url + 'search/',
-                        dataType: 'json',
-                        delay: 250,
-                        data: function (params) {
-                            params.term || (params.term = '');
-
-                            return {
-                                filters: JSON.stringify({
-                                    method: 'icontains',
-                                    fields: ['name'],
-                                    name: params.term
-                                }),
-                                cursor: params.next
-                            };
-                        },
-                        processResults: function (data, params) {
-                            params.next = null;
-
-                            if (data.items.length >= 30) {
-                                params.next = data.next || null;
-                            }
-
-                            var results = [];
-
-                            for (var i = 0; i < data.items.length; ++i) {
-                                results.push({
-                                    id: data.items[i].id,
-                                    text: data.items[i].label
-                                });
-                            }
-
-                            return {
-                                results: results,
-                                pagination: {
-                                    more: params.next != null
-                                }
-                            };
-                        },
-                        cache: true
-                    },
-                    allowClear: true,
-                    minimumInputLength: 3,
-                    placeholder: _t("Enter a value.")
-                };
+                //
+                // var container = this.parent.closest('div.modal-dialog').parent();
+                // if (container.length === 0) {
+                //     container = this.parent.closest('div.panel');
+                // }
+                //
+                // var params = {
+                //     data: initials,
+                //     dropdownParent: container,
+                //     ajax: {
+                //         url: url + 'search/',
+                //         dataType: 'json',
+                //         delay: 250,
+                //         data: function (params) {
+                //             params.term || (params.term = '');
+                //
+                //             return {
+                //                 filters: JSON.stringify({
+                //                     method: 'icontains',
+                //                     fields: ['name'],
+                //                     name: params.term
+                //                 }),
+                //                 cursor: params.next
+                //             };
+                //         },
+                //         processResults: function (data, params) {
+                //             params.next = null;
+                //
+                //             if (data.items.length >= 30) {
+                //                 params.next = data.next || null;
+                //             }
+                //
+                //             var results = [];
+                //
+                //             for (var i = 0; i < data.items.length; ++i) {
+                //                 results.push({
+                //                     id: data.items[i].id,
+                //                     text: data.items[i].label
+                //                 });
+                //             }
+                //
+                //             return {
+                //                 results: results,
+                //                 pagination: {
+                //                     more: params.next != null
+                //                 }
+                //             };
+                //         },
+                //         cache: true
+                //     },
+                //     allowClear: true,
+                //     minimumInputLength: 3,
+                //     placeholder: _t("Enter a value.")
+                // };
 
                 // autoselect the initial value
                 $.ajax({
@@ -222,11 +222,32 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
                 }).done(function (data) {
                     initials.push({id: data.id, text: data.name});
 
-                    params.data = initials;
+                    // params.data = initials;
+                    //
+                    // type.el.select2(params).fixSelect2Position();
+                    // type.el.val(defaultValues).trigger('change');
 
-                    type.el.select2(params).fixSelect2Position();
-                    type.el.val(defaultValues).trigger('change');
+                    var option = new Option(data.name, data.id, true, true);
+                    type.el.append(option).trigger('change');
+
+                    type.el.trigger({
+                        type: 'select2:select',
+                        params: {
+                            data: initials
+                        }
+                    });
                 });
+            }
+        }
+    },
+
+    clear: function () {
+        if (this.el && this.parent) {
+            if (this.readOnly) {
+                this.el.attr('value', null);
+                this.el.val('');
+            } else {
+                this.el.val(null).trigger('change');
             }
         }
     },

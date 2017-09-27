@@ -494,7 +494,7 @@ def patch_user(request, username):
             "object": {"type": "integer", 'required': False},
         },
     },
-    perms={'auth.add_permission': _("You are not allowed to add a permission")},
+    perms={'auth.change_user': _("You are not allowed to changer a user")},
     staff=True)
 def add_user_permission(request, username):
     permission = request.data['permission']
@@ -531,7 +531,7 @@ def add_user_permission(request, username):
             "object": {"type": "integer", 'required': False},
         },
     },
-    perms={'auth.delete_permission': _("You are not allowed to remove a permission")},
+    perms={'auth.change_user': _("You are not allowed to changer a user")},
     staff=True)
 def delete_user_permission(request, username):
     action = request.data['action']
@@ -634,7 +634,7 @@ def get_group_permissions(request, grp_id):
             "object": {"type": "integer", 'required': False},
         },
     },
-    perms={'auth.add_permission': _("You are not allowed to add a permission")},
+    perms={'auth.change_group': _("You are not allowed to change a group")},
     staff=True)
 def add_group_permission(request, grp_id):
     permission = request.data['permission']
@@ -670,12 +670,13 @@ def add_group_permission(request, grp_id):
             "object": {"type": "integer", 'required': False},
         },
     },
-    perms={'auth.delete_permission': _("You are not allowed to remove a permission")},
+    perms={'auth.change_group': _("You are not allowed to change a group")},
     staff=True)
-def delete_group_permission(request, grp_id):
+def change_group_permission(request, grp_id):
     action = request.data['action']
     permission = request.data['permission']
     content_type = request.data['content_type']
+    target = request.data['target']
     object_id = int(request.data['object']) if 'object' in request.data else None
 
     if content_type == "auth.permission" and not request.user.is_superuser:
@@ -686,23 +687,24 @@ def delete_group_permission(request, grp_id):
     app_label, model = content_type.split('.')
     content_type = ContentType.objects.get_by_natural_key(app_label, model)
 
-    if not object_id:
-        perm = get_object_or_404(Permission, codename=permission, content_type=content_type)
-        if action == "add":
-            group.permissions.add(perm)
-        elif action == "remove":
-            group.permissions.remove(perm)
+    if target == "permission":
+        if not object_id:
+            perm = get_object_or_404(Permission, codename=permission, content_type=content_type)
+            if action == "add":
+                group.permissions.add(perm)
+            elif action == "remove":
+                group.permissions.remove(perm)
+            else:
+                raise SuspiciousOperation('Invalid action')
         else:
-            raise SuspiciousOperation('Invalid patch action')
-    else:
-        obj = get_object_or_404(content_type.model, id=object_id)
+            obj = get_object_or_404(content_type.model, id=object_id)
 
-        if action == "add":
-            GroupObjectPermission.objects.assign_perm(permission, group=group, obj=obj)
-        elif action == "remove":
-            GroupObjectPermission.objects.remove_perm(permission, group=group, obj=obj)
-        else:
-            raise SuspiciousOperation('Invalid patch action')
+            if action == "add":
+                GroupObjectPermission.objects.assign_perm(permission, group=group, obj=obj)
+            elif action == "remove":
+                GroupObjectPermission.objects.remove_perm(permission, group=group, obj=obj)
+            else:
+                raise SuspiciousOperation('Invalid action')
 
     return HttpResponseRest(request, {})
 

@@ -2,8 +2,13 @@
 import os
 import sys
 
+
 if __name__ == "__main__":
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings.development")
+    import importlib.util
+    if importlib.util.find_spec("settings.developmentuser"):
+        os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings.developmentuser")
+    else:
+        os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings.development")
 
     from django.core.management import execute_from_command_line
 

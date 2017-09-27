@@ -11,17 +11,22 @@
 var AccessionModel = require('../models/accession');
 
 var Collection = Backbone.Collection.extend({
-    url: application.baseUrl + 'accession/accession/',
     model: AccessionModel,
+
+    url: function() {
+        if (this.panel_id) {
+            return application.baseUrl + 'accession/panel/' + this.panel_id + '/accession/';
+        } else {
+            return application.baseUrl + 'accession/accession/';
+        }
+    },
 
     // comparator: 'name',
 
-    initialize: function (options) {
+    initialize: function (models, options) {
         options || (options = {});
+
         this.panel_id = (options.panel_id || null);
-        if (this.panel_id) {
-            this.url = application.baseUrl + 'accession/panel/' + this.panel_id + '/accession/';
-        }
         this.filters = (options.filters || {});
         this.search = (options.search || {});
     },
@@ -81,7 +86,7 @@ var Collection = Backbone.Collection.extend({
 
         $.ajax({
             type: "GET",
-            url: this.url + 'count/',
+            url: this.url() + 'count/',
             dataType: 'json',
             data: opts.data,
             collection: this

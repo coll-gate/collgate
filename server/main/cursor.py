@@ -477,29 +477,50 @@ class CursorQuery(object):
             elif filter_type == 'op':
                 pass
 
+            # empty
+            elif filter_type is None:
+                pass
+
             else:
                 raise CursorQueryError('Unrecognized filter type')
 
         # add for join
         self.add_select_related(select_related)
 
-    def filter(self, *filters):
+    def filter(self, *filters, **kfilters):
         """
         Defines criterion to filters. The max depth of lists is by default 3.
 
         :param filters: A structure compound of lists and sub-lists.
         :return: self
         """
-        for lfilter in filters:
-            ltype = type(lfilter)
+        ltype = type(filters)
 
-            if ltype is str:
-                pass
-            elif ltype is tuple or ltype is list:
-                self._parse_and_add_filters(lfilter, 0)
-                self._filter_clauses.extend(lfilter)
-            elif ltype is dict:
-                pass
+        if (ltype is tuple or ltype is list) and len(filters) > 0:
+            self._parse_and_add_filters(filters, 0)
+            self._filter_clauses.extend(filters)
+        elif ltype is dict:
+            self._parse_and_add_filters([filters], 0)
+            self._filter_clauses.append(filters)
+        elif len(kfilters):
+            lfilters = []
+
+            for key, v in kfilters.items():
+                if key.count('__'):
+                    field, op = key.rsplit('__', 1)
+                else:
+                    field = key
+                    op = 'eq'
+
+                lfilters.append({
+                    'type': 'term',
+                    'field': field.replace('__', CursorQuery.FIELDS_SEP),
+                    'value': v,
+                    'op': op if op else 'eq'
+                })
+
+            self._parse_and_add_filters(lfilters, 0)
+            self._filter_clauses.extend(lfilters)
 
         return self
 
@@ -910,6 +931,8 @@ class CursorQuery(object):
             # eval before
             try:
                 self._query_set = list(self._query_set)
+                # for el in self:
+                #     pass
             except IndexError:
                 self._query_set = list()
             except ProgrammingError:

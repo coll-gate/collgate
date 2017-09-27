@@ -88,7 +88,7 @@ var Layout = LayoutView.extend({
 
         // accession tab
         var AccessionCollection = require('../collections/accession');
-        var accessionPanelAccessions = new AccessionCollection({panel_id: this.model.get('id')});
+        var accessionPanelAccessions = new AccessionCollection([], {panel_id: this.model.get('id')});
 
         // get available columns
         var columns = $.ajax({

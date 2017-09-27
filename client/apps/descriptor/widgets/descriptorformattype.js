@@ -103,6 +103,10 @@ DescriptorFormatType.prototype = {
         /* define and format value(s) */
     },
 
+    clear: function () {
+        /* clear current value */
+    },
+
     values: function() {
         /* return the formatted values */
         return null;

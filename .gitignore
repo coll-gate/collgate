@@ -21,3 +21,4 @@ __pycache__
 /server/main/static/main/js/app.min.js.map
 /server/media
 /server/venv/
+/server/settings/developmentuser.py

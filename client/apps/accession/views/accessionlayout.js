@@ -13,6 +13,7 @@ var ClassificationEntryModel = require('../../classification/models/classificati
 
 var ScrollingMoreView = require('../../main/views/scrollingmore');
 var ContentBottomLayout = require('../../main/views/contentbottomlayout');
+var ContentBottomFooterLayout = require('../../main/views/contentbottomfooterlayout');
 var EntityPathView = require('../../classification/views/entitypath');
 var AccessionDescriptorEditView = require('../views/accessiondescriptoredit');
 
@@ -22,7 +23,7 @@ var Layout = LayoutView.extend({
     ui: {
         synonyms_tab: 'a[aria-controls=synonyms]',
         batches_tab: 'a[aria-controls=batches]',
-        classifications_tab: 'a[aria-controls=classifications]'
+        classifications_entries_tab: 'a[aria-controls=classifications-entries]'
     },
 
     regions: {
@@ -30,7 +31,7 @@ var Layout = LayoutView.extend({
         'descriptors': "div.tab-pane[name=descriptors]",
         'synonyms': "div.tab-pane[name=synonyms]",
         'batches': "div.tab-pane[name=batches]",
-        'classifications': "div.tab-pane[name=classifications]"
+        'classifications-entries': "div.tab-pane[name=classifications-entries]"
     },
 
     initialize: function(options) {
@@ -59,14 +60,14 @@ var Layout = LayoutView.extend({
         this.ui.batches_tab.parent().addClass('disabled');
     },
 
-    disableClassificationsTab: function () {
-        this.ui.classifications_tab.parent().addClass('disabled');
+    disableClassificationsEntriesTab: function () {
+        this.ui.classifications_entries_tab.parent().addClass('disabled');
     },
 
     enableTabs: function() {
         this.ui.synonyms_tab.parent().removeClass('disabled');
         this.ui.batches_tab.parent().removeClass('disabled');
-        this.ui.classifications_tab.parent().removeClass('disabled');
+        this.ui.classifications_entries_tab.parent().removeClass('disabled');
     },
 
     onDescriptorMetaModelChange: function(model, value) {
@@ -144,6 +145,36 @@ var Layout = LayoutView.extend({
                 contentBottomLayout.showChildView('bottom', new ScrollingMoreView({targetView: batchListView}));
             });
 
+            // classifications entry tab
+            var AccessionClassificationEntryCollection = require('../collections/accessionclassificationentry');
+            var accessionClassificationEntries = new AccessionClassificationEntryCollection([], {accession_id: this.model.get('id')});
+
+            // get available columns
+            var columns = $.ajax({
+                type: "GET",
+                url: application.baseUrl + 'descriptor/columns/classification.classificationentry/',
+                contentType: "application/json; charset=utf-8"
+            });
+
+            $.when(columns, accessionClassificationEntries.fetch()).done(function (data) {
+                if (!accessionLayout.isRendered()) {
+                    return;
+                }
+
+                var AccessionClassificationEntryListView = require('../views/accessionclassificationentries');
+                var accessionClassificationEntryListView  = new AccessionClassificationEntryListView({
+                    collection: accessionClassificationEntries, model: accessionLayout.model, columns: data[0].columns});
+
+                var contentBottomFooterLayout = new ContentBottomFooterLayout();
+                accessionLayout.showChildView('classifications-entries', contentBottomFooterLayout);
+
+                contentBottomFooterLayout.showChildView('content', accessionClassificationEntryListView);
+                // contentBottomFooterLayout.showChildView('bottom', new ScrollingMoreView({targetView: accessionClassificationEntryListView}));
+
+                var AccessionClassificationEntryAdd = require('../views/accessionclassificationentryadd');
+                contentBottomFooterLayout.showChildView('footer', new AccessionClassificationEntryAdd({collection: accessionClassificationEntries}));
+            });
+
             this.onDescriptorMetaModelChange(this.model, this.model.get('descriptor_meta_model'));
             this.enableTabs();
         } else {
@@ -177,7 +208,7 @@ var Layout = LayoutView.extend({
             // not available tabs
             this.disableSynonymsTab();
             this.disableBatchesTab();
-            this.disableClassificationsTab();
+            this.disableClassificationsEntriesTab();
         }
     }
 });

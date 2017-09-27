@@ -29,7 +29,7 @@ var Router = Marionette.AppRouter.extend({
     getAccessionList : function(options) {
         options || (options = {});
 
-        var collection = new AccessionCollection({
+        var collection = new AccessionCollection([], {
             filters: (options.filters || {}),
             search: (options.search || {})
         });
