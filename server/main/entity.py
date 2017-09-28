@@ -198,6 +198,7 @@ def list_entity_synonym_type(request):
             'name': st.name,
             'label': st.get_label(),
             'unique': st.unique,
+            'multiple_entry': st.multiple_entry,
             'has_language': st.has_language,
             'target_model': ".".join(st.target_model.natural_key()),
             'can_delete': st.can_delete,
@@ -225,6 +226,7 @@ def get_entity_synonym_type(request, content_type_name):
             'name': st.name,
             'label': st.get_label(),
             'unique': st.unique,
+            'multiple_entry': st.multiple_entry,
             'has_language': st.has_language,
             'target_model': ".".join(st.target_model.natural_key()),
             'can_delete': st.can_delete,
@@ -271,6 +273,7 @@ def post_entity_synonym_type(request):
         'name': entity_synonym_type.name,
         'label': entity_synonym_type.get_label(),
         'unique': entity_synonym_type.unique,
+        'multiple_entry': entity_synonym_type.multiple_entry,
         'has_language': entity_synonym_type.has_language,
         'target_model': ".".join(entity_synonym_type.target_model.natural_key()),
         'can_delete': entity_synonym_type.can_delete,
@@ -355,6 +358,7 @@ def change_language_labels(request, est_id):
         "properties": {
             "name": EntitySynonymType.NAME_VALIDATOR_OPTIONAL,
             "unique": {"type": "boolean", "required": False},
+            "multiple_entry": {"type": "boolean", "required": False},
             "has_language": {"type": "boolean", "required": False},
         },
     },
@@ -372,6 +376,11 @@ def patch_entity_synonym_type(request, est_id):
     if not entity_synonym_type.can_modify:
         raise SuspiciousOperation(_("It is not permit to modify this synonym type of entity"))
 
+    result = {
+        'id': entity_synonym_type.id,
+        'name': entity_synonym_type.name
+    }
+
     if name and name != entity_synonym_type.name:
         if EntitySynonymType.objects.filter(name__exact=name).exists():
             raise SuspiciousOperation(_("Name of synonym type of entity already in usage"))
@@ -379,22 +388,28 @@ def patch_entity_synonym_type(request, est_id):
         entity_synonym_type.name = name
         entity_synonym_type.full_clean()
 
+        result['name'] = name
         update = True
 
     if 'unique' in request.data:
-        update = True
         entity_synonym_type.unique = request.data['unique']
 
-    if 'has_language' in request.data:
+        result['unique'] = entity_synonym_type.unique
         update = True
-        entity_synonym_type.is_staff = request.data['has_language']
+
+    if 'multiple_entry' in request.data:
+        entity_synonym_type.multiple_entry = request.data['multiple_entry']
+
+        result['multiple_entry'] = entity_synonym_type.multiple_entry
+        update = True
+
+    if 'has_language' in request.data:
+        entity_synonym_type.has_language = request.data['has_language']
+
+        result['has_language'] = entity_synonym_type.has_language
+        update = True
 
     if update:
         entity_synonym_type.save()
-
-    result = {
-        'id': entity_synonym_type.id,
-        'name': entity_synonym_type.name
-    }
 
     return HttpResponseRest(request, result)

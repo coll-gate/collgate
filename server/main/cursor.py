@@ -497,11 +497,17 @@ class CursorQuery(object):
         ltype = type(filters)
 
         if (ltype is tuple or ltype is list) and len(filters) > 0:
-            self._parse_and_add_filters(filters, 0)
-            self._filter_clauses.extend(filters)
+            # ignore empty
+            lfilters = [f for f in filters if f]
+
+            if lfilters:
+                self._parse_and_add_filters(lfilters, 0)
+                self._filter_clauses.extend(lfilters)
         elif ltype is dict:
-            self._parse_and_add_filters([filters], 0)
-            self._filter_clauses.append(filters)
+            # ignore empty
+            if filters:
+                self._parse_and_add_filters([filters], 0)
+                self._filter_clauses.append(filters)
         elif len(kfilters):
             lfilters = []
 

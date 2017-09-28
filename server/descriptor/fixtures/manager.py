@@ -416,6 +416,7 @@ class FixtureManager:
                 defaults={
                     'label': v['label'],
                     'unique': v.get('unique', False),
+                    'multiple_entry': v.get('multiple_entry', False),
                     'has_language': v.get('has_language', True),
                     'target_model': related_model,
                     'can_delete': v.get('can_delete', True),

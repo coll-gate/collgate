@@ -144,8 +144,9 @@ class Entity(models.Model):
     NAME_VALIDATOR_OPTIONAL = {
         "type": "string", "minLength": 3, "maxLength": 32, "pattern": "^[a-zA-Z0-9\-\_]+$", "required": False}
 
-    # language type validator
-    LANGUAGE_VALIDATOR = {"type:": "string", "minLength": 2, "maxLength": 5, "pattern": r"^[a-zA-Z-]{2,5}$"}
+    # language type validator (blank or fr or fr_FR...)
+    LANGUAGE_VALIDATOR = {
+        "type:": "string", "minLength": 0, "maxLength": 5, "pattern": r"^([a-zA-Z-]{2,5}){0,1}$", "blank": True}
 
     # content type validator
     CONTENT_TYPE_VALIDATOR = {"type": "string", "minLength": 3, "maxLength": 64, "pattern": r"^[a-z]{3,}\.[a-z]{3,}$"}
@@ -347,8 +348,12 @@ class EntitySynonymType(models.Model):
     # synonym display name (default for each entity is 'code', 'primary' and 'alternate_name'
     name = models.CharField(max_length=128, db_index=True)
 
-    # unique means only one of this type per entity
+    # unique means the name of the synonym is unique for the couple (target, synonym_type)
     unique = models.BooleanField(default=False)
+
+    # If false, only a single synonym of this type is allowed per instance of target entity.
+    # For example, false for a code, true for an alternate name.
+    multiple_entry = models.BooleanField(default=False)
 
     # if true the language code is necessary to the synonym. in practice uses false for type like codes
     has_language = models.BooleanField(default=True)

@@ -22,6 +22,11 @@
 <% } else { %>
     <td class="<%= className %> glyph-fixed-column" name="unique"><span class="action glyphicon glyphicon-remove"></span></td>
 <% } %>
+<% if (multiple_entry) { %>
+    <td class="<%= className %> glyph-fixed-column" name="unique"><span class="action glyphicon glyphicon-ok"></span></td>
+<% } else { %>
+    <td class="<%= className %> glyph-fixed-column" name="unique"><span class="action glyphicon glyphicon-remove"></span></td>
+<% } %>
 <% if (has_language) { %>
     <td class="<%= className %> glyph-fixed-column" name="has-language"><span class="action glyphicon glyphicon-ok"></span></td>
 <% } else { %>

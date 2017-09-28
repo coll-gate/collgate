@@ -33,7 +33,7 @@ var Accession = DescriptorMetaModelType.extend({
 
         var primaryClassificationValue = Object.resolve('data.primary_classification', this.model.get('parameters'));
 
-        classifications.drawSelect(primaryClassification, true, false, primaryClassificationValue).done(function () {
+        classifications.drawSelect(primaryClassification, true, true, primaryClassificationValue).done(function () {
         });
 
         // batches list

@@ -20,6 +20,7 @@ from django.shortcuts import get_object_or_404
 # from permission.utils import get_permissions_for
 from django.utils.translation import ugettext_lazy as _
 
+from permission.utils import get_permissions_for
 from .models import AccessionPanel, Accession, AccessionSynonym
 from .base import RestAccession
 
@@ -368,8 +369,14 @@ def get_panel_accession_list_count(request, panel_id):
     'accession.list_accession': _("You are not allowed to list the accessions")
 })
 def get_panel_accession_list(request, panel_id):
-    # @todo check permission on this panel
+    # check permission on this panel
     # panel = get_object_or_404(AccessionPanel, id=int(panel_id))
+    #
+    # # check permission on this object
+    # perms = get_permissions_for(request.user, panel.content_type.app_label, panel.content_type.model,
+    #                             panel.pk)
+    # if 'accession.get_panel' not in perms:
+    #     raise PermissionDenied(_('Invalid permission to access to this panel'))
 
     results_per_page = int_arg(request.GET.get('more', 30))
     cursor = json.loads(request.GET.get('cursor', 'null'))

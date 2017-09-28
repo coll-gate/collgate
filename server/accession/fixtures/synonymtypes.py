@@ -13,30 +13,33 @@ SYNONYM_TYPES = {
         'id': None,
         'name': 'accession_code',
         'unique': True,
+        'multiple_entry': False,
         'has_language': False,
         'label': {
             'en': 'GRC code',
             'fr': 'Code CRB'
         },
         'can_delete': False,
-        'can_modify': True
+        'can_modify': False
     },
     'accession_name': {
         'id': None,
         'name': 'accession_name',
-        'unique': True,
+        'unique': False,
+        'multiple_entry': False,
         'has_language': True,
         'label': {
             'en': 'Primary name',
             'fr': 'Nom principal'
         },
         'can_delete': False,
-        'can_modify': True
+        'can_modify': False
     },
     'accession_geves_code': {
         'id': None,
         'name': 'accession_geves_code',
         'unique': True,
+        'multiple_entry': False,
         'has_language': False,
         'label': {
             'en': 'GEVES code',
@@ -49,6 +52,7 @@ SYNONYM_TYPES = {
         'id': None,
         'name': 'accession_alternate_name',
         'unique': False,
+        'multiple_entry': True,
         'has_language': True,
         'label': {
             'en': 'Alternate name',

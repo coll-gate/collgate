@@ -45,16 +45,31 @@ var View = Marionette.View.extend({
     },
 
     onRender: function() {
-        application.main.views.languages.drawSelect(this.ui.synonym_language);
+        application.main.views.languages.drawSelect(this.ui.synonym_language, true, true);
         application.accession.views.accessionSynonymTypes.drawSelect(this.ui.accession_synonym_type);
 
         application.main.views.languages.htmlFromValue(this.el);
         application.accession.views.accessionSynonymTypes.htmlFromValue(this.el);
 
         // remove GRC code and Primary Name
-        this.ui.accession_synonym_type.find('option[name=accession_code]').remove();
-        this.ui.accession_synonym_type.find('option[name=accession_name]').remove();
-        this.ui.accession_synonym_type.selectpicker('refresh');
+        for (var i = 0; i < application.accession.views.accessionSynonymTypes.collection.models.length; ++i) {
+            var st = application.accession.views.accessionSynonymTypes.collection.models[i];
+
+            if (st.get('unique')) {
+                for (var j = 0; j < this.collection.models.length; ++j) {
+                    if (this.collection.models[j].get('synonym_type') === st.get('id')) {
+                        this.ui.accession_synonym_type.find('option[name=' + st.name + ']').disabled('true');
+                    }
+                }
+            }
+
+            if (st.get('has_language')) {
+
+            }
+        }
+        // this.ui.accession_synonym_type.find('option[name=accession_code]').remove();
+        // this.ui.accession_synonym_type.find('option[name=accession_name]').remove();
+        // this.ui.accession_synonym_type.selectpicker('refresh');
     },
 
     validateName: function() {
@@ -195,6 +210,7 @@ var View = Marionette.View.extend({
                             for (var i in data.items) {
                                 var t = data.items[i];
 
+                                // @todo
                                 if (t.label.toUpperCase() === name.toUpperCase()) {
                                     // valid if same accession and same synonym
                                     if ((t.accession === self.model.get('id')) && (t.id === self.getOption('synonym_id'))) {

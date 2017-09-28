@@ -22,6 +22,7 @@ var model = Backbone.Model.extend({
             name: '',
             label: '',
             unique: false,
+            multiple_entry: false,
             has_language: false,
             target_model: null,
             can_delete: false,

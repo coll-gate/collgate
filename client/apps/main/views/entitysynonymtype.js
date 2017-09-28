@@ -20,6 +20,7 @@ var View = Marionette.View.extend({
         change_label: 'td.change-label',
         rename_btn: 'td.action.rename',
         unique_btn: 'td.action[name=unique]',
+        multiple_entry_btn: 'td.action[name=multiple-entry]',
         has_language_btn: 'td.action[name=has-language]'
     },
 
@@ -28,6 +29,7 @@ var View = Marionette.View.extend({
         'click @ui.change_label': 'onEditLabel',
         'click @ui.rename_btn': 'onRename',
         'click @ui.unique_btn': 'onToggleUnique',
+        'click @ui.multiple_entry': 'onToggleMultipleEntry',
         'click @ui.has_language_btn': 'onToggleHasLanguage'
     },
 
@@ -93,6 +95,11 @@ var View = Marionette.View.extend({
     onToggleUnique: function () {
         // @todo cannot be modified once there is some data
         alert("u");
+    },
+
+    onToggleMultipleEntry: function () {
+        // @todo cannot be modified once there is some data
+        alert("l");
     },
 
     onToggleHasLanguage: function () {

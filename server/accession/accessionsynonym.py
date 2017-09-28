@@ -20,7 +20,7 @@ from accession.models import AccessionSynonym, Accession
 
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
-from main.models import EntitySynonymType
+from main.models import EntitySynonymType, Language
 
 from .accession import RestAccessionAccession, RestAccessionId
 
@@ -87,7 +87,7 @@ def search_accession_synonyms(request):
             'value': synonym.id,
             'label': synonym.name,
             'synonym_type': synonym.synonym_type_id,
-            'accession': synonym.accession_id
+            'accession': synonym.entity_id
         }
 
         items_list.append(s)
@@ -115,6 +115,37 @@ def search_accession_synonyms(request):
     return HttpResponseRest(request, results)
 
 
+def add_entity_synonym(entity, synonym_type, name, language_code):
+    if language_code and not Language.objects.filter(code=language_code).exists():
+        raise Exception(_('Invalid language code'))
+
+    # check if a similar synonyms exists into the accession or as primary name for another accession
+    synonyms_by_name = AccessionSynonym.objects.filter(name__iexact=name)
+
+    if synonym_type.unique and synonyms_by_name.exists():
+        raise SuspiciousOperation(_('The name of a synonym of this type must be unique'))
+
+    # check option on the synonym type (uniqueness, languages)
+    synonyms_by_type = entity.synonyms.filter(synonym_type=synonym_type)
+
+    if synonym_type.unique and synonyms_by_type.exists():
+        raise SuspiciousOperation(_('Only a unique synonym of this type per entity is allowed'))
+
+    if synonym_type.has_language and not language_code:
+        raise SuspiciousOperation(_('A language must be defined for a synonym of this type'))
+
+    if not synonym_type.has_language and language_code:
+        raise SuspiciousOperation(_('No language is supported for a synonym of this type'))
+
+    entity_synonym = entity.synonyms.create(
+        entity=entity,
+        name=name,
+        language=language_code,
+        synonym_type=synonym_type)
+
+    return entity_synonym
+
+
 @RestAccessionIdSynonym.def_auth_request(
     Method.POST, Format.JSON, content={
         "type": "object",
@@ -135,44 +166,46 @@ def accession_add_synonym(request, acc_id):
     # check that type is in the values of descriptor
     synonym_type = get_object_or_404(EntitySynonymType, id=int_arg(request.data['synonym_type']))
 
-    # @todo unique / has_language
+    entity_synonym = add_entity_synonym(accession, synonym_type, request.data['name'], request.data['language'])
 
-    if request.data['synonym_type'] == localsettings.synonym_type_accession_code:
-        raise SuspiciousOperation(_("An accession cannot have more than one GRC code"))
-
-    if request.data['synonym_type'] == localsettings.synonym_type_accession_name:
-        raise SuspiciousOperation(_("An accession cannot have more than one primary name"))
-
-    # check if a similar synonyms exists into the accession or as primary name for another accession
-    synonyms = AccessionSynonym.objects.filter(name__iexact=request.data['name'])
-
-    for synonym in synonyms:
-        # at least one usage, not compatible with primary synonym
-        if request.data['synonym_type'] == localsettings.synonym_type_accession_code and synonym.entity_id != int(acc_id):
-            raise SuspiciousOperation(_("The GRC code name of the accession could not be used as synonym"))
-
-        # already used by another accession as a grc code name
-        if synonym.is_code():
-            raise SuspiciousOperation(_("Synonym already used as a primary name"))
-
-        # already used by this accession
-        if synonym.entity_id == int(acc_id):
-            raise SuspiciousOperation(_("Synonym already used into this accession"))
-
-    accession_synonym = AccessionSynonym(
-        entity=accession,
-        name=request.data['name'],
-        language=request.data['language'],
-        synonym_type=synonym_type)
-
-    accession_synonym.save()
-    accession.synonyms.add(accession_synonym)
+    # # @todo unique / has_language
+    #
+    # if request.data['synonym_type'] == localsettings.synonym_type_accession_code:
+    #     raise SuspiciousOperation(_("An accession cannot have more than one GRC code"))
+    #
+    # if request.data['synonym_type'] == localsettings.synonym_type_accession_name:
+    #     raise SuspiciousOperation(_("An accession cannot have more than one primary name"))
+    #
+    # # check if a similar synonyms exists into the accession or as primary name for another accession
+    # synonyms = AccessionSynonym.objects.filter(name__iexact=request.data['name'])
+    #
+    # for synonym in synonyms:
+    #     # at least one usage, not compatible with primary synonym
+    #     if request.data['synonym_type'] == localsettings.synonym_type_accession_code and synonym.entity_id != int(acc_id):
+    #         raise SuspiciousOperation(_("The GRC code name of the accession could not be used as synonym"))
+    #
+    #     # already used by another accession as a grc code name
+    #     if synonym.is_code():
+    #         raise SuspiciousOperation(_("Synonym already used as a primary name"))
+    #
+    #     # already used by this accession
+    #     if synonym.entity_id == int(acc_id):
+    #         raise SuspiciousOperation(_("Synonym already used into this accession"))
+    #
+    # accession_synonym = AccessionSynonym(
+    #     entity=accession,
+    #     name=request.data['name'],
+    #     language=request.data['language'],
+    #     synonym_type=synonym_type)
+    #
+    # accession_synonym.save()
+    # accession.synonyms.add(accession_synonym)
 
     result = {
-        'id': accession_synonym.pk,
-        'synonym_type': accession_synonym.synonym_type_id,
-        'name': accession_synonym.name,
-        'language': accession_synonym.language
+        'id': entity_synonym.pk,
+        'synonym_type': entity_synonym.synonym_type_id,
+        'name': entity_synonym.name,
+        'language': entity_synonym.language
     }
 
     return HttpResponseRest(request, result)
