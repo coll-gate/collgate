@@ -5,7 +5,7 @@ var fs = require("fs");
 var webpack = require('webpack');
 var path = require('path');
 
-module.exports = function(env) {
+module.exports = function (env) {
 
     var defaults = {
         entry: './apps/driver.js',
@@ -14,6 +14,20 @@ module.exports = function(env) {
         },
         module: {
             rules: [
+                {
+                    test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+                    use: [{
+                        loader: "url-loader",
+                        options: {
+                            limit: 0,
+                            mimetype: 'application/font-woff'
+                        }
+                    }]
+                },
+                {
+                    test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+                    use: [{loader: "file-loader"}]
+                },
                 {
                     test: /\.mo$/,
                     use: [{loader: 'buffer-loader'}]  // binary returns string and not Buffer
