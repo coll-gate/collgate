@@ -25,6 +25,7 @@ var View = Marionette.View.extend({
     },
 
     events: {
+
         'click @ui.delete_synonym_type': 'deleteSynonymType',
         'click @ui.change_label': 'onEditLabel',
         'click @ui.rename_btn': 'onRename',

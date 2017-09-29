@@ -52,7 +52,7 @@ var View = Marionette.View.extend({
         application.accession.views.accessionSynonymTypes.htmlFromValue(this.el);
 
         // remove GRC code and Primary Name
-        for (var i = 0; i < application.accession.views.accessionSynonymTypes.collection.models.length; ++i) {
+        /*for (var i = 0; i < application.accession.views.accessionSynonymTypes.collection.models.length; ++i) {
             var st = application.accession.views.accessionSynonymTypes.collection.models[i];
 
             if (st.get('unique')) {
@@ -66,7 +66,7 @@ var View = Marionette.View.extend({
             if (st.get('has_language')) {
 
             }
-        }
+        }*/
         // this.ui.accession_synonym_type.find('option[name=accession_code]').remove();
         // this.ui.accession_synonym_type.find('option[name=accession_name]').remove();
         // this.ui.accession_synonym_type.selectpicker('refresh');
