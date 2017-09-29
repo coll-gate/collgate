@@ -8,21 +8,22 @@
 # @license MIT (see LICENSE file)
 # @details 
 
-import json
+import logging
 import re
 import uuid as uuid
 
-from django.contrib.postgres.fields import JSONField
-from django.core.exceptions import SuspiciousOperation
-from django.core.validators import RegexValidator
-from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.postgres.fields import JSONField
+from django.core.exceptions import SuspiciousOperation
+from django.db import models, transaction, IntegrityError
 from django.db.models import Q
 from django.utils import translation
 from django.utils.translation import ugettext_lazy as _
 
 from igdectk.common.models import ChoiceEnum, IntegerChoice, StringChoice
+
+logger = logging.getLogger('collgate')
 
 
 class Profile(models.Model):
@@ -451,3 +452,110 @@ class EntitySynonym(Entity):
         return {
             'name': self.name
         }
+
+    def is_primary(self):
+        return False
+
+    def is_code(self):
+        return False
+
+    @classmethod
+    def add_entity_synonym(cls, entity, synonym_type, name, language_code):
+        """
+        Add a new synonym to a valid entity. According to the rules of the type of synonym, allow or forbid the
+        creation.
+
+        :param entity: Related entity
+        :param synonym_type: Type of synonym model instance
+        :param name: Name of the new synonym
+        :param language_code: Language code or blank
+        :return: A new entity synonym object instance
+        """
+        if language_code and not Language.objects.filter(code=language_code).exists():
+            raise Exception(_('Invalid language code'))
+
+        if not synonym_type.has_language and language_code:
+            raise SuspiciousOperation(_('No language is supported for a synonym of this type'))
+
+        if synonym_type.has_language and not language_code:
+            raise SuspiciousOperation(_('A language must be defined for a synonym of this type'))
+
+        # uniqueness by type, name and language
+        synonyms_by_name = cls.objects.filter(name__iexact=name, synonym_type=synonym_type, language=language_code)
+
+        if synonyms_by_name.exists():
+            raise SuspiciousOperation(_('A similar synonym of this type exists for this entity'))
+
+        # uniqueness by type, name and model
+        synonyms_by_model = cls.objects.filter(name__iexact=name, synonym_type=synonym_type, entity=entity)
+
+        if synonym_type.unique and synonyms_by_model.exists():
+            raise SuspiciousOperation(_('The synonym must be unique'))
+
+        # single or multiple per entity
+        synonyms_by_type = entity.synonyms.filter(synonym_type=synonym_type)
+
+        if not synonym_type.multiple_entry and synonyms_by_type.exists():
+            raise SuspiciousOperation(_('Only a single synonym of this type per entity is allowed'))
+
+        entity_synonym = entity.synonyms.create(
+            entity=entity,
+            name=name,
+            language=language_code,
+            synonym_type=synonym_type)
+
+        return entity_synonym
+
+    @classmethod
+    def rename(cls, entity, entity_synonym, name):
+        """
+        Rename the synonym of an entity according the new given name.
+        Special case, if the synonym is a code or a primary name it also inside the transaction rename the code or
+        name of the entity.
+
+        :param entity: Related entity
+        :param entity_synonym: Synonym to rename
+        :param name: New name
+        """
+        # uniqueness by type, name and language
+        synonyms_by_name = cls.objects.filter(
+            name__iexact=name,
+            synonym_type=entity_synonym.synonym_type,
+            language=entity_synonym.language).exclude(id=entity_synonym.id)
+
+        if synonyms_by_name.exists():
+            raise SuspiciousOperation(_('A similar synonym of this type exists for this entity'))
+
+        # uniqueness by type, name and model
+        synonyms_by_model = cls.objects.filter(
+            name__iexact=name, synonym_type=entity_synonym.synonym_type, entity=entity).exclude(id=entity_synonym.id)
+
+        if entity_synonym.synonym_type.unique and synonyms_by_model.exists():
+            raise SuspiciousOperation(_('The synonym must be unique'))
+
+        # single or multiple per entity
+        synonyms_by_type = entity.synonyms.filter(
+            synonym_type=entity_synonym.synonym_type).exclude(id=entity_synonym.id)
+
+        if not entity_synonym.synonym_type.multiple_entry and synonyms_by_type.exists():
+            raise SuspiciousOperation(_('Only a single synonym of this type per entity is allowed'))
+
+        try:
+            with transaction.atomic():
+                # rename the accession if the synonym is the GRC code name
+                if entity_synonym.is_code():
+                    entity.code = name
+                    entity.update_field('code')
+                    entity.save()
+                # or if is the primary name
+                elif entity_synonym.is_primary():
+                    entity.name = name
+                    entity.update_field('name')
+                    entity.save()
+
+                entity_synonym.name = name
+                entity_synonym.update_field('name')
+                entity_synonym.save()
+        except IntegrityError as e:
+            logger.log(repr(e))
+            raise SuspiciousOperation(_("Unable to rename the synonym of the entity"))

@@ -53,11 +53,11 @@ class Accession(DescribableEntity):
     Accession entity defines a physical or virtual accession.
     """
 
-    # simple name pattern with alphanumeric characters plus _ and - with a least a length of 1
-    NAME_RE = re.compile(r'^[a-zA-Z0-9_-]+$', re.IGNORECASE)
+    # name pattern
+    NAME_RE = re.compile(r"^\S+.+\S+$", re.IGNORECASE)
 
     # default name validator
-    NAME_VALIDATOR = {"type": "string", "minLength": 1, "maxLength": 182, "pattern": "^[a-zA-Z0-9\-\_]+$"}
+    NAME_VALIDATOR = {"type": "string", "minLength": 1, "maxLength": 255, "pattern": "^\S+.+\S+$"}
 
     # non-unique primary name of the accession
     name = models.CharField(max_length=255, db_index=True)
@@ -192,7 +192,7 @@ class AccessionSynonym(EntitySynonym):
     """
 
     # name validator, used with content validation, to avoid any whitespace before and after
-    NAME_VALIDATOR = {"type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9\-\_]+$"}
+    NAME_VALIDATOR = {"type": "string", "minLength": 1, "maxLength": 128, "pattern": "^\S+.+\S+$"}
 
     # code validator, used with content validation, to avoid any whitespace before and after
     CODE_VALIDATOR = {"type": "string", "minLength": 1, "maxLength": 128, "pattern": r"^\S+.+\S+$"}

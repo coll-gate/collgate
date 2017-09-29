@@ -17,7 +17,7 @@ from django.utils import translation
 
 from django.utils.translation import ugettext_lazy as _
 
-from accession import localsettings
+from classification import localsettings
 from descriptor.models import DescriptorMetaModel
 from igdectk.common.models import ChoiceEnum, IntegerChoice
 
@@ -404,7 +404,7 @@ class ClassificationEntrySynonym(EntitySynonym):
     """
 
     # name validator, used with content validation, to avoid any whitespace before and after
-    NAME_VALIDATOR = {"type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9\-\_]+$"}
+    NAME_VALIDATOR = {"type": "string", "minLength": 1, "maxLength": 128, "pattern": "^\S+.+\S+$"}
 
     # code validator, used with content validation, to avoid any whitespace before and after
     CODE_VALIDATOR = {"type": "string", "minLength": 1, "maxLength": 128, "pattern": r"^\S+.+\S+$"}

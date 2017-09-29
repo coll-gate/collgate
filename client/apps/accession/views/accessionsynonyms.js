@@ -5,7 +5,7 @@
  * @date 2017-01-16
  * @copyright Copyright (c) 2017 INRA/CIRAD
  * @license MIT (see LICENSE file)
- * @details 
+ * @details
  */
 
 var Marionette = require('backbone.marionette');
@@ -30,7 +30,9 @@ var View = Marionette.View.extend({
         'input @ui.synonym_name': 'onSynonymNameInput',
         'click @ui.add_synonym': 'onAddSynonym',
         'click @ui.remove_synonym': 'onRemoveSynonym',
-        'click @ui.rename_synonym': 'onRenameSynonym'
+        'click @ui.rename_synonym': 'onRenameSynonym',
+        'change @ui.accession_synonym_type': 'onChangeSynonymType',
+        'change @ui.synonym_language': 'onChangeSynonymLanguage'
     },
 
     templateContext: function () {
@@ -40,39 +42,53 @@ var View = Marionette.View.extend({
         };
     },
 
-    initialize: function() {
+    initialize: function () {
         this.listenTo(this.model, 'change', this.render, this);
     },
 
-    onRender: function() {
+    onRender: function () {
         application.main.views.languages.drawSelect(this.ui.synonym_language, true, true);
         application.accession.views.accessionSynonymTypes.drawSelect(this.ui.accession_synonym_type);
 
         application.main.views.languages.htmlFromValue(this.el);
         application.accession.views.accessionSynonymTypes.htmlFromValue(this.el);
 
-        // remove GRC code and Primary Name
-        /*for (var i = 0; i < application.accession.views.accessionSynonymTypes.collection.models.length; ++i) {
-            var st = application.accession.views.accessionSynonymTypes.collection.models[i];
-
-            if (st.get('unique')) {
-                for (var j = 0; j < this.collection.models.length; ++j) {
-                    if (this.collection.models[j].get('synonym_type') === st.get('id')) {
-                        this.ui.accession_synonym_type.find('option[name=' + st.name + ']').disabled('true');
-                    }
-                }
+        // disable non multiple synonym types
+        for (var i = 0; i < this.model.get('synonyms').length; ++i) {
+            var st = application.accession.collections.accessionSynonymTypes.get(this.model.get('synonyms')[i].synonym_type);
+            if (!st.get('multiple_entry')) {
+                var name = st.get('name');
+                this.ui.accession_synonym_type.find('option[name=' + name + ']').prop('disabled', true);
             }
+        }
 
-            if (st.get('has_language')) {
+        this.ui.accession_synonym_type.selectpicker('refresh');
 
-            }
-        }*/
-        // this.ui.accession_synonym_type.find('option[name=accession_code]').remove();
-        // this.ui.accession_synonym_type.find('option[name=accession_name]').remove();
-        // this.ui.accession_synonym_type.selectpicker('refresh');
+        this.onChangeSynonymType();
     },
 
-    validateName: function() {
+    onChangeSynonymType: function () {
+        var synonymTypeId = parseInt(this.ui.accession_synonym_type.val());
+        if (!isNaN(synonymTypeId)) {
+            var synonymType = application.accession.collections.accessionSynonymTypes.get(synonymTypeId);
+
+            // enable/disable and default language
+            if (synonymType.get('has_language')) {
+                this.ui.synonym_language.prop('disabled', false).val(session.language).selectpicker('refresh');
+            } else {
+                this.ui.synonym_language.prop('disabled', true).val('').selectpicker('refresh');
+            }
+        }
+
+        this.ui.synonym_name.cleanField();
+    },
+
+    onChangeSynonymLanguage: function () {
+        // force revalidation
+        this.onSynonymNameInput();
+    },
+
+    validateName: function () {
         var v = this.ui.synonym_name.val().trim();
 
         if (v.length > 128) {
@@ -88,46 +104,59 @@ var View = Marionette.View.extend({
 
     onSynonymNameInput: function () {
         if (this.validateName()) {
+            var synonymTypeId = parseInt(this.ui.accession_synonym_type.val());
+            var synonymType = application.accession.collections.accessionSynonymTypes.get(synonymTypeId);
+
             var self = this;
             var name = this.ui.synonym_name.val().trim();
+            var language = this.ui.synonym_language.val();
 
             var filters = {
-                fields: ["name"],
+                fields: ["name", "synonym_type"],
                 method: "ieq",
-                name: name
+                name: name,
+                synonym_type: synonymTypeId
             };
 
-            $.ajax({
-                type: "GET",
-                url: application.baseUrl + 'accession/accession/synonym/search/',
-                dataType: 'json',
-                data: {filters: JSON.stringify(filters)},
-                cache: false
-            }).done(function(data) {
-                var accessionCodeId = self.templateContext()['accession_code'];
+            if (synonymType.get('has_language')) {
+                filters.fields.push('language');
+                filters.language = language;
+            }
 
-                if (data.items.length > 0) {
-                    for (var i in data.items) {
-                        var t = data.items[i];
+            if (synonymType.get('unique') || synonymType.get('has_language')) {
+                $.ajax({
+                    type: "GET",
+                    url: application.baseUrl + 'accession/accession/synonym/search/',
+                    dataType: 'json',
+                    data: {filters: JSON.stringify(filters)},
+                    cache: false
+                }).done(function (data) {
+                    if (data.items.length > 0) {
+                        for (var i in data.items) {
+                            var t = data.items[i];
 
-                        // invalid if GRC code exists with the same name or if exists into the same accession
-                        if (t.label.toUpperCase() === name.toUpperCase()) {
-                            if (t.synonym_type === accessionCodeId) {
-                                self.ui.synonym_name.validateField(
-                                    'failed', _t('It is not possible to use a GRC code of accession as synonym'));
-                                return;
-                            } else if (t.accession === self.model.get('id')) {
-                                self.ui.synonym_name.validateField(
-                                    'failed', _t('Synonym of accession already defined into this accession'));
+                            // name must be unique
+                            if (t.label.toUpperCase() === name.toUpperCase()) {
+                                if (synonymType.get('has_language')) {
+                                    self.ui.synonym_name.validateField(
+                                        'failed', _t('This synonym exists with this language and type'));
+                                } else {
+                                    self.ui.synonym_name.validateField(
+                                        'failed', _t('The synonym must be unique for this type'));
+                                }
+
                                 return;
                             }
                         }
                     }
-                }
 
+                    // validate
+                    self.ui.synonym_name.validateField('ok');
+                });
+            } else {
                 // validate
                 self.ui.synonym_name.validateField('ok');
-            });
+            }
         }
     },
 
@@ -164,7 +193,7 @@ var View = Marionette.View.extend({
         });
     },
 
-    onRenameSynonym: function(e) {
+    onRenameSynonym: function (e) {
         var parentSelf = this;
 
         var ChangeSynonym = Dialog.extend({
@@ -188,60 +217,64 @@ var View = Marionette.View.extend({
 
             onNameInput: function () {
                 if (this.validateName()) {
+                    var synonymTypeId = this.getOption('synonym_type');
+                    var synonymType = application.accession.collections.accessionSynonymTypes.get(synonymTypeId);
+
                     var self = this;
                     var name = this.ui.synonym_name.val().trim();
 
                     var filters = {
-                        fields: ["name"],
+                        fields: ["name", "synonym_type"],
                         method: "ieq",
-                        name: name
+                        name: name,
+                        synonym_type: this.getOption('synonym_type')
                     };
 
-                    $.ajax({
-                        type: "GET",
-                        url: application.baseUrl + 'accession/accession/synonym/search/',
-                        dataType: 'json',
-                        data: {filters: JSON.stringify(filters)},
-                        cache: false
-                    }).done(function(data) {
-                        var accessionCodeId = parentSelf.templateContext()['accession_code'];
+                    if (synonymType.get('has_language')) {
+                        filters.fields.push('language');
+                        filters.language = this.getOption('language');
+                    }
 
-                        if (data.items.length > 0) {
-                            for (var i in data.items) {
-                                var t = data.items[i];
+                    if (synonymType.get('unique') || synonymType.get('has_language')) {
+                        $.ajax({
+                            type: "GET",
+                            url: application.baseUrl + 'accession/accession/synonym/search/',
+                            dataType: 'json',
+                            data: {filters: JSON.stringify(filters)},
+                            cache: false
+                        }).done(function (data) {
+                            if (data.items.length > 0) {
+                                for (var i in data.items) {
+                                    var t = data.items[i];
 
-                                // @todo
-                                if (t.label.toUpperCase() === name.toUpperCase()) {
-                                    // valid if same accession and same synonym
                                     if ((t.accession === self.model.get('id')) && (t.id === self.getOption('synonym_id'))) {
+                                        // valid if same accession and same synonym
                                         self.ui.synonym_name.validateField('ok');
-                                        break;
-                                    } else if (self.getOption('synonym_type') === accessionCodeId) {
-                                        // invalid if same name and modifying a GRC code synonym
-                                        self.ui.synonym_name.validateField(
-                                            'failed', _t('Accession GRC code must be unique'));
-                                        break;
-                                    } else if (t.synonym_type === accessionCodeId) {
-                                        // invalid if GRC code exists with the same name
-                                        self.ui.synonym_name.validateField(
-                                            'failed', _t('It is not possible to use a GRC code of accession as synonym'));
-                                        break;
-                                    } else if (t.accession === self.model.get('id')) {
-                                        // invalid if exists into the same accession
-                                        self.ui.synonym_name.validateField(
-                                            'failed', _t('Synonym of accession already defined into this accession'));
-                                        break;
+                                        return;
+                                    } else if (t.label.toUpperCase() === name.toUpperCase()) {
+                                        // name must be unique
+                                        if (synonymType.get('has_language')) {
+                                            self.ui.synonym_name.validateField(
+                                                'failed', _t('This synonym exists with this language and type'));
+                                        } else {
+                                            self.ui.synonym_name.validateField(
+                                                'failed', _t('The synonym must be unique for this type'));
+                                        }
+
+                                        return;
                                     }
                                 }
                             }
-                        } else {
+
                             self.ui.synonym_name.validateField('ok');
-                        }
-                    });
+                        });
+                    } else {
+                        self.ui.synonym_name.validateField('ok');
+                    }
                 }
             },
 
-            validateName: function() {
+            validateName: function () {
                 var v = this.ui.synonym_name.val().trim();
 
                 if (v.length < 1) {
@@ -256,7 +289,7 @@ var View = Marionette.View.extend({
                 }
             },
 
-            onApply: function() {
+            onApply: function () {
                 var self = this;
                 var synonym_id = this.getOption('synonym_id');
                 var name = this.ui.synonym_name.val().trim();
@@ -268,9 +301,9 @@ var View = Marionette.View.extend({
                         contentType: "application/json; charset=utf-8",
                         dataType: 'json',
                         data: JSON.stringify({name: name})
-                    }).done(function() {
+                    }).done(function () {
                         self.model.fetch({reset: true});
-                    }).always(function() {
+                    }).always(function () {
                         self.destroy();
                     });
                 }

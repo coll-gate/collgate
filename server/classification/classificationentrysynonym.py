@@ -49,7 +49,7 @@ class RestClassificationEntryIdSynonymId(RestClassificationEntryIdSynonym):
 
 
 @RestClassificationEntrySynonymSearch.def_auth_request(Method.GET, Format.JSON, ('filters',))
-def search_taxon_synonym(request):
+def search_classification_entry_synonym(request):
     """
     Quick search for a classification entry synonym with a exact or partial name.
     """
@@ -73,6 +73,22 @@ def search_taxon_synonym(request):
             qs = qs.filter(name__iexact=filters['name'])
         elif name_method == 'icontains':
             qs = qs.filter(name__icontains=filters['name'])
+
+    if 'synonym_type' in filters['fields']:
+        st_method = filters.get('synonym_type_method', 'eq')
+
+        if st_method == 'eq':
+            qs = qs.filter(synonym_type_id=filters['synonym_type'])
+        # elif st_method == 'in':
+        #     qs = qs.filter(synonym_type_id__in=filters['synonym_type'])
+
+    if 'language' in filters['fields']:
+        method = filters.get('language_method', 'eq')
+
+        if method == 'eq':
+            qs = qs.filter(language=filters['language'])
+        elif method == 'neq':
+            qs = qs.exclude(language=filters['language'])
 
     qs = qs.order_by('name', 'id')[:limit]
 
@@ -132,40 +148,14 @@ def classification_entry_add_synonym(request, cls_id):
     # check that type is in the values of descriptor
     synonym_type = get_object_or_404(EntitySynonymType, id=int_arg(request.data['synonym_type']))
 
-    # check if a similar synonyms exists into the classification entry
-    # or as primary name for another classification entry
-    synonyms = ClassificationEntrySynonym.objects.filter(name__iexact=request.data['name'])
-
-    # @todo unique / has_language
-
-    for synonym in synonyms:
-        # at least one usage, not compatible with primary synonym
-        if synonym_type.pk == localsettings.synonym_type_classification_entry_name:
-            raise SuspiciousOperation(
-                _("The primary name could not be used by another synonym of classification entry"))
-
-        # already used by another classification entry as primary name
-        if synonym.is_primary():
-            raise SuspiciousOperation(_("Synonym already used as a primary name"))
-
-        # already used by this classification entry
-        if synonym.entity_id == int(cls_id):
-            raise SuspiciousOperation(_("Synonym already used into this classification entry"))
-
-    classification_entry_synonym = ClassificationEntrySynonym(
-        entity=classification_entry,
-        name=request.data['name'],
-        language=request.data['language'],
-        synonym_type=synonym_type)
-
-    classification_entry_synonym.save()
-    classification_entry.synonyms.add(classification_entry_synonym)
+    entity_synonym = ClassificationEntrySynonym.add_entity_synonym(
+        classification_entry, synonym_type, request.data['name'], request.data['language'])
 
     result = {
-        'id': classification_entry_synonym.pk,
-        'synonym_type': int(request.data['synonym_type']),
-        'name': request.data['name'],
-        'language': request.data['language']
+        'id': entity_synonym.pk,
+        'synonym_type': entity_synonym.synonym_type_id,
+        'name': entity_synonym.name,
+        'language': entity_synonym.language
     }
 
     return HttpResponseRest(request, result)
@@ -194,42 +184,12 @@ def classification_entry_change_synonym(request, cls_id, syn_id):
     if name == classification_entry_synonym.name:
         return HttpResponseRest(request, {})
 
-    # check if a similar synonyms exists into the classification entry or as primary name for another one
-    synonyms = ClassificationEntrySynonym.objects.filter(name__iexact=name).exclude(id=int(syn_id))
+    ClassificationEntrySynonym.rename(classification_entry, classification_entry_synonym, name)
 
-    for synonym in synonyms:
-        # at least one usage, not compatible with primary synonym
-        if classification_entry_synonym.synonym_type == localsettings.synonym_type_classification_entry_name:
-            raise SuspiciousOperation(
-                _("The primary name could not be used by another synonym of classification entry"))
-
-        # already used by another classification entry as primary name
-        if synonym.is_primary():
-            raise SuspiciousOperation(_("Synonym already used as a primary name"))
-
-        # already used by this classification entry
-        if synonym.classification_id == cls_id:
-            raise SuspiciousOperation(_("Synonym already used into this classification entry"))
-
-    try:
-        with transaction.atomic():
-            # rename the classification entry if the synonym name is the classification entry name
-            if classification_entry.name == classification_entry_synonym.name:
-                classification_entry.name = name
-                classification_entry.update_field('name')
-                classification_entry.save()
-
-            classification_entry_synonym.name = name
-            classification_entry_synonym.update_field('name')
-            classification_entry_synonym.save()
-
-            result = {
-                'id': classification_entry_synonym.id,
-                'name': classification_entry_synonym.name
-            }
-    except IntegrityError as e:
-        logger.log(repr(e))
-        raise SuspiciousOperation(_("Unable to rename a synonym of a classification entry"))
+    result = {
+        'id': classification_entry_synonym.id,
+        'name:': name
+    }
 
     return HttpResponseRest(request, result)
 
