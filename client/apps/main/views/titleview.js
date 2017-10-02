@@ -32,7 +32,7 @@ var TitleView = Marionette.View.extend({
         this.ui.title.html(this.getOption('title'));
 
         if (this.getOption('getOption') !== null) {
-            this.ui.title.prepend('<span class="glyphicon ' + this.getOption('glyphicon') + '"></span>&nbsp;');
+            this.ui.title.prepend('<span class="fa ' + this.getOption('glyphicon') + '"></span>&nbsp;');
         }
 
         if (this.model && this.model.has('name')) {

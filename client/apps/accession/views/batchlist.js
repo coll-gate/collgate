@@ -5,7 +5,7 @@
  * @date 2017-02-14
  * @copyright Copyright (c) 2017 INRA/CIRAD
  * @license MIT (see LICENSE file)
- * @details 
+ * @details
  */
 
 var BatchView = require('../views/batch');
@@ -24,7 +24,7 @@ var View = ScrollView.extend({
     childView: BatchView,
     childViewContainer: 'tbody.entity-list',
 
-    userSettingName: function() {
+    userSettingName: function () {
         if (this.collection.batch_type === 'parents') {
             return 'parents_batches_list_columns';
         } else if (this.collection.batch_type === 'children') {
@@ -40,7 +40,13 @@ var View = ScrollView.extend({
     ],
 
     columnsOptions: {
-        'glyph': {label: '', width: 'auto', glyphicon: ['glyphicon-unchecked', 'glyphicon-unchecked'], event: 'selectBatch', fixed: true},
+        'glyph': {
+            label: '',
+            width: 'auto',
+            glyphicon: ['fa-square-o', 'fa-square-o'],
+            event: 'selectBatch',
+            fixed: true
+        },
         'name': {label: _t('Name'), width: 'auto', minWidth: true, event: 'view-batch-details'},
     },
 
@@ -58,13 +64,13 @@ var View = ScrollView.extend({
         }
     },
 
-    initialize: function(options) {
+    initialize: function (options) {
         View.__super__.initialize.apply(this, arguments);
 
         // this.listenTo(this.collection, 'reset', this.render, this);
     },
 
-    onShowTab: function() {
+    onShowTab: function () {
         View.__super__.onShowTab.apply(this);
 
         // context only for children (sub-batches)
@@ -93,7 +99,7 @@ var View = ScrollView.extend({
         }
     },
 
-    onHideTab: function() {
+    onHideTab: function () {
         application.main.defaultRightView();
     },
 

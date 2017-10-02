@@ -23,9 +23,9 @@
                     <th name="<%= columnName %>" class="<%= classes %>">
                     <% if (column.glyphicon != undefined) { %>
                         <% if (column.fixed) { %>
-                            <span class="glyphicon <%= column.glyphicon[0] %> column-action"></span>
+                            <span class="fa <%= column.glyphicon[0] %> column-action"></span>
                         <% } else { %>
-                            <span class="glyphicon <%= column.glyphicon[0] %> column-action" draggable="true"></span>
+                            <span class="fa <%= column.glyphicon[0] %> column-action" draggable="true"></span>
                         <% } %>
                     <% } else { %>
                         <span class="column-sorter glyphicon glyphicon-sort column-action action"></span>
@@ -48,18 +48,18 @@
     </table>
 </div>
 <div class="placeholder-column">
-    <span class="action glyphicon glyphicon-th-list add-column" type="button"></span>
+    <span class="action fa fa-th-list add-column" type="button"></span>
 </div>
 <div class="clearfix add-column-menu" style="position: absolute; display:none;">
     <div class="input-group">
         <input type="text" name="add-column-filter" class="form-control" autofocus="" autocomplete="off">
-        <span class="input-group-addon"><span class="glyphicon glyphicon-search"></span></span>
+        <span class="input-group-addon"><span class="fa fa-search"></span></span>
     </div>
     <ul class="columns-list"></ul>
     <div class="btn-group">
-        <span class="btn btn-default select-all"><span class="glyphicon glyphicon-check"></span>&nbsp;<%= _t("All") %></span>
-        <span class="btn btn-default select-none"><span class="glyphicon glyphicon-unchecked"></span>&nbsp;<%= _t("None") %></span>
-        <span class="btn btn-default select-accept"><span class="glyphicon glyphicon-ok"></span>&nbsp;<%= _t("Accept") %></span>
-        <span class="btn btn-default select-cancel"><span class="glyphicon glyphicon-remove"></span>&nbsp;<%= _t("Cancel") %></span>
+        <span class="btn btn-default select-all"><span class="fa fa-check-square-o"></span>&nbsp;<%= _t("All") %></span>
+        <span class="btn btn-default select-none"><span class="fa fa-square-o"></span>&nbsp;<%= _t("None") %></span>
+        <span class="btn btn-default select-accept"><span class="fa fa-check"></span>&nbsp;<%= _t("Accept") %></span>
+        <span class="btn btn-default select-cancel"><span class="fa fa-remove"></span>&nbsp;<%= _t("Cancel") %></span>
     </div>
 </div>

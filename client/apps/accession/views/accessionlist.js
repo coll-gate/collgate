@@ -34,7 +34,7 @@ var View = ScrollView.extend({
             label: '',
             width: 'auto',
             type: 'checkbox',
-            glyphicon: ['glyphicon-unchecked', 'glyphicon-unchecked'],
+            glyphicon: ['fa-square-o', 'fa-square-o'],
             event: 'accession-select',
             fixed: true
         },
@@ -75,6 +75,8 @@ var View = ScrollView.extend({
     initialize: function(options) {
         View.__super__.initialize.apply(this, arguments);
         this.related_entity = this.getOption('related_entity');
+        this.filters = this.getOption('filters');
+
         // var context_menu = options.context_menu;
         // this.listenTo(this.collection, 'reset', this.render, this);
     },
@@ -90,7 +92,7 @@ var View = ScrollView.extend({
         }
 
         var TitleView = require('../../main/views/titleview');
-        contextLayout.showChildView('title', new TitleView({title: _t("Accession actions"), glyphicon: 'glyphicon-wrench'}));
+        contextLayout.showChildView('title', new TitleView({title: _t("Accession actions"), glyphicon: 'fa-wrench'}));
 
         var actions = ['create-panel'];
 
@@ -110,8 +112,7 @@ var View = ScrollView.extend({
     },
 
     onCreatePanel: function () {
-        var selection_acc_id = this.getSelection('select');
-        application.accession.controllers.panel.create(selection_acc_id, this.related_entity);
+        application.accession.controllers.panel.create(this.getSelection('select'), this.related_entity, this.collection.filters, this.collection.search);
     }
 });
 

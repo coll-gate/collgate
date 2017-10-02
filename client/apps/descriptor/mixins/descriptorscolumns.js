@@ -98,7 +98,7 @@ var DescriptorsColumnsView = {
 
                         // auto-selection
                         if (options.autoSelect) {
-                            cell.children('span').removeClass('glyphicon-unchecked').addClass('glyphicon-check');
+                            cell.children('span').removeClass('fa-square-o').addClass('fa-check-square-o');
                         }
                     }
                 }

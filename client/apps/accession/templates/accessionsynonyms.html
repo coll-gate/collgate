@@ -11,7 +11,7 @@
 <table class="table table-striped" style="margin-bottom: 0px;">
     <thead>
         <tr>
-            <th><span class="glyphicon glyphicon-asterisk" /></th>
+            <th><span class="fa fa-asterisk" /></th>
             <th><%= _t("Type") %></th>
             <th><%= _t("Name") %></th>
             <th><%= _t("Language") %></th>
@@ -21,7 +21,7 @@
         <% _.each(synonyms, function(synonym) { %>
         <tr class="element">
             <th scope="row">
-                <% if (synonym.synonym_type !== accession_code && synonym.synonym_type !== accession_name) { %><span data-synonym-id="<%= synonym.id %>" class="action remove-synonym glyphicon glyphicon-minus-sign"></span><% } %>
+                <% if (synonym.synonym_type !== accession_code && synonym.synonym_type !== accession_name) { %><span data-synonym-id="<%= synonym.id %>" class="action remove-synonym fa fa-minus-sign"></span><% } %>
             </th>
             <td name="synonym-type" class="accession-synonym-type" value="<%- synonym.synonym_type %>"></td>
             <td name="name" class="action rename-synonym" data-synonym-id="<%= synonym.id %>"><%- synonym.name %></td>
@@ -30,7 +30,7 @@
         <% }) %>
         <tr class="add-synonym-panel">
             <form>
-                <th scope="row"><span class="add-synonym action glyphicon glyphicon-plus-sign" style="margin-top: 9px;"></span></th>
+                <th scope="row"><span class="add-synonym action fa fa-plus-sign" style="margin-top: 9px;"></span></th>
                 <td><select class="accession-synonym-types" name="accession-synonym-type"></select></td>
                 <td>
                     <div class="form-group" style="margin-bottom: 0px;">

@@ -315,11 +315,12 @@ td.action:hover > .label, th.action:hover > .label {
     background-color: #999;
 }
 
-.glyphicon.action:hover, td.action:hover > .glyphicon, th.action:hover > .glyphicon {
+.glyphicon.action:hover, td.action:hover > .glyphicon, th.action:hover > .glyphicon,
+.fa.action:hover, td.action:hover > .fa, th.action:hover > .fa{
     opacity: 0.3;
 }
 
-th.action:hover, td.action:hover, span.action:not(.glyphicon):not(.parenthesis):hover {
+th.action:hover, td.action:hover, span.action:not(.glyphicon):not(.fa):not(.parenthesis):hover {
     text-decoration: underline;
 }
 
