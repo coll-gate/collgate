@@ -117,10 +117,9 @@ var Layout = LayoutView.extend({
             });
 
             // get available columns
-            var columns = $.ajax({
-                type: "GET",
-                url: application.baseUrl + 'descriptor/columns/accession.batch/',
-                contentType: "application/json; charset=utf-8"
+            var columns = application.main.cache.lookup({
+                type: 'entity_columns',
+                format: {model: 'accession.batch'}
             });
 
             // parents batches tab
@@ -134,7 +133,7 @@ var Layout = LayoutView.extend({
 
                 var BatchListView = require('../views/batchlist');
                 var batchListView = new BatchListView({
-                    collection: parentBatches, model: batchLayout.model, columns: data[0].columns});
+                    collection: parentBatches, model: batchLayout.model, columns: data[0].value});
 
                 var contentBottomLayout = new ContentBottomLayout();
                 batchLayout.showChildView('parents', contentBottomLayout);

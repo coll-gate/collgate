@@ -11,7 +11,9 @@
 import json
 
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import SuspiciousOperation
 from django.shortcuts import get_object_or_404
+from django.utils.translation import ugettext_lazy as _
 
 from descriptor.descriptorformattype import DescriptorFormatTypeManager
 
@@ -29,7 +31,7 @@ class RestDescriptorColumnsForContentType(RestDescriptor):
 
 
 @RestDescriptorColumnsForContentType.def_auth_request(Method.GET, Format.JSON)
-@named_cache('descriptor', '{0}', 5)
+# @named_cache('descriptor', '{0}', 5)
 def get_columns_name_for_describable_content_type(request, content_type_name):
     """
     According to a specified model, retrieve any meta-models of descriptors, and
@@ -47,14 +49,24 @@ def get_columns_name_for_describable_content_type(request, content_type_name):
     app_label, model = content_type_name.split('.')
     content_type = get_object_or_404(ContentType, app_label=app_label, model=model)
 
-    meta_model_id_list = request.GET.get('meta_model_list')
+    dmms_list = request.GET.get('descriptor_meta_models')
+    dmms_ids = None
+
+    if dmms_list:
+        if type(dmms_list) is not str:
+            raise SuspiciousOperation(_('Invalid descriptor meta model list parameter format'))
+
+        dmms_ids = [int(x) for x in dmms_list.split(',')]
+        dmms_ids.sort()
 
     dmms = DescriptorMetaModel.objects.filter(target=content_type).values_list(
         "descriptor_models__descriptor_model_types__id", flat=True)
 
+    # @todo cache manually
     # @todo must be in parameters list with VALIDATION
-    if meta_model_id_list:
-        dmms = dmms.filter(pk__in=meta_model_id_list.split(','))
+    # @todo must be managed by cache options
+    if dmms_ids:
+        dmms = dmms.filter(pk__in=dmms_ids)
 
     dmts = DescriptorModelType.objects.filter(id__in=dmms).prefetch_related('descriptor_type')
 

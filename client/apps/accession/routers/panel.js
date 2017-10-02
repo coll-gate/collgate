@@ -37,15 +37,13 @@ var Router = Marionette.AppRouter.extend({
 
         defaultLayout.showChildView('title', new TitleView({title: _t("List of panels")}));
 
-        // get available columns
-        var columns = $.ajax({
-            type: "GET",
-            url: application.baseUrl + 'descriptor/columns/accession.accessionpanel/',
-            contentType: "application/json; charset=utf-8"
+        var columns = application.main.cache.lookup({
+            type: 'entity_columns',
+            format: {model: 'accession.accessionpanel'}
         });
 
         columns.done(function (data) {
-            var panelListView = new PanelListView({collection: collection, columns: data.columns});
+            var panelListView = new PanelListView({collection: collection, columns: data[0].value});
 
             defaultLayout.showChildView('content', panelListView);
             defaultLayout.showChildView('content-bottom', new ScrollingMoreView({
@@ -54,7 +52,7 @@ var Router = Marionette.AppRouter.extend({
             }));
 
             defaultLayout.showChildView('bottom', new EntityListFilterView({
-                collection: collection, columns: data.columns
+                collection: collection, columns: data[0].value
             }));
 
             panelListView.query();

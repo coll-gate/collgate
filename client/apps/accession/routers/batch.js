@@ -34,15 +34,13 @@ var Router = Marionette.AppRouter.extend({
 
         defaultLayout.showChildView('title', new TitleView({title: _t("List of all batches")}));
 
-        // get available columns
-        var columns = $.ajax({
-            type: "GET",
-            url: application.baseUrl + 'descriptor/columns/accession.batch/',
-            contentType: "application/json; charset=utf-8"
+        var columns = application.main.cache.lookup({
+            type: 'entity_columns',
+            format: {model: 'accession.batch'}
         });
 
         $.when(columns, collection.fetch()).done(function (data) {
-            var batchListView  = new BatchListView({collection: collection, columns: data[0].columns});
+            var batchListView  = new BatchListView({collection: collection, columns: data[0].value});
 
             defaultLayout.showChildView('content', batchListView);
             defaultLayout.showChildView('content-bottom', new ScrollingMoreView({targetView: batchListView}));
@@ -58,14 +56,13 @@ var Router = Marionette.AppRouter.extend({
         defaultLayout.showChildView('title', new TitleView({title: _t("List of batches for the accession")}));
 
         // get available columns
-        var columns = $.ajax({
-            type: "GET",
-            url: application.baseUrl + 'descriptor/columns/accession.batch/',
-            contentType: "application/json; charset=utf-8"
+        var columns = application.main.cache.lookup({
+            type: 'entity_columns',
+            format: {model: 'accession.batch'}
         });
 
         $.when(columns, collection.fetch()).done(function (data) {
-            var batchListView = new BatchListView({collection : collection, columns: data[0].columns});
+            var batchListView = new BatchListView({collection : collection, columns: data[0].value});
 
             defaultLayout.showChildView('content', batchListView);
             defaultLayout.showChildView('content-bottom', new ScrollingMoreView({targetView: batchListView}));

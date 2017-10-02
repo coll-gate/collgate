@@ -98,11 +98,9 @@ var Layout = LayoutView.extend({
         var AccessionCollection = require('../collections/accession');
         var accessionPanelAccessions = new AccessionCollection([], {panel_id: this.model.get('id')});
 
-        // get available columns
-        var columns = $.ajax({
-            type: "GET",
-            url: application.baseUrl + 'descriptor/columns/accession.accession/',
-            contentType: "application/json; charset=utf-8"
+        var columns = application.main.cache.lookup({
+            type: 'entity_columns',
+            format: {model: 'accession.accession'}
         });
 
         columns.done(function (data) {
@@ -114,7 +112,7 @@ var Layout = LayoutView.extend({
             var accessionListView = new AccessionListView({
                 collection: accessionPanelAccessions,
                 model: panelLayout.model,
-                columns: data.columns,
+                columns: data[0].value,
                 related_entity: {
                     'content_type': 'accession.accessionpanel',
                     'id': panelLayout.model.id

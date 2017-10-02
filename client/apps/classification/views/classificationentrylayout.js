@@ -115,10 +115,9 @@ var Layout = LayoutView.extend({
             var classificationEntryChildren = new ClassificationEntryChildrenCollection([], {model_id: this.model.id});
 
             // get available columns
-            var columns = $.ajax({
-                type: "GET",
-                url: application.baseUrl + 'descriptor/columns/classification.classificationentry/',
-                contentType: "application/json; charset=utf-8"
+            var columns = application.main.cache.lookup({
+                type: 'entity_columns',
+                format: {model: 'classification.classificationentry'}
             });
 
             $.when(columns, classificationEntryChildren.fetch()).done(function(data) {
@@ -130,7 +129,7 @@ var Layout = LayoutView.extend({
                 var classificationEntryChildrenView = new ClassificationEntryChildrenView({
                     collection: classificationEntryChildren,
                     model: classificationEntryLayout.model,
-                    columns: data[0].columns});
+                    columns: data[0].value});
 
                 var contentBottomLayout = new ContentBottomLayout();
                 classificationEntryLayout.showChildView('children', contentBottomLayout);

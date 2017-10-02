@@ -40,15 +40,14 @@ var Router = Marionette.AppRouter.extend({
         defaultLayout.showChildView('title', new TitleView({title: _t("List of accessions")}));
 
         // get available columns
-        var columns = $.ajax({
-            type: "GET",
-            url: application.baseUrl + 'descriptor/columns/accession.accession/',
-            contentType: "application/json; charset=utf-8"
+        var columns = application.main.cache.lookup({
+            type: 'entity_columns',
+            format: {model: 'accession.accession'}
         });
 
         columns.done(function (data) {
             var accessionListView = new AccessionListView({
-                collection : collection, columns: data.columns,
+                collection : collection, columns: data[0].value,
                 onRender: function () {
                     this.onShowTab();
                 }
@@ -61,7 +60,7 @@ var Router = Marionette.AppRouter.extend({
             }));
 
             defaultLayout.showChildView('bottom', new EntityListFilterView({
-                collection: collection, columns: data.columns}));
+                collection: collection, columns: data[0].value}));
 
             accessionListView.query();
         });

@@ -112,12 +112,16 @@ DescriptorModule.prototype = {
 
         app.main.cache.register('descriptors');
         app.main.cache.register('descriptor_meta_model');
+        app.main.cache.register('entity_columns');
 
         var DescriptorMetaModelCacheFetcher = require('./utils/descriptormetamodelcachefetcher');
         app.main.cache.registerFetcher(new DescriptorMetaModelCacheFetcher());
 
         var DescriptorCacheFetcher = require('./utils/descriptorcachefetcher');
         app.main.cache.registerFetcher(new DescriptorCacheFetcher());
+
+        var ColumnCacheFetcher = require('./utils/columncachefetcher');
+        app.main.cache.registerFetcher(new ColumnCacheFetcher());
 
         //
         // routers

@@ -145,7 +145,53 @@ var View = Dialog.extend({
 
         const view = this;
 
-        var models_data = {};
+        var descriptorMetaModels = [];
+
+        if (metaModels) {
+            for (var i = 0; i < metaModels.length; ++i) {
+                descriptorMetaModels.push(parseInt(metaModels[i]));
+            }
+        }
+
+        application.main.cache.lookup({
+            type: 'entity_columns',
+            format: {model: entityType, descriptor_meta_models: descriptorMetaModels},
+        }).done(function(data) {
+            $(selects).children('option').remove().end();
+
+            // var columns_extension = {
+            //     'code': {label: _t('Code'), format: {type: 'string'}},
+            //     'name': {label: _t('Name'), format: {type: 'string'}}
+            //     // 'parent': {
+            //     //     label: _t('Classification'),
+            //     //     width: 'auto',
+            //     //     minWidth: true,
+            //     //     event: 'view-parent-details',
+            //     //     custom: 'parentCell',
+            //     //     field: 'name'
+            //     // },
+            //     // 'descriptor_meta_model': {label: _t('Model'), width: 'auto', minWidth: true}
+            // };
+
+            var columns = data[0].value;
+            // for(var col in columns_extension) columns[col]=columns_extension[col]; // add columns_extension properties in the same object "columns"
+
+            view.getChildView('conditions').children.each(function (childview) {
+                childview.columns = columns;
+            });
+
+            $.each(columns, function (field) {
+                selects.append($('<option>', {
+                    value: field,
+                    text: columns[field].label,
+                    'data-type': columns[field].format.type
+                }));
+            });
+
+            selects.trigger('change')
+                .selectpicker('refresh');
+        });
+/*        var models_data = {};
         if (metaModels !== null) {
             models_data = {meta_model_list: metaModels.toString()}
         }
@@ -189,7 +235,7 @@ var View = Dialog.extend({
             });
             selects.trigger('change');
             selects.selectpicker('refresh');
-        });
+        });*/
         selects.change();
     },
 

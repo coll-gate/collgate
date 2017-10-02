@@ -61,10 +61,9 @@ var ClassificationEntryRouter = Marionette.AppRouter.extend({
         defaultLayout.showChildView('title', new TitleView({title: _t("List of classifications entries")}));
 
         // get available columns
-        var columns = $.ajax({
-            type: "GET",
-            url: application.baseUrl + 'descriptor/columns/classification.classificationentry/',
-            contentType: "application/json; charset=utf-8"
+        var columns = application.main.cache.lookup({
+            type: 'entity_columns',
+            format: {model: 'classification.classificationentry'}
         });
 
         $.when(columns, collection.fetch()).done(function(data) {
@@ -72,7 +71,8 @@ var ClassificationEntryRouter = Marionette.AppRouter.extend({
                 return;
             }
 
-            var classificationEntryListView = new ClassificationEntryListView({collection : collection, columns: data[0].columns});
+            var classificationEntryListView = new ClassificationEntryListView({
+                collection : collection, columns: data[0].value});
 
             defaultLayout.showChildView('content', classificationEntryListView);
             defaultLayout.showChildView('content-bottom', new ScrollingMoreView({
@@ -81,7 +81,7 @@ var ClassificationEntryRouter = Marionette.AppRouter.extend({
             }));
 
             defaultLayout.showChildView('bottom', new EntityListFilterView({
-                collection: collection, columns: data[0].columns}));
+                collection: collection, columns: data[0].value}));
         });
     },
 

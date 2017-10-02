@@ -123,20 +123,19 @@ var Layout = LayoutView.extend({
             var accessionBatches = new BatchCollection([], {accession_id: this.model.get('id')});
 
             // get available columns
-            var columns = $.ajax({
-                type: "GET",
-                url: application.baseUrl + 'descriptor/columns/accession.batch/',
-                contentType: "application/json; charset=utf-8"
+            var columns1 = application.main.cache.lookup({
+                type: 'entity_columns',
+                format: {model: 'accession.batch'}
             });
 
-            $.when(columns, accessionBatches.fetch()).done(function (data) {
+            $.when(columns1, accessionBatches.fetch()).done(function (data) {
                 if (!accessionLayout.isRendered()) {
                     return;
                 }
 
                 var BatchListView = require('../views/batchlist');
                 var batchListView  = new BatchListView({
-                    collection: accessionBatches, model: accessionLayout.model, columns: data[0].columns});
+                    collection: accessionBatches, model: accessionLayout.model, columns: data[0].value});
 
                 var contentBottomLayout = new ContentBottomLayout();
                 accessionLayout.showChildView('batches', contentBottomLayout);
@@ -150,20 +149,19 @@ var Layout = LayoutView.extend({
             var accessionClassificationEntries = new AccessionClassificationEntryCollection([], {accession_id: this.model.get('id')});
 
             // get available columns
-            var columns = $.ajax({
-                type: "GET",
-                url: application.baseUrl + 'descriptor/columns/classification.classificationentry/',
-                contentType: "application/json; charset=utf-8"
+            var columns2 = application.main.cache.lookup({
+                type: 'entity_columns',
+                format: {model: 'classification.classificationentry'}
             });
 
-            $.when(columns, accessionClassificationEntries.fetch()).done(function (data) {
+            $.when(columns2, accessionClassificationEntries.fetch()).done(function (data) {
                 if (!accessionLayout.isRendered()) {
                     return;
                 }
 
                 var AccessionClassificationEntryListView = require('../views/accessionclassificationentries');
                 var accessionClassificationEntryListView  = new AccessionClassificationEntryListView({
-                    collection: accessionClassificationEntries, model: accessionLayout.model, columns: data[0].columns});
+                    collection: accessionClassificationEntries, model: accessionLayout.model, columns: data[0].value});
 
                 var contentBottomFooterLayout = new ContentBottomFooterLayout();
                 accessionLayout.showChildView('classifications-entries', contentBottomFooterLayout);

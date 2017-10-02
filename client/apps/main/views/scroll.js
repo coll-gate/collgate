@@ -108,13 +108,16 @@ var View = Marionette.CompositeView.extend({
 
         if (options.columns === undefined) {
             options.columns = {};
+        } else {
+            // detach
+            options.columns = _.deepClone(options.columns);
         }
 
         // merge values for each column
         if (this.columnsOptions !== undefined) {
             for (var columnName in this.columnsOptions) {
                 if (columnName in options.columns) {
-                    _.extend(options.columns[columnName], this.columnsOptions[columnName]);
+                    _.extend(_.deepClone(options.columns[columnName]), _.deepClone(this.columnsOptions[columnName]));
                 } else {
                     options.columns[columnName] = _.deepClone(this.columnsOptions[columnName]);
                 }
