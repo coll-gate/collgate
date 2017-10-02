@@ -86,7 +86,9 @@ class RestAccessionPanelAccessionCount(RestAccessionPanelAccession):
                         "content_type": {"type": "string"},
                         "id": {"type": "integer"}
                     }
-                }
+                },
+                "search": {"type": "object"},
+                "filters": {"type": "object"}
             }
         }
     }
@@ -97,6 +99,8 @@ def create_panel(request):
     name = request.data['name']
     selection = request.data['selection']['select']
     related_entity = request.data['selection']['from']
+    search = request.data['selection']['search']
+    filters = request.data['selection']['filters']
     dmm_id = request.data['descriptor_meta_model']
     descriptors = request.data['descriptors']
 
@@ -110,14 +114,20 @@ def create_panel(request):
         content_type = get_object_or_404(ContentType, app_label="accession", model="accessionpanel")
         dmm = get_object_or_404(DescriptorMetaModel, id=int_arg(dmm_id), target=content_type)
 
+    from main.cursor import CursorQuery
+    cq = CursorQuery(Accession)
+
+    if search:
+        cq.filter(search)
+
+    if filters:
+        cq.filter(filters)
+
     if related_entity:
         label, model = related_entity['content_type'].split('.')
-        parent_content_type = get_object_or_404(ContentType, app_label=label, model=model)
-        entity = parent_content_type.get_object_for_this_type(id=int_arg(related_entity['id']))
-
-        related_accessions = entity.accessions
-    else:
-        related_accessions = Accession.objects
+        content_type = get_object_or_404(ContentType, app_label=label, model=model)
+        model_class = content_type.model_class()
+        cq.inner_join(model_class, **{model: int_arg(related_entity['id'])})
 
     try:
         with transaction.atomic():
@@ -138,13 +148,13 @@ def create_panel(request):
 
             if isinstance(selection, bool):
                 if selection is True:
-                    panel.accessions.add(*related_accessions.all())
+                    panel.accessions.add(*cq)
 
             elif selection['op'] == 'in':
-                panel.accessions.add(*related_accessions.filter(id__in=selection['value']))
+                panel.accessions.add(*cq.filter(id__in=selection['value']))
 
             elif selection['op'] == 'notin':
-                panel.accessions.add(*related_accessions.exclude(id__in=selection['value']))
+                panel.accessions.add(*cq.filter(id__notin=selection['value']))
 
     except IntegrityError as e:
         DescriptorModelType.integrity_except(AccessionPanel, e)
@@ -256,12 +266,14 @@ def delete_panel(request, panel_id):
                                        content={
                                            "type": "object",
                                            "properties": {
-                                               "name": AccessionPanel.NAME_VALIDATOR,
                                                # "entity_status": AccessionPanel.ENTITY_STATUS_VALIDATOR_OPTIONAL,
                                                "descriptor_meta_model": {"type": ["integer", "null"],
                                                                          'required': False},
                                                "descriptors": {"type": "object", "required": False},
                                            },
+                                           "additionalProperties": {
+                                                "name": AccessionPanel.NAME_VALIDATOR
+                                           }
                                        })
 def modify_panel(request, panel_id):
     panel = get_object_or_404(AccessionPanel, id=int(panel_id))

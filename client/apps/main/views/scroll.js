@@ -5,7 +5,7 @@
  * @date 2016-10-07
  * @copyright Copyright (c) 2016 INRA/CIRAD
  * @license MIT (see LICENSE file)
- * @details 
+ * @details
  */
 
 var Marionette = require('backbone.marionette');
@@ -30,14 +30,13 @@ var TableBody = Marionette.CollectionView.extend({
 
 // @todo evolve to CollectionView and a layout before Mn remove CompositeView
 var View = Marionette.CompositeView.extend({
-    rowHeight: 1+8+20+8,
+    rowHeight: 1 + 8 + 20 + 8,
     scrollViewInitialized: false,
     userSettingName: null,
     userSettingVersion: null,
     scrollbarWidth: $.position.scrollbarWidth(),
 
-    attributes: {
-    },
+    attributes: {},
 
     ui: {
         table: 'table.table.table-advanced',
@@ -70,7 +69,7 @@ var View = Marionette.CompositeView.extend({
         }
     },
 
-    constructor: function() {
+    constructor: function () {
         var prototype = this.constructor.prototype;
 
         this.events = {};
@@ -154,7 +153,7 @@ var View = Marionette.CompositeView.extend({
         this.initialResizeDone = false;
     },
 
-    getUserSettingName: function() {
+    getUserSettingName: function () {
         if (this.userSettingName) {
             if (_.isFunction(this.userSettingName)) {
                 return this.userSettingName();
@@ -166,7 +165,7 @@ var View = Marionette.CompositeView.extend({
         }
     },
 
-    getUserSettingVersion: function() {
+    getUserSettingVersion: function () {
         if (this.userSettingVersion) {
             if (_.isFunction(this.userSettingVersion)) {
                 return this.userSettingVersion();
@@ -178,7 +177,7 @@ var View = Marionette.CompositeView.extend({
         }
     },
 
-    getScrollElement: function() {
+    getScrollElement: function () {
         var scrollElement = this.$el.parent();
 
         if (this.ui.tbody.parent().parent().css('overflow-y') === "auto") {
@@ -188,7 +187,7 @@ var View = Marionette.CompositeView.extend({
         return scrollElement;
     },
 
-    isDisplayed: function() {
+    isDisplayed: function () {
         if (this.ui.table instanceof Object) {
             return this.ui.table.offsetParent().length && this.ui.table.offsetParent()[0].nodeName !== 'HTML';
         } else {
@@ -201,7 +200,7 @@ var View = Marionette.CompositeView.extend({
      * This method must be called in place of the collection fetch else the initial sort cannot be performed
      * by the user settings took by the view.
      */
-    query: function() {
+    query: function () {
         if (this.collection) {
             // cleanup
             var sorters = this.ui.thead.children('tr').children('th,td').find('div.table-advanced-label span.column-sorter');
@@ -271,7 +270,7 @@ var View = Marionette.CompositeView.extend({
         }
     },
 
-    onResetCollection: function() {
+    onResetCollection: function () {
         this.lastModels = null;
 
         // reset scrolling
@@ -281,7 +280,7 @@ var View = Marionette.CompositeView.extend({
         // this.initialResizeDone = false;
     },
 
-    onDestroy: function() {
+    onDestroy: function () {
         // cleanup bound events
         $("body").off('mousemove', $.proxy(this.onResizeColumnMove, this))
             .off('mouseup', $.proxy(this.onResizeColumnFinish, this));
@@ -291,7 +290,7 @@ var View = Marionette.CompositeView.extend({
             .off('keyup', $.proxy(this.onKeyUp, this));
     },
 
-    onDomRefresh: function() {
+    onDomRefresh: function () {
         // we can only init here because we need to known the parent container
         if (!this.scrollViewInitialized) {
             var self = this;
@@ -310,12 +309,12 @@ var View = Marionette.CompositeView.extend({
                 .on('keyup', $.proxy(this.onKeyUp, this));
 
             // btn events
-            this.ui.add_column_menu.children('div.btn-group').children('span.select-all').on('click', function() {
+            this.ui.add_column_menu.children('div.btn-group').children('span.select-all').on('click', function () {
                 self.ui.add_column_menu.children('ul.columns-list')
                     .children('li.column').children('label').children('input').prop("checked", true);
             });
 
-            this.ui.add_column_menu.children('div.btn-group').children('span.select-none').on('click', function() {
+            this.ui.add_column_menu.children('div.btn-group').children('span.select-none').on('click', function () {
                 self.ui.add_column_menu.children('ul.columns-list')
                     .children('li.column').children('label').children('input').prop("checked", false);
             });
@@ -330,23 +329,23 @@ var View = Marionette.CompositeView.extend({
                 'click', $.proxy(this.onAddRemoveColumn, this));
 
             this.ui.add_column_menu.children('div.input-group').children('input[name=add-column-filter]').on('input', function (e) {
-               var name = $(e.target).val();
-               var labels = self.ui.add_column_menu.children('ul.columns-list')
-                   .children('li.column')
-                   .children('label');
+                var name = $(e.target).val();
+                var labels = self.ui.add_column_menu.children('ul.columns-list')
+                    .children('li.column')
+                    .children('label');
 
-               $.each(labels, function(i, element) {
-                   var el = $(element);
+                $.each(labels, function (i, element) {
+                    var el = $(element);
 
-                   var c1 = el.attr('name').toUpperCase().indexOf(name.toUpperCase()) !== -1;
-                   var c2 = el.text().toUpperCase().indexOf(name.toUpperCase()) !== -1;
+                    var c1 = el.attr('name').toUpperCase().indexOf(name.toUpperCase()) !== -1;
+                    var c2 = el.text().toUpperCase().indexOf(name.toUpperCase()) !== -1;
 
-                   if (c1 || c2) {
-                       el.parent().css('display', 'block');
-                   } else {
-                       el.parent().css('display', 'none');
-                   }
-               });
+                    if (c1 || c2) {
+                        el.parent().css('display', 'block');
+                    } else {
+                        el.parent().css('display', 'none');
+                    }
+                });
             });
 
             // create an entry per column from template
@@ -378,13 +377,13 @@ var View = Marionette.CompositeView.extend({
         }
     },
 
-    onResize: function() {
+    onResize: function () {
         // re-adjust when parent send a resize event
         if (this.initialResizeDone) {
             if (this.isDisplayed()) {
                 // need async update on some cases of resize
                 var view = this;
-                setTimeout(function() {
+                setTimeout(function () {
                     view.updateColumnsWidth();
 
                     // need a second call because width in some case need an adjustment
@@ -394,13 +393,13 @@ var View = Marionette.CompositeView.extend({
         }
     },
 
-    onShowTab: function(tabView) {
+    onShowTab: function (tabView) {
         if (this.isDisplayed()) {
             this.updateColumnsWidth();
         }
     },
 
-    updateColumnsWidth: function(autoAdjust) {
+    updateColumnsWidth: function (autoAdjust) {
         if (!this.ui.table.hasClass('table-advanced') || !this.ui.table.hasClass('table-advanced')) {
             return;
         }
@@ -511,7 +510,7 @@ var View = Marionette.CompositeView.extend({
 
                 // and for the first body row
                 $(rows.get(i)).css('min-width', minWidth + 8 + 8 + (i === 0 ? 0 : 1) + 'px');
-                
+
                 el.width('auto');
             } else if (label.css('min-width') === '0px') {
                 // for each actor + 3 per span + 3 of right margin
@@ -556,7 +555,7 @@ var View = Marionette.CompositeView.extend({
 
         // auto adjust, recompute the correct width for each column and keep it in local configuration
         if (autoAdjust) {
-            $.each(headerRows, function(i, element) {
+            $.each(headerRows, function (i, element) {
                 var el = $(element);
 
                 if (!el.hasClass('glyph-fixed-column')) {
@@ -603,7 +602,7 @@ var View = Marionette.CompositeView.extend({
                     el.width(columnsWidth[i]);
 
                     // update user setting locally (minus border left except on first column)
-                   view.selectedColumns[i].width = el.width() / tableWidth;
+                    view.selectedColumns[i].width = el.width() / tableWidth;
                 } else {
                     view.selectedColumns[i].width = "auto";
                 }
@@ -619,7 +618,7 @@ var View = Marionette.CompositeView.extend({
         }
     },
 
-    onColumnDragStart: function(e) {
+    onColumnDragStart: function (e) {
         // fix for firefox...
         e.originalEvent.dataTransfer.setData('text/plain', null);
 
@@ -628,7 +627,7 @@ var View = Marionette.CompositeView.extend({
             .children('div.table-advanced-label').addClass('highlight-label');
 
         var i1;
-        $.each(this.ui.thead.children('tr').children('td,th'), function(i, element) {
+        $.each(this.ui.thead.children('tr').children('td,th'), function (i, element) {
             if (target.attr('name') === $(element).attr('name')) {
                 i1 = i;
                 return false;
@@ -636,7 +635,7 @@ var View = Marionette.CompositeView.extend({
         });
 
         // opacity of each cell
-        $.each(this.ui.tbody.children('tr'), function(i, element) {
+        $.each(this.ui.tbody.children('tr'), function (i, element) {
             $(element).children('th,td').eq(i1).css('opacity', '0.4');
         });
 
@@ -644,13 +643,13 @@ var View = Marionette.CompositeView.extend({
         this.targetDropElement = null;
     },
 
-    onColumnDragEnd: function(e) {
+    onColumnDragEnd: function (e) {
         var target = $(e.currentTarget).parent().parent();
         target.css('opacity', 'initial')
             .children('div.table-advanced-label').removeClass('highlight-label');
 
         var i1;
-        $.each(this.ui.thead.children('tr').children('td,th'), function(i, element) {
+        $.each(this.ui.thead.children('tr').children('td,th'), function (i, element) {
             if (target.attr('name') === $(element).attr('name')) {
                 i1 = i;
                 return false;
@@ -658,7 +657,7 @@ var View = Marionette.CompositeView.extend({
         });
 
         // opacity of each cell
-        $.each(this.ui.tbody.children('tr'), function(i, element) {
+        $.each(this.ui.tbody.children('tr'), function (i, element) {
             $(element).children('th,td').eq(i1).css('opacity', 'initial');
         });
 
@@ -668,7 +667,7 @@ var View = Marionette.CompositeView.extend({
                 .children('div.table-advanced-label').removeClass('highlight-label');
 
             var i2;
-            $.each(this.ui.thead.children('tr').children('td,th'), function(i, element) {
+            $.each(this.ui.thead.children('tr').children('td,th'), function (i, element) {
                 if (target.attr('name') === $(element).attr('name')) {
                     i2 = i;
                     return false;
@@ -676,7 +675,7 @@ var View = Marionette.CompositeView.extend({
             });
 
             // opacity of each cell
-            $.each(this.ui.tbody.children('tr'), function(i, element) {
+            $.each(this.ui.tbody.children('tr'), function (i, element) {
                 $(element).children('th,td').eq(i2).css('opacity', 'initial');
             });
         }
@@ -685,7 +684,7 @@ var View = Marionette.CompositeView.extend({
         this.targetDropElement = null;
     },
 
-    onColumnDragEnter: function(e) {
+    onColumnDragEnter: function (e) {
         if (e.originalEvent.preventDefault) {
             e.originalEvent.preventDefault();
         }
@@ -696,7 +695,7 @@ var View = Marionette.CompositeView.extend({
                 .children('div.table-advanced-label').removeClass('highlight-label');
 
             var i2;
-            $.each(this.ui.thead.children('tr').children('td,th'), function(i, element) {
+            $.each(this.ui.thead.children('tr').children('td,th'), function (i, element) {
                 if (oldTarget.attr('name') === $(element).attr('name')) {
                     i2 = i;
                     return false;
@@ -704,7 +703,7 @@ var View = Marionette.CompositeView.extend({
             });
 
             // opacity of each cell
-            $.each(this.ui.tbody.children('tr'), function(i, element) {
+            $.each(this.ui.tbody.children('tr'), function (i, element) {
                 $(element).children('th,td').eq(i2).css('opacity', 'initial');
             });
 
@@ -733,7 +732,7 @@ var View = Marionette.CompositeView.extend({
         }
 
         var i2;
-        $.each(this.ui.thead.children('tr').children('td,th'), function(i, element) {
+        $.each(this.ui.thead.children('tr').children('td,th'), function (i, element) {
             if (target.attr('name') === $(element).attr('name')) {
                 i2 = i;
                 return false;
@@ -741,7 +740,7 @@ var View = Marionette.CompositeView.extend({
         });
 
         // opacity of each cell
-        $.each(this.ui.tbody.children('tr'), function(i, element) {
+        $.each(this.ui.tbody.children('tr'), function (i, element) {
             $(element).children('th,td').eq(i2).css('opacity', '0.4');
         });
 
@@ -750,7 +749,7 @@ var View = Marionette.CompositeView.extend({
         return false;
     },
 
-    onColumnDragLeave: function(e) {
+    onColumnDragLeave: function (e) {
         if (e.originalEvent.preventDefault) {
             e.originalEvent.preventDefault();
         }
@@ -776,7 +775,7 @@ var View = Marionette.CompositeView.extend({
             .children('div.table-advanced-label').removeClass('highlight-label');
 
         var i2;
-        $.each(this.ui.thead.children('tr').children('td,th'), function(i, element) {
+        $.each(this.ui.thead.children('tr').children('td,th'), function (i, element) {
             if (target.attr('name') === $(element).attr('name')) {
                 i2 = i;
                 return false;
@@ -784,7 +783,7 @@ var View = Marionette.CompositeView.extend({
         });
 
         // opacity of each cell
-        $.each(this.ui.tbody.children('tr'), function(i, element) {
+        $.each(this.ui.tbody.children('tr'), function (i, element) {
             $(element).children('th,td').eq(i2).css('opacity', 'initial');
         });
 
@@ -793,7 +792,7 @@ var View = Marionette.CompositeView.extend({
         return false;
     },
 
-    onColumnDragOver: function(e) {
+    onColumnDragOver: function (e) {
         if (e.originalEvent.preventDefault) {
             e.originalEvent.preventDefault();
         }
@@ -801,7 +800,7 @@ var View = Marionette.CompositeView.extend({
         return false;
     },
 
-    onColumnDrop: function(e) {
+    onColumnDrop: function (e) {
         if (e.originalEvent.stopPropagation) {
             e.originalEvent.stopPropagation();
         }
@@ -824,7 +823,7 @@ var View = Marionette.CompositeView.extend({
         if (srcName !== dstName) {
             // switch the two columns
             var i1 = 0, i2 = 0;
-            $.each(this.ui.thead.children('tr').children('td,th'), function(i, element) {
+            $.each(this.ui.thead.children('tr').children('td,th'), function (i, element) {
                 if ($(element).attr('name') === dstName) {
                     i1 = i;
                 } else if ($(element).attr('name') === srcName) {
@@ -887,7 +886,7 @@ var View = Marionette.CompositeView.extend({
         return false;
     },
 
-    onResizeColumnHover: function(e) {
+    onResizeColumnHover: function (e) {
         var sizer = $(e.currentTarget);
 
         // get the previous column
@@ -895,7 +894,7 @@ var View = Marionette.CompositeView.extend({
         var columns = column.parent().find('th');
 
         // adapt the cursor, because if the right column is fixed size, the resize cannot be performed
-        $.each(columns, function(i, element) {
+        $.each(columns, function (i, element) {
             var el = $(element);
 
             if (el.attr('name') === column.attr('name')) {
@@ -920,10 +919,10 @@ var View = Marionette.CompositeView.extend({
 
         this.resizingColumnLeft = null;
 
-        $.each(columns, function(i, element) {
+        $.each(columns, function (i, element) {
             if ($(element).attr('name') === column.attr('name')) {
                 // left and right columns directly impacted
-                view.resizingColumnLeft = $(columns[i-1]);
+                view.resizingColumnLeft = $(columns[i - 1]);
                 view.resizingColumnRight = $(element);
                 view.resizingColumnIndex = i;
 
@@ -952,7 +951,7 @@ var View = Marionette.CompositeView.extend({
         }
     },
 
-    onResizeColumnFinish: function(e) {
+    onResizeColumnFinish: function (e) {
         if (this.resizingColumnLeft && this.resizingColumnRight) {
             $('body').removeClass('unselectable');
 
@@ -1005,33 +1004,33 @@ var View = Marionette.CompositeView.extend({
             var body = this.ui.tbody.children('tr:first-child').children('th,td');
 
             // and body
-            $(body[this.resizingColumnIndex-1]).width(leftWidth);
+            $(body[this.resizingColumnIndex - 1]).width(leftWidth);
             $(body[this.resizingColumnIndex]).width(rightWidth);
-/*
-            // and auto-adjust all columns from body constraints
-            $.each(body, function(i, element) {
-                var el = $(element);
-                var headEl = $(head[i]);
-                var label = headEl.children('div.table-advanced-label');
+            /*
+                        // and auto-adjust all columns from body constraints
+                        $.each(body, function(i, element) {
+                            var el = $(element);
+                            var headEl = $(head[i]);
+                            var label = headEl.children('div.table-advanced-label');
 
-                if (!el.hasClass('glyph-fixed-column')) {
-                    headEl.width(el.width());
+                            if (!el.hasClass('glyph-fixed-column')) {
+                                headEl.width(el.width());
 
-                    // adjust the label div (minus border left width)
-                    label.width(el.width() - (i === 0 ? 0 : 1));
-                }
-            });
-*/
+                                // adjust the label div (minus border left width)
+                                label.width(el.width() - (i === 0 ? 0 : 1));
+                            }
+                        });
+            */
             this.computeClipping();
         }
     },
 
-    capacity: function() {
+    capacity: function () {
         var scrollElement = this.getScrollElement();
         return Math.max(1, Math.floor(scrollElement.prop('clientHeight') / this.rowHeight));
     },
 
-    isNeedMoreResults: function() {
+    isNeedMoreResults: function () {
         var scrollElement = this.getScrollElement();
         var clientHeight = scrollElement.prop('clientHeight');
         var diff = scrollElement.prop('scrollHeight') - scrollElement.scrollTop() - clientHeight;
@@ -1040,7 +1039,7 @@ var View = Marionette.CompositeView.extend({
         return diff - (scrollElement.outerHeight(true) - scrollElement.height()) <= clientHeight;
     },
 
-    scrollOnePage: function(direction) {
+    scrollOnePage: function (direction) {
         direction !== undefined || (direction = 1);
 
         var scrollElement = this.getScrollElement();
@@ -1051,9 +1050,9 @@ var View = Marionette.CompositeView.extend({
         scrollElement.scrollTop(scrollElement.scrollTop() + amount * (direction > 0 ? 1 : -1));
     },
 
-    moreResults: function(more, scroll) {
-        scroll || (scroll=false);
-        more || (more=20);
+    moreResults: function (more, scroll) {
+        scroll || (scroll = false);
+        more || (more = 20);
 
         var view = this;
 
@@ -1062,11 +1061,13 @@ var View = Marionette.CompositeView.extend({
         }
 
         if ((this.collection !== null) && (this.collection.next !== null)) {
-            this.collection.fetch({update: true, remove: false, data: {
-                cursor: this.collection.next,
-                sort_by: this.collection.sort_by,
-                more: more
-            }}).done(function(data) {
+            this.collection.fetch({
+                update: true, remove: false, data: {
+                    cursor: this.collection.next,
+                    sort_by: this.collection.sort_by,
+                    more: more
+                }
+            }).done(function (data) {
                 // var scrollElement = view.getScrollElement();
 
                 if (scroll) {
@@ -1093,7 +1094,7 @@ var View = Marionette.CompositeView.extend({
         });
     },
 
-    onRender: function() {
+    onRender: function () {
         // if collection in fetched before rendering the view, meaning by null lastModels
         if (!this.lastModels) {
             this.onRefreshChildren();
@@ -1116,7 +1117,7 @@ var View = Marionette.CompositeView.extend({
         }
     },
 
-    scroll: function(e) {
+    scroll: function (e) {
         if (this.previousScrollTop === undefined) {
             this.previousScrollTop = 0;
         }
@@ -1139,7 +1140,7 @@ var View = Marionette.CompositeView.extend({
         }
     },
 
-    computeClipping: function() {
+    computeClipping: function () {
         // adjust left of every columns header
         var head = this.ui.thead.children('tr').children('th,td');
         var body = this.ui.tbody.children('tr:first-child').children('th,td');
@@ -1157,7 +1158,7 @@ var View = Marionette.CompositeView.extend({
             rightMargin = Math.max(rightMargin, this.scrollbarWidth);
         }
 
-        $.each(head, function(i, element) {
+        $.each(head, function (i, element) {
             var el = $(element);
             var row = $(body.get(i));
             var label = el.children('div.table-advanced-label');
@@ -1180,7 +1181,7 @@ var View = Marionette.CompositeView.extend({
                 } else {
                     label.css('display', '');
                 }
-            } else if (left+w > clientWidth - rightMargin) {
+            } else if (left + w > clientWidth - rightMargin) {
                 var l = 0;
                 var r = Math.max(0, clientWidth - left/* - rightMargin*/);
                 label.css('clip', 'rect(0px ' + r + 'px 32px ' + l + 'px)');
@@ -1212,7 +1213,7 @@ var View = Marionette.CompositeView.extend({
         });
     },
 
-    getLastModels: function() {
+    getLastModels: function () {
         if (!this.lastModels) {
             this.lastModels = [];
             for (var i = 0; i < this.collection.models.length; ++i) {
@@ -1223,7 +1224,7 @@ var View = Marionette.CompositeView.extend({
         return this.lastModels;
     },
 
-    highlightLabels: function(highlight) {
+    highlightLabels: function (highlight) {
         var labels = this.ui.thead.children('tr').children('th,td').find('div.table-advanced-label');
 
         if (highlight) {
@@ -1233,7 +1234,7 @@ var View = Marionette.CompositeView.extend({
         }
     },
 
-    onAddColumnAction: function(e) {
+    onAddColumnAction: function (e) {
         var contextMenu = this.ui.add_column_menu;
         if (contextMenu.length) {
             if (contextMenu.css('display') === 'block') {
@@ -1246,7 +1247,7 @@ var View = Marionette.CompositeView.extend({
                 var displayedColumns = new Set();
 
                 // add displayed columns first in order
-                for (var i = 0 ; i < this.displayedColumns.length; ++i) {
+                for (var i = 0; i < this.displayedColumns.length; ++i) {
                     var columnName = this.displayedColumns[i];
 
                     if (columnName in columns && columns[columnName].fixed)
@@ -1275,7 +1276,7 @@ var View = Marionette.CompositeView.extend({
                     });
                 }
 
-                columnsByLabel.sort(function(a, b) {
+                columnsByLabel.sort(function (a, b) {
                     return a.label.localeCompare(b.label);
                 });
 
@@ -1320,7 +1321,7 @@ var View = Marionette.CompositeView.extend({
                 }
 
                 // hide the context menu when click on the glass pane
-                application.main.glassPane('show').on('click', function(e) {
+                application.main.glassPane('show').on('click', function (e) {
                     contextMenu.hide();
                     return true;
                 });
@@ -1334,7 +1335,7 @@ var View = Marionette.CompositeView.extend({
      * @param save If true save user settings.
      * @returns boolean if success.
      */
-    removeColumn: function(columnName, save) {
+    removeColumn: function (columnName, save) {
         var columnId = -1;
 
         for (var j = 0; j < this.displayedColumns.length; ++j) {
@@ -1377,7 +1378,7 @@ var View = Marionette.CompositeView.extend({
         return true;
     },
 
-    addColumn: function(columnName, save) {
+    addColumn: function (columnName, save) {
         var columnId = -1;
         var self = this;
 
@@ -1454,7 +1455,7 @@ var View = Marionette.CompositeView.extend({
         });
 
         // refresh only the new column on every row
-        this.onRefreshChildren(true, this.displayedColumns.slice(-1)).done(function() {
+        this.onRefreshChildren(true, this.displayedColumns.slice(-1)).done(function () {
             // save once refresh is done completely
             if (self.getUserSettingName()) {
                 application.updateUserSetting(
@@ -1490,7 +1491,7 @@ var View = Marionette.CompositeView.extend({
         application.main.glassPane('destroy');
 
         // first remove columns
-        $.each(labels, function(i, element) {
+        $.each(labels, function (i, element) {
             var el = $(element);
             var columnName = el.attr('name');
 
@@ -1501,7 +1502,7 @@ var View = Marionette.CompositeView.extend({
 
         // then add others
         labels = contextMenu.children('ul.columns-list').children('li.column').children('label');
-        $.each(labels, function(i, element) {
+        $.each(labels, function (i, element) {
             var el = $(element);
             var columnName = el.attr('name');
 
@@ -1521,7 +1522,7 @@ var View = Marionette.CompositeView.extend({
         }
     },
 
-    getSortField: function(columnName) {
+    getSortField: function (columnName) {
         // not column descriptor simply returns the column name
         if (!columnName in this.getOption('columns')) {
             return columnName;
@@ -1544,7 +1545,7 @@ var View = Marionette.CompositeView.extend({
         }
     },
 
-    onSortColumn: function(e) {
+    onSortColumn: function (e) {
         var el = $(e.target);
         var columnEl = $(e.target).parent().parent();
         var columnName = columnEl.attr('name');
@@ -1608,7 +1609,7 @@ var View = Marionette.CompositeView.extend({
                     el.empty().attr('sort-position', null);
 
                     // reorder previous
-                    $.each(headers, function(n, el) {
+                    $.each(headers, function (n, el) {
                         var sorter = $(el);
                         if (sorter.length) {
                             var pos = parseInt(sorter.attr('sort-position') || -1);
@@ -1625,7 +1626,7 @@ var View = Marionette.CompositeView.extend({
                 }
             } else {
                 sortBy.push(order + sortField);
-                el.attr('sort-position', sortBy.length-1);
+                el.attr('sort-position', sortBy.length - 1);
             }
 
             // assign order
@@ -1658,10 +1659,12 @@ var View = Marionette.CompositeView.extend({
         }
 
         // reset and fetch collection
-        this.collection.fetch({reset: true, data: {
-            sort_by: sortBy,
-            more: Math.max(this.capacity() + 1, 30)
-        }});
+        this.collection.fetch({
+            reset: true, data: {
+                sort_by: sortBy,
+                more: Math.max(this.capacity() + 1, 30)
+            }
+        });
 
         // and save them
         if (this.getUserSettingName()) {
@@ -1672,7 +1675,7 @@ var View = Marionette.CompositeView.extend({
         }
     },
 
-    onWindowLostFocus: function(e) {
+    onWindowLostFocus: function (e) {
         if (e.target !== window) {
             return false;
         }
@@ -1685,7 +1688,7 @@ var View = Marionette.CompositeView.extend({
         }
     },
 
-    onKeyDown: function(e) {
+    onKeyDown: function (e) {
         if (e.key === 'Control') {
             if (!application.main.isForeground(this)) {
                 return false;
@@ -1702,7 +1705,7 @@ var View = Marionette.CompositeView.extend({
         }
     },
 
-    onKeyUp: function(e) {
+    onKeyUp: function (e) {
         if (e.key === 'Control') {
             if (this.controlKeyDown) {
                 this.controlKeyDown = false;
@@ -1711,7 +1714,7 @@ var View = Marionette.CompositeView.extend({
         }
     },
 
-    onClickHead: function(e) {
+    onClickHead: function (e) {
         var el = $(e.target);
         var parent = null;
 
@@ -1735,27 +1738,28 @@ var View = Marionette.CompositeView.extend({
         if (columns[columnName].type === "checkbox") {
             var checkbox = el;
 
-            checkbox.parent().css('background-color', 'initial');
+            // checkbox.parent().css('background-color', 'initial');
 
-            if (checkbox.hasClass('glyphicon-unchecked')) {
-                checkbox.removeClass('glyphicon-unchecked');
-                checkbox.addClass('glyphicon-check');
+
+            if (checkbox.hasClass('fa-square-o')) {
+                checkbox.removeClass('fa-square-o');
+                checkbox.addClass('fa-check-square-o');
 
                 // check every ones
-                this.ui.tbody.children('tr').children('td[name=' + columnName + ']').children('span.glyphicon-unchecked')
-                    .removeClass('glyphicon-unchecked')
-                    .addClass('glyphicon-check');
+                this.ui.tbody.children('tr').children('td[name=' + columnName + ']').children('span.fa-square-o')
+                    .removeClass('fa-square-o')
+                    .addClass('fa-check-square-o');
 
                 columns[columnName].autoSelect = true;
                 columns[columnName].selection = true;
             } else {
-                checkbox.removeClass('glyphicon-check');
-                checkbox.addClass('glyphicon-unchecked');
+                checkbox.removeClass('fa-check-square-o').removeClass('fa-minus-square-o');
+                checkbox.addClass('fa-square-o');
 
                 // uncheck every ones
-                this.ui.tbody.children('tr').children('td[name=' + columnName + ']').children('span.glyphicon-check')
-                    .removeClass('glyphicon-check')
-                    .addClass('glyphicon-unchecked');
+                this.ui.tbody.children('tr').children('td[name=' + columnName + ']').children('span.fa-check-square-o')
+                    .removeClass('fa-check-square-o')
+                    .addClass('fa-square-o');
 
                 columns[columnName].autoSelect = false;
                 delete columns[columnName].selection;
@@ -1765,7 +1769,7 @@ var View = Marionette.CompositeView.extend({
         }
     },
 
-    onClickBody: function(e) {
+    onClickBody: function (e) {
         var el = $(e.target);
         var parent = null;
 
@@ -1792,9 +1796,9 @@ var View = Marionette.CompositeView.extend({
         if (columns[columnName].type === "checkbox") {
             var checkbox = el;
 
-            if (checkbox.hasClass('glyphicon-unchecked')) {
-                checkbox.removeClass('glyphicon-unchecked');
-                checkbox.addClass('glyphicon-check');
+            if (checkbox.hasClass('fa-square-o')) {
+                checkbox.removeClass('fa-square-o');
+                checkbox.addClass('fa-check-square-o');
 
                 if (!(columns[columnName].selection instanceof Object)) {
                     columns[columnName].selection = {
@@ -1813,8 +1817,8 @@ var View = Marionette.CompositeView.extend({
                     columns[columnName].selection = columns[columnName].autoSelect || false;
                 }
             } else {
-                checkbox.removeClass('glyphicon-check');
-                checkbox.addClass('glyphicon-unchecked');
+                checkbox.removeClass('fa-check-square-o');
+                checkbox.addClass('fa-square-o');
 
                 if (!(columns[columnName].selection instanceof Object)) {
                     columns[columnName].selection = {
@@ -1837,23 +1841,29 @@ var View = Marionette.CompositeView.extend({
             var headCheckbox = this.ui.thead.children('tr').children('th[name=' + columnName + ']').children('div').children('span');
 
             if (columns[columnName].selection === false) {
-                headCheckbox.parent().css('background-color', 'initial');
+                // headCheckbox.parent().css('background-color', 'initial');
+                headCheckbox.removeClass('fa-check-square-o').removeClass('fa-minus-square-o')
+                    .addClass('fa-square-o');
 
                 // none check on head
-                if (!headCheckbox.hasClass('glyphicon-unchecked')) {
-                    headCheckbox.removeClass('glyphicon-check')
-                        .addClass('glyphicon-unchecked');
+                if (!headCheckbox.hasClass('fa-square-o')) {
+                    headCheckbox.removeClass('fa-check-square-o')
+                        .addClass('fa-square-o');
                 }
             } else if (columns[columnName].selection === true) {
-                headCheckbox.parent().css('background-color', 'initial');
+                // headCheckbox.parent().css('background-color', 'initial');
+                headCheckbox.removeClass('fa-square-o').removeClass('fa-minus-square-o')
+                    .addClass('fa-check-square-o');
 
                 // none check on head
-                if (!headCheckbox.hasClass('glyphicon-check')) {
-                    headCheckbox.removeClass('glyphicon-unchecked')
-                        .addClass('glyphicon-check');
+                if (!headCheckbox.hasClass('fa-check-square-o')) {
+                    headCheckbox.removeClass('fa-square-o')
+                        .addClass('fa-check-square-o');
                 }
             } else {
-                headCheckbox.parent().css('background-color', '#5cb85c');
+                // headCheckbox.parent().css('background-color', '#5cb85c');
+                headCheckbox.removeClass('fa-square-o')
+                    .addClass('fa-minus-square-o');
             }
         }
     },
@@ -1863,7 +1873,7 @@ var View = Marionette.CompositeView.extend({
      * @param columnName Column name.
      * @returns {term: string, op: string, value: Array} Boolean or a Object. true mean all objects are selected, false none.
      */
-    getSelection: function(columnName) {
+    getSelection: function (columnName) {
         var columns = this.getOption('columns') || {};
         if (!(columnName in columns)) {
             return false;

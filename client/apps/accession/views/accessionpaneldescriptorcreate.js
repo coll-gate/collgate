@@ -10,7 +10,6 @@
 
 var Marionette = require('backbone.marionette');
 var Dialog = require('../../main/views/dialog');
-var AccessionPanelDescriptorView = require('./accessionpaneldescriptor');
 
 var View = Marionette.View.extend({
         tagName: 'div',
@@ -132,7 +131,7 @@ var View = Marionette.View.extend({
             var TitleView = require('../../main/views/titleview');
             contextLayout.showChildView('title', new TitleView({
                 title: _t("Descriptors"),
-                glyphicon: 'glyphicon-wrench'
+                glyphicon: 'fa-wrench'
             }));
             contextLayout.showChildView('content', contextView);
 

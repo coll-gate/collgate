@@ -34,7 +34,7 @@ var View = ScrollView.extend({
             label: '',
             width: 'auto',
             type: 'checkbox',
-            glyphicon: ['glyphicon-unchecked', 'glyphicon-unchecked'],
+            glyphicon: ['fa-square-o', 'fa-square-o'],
             event: 'accession-select',
             fixed: true
         },
@@ -92,7 +92,7 @@ var View = ScrollView.extend({
         var TitleView = require('../../main/views/titleview');
         contextLayout.showChildView('title', new TitleView({
             title: _t("Accession actions"),
-            glyphicon: 'glyphicon-wrench'
+            glyphicon: 'fa-wrench'
         }));
 
         var actions = [
@@ -132,7 +132,7 @@ var View = ScrollView.extend({
     },
 
     onCreatePanel: function () {
-        application.accession.controllers.panel.create(this.getSelection('select'), this.related_entity);
+        application.accession.controllers.panel.create(this.getSelection('select'), this.related_entity, this.collection.filters, this.collection.search);
     }
 });
 

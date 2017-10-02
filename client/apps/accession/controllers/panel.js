@@ -17,8 +17,11 @@ var AccessionPanelModel = require('../models/panel');
 var AccessionPanelLayout = require('../views/panellayout');
 
 var Controller = Marionette.Object.extend({
-    create: function (selection, related_entity) {
+    create: function (selection, related_entity, filters, search) {
         related_entity || (related_entity = null);
+        filters || (filters = {});
+        search || (search = {});
+
 
         var CreatePanelDialog = Dialog.extend({
             template: require('../templates/panelcreate.html'),
@@ -96,7 +99,9 @@ var Controller = Marionette.Object.extend({
                         name: name,
                         selection: {
                             select: selection,
-                            from: related_entity
+                            from: related_entity,
+                            filters: filters,
+                            search: search
                         },
                         descriptors: {},
                         descriptor_meta_model: null
