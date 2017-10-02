@@ -200,40 +200,46 @@ I18NextWebpackPlugin.prototype.apply = function (compiler) {
         data.normalModuleFactory.plugin("parser", function (parser, options) {
             parser.plugin("call " + self.functionName, function (expr) {
                 let args = expr.arguments.map(function (arg) {
-                   /* let param, defaultValue;
-                    switch (expr.arguments.length) {
-                        case 2:
-                            param = parser.evaluateExpression(expr.arguments[1]);
-                            if (!param.isString()) return;
-                            param = param.parser;
-                            defaultValue = self.evaluateExpression(expr.arguments[0]);
-                            if (!defaultValue.isString()) return;
-                            defaultValue = defaultValue.string;
-                            break;
-                        case 1:
-                            param = parser.evaluateExpression(expr.arguments[0]);
-                            if (!param.isString()) return;
-                            defaultValue = param = param.string;
-                            break;
-                        default:
-                            return;
-                    }
-                    let result = self.localization ? self.localization(param) : defaultValue;
-                    if (typeof result === "undefined") {
-                        let error = parser.state.module[__dirname];
-                        if (!error) {
-                            error = parser.state.module[__dirname] = new MissingLocalizationError(parser.state.module, param, defaultValue);
-                            if (failOnMissing) {
-                                parser.state.module.errors.push(error);
-                            } else {
-                                parser.state.module.warnings.push(error);
-                            }
-                        } else if (error.requests.indexOf(param) < 0) {
-                            error.add(param, defaultValue);
-                        }
-                        result = defaultValue;
-                    }
-*/
+                //     let param, defaultValue;
+                //     switch (expr.arguments.length) {
+                //         case 2:
+                //             param = parser.evaluateExpression(expr.arguments[1]);
+                //             if (!param.isString())
+                //                 return;
+                //
+                //             param = param.parser;
+                //             defaultValue = self.evaluateExpression(expr.arguments[0]);
+                //             if (!defaultValue.isString())
+                //                 return;
+                //
+                //             defaultValue = defaultValue.string;
+                //             break;
+                //         case 1:
+                //             param = parser.evaluateExpression(expr.arguments[0]);
+                //             if (!param.isString())
+                //                 return;
+                //
+                //             defaultValue = param = param.string;
+                //             break;
+                //         default:
+                //             return;
+                //     }
+                //
+                //     let result = self.localization ? self.localization(param) : defaultValue;
+                //     if (typeof result === "undefined") {
+                //         let error = parser.state.module[__dirname];
+                //         if (!error) {
+                //             error = parser.state.module[__dirname] = new MissingLocalizationError(parser.state.module, param, defaultValue);
+                //             if (failOnMissing) {
+                //                 parser.state.module.errors.push(error);
+                //             } else {
+                //                 parser.state.module.warnings.push(error);
+                //             }
+                //         } else if (error.requests.indexOf(param) < 0) {
+                //             error.add(param, defaultValue);
+                //         }
+                //         result = defaultValue;
+                //     }
 
                     // @todo detect removed translations
                     let context = parser.state.module.context.split('/');
@@ -244,14 +250,14 @@ I18NextWebpackPlugin.prototype.apply = function (compiler) {
                             break;
                         }
                     }
-/*
-                    let dep = new ConstDependency(JSON.stringify(result), expr.range);
-                    dep.module = parser.state.module;
-                    dep.appModuleName = appModuleName;
-                    dep.loc = expr.loc;
-                    parser.state.current.addDependency(dep);
+
+                    // let dep = new ConstDependency(JSON.stringify(result), expr.range);
+                    // dep.module = parser.state.module;
+                    // dep.appModuleName = appModuleName;
+                    // dep.loc = expr.loc;
+                    // parser.state.current.addDependency(dep);
                     // console.log(dep)
-*/
+
                     console.log("Parse: ", appModuleName, parser.state.current.resource);
 
                     self.modifiedAppModules.add(appModuleName);

@@ -18,7 +18,7 @@ var View = ScrollView.extend({
     childView: AccessionView,
     childViewContainer: 'tbody.entity-list',
     userSettingName: 'panel_accessions_list_columns',
-    // userSettingVersion: '1.1',
+    userSettingVersion: '1.0',
 
     defaultColumns: [
         {name: 'select', width: 'auto', sort_by: null},
@@ -111,6 +111,8 @@ var View = ScrollView.extend({
         contextView.on("accessions:unlink", function () {
             view.onUnlinkAccessions();
         });
+
+        View.__super__.onShowTab.apply(this, arguments);
     },
 
     onBeforeDetach: function () {

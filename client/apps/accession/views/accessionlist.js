@@ -101,6 +101,8 @@ var View = ScrollView.extend({
         contextView.on("panel:create", function () {
             view.onCreatePanel();
         });
+
+        View.__super__.onShowTab.apply(this, arguments);
     },
 
     onBeforeDetach: function() {

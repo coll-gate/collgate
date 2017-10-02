@@ -70,6 +70,10 @@ var Router = Marionette.AppRouter.extend({
         application.main.showContent(defaultLayout);
 
         panel.fetch().then(function () {
+            if (!defaultLayout.isRendered()) {
+                return;
+            }
+
             defaultLayout.showChildView('title', new TitleView({title: _t("Panel"), model: panel}));
 
             var panelLayout = new PanelLayout({model: panel, initialTab: tab.replace('/', '')});
