@@ -10,7 +10,6 @@
 
 var Marionette = require('backbone.marionette');
 var Dialog = require('../../main/views/dialog');
-var AccessionPanelDescriptorView = require('./accessionpaneldescriptor');
 
 var View = Marionette.View.extend({
         tagName: 'div',

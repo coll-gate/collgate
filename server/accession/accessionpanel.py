@@ -266,12 +266,14 @@ def delete_panel(request, panel_id):
                                        content={
                                            "type": "object",
                                            "properties": {
-                                               "name": AccessionPanel.NAME_VALIDATOR,
                                                # "entity_status": AccessionPanel.ENTITY_STATUS_VALIDATOR_OPTIONAL,
                                                "descriptor_meta_model": {"type": ["integer", "null"],
                                                                          'required': False},
                                                "descriptors": {"type": "object", "required": False},
                                            },
+                                           "additionalProperties": {
+                                                "name": AccessionPanel.NAME_VALIDATOR
+                                           }
                                        })
 def modify_panel(request, panel_id):
     panel = get_object_or_404(AccessionPanel, id=int(panel_id))
