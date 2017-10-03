@@ -129,10 +129,7 @@ var View = Marionette.View.extend({
             var contextView = new AccessionPanelDescriptorContextView({actions: actions});
 
             var TitleView = require('../../main/views/titleview');
-            contextLayout.showChildView('title', new TitleView({
-                title: _t("Descriptors"),
-                glyphicon: 'fa-wrench'
-            }));
+            contextLayout.showChildView('title', new TitleView({title: _t("Descriptors"), glyphicon: 'fa-wrench'}));
             contextLayout.showChildView('content', contextView);
 
             contextView.on("descriptormetamodel:add", function () {

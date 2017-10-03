@@ -9,9 +9,9 @@
  */
 
 var PermissionGroupUserView = require('../views/groupuser');
-var ScrollView = require('../../main/views/scroll');
+var AdvancedTable = require('../../main/views/advancedtable');
 
-var View = ScrollView.extend({
+var View = AdvancedTable.extend({
     template: require("../templates/groupuserlist.html"),
     className: "object group-user-list advanced-table-container",
     childView: PermissionGroupUserView,

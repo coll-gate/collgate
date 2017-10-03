@@ -8,11 +8,11 @@
  * @details 
  */
 
-var ScrollView = require('../../main/views/scroll');
+var AdvancedTable = require('../../main/views/advancedtable');
 var OrganisationView = require('../views/organisation');
 var DescriptorsColumnsView = require('../../descriptor/mixins/descriptorscolumns');
 
-var View = ScrollView.extend({
+var View = AdvancedTable.extend({
     template: require("../templates/organisationlist.html"),
     className: "object organisation-list advanced-table-container",
     childView: OrganisationView,

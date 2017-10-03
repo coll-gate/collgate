@@ -9,9 +9,9 @@
  */
 
 var ClassificationRankView = require('../views/classificationrank');
-var ScrollView = require('../../main/views/scroll');
+var AdvancedTable = require('../../main/views/advancedtable');
 
-var View = ScrollView.extend({
+var View = AdvancedTable.extend({
     template: require("../templates/classificationranklist.html"),
     className: "object classification-rank-list advanced-table-container",
     childView: ClassificationRankView,

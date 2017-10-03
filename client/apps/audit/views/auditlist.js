@@ -9,9 +9,9 @@
  */
 
 var AuditView = require('../views/audit');
-var ScrollView = require('../../main/views/scroll');
+var AdvancedTable = require('../../main/views/advancedtable');
 
-var View = ScrollView.extend({
+var View = AdvancedTable.extend({
     template: require("../templates/auditlist.html"),
     className: "object audit-list advanced-table-container",
     childView: AuditView,

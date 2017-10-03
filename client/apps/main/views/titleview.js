@@ -31,8 +31,16 @@ var TitleView = Marionette.View.extend({
     onRender: function() {
         this.ui.title.html(this.getOption('title'));
 
-        if (this.getOption('getOption') !== null) {
-            this.ui.title.prepend('<span class="fa ' + this.getOption('glyphicon') + '"></span>&nbsp;');
+        if (this.getOption('glyphicon')) {
+            var glyphicon = this.getOption('glyphicon');
+
+            if (glyphicon.startsWith('glyphicon-')) {
+                glyphicon = 'glyphicon ' + glyphicon;
+            } else if (glyphicon.startsWith('fa-')) {
+                glyphicon = 'fa ' + glyphicon;
+            }
+
+            this.ui.title.prepend('<span class="' + glyphicon + '"></span>&nbsp;');
         }
 
         if (this.model && this.model.has('name')) {

@@ -8,11 +8,11 @@
  * @details 
  */
 
-var ScrollView = require('../../main/views/scroll');
+var AdvancedTable = require('../../main/views/advancedtable');
 var Dialog = require('../../main/views/dialog');
 var DescriptorModelTypeView = require('../views/descriptormodeltype');
 
-var View = ScrollView.extend({
+var View = AdvancedTable.extend({
     template: require("../templates/descriptormodeltypelist.html"),
     className: "object descriptor-model-type-list advanced-table-container",
     childView: DescriptorModelTypeView,

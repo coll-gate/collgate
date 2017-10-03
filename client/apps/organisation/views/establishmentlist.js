@@ -8,12 +8,12 @@
  * @details 
  */
 
-var ScrollView = require('../../main/views/scroll');
+var AdvancedTable = require('../../main/views/advancedtable');
 var EstablishmentView = require('../views/establishment');
 
 var DescriptorsColumnsView = require('../../descriptor/mixins/descriptorscolumns');
 
-var View = ScrollView.extend({
+var View = AdvancedTable.extend({
     template: require("../templates/establishmentlist.html"),
     className: "object establishment-list advanced-table-container",
     childView: EstablishmentView,

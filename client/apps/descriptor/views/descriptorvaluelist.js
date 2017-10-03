@@ -9,9 +9,9 @@
  */
 
 var DescriptorValueView = require('../views/descriptorvalue');
-var ScrollView = require('../../main/views/scroll');
+var AdvancedTable = require('../../main/views/advancedtable');
 
-var View = ScrollView.extend({
+var View = AdvancedTable.extend({
     template: require("../templates/descriptorvaluelist.html"),
     className: "object descriptor-value-list advanced-table-container",
     childView: DescriptorValueView,
