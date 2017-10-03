@@ -132,6 +132,11 @@ var Controller = Marionette.Object.extend({
         filters || (filters = {});
         search || (search = {});
 
+        if (!selection) {
+            $.alert.warning(_t("No accession selected"));
+            return;
+        }
+
         $.ajax({
             type: "GET",
             url: application.baseUrl + 'accession/panel/',
@@ -155,6 +160,11 @@ var Controller = Marionette.Object.extend({
 
                 initialize: function (options) {
                     LinkToPanelDialog.__super__.initialize.apply(this);
+                },
+
+                onRender: function () {
+                    LinkToPanelDialog.__super__.onRender.apply(this);
+                    this.ui.panel.selectpicker({});
                 },
 
                 onLinkToPanel: function (ev) {

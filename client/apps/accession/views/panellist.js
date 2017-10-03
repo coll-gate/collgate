@@ -53,6 +53,54 @@ var View = AdvancedTable.extend({
 
     initialize: function (options) {
         View.__super__.initialize.apply(this, arguments);
+    },
+
+    onRender: function () {
+        View.__super__.onRender.apply(this, arguments);
+        this.onShowTab();
+    },
+
+    onUnion: function () {
+        alert('todo!')
+    },
+
+    onIntersection: function () {
+        alert('todo!')
+    },
+
+    onDifference: function () {
+        alert('todo!')
+    },
+
+    onShowTab: function () {
+        var view = this;
+
+        var DefaultLayout = require('../../main/views/defaultlayout');
+        var contextLayout = new DefaultLayout();
+        application.getView().showChildView('right', contextLayout);
+
+        var actions = [
+            'union',
+            'intersection',
+            'difference'
+        ];
+
+        var PanelListContextView = require('./panellistcontext');
+        var contextView = new PanelListContextView({actions: actions});
+
+        var TitleView = require('../../main/views/titleview');
+        contextLayout.showChildView('title', new TitleView({title: _t("Panel actions"), glyphicon: 'fa-wrench'}));
+        contextLayout.showChildView('content', contextView);
+
+        contextView.on("panel:union", function () {
+            view.onUnion();
+        });
+        contextView.on("panel:intersection", function () {
+            view.onIntersection();
+        });
+        contextView.on("panel:difference", function () {
+            view.onDifference();
+        });
     }
 });
 

@@ -120,6 +120,12 @@ var View = AdvancedTable.extend({
     },
 
     onUnlinkAccessions: function () {
+
+        if (!this.getSelection('select')) {
+            $.alert.warning(_t("No accession selected"));
+            return;
+        }
+
         var view = this;
         $.ajax({
                 type: 'PATCH',
