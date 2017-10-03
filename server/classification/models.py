@@ -276,6 +276,15 @@ class ClassificationEntry(Entity):
     @classmethod
     def get_defaults_columns(cls):
         return {
+            'name': {
+                'label': _('Name'),
+                'query': False,
+                'format': {
+                    'type': 'string',
+                    'model': 'classification.classificationentry'
+                },
+                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
+            },
             'rank': {
                 'label': _('Rank'),
                 'field': 'level',  # @todo classification->rank_level special sort (need a GROUP BY classification)
@@ -284,11 +293,11 @@ class ClassificationEntry(Entity):
                     'type': 'entity',
                     'model': 'classification.classificationrank',
                     'details': True,
-                    'option': 'dropdown'  # @todo create this widget with dropdown
+                    'list_type': 'dropdown'  # @todo create this widget with dropdown
                 }
             },
             'parent': {
-                'label': _('Classification'),
+                'label': _('Parent'),
                 'field': 'name',
                 'query': True,
                 'format': {

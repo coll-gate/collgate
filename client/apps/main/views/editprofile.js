@@ -33,10 +33,15 @@ var View = Marionette.View.extend({
     },
 
     updateProfile: function () {
+        var model = this.model;
+
         this.model.save({
             first_name: this.ui.first_name.val(),
             last_name: this.ui.last_name.val()
         }).done(function() {
+            var text = model.get('first_name') && model.get('last_name') ? model.get('first_name') + ' ' + model.get('last_name') : model.get('username');
+            $('#drop-profile').text(text);
+
             $.alert.success(_t("Done"));
         });
     }

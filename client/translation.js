@@ -139,7 +139,7 @@ I18NextWebpackPlugin.prototype.apply = function (compiler) {
     });
 
     compiler.plugin('done', function (watching) {
-        console.log('done');
+        // console.log('done');
         self.modifiedAppModules = new Set();
         watching.startTime -= self.timefix;
     });
@@ -258,7 +258,7 @@ I18NextWebpackPlugin.prototype.apply = function (compiler) {
                     // parser.state.current.addDependency(dep);
                     // console.log(dep)
 
-                    console.log("Parse: ", appModuleName, parser.state.current.resource);
+                    // console.log("Parse: ", appModuleName, parser.state.current.resource);
 
                     self.modifiedAppModules.add(appModuleName);
                     self.i18nFiles.add(parser.state.current.resource);

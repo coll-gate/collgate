@@ -203,8 +203,8 @@ var View = Marionette.CompositeView.extend({
     query: function () {
         if (this.collection) {
             // cleanup
-            var sorters = this.ui.thead.children('tr').children('th,td').find('div.table-advanced-label span.column-sorter');
-            sorters.removeClass(
+            var headers = this.ui.thead.children('tr').children('th,td').find('div.table-advanced-label');
+            headers.children('span.column-sorter').removeClass(
                 'sortby-asc-column sortby-desc-column glyphicon-sort-by-alphabet glyphicon-sort-by-alphabet-alt')
                 .attr('sort-position', null)
                 .empty();
@@ -238,7 +238,7 @@ var View = Marionette.CompositeView.extend({
                 sort_by.splice(pos, 0, order + sortField);
 
                 // setup column header
-                var el = $(this.ui.thead.children('tr').children('th,td').get(i));
+                var el = this.ui.thead.children('tr').children('th,td').eq(i);
                 var sorter = el.children('div.table-advanced-label').children('span.column-sorter');
                 sorter.attr('sort-position', pos);
 
@@ -399,6 +399,67 @@ var View = Marionette.CompositeView.extend({
         }
     },
 
+    initHeaders: function () {
+        /**
+         * Initialize uninitialized columns
+         * @type {boolean}
+         */
+        var view = this;
+        var headerRows = this.ui.thead.children('tr').children('th,td');
+        var fixedPrevColumn = false;
+
+        $.each(headerRows, function (i, element) {
+            var el = $(element);
+            var label = el.children('div.table-advanced-label');
+
+            // if not exist insert the label into a sub-div
+            if (label.length === 0) {
+                label = $('<div class="table-advanced-label"></div>').html(el.html()).attr('title', el.text().trim());
+                el.html(label);
+
+                var draggable = label.children('[draggable]');
+
+                draggable.on('dragstart', $.proxy(view.onColumnDragStart, view))
+                    .on('dragend', $.proxy(view.onColumnDragEnd, view));
+
+                el.on('dragenter', $.proxy(view.onColumnDragEnter, view))
+                    .on('dragleave', $.proxy(view.onColumnDragLeave, view))
+                    .on('dragover', $.proxy(view.onColumnDragOver, view))
+                    .on('drop', $.proxy(view.onColumnDrop, view));
+
+                var sorters = label.children('span.column-sorter');
+                sorters.on('click', $.proxy(view.onSortColumn, view));
+            }
+
+            // name unamed columns
+            if (el.attr('name') === undefined || el.attr('name') === "") {
+                el.attr('name', 'unamed' + i);
+            }
+
+            // add column sizer for each column except the first and the last
+            if (i > 0 && i < headerRows.length && el.children('div.column-sizer').length === 0) {
+                var sizer = $('<div class="column-sizer"></div>');
+                el.prepend(sizer);
+
+                sizer.append('<div></div>');
+
+                // active sizer only if the left column is not fixed size
+                if (!fixedPrevColumn) {
+                    sizer.addClass('active');
+
+                    sizer.on('mousedown', $.proxy(view.onResizeColumnBegin, view))
+                        .on('mouseover', $.proxy(view.onResizeColumnHover, view));
+                }
+            } else if (i === 0 && el.children('div.column-sizer').length !== 0) {
+                // remove previous sizer (can appears when moving columns)
+                el.children('div.column-sizer').remove();
+            }
+
+            // fixed column, then no sizer on the left of the next column
+            fixedPrevColumn = !!el.hasClass('glyph-fixed-column');
+        });
+    },
+
     updateColumnsWidth: function (autoAdjust) {
         if (!this.ui.table.hasClass('table-advanced') || !this.ui.table.hasClass('table-advanced')) {
             return;
@@ -406,6 +467,8 @@ var View = Marionette.CompositeView.extend({
 
         // not displayed at this time, wait for a visibility signal (onShowTab or onDomRefresh)
         if (!this.isDisplayed()) {
+            // at least init headers
+            this.initHeaders();
             return;
         }
 

@@ -18,9 +18,9 @@ var View = AdvancedTable.extend({
     childView: ClassificationEntryView,
     childViewContainer: 'tbody.entity-list',
 
-    userSettingName: function() {
-        return /*this.classification.get('name')*/'classificationentry' + '_classification_list_columns';
-    },
+    userSettingName: 'classificationentry_list_columns', //function() {
+        //return /*this.classification.get('name')*/'classificationentry' + '_classification_list_columns';
+    //},
     userSettingVersion: '1.0',
 
     defaultColumns: [

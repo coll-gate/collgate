@@ -16,7 +16,9 @@ var EnumSingle = function() {
 
     this.name = "enum_single";
     this.group = "list";
-    this.allow_multiple = true
+
+    this.autocomplete = false;
+    this.allow_multiple = true;
 };
 
 _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
@@ -112,12 +114,12 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
 
                 select.selectpicker({container: 'body', style: 'btn-default'});
 
-                // init the select2
+                // init the selectpicker
                 var url = application.baseUrl + 'descriptor/group/' + descriptorTypeGroup + '/type/' + descriptorTypeId + '/';
 
                 // refresh values
                 this.promise = $.ajax({
-                    url: url + 'value/display',
+                    url: url + 'value/display/',
                     dataType: 'json'
                 }).done(function (data) {
                     for (var i = 0; i < data.length; ++i) {
@@ -217,81 +219,114 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
                 var type = this;
 
                 if (this.autocomplete) {
-                    // need to re-init the select2 widget
-                    this.el.select2('destroy');
-
-                    // init the autocomplete
                     var initials = [];
 
-                    var container = this.parent.closest('div.modal-dialog').parent();
-                    if (container.length === 0) {
-                        container = this.groupEl;  // parent.closest('div.panel');
+                    // @todo multiple ?
+
+                    // is the option exists
+                    if (type.el.children('option[value=' + defaultValues + ']').length) {
+                        type.el.trigger({
+                            type: 'select2:select',
+                            params: {
+                                data: initials
+                            }
+                        });
+                    } else {
+                        // autoselect the initial value
+                        $.ajax({
+                            type: "GET",
+                            url: url + 'value/' + defaultValues + '/display/',
+                            dataType: 'json'
+                        }).done(function (data) {
+                            initials.push({id: data.id, text: data.name});
+
+                            var option = new Option(data.name, data.id, true, true);
+                            type.el.append(option).trigger('change');
+
+                            type.el.trigger({
+                                type: 'select2:select',
+                                params: {
+                                    data: initials
+                                }
+                            });
+                        });
                     }
 
-                    var params = {
-                        data: initials,
-                        dropdownParent: container,
-                        ajax: {
-                            url: url + 'value/display/search/',
-                            dataType: 'json',
-                            delay: 250,
-                            data: function (params) {
-                                params.term || (params.term = '');
-
-                                return {
-                                    cursor: params.next,
-                                    value: params.term
-                                };
-                            },
-                            processResults: function (data, params) {
-                                params.next = null;
-
-                                if (data.items.length >= 30) {
-                                    params.next = data.next || null;
-                                }
-
-                                var results = [];
-
-                                for (var i = 0; i < data.items.length; ++i) {
-                                    results.push({
-                                        id: data.items[i].id,
-                                        text: data.items[i].label
-                                    });
-                                }
-
-                                return {
-                                    results: results,
-                                    pagination: {
-                                        more: params.next != null
-                                    }
-                                };
-                            },
-                            cache: true
-                        },
-                        allowClear: true,
-                        minimumInputLength: 3,
-                        placeholder: _t("Enter a value.")
-                    };
-
-                    // defines temporary value (before waiting)
-                    this.el.attr('value', defaultValues);
-
-                    // autoselect the initial value
-                    $.ajax({
-                        type: "GET",
-                        url: url + 'value/' + defaultValues + '/display/',
-                        dataType: 'json'
-                    }).done(function (data) {
-                        initials.push({id: data.id, text: data.label});
-
-                        params.data = initials;
-
-                        type.el.select2(params).fixSelect2Position();
-                        type.el.val(defaultValues).trigger('change');
-
-                        // remove temporary value
-                        type.el.removeAttr('value');
-                    });
+                    // // need to re-init the select2 widget
+                    // this.el.select2('destroy');
+                    //
+                    // // init the autocomplete
+                    // var initials = [];
+                    //
+                    // var container = this.parent.closest('div.modal-dialog').parent();
+                    // if (container.length === 0) {
+                    //     container = this.groupEl;  // parent.closest('div.panel');
+                    // }
+                    //
+                    // var params = {
+                    //     data: initials,
+                    //     dropdownParent: container,
+                    //     ajax: {
+                    //         url: url + 'value/display/search/',
+                    //         dataType: 'json',
+                    //         delay: 250,
+                    //         data: function (params) {
+                    //             params.term || (params.term = '');
+                    //
+                    //             return {
+                    //                 cursor: params.next,
+                    //                 value: params.term
+                    //             };
+                    //         },
+                    //         processResults: function (data, params) {
+                    //             params.next = null;
+                    //
+                    //             if (data.items.length >= 30) {
+                    //                 params.next = data.next || null;
+                    //             }
+                    //
+                    //             var results = [];
+                    //
+                    //             for (var i = 0; i < data.items.length; ++i) {
+                    //                 results.push({
+                    //                     id: data.items[i].id,
+                    //                     text: data.items[i].label
+                    //                 });
+                    //             }
+                    //
+                    //             return {
+                    //                 results: results,
+                    //                 pagination: {
+                    //                     more: params.next != null
+                    //                 }
+                    //             };
+                    //         },
+                    //         cache: true
+                    //     },
+                    //     allowClear: true,
+                    //     minimumInputLength: 3,
+                    //     placeholder: _t("Enter a value.")
+                    // };
+                    //
+                    // // defines temporary value (before waiting)
+                    // this.el.attr('value', defaultValues);
+                    //
+                    // // autoselect the initial value
+                    // $.ajax({
+                    //     type: "GET",
+                    //     url: url + 'value/' + defaultValues + '/display/',
+                    //     dataType: 'json'
+                    // }).done(function (data) {
+                    //     initials.push({id: data.id, text: data.label});
+                    //
+                    //     params.data = initials;
+                    //
+                    //     type.el.select2(params).fixSelect2Position();
+                    //     type.el.val(defaultValues).trigger('change');
+                    //
+                    //     // remove temporary value
+                    //     type.el.removeAttr('value');
+                    // });
                 } else {
                     // defines temporary value (before waiting)
                     this.el.attr('value', defaultValues);

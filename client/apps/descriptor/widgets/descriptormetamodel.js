@@ -15,6 +15,7 @@ var DescriptorMetaModel = function () {
 
     this.name = "descriptor_meta_model";
     this.group = "reference";
+
     this.searchUrl = null;
     this.allow_multiple = true
 };

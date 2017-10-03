@@ -153,15 +153,19 @@ def search_classification(request):
     """
     Filters the classification by name.
     """
-    filters = json.loads(request.GET['filters'])
+    filters = json.loads(request.GET.get('filters', {}))
+    fields = filters.get('fields', [])
     page = int_arg(request.GET.get('page', 1))
 
-    classifications = None
+    classifications = Classification.objects.get_queryset()
 
-    if filters['method'] == 'ieq' and 'name' in filters['fields']:
-        classifications = Classification.objects.filter(name__iexact=filters['name'])
-    elif filters['method'] == 'icontains' and 'name' in filters['fields']:
-        classifications = Classification.objects.filter(name__icontains=filters['name'])
+    if 'name' in fields:
+        method = filters.get('method', 'ieq')
+
+        if method == 'ieq':
+            classifications = classifications.filter(name__iexact=filters['name'])
+        elif method == 'icontains':
+            classifications = classifications.filter(name__icontains=filters['name'])
 
     classifications = classifications.annotate(Count('ranks'))
     classifications_list = []
@@ -507,17 +511,21 @@ def search_classification_rank(request):
     """
     Filters the classification rank by name.
     """
-    filters = json.loads(request.GET['filters'])
+    filters = json.loads(request.GET.get('filters', {}))
+    fields = filters.get('fields', [])
     page = int_arg(request.GET.get('page', 1))
 
-    classification_ranks = None
+    classification_ranks = ClassificationRank.objects.get_queryset()
 
-    if filters['method'] == 'ieq' and 'name' in filters['fields']:
-        classification_ranks = ClassificationRank.objects.filter(name__iexact=filters['name'])
-    elif filters['method'] == 'icontains' and 'name' in filters['fields']:
-        classification_ranks = ClassificationRank.objects.filter(name__icontains=filters['name'])
+    if 'name' in fields:
+        method = filters.get('method', 'ieq')
 
-    classification_ranks = classification_ranks.annotate(Count('classificationentry'))
+        if method == 'ieq':
+            classification_ranks = classification_ranks.filter(name__iexact=filters['name'])
+        elif method == 'icontains':
+            classification_ranks = classification_ranks.filter(name__icontains=filters['name'])
+
+    classification_ranks = classification_ranks.annotate(Count('classificationentry')).order_by('level')
     classification_ranks_list = []
 
     if classification_ranks:

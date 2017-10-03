@@ -16,7 +16,9 @@ var Entity = function () {
 
     this.name = "entity";
     this.group = "reference";
+
     this.searchUrl = null;
+    this.autocomplete = false;
     this.allow_multiple = true
 };
 
@@ -34,73 +36,110 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
             this.readOnly = true;
             this.el = input;
         } else {
-            var select = $('<select style="width: 100%;" ' + (options.multiple ? "multiple" : "") + '></select>');
-            this.groupEl = this._createInputGroup(parent, "glyphicon-share", select);
+            if (!format.list_type || format.list_type === "autocomplete") {
+                this.autocomplete = true;
 
-            // init the autocomplete
-            var url = application.baseUrl + (this.searchUrl ? this.searchUrl : (format.model.replace('.', '/') + '/'));
-            var initials = [];
+                var select = $('<select style="width: 100%;" ' + (options.multiple ? "multiple" : "") + '></select>');
+                this.groupEl = this._createInputGroup(parent, "glyphicon-share", select);
 
-            var container = parent.closest('div.modal-dialog').parent();
-            if (container.length === 0) {
-                container = this.groupEl;  // parent.closest('div.panel');
-            }
+                // init the autocomplete
+                var url = application.baseUrl + (this.searchUrl ? this.searchUrl : (format.model.replace('.', '/') + '/'));
+                var initials = [];
 
-            var params = {
-                // width: 'element',
-                data: initials,
-                dropdownParent: container,
-                ajax: {
+                var container = parent.closest('div.modal-dialog').parent();
+                if (container.length === 0) {
+                    container = this.groupEl;  // parent.closest('div.panel');
+                }
+
+                var params = {
+                    // width: 'element',
+                    data: initials,
+                    dropdownParent: container,
+                    ajax: {
+                        url: url + 'search/',
+                        dataType: 'json',
+                        delay: 250,
+                        data: function (params) {
+                            params.term || (params.term = '');
+
+                            return {
+                                filters: JSON.stringify({
+                                    method: 'icontains',
+                                    fields: ['name'],
+                                    name: params.term
+                                }),
+                                cursor: params.next
+                            };
+                        },
+                        processResults: function (data, params) {
+                            params.next = null;
+
+                            if (data.items.length >= 30) {
+                                params.next = data.next || null;
+                            }
+
+                            var results = [];
+
+                            for (var i = 0; i < data.items.length; ++i) {
+                                results.push({
+                                    id: data.items[i].id,
+                                    text: data.items[i].label
+                                });
+                            }
+
+                            return {
+                                results: results,
+                                pagination: {
+                                    more: params.next != null
+                                }
+                            };
+                        },
+                        cache: true
+                    },
+                    allowClear: true,
+                    minimumInputLength: 3,
+                    placeholder: _t("Enter a value.")
+                };
+
+                // make an autocomplete widget on simple_value
+                select.select2(params).fixSelect2Position();
+
+                this.parent = parent;
+                this.el = select;
+            } else if (format.list_type === 'dropdown') {
+                this.autocomplete = false;
+
+                var select = $('<select style="width: 100%;" ' + (options.multiple ? "multiple" : "") + '></select>');
+                this.groupEl = this._createInputGroup(parent, "glyphicon-share", select);
+
+                select.selectpicker({container: 'body', style: 'btn-default'});
+
+                // init the selectpicker
+                var url = application.baseUrl + (this.searchUrl ? this.searchUrl : (format.model.replace('.', '/') + '/'));
+
+                // refresh values
+                this.promise = $.ajax({
                     url: url + 'search/',
                     dataType: 'json',
-                    delay: 250,
-                    data: function (params) {
-                        params.term || (params.term = '');
+                    data: {filters: "{}"}
+                }).done(function (data) {
+                    for (var i = 0; i < data.items.length; ++i) {
+                        var option = $("<option></option>");
+                        var item = data.items[i];
 
-                        return {
-                            filters: JSON.stringify({
-                                method: 'icontains',
-                                fields: ['name'],
-                                name: params.term
-                            }),
-                            cursor: params.next
-                        };
-                    },
-                    processResults: function (data, params) {
-                        params.next = null;
+                        option.attr("value", item.value || item.id);
+                        option.attr("title", item.label || item.name);
+                        option.html(item.label || item.name);
 
-                        if (data.items.length >= 30) {
-                            params.next = data.next || null;
-                        }
+                        select.append(option);
+                    }
 
-                        var results = [];
+                    select.selectpicker('refresh');
+                });
 
-                        for (var i = 0; i < data.items.length; ++i) {
-                            results.push({
-                                id: data.items[i].id,
-                                text: data.items[i].label
-                            });
-                        }
-
-                        return {
-                            results: results,
-                            pagination: {
-                                more: params.next != null
-                            }
-                        };
-                    },
-                    cache: true
-                },
-                allowClear: true,
-                minimumInputLength: 3,
-                placeholder: _t("Enter a value.")
-            };
-
-            // make an autocomplete widget on simple_value
-            select.select2(params).fixSelect2Position();
-
-            this.parent = parent;
-            this.el = select;
+                this.parent = parent;
+                this.el = select;
+            }
         }
     },
 
@@ -109,7 +148,11 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
             if (this.readOnly) {
                 this.el.parent().remove();
             } else {
-                this.el.select2('destroy');
+                if (this.autocomplete) {
+                    this.el.select2('destroy');
+                } else {
+                    this.el.selectpicker('destroy');
+                }
                 this.groupEl.remove();
             }
         }
@@ -117,13 +160,21 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
 
     enable: function () {
         if (this.el) {
-            this.el.prop("disabled", false);
+            if (this.autocomplete) {
+                this.el.prop("disabled", false);
+            } else {
+                this.el.prop("disabled", false).selectpicker('refresh');
+            }
         }
     },
 
     disable: function () {
         if (this.el) {
-            this.el.prop("disabled", true);
+            if (this.autocomplete) {
+                this.el.prop("disabled", true);
+            } else {
+                this.el.prop("disabled", true).selectpicker('refresh');
+            }
         }
     },
 
@@ -154,89 +205,51 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
             if (definesValues) {
                 var type = this;
 
-                // // need to re-init the select2 widget
-                // this.el.select2('destroy');
-                //
-                // init the autocomplete
-                var initials = [];
-                //
-                // var container = this.parent.closest('div.modal-dialog').parent();
-                // if (container.length === 0) {
-                //     container = this.parent.closest('div.panel');
-                // }
-                //
-                // var params = {
-                //     data: initials,
-                //     dropdownParent: container,
-                //     ajax: {
-                //         url: url + 'search/',
-                //         dataType: 'json',
-                //         delay: 250,
-                //         data: function (params) {
-                //             params.term || (params.term = '');
-                //
-                //             return {
-                //                 filters: JSON.stringify({
-                //                     method: 'icontains',
-                //                     fields: ['name'],
-                //                     name: params.term
-                //                 }),
-                //                 cursor: params.next
-                //             };
-                //         },
-                //         processResults: function (data, params) {
-                //             params.next = null;
-                //
-                //             if (data.items.length >= 30) {
-                //                 params.next = data.next || null;
-                //             }
-                //
-                //             var results = [];
-                //
-                //             for (var i = 0; i < data.items.length; ++i) {
-                //                 results.push({
-                //                     id: data.items[i].id,
-                //                     text: data.items[i].label
-                //                 });
-                //             }
-                //
-                //             return {
-                //                 results: results,
-                //                 pagination: {
-                //                     more: params.next != null
-                //                 }
-                //             };
-                //         },
-                //         cache: true
-                //     },
-                //     allowClear: true,
-                //     minimumInputLength: 3,
-                //     placeholder: _t("Enter a value.")
-                // };
+                if (this.autocomplete) {
+                    var initials = [];
 
-                // autoselect the initial value
-                $.ajax({
-                    type: "GET",
-                    url: url + defaultValues + '/',
-                    dataType: 'json'
-                }).done(function (data) {
-                    initials.push({id: data.id, text: data.name});
+                    // @todo multiple ?
 
-                    // params.data = initials;
-                    //
-                    // type.el.select2(params).fixSelect2Position();
-                    // type.el.val(defaultValues).trigger('change');
+                    // is the option exists
+                    if (type.el.children('option[value=' + defaultValues + ']').length) {
+                        type.el.trigger({
+                            type: 'select2:select',
+                            params: {
+                                data: initials
+                            }
+                        });
+                    } else {
+                        // autoselect the initial value
+                        $.ajax({
+                            type: "GET",
+                            url: url + defaultValues + '/',
+                            dataType: 'json'
+                        }).done(function (data) {
+                            initials.push({id: data.id, text: data.name});
 
-                    var option = new Option(data.name, data.id, true, true);
-                    type.el.append(option).trigger('change');
+                            var option = new Option(data.name, data.id, true, true);
+                            type.el.append(option).trigger('change');
 
-                    type.el.trigger({
-                        type: 'select2:select',
-                        params: {
-                            data: initials
-                        }
+                            type.el.trigger({
+                                type: 'select2:select',
+                                params: {
+                                    data: initials
+                                }
+                            });
+                        });
+                    }
+                } else {
+                    // defines temporary value (before waiting)
+                    this.el.attr('value', defaultValues);
+
+                    $.when(this.promise).done(function (data) {
+                        type.el.val(defaultValues).trigger('change');
+                        type.el.selectpicker('refresh');
+
+                        // remove temporary vale
+                        type.el.removeAttr('value');
                     });
-                });
+                }
             }
         }
     },
