@@ -116,12 +116,11 @@ var View = Marionette.CompositeView.extend({
         if (this.columnsOptions !== undefined) {
             for (var columnName in this.columnsOptions) {
                 if (columnName in options.columns) {
-                    _.extend(_.deepClone(options.columns[columnName]), _.deepClone(this.columnsOptions[columnName]));
+                    _.extend(options.columns[columnName], _.deepClone(this.columnsOptions[columnName]));
                 } else {
                     options.columns[columnName] = _.deepClone(this.columnsOptions[columnName]);
                 }
             }
-            // _.extend(options.columns, this.columnsOptions);
         }
 
         this.listenTo(this.collection, 'reset', this.onResetCollection, this);
