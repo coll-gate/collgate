@@ -9,7 +9,7 @@
  */
 
 var BatchView = require('../views/batch');
-var ScrollView = require('../../main/views/scroll');
+var AdvancedTable = require('../../main/views/advancedtable');
 var Dialog = require('../../main/views/dialog');
 var DefaultLayout = require('../../main/views/defaultlayout');
 var TitleView = require('../../main/views/titleview');
@@ -18,7 +18,7 @@ var AccessionModel = require('../models/accession');
 var BatchModel = require('../models/batch');
 var BatchLayout = require('../views/batchlayout');
 
-var View = ScrollView.extend({
+var View = AdvancedTable.extend({
     template: require("../../descriptor/templates/entitylist.html"),
     className: "batch-list advanced-table-container",
     childView: BatchView,

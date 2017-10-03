@@ -9,9 +9,9 @@
  */
 
 var LanguageView = require('../views/language');
-var ScrollView = require('../../main/views/scroll');
+var AdvancedTable = require('./advancedtable');
 
-var View = ScrollView.extend({
+var View = AdvancedTable.extend({
     template: require("../templates/languagelist.html"),
     className: "language-list advanced-table-container",
     childView: LanguageView,

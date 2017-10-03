@@ -8,12 +8,12 @@
  * @details 
  */
 
-var ScrollView = require('../../main/views/scroll');
+var AdvancedTable = require('../../main/views/advancedtable');
 var Dialog = require('../../main/views/dialog');
 
 var DescriptorPanelView = require('../views/descriptorpanel');
 
-var View = ScrollView.extend({
+var View = AdvancedTable.extend({
     template: require("../templates/descriptorpanellist.html"),
     childView: DescriptorPanelView,
     childViewContainer: 'div.descriptor-panel-list',

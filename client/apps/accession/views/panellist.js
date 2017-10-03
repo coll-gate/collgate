@@ -9,10 +9,10 @@
  */
 
 var PanelView = require('../views/panel');
-var ScrollView = require('../../main/views/scroll');
+var AdvancedTable = require('../../main/views/advancedtable');
 var DescriptorsColumnsView = require('../../descriptor/mixins/descriptorscolumns');
 
-var View = ScrollView.extend({
+var View = AdvancedTable.extend({
     template: require("../../descriptor/templates/entitylist.html"),
     className: "panel-list advanced-table-container",
     childView: PanelView,

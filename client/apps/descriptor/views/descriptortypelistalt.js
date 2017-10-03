@@ -8,10 +8,10 @@
  * @details 
  */
 
-var ScrollView = require('../../main/views/scroll');
+var AdvancedTable = require('../../main/views/advancedtable');
 var DescriptorTypeAltView = require('../views/descriptortypealt');
 
-var View = ScrollView.extend({
+var View = AdvancedTable.extend({
     template: require("../templates/descriptortypelistalt.html"),
     className: "object descriptor-type-list advanced-table-container",
     childView: DescriptorTypeAltView,

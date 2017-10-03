@@ -11,9 +11,9 @@
 var Marionette = require('backbone.marionette');
 var DescriptorValueModel = require('../models/descriptorvalue');
 var DescriptorValueOrdinalView = require('../views/descriptorvalueordinal');
-var ScrollView = require('../../main/views/scroll');
+var AdvancedTable = require('../../main/views/advancedtable');
 
-var View = ScrollView.extend({
+var View = AdvancedTable.extend({
     template: require("../templates/descriptorvalueordinallist.html"),
     className: "object descriptor-value-list advanced-table-container",
     childView: DescriptorValueOrdinalView,

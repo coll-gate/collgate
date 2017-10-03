@@ -9,9 +9,9 @@
  */
 
 var EntitySynonymView = require('../views/entitysynonymtype');
-var ScrollView = require('../../main/views/scroll');
+var AdvancedTable = require('./advancedtable');
 
-var View = ScrollView.extend({
+var View = AdvancedTable.extend({
     template: require("../templates/entitysynonymtypelist.html"),
     className: "entity-synonym-type-list advanced-table-container",
     childView: EntitySynonymView,

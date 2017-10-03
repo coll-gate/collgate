@@ -9,9 +9,9 @@
  */
 
 var ClassificationEntryEntityView = require('./classificationentryentity');
-var ScrollView = require('../../main/views/scroll');
+var AdvancedTable = require('../../main/views/advancedtable');
 
-var View = ScrollView.extend({
+var View = AdvancedTable.extend({
     template: require("../templates/classificationentryentitieslist.html"),
     className: "classification-entry-entity-list advanced-table-container",
     childView: ClassificationEntryEntityView,

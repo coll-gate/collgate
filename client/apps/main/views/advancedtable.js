@@ -1,11 +1,12 @@
 /**
- * @file scroll.js
- * @brief Base view for scrollable view with a cursor collection
+ * @file advancedtable.js
+ * @brief Table view customizable cells and headers, resizable, dynamic columns (add, remove, move).
  * @author Frédéric SCHERMA (INRA UMR1095)
  * @date 2016-10-07
  * @copyright Copyright (c) 2016 INRA/CIRAD
  * @license MIT (see LICENSE file)
- * @details
+ * @details Table view customizable cells and headers, resizable, dynamic columns (add, remove, move), with auto
+ * fetching on collection using infinite scrolling. Also support sorting and multi-columns sorting.
  */
 
 var Marionette = require('backbone.marionette');
