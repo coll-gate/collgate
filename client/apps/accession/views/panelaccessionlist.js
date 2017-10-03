@@ -8,7 +8,7 @@
  * @details
  */
 
-var AccessionView = require('../views/accession');
+var AccessionView = require('../views/panelaccession');
 var ScrollView = require('../../main/views/scroll');
 var DescriptorsColumnsView = require('../../descriptor/mixins/descriptorscolumns');
 
@@ -122,11 +122,25 @@ var View = ScrollView.extend({
     onUnlinkAccessions: function () {
         var view = this;
         $.ajax({
-            type: 'POST',
-            url: application.baseUrl + 'accession/panel/' + this.model.id + '/accession/',
-            dataType: 'json',
-            data: {'select': JSON.stringify(view.getSelection('select'))}
-        }).done(function () {
+                type: 'PATCH',
+                url: application.baseUrl + 'accession/panel/' + this.model.id + '/accession/',
+                dataType: 'json',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({
+                    'action': 'remove',
+                    'selection': {
+                        'select': view.getSelection('select'),
+                        'from': {
+                            'content_type': 'accession.accessionpanel',
+                            'id': view.model.id
+                        }
+                        // 'filters': filters,
+                        // 'search': search
+                    }
+                })
+            }
+        ).done(function () {
+            // view.render();
             view.collection.fetch();
         });
     },

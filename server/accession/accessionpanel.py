@@ -206,7 +206,7 @@ def get_panel_list_count(request):
 @RestAccessionPanel.def_auth_request(Method.GET, Format.JSON, perms={
     'accession.list_accessionpanel': _("You are not allowed to list the accession panels")
 })
-def get_accession_list(request):
+def get_panel_list(request):
     results_per_page = int_arg(request.GET.get('more', 30))
     cursor = json.loads(request.GET.get('cursor', 'null'))
     limit = results_per_page
@@ -272,7 +272,7 @@ def delete_panel(request, panel_id):
                                                "descriptors": {"type": "object", "required": False},
                                            },
                                            "additionalProperties": {
-                                                "name": AccessionPanel.NAME_VALIDATOR
+                                               "name": AccessionPanel.NAME_VALIDATOR
                                            }
                                        })
 def modify_panel(request, panel_id):
@@ -460,51 +460,155 @@ def get_panel_accession_list(request, panel_id):
     return HttpResponseRest(request, results)
 
 
-@RestAccessionPanelAccession.def_auth_request(Method.POST, Format.JSON, content={
+@RestAccessionPanelAccession.def_auth_request(Method.PATCH, Format.JSON, content={
     "type": "object",
     "properties": {
-        "select": {
-            "type": [
-                {
+        "action": {"type": "string", "enum": ['add', 'remove']},
+        "selection": {
+            "type": "object",
+            "properties": {
+                "select": {
+                    "type": [
+                        {
+                            "type": "object",
+                            "properties": {
+                                "op": {"type": "string", "enum": ['in', 'notin']},
+                                "term": {"type": "string"},
+                                "value": {"type": "array"},
+                            },
+                        },
+                        {
+                            "type": "boolean"
+                        }
+                    ]
+                },
+
+            },
+            "additionalProperties": {
+                "from": {
                     "type": "object",
                     "properties": {
-                        "op": {"enum": ['in', 'notin']},
-                        "term": {"type": "string"},
-                        "value": {"type": "array"},
-                    },
+                        "content_type": {"type": "string"},
+                        "id": {"type": "integer"}
+                    }
                 },
-                {
-                    "type": "boolean"
-                }
-            ]
+                "search": {"type": "object"},
+                "filters": {"type": "object"}
+            }
         }
     }
 
 }, perms={
     'accession.change_accessionpanel': _("You are not allowed to modify accession panel")
 })
-def unlink_panel_accessions(request, panel_id):
-    print(request)
-    selection = json.loads(request.data['select'])
+def modify_panel_accessions(request, panel_id):
+    action = request.data['action']
+    selection = request.data['selection']['select']
+    # search = request.data['selection']['search']
+    # filters = request.data['selection']['filters']
+    related_entity = request.data['selection']['from']
     panel = AccessionPanel.objects.get(id=int_arg(panel_id))
 
-    try:
-        with transaction.atomic():
+    from main.cursor import CursorQuery
+    cq = CursorQuery(Accession)
 
-            if isinstance(selection, bool):
-                if selection is True:
-                    panel.accessions.remove(*panel.accessions.all())
+    if request.data['selection'].get('filters'):
+        cq.filter(request.data['selection'].get('filters'))
 
-            elif selection['op'] == 'in':
-                panel.accessions.remove(*panel.accessions.filter(id__in=selection['value']))
+    if request.data['selection'].get('search'):
+        cq.filter(request.data['selection'].get('search'))
 
-            elif selection['op'] == 'notin':
-                panel.accessions.remove(*panel.accessions.exclude(id__in=selection['value']))
+    if related_entity:
+        label, model = related_entity['content_type'].split('.')
+        content_type = get_object_or_404(ContentType, app_label=label, model=model)
+        model_class = content_type.model_class()
+        cq.inner_join(model_class, **{model: int_arg(related_entity['id'])})
 
-    except IntegrityError as e:
-        DescriptorModelType.integrity_except(AccessionPanel, e)
+    if action == 'remove':
+        try:
+            with transaction.atomic():
+                if isinstance(selection, bool):
+                    if selection is True:
+                        panel.accessions.remove(*cq)
 
-    return HttpResponseRest(request, {'message': 'ok'})
+                elif selection['op'] == 'in':
+                    panel.accessions.remove(*cq.filter(id__in=selection['value']))
+
+                elif selection['op'] == 'notin':
+                    panel.accessions.remove(*cq.filter(id__notin=selection['value']))
+
+                panel.save()
+
+        except IntegrityError as e:
+            DescriptorModelType.integrity_except(AccessionPanel, e)
+
+    elif action == 'add':
+        try:
+            with transaction.atomic():
+                if isinstance(selection, bool):
+                    if selection is True:
+                        panel.accessions.add(*cq)
+
+                elif selection['op'] == 'in':
+                    panel.accessions.add(*cq.filter(id__in=selection['value']))
+
+                elif selection['op'] == 'notin':
+                    panel.accessions.add(*cq.filter(id__notin=selection['value']))
+
+                panel.save()
+
+        except IntegrityError as e:
+            DescriptorModelType.integrity_except(AccessionPanel, e)
+    else:
+        raise SuspiciousOperation('Invalid action')
+
+    return HttpResponseRest(request, {})
+
+
+# @RestAccessionPanelAccession.def_auth_request(Method.POST, Format.JSON, content={
+#     "type": "object",
+#     "properties": {
+#         "select": {
+#             "type": [
+#                 {
+#                     "type": "object",
+#                     "properties": {
+#                         "op": {"enum": ['in', 'notin']},
+#                         "term": {"type": "string"},
+#                         "value": {"type": "array"},
+#                     },
+#                 },
+#                 {
+#                     "type": "boolean"
+#                 }
+#             ]
+#         }
+#     }
+#
+# }, perms={
+#     'accession.change_accessionpanel': _("You are not allowed to modify accession panel")
+# })
+# def unlink_panel_accessions(request, panel_id):
+#     selection = json.loads(request.data['select'])
+#     panel = AccessionPanel.objects.get(id=int_arg(panel_id))
+#
+#     try:
+#         with transaction.atomic():
+#
+#             if isinstance(selection, bool):
+#                 if selection is True:
+#                     panel.accessions.remove(*panel.accessions.all())
+#
+#             elif selection['op'] == 'in':
+#                 panel.accessions.remove(*panel.accessions.filter(id__in=selection['value']))
+#
+#             elif selection['op'] == 'notin':
+#                 panel.accessions.remove(*panel.accessions.exclude(id__in=selection['value']))
+#
+#     except IntegrityError as e:
+#         DescriptorModelType.integrity_except(AccessionPanel, e)
+#
+#     return HttpResponseRest(request, {'message': 'ok'})
 
 
 @RestAccessionPanelSearch.def_auth_request(Method.GET, Format.JSON, ('filters',))

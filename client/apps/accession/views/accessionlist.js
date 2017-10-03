@@ -72,7 +72,7 @@ var View = ScrollView.extend({
         }
     },
 
-    initialize: function(options) {
+    initialize: function (options) {
         View.__super__.initialize.apply(this, arguments);
         this.related_entity = this.getOption('related_entity');
         this.filters = this.getOption('filters');
@@ -81,7 +81,7 @@ var View = ScrollView.extend({
         // this.listenTo(this.collection, 'reset', this.render, this);
     },
 
-    onShowTab: function() {
+    onShowTab: function () {
         var view = this;
 
         var contextLayout = application.getView().getChildView('right');
@@ -94,7 +94,10 @@ var View = ScrollView.extend({
         var TitleView = require('../../main/views/titleview');
         contextLayout.showChildView('title', new TitleView({title: _t("Accession actions"), glyphicon: 'fa-wrench'}));
 
-        var actions = ['create-panel'];
+        var actions = [
+            'create-panel',
+            'link-to-panel'
+        ];
 
         var AccessionListContextView = require('./accessionlistcontext');
         var contextView = new AccessionListContextView({actions: actions});
@@ -104,16 +107,25 @@ var View = ScrollView.extend({
             view.onCreatePanel();
         });
 
+        contextView.on("panel:link-accessions", function () {
+            view.onLinkToPanel();
+        });
+
         View.__super__.onShowTab.apply(this, arguments);
     },
 
-    onBeforeDetach: function() {
+    onBeforeDetach: function () {
         application.main.defaultRightView();
     },
 
     onCreatePanel: function () {
         application.accession.controllers.panel.create(this.getSelection('select'), this.related_entity, this.collection.filters, this.collection.search);
+    },
+
+    onLinkToPanel: function () {
+        application.accession.controllers.panel.linkAccessions(this.getSelection('select'), this.related_entity, this.collection.filters, this.collection.search);
     }
+
 });
 
 // support of descriptors columns extension
