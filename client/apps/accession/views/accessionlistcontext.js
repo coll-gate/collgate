@@ -18,7 +18,8 @@ var View = Marionette.View.extend({
         return {
             actions: this.getOption('actions'),
             options: {
-                'create-panel': {className: 'btn-default', label: _t('Create panel')},
+                'create-panel': {className: 'btn-default', label: _t('Create new panel')},
+                'link-to-panel': {className: 'btn-default', label: _t('Link to existing panel')}
                 // 'xxx': {className: 'btn-success', label: _t('XXxx')},
                 // 'yyy': {className: 'btn-default', label: _t('YYyy')}
             }
@@ -27,12 +28,14 @@ var View = Marionette.View.extend({
 
     ui: {
         'create-panel': 'button[name="create-panel"]',
+        'link-to-panel': 'button[name="link-to-panel"]'
         // 'apply': 'button[name="apply"]',
         // 'cancel': 'button[name="cancel"]'
     },
 
     triggers: {
         "click @ui.create-panel": "panel:create",
+        "click @ui.link-to-panel": "panel:link-accessions"
         // "click @ui.apply": "describable:apply",
         // "click @ui.cancel": "describable:cancel"
     },

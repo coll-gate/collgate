@@ -18,7 +18,7 @@ var View = Marionette.View.extend({
         return {
             actions: this.getOption('actions'),
             options: {
-                'create-panel': {className: 'btn-default', label: _t('Create panel')},
+                'create-panel': {className: 'btn-default', label: _t('Create new panel')},
                 'unlink-accessions': {className: 'btn-danger', label: _t('Unlink accessions')}
                 // 'xxx': {className: 'btn-success', label: _t('XXxx')},
                 // 'yyy': {className: 'btn-default', label: _t('YYyy')}

@@ -113,7 +113,7 @@ var Controller = Marionette.Object.extend({
                     application.main.showContent(defaultLayout);
 
                     defaultLayout.showChildView('title', new TitleView({
-                        title: _t("Classification entry"),
+                        title: _t("Panel"),
                         model: model
                     }));
 
@@ -125,6 +125,71 @@ var Controller = Marionette.Object.extend({
 
         var createPanelDialog = new CreatePanelDialog();
         createPanelDialog.render();
+    },
+
+    linkAccessions: function (selection, related_entity, filters, search) {
+        related_entity || (related_entity = null);
+        filters || (filters = {});
+        search || (search = {});
+
+        $.ajax({
+            type: "GET",
+            url: application.baseUrl + 'accession/panel/',
+            dataType: 'json'
+        }).done(function (data) {
+            var LinkToPanelDialog = Dialog.extend({
+                template: require('../templates/panellinkaccessions.html'),
+                templateContext: function () {
+                    return {
+                        panels: data.items
+                    };
+                },
+                ui: {
+                    validate: "button.link-to-panel",
+                    panel: "#panel"
+                },
+
+                events: {
+                    'click @ui.validate': 'onLinkToPanel'
+                },
+
+                initialize: function (options) {
+                    LinkToPanelDialog.__super__.initialize.apply(this);
+                },
+
+                onLinkToPanel: function (ev) {
+                    var view = this;
+                    var panel_id = this.ui.panel.val();
+                    var go_to_panel = $(ev.currentTarget).data('gotopanel');
+
+                    $.ajax({
+                        type: 'PATCH',
+                        url: application.baseUrl + 'accession/panel/' + panel_id + '/accession/',
+                        dataType: 'json',
+                        contentType: "application/json; charset=utf-8",
+                        data: JSON.stringify({
+                            'action': 'add',
+                            'selection': {
+                                'select': selection,
+                                'from': related_entity,
+                                'filters': filters,
+                                'search': search
+                            }
+                        })
+                    }).done(function () {
+                        view.destroy();
+                        if (go_to_panel) {
+                            Backbone.history.navigate('app/accession/panel/' + panel_id + '/accessions/', {trigger: true});
+                        }
+                    });
+                }
+            });
+
+            var linkToPanelDialog = new LinkToPanelDialog();
+            linkToPanelDialog.render();
+        });
+
+
     }
 
 });
