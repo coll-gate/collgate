@@ -215,6 +215,7 @@ INSTALLED_APPS = (
 APPLICATIONS = {
     "igdectk.jquery": {
         "DB_DEFAULT_SETTINGS": {
+            "jquery": {"default_version": "3.2.1"},
             "ui": {"default_theme": "lightness"},
             "fancytree": {
                 "default_version": "2.12.0",
@@ -222,8 +223,8 @@ APPLICATIONS = {
                 ".glyph": {"default_version": "2.12.0"},
             },
             "select2": {
-                "default_version": "4.0.3",
-                ".bootstrap": {"default_version": "4.0.3"},
+                "default_version": "4.0.4",
+                ".bootstrap": {"default_version": "4.0.4"},
             },
             "igdectk": {
                 ".csrf": {"default_version": "2.0.0"},
@@ -233,7 +234,7 @@ APPLICATIONS = {
     },
     "igdectk.bootstrap": {
         "DB_DEFAULT_SETTINGS": {
-            "bootstrap": {"default_version": "3.3.6"},
+            "bootstrap": {"default_version": "3.3.7"},
             "igdectk": {
                 ".alert": {"default_version": "2.0.0"},
                 ".helper": {"default_version": "2.0.0"},
