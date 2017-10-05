@@ -94,7 +94,7 @@ class CollGateAccession(ApplicationMain):
         menu_accession.add_entry(
             MenuEntry('list-accession', _('List accessions'), "#accession/accession/", icon=Glyph.LIST, order=101))
         menu_accession.add_entry(
-            MenuEntry('panel-accession', _('Panel accessions'), "#accession/panel/",
+            MenuEntry('panel-accession', _('Panel accessions'), "#accession/accessions_panel/",
                       icon=Glyph.LIST_ALT, order=102))
 
         menu_accession.add_entry(MenuSeparator(200))
@@ -114,6 +114,9 @@ class CollGateAccession(ApplicationMain):
         menu_batch.add_entry(MenuSeparator(100))
         menu_batch.add_entry(
             MenuEntry('list-batches', _('List batches'), "#accession/batch/", icon=Glyph.LIST, order=101))
+        menu_batch.add_entry(
+            MenuEntry('panel-batches', _('Panel batches'), "#accession/batches_panel/",
+                      icon=Glyph.LIST_ALT, order=102))
 
         menu_batch.add_entry(MenuSeparator(200))
         menu_batch.add_entry(

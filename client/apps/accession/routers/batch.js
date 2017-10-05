@@ -13,6 +13,7 @@ var Marionette = require('backbone.marionette');
 var BatchModel = require('../models/batch');
 var BatchCollection = require('../collections/batch');
 var BatchListView = require('../views/batchlist');
+var EntityListFilterView = require('../../descriptor/views/entitylistfilter');
 
 var DefaultLayout = require('../../main/views/defaultlayout');
 var ScrollingMoreView = require('../../main/views/scrollingmore');
@@ -26,8 +27,13 @@ var Router = Marionette.AppRouter.extend({
         "app/accession/batch/:id/*tab": "getBatch"
     },
 
-    getBatchList : function() {
-        var collection = new BatchCollection();
+    getBatchList : function(options) {
+        options || (options = {});
+
+        var collection = new BatchCollection([], {
+            filters: (options.filters || {}),
+            search: (options.search || {})
+        });
 
         var defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
@@ -44,6 +50,9 @@ var Router = Marionette.AppRouter.extend({
 
             defaultLayout.showChildView('content', batchListView);
             defaultLayout.showChildView('content-bottom', new ScrollingMoreView({targetView: batchListView}));
+            defaultLayout.showChildView('bottom', new EntityListFilterView({
+                collection: collection, columns: data[0].value
+            }));
         });
     },
 

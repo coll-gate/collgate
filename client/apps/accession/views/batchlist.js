@@ -23,6 +23,7 @@ var View = AdvancedTable.extend({
     className: "batch-list advanced-table-container",
     childView: BatchView,
     childViewContainer: 'tbody.entity-list',
+    userSettingVersion: '1.0',
 
     userSettingName: function () {
         if (this.collection.batch_type === 'parents') {
@@ -35,14 +36,15 @@ var View = AdvancedTable.extend({
     },
 
     defaultColumns: [
-        {name: 'glyph', width: 'auto', sort_by: null},
+        {name: 'select', width: 'auto', sort_by: null},
         {name: 'name', width: 'auto', sort_by: '+0'},
     ],
 
     columnsOptions: {
-        'glyph': {
+        'select': {
             label: '',
             width: 'auto',
+            type: 'checkbox',
             glyphicon: ['fa-square-o', 'fa-square-o'],
             event: 'selectBatch',
             fixed: true

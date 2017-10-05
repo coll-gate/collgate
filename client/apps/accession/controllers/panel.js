@@ -52,7 +52,7 @@ var Controller = Marionette.Object.extend({
 
                     $.ajax({
                         type: "GET",
-                        url: application.baseUrl + 'accession/panel/search/',
+                        url: application.baseUrl + 'accession/accessions_panel/search/',
                         dataType: 'json',
                         data: {filters: JSON.stringify(filters)},
                         el: this.ui.name,
@@ -139,7 +139,7 @@ var Controller = Marionette.Object.extend({
 
         $.ajax({
             type: "GET",
-            url: application.baseUrl + 'accession/panel/',
+            url: application.baseUrl + 'accession/accessions_panel/',
             dataType: 'json'
         }).done(function (data) {
             var LinkToPanelDialog = Dialog.extend({
@@ -174,7 +174,7 @@ var Controller = Marionette.Object.extend({
 
                     $.ajax({
                         type: 'PATCH',
-                        url: application.baseUrl + 'accession/panel/' + panel_id + '/accession/',
+                        url: application.baseUrl + 'accession/accessions_panel/' + panel_id + '/accessions/',
                         dataType: 'json',
                         contentType: "application/json; charset=utf-8",
                         data: JSON.stringify({
@@ -189,7 +189,7 @@ var Controller = Marionette.Object.extend({
                     }).done(function () {
                         view.destroy();
                         if (go_to_panel) {
-                            Backbone.history.navigate('app/accession/panel/' + panel_id + '/accessions/', {trigger: true});
+                            Backbone.history.navigate('app/accession/accessions_panel/' + panel_id + '/accessions/', {trigger: true});
                         }
                     });
                 }

@@ -21,8 +21,8 @@ var PanelLayout = require('../views/panellayout');
 
 var Router = Marionette.AppRouter.extend({
     routes: {
-        "app/accession/panel/": "getPanelList",
-        "app/accession/panel/:id/*tab": "getPanel"
+        "app/accession/accessions_panel/": "getPanelList",
+        "app/accession/accessions_panel/:id/*tab": "getPanel"
     },
 
     getPanelList: function (options) {
