@@ -46,8 +46,7 @@ var View = Marionette.View.extend({
 
     events: {
         'click @ui.details': 'viewDetails',
-        'click @ui.accession': 'viewAccession',
-        'click': 'viewDetails'
+        'click @ui.accession': 'viewAccession'
     },
 
     initialize: function() {

@@ -38,6 +38,11 @@ class RestBatchSearch(RestBatch):
     suffix = 'search'
 
 
+class RestBatchCount(RestBatch):
+    regex = r'^count/$'
+    name = 'count'
+
+
 class RestBatchId(RestBatch):
     regex = r'^(?P<bat_id>[0-9]+)/$'
     suffix = 'id'
@@ -425,42 +430,34 @@ def search_batch(request):
 })
 def get_batch_list(request):
     results_per_page = int_arg(request.GET.get('more', 30))
-    cursor = request.GET.get('cursor')
+    cursor = json.loads(request.GET.get('cursor', 'null'))
     limit = results_per_page
-    order_by = ['name', 'id']
+    sort_by = json.loads(request.GET.get('sort_by', '[]'))
 
     # @todo how to manage permission to list only auth batches
-    # @todo use order_by one cursor, and on order_by
+
+    if not len(sort_by) or sort_by[-1] not in ('id', '+id', '-id'):
+        order_by = sort_by + ['id']
+    else:
+        order_by = sort_by
+
+    from main.cursor import CursorQuery
+    cq = CursorQuery(Batch)
+
+    if request.GET.get('search'):
+        search = json.loads(request.GET['search'])
+        cq.filter(search)
 
     if request.GET.get('filters'):
         filters = json.loads(request.GET['filters'])
+        cq.filter(filters)
 
-        if cursor:
-            cursor_name, cursor_id = cursor.rsplit('/', 1)
-            qs = Batch.objects.filter(Q(name__gt=cursor_name) | (Q(name__gte=cursor_name) & Q(id__gt=cursor_id)))
-        else:
-            qs = Batch.objects.all()
-
-        name = filters.get('name', '')
-
-        # name search
-        if filters.get('method', 'icontains') == 'icontains':
-            qs = qs.filter(Q(name__icontains=name))
-        else:
-            qs = qs.filter(Q(name__iexact=name))
-    else:
-        if cursor:
-            cursor_name, cursor_id = cursor.rsplit('/', 1)
-            qs = Batch.objects.filter(Q(name__gt=cursor_name) | (Q(name__gte=cursor_name) & Q(id__gt=cursor_id)))
-        else:
-            qs = Batch.objects.all()
-
-    # Prefetch permit to have only 2 requests
-    qs = qs.select_related('accession').order_by(*order_by)[:limit]
+    cq.cursor(cursor, order_by)
+    cq.order_by(order_by).limit(limit)
 
     batch_list = []
 
-    for batch in qs:
+    for batch in cq:
         a = {
             'id': batch.pk,
             'name': batch.name,
@@ -471,24 +468,36 @@ def get_batch_list(request):
 
         batch_list.append(a)
 
-    if len(batch_list) > 0:
-        # prev cursor (asc order)
-        entity = batch_list[0]
-        prev_cursor = "/".join(str(entity[field]) for field in order_by)
-
-        # next cursor (asc order)
-        entity = batch_list[-1]
-        next_cursor = "/".join(str(entity[field]) for field in order_by)
-    else:
-        prev_cursor = None
-        next_cursor = None
-
     results = {
         'perms': [],
         'items': batch_list,
-        'prev': prev_cursor,
+        'prev': cq.prev_cursor,
         'cursor': cursor,
-        'next': next_cursor,
+        'next': cq.next_cursor,
+    }
+
+    return HttpResponseRest(request, results)
+
+
+@RestBatchCount.def_auth_request(Method.GET, Format.JSON, perms={
+    'accession.list_batch': _("You are not allowed to list the batches")
+})
+def get_batch_list_count(request):
+    from main.cursor import CursorQuery
+    cq = CursorQuery(Batch)
+
+    if request.GET.get('search'):
+        search = json.loads(request.GET['search'])
+        cq.filter(search)
+
+    if request.GET.get('filters'):
+        filters = json.loads(request.GET['filters'])
+        cq.filter(filters)
+
+    count = cq.count()
+
+    results = {
+        'count': count
     }
 
     return HttpResponseRest(request, results)

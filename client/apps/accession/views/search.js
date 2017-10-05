@@ -257,6 +257,7 @@ var View = Dialog.extend({
             const query = this.getQuery(conditions);
             const options = {search: query.result};
             application.accession.routers.accession.getAccessionList(options);
+            Backbone.history.navigate('app/accession/accession/');
 
             this.destroy();
 
@@ -266,6 +267,7 @@ var View = Dialog.extend({
             const options = {search: query.result};
             console.log(options);
             application.accession.routers.batch.getBatchList(options);
+            Backbone.history.navigate('app/accession/batch/');
 
             this.destroy();
 

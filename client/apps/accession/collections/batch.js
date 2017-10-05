@@ -12,7 +12,9 @@ var BatchModel = require('../models/batch');
 
 var Collection = Backbone.Collection.extend({
     url: function() {
-        if (this.accession_id) {
+        if (this.panel_id) {
+            return application.baseUrl + 'accession/batches_panel/' + this.panel_id + '/batches/';
+        } else if (this.accession_id) {
             return application.baseUrl + 'accession/accession/' + this.accession_id + '/batch/';
         } else if (this.batch_id) {
             if (this.batch_type === "parents") {
@@ -34,6 +36,10 @@ var Collection = Backbone.Collection.extend({
         this.batch_type = options.batch_type || '';
         this.accession_id = options.accession_id;
         this.batch_id = options.batch_id;
+
+        this.panel_id = (options.panel_id || null);
+        this.filters = (options.filters || {});
+        this.search = (options.search || {});
     },
 
     parse: function(data) {
@@ -49,17 +55,59 @@ var Collection = Backbone.Collection.extend({
         options || (options = {});
         var data = (options.data || {});
 
-        options.data = data;
+        var opts = _.clone(options);
+        opts.data = data;
 
-        this.cursor = options.data.cursor;
-        this.sort_by = options.data.sort_by;
+        // options.data = data;
 
-        if (this.filters) {
-            options.data.filters = JSON.stringify(this.filters)
+        this.cursor = data.cursor;
+        this.sort_by = data.sort_by;
+
+        if (this.search) {
+            opts.data.search = JSON.stringify(this.search)
         }
 
-        return Backbone.Collection.prototype.fetch.call(this, options);
+        if (this.filters) {
+            opts.data.filters = JSON.stringify(this.filters)
+        }
+
+        if (data.cursor && typeof data.cursor !== 'string') {
+            opts.data.cursor = JSON.stringify(data.cursor);
+        }
+
+        if (data.sort_by && typeof data.sort_by !== 'string') {
+            opts.data.sort_by = JSON.stringify(data.sort_by);
+        }
+
+        return Backbone.Collection.prototype.fetch.call(this, opts);
+    },
+
+    count: function (options) {
+        options || (options = {});
+        var data = (options.data || {});
+
+        var opts = _.clone(options);
+        opts.data = data;
+
+        if (this.search) {
+            opts.data.search = JSON.stringify(this.search)
+        }
+
+        if (this.filters) {
+            opts.data.filters = JSON.stringify(this.filters)
+        }
+
+        $.ajax({
+            type: "GET",
+            url: this.url() + 'count/',
+            dataType: 'json',
+            data: opts.data,
+            collection: this
+        }).done(function (data) {
+            this.collection.trigger('count', data.count);
+        });
     }
+
 });
 
 module.exports = Collection;

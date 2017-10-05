@@ -234,6 +234,30 @@ class Batch(DescribableEntity):
     # direct parent batches
     batches = models.ManyToManyField('Batch', related_name='children')
 
+    @classmethod
+    def get_defaults_columns(cls):
+        return {
+            'descriptor_meta_model': {
+                'label': _('Model'),
+                'field': 'name',
+                'query': True,
+                'format': {
+                    'type': 'descriptor_meta_model',
+                    'model': 'accession.batch'
+                },
+                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'in', 'notin']
+            },
+            'name': {
+                'label': _('Name'),
+                'query': False,  # done by a prefetch related
+                'format': {
+                    'type': 'string',
+                    'model': 'accession.batch'
+                },
+                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
+            }
+        }
+
     class Meta:
         verbose_name = _("batch")
 
