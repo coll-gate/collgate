@@ -140,11 +140,11 @@ DescriptorModule.prototype = {
         this.collections.descriptorGroup = new DescriptorGroupCollection();
     },
 
-    start: function(options) {
+    start: function(app, options) {
         // nothing to do
     },
 
-    stop: function(options) {
+    stop: function(app, options) {
 
     }
 };

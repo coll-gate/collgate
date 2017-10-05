@@ -548,3 +548,7 @@ div.add-column-menu div.btn-group {
     float: right;
     margin: 0px 10px 10px 10px;
 }
+
+span.fa.fa-lg {
+    font-size: 1.27em;
+}

@@ -1827,8 +1827,6 @@ var View = Marionette.CompositeView.extend({
                 columns[columnName].autoSelect = false;
                 delete columns[columnName].selection;
             }
-
-            console.log(this.getSelection(columnName))
         }
     },
 

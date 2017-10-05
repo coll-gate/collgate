@@ -68,6 +68,9 @@ class DescriptorFormatType(object):
         # defines if the descriptor type can be displayed on the table views
         self.column_display = True
 
+        # displayed field by default, used by client for default sort sub-field
+        self.display_fields = None
+
     def validate(self, descriptor_type_format, value, descriptor_model_type):
         """
         Validate the value according the format.

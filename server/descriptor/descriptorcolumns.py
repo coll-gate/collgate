@@ -19,7 +19,7 @@ from descriptor.descriptorformattype import DescriptorFormatTypeManager
 
 from igdectk.rest import Format, Method
 from igdectk.rest.response import HttpResponseRest
-from main.cache import cache_manager, named_cache
+from main.cache import cache_manager
 
 from .descriptor import RestDescriptor
 from .models import DescriptorMetaModel, DescriptorModelType, DescriptorType
@@ -31,7 +31,6 @@ class RestDescriptorColumnsForContentType(RestDescriptor):
 
 
 @RestDescriptorColumnsForContentType.def_auth_request(Method.GET, Format.JSON)
-# @named_cache('descriptor', '{0}', 5)
 def get_columns_name_for_describable_content_type(request, content_type_name):
     """
     According to a specified model, retrieve any meta-models of descriptors, and
@@ -46,8 +45,8 @@ def get_columns_name_for_describable_content_type(request, content_type_name):
     :param content_type_name: Module.model content type name.
     :return: An array of dict defining all available columns related to this model.
     """
-    app_label, model = content_type_name.split('.')
-    content_type = get_object_or_404(ContentType, app_label=app_label, model=model)
+    app_label, model_name = content_type_name.split('.')
+    content_type = get_object_or_404(ContentType, app_label=app_label, model=model_name)
 
     dmms_list = request.GET.get('descriptor_meta_models')
     dmms_ids = None
@@ -59,12 +58,18 @@ def get_columns_name_for_describable_content_type(request, content_type_name):
         dmms_ids = [int(x) for x in dmms_list.split(',')]
         dmms_ids.sort()
 
+        cache_name = cache_manager.make_cache_name('columns', content_type_name, ','.join(map(str, dmms_ids)))
+    else:
+        cache_name = cache_manager.make_cache_name('columns', content_type_name)
+
+    results = cache_manager.content('descriptor', cache_name)
+
+    if results:
+        return HttpResponseRest(request, results)
+
     dmms = DescriptorMetaModel.objects.filter(target=content_type).values_list(
         "descriptor_models__descriptor_model_types__id", flat=True)
 
-    # @todo cache manually
-    # @todo must be in parameters list with VALIDATION
-    # @todo must be managed by cache options
     if dmms_ids:
         dmms = dmms.filter(pk__in=dmms_ids)
 
@@ -78,6 +83,12 @@ def get_columns_name_for_describable_content_type(request, content_type_name):
         descriptor_format = dmt.descriptor_type.format
         query = True if DescriptorFormatTypeManager.get(descriptor_format).related_model(descriptor_format) else False
 
+        dft = DescriptorFormatTypeManager.get(descriptor_format)
+
+        # display_fields comes by default from dft is defined
+        if dft.display_fields is not None and 'display_fields' not in descriptor_format:
+            descriptor_format['display_fields'] = dft.display_fields
+
         if DescriptorFormatTypeManager.get(descriptor_format).column_display is True:
             columns['#' + dmt.name] = {
                 'group': dmt.descriptor_type.group_id,
@@ -85,7 +96,7 @@ def get_columns_name_for_describable_content_type(request, content_type_name):
                 'label': dmt.get_label(),
                 'query': query,
                 'format': descriptor_format,
-                'available_operators': DescriptorFormatTypeManager.get(descriptor_format).available_operators
+                'available_operators': dft.available_operators
             }
 
     # and add standard columns information if the models defines a get_default_columns method
@@ -120,6 +131,9 @@ def get_columns_name_for_describable_content_type(request, content_type_name):
         'columns': columns
     }
 
+    # cache only for 5 seconds until @todo cache service
+    cache_manager.set('descriptor', cache_name, 5).content = results
+
     return HttpResponseRest(request, results)
 
 
@@ -127,7 +141,7 @@ def get_description(model):
     """
     Returns information about columns for a specified model. All columns of any related meta-models.
     """
-    cache_name = 'description:%s.%s' % (model._meta.app_label, model._meta.model_name)
+    cache_name = cache_manager.make_cache_name('description', '%s.%s' % (model._meta.app_label, model._meta.model_name))
     results = cache_manager.content('descriptor', cache_name)
 
     if results:
@@ -153,7 +167,7 @@ def get_description(model):
             'format': descriptor_format
         }
 
-    # cache only for 5 seconds
+    # cache only for 5 seconds until @todo cache service
     cache_manager.set('descriptor', cache_name, 5).content = results
 
     return results

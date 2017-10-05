@@ -126,7 +126,7 @@ var Layout = LayoutView.extend({
             var BatchCollection = require('../collections/batch');
             var parentBatches = new BatchCollection([], {batch_id: this.model.get('id'), batch_type: 'parents'});
 
-            $.when(columns, parentBatches.fetch()).done(function (data) {
+            $.when(columns, parentBatches.fetch()).then(function (data) {
                 if (!batchLayout.isRendered()) {
                     return;
                 }
@@ -145,7 +145,7 @@ var Layout = LayoutView.extend({
             // children batches tab
             var childrenBatches = new BatchCollection([], {batch_id: this.model.get('id'), batch_type: 'children'});
 
-            $.when(columns, childrenBatches.fetch()).done(function (data) {
+            $.when(columns, childrenBatches.fetch()).then(function (data) {
                 if (!batchLayout.isRendered()) {
                     return;
                 }

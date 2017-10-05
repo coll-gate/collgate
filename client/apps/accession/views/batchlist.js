@@ -125,7 +125,7 @@ var View = AdvancedTable.extend({
             batchModel = this.model;
         }
 
-        $.when(metaModelPromise, accessionModelPromise).done(function (data) {
+        $.when(metaModelPromise, accessionModelPromise).then(function (data) {
             var CreateBatchView = Dialog.extend({
                 attributes: {
                     'id': 'dlg_create_batch'

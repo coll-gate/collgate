@@ -8,67 +8,29 @@
  * @details 
  */
 
+var CountableCollection = require('../../main/collections/countable');
 var ClassificationEntryModel = require('../models/classificationentry');
 
-var Collection = Backbone.Collection.extend({
-    url: application.baseUrl + 'classification/classificationentry/',
+var Collection = CountableCollection.extend({
+    url: function() {
+        if (this.classification_id) {
+            return application.baseUrl + 'classification/classification/' + this.classification_id + '/classificationentry/';
+        } else {
+            return application.baseUrl + 'classification/classificationentry/';
+        }
+    },
     model: ClassificationEntryModel,
 
     // comparator: 'name',
 
-    parse: function(data) {
-        this.prev = data.prev;
-        this.cursor = data.cursor;
-        this.next = data.next;
-
-        return data.items;
-    },
-
-    fetch: function(options) {
+    initialize: function(models, options) {
         options || (options = {});
-        var data = (options.data || {});
 
-        var opts = _.clone(options);
-        opts.data = data;
+        CountableCollection.__super__.initialize.apply(this, arguments);
 
-        this.cursor = data.cursor;
-        this.sort_by = data.sort_by;
-
-        if (this.filters) {
-            opts.data.filters = JSON.stringify(this.filters)
+        if (options.classification_id) {
+            this.classification_id = options.classification_id;
         }
-
-        if (data.cursor && typeof data.cursor !== 'string') {
-            opts.data.cursor = JSON.stringify(data.cursor);
-        }
-
-        if (data.sort_by && typeof data.sort_by !== 'string') {
-            opts.data.sort_by = JSON.stringify(data.sort_by);
-        }
-
-        return Backbone.Collection.prototype.fetch.call(this, opts);
-    },
-
-    count: function(options) {
-        options || (options = {});
-        var data = (options.data || {});
-
-        var opts = _.clone(options);
-        opts.data = data;
-
-        if (this.filters) {
-            opts.data.filters = JSON.stringify(this.filters)
-        }
-
-        $.ajax({
-            type: "GET",
-            url: this.url + 'count/',
-            dataType: 'json',
-            data: opts.data,
-            collection: this
-        }).done(function (data) {
-            this.collection.trigger('count', data.count);
-        });
     }
 });
 

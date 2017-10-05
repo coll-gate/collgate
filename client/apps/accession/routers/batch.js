@@ -39,7 +39,7 @@ var Router = Marionette.AppRouter.extend({
             format: {model: 'accession.batch'}
         });
 
-        $.when(columns, collection.fetch()).done(function (data) {
+        $.when(columns, collection.fetch()).then(function (data) {
             var batchListView  = new BatchListView({collection: collection, columns: data[0].value});
 
             defaultLayout.showChildView('content', batchListView);
@@ -61,7 +61,7 @@ var Router = Marionette.AppRouter.extend({
             format: {model: 'accession.batch'}
         });
 
-        $.when(columns, collection.fetch()).done(function (data) {
+        $.when(columns, collection.fetch()).then(function (data) {
             var batchListView = new BatchListView({collection : collection, columns: data[0].value});
 
             defaultLayout.showChildView('content', batchListView);

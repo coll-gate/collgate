@@ -56,11 +56,11 @@ MediaLibraryModule.prototype = {
         //this.routers.medialibrary = new MediaLibraryRouter();
     },
 
-    start: function(options) {
+    start: function(app, options) {
         // nothing to do
     },
 
-    stop: function(options) {
+    stop: function(app, options) {
     }
 };
 

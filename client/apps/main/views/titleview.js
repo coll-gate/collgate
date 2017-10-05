@@ -48,10 +48,12 @@ var TitleView = Marionette.View.extend({
                 this.ui.object.show();
             }
 
-            // with or without extra code
+            // with or without extra code, or label, finally name
             if (this.model.has('code')) {
                 this.ui.object.html(this.model.get('name') + ' (' + this.model.get('code') + ')');
-            } else {
+            }/* else if (this.model.has('label')) {
+                this.ui.object.html(this.model.get('label'));
+            }*/ else {
                 this.ui.object.html(this.model.get('name'));
             }
         } else if (this.getOption('object')) {

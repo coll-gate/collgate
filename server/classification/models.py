@@ -256,8 +256,8 @@ class ClassificationEntry(Entity):
     # classification rank
     rank = models.ForeignKey(ClassificationRank, null=False, on_delete=models.PROTECT)
 
-    # bridge/link to another classification.
-    # bridge = models.ForeignKey(ClassificationRank, null=False, on_delete=models.PROTECT)
+    # relate some others classifications entries of different nature of classification.
+    related = models.ManyToManyField('ClassificationEntry', related_name='relate_to_classificationsentries')
 
     # classification direct parent or None
     parent = models.ForeignKey('ClassificationEntry', null=True, related_name="children", on_delete=models.PROTECT)
@@ -287,13 +287,13 @@ class ClassificationEntry(Entity):
             },
             'rank': {
                 'label': _('Rank'),
-                'field': 'level',  # @todo classification->rank_level special sort (need a GROUP BY classification)
+                'field': 'level',  # @todo [rank.classification_id, rank.level] special sort
                 'query': True,
                 'format': {
                     'type': 'entity',
                     'model': 'classification.classificationrank',
                     'details': True,
-                    'list_type': 'dropdown'  # @todo create this widget with dropdown
+                    'list_type': 'dropdown'
                 }
             },
             'parent': {
@@ -316,7 +316,7 @@ class ClassificationEntry(Entity):
                 },
                 'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'in', 'notin']
             },
-            'synonym': {  # cannot be managed for table or only a preferred one
+            'synonym': {
                 'label': _('Synonym'),
                 'field': 'name',
                 'query': False,   # done by a prefetch related

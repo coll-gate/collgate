@@ -8,7 +8,7 @@
 # @license MIT (see LICENSE file)
 # @details
 
-from django.contrib.postgres.fields import JSONField
+from django.contrib.postgres.fields import JSONField, ArrayField
 from django.db import models, ProgrammingError, connection
 from django.db.models import prefetch_related_objects
 from django.db.models.fields.related_descriptors import ForwardManyToOneDescriptor
@@ -122,11 +122,17 @@ class CursorQuery(object):
             elif type(field) is JSONField:
                 self.model_fields[field.name] = ('JSON', 'JSON', field.null)
                 self.query_select.append('"%s"."%s"' % (db_table, field.name))
+            elif type(field) is ArrayField:
+                if type(field.base_field) is models.fields.IntegerField or type(field.base_field) == models.fields.AutoField:
+                    base_type = 'INTEGER'
+                else:
+                    base_type = 'TEXT'
+
+                self.model_fields[field.name] = ('ARRAY', base_type, field.null)
+                self.query_select.append('"%s"."%s"' % (db_table, field.name))
             else:
                 self.model_fields[field.name] = ('TEXT', 'TEXT', field.null)
                 self.query_select.append('"%s"."%s"' % (db_table, field.name))
-
-                # @todo maybe for DATE (idem for join)
 
     def cursor(self, cursor, cursor_fields=('id',)):
         """
@@ -261,7 +267,10 @@ class CursorQuery(object):
                 return str(value)
             elif isinstance(value, list):
                 try:
-                    return '(' + ','.join(str(int(v)) for v in value) + ')'
+                    if field_data[0] == 'ARRAY':
+                        return 'ARRAY[' + ','.join(str(int(v)) for v in value) + ']'
+                    else:
+                        return '(' + ','.join(str(int(v)) for v in value) + ')'
                 except ValueError:
                     pass
 
@@ -324,6 +333,19 @@ class CursorQuery(object):
                     if ff[0] in self.model_fields:
                         if self.model_fields[ff[0]][0] == 'FK':
                             select_related.append(f)
+
+        # if isinstance(self._select_related, bool):
+        #     field_dict = {}
+        # else:
+        #     field_dict = self._select_related
+        # for field in select_related:
+        #     d = field_dict
+        #     for part in field.split(self.FIELDS_SEP):
+        #         if d.get(part) is not None and not d.get(part):
+        #             d = d.get(part)
+        #         else:
+        #             d = d.setdefault(part, {})
+        # self._select_related = field_dict
 
         self.add_select_related(select_related)
         return self
@@ -514,13 +536,18 @@ class CursorQuery(object):
             for key, v in kfilters.items():
                 if key.count('__'):
                     field, op = key.rsplit('__', 1)
+
+                    if op not in CursorQuery.OPERATORS_MAP:
+                        field = key
+                        op = 'eq'
                 else:
                     field = key
                     op = 'eq'
 
+                # replace __ by -> for next processing, and remove _id to find it in fields names
                 lfilters.append({
                     'type': 'term',
-                    'field': field.replace('__', CursorQuery.FIELDS_SEP),
+                    'field': field.replace('__', CursorQuery.FIELDS_SEP).rstrip('_id'),
                     'value': v,
                     'op': op if op else 'eq'
                 })
@@ -655,8 +682,11 @@ class CursorQuery(object):
                 return 'COALESCE("%s"."%s", %s) %s %s' % (
                     table_name, field_name, coalesce_value, operator, final_value)
         else:
-            if field_model[0] == 'FK':  # @todo same as prev
+            if field_model[0] == 'FK':
                 return '"%s"."%s_id" %s %s' % (table_name, field_name, operator, final_value)
+            elif field_model[0] == 'ARRAY':
+                # @todo map operator to array operator (here @> for in or maybe contains)
+                return '"%s"."%s" @> %s' % (table_name, field_name, final_value)
             else:
                 return '"%s"."%s" %s %s' % (table_name, field_name, operator, final_value)
 
@@ -666,13 +696,20 @@ class CursorQuery(object):
         coalesce_value = self._make_value(None, field_model)
 
         if field_model[2]:  # is null
-            # return 'COALESCE("%s"."%s", %s) %s %s' % (
-            #     self._related_tables[table_name][0]._meta.db_table, field_name, coalesce_value, operator, final_value)
-            return 'COALESCE("%s"."%s", %s) %s %s' % (table_name, field_name, coalesce_value, operator, final_value)
+            if field_model[0] == 'FK':
+                return 'COALESCE("%s"."%s_id", %s) %s %s' % (
+                    table_name, field_name, coalesce_value, operator, final_value)
+            else:
+                return 'COALESCE("%s"."%s", %s) %s %s' % (
+                    table_name, field_name, coalesce_value, operator, final_value)
         else:
-            # return '"%s"."%s" %s %s' % (
-            #     self._related_tables[table_name][0]._meta.db_table, field_name, operator, final_value)
-            return '"%s"."%s" %s %s' % (table_name, field_name, operator, final_value)
+            if field_model[0] == 'FK':
+                return '"%s"."%s_id" %s %s' % (table_name, field_name, operator, final_value)
+            elif field_model[0] == 'ARRAY':
+                # @todo map operator to array operator (here @> for in or maybe contains)
+                return '"%s"."%s" @> %s' % (table_name, field_name, final_value)
+            else:
+                return '"%s"."%s" %s %s' % (table_name, field_name, operator, final_value)
 
     def _cast_descriptor_type(self, table_name, descriptor_name, operator, value):
         description = self._description[descriptor_name]
@@ -688,9 +725,20 @@ class CursorQuery(object):
         coalesce_value = self._make_value(None, field_model)
 
         if field_model[2]:  # is null
-            return 'COALESCE("%s"."%s", %s) %s %s' % (renamed_table, field_name, coalesce_value, operator, final_value)
+            if field_model[0] == 'FK':
+                return 'COALESCE("%s"."%s_id", %s) %s %s' % (
+                    renamed_table, field_name, coalesce_value, operator, final_value)
+            else:
+                return 'COALESCE("%s"."%s", %s) %s %s' % (
+                    renamed_table, field_name, coalesce_value, operator, final_value)
         else:
-            return '"%s"."%s" %s %s' % (renamed_table, field_name, operator, final_value)
+            if field_model[0] == 'FK':
+                return '"%s"."%s_id" %s %s' % (renamed_table, field_name, operator, final_value)
+            elif field_model[0] == 'ARRAY':
+                # @todo map operator to array operator (here @> for in or maybe contains)
+                return '"%s"."%s" @> %s' % (renamed_table, field_name, final_value)
+            else:
+                return '"%s"."%s" %s %s' % (renamed_table, field_name, operator, final_value)
 
     def join_descriptor(self, description, descriptor_name, fields=None):
         model_fields = {}
@@ -716,8 +764,7 @@ class CursorQuery(object):
                 # model_fields[field.name] = ('M2M', '', field.null)
                 pass
             elif type(field) is models.fields.related.ForeignKey:
-                # @todo could be TEXT
-                model_fields[field.name + '_id'] = ('FK', 'INTEGER', field.null)
+                model_fields[field.name] = ('FK', 'INTEGER', field.null)
                 self.query_select.append(
                     '"%s"."%s_id" AS "%s_%s_id"' % (renamed_table, field.name, renamed_table, field.name))
             elif type(field) is models.fields.IntegerField or type(field) == models.fields.AutoField:
@@ -726,6 +773,16 @@ class CursorQuery(object):
                     '"%s"."%s" AS "%s_%s"' % (renamed_table, field.name, renamed_table, field.name))
             elif type(field) is JSONField:
                 self.model_fields[field.name] = ('JSON', 'JSON', field.null)
+                self.query_select.append(
+                    '"%s"."%s" AS "%s_%s"' % (renamed_table, field.name, renamed_table, field.name))
+            elif type(field) is ArrayField:
+                if (type(field.base_field) is models.fields.IntegerField or
+                        type(field.base_field) == models.fields.AutoField):
+                    base_type = 'INTEGER'
+                else:
+                    base_type = 'TEXT'
+
+                self.model_fields[field.name] = ('ARRAY', base_type, field.null)
                 self.query_select.append(
                     '"%s"."%s" AS "%s_%s"' % (renamed_table, field.name, renamed_table, field.name))
             else:
@@ -765,9 +822,11 @@ class CursorQuery(object):
                 elif type(field) is models.fields.reverse_related.ManyToOneRel:
                     pass
                     # model_fields[field.name] = ('M2O', '', field.null)
+                elif type(field) is models.fields.related.ManyToManyField:
+                    pass
+                    # model_fields[field.name] = ('M2M', '', field.null)
                 elif type(field) is models.fields.related.ForeignKey:
-                    # @todo could be TEXT
-                    model_fields[field.name + '_id'] = ('FK', 'INTEGER', field.null)
+                    model_fields[field.name] = ('FK', 'INTEGER', field.null)
                     self.query_select.append(
                         '"%s"."%s_id" AS "%s_%s_id"' % (db_table_alias, field.name, related_field, field.name))
                 elif type(field) is models.fields.IntegerField or type(field) == models.fields.AutoField:
@@ -776,6 +835,16 @@ class CursorQuery(object):
                         '"%s"."%s" AS "%s_%s"' % (db_table_alias, field.name, related_field, field.name))
                 elif type(field) is JSONField:
                     self.model_fields[field.name] = ('JSON', 'JSON', field.null)
+                    self.query_select.append(
+                        '"%s"."%s" AS "%s_%s"' % (db_table_alias, field.name, related_field, field.name))
+                elif type(field) is ArrayField:
+                    if (type(field.base_field) is models.fields.IntegerField or
+                            type(field.base_field) == models.fields.AutoField):
+                        base_type = 'INTEGER'
+                    else:
+                        base_type = 'TEXT'
+
+                    self.model_fields[field.name] = ('ARRAY', base_type, field.null)
                     self.query_select.append(
                         '"%s"."%s" AS "%s_%s"' % (db_table_alias, field.name, related_field, field.name))
                 else:
@@ -824,7 +893,11 @@ class CursorQuery(object):
                     setattr(instance, "_%s_cache" % field, new_model)
 
                     for related_field in model_fields:
-                        setattr(new_model, related_field, getattr(instance, "%s_%s" % (field, related_field)))
+                        if model_fields[related_field][0] == 'FK':
+                            field_name = related_field + '_id'
+                            setattr(new_model, field_name, getattr(instance, "%s_%s" % (field, field_name)))
+                        else:
+                            setattr(new_model, related_field, getattr(instance, "%s_%s" % (field, related_field)))
 
                 yield instance
         except ProgrammingError as e:
@@ -839,6 +912,7 @@ class CursorQuery(object):
             d = field_dict
             for part in field.split(self.FIELDS_SEP):
                 d = d.setdefault(part, {})
+
         self._select_related = field_dict
 
     def select_related(self, *fields):
@@ -980,8 +1054,8 @@ class CursorQuery(object):
                 #     pass
             except IndexError:
                 self._query_set = list()
-            except ProgrammingError:
-                raise CursorQueryError('Invalid query arguments')
+            except ProgrammingError as e:
+                raise CursorQueryError('Invalid query arguments: ' + str(e))
 
             prefetch_related_objects(self._query_set, *self._prefetch_related)
         return self._query_set
@@ -1020,8 +1094,9 @@ class CursorQuery(object):
 
         :return: Integer count value.
         """
+
         # perform joins using select_related, like for normal SQL but does not perform the ORDER BY and LIMIT
-        if type(self._select_related) is list:
+        if type(self._select_related) is dict:
             for related_model, related_fields in self._select_related.items():
                 self.join(related_model, related_fields)
 

@@ -55,7 +55,9 @@ var View = Marionette.View.extend({
         'click @ui.index': 'changeIndex'
     },
 
-    initialize: function() {
+    initialize: function(options) {
+        View.__super__.initialize.apply(this, arguments);
+
         this.listenTo(this.model, 'change', this.render, this);
     },
 

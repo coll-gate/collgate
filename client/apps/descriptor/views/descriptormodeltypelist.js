@@ -40,9 +40,9 @@ var View = AdvancedTable.extend({
     },
 
     initialize: function(options) {
-        View.__super__.initialize.apply(this);
-
         options || (options = {});
+
+        View.__super__.initialize.apply(this, arguments);
 
         this.listenTo(this.collection, 'reset', this.render, this);
     },

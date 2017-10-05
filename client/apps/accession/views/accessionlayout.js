@@ -23,7 +23,8 @@ var Layout = LayoutView.extend({
     ui: {
         synonyms_tab: 'a[aria-controls=synonyms]',
         batches_tab: 'a[aria-controls=batches]',
-        classifications_entries_tab: 'a[aria-controls=classifications-entries]'
+        classifications_entries_tab: 'a[aria-controls=classifications-entries]',
+        panels_tab: 'a[aria-controls=panels]',
     },
 
     regions: {
@@ -31,7 +32,8 @@ var Layout = LayoutView.extend({
         'descriptors': "div.tab-pane[name=descriptors]",
         'synonyms': "div.tab-pane[name=synonyms]",
         'batches': "div.tab-pane[name=batches]",
-        'classifications-entries': "div.tab-pane[name=classifications-entries]"
+        'classifications-entries': "div.tab-pane[name=classifications-entries]",
+        'panels': "div.tab-pane[name=panels]",
     },
 
     initialize: function(options) {
@@ -64,10 +66,15 @@ var Layout = LayoutView.extend({
         this.ui.classifications_entries_tab.parent().addClass('disabled');
     },
 
+    disablePanelsTab: function () {
+        this.ui.panels_tab.parent().addClass('disabled');
+    },
+
     enableTabs: function() {
         this.ui.synonyms_tab.parent().removeClass('disabled');
         this.ui.batches_tab.parent().removeClass('disabled');
         this.ui.classifications_entries_tab.parent().removeClass('disabled');
+        this.ui.panels_tab.parent().removeClass('disabled');
     },
 
     onDescriptorMetaModelChange: function(model, value) {
@@ -128,7 +135,7 @@ var Layout = LayoutView.extend({
                 format: {model: 'accession.batch'}
             });
 
-            $.when(columns1, accessionBatches.fetch()).done(function (data) {
+            $.when(columns1, accessionBatches.fetch()).then(function (data) {
                 if (!accessionLayout.isRendered()) {
                     return;
                 }
@@ -154,7 +161,7 @@ var Layout = LayoutView.extend({
                 format: {model: 'classification.classificationentry'}
             });
 
-            $.when(columns2, accessionClassificationEntries.fetch()).done(function (data) {
+            $.when(columns2, accessionClassificationEntries.fetch()).then(function (data) {
                 if (!accessionLayout.isRendered()) {
                     return;
                 }
@@ -207,6 +214,7 @@ var Layout = LayoutView.extend({
             this.disableSynonymsTab();
             this.disableBatchesTab();
             this.disableClassificationsEntriesTab();
+            this.disablePanelsTab();
         }
     }
 });

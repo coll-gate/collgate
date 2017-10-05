@@ -71,7 +71,7 @@ var Collection = Backbone.Collection.extend({
 
         $.ajax({
             type: "GET",
-            url: this.url + 'count/',
+            url: (_.isFunction(this.url) ? this.url() : this.url) + 'count/',
             dataType: 'json',
             data: opts.data,
             collection: this

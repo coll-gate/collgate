@@ -18,18 +18,17 @@ from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 
 from classification import localsettings
+from classification.classification import RestClassificationClassificationId
 from descriptor.describable import DescriptorsBuilder
 from descriptor.models import DescriptorMetaModel, DescriptorModelType
-from main.cursor import CursorQuery
-from main.models import Language
-
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
-
-from .controller import ClassificationEntryManager
-from .models import Classification, ClassificationRank, ClassificationEntrySynonym
-from .models import ClassificationEntry
+from main.cursor import CursorQuery
+from main.models import Language
 from .base import RestClassification
+from .controller import ClassificationEntryManager
+from .models import ClassificationEntry
+from .models import ClassificationEntrySynonym
 
 
 class RestClassificationEntry(RestClassification):
@@ -65,6 +64,16 @@ class RestClassificationEntryIdChildrenCount(RestClassificationEntryIdChildren):
 class RestClassificationEntryIdEntities(RestClassificationEntryId):
     regex = r'^entities/$'
     suffix = 'entities'
+
+
+class RestClassificationClassificationIdClassificationEntry(RestClassificationClassificationId):
+    regex = r'^classificationentry/$'
+    suffix = 'classificationentry'
+
+
+class RestClassificationClassificationIdClassificationEntryCount(RestClassificationClassificationIdClassificationEntry):
+    regex = r'^count/$'
+    suffix = 'count'
 
 
 @RestClassificationEntry.def_auth_request(Method.POST, Format.JSON, content={
@@ -542,19 +551,14 @@ def get_classification_entry_children(request, cls_id):
     from main.cursor import CursorQuery
     cq = CursorQuery(ClassificationEntry)
 
-    # only children
-    # @todo could have a method for that if model given to CursorQuery is a FK ? or any other cool idea ?
-    filters = [{
-        'type': 'term',
-        'field': 'parent',
-        'value': classification_entry.id,
-        'op': 'eq'
-    }]
+    # if only children
+    if request.GET.get('deeply', False):
+        cq.filter(parent_list__in=[classification_entry.id])
+    else:
+        cq.filter(parent=classification_entry.id)
 
     if request.GET.get('filters'):
-        filters.extend(json.loads(request.GET['filters']))
-
-    cq.filter(filters)
+        cq.filter(json.loads(request.GET['filters']))
 
     cq.prefetch_related(Prefetch(
             "synonyms",
@@ -735,6 +739,105 @@ def get_classification_entry_entities(request, cls_id):
         'prev': prev_cursor,
         'cursor': cursor,
         'next': next_cursor,
+    }
+
+    return HttpResponseRest(request, results)
+
+
+@RestClassificationClassificationIdClassificationEntry.def_auth_request(Method.GET, Format.JSON, perms={
+    'classification.list_classificationentry': _("You are not allowed to list the classifications entries")
+})
+def get_classification_id_entry_list(request, cls_id):
+    results_per_page = int_arg(request.GET.get('more', 30))
+    cursor = json.loads(request.GET.get('cursor', 'null'))
+    limit = results_per_page
+    sort_by = json.loads(request.GET.get('sort_by', '[]'))
+
+    if not len(sort_by) or sort_by[-1] not in ('id', '+id', '-id'):
+        order_by = sort_by + ['id']
+    else:
+        order_by = sort_by
+
+    cq = CursorQuery(ClassificationEntry)
+
+    cq.filter(rank__classification=int_arg(cls_id))
+
+    if request.GET.get('filters'):
+        filters = json.loads(request.GET['filters'])
+        cq.filter(filters)
+
+    cq.prefetch_related(Prefetch(
+            "synonyms",
+            queryset=ClassificationEntrySynonym.objects.all().order_by('synonym_type', 'language')))
+
+    cq.select_related('rank->classification')
+    # cq.select_related('parent->name', 'parent->rank')
+
+    cq.cursor(cursor, order_by)
+    cq.order_by(order_by).limit(limit)
+
+    classification_entry_items = []
+
+    for classification_entry in cq:
+        c = {
+            'id': classification_entry.id,
+            'name': classification_entry.name,
+            'parent': classification_entry.parent_id,
+            'rank': classification_entry.rank_id,
+            'descriptor_meta_model': classification_entry.descriptor_meta_model_id,
+            'descriptors': classification_entry.descriptors,
+            'parent_list': classification_entry.parent_list,
+            # 'parent_details': None,
+            'synonyms': []
+        }
+
+        # if classification_entry.parent:
+        #     c['parent_details'] = {
+        #         'id': classification_entry.parent.id,
+        #         'name': classification_entry.parent.name,
+        #         'rank': classification_entry.parent.rank_id
+        #     }
+
+        for synonym in classification_entry.synonyms.all():
+            c['synonyms'].append({
+                'id': synonym.id,
+                'name': synonym.name,
+                'synonym_type': synonym.synonym_type_id,
+                'language': synonym.language
+            })
+
+        classification_entry_items.append(c)
+
+    results = {
+        'perms': [],
+        'items': classification_entry_items,
+        'prev': cq.prev_cursor,
+        'cursor': cursor,
+        'next': cq.next_cursor,
+    }
+
+    return HttpResponseRest(request, results)
+
+
+@RestClassificationClassificationIdClassificationEntryCount.def_auth_request(Method.GET, Format.JSON, perms={
+    'classification.list_classificationentry': _("You are not allowed to list the classifications entries")
+})
+def get_classification_id_list_count(request, cls_id):
+    from main.cursor import CursorQuery
+    cq = CursorQuery(ClassificationEntry)
+
+    cq.filter(rank__classification=int_arg(cls_id))
+
+    if request.GET.get('filters'):
+        filters = json.loads(request.GET['filters'])
+        cq.filter(filters)
+
+    cq.select_related('rank->classification')
+
+    count = cq.count()
+
+    results = {
+        'count': count
     }
 
     return HttpResponseRest(request, results)

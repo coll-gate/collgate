@@ -80,7 +80,7 @@ var Router = Marionette.AppRouter.extend({
         var groupCollection = new DescriptorGroupCollection();
 
         // need groups for model type so wait for the two collections to be done
-        $.when(modelTypeCollection.fetch(), groupCollection.fetch()).done(function() {
+        $.when(modelTypeCollection.fetch(), groupCollection.fetch()).then(function() {
             var descriptorTypeModelList = new DescriptorModelTypeListView({
                 collection : modelTypeCollection,
                 descriptor_type_groups: groupCollection});

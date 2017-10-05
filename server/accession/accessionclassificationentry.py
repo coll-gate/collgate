@@ -7,6 +7,7 @@
 # @copyright Copyright (c) 2017 INRA/CIRAD
 # @license MIT (see LICENSE file)
 # @details
+
 from django.core.exceptions import SuspiciousOperation
 from django.db.models import Prefetch
 from django.shortcuts import get_object_or_404
@@ -15,7 +16,10 @@ from django.utils.translation import ugettext_lazy as _
 from classification.models import ClassificationEntry, ClassificationEntrySynonym
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
+
+from main.cursor import CursorQuery
 from permission.utils import get_permissions_for
+
 from .accession import RestAccessionId
 from .models import Accession, AccessionClassificationEntry
 
@@ -49,7 +53,26 @@ def get_accession_id_classification_entry_list(request, acc_id):
     else:
         order_by = sort_by
 
-    from main.cursor import CursorQuery
+    tmp_order_by = []
+    for field in order_by:
+        f = field.lstrip('+-#')
+        is_descriptor = field[0] == '#' or field[1] == '#'
+
+        if f == 'id':
+            continue
+
+        if is_descriptor:
+            # only if sub-value of descriptor
+            if CursorQuery.FIELDS_SEP in f:
+                tmp_order_by.append('#' + 'classification_entry->' + f)
+        else:
+            if field.startswith('-'):
+                tmp_order_by.append('-classification_entry->' + f)
+            else:
+                tmp_order_by.append('+classification_entry->' + f)
+
+    order_by = tmp_order_by
+
     cq = CursorQuery(AccessionClassificationEntry)
 
     cq.filter(accession=accession.id)
@@ -73,24 +96,25 @@ def get_accession_id_classification_entry_list(request, acc_id):
 
     for accession_classification_entry in cq:
         c = {
-            'id': accession_classification_entry.id,
-            'name': accession_classification_entry.classification_entry_name,
-            'parent': accession_classification_entry.classification_entry_parent_id,
-            'rank': accession_classification_entry.classification_entry_rank_id,
-            'descriptor_meta_model': accession_classification_entry.classification_entry_descriptor_meta_model_id,
-            'descriptors': accession_classification_entry.classification_entry_descriptors,
-            'parent_list': accession_classification_entry.classification_entry_parent_list,
+            'id': accession_classification_entry.classification_entry.id,
+            'name': accession_classification_entry.classification_entry.name,
+            'parent': accession_classification_entry.classification_entry.parent_id,
+            'rank': accession_classification_entry.classification_entry.rank_id,
+            'descriptor_meta_model': accession_classification_entry.classification_entry.descriptor_meta_model_id,
+            'descriptors': accession_classification_entry.classification_entry.descriptors,
+            'parent_list': accession_classification_entry.classification_entry.parent_list,
             'synonyms': []
         }
 
-        # @todo why not prefetched ?
-        for synonym in accession_classification_entry.classification_entry.synonyms.all():
-            c['synonyms'].append({
-                'id': synonym.id,
-                'name': synonym.name,
-                'synonym_type': synonym.synonym_type_id,
-                'language': synonym.language
-            })
+        # @todo why prefetch is not used ? maybe cache field name problem, else make a manual query
+        # maybe need a _synonyms_cache field ?
+        # for synonym in accession_classification_entry.classification_entry.synonyms.all():
+        #     c['synonyms'].append({
+        #         'id': synonym.id,
+        #         'name': synonym.name,
+        #         'synonym_type': synonym.synonym_type_id,
+        #         'language': synonym.language
+        #     })
 
         classification_entry_items.append(c)
 

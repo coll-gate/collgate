@@ -37,10 +37,15 @@ MenuEntry.prototype.render = function(parent) {
     var aEl = $('<a role="menuitem" class="url" tabindex="-1" href="' + this.url + '"></a>');
 
     if (this.icon) {
-        var iconEl = $('<span class="glyphicon ' + this.icon + '"></span>');
-        aEl.append(iconEl);
+        if (this.icon.startsWith('fa-')) {
+            var iconEl = $('<span class="fa ' + this.icon + '"></span>');
+            aEl.append(iconEl);
+        } else {
+            var iconEl = $('<span class="glyphicon ' + this.icon + '"></span>');
+            aEl.append(iconEl);
+        }
     } else {
-        var noIconEl = $('<span class="glyphicon glyphicon-user" style="visibility: hidden;"></span>');
+        var noIconEl = $('<span class="fa fa-user" style="visibility: hidden;"></span>');
         aEl.append(noIconEl);
     }
 

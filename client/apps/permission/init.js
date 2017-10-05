@@ -50,11 +50,11 @@ PermissionModule.prototype = {
         this.routers.permission = new PermissionRouter();
     },
 
-    start: function(options) {
+    start: function(app, options) {
         // nothing to do
     },
 
-    stop: function(options) {
+    stop: function(app, options) {
     }
 };
 

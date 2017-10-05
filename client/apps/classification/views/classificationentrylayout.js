@@ -19,15 +19,17 @@ var Layout = LayoutView.extend({
     ui: {
         synonyms_tab: 'a[aria-controls=synonyms]',
         children_tab: 'a[aria-controls=children]',
-        entities_tab: 'a[aria-controls=entities]'
+        entities_tab: 'a[aria-controls=entities]',
+        related_tab: 'a[aria-controls=related]'
     },
 
     regions: {
-        'details': "div[name=details]",
-        'synonyms': "div.tab-pane[name=synonyms]",
-        'descriptors': "div.tab-pane[name=descriptors]",
+        'details': 'div[name=details]',
+        'synonyms': 'div.tab-pane[name=synonyms]',
+        'descriptors': 'div.tab-pane[name=descriptors]',
         'children': 'div.tab-pane[name=children]',
-        'entities': "div.tab-pane[name=entities]"
+        'entities': 'div.tab-pane[name=entities]',
+        'related': 'div.tab-pane[name=batches]'
     },
 
     initialize: function(options) {
@@ -60,10 +62,15 @@ var Layout = LayoutView.extend({
         this.ui.entities_tab.parent().addClass('disabled');
     },
 
+    disableRelatedTab: function () {
+        this.ui.related_tab.parent().addClass('disabled');
+    },
+
     enableTabs: function() {
         this.ui.synonyms_tab.parent().removeClass('disabled');
         this.ui.children_tab.parent().removeClass('disabled');
         this.ui.entities_tab.parent().removeClass('disabled');
+        this.ui.related_tab.parent().removeClass('disabled');
     },
 
     onDescriptorMetaModelChange: function(model, value) {
@@ -120,7 +127,7 @@ var Layout = LayoutView.extend({
                 format: {model: 'classification.classificationentry'}
             });
 
-            $.when(columns, classificationEntryChildren.fetch()).done(function(data) {
+            $.when(columns, classificationEntryChildren.fetch()).then(function(data) {
                 if (!classificationEntryLayout.isRendered()) {
                     return;
                 }
@@ -187,6 +194,7 @@ var Layout = LayoutView.extend({
             this.disableSynonymsTab();
             this.disableChildrenTab();
             this.disableEntitiesTab();
+            this.disableRelatedTab();
         }
     },
 

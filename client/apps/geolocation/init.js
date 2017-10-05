@@ -47,11 +47,11 @@ GeolocationModule.prototype = {
         //
     },
 
-    start: function(options) {
+    start: function(app, options) {
         // nothing to do
     },
 
-    stop: function(options) {
+    stop: function(app, options) {
     }
 };
 

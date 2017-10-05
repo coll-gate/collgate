@@ -408,7 +408,7 @@ var Application = Marionette.Application.extend({
             if (this[module] && this[module].start) {
                 try {
                     Logger.time("Start " + module + " module");
-                    this[module].start({});
+                    this[module].start(this, {});
                     Logger.timeEnd("Start " + module + " module");
                 } catch (e) {
                     var msg = _t("Module startup failed") + " : " + module + ". " +

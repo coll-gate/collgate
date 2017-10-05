@@ -155,7 +155,7 @@ MainModule.prototype = {
         }
     },
 
-    start: function(options) {
+    start: function(app, options) {
         // main view
         var MainView = require('./views/main');
         var mainView = new MainView();
@@ -177,7 +177,7 @@ MainModule.prototype = {
         // this.menus.getMenu('testmenu').addEntry(new MenuEntry('test', 'Test1', '#', 'glyphicon-check'));
     },
 
-    stop: function(options) {
+    stop: function(app, options) {
 
     },
 

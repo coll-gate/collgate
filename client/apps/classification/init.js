@@ -75,11 +75,38 @@ ClassificationModule.prototype = {
         this.routers.classificationEntry = new ClassificationEntryRouter();
     },
 
-    start: function(options) {
-        // nothing to do
+    start: function(app, options) {
+        //
+        // add classifications to menu
+        //
+        var ClassificationCollection = require('./collections/classification');
+        var classificationCollection = new ClassificationCollection();
+
+        var MenuEntry = require('../main/utils/menuentry');
+        var MenuSeparator = require('../main/utils/menuseparator');
+
+        classificationCollection.fetch().then(function(data) {
+            var order = 200;
+            var auth = 'user';
+            var icon = 'fa-list-ul';
+
+            if (classificationCollection.models.length) {
+                app.main.menus.getMenu('classification').addEntry(new MenuSeparator(order++, auth));
+            }
+
+            for (var i = 0; i < classificationCollection.models.length; ++i) {
+                var model = classificationCollection.models[i];
+                var url = '#classification/classification/' + model.get('id') + '/classificationentry/';
+
+                app.main.menus.getMenu('classification').addEntry(
+                    new MenuEntry(model.get('name'), model.get('label'), url, icon, order, auth));
+
+                ++order;
+            }
+        });
     },
 
-    stop: function(options) {
+    stop: function(app, options) {
 
     }
 };

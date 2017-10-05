@@ -9,6 +9,8 @@
  */
 
 var Marionette = require('backbone.marionette');
+
+var ClassificationModel = require('../models/classification');
 var ClassificationEntryModel = require('../models/classificationentry');
 
 var ClassificationEntryListView = require('../views/classificationentrylist');
@@ -26,7 +28,8 @@ var ClassificationEntryCollection = require('../collections/classificationentry'
 var ClassificationEntryRouter = Marionette.AppRouter.extend({
     routes : {
         "app/classification/classificationentry/": "getClassificationEntryList",
-        "app/classification/classificationentry/:id/*tab": "getClassificationEntry"
+        "app/classification/classificationentry/:id/*tab": "getClassificationEntry",
+        "app/classification/classification/:id/classificationentry/": "getClassificationClassificationEntry"
     },
 /*
     constructor: function() {
@@ -103,6 +106,46 @@ var ClassificationEntryRouter = Marionette.AppRouter.extend({
         });
 
         classificationEntry.fetch();
+    },
+
+    getClassificationClassificationEntry: function(id) {
+        var classification = new ClassificationModel({id: id});
+
+        var defaultLayout = new DefaultLayout();
+        application.main.showContent(defaultLayout);
+
+        var collection = new ClassificationEntryCollection([], {classification_id: id});
+
+        // get available columns
+        var columns = application.main.cache.lookup({
+            type: 'entity_columns',
+            format: {model: 'classification.classificationentry'}
+        });
+
+        $.when(columns, classification.fetch()).then(function(data) {
+            defaultLayout.showChildView('title', new TitleView({
+                title: _t("Classifications entries"),
+                model: classification
+            }));
+
+            var classificationEntryListView = new ClassificationEntryListView({
+                classification: classification,
+                collection: collection,
+                columns: data[0].value
+            });
+
+            defaultLayout.showChildView('content', classificationEntryListView);
+            defaultLayout.showChildView('content-bottom', new ScrollingMoreView({
+                targetView: classificationEntryListView,
+                collection: collection
+            }));
+
+            // need classification permission details
+            classificationEntryListView.query();
+
+            defaultLayout.showChildView('bottom', new EntityListFilterView({
+                collection: collection, columns: data[0].value}));
+        });
     }
 });
 

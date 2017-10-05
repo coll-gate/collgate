@@ -40,7 +40,7 @@ class DescriptorFormatTypeCountry(DescriptorFormatType):
             "country"
         ]
         self.data = "INTEGER"
-        self.display_field = "name"
+        self.display_fields = "name"
         self.allow_multiple = True
         self.available_operators = ['isnull', 'notnull', 'eq', 'neq', 'in', 'notin']
 
@@ -107,6 +107,7 @@ class DescriptorFormatTypeCity(DescriptorFormatType):
             "city"
         ]
         self.data = "INTEGER"
+        self.display_fields = "name"
         self.allow_multiple = True
         self.available_operators = ['isnull', 'notnull', 'eq', 'neq', 'in', 'notin']
 

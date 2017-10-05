@@ -59,7 +59,7 @@ class CacheEntry(object):
 
     def __del__(self):
         if cache:
-            cache.set(self.category + '__' + self.name, None)
+            cache.set("%s__%s" % (self.category, self.name), None)
         # @todo send a notification on messaging service to CacheWebService
 
     @property
@@ -68,12 +68,12 @@ class CacheEntry(object):
 
     @property
     def content(self):
-        return cache.get(self.category + '__' + self.name)
+        return cache.get("%s__%s" % (self.category, self.name))
 
     @content.setter
     def content(self, content):
         self.datetime = datetime.datetime.utcnow()
-        cache.set(self.category + '__' + self.name, content, self.validity)
+        cache.set("%s__%s" % (self.category, self.name), content, self.validity)
 
 
 class CacheManager(object):
@@ -221,6 +221,9 @@ class CacheManager(object):
         self._expired.content = categories
 
         return categories
+
+    def make_cache_name(self, *kargs):
+        return ":".join(kargs)
 
 
 # Singleton of cache

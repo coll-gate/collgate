@@ -43,7 +43,7 @@ AuditModule.prototype = {
         this.routers.audit = new AuditRouter();
     },
 
-    start: function (options) {
+    start: function (app, options) {
         // nothing to do
     },
 
