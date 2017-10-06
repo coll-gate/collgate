@@ -162,6 +162,37 @@ def update_self_profile(request):
     return HttpResponseRest(request, {})
 
 
+def get_setting(user, setting_name):
+    profile = get_object_or_404(Profile, user=user)
+    current_settings = json.loads(profile.settings)
+
+    # setup of update setting version and content
+    return current_settings.get(setting_name)
+
+
+def update_setting(user, setting_name, setting_data, setting_version):
+    profile = get_object_or_404(Profile, user=user)
+
+    try:
+        version = pkg_version.parse(setting_version)
+    except ValueError:
+        raise ValueError('Invalid version number format')
+
+    if version < pkg_version.parse('0.1'):
+        raise ValueError('Minimal version number must be 0.1')
+
+    current_settings = json.loads(profile.settings)
+
+    # setup of update setting version and content
+    current_settings[setting_name] = {
+        'version': str(version),
+        'setting': setting_data
+    }
+
+    profile.settings = json.dumps(current_settings)
+    profile.save()
+
+
 @RestProfileSettings.def_auth_request(Method.PATCH, Format.JSON, content={
     "type": "object",
     "properties": {
@@ -174,33 +205,7 @@ def update_self_settings(request):
     """
     Update or create a user setting.
     """
-    profile = get_object_or_404(Profile, user=request.user)
-
-    # name of the setting
-    setting_name = request.data['name']
-
-    setting = request.data['setting']
-
-    try:
-        version = pkg_version.parse(request.data['version'])
-    except ValueError:
-        raise ValueError('Invalid version number format')
-
-    if version < pkg_version.parse('0.1'):
-        raise ValueError('Minimal version number must be 0.1')
-
-    current_settings = json.loads(profile.settings)
-
-    # setup of update setting version and content
-    current_settings[setting_name] = {
-        'version': str(version),
-        'setting': setting
-    }
-
-    profile.settings = json.dumps(current_settings)
-
-    profile.save()
-
+    update_setting(request.user, request.data['name'], request.data['setting'], request.data['version'])
     return HttpResponseRest(request, {})
 
 

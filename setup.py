@@ -102,5 +102,5 @@ setup(
     # simple. Or you can use find_packages().
     packages=find_packages(exclude=['contrib', 'docs', 'tests*', '__pycache__', '*.pyc']),
 
-    install_requires=['django', 'validictory']
+    install_requires=['django', 'validictory', 'channels', 'django-redis-cache']
 )

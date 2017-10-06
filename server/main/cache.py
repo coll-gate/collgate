@@ -12,36 +12,7 @@ import datetime
 
 from django.core.cache import cache
 
-from igdectk.rest.handler import *
-from igdectk.rest.response import HttpResponseRest
-
-from .main import RestMain
-
-
-class RestCache(RestMain):
-    regex = r'^cache/$'
-    name = 'cache'
-
-
-# @todo need a standalone service that will receive notification of changes on some models/instance.
-# each change can invalidate some caches entries. the solution can be using a UWSGI 1process/1thread simple application
-# width a file socket for communication between django services and cache service. The cache service could cache simply
-# in RAM using a structure, or dict, or uses of a Redis instance.
-# the communication with clients can be performed using channel and websocket. cache service will inform client of
-# invalidation.
-
-@RestCache.def_auth_request(Method.GET, Format.JSON, parameters=('status',))
-def get_cache_list(request):
-    status = request.GET.get('status', 'valid')
-
-    if status == 'valid':
-        results = cache_manager.all()
-    elif status == 'expired':
-        results = cache_manager.expired()
-    else:
-        results = {}
-
-    return HttpResponseRest(request, results)
+# @todo update for REDIS, and follow models changes
 
 
 class CacheEntry(object):
@@ -60,7 +31,7 @@ class CacheEntry(object):
     def __del__(self):
         if cache:
             cache.set("%s__%s" % (self.category, self.name), None)
-        # @todo send a notification on messaging service to CacheWebService
+            # @todo send a notification on messaging service to CacheWebService
 
     @property
     def expires(self):
@@ -74,13 +45,15 @@ class CacheEntry(object):
     def content(self, content):
         self.datetime = datetime.datetime.utcnow()
         cache.set("%s__%s" % (self.category, self.name), content, self.validity)
+        # @todo send a notification on messaging service to CacheWebService
 
 
 class CacheManager(object):
     """
     Global cache manager and validity.
     @todo surveillance de model :
-        descriptortype, descriptorvalue, descriptormodeltype, descriptormetamodel, descriptorpanel
+        descriptortype, descriptorvalue, descriptormodeltype, descriptormetamodel, descriptorpanel,
+        classification...
     """
 
     def __init__(self):

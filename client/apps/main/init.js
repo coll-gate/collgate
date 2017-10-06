@@ -167,18 +167,19 @@ MainModule.prototype = {
         // render menus
         this.menus.render();
 
-        // this.menus.getMenu('classification').removeEntry('create-classification-entry');
-        // this.menus.removeMenu('help');
+        // messenger web-socket
+        var Messenger = require('./utils/messenger');
+        this.messenger = new Messenger();
 
-        // var Menu = require('./utils/menu');
-        // var MenuEntry = require('./utils/menuentry');
-
-        // this.menus.addMenu(new Menu('testmenu', 'TestMenu'));
-        // this.menus.getMenu('testmenu').addEntry(new MenuEntry('test', 'Test1', '#', 'glyphicon-check'));
+        if (session.user.isAuth) {
+            this.messenger.connect();
+        }
     },
 
     stop: function(app, options) {
-
+        if (this.messenger) {
+            this.messenger.disconnect();
+        }
     },
 
     /**

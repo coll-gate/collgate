@@ -1,7 +1,7 @@
 # -*- coding: utf-8; -*-
 #
-# @file staging.py
-# @brief Staging specific settings.
+# @file production.py
+# @brief Production specific settings.
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2016-09-01
 # @copyright Copyright (c) 2016 INRA/CIRAD
@@ -33,7 +33,7 @@ DATABASES = {
     }
 }
 
-ALLOWED_HOSTS = ['staging.gdec.clermont.inra.fr', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 # session cookie path
 SESSION_COOKIE_PATH = "/coll-gate/"
@@ -47,26 +47,20 @@ MEDIA_URL = 'media/'
 
 STATIC_ROOT = 'static/'
 
-STATIC_URL = '/coll-gate/static/'
+STATIC_URL = '/static/'
 
 TEMPLATES[0]['OPTIONS']['debug'] = False
 
 MIDDLEWARE = (
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
-    # 'debug_toolbar.middleware.DebugToolbarMiddleware',
-    # 'debug_panel.middleware.DebugPanelMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
     'igdectk.rest.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'igdectk.rest.restmiddleware.RestMiddleware',
-    # Uncomment the next line for simple clickjacking protection:
-    # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
 INSTALLED_APPS = (
-    'bootstrap3',
     'django.contrib.postgres',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -75,22 +69,8 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.admin',
-    'channels',
-    'guardian',
     'igdectk.common',
-    'igdectk.jquery',
-    'igdectk.bootstrap',
-    'main',
-    'messenger',
-    'audit',
-    'permission',
-    'descriptor',
-    'medialibrary',
-    'geonames',
-    'geolocation',
-    'organisation',
-    'classification',
-    'accession'
+    'channels'
 )
 
 LOGGING = {
@@ -127,7 +107,7 @@ LOGGING = {
         'file': {
             'level': 'INFO',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(BASE_DIR, '..', '..', 'logs', 'collgate.log'),
+            'filename': os.path.join(BASE_DIR, 'logs', 'collgate-messenger.log'),
             'formatter': 'standard',
             'maxBytes': 1024*1024*16,  # 16MB
             'backupCount': 10,
@@ -164,17 +144,3 @@ EMAIL_PORT = 25  # 465
 EMAIL_HOST_USER = "fscherma"
 EMAIL_HOST_PASSWORD = ""
 #EMAIL_USE_SSL = True
-
-
-APPLICATIONS['geonames'] = {
-    'DB_DEFAULT_SETTINGS': {
-        'geonames_username': "demo",
-    }
-}
-
-APPLICATIONS['medialibrary'] = {
-    'DB_DEFAULT_SETTINGS': {
-        'storage_location': "/coll-gate/media",
-        'storage_path': "/var/lib/collgate/media"
-    }
-}

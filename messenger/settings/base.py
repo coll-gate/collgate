@@ -1,10 +1,10 @@
 # -*- coding: utf-8; -*-
 #
 # @file base.py
-# @brief Django base settings for coll-gate project.
+# @brief Django base settings for coll-gate messenger project.
 # @author Frédéric SCHERMA (INRA UMR1095)
-# @date 2016-09-01
-# @copyright Copyright (c) 2016 INRA/CIRAD
+# @date 2017-10-06
+# @copyright Copyright (c) 2017 INRA/CIRAD
 # @license MIT (see LICENSE file)
 # @details 
 
@@ -72,6 +72,7 @@ CONTENT_TYPES = ['text/plain']
 BASE_DIR = dirname(dirname(__file__))
 # Append the path of the parent of 'common' project
 sys.path.insert(0, realpath(join(BASE_DIR, "..", "..")))
+sys.path.insert(0, realpath(join(BASE_DIR, "..")))
 
 # LOCALE_PATHS = [join(BASE_DIR, "locale"), ]
 
@@ -104,12 +105,10 @@ STATICFILES_DIRS = (
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'igdectk.packager.finders.AppDirectoriesFinder'
-    # 'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    # 'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = 'tqz1=9-yx395l*-&47!&yixn!itl6rq6ih_sdp140u2a#evy#_'
+SECRET_KEY = '9$0mgujqkt!k&c!!6fr%=+y$&=fq0b+eb+o9ckzubff(yd=^6m'
 
 TEMPLATES = [
     {
@@ -142,53 +141,22 @@ MIDDLEWARE = [
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'igdectk.rest.csrf.CsrfViewMiddleware',
-    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'igdectk.rest.restmiddleware.RestMiddleware',
-    # Uncomment the next line for simple clickjacking protection:
-    # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
 
 AUTHENTICATION_BACKENDS = (
     'igdectk.auth.ldap.LdapAuthenticationBackend',
-    # 'django.contrib.auth.backends.ModelBackend'
     'guardian.backends.ObjectPermissionBackend',
 )
-
-LDAPS = {
-    'default': {
-        'HOST': "ldap-authentification.inra.fr",
-        'BASE_DN': "ou=personnes,dc=inra,dc=fr",
-        'OPTIONS': {
-            'auto_add_user': True,
-            'search_filter': "()",
-            'username_attr': 'uid',
-            'email_attrs': ['mail', 'mailSynthese'],
-            'state_attrs': {'etatFicheLdap': 'actif'},
-            'firstname_attrs': ['givenName'],
-            'lastname_attrs': ['sn'],
-        }
-    },
-}
 
 ROOT_URLCONF = 'urls'
 
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'wsgi.application'
 
-# BOOTSTRAP3 = {
-#     'include_jquery': False,
-#     'jquery_url': '/static/promoteranalysis/js/jquery.min.js',
-#     'base_url': '/static/promoteranalysis/js/',
-#     'css_url': '/static/promoteranalysis/css/bootstrap.min.css',
-#     'theme_url': '/static/promoteranalysis/css/bootstrap-theme.min.css',
-#     'javascript_url': '/static/promoteranalysis/js/bootstrap.min.js',
-# }
-
 INSTALLED_APPS = (
-    'bootstrap3',
     'django.contrib.postgres',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -196,54 +164,11 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django-redis',
-    'channels',
-    # 'django.contrib.admin',
-    # 'django.contrib.admindocs',
-    'guardian',
-    'django_filters',
     'igdectk.common',
-    'igdectk.jquery',
-    'igdectk.bootstrap',
-    'main',
-    'messenger',
-    'permission',
-    'audit',
-    'descriptor',
-    'medialibrary',
-    'classification',
-    'accession',
+    'channels'
 )
 
 APPLICATIONS = {
-    "igdectk.jquery": {
-        "DB_DEFAULT_SETTINGS": {
-            "jquery": {"default_version": "3.2.1"},
-            "ui": {"default_theme": "lightness"},
-            "fancytree": {
-                "default_version": "2.12.0",
-                "default_theme": "bootstrap",
-                ".glyph": {"default_version": "2.12.0"},
-            },
-            "select2": {
-                "default_version": "4.0.4",
-                ".bootstrap": {"default_version": "4.0.4"},
-            },
-            "igdectk": {
-                ".csrf": {"default_version": "2.0.0"},
-                ".validator": {"default_version": "2.0.0"}
-            }
-        },
-    },
-    "igdectk.bootstrap": {
-        "DB_DEFAULT_SETTINGS": {
-            "bootstrap": {"default_version": "3.3.7"},
-            "igdectk": {
-                ".alert": {"default_version": "2.0.0"},
-                ".helper": {"default_version": "2.0.0"},
-            }
-        },
-    },
 }
 
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'
@@ -285,21 +210,26 @@ EMAIL_PORT = 25
 EMAIL_SUBJECT_PREFIX = "Coll-Gate IS"
 
 CACHES = {
-    # 'default': {
-    #     'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-    #     'LOCATION': 'collgate-cache',
-    #     'TIMEOUT': 60*60*24,
-    #     'OPTIONS': {
-    #         'MAX_ENTRIES': 1000
-    #     }
-    # },
     'default': {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379",
-        "OPTIONS": {
-            "DB": 1,
-            "CLIENT_CLASS": "django_redis.client.DefaultClient"
-        },
-        "KEY_PREFIX": "coll-gate"
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'collgate-cache',
+        'TIMEOUT': 60*60*24,
+        'OPTIONS': {
+            'MAX_ENTRIES': 1000
+        }
     }
+}
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "asgiref.inmemory.ChannelLayer",
+        "ROUTING": "routing.channel_routing",
+    },
+    "cacheservice": {
+        "BACKEND": "asgi_redis.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("localhost", 6379)],
+        },
+        "ROUTING": "routing.channel_routing",
+    },
 }
