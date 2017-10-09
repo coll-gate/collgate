@@ -12,6 +12,7 @@ from django.contrib.postgres.fields import JSONField, ArrayField
 from django.db import models, ProgrammingError, connection
 from django.db.models import prefetch_related_objects
 from django.db.models.fields.related_descriptors import ForwardManyToOneDescriptor
+import re
 
 
 class CursorQueryError(Exception):
@@ -545,9 +546,12 @@ class CursorQuery(object):
                     op = 'eq'
 
                 # replace __ by -> for next processing, and remove _id to find it in fields names
+                appended_field = re.sub(r'__', CursorQuery.FIELDS_SEP, field)
+                appended_field = re.sub(r'_id', '', appended_field)
+
                 lfilters.append({
                     'type': 'term',
-                    'field': field.replace('__', CursorQuery.FIELDS_SEP).rstrip('_id'),
+                    'field': appended_field,
                     'value': v,
                     'op': op if op else 'eq'
                 })
