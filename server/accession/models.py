@@ -510,6 +510,16 @@ class AccessionPanel(Panel):
                     'model': 'accession.accessionpanel'
                 },
                 'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
+            },
+            'accessions_amount': {
+                'label': _('Accessions amount'),
+                'field': 'accessions_amount',
+                'query': False,
+                'format': {
+                    'type': 'int',
+                    'model': 'accession.accessionpanel'
+                },
+                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'gte', 'lte']
             }
         }
 

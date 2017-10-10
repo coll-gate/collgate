@@ -9,14 +9,21 @@
  */
 
 var LayoutView = require('../../main/views/layout');
-var ContentBottomLayout = require('../../main/views/contentbottomlayout');
+var ContentBottomFooterLayout = require('../../main/views/contentbottomfooterlayout');
 var ScrollingMoreView = require('../../main/views/scrollingmore');
+var EntityListFilterView = require('../../descriptor/views/entitylistfilter');
 
 var Layout = LayoutView.extend({
     template: require("../templates/panellayout.html"),
+    templateContext: function () {
+        return {
+            acc_amount: this.model.get('accessions_amount')
+        }
+    },
 
     ui: {
-        accessions_tab: 'a[aria-controls=accessions]'
+        accessions_tab: 'a[aria-controls=accessions]',
+        accessions_badge: '#accessions-badge'
     },
 
     regions: {
@@ -45,6 +52,11 @@ var Layout = LayoutView.extend({
         });
     },
 
+    updateAccessionsAmount: function (nb) {
+        this.ui.accessions_badge.html(nb);
+        // this.childView('bottom').onUpdateCount(nb)
+        // this.render()
+    },
 
     disableEntitiesTab: function () {
         this.ui.accessions_tab.parent().addClass('disabled');
@@ -98,6 +110,7 @@ var Layout = LayoutView.extend({
         var AccessionCollection = require('../collections/accession');
         var accessionPanelAccessions = new AccessionCollection([], {panel_id: this.model.get('id')});
 
+
         var columns = application.main.cache.lookup({
             type: 'entity_columns',
             format: {model: 'accession.accession'}
@@ -113,18 +126,29 @@ var Layout = LayoutView.extend({
                 collection: accessionPanelAccessions,
                 model: panelLayout.model,
                 columns: data[0].value,
-                related_entity: {
+                collectionEvents: {
+                    'update': 'updateAmount'
+                },
+                layoutView: panelLayout,
+                relatedEntity: {
                     'content_type': 'accession.accessionpanel',
                     'id': panelLayout.model.id
                 }
-
             });
 
-            var contentBottomLayout = new ContentBottomLayout();
-            panelLayout.showChildView('accessions', contentBottomLayout);
+            var contentBottomFooterLayout = new ContentBottomFooterLayout();
+            panelLayout.showChildView('accessions', contentBottomFooterLayout);
 
-            contentBottomLayout.showChildView('content', accessionListView);
-            contentBottomLayout.showChildView('bottom', new ScrollingMoreView({targetView: accessionListView}));
+            contentBottomFooterLayout.showChildView('content', accessionListView);
+            contentBottomFooterLayout.showChildView('bottom', new ScrollingMoreView({
+                collection: accessionPanelAccessions,
+                targetView: accessionListView
+            }));
+
+            contentBottomFooterLayout.showChildView('footer', new EntityListFilterView({
+                collection: accessionPanelAccessions,
+                columns: data[0].value
+            }));
 
             accessionListView.query();
 

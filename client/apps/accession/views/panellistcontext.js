@@ -18,26 +18,26 @@ var View = Marionette.View.extend({
         return {
             actions: this.getOption('actions'),
             options: {
+                'create-panel': {className: 'btn-default', label: _t('Create new panel')},
                 'union': {className: 'btn-default', label: _t('Union')},
-                'intersection': {className: 'btn-default', label: _t('Intersection')},
-                'difference': {className: 'btn-default', label: _t('Difference')}
+                'intersection': {className: 'btn-default', label: _t('Intersection')}
             }
         }
     },
 
     ui: {
+        'create-panel': 'button[name="create-panel"]',
         'union': 'button[name="union"]',
-        'intersection': 'button[name="intersection"]',
-        'difference': 'button[name="difference"]'
+        'intersection': 'button[name="intersection"]'
     },
 
     triggers: {
+        "click @ui.create-panel": "panel:create",
         "click @ui.union": "panel:union",
-        "click @ui.intersection": "panel:intersection",
-        "click @ui.difference": "panel:difference"
+        "click @ui.intersection": "panel:intersection"
     },
 
-    initialize: function(options) {
+    initialize: function (options) {
         options || (options = {actions: []});
     }
 });

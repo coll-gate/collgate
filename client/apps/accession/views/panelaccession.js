@@ -117,7 +117,8 @@ var View = Marionette.View.extend({
                 }
             })
         }).done(function () {
-            view.model.collection.fetch();
+            view.model.collection.count();
+            view.model.collection.remove(view.model);
         });
     },
 

@@ -21,8 +21,6 @@ var Collection = Backbone.Collection.extend({
         }
     },
 
-    // comparator: 'name',
-
     initialize: function (models, options) {
         options || (options = {});
 

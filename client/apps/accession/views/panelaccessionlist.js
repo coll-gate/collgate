@@ -74,9 +74,7 @@ var View = AdvancedTable.extend({
 
     initialize: function (options) {
         View.__super__.initialize.apply(this, arguments);
-        this.related_entity = this.getOption('related_entity');
-        // var context_menu = options.context_menu;
-        // this.listenTo(this.collection, 'reset', this.render, this);
+        this.relatedEntity = this.getOption('relatedEntity');
     },
 
     onShowTab: function () {
@@ -97,17 +95,20 @@ var View = AdvancedTable.extend({
 
         var actions = [
             'create-panel',
+            'link-to-panel',
             'unlink-accessions'
         ];
 
-        var PanelAccessionListContextView = require('./panelaccessionlistcontext');
+        var PanelAccessionListContextView = require('./accessionlistcontext');
         var contextView = new PanelAccessionListContextView({actions: actions});
         contextLayout.showChildView('content', contextView);
 
         contextView.on("panel:create", function () {
             view.onCreatePanel();
         });
-
+        contextView.on("panel:link-accessions", function () {
+            view.onLinkToPanel();
+        });
         contextView.on("accessions:unlink", function () {
             view.onUnlinkAccessions();
         });
@@ -139,20 +140,53 @@ var View = AdvancedTable.extend({
                         'from': {
                             'content_type': 'accession.accessionpanel',
                             'id': view.model.id
-                        }
-                        // 'filters': filters,
+                        },
+                        'filters': this.collection.filters
                         // 'search': search
                     }
                 })
             }
         ).done(function () {
-            // view.render();
-            view.collection.fetch();
+            if (view.getSelection('select').op === 'in') {
+                // this condition by pass auto-request loop to retrieve last user position in the table
+                view.collection.remove(view.getSelection('select').value);
+            } else {
+                view.collection.fetch();
+            }
+            view.collection.count();
+        });
+    },
+
+    updateAmount: function () {
+        // update the accessions amount badge only if layout view is specified
+        var panelLayoutView = this.getOption('layoutView', null);
+
+        if (!panelLayoutView) {
+            console.error("Panel layout view is missing: updateAmount() can not find amount badge to update");
+            return
+        }
+        $.ajax({
+                type: 'GET',
+                url: application.baseUrl + 'accession/accessions_panel/' + this.model.id + '/accessions/count/',
+                dataType: 'json',
+                contentType: "application/json; charset=utf-8"
+            }
+        ).done(function (data) {
+            panelLayoutView.model.set('accessions_amount', data.count);
+            panelLayoutView.updateAccessionsAmount(data.count);
         });
     },
 
     onCreatePanel: function () {
-        application.accession.controllers.panel.create(this.getSelection('select'), this.related_entity, this.collection.filters, this.collection.search);
+        if (!this.getSelection('select')) {
+            $.alert.warning(_t("No accession selected"));
+        } else {
+            application.accession.controllers.panel.create(this.getSelection('select'), this.relatedEntity, this.collection.filters, this.collection.search);
+        }
+    },
+
+    onLinkToPanel: function () {
+        application.accession.controllers.panel.linkAccessions(this.getSelection('select'), this.relatedEntity, this.collection.filters, this.collection.search);
     }
 });
 
