@@ -68,8 +68,8 @@ var View = AdvancedTable.extend({
         alert('todo!')
     },
 
-    onDifference: function () {
-        alert('todo!')
+    onCreatePanel: function () {
+        application.accession.controllers.panel.create();
     },
 
     onShowTab: function () {
@@ -80,9 +80,9 @@ var View = AdvancedTable.extend({
         application.getView().showChildView('right', contextLayout);
 
         var actions = [
+            'create-panel',
             'union',
-            'intersection',
-            'difference'
+            'intersection'
         ];
 
         var PanelListContextView = require('./panellistcontext');
@@ -92,14 +92,14 @@ var View = AdvancedTable.extend({
         contextLayout.showChildView('title', new TitleView({title: _t("Panel actions"), glyphicon: 'fa-wrench'}));
         contextLayout.showChildView('content', contextView);
 
+        contextView.on("panel:create", function () {
+            view.onCreatePanel();
+        });
         contextView.on("panel:union", function () {
             view.onUnion();
         });
         contextView.on("panel:intersection", function () {
             view.onIntersection();
-        });
-        contextView.on("panel:difference", function () {
-            view.onDifference();
         });
     }
 });

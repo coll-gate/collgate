@@ -74,7 +74,7 @@ var View = AdvancedTable.extend({
 
     initialize: function (options) {
         View.__super__.initialize.apply(this, arguments);
-        this.related_entity = this.getOption('related_entity');
+        this.relatedEntity = this.getOption('relatedEntity');
         this.filters = this.getOption('filters');
 
         // var context_menu = options.context_menu;
@@ -119,11 +119,15 @@ var View = AdvancedTable.extend({
     },
 
     onCreatePanel: function () {
-        application.accession.controllers.panel.create(this.getSelection('select'), this.related_entity, this.collection.filters, this.collection.search);
+        if (!this.getSelection('select')) {
+            $.alert.warning(_t("No accession selected"));
+        } else {
+            application.accession.controllers.panel.create(this.getSelection('select'), this.relatedEntity, this.collection.filters, this.collection.search);
+        }
     },
 
     onLinkToPanel: function () {
-        application.accession.controllers.panel.linkAccessions(this.getSelection('select'), this.related_entity, this.collection.filters, this.collection.search);
+        application.accession.controllers.panel.linkAccessions(this.getSelection('select'), this.relatedEntity, this.collection.filters, this.collection.search);
     }
 
 });

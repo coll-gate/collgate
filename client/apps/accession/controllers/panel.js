@@ -18,6 +18,7 @@ var AccessionPanelLayout = require('../views/panellayout');
 
 var Controller = Marionette.Object.extend({
     create: function (selection, related_entity, filters, search) {
+        selection || (selection = false);
         related_entity || (related_entity = null);
         filters || (filters = {});
         search || (search = {});

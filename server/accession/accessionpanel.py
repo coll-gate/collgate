@@ -290,8 +290,8 @@ def create_panel(request):
     try:
         with transaction.atomic():
             panel = AccessionPanel(name=name)
-
             panel.descriptor_meta_model = dmm
+            panel.count = 0
 
             # descriptors
             descriptors_builder = DescriptorsBuilder(panel)
@@ -307,12 +307,15 @@ def create_panel(request):
             if isinstance(selection, bool):
                 if selection is True:
                     panel.accessions.add(*cq)
+                    panel.count = cq.count()
 
             elif selection['op'] == 'in':
                 panel.accessions.add(*cq.filter(id__in=selection['value']))
+                panel.count = cq.filter(id__in=selection['value']).count()
 
             elif selection['op'] == 'notin':
                 panel.accessions.add(*cq.filter(id__notin=selection['value']))
+                panel.count = cq.filter(id__notin=selection['value']).count()
 
     except IntegrityError as e:
         DescriptorModelType.integrity_except(AccessionPanel, e)
@@ -321,7 +324,8 @@ def create_panel(request):
         'id': panel.pk,
         'name': panel.name,
         'descriptor_meta_model': panel.descriptor_meta_model.pk if panel.descriptor_meta_model else None,
-        'descriptors': panel.descriptors
+        'descriptors': panel.descriptors,
+        'accessions_amount': panel.count
     }
 
     return HttpResponseRest(request, response)
@@ -335,7 +339,8 @@ def get_panel(request, panel_id):
         'id': panel.pk,
         'name': panel.name,
         'descriptor_meta_model': panel.descriptor_meta_model.pk if panel.descriptor_meta_model else None,
-        'descriptors': panel.descriptors
+        'descriptors': panel.descriptors,
+        'accessions_amount': AccessionPanel.objects.get(id=int_arg(panel_id)).accessions.count()
     }
 
     return HttpResponseRest(request, results)
@@ -392,7 +397,8 @@ def get_panel_list(request):
             'id': panel.pk,
             'name': panel.name,
             'descriptor_meta_model': panel.descriptor_meta_model.pk if panel.descriptor_meta_model else None,
-            'descriptors': panel.descriptors
+            'descriptors': panel.descriptors,
+            'accessions_amount': panel.accessions.count()
         }
 
         panel_items.append(a)
@@ -522,14 +528,22 @@ def modify_panel(request, panel_id):
 
 
 # todo: set correct permissions... maybe list_panel_accession???
+# todo: maybe deprecated function, use panel column "accessions_amount"?
 @RestAccessionPanelAccessionsCount.def_auth_request(Method.GET, Format.JSON, perms={
     'accession.list_accession': _("You are not allowed to list the accessions")
 })
 def get_panel_accession_list_count(request, panel_id):
-    panel = get_object_or_404(AccessionPanel, id=int(panel_id))
+    from main.cursor import CursorQuery
+    cq = CursorQuery(Accession)
+
+    if request.GET.get('filters'):
+        filters = json.loads(request.GET['filters'])
+        cq.filter(filters)
+
+    cq.inner_join(AccessionPanel, accessionpanel=int(panel_id))
 
     results = {
-        'count': panel.accessions.count()
+        'count': cq.count()
     }
 
     return HttpResponseRest(request, results)

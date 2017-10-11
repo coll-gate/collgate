@@ -45,14 +45,21 @@ var Router = Marionette.AppRouter.extend({
             format: {model: 'accession.batch'}
         });
 
-        $.when(columns, collection.fetch()).then(function (data) {
-            var batchListView  = new BatchListView({collection: collection, columns: data[0].value});
+        columns.done(function (data) {
+            var batchListView  = new BatchListView({
+                collection: collection, columns: data[0].value,
+                onRender: function () {
+                    this.onShowTab();
+                }
+            });
 
             defaultLayout.showChildView('content', batchListView);
             defaultLayout.showChildView('content-bottom', new ScrollingMoreView({targetView: batchListView}));
             defaultLayout.showChildView('bottom', new EntityListFilterView({
                 collection: collection, columns: data[0].value
             }));
+
+            batchListView.query();
         });
     },
 
