@@ -80,6 +80,55 @@ Cache.prototype = {
     },
 
     /**
+     * Invalidate a cache entry.
+     * @param cacheType Cache type is a first classification key.
+     * @param key Key of the cache to get.
+     * @param values null or a list of value or a wild-char.
+     */
+    invalidate: function(cacheType, key, values) {
+        values || (values = null);
+
+        if (cacheType in this.data) {
+            var category = this.data[cacheType];
+
+            if (values) {
+                // @todo an invalidate per value
+            } else if (key.startsWith('*')) {
+                var match = key.replace('*', '');
+                var rmList = [];
+
+                for (key in category) {
+                    if (key.endsWith(match)) {
+                        rmList.push(key);
+                    }
+                }
+
+                for (var i = 0; i < rmList.length; ++i) {
+                    console.warn("invalidate", cacheType + "__" + rmList[i]);
+                    delete category[rmList[i]];
+                }
+            } else if (key.endsWith('*')) {
+                var match = key.replace('*', '');
+                var rmList = [];
+
+                for (key in category) {
+                    if (key.startsWith(match)) {
+                        rmList.push(key);
+                    }
+                }
+
+                for (var i = 0; i < rmList.length; ++i) {
+                    console.warn("invalidate", cacheType + "__" + rmList[i]);
+                    delete category[rmList[i]];
+                }
+            } else if (key in category) {
+                console.warn("invalidate", cacheType + "__" + key);
+                delete category[key];
+            }
+        }
+    },
+
+    /**
      * Register a specific cache fetcher.
      * @param fetcher Valid cache fetcher instance.
      */
@@ -147,6 +196,14 @@ Cache.prototype = {
         } else {
             throw "Unregistered cache fetcher for this type (" + cacheType + ")"
         }
+    },
+
+    enable: function () {
+        this.enabled = true;
+    },
+
+    disable: function () {
+        this.enabled = false;
     }
 };
 

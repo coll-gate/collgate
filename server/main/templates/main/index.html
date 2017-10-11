@@ -160,11 +160,7 @@
     {% endblock %}
 </div> <!-- /container -->
 
-<footer class="footer">
-    <div class="container">
-        <div style="text-align:center;">Coll-Gate IS {% collgate "version" %} Copyright &copy; 2016-2017 INRA/CIRAD</div>
-    </div>
-</footer>
+<footer class="footer"></footer>
 
 <script language="javascript">
 
@@ -193,6 +189,7 @@ session = function() {
     }
 }();
 
+session.version = '{% collgate "version" %}';
 session.modules = {% collgate "modules" %};
 session.debug = {{ debug|yesno:"true,false" }};
 session.language = "{{ LANGUAGE_CODE }}";

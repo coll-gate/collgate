@@ -8,15 +8,11 @@
 # @license MIT (see LICENSE file)
 # @details
 
-import os
-
-import sys
-from django.core.exceptions import ImproperlyConfigured
-
 from igdectk.common.apphelpers import ApplicationMain
 from igdectk.module.manager import module_manager
 from igdectk.module.module import Module
-from main.config import configuration
+
+from . import tcpclient
 
 
 class CollGateMessenger(ApplicationMain):
@@ -37,7 +33,17 @@ class CollGateMessenger(ApplicationMain):
             'base',
         ))
 
+        module_manager.register_module(messenger_module)
+
+        if self.is_run_mode():
+            self.post_ready()
+
+    def post_ready(self):
+        messenger_module = module_manager.get_module('messenger')
+
         # no client counterpart
         messenger_module.client_export = False
 
-        module_manager.register_module(messenger_module)
+        # create a connector to messenger service
+        messenger_module.tcp_client = tcpclient.TCPClient()
+        messenger_module.tcp_client.daemon = True

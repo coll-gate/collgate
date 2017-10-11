@@ -197,7 +197,6 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django-redis',
-    'channels',
     # 'django.contrib.admin',
     # 'django.contrib.admindocs',
     'guardian',

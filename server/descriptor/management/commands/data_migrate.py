@@ -19,7 +19,8 @@ from django.db import transaction
 
 from igdectk.module.manager import module_manager
 
-from audit.models import unregister_models
+from main.models import main_unregister_models
+from audit.models import audit_unregister_models
 
 
 class Command(BaseCommand):
@@ -89,8 +90,10 @@ class Command(BaseCommand):
         from audit import localsettings
         if not localsettings.migration_audit:
             for module in module_manager.modules:
-                # avoid audit during fixture processing
-                unregister_models(module.name)
+                # avoid main signal during fixture processing
+                main_unregister_models(module.name)
+                # and audit creation
+                audit_unregister_models(module.name)
 
         from descriptor.fixtures import manager
         fixture_manager = manager.FixtureManager()

@@ -23,13 +23,13 @@ DescriptorCacheFetcher.prototype.constructor = DescriptorCacheFetcher;
  * Fetch values.
  * @param keys Keys list.
  */
-DescriptorCacheFetcher.prototype.fetch = function(cacheManager, options, keys, evalKeys) {
+DescriptorCacheFetcher.prototype.fetch = function(cacheManager, options, keys) {
     var cache = cacheManager.get('descriptors', options.format.name);
 
     var queryData = {};
     var doFetch = false;
 
-    if (evalKeys) {
+    if (cacheManager.enabled) {
         // make the list of values
         var keysToFetch = new Set();
 

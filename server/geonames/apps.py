@@ -71,8 +71,11 @@ class CollGateGeonames(ApplicationMain):
         instance.geonames_include_city_types = self.geonames_include_city_types
         instance.geonames_username = self.geonames_username
 
-        from audit.models import register_models
-        register_models(CollGateGeolocation.name)
+        from main.models import main_register_models
+        main_register_models(CollGateGeolocation.name)
+
+        from audit.models import audit_register_models
+        audit_register_models(CollGateGeolocation.name)
 
         # create a geonames module
         geonames_module = Module('geonames', base_url='coll-gate')

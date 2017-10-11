@@ -100,6 +100,7 @@ MainModule.prototype = {
         var Cache = require('./utils/cache');
         this.cache = new Cache();
         this.cache.register('entity');
+        this.cache.register('entity_columns');
 
         var EntityCacheFetcher = require('./utils/entitycachefetcher');
         this.cache.registerFetcher(new EntityCacheFetcher());

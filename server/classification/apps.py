@@ -38,8 +38,11 @@ class CollGateClassification(ApplicationMain):
     def ready(self):
         super().ready()
 
-        from audit.models import register_models
-        register_models(CollGateClassification.name)
+        from main.models import main_register_models
+        main_register_models(CollGateClassification.name)
+
+        from audit.models import audit_register_models
+        audit_register_models(CollGateClassification.name)
 
         # create a module classification
         classification_module = Module('classification', base_url='coll-gate')

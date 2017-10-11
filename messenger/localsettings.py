@@ -10,3 +10,10 @@
 
 # @todo setup from a file declared in environment
 SECRET_KEY = 'tqz1=9-yx395l*-&47!&yixn!itl6rq6ih_sdp140u2a#evy#_'
+
+# @todo from server session configuration
+SESSION_COOKIE_AGE = 1209600
+
+TCP_SERVER_LISTEN = "0.0.0.0"
+
+TCP_SERVER_LISTEN_PORT = 8888

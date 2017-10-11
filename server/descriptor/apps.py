@@ -41,10 +41,16 @@ class CollGateDescriptor(ApplicationMain):
 
         # register descriptor cache category
         from main.cache import cache_manager
-        cache_manager.register('descriptor')
+        cache_manager.register('_descriptor')
+        cache_manager.register('_entity_columns')
+        cache_manager.register('descriptors')
+        cache_manager.register('entity_columns')
 
-        from audit.models import register_models
-        register_models(CollGateDescriptor.name)
+        from main.models import main_register_models
+        main_register_models(CollGateDescriptor.name)
+
+        from audit.models import audit_register_models
+        audit_register_models(CollGateDescriptor.name)
 
         # create a module accession
         descriptor_module = Module('descriptor', base_url='coll-gate')

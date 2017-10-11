@@ -8,7 +8,6 @@
 # @license MIT (see LICENSE file)
 # @details
 
-# import re
 from packaging import version as pkg_version
 
 from django.contrib import messages
@@ -19,6 +18,8 @@ from django.shortcuts import get_object_or_404
 
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
+from messenger import COMMAND_AUTH_SESSION
+from module.manager import module_manager
 
 from .models import Profile
 from .main import RestMain

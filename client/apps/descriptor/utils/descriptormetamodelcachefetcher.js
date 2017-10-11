@@ -31,29 +31,34 @@ DescriptorMetaModelCacheFetcher.prototype.fetch = function(cacheManager, options
     var toFetch = false;
     var now = Date.now();
 
-    // lookup into the global cache
-    for (var i = 0; i < keys.length; ++i) {
-        var key = keys[i];
-        var entry = undefined;
+    if (cacheManager.enabled) {
+        // lookup into the global cache
+        for (var i = 0; i < keys.length; ++i) {
+            var key = keys[i];
+            var entry = undefined;
 
-        toFetch = false;
+            toFetch = false;
 
-        if (key !== null && key !== undefined && key !== "") {
-            entry = cache[key];
-        }
+            if (key !== null && key !== undefined && key !== "") {
+                entry = cache[key];
+            }
 
-        if (entry !== undefined) {
-            // found. look for validity
-            if (entry.expire !== null && entry.expire <= now) {
+            if (entry !== undefined) {
+                // found. look for validity
+                if (entry.expire !== null && entry.expire <= now) {
+                    toFetch = true;
+                }
+            } else if (key !== null && key !== undefined && key !== "") {
                 toFetch = true;
             }
-        } else if (key !== null && key !== undefined && key !== "") {
-            toFetch = true;
-        }
 
-        if (toFetch) {
-            keysToFetch.add(key);
+            if (toFetch) {
+                keysToFetch.add(key);
+            }
         }
+    } else {
+        // all when cache disabled
+        keysToFetch = new Set(keys);
     }
 
     var url = "descriptor/meta-model/values/";

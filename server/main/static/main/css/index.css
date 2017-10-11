@@ -54,6 +54,10 @@ hr {
     div.access-buttons {
         display: none;
     }
+
+    footer {
+        display: none;
+    }
 }
 
 @media (min-width: 769px) {
@@ -67,8 +71,13 @@ hr {
         padding: 0px;
     }
 
+    footer {
+        display: none;
+    }
+
     #root {
-        height: calc(100vh - 50px - 10px - 5px - 5px - 1px);  /* 100% of the viewport height - height of header and footer */
+        /*height: calc(100vh - 50px - 10px - 5px - 5px - 1px);  !* 100% of the viewport height - height of header and footer *!*/
+        height: calc(100vh - 50px - 10px - 1px);  /* 100% of the viewport height - height of header */
     }
 }
 
@@ -86,7 +95,8 @@ hr {
     }
 
     #root {
-        height: calc(100vh - 50px - 10px - 5px - 15px - 1px);  /* 100% of the viewport height - height of header and footer */
+        /*height: calc(100vh - 50px - 10px - 5px - 15px - 1px);  !* 100% of the viewport height - height of header and footer *!*/
+        height: calc(100vh - 50px - 10px - 1px);  /* 100% of the viewport height - height of header */
     }
 }
 

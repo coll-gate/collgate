@@ -75,7 +75,6 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.admin',
-    'channels',
     'guardian',
     'igdectk.common',
     'igdectk.jquery',

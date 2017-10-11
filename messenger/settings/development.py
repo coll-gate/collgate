@@ -70,7 +70,9 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'igdectk.common',
-    'channels'
+    'channels',
+    'main',
+    'tcpserver'
 )
 
 LOGGING = {
@@ -129,7 +131,27 @@ LOGGING = {
             'level': 'INFO',
             'propagate': True,
         },
-        'collgate': {
+        'django.channels': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'daphne': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'daphne.worker': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'daphne.server': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'collgate-messenger': {
             'handlers': ['console', 'file'],
             'level': 'DEBUG',
             'propagate': True,
@@ -138,7 +160,7 @@ LOGGING = {
             'handlers': ['console', 'file'],
             'level': 'DEBUG',
             'propagate': True,
-        }
+        },
     }
 }
 

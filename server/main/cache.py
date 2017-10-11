@@ -12,7 +12,7 @@ import datetime
 
 from django.core.cache import cache
 
-# @todo update for REDIS, and follow models changes
+# @todo may could remove that manager...
 
 
 class CacheEntry(object):
@@ -28,10 +28,9 @@ class CacheEntry(object):
         self.datetime = datetime.datetime.utcnow()
         self.validity = validity if validity is not None else CacheEntry.DEFAULT_VALIDITY
 
-    def __del__(self):
-        if cache:
+    def clear(self):
+        if cache and self.category and self.name:
             cache.set("%s__%s" % (self.category, self.name), None)
-            # @todo send a notification on messaging service to CacheWebService
 
     @property
     def expires(self):
@@ -43,24 +42,18 @@ class CacheEntry(object):
 
     @content.setter
     def content(self, content):
-        self.datetime = datetime.datetime.utcnow()
-        cache.set("%s__%s" % (self.category, self.name), content, self.validity)
-        # @todo send a notification on messaging service to CacheWebService
+        if content:
+            self.datetime = datetime.datetime.utcnow()
+            cache.set("%s__%s" % (self.category, self.name), content, self.validity)
 
 
 class CacheManager(object):
     """
-    Global cache manager and validity.
-    @todo surveillance de model :
-        descriptortype, descriptorvalue, descriptormodeltype, descriptormetamodel, descriptorpanel,
-        classification...
+    Global cache manager and validity. Models are watched using django signals.
     """
 
     def __init__(self):
         self.categories = {}
-
-        self._expired = CacheEntry('_expired', 1)
-        self._all = CacheEntry('_all', 1)
 
     def register(self, category):
         if category not in self.categories:
@@ -108,6 +101,7 @@ class CacheManager(object):
                     rm_list.append(cache_entry)
 
             for cache_entry in rm_list:
+                cache_category[cache_entry].clear()
                 del cache_category[cache_entry]
 
         elif name.startswith('*'):
@@ -119,6 +113,7 @@ class CacheManager(object):
                     rm_list.append(cache_entry)
 
             for cache_entry in rm_list:
+                cache_category[cache_entry].clear()
                 del cache_category[cache_entry]
 
         elif name in cache_category:
@@ -135,65 +130,6 @@ class CacheManager(object):
             return cache_entry.content
         else:
             return None
-
-    def all(self):
-        """
-        Convert the structure of the manager to a dict.
-        """
-        categories = self._all.content
-
-        if categories is not None:
-            return categories
-
-        categories = {}
-
-        for category in self.categories:
-            cat = {}
-
-            for entry in category:
-                cat[entry.name] = {
-                    'status': 'valid',
-                    'datetime': entry.datetime,
-                    'validity': entry.validity,
-                    'expires': entry.expires
-                }
-
-            categories = cat
-
-        # keep result in for a short time
-        self._all.content = categories
-
-        return categories
-
-    def expired(self):
-        """
-        Returns as a dict structure all expired caches.
-        """
-        categories = self._expired.content
-
-        if categories is not None:
-            return categories
-
-        categories = {}
-
-        for category in self.categories:
-            cat = {}
-
-            for entry in category:
-                if entry.expires <= datetime.datetime.utcnow():
-                    cat[entry.name] = {
-                        'status': 'invalid',
-                        'datetime': entry.datetime,
-                        'validity': entry.validity,
-                        'expires': entry.expires
-                    }
-
-            categories = cat
-
-        # keep result in for a short time
-        self._expired.content = categories
-
-        return categories
 
     def make_cache_name(self, *kargs):
         return ":".join(kargs)

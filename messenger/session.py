@@ -14,34 +14,69 @@ import datetime
 class Session:
 
     def __init__(self):
-        self.sessions = {}
+        self.sessions_by_username = {}
+        self.sessions_by_reply_channel = {}
+        self.waiting_sessions = {}
 
-    def get_session(self, messengerid):
-        return self.sessions.get(messengerid)
+    def get_session(self, reply_channel):
+        return self.sessions_by_reply_channel.get(reply_channel)
 
-    def add_session(self, messengerid, username):
-        # @todo expire
+    def setup_session(self, messengerid, reply_channel, username):
+        session = self.waiting_sessions.get(username)
+
+        if session is None:
+            return None
+
+        if session['messengerid'] != messengerid:
+            return None
+
+        if session['username'] != username:
+            return None
+
+        # expired session
+        if session['expire'] <= datetime.datetime.now():
+            del self.waiting_sessions[username]
+            return None
+
+        session['auth'] = True
+
+        self.sessions_by_reply_channel[reply_channel] = session
+        self.sessions_by_username[session['username']] = session
+
+        del self.waiting_sessions[username]
+
+        return session
+
+    def has_session(self, reply_channel):
+        return reply_channel in self.sessions_by_reply_channel
+
+    def unset_session(self, reply_channel):
+        session_by_reply_channel = self.sessions_by_reply_channel.get(reply_channel)
+        if session_by_reply_channel is None:
+            return
+
+        username = session_by_reply_channel['username']
+
+        if reply_channel in self.sessions_by_reply_channel:
+            del self.sessions_by_reply_channel[reply_channel]
+
+        if username in self.sessions_by_username:
+            del self.sessions_by_username[username]
+
+    def get_session(self, reply_channel):
+        return self.sessions_by_reply_channel.get(reply_channel)
+
+    def register_session(self, username, messengerid, validity):
         session = {
+            'auth': False,
             'username': username,
             'connection': datetime.datetime.now(),
-            'expire': datetime.datetime.now() + datetime.timedelta(hours=24),
+            'expire': datetime.datetime.now() + datetime.timedelta(seconds=validity),
+            'messengerid': messengerid,
             'data': {}
         }
 
-        self.sessions[messengerid] = session
-        return session
+        self.waiting_sessions[username] = session
 
-    def has_session(self, messengerid):
-        return messengerid in self.sessions
-
-    def remove_session(self, messengerid):
-        if messengerid in self.sessions:
-            del self.sessions
-
-    def get_session(self):
-        return self.sessions
-
-
-# @todo managed session expiration
 
 session_manager = Session()

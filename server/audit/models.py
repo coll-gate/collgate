@@ -27,6 +27,7 @@ from . import localsettings
 
 
 class AuditManager(models.Manager):
+
     def for_user(self, user):
         """
         Lookup any audits for a specific user.
@@ -300,7 +301,7 @@ def entity_m2m_changed(sender, instance, action, reverse, model, **kwargs):
     Audit.objects.create_audit(user, content_type, instance.pk, AuditType.M2M_CHANGE, fields)
 
 
-def register_models(app_name):
+def audit_register_models(app_name):
     if 'django_content_type' not in connection.introspection.table_names():
         return
 
@@ -312,7 +313,7 @@ def register_models(app_name):
         models.signals.m2m_changed.connect(entity_m2m_changed, sender=model)
 
 
-def unregister_models(app_name):
+def audit_unregister_models(app_name):
     if 'django_content_type' not in connection.introspection.table_names():
         return
 

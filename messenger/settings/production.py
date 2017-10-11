@@ -70,7 +70,9 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'igdectk.common',
-    'channels'
+    'channels',
+    'main',
+    'tcpserver'
 )
 
 LOGGING = {
@@ -124,7 +126,7 @@ LOGGING = {
             'level': 'WARNING',
             'propagate': True,
         },
-        'collgate': {
+        'collgate-messenger': {
             'handlers': ['console', 'file'],
             'level': 'DEBUG',
             'propagate': True,

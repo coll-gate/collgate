@@ -12,15 +12,13 @@ import base64
 import hashlib
 import hmac
 import json
+import re
 import urllib
 
-import re
+from channels import Group
 from django.contrib.auth import get_user_model
 from django.contrib.sessions.models import Session
 from django.core.signing import TimestampSigner, SignatureExpired
-from django.http import HttpResponse
-from channels.handler import AsgiHandler
-
 from django.db import connection
 
 from messenger.localsettings import SECRET_KEY
@@ -45,18 +43,6 @@ def decode(session_data, secret_key, class_name='SessionStore'):
     return json.loads(pickled.decode('utf-8'))
 
 
-def get_setting(user, setting_name):
-    cursor = connection.cursor()
-
-    cursor.execute("SELECT settings FROM main_profile WHERE user_id=%s", (user.pk,))
-    row = cursor.fetchone()
-
-    current_settings = json.loads(row[0])
-
-    # setup of update setting version and content
-    return current_settings.get(setting_name)
-
-
 # def http_consumer(message):
 #     # Make standard HTTP response - access ASGI path attribute directly
 #     response = HttpResponse("Hello world! You asked for %s" % message.content['path'])
@@ -66,19 +52,17 @@ def get_setting(user, setting_name):
 
 
 def ws_message(message):
-    content = json.loads(message.content['text'])
+    pass
+    # content = json.loads(message.content['text'])
+    #
+    # result = {
+    #     'content': content
+    # }
+    #
+    # message.reply_channel.send({'text': json.dumps(result)})
 
-    result = {
-        'content': content
-    }
 
-    message.reply_channel.send({'text': json.dumps(result)})
-
-
-def ws_connect(message):
-    query_string = message.content.get('query_string', b'').decode('utf8')
-    parameters = urllib.parse.parse_qs(query_string)
-
+def get_session_id(message):
     sessionid = None
 
     headers = message.content['headers']
@@ -97,65 +81,56 @@ def ws_connect(message):
         if sessionid:
             break
 
+    return sessionid
+
+
+def ws_connect(message):
+    query_string = message.content.get('query_string', b'').decode('utf8')
+    parameters = urllib.parse.parse_qs(query_string)
+
     username = parameters.get('username', [''])[0]
     messengerid = parameters.get('messengerid', [''])[0]
 
     if not re.match(r'[a-zA-Z0-9_]{3,100}', username):
         message.reply_channel.send({'accept': False})
+        return
 
     if not re.match(r'[a-zA-Z0-9_\-:]{50,100}', messengerid):
         message.reply_channel.send({'accept': False})
+        return
 
     if not username or not messengerid:
         message.reply_channel.send({'accept': False})
-
-    try:
-        session = Session.objects.get(session_key=sessionid)
-    except Session.DoesNotExist:
-        message.reply_channel.send({'accept': False})
-
-    session_data = decode(session.session_data, SECRET_KEY)
-    uid = session_data.get('_auth_user_id')
-    expiry = session_data.get('_session_expiry')
-
-    # compare session key
-    if session.session_key != sessionid:
-        message.reply_channel.send({'accept': False})
+        return
 
     UserModel = get_user_model()
 
     # get user from DB
     try:
-        user = UserModel.objects.get(pk=uid)
+        user = UserModel.objects.get(username=username)
     except UserModel.DoesNotExist:
         message.reply_channel.send({'accept': False})
-
-    # compare username
-    if username != user.username:
-        message.reply_channel.send({'accept': False})
-
-    # @todo how to check session validity and is authenticated
+        return
 
     # check validity
     signer = TimestampSigner(SECRET_KEY)
 
     try:
-        messengerid_org = signer.unsign(messengerid, max_age=15)
+        messengerid_org = signer.unsign(messengerid, max_age=60)
     except SignatureExpired:
         message.reply_channel.send({'accept': False})
+        return
 
-    # validate messengerid token, and consume it
-    messengerid_srv = get_setting(user, "messengerid")
-
-    if messengerid_srv is None or messengerid != messengerid_srv['setting']:
+    if session_manager.setup_session(messengerid, message.reply_channel, username) is None:
         message.reply_channel.send({'accept': False})
+        return
 
-    if user.username != username:
-        message.reply_channel.send({'accept': False})
+    # add to group of command type default
+    Group("default").add(message.reply_channel)
 
-    session_manager.add_session(messengerid_srv['setting'], username)
     message.reply_channel.send({'accept': True})
 
 
 def ws_disconnect(message):
-    pass
+    Group("default").discard(message.reply_channel)
+    session_manager.unset_session(message.reply_channel)

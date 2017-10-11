@@ -16,12 +16,17 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.postgres.fields import JSONField
 from django.core.exceptions import SuspiciousOperation
-from django.db import models, transaction, IntegrityError
+from django.db import models, transaction, IntegrityError, connection
 from django.db.models import Q
+from django.dispatch import receiver
 from django.utils import translation
 from django.utils.translation import ugettext_lazy as _
 
 from igdectk.common.models import ChoiceEnum, IntegerChoice, StringChoice
+from igdectk.module.manager import module_manager
+
+from messenger import COMMAND_CACHE_INVALIDATION
+
 
 logger = logging.getLogger('collgate')
 
@@ -559,3 +564,85 @@ class EntitySynonym(Entity):
         except IntegrityError as e:
             logger.log(repr(e))
             raise SuspiciousOperation(_("Unable to rename the synonym of the entity"))
+
+
+@receiver(models.signals.post_save, sender=Entity)
+def main_entity_post_save(sender, instance, created, **kwargs):
+    # invalidate server cache(s)
+    if hasattr(sender, 'server_cache_invalidate'):
+        from main.cache import cache_manager
+
+        for invalidator in sender.server_cache_invalidate:
+            cache_manager.unset(invalidator, '*')
+
+    # invalidate client cache(s)
+    if hasattr(sender, 'client_cache_invalidate'):
+        from main.cache import cache_manager
+
+        # @todo have a function, that make it from model, with name.. values...
+        for invalidator in sender.client_cache_invalidate:
+            messenger_module = module_manager.get_module('messenger')
+            messenger_module.tcp_client.message(COMMAND_CACHE_INVALIDATION, {
+                'category': invalidator, 'name': '*', 'values': None})
+
+
+@receiver(models.signals.post_delete, sender=Entity)
+def main_entity_post_delete(sender, instance, created, **kwargs):
+    # invalidate server cache(s)
+    if hasattr(sender, 'server_cache_invalidate'):
+        from main.cache import cache_manager
+
+        for invalidator in sender.server_cache_invalidate:
+            cache_manager.unset(invalidator, '*')
+
+    # invalidate client cache(s)
+    if hasattr(sender, 'client_cache_invalidate'):
+        from main.cache import cache_manager
+
+        for invalidator in sender.client_cache_invalidate:
+            messenger_module = module_manager.get_module('messenger')
+            messenger_module.tcp_client.message(COMMAND_CACHE_INVALIDATION, {
+                'category': invalidator, 'name': '*', 'values': None})
+
+
+@receiver(models.signals.m2m_changed, sender=Entity)
+def main_entity_m2m_changed(sender, instance, created, **kwargs):
+    # invalidate server cache(s)
+    if hasattr(sender, 'server_cache_invalidate'):
+        from main.cache import cache_manager
+
+        for invalidator in sender.server_cache_invalidate:
+            cache_manager.unset(invalidator, '*')
+
+    # invalidate client cache(s)
+    if hasattr(sender, 'client_cache_invalidate'):
+        from main.cache import cache_manager
+
+        for invalidator in sender.client_cache_invalidate:
+            messenger_module = module_manager.get_module('messenger')
+            messenger_module.tcp_client.message(COMMAND_CACHE_INVALIDATION, {
+                'category': invalidator, 'name': '*', 'values': None})
+
+
+def main_register_models(app_name):
+    if 'django_content_type' not in connection.introspection.table_names():
+        return
+
+    content_types = ContentType.objects.filter(app_label=app_name)
+    for content_type in content_types:
+        model = content_type.model_class()
+        models.signals.post_save.connect(main_entity_post_save, sender=model)
+        models.signals.post_delete.connect(main_entity_post_delete, sender=model)
+        models.signals.m2m_changed.connect(main_entity_m2m_changed, sender=model)
+
+
+def main_unregister_models(app_name):
+    if 'django_content_type' not in connection.introspection.table_names():
+        return
+
+    content_types = ContentType.objects.filter(app_label=app_name)
+    for content_type in content_types:
+        model = content_type.model_class()
+        models.signals.post_save.disconnect(main_entity_post_save, sender=model)
+        models.signals.post_delete.disconnect(main_entity_post_delete, sender=model)
+        models.signals.m2m_changed.disconnect(main_entity_m2m_changed, sender=model)

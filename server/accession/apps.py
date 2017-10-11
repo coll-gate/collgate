@@ -35,8 +35,11 @@ class CollGateAccession(ApplicationMain):
     def ready(self):
         super().ready()
 
-        from audit.models import register_models
-        register_models(CollGateAccession.name)
+        from main.models import main_register_models
+        main_register_models(CollGateAccession.name)
+
+        from audit.models import audit_register_models
+        audit_register_models(CollGateAccession.name)
 
         # create a module accession
         accession_module = Module('accession', base_url='coll-gate')

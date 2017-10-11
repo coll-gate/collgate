@@ -23,7 +23,7 @@ ColumnCacheFetcher.prototype.constructor = ColumnCacheFetcher;
  * Fetch values.
  * @param keys Keys list.
  */
-ColumnCacheFetcher.prototype.fetch = function(cacheManager, options, keys, evalKeys) {
+ColumnCacheFetcher.prototype.fetch = function(cacheManager, options, keys) {
     var name = options.format.model;
     if (options.format.descriptor_meta_models && options.format.descriptor_meta_models.length > 0) {
         name += ':' + options.format.descriptor_meta_models.sort().toString();
@@ -38,7 +38,7 @@ ColumnCacheFetcher.prototype.fetch = function(cacheManager, options, keys, evalK
     // lookup into the global cache
     var entry = 0 in cache ? cache[0] : undefined;
 
-    if (entry !== undefined) {
+    if (cacheManager.enabled && entry !== undefined) {
         // found. look for validity
         if (entry.expire !== null && entry.expire <= now) {
             doFetch = true;

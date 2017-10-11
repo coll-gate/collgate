@@ -60,6 +60,9 @@ class DescriptorGroup(Entity):
     Category of a type of descriptor.
     """
 
+    server_cache_invalidate = ("_descriptor", "_entity_columns")
+    client_cache_invalidate = ("entity_columns",)
+
     # unique group name
     name = models.CharField(unique=True, max_length=255, db_index=True)
 
@@ -118,6 +121,9 @@ class DescriptorType(Entity):
     """
     Type of descriptor for a model.
     """
+
+    server_cache_invalidate = ("_descriptor", "_entity_columns")
+    client_cache_invalidate = ("entity_columns", "descriptors")
 
     # unique name of type of descriptor
     name = models.CharField(unique=True, max_length=255, db_index=True)
@@ -907,6 +913,9 @@ class DescriptorValue(Entity):
     The field name represent the code of the value according to its type.
     """
 
+    # @todo with key
+    client_cache_invalidate = ("descriptors",)
+
     # Descriptor value code (unique with language)
     code = models.CharField(max_length=64)
 
@@ -1004,6 +1013,9 @@ class DescriptorPanel(Entity):
     The textual resources of a panel are i18nable because they are displayed for users.
     """
 
+    server_cache_invalidate = ("_descriptor", "_entity_columns")
+    client_cache_invalidate = ("entity_columns",)
+
     # To which meta-models this panel is attached.
     descriptor_meta_model = models.ForeignKey('DescriptorMetaModel', related_name='panels')
 
@@ -1092,6 +1104,9 @@ class DescriptorModelType(Entity):
     This is a basic entity of the model of descriptor. It makes the relation between a panel and
     its descriptors. And it makes the relation between him and the model of descriptor.
     """
+
+    server_cache_invalidate = ("_descriptor", "_entity_columns")
+    client_cache_invalidate = ("entity_columns",)
 
     # default name validator optional
     NAME_VALIDATOR = {
@@ -1335,6 +1350,9 @@ class DescriptorModel(Entity):
     Many entities can share the same model of descriptors.
     """
 
+    server_cache_invalidate = ("_descriptor", "_entity_columns")
+    client_cache_invalidate = ("entity_columns",)
+
     # unique name of model of descriptor
     name = models.CharField(unique=True, max_length=255, db_index=True)
 
@@ -1418,6 +1436,9 @@ class DescriptorMetaModel(Entity):
     Some entities inherit of one of this model, in way to defines what descriptors are used,
     and how they are displayed.
     """
+
+    server_cache_invalidate = ("_descriptor", "_entity_columns")
+    client_cache_invalidate = ("entity_columns",)
 
     # unique name of meta-model of descriptor
     name = models.CharField(unique=True, max_length=255, db_index=True)
@@ -1540,6 +1561,9 @@ class DescriptorModelTypeCondition(Entity):
     """
     Condition for a type of model of descriptor.
     """
+
+    server_cache_invalidate = ("_descriptor", "_entity_columns")
+    client_cache_invalidate = ("entity_columns",)
 
     # related descriptor model type
     descriptor_model_type = models.ForeignKey(DescriptorModelType, related_name='conditions')

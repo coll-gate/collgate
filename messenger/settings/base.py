@@ -165,7 +165,9 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'igdectk.common',
-    'channels'
+    'channels',
+    'main',
+    'tcpserver'
 )
 
 APPLICATIONS = {
@@ -220,6 +222,7 @@ CACHES = {
     }
 }
 
+# @todo redis with auth and for staging and production
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "asgiref.inmemory.ChannelLayer",

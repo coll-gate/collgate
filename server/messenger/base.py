@@ -8,7 +8,6 @@
 # @license MIT (see LICENSE file)
 # @details
 
-import datetime
 import random
 import hashlib
 
@@ -16,9 +15,10 @@ from django.core.signing import TimestampSigner
 
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
-from main.profile import update_setting
+from igdectk.module.manager import module_manager
 
-MESSENGERID_KEY_LENGTH = 50
+from .localsettings import MESSENGERID_KEY_LENGTH
+from . import COMMAND_AUTH_SESSION
 
 
 class RestMessenger(RestHandler):
@@ -37,8 +37,6 @@ def get_messenger_id(request):
     random_key = ''.join(
         [random.SystemRandom().choice('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-') for i in range(MESSENGERID_KEY_LENGTH)])
 
-    print(request.user.get_session_auth_hash())
-
     hash = hashlib.sha1()
     hash.update(random_key.encode('utf-8'))
 
@@ -47,8 +45,13 @@ def get_messenger_id(request):
     signer = TimestampSigner()
     messengerid = signer.sign(digest)
 
-    # set it to user settings data
-    update_setting(request.user, "messengerid", messengerid, "1.0")
+    messenger_module = module_manager.get_module('messenger')
+    messenger_module.tcp_client.message(
+        COMMAND_AUTH_SESSION, {
+            'username': request.user.username,
+            'messengerid': messengerid,
+            'validity': request.session.get_expiry_age()
+         })
 
     results = {
         'messengerid': messengerid
