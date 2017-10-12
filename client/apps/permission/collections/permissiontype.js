@@ -11,7 +11,7 @@
 var PermissionTypeModel = require('../models/permissiontype');
 
 var Collection = Backbone.Collection.extend({
-    url: application.baseUrl + 'permission/type/',
+    url: window.application.url(['permission', 'type']),
     model: PermissionTypeModel,
 
     toJSON: function() {

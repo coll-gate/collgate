@@ -126,7 +126,7 @@ var View = Marionette.View.extend({
             if (synonymType.get('unique') || synonymType.get('has_language')) {
                 $.ajax({
                     type: "GET",
-                    url: application.baseUrl + 'classification/classificationentry/synonym/search/',
+                    url: window.application.url(['classification', 'classificationentry', 'synonym', 'search']),
                     dataType: 'json',
                     data: {filters: JSON.stringify(filters)},
                     cache: false,
@@ -242,7 +242,7 @@ var View = Marionette.View.extend({
                     if (synonymType.get('unique') || synonymType.get('has_language')) {
                         $.ajax({
                             type: "GET",
-                            url: application.baseUrl + 'classification/classificationentry/synonym/search/',
+                            url: window.application.url(['classification', 'classificationentry', 'synonym', 'search']),
                             dataType: 'json',
                             data: {filters: JSON.stringify(filters)},
                             cache: false

@@ -11,7 +11,7 @@
 var DescribableModel = require('../models/describable');
 
 var Collection = Backbone.Collection.extend({
-    url: application.baseUrl + 'descriptor/describable',
+    url: window.application.url(['descriptor', 'describable']),
     model: DescribableModel,
 
     parse: function (data) {

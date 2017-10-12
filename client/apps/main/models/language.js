@@ -19,8 +19,8 @@ module.exports = Backbone.Model.extend({
 
     url: function() {
         if (this.isNew())
-            return application.baseUrl + 'main/language/';
+            return window.application.url(['main', 'language']);
         else
-            return application.baseUrl + 'main/language/' + this.get('id') + '/';
+            return window.application.url(['main', 'language', this.get('id')]);
     }
 });

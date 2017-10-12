@@ -23,10 +23,10 @@ var ProfileRouter = Marionette.AppRouter.extend({
     logout: function() {
         $.ajax({
             type: "POST",
-            url: application.baseUrl + "main/profile/logout/",
+            url: window.application.url(['main', 'profile', 'logout']),
             data: {},
         }).done(function(data) {
-            window.open(application.baseUrl, "_self", "", true);
+            window.open(window.application.url(), "_self", "", true);
         });
     },
 

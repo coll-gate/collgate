@@ -16,6 +16,6 @@ module.exports = Backbone.Model.extend({
             label: ''
         }
     },
-    url: application.baseUrl + 'main/ui/language/:id'
+    url: window.application.url(['main', 'ui', 'language', ':id'])
 });
 

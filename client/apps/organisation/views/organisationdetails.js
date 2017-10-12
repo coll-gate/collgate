@@ -86,7 +86,7 @@ var View = Marionette.View.extend({
 
                     $.ajax({
                         type: "GET",
-                        url: application.baseUrl + 'organisation/organisation/search/',
+                        url: window.application.url(['organisation', 'organisation', 'search']),
                         dataType: 'json',
                         data: {filters: JSON.stringify(filters)},
                         el: this.ui.name,

@@ -11,7 +11,7 @@
 var OrganisationTypeModel = require('../models/organisationtype');
 
 var Collection = Backbone.Collection.extend({
-    url: application.baseUrl + 'organisation/organisation-type/',
+    url: window.application.url(['organisation', 'organisation-type']),
     model: OrganisationTypeModel,
 
     parse: function(data) {

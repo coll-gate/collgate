@@ -263,7 +263,7 @@ var View = Marionette.View.extend({
 
             $.ajax({
                 type: "PUT",
-                url: application.baseUrl + 'descriptor/meta-model/' + modelId + '/panel/order/',
+                url: window.application.url(['descriptor', 'meta-model', modelId, 'panel', 'order']),
                 dataType: 'json',
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify({

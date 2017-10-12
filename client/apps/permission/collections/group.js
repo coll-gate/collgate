@@ -12,7 +12,7 @@ var PermissionGroupModel = require('../models/group');
 
 var Collection = Backbone.Collection.extend({
     url: function() {
-        return application.baseUrl + 'permission/group/';
+        return window.application.url(['permission', 'group']);
     },
     model: PermissionGroupModel,
 

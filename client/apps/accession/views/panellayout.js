@@ -82,7 +82,7 @@ var Layout = LayoutView.extend({
             // get the layout before creating the view
             $.ajax({
                 method: "GET",
-                url: application.baseUrl + 'descriptor/meta-model/' + value + '/layout/',
+                url: window.application.url(['descriptor', 'meta-model', value, 'layout']),
                 dataType: 'json'
             }).done(function (data) {
                 var PanelDescriptorView = require('../views/accessionpaneldescriptor');

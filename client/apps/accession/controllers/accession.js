@@ -23,7 +23,7 @@ var Controller = Marionette.Object.extend({
     create: function() {
         $.ajax({
             type: "GET",
-            url: application.baseUrl + 'descriptor/meta-model/for-describable/' + 'accession.accession/',
+            url: window.application.url(['descriptor', 'meta-model', 'for-describable', 'accession.accession']),
             dataType: 'json'
         }).done(function(data) {
             var CreateAccessionDialog = Dialog.extend({
@@ -146,7 +146,7 @@ var Controller = Marionette.Object.extend({
                     select.select2({
                         dropdownParent: this.ui.primary_classification_entry.parent(),
                         ajax: {
-                            url: application.baseUrl + "classification/classificationentry/search/",
+                            url: awindow.application.url(['classification' ,'classificationentry', 'search']),
                             dataType: 'json',
                             delay: 250,
                             data: function (params) {
@@ -205,7 +205,7 @@ var Controller = Marionette.Object.extend({
 
                         $.ajax({
                             type: "GET",
-                            url: application.baseUrl + 'accession/accession/search/',
+                            url: window.application.url(['accession' ,'accession', 'search']),
                             dataType: 'json',
                             contentType: 'application/json; charset=utf8',
                             data: {filters: JSON.stringify(filters)},
@@ -240,7 +240,7 @@ var Controller = Marionette.Object.extend({
 
                         $.ajax({
                             type: "GET",
-                            url: application.baseUrl + 'accession/accession/synonym/search/',
+                            url: window.application.url(['accession', 'accession', 'synonym', 'search']),
                             dataType: 'json',
                             contentType: 'application/json; charset=utf8',
                             data: {filters: JSON.stringify(filters)},

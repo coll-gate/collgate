@@ -13,7 +13,7 @@ var ClassificationModel = require('../../classification/models/classification');
 
 var Collection = CountableCollection.extend({
     url: function() {
-        return application.baseUrl + 'accession/accession/' + this.accession_id + '/classificationentry/';
+        return window.application.url(['accession', 'accession', this.accession_id, 'classificationentry']);
     },
     model: ClassificationModel,
 

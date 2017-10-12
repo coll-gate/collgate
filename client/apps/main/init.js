@@ -32,7 +32,7 @@ MainModule.prototype = {
         try {
             i18next.default.addResources(session.language, 'default', require('./locale/' + session.language + '/default.json'));
             // inject django json catalog
-            //$.get(application.baseUrl + 'jsoni18n/main/django').done(function (data) {
+            //$.get(window.application.url(['jsoni18n', 'main', 'django').done(function (data) {
             //    i18next.default.addResources(session.language, 'default', data.catalog);
             //    deferred.resolve("jsoni18n");
             //});

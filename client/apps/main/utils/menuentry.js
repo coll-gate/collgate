@@ -100,7 +100,7 @@ MenuEntry.prototype.bind = function() {
         // href starting with # are route that must be called using the navigation mechanism
         var aEl = this.$el.children("a.url");
 
-        var href = this.url.replace('#', application.baseUrl + 'app/');
+        var href = this.url.replace('#', window.application.url('app'));
         aEl.attr("href", href);
 
         aEl.on("click", function (e) {

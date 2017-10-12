@@ -287,7 +287,7 @@ if (session.languageDirection === "rtl") {
 
             $.ajax({
                 type: "POST",
-                url: application.baseUrl + "i18n/setlang/",
+                url: window.application.url(['i18n', 'setlang']),
                 data: {language: $('#languages').val()}
             }).done(function(data) {
                 // reload the application
@@ -378,7 +378,7 @@ if (session.languageDirection === "rtl") {
                 });
             } else if (href.startsWith("#") && href.length > 1) {
                 // href starting with # are route that must be called using the navigation mechanism
-                href = href.replace('#', application.baseUrl + 'app/');
+                href = href.replace('#', window.application.url('app'));
                 $(this).attr("href", href);
                 $(this).on("click", function (e) {
                     // close the menu and prevent default to open the url

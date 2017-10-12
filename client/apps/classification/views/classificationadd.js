@@ -137,7 +137,7 @@ var View = Marionette.View.extend({
         if (this.validateClassificationName()) {
             $.ajax({
                 type: "GET",
-                url: application.baseUrl + 'classification/classification/search/',
+                url: window.application.url(['classification', 'classification', 'search']),
                 dataType: 'json',
                 data: {
                     filters: JSON.stringify({

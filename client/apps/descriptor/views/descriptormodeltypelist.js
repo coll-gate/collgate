@@ -275,7 +275,7 @@ var View = AdvancedTable.extend({
 
             $.ajax({
                 type: "PUT",
-                url: application.baseUrl + 'descriptor/model/' + modelId + '/order/',
+                url: window.application.url(['descriptor', 'model', modelId, 'order']),
                 dataType: 'json',
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify({

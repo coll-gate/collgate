@@ -130,7 +130,7 @@ var View = AdvancedTable.extend({
         var view = this;
         $.ajax({
                 type: 'PATCH',
-                url: application.baseUrl + 'accession/accessions_panel/' + this.model.id + '/accessions/',
+                url: window.application.url(['accession', 'accessions_panel', this.model.id, 'accessions']),
                 dataType: 'json',
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify({
@@ -167,7 +167,7 @@ var View = AdvancedTable.extend({
         }
         $.ajax({
                 type: 'GET',
-                url: application.baseUrl + 'accession/accessions_panel/' + this.model.id + '/accessions/count/',
+                url: window.application.url(['accession', 'accessions_panel', this.model.id, 'accessions', 'count']),
                 dataType: 'json',
                 contentType: "application/json; charset=utf-8"
             }

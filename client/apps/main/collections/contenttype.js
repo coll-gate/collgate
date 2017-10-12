@@ -11,7 +11,7 @@
 var ContentTypeModel = require('../models/contenttype');
 
 var Collection = Backbone.Collection.extend({
-    url: application.baseUrl + 'main/content-type/',
+    url: window.application.url(['main', 'content-type']),
     model: ContentTypeModel,
 
     toJSON: function() {

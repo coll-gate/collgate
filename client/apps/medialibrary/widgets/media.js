@@ -87,10 +87,10 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
                         // get the media mime-type
                         $.ajax({
                             type: "GET",
-                            url: application.baseUrl + 'medialibrary/media/' + this.value + '/',
+                            url: window.application.url(['medialibrary', 'media', this.value]),
                             contentType: "application/json; charset=utf-8"
                         }).done(function(data) {
-                            var url = application.baseUrl + 'medialibrary/media/' + data.uuid + '/download/';
+                            var url = window.application.url(['medialibrary', 'media', data.uuid, 'download']);
 
                             // get mime-type, and if compatible with a client view show it else download it
                             if (data.mime_type.startsWith('image/')) {
@@ -109,7 +109,7 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
                             } else {
                                 // download the document
                                 $('<form></form>')
-                                    .attr('action', application.baseUrl + 'medialibrary/media/' + data.uuid + '/download/')
+                                    .attr('action', window.application.url(['medialibrary', 'media', data.uuid, 'download']))
                                     .appendTo('body').submit().remove();
                             }
                         });
@@ -120,7 +120,7 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
                     if (this.value) {
                         // download the document
                         $('<form></form>')
-                            .attr('action', application.baseUrl + 'medialibrary/media/' + this.value + '/download/')
+                            .attr('action', window.application.url(['medialibrary', 'media', this.value, 'download']))
                             .appendTo('body').submit().remove();
                     }
                 }, this));
@@ -181,7 +181,7 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
 
                 $.ajax({
                     type: "POST",
-                    url: application.baseUrl + 'medialibrary/media/upload/',
+                    url: window.application.url(['medialibrary', 'media', 'upload']),
                     encType: "multipart/form-data",
                     data: formData,
                     cache: false,
@@ -276,7 +276,7 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
                     // erase the last uploaded media and set descriptor value to null
                     $.ajax({
                         type: "DELETE",
-                        url: application.baseUrl + 'medialibrary/media/' + this.value + '/',
+                        url: window.application.url(['medialibrary', 'media', this.value]),
                         contentType: "application/json; charset=utf-8"
                     }).done(function(data) {
                         widget.fileName.val("");
@@ -324,7 +324,7 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
                 // erase the last uploaded media and set descriptor value to null
                 $.ajax({
                     type: "DELETE",
-                    url: application.baseUrl + 'medialibrary/media/' + this.value + '/',
+                    url: window.application.url(['medialibrary', 'media', this.value]),
                     contentType: "application/json; charset=utf-8"
                 }).done(function(data) {
                     widget.fileName.val("");
@@ -398,12 +398,12 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
                     // get the media file name
                     $.ajax({
                         type: "GET",
-                        url: application.baseUrl + 'medialibrary/media/' + this.value + '/',
+                        url: window.application.url(['medialibrary', 'media', this.value]),
                         contentType: "application/json; charset=utf-8"
                     }).done(function(data) {
                         widget.media = data;
 
-                        var url = application.baseUrl + 'medialibrary/media/' + data.uuid + '/download/';
+                        var url = window.application.url(['medialibrary', 'media', data.uuid, 'download']);
                         var img = $('<img class="media-image" src="' + url + '" alt="' + data.file_name + '"></img>');
 
                         // center the miniature
@@ -416,7 +416,7 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
                         download.on('click', $.proxy(function(e) {
                             // download the document
                             $('<form></form>')
-                                .attr('action', application.baseUrl + 'medialibrary/media/' + this.value + '/download/')
+                                .attr('action', window.application.url(['medialibrary', 'media', this.value, 'download']))
                                 .appendTo('body').submit().remove();
                         }, widget));
 
@@ -474,7 +474,7 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
                 // get the media file name
                 $.ajax({
                     type: "GET",
-                    url: application.baseUrl + 'medialibrary/media/' + this.value + '/',
+                    url: window.application.url(['medialibrary', 'media', this.value]),
                     contentType: "application/json; charset=utf-8"
                 }).done(function(data) {
                     widget.fileName.val(data.file_name);

@@ -22,7 +22,7 @@ var Controller = Marionette.Object.extend({
     create: function() {
         $.ajax({
             type: "GET",
-            url: application.baseUrl + 'descriptor/meta-model/for-describable/' + 'classification.classificationentry/',
+            url: window.application.url(['descriptor', 'meta-model', 'for-describable', 'classification.classificationentry']),
             dataType: 'json'
         }).done(function(data) {
             var CreateClassificationEntryDialog = Dialog.extend({
@@ -193,7 +193,7 @@ var Controller = Marionette.Object.extend({
                     select.select2({
                         dropdownParent: select.parent(),
                         ajax: {
-                            url: application.baseUrl + "classification/classificationentry/search/",
+                            url: window.application.url(['classification', 'classificationentry', 'search']),
                             dataType: 'json',
                             delay: 250,
                             data: function (params) {
@@ -253,7 +253,7 @@ var Controller = Marionette.Object.extend({
 
                         $.ajax({
                             type: "GET",
-                            url: application.baseUrl + 'classification/classificationentry/synonym/search/',
+                            url: window.application.url(['classification', 'classificationentry', 'synonym', 'search']),
                             dataType: 'json',
                             contentType: 'application/json; charset=utf8',
                             data: {filters: JSON.stringify(filters)},

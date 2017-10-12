@@ -25,7 +25,7 @@ from django.utils.translation import ugettext_lazy as _
 from igdectk.common.models import ChoiceEnum, IntegerChoice, StringChoice
 from igdectk.module.manager import module_manager
 
-from messenger import COMMAND_CACHE_INVALIDATION
+from messenger.commands import COMMAND_CACHE_INVALIDATION
 
 
 logger = logging.getLogger('collgate')

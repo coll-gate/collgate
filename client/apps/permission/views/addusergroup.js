@@ -35,7 +35,7 @@ var View = Marionette.View.extend({
 
         $(select).select2({
             ajax: {
-                url: application.baseUrl + "permission/user/search/",
+                url: window.application.url(['permission', 'user', 'search']),
                 dataType: 'json',
                 delay: 250,
                 data: function (params) {

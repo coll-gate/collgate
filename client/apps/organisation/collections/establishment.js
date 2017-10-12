@@ -13,9 +13,9 @@ var EstablishmentModel = require('../models/establishment');
 var Collection = Backbone.Collection.extend({
     url: function () {
         if (this.organisation_id) {
-            return application.baseUrl + 'organisation/organisation/' + this.organisation_id + '/establishment/';
+            return window.application.url(['organisation', 'organisation', this.organisation_id, 'establishment']);
         } else {
-            return application.baseUrl + 'organisation/establishment/';
+            return window.application.url(['organisation', 'establishment']);
         }
     },
     model: EstablishmentModel,

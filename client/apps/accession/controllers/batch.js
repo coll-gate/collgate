@@ -23,7 +23,7 @@ var Controller = Marionette.Object.extend({
     create: function () {
         $.ajax({
             type: "GET",
-            url: application.baseUrl + 'descriptor/meta-model/for-describable/' + 'accession.batch/',
+            url: window.application.url(['descriptor', 'meta-model', 'for-describable', 'accession.batch']),
             dataType: 'json'
         }).done(function (data) {
             var CreateBatchView = Dialog.extend({
@@ -59,7 +59,7 @@ var Controller = Marionette.Object.extend({
                     $(this.ui.accession).select2({
                         dropdownParent: this.ui.accession.parent(),
                         ajax: {
-                            url: application.baseUrl + "accession/accession/search/",
+                            url: window.application.url(['accession', 'accession', 'search']),
                             dataType: 'json',
                             delay: 250,
                             data: function (params) {
@@ -123,7 +123,7 @@ var Controller = Marionette.Object.extend({
 
                         $.ajax({
                             type: "GET",
-                            url: application.baseUrl + 'accession/batch/search/',
+                            url: window.application.url(['accession', 'batch', 'search']),
                             dataType: 'json',
                             contentType: 'application/json; charset=utf8',
                             data: {filters: JSON.stringify(filters)},

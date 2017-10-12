@@ -13,10 +13,10 @@ var Backbone = require('backbone');
 var Model = Backbone.Model.extend({
     url: function() {
         if (this.isNew()) {
-            return application.baseUrl + 'descriptor/group/' + this.getGroupId() + '/type/';
+            return window.application.url(['descriptor', 'group', this.getGroupId(), 'type']);
+        } else {
+            return window.application.url(['descriptor', 'group', this.getGroupId(), 'type', this.get('id')]);
         }
-        else
-            return application.baseUrl + 'descriptor/group/' + this.getGroupId() + '/type/' + this.get('id') + '/';
     },
 
     defaults: {

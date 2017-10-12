@@ -11,7 +11,7 @@
 var LanguageModel = require('../models/language');
 
 var LanguageCollection = Backbone.Collection.extend({
-    url: application.baseUrl + 'main/language/',
+    url: window.application.url(['main', 'language']),
     model: LanguageModel,
 
     parse: function(data) {

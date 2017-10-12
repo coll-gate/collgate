@@ -53,7 +53,7 @@ var Controller = Marionette.Object.extend({
 
                     $.ajax({
                         type: "GET",
-                        url: application.baseUrl + 'accession/accessions_panel/search/',
+                        url: window.application.url(['accession', 'accessions_panel', 'search']),
                         dataType: 'json',
                         data: {filters: JSON.stringify(filters)},
                         el: this.ui.name,
@@ -140,7 +140,7 @@ var Controller = Marionette.Object.extend({
 
         $.ajax({
             type: "GET",
-            url: application.baseUrl + 'accession/accessions_panel/',
+            url: window.application.url(['accession', 'accessions_panel']),
             dataType: 'json'
         }).done(function (data) {
             var LinkToPanelDialog = Dialog.extend({
@@ -175,7 +175,7 @@ var Controller = Marionette.Object.extend({
 
                     $.ajax({
                         type: 'PATCH',
-                        url: application.baseUrl + 'accession/accessions_panel/' + panel_id + '/accessions/',
+                        url: window.application.url(['accession', 'accessions_panel', panel_id, 'accessions']),
                         dataType: 'json',
                         contentType: "application/json; charset=utf-8",
                         data: JSON.stringify({

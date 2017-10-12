@@ -18,8 +18,6 @@ from django.shortcuts import get_object_or_404
 
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
-from messenger import COMMAND_AUTH_SESSION
-from module.manager import module_manager
 
 from .models import Profile
 from .main import RestMain
@@ -47,9 +45,9 @@ class RestProfileSettings(RestProfile):
     name = 'settings'
 
 
-class RestProfilePing(RestProfile):
-    regex = r'^ping/$'
-    name = 'ping'
+class RestProfileStatus(RestProfile):
+    regex = r'^status/$'
+    name = 'status'
 
 
 # def compare_version(version1, version2):
@@ -210,15 +208,13 @@ def update_self_settings(request):
     return HttpResponseRest(request, {})
 
 
-@RestProfilePing.def_auth_request(Method.GET, Format.JSON)
-def get_ping_session(request):
+@RestProfileStatus.def_auth_request(Method.GET, Format.JSON)
+def get_session_status(request):
     """
-    Ping current session for self. Returns true if the session still authenticated.
+    Get current session status. Returns true if the session still authenticated.
     """
-    status = request.user.is_authenticated()
-
     result = {
-        'pong': status
+        'is_auth': request.user.is_authenticated
     }
 
     return HttpResponseRest(request, result)

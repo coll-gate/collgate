@@ -23,7 +23,7 @@ var Controller = Marionette.Object.extend({
     create: function() {
         $.ajax({
             type: "GET",
-            url: application.baseUrl + 'descriptor/meta-model/for-describable/' + 'organisation.organisation/',
+            url: window.application.url(['descriptor', 'meta-model', 'for-describable', 'organisation.organisation']),
             dataType: 'json'
         }).done(function(data) {
             var CreateOrganisationView = Dialog.extend({
@@ -74,7 +74,7 @@ var Controller = Marionette.Object.extend({
 
                         $.ajax({
                             type: "GET",
-                            url: application.baseUrl + 'organisation/organisation/search/',
+                            url: window.application.url(['organisation', 'organisation', 'search']),
                             dataType: 'json',
                             data: {filters: JSON.stringify(filters)},
                             el: this.ui.name,

@@ -11,7 +11,7 @@
 var PanelModel = require('../models/panel');
 
 var Collection = Backbone.Collection.extend({
-    url: application.baseUrl + 'accession/accessions_panel/',
+    url: window.application.url(['accession', 'accessions_panel']),
     model: PanelModel,
 
     initialize: function (options) {

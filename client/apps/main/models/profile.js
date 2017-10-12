@@ -20,6 +20,6 @@ module.exports = Backbone.Model.extend({
     },
 
     url: function() {
-        return application.baseUrl + 'main/profile/';
+        return window.application.url(['main', 'profile']);
     }
 });

@@ -16,6 +16,6 @@ module.exports = Backbone.Model.extend({
             label: ''
         }
     },
-    url: application.baseUrl + 'descriptor/condition/:id'
+    url: window.application.url(['descriptor', 'condition', ':id'])
 });
 

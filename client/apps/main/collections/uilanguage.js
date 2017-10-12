@@ -11,7 +11,7 @@
 var InterfaceLanguageModel = require('../models/uilanguage');
 
 var Collection = Backbone.Collection.extend({
-    url: application.baseUrl + 'main/ui/language/',
+    url: window.application.url(['main', 'ui', 'language']),
     model: InterfaceLanguageModel,
 
     parse: function(data) {

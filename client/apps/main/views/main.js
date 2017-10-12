@@ -26,10 +26,10 @@ var MainLayout = Marionette.View.extend({
         'right': "div.root-right-bar"
     },
 
-    ping_timeout: 3*60*1000,   // every 3 minutes
+    check_status_timeout: 3*60*1000,   // every 3 minutes
 
     initialize: function() {
-        var uiSetting = application.getUserSetting("ui", UI_SETTING_VERSION, UI_DEFAULT_SETTING);
+        var uiSetting = window.application.getUserSetting("ui", UI_SETTING_VERSION, UI_DEFAULT_SETTING);
         this.currentDisplayMode = uiSetting['display_mode'];
         this.compactDisplay = false;
     },
@@ -64,7 +64,7 @@ var MainLayout = Marionette.View.extend({
 
         this.currentDisplayMode = mode;
 
-        application.updateMessengerDisplay();
+        window.application.updateMessengerDisplay();
     },
 
     onResize: function() {
@@ -99,7 +99,7 @@ var MainLayout = Marionette.View.extend({
             this.setDisplay('0-12-0');
         } else {
             if (this.compactDisplay) {
-                var displayMode = application.getUserSetting("ui", UI_SETTING_VERSION, UI_DEFAULT_SETTING)['display_mode'];
+                var displayMode = window.application.getUserSetting("ui", UI_SETTING_VERSION, UI_DEFAULT_SETTING)['display_mode'];
 
                 // restore to previous setting
                 this.setDisplay(displayMode);
@@ -246,28 +246,29 @@ var MainLayout = Marionette.View.extend({
             return;
         }
 
+        // check only if no activities since a certain delta time
         var now = new Date().getTime();
-        if (now - session.user.lastAction > this.ping_timeout) {
-            if (this.ping) {
+        if (now - session.user.lastAction > this.check_status_timeout) {
+            if (this.checkStatus) {
                 return;
             }
 
-            this.ping = true;
+            this.checkStatus = true;
 
             $.ajax({
                 method: "GET",
-                url: application.baseUrl + 'main/profile/ping/',
+                url: window.application.url(['main', 'profile', 'status']),
                 dataType: 'json',
                 view: this
             }).done(function (data) {
                 // lastAction timestamp is set during global jQuery callback on driver.js
-                this.view.ping = false;
+                this.view.checkStatus = false;
 
-                if (!data.pong) {
+                if (!data.is_auth) {
                     session.user.isAuth = false;
 
                     // session terminated, message and back to home page
-                    window.location.assign(application.baseUrl + 'app/home/');
+                    window.location.assign(window.application.url(['app', 'home']));
                 }
             });
         }

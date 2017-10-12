@@ -61,15 +61,15 @@ EntityCacheFetcher.prototype.fetch = function(cacheManager, options, keys) {
     var queryData = {values: JSON.stringify(Array.from(keys))};
 
     if (options.format.details) {
-        url = "main/entity/" + options.format.model + '/details/';
+        url = window.application.url(['main', 'entity', options.format.model, 'details']);
     } else {
-        url = "main/entity/" + options.format.model + '/values/';
+        url = window.application.url(['main', 'entity', options.format.model, 'values']);
     }
 
     if (keysToFetch.size) {
         var promise = $.ajax({
             type: "GET",
-            url: application.baseUrl + url,
+            url: url,
             contentType: 'application/json; charset=utf8',
             data: queryData
         });

@@ -76,7 +76,7 @@ var View = Marionette.View.extend({
 
         $.ajax({
             type: "GET",
-            url: application.baseUrl + 'descriptor/meta-model/for-describable/' + 'organisation.establishment/',
+            url: window.application.url(['descriptor', 'meta-model', 'for-describable', 'organisation.establishment']),
             dataType: 'json'
         }).done(function(data) {
             var CreateEstablishmentView = Dialog.extend({
@@ -125,7 +125,7 @@ var View = Marionette.View.extend({
 
                         $.ajax({
                             type: "GET",
-                            url: application.baseUrl + 'organisation/establishment/search/',
+                            url: window.application.url(['organisation', 'establishment', 'search']),
                             dataType: 'json',
                             data: {filters: JSON.stringify(filters)},
                             el: this.ui.name,

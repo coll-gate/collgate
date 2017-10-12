@@ -90,7 +90,7 @@ var View = Marionette.View.extend({
                 $(this.ui.parent).select2({
                     dropdownParent: $(this.el),
                     ajax: {
-                        url: application.baseUrl + "classification/classificationentry/search/",
+                        url: window.application.url(['classification', 'classificationentry', 'search']),
                         dataType: 'json',
                         delay: 250,
                         data: function (params) {

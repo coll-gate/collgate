@@ -64,7 +64,7 @@ var View = Marionette.View.extend({
         if (this.validateTypeName()) {
             $.ajax({
                 type: "GET",
-                url: application.baseUrl + 'descriptor/group/' + this.collection.group_id + '/type/search/',
+                url: window.application.url(['descriptor', 'group', this.collection.group_id, 'type', 'search']),
                 dataType: 'json',
                 data: {filters: JSON.stringify({
                     method: 'ieq',

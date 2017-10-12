@@ -9,7 +9,7 @@
  */
 
 module.exports = Backbone.Model.extend({
-    url: application.baseUrl + 'main/content-type/:id/',
+    url: window.application.url(['main', 'content-type', ':id']),
 
     defaults: function() {
         return {

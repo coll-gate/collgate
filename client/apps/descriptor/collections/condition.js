@@ -11,7 +11,7 @@
 var ConditionModel = require('../models/condition');
 
 var Collection = Backbone.Collection.extend({
-    url: application.baseUrl + 'descriptor/condition',
+    url: window.application.url(['descriptor', 'condition']),
     model: ConditionModel,
 
     parse: function(data) {

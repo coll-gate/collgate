@@ -38,7 +38,7 @@ _.extend(DescriptorMetaModel.prototype, DescriptorFormatType.prototype, {
             this.groupEl = this._createInputGroup(parent, "glyphicon-th-large", select);
 
             // init the autocomplete
-            var url = application.baseUrl + "descriptor/meta-model/";
+            var url = window.application.url(['descriptor', 'meta-model']);
             var initials = [];
 
             var container = parent.closest('div.modal-dialog').parent();
@@ -135,7 +135,7 @@ _.extend(DescriptorMetaModel.prototype, DescriptorFormatType.prototype, {
 
         definesValues = this.isValueDefined(definesValues, defaultValues);
 
-        var url = application.baseUrl + "descriptor/meta-model/";
+        var url = window.application.url(['descriptor', 'meta-model']);
 
         if (this.readOnly) {
             var type = this;
@@ -145,7 +145,7 @@ _.extend(DescriptorMetaModel.prototype, DescriptorFormatType.prototype, {
 
                 $.ajax({
                     type: "GET",
-                    url: url + defaultValues + '/',
+                    url: window.application.url([url, defaultValues]),
                     dataType: 'json'
                 }).done(function (data) {
                     type.el.val(data.name);

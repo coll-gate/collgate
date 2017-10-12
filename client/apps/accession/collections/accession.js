@@ -15,9 +15,9 @@ var Collection = Backbone.Collection.extend({
 
     url: function() {
         if (this.panel_id) {
-            return application.baseUrl + 'accession/accessions_panel/' + this.panel_id + '/accessions/';
+            return window.application.url(['accession', 'accessions_panel', this.panel_id, 'accessions']);
         } else {
-            return application.baseUrl + 'accession/accession/';
+            return window.application.url(['accession', 'accession']);
         }
     },
 

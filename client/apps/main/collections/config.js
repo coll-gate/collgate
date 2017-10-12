@@ -11,7 +11,7 @@
 var ConfigModel = require('../models/config');
 
 var Collection = Backbone.Collection.extend({
-    url: application.baseUrl + 'main/config/',
+    url: window.application.url(['main', 'config']),
     model: ConfigModel
 });
 

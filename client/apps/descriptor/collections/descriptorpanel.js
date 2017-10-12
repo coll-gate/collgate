@@ -12,7 +12,7 @@ var DescriptorPanelModel = require('../models/descriptorpanel');
 
 var Collection = Backbone.Collection.extend({
     url: function() {
-        return application.baseUrl + 'descriptor/meta-model/' + this.model_id + '/panel/';
+        return window.application.url(['descriptor', 'meta-model', this.model_id, 'panel']);
     },
 
     model: DescriptorPanelModel,

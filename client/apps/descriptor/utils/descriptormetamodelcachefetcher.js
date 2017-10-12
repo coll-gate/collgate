@@ -61,7 +61,7 @@ DescriptorMetaModelCacheFetcher.prototype.fetch = function(cacheManager, options
         keysToFetch = new Set(keys);
     }
 
-    var url = "descriptor/meta-model/values/";
+    var url = window.application.url(['descriptor', 'meta-model', 'values']);
     var queryData = {
         values: JSON.stringify(Array.from(keysToFetch))
     };
@@ -69,7 +69,7 @@ DescriptorMetaModelCacheFetcher.prototype.fetch = function(cacheManager, options
     if (keysToFetch.size) {
         var promise = $.ajax({
             type: "GET",
-            url: application.baseUrl + url,
+            url: url,
             contentType: 'application/json; charset=utf8',
             data: queryData
         });

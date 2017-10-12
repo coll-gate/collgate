@@ -11,7 +11,7 @@
 var EventMessageModel = require('../models/eventmessage');
 
 var Collection = Backbone.Collection.extend({
-    url: application.baseUrl + 'main/event-message/',
+    url: window.application.url(['main', 'event-message']),
     model: EventMessageModel,
 
     comparator: 'created_date',

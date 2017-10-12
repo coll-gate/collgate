@@ -11,7 +11,7 @@
 var Backbone = require('backbone');
 
 var Model = Backbone.Model.extend({
-    url: application.baseUrl + 'organisation/grc/',
+    url: window.application.url(['organisation', 'grc']),
 
     defaults: {
         id: null,

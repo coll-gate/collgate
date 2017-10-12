@@ -43,7 +43,7 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
                 this.groupEl = this._createInputGroup(parent, "glyphicon-share", select);
 
                 // init the autocomplete
-                var url = application.baseUrl + (this.searchUrl ? this.searchUrl : (format.model.replace('.', '/') + '/'));
+                var url = window.application.url() + (this.searchUrl ? this.searchUrl : (format.model.replace('.', '/') + '/'));
                 var initials = [];
 
                 var container = parent.closest('div.modal-dialog').parent();
@@ -115,7 +115,7 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
                 select.selectpicker({container: 'body', style: 'btn-default'});
 
                 // init the selectpicker
-                var url = application.baseUrl + (this.searchUrl ? this.searchUrl : (format.model.replace('.', '/') + '/'));
+                var url = window.application.url() + (this.searchUrl ? this.searchUrl : (format.model.replace('.', '/') + '/'));
 
                 // refresh values
                 this.promise = $.ajax({
@@ -185,7 +185,7 @@ _.extend(Entity.prototype, DescriptorFormatType.prototype, {
 
         definesValues = this.isValueDefined(definesValues, defaultValues);
 
-        var url = application.baseUrl + (this.searchUrl ? this.searchUrl : (format.model.replace('.', '/') + '/'));
+        var url = window.application.url() + (this.searchUrl ? this.searchUrl : (format.model.replace('.', '/') + '/'));
 
         if (this.readOnly) {
             var type = this;

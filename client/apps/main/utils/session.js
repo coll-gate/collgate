@@ -58,7 +58,7 @@
 //         if (session.user.isAuth && !settingName.startsWith('_')) {
 //             $.ajax({
 //                 type: "PATCH",
-//                 url: application.baseUrl + 'main/profile/settings/',
+//                 url: window.application.url(['main', 'profile', 'settings']),
 //                 contentType: "application/json; charset=utf-8",
 //                 dataType: 'json',
 //                     data: JSON.stringify({

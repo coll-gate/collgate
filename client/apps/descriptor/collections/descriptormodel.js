@@ -11,7 +11,7 @@
 var DescriptorModelModel = require('../models/descriptormodel');
 
 var Collection = Backbone.Collection.extend({
-    url: application.baseUrl + 'descriptor/model/',
+    url: window.application.url(['descriptor', 'model']),
     model: DescriptorModelModel,
 
     parse: function(data) {

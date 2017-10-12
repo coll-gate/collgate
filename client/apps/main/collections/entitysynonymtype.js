@@ -13,9 +13,9 @@ var EntitySynonymTypeModel = require('../models/entitysynonymtype');
 var Collection = Backbone.Collection.extend({
     url: function() {
         if (this.target_model) {
-            return application.baseUrl + 'main/entity-synonym-type/' + this.target_model + '/values/';
+            return window.application.url(['main', 'entity-synonym-type', this.target_model, 'values']);
         } else {
-            return application.baseUrl + 'main/entity-synonym-type/';
+            return window.application.url(['main', 'entity-synonym-type']);
         }
     },
     model: EntitySynonymTypeModel,

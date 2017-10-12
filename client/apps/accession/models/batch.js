@@ -13,9 +13,9 @@ var Backbone = require('backbone');
 var Model = Backbone.Model.extend({
     url: function() {
         if (this.isNew())
-            return application.baseUrl + 'accession/batch/';
+            return window.application.url(['accession', 'batch']);
         else
-            return application.baseUrl + 'accession/batch/' + this.get('id') + '/';
+            return window.application.url(['accession', 'batch', this.get('id')]);
     },
 
     defaults: {

@@ -15,10 +15,10 @@ var Model = Backbone.Model.extend({
         var model_id = this.model_id || this.get('model') || this.collection.model_id;
 
         if (this.isNew()) {
-            return application.baseUrl + 'descriptor/meta-model/' + model_id + '/panel/';
+            return window.application.url(['descriptor', 'meta-model', model_id, 'panel']);
+        } else {
+            return window.application.url(['descriptor', 'meta-model', model_id, 'panel', this.get('id')]);
         }
-        else
-            return application.baseUrl + 'descriptor/meta-model/' + model_id + '/panel/' + this.get('id') + '/';
     },
 
     defaults: {
@@ -55,4 +55,3 @@ var Model = Backbone.Model.extend({
 });
 
 module.exports = Model;
-

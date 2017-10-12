@@ -50,7 +50,7 @@ var Controller = Marionette.Object.extend({
                 $(this.ui.username).select2({
                     dropdownParent: $(this.el),
                     ajax: {
-                        url: application.baseUrl + "permission/user/search/",
+                        url: window.application.url(['permission', 'user', 'search']),
                         dataType: 'json',
                         delay: 250,
                         data: function (params) {
@@ -163,7 +163,7 @@ var Controller = Marionette.Object.extend({
                     dropdownParent: $(this.el),
                     content_type: $(this.ui.content_type),
                     ajax: {
-                        url: application.baseUrl + "main/entity/search/",
+                        url: window.application.url(['main', 'entity', 'search']),
                         dataType: 'json',
                         delay: 250,
                         data: function (params) {
@@ -253,7 +253,7 @@ var Controller = Marionette.Object.extend({
         // if not specified retrieve the entity name
         if (object_name == null) {
             $.ajax({
-                url: application.baseUrl + "main/entity/",
+                url: window.application.url(['main', 'entity']),
                 dataType: 'json',
                 data: {
                     app_label: app_label,

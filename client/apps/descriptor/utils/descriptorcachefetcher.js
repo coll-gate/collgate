@@ -68,12 +68,12 @@ DescriptorCacheFetcher.prototype.fetch = function(cacheManager, options, keys) {
         queryData = {values: JSON.stringify(keys)};
     }
 
-    var url = 'descriptor/descriptor-model-type/' + options.format.name + '/';
+    var url = window.application.url(['descriptor', 'descriptor-model-type', options.format.name]);
 
     if (doFetch) {
         var promise = $.ajax({
             type: "GET",
-            url: application.baseUrl + url,
+            url: url,
             contentType: 'application/json; charset=utf8',
             data: queryData
         });

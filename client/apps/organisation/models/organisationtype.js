@@ -16,6 +16,6 @@ module.exports = Backbone.Model.extend({
             label: ''
         }
     },
-    url: application.baseUrl + 'organisation/organisation-type/:id/'
+    url: window.application.url(['organisation', 'organisation-type', ':id'])
 });
 

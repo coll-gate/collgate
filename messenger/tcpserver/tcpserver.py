@@ -18,7 +18,7 @@ from threading import Lock
 from channels import Group
 
 from messenger.session import session_manager
-from . import COMMAND_CACHE_INVALIDATION, COMMAND_AUTH_SESSION
+from messenger.commands import COMMAND_CACHE_INVALIDATION, COMMAND_AUTH_SESSION, COMMAND_ONLINE, COMMAND_OFFLINE
 
 logger = logging.getLogger('collgate-messenger')
 

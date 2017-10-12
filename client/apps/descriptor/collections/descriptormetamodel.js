@@ -11,7 +11,7 @@
 var DescriptorMetaModelModel = require('../models/descriptormetamodel');
 
 var Collection = Backbone.Collection.extend({
-    url: application.baseUrl + 'descriptor/meta-model/',
+    url: window.application.url(['descriptor', 'meta-model']),
     model: DescriptorMetaModelModel,
 
     parse: function(data) {

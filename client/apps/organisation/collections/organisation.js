@@ -13,9 +13,9 @@ var OrganisationModel = require('../models/organisation');
 var Collection = Backbone.Collection.extend({
     url: function() {
         if (this.grc) {
-            return application.baseUrl + 'organisation/grc/organisation/';
+            return window.application.url(['organisation', 'grc', 'organisation']);
         } else {
-            return application.baseUrl + 'organisation/organisation/';
+            return window.application.url(['organisation', 'organisation']);
         }
     },
     model: OrganisationModel,

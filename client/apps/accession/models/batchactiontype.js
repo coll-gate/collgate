@@ -9,7 +9,7 @@
  */
 
 module.exports = Backbone.Model.extend({
-    url: application.baseUrl + 'accession/batch-action-type/:id/',
+    url: window.application.url(['accession', 'batch-action-type', ':id']),
 
     defaults: function() {
         return {

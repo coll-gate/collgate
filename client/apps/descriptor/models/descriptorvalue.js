@@ -13,9 +13,9 @@ var Backbone = require('backbone');
 var Model = Backbone.Model.extend({
     url: function() {
         if (this.isNew())
-            return application.baseUrl + 'descriptor/group/' + this.group_id + '/type/' + this.type_id + '/value/';
+            return window.application.url(['descriptor', 'group', this.group_id, 'type', this.type_id, 'value']);
         else
-            return application.baseUrl + 'descriptor/group/' + this.group_id + '/type/' + this.type_id + '/value/' + this.id + '/';
+            return window.application.url(['descriptor', 'group', this.group_id, 'type', this.type_id, 'value', this.id]);
     },
 
     defaults: {

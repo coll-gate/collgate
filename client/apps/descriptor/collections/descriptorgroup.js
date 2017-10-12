@@ -12,7 +12,7 @@ var CountableCollection = require('../../main/collections/countable');
 var DescriptorGroupModel = require('../models/descriptorgroup');
 
 var Collection = CountableCollection.extend({
-    url: application.baseUrl + 'descriptor/group/',
+    url: window.application.url(['descriptor', 'group']),
     model: DescriptorGroupModel,
 
     comparator: function (item1, item2) {

@@ -11,7 +11,7 @@
 var FormatTypeModel = require('../models/formattype');
 
 var Collection = Backbone.Collection.extend({
-    url: application.baseUrl + 'descriptor/format/type/',
+    url: window.application.url(['descriptor', 'format', 'type']),
     model: FormatTypeModel,
 
     initialize: function(models, options) {

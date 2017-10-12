@@ -47,7 +47,7 @@ ColumnCacheFetcher.prototype.fetch = function(cacheManager, options, keys) {
         doFetch = true;
     }
 
-    var url = 'descriptor/columns/' + options.format.model + '/';
+    var url = window.application.url(['descriptor', 'columns', options.format.model]);
 
     if (options.format.descriptor_meta_models && options.format.descriptor_meta_models.length > 0) {
         queryData.descriptor_meta_models = options.format.descriptor_meta_models.toString();
@@ -56,7 +56,7 @@ ColumnCacheFetcher.prototype.fetch = function(cacheManager, options, keys) {
     if (doFetch) {
         var promise = $.ajax({
             type: "GET",
-            url: application.baseUrl + url,
+            url: url,
             contentType: 'application/json; charset=utf8',
             data: queryData
         });

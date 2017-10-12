@@ -92,7 +92,7 @@ var View = Dialog.extend({
 
         $.ajax({
             type: "GET",
-            url: application.baseUrl + 'descriptor/meta-model/for-describable/' + entityType + '/',
+            url: window.application.url(['descriptor', 'meta-model', 'for-describable', entityType]),
             dataType: 'json'
         }).done(function (data) {
             view.ui.meta_model.children('option').remove();
@@ -198,7 +198,7 @@ var View = Dialog.extend({
 
         $.ajax({
             type: "GET",
-            url: application.baseUrl + 'descriptor/columns/' + entityType + '/',
+            url: window.application.url(['descriptor', 'columns', entityType]),
             contentType: "application/json; charset=utf-8",
             dataType: 'json',
             data: models_data

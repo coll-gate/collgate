@@ -13,17 +13,17 @@ var BatchModel = require('../models/batch');
 var Collection = Backbone.Collection.extend({
     url: function() {
         if (this.panel_id) {
-            return application.baseUrl + 'accession/batches_panel/' + this.panel_id + '/batches/';
+            return window.application.url(['accession', 'batches_panel', this.panel_id, '/batches']);
         } else if (this.accession_id) {
-            return application.baseUrl + 'accession/accession/' + this.accession_id + '/batch/';
+            return window.application.url(['accession', 'accession', this.accession_id, 'batch']);
         } else if (this.batch_id) {
             if (this.batch_type === "parents") {
-                return application.baseUrl + 'accession/batch/' + this.batch_id + '/parent/';
+                return window.application.url(['accession', 'batch', this.batch_id, 'parent']);
             } else {
-                return application.baseUrl + 'accession/batch/' + this.batch_id + '/batch/';
+                return window.application.url(['accession', 'batch', this.batch_id, 'batch']);
             }
         } else {
-            return application.baseUrl + 'accession/batch/';
+            return window.application.url(['accession', 'batch']);
         }
     },
     model: BatchModel,

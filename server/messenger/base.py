@@ -18,7 +18,7 @@ from igdectk.rest.response import HttpResponseRest
 from igdectk.module.manager import module_manager
 
 from .localsettings import MESSENGERID_KEY_LENGTH
-from . import COMMAND_AUTH_SESSION
+from messenger.commands import COMMAND_AUTH_SESSION
 
 
 class RestMessenger(RestHandler):
@@ -54,7 +54,10 @@ def get_messenger_id(request):
          })
 
     results = {
-        'messengerid': messengerid
+        'messengerid': messengerid,
+        'host': get_setting('messenger', 'messenger_host'),
+        'port': get_setting('messenger', 'messenger_port'),
+        'path': get_setting('messenger', 'messenger_path')
     }
 
     return HttpResponseRest(request, results)

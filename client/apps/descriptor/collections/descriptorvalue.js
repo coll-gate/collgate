@@ -12,7 +12,7 @@ var DescriptorTypeModel = require('../models/descriptorvalue');
 
 var Collection = Backbone.Collection.extend({
     url: function() {
-        return application.baseUrl + 'descriptor/group/' + this.group_id + '/type/' + this.type_id + '/value/';
+        return window.application.url(['descriptor', 'group', this.group_id, 'type', this.type_id, 'value']);
     },
 
     model: DescriptorTypeModel,

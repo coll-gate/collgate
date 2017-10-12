@@ -49,7 +49,7 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
                 this.groupEl = this._createInputGroup(parent, "glyphicon-list", select);
 
                 // init the autocomplete
-                var url = application.baseUrl + 'descriptor/group/' + descriptorTypeGroup + '/type/' + descriptorTypeId + '/';
+                var url = window.application.url(['descriptor', 'group', descriptorTypeGroup, 'type', descriptorTypeId]);
                 var initials = [];
 
                 var container = parent.closest('div.modal-dialog').parent();
@@ -115,7 +115,7 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
                 select.selectpicker({container: 'body', style: 'btn-default'});
 
                 // init the selectpicker
-                var url = application.baseUrl + 'descriptor/group/' + descriptorTypeGroup + '/type/' + descriptorTypeId + '/';
+                var url = window.application.url(['descriptor', 'group', descriptorTypeGroup, 'type', descriptorTypeId]);
 
                 // refresh values
                 this.promise = $.ajax({
@@ -198,7 +198,7 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
 
         definesValues = this.isValueDefined(definesValues, defaultValues);
 
-        var url = application.baseUrl + 'descriptor/group/' + descriptorTypeGroup + '/type/' + descriptorTypeId + '/';
+        var url = window.application.url(['descriptor', 'group', descriptorTypeGroup, 'type', descriptorTypeId]);
 
         if (this.readOnly) {
             var type = this;

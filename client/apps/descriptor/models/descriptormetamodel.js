@@ -13,9 +13,9 @@ var Backbone = require('backbone');
 var Model = Backbone.Model.extend({
     url: function() {
         if (this.isNew())
-            return application.baseUrl + 'descriptor/meta-model/';
+            return window.application.url(['descriptor', 'meta-model']);
         else
-            return application.baseUrl + 'descriptor/meta-model/' + this.get('id') + '/';
+            return window.application.url(['descriptor', 'meta-model', this.get('id')]);
     },
 
     defaults: {

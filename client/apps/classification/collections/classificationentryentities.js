@@ -12,7 +12,7 @@ var ClassificationEntryEntityModel = require('../models/classificationentryentit
 
 var Collection = Backbone.Collection.extend({
     url: function() {
-        return application.baseUrl + 'classification/classificationentry/' + this.model_id + '/entities/';
+        return window.application.url(['classification', 'classificationentry', this.model_id, 'entities']);
     },
     model: ClassificationEntryEntityModel,
 

@@ -129,7 +129,7 @@ var Application = Marionette.Application.extend({
 
                     // fallback to home page to force user to log
                     // Backbone.history.navigate('/home/', {trigger: true});
-                    window.location.assign(application.baseUrl + 'app/home/');
+                    window.location.assign(window.application.url(['app', 'home']));
                 } else {
                     if (typeof(xhr.responseText) !== "undefined") {
                         if (xhr.getResponseHeader('Content-Type') === "application/json") {
@@ -150,7 +150,7 @@ var Application = Marionette.Application.extend({
         $(document).ajaxError(function(event, jqXHR, settings, thrownError) {
             if (jqXHR.status === 401) {
                 // fallback to home page to force user to login
-                window.location.assign(application.baseUrl + 'app/home/');
+                window.location.assign(window.application.url(['app', 'home']));
             }
         });
 
@@ -163,6 +163,34 @@ var Application = Marionette.Application.extend({
     onBeforeStart: function(options) {
         this.baseUrl = '/coll-gate/';
         this.isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+
+        this.url = function(path) {
+            if (path instanceof Array) {
+                let url = this.baseUrl;
+
+                for (let i = 0; i < path.length; ++i) {
+                    url += path[i];
+
+                    // trailing slash
+                    if (!url.endsWith('/')) {
+                        url += '/';
+                    }
+                }
+
+                return url;
+            } else if (typeof path === 'string') {
+                let url = this.baseUrl + path;
+
+                // trailing slash
+                if (!url.endsWith('/')) {
+                    url += '/';
+                }
+
+                return url;
+            } else {
+                return this.baseUrl;
+            }
+        }.bind(this);
 
         /**
          * Update the width and left position of the messenger div.
@@ -248,7 +276,7 @@ var Application = Marionette.Application.extend({
             if (session.user.isAuth && !settingName.startsWith('_')) {
                 $.ajax({
                     type: "PATCH",
-                    url: application.baseUrl + 'main/profile/settings/',
+                    url: window.application.url(['main', 'profile', 'settings']),
                     contentType: "application/json; charset=utf-8",
                     dataType: 'json',
                         data: JSON.stringify({

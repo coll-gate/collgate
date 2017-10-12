@@ -12,7 +12,7 @@ var AuditModel = require('../models/audit');
 
 var Collection = Backbone.Collection.extend({
     url: function() {
-        return application.baseUrl + 'audit/search/';
+        return window.application.url(['audit' ,'search']);
     },
     model: AuditModel,
 

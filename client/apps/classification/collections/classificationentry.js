@@ -14,9 +14,9 @@ var ClassificationEntryModel = require('../models/classificationentry');
 var Collection = CountableCollection.extend({
     url: function() {
         if (this.classification_id) {
-            return application.baseUrl + 'classification/classification/' + this.classification_id + '/classificationentry/';
+            return window.application.url(['classification', 'classification', this.classification_id, 'classificationentry']);
         } else {
-            return application.baseUrl + 'classification/classificationentry/';
+            return window.application.url(['classification', 'classificationentry']);
         }
     },
     model: ClassificationEntryModel,

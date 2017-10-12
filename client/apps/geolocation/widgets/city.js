@@ -39,7 +39,7 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
             this.groupEl = this._createInputGroup(parent, "glyphicon-map-marker", select);
 
             // init the autocomplete
-            var url = application.baseUrl + 'geolocation/city/search';
+            var url = window.application.url(['geolocation', 'city', 'search']);
             var initials = [];
 
             var container = parent.closest('div.modal-dialog').parent();
@@ -116,7 +116,7 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
             this.groupEl = this._createInputGroup(parent, "glyphicon-map-marker", select);
 
             // init the autocomplete
-            var url = application.baseUrl + 'geolocation/';
+            var url = window.application.url('geolocation');
             var initials = [];
 
             var container = parent.closest('div.modal-dialog').parent();
@@ -430,7 +430,7 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
 
             $.ajax({
                 type: "GET",
-                url: application.baseUrl + 'geolocation/city/' + defaultValues + '/',
+                url: window.application.url(['geolocation', 'city', defaultValues]),
                 dataType: 'json'
             }).done(function (data) {
                 var country_data = data.country;
@@ -467,7 +467,7 @@ _.extend(CityType.prototype, DescriptorFormatType.prototype, {
                 var select = this.el;
 
                 // init the autocomplete
-                var url = application.baseUrl + 'geolocation/';
+                var url = window.application.url('geolocation');
                 var initials = [];
 
                 var container = this.parent.closest('div.modal-dialog').parent();

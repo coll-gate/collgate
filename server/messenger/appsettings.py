@@ -10,8 +10,9 @@
 
 # Default settings of the application
 APP_DB_DEFAULT_SETTINGS = {
-    'host': "127.0.0.1",
-    'path': "/"
+    'messenger_host': "127.0.0.1",
+    'messenger_port': 8002,
+    'messenger_path': "messenger/"
 }
 
 APP_VERBOSE_NAME = "Coll-Gate :: Messenger"

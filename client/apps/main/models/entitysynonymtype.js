@@ -11,9 +11,9 @@
 var model = Backbone.Model.extend({
     url: function() {
         if (this.isNew())
-            return application.baseUrl + 'main/entity-synonym-type/';
+            return window.application.url(['main', 'entity-synonym-type']);
         else
-            return application.baseUrl + 'main/entity-synonym-type/' + this.get('id') + '/';
+            return window.application.url(['main', 'entity-synonym-type', this.get('id')]);
     },
 
     defaults: function() {

@@ -13,9 +13,9 @@ var Backbone = require('backbone');
 var ClassificationModel = Backbone.Model.extend({
     url: function() {
         if (this.isNew())
-            return application.baseUrl + 'classification/classification/';
+            return window.application.url(['classification', 'classification']);
         else
-            return application.baseUrl + 'classification/classification/' + this.get('id') + '/';
+            return window.application.url(['classification', 'classification', this.get('id')]);
     },
 
     defaults: {

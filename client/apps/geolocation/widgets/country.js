@@ -39,7 +39,7 @@ _.extend(CountryType.prototype, DescriptorFormatType.prototype, {
             this.groupEl = this._createInputGroup(parent, "glyphicon-map-marker", select);
 
             // init the autocomplete
-            var url = application.baseUrl + 'geolocation/country/search';
+            var url = window.application.url(['geolocation', 'country', 'search']);
             var initials = [];
 
             var container = parent.closest('div.modal-dialog').parent();
@@ -151,7 +151,7 @@ _.extend(CountryType.prototype, DescriptorFormatType.prototype, {
 
             $.ajax({
                 type: "GET",
-                url: application.baseUrl + 'geolocation/country/' + defaultValues + '/',
+                url: window.application.url(['geolocation', 'country', defaultValues]),
                 dataType: 'json'
             }).done(function (data) {
                 var display = '';
@@ -177,7 +177,7 @@ _.extend(CountryType.prototype, DescriptorFormatType.prototype, {
                 this.el.select2('destroy');
 
                 // init the autocomplete
-                var url = application.baseUrl + 'geolocation/country/';
+                var url = window.application.url(['geolocation', 'country']);
                 var initials = [];
 
                 var container = this.parent.closest('div.modal-dialog').parent();

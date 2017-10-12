@@ -126,7 +126,7 @@ var View = Marionette.View.extend({
             if (synonymType.get('unique') || synonymType.get('has_language')) {
                 $.ajax({
                     type: "GET",
-                    url: application.baseUrl + 'accession/accession/synonym/search/',
+                    url: window.application.url(['accession', 'accession', 'synonym', 'search']),
                     dataType: 'json',
                     data: {filters: JSON.stringify(filters)},
                     cache: false
@@ -238,7 +238,7 @@ var View = Marionette.View.extend({
                     if (synonymType.get('unique') || synonymType.get('has_language')) {
                         $.ajax({
                             type: "GET",
-                            url: application.baseUrl + 'accession/accession/synonym/search/',
+                            url: window.application.url(['accession', 'accession', 'synonym', 'search']),
                             dataType: 'json',
                             data: {filters: JSON.stringify(filters)},
                             cache: false

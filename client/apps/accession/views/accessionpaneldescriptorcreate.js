@@ -34,7 +34,7 @@ var View = Marionette.View.extend({
 
             $.ajax({
                 type: "GET",
-                url: application.baseUrl + 'descriptor/meta-model/for-describable/' + 'accession.accessionpanel/',
+                url: window.application.url(['descriptor', 'meta-model', 'for-describable', 'accession.accessionpanel']),
                 dataType: 'json'
             }).done(function (data) {
                 var CreateDescriptorView = Dialog.extend({
@@ -95,7 +95,7 @@ var View = Marionette.View.extend({
 
                             // $.ajax({
                             //     method: "GET",
-                            //     url: application.baseUrl + 'descriptor/meta-model/' + metaModel + '/layout/',
+                            //     url: window.application.url(['descriptor', 'meta-model', metaModel, 'layout']),
                             //     dataType: 'json'
                             // }).done(function (data) {
                             //     var accessionPanelDescriptorView = new AccessionPanelDescriptorView({

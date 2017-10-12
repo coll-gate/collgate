@@ -11,7 +11,7 @@
 var BatchActionTypeModel = require('../models/batchactiontype');
 
 var Collection = Backbone.Collection.extend({
-    url: application.baseUrl + 'accession/batch-action-type/',
+    url: window.application.url(['accession', 'batch-action-type']),
     model: BatchActionTypeModel,
 
     findValue: function(id) {

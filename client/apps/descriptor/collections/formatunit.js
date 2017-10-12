@@ -11,7 +11,7 @@
 var FormatUnitModel = require('../models/formatunit');
 
 var Collection = Backbone.Collection.extend({
-    url: application.baseUrl + 'descriptor/format/unit/',
+    url: window.application.url(['descriptor', 'format', 'unit']),
     model: FormatUnitModel,
 
     initialize: function(models, options) {

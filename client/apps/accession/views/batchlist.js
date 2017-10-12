@@ -111,7 +111,7 @@ var View = AdvancedTable.extend({
 
         var metaModelPromise = $.ajax({
             type: "GET",
-            url: application.baseUrl + 'descriptor/meta-model/for-describable/' + 'accession.batch/',
+            url: window.application.url(['descriptor', 'meta-model', 'for-describable', 'accession.batch/']),
             dataType: 'json'
         });
 
@@ -179,7 +179,7 @@ var View = AdvancedTable.extend({
 
                         $.ajax({
                             type: "GET",
-                            url: application.baseUrl + 'accession/batch/search/',
+                            url: window.application.url(['accession', 'batch', 'search']),
                             dataType: 'json',
                             contentType: 'application/json; charset=utf8',
                             data: {filters: JSON.stringify(filters)},

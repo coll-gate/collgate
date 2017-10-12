@@ -13,9 +13,9 @@ var Backbone = require('backbone');
 var Model = Backbone.Model.extend({
     url: function() {
         if (this.isNew())
-            return application.baseUrl + 'organisation/organisation/';
+            return window.application.url(['organisation', 'organisation']);
         else
-            return application.baseUrl + 'organisation/organisation/' + this.get('id') + '/';
+            return window.application.url(['organisation', 'organisation', this.get('id')]);
     },
 
     defaults: {

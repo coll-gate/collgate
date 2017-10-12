@@ -10,6 +10,3 @@
 
 # Application Config for startup and more...
 default_app_config = __name__ + '.apps.CollGateMessenger'
-
-COMMAND_CACHE_INVALIDATION = 1
-COMMAND_AUTH_SESSION = 10

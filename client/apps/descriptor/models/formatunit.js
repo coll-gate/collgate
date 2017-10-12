@@ -18,6 +18,6 @@ module.exports = Backbone.Model.extend({
             group_label: ''
         }
     },
-    url: application.baseUrl + 'descriptor/format/unit/:id'
+    url: window.application.url(['descriptor', 'format', 'unit', ':id'])
 });
 
