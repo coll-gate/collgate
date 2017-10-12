@@ -243,4 +243,8 @@ class TCPClient(threading.Thread):
         self._lock.release()
 
     def is_ready(self):
-        return self.status == 2
+        self._lock.acquire()
+        status = self.status
+        self._lock.release()
+
+        return status == 2

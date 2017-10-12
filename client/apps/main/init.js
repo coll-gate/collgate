@@ -120,13 +120,13 @@ MainModule.prototype = {
         this.menus.destroy();
 
         // and add them initiated by django server side
-        if (typeof initials_menus !== "undefined") {
+        if (typeof session.initialsMenus !== "undefined") {
             var Menu = require('./utils/menu');
             var MenuEntry = require('./utils/menuentry');
             var MenuSeparator = require('./utils/menuseparator');
 
-            for (var i = 0; i < initials_menus.length; ++i) {
-                var iMenu = initials_menus[i];
+            for (var i = 0; i < session.initialsMenus.length; ++i) {
+                var iMenu = session.initialsMenus[i];
 
                 // menu
                 var menu = new Menu(iMenu.name, iMenu.label, iMenu.order, iMenu.auth);

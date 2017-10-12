@@ -1212,7 +1212,7 @@ var View = Marionette.CompositeView.extend({
         var hasScroll = (this.ui.tbody[0].scrollHeight - this.ui.tbody[0].parentNode.parentNode.clientHeight) > 0;
 
         // var scrollLeft = this.ui.tbody.parent().parent().scrollLeft();
-        var leftMargin = application.isFirefox ? 7 : 8;
+        var leftMargin = application.IS_FIREFOX ? 7 : 8;
         var rightMargin = this.ui.add_column.length > 0 ? this.ui.add_column.parent().width() : 0;
         var leftClip = this.ui.table.position().left;
         // var rightClip = this.ui.add_column.length > 0 ? this.ui.add_column.parent().width() : 0;

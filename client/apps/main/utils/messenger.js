@@ -8,17 +8,18 @@
  * @details
  */
 
-var Messenger = function() {
+let Messenger = function() {
     this.host = window.location.hostname;
     this.port = 8002;
     this.path = window.application.url('messenger');
     this.socket = null;
     this.attempt = 0;
 
-    this.COMMAND_CACHE_INVALIDATION = 1;
     this.RETRY_DELAY = 5000;
     this.CONNECT_DELAY = 500;
     this.MAX_ATTEMPTS = 10;
+
+    this.COMMAND_CACHE_INVALIDATION = 1;
 };
 
 /**
@@ -27,7 +28,7 @@ var Messenger = function() {
 Messenger.prototype.connect = function(force) {
     force || (force = false);
 
-    var self = this;
+    let self = this;
 
     if (this.socket) {
         return;
@@ -43,72 +44,74 @@ Messenger.prototype.connect = function(force) {
         return;
     }
 
+    let retry = function(self) {
+        // disable cache persistence
+        window.application.main.cache.disable();
+
+        setTimeout(function (self) {
+            self.connect();
+        }, self.RETRY_DELAY * self.attempt, self);
+    };
+
     // obtain the messengerid
     $.ajax({
         type: "GET",
         url: window.application.url(['messenger', 'messengerid']),
         dataType: 'json'
     }).done(function(data) {
-        self.messengerid = data.messengerid;
-        self.host = data.host;
-        self.port = data.port;
-        self.path = window.application.url(data.path);
+        if (!data.alive) {
+            return retry(self);
+        }
 
         // deferred to 0.5sec
-        setTimeout(function(self) {
-            self.messengerid = data.messengerid;
+        setTimeout(function(self, connection) {
+            let url = window.application.makeUrl(
+                "ws://", connection.host, connection.port, connection.path.split('/'), {
+                    username: window.session.user.username,
+                    messengerid: connection.messengerid
+            });
 
-            var parameters = '?username=' + session.user.username + '&messengerid=' + encodeURIComponent(data.messengerid);
             try {
-                self.socket = new WebSocket("ws://" + self.host + ":" + self.port + self.path + parameters);
+                self.socket = new WebSocket(url);
             } catch (e) {
-               // disable cache persistence
-                application.main.cache.disable();
-
-                setTimeout(function (self) {
-                    self.connect();
-                }, self.RETRY_DELAY * self.attempt, self);
+                return retry(self);
             }
 
             self.socket.onmessage = function (e) {
-                var data = JSON.parse(e.data);
+                let data = JSON.parse(e.data);
 
                 if (data.command === self.COMMAND_CACHE_INVALIDATION) {
-                    application.main.cache.invalidate(data.data.category, data.data.name);
+                    window.application.main.cache.invalidate(data.data.category, data.data.name);
                 }
             };
 
             self.socket.onclose = function () {
                 self.socket = null;
-
-                // disable cache persistence
-                application.main.cache.disable();
-
-                setTimeout(function (self) {
-                    self.connect();
-                }, self.RETRY_DELAY * self.attempt, self);
+                return retry(self);
             };
 
             self.socket.onopen = function () {
                 self.attempt = 0;
+                self.messengerid = connection.messengerid;
+                self.host = connection.host;
+                self.port = connection.port;
+                self.path = window.application.url(connection.path);
 
                 // enable cache persistence
-                application.main.cache.enable();
+                window.application.main.cache.enable();
 
-                session.logger.info(_t("Connected to messenger"));
+                window.session.logger.info(_t("Connected to messenger"));
             };
 
             // Call onopen directly if socket is already open
             if (self.socket.readyState === WebSocket.OPEN) {
                 self.socket.onopen();
             }
-        }, self.CONNECT_DELAY, self);
+        }, self.CONNECT_DELAY, self, data);
     }).fail(function() {
         $.alert(_t("Unable to get a messenger identifier"));
 
-        setTimeout(function(self) {
-            self.connect();
-        }, self.RETRY_DELAY * self.attempt, self);
+        return retry(self);
     });
 };
 

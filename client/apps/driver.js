@@ -161,12 +161,22 @@ var Application = Marionette.Application.extend({
     },
 
     onBeforeStart: function(options) {
-        this.baseUrl = '/coll-gate/';
-        this.isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+        //
+        // Constants
+        //
+
+        this.UI_DEFAULT_SETTING = {display_mode: '2-8-2'};
+        this.UI_SETTING_VERSION = '1.0';
+        this.BASE_URL = '/coll-gate/';
+        this.IS_FIREFOX = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+
+        //
+        // Methods
+        //
 
         this.url = function(path) {
             if (path instanceof Array) {
-                let url = this.baseUrl;
+                let url = this.BASE_URL;
 
                 for (let i = 0; i < path.length; ++i) {
                     url += path[i];
@@ -179,7 +189,7 @@ var Application = Marionette.Application.extend({
 
                 return url;
             } else if (typeof path === 'string') {
-                let url = this.baseUrl + path;
+                let url = this.BASE_URL + path;
 
                 // trailing slash
                 if (!url.endsWith('/')) {
@@ -188,17 +198,83 @@ var Application = Marionette.Application.extend({
 
                 return url;
             } else {
-                return this.baseUrl;
+                return this.BASE_URL;
             }
         }.bind(this);
+
+        this.makeUrl = function(protocol, host, port, path, parameters) {
+            let url = protocol;
+            if (host) {
+                url += host;
+            }
+
+            if (port) {
+                url += ':' + port;
+            }
+
+            if (!url.endsWith('/')) {
+                url += '/';
+            }
+
+            let params = "";
+            if (parameters instanceof Object) {
+                for (let p in parameters) {
+                    if (params.length === 0) {
+                        params += "?";
+                    } else {
+                        params += "&";
+                    }
+
+                    params += window.encodeURIComponent(p) + '=' + window.encodeURIComponent(parameters[p]);
+                }
+            }
+
+            if (path instanceof Array) {
+                for (let i = 0; i < path.length; ++i) {
+                    let p = path[i];
+
+                    if (p.startsWith('/')) {
+                        p = p.substring(1)
+                    }
+
+                    url += p;
+
+                    // trailing slash
+                    if (!url.endsWith('/')) {
+                        url += '/';
+                    }
+                }
+
+                return url + params;
+            } else if (typeof path === 'string') {
+                let p = path;
+
+                if (p.startsWith('/')) {
+                    p = p.substring(1)
+                }
+
+                url += p;
+
+                // trailing slash
+                if (!url.endsWith('/')) {
+                    url += '/';
+                }
+
+                return url + params;
+            } else {
+                return url + params;
+            }
+        };
 
         /**
          * Update the width and left position of the messenger div.
          */
         this.updateMessengerDisplay = function() {
-            var width = $("div.root-content").width();
-            var position = $("div.root-content").position();
-            var left = position ? position.left : 15;
+            let root = $("div.root-content");
+
+            let width = root.width();
+            let position = root.position();
+            let left = position ? position.left : 15;
 
             $("#messenger").css('width', width).css('left', left);
         };
@@ -214,7 +290,7 @@ var Application = Marionette.Application.extend({
             if (typeof(mode) !== 'string' || !mode)
                 return;
 
-            var view = application.getView();
+            let view = application.getView();
             if (view && view.setDisplay) {
                 view.setDisplay(mode);
             }
@@ -226,7 +302,7 @@ var Application = Marionette.Application.extend({
 
         // when the viewport is resized send a global onResize event
         $(window).resize(function() {
-            var view = application.getView();
+            let view = application.getView();
             if (view && view.onResize) {
                 view.onResize();
             }
@@ -246,9 +322,9 @@ var Application = Marionette.Application.extend({
         this.updateUserSetting = function(settingName, setting, version) {
             version || (version = '0.1');
 
-            var current = session.user.settings[settingName];
+            let current = window.session.user.settings[settingName];
             if (current) {
-                var cmp = $.versioncompare(version, current.version || '0.1');
+                let cmp = $.versioncompare(version, current.version || '0.1');
 
                 if (cmp === 0) {
                     current.setting = _.deepClone(setting);
@@ -261,19 +337,19 @@ var Application = Marionette.Application.extend({
                 }
             } else {
                 // validate the version number
-                var cmp = $.versioncompare(version, '0.1');
+                let cmp = $.versioncompare(version, '0.1');
 
                 if (cmp === -1) {
                     throw new Error("User setting minimal version supported is '0.1'.");
                 }
 
-                session.user.settings[settingName] = {
+                window.session.user.settings[settingName] = {
                     version: version,
                     setting: _.deepClone(setting)
                 };
             }
 
-            if (session.user.isAuth && !settingName.startsWith('_')) {
+            if (window.session.user.isAuth && !settingName.startsWith('_')) {
                 $.ajax({
                     type: "PATCH",
                     url: window.application.url(['main', 'profile', 'settings']),
@@ -296,7 +372,7 @@ var Application = Marionette.Application.extend({
          * @returns {boolean}
          */
         this.hasUserSetting = function(settingName) {
-            return settingName in session.user.settings;
+            return settingName in window.session.user.settings;
         };
 
         /**
@@ -305,7 +381,7 @@ var Application = Marionette.Application.extend({
          * @returns {*} Setting version string.
          */
         this.getUserSettingVersion = function(settingName) {
-            var setting = session.user.settings[settingName];
+            let setting = window.session.user.settings[settingName];
             if (setting) {
                 return setting.version;
             } else {
@@ -323,7 +399,7 @@ var Application = Marionette.Application.extend({
         this.getUserSetting = function(settingName, version, defaultSetting) {
             version || (version = '0.1');
 
-            var setting = session.user.settings[settingName];
+            let setting = window.session.user.settings[settingName];
             if (setting && setting.version && ($.versioncompare(version, setting.version) === 0)) {
                 return setting.setting;
             } else if (defaultSetting) {
@@ -342,17 +418,17 @@ var Application = Marionette.Application.extend({
         this.setDefaultUserSetting = function(settingName, defaultSetting, version) {
             version || (version = '0.1');
 
-            var setting = session.user.settings[settingName];
+            let setting = window.session.user.settings[settingName];
             if (!setting) {
                 // validate the version number
-                var cmp = $.versioncompare(version, '0.1');
+                let cmp = $.versioncompare(version, '0.1');
 
                 if (cmp === -1) {
                     throw new Error("User setting minimal version supported is '0.1'.");
                 }
 
                 // undefined key
-                session.user.settings[settingName] = {
+                window.session.user.settings[settingName] = {
                     version: version,
                     setting: _.deepClone(defaultSetting)
                 };
@@ -365,7 +441,7 @@ var Application = Marionette.Application.extend({
         // i18n
         i18next.init({
             initImmediate: false,  // avoid setTimeout
-            lng: session.language,
+            lng: window.session.language,
             ns: ['default'],
             defaultNS: 'default',
             debug: false,
@@ -380,32 +456,32 @@ var Application = Marionette.Application.extend({
         window.i18next = i18next;
 
         // select2
-        if (session.language === "fr") {
+        if (window.session.language === "fr") {
             require('select2/dist/js/i18n/fr');
         } else {  // default to english
         }
 
-        $.fn.select2.defaults.set('language', session.language);
+        $.fn.select2.defaults.set('language', window.session.language);
 
         // moment
-        moment.locale(session.language);
+        moment.locale(window.session.language);
 
         // defaults modules
-        session.modules || (session.modules = ['main']);
+        window.session.modules || (window.session.modules = ['main']);
 
         // alert display component
         $.alert({container: '#messenger'/*'div.root-content'*/, className: 'message-alert'});
         $.alert.update();
 
         // require and initialize each modules
-        for (var i = 0; i < session.modules.length; ++i) {
-            var module = session.modules[i];
+        for (let i = 0; i < window.session.modules.length; ++i) {
+            let module = window.session.modules[i];
 
             try {
-                var Module = require('./' + module + '/init');
+                let Module = require('./' + module + '/init');
                 this[module] = new Module();
             } catch (e) {
-                var msg = i18next.t("Missing client module") + " : " + module + ". " +
+                let msg = i18next.t("Missing client module") + " : " + module + ". " +
                           _t("Please contact your administrator.");
 
                 console.error(e);
@@ -418,7 +494,7 @@ var Application = Marionette.Application.extend({
                     this[module].initialize(this, {});
                     Logger.timeEnd("Init " + module + " module");
                 } catch (e) {
-                    var msg = _t("Module initialization failed") + " : " + module + ". " +
+                    let msg = _t("Module initialization failed") + " : " + module + ". " +
                               _t("Please contact your administrator.");
 
                     console.error(e);
@@ -430,8 +506,8 @@ var Application = Marionette.Application.extend({
 
     onStart: function(options) {
         // start each module
-        for (var i = 0; i < session.modules.length; ++i) {
-            var module = session.modules[i];
+        for (let i = 0; i < window.session.modules.length; ++i) {
+            let module = window.session.modules[i];
 
             if (this[module] && this[module].start) {
                 try {
@@ -439,7 +515,7 @@ var Application = Marionette.Application.extend({
                     this[module].start(this, {});
                     Logger.timeEnd("Start " + module + " module");
                 } catch (e) {
-                    var msg = _t("Module startup failed") + " : " + module + ". " +
+                    let msg = _t("Module startup failed") + " : " + module + ". " +
                               _t("Please contact your administrator.");
 
                     console.error(e);
@@ -449,19 +525,22 @@ var Application = Marionette.Application.extend({
         }
 
         // update the messenger display properties
-        var uiSettings = this.getUserSetting('ui', UI_SETTING_VERSION, UI_DEFAULT_SETTING);
+        let uiSettings = this.getUserSetting(
+            'ui', window.application.UI_SETTING_VERSION, window.application.UI_DEFAULT_SETTING);
+
         this.setDisplay(uiSettings['display_mode']);
 
         // starts the URL handling framework and automatically route as possible
         Backbone.history.start({pushState: true, silent: false, root: '/coll-gate'});
 
         // add alerts initiated by django server side
-        if (typeof initials_alerts !== "undefined") {
-            for (var alert in initials_alerts) {
-                $.alert.message(initials_alerts[alert].type, initials_alerts[alert].msg);
+        if (typeof window.session.initialsAlerts !== "undefined") {
+            for (let i = 0; i < window.session.initialsAlerts.length; ++i) {
+                let alert = window.session.initialsAlerts[i];
+                $.alert.message(alert.type, alert.msg);
             }
 
-            delete initials_alerts;
+            window.session.initialsAlerts = [];
         }
 
         Logger.timeEnd('Application startup');

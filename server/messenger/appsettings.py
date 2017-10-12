@@ -12,7 +12,7 @@
 APP_DB_DEFAULT_SETTINGS = {
     'messenger_host': "127.0.0.1",
     'messenger_port': 8002,
-    'messenger_path': "messenger/"
+    'messenger_path': "/coll-gate/messenger/"
 }
 
 APP_VERBOSE_NAME = "Coll-Gate :: Messenger"

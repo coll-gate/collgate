@@ -53,11 +53,17 @@ def get_messenger_id(request):
             'validity': request.session.get_expiry_age()
          })
 
-    results = {
-        'messengerid': messengerid,
-        'host': get_setting('messenger', 'messenger_host'),
-        'port': get_setting('messenger', 'messenger_port'),
-        'path': get_setting('messenger', 'messenger_path')
-    }
+    if messenger_module.tcp_client.is_ready():
+        results = {
+            'alive': True,
+            'messengerid': messengerid,
+            'host': get_setting('messenger', 'messenger_host'),
+            'port': get_setting('messenger', 'messenger_port'),
+            'path': get_setting('messenger', 'messenger_path')
+        }
+    else:
+        results = {
+            'alive': False
+        }
 
     return HttpResponseRest(request, results)

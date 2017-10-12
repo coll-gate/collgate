@@ -164,71 +164,14 @@
 
 <script language="javascript">
 
-const UI_DEFAULT_SETTING = {
-    display_mode: '2-8-2'
-};
-
-const UI_SETTING_VERSION = '1.0';
-
-// initials alerts coming from django templating
-initials_alerts = [{% spaceless %}
-{% for message in messages %}
-    {type: "{{ message|bootstrap_message_classes }}".split('-')[1], msg: "{{ message }}"},
-{% endfor %}
-{% endspaceless %}];
-
-// initials menu coming from django templating
-initials_menus = {% collgate "menus" %};
-
-// client session
-session = function() {
-    if (typeof session !== 'undefined') {
-        return session;
-    } else {
-        return {};
-    }
-}();
-
-session.version = '{% collgate "version" %}';
-session.modules = {% collgate "modules" %};
-session.debug = {{ debug|yesno:"true,false" }};
-session.language = "{{ LANGUAGE_CODE }}";
-session.languageDirection = "ltr";
-
-session.user = {
-    username: "{{ user.username }}",
-    id: 0,
-    isAuth: false,
-    isSuperUser: false,
-    isStaff: false,
-    settings: {},
-    lastAction : new Date().getTime()
-};
-
-{% if user.is_authenticated %}
-session.user.id = {{ user.id }};
-session.user.isAuth = true;
-session.user.isSuperUser = {{ user.is_superuser|yesno:"true,false" }};
-session.user.isStaff = {{ user.is_staff|yesno:"true,false" }};
-session.user.settings = {{ profile_settings|safe }};
-{% endif %}
-
-// LTR or RTL language
-var elem = $('a.navbar-brand.url');
-if (window.getComputedStyle) { // all browsers
-    session.languageDirection = window.getComputedStyle(elem[0], null).getPropertyValue('direction');
-} else { // IE5-8
-    session.languageDirection = elem[0].currentStyle.direction;
-}
-
 function addCss(code) {
-    var style = document.createElement('style');
+    let style = document.createElement('style');
     style.type = 'text/css';
 
     document.getElementsByTagName("head")[0].appendChild(style);
 
     // grab style sheet
-    //var styleSheet = style.sheet;
+    //let styleSheet = style.sheet;
     // insert CSS Rule
     //styleSheet.insertRule(code, styleSheet.cssRules.length);
 
@@ -236,21 +179,70 @@ function addCss(code) {
     style.innerHTML = code;
 }
 
-if (session.languageDirection === "rtl") {
-    // this fix RTL support for bootstrap select
-    addCss(".bootstrap-select.btn-group .btn .caret { position: absolute; top: 50%; left: 12px; margin-top: -2px; vertical-align: middle; }");
-    addCss(".bootstrap-select.btn-group .btn .filter-option { display: inline-block; overflow: hidden; width: 100%; text-align: right; }");
+function initIndex() {
+    // client global session
+    this.session = {};
+
+    // initials alerts coming from django template
+    this.session.initialsAlerts = [{% spaceless %}
+        {% for message in messages %}
+            {type: "{{ message|bootstrap_message_classes }}".split('-')[1], msg: "{{ message }}"},
+        {% endfor %}
+    {% endspaceless %}];
+
+    // initials menu coming from django templating
+    this.session.initialsMenus = {% collgate "menus" %};
+
+    this.session.version = '{% collgate "version" %}';
+    this.session.modules = {% collgate "modules" %};
+    this.session.debug = {{ debug|yesno:"true,false" }};
+    this.session.language = "{{ LANGUAGE_CODE }}";
+    this.session.languageDirection = "ltr";
+
+    this.session.user = {
+        username: "{{ user.username }}",
+        id: 0,
+        isAuth: false,
+        isSuperUser: false,
+        isStaff: false,
+        settings: {},
+        lastAction : new Date().getTime()
+    };
+
+    {% if user.is_authenticated %}
+    this.session.user.id = {{ user.id }};
+    this.session.user.isAuth = true;
+    this.session.user.isSuperUser = {{ user.is_superuser|yesno:"true,false" }};
+    this.session.user.isStaff = {{ user.is_staff|yesno:"true,false" }};
+    this.session.user.settings = {{ profile_settings|safe }};
+    {% endif %}
+
+    // LTR or RTL language
+    let elem = $('a.navbar-brand.url');
+    if (window.getComputedStyle) { // all browsers
+        this.session.languageDirection = window.getComputedStyle(elem[0], null).getPropertyValue('direction');
+    } else { // IE5-8
+        this.session.languageDirection = elem[0].currentStyle.direction;
+    }
+
+    if (this.session.languageDirection === "rtl") {
+        // this fix RTL support for bootstrap select
+        addCss(".bootstrap-select.btn-group .btn .caret { position: absolute; top: 50%; left: 12px; margin-top: -2px; vertical-align: middle; }");
+        addCss(".bootstrap-select.btn-group .btn .filter-option { display: inline-block; overflow: hidden; width: 100%; text-align: right; }");
+    }
 }
+
+// some initialisation
+initIndex();
 
 </script>
 
 <script language="javascript">
     $(function() {
-        // avoid FancyTree error message on console
-        // (opening an empty node, or with invisible nodes as first)
-        $(document).on("error", function() {
-            // nothing
-        });
+        // avoid FancyTree error message on console (opening an empty node, or with invisible nodes as first)
+        // $(document).on("error", function() {
+        //    // nothing
+        // });
 
         //
         // multi languages support
@@ -258,13 +250,13 @@ if (session.languageDirection === "rtl") {
 
         $("#lang_redirect").attr('value', window.location.href);
 
-        function formatLanguage(language) {
+        let formatLanguage = function(language) {
             if (!language.id) {
                 return language.text;
             }
 
-            var img = language.element.getAttribute("img");
-            var lang = $(
+            let img = language.element.getAttribute("img");
+            let lang = $(
                 '<span><img style="margin-bottom: 3px;" src="' + img + '" class="img-flag" /> ' + language.text + '</span>'
             );
             return lang;
@@ -277,13 +269,14 @@ if (session.languageDirection === "rtl") {
         });
 
         $('#languages').on("select2:select", function(e) {
-            var language = $('#languages').val() || 'en';
+            let language = $('#languages').val() || 'en';
 
             // update and save user setting
-            var ui = application.getUserSetting('ui', UI_SETTING_VERSION, UI_DEFAULT_SETTING);
+            let ui = window.application.getUserSetting(
+                'ui', window.application.UI_SETTING_VERSION, window.application.UI_DEFAULT_SETTING);
             ui.preferred_language = language;
 
-            application.updateUserSetting('ui', ui, UI_SETTING_VERSION);
+            window.application.updateUserSetting('ui', ui, window.application.UI_SETTING_VERSION);
 
             $.ajax({
                 type: "POST",
@@ -343,7 +336,7 @@ if (session.languageDirection === "rtl") {
         //
 
         $("a.url").each(function (index) {
-            var href = $(this).attr("href");
+            let href = $(this).attr("href");
 
             // href starting with ~ are actions that directly call a controller,
             // but doesn't modify the URL neither the history
@@ -354,17 +347,17 @@ if (session.languageDirection === "rtl") {
                     $(".dropdown").removeClass("open");
                     $(".dropdown-toggle").attr("aria-expanded", false);
 
-                    var parts = href.slice(1).split('/');
-                    if (!application[parts[0]]) {
+                    let parts = href.slice(1).split('/');
+                    if (!window.application[parts[0]]) {
                         return false;
-                    };
+                    }
 
-                    var ctrl = application[parts[0]].controllers[parts[1]];
+                    let ctrl = window.application[parts[0]].controllers[parts[1]];
                     if (!ctrl) {
                         return false;
                     }
 
-                    var method = parts[2];
+                    let method = parts[2];
                     if (!method || !ctrl[method]) {
                         return false;
                     }
@@ -385,7 +378,7 @@ if (session.languageDirection === "rtl") {
                     $(".dropdown").removeClass("open");
                     $(".dropdown-toggle").attr("aria-expanded", false);
 
-                    var href = $(this).attr("href").replace('/coll-gate/', '');
+                    let href = $(this).attr("href").replace('/coll-gate/', '');
                     Backbone.history.navigate(href, {trigger: true});
 
                     return false;
@@ -395,9 +388,9 @@ if (session.languageDirection === "rtl") {
 
         // toggle display mode and save user setting
         $("#toggle_display").on("click", function(e) {
-            var mode = $(this).attr("display-mode") || application.getUserSetting(
-                "ui", UI_SETTING_VERSION, UI_DEFAULT_SETTING)['display_mode'];
-            var newMode = null;
+            let mode = $(this).attr("display-mode") || application.getUserSetting(
+                "ui", window.application.UI_SETTING_VERSION, window.application.UI_DEFAULT_SETTING)['display_mode'];
+            let newMode = null;
 
             if (mode === "2-8-2") {
                 newMode = "0-10-2";
@@ -408,14 +401,16 @@ if (session.languageDirection === "rtl") {
             }
 
             if (newMode && newMode !== mode) {
-                application.setDisplay(newMode);
+                window.application.setDisplay(newMode);
                 $(this).attr("display-mode", newMode);
 
                 // update and save user setting
-                var ui = application.getUserSetting('ui', UI_SETTING_VERSION, UI_DEFAULT_SETTING);
+                let ui = window.application.getUserSetting(
+                    'ui', window.application.UI_SETTING_VERSION, window.application.UI_DEFAULT_SETTING);
+
                 ui.display_mode = newMode;
 
-                application.updateUserSetting('ui', ui, UI_SETTING_VERSION);
+                window.application.updateUserSetting('ui', ui, window.application.UI_SETTING_VERSION);
             }
         });
     });

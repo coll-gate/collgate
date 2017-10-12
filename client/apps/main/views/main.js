@@ -29,7 +29,9 @@ var MainLayout = Marionette.View.extend({
     check_status_timeout: 3*60*1000,   // every 3 minutes
 
     initialize: function() {
-        var uiSetting = window.application.getUserSetting("ui", UI_SETTING_VERSION, UI_DEFAULT_SETTING);
+        var uiSetting = window.application.getUserSetting(
+            "ui", window.application.UI_SETTING_VERSION, window.application.UI_DEFAULT_SETTING);
+
         this.currentDisplayMode = uiSetting['display_mode'];
         this.compactDisplay = false;
     },
@@ -99,7 +101,8 @@ var MainLayout = Marionette.View.extend({
             this.setDisplay('0-12-0');
         } else {
             if (this.compactDisplay) {
-                var displayMode = window.application.getUserSetting("ui", UI_SETTING_VERSION, UI_DEFAULT_SETTING)['display_mode'];
+                var displayMode = window.application.getUserSetting(
+                    "ui", window.application.UI_SETTING_VERSION, window.application.UI_DEFAULT_SETTING)['display_mode'];
 
                 // restore to previous setting
                 this.setDisplay(displayMode);
