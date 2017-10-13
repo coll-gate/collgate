@@ -16,11 +16,11 @@ var View = Marionette.View.extend({
     template: require('../templates/editprofile.html'),
 
     ui: {
-        username: '#username',
-        email: '#email',
-        first_name: '#first_name',
-        last_name: '#last_name',
-        save: '#save'
+        username: 'input[name=username]',
+        email: 'input[name=email]',
+        first_name: 'input[name=first_name]',
+        last_name: 'input[name=last_name]',
+        save: 'button[name=save]'
     },
 
     events: {
@@ -29,18 +29,22 @@ var View = Marionette.View.extend({
 
     initialize: function(options) {
         options || (options = {});
-        this.model = options.model;
+
+        View.__super__.initialize.apply(this, arguments);
+    },
+
+    onRender: function() {
     },
 
     updateProfile: function () {
-        var model = this.model;
+        let model = this.model;
 
         this.model.save({
             first_name: this.ui.first_name.val(),
             last_name: this.ui.last_name.val()
         }).done(function() {
-            var text = model.get('first_name') && model.get('last_name') ? model.get('first_name') + ' ' + model.get('last_name') : model.get('username');
-            $('#drop-profile').text(text);
+            let text = model.get('first_name') && model.get('last_name') ? model.get('first_name') + ' ' + model.get('last_name') : model.get('username');
+            $('#drop-profile span[name=label]').text(text);
 
             $.alert.success(_t("Done"));
         });

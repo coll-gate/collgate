@@ -8,13 +8,13 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
-var EditProfileView = require('../views/editprofile');
-var DefaultLayout = require('../views/defaultlayout');
-var TitleView = require('../views/titleview');
-var ProfileModel = require('../models/profile');
+let Marionette = require('backbone.marionette');
+let EditProfileView = require('../views/editprofile');
+let DefaultLayout = require('../views/defaultlayout');
+let TitleView = require('../views/titleview');
+let ProfileModel = require('../models/profile');
 
-var ProfileRouter = Marionette.AppRouter.extend({
+let ProfileRouter = Marionette.AppRouter.extend({
     routes : {
         "app/main/profile/logout/": "logout",
         "app/main/profile/edit/": "edit",
@@ -31,14 +31,14 @@ var ProfileRouter = Marionette.AppRouter.extend({
     },
 
     edit: function() {
-        var defaultLayout = new DefaultLayout({});
+        let defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
-        model = new ProfileModel({username: session.user.username});
+        let model = new ProfileModel({username: window.session.user.username});
 
         defaultLayout.showChildView('title', new TitleView({title: _t("Edit my profile details")}));
 
-        model.fetch().done(function() {
+        model.fetch().then(function() {
             defaultLayout.showChildView('content', new EditProfileView({model: model}));
         });
 

@@ -73,10 +73,10 @@
                 {% include 'bootstrap/menu.html' %}
             </ul>
             <div class="btn-group access-buttons">
-                <button class="btn btn-sm btn-success navbar-btn" id="nav_back"><span class="fa fa-backward"></span></button>
-                <button class="btn btn-sm btn-success navbar-btn" id="nav_fwd"><span class="fa fa-forward"></span></button>
-                <button class="btn btn-sm btn-success navbar-btn" id="nav_refresh"><span class="fa fa-refresh"></span></button>
-                <button class="btn btn-sm btn-default navbar-btn" id="toggle_display" title="{% trans 'Change display' %}"><span class="fa fa-caret-square-o-right"></span></button>
+                <button class="btn btn-sm btn-success navbar-btn" id="nav_back"><span class="fa fa-backward fa-lg"></span></button>
+                <button class="btn btn-sm btn-success navbar-btn" id="nav_fwd"><span class="fa fa-forward fa-lg"></span></button>
+                <button class="btn btn-sm btn-success navbar-btn" id="nav_refresh"><span class="fa fa-refresh fa-lg"></span></button>
+                <button class="btn btn-sm btn-default navbar-btn" id="toggle_display" title="{% trans 'Change display' %}"><span class="fa fa-caret-square-o-right fa-lg"></span></button>
             </div>
             {% if not user.is_authenticated %}
                 <form class="navbar-form navbar-right" role="form" method="post" action="{% url 'main:profile-signin' %}">
@@ -99,7 +99,7 @@
                 <ul class="nav navbar-nav navbar-right">
                     <li class="dropdown auth-user">
                         <a id="drop-profile" href="#" role="button" class="dropdown-toggle" data-toggle="dropdown">
-                            {% if user.first_name and user.last_name %}{{ user.first_name }} {{ user.last_name }}{% else %}{{ user.username }}{% endif %}
+                            <span name="label">{% if user.first_name and user.last_name %}{{ user.first_name }} {{ user.last_name }}{% else %}{{ user.username }}{% endif %}</span>
                             <b class="caret"></b>
                         </a>
                         <ul class="dropdown-menu" role="menu" aria-labelledby="menu-drop-profile">
