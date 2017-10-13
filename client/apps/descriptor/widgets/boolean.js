@@ -90,9 +90,9 @@ _.extend(BooleanType.prototype, DescriptorFormatType.prototype, {
                 this.el.val(defaultValues ? _t('Yes') : _t('No')).attr('value', defaultValues);
 
                 if (defaultValues) {
-                    this.el.parent().children('span').children('span').addClass('glyphicon-check');
+                    this.el.parent().children('span').children('span').addClass('fa-check-square-o');
                 } else {
-                    this.el.parent().children('span').children('span').addClass('glyphicon-unchecked');
+                    this.el.parent().children('span').children('span').addClass('fa-square-o');
                 }
             }
         } else {

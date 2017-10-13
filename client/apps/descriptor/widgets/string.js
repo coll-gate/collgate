@@ -34,7 +34,7 @@ _.extend(StringType.prototype, DescriptorFormatType.prototype, {
         } else {
             var group = $('<div class="input-group"></div>');
             var input = $('<input class="form-control" width="100%">');
-            var glyph = $('<span class="input-group-addon"><span class="glyphicon glyphicon-font"></span></span>');
+            var glyph = $('<span class="input-group-addon"><span class="fa fa-font"></span></span>');
 
             group.append(input);
             group.append(glyph);

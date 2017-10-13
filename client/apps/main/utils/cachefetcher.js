@@ -8,7 +8,7 @@
  * @details
  */
 
-var CacheFetcher = function() {
+let CacheFetcher = function() {
     this.type = "";
 };
 

@@ -10,23 +10,23 @@
 
 <td name="is_active" class="action glyph-fixed-column">
     <% if (is_active) { %>
-        <span class="disable-user glyphicon glyphicon-ok"></span>
+        <span class="disable-user fa fa-check-circle"></span>
     <% } else { %>
-        <span class="enable-user glyphicon glyphicon-remove"></span>
+        <span class="enable-user fa fa-times"></span>
     <% } %>
 </td>
 <td name="is_superuser" class="action glyph-fixed-column">
     <% if (is_superuser) { %>
-        <span class="set-user glyphicon glyphicon-ok"></span>
+        <span class="set-user fa fa-check-circle"></span>
     <% } else { %>
-        <span class="set-superuser glyphicon glyphicon-remove"></span>
+        <span class="set-superuser fa fa-times"></span>
     <% } %>
 </td>
 <td name="is_staff" class="action glyph-fixed-column">
     <% if (is_staff) { %>
-        <span class="set-regular glyphicon glyphicon-ok"></span>
+        <span class="set-regular fa fa-check-circle"></span>
     <% } else { %>
-        <span class="set-staff glyphicon glyphicon-remove"></span>
+        <span class="set-staff fa fa-times"></span>
     <% } %>
 </td>
 <td name="username" class="action view-user-details" value="<%= username %>"><%- username %></td>

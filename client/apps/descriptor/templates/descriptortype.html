@@ -10,11 +10,11 @@
 
 <td class="glyph-fixed-column lock-status">
     <% if (!can_delete) { %>
-        <span class="glyphicon glyphicon-lock" title="<%= _t('Descriptor type locked') %>"></span>
+        <span class="fa fa-lock" title="<%= _t('Descriptor type locked') %>"></span>
     <% } %>
 </td>
 <td class="glyph-fixed-column" name="description">
-    <span class="glyphicon glyphicon-question-sign" title="<%= description %>" style="cursor: help;"></span>
+    <span class="fa fa-question-circle" title="<%= description %>" style="cursor: help;"></span>
 </td>
 <td class="action edit" name="name" value="<%= name %>"><%= name %></td>
 <td class="action edit" name="code"><%= code %></td>

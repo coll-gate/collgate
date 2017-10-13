@@ -21,10 +21,9 @@ var Collection = Backbone.Collection.extend({
     default: [],
 
     findLabel: function(value) {
-        var res = this.findWhere({value: value});
+        let res = this.findWhere({value: value});
         return res ? res.get('label') : '';
     }
 });
 
 module.exports = Collection;
-

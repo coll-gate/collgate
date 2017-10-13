@@ -12,7 +12,7 @@
 <td class="glyph-fixed-column lock-status">
     <% if (!classification.get('can_modify')) { %>
         <% className = ""; %>
-        <span class="glyphicon glyphicon-lock" title="<%= _t('Classification locked') %>"></span>
+        <span class="fa fa-lock" title="<%= _t('Classification locked') %>"></span>
     <% } %>
 </td>
 <td class="<%= className %> rename" name="name" value="<%= name %>"><%= name %></td>

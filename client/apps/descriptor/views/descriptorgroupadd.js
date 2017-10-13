@@ -31,9 +31,11 @@ var View = Marionette.View.extend({
     },
 
     addGroup: function () {
-        if (!this.ui.add_group_name.hasClass('invalid')) {
+        var v = this.ui.add_group_name.val().trim();
+
+        if (!this.ui.add_group_name.hasClass('invalid') && v.length) {
             this.collection.create({name: this.ui.add_group_name.val()}, {wait: true});
-            $(this.ui.add_group_name).cleanField();
+            this.ui.add_group_name.cleanField();
         }
     },
 
@@ -42,10 +44,10 @@ var View = Marionette.View.extend({
         var re = /^[a-zA-Z0-9_\-]+$/i;
 
         if (v.length > 0 && !re.test(v)) {
-            $(this.ui.add_group_name).validateField('failed', _t("Invalid characters (alphanumeric, _ and - only)"));
+            this.ui.add_group_name.validateField('failed', _t("Invalid characters (alphanumeric, _ and - only)"));
             return false;
         } else if (v.length < 3) {
-            $(this.ui.add_group_name).validateField('failed', _t('characters_min', {count: 3}));
+            this.ui.add_group_name.validateField('failed', _t('characters_min', {count: 3}));
             return false;
         }
 

@@ -8,9 +8,9 @@
  * @details 
  */
 
-var LanguageModel = require('../models/language');
+let LanguageModel = require('../models/language');
 
-var LanguageCollection = Backbone.Collection.extend({
+let LanguageCollection = Backbone.Collection.extend({
     url: window.application.url(['main', 'language']),
     model: LanguageModel,
 
@@ -27,7 +27,7 @@ var LanguageCollection = Backbone.Collection.extend({
     ],
 
     findLabel: function(value) {
-        var res = this.findWhere({value: value});
+        let res = this.findWhere({value: value});
         return res ? res.get('label') : '';
         /*for (var r in this.models) {
             var m = this.models[r];
@@ -38,4 +38,3 @@ var LanguageCollection = Backbone.Collection.extend({
 });
 
 module.exports = LanguageCollection;
-

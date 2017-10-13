@@ -26,14 +26,14 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
 
         if (readOnly) {
             var group = $('<div class="input-group"></div>');
-            var glyph = $('<span class="input-group-addon"><span class="glyphicon glyphicon-file"></span></span>');
+            var glyph = $('<span class="input-group-addon"><span class="fa fa-file"></span></span>');
             glyph.css(this.spanStyle);
 
             if (format.media_inline) {
                 /* miniature + download */
                 var group = $('<div class="input-group"></div>');
                 var collection = $('<div class="media-image-collection"></div>');
-                var glyph = $('<span class="input-group-addon"><span class="glyphicon glyphicon-file"></span></span>');
+                var glyph = $('<span class="input-group-addon"><span class="fa fa-file"></span></span>');
 
                 collection.css('height', 'auto');
 
@@ -54,7 +54,7 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
                     'padding': '0px'
                 });
 
-                var preview = $('<span class="media-preview btn btn-default"><span class="glyphicon glyphicon-eye-open"></span>&nbsp;' + _t('Preview') + '</span>');
+                var preview = $('<span class="media-preview btn btn-default"><span class="fa fa-eye"></span>&nbsp;' + _t('Preview') + '</span>');
                 preview.css({
                     'padding-top': '1px',
                     'padding-bottom': '1px',
@@ -63,7 +63,7 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
                 });
                 btnGroup.append(preview);
 
-                var download = $('<span class="media-download btn btn-default"><span class="glyphicon glyphicon-download"></span>&nbsp;' + _t('Download') + '</span>');
+                var download = $('<span class="media-download btn btn-default"><span class="fa fa-download"></span>&nbsp;' + _t('Download') + '</span>');
                 download.css({
                     'padding-top': '1px',
                     'padding-bottom': '1px',
@@ -139,12 +139,12 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
 
             var btnGroup = $('<span class="input-group-btn"></span>');
             var browse = $('<span class="btn btn-default btn-file">' + _t('Browse') + '</span>');
-            var erase = $('<span class="btn btn-default btn-file"><span class="glyphicon glyphicon-remove"></span></span>');
+            var erase = $('<span class="btn btn-default btn-file"><span class="fa fa-times"></span></span>');
 
             var input = $('<input type="file" style="display: none;">');
             var progress = $('<span class="input-group-addon progress"><span class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="min-width: 2em;">0%</span></span>');
             var fileName = $('<input type="text" class="form-control" readonly>');
-            var glyph = $('<span class="input-group-addon"><span class="glyphicon glyphicon-file"></span></span>');
+            var glyph = $('<span class="input-group-addon"><span class="fa fa-file"></span></span>');
 
             progress.css({
                 'width': '30%',
@@ -412,7 +412,7 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
                             'margin-left': '43.5%'
                         });
 
-                        var download = $('<span class="media-download contextual btn btn-default"><span class="glyphicon glyphicon-download"></span></span>');
+                        var download = $('<span class="media-download contextual btn btn-default"><span class="fa fa-download"></span></span>');
                         download.on('click', $.proxy(function(e) {
                             // download the document
                             $('<form></form>')
@@ -442,7 +442,7 @@ _.extend(Media.prototype, DescriptorFormatType.prototype, {
                 this.value = null;
 
                 if (this.collection) {
-                    var placeholder = $('<span class="glyphicon glyphicon-ban-circle"></span>');
+                    var placeholder = $('<span class="fa fa-ban"></span>');
 
                     // center the placeholder
                     placeholder.css({

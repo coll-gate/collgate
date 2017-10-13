@@ -8,9 +8,9 @@
  * @details 
  */
 
-var EventMessageModel = require('../models/eventmessage');
+let EventMessageModel = require('../models/eventmessage');
 
-var Collection = Backbone.Collection.extend({
+let Collection = Backbone.Collection.extend({
     url: window.application.url(['main', 'event-message']),
     model: EventMessageModel,
 
@@ -27,7 +27,7 @@ var Collection = Backbone.Collection.extend({
 
     fetch: function(options) {
         options || (options = {});
-        var data = (options.data || {});
+        let data = (options.data || {});
 
         options.data = data;
 
@@ -43,4 +43,3 @@ var Collection = Backbone.Collection.extend({
 });
 
 module.exports = Collection;
-

@@ -31,7 +31,7 @@ _.extend(DateType.prototype, DescriptorFormatType.prototype, {
         } else {
             var group = $('<div class="input-group"></div>');
             var input = $('<input class="form-control" width="100%">');
-            var glyph = $('<span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>').css('cursor', 'pointer');
+            var glyph = $('<span class="input-group-addon"><span class="fa fa-calendar"></span></span>').css('cursor', 'pointer');
 
             group.append(input);
             group.append(glyph);

@@ -23,7 +23,7 @@ _.extend(MediaCollection.prototype, DescriptorFormatType.prototype, {
         readOnly || (readOnly = false);
 
         if (readOnly) {
-            var input = this._createStdInput(parent, "glyphicon-check");
+            var input = this._createStdInput(parent, "fa-check-square-o");
 
             this.parent = parent;
             this.readOnly = true;

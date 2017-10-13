@@ -37,7 +37,7 @@ _.extend(ImpreciseDateType.prototype, DescriptorFormatType.prototype, {
                     padding: '0px',
                     border: 'none'}); // element to hide
             var display_input = $('<input class="form-control" width="100%" pattern="[0-9\/\s]+">');
-            var glyph = $('<span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>').css('cursor', 'pointer');
+            var glyph = $('<span class="input-group-addon"><span class="fa fa-calendar"></span></span>').css('cursor', 'pointer');
 
             group.append(display_input);
             group.append(input);

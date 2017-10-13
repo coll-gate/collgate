@@ -8,9 +8,9 @@
  * @details 
  */
 
-var InterfaceLanguageModel = require('../models/uilanguage');
+let InterfaceLanguageModel = require('../models/uilanguage');
 
-var Collection = Backbone.Collection.extend({
+let Collection = Backbone.Collection.extend({
     url: window.application.url(['main', 'ui', 'language']),
     model: InterfaceLanguageModel,
 
@@ -24,10 +24,9 @@ var Collection = Backbone.Collection.extend({
     ],
 
     findLabel: function(value) {
-        var res = this.findWhere({value: value});
+        let res = this.findWhere({value: value});
         return res ? res.get('label') : '';
     },
 });
 
 module.exports = Collection;
-

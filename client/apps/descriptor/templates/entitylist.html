@@ -28,7 +28,7 @@
                             <span class="fa <%= column.glyphicon[0] %> column-action" draggable="true"></span>
                         <% } %>
                     <% } else { %>
-                        <span class="column-sorter glyphicon glyphicon-sort column-action action"></span>
+                        <span class="column-sorter fa fa-sort column-action action"></span>
                         <% if (column.fixed) { %>
                             <span class="column-label"><%= column.label || column.name %></span>
                         <% } else { %>
@@ -60,6 +60,6 @@
         <span class="btn btn-default select-all"><span class="fa fa-check-square-o"></span>&nbsp;<%= _t("All") %></span>
         <span class="btn btn-default select-none"><span class="fa fa-square-o"></span>&nbsp;<%= _t("None") %></span>
         <span class="btn btn-default select-accept"><span class="fa fa-check"></span>&nbsp;<%= _t("Accept") %></span>
-        <span class="btn btn-default select-cancel"><span class="fa fa-remove"></span>&nbsp;<%= _t("Cancel") %></span>
+        <span class="btn btn-default select-cancel"><span class="fa fa-times"></span>&nbsp;<%= _t("Cancel") %></span>
     </div>
 </div>

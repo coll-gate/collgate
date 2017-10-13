@@ -8,7 +8,7 @@
  * @details
  */
 
-var Collection = Backbone.Collection.extend({
+let Collection = Backbone.Collection.extend({
     initialize: function (options) {
         options || (options = {});
 
@@ -27,9 +27,9 @@ var Collection = Backbone.Collection.extend({
 
     fetch: function(options) {
         options || (options = {});
-        var data = (options.data || {});
+        let data = (options.data || {});
 
-        var opts = _.clone(options);
+        let opts = _.clone(options);
         opts.data = data;
 
         this.cursor = data.cursor;
@@ -56,9 +56,9 @@ var Collection = Backbone.Collection.extend({
 
     count: function(options) {
         options || (options = {});
-        var data = (options.data || {});
+        let data = (options.data || {});
 
-        var opts = _.clone(options);
+        let opts = _.clone(options);
         opts.data = data;
 
         if (this.search && this.search.length) {

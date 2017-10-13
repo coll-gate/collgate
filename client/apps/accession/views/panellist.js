@@ -30,7 +30,7 @@ var View = AdvancedTable.extend({
         //     label: '',
         //     width: 'auto',
         //     type: 'checkbox',
-        //     glyphicon: ['glyphicon-unchecked', 'glyphicon-unchecked'],
+        //     glyphicon: ['fa-square-o', 'fa-square-o'],
         //     event: 'panel-select',
         //     fixed: true
         // },

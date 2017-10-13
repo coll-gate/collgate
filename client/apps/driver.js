@@ -463,6 +463,20 @@ var Application = Marionette.Application.extend({
 
         $.fn.select2.defaults.set('language', window.session.language);
 
+        // font-awesome use .fa
+        $.fn.popover.glyphicon = 'fa fa-question-circle';
+
+        $.fn.validator = {
+            className: 'fa-form-control-feedback',
+            glyphicon: {
+                'placement': '',
+                'prefix': 'fa',
+                'warning': 'fa-refresh',
+                'failed': 'fa-times',
+                'ok': 'fa-check'
+            }
+        };
+
         // moment
         moment.locale(window.session.language);
 

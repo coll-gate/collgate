@@ -14,23 +14,23 @@
 <% } %>
 <td class="glyph-fixed-column lock-status">
     <% if (!can_delete) { %>
-        <span class="glyphicon glyphicon-lock" title="<%= _t('Entity synonym type locked') %>"></span>
+        <span class="fa fa-lock" title="<%= _t('Entity synonym type locked') %>"></span>
     <% } %>
 </td>
 <% if (unique) { %>
-    <td class="<%= className %> glyph-fixed-column" name="unique"><span class="action glyphicon glyphicon-ok"></span></td>
+    <td class="<%= className %> glyph-fixed-column" name="unique"><span class="action fa fa-check"></span></td>
 <% } else { %>
-    <td class="<%= className %> glyph-fixed-column" name="unique"><span class="action glyphicon glyphicon-remove"></span></td>
+    <td class="<%= className %> glyph-fixed-column" name="unique"><span class="action fa fa-times"></span></td>
 <% } %>
 <% if (multiple_entry) { %>
-    <td class="<%= className %> glyph-fixed-column" name="unique"><span class="action glyphicon glyphicon-ok"></span></td>
+    <td class="<%= className %> glyph-fixed-column" name="unique"><span class="action fa fa-check"></span></td>
 <% } else { %>
-    <td class="<%= className %> glyph-fixed-column" name="unique"><span class="action glyphicon glyphicon-remove"></span></td>
+    <td class="<%= className %> glyph-fixed-column" name="unique"><span class="action fa fa-times"></span></td>
 <% } %>
 <% if (has_language) { %>
-    <td class="<%= className %> glyph-fixed-column" name="has-language"><span class="action glyphicon glyphicon-ok"></span></td>
+    <td class="<%= className %> glyph-fixed-column" name="has-language"><span class="action fa fa-check"></span></td>
 <% } else { %>
-    <td class="<%= className %> glyph-fixed-column" name="has-language"><span class="action glyphicon glyphicon-remove"></span></td>
+    <td class="<%= className %> glyph-fixed-column" name="has-language"><span class="action fa fa-times"></span></td>
 <% } %>
 <td class="<%= className %> rename" name="name"><%= name %></td>
 <td class="content-type" name="target-model" value="<%= target_model %>"></td>

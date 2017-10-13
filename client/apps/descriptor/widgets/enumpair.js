@@ -59,7 +59,7 @@ EnumPair.DescriptorTypeDetailsView = Marionette.View.extend({
         this.ui.display_fields.selectpicker({style: 'btn-default'});
         this.ui.search_field.selectpicker({style: 'btn-default'});
 
-        var format = this.model.get('format');
+        let format = this.model.get('format');
 
         if (format.trans) {
             this.ui.format_trans.val("true").selectpicker('refresh');
@@ -99,7 +99,7 @@ EnumPair.DescriptorTypeDetailsView = Marionette.View.extend({
     },
 
     changeListType: function () {
-        var listType = this.ui.list_type.val();
+        let listType = this.ui.list_type.val();
 
         switch (listType) {
             case "dropdown":

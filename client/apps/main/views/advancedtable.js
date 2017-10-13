@@ -205,7 +205,7 @@ var View = Marionette.CompositeView.extend({
             // cleanup
             var headers = this.ui.thead.children('tr').children('th,td').find('div.table-advanced-label');
             headers.children('span.column-sorter').removeClass(
-                'sortby-asc-column sortby-desc-column glyphicon-sort-by-alphabet glyphicon-sort-by-alphabet-alt')
+                'sortby-asc-column sortby-desc-column fa-sort-alpha-asc fa-sort-alpha-desc')
                 .attr('sort-position', null)
                 .empty();
 
@@ -249,11 +249,11 @@ var View = Marionette.CompositeView.extend({
                 }
 
                 if (order === '+') {
-                    sorter.addClass('sortby-asc-column glyphicon-sort-by-alphabet');
+                    sorter.addClass('sortby-asc-column fa-sort-alpha-asc');
                 } else if (order === '-') {
-                    sorter.addClass('sortby-desc-column glyphicon-sort-by-alphabet-alt');
+                    sorter.addClass('sortby-desc-column fa-sort-alpha-desc');
                 } else {
-                    sorter.addClass('glyphicon-sort');
+                    sorter.addClass('fa-sort');
                 }
             }
 
@@ -274,7 +274,7 @@ var View = Marionette.CompositeView.extend({
         this.lastModels = null;
 
         // reset scrolling
-        var scrollElement = this.getScrollElement();
+        let scrollElement = this.getScrollElement();
         scrollElement.scrollTop(0);
 
         // this.initialResizeDone = false;
@@ -1462,11 +1462,11 @@ var View = Marionette.CompositeView.extend({
             th.addClass("title-column");
         }
 
-        var sorter = $('<span class="column-sorter glyphicon glyphicon-sort action sortby-asc-column column-action"></span>');
+        var sorter = $('<span class="column-sorter fa fa-sort action sortby-asc-column column-action"></span>');
         th.append(sorter);
 
         if (typeof(column.glyphicon) === "string") {
-            labelOrGlyph.addClass("glyphicon " + column.glyphicon);
+            labelOrGlyph.addClass("fa " + column.glyphicon);
             th.addClass('glyph-fixed-column');
         }
 
@@ -1496,7 +1496,7 @@ var View = Marionette.CompositeView.extend({
             if (column.custom) {
                 // deferred
             } else if (column.glyphicon) {
-                var span = $('<span class="glyphicon"></span>');
+                var span = $('<span class="fa"></span>');
                 span.addClass(column.glyphicon[1]);
                 cell.html(span);
             } else if (!column.format) {
@@ -1634,16 +1634,16 @@ var View = Marionette.CompositeView.extend({
         if (!this.controlKeyDown) {
             // cleanup
             headers.children('span.column-sorter').removeClass(
-                'sortby-asc-column sortby-desc-column glyphicon-sort-by-alphabet glyphicon-sort-by-alphabet-alt')
+                'sortby-asc-column sortby-desc-column fa-sort-alpha-asc fa-sort-alpha-desc')
                 .attr('sort-position', null)
                 .empty();
 
             if (order === '+') {
-                el.addClass('sortby-asc-column glyphicon-sort-by-alphabet');
+                el.addClass('sortby-asc-column fa-sort-alpha-asc');
             } else if (order === '-') {
-                el.addClass('sortby-desc-column glyphicon-sort-by-alphabet-alt');
+                el.addClass('sortby-desc-column fa-sort-alpha-desc');
             } else {
-                el.addClass('glyphicon-sort');
+                el.addClass('fa-sort');
             }
 
             if (order === '') {
@@ -1655,14 +1655,14 @@ var View = Marionette.CompositeView.extend({
         } else {
             // multiple
             if (order === '+') {
-                el.removeClass('sortby-desc-column glyphicon-sort-by-alphabet-alt');
-                el.addClass('sortby-asc-column glyphicon-sort-by-alphabet');
+                el.removeClass('sortby-desc-column fa-sort-alpha-desc');
+                el.addClass('sortby-asc-column fa-sort-alpha-asc');
             } else if (order === '-') {
-                el.removeClass('sortby-asc-column glyphicon-sort-by-alphabet-alt');
-                el.addClass('sortby-desc-column glyphicon-sort-by-alphabet-alt');
+                el.removeClass('sortby-asc-column fa-sort-alpha-desc');
+                el.addClass('sortby-desc-column fa-sort-alpha-dsec');
             } else {
-                el.removeClass('sortby-asc-column sortby-desc-column glyphicon-sort-by-alphabet glyphicon-sort-by-alphabet-alt');
-                el.addClass('glyphicon-sort');
+                el.removeClass('sortby-asc-column sortby-desc-column fa-sort-alpha-asc fa-sort-alpha-desc');
+                el.addClass('fa-sort');
                 el.attr('sort-position', null);
             }
 

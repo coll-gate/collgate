@@ -8,9 +8,9 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
+let Marionette = require('backbone.marionette');
 
-var Popover = Marionette.Behavior.extend({
+let Popover = Marionette.Behavior.extend({
     defaults: {
         content: ''
     },
@@ -20,17 +20,22 @@ var Popover = Marionette.Behavior.extend({
     },
 
     onRender: function() {
-        var content = this.ui.content.html();
-        var text = this.ui.popover.attr("helper-text");
-        var title = this.ui.popover.attr("helper-title");
-        var trigger = this.ui.popover.attr("helper-trigger");
-        var template = undefined;
+        let content = this.ui.content.html();
+        let text = this.ui.popover.attr("helper-text");
+        let title = this.ui.popover.attr("helper-title");
+        let trigger = this.ui.popover.attr("helper-trigger");
+        let template = undefined;
 
         if (text || content) {
             this.ui.popover.addClass('btn');
             this.ui.popover.addClass('popover-dismiss');
-            this.ui.popover.addClass('glyphicon glyphicon-question-sign');
             this.ui.popover.attr('data-toggle', 'popover');
+
+            if ($.fn.popover.glyphicon) {
+                this.ui.popover.addClass($.fn.popover.glyphicon);
+            } else {
+                this.ui.popover.text('?');
+            }
 
             // not a css because element attribute (over btn style)
             this.ui.popover.css({
@@ -48,7 +53,7 @@ var Popover = Marionette.Behavior.extend({
         }
 
         if (this.ui.popover.hasClass("popover-lg"))
-            template = '<div class="popover popover-large"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>'
+            template = '<div class="popover popover-large"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>';
 
         if (content) {
             this.ui.popover.popover({

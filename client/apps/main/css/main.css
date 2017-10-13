@@ -166,19 +166,6 @@ div.event-message:hover > span.remove-event-message {
     display: inline-block;
 }
 
-.panel-heading .accordion-toggle:after {
-    /* symbol for "opening" panels */
-    font-family: 'Glyphicons Halflings'; /* essential for enabling glyphicon */
-    content: "\e114"; /* adjust as needed, taken from bootstrap.css */
-    float: right; /* adjust as needed */
-    color: grey; /* adjust as needed */
-}
-
-.panel-heading .accordion-toggle.collapsed:after {
-    /* symbol for "collapsed" panels */
-    content: "\e080"; /* adjust as needed, taken from bootstrap.css */
-}
-
 /* disable bootstrap collapsing animation */
 .collapsing {
     -webkit-transition: none;
@@ -268,15 +255,22 @@ span[name='label']:not(:empty) ~ span.label-placeholder {
 
 /** add a glyphicon to collapsable panels */
 .panel-heading .accordion-toggle:after {
-    font-family: 'Glyphicons Halflings';
-    content: "\e114";
+    /*font-family: 'Glyphicons Halflings';*/
+    /*content: "\e114";*/
+    font-family: 'FontAwesome';
+    content: '\f078';
     float: right;
     color: grey;
 }
 
 /** panel according toggle symbol */
 .panel-heading .accordion-toggle.collapsed:after {
-    content: "\e080";
+    /*font-family: 'Glyphicons Halflings';*/
+    /*content: "\e080";*/
+    font-family: 'FontAwesome';
+    content: "\f054";
+    float: right;
+    color: grey;
 }
 
 /** put bold and italic each mandatory field */
@@ -551,4 +545,12 @@ div.add-column-menu div.btn-group {
 
 span.fa.fa-lg {
     font-size: 1.27em;
+}
+
+.fa-form-control-feedback {
+    top: 0px;
+    right: 0;
+    width: 34px;
+    height: 34px;
+    line-height: 34px;
 }

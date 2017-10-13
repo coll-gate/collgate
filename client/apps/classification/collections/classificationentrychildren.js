@@ -9,8 +9,9 @@
  */
 
 var ClassificationEntryModel = require('../models/classificationentry');
+var CountableCollection = require('../../main/collections/countable');
 
-var Collection = Backbone.Collection.extend({
+var Collection = CountableCollection.extend({
     url: function() {
         return window.application.url(['classification', 'classificationentry', this.model_id, 'children']);
     },
@@ -20,63 +21,10 @@ var Collection = Backbone.Collection.extend({
 
     initialize: function(models, options) {
         options || (options = {});
-        this.model_id = options.model_id;
-    },
 
-    parse: function(data) {
-        this.prev = data.prev;
-        this.cursor = data.cursor;
-        this.next = data.next;
+        Collection.__super__.initialize.apply(this, arguments);
 
-        return data.items;
-    },
-
-    fetch: function(options) {
-        options || (options = {});
-        var data = (options.data || {});
-
-        var opts = _.clone(options);
-        opts.data = data;
-
-        this.cursor = data.cursor;
-        this.sort_by = data.sort_by;
-
-        if (this.filters) {
-            opts.data.filters = JSON.stringify(this.filters)
-        }
-
-        if (data.cursor && typeof data.cursor !== 'string') {
-            opts.data.cursor = JSON.stringify(data.cursor);
-        }
-
-        if (data.sort_by && typeof data.sort_by !== 'string') {
-            opts.data.sort_by = JSON.stringify(data.sort_by);
-        }
-
-        return Backbone.Collection.prototype.fetch.call(this, opts);
-    },
-
-    count: function(options) {
-        options || (options = {});
-        var data = (options.data || {});
-
-        var opts = _.clone(options);
-        opts.data = data;
-
-        if (this.filters) {
-            opts.data.filters = JSON.stringify(this.filters)
-        }
-
-        // @todo take care when factoring this.url can be a property or a function
-        $.ajax({
-            type: "GET",
-            url: this.url() + 'count/',
-            dataType: 'json',
-            data: opts.data,
-            collection: this
-        }).done(function (data) {
-            this.collection.trigger('count', data.count);
-        });
+        this.model_id = (options.model_id || null);
     }
 });
 

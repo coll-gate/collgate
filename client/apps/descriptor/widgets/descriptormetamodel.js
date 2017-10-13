@@ -28,14 +28,14 @@ _.extend(DescriptorMetaModel.prototype, DescriptorFormatType.prototype, {
         });
 
         if (readOnly) {
-            var input = this._createStdInput(parent, "glyphicon-folder-open");
+            var input = this._createStdInput(parent, "fa-folder-open");
 
             this.parent = parent;
             this.readOnly = true;
             this.el = input;
         } else {
             var select = $('<select style="width: 100%;" ' + (options.multiple ? "multiple" : "") + '></select>');
-            this.groupEl = this._createInputGroup(parent, "glyphicon-th-large", select);
+            this.groupEl = this._createInputGroup(parent, "fa-th-large", select);
 
             // init the autocomplete
             var url = window.application.url(['descriptor', 'meta-model']);

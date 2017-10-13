@@ -8,10 +8,10 @@
  * @details
  */
 
-var Marionette = require('backbone.marionette');
-var RowActionButtons = require('../templates/rowactionsbuttons.html');
+let Marionette = require('backbone.marionette');
+let RowActionButtons = require('../templates/rowactionsbuttons.html');
 
-var ActionBtnEvents = Marionette.Behavior.extend({
+let ActionBtnEvents = Marionette.Behavior.extend({
     defaults: {
         actions: {
             show: {title: _t('Show'), display: false},
@@ -32,8 +32,8 @@ var ActionBtnEvents = Marionette.Behavior.extend({
     },
 /*
     changeButtonMode: function () {
-        var group = this.$el.children('div.row-action-group');
-        var numButtons = group.children('div.action.actions-buttons')[0].childElementCount;
+        let group = this.$el.children('div.row-action-group');
+        let numButtons = group.children('div.action.actions-buttons')[0].childElementCount;
         group.css('margin-left', (-numButtons * 24 - 10).toString() + 'px');
 
         // $(window).on('resize', function change_btn_mode() {
@@ -71,7 +71,7 @@ var ActionBtnEvents = Marionette.Behavior.extend({
     overActions: function (e) {
         // delete a previous one not clean (issue on chrome)
         if (application.main.tmp.lastActionButtonEvents !== this) {
-            var last = application.main.tmp.lastActionButtonEvents;
+            let last = application.main.tmp.lastActionButtonEvents;
 
             if (last && last.rowActionButtons) {
                 last.inButtons = last.inRow = false;
@@ -93,12 +93,12 @@ var ActionBtnEvents = Marionette.Behavior.extend({
              return false;
         }
 
-        var actions = this.options.actions;
-        var options = _.deepClone(this.defaults.actions);
+        let actions = this.options.actions;
+        let options = _.deepClone(this.defaults.actions);
 
-        var properties = this.view.actionsProperties ? this.view.actionsProperties() : {};
+        let properties = this.view.actionsProperties ? this.view.actionsProperties() : {};
 
-        for (var action in options) {
+        for (let action in options) {
             if (actions[action] != undefined) {
                 if (actions[action].display != undefined) {
                     options[action].display = actions[action].display;
@@ -136,7 +136,7 @@ var ActionBtnEvents = Marionette.Behavior.extend({
             }
         }
 
-        var top = this.$el.children('td:last-child').html() === "" ? 0 : -20;
+        let top = this.$el.children('td:last-child').html() === "" ? 0 : -20;
 
         this.rowActionButtons = $(_.template(RowActionButtons(options))());
         this.$el.children('td:last-child').append(this.rowActionButtons);
@@ -149,7 +149,7 @@ var ActionBtnEvents = Marionette.Behavior.extend({
         this.rowActionButtons.children('div').css('top', top);
 
         // bind events
-        for (var action in options) {
+        for (let action in options) {
             if (options[action].event != undefined) {
                 this.rowActionButtons.children('div').children('button.action[name=' + action + ']').on('click',
                     $.proxy(this.view[options[action].event], this.view));

@@ -24,7 +24,7 @@ var Collection = Backbone.Collection.extend({
             var value = model.get('value').split('.');
             var f = value[0] + '.' + value[1];
 
-            if (f != prev) {
+            if (f !== prev) {
                 group = {id: -1, value: "", label: f, options: []};
                 result.push(group);
             }
@@ -44,7 +44,7 @@ var Collection = Backbone.Collection.extend({
     findValue: function(id) {
         for (var r in this.models) {
             var m = this.models[r];
-            if (m.get('id') == id)
+            if (m.get('id') === id)
                 return m.get('value');
         }
         // var res = this.findWhere({id: id});
@@ -54,7 +54,7 @@ var Collection = Backbone.Collection.extend({
     findLabel: function(value) {
         for (var r in this.models) {
             var m = this.models[r];
-            if (m.get('value') == value)
+            if (m.get('value') === value)
                 return m.get('label');
         }
         // var res = this.findWhere({id: id});

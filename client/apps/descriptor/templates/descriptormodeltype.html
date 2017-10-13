@@ -8,25 +8,25 @@
  - @details 
 -->
 
-<th class="glyph-fixed-column"><span class="delete-descriptor-model-type action glyphicon glyphicon-minus-sign"></span></th>
+<th class="glyph-fixed-column"><span class="delete-descriptor-model-type action fa fa-minus-circle"></span></th>
 <td name="descriptor-type-code">
-    <span class="glyphicon glyphicon-question-sign" title="<%= descriptor_type_groups.get(descriptor_type_group).get('name') + '.' + descriptor_type_name + ' (' + descriptor_type_code + ')' %>"></span>
+    <span class="fa fa-question-circle" title="<%= descriptor_type_groups.get(descriptor_type_group).get('name') + '.' + descriptor_type_name + ' (' + descriptor_type_code + ')' %>"></span>
 </td>
 <td name="name" class="action rename-descriptor-model-type"><%= name %></td>
 <td name="label" class="action"><%= label %></td>
 <% if (mandatory) { %>
-    <td class="glyph-fixed-column" name="mandatory"><span class="action glyphicon glyphicon-ok"></span></td>
+    <td class="glyph-fixed-column" name="mandatory"><span class="action fa fa-check"></span></td>
 <% } else { %>
-    <td class="glyph-fixed-column" name="mandatory"><span class="action glyphicon glyphicon-remove"></span></td>
+    <td class="glyph-fixed-column" name="mandatory"><span class="action fa fa-times"></span></td>
 <% } %>
 <% if (set_once) { %>
-    <td class="glyph-fixed-column" name="set_once"><span class="action glyphicon glyphicon-ok"></span></td>
+    <td class="glyph-fixed-column" name="set_once"><span class="action fa fa-check"></span></td>
 <% } else { %>
-    <td class="glyph-fixed-column" name="set_once"><span class="action glyphicon glyphicon-remove"></span></td>
+    <td class="glyph-fixed-column" name="set_once"><span class="action fa fa-times"></span></td>
 <% } %>
-<td class="glyph-fixed-column" name="condition"><span class="action glyphicon glyphicon-wrench"></span></td>
+<td class="glyph-fixed-column" name="condition"><span class="action fa fa-wrench"></span></td>
 <% if (index !== 0) { %>
-    <td class="glyph-fixed-column" name="index"><span class="action glyphicon glyphicon-italic"></span></td>
+    <td class="glyph-fixed-column" name="index"><span class="action fa fa-italic"></span></td>
 <% } else { %>
-    <td class="glyph-fixed-column" name="index"><span class="action glyphicon glyphicon-italic" style="text-decoration:line-through;"></span></td>
+    <td class="glyph-fixed-column" name="index"><span class="action fa fa-italic" style="text-decoration:line-through;"></span></td>
 <% } %>

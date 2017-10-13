@@ -53,16 +53,16 @@ var View = AdvancedTable.extend({
 
         if (sort_by[1] === '-') {
             if ((sort_el.attr('column-type') || "alpha") === "numeric") {
-                sort_el.addClass('glyphicon-sort-by-order-alt');
+                sort_el.addClass('fa-sort-numeric-desc');
             } else {
-                sort_el.addClass('glyphicon-sort-by-alphabet-alt');
+                sort_el.addClass('fa-sort-alpha-desc');
             }
             sort_el.attr('sort-direction', 'desc');
         } else {
             if ((sort_el.attr('column-type') || "alpha") === "numeric") {
-                sort_el.addClass('glyphicon-sort-by-order');
+                sort_el.addClass('fa-sort-numeric-asc');
             } else {
-                sort_el.addClass('glyphicon-sort-by-alphabet');
+                sort_el.addClass('fa-sort-alpha-asc');
             }
             sort_el.attr('sort-direction', 'asc');
         }

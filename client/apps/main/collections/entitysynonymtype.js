@@ -8,9 +8,9 @@
  * @details
  */
 
-var EntitySynonymTypeModel = require('../models/entitysynonymtype');
+let EntitySynonymTypeModel = require('../models/entitysynonymtype');
 
-var Collection = Backbone.Collection.extend({
+let Collection = Backbone.Collection.extend({
     url: function() {
         if (this.target_model) {
             return window.application.url(['main', 'entity-synonym-type', this.target_model, 'values']);
@@ -29,16 +29,16 @@ var Collection = Backbone.Collection.extend({
     },
 
     findValue: function(id) {
-        for (var r in this.models) {
-            var m = this.models[r];
+        for (let r in this.models) {
+            let m = this.models[r];
             if (m.get('id') === id)
                 return m.get('name');
         }
     },
 
     findLabel: function(name) {
-        for (var r in this.models) {
-            var m = this.models[r];
+        for (let r in this.models) {
+            let m = this.models[r];
             if (m.get('name') === name)
                 return m.get('label');
         }

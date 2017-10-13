@@ -562,66 +562,50 @@ class EntitySynonym(Entity):
                 entity_synonym.update_field('name')
                 entity_synonym.save()
         except IntegrityError as e:
-            logger.log(repr(e))
+            logger.warning(repr(e))
             raise SuspiciousOperation(_("Unable to rename the synonym of the entity"))
+
+
+def _cache_update(sender, instance, created, **kwargs):
+    # invalidate server cache(s)
+    if hasattr(sender, 'on_server_cache_update'):
+        from main.cache import cache_manager
+
+        # @todo about values ?
+        for invalidator in sender.on_server_cache_update():
+            cache_manager.unset(invalidator['category'], invalidator['name'])
+
+    if hasattr(sender, 'server_cache_update'):
+        from main.cache import cache_manager
+
+        for invalidator in sender.server_cache_update:
+            cache_manager.unset(invalidator, '*')
+
+    if hasattr(instance, 'on_client_cache_update'):
+        for invalidator in instance.on_client_cache_update():
+            messenger_module = module_manager.get_module('messenger')
+            messenger_module.tcp_client.message(COMMAND_CACHE_INVALIDATION, invalidator)
+
+    elif hasattr(instance, 'client_cache_update'):
+        for invalidator in instance.client_cache_update:
+            messenger_module = module_manager.get_module('messenger')
+            messenger_module.tcp_client.message(COMMAND_CACHE_INVALIDATION, {
+                'category': invalidator, 'name': '*', 'values': None})
 
 
 @receiver(models.signals.post_save, sender=Entity)
 def main_entity_post_save(sender, instance, created, **kwargs):
-    # invalidate server cache(s)
-    if hasattr(sender, 'server_cache_invalidate'):
-        from main.cache import cache_manager
-
-        for invalidator in sender.server_cache_invalidate:
-            cache_manager.unset(invalidator, '*')
-
-    # invalidate client cache(s)
-    if hasattr(sender, 'client_cache_invalidate'):
-        from main.cache import cache_manager
-
-        # @todo have a function, that make it from model, with name.. values...
-        for invalidator in sender.client_cache_invalidate:
-            messenger_module = module_manager.get_module('messenger')
-            messenger_module.tcp_client.message(COMMAND_CACHE_INVALIDATION, {
-                'category': invalidator, 'name': '*', 'values': None})
+    return _cache_update(sender, instance, created, **kwargs)
 
 
 @receiver(models.signals.post_delete, sender=Entity)
-def main_entity_post_delete(sender, instance, created, **kwargs):
-    # invalidate server cache(s)
-    if hasattr(sender, 'server_cache_invalidate'):
-        from main.cache import cache_manager
-
-        for invalidator in sender.server_cache_invalidate:
-            cache_manager.unset(invalidator, '*')
-
-    # invalidate client cache(s)
-    if hasattr(sender, 'client_cache_invalidate'):
-        from main.cache import cache_manager
-
-        for invalidator in sender.client_cache_invalidate:
-            messenger_module = module_manager.get_module('messenger')
-            messenger_module.tcp_client.message(COMMAND_CACHE_INVALIDATION, {
-                'category': invalidator, 'name': '*', 'values': None})
+def main_entity_post_delete(sender, instance, **kwargs):
+    return _cache_update(sender, instance, False, **kwargs)
 
 
 @receiver(models.signals.m2m_changed, sender=Entity)
-def main_entity_m2m_changed(sender, instance, created, **kwargs):
-    # invalidate server cache(s)
-    if hasattr(sender, 'server_cache_invalidate'):
-        from main.cache import cache_manager
-
-        for invalidator in sender.server_cache_invalidate:
-            cache_manager.unset(invalidator, '*')
-
-    # invalidate client cache(s)
-    if hasattr(sender, 'client_cache_invalidate'):
-        from main.cache import cache_manager
-
-        for invalidator in sender.client_cache_invalidate:
-            messenger_module = module_manager.get_module('messenger')
-            messenger_module.tcp_client.message(COMMAND_CACHE_INVALIDATION, {
-                'category': invalidator, 'name': '*', 'values': None})
+def main_entity_m2m_changed(sender, instance, **kwargs):
+    return _cache_update(sender, instance, False, **kwargs)
 
 
 def main_register_models(app_name):

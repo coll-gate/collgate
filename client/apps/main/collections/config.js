@@ -8,12 +8,11 @@
  * @details 
  */
 
-var ConfigModel = require('../models/config');
+let ConfigModel = require('../models/config');
 
-var Collection = Backbone.Collection.extend({
+let Collection = Backbone.Collection.extend({
     url: window.application.url(['main', 'config']),
     model: ConfigModel
 });
 
 module.exports = Collection;
-
