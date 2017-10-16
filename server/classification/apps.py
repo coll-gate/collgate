@@ -50,7 +50,8 @@ class CollGateClassification(ApplicationMain):
             'base',
             'classification',
             'classificationentry',
-            'classificationentrysynonym'
+            'classificationentrysynonym',
+            'classificationentryrelated'
             )
         )
 

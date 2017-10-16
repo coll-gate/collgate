@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-09-01 10:27+0200\n"
+"POT-Creation-Date: 2017-10-16 12:05+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,191 +16,213 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: accession.py:63
+#: accession.py:64
 msgid "You are not allowed to create an accession"
 msgstr ""
 
-#: accession.py:76
+#: accession.py:77
 msgid "The code of the accession is already used as a synonym name"
 msgstr ""
 
-#: accession.py:80
+#: accession.py:81
 msgid "The code of the accession is already used"
 msgstr ""
 
-#: accession.py:83
+#: accession.py:84
 msgid "The language is not supported"
 msgstr ""
 
-#: accession.py:86
+#: accession.py:87
 msgid "The code and the name of the accession must be different"
 msgstr ""
 
-#: accession.py:166 accession.py:190
+#: accession.py:172 accession.py:196 accessionpanel.py:533
+#: accessionpanel.py:553
 msgid "You are not allowed to list the accessions"
 msgstr ""
 
-#: accession.py:350 accessionbatch.py:39 accessionbatch.py:100 batch.py:215
-#: batch.py:279 batch.py:343 batch.py:423
+#: accession.py:277 accessionbatch.py:39 accessionbatch.py:100 batch.py:220
+#: batch.py:284 batch.py:348 batch.py:428
 msgid "You are not allowed to get an accession"
 msgstr ""
 
-#: accession.py:361 accessionbatch.py:53 accessionbatch.py:119 batch.py:232
-#: batch.py:296
+#: accession.py:289 accessionbatch.py:53 accessionbatch.py:119
+#: accessionclassificationentry.py:49 accessionclassificationentry.py:169
+#: batch.py:237 batch.py:301
 msgid "Invalid permission to access to this accession"
 msgstr ""
 
-#: accession.py:385
+#: accession.py:313
 msgid "You are not allowed to search accessions"
 msgstr ""
 
-#: accession.py:487 accessionsynonym.py:161 accessionsynonym.py:223
-#: accessionsynonym.py:283
+#: accession.py:416 accessionsynonym.py:139 accessionsynonym.py:170
+#: accessionsynonym.py:197
 msgid "You are not allowed to modify an accession"
 msgstr ""
 
-#: accession.py:544
+#: accession.py:474
 msgid "You are not allowed to delete an accession"
 msgstr ""
 
-#: accessionbatch.py:40 accessionbatch.py:101 batch.py:216
+#: accessionbatch.py:40 accessionbatch.py:101 batch.py:221
 msgid "You are not allowed to list batches for an accession"
 msgstr ""
 
-#: accessionsynonym.py:162
+#: accessionclassificationentry.py:154
+msgid "You are not allowed to change an accession"
+msgstr ""
+
+#: accessionclassificationentry.py:176
+msgid "You are not allowed to add an entry of classification to an accession"
+msgstr ""
+
+#: accessionclassificationentry.py:179
+msgid "Already defined as primary classification"
+msgstr ""
+
+#: accessionclassificationentry.py:184
+msgid "It is not permit to add twice the same classification entry"
+msgstr ""
+
+#: accessionclassificationentry.py:191
+msgid ""
+"You are not allowed to remove an entry of classification from an accession"
+msgstr ""
+
+#: accessionclassificationentry.py:194
+msgid "It is not permit to remove the primary classification entry"
+msgstr ""
+
+#: accessionpanel.py:126
+msgid "You are not allowed to create a batch panel"
+msgstr ""
+
+#: accessionpanel.py:141 accessionpanel.py:269 accessionpanel.py:461
+msgid "The name of the panel is already used"
+msgstr ""
+
+#: accessionpanel.py:254
+msgid "You are not allowed to create an accession panel"
+msgstr ""
+
+#: accessionpanel.py:350 accessionpanel.py:370
+msgid "You are not allowed to list the accession panels"
+msgstr ""
+
+#: accessionpanel.py:418
+msgid "You are not allowed to delete accession panel"
+msgstr ""
+
+#: accessionpanel.py:428 accessionpanel.py:674
+msgid "You are not allowed to modify accession panel"
+msgstr ""
+
+#: accessionsynonym.py:140
 msgid "You are not allowed to add a synonym of accession"
 msgstr ""
 
-#: accessionsynonym.py:176
-msgid "Unsupported type of synonym"
-msgstr ""
-
-#: accessionsynonym.py:179
-msgid "An accession cannot have more than one GRC code"
-msgstr ""
-
-#: accessionsynonym.py:182
-msgid "An accession cannot have more than one primary name"
-msgstr ""
-
-#: accessionsynonym.py:190
-msgid "The GRC code name of the accession could not be used as synonym"
-msgstr ""
-
-#: accessionsynonym.py:194
-msgid "Synonym already used as a primary name"
-msgstr ""
-
-#: accessionsynonym.py:198 accessionsynonym.py:251
-msgid "Synonym already used into this accession"
-msgstr ""
-
-#: accessionsynonym.py:224
+#: accessionsynonym.py:171
 msgid "You are not allowed to modify a synonym of accession"
 msgstr ""
 
-#: accessionsynonym.py:243
-msgid ""
-"The GRC code of accession could not be used by another synonym of accession"
-msgstr ""
-
-#: accessionsynonym.py:247
-msgid "Synonym already used as a GRC code of accession"
-msgstr ""
-
-#: accessionsynonym.py:275
-msgid "Unable to rename a synonym of an accession"
-msgstr ""
-
-#: accessionsynonym.py:284
+#: accessionsynonym.py:198
 msgid "You are not allowed to delete a synonym of accession"
 msgstr ""
 
-#: accessionsynonym.py:292
+#: accessionsynonym.py:206
 msgid "It is not possible to remove a GRC code name"
 msgstr ""
 
-#: accessionsynonym.py:295
+#: accessionsynonym.py:209
 msgid "It is not possible to remove a primary name"
 msgstr ""
 
-#: apps.py:68
+#: apps.py:91 descriptormetamodeltype.py:39
 msgid "Accession"
 msgstr ""
 
-#: apps.py:71
+#: apps.py:94
 msgid "Create accession"
 msgstr ""
 
-#: apps.py:76
+#: apps.py:99
 msgid "List accessions"
 msgstr ""
 
-#: apps.py:80
+#: apps.py:101
+msgid "Panel accessions"
+msgstr ""
+
+#: apps.py:106
 msgid "Search accessions"
 msgstr ""
 
-#: apps.py:86
+#: apps.py:112 descriptormetamodeltype.py:86
 msgid "Batch"
 msgstr ""
 
-#: apps.py:89
+#: apps.py:115
 msgid "Introduce a batch"
 msgstr ""
 
-#: apps.py:94
+#: apps.py:120
 msgid "List batches"
 msgstr ""
 
-#: apps.py:98
+#: apps.py:122
+msgid "Panel batches"
+msgstr ""
+
+#: apps.py:127
 msgid "Search batches"
 msgstr ""
 
-#: apps.py:104
+#: apps.py:133
 msgid "Action"
 msgstr ""
 
-#: batch.py:66
+#: batch.py:71
 msgid "Invalid permission to access to this batch"
 msgstr ""
 
-#: batch.py:88
+#: batch.py:93
 msgid "You are not allowed to create a batch"
 msgstr ""
 
-#: batch.py:100
+#: batch.py:105
 msgid "The name of the batch is already used"
 msgstr ""
 
-#: batch.py:130
+#: batch.py:135
 msgid "Unable to create the batch"
 msgstr ""
 
-#: batch.py:152
+#: batch.py:157
 msgid "You are not allowed to modify a batch"
 msgstr ""
 
-#: batch.py:164
+#: batch.py:169
 msgid "Invalid permission to modify this accession"
 msgstr ""
 
-#: batch.py:196
+#: batch.py:201
 msgid "Unable to update the batch"
 msgstr ""
 
-#: batch.py:202
+#: batch.py:207
 msgid "You are not allowed to delete a batch"
 msgstr ""
 
-#: batch.py:280
+#: batch.py:285
 msgid "You are not allowed to list parent batches for a batch"
 msgstr ""
 
-#: batch.py:344
+#: batch.py:349
 msgid "You are not allowed to search batches"
 msgstr ""
 
-#: batch.py:424
+#: batch.py:429 batch.py:483
 msgid "You are not allowed to list the batches"
 msgstr ""
 
@@ -216,70 +238,95 @@ msgstr ""
 msgid "Undefined synonym language"
 msgstr ""
 
-#: models.py:38
-msgid "panel"
+#: descriptormetamodeltype.py:62
+msgid "The classification must refers to an existing object"
 msgstr ""
 
-#: models.py:101
+#: descriptormetamodeltype.py:69
+msgid ""
+"The list of descriptor meta-models of batches must refers to existing objects"
+msgstr ""
+
+#: models.py:80
 msgid "Classification"
 msgstr ""
 
-#: models.py:110
+#: models.py:91 models.py:241 models.py:455 models.py:496
 msgid "Model"
 msgstr ""
 
-#: models.py:119
+#: models.py:101
 msgid "Synonym"
 msgstr ""
 
-#: models.py:130
+#: models.py:111 models.py:251 models.py:465 models.py:506
+msgid "Name"
+msgstr ""
+
+#: models.py:120
+msgid "Code"
+msgstr ""
+
+#: models.py:131
 msgid "accession"
 msgstr ""
 
-#: models.py:227
+#: models.py:203
 msgid "accession synonym"
 msgstr ""
 
-#: models.py:314
+#: models.py:262
 msgid "batch"
 msgstr ""
 
-#: models.py:378
+#: models.py:326
 msgid "sample"
 msgstr ""
 
-#: models.py:426
+#: models.py:374
 msgid "Introduction"
 msgstr ""
 
-#: models.py:427
+#: models.py:375
 msgid "Multiplication"
 msgstr ""
 
-#: models.py:428
+#: models.py:376
 msgid "Regeneration"
 msgstr ""
 
-#: models.py:429
+#: models.py:377
 msgid "Test"
 msgstr ""
 
-#: models.py:430
+#: models.py:378
 msgid "Clean-up"
 msgstr ""
 
-#: models.py:431
+#: models.py:379
 msgid "Sample"
 msgstr ""
 
-#: models.py:432
+#: models.py:380
 msgid "Dispatch"
 msgstr ""
 
-#: models.py:433
+#: models.py:381
 msgid "Elimination"
 msgstr ""
 
-#: models.py:462
+#: models.py:410
 msgid "batch action"
+msgstr ""
+
+#: models.py:476
+msgid "batch panel"
+msgstr ""
+
+#: models.py:515
+msgid "Accessions amount"
+msgstr ""
+
+#: models.py:527
+msgid "accession panel"
 msgstr ""

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-09-01 10:27+0200\n"
+"POT-Creation-Date: 2017-10-16 12:05+0200\n"
 "PO-Revision-Date: 2016-02-01 11:53+0100\n"
 "Last-Translator: Frederic SCHERMA <frederic.scherma@clermont.inra.fr>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,28 +17,56 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: apps.py:51
+#: apps.py:52
 msgid "Administration"
 msgstr ""
 
-#: apps.py:55
+#: apps.py:56
 msgid "Server configuration"
 msgstr ""
 
-#: apps.py:59
+#: apps.py:60
 msgid "Configured languages"
 msgstr ""
 
-#: apps.py:65
-msgid "Help"
-msgstr ""
-
-#: apps.py:67
-msgid "Manual index"
+#: apps.py:64
+msgid "Configured types of synonyms"
 msgstr ""
 
 #: apps.py:70
+msgid "Help"
+msgstr ""
+
+#: apps.py:72
+msgid "Manual index"
+msgstr ""
+
+#: apps.py:75
 msgid "About Coll-Gate IS..."
+msgstr ""
+
+#: entity.py:248
+msgid "You are not allowed to create a synonym type of entity"
+msgstr ""
+
+#: entity.py:290
+msgid "You are not allowed to remove a synonym type of entity"
+msgstr ""
+
+#: entity.py:330 entity.py:366
+msgid "You are not allowed to modify a synonym type of entity"
+msgstr ""
+
+#: entity.py:341 eventmessage.py:127 language.py:156
+msgid "Unsupported language identifier"
+msgstr ""
+
+#: entity.py:377
+msgid "It is not permit to modify this synonym type of entity"
+msgstr ""
+
+#: entity.py:386
+msgid "Name of synonym type of entity already in usage"
 msgstr ""
 
 #: eventmessage.py:100
@@ -49,10 +77,6 @@ msgstr ""
 msgid "You are not allowed to create an event message"
 msgstr ""
 
-#: eventmessage.py:127 language.py:147
-msgid "Unsupported language identifier"
-msgstr ""
-
 #: home.py:46
 msgid "You are not authenticated."
 msgstr ""
@@ -61,63 +85,91 @@ msgstr ""
 msgid "Please, you must enable your cookies."
 msgstr ""
 
-#: models.py:63
+#: models.py:69
 msgid "English"
 msgstr ""
 
-#: models.py:64
+#: models.py:70
 msgid "French"
 msgstr ""
 
-#: models.py:111
+#: models.py:117
 msgid "Pending"
 msgstr ""
 
-#: models.py:112
+#: models.py:118
 msgid "Valid"
 msgstr ""
 
-#: models.py:113
+#: models.py:119
 msgid "Archived"
 msgstr ""
 
-#: models.py:114
+#: models.py:120
 msgid "Removed"
 msgstr ""
 
-#: models.py:276
+#: models.py:283
 msgid ""
 "It is not allowed to change the status of an entity from valid to pending"
 msgstr ""
 
-#: models.py:279
+#: models.py:286
 msgid "It is not allowed to change the status of a removed entity"
 msgstr ""
 
-#: models.py:282
+#: models.py:289
 msgid "It is not allowed to change the status of an archived entity"
 msgstr ""
 
-#: profile.py:87
+#: models.py:480
+msgid "Invalid language code"
+msgstr ""
+
+#: models.py:483
+msgid "No language is supported for a synonym of this type"
+msgstr ""
+
+#: models.py:486
+msgid "A language must be defined for a synonym of this type"
+msgstr ""
+
+#: models.py:492 models.py:532
+msgid "A similar synonym of this type exists for this entity"
+msgstr ""
+
+#: models.py:498 models.py:539
+msgid "The synonym must be unique"
+msgstr ""
+
+#: models.py:504 models.py:546
+msgid "Only a single synonym of this type per entity is allowed"
+msgstr ""
+
+#: models.py:566
+msgid "Unable to rename the synonym of the entity"
+msgstr ""
+
+#: profile.py:86
 msgid ""
 "Your account is pending for activation. Please be patient or contact an "
 "administrator."
 msgstr ""
 
-#: profile.py:92
+#: profile.py:91
 msgid "Successfully logged"
 msgstr ""
 
-#: profile.py:99
+#: profile.py:98
 msgid ""
 "Your account is closed. Please contact an administrator to re-activate it."
 msgstr ""
 
-#: profile.py:102
+#: profile.py:101
 msgid "Invalid username or password"
 msgstr ""
 
-#: profile.py:115
+#: profile.py:114
 msgid "Logged out"
 msgstr ""
 

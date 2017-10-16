@@ -134,6 +134,11 @@ def create_accession(request):
 
             accession.synonyms.add(grc_code)
             accession.synonyms.add(primary_name)
+
+            # add related classification entries
+            for related in primary_classification_entry.related.all():
+                accession.classifications_entries.add(related)
+
     except IntegrityError as e:
         DescriptorModelType.integrity_except(Accession, e)
 

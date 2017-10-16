@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-09-01 10:27+0200\n"
+"POT-Creation-Date: 2017-10-16 12:05+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,40 +20,40 @@ msgstr ""
 msgid "Media"
 msgstr ""
 
-#: descriptorformattype.py:51
+#: descriptorformattype.py:53
 msgid "The descriptor value must be a string"
 msgstr ""
 
-#: descriptorformattype.py:55 descriptorformattype.py:149
+#: descriptorformattype.py:57 descriptorformattype.py:153
 msgid "The descriptor value must match with the UUID format"
 msgstr ""
 
-#: descriptorformattype.py:61 descriptorformattype.py:154
+#: descriptorformattype.py:63 descriptorformattype.py:158
 msgid "The descriptor value must refers to an existing media"
 msgstr ""
 
-#: descriptorformattype.py:81 descriptorformattype.py:175
+#: descriptorformattype.py:83 descriptorformattype.py:179
 msgid ""
 "Media type must be archives, images, documents or spreadsheets (media_types)"
 msgstr ""
 
-#: descriptorformattype.py:95 descriptorformattype.py:194
+#: descriptorformattype.py:97 descriptorformattype.py:198
 msgid "The descriptor old_value must refers to an existing media"
 msgstr ""
 
-#: descriptorformattype.py:111 descriptorformattype.py:211
+#: descriptorformattype.py:113 descriptorformattype.py:215
 msgid "The descriptor new_value must refers to an existing media"
 msgstr ""
 
-#: descriptorformattype.py:132
+#: descriptorformattype.py:134
 msgid "Media collection"
 msgstr ""
 
-#: descriptorformattype.py:140
+#: descriptorformattype.py:144
 msgid "The descriptor value must be an array of string"
 msgstr ""
 
-#: descriptorformattype.py:144
+#: descriptorformattype.py:148
 #, python-format
 msgid "The number of media must be lesser or equal than %i"
 msgstr ""

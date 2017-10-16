@@ -176,7 +176,7 @@ def get_classification_entry_list(request):
             "synonyms",
             queryset=ClassificationEntrySynonym.objects.all().order_by('synonym_type', 'language')))
 
-    # cq.select_related('parent->name', 'parent->rank')
+    cq.select_related('parent->name', 'parent->rank')
 
     cq.cursor(cursor, order_by)
     cq.order_by(order_by).limit(limit)

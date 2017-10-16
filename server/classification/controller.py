@@ -11,6 +11,7 @@
 from django.core.exceptions import SuspiciousOperation, PermissionDenied
 from django.db import transaction
 
+from classification import localsettings
 from descriptor.describable import DescriptorsBuilder
 from .models import ClassificationEntry, ClassificationRank
 from .models import ClassificationEntrySynonym
@@ -96,9 +97,9 @@ class ClassificationEntryManager(object):
 
         # first name a primary synonym
         primary_synonym = ClassificationEntrySynonym(
-            classification_entry_id=classification_entry.id,
+            entity_id=classification_entry.id,
             name=name,
-            type=0,
+            synonym_type_id=localsettings.synonym_type_classification_entry_name,
             language=language
         )
 
@@ -190,7 +191,7 @@ class ClassificationEntryManager(object):
             classification_entry=classification_entry,
             name="%s_%s" % (classification_entry.name, synonym['name']),
             synonym=synonym['name'],
-            type=synonym['type'],
+            synonym_type=synonym['type'],
             language=synonym['language']
         )
 

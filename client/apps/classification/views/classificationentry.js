@@ -8,9 +8,9 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
+let Marionette = require('backbone.marionette');
 
-var ClassificationEntryView = Marionette.View.extend({
+let ClassificationEntryView = Marionette.View.extend({
     tagName: 'tr',
     className: 'object classification-entry element',
     attributes: function() {
@@ -60,7 +60,7 @@ var ClassificationEntryView = Marionette.View.extend({
     },
 
     actionsProperties: function() {
-        var properties = {
+        let properties = {
             manage: {disabled: false},
             remove: {disabled: false}
         };
@@ -96,16 +96,16 @@ var ClassificationEntryView = Marionette.View.extend({
 
     rankCell: function(td, value) {
         if (value && value.label) {
-            var text = value.label;
+            let text = value.label;
             td.html(text);
         }
     },
 
     synonymCell: function(td) {
-        var synonyms = this.model.get('synonyms');
+        let synonyms = this.model.get('synonyms');
 
         if (synonyms.length > 1) {
-            var text = this.model.get('synonyms')[1].name;
+            let text = this.model.get('synonyms')[1].name;
             td.html(text);
         }
     },
