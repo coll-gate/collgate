@@ -8,17 +8,14 @@
 # @license MIT (see LICENSE file)
 # @details 
 
-import json
-import sys
-
 from django.utils.translation import ugettext_lazy as _
 
+from igdectk.bootstrap.customglyph import FaGlyph
 from igdectk.common.apphelpers import ApplicationMain
-from igdectk.module import AUTH_USER, AUTH_STAFF, AUTH_SUPER_USER
+from igdectk.module import AUTH_STAFF, AUTH_SUPER_USER
 from igdectk.module.manager import module_manager
 from igdectk.module.menu import MenuEntry, MenuSeparator
 from igdectk.module.module import Module, ModuleMenu
-from igdectk.bootstrap.glyphs import Glyph
 
 
 class CollGateMain(ApplicationMain):
@@ -46,9 +43,9 @@ class CollGateMain(ApplicationMain):
 
         # profile menu (merged directly into main/index.html
         # menu_profile = ModuleMenu('profile', _('Profile'), auth=AUTH_USER, order=1000)
-        # menu_profile.add_entry(MenuEntry('edit', _('Edit information'), "#main/profile/edit/", icon=Glyph.USER, order=8))
+        # menu_profile.add_entry(MenuEntry('edit', _('Edit information'), "#main/profile/edit/", icon=FaGlyphv('user'), order=8))
         # menu_profile.add_entry(MenuSeparator(9))
-        # menu_profile.add_entry(MenuEntry('logout', _('Logout'), "#main/profile/logout/", icon=Glyph.OFF, order=10))
+        # menu_profile.add_entry(MenuEntry('logout', _('Logout'), "#main/profile/logout/", icon=FaGlyph('off'), order=10))
         # main_module.add_menu(menu_profile)
 
         # administration menu
@@ -57,25 +54,25 @@ class CollGateMain(ApplicationMain):
         # administration related menus
         menu_administration.add_entry(
             MenuEntry('server-config', _('Server configuration'), "#main/config/",
-                      icon=Glyph.COG, order=-199, auth=AUTH_SUPER_USER))
+                      icon=FaGlyph('cog'), order=-199, auth=AUTH_SUPER_USER))
 
         menu_administration.add_entry(
             MenuEntry('language-list', _('Configured languages'), "#main/language/",
-                      icon=Glyph.LIST, order=-198, auth=AUTH_SUPER_USER))
+                      icon=FaGlyph('list'), order=-198, auth=AUTH_SUPER_USER))
 
         menu_administration.add_entry(
             MenuEntry('entity-synonym-type-list', _('Configured types of synonyms'), "#main/entity-synonym-type/",
-                      icon=Glyph.TH_LIST, order=-197, auth=AUTH_SUPER_USER))
+                      icon=FaGlyph('th-list'), order=-197, auth=AUTH_SUPER_USER))
         menu_administration.add_entry(MenuSeparator(-100, auth=AUTH_SUPER_USER))
         main_module.add_menu(menu_administration)
 
         # help menu
         menu_help = ModuleMenu('help', _('Help'), order=1001)
         menu_help.add_entry(
-            MenuEntry('manual', _('Manual index'), "#main/help/", Glyph.BOOK, 50))
+            MenuEntry('manual', _('Manual index'), "#main/help/", FaGlyph('book'), 50))
         menu_help.add_entry(MenuSeparator(100))
         menu_help.add_entry(
-            MenuEntry('about', _('About Coll-Gate IS...'), "#main/about/", Glyph.INFO_SIGN, 101))
+            MenuEntry('about', _('About Coll-Gate IS...'), "#main/about/", FaGlyph('question-circle'), 101))
         main_module.add_menu(menu_help)
 
         module_manager.register_module(main_module)

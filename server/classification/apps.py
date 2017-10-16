@@ -16,7 +16,7 @@ from igdectk.module import AUTH_USER, AUTH_STAFF, AUTH_SUPER_USER
 from igdectk.module.manager import module_manager
 from igdectk.module.menu import MenuEntry, MenuSeparator
 from igdectk.module.module import Module, ModuleMenu
-from igdectk.bootstrap.glyphs import Glyph
+from igdectk.bootstrap.customglyph import FaGlyph
 from main.config import configuration
 
 
@@ -83,7 +83,7 @@ class CollGateClassification(ApplicationMain):
         # administration related menus
         menu_administration.add_entry(
             MenuEntry('classification-list', _('List of classifications'), "#classification/classification/",
-                      icon=Glyph.TAGS, order=401, auth=AUTH_SUPER_USER))
+                      icon=FaGlyph('tags'), order=401, auth=AUTH_SUPER_USER))
 
         classification_module.add_menu(menu_administration)
 
@@ -94,7 +94,7 @@ class CollGateClassification(ApplicationMain):
                 'create-classification-entry',
                 _('Create classification entry'),
                 "~classification/classificationEntry/create",
-                icon=Glyph.PLUS_SIGN,
+                icon=FaGlyph('plus'),
                 order=1))
 
         menu_classification.add_entry(MenuSeparator(100))
@@ -103,7 +103,7 @@ class CollGateClassification(ApplicationMain):
                 'list-classification-entry',
                 _('List classifications entries'),
                 "#classification/classificationentry/",
-                icon=Glyph.LIST,
+                icon=FaGlyph('list'),
                 order=101))
 
         classification_module.add_menu(menu_classification)

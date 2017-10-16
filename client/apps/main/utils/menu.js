@@ -35,15 +35,15 @@ Menu.prototype = {
             }
 
             if (entry.name) {
-                for (var i = 0; i < this.entries; ++i) {
+                for (let i = 0; i < this.entries; ++i) {
                     if (this.entries[i].name === entry.name) {
                         throw "Menu entry " + entry.name + " is already defined";
                     }
                 }
             }
 
-            var pos = 0;
-            for (var i = 0; i < this.entries.length; ++i) {
+            let pos = 0;
+            for (let i = 0; i < this.entries.length; ++i) {
                 if (this.entries[i].order <= entry.order) {
                     ++pos;
                 } else {
@@ -93,11 +93,11 @@ Menu.prototype = {
     render: function(parent, pos) {
         pos >= 0 || (pos = -1);
 
-        var menuEl = $('<li class="dropdown"></li>');
+        let menuEl = $('<li class="dropdown"></li>');
         menuEl.addClass(this.authTypeClassName());
         menuEl.attr('name', this.name);
 
-        var aEl = $(
+        let aEl = $(
             '<a href="#" role="button" class="dropdown-toggle" data-toggle="dropdown">' +
             _t(this.label || "") + '<b class="caret"></b>' +
             '</a>');
@@ -106,18 +106,18 @@ Menu.prototype = {
         menuEl.append(aEl);
 
         // entries container
-        var menuEntries = $('<ul class="dropdown-menu" role="menu" aria-labelledby="menu-drop-' + this.name + '">');
+        let menuEntries = $('<ul class="dropdown-menu" role="menu" aria-labelledby="menu-drop-' + this.name + '">');
         menuEl.append(menuEntries);
 
         if (pos >= 0 && pos < parent.children('li.dropdown').length) {
-            var nextEl = $(parent.children('li.dropdown').get(pos));
+            let nextEl = $(parent.children('li.dropdown').get(pos));
             menuEl.insertBefore(nextEl);
         } else {
             parent.append(menuEl);
         }
 
         // with any entries
-        for (var i = 0; i < this.entries.length; ++i) {
+        for (let i = 0; i < this.entries.length; ++i) {
             this.entries[i].render(menuEntries);
         }
 
@@ -132,8 +132,8 @@ Menu.prototype = {
     removeEntry: function(name, destroy) {
         typeof destroy !== "undefined" || (destroy = true);
 
-        for (var i = 0; i < this.entries.length; ++i) {
-            var entry = this.entries[i];
+        for (let i = 0; i < this.entries.length; ++i) {
+            let entry = this.entries[i];
             if (entry.name === name) {
                 if (destroy) {
                     entry.destroy();

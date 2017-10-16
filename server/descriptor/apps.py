@@ -11,11 +11,11 @@
 from django.utils.translation import ugettext_lazy as _
 
 from igdectk.common.apphelpers import ApplicationMain
-from igdectk.module import AUTH_USER, AUTH_STAFF
+from igdectk.module import AUTH_STAFF
 from igdectk.module.manager import module_manager
 from igdectk.module.menu import MenuEntry, MenuSeparator
 from igdectk.module.module import Module, ModuleMenu
-from igdectk.bootstrap.glyphs import Glyph
+from igdectk.bootstrap.customglyph import FaGlyph
 
 
 class CollGateDescriptor(ApplicationMain):
@@ -117,13 +117,13 @@ class CollGateDescriptor(ApplicationMain):
         menu_descriptor.add_entry(MenuSeparator(300))
         menu_descriptor.add_entry(
             MenuEntry('list-descriptor-group', _('List groups of descriptors'), "#descriptor/group/",
-                      icon=Glyph.TH_LIST, order=301, auth=AUTH_STAFF))
+                      icon=FaGlyph('th-list'), order=301, auth=AUTH_STAFF))
         menu_descriptor.add_entry(
             MenuEntry('list-descriptor-model', _('List models of descriptor'), "#descriptor/model/",
-                      icon=Glyph.TH, order=302, auth=AUTH_STAFF))
+                      icon=FaGlyph('th'), order=302, auth=AUTH_STAFF))
         menu_descriptor.add_entry(
             MenuEntry('list-descriptor-meta-model', _('List meta-models of descriptor'), "#descriptor/meta-model/",
-                      icon=Glyph.TH_LARGE, order=303, auth=AUTH_STAFF))
+                      icon=FaGlyph('th-large'), order=303, auth=AUTH_STAFF))
         descriptor_module.add_menu(menu_descriptor)
 
         module_manager.register_module(descriptor_module)

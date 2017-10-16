@@ -10,12 +10,12 @@
 
 from django.utils.translation import ugettext_lazy as _
 
+from igdectk.bootstrap.customglyph import FaGlyph
 from igdectk.common.apphelpers import ApplicationMain
 from igdectk.module import AUTH_STAFF
 from igdectk.module.manager import module_manager
 from igdectk.module.menu import MenuEntry, MenuSeparator
 from igdectk.module.module import Module, ModuleMenu
-from igdectk.bootstrap.glyphs import Glyph
 
 
 class CollGatePermission(ApplicationMain):
@@ -36,9 +36,9 @@ class CollGatePermission(ApplicationMain):
 
         menu_permission.add_entry(MenuSeparator(100))
         menu_permission.add_entry(
-            MenuEntry('user-permission', _('Manage users'), "#permission/user/", icon=Glyph.USER, order=101))
+            MenuEntry('user-permission', _('Manage users'), "#permission/user/", icon=FaGlyph('user'), order=101))
         menu_permission.add_entry(
-            MenuEntry('group-permission', _('Manage groups'), "#permission/group/", icon=Glyph.FOLDER_CLOSE, order=102))
+            MenuEntry('group-permission', _('Manage groups'), "#permission/group/", icon=FaGlyph('folder'), order=102))
         permission_module.add_menu(menu_permission)
 
         module_manager.register_module(permission_module)

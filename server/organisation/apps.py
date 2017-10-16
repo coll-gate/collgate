@@ -8,17 +8,14 @@
 # @license MIT (see LICENSE file)
 # @details 
 
-import sys
-
-from django.core.exceptions import ImproperlyConfigured
 from django.utils.translation import ugettext_lazy as _
 
 from igdectk.common.apphelpers import ApplicationMain
 from igdectk.module import AUTH_STAFF
 from igdectk.module.manager import module_manager
-from igdectk.module.menu import MenuEntry, MenuSeparator
+from igdectk.module.menu import MenuEntry
 from igdectk.module.module import Module, ModuleMenu
-from igdectk.bootstrap.glyphs import Glyph
+from igdectk.bootstrap.customglyph import FaGlyph
 from main.config import configuration
 
 
@@ -59,24 +56,24 @@ class CollGateOrganisation(ApplicationMain):
         # organisation menu
         menu_organisation = ModuleMenu('administration', _('Administration'), order=999, auth=AUTH_STAFF)
         menu_organisation.add_entry(
-            MenuEntry('grc-details', _('Manage GRC'), "#organisation/grc/", icon=Glyph.CLOUD, order=1))
+            MenuEntry('grc-details', _('Manage GRC'), "#organisation/grc/", icon=FaGlyph('cloud'), order=1))
         menu_organisation.add_entry(
             MenuEntry('grc-organisation',
                       _('Manage GRC partners'),
                       "#organisation/grc/organisation/",
-                      icon=Glyph.BOOKMARK,
+                      icon=FaGlyph('bookmark'),
                       order=2))
         menu_organisation.add_entry(
             MenuEntry('organisation',
                       _('Manage organisations'),
                       "#organisation/organisation/",
-                      icon=Glyph.MAP_MARKER,
+                      icon=FaGlyph('map-marker'),
                       order=3))
         menu_organisation.add_entry(
             MenuEntry('create-organisation',
                       _('Create an organisation or a partner'),
                       "~organisation/organisation/create/",
-                      icon=Glyph.PLUS_SIGN,
+                      icon=FaGlyph('plus'),
                       order=4))
 
         organisation_module.add_menu(menu_organisation)

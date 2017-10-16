@@ -12,11 +12,12 @@ from django.utils.translation import ugettext_lazy as _
 
 from descriptor.descriptormetamodeltype import DescriptorMetaModelTypeManager
 from igdectk.common.apphelpers import ApplicationMain
-from igdectk.module import AUTH_USER, AUTH_STAFF
+from igdectk.module import AUTH_USER
 from igdectk.module.manager import module_manager
 from igdectk.module.menu import MenuEntry, MenuSeparator
 from igdectk.module.module import Module, ModuleMenu
-from igdectk.bootstrap.glyphs import Glyph
+from igdectk.bootstrap.customglyph import FaGlyph
+
 from main.config import configuration
 
 
@@ -91,19 +92,19 @@ class CollGateAccession(ApplicationMain):
 
         menu_accession.add_entry(
             MenuEntry('create-accession', _('Create accession'), "~accession/accession/create",
-                      icon=Glyph.PLUS_SIGN, order=1))
+                      icon=FaGlyph('plus'), order=1))
 
         menu_accession.add_entry(MenuSeparator(100))
         menu_accession.add_entry(
-            MenuEntry('list-accession', _('List accessions'), "#accession/accession/", icon=Glyph.LIST, order=101))
+            MenuEntry('list-accession', _('List accessions'), "#accession/accession/", icon=FaGlyph('list'), order=101))
         menu_accession.add_entry(
             MenuEntry('panel-accession', _('Panel accessions'), "#accession/accessions_panel/",
-                      icon=Glyph.LIST_ALT, order=102))
+                      icon=FaGlyph('list-alt'), order=102))
 
         menu_accession.add_entry(MenuSeparator(200))
         menu_accession.add_entry(
             MenuEntry('search-accession', _('Search accessions'), "~accession/accession/search",
-                      icon=Glyph.SEARCH, order=201))
+                      icon=FaGlyph('search'), order=201))
 
         accession_module.add_menu(menu_accession)
 
@@ -112,19 +113,19 @@ class CollGateAccession(ApplicationMain):
 
         menu_batch.add_entry(
             MenuEntry('create-batch', _('Introduce a batch'), "~accession/batch/create",
-                      icon=Glyph.PLUS_SIGN, order=1))
+                      icon=FaGlyph('plus'), order=1))
 
         menu_batch.add_entry(MenuSeparator(100))
         menu_batch.add_entry(
-            MenuEntry('list-batches', _('List batches'), "#accession/batch/", icon=Glyph.LIST, order=101))
+            MenuEntry('list-batches', _('List batches'), "#accession/batch/", icon=FaGlyph('list'), order=101))
         menu_batch.add_entry(
             MenuEntry('panel-batches', _('Panel batches'), "#accession/batches_panel/",
-                      icon=Glyph.LIST_ALT, order=102))
+                      icon=FaGlyph('list-alt'), order=102))
 
         menu_batch.add_entry(MenuSeparator(200))
         menu_batch.add_entry(
             MenuEntry('search-batch', _('Search batches'), "~accession/batch/search",
-                      icon=Glyph.SEARCH, order=201))
+                      icon=FaGlyph('search'), order=201))
 
         accession_module.add_menu(menu_batch)
 

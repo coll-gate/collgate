@@ -14,11 +14,11 @@ import sys
 from django.utils.translation import ugettext_lazy as _
 
 from igdectk.common.apphelpers import ApplicationMain
-from igdectk.module import AUTH_USER, AUTH_STAFF
+from igdectk.module import AUTH_STAFF
 from igdectk.module.manager import module_manager
-from igdectk.module.menu import MenuEntry, MenuSeparator
+from igdectk.module.menu import MenuEntry
 from igdectk.module.module import Module, ModuleMenu
-from igdectk.bootstrap.glyphs import Glyph
+from igdectk.bootstrap.customglyph import FaGlyph
 
 
 class CollGateAudit(ApplicationMain):
@@ -87,8 +87,8 @@ class CollGateAudit(ApplicationMain):
 
         # audit menu
         menu_audit = ModuleMenu('audit', _('Tracability'), auth=AUTH_STAFF, order=900)
-        menu_audit.add_entry(MenuEntry('audit-user', _('Tracability for a user'), "~audit/audit/searchByUserName", icon=Glyph.USER, order=1))
-        menu_audit.add_entry(MenuEntry('audit-entity', _('Tracability for an entity'), "~audit/audit/searchByEntity", icon=Glyph.BOOK, order=2))
+        menu_audit.add_entry(MenuEntry('audit-user', _('Tracability for a user'), "~audit/audit/searchByUserName", icon=FaGlyph('user'), order=1))
+        menu_audit.add_entry(MenuEntry('audit-entity', _('Tracability for an entity'), "~audit/audit/searchByEntity", icon=FaGlyph('book'), order=2))
         audit_module.add_menu(menu_audit)
 
         module_manager.register_module(audit_module)

@@ -38,14 +38,14 @@ MenuEntry.prototype.render = function(parent) {
 
     if (this.icon) {
         if (this.icon.startsWith('fa-')) {
-            var iconEl = $('<span class="fa ' + this.icon + '"></span>');
+            var iconEl = $('<i class="fa ' + this.icon + '"></i>');
             aEl.append(iconEl);
         } else {
-            var iconEl = $('<span class="glyphicon ' + this.icon + '"></span>');
+            var iconEl = $('<i class="glyphicon ' + this.icon + '"></i>');
             aEl.append(iconEl);
         }
     } else {
-        var noIconEl = $('<span class="fa fa-user" style="visibility: hidden;"></span>');
+        var noIconEl = $('<i class="fa fa-user" style="visibility: hidden;"></i>');
         aEl.append(noIconEl);
     }
 
