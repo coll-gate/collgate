@@ -36,6 +36,11 @@ class RestClassificationEntryIdRelated(RestClassificationEntryId):
     suffix = 'related'
 
 
+class RestClassificationEntryIdRelatedCount(RestClassificationEntryIdRelated):
+    regex = r'^count/$'
+    suffix = 'count'
+
+
 @RestClassificationEntryIdRelated.def_auth_request(Method.GET, Format.JSON, perms={
     # 'classification.get_classificationentry': _("You are not allowed to get classifications entries")
 })
@@ -117,6 +122,39 @@ def get_classification_entry_related(request, cls_id):
         'prev': cq.prev_cursor,
         'cursor': cursor,
         'next': cq.next_cursor,
+    }
+
+    return HttpResponseRest(request, results)
+
+
+@RestClassificationEntryIdRelatedCount.def_auth_request(Method.GET, Format.JSON, perms={
+    # 'classification.get_classificationentry': _("You are not allowed to get classifications entries")
+})
+def get_count_classification_entry_related(request, cls_id):
+    """
+    Return the list of related classification entries for the given classification entry.
+    """
+    classification_entry = get_object_or_404(ClassificationEntry, id=int(cls_id))
+
+    from main.cursor import CursorQuery
+    cq = CursorQuery(ClassificationEntry)
+
+    cq.inner_join(
+        ClassificationEntry,
+        related_name='related',
+        to_related_name='to_classificationentry',
+        from_classificationentry=classification_entry.pk)
+
+    if request.GET.get('search'):
+        cq.filter(json.loads(request.GET['search']))
+
+    if request.GET.get('filters'):
+        cq.filter(json.loads(request.GET['filters']))
+
+    count = cq.count()
+
+    results = {
+        'count': count
     }
 
     return HttpResponseRest(request, results)
