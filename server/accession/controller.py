@@ -53,9 +53,9 @@ class AccessionController(object):
         if not synonym['language']:
             raise SuspiciousOperation(_('Undefined synonym language'))
 
-        synonym = AccessionSynonym(accession_id=accession_id,
+        synonym = AccessionSynonym(entity_id=accession_id,
                                    name=synonym['name'],
-                                   type=synonym['type'],
+                                   synonym_type_id=synonym['type'],
                                    language=synonym['language'])
         synonym.save()
 
