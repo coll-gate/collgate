@@ -26,7 +26,7 @@ from main.models import Language
 from permission.utils import get_permissions_for
 from classification.models import ClassificationEntry
 
-from .models import Accession, AccessionSynonym, AccessionClassificationEntry
+from .models import Accession, AccessionSynonym, AccessionClassificationEntry, AccessionPanel, AccessionView
 from .base import RestAccession
 
 
@@ -186,6 +186,12 @@ def get_accession_list_count(request):
 
     if request.GET.get('search'):
         search = json.loads(request.GET['search'])
+
+        for criteria in search:
+            if criteria.get('field') == 'panels':
+                cq = CursorQuery(AccessionView)
+                break
+
         cq.filter(search)
 
     if request.GET.get('filters'):
@@ -227,15 +233,22 @@ def get_accession_list(request):
 
     if request.GET.get('search'):
         search = json.loads(request.GET['search'])
+
+        for criteria in search:
+            if criteria.get('field') == 'panels':
+                AccessionView._meta.model_name = 'accession'
+                cq = CursorQuery(AccessionView)
+                break
+
         cq.filter(search)
 
     if request.GET.get('filters'):
         filters = json.loads(request.GET['filters'])
         cq.filter(filters)
 
-    cq.prefetch_related(Prefetch(
-        "synonyms",
-        queryset=AccessionSynonym.objects.all().order_by('synonym_type', 'language')))
+    # cq.prefetch_related(Prefetch(
+    #     "synonyms",
+    #     queryset=AccessionSynonym.objects.all().order_by('synonym_type', 'language')))
 
     cq.select_related('primary_classification_entry->name', 'primary_classification_entry->rank')
     # cq.select_related('#test_accession->code')
@@ -261,13 +274,13 @@ def get_accession_list(request):
             }
         }
 
-        for synonym in accession.synonyms.all():
-            a['synonyms'].append({
-                'id': synonym.id,
-                'name': synonym.name,
-                'synonym_type': synonym.synonym_type_id,
-                'language': synonym.language
-            })
+        # for synonym in accession.synonyms.all():
+        #     a['synonyms'].append({
+        #         'id': synonym.id,
+        #         'name': synonym.name,
+        #         'synonym_type': synonym.synonym_type_id,
+        #         'language': synonym.language
+        #     })
 
         accession_items.append(a)
 
@@ -289,7 +302,8 @@ def get_accession_details_json(request, acc_id):
     """
     Get the details of an accession.
     """
-    accession = Accession.objects.get(id=int(acc_id))
+
+    accession = AccessionView.objects.get(id=int(acc_id))
 
     # check permission on this object
     perms = get_permissions_for(request.user, accession.content_type.app_label, accession.content_type.model,
@@ -304,16 +318,27 @@ def get_accession_details_json(request, acc_id):
         'primary_classification_entry': accession.primary_classification_entry_id,
         'synonyms': [],
         'descriptor_meta_model': accession.descriptor_meta_model_id,
-        'descriptors': accession.descriptors
+        'descriptors': accession.descriptors,
+        'panels': []
     }
 
-    for s in accession.synonyms.all().order_by('synonym_type', 'language'):
-        result['synonyms'].append({
-            'id': s.id,
-            'name': s.name,
-            'synonym_type': s.synonym_type_id,
-            'language': s.language,
+    for panel_id in accession.panels:
+        panel = AccessionPanel.objects.get(id=panel_id)
+        result['panels'].append({
+            'id': panel.id,
+            'name': panel.name,
+            'descriptor_meta_model': panel.descriptor_meta_model.pk if panel.descriptor_meta_model else None,
+            'descriptors': panel.descriptors,
+            'accessions_amount': panel.accessions.count()
         })
+
+    # for s in accession.synonyms.all().order_by('synonym_type', 'language'):
+    #     result['synonyms'].append({
+    #         'id': s.id,
+    #         'name': s.name,
+    #         'synonym_type': s.synonym_type_id,
+    #         'language': s.language,
+    #     })
 
     return HttpResponseRest(request, result)
 
@@ -421,9 +446,9 @@ def search_accession(request):
         "descriptors": {"type": "object", "required": False},
     },
 },
-    perms={
-      'accession.change_accession': _("You are not allowed to modify an accession"),
-    })
+                                  perms={
+                                      'accession.change_accession': _("You are not allowed to modify an accession"),
+                                  })
 def patch_accession(request, acc_id):
     accession = get_object_or_404(Accession, id=int(acc_id))
 

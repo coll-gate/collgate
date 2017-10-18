@@ -17,6 +17,42 @@ var AccessionPanelModel = require('../models/panel');
 var AccessionPanelLayout = require('../views/panellayout');
 
 var Controller = Marionette.Object.extend({
+    delete: function (model) {
+        var DeletePanelDialog = Dialog.extend({
+            template: require('../../main/templates/confirm.html'),
+            templateContext: function () {
+                return {
+                    title: _t("Delete panel"),
+                    message: _t("Do you really want to delete this panel?"),
+                    confirm_txt: _("Yes"),
+                    confirm_class: 'danger',
+                    cancel_txt: _("No"),
+                    cancel_class: 'default'
+                }
+            },
+            ui: {
+                confirm: "button.confirm"
+            },
+            events: {
+                'click @ui.confirm': 'onDelete'
+            },
+
+            initialize: function (options) {
+                DeletePanelDialog.__super__.initialize.apply(this);
+            },
+
+            onDelete: function () {
+                model.destroy({wait: true});
+                this.destroy();
+                return false;
+            }
+
+        });
+
+        var deletePanelDialog = new DeletePanelDialog();
+        deletePanelDialog.render();
+    },
+
     create: function (selection, related_entity, filters, search) {
         selection || (selection = false);
         related_entity || (related_entity = null);
@@ -53,7 +89,7 @@ var Controller = Marionette.Object.extend({
 
                     $.ajax({
                         type: "GET",
-                        url: window.application.url(['accession', 'accessions_panel', 'search']),
+                        url: window.application.url(['accession', 'accessionpanel', 'search']),
                         dataType: 'json',
                         data: {filters: JSON.stringify(filters)},
                         el: this.ui.name,
@@ -140,7 +176,7 @@ var Controller = Marionette.Object.extend({
 
         $.ajax({
             type: "GET",
-            url: window.application.url(['accession', 'accessions_panel']),
+            url: window.application.url(['accession', 'accessionpanel']),
             dataType: 'json'
         }).done(function (data) {
             var LinkToPanelDialog = Dialog.extend({
@@ -175,7 +211,7 @@ var Controller = Marionette.Object.extend({
 
                     $.ajax({
                         type: 'PATCH',
-                        url: window.application.url(['accession', 'accessions_panel', panel_id, 'accessions']),
+                        url: window.application.url(['accession', 'accessionpanel', panel_id, 'accessions']),
                         dataType: 'json',
                         contentType: "application/json; charset=utf-8",
                         data: JSON.stringify({
@@ -190,7 +226,7 @@ var Controller = Marionette.Object.extend({
                     }).done(function () {
                         view.destroy();
                         if (go_to_panel) {
-                            Backbone.history.navigate('app/accession/accessions_panel/' + panel_id + '/accessions/', {trigger: true});
+                            Backbone.history.navigate('app/accession/accessionpanel/' + panel_id + '/accessions/', {trigger: true});
                         }
                     });
                 }

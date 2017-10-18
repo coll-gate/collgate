@@ -98,7 +98,7 @@ class CollGateAccession(ApplicationMain):
         menu_accession.add_entry(
             MenuEntry('list-accession', _('List accessions'), "#accession/accession/", icon=FaGlyph('list'), order=101))
         menu_accession.add_entry(
-            MenuEntry('panel-accession', _('Panel accessions'), "#accession/accessions_panel/",
+            MenuEntry('panel-accession', _('Panel accessions'), "#accession/accessionpanel/",
                       icon=FaGlyph('list-alt'), order=102))
 
         menu_accession.add_entry(MenuSeparator(200))

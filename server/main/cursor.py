@@ -16,19 +16,16 @@ import re
 
 
 class CursorQueryError(Exception):
-
     def __init__(self, message):
         super(Exception, self).__init__(message)
 
 
 class CursorQueryValueError(CursorQueryError):
-
     def __init__(self, message):
         super(Exception, self).__init__("Value error: " + message)
 
 
 class CursorQueryOperatorError(CursorQueryError):
-
     def __init__(self, message):
         super(Exception, self).__init__("Operator error: " + message)
 
@@ -71,6 +68,16 @@ class CursorQuery(object):
         'istartswith': 'ILIKE',
         'endswith': 'LIKE',
         'iendswith': 'ILIKE'
+    }
+
+    ARRAY_OPERATORS_MAP = {
+        'in': '@>',
+        'contains': '@>',
+        'contained_by': '<@',
+        'notin': ['NOT', '@>'],
+        'not_contained_by': ['NOT', '<@'],
+        'overlap': '&&',
+        'not_overlap': ['NOT', '&&'],
     }
 
     def __init__(self, model, db='default'):
@@ -128,7 +135,8 @@ class CursorQuery(object):
                 self.model_fields[field.name] = ('JSON', 'JSON', field.null)
                 self.query_select.append('"%s"."%s"' % (db_table, field.name))
             elif type(field) is ArrayField:
-                if type(field.base_field) is models.fields.IntegerField or type(field.base_field) == models.fields.AutoField:
+                if type(field.base_field) is models.fields.IntegerField or type(
+                        field.base_field) == models.fields.AutoField:
                     base_type = 'INTEGER'
                 else:
                     base_type = 'TEXT'
@@ -602,29 +610,38 @@ class CursorQuery(object):
 
                 value = lfilter.get('value', None)
                 cmp = lfilter.get('op', '=').lower()
-                op = self.OPERATORS_MAP.get(cmp)
-
-                # cmp is used with descriptor, otherwise map to a SQL operator
-                if not op:
-                    raise CursorQueryValueError('Unrecognized term operator')
 
                 f = field.lstrip('#')
                 is_descriptor = field[0] == '#' or field[1] == '#'
 
-                if is_descriptor:
-                    if self.FIELDS_SEP in f:
-                        ff = f.split(self.FIELDS_SEP)
+                if self.FIELDS_SEP in f:
+                    ff = f.split(self.FIELDS_SEP)
+                    field_model = self.model_fields[ff[1]]
+                    op = self.ARRAY_OPERATORS_MAP.get(cmp) if field_model[0] == 'ARRAY' else self.OPERATORS_MAP.get(
+                        cmp)
+                    # cmp is used with descriptor, otherwise map to a SQL operator
+                    if not op:
+                        raise CursorQueryValueError('Unrecognized term operator')
+
+                    if is_descriptor:
                         lqs.append(self._cast_descriptor_sub_type(ff[0], ff[1], op, self._convert_value(value, cmp)))
                     else:
+                        lqs.append(self._cast_default_sub_type(ff[0], ff[1], op, self._convert_value(value, cmp)))
+
+                else:
+                    if is_descriptor:
+                        op = self.OPERATORS_MAP.get(cmp)
+                        # cmp is used with descriptor, otherwise map to a SQL operator
+                        if not op:
+                            raise CursorQueryValueError('Unrecognized term operator')
                         # use cmp with descriptor format type
                         clause = self._cast_descriptor_type(db_table, f, cmp, value)
                         if clause:
                             lqs.append(clause)
-                else:
-                    if self.FIELDS_SEP in f:
-                        ff = f.split(self.FIELDS_SEP)
-                        lqs.append(self._cast_default_sub_type(ff[0], ff[1], op, self._convert_value(value, cmp)))
                     else:
+                        field_model = self.model_fields[f]
+                        op = self.ARRAY_OPERATORS_MAP.get(cmp) if field_model[0] == 'ARRAY' else self.OPERATORS_MAP.get(
+                            cmp)
                         lqs.append(self._cast_default_type(db_table, f, op, self._convert_value(value, cmp)))
 
             # operator
@@ -692,9 +709,8 @@ class CursorQuery(object):
         else:
             if field_model[0] == 'FK':
                 return '"%s"."%s_id" %s %s' % (table_name, field_name, operator, final_value)
-            elif field_model[0] == 'ARRAY':
-                # @todo map operator to array operator (here @> for in or maybe contains)
-                return '"%s"."%s" @> %s' % (table_name, field_name, final_value)
+            elif field_model[0] == 'ARRAY' and isinstance(operator, list) and operator[0] == 'NOT':
+                return 'NOT "%s"."%s" %s %s' % (table_name, field_name, operator[1], final_value)
             else:
                 return '"%s"."%s" %s %s' % (table_name, field_name, operator, final_value)
 
@@ -713,9 +729,8 @@ class CursorQuery(object):
         else:
             if field_model[0] == 'FK':
                 return '"%s"."%s_id" %s %s' % (table_name, field_name, operator, final_value)
-            elif field_model[0] == 'ARRAY':
-                # @todo map operator to array operator (here @> for in or maybe contains)
-                return '"%s"."%s" @> %s' % (table_name, field_name, final_value)
+            elif field_model[0] == 'ARRAY' and isinstance(operator, list) and operator[0] == 'NOT':
+                return 'NOT "%s"."%s" %s %s' % (table_name, field_name, operator[1], final_value)
             else:
                 return '"%s"."%s" %s %s' % (table_name, field_name, operator, final_value)
 
@@ -742,9 +757,8 @@ class CursorQuery(object):
         else:
             if field_model[0] == 'FK':
                 return '"%s"."%s_id" %s %s' % (renamed_table, field_name, operator, final_value)
-            elif field_model[0] == 'ARRAY':
-                # @todo map operator to array operator (here @> for in or maybe contains)
-                return '"%s"."%s" @> %s' % (renamed_table, field_name, final_value)
+            elif field_model[0] == 'ARRAY' and isinstance(operator, list) and operator[0] == 'NOT':
+                return 'NOT "%s"."%s" %s %s' % (renamed_table, field_name, operator[1], final_value)
             else:
                 return '"%s"."%s" %s %s' % (renamed_table, field_name, operator, final_value)
 
@@ -785,7 +799,7 @@ class CursorQuery(object):
                     '"%s"."%s" AS "%s_%s"' % (renamed_table, field.name, renamed_table, field.name))
             elif type(field) is ArrayField:
                 if (type(field.base_field) is models.fields.IntegerField or
-                        type(field.base_field) == models.fields.AutoField):
+                            type(field.base_field) == models.fields.AutoField):
                     base_type = 'INTEGER'
                 else:
                     base_type = 'TEXT'
@@ -847,7 +861,7 @@ class CursorQuery(object):
                         '"%s"."%s" AS "%s_%s"' % (db_table_alias, field.name, related_field, field.name))
                 elif type(field) is ArrayField:
                     if (type(field.base_field) is models.fields.IntegerField or
-                            type(field.base_field) == models.fields.AutoField):
+                                type(field.base_field) == models.fields.AutoField):
                         base_type = 'INTEGER'
                     else:
                         base_type = 'TEXT'

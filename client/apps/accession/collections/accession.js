@@ -16,7 +16,7 @@ var Collection = CountableCollection.extend({
 
     url: function() {
         if (this.panel_id) {
-            return window.application.url(['accession', 'accessions_panel', this.panel_id, 'accessions']);
+            return window.application.url(['accession', 'accessionpanel', this.panel_id, 'accessions']);
         } else {
             return window.application.url(['accession', 'accession']);
         }

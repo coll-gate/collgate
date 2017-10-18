@@ -1,0 +1,28 @@
+<!--
+ - @file confirm.html
+ - @brief 
+ - @author Medhi BOULNEMOUR (INRA UMR1095)
+ - @date 2017-10-16
+ - @copyright Copyright (c) 2016 INRA/CIRAD
+ - @license MIT (see LICENSE file)
+ - @details 
+-->
+
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title"><%= title %></h4>
+        </div>
+        <div class="modal-body">
+            <p>
+                <%= message %>
+            </p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-<%= cancel_class %> cancel" data-dismiss="modal"><%= cancel_txt %>
+            </button>
+            <button type="button" class="btn btn-<%= confirm_class %> confirm"><%= confirm_txt %></button>
+        </div>
+    </div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->

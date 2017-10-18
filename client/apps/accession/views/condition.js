@@ -227,7 +227,11 @@ var View = Marionette.View.extend({
         }
 
         this.ui.condition.selectpicker('refresh');
-        this.ui.condition.selectpicker({container: '.modal'}).selectpicker('val', 'eq');
+        if (column.available_operators.includes('eq')) {
+            this.ui.condition.selectpicker({container: '.modal'}).selectpicker('val', 'eq');
+        } else {
+            this.ui.condition.selectpicker({container: '.modal'}).selectpicker('val', column.available_operators[0]);
+        }
 
         this.onUIChange();
     },
