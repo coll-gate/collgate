@@ -1,7 +1,7 @@
 /**
  * @file search.js
  * @brief Entity advanced search dialog
- * @author Frédéric SCHERMA (INRA UMR1095)
+ * @author Medhi BOULNEMOUR (INRA UMR1095)
  * @date 2017-05-15
  * @copyright Copyright (c) 2017 INRA/CIRAD
  * @license MIT (see LICENSE file)
@@ -16,7 +16,6 @@ var View = Dialog.extend({
     templateContext: function () {
         return {
             entity_types: [
-                {id: 'classification.classificationEntry', label: _t('Cultivar')},
                 {id: 'accession.accession', label: _t('Accession')},
                 {id: 'accession.batch', label: _t('Batch')}
             ],
@@ -47,8 +46,6 @@ var View = Dialog.extend({
 
     initialize: function (options) {
         View.__super__.initialize.apply(this, arguments);
-        // this.search = application.accession.search;
-        // this.search.entity = 'accession.accession';
     },
 
     onRender: function () {
@@ -61,16 +58,8 @@ var View = Dialog.extend({
             collection: application.accession.collections.conditionList,
             parent: this
         }));
-
-        // if (this.search.entity) {
-        //     this.ui.entity_type.selectpicker('val', this.search.entity);
         this.onChangeEntityType();
-        // }
-        //
-        // if (this.search.models) {
-        //     this.ui.entity_type.selectpicker('val', this.search.models);
-        //     this.onChangeMetaModel();
-        // }
+
     },
 
     onAddSearchRow: function () {
@@ -87,7 +76,6 @@ var View = Dialog.extend({
     onChangeEntityType: function () {
         var entityType = this.ui.entity_type.selectpicker('val');
         this.ui.meta_model.prop('disabled', false);
-        // this.search.entity = entityType;
         var view = this;
 
         $.ajax({
@@ -131,15 +119,13 @@ var View = Dialog.extend({
     },
 
     refreshFieldList: function (childview) {
-        const entityType = this.ui.entity_type.selectpicker('val');
+        var entityType = this.ui.entity_type.selectpicker('val');
         const metaModels = this.ui.meta_model.selectpicker('val');
         var selects = null;
 
         if (childview) {
-            // selects = childview.$el.find('div.search-condition').find('div.field').children('div').children('select');
             selects = childview.ui.field;
         } else {
-            // selects = this.getChildView('conditions').$el.find('div.search-condition').find('div.field').children('div').children('select');
             selects = this.getChildView('conditions').ui.field;
         }
 
@@ -155,26 +141,12 @@ var View = Dialog.extend({
 
         application.main.cache.lookup({
             type: 'entity_columns',
-            format: {model: entityType, descriptor_meta_models: descriptorMetaModels},
-        }).done(function(data) {
+            format: {model: entityType, descriptor_meta_models: descriptorMetaModels}
+
+        }).done(function (data) {
             $(selects).children('option').remove().end();
 
-            // var columns_extension = {
-            //     'code': {label: _t('Code'), format: {type: 'string'}},
-            //     'name': {label: _t('Name'), format: {type: 'string'}}
-            //     // 'parent': {
-            //     //     label: _t('Classification'),
-            //     //     width: 'auto',
-            //     //     minWidth: true,
-            //     //     event: 'view-parent-details',
-            //     //     custom: 'parentCell',
-            //     //     field: 'name'
-            //     // },
-            //     // 'descriptor_meta_model': {label: _t('Model'), width: 'auto', minWidth: true}
-            // };
-
             var columns = data[0].value;
-            // for(var col in columns_extension) columns[col]=columns_extension[col]; // add columns_extension properties in the same object "columns"
 
             view.getChildView('conditions').children.each(function (childview) {
                 childview.columns = columns;
@@ -191,56 +163,10 @@ var View = Dialog.extend({
             selects.trigger('change')
                 .selectpicker('refresh');
         });
-/*        var models_data = {};
-        if (metaModels !== null) {
-            models_data = {meta_model_list: metaModels.toString()}
-        }
-
-        $.ajax({
-            type: "GET",
-            url: window.application.url(['descriptor', 'columns', entityType]),
-            contentType: "application/json; charset=utf-8",
-            dataType: 'json',
-            data: models_data
-        }).done(function (data) {
-            $(selects).children('option').remove().end();
-
-            // var columns_extension = {
-            //     'code': {label: _t('Code'), format: {type: 'string'}},
-            //     'name': {label: _t('Name'), format: {type: 'string'}}
-            //     // 'parent': {
-            //     //     label: _t('Classification'),
-            //     //     width: 'auto',
-            //     //     minWidth: true,
-            //     //     event: 'view-parent-details',
-            //     //     custom: 'parentCell',
-            //     //     field: 'name'
-            //     // },
-            //     // 'descriptor_meta_model': {label: _t('Model'), width: 'auto', minWidth: true}
-            // };
-            //
-            var columns = data.columns;
-            // for(var col in columns_extension) columns[col]=columns_extension[col]; // add columns_extension properties in the same object "columns"
-
-            view.getChildView('conditions').children.each(function (childview) {
-                childview.columns = columns;
-            });
-
-            $.each(columns, function (field) {
-                selects.append($('<option>', {
-                    value: field,
-                    text: columns[field].label,
-                    'data-type': columns[field].format.type
-                }));
-            });
-            selects.trigger('change');
-            selects.selectpicker('refresh');
-        });*/
         selects.change();
     },
 
     onSearch: function () {
-
         this.getChildView('conditions').children.each(function (view) {
             //todo: Remove this code-block and try to update collection on input (from the childviews)
             view.onUIChange(); //update collection
@@ -253,6 +179,7 @@ var View = Dialog.extend({
         const entityType = this.ui.entity_type.val();
 
         if (entityType === 'accession.accession') {
+            // Accession condition
             const conditions = this.getChildView('conditions').collection.models;
             const query = this.getQuery(conditions);
             const options = {search: query.result};
@@ -262,6 +189,7 @@ var View = Dialog.extend({
             this.destroy();
 
         } else if (entityType === 'accession.batch') {
+            // Batch condition
             const conditions = this.getChildView('conditions').collection.models;
             const query = this.getQuery(conditions);
             const options = {search: query.result};
@@ -271,11 +199,7 @@ var View = Dialog.extend({
 
             this.destroy();
 
-        } else if (entityType === 'classification.classificationEntry') {
-            // todo
-            alert('Not yet implemented!')
         }
-        // this.destroy();
     },
 
     setQuery: function () {
@@ -346,7 +270,6 @@ var View = Dialog.extend({
         if (entityType === 'accession.accession') {
             var conditions = this.getChildView('conditions').collection.models;
             var query = this.getQuery(conditions);
-            // console.log(query.result);
         }
     },
 

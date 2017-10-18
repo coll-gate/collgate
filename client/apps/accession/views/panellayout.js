@@ -46,7 +46,7 @@ var Layout = LayoutView.extend({
         this.render();
 
         // and update history
-        Backbone.history.navigate('app/accession/accessions_panel/' + this.model.get('id') + '/', {
+        Backbone.history.navigate('app/accession/accessionpanel/' + this.model.get('id') + '/', {
             /*trigger: true,*/
             replace: false
         });

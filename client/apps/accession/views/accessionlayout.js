@@ -180,6 +180,34 @@ var Layout = LayoutView.extend({
                 contentBottomFooterLayout.showChildView('footer', new AccessionClassificationEntryAdd({collection: accessionClassificationEntries}));
             });
 
+            // panels tab
+            var PanelCollection = require('../collections/panel');
+            var accessionPanels = new PanelCollection([], {accession_id: this.model.get('id')});
+
+            // get available columns
+            var columns3 = application.main.cache.lookup({
+                type: 'entity_columns',
+                format: {model: 'accession.accessionpanel'}
+            });
+
+            $.when(columns3, accessionPanels.fetch()).then(function (data) {
+                if (!accessionLayout.isRendered()) {
+                    return;
+                }
+
+                var PanelListView = require('../views/panellist');
+                var panelListView  = new PanelListView({
+                    collection: accessionPanels, model: accessionLayout.model, columns: data[0].value});
+
+                var contentBottomLayout = new ContentBottomLayout();
+                accessionLayout.showChildView('panels', contentBottomLayout);
+
+                contentBottomLayout.showChildView('content', panelListView);
+                contentBottomLayout.showChildView('bottom', new ScrollingMoreView({targetView: panelListView}));
+
+                panelListView.query();
+            });
+
             this.onDescriptorMetaModelChange(this.model, this.model.get('descriptor_meta_model'));
             this.enableTabs();
         } else {

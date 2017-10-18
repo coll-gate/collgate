@@ -99,7 +99,7 @@ var View = Marionette.View.extend({
         var view = this;
         $.ajax({
             type: 'PATCH',
-            url: window.application.url(['accession', 'accessions_panel', view.model.collection.panel_id, 'accessions']),
+            url: window.application.url(['accession', 'accessionpanel', view.model.collection.panel_id, 'accessions']),
             dataType: 'json',
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify({

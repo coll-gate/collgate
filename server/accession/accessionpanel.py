@@ -21,18 +21,29 @@ from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 
 from permission.utils import get_permissions_for
-from .models import AccessionPanel, Accession, AccessionSynonym, BatchPanel, Batch
+from .models import AccessionPanel, Accession, AccessionSynonym, BatchPanel, Batch, AccessionView
 from .base import RestAccession
+from .accession import RestAccessionId
 
 
 class RestAccessionPanel(RestAccession):
-    regex = r'^accessions_panel/$'
-    name = "accessions_panel"
+    regex = r'^accessionpanel/$'
+    name = "accessionpanel"
+
+
+class RestAccessionId(RestAccessionId):
+    regex = r'^panels/$'
+    suffix = 'panels'
+
+
+class RestAccessionIdCount(RestAccessionId):
+    regex = r'^count/$'
+    name = "count"
 
 
 class RestBatchPanel(RestAccession):
-    regex = r'^batches_panel/$'
-    name = "batches_panel"
+    regex = r'^batchpanel/$'
+    name = "batchpanel"
 
 
 class RestAccessionPanelSearch(RestAccessionPanel):
@@ -83,6 +94,74 @@ class RestAccessionPanelAccessionsCount(RestAccessionPanelAccessions):
 class RestBatchPanelBatchesCount(RestBatchPanelBatches):
     regex = r'^count/$'
     name = "count"
+
+
+@RestAccessionId.def_auth_request(Method.GET, Format.JSON)
+def get_accession_panels(request, acc_id):
+    results_per_page = int_arg(request.GET.get('more', 30))
+    cursor = json.loads(request.GET.get('cursor', 'null'))
+    limit = results_per_page
+    sort_by = json.loads(request.GET.get('sort_by', '[]'))
+
+    if not len(sort_by) or sort_by[-1] not in ('id', '+id', '-id'):
+        order_by = sort_by + ['id']
+    else:
+        order_by = sort_by
+
+    accession = AccessionView.objects.get(id=int(acc_id))
+
+    from main.cursor import CursorQuery
+    cq = CursorQuery(AccessionPanel)
+    cq.filter(id__in=accession.panels)
+
+    if request.GET.get('filters'):
+        filters = json.loads(request.GET['filters'])
+        cq.filter(filters)
+
+    cq.cursor(cursor, order_by)
+    cq.order_by(order_by).limit(limit)
+
+    panel_items = []
+
+    for panel in cq:
+        a = {
+            'id': panel.pk,
+            'name': panel.name,
+            'descriptor_meta_model': panel.descriptor_meta_model.pk if panel.descriptor_meta_model else None,
+            'descriptors': panel.descriptors,
+            'accessions_amount': panel.accessions.count()
+        }
+
+        panel_items.append(a)
+
+    results = {
+        'perms': [],
+        'items': panel_items,
+        'prev': cq.prev_cursor,
+        'cursor': cursor,
+        'next': cq.next_cursor,
+    }
+
+    return HttpResponseRest(request, results)
+
+
+@RestAccessionIdCount.def_auth_request(Method.GET, Format.JSON)
+def count_accession_panels(request, acc_id):
+    accession = AccessionView.objects.get(id=int(acc_id))
+
+    from main.cursor import CursorQuery
+    cq = CursorQuery(AccessionPanel)
+    cq.filter(id__in=accession.panels)
+
+    if request.GET.get('filters'):
+        filters = json.loads(request.GET['filters'])
+        cq.filter(filters)
+
+    results = {
+        'count': cq.count()
+    }
+
+    return HttpResponseRest(request, results)
 
 
 @RestBatchPanel.def_auth_request(Method.POST, Format.JSON, content={
@@ -528,7 +607,6 @@ def modify_panel(request, panel_id):
 
 
 # todo: set correct permissions... maybe list_panel_accession???
-# todo: maybe deprecated function, use panel column "accessions_amount"?
 @RestAccessionPanelAccessionsCount.def_auth_request(Method.GET, Format.JSON, perms={
     'accession.list_accession': _("You are not allowed to list the accessions")
 })
@@ -775,8 +853,9 @@ def search_accession_panel(request):
         a = {
             'id': panel.pk,
             'name': panel.name,
+            'label': panel.name,
             'descriptor_meta_model': panel.descriptor_meta_model.pk if panel.descriptor_meta_model else None,
-            'descriptors': panel.descriptors
+            'descriptors': panel.descriptors,
         }
 
         items_list.append(a)

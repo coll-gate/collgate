@@ -9,7 +9,7 @@
  */
 
 let Collection = Backbone.Collection.extend({
-    initialize: function (options) {
+    initialize: function (model, options) {
         options || (options = {});
 
         this.filters = (options.filters || {});

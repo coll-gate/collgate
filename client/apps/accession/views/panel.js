@@ -71,7 +71,7 @@ var View = Marionette.View.extend({
     },
 
     viewDetails: function () {
-        Backbone.history.navigate('app/accession/accessions_panel/' + this.model.get('id') + '/', {trigger: true});
+        Backbone.history.navigate('app/accession/accessionpanel/' + this.model.get('id') + '/', {trigger: true});
     },
 
     onRename: function () {
@@ -92,8 +92,7 @@ var View = Marionette.View.extend({
     },
 
     onDeletePanel: function () {
-        this.model.destroy({wait: true});
-        return false;
+        application.accession.controllers.panel.delete(this.model);
     }
 });
 

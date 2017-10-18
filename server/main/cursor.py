@@ -16,19 +16,16 @@ import re
 
 
 class CursorQueryError(Exception):
-
     def __init__(self, message):
         super(Exception, self).__init__(message)
 
 
 class CursorQueryValueError(CursorQueryError):
-
     def __init__(self, message):
         super(Exception, self).__init__("Value error: " + message)
 
 
 class CursorQueryOperatorError(CursorQueryError):
-
     def __init__(self, message):
         super(Exception, self).__init__("Operator error: " + message)
 
@@ -124,7 +121,8 @@ class CursorQuery(object):
                 self.model_fields[field.name] = ('JSON', 'JSON', field.null)
                 self.query_select.append('"%s"."%s"' % (db_table, field.name))
             elif type(field) is ArrayField:
-                if type(field.base_field) is models.fields.IntegerField or type(field.base_field) == models.fields.AutoField:
+                if type(field.base_field) is models.fields.IntegerField or type(
+                        field.base_field) == models.fields.AutoField:
                     base_type = 'INTEGER'
                 else:
                     base_type = 'TEXT'
@@ -134,6 +132,8 @@ class CursorQuery(object):
             else:
                 self.model_fields[field.name] = ('TEXT', 'TEXT', field.null)
                 self.query_select.append('"%s"."%s"' % (db_table, field.name))
+
+        self.inner_join_counter = 0
 
     def cursor(self, cursor, cursor_fields=('id',)):
         """
@@ -781,7 +781,7 @@ class CursorQuery(object):
                     '"%s"."%s" AS "%s_%s"' % (renamed_table, field.name, renamed_table, field.name))
             elif type(field) is ArrayField:
                 if (type(field.base_field) is models.fields.IntegerField or
-                        type(field.base_field) == models.fields.AutoField):
+                            type(field.base_field) == models.fields.AutoField):
                     base_type = 'INTEGER'
                 else:
                     base_type = 'TEXT'
@@ -843,7 +843,7 @@ class CursorQuery(object):
                         '"%s"."%s" AS "%s_%s"' % (db_table_alias, field.name, related_field, field.name))
                 elif type(field) is ArrayField:
                     if (type(field.base_field) is models.fields.IntegerField or
-                            type(field.base_field) == models.fields.AutoField):
+                                type(field.base_field) == models.fields.AutoField):
                         base_type = 'INTEGER'
                     else:
                         base_type = 'TEXT'
@@ -957,6 +957,9 @@ class CursorQuery(object):
         :param related_name: If specified uses this field name as join term in place of the self.modelname in plural form.
         :param kwargs: FieldName=IntegerValue
         """
+
+        self.inner_join_counter += 1
+
         if len(kwargs) < 1:
             raise CursorQueryError("Unspecified related field and value")
 
@@ -967,7 +970,7 @@ class CursorQuery(object):
         if related_name is not None and type(related_name) is str:
             model_name_alias = related_name
 
-        related_field_name, id_value = list(kwargs.items())[0]
+        related_field_entry, id_value = list(kwargs.items())[0]
 
         related_field = getattr(related_model, model_name_alias)
         if related_field is None:
@@ -976,13 +979,34 @@ class CursorQuery(object):
         if type(related_field) is not models.fields.related_descriptors.ManyToManyDescriptor:
             raise CursorQueryError("Invalid related field %s" % related_field)
 
+        related_field_name = re.sub('__notin', '', related_field_entry)
+        related_field_name = re.sub('__in', '', related_field_name)
+
         if not hasattr(related_field.through, related_field_name):
             raise CursorQueryError("Invalid related field name %s" % related_field_name)
 
         join_db_table = related_field.through._meta.db_table
+        join_db_table_alias = join_db_table + '_' + str(self.inner_join_counter)
 
-        inner_join = 'INNER JOIN "%s" ON ("%s"."%s_id" = %i AND "%s"."id" = "%s"."%s_id")' % (
-            join_db_table, join_db_table, related_field_name, id_value, db_table, join_db_table, short_db_table
+        if re.match('\w+__notin', related_field_entry):
+            operator = 'NOT IN'
+        elif re.match('\w+__in', related_field_entry):
+            operator = 'IN'
+        else:
+            inner_join = 'INNER JOIN "%s" AS "%s" ON ("%s"."%s_id" = %i AND "%s"."id" = "%s"."%s_id")' % (
+                join_db_table, join_db_table_alias, join_db_table_alias, related_field_name, id_value, db_table,
+                join_db_table_alias, short_db_table
+            )
+            self.query_from.append(inner_join)
+            return
+
+        if not isinstance(id_value, list):
+            raise CursorQueryError("Invalid values to related field name %s" % related_field_name)
+
+        values = ",".join(str(id) for id in id_value)
+        inner_join = 'INNER JOIN "%s" AS "%s" ON ("%s"."%s_id" %s (%s) AND "%s"."id" = "%s"."%s_id")' % (
+            join_db_table, join_db_table_alias, join_db_table_alias, related_field_name, operator, values, db_table,
+            join_db_table_alias, short_db_table
         )
 
         self.query_from.append(inner_join)

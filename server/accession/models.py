@@ -11,7 +11,7 @@
 import re
 
 from django.contrib.auth.models import User
-from django.contrib.postgres.fields import JSONField
+from django.contrib.postgres.fields import JSONField, ArrayField
 from django.db import models
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
@@ -21,7 +21,7 @@ from classification.models import ClassificationEntry
 from descriptor.models import DescribableEntity
 from descriptor.models import DescriptorMetaModel
 from igdectk.common.models import ChoiceEnum, IntegerChoice
-from main.models import Entity, EntitySynonym
+from main.models import Entity, EntitySynonym, EntityStatus, ContentType, uuid
 
 
 class AccessionClassificationEntry(models.Model):
@@ -124,6 +124,18 @@ class Accession(DescribableEntity):
                     'model': 'accession.accession'
                 },
                 'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
+            },
+            'panels': {
+                'label': _('Panels'),
+                'field': 'name',
+                'query': False,  # done by a prefetch related
+                'format': {
+                    'type': 'entity',
+                    'model': 'accession.accessionpanel'
+                },
+                'available_operators': ['in', 'notin'],
+                'column_display': False,
+                # 'search_only': True
             }
         }
 
@@ -530,3 +542,125 @@ class AccessionPanel(Panel):
             ("get_accessionpanel", "Can get a accession panel"),
             ("list_accessionpanel", "Can list accession panel"),
         )
+
+
+class AccessionView(models.Model):
+    """
+    Accession from accession_panelslist view.
+    """
+
+    # non-unique primary name of the accession
+    name = models.CharField(max_length=255, db_index=True)
+
+    # unique GRC code of the accession
+    code = models.CharField(unique=True, max_length=255, db_index=True)
+
+    # primary classification as simple FK for a simple join
+    primary_classification_entry = models.ForeignKey(
+        ClassificationEntry, on_delete=models.DO_NOTHING, related_name='primary_accessionsviews', null=True)
+
+    # accession can have many classification but at least a primary
+    classifications_entries = models.ManyToManyField(ClassificationEntry)
+
+    # JSONB field containing the list of descriptors model type id as key, with a descriptor value or value code.
+    descriptors = JSONField(default={})
+
+    # It refers to a set of models of type of descriptors through a meta-model of descriptor.
+    descriptor_meta_model = models.ForeignKey(DescriptorMetaModel, on_delete=models.DO_NOTHING)
+
+    # content type of the entity
+    content_type = models.ForeignKey(ContentType, editable=False, on_delete=models.DO_NOTHING)
+
+    # status of the entity
+    entity_status = models.IntegerField(
+        null=False, blank=False, choices=EntityStatus.choices(), default=EntityStatus.VALID.value)
+
+    # insert date
+    created_date = models.DateTimeField(auto_now_add=True)
+    # last update date
+    modified_date = models.DateTimeField(auto_now=True)
+
+    # unique object identifier
+    uuid = models.UUIDField(db_index=True, default=uuid.uuid4, editable=False, unique=True)
+
+    # panels
+    panels = ArrayField(models.IntegerField())
+
+    class Meta:
+        managed = False
+        db_table = 'accession_panelslist'
+        verbose_name = _("accession")
+
+        permissions = (
+            ("get_accession", "Can get an accession"),
+            ("list_accession", "Can list accessions"),
+            ("search_accession", "Can search for accessions")
+        )
+
+    def natural_name(self):
+        return self.name
+
+    def details(self):
+        """
+        Return the details field for the specialized entity. By default return an empty dict.
+        :return: A dict of details
+        """
+        return {}
+
+    @classmethod
+    def make_search_by_name(cls, term):
+        return Q(name__istartswith=term)
+
+    @classmethod
+    def get_defaults_columns(cls):
+        return {
+            'primary_classification_entry': {
+                'label': _('Classification'),
+                'field': 'name',
+                'query': True,  # False,   # could be later, for the moment LEFT JOIN into the queryset
+                'format': {
+                    'type': 'entity',
+                    'model': 'classification.classificationentry',
+                    'details': True
+                },
+                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'in', 'notin']
+            },
+            'descriptor_meta_model': {
+                'label': _('Model'),
+                'field': 'name',
+                'query': True,
+                'format': {
+                    'type': 'descriptor_meta_model',
+                    'model': 'accession.accession'
+                },
+                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'in', 'notin']
+            },
+            'synonym': {
+                'label': _('Synonym'),
+                'field': 'name',
+                'query': False,  # done by a prefetch related
+                'format': {
+                    'type': 'string',
+                    'model': 'accession.accessionsynonym'
+                },
+                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
+            },
+            'name': {
+                'label': _('Name'),
+                'query': False,  # done by a prefetch related
+                'format': {
+                    'type': 'string',
+                    'model': 'accession.accession'
+                },
+                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
+            },
+            'code': {
+                'label': _('Code'),
+                'query': False,  # done by a prefetch related
+                'format': {
+                    'type': 'string',
+                    'model': 'accession.accession'
+                },
+                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
+            }
+        }
