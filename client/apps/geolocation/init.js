@@ -8,7 +8,7 @@
  * @details 
  */
 
-var GeolocationModule = function() {
+let GeolocationModule = function() {
     this.name = "geolocation";
 };
 
@@ -32,13 +32,13 @@ GeolocationModule.prototype = {
         //
 
         // register the format type of descriptors
-        var widgets = [
+        let widgets = [
             'country',
             'city'
         ];
 
-        for (var i = 0; i < widgets.length; ++i) {
-            var moduleName = widgets[i];
+        for (let i = 0; i < widgets.length; ++i) {
+            let moduleName = widgets[i];
             application.descriptor.widgets.registerElement(widgets[i], require('./widgets/' + moduleName));
         }
 

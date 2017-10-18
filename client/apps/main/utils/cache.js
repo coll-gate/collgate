@@ -8,11 +8,12 @@
  * @details
  */
 
-var CacheFetcher = require('./cachefetcher');
+let CacheFetcher = require('./cachefetcher');
 
-var Cache = function() {
+let Cache = function() {
     this.data = {};
     this.fetcher = {};
+    this.collection = {};
 };
 
 Cache.prototype = {
@@ -45,12 +46,12 @@ Cache.prototype = {
      */
     get: function(cacheType, key) {
         if (cacheType in this.data) {
-            var category = this.data[cacheType];
+            let category = this.data[cacheType];
 
             if (key in category) {
                 return category[key];
             } else {
-                var cache = {};
+                let cache = {};
                 category[key] = cache;
 
                 return cache;
@@ -62,7 +63,7 @@ Cache.prototype = {
 
     unset: function(cacheType, key) {
         if (cacheType in this.data) {
-            var category = this.data[cacheType];
+            let category = this.data[cacheType];
 
             if (key in category) {
                 delete category[key];
@@ -72,7 +73,7 @@ Cache.prototype = {
 
     has: function(cacheType, key) {
         if (cacheType in this.data) {
-            var category = this.data[cacheType];
+            let category = this.data[cacheType];
             return key in category;
         } else {
             return false;
@@ -89,13 +90,19 @@ Cache.prototype = {
         values || (values = null);
 
         if (cacheType in this.data) {
-            var category = this.data[cacheType];
+            let category = this.data[cacheType];
+/*
+            // @todo maybe collection could be connected to cache or move this like ranks
+            if (key.startsWith('languages:')) {
+                window.application.main.collections.languages.fetch({reset: true});
+                return;
+            }*/
 
             if (values) {
                 // @todo an invalidate per value
             } else if (key.startsWith('*')) {
-                var match = key.replace('*', '');
-                var rmList = [];
+                let match = key.replace('*', '');
+                let rmList = [];
 
                 for (key in category) {
                     if (key.endsWith(match)) {
@@ -103,13 +110,22 @@ Cache.prototype = {
                     }
                 }
 
-                for (var i = 0; i < rmList.length; ++i) {
+                for (let i = 0; i < rmList.length; ++i) {
                     console.warn("invalidate", cacheType + "__" + rmList[i]);
                     delete category[rmList[i]];
                 }
+
+                if (cacheType in this.collection) {
+                    for (key in this.collection[cacheType]) {
+                        if (key.endsWith(match)) {
+                            console.warn("invalidate", cacheType + "__" + key);
+                            this.collection[cacheType][key].fetch({reset: true});
+                        }
+                    }
+                }
             } else if (key.endsWith('*')) {
-                var match = key.replace('*', '');
-                var rmList = [];
+                let match = key.replace('*', '');
+                let rmList = [];
 
                 for (key in category) {
                     if (key.startsWith(match)) {
@@ -117,9 +133,18 @@ Cache.prototype = {
                     }
                 }
 
-                for (var i = 0; i < rmList.length; ++i) {
+                for (let i = 0; i < rmList.length; ++i) {
                     console.warn("invalidate", cacheType + "__" + rmList[i]);
                     delete category[rmList[i]];
+                }
+
+                if (cacheType in this.collection) {
+                    for (key in this.collection[cacheType]) {
+                        if (key.startsWith(match)) {
+                            console.warn("invalidate", cacheType + "__" + key);
+                            this.collection[cacheType][key].fetch({reset: true});
+                        }
+                    }
                 }
             } else if (key in category) {
                 console.warn("invalidate", cacheType + "__" + key);
@@ -158,7 +183,7 @@ Cache.prototype = {
      * @return A promise or null
      */
     fetch: function(options, keys) {
-        var cacheType = options.type;
+        let cacheType = options.type;
 
         if (cacheType in this.fetcher) {
             return this.fetcher[cacheType].fetch(this, options, keys);
@@ -175,15 +200,15 @@ Cache.prototype = {
      * @returns A promise
      */
     lookup: function(options, keys) {
-        var cacheType = options.type;
+        let cacheType = options.type;
 
         if (cacheType in this.fetcher) {
-            var fetcher = this.fetcher[cacheType];
+            let fetcher = this.fetcher[cacheType];
 
-            var deferred = $.Deferred();
-            var self = this;
+            let deferred = $.Deferred();
+            let self = this;
 
-            var promise = fetcher.fetch(this, options, keys);
+            let promise = fetcher.fetch(this, options, keys);
             if (promise) {
                 promise.done(function(data) {
                     deferred.resolve(fetcher.get(self, options));
@@ -194,7 +219,7 @@ Cache.prototype = {
 
             return deferred.promise();
         } else {
-            throw "Unregistered cache fetcher for this type (" + cacheType + ")"
+            throw "Unregistered cache fetcher for this type (" + cacheType + ")";
         }
     },
 
@@ -204,6 +229,28 @@ Cache.prototype = {
 
     disable: function () {
         this.enabled = false;
+    },
+
+    /**
+     * Register a cached collection.
+     * @param collection
+     */
+    registerCollection: function(collection) {
+        let cacheInfo = _.isFunction(collection.cache) ? collection.cache() : collection.cache;
+
+        if (cacheInfo.category in this.data) {
+            if (cacheInfo.category in this.collection) {
+                return;
+            }
+
+            if (!(cacheInfo.category in this.collection)) {
+                this.collection[cacheInfo.category] = {};
+            }
+
+            this.collection[cacheInfo.category][cacheInfo.key] = collection;
+        } else {
+            throw "Unregistered cache for this type (" + cacheInfo.category + ")";
+        }
     }
 };
 

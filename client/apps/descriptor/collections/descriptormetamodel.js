@@ -8,22 +8,12 @@
  * @details 
  */
 
-var DescriptorMetaModelModel = require('../models/descriptormetamodel');
+let CountableCollection = require('../../main/collections/countable');
+let DescriptorMetaModelModel = require('../models/descriptormetamodel');
 
-var Collection = Backbone.Collection.extend({
+let Collection = CountableCollection.extend({
     url: window.application.url(['descriptor', 'meta-model']),
     model: DescriptorMetaModelModel,
-
-    parse: function(data) {
-        this.prev = data.prev;
-        this.cursor = data.cursor;
-        this.next = data.next;
-
-        this.perms = data.perms;
-
-        return data.items;
-    },
 });
 
 module.exports = Collection;
-

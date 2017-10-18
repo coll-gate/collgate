@@ -11,7 +11,7 @@
 import json
 
 from django.core.exceptions import SuspiciousOperation
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.shortcuts import get_object_or_404
 from django.utils import translation
 from django.utils.translation import ugettext_lazy as _
@@ -20,6 +20,7 @@ from descriptor.descriptorformattype import DescriptorFormatTypeManager
 from igdectk.common.helpers import int_arg
 from igdectk.rest import Format, Method
 from igdectk.rest.response import HttpResponseRest
+from main.cursor import CursorQuery
 
 from main.models import InterfaceLanguages
 from .descriptor import RestDescriptor
@@ -78,46 +79,42 @@ def get_descriptor_models(request):
     Returns a list of models of descriptor ordered by name.
     """
     results_per_page = int_arg(request.GET.get('more', 30))
-    cursor = request.GET.get('cursor')
+    cursor = json.loads(request.GET.get('cursor', 'null'))
     limit = results_per_page
+    sort_by = json.loads(request.GET.get('sort_by', '["name"]'))
+    order_by = sort_by
 
-    if cursor:
-        cursor_name, cursor_id = cursor.rsplit('/', 1)
-        qs = DescriptorModel.objects.filter(Q(name__gt=cursor_name))
-    else:
-        qs = DescriptorModel.objects.all()
+    cq = CursorQuery(DescriptorModel)
 
-    dms = qs.order_by('name')[:limit]
+    if request.GET.get('search'):
+        search = json.loads(request.GET['search'])
+        cq.filter(search)
 
-    dm_list = []
+    if request.GET.get('filters'):
+        filters = json.loads(request.GET['filters'])
+        cq.filter(filters)
 
-    for dm in dms:
-        dm_list.append({
+    cq.cursor(cursor, order_by)
+    cq.order_by(order_by).limit(limit)
+    cq.set_count('descriptor_model_types')
+
+    dm_items = []
+
+    for dm in cq:
+        dm_items.append({
             'id': dm.id,
             'name': dm.name,
             'verbose_name': dm.verbose_name,
             'description': dm.description,
-            'num_descriptor_model_types': dm.descriptor_model_types.all().count()
+            'num_descriptor_model_types': dm.descriptor_model_types__count
         })
-
-    if len(dm_list) > 0:
-        # prev cursor (asc order)
-        dm = dm_list[0]
-        prev_cursor = "%s/%s" % (dm['name'], dm['id'])
-
-        # next cursor (asc order)
-        dm = dm_list[-1]
-        next_cursor = "%s/%s" % (dm['name'], dm['id'])
-    else:
-        prev_cursor = None
-        next_cursor = None
 
     results = {
         'perms': [],
-        'items': dm_list,
-        'prev': prev_cursor,
+        'items': dm_items,
+        'prev': cq.prev_cursor,
         'cursor': cursor,
-        'next': next_cursor,
+        'next': cq.next_cursor
     }
 
     return HttpResponseRest(request, results)

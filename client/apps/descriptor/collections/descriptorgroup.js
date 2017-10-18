@@ -8,16 +8,16 @@
  * @details 
  */
 
-var CountableCollection = require('../../main/collections/countable');
-var DescriptorGroupModel = require('../models/descriptorgroup');
+let CountableCollection = require('../../main/collections/countable');
+let DescriptorGroupModel = require('../models/descriptorgroup');
 
-var Collection = CountableCollection.extend({
+let Collection = CountableCollection.extend({
     url: window.application.url(['descriptor', 'group']),
     model: DescriptorGroupModel,
 
     comparator: function (item1, item2) {
-        var item1Name = item1.get('name');
-        var item2Name = item2.get('name');
+        let item1Name = item1.get('name');
+        let item2Name = item2.get('name');
 
         return item1Name.localeCompare(item2Name /*, locale*/);
     }

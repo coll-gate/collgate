@@ -8,9 +8,9 @@
  * @details
  */
 
-var Marionette = require('backbone.marionette');
+let Marionette = require('backbone.marionette');
 
-var View = Marionette.View.extend({
+let View = Marionette.View.extend({
     tagName: 'tr',
     className: 'element object language',
     template: require('../templates/language.html'),
@@ -51,8 +51,8 @@ var View = Marionette.View.extend({
     },
 
     onEditLabel: function() {
-        var ChangeLabel = require('../../main/views/entitychangelabel');
-        var changeLabel = new ChangeLabel({
+        let ChangeLabel = require('../../main/views/entitychangelabel');
+        let changeLabel = new ChangeLabel({
             model: this.model,
             title: _t("Change the labels for the language")});
 

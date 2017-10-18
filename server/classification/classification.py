@@ -102,6 +102,7 @@ def get_classification_list(request):
 
     cq.cursor(cursor, order_by)
     cq.order_by(order_by).limit(limit)
+    cq.set_count('ranks')
 
     classification_items = []
 
@@ -113,7 +114,7 @@ def get_classification_list(request):
             'can_delete': classification.can_delete,
             'label': classification.get_label(),
             'description': classification.description,
-            'num_classification_ranks': classification.ranks.all().count()
+            'num_classification_ranks': classification.ranks__count
         }
 
         classification_items.append(c)

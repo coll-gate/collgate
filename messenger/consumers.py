@@ -63,7 +63,7 @@ def ws_message(message):
 def get_session_id(message):
     sessionid = None
 
-    headers = message.content['headers']
+    headers = message.get['headers']
     for header in headers:
         if len(header) > 1 and header[0] == b'cookie':
             for v in header:
@@ -87,7 +87,7 @@ def ws_connect_null(message):
 
 
 def ws_connect(message):
-    query_string = message.content.get('query_string', b'').decode('utf8')
+    query_string = message.get.get('query_string', b'').decode('utf8')
     parameters = urllib.parse.parse_qs(query_string)
 
     username = parameters.get('username', [''])[0]

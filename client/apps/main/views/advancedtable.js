@@ -1117,13 +1117,13 @@ var View = Marionette.CompositeView.extend({
         scroll || (scroll = false);
         more || (more = 20);
 
-        var view = this;
+        let view = this;
 
         if (more === -1) {
             more = this.capacity() + 1;
         }
 
-        if ((this.collection !== null) && (this.collection.next !== null)) {
+        if (this.collection && this.collection.next) {
             this.collection.fetch({
                 update: true, remove: false, data: {
                     cursor: this.collection.next,

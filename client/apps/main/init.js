@@ -15,13 +15,13 @@ require('./css/main.css');
 require('./utils/popupcell');
 require('./utils/asyncvalue');
 
-var MainModule = function() {
+let MainModule = function() {
     this.name = "main";
 };
 
 MainModule.prototype = {
     initialize : function(app, options) {
-        //var deferred = $.Deferred();
+        //let deferred = $.Deferred();
         //this.loaded = deferred.promise();
 
         this.models = {};
@@ -50,46 +50,13 @@ MainModule.prototype = {
         }, '1.0');
 
         //
-        // collections
-        //
-
-        var SelectOption = require('./renderers/selectoption');
-
-        var LanguageCollection = require('./collections/language');
-        this.collections.languages = new LanguageCollection();
-
-        this.views.languages = new SelectOption({
-            className: 'language',
-            collection: this.collections.languages
-        });
-
-        var InterfaceLanguageCollection = require('./collections/uilanguage');
-        this.collections.uilanguages = new InterfaceLanguageCollection();
-
-        this.views.uilanguages = new SelectOption({
-            className: 'ui-language',
-            collection: this.collections.uilanguages
-        });
-
-        var ContentTypeCollection = require('./collections/contenttype');
-        this.collections.contentTypes = new ContentTypeCollection();
-
-        this.views.contentTypes = new SelectOption({
-            className: 'content-type',
-            collection: this.collections.contentTypes
-        });
-
-        var EventMessageCollection = require('./collections/eventmessage');
-        this.collections.eventMessages = new EventMessageCollection();
-
-        //
         // routers
         //
 
-        var MainRouter = require('./routers/main');
+        let MainRouter = require('./routers/main');
         this.routers.main = new MainRouter();
 
-        var ProfileRouter = require('./routers/profile');
+        let ProfileRouter = require('./routers/profile');
         this.routers.profile = new ProfileRouter();
 
         //
@@ -97,23 +64,59 @@ MainModule.prototype = {
         //
 
         // global cache manager
-        var Cache = require('./utils/cache');
+        let Cache = require('./utils/cache');
         this.cache = new Cache();
+        this.cache.register('main');
         this.cache.register('entity');
         this.cache.register('entity_columns');
 
-        var EntityCacheFetcher = require('./utils/entitycachefetcher');
+        let EntityCacheFetcher = require('./utils/entitycachefetcher');
         this.cache.registerFetcher(new EntityCacheFetcher());
 
         // temporary dictionary
         this.tmp = {};
 
+        //
+        // collections
+        //
+
+        let SelectOption = require('./renderers/selectoption');
+
+        // cached collection for data languages
+        let LanguageCollection = require('./collections/language');
+        this.collections.languages = new LanguageCollection();
+
+        this.views.languages = new SelectOption({
+            className: 'language',
+            collection: this.collections.languages
+        });
+
+        let InterfaceLanguageCollection = require('./collections/uilanguage');
+        this.collections.uilanguages = new InterfaceLanguageCollection();
+
+        this.views.uilanguages = new SelectOption({
+            className: 'ui-language',
+            collection: this.collections.uilanguages
+        });
+
+        let ContentTypeCollection = require('./collections/contenttype');
+        this.collections.contentTypes = new ContentTypeCollection();
+
+        this.views.contentTypes = new SelectOption({
+            className: 'content-type',
+            collection: this.collections.contentTypes
+        });
+
+        // @todo should be on home view only...
+        let EventMessageCollection = require('./collections/eventmessage');
+        this.collections.eventMessages = new EventMessageCollection();
+
         // drag'n'drop manager
-        var DragAndDrop = require('./utils/dnd');
+        let DragAndDrop = require('./utils/dnd');
         this.dnd = new DragAndDrop();
 
         // global menu manager
-        var MenuManager = require('./utils/menumanager');
+        let MenuManager = require('./utils/menumanager');
         this.menus = new MenuManager($('ul.application-menu'));
 
         // cleanup initial menu
@@ -121,22 +124,22 @@ MainModule.prototype = {
 
         // and add them initiated by django server side
         if (typeof session.initialsMenus !== "undefined") {
-            var Menu = require('./utils/menu');
-            var MenuEntry = require('./utils/menuentry');
-            var MenuSeparator = require('./utils/menuseparator');
+            let Menu = require('./utils/menu');
+            let MenuEntry = require('./utils/menuentry');
+            let MenuSeparator = require('./utils/menuseparator');
 
-            for (var i = 0; i < session.initialsMenus.length; ++i) {
-                var iMenu = session.initialsMenus[i];
+            for (let i = 0; i < session.initialsMenus.length; ++i) {
+                let iMenu = session.initialsMenus[i];
 
                 // menu
-                var menu = new Menu(iMenu.name, iMenu.label, iMenu.order, iMenu.auth);
+                let menu = new Menu(iMenu.name, iMenu.label, iMenu.order, iMenu.auth);
 
                 // and entries
-                for (var j = 0; j < iMenu.entries.length; ++j) {
-                    var iMenuEntry = iMenu.entries[j];
+                for (let j = 0; j < iMenu.entries.length; ++j) {
+                    let iMenuEntry = iMenu.entries[j];
 
                     if (iMenuEntry.type === 'entry') {
-                        var menuEntry = new MenuEntry(
+                        let menuEntry = new MenuEntry(
                             iMenuEntry.name,
                             iMenuEntry.label,
                             iMenuEntry.url,
@@ -146,7 +149,7 @@ MainModule.prototype = {
 
                         menu.addEntry(menuEntry);
                     } else if (iMenuEntry.type === 'separator') {
-                        var menuSeparator = new MenuSeparator(iMenuEntry.order, iMenuEntry.auth);
+                        let menuSeparator = new MenuSeparator(iMenuEntry.order, iMenuEntry.auth);
                         menu.addEntry(menuSeparator);
                     }
                 }
@@ -157,19 +160,21 @@ MainModule.prototype = {
     },
 
     start: function(app, options) {
+        //
         // main view
-        var MainView = require('./views/main');
-        var mainView = new MainView();
+        //
+        let MainView = require('./views/main');
+        let mainView = new MainView();
         application.showView(mainView);
 
-        var LeftBarView = require('./views/leftbar');
+        let LeftBarView = require('./views/leftbar');
         mainView.showChildView('left', new LeftBarView());
 
         // render menus
         this.menus.render();
 
         // messenger web-socket
-        var Messenger = require('./utils/messenger');
+        let Messenger = require('./utils/messenger');
         this.messenger = new Messenger();
 
         if (session.user.isAuth) {
@@ -187,9 +192,9 @@ MainModule.prototype = {
      * Setup the default left view, meaning the left bar view.
      */
     defaultLeftView: function() {
-        var mainView = application.getView();
+        let mainView = application.getView();
 
-        var LeftBarView = require('./views/leftbar');
+        let LeftBarView = require('./views/leftbar');
         mainView.showChildView('left', new LeftBarView());
     },
 
@@ -197,7 +202,7 @@ MainModule.prototype = {
      * Get current left view.
      */
     getLeftView: function() {
-        var mainView = application.getView();
+        let mainView = application.getView();
         return mainView.getChildView('left');
     },
 
@@ -205,7 +210,7 @@ MainModule.prototype = {
      * Setup the default right view, meaning an empty area.
      */
     defaultRightView: function() {
-        var mainView = application.getView();
+        let mainView = application.getView();
         mainView.getRegion('right').empty();
     },
 
@@ -213,7 +218,7 @@ MainModule.prototype = {
      * Get current right view.
      */
     getRightView: function() {
-        var mainView = application.getView();
+        let mainView = application.getView();
         return mainView.getChildView('right');
     },
 
@@ -249,7 +254,7 @@ MainModule.prototype = {
      * @returns {boolean} True is the view is on foreground (no model upside, or glass pane)
      */
     isForeground: function(view) {
-        var body = $('body');
+        let body = $('body');
 
         if ((body.children('div.modal-backdrop.in').length && !view.$el.closest('div.modal.in').length) ||
             body.children('div.glasspane').length) {
@@ -264,7 +269,7 @@ MainModule.prototype = {
      * @param view
      */
     showContent: function(view) {
-        return application.getView().showChildView('content', view);
+        return window.application.getView().showChildView('content', view);
     },
 
     /**
@@ -272,7 +277,7 @@ MainModule.prototype = {
      * @returns Marionette.View or undefined
      */
     viewContent: function() {
-        return application.getView().getChildView('content');
+        return window.application.getView().getChildView('content');
     }
 };
 

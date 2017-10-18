@@ -12,44 +12,10 @@ import datetime
 
 from django.core.cache import cache
 
-# @todo may could remove that manager...
-
-
-class CacheEntry(object):
-    """
-    Cache object entry.
-    """
-
-    DEFAULT_VALIDITY = 60*60*3   # 3 minutes
-
-    def __init__(self, category, name, validity=None):
-        self.category = category
-        self.name = name
-        self.datetime = datetime.datetime.utcnow()
-        self.validity = validity if validity is not None else CacheEntry.DEFAULT_VALIDITY
-
-    def clear(self):
-        if cache and self.category and self.name:
-            cache.set("%s__%s" % (self.category, self.name), None)
-
-    @property
-    def expires(self):
-        return self.datetime + datetime.timedelta(seconds=self.validity)
-
-    @property
-    def content(self):
-        return cache.get("%s__%s" % (self.category, self.name))
-
-    @content.setter
-    def content(self, content):
-        if content:
-            self.datetime = datetime.datetime.utcnow()
-            cache.set("%s__%s" % (self.category, self.name), content, self.validity)
-
 
 class CacheManager(object):
     """
-    Global cache manager and validity. Models are watched using django signals.
+    Helper in front of cache API. Models are watched using django signals.
     """
 
     def __init__(self):
@@ -59,12 +25,13 @@ class CacheManager(object):
         if category not in self.categories:
             self.categories[category] = {}
 
-    def set(self, category, name, validity=None):
+    def set(self, category, name, content, validity=None):
         """
         Set a cache object.
 
         :param category: Name of the category (must be previously registered)
         :param name: Key name of the cache.
+        :param content: Cache content.
         :param validity: During in seconds of the validity of the cache.
         :return:
         """
@@ -73,10 +40,50 @@ class CacheManager(object):
         if cache_category is None:
             raise ValueError("Unregistered cache manager category")
 
-        cache_entry = CacheEntry(category, name, validity)
-        cache_category[name] = cache_entry
+        cache.get("%s__%s" % (category, name), content, validity)
 
-        return cache_entry
+    def delete(self, category, name):
+        """
+        Delete a cache entry.
+        :param category: Prefix
+        :param name: Name can contains wild-char
+        """
+        cache_category = self.categories.get(category)
+
+        if cache_category is None:
+            raise ValueError("Unregistered cache manager category")
+
+        if '*' in name:
+            cache.delete_pattern("%s__%s" % (category, name))
+        else:
+            cache.delete("%s__%s" % (category, name))
+
+        # if name.endswith('*'):
+        #     match = name.rstrip('*')
+        #     rm_list = []
+        #
+        #     for cache_entry in cache_category:
+        #         if cache_entry.startswith(match):
+        #             rm_list.append(cache_entry)
+        #
+        #     for cache_entry in rm_list:
+        #         cache_category[cache_entry].clear()
+        #         del cache_category[cache_entry]
+        #
+        # elif name.startswith('*'):
+        #     match = name.lstrip('*')
+        #     rm_list = []
+        #
+        #     for cache_entry in cache_category:
+        #         if cache_entry.endswith(match):
+        #             rm_list.append(cache_entry)
+        #
+        #     for cache_entry in rm_list:
+        #         cache_category[cache_entry].clear()
+        #         del cache_category[cache_entry]
+        #
+        # elif name in cache_category:
+        #     del cache_category[name]
 
     def get(self, category, name):
         cache_category = self.categories.get(category)
@@ -84,52 +91,15 @@ class CacheManager(object):
         if cache_category is None:
             raise ValueError("Unregistered cache manager category")
 
-        return cache_category.get(name)
+        return cache.get("%s__%s" % (category, name))
 
-    def unset(self, category, name):
+    def get_or_set(self, category, name, default, validity):
         cache_category = self.categories.get(category)
 
         if cache_category is None:
             raise ValueError("Unregistered cache manager category")
 
-        if name.endswith('*'):
-            match = name.rstrip('*')
-            rm_list = []
-
-            for cache_entry in cache_category:
-                if cache_entry.startswith(match):
-                    rm_list.append(cache_entry)
-
-            for cache_entry in rm_list:
-                cache_category[cache_entry].clear()
-                del cache_category[cache_entry]
-
-        elif name.startswith('*'):
-            match = name.lstrip('*')
-            rm_list = []
-
-            for cache_entry in cache_category:
-                if cache_entry.endswith(match):
-                    rm_list.append(cache_entry)
-
-            for cache_entry in rm_list:
-                cache_category[cache_entry].clear()
-                del cache_category[cache_entry]
-
-        elif name in cache_category:
-            del cache_category[name]
-
-    def content(self, category, name):
-        cache_category = self.categories.get(category)
-
-        if cache_category is None:
-            raise ValueError("Unregistered cache manager category")
-
-        cache_entry = cache_category.get(name)
-        if cache_entry:
-            return cache_entry.content
-        else:
-            return None
+        return cache.get_or_set("%s__%s" % (category, name), default, validity)
 
     def make_cache_name(self, *kargs):
         return ":".join(kargs)
@@ -155,10 +125,10 @@ def named_cache(category, name, cache_timeout):
             else:
                 key_name = name(kwargs)
 
-            response = cache_manager.content(category, key_name)
+            response = cache_manager.get(category, key_name)
             if not response:
                 response = func(*args, **kwargs)
-                cache_manager.set(category, key_name, cache_timeout).content = response
+                cache_manager.set(category, key_name, response, cache_timeout)
             return response
         return foo
     return wrapper

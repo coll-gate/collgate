@@ -12,7 +12,7 @@ var Marionette = require('backbone.marionette');
 
 var TitleView = Marionette.View.extend({
     tagName: "span",
-    template: _.template('<span name="title"></span><span class="heading" name="object"></span>'),
+    template: _.template('<span class="text-selection-none" name="title"></span><span class="heading text-selection-all" name="object"></span>'),
 
     ui: {
         glyphicon: null,

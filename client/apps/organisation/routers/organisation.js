@@ -8,22 +8,22 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
+let Marionette = require('backbone.marionette');
 
-var GRCModel = require('../models/grc');
-var OrganisationModel = require('../models/organisation');
+let GRCModel = require('../models/grc');
+let OrganisationModel = require('../models/organisation');
 
-var OrganisationCollection = require('../collections/organisation');
+let OrganisationCollection = require('../collections/organisation');
 
-var OrganisationListView = require('../views/organisationlist');
-var OrganisationListFilterView = require('../views/organisationlistfilter');
-var OrganisationLayout = require('../views/organisationlayout');
+let OrganisationListView = require('../views/organisationlist');
+let OrganisationListFilterView = require('../views/organisationlistfilter');
+let OrganisationLayout = require('../views/organisationlayout');
 
-var DefaultLayout = require('../../main/views/defaultlayout');
-var ScrollingMoreView = require('../../main/views/scrollingmore');
-var TitleView = require('../../main/views/titleview');
+let DefaultLayout = require('../../main/views/defaultlayout');
+let ScrollingMoreView = require('../../main/views/scrollingmore');
+let TitleView = require('../../main/views/titleview');
 
-var Router = Marionette.AppRouter.extend({
+let Router = Marionette.AppRouter.extend({
     routes : {
         "app/organisation/grc/": "getGRC",
         "app/organisation/grc/organisation/": "getGRCOrganisationList",
@@ -32,13 +32,13 @@ var Router = Marionette.AppRouter.extend({
     },
 
     getGRC: function () {
-        var grc = new GRCModel();
+        let grc = new GRCModel();
 
-        var defaultLayout = new DefaultLayout();
+        let defaultLayout = new DefaultLayout();
         application.main.showContent(defaultLayout);
 
-        var GRCDetailsView = require('../views/grcdetails');
-        var grcDetails = new GRCDetailsView({model: grc});
+        let GRCDetailsView = require('../views/grcdetails');
+        let grcDetails = new GRCDetailsView({model: grc});
 
         grc.fetch().then(function () {
             defaultLayout.showChildView('title', new TitleView({title: _t("GRC details"), model: grc}));
@@ -47,15 +47,15 @@ var Router = Marionette.AppRouter.extend({
     },
 
     getGRCOrganisationList : function() {
-        var collection = new OrganisationCollection([], {grc: true});
+        let collection = new OrganisationCollection([], {grc: true});
 
-        var defaultLayout = new DefaultLayout({});
+        let defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
         defaultLayout.showChildView('title', new TitleView({title: _t("List of GRC partners")}));
 
         collection.fetch().then(function () {
-            var organisationListView = new OrganisationListView({collection : collection});
+            let organisationListView = new OrganisationListView({collection : collection});
 
             defaultLayout.showChildView('content', organisationListView);
             defaultLayout.showChildView('content-bottom', new ScrollingMoreView({targetView: organisationListView}));
@@ -65,15 +65,15 @@ var Router = Marionette.AppRouter.extend({
     },
 
     getOrganisationList : function() {
-        var collection = new OrganisationCollection([]);
+        let collection = new OrganisationCollection([]);
 
-        var defaultLayout = new DefaultLayout({});
+        let defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
         defaultLayout.showChildView('title', new TitleView({title: _t("List of organisations")}));
 
         collection.fetch().then(function () {
-            var organisationListView = new OrganisationListView({collection : collection});
+            let organisationListView = new OrganisationListView({collection : collection});
 
             defaultLayout.showChildView('content', organisationListView);
             defaultLayout.showChildView('content-bottom', new ScrollingMoreView({targetView: organisationListView}));
@@ -85,12 +85,12 @@ var Router = Marionette.AppRouter.extend({
     getOrganisation : function(id, tab) {
         tab || (tab = "");
 
-        var organisation = new OrganisationModel({id: id});
+        let organisation = new OrganisationModel({id: id});
 
-        var defaultLayout = new DefaultLayout();
+        let defaultLayout = new DefaultLayout();
         application.main.showContent(defaultLayout);
 
-        var organisationLayout = new OrganisationLayout({model: organisation, initialTab: tab.replace('/', '')});
+        let organisationLayout = new OrganisationLayout({model: organisation, initialTab: tab.replace('/', '')});
 
         organisation.fetch().then(function() {
             defaultLayout.showChildView('title', new TitleView({title: _t("Organisation"), model: organisation}));

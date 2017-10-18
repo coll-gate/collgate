@@ -54,7 +54,7 @@ def get_languages(request):
     lang = translation.get_language()
     cache_name = 'languages:%s' % lang
 
-    languages = cache_manager.content('main', cache_name)
+    languages = cache_manager.get('main', cache_name)
 
     if languages:
         return HttpResponseRest(request, languages)
@@ -69,13 +69,13 @@ def get_languages(request):
         })
 
     # cache for 24h
-    cache_manager.set('main', cache_name, 60*60*24).content = languages
+    cache_manager.set('main', cache_name, languages, 60*60*24)
 
     return HttpResponseRest(request, languages)
 
 
 @RestLanguage.def_admin_request(Method.POST, Format.JSON, content={
-    "type": "object",
+        "type": "object",
         "properties": {
             "code": Language.CODE_VALIDATOR,
             "label": Language.LABEL_VALIDATOR
@@ -103,7 +103,13 @@ def post_language(request):
         'label': label
     }
 
-    cache_manager.unset('main', 'languages:*')
+    cache_manager.delete('main', 'languages:*')
+
+    from igdectk.module.manager import module_manager
+    messenger_module = module_manager.get_module('messenger')
+    from messenger.commands import COMMAND_CACHE_INVALIDATION
+    messenger_module.tcp_client.message(COMMAND_CACHE_INVALIDATION, {
+        'category': 'main', 'name': 'languages:*', 'values': None})
 
     return HttpResponseRest(request, results)
 
@@ -116,7 +122,13 @@ def delete_language(request, code):
     # it is not really a problem because the code is a standard
     language.delete()
 
-    cache_manager.unset('main', 'languages:*')
+    cache_manager.delete('main', 'languages:*')
+
+    from igdectk.module.manager import module_manager
+    messenger_module = module_manager.get_module('messenger')
+    from messenger.commands import COMMAND_CACHE_INVALIDATION
+    messenger_module.tcp_client.message(COMMAND_CACHE_INVALIDATION, {
+        'category': 'main', 'name': 'languages:*', 'values': None})
 
     return HttpResponseRest(request, {})
 
@@ -162,7 +174,13 @@ def change_language_labels(request, code):
         'label': language.get_label()
     }
 
-    cache_manager.unset('main', 'languages:*')
+    cache_manager.delete('main', 'languages:*')
+
+    from igdectk.module.manager import module_manager
+    messenger_module = module_manager.get_module('messenger')
+    from messenger.commands import COMMAND_CACHE_INVALIDATION
+    messenger_module.tcp_client.message(COMMAND_CACHE_INVALIDATION, {
+        'category': 'main', 'name': 'languages:*', 'values': None})
 
     return HttpResponseRest(request, result)
 
@@ -175,7 +193,7 @@ def get_ui_languages(request):
     lang = translation.get_language()
     cache_name = 'ui-languages:%s' % lang
 
-    results = cache_manager.content('main', cache_name)
+    results = cache_manager.get('main', cache_name)
 
     if results:
         return results
@@ -190,6 +208,6 @@ def get_ui_languages(request):
         })
 
     # cache for 24h
-    cache_manager.set('main', cache_name, 60*60*24).content = results
+    cache_manager.set('main', cache_name, results, 60*60*24)
 
     return HttpResponseRest(request, languages)

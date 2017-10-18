@@ -573,13 +573,13 @@ def _cache_update(sender, instance, created, **kwargs):
 
         # @todo about values ?
         for invalidator in sender.on_server_cache_update():
-            cache_manager.unset(invalidator['category'], invalidator['name'])
+            cache_manager.delete(invalidator['category'], invalidator['name'])
 
     if hasattr(sender, 'server_cache_update'):
         from main.cache import cache_manager
 
         for invalidator in sender.server_cache_update:
-            cache_manager.unset(invalidator, '*')
+            cache_manager.delete(invalidator, '*')
 
     if hasattr(instance, 'on_client_cache_update'):
         for invalidator in instance.on_client_cache_update():

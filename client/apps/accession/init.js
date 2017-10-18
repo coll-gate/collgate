@@ -8,7 +8,7 @@
  * @details
  */
 
-var AccessionModule = function () {
+let AccessionModule = function () {
     this.name = "accession";
 };
 
@@ -27,13 +27,13 @@ AccessionModule.prototype = {
         }
 
         // register the meta-model type of descriptors
-        var metaModelTypes = [
+        let metaModelTypes = [
             'accession',
             'batch'
         ];
 
-        for (var i = 0; i < metaModelTypes.length; ++i) {
-            var moduleName = metaModelTypes[i].replace(/_/g, '').toLowerCase();
+        for (let i = 0; i < metaModelTypes.length; ++i) {
+            let moduleName = metaModelTypes[i].replace(/_/g, '').toLowerCase();
             app.descriptor.descriptorMetaModelTypes.registerElement(metaModelTypes[i], require('./descriptormetamodeltypes/' + moduleName));
         }
 
@@ -41,9 +41,10 @@ AccessionModule.prototype = {
         // main collections
         //
 
-        var SelectOption = require('../main/renderers/selectoption');
+        let SelectOption = require('../main/renderers/selectoption');
 
-        var EntitySynonymTypeCollection = require('../main/collections/entitysynonymtype');
+        // @todo may be a cache collection or uses a cachefetcher for accession synonym type
+        let EntitySynonymTypeCollection = require('../main/collections/entitysynonymtype');
         this.collections.accessionSynonymTypes = new EntitySynonymTypeCollection([], {
             target_model: 'accession.accession'});
 
@@ -52,7 +53,8 @@ AccessionModule.prototype = {
             collection: this.collections.accessionSynonymTypes
         });
 
-        var BatchActionTypeCollection = require('./collections/batchactiontype');
+        // @todomay be a cache collection or uses a cachefetcher for batch action type
+        let BatchActionTypeCollection = require('./collections/batchactiontype');
         this.collections.batchActionTypes = new BatchActionTypeCollection();
 
         this.views.batchActionTypes = new SelectOption({
@@ -66,9 +68,9 @@ AccessionModule.prototype = {
         // controllers
         //
 
-        var AccessionController = require('./controllers/accession');
-        var BatchController = require('./controllers/batch');
-        var PanelController = require('./controllers/panel');
+        let AccessionController = require('./controllers/accession');
+        let BatchController = require('./controllers/batch');
+        let PanelController = require('./controllers/panel');
         this.controllers.accession = new AccessionController();
         this.controllers.batch = new BatchController();
         this.controllers.panel = new PanelController();
@@ -77,13 +79,13 @@ AccessionModule.prototype = {
         // routers
         //
 
-        var AccessionRouter = require('./routers/accession');
+        let AccessionRouter = require('./routers/accession');
         this.routers.accession = new AccessionRouter();
 
-        var BatchRouter = require('./routers/batch');
+        let BatchRouter = require('./routers/batch');
         this.routers.batch = new BatchRouter();
 
-        var PanelRouter = require('./routers/panel');
+        let PanelRouter = require('./routers/panel');
         this.routers.panel = new PanelRouter();
 
     },

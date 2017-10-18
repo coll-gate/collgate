@@ -8,7 +8,7 @@
  * @details 
  */
 
-var OrganisationModule = function() {
+let OrganisationModule = function() {
     this.name = "organisation";
 };
 
@@ -30,9 +30,10 @@ OrganisationModule.prototype = {
         // collections
         //
 
-        var SelectOption = require('../main/renderers/selectoption');
+        let SelectOption = require('../main/renderers/selectoption');
 
-        var OrganisationTypeCollection = require('./collections/organisationtype');
+        // @todo may be a cache collection or uses a cachefetcher for organisationtype
+        let OrganisationTypeCollection = require('./collections/organisationtype');
         this.collections.organisationTypes = new OrganisationTypeCollection();
 
         this.views.organisationTypes = new SelectOption({
@@ -44,17 +45,17 @@ OrganisationModule.prototype = {
         // controllers
         //
 
-        var OrganisationController = require('./controllers/organisation');
+        let OrganisationController = require('./controllers/organisation');
         this.controllers.organisation = new OrganisationController();
 
         //
         // routers
         //
 
-        var OrganisationRouter = require('./routers/organisation');
+        let OrganisationRouter = require('./routers/organisation');
         this.routers.organisation = new OrganisationRouter();
 
-        var EstablishmentRouter = require('./routers/establishment');
+        let EstablishmentRouter = require('./routers/establishment');
         this.routers.establishment = new EstablishmentRouter();
     },
 

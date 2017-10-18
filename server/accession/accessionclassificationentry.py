@@ -172,7 +172,8 @@ def change_accession_id_classification_entry(request, acc_id):
             if classification_entry_id == accession.primary_classification_entry:
                 raise SuspiciousOperation(_('It is not permit to remove the primary classification entry'))
 
-            accession.classifications_entries.filter(classification_entry_id=classification_entry_id).delete()
+            AccessionClassificationEntry.objects.filter(
+                accession=accession, classification_entry_id=classification_entry_id).delete()
         else:
             raise SuspiciousOperation('Invalid action')
 

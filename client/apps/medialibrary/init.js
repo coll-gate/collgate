@@ -8,14 +8,14 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
+let Marionette = require('backbone.marionette');
 
 require("./css/medialibrary.css");
 
 require("imageviewer");
 require("imageviewer/dist/viewer.min.css");
 
-var MediaLibraryModule = function() {
+let MediaLibraryModule = function() {
     this.name = "medialibrary";
 };
 
@@ -38,13 +38,13 @@ MediaLibraryModule.prototype = {
         //
 
         // register the format type of descriptors
-        var widgets = [
+        let widgets = [
             'media',
             'media_collection'
         ];
 
-        for (var i = 0; i < widgets.length; ++i) {
-            var moduleName = widgets[i].replace('_', '').toLowerCase();
+        for (let i = 0; i < widgets.length; ++i) {
+            let moduleName = widgets[i].replace('_', '').toLowerCase();
             application.descriptor.widgets.registerElement(widgets[i], require('./widgets/' + moduleName));
         }
 
@@ -52,7 +52,7 @@ MediaLibraryModule.prototype = {
         // routers
         //
 
-        //var MediaLibraryRouter = require('./routers/medialibrary');
+        //let MediaLibraryRouter = require('./routers/medialibrary');
         //this.routers.medialibrary = new MediaLibraryRouter();
     },
 
@@ -65,4 +65,3 @@ MediaLibraryModule.prototype = {
 };
 
 module.exports = MediaLibraryModule;
-

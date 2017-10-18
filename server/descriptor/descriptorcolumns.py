@@ -62,9 +62,9 @@ def get_columns_name_for_describable_content_type(request, content_type_name):
     else:
         cache_name = cache_manager.make_cache_name(content_type_name)
 
-    results = cache_manager.content('_entity_columns', cache_name)
+    results = cache_manager.get('_entity_columns', cache_name)
 
-    if results:
+    if results is not None:
         return HttpResponseRest(request, results)
 
     dmms = DescriptorMetaModel.objects.filter(target=content_type).values_list(
@@ -132,7 +132,7 @@ def get_columns_name_for_describable_content_type(request, content_type_name):
     }
 
     # cache for 1 day
-    cache_manager.set('_entity_columns', cache_name, 60*60*24).content = results
+    cache_manager.set('_entity_columns', cache_name, results, 60*60*24)
 
     return HttpResponseRest(request, results)
 
@@ -142,12 +142,12 @@ def get_description(model):
     Returns information about columns for a specified model. All columns of any related meta-models.
     """
     cache_name = cache_manager.make_cache_name('description', '%s.%s' % (model._meta.app_label, model._meta.model_name))
-    results = cache_manager.content('_descriptor', cache_name)
+    results = cache_manager.get('_descriptor', cache_name)
 
-    if results:
+    if results is not None:
         return results
 
-    content_type = get_object_or_404(ContentType, app_label=model._meta.app_label, model=model._meta.model_name)
+    content_type = ContentType.objects.get_by_natural_key(app_label=model._meta.app_label, model=model._meta.model_name)
 
     dmms = DescriptorMetaModel.objects.filter(target=content_type).values_list(
         "descriptor_models__descriptor_model_types__id", flat=True)
@@ -168,6 +168,6 @@ def get_description(model):
         }
 
     # cache for 1 day
-    cache_manager.set('_descriptor', cache_name, 60*60*24).content = results
+    cache_manager.set('_descriptor', cache_name, results, 60*60*24)
 
     return results
