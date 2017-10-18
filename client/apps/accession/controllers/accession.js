@@ -146,7 +146,7 @@ var Controller = Marionette.Object.extend({
                     select.select2({
                         dropdownParent: this.ui.primary_classification_entry.parent(),
                         ajax: {
-                            url: awindow.application.url(['classification' ,'classificationentry', 'search']),
+                            url: window.application.url(['classification' ,'classificationentry', 'search']),
                             dataType: 'json',
                             delay: 250,
                             data: function (params) {

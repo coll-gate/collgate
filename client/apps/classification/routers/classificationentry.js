@@ -8,24 +8,24 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
+let Marionette = require('backbone.marionette');
 
-var ClassificationModel = require('../models/classification');
-var ClassificationEntryModel = require('../models/classificationentry');
+let ClassificationModel = require('../models/classification');
+let ClassificationEntryModel = require('../models/classificationentry');
 
-var ClassificationEntryListView = require('../views/classificationentrylist');
-var EntityListFilterView = require('../../descriptor/views/entitylistfilter');
+let ClassificationEntryListView = require('../views/classificationentrylist');
+let EntityListFilterView = require('../../descriptor/views/entitylistfilter');
 
-var ClassificationEntryLayout = require('../views/classificationentrylayout');
+let ClassificationEntryLayout = require('../views/classificationentrylayout');
 
-var DefaultLayout = require('../../main/views/defaultlayout');
-var TitleView = require('../../main/views/titleview');
-var ScrollingMoreView = require('../../main/views/scrollingmore');
+let DefaultLayout = require('../../main/views/defaultlayout');
+let TitleView = require('../../main/views/titleview');
+let ScrollingMoreView = require('../../main/views/scrollingmore');
 
-var ClassificationEntryCollection = require('../collections/classificationentry');
+let ClassificationEntryCollection = require('../collections/classificationentry');
 
 
-var ClassificationEntryRouter = Marionette.AppRouter.extend({
+let ClassificationEntryRouter = Marionette.AppRouter.extend({
     routes : {
         "app/classification/classificationentry/": "getClassificationEntryList",
         "app/classification/classificationentry/:id/*tab": "getClassificationEntry",
@@ -33,7 +33,7 @@ var ClassificationEntryRouter = Marionette.AppRouter.extend({
     },
 /*
     constructor: function() {
-        var args = Array.prototype.slice.call(arguments);
+        let args = Array.prototype.slice.call(arguments);
         Marionette.AppRouter.apply(this, args);
 
         // set up the onRoute processing, from the existing route event
@@ -43,7 +43,7 @@ var ClassificationEntryRouter = Marionette.AppRouter.extend({
     // process the route event and trigger the onRoute method call, if it exists
     _processOnRoute: function(routeName, routeArgs) {
         // find the path that matched
-        var routePath = _.invert(this.appRoutes)[routeName];
+        let routePath = _.invert(this.appRoutes)[routeName];
 
         // make sure an onRoute is there, and call it
         if (_.isFunction(this.onRoute)) {
@@ -56,15 +56,15 @@ var ClassificationEntryRouter = Marionette.AppRouter.extend({
     },
 */
     getClassificationEntryList : function() {
-        var collection = new ClassificationEntryCollection();
+        let collection = new ClassificationEntryCollection();
 
-        var defaultLayout = new DefaultLayout({});
+        let defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
         defaultLayout.showChildView('title', new TitleView({title: _t("List of classifications entries")}));
 
         // get available columns
-        var columns = application.main.cache.lookup({
+        let columns = application.main.cache.lookup({
             type: 'entity_columns',
             format: {model: 'classification.classificationentry'}
         });
@@ -74,7 +74,7 @@ var ClassificationEntryRouter = Marionette.AppRouter.extend({
                 return;
             }
 
-            var classificationEntryListView = new ClassificationEntryListView({
+            let classificationEntryListView = new ClassificationEntryListView({
                 collection : collection, columns: data[0].value});
 
             defaultLayout.showChildView('content', classificationEntryListView);
@@ -93,31 +93,29 @@ var ClassificationEntryRouter = Marionette.AppRouter.extend({
     getClassificationEntry : function(id, tab) {
         tab || (tab = "");
 
-        var classificationEntry = new ClassificationEntryModel({id: id});
+        let classificationEntry = new ClassificationEntryModel({id: id});
 
-        var defaultLayout = new DefaultLayout();
+        let defaultLayout = new DefaultLayout();
         application.main.showContent(defaultLayout);
 
-        var classificationEntryLayout = new ClassificationEntryLayout({model: classificationEntry, initialTab: tab.replace('/', '')});
+        let classificationEntryLayout = new ClassificationEntryLayout({model: classificationEntry, initialTab: tab.replace('/', '')});
 
         classificationEntry.fetch().then(function () {
             defaultLayout.showChildView('title', new TitleView({title: _t("Classification entry details"), model: classificationEntry}));
             defaultLayout.showChildView('content', classificationEntryLayout);
         });
-
-        classificationEntry.fetch();
     },
 
     getClassificationClassificationEntry: function(id) {
-        var classification = new ClassificationModel({id: id});
+        let classification = new ClassificationModel({id: id});
 
-        var defaultLayout = new DefaultLayout();
+        let defaultLayout = new DefaultLayout();
         application.main.showContent(defaultLayout);
 
-        var collection = new ClassificationEntryCollection([], {classification_id: id});
+        let collection = new ClassificationEntryCollection([], {classification_id: id});
 
         // get available columns
-        var columns = application.main.cache.lookup({
+        let columns = application.main.cache.lookup({
             type: 'entity_columns',
             format: {model: 'classification.classificationentry'}
         });
@@ -128,7 +126,7 @@ var ClassificationEntryRouter = Marionette.AppRouter.extend({
                 model: classification
             }));
 
-            var classificationEntryListView = new ClassificationEntryListView({
+            let classificationEntryListView = new ClassificationEntryListView({
                 classification: classification,
                 collection: collection,
                 columns: data[0].value

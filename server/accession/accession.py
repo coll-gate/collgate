@@ -120,7 +120,7 @@ def create_accession(request):
             grc_code = AccessionSynonym(
                 entity=accession,
                 name=code,
-                synonym_type=localsettings.synonym_type_accession_code,
+                synonym_type_id=localsettings.synonym_type_accession_code,
                 language='en')
             grc_code.save()
 
@@ -128,12 +128,26 @@ def create_accession(request):
             primary_name = AccessionSynonym(
                 entity=accession,
                 name=name,
-                synonym_type=localsettings.synonym_type_accession_name,
+                synonym_type_id=localsettings.synonym_type_accession_name,
                 language=language)
             primary_name.save()
 
             accession.synonyms.add(grc_code)
             accession.synonyms.add(primary_name)
+
+            # add related classification entries
+            classification_entry_bulk = []
+            for classification_entry in primary_classification_entry.related.all():
+                ace = AccessionClassificationEntry(
+                    primary=False,
+                    accession=accession,
+                    classification_entry=classification_entry
+                )
+
+                classification_entry_bulk.append(ace)
+
+            AccessionClassificationEntry.objects.bulk_create(classification_entry_bulk)
+
     except IntegrityError as e:
         DescriptorModelType.integrity_except(Accession, e)
 

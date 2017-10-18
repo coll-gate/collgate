@@ -53,68 +53,47 @@ def get_accession_id_classification_entry_list(request, acc_id):
     else:
         order_by = sort_by
 
-    tmp_order_by = []
-    for field in order_by:
-        f = field.lstrip('+-#')
-        is_descriptor = field[0] == '#' or field[1] == '#'
+    cq = CursorQuery(ClassificationEntry)
 
-        if f == 'id':
-            continue
-
-        if is_descriptor:
-            # only if sub-value of descriptor
-            if CursorQuery.FIELDS_SEP in f:
-                tmp_order_by.append('#' + 'classification_entry->' + f)
-        else:
-            if field.startswith('-'):
-                tmp_order_by.append('-classification_entry->' + f)
-            else:
-                tmp_order_by.append('+classification_entry->' + f)
-
-    order_by = tmp_order_by
-
-    cq = CursorQuery(AccessionClassificationEntry)
-
-    cq.filter(accession=accession.id)
-    cq.select_related('classification_entry')
-
-    cq.prefetch_related(Prefetch(
-        "classification_entry__synonyms",
-        queryset=ClassificationEntrySynonym.objects.all().order_by('synonym_type', 'language')))
+    cq.inner_join(
+        ClassificationEntry,
+        related_name='accession_set',
+        to_related_name='classification_entry',
+        accession=accession.pk)
 
     if request.GET.get('search'):
-        search = json.loads(request.GET['search'])
-        cq.filter(search)
+        cq.filter(json.loads(request.GET['search']))
 
     if request.GET.get('filters'):
-        filters = json.loads(request.GET['filters'])
-        cq.filter(filters)
+        cq.filter(json.loads(request.GET['filters']))
+
+    cq.prefetch_related(Prefetch(
+        "synonyms",
+        queryset=ClassificationEntrySynonym.objects.all().order_by('synonym_type', 'language')))
 
     cq.order_by(order_by)
 
     classification_entry_items = []
 
-    for accession_classification_entry in cq:
+    for classification_entry in cq:
         c = {
-            'id': accession_classification_entry.classification_entry.id,
-            'name': accession_classification_entry.classification_entry.name,
-            'parent': accession_classification_entry.classification_entry.parent_id,
-            'rank': accession_classification_entry.classification_entry.rank_id,
-            'descriptor_meta_model': accession_classification_entry.classification_entry.descriptor_meta_model_id,
-            'descriptors': accession_classification_entry.classification_entry.descriptors,
-            'parent_list': accession_classification_entry.classification_entry.parent_list,
+            'id': classification_entry.id,
+            'name': classification_entry.name,
+            'parent': classification_entry.parent_id,
+            'rank': classification_entry.rank_id,
+            'descriptor_meta_model': classification_entry.descriptor_meta_model_id,
+            'descriptors': classification_entry.descriptors,
+            'parent_list': classification_entry.parent_list,
             'synonyms': []
         }
 
-        # @todo why prefetch is not used ? maybe cache field name problem, else make a manual query
-        # maybe need a _synonyms_cache field ?
-        # for synonym in accession_classification_entry.classification_entry.synonyms.all():
-        #     c['synonyms'].append({
-        #         'id': synonym.id,
-        #         'name': synonym.name,
-        #         'synonym_type': synonym.synonym_type_id,
-        #         'language': synonym.language
-        #     })
+        for synonym in classification_entry.synonyms.all():
+            c['synonyms'].append({
+                'id': synonym.id,
+                'name': synonym.name,
+                'synonym_type': synonym.synonym_type_id,
+                'language': synonym.language
+            })
 
         classification_entry_items.append(c)
 

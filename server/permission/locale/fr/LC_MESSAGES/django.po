@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-09-01 10:27+0200\n"
+"POT-Creation-Date: 2017-10-16 12:05+0200\n"
 "PO-Revision-Date: 2016-05-26 11:49+0200\n"
 "Last-Translator: Frédéric SCHERMA <frederic.scherma@clermont.inra.fr>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,38 +29,45 @@ msgstr "Gérer les utilisateurs"
 msgid "Manage groups"
 msgstr "Gérer les groupes"
 
-#: base.py:243 base.py:302
+#: base.py:247 base.py:307
 msgid "Group name already in usage"
 msgstr "Nom de groupe déjà utilisé"
 
-#: base.py:279
+#: base.py:283
 msgid "Only empty groups can be deleted"
 msgstr "Seul les groupes vides peuvent être supprimés"
 
-#: base.py:486 base.py:626
-msgid "You are not allowed to add a permission"
+#: base.py:497 base.py:534
+#, fuzzy
+#| msgid "You are not allowed to add a permission"
+msgid "You are not allowed to changer a user"
 msgstr "Vous n'êtes pas autorisé à rajouter une permission"
 
-#: base.py:494 base.py:532 base.py:634 base.py:671
+#: base.py:505 base.py:543 base.py:645 base.py:683
 msgid "Only a superuser can change an auth.permission"
 msgstr "Seulement un super-utilisateur peu changer une auth.permission"
 
-#: base.py:523 base.py:662
-msgid "You are not allowed to remove a permission"
-msgstr "Vous n'êtes pas autorisé à supprimer une permission"
+#: base.py:637 base.py:673
+#, fuzzy
+#| msgid "You are not allowed to add a user into a group"
+msgid "You are not allowed to change a group"
+msgstr "Vous n'êtes pas autorisé à rajouter un utilisateur dans un groupe"
 
-#: base.py:705
+#: base.py:718
 msgid "You are not allowed to add a user into a group"
 msgstr "Vous n'êtes pas autorisé à rajouter un utilisateur dans un groupe"
 
-#: base.py:712
+#: base.py:725
 msgid "User already exists into the group"
 msgstr "L'utilisateur existe déjà dans ce groupe"
 
-#: base.py:731
+#: base.py:744
 msgid "You are not allowed to remove a user from a group"
 msgstr "Vous n'êtes pas autorisé à supprimer un utilisateur d'un groupe"
 
-#: base.py:738
+#: base.py:751
 msgid "User does not exists into the group"
 msgstr "L'utilisateur n'existe pas dans ce groupe"
+
+#~ msgid "You are not allowed to remove a permission"
+#~ msgstr "Vous n'êtes pas autorisé à supprimer une permission"

@@ -15,6 +15,8 @@ var Collection = CountableCollection.extend({
     url: function() {
         if (this.classification_id) {
             return window.application.url(['classification', 'classification', this.classification_id, 'classificationentry']);
+        } else if (this.classification_entry_id) {
+            return window.application.url(['classification', 'classificationentry', this.classification_entry_id, 'related']);
         } else {
             return window.application.url(['classification', 'classificationentry']);
         }
@@ -30,6 +32,10 @@ var Collection = CountableCollection.extend({
 
         if (options.classification_id) {
             this.classification_id = options.classification_id;
+        }
+
+        if (options.classification_entry_id) {
+            this.classification_entry_id = options.classification_entry_id;
         }
     }
 });

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-09-01 10:27+0200\n"
+"POT-Creation-Date: 2017-10-16 12:05+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,100 +16,139 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: apps.py:60
+#: apps.py:79
 msgid "Administration"
 msgstr ""
 
-#: apps.py:66
+#: apps.py:85
 msgid "List of classifications"
 msgstr ""
 
-#: apps.py:72 models.py:198
+#: apps.py:91
 msgid "Classification"
 msgstr ""
 
-#: apps.py:76
+#: apps.py:95
 msgid "Create classification entry"
 msgstr ""
 
-#: apps.py:85
+#: apps.py:104
 msgid "List classifications entries"
 msgstr ""
 
-#: classificationentry.py:90
-msgid "You are not allowed to create a classification entry"
+#: classification.py:220
+msgid "You are not allowed to create a classification"
 msgstr ""
 
-#: classificationentry.py:109
+#: classification.py:231 classification.py:569 classificationentry.py:110
 msgid "The language is not supported"
 msgstr ""
 
-#: classificationentry.py:154 classificationentry.py:227
-#: classificationentry.py:525 classificationentry.py:682
+#: classification.py:234
+msgid "A classification already exists with this name"
+msgstr ""
+
+#: classification.py:273 classification.py:384 classification.py:557
+#: classification.py:612 classification.py:710
+msgid "You are not allowed to modify a classification"
+msgstr ""
+
+#: classification.py:288 classification.py:350 classification.py:394
+#: classification.py:574
+msgid "This classification is locked"
+msgstr ""
+
+#: classification.py:296
+msgid "The name of classification already exists"
+msgstr ""
+
+#: classification.py:340 classification.py:654
+msgid "You are not allowed to remove a classification"
+msgstr ""
+
+#: classification.py:353
+msgid "There is some ranks into this classification"
+msgstr ""
+
+#: classification.py:402 classification.py:730
+msgid "Unsupported language identifier"
+msgstr ""
+
+#: classification.py:558
+msgid "You are not allowed to create a classification rank"
+msgstr ""
+
+#: classification.py:577
+msgid "A rank of classification already exists with this name"
+msgstr ""
+
+#: classification.py:613 classification.py:711
+msgid "You are not allowed to modify a classification rank"
+msgstr ""
+
+#: classification.py:625 classification.py:665 classification.py:722
+msgid "The classification owning this rank is locked"
+msgstr ""
+
+#: classification.py:633
+msgid "The name of classification rank already exists"
+msgstr ""
+
+#: classification.py:655
+msgid "You are not allowed to remove a classification rank"
+msgstr ""
+
+#: classification.py:668
+msgid "There is one or more entities using this classification rank"
+msgstr ""
+
+#: classificationentry.py:91
+msgid "You are not allowed to create a classification entry"
+msgstr ""
+
+#: classificationentry.py:156 classificationentry.py:228
+#: classificationentry.py:533 classificationentry.py:616
+#: classificationentry.py:748 classificationentry.py:823
 msgid "You are not allowed to list the classifications entries"
 msgstr ""
 
-#: classificationentry.py:384 classificationentrysynonym.py:144
-#: classificationentrysynonym.py:204 classificationentrysynonym.py:260
+#: classificationentry.py:392 classificationentrysynonym.py:141
+#: classificationentrysynonym.py:172 classificationentrysynonym.py:200
 msgid "You are not allowed to modify a classification entry"
 msgstr ""
 
-#: classificationentry.py:409
+#: classificationentry.py:417
 msgid ""
 "The rank of the parent must be lowest than the classification entry itself"
 msgstr ""
 
-#: classificationentry.py:505
+#: classificationentry.py:513
 msgid "You are not allowed to remove a classification entry"
 msgstr ""
 
-#: classificationentry.py:513
+#: classificationentry.py:521
 msgid ""
 "This classification entry is referred by one or more entities. It cannot be "
 "deleted."
 msgstr ""
 
-#: classificationentry.py:517
+#: classificationentry.py:525
 msgid "This classification entry has sub-ranks. It cannot be deleted."
 msgstr ""
 
-#: classificationentrysynonym.py:145
+#: classificationentrysynonym.py:142
 msgid "You are not allowed to add a synonym to a classification entry"
 msgstr ""
 
-#: classificationentrysynonym.py:161 controller.py:169
-msgid "Unsupported type of synonym"
-msgstr ""
-
-#: classificationentrysynonym.py:171 classificationentrysynonym.py:226
-#: controller.py:179
-msgid ""
-"The primary name could not be used by another synonym of classification entry"
-msgstr ""
-
-#: classificationentrysynonym.py:175 classificationentrysynonym.py:230
-#: controller.py:183
-msgid "Synonym already used as a primary name"
-msgstr ""
-
-#: classificationentrysynonym.py:179 classificationentrysynonym.py:234
-#: controller.py:187
-msgid "Synonym already used into this classification entry"
-msgstr ""
-
-#: classificationentrysynonym.py:206
+#: classificationentrysynonym.py:174
 msgid "You are not allowed to modify a synonym to a classification entry"
 msgstr ""
 
-#: classificationentrysynonym.py:252
-msgid "Unable to rename a synonym of a classification entry"
-msgstr ""
-
-#: classificationentrysynonym.py:262
+#: classificationentrysynonym.py:202
 msgid "You are not allowed to delete a synonym from a classification entry"
 msgstr ""
 
-#: classificationentrysynonym.py:269
+#: classificationentrysynonym.py:209
 msgid "It is not possible to remove a primary synonym"
 msgstr ""
 
@@ -142,6 +181,31 @@ msgstr ""
 
 #: controller.py:165
 msgid "Undefined synonym language"
+msgstr ""
+
+#: controller.py:169
+msgid "Unsupported type of synonym"
+msgstr ""
+
+#: controller.py:179
+msgid ""
+"The primary name could not be used by another synonym of classification entry"
+msgstr ""
+
+#: controller.py:183
+msgid "Synonym already used as a primary name"
+msgstr ""
+
+#: controller.py:187
+msgid "Synonym already used into this classification entry"
+msgstr ""
+
+#: descriptormetamodeltype.py:27
+msgid "Classification entry"
+msgstr ""
+
+#: descriptormetamodeltype.py:47
+msgid "The classification must refers to an existing object"
 msgstr ""
 
 #: models.py:32
@@ -196,38 +260,38 @@ msgstr ""
 msgid "Cultivar"
 msgstr ""
 
-#: models.py:52
-msgid "Primary"
-msgstr ""
-
-#: models.py:53 models.py:216
-msgid "Synonym"
-msgstr ""
-
-#: models.py:54
-msgid "Code"
-msgstr ""
-
-#: models.py:77
+#: models.py:76
 msgid "classification"
 msgstr ""
 
-#: models.py:125
+#: models.py:171
 msgid "classification rank"
 msgstr ""
 
-#: models.py:189
+#: models.py:280
+msgid "Name"
+msgstr ""
+
+#: models.py:289
 msgid "Rank"
 msgstr ""
 
-#: models.py:207
+#: models.py:300
+msgid "Parent"
+msgstr ""
+
+#: models.py:310
 msgid "Model"
 msgstr ""
 
-#: models.py:227
+#: models.py:320
+msgid "Synonym"
+msgstr ""
+
+#: models.py:331
 msgid "classification entry"
 msgstr ""
 
-#: models.py:317
+#: models.py:424
 msgid "classification entry synonym"
 msgstr ""
