@@ -8,10 +8,9 @@
  * @details
  */
 
-var Marionette = require('backbone.marionette');
-var Dialog = require('../../main/views/dialog');
+let Marionette = require('backbone.marionette');
 
-var View = Marionette.View.extend({
+let View = Marionette.View.extend({
     tagName: 'div',
     className: 'classification-entry-add',
     template: require('../templates/accessionclassificationentryadd.html'),
@@ -47,9 +46,9 @@ var View = Marionette.View.extend({
     },
 
     addClassificationEntry: function () {
-        var self = this;
+        let self = this;
 
-        var classificationEntryId = this.classificationEntryWidget.values();
+        let classificationEntryId = this.classificationEntryWidget.values();
         this.classificationEntryWidget.clear();
 
         $.ajax({

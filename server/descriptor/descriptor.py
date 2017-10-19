@@ -11,7 +11,7 @@
 import json
 
 from django.core.exceptions import SuspiciousOperation
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.db.models.functions import Length
 from django.shortcuts import get_object_or_404
 from django.utils import translation
@@ -126,13 +126,14 @@ def get_descriptor_group_list(request):
 
     cq.cursor(cursor, order_by)
     cq.order_by(order_by).limit(limit)
+    cq.set_count('types_set')
 
     group_list = []
     for group in cq:
         group_list.append({
             'id': group.pk,
             'name': group.name,
-            'num_descriptor_types': group.types_set.all().count(),
+            'num_descriptor_types': group.types_set__count,
             'can_delete': group.can_delete,
             'can_modify': group.can_modify
         })
@@ -268,6 +269,8 @@ def search_descriptor_groups(request):
     elif filters['method'] == 'icontains' and 'name' in filters['fields']:
         groups = DescriptorGroup.objects.filter(name__icontains=filters['name'])
 
+    groups = groups.annotate(Count('types_set'))
+
     groups_list = []
 
     if groups:
@@ -275,7 +278,7 @@ def search_descriptor_groups(request):
             groups_list.append({
                 "id": group.id,
                 "name": group.name,
-                'num_descriptor_types': group.types_set.all().count(),
+                'num_descriptor_types': group.types_set__count,
                 'can_delete': group.can_delete,
                 'can_modify': group.can_modify
             })
@@ -306,24 +309,35 @@ def get_descriptor_groups(request, grp_id):
 @RestDescriptorGroupIdType.def_auth_request(Method.GET, Format.JSON)
 def get_descriptor_types_for_group(request, grp_id):
     results_per_page = int_arg(request.GET.get('more', 30))
-    cursor = request.GET.get('cursor')
+    cursor = json.loads(request.GET.get('cursor', 'null'))
     limit = results_per_page
+    sort_by = json.loads(request.GET.get('sort_by', '["name"]'))
+    order_by = sort_by
 
     group = get_object_or_404(DescriptorGroup, id=int(grp_id))
 
-    if cursor:
-        cursor_name, cursor_id = cursor.rsplit('/', 1)
-        qs = group.types_set.filter(Q(name__gt=cursor_name))
-    else:
-        qs = group.types_set.all()
+    cq = CursorQuery(DescriptorType)
 
-    dts = qs.order_by('name')[:limit]
+    cq.filter(group=group.pk)
 
-    types_list = []
-    for descr_type in dts:
+    if request.GET.get('search'):
+        search = json.loads(request.GET['search'])
+        cq.filter(search)
+
+    if request.GET.get('filters'):
+        filters = json.loads(request.GET['filters'])
+        cq.filter(filters)
+
+    cq.cursor(cursor, order_by)
+    cq.order_by(order_by).limit(limit)
+
+    dt_items = []
+
+    for descr_type in cq:
+        # can add an extra query per row
         count = descr_type.count_num_values()
 
-        types_list.append({
+        dt_items.append({
             'id': descr_type.pk,
             'group': group.pk,
             'name': descr_type.name,
@@ -335,24 +349,12 @@ def get_descriptor_types_for_group(request, grp_id):
             'format': descr_type.format
         })
 
-    if len(types_list) > 0:
-        # prev cursor (asc order)
-        dm = types_list[0]
-        prev_cursor = "%s/%s" % (dm['name'], dm['id'])
-
-        # next cursor (asc order)
-        dm = types_list[-1]
-        next_cursor = "%s/%s" % (dm['name'], dm['id'])
-    else:
-        prev_cursor = None
-        next_cursor = None
-
     results = {
         'perms': [],
-        'items': types_list,
-        'prev': prev_cursor,
+        'items': dt_items,
+        'prev': cq.prev_cursor,
         'cursor': cursor,
-        'next': next_cursor,
+        'next': cq.next_cursor
     }
 
     return HttpResponseRest(request, results)
@@ -362,7 +364,6 @@ def get_descriptor_types_for_group(request, grp_id):
 def search_descriptor_types_for_group(request, grp_id):
     """
     Filters the type of descriptors by name for a specific group.
-    @todo needs pagination
     """
     filters = json.loads(request.GET['filters'])
     page = int_arg(request.GET.get('page', 1))
@@ -377,8 +378,9 @@ def search_descriptor_types_for_group(request, grp_id):
 
     descr_types_list = []
 
-    if descr_types:
+    if descr_types is not None:
         for descr_type in descr_types:
+            # can add one query per descriptor type
             count = descr_type.count_num_values()
 
             descr_types_list.append({

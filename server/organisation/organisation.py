@@ -12,7 +12,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import SuspiciousOperation
 from django.db import IntegrityError
 from django.db import transaction
-from django.db.models import Q, TextField
+from django.db.models import Q, TextField, Count
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 
@@ -175,11 +175,8 @@ def filter_organisation(filters, cursor, limit, grc_only):
             else:
                 qs = qs.exclude(Q(type=organisation_type))
 
+    qs = qs.annotate(Count('establishments'))
     qs = qs.order_by('name')[:limit]
-
-    # from django.db.models.expressions import OrderBy
-    # from django.db.models.expressions import RawSQL
-    # qs = qs.order_by(OrderBy(RawSQL("LOWER(descriptors->>%s)", ("organisation_acronym",)), descending=True))
 
     items_list = []
     for organisation in qs:
@@ -189,7 +186,7 @@ def filter_organisation(filters, cursor, limit, grc_only):
             'type': organisation.type,
             'descriptors': organisation.descriptors,
             'descriptor_meta_model': organisation.descriptor_meta_model_id,
-            'num_establishments': organisation.establishments.count()
+            'num_establishments': organisation.establishments__count
         }
 
         items_list.append(t)

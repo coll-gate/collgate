@@ -11,7 +11,7 @@
 // style
 require('./css/descriptor.css');
 
-var DescriptorModule = function() {
+let DescriptorModule = function() {
     this.name = "descriptor";
 };
 
@@ -33,9 +33,9 @@ DescriptorModule.prototype = {
         // main collections
         //
 
-        var SelectOption = require('../main/renderers/selectoption');
+        let SelectOption = require('../main/renderers/selectoption');
 
-        var DescribableCollection = require('./collections/describable');
+        let DescribableCollection = require('./collections/describable');
         this.collections.describables = new DescribableCollection();
 
         this.views.describables = new SelectOption({
@@ -43,7 +43,7 @@ DescriptorModule.prototype = {
             collection: this.collections.describables,
         });
 
-        var ConditionCollection = require('./collections/condition');
+        let ConditionCollection = require('./collections/condition');
         this.collections.conditions = new ConditionCollection();
 
         this.views.conditions = new SelectOption({
@@ -51,7 +51,7 @@ DescriptorModule.prototype = {
             collection: this.collections.conditions,
         });
 
-        var FormatTypeCollection = require('./collections/formattype');
+        let FormatTypeCollection = require('./collections/formattype');
         this.collections.formatTypes = new FormatTypeCollection();
 
         this.views.formatTypes = new SelectOption({
@@ -60,7 +60,7 @@ DescriptorModule.prototype = {
             collection: this.collections.formatTypes,
         });
 
-        var FormatUnitCollection = require('./collections/formatunit');
+        let FormatUnitCollection = require('./collections/formatunit');
         this.collections.formatUnits = new FormatUnitCollection();
 
         this.views.formatUnits = new SelectOption({
@@ -73,11 +73,11 @@ DescriptorModule.prototype = {
         // descriptor format types
         //
 
-        var DescriptorFormatTypeManager = require('./widgets/descriptorformattypemanager');
+        let DescriptorFormatTypeManager = require('./widgets/descriptorformattypemanager');
         this.widgets = new DescriptorFormatTypeManager();
 
         // register the standard format type of descriptors
-        var widgets = [
+        let widgets = [
             'boolean',
             'numeric',
             'numeric_range',
@@ -94,8 +94,8 @@ DescriptorModule.prototype = {
             'descriptor_meta_model'
         ];
 
-        for (var i = 0; i < widgets.length; ++i) {
-            var moduleName = widgets[i].replace(/_/g, '').toLowerCase();
+        for (let i = 0; i < widgets.length; ++i) {
+            let moduleName = widgets[i].replace(/_/g, '').toLowerCase();
             this.widgets.registerElement(widgets[i], require('./widgets/' + moduleName));
         }
 
@@ -103,7 +103,7 @@ DescriptorModule.prototype = {
         // descriptor meta-model types
         //
 
-        var DescriptorMetaModelTypeManager = require('./descriptormetamodeltypes/descriptormetamodeltypemanager');
+        let DescriptorMetaModelTypeManager = require('./descriptormetamodeltypes/descriptormetamodeltypemanager');
         this.descriptorMetaModelTypes = new DescriptorMetaModelTypeManager();
 
         //
@@ -114,29 +114,29 @@ DescriptorModule.prototype = {
         app.main.cache.register('descriptor_meta_model');
         app.main.cache.register('entity_columns');
 
-        var DescriptorMetaModelCacheFetcher = require('./utils/descriptormetamodelcachefetcher');
+        let DescriptorMetaModelCacheFetcher = require('./utils/descriptormetamodelcachefetcher');
         app.main.cache.registerFetcher(new DescriptorMetaModelCacheFetcher());
 
-        var DescriptorCacheFetcher = require('./utils/descriptorcachefetcher');
+        let DescriptorCacheFetcher = require('./utils/descriptorcachefetcher');
         app.main.cache.registerFetcher(new DescriptorCacheFetcher());
 
-        var ColumnCacheFetcher = require('./utils/columncachefetcher');
+        let ColumnCacheFetcher = require('./utils/columncachefetcher');
         app.main.cache.registerFetcher(new ColumnCacheFetcher());
 
         //
         // routers
         //
 
-        var DescriptorRouter = require('./routers/descriptor');
+        let DescriptorRouter = require('./routers/descriptor');
         this.routers.descriptor = new DescriptorRouter();
 
-        var DescriptorModelRouter = require('./routers/descriptormodel');
+        let DescriptorModelRouter = require('./routers/descriptormodel');
         this.routers.descriptorModel = new DescriptorModelRouter();
 
-        var DescriptorMetaModelRouter = require('./routers/descriptormetamodel');
+        let DescriptorMetaModelRouter = require('./routers/descriptormetamodel');
         this.routers.descriptorMetaModel = new DescriptorMetaModelRouter();
 
-        var DescriptorGroupCollection = require('./collections/descriptorgroup');
+        let DescriptorGroupCollection = require('./collections/descriptorgroup');
         this.collections.descriptorGroup = new DescriptorGroupCollection();
     },
 

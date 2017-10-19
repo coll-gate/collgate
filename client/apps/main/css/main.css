@@ -554,3 +554,11 @@ span.fa.fa-lg {
     height: 34px;
     line-height: 34px;
 }
+
+.text-selection-all {
+    user-select: all;
+}
+
+.text-selection-none {
+    user-select: none;
+}

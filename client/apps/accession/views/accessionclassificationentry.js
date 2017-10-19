@@ -8,9 +8,9 @@
  * @details
  */
 
-var ClassificationEntryView = require('../../classification/views/classificationentry');
+let ClassificationEntryView = require('../../classification/views/classificationentry');
 
-var View = ClassificationEntryView.extend({
+let View = ClassificationEntryView.extend({
     initialize: function () {
         View.__super__.initialize.apply(this, arguments);
 
@@ -18,11 +18,22 @@ var View = ClassificationEntryView.extend({
     },
 
     onRemoveClassificationEntry: function() {
-        // @todo
-        alert("@todo")
-        // this.model.destroy({wait: true}).then(function() {
-        //     $.alert.success(_t("Successfully removed !"));
-        // });
+        let self = this;
+
+        $.ajax({
+            type: "PATCH",
+            url: this.model.collection.url(),
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            data: JSON.stringify({
+                action: 'remove',
+                target: 'classification_entry',
+                classification_entry: this.model.get('id')
+            })
+        }).done(function(data) {
+           $.alert.success(_t("Successfully removed !"));
+           self.model.collection.fetch({reset: true});
+        });
     },
 });
 

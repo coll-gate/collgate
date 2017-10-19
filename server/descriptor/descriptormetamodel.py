@@ -12,7 +12,7 @@ import json
 
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import SuspiciousOperation
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.shortcuts import get_object_or_404
 from django.utils import translation
 from django.utils.translation import ugettext_lazy as _
@@ -31,6 +31,11 @@ from .models import DescriptorModel, DescriptorPanel, DescriptorMetaModel, Descr
 class RestDescriptorMetaModel(RestDescriptor):
     regex = r'^meta-model/$'
     suffix = 'descriptor-meta-model'
+
+
+class RestDescriptorMetaModelCount(RestDescriptorMetaModel):
+    regex = r'^count/$'
+    suffix = 'count'
 
 
 class RestDescriptorMetaModelValues(RestDescriptorMetaModel):
@@ -84,53 +89,80 @@ class RestDescriptorMetaModelIdPanelIdLabel(RestDescriptorMetaModelIdPanelId):
 
 
 @RestDescriptorMetaModel.def_auth_request(Method.GET, Format.JSON)
-def list_descriptor_meta_models(request):
+def get_list_descriptor_meta_models(request):
     """
     Returns a list of metal-models of descriptors ordered by name.
     """
     results_per_page = int_arg(request.GET.get('more', 30))
-    cursor = request.GET.get('cursor')
+    cursor = json.loads(request.GET.get('cursor', 'null'))
     limit = results_per_page
+    sort_by = json.loads(request.GET.get('sort_by', '[]'))
 
-    if cursor:
-        cursor_name, cursor_id = cursor.rsplit('/', 1)
-        qs = DescriptorMetaModel.objects.filter(Q(name__gt=cursor_name))
+    if not len(sort_by) or sort_by[-1] not in ('id', '+id', '-id'):
+        order_by = sort_by + ['id']
     else:
-        qs = DescriptorMetaModel.objects.all()
+        order_by = sort_by
 
-    dmms = qs.order_by('name')[:limit]
+    from main.cursor import CursorQuery
+    cq = CursorQuery(DescriptorMetaModel)
 
-    dmms_list = []
+    if request.GET.get('search'):
+        cq.filter(json.loads(request.GET['search']))
 
-    for dmm in dmms:
-        dmms_list.append({
+    if request.GET.get('filters'):
+        cq.filter(json.loads(request.GET['filters']))
+
+    cq.cursor(cursor, order_by)
+    # cq.set_count('descriptor_models')
+    cq.set_count('panels')
+    cq.order_by(order_by).limit(limit)
+
+    cq.prefetch_related('target')
+
+    dmm_items = []
+
+    for dmm in cq:
+        d = {
             'id': dmm.id,
             'name': dmm.name,
             'label': dmm.get_label(),
             'description': dmm.description,
             'target': '.'.join(dmm.target.natural_key()),
             'parameters': dmm.parameters,
-            'num_descriptor_models': dmm.descriptor_models.all().count()
-        })
+            'num_descriptor_models': dmm.panels__count  # 0 #dmm.descriptor_models__count
+        }
 
-    if len(dmms_list) > 0:
-        # prev cursor (asc order)
-        dmm = dmms_list[0]
-        prev_cursor = "%s/%s" % (dmm['name'], dmm['id'])
-
-        # next cursor (asc order)
-        dmm = dmms_list[-1]
-        next_cursor = "%s/%s" % (dmm['name'], dmm['id'])
-    else:
-        prev_cursor = None
-        next_cursor = None
+        dmm_items.append(d)
 
     results = {
         'perms': [],
-        'items': dmms_list,
-        'prev': prev_cursor,
+        'items': dmm_items,
+        'prev': cq.prev_cursor,
         'cursor': cursor,
-        'next': next_cursor,
+        'next': cq.next_cursor,
+    }
+
+    return HttpResponseRest(request, results)
+
+
+@RestDescriptorMetaModelCount.def_auth_request(Method.GET, Format.JSON)
+def get_count_descriptor_meta_models(request):
+    """
+    Returns a list of metal-models of descriptors ordered by name.
+    """
+    from main.cursor import CursorQuery
+    cq = CursorQuery(DescriptorMetaModel)
+
+    if request.GET.get('search'):
+        cq.filter(json.loads(request.GET['search']))
+
+    if request.GET.get('filters'):
+        cq.filter(json.loads(request.GET['filters']))
+
+    count = cq.count()
+
+    results = {
+        'count': count
     }
 
     return HttpResponseRest(request, results)
@@ -439,15 +471,16 @@ def search_descriptor_meta_models(request):
         content_type = get_object_or_404(ContentType, app_label=app_name, model=model)
         meta_models = meta_models.filter(target=content_type)
 
+    meta_models = meta_models.annotate(Count('descriptor_models'))
     meta_models_list = []
 
-    if meta_models:
+    if meta_models is not None:
         for meta_model in meta_models:
             meta_models_list.append({
                 "id": meta_model.id,
                 "name": meta_model.name,
                 "label": meta_model.get_label(),
-                'num_descriptor_models': meta_model.descriptor_models.all().count(),
+                'num_descriptor_models': meta_model.descriptor_models__count
             })
 
     response = {

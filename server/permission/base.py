@@ -12,7 +12,7 @@ from django.contrib.auth.models import Permission, User, Group
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import SuspiciousOperation
 from django.db import transaction
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.cache import cache_page
@@ -22,10 +22,11 @@ from guardian.models import UserObjectPermission, GroupObjectPermission
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
 from igdectk.module.manager import module_manager
+from main.cursor import CursorQuery
 from main.models import Entity, Profile
 
 from .filters import GroupFilter, UserFilter
-from .utils import get_permissions_for
+from .utils import get_permissions_for, prefetch_permissions_for
 
 
 class RestPermission(RestHandler):
@@ -141,21 +142,29 @@ def get_permission_types(request):
 @RestPermissionUser.def_auth_request(Method.GET, Format.JSON, staff=True)
 def get_users_list(request):
     results_per_page = int_arg(request.GET.get('more', 30))
-    cursor = request.GET.get('cursor')
+    cursor = json.loads(request.GET.get('cursor', 'null'))
     limit = results_per_page
+    sort_by = json.loads(request.GET.get('sort_by', '["username"]'))
+    order_by = sort_by
 
-    if cursor:
-        cursor_username, cursor_id = cursor.rsplit('/', 1)
-        qs = User.objects.filter(Q(username__gt=cursor_username))
-    else:
-        qs = User.objects.all()
+    cq = CursorQuery(User)
 
-    qs = qs.order_by('username')[:limit]
+    if request.GET.get('search'):
+        search = json.loads(request.GET['search'])
+        cq.filter(search)
 
-    users_list = []
+    if request.GET.get('filters'):
+        filters = json.loads(request.GET['filters'])
+        cq.filter(filters)
 
-    for user in qs:
-        users_list.append({
+    cq.cursor(cursor, order_by)
+    cq.order_by(order_by).limit(limit)
+    cq.set_count('user_permissions')
+
+    user_items = []
+
+    for user in cq:
+        user_items.append({
             'id': user.id,
             'username': user.username,
             'first_name': user.first_name,
@@ -164,74 +173,66 @@ def get_users_list(request):
             'is_active': user.is_active,
             'is_staff': user.is_staff,
             'is_superuser': user.is_superuser,
-            'num_permissions': user.user_permissions.all().count()
+            'num_permissions': user.user_permissions.all().count()  # optimized by the set_count
         })
 
-    # prev/next cursor (desc order)
-    if len(users_list) > 0:
-        user = users_list[0]
-        prev_cursor = "%s/%s" % (user['username'], user['id'])
-        user = users_list[-1]
-        next_cursor = "%s/%s" % (user['username'], user['id'])
-    else:
-        prev_cursor = None
-        next_cursor = None
-
-    response = {
-        'items': users_list,
+    results = {
         'perms': get_permissions_for(request.user, "auth", "user"),
-        'prev': prev_cursor,
+        'items': user_items,
+        'prev': cq.prev_cursor,
         'cursor': cursor,
-        'next': next_cursor
+        'next': cq.next_cursor
     }
 
-    return HttpResponseRest(request, response)
+    return HttpResponseRest(request, results)
 
 
 @RestPermissionGroup.def_auth_request(Method.GET, Format.JSON, staff=True)
 def get_groups_list(request):
     results_per_page = int_arg(request.GET.get('more', 30))
-    cursor = request.GET.get('cursor')
+    cursor = json.loads(request.GET.get('cursor', 'null'))
     limit = results_per_page
+    sort_by = json.loads(request.GET.get('sort_by', '["name"]'))
+    order_by = sort_by
 
-    if cursor:
-        cursor_name, cursor_id = cursor.rsplit('/', 1)
-        qs = Group.objects.filter(Q(name__gt=cursor_name))
-    else:
-        qs = Group.objects.all()
+    cq = CursorQuery(Group)
 
-    qs = qs.order_by('name')[:limit]
+    if request.GET.get('search'):
+        search = json.loads(request.GET['search'])
+        cq.filter(search)
 
-    group_list = []
+    if request.GET.get('filters'):
+        filters = json.loads(request.GET['filters'])
+        cq.filter(filters)
 
-    for group in qs:
-        group_list.append({
+    cq.cursor(cursor, order_by)
+    cq.order_by(order_by).limit(limit)
+    cq.prefetch_related('permissions')
+    cq.prefetch_related('user_set')
+
+    # @todo is it prefetch something ?
+    prefetch_permissions_for(request.user, cq)
+
+    group_items = []
+
+    for group in cq:
+        group_items.append({
             'id': group.id,
             'name': group.name,
-            'num_users': group.user_set.all().count(),
-            'num_permissions': group.permissions.all().count(),
+            'num_users': group.user_set.all().count(),  # optimized by prefetch_related
+            'num_permissions': group.permissions.all().count(),  # optimized by prefetch_related
             'perms': get_permissions_for(request.user, "auth", "group", group),
         })
 
-    # prev/next cursor (desc order)
-    if len(group_list) > 0:
-        user = group_list[0]
-        prev_cursor = "%s/%s" % (user['name'], user['id'])
-        user = group_list[-1]
-        next_cursor = "%s/%s" % (user['name'], user['id'])
-    else:
-        prev_cursor = None
-        next_cursor = None
-
-    response = {
-        'items': group_list,
+    results = {
         'perms': get_permissions_for(request.user, "auth", "group"),
-        'prev': prev_cursor,
+        'items': group_items,
+        'prev': cq.prev_cursor,
         'cursor': cursor,
-        'next': next_cursor
+        'next': cq.next_cursor
     }
 
-    return HttpResponseRest(request, response)
+    return HttpResponseRest(request, results)
 
 
 @RestPermissionGroup.def_auth_request(Method.POST, Format.JSON, staff=True, content={
@@ -758,24 +759,30 @@ def group_delete_user(request, grp_id, username):
 @RestPermissionGroupIdUser.def_auth_request(Method.GET, Format.JSON, staff=True)
 def get_users_list_for_group(request, grp_id):
     results_per_page = int_arg(request.GET.get('more', 30))
-    cursor = request.GET.get('cursor')
+    cursor = json.loads(request.GET.get('cursor', 'null'))
     limit = results_per_page
+    sort_by = json.loads(request.GET.get('sort_by', '["username"]'))
+    order_by = sort_by
 
     group = get_object_or_404(Group, id=int(grp_id))
-    users = group.user_set
+    cq = CursorQuery(User)
 
-    if cursor:
-        cursor_username, cursor_id = cursor.rsplit('/', 1)
-        qs = users.filter(Q(username__gt=cursor_username))
-    else:
-        qs = users.all()
+    if request.GET.get('search'):
+        search = json.loads(request.GET['search'])
+        cq.filter(search)
 
-    qs = qs.order_by('username')[:limit]
+    if request.GET.get('filters'):
+        filters = json.loads(request.GET['filters'])
+        cq.filter(filters)
 
-    users_list = []
+    cq.inner_join(Group, related_name='user_set', group=group.pk)
+    cq.cursor(cursor, order_by)
+    cq.order_by(order_by).limit(limit)
 
-    for user in qs:
-        users_list.append({
+    user_items = []
+
+    for user in cq:
+        user_items.append({
             'id': user.id,
             'username': user.username,
             'first_name': user.first_name,
@@ -786,23 +793,61 @@ def get_users_list_for_group(request, grp_id):
             'is_superuser': user.is_superuser,
         })
 
-    # prev/next cursor (desc order)
-    if len(users_list) > 0:
-        user = users_list[0]
-        prev_cursor = "%s/%s" % (user['username'], user['id'])
-        user = users_list[-1]
-        next_cursor = "%s/%s" % (user['username'], user['id'])
-    else:
-        prev_cursor = None
-        next_cursor = None
-
-    response = {
-        'items': users_list,
+    results = {
         'perms': get_permissions_for(request.user, "auth", "group", group),
-        'prev': prev_cursor,
+        'items': user_items,
+        'prev': cq.prev_cursor,
         'cursor': cursor,
-        'next': next_cursor
+        'next': cq.next_cursor
     }
 
-    return HttpResponseRest(request, response)
-
+    return HttpResponseRest(request, results)
+    #
+    # results_per_page = int_arg(request.GET.get('more', 30))
+    # cursor = request.GET.get('cursor')
+    # limit = results_per_page
+    #
+    # group = get_object_or_404(Group, id=int(grp_id))
+    # users = group.user_set
+    #
+    # if cursor:
+    #     cursor_username, cursor_id = cursor.rsplit('/', 1)
+    #     qs = users.filter(Q(username__gt=cursor_username))
+    # else:
+    #     qs = users.all()
+    #
+    # qs = qs.order_by('username')[:limit]
+    #
+    # users_list = []
+    #
+    # for user in qs:
+    #     users_list.append({
+    #         'id': user.id,
+    #         'username': user.username,
+    #         'first_name': user.first_name,
+    #         'last_name': user.last_name,
+    #         'email': user.email,
+    #         'is_active': user.is_active,
+    #         'is_staff': user.is_staff,
+    #         'is_superuser': user.is_superuser,
+    #     })
+    #
+    # # prev/next cursor (desc order)
+    # if len(users_list) > 0:
+    #     user = users_list[0]
+    #     prev_cursor = "%s/%s" % (user['username'], user['id'])
+    #     user = users_list[-1]
+    #     next_cursor = "%s/%s" % (user['username'], user['id'])
+    # else:
+    #     prev_cursor = None
+    #     next_cursor = None
+    #
+    # response = {
+    #     'items': users_list,
+    #     'perms': get_permissions_for(request.user, "auth", "group", group),
+    #     'prev': prev_cursor,
+    #     'cursor': cursor,
+    #     'next': next_cursor
+    # }
+    #
+    # return HttpResponseRest(request, response)

@@ -8,7 +8,7 @@
  * @details 
  */
 
-var ClassificationModule = function() {
+let ClassificationModule = function() {
     this.name = "classification";
 };
 
@@ -27,12 +27,12 @@ ClassificationModule.prototype = {
         }
 
         // register the meta-model type of descriptors
-        var metaModelTypes = [
+        let metaModelTypes = [
             'classification_entry'
         ];
 
-        for (var i = 0; i < metaModelTypes.length; ++i) {
-            var moduleName = metaModelTypes[i].replace(/_/g, '').toLowerCase();
+        for (let i = 0; i < metaModelTypes.length; ++i) {
+            let moduleName = metaModelTypes[i].replace(/_/g, '').toLowerCase();
             app.descriptor.descriptorMetaModelTypes.registerElement(metaModelTypes[i], require('./descriptormetamodeltypes/' + moduleName));
         }
 
@@ -40,9 +40,10 @@ ClassificationModule.prototype = {
         // main collections
         //
 
-        var SelectOption = require('../main/renderers/selectoption');
+        let SelectOption = require('../main/renderers/selectoption');
 
-        var EntitySynonymTypeCollection = require('../main/collections/entitysynonymtype');
+        // @todo may be a cache collection or uses a cachefetcher for classfication synonym type
+        let EntitySynonymTypeCollection = require('../main/collections/entitysynonymtype');
         this.collections.classificationEntrySynonymTypes = new EntitySynonymTypeCollection([], {
             target_model: 'classification.classificationentry'});
 
@@ -55,7 +56,7 @@ ClassificationModule.prototype = {
         // controllers
         //
 
-        var ClassificationEntryController = require('./controllers/classificationentry');
+        let ClassificationEntryController = require('./controllers/classificationentry');
         this.controllers.classificationEntry = new ClassificationEntryController();
 
         //
@@ -68,10 +69,10 @@ ClassificationModule.prototype = {
         // routers
         //
 
-        var ClassificationRouter = require('./routers/classification');
+        let ClassificationRouter = require('./routers/classification');
         this.routers.classification = new ClassificationRouter();
 
-        var ClassificationEntryRouter = require('./routers/classificationentry');
+        let ClassificationEntryRouter = require('./routers/classificationentry');
         this.routers.classificationEntry = new ClassificationEntryRouter();
     },
 
@@ -80,24 +81,24 @@ ClassificationModule.prototype = {
         // add classifications to menu
         //
         if (session.user.isAuth) {
-            var ClassificationCollection = require('./collections/classification');
-            var classificationCollection = new ClassificationCollection();
+            let ClassificationCollection = require('./collections/classification');
+            let classificationCollection = new ClassificationCollection();
 
-            var MenuEntry = require('../main/utils/menuentry');
-            var MenuSeparator = require('../main/utils/menuseparator');
+            let MenuEntry = require('../main/utils/menuentry');
+            let MenuSeparator = require('../main/utils/menuseparator');
 
             classificationCollection.fetch().then(function (data) {
-                var order = 200;
-                var auth = 'user';
-                var icon = 'fa-list-ul';
+                let order = 200;
+                let auth = 'user';
+                let icon = 'fa-list-ul';
 
                 if (classificationCollection.models.length) {
                     app.main.menus.getMenu('classification').addEntry(new MenuSeparator(order++, auth));
                 }
 
-                for (var i = 0; i < classificationCollection.models.length; ++i) {
-                    var model = classificationCollection.models[i];
-                    var url = '#classification/classification/' + model.get('id') + '/classificationentry/';
+                for (let i = 0; i < classificationCollection.models.length; ++i) {
+                    let model = classificationCollection.models[i];
+                    let url = '#classification/classification/' + model.get('id') + '/classificationentry/';
 
                     app.main.menus.getMenu('classification').addEntry(
                         new MenuEntry(model.get('name'), model.get('label'), url, icon, order, auth));

@@ -8,9 +8,7 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
-
-var AuditModule = function() {
+let AuditModule = function() {
     this.name = "audit";
 };
 
@@ -32,14 +30,14 @@ AuditModule.prototype = {
         // controllers
         //
 
-        var AuditController = require('./controllers/audit');
+        let AuditController = require('./controllers/audit');
         this.controllers.audit = new AuditController();
 
         //
         // routers
         //
 
-        var AuditRouter = require('./routers/audit');
+        let AuditRouter = require('./routers/audit');
         this.routers.audit = new AuditRouter();
     },
 
@@ -53,4 +51,3 @@ AuditModule.prototype = {
 };
 
 module.exports = AuditModule;
-

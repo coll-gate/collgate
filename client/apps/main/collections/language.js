@@ -8,11 +8,25 @@
  * @details 
  */
 
+let CacheCollection = require('../collections/cachedcollection');
 let LanguageModel = require('../models/language');
 
-let LanguageCollection = Backbone.Collection.extend({
+let LanguageCollection = CacheCollection.extend({
     url: window.application.url(['main', 'language']),
     model: LanguageModel,
+
+    cache: function() {
+        return {
+            category: 'main',
+            key: 'languages:' + window.session.language
+        }
+    },
+
+    initialize: function (options) {
+        options || (options = {});
+
+        LanguageCollection.__super__.initialize.apply(this, arguments);
+    },
 
     parse: function(data) {
         return data;
@@ -29,11 +43,6 @@ let LanguageCollection = Backbone.Collection.extend({
     findLabel: function(value) {
         let res = this.findWhere({value: value});
         return res ? res.get('label') : '';
-        /*for (var r in this.models) {
-            var m = this.models[r];
-            if (m.get('value') == value)
-                return m.get('label');
-        }*/
     },
 });
 

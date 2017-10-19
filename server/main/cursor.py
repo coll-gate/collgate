@@ -99,12 +99,14 @@ class CursorQuery(object):
         self.query_filters = []
         self.query_where = []
         self.query_order_by = []
+        self.query_group_by = []
         self.query_limit = None
 
         self._related_tables = {}
 
         self._select_related = False
         self._prefetch_related = []
+        self._counts = []
 
         self._filter_clauses = []
 
@@ -116,7 +118,9 @@ class CursorQuery(object):
         self._description = get_description(self._model)
 
         for field in model._meta.get_fields():
-            if type(field) is models.fields.reverse_related.ManyToManyRel:
+            if type(field) is models.fields.related.OneToOneRel:
+                self.model_fields[field.name] = ('O2O', '', field.null)
+            elif type(field) is models.fields.reverse_related.ManyToManyRel:
                 self.model_fields[field.name] = ('M2M', '', field.null)
             elif type(field) is models.fields.reverse_related.ManyToOneRel:
                 self.model_fields[field.name] = ('M2O', '', field.null)
@@ -420,9 +424,9 @@ class CursorQuery(object):
             last_entity = None
 
             try:
-                # @todo could be cached during iteration
-                first_entity = self._query_set[0]
-                last_entity = self._query_set[-1]
+                # cached during iteration
+                first_entity = self._first_elt or self._query_set[0]
+                last_entity = self._last_elt or self._query_set[-1]
             except IndexError:
                 self._prev_cursor = None
                 self._next_cursor = None
@@ -871,12 +875,24 @@ class CursorQuery(object):
                     self.query_select.append(
                         '"%s"."%s" AS "%s_%s"' % (db_table_alias, field.name, related_field, field.name))
 
-        self._related_tables[related_field] = (related_model.field.related_model, model_fields)
+            self._related_tables[related_field] = (related_model.field.related_model, model_fields)
 
-        on_clause = ['"%s"."%s_id" = "%s"."id"' % (db_table, related_field, db_table_alias)]
-        _from = 'LEFT JOIN "%s" AS "%s" ON (%s)' % (join_db_table, db_table_alias, " AND ".join(on_clause))
+            on_clause = ['"%s"."%s_id" = "%s"."id"' % (db_table, related_field, db_table_alias)]
+            _from = 'LEFT JOIN "%s" AS "%s" ON (%s)' % (join_db_table, db_table_alias, " AND ".join(on_clause))
 
-        self.query_from.append(_from)
+            self.query_from.append(_from)
+
+        elif type(related_model) is models.fields.related_descriptors.ReverseManyToOneDescriptor:
+            join_db_table = related_model.rel.related_model._meta.db_table
+
+            # self._related_tables[related_field] = (related_model.field.related_model, model_fields)
+            join_column = related_model.rel.field.column
+
+            on_clause = ['"%s"."id" = "%s"."%s"' % (db_table, related_field, join_column)]
+            _from = 'LEFT OUTER JOIN "%s" AS "%s" ON (%s)' % (join_db_table, db_table_alias, " AND ".join(on_clause))
+
+            self.query_from.append(_from)
+
         return self
 
     def limit(self, limit):
@@ -898,6 +914,20 @@ class CursorQuery(object):
         self.query_distinct = True
         return self
 
+    def __len__(self):
+        if self._query_set is None:
+            self.sql()
+
+        if type(self._query_set) is not list:
+            try:
+                self._query_set = list(self._query_set)
+            except IndexError:
+                self._query_set = list()
+            except ProgrammingError as e:
+                raise CursorQueryError('Invalid query arguments: ' + str(e))
+
+        return len(self._query_set)
+
     def __iter__(self):
         if self._query_set is None:
             self.sql()
@@ -917,6 +947,12 @@ class CursorQuery(object):
                             setattr(new_model, field_name, getattr(instance, "%s_%s" % (field, field_name)))
                         else:
                             setattr(new_model, related_field, getattr(instance, "%s_%s" % (field, related_field)))
+
+                # cache them for cursor build
+                if self._first_elt is None:
+                    self._first_elt = instance
+
+                self._last_elt = instance
 
                 yield instance
         except ProgrammingError as e:
@@ -1021,6 +1057,33 @@ class CursorQuery(object):
 
         self.query_from.append(inner_join)
 
+    def set_count(self, related_field):
+        self._counts.append(related_field)
+
+        related_model = getattr(self._model, related_field)
+        if type(related_model) is models.fields.related_descriptors.ReverseManyToOneDescriptor:
+            # uses a left outer join
+            short_db_table = self._model._meta.model_name
+            self.join(related_field, [short_db_table])
+        elif type(related_model) is models.fields.related_descriptors.ManyToManyDescriptor:
+            # uses a prefetch related (additional query)
+            self._prefetch_related.append(related_field)
+
+    def _process_count(self):
+        db_table = self._model._meta.db_table
+
+        for related_field in self._counts:
+            related_model = getattr(self._model, related_field)
+            # related_model_name = related_model.rel.target_field.model._meta.model_name
+
+            if type(related_model) is models.fields.related_descriptors.ReverseManyToOneDescriptor:
+                related_field_column = related_model.rel.field.column
+
+                self.query_select.append('COUNT("%s"."%s") AS "%s__count"' % (
+                    related_field, related_field_column, related_field))
+
+                self.query_group_by.append('"%s"."id"' % (db_table,))
+
     def sql(self):
         """
         Build the SQL query that will be performed directly if there is some prefetch related,
@@ -1041,11 +1104,17 @@ class CursorQuery(object):
             self._process_cursor()
             self._process_order_by()
             self._process_filter()
+            self._process_count()
         except KeyError as e:
             raise CursorQueryError(e)
 
         _select = "SELECT DISTINCT " if self.query_distinct else "SELECT " + ", ".join(self.query_select)
         _from = "FROM " + " ".join(self.query_from)
+
+        if self.query_group_by:
+            _group_by = "GROUP BY " + ", ".join(self.query_group_by)
+        else:
+            _group_by = ""
 
         if self.query_order_by:
             _order_by = "ORDER BY " + ", ".join(self.query_order_by)
@@ -1065,8 +1134,8 @@ class CursorQuery(object):
         else:
             _where = "WHERE " + " OR ".join(self.query_where)
 
-        if (self.query_where or self.query_filters) and self.query_order_by and self.query_limit:
-            sql = " ".join([_select, _from, _where, _order_by, _limit])
+        if (self.query_where or self.query_filters) and self.query_group_by and self.query_order_by and self.query_limit:
+            sql = " ".join([_select, _from, _where, _group_by, _order_by, _limit])
         else:
             sql = _select
 
@@ -1076,6 +1145,9 @@ class CursorQuery(object):
             if self.query_where or self.query_filters:
                 sql = sql + " " + _where
 
+            if self.query_group_by:
+                sql = sql + " " + _group_by
+
             if self.query_order_by:
                 sql = sql + " " + _order_by
 
@@ -1083,13 +1155,13 @@ class CursorQuery(object):
                 sql = sql + " " + _limit
 
         self._query_set = self._model.objects.raw(sql)
+        self._first_elt = None
+        self._last_elt = None
 
         if self._prefetch_related:
             # eval before
             try:
                 self._query_set = list(self._query_set)
-                # for el in self:
-                #     pass
             except IndexError:
                 self._query_set = list()
             except ProgrammingError as e:

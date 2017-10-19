@@ -8,9 +8,7 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
-
-var PermissionModule = function() {
+let PermissionModule = function() {
     this.name = "permission";
 };
 
@@ -32,9 +30,9 @@ PermissionModule.prototype = {
         // main collections
         //
 
-        var SelectOption = require('../main/renderers/selectoption');
+        let SelectOption = require('../main/renderers/selectoption');
 
-        var PermissionTypeCollection = require('./collections/permissiontype');
+        let PermissionTypeCollection = require('./collections/permissiontype');
         this.collections.permissionType = new PermissionTypeCollection();
 
         this.views.permissionType = new SelectOption({
@@ -46,7 +44,7 @@ PermissionModule.prototype = {
         // routers
         //
 
-        var PermissionRouter = require('./routers/permission');
+        let PermissionRouter = require('./routers/permission');
         this.routers.permission = new PermissionRouter();
     },
 
@@ -59,4 +57,3 @@ PermissionModule.prototype = {
 };
 
 module.exports = PermissionModule;
-
