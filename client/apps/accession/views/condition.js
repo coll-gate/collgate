@@ -228,12 +228,12 @@ var View = Marionette.View.extend({
             'icontains': _t('Contains'),
             'lte': _t('Lesser than'),
             'gte': _t('Greater than'),
-            'contains': _t('Contains'),
-            'not_contains': _t('Not contains'),
+            'contains': _t('belong to (intersection)'),
+            'not_contains': _t('Not belong to (intersection)'),
+            'overlap': _t('Belong to (union)'),
+            'not_overlap': _t('Not belong to (union)'),
             'contained_by': _t('Contained by'),
-            'not_contained_by': _t('Not contained by'),
-            'overlap': _t('Overlap'),
-            'not_overlap': _t('Not overlap')
+            'not_contained_by': _t('Not contained by')
         };
 
         for (var i = 0; i < column.available_operators.length; i++) {
