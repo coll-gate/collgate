@@ -75,6 +75,7 @@ class CursorQuery(object):
         'contains': '@>',
         'contained_by': '<@',
         'notin': ['NOT', '@>'],
+        'not_contains': ['NOT', '@>'],
         'not_contained_by': ['NOT', '<@'],
         'overlap': '&&',
         'not_overlap': ['NOT', '&&'],
