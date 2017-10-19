@@ -94,3 +94,6 @@ class CollGateMain(ApplicationMain):
             if not Language.objects.filter(code='la').exists():
                 language = Language(code='la', label={'en': 'Latin', 'fr': 'Latin'})
                 language.save()
+
+        from main.cache import cache_manager
+        cache_manager.setup()

@@ -242,7 +242,7 @@ APPLICATIONS = {
                 ".helper": {"default_version": "2.0.0"},
             }
         },
-    },
+    }
 }
 
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'

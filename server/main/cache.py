@@ -9,6 +9,7 @@
 # @details
 
 from django.core.cache import cache
+from django.conf import settings
 
 
 class CacheManager(object):
@@ -18,6 +19,10 @@ class CacheManager(object):
 
     def __init__(self):
         self.categories = {}
+
+    def setup(self):
+        if getattr(settings, 'PURGE_SERVER_CACHE', False):
+            self.purge()
 
     def register(self, category):
         if category not in self.categories:
@@ -38,7 +43,7 @@ class CacheManager(object):
         if cache_category is None:
             raise ValueError("Unregistered cache manager category")
 
-        cache.get("%s__%s" % (category, name), content, validity)
+        cache.set("%s__%s" % (category, name), content, validity)
 
     def delete(self, category, name):
         """
@@ -74,6 +79,10 @@ class CacheManager(object):
 
     def make_cache_name(self, *kargs):
         return ":".join(kargs)
+
+    def purge(self):
+        for category in self.categories:
+            cache.delete_pattern("%s__*" % category)
 
 
 # Singleton of server cache manager
