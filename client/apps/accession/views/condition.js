@@ -74,13 +74,19 @@ var View = Marionette.View.extend({
         var field = this.ui.field.val();
         var column = this.columns[field];
 
-        console.log(column);
-        console.log(this.widget);
-
         if (this.widget.allow_multiple) {
             this.widget.destroy();
 
-            if (this.ui.condition.val() === 'in' || this.ui.condition.val() === 'notin') {
+            if (_.indexOf([
+                    'in',
+                    'notin',
+                    'contains',
+                    'not_contains',
+                    'contained_by',
+                    'not_contained_by',
+                    'overlap',
+                    'not_overlap'
+                ], this.ui.condition.val())) {
                 this.widget.create(column.format, this.ui.field_value_group, false, column.group, column.type, {
                     multiple: true,
                     extended_search: false
@@ -92,7 +98,16 @@ var View = Marionette.View.extend({
                 });
             }
         } else {
-            if (this.ui.condition.val() === 'in' || this.ui.condition.val() === 'notin') {
+            if (_.indexOf([
+                    'in',
+                    'notin',
+                    'contains',
+                    'not_contains',
+                    'contained_by',
+                    'not_contained_by',
+                    'overlap',
+                    'not_overlap'
+                ], this.ui.condition.val())) {
                 this.ui.field_value_group.find('select').prop('multiple', true).selectpicker('destroy').selectpicker({container: '.modal'});
             } else {
                 this.ui.field_value_group.find('select').prop('multiple', false).selectpicker('destroy').selectpicker({container: '.modal'});
@@ -127,12 +142,6 @@ var View = Marionette.View.extend({
             open_group: this.open_group,
             close_group: this.close_group
         });
-
-        var field = this.ui.field.val();
-        var column = this.columns[field];
-
-        console.log(column.format);
-        console.log(this.widget);
     },
 
     onOpenGroup: function () {
@@ -218,7 +227,13 @@ var View = Marionette.View.extend({
             'notin': _t('Not include'),
             'icontains': _t('Contains'),
             'lte': _t('Lesser than'),
-            'gte': _t('Greater than')
+            'gte': _t('Greater than'),
+            'contains': _t('Contains'),
+            'not_contains': _t('Not contains'),
+            'contained_by': _t('Contained by'),
+            'not_contained_by': _t('Not contained by'),
+            'overlap': _t('Overlap'),
+            'not_overlap': _t('Not overlap')
         };
 
         for (var i = 0; i < column.available_operators.length; i++) {
@@ -233,7 +248,7 @@ var View = Marionette.View.extend({
             this.ui.condition.selectpicker({container: '.modal'}).selectpicker('val', column.available_operators[0]);
         }
 
-        this.onUIChange();
+        this.onConditionChange();
     },
 
     onRemove: function () {

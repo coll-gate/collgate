@@ -133,7 +133,15 @@ class Accession(DescribableEntity):
                     'type': 'entity',
                     'model': 'accession.accessionpanel'
                 },
-                'available_operators': ['in', 'notin'],
+                'available_operators': [
+                    'contains',
+                    'not_contains',
+                    'contained_by',
+                    'not_contained_by',
+                    'overlap',
+                    'not_overlap'
+                ],
+
                 'column_display': False,
                 # 'search_only': True
             }
