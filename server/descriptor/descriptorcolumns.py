@@ -62,7 +62,7 @@ def get_columns_name_for_describable_content_type(request, content_type_name):
     else:
         cache_name = cache_manager.make_cache_name(content_type_name)
 
-    results = cache_manager.get('_entity_columns', cache_name)
+    results = cache_manager.get('entity_columns', cache_name)
 
     if results is not None:
         return HttpResponseRest(request, results)
@@ -132,7 +132,7 @@ def get_columns_name_for_describable_content_type(request, content_type_name):
     }
 
     # cache for 1 day
-    cache_manager.set('_entity_columns', cache_name, results, 60*60*24)
+    cache_manager.set('entity_columns', cache_name, results, 60*60*24)
 
     return HttpResponseRest(request, results)
 
@@ -142,7 +142,7 @@ def get_description(model):
     Returns information about columns for a specified model. All columns of any related meta-models.
     """
     cache_name = cache_manager.make_cache_name('description', '%s.%s' % (model._meta.app_label, model._meta.model_name))
-    results = cache_manager.get('_descriptor', cache_name)
+    results = cache_manager.get('descriptor', cache_name)
 
     if results is not None:
         return results
@@ -168,6 +168,6 @@ def get_description(model):
         }
 
     # cache for 1 day
-    cache_manager.set('_descriptor', cache_name, results, 60*60*24)
+    cache_manager.set('descriptor', cache_name, results, 60*60*24)
 
     return results

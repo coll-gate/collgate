@@ -60,7 +60,7 @@ class DescriptorGroup(Entity):
     Category of a type of descriptor.
     """
 
-    server_cache_update = ("_descriptor", "_entity_columns")
+    server_cache_update = ("descriptor", "entity_columns")
     client_cache_update = ("entity_columns",)
 
     # unique group name
@@ -122,7 +122,7 @@ class DescriptorType(Entity):
     Type of descriptor for a model.
     """
 
-    server_cache_update = ("_descriptor", "_entity_columns")
+    server_cache_update = ("descriptor", "entity_columns")
     client_cache_update = ("entity_columns", "descriptors")
 
     # unique name of type of descriptor
@@ -1013,7 +1013,7 @@ class DescriptorPanel(Entity):
     The textual resources of a panel are i18nable because they are displayed for users.
     """
 
-    server_cache_update = ("_descriptor", "_entity_columns")
+    server_cache_update = ("descriptor", "entity_columns")
     client_cache_update = ("entity_columns",)
 
     # To which meta-models this panel is attached.
@@ -1105,7 +1105,7 @@ class DescriptorModelType(Entity):
     its descriptors. And it makes the relation between him and the model of descriptor.
     """
 
-    server_cache_update = ("_descriptor", "_entity_columns")
+    server_cache_update = ("descriptor", "entity_columns")
     client_cache_update = ("entity_columns",)
 
     # default name validator optional
@@ -1350,7 +1350,7 @@ class DescriptorModel(Entity):
     Many entities can share the same model of descriptors.
     """
 
-    server_cache_update = ("_descriptor", "_entity_columns")
+    server_cache_update = ("descriptor", "entity_columns")
     client_cache_update = ("entity_columns",)
 
     # unique name of model of descriptor
@@ -1437,12 +1437,12 @@ class DescriptorMetaModel(Entity):
     and how they are displayed.
     """
 
-    server_cache_update = ("_descriptor", "_entity_columns")
+    server_cache_update = ("descriptor", "entity_columns")
 
     def on_client_cache_update(self):
         return [{
             'category': 'entity_columns',
-            'name': ".".join(self.target.natural_key()),
+            'name': ".".join(self.target.natural_key()) + "*",
             'values': None
         }]
 
@@ -1568,7 +1568,7 @@ class DescriptorModelTypeCondition(Entity):
     Condition for a type of model of descriptor.
     """
 
-    server_cache_update = ("_descriptor", "_entity_columns")
+    server_cache_update = ("descriptor", "entity_columns")
     client_cache_update = ("entity_columns",)
 
     # related descriptor model type

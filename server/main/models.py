@@ -75,6 +75,8 @@ class Language(models.Model):
     Defines the list of configured languages for data (not UI).
     """
 
+    server_cache_update = ("main",)
+
     # code pattern
     CODE_VALIDATOR = {"type": "string", "minLength": 2, "maxLength": 5, "pattern": "^[a-zA-Z]{2}([_-][a-zA-Z]{2})*$"}
 
@@ -107,6 +109,13 @@ class Language(models.Model):
         :note Model instance save() is not called.
         """
         self.label[lang] = label
+
+    def on_client_cache_update(self):
+        return [{
+            'category': 'main',
+            'name': "languages:*",
+            'values': None
+        }]
 
 
 class EntityStatus(ChoiceEnum):

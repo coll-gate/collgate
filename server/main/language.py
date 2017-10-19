@@ -15,7 +15,9 @@ from django.utils.translation import ugettext_lazy as _
 
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
+
 from main.cache import cache_manager
+from messenger.cache import client_cache_manager
 
 from .models import InterfaceLanguages, Language
 from .main import RestMain
@@ -104,12 +106,7 @@ def post_language(request):
     }
 
     cache_manager.delete('main', 'languages:*')
-
-    from igdectk.module.manager import module_manager
-    messenger_module = module_manager.get_module('messenger')
-    from messenger.commands import COMMAND_CACHE_INVALIDATION
-    messenger_module.tcp_client.message(COMMAND_CACHE_INVALIDATION, {
-        'category': 'main', 'name': 'languages:*', 'values': None})
+    # client_cache_manager.delete('main', 'languages:*')
 
     return HttpResponseRest(request, results)
 
@@ -123,12 +120,7 @@ def delete_language(request, code):
     language.delete()
 
     cache_manager.delete('main', 'languages:*')
-
-    from igdectk.module.manager import module_manager
-    messenger_module = module_manager.get_module('messenger')
-    from messenger.commands import COMMAND_CACHE_INVALIDATION
-    messenger_module.tcp_client.message(COMMAND_CACHE_INVALIDATION, {
-        'category': 'main', 'name': 'languages:*', 'values': None})
+    # client_cache_manager.delete('main', 'languages:*')
 
     return HttpResponseRest(request, {})
 
@@ -175,12 +167,7 @@ def change_language_labels(request, code):
     }
 
     cache_manager.delete('main', 'languages:*')
-
-    from igdectk.module.manager import module_manager
-    messenger_module = module_manager.get_module('messenger')
-    from messenger.commands import COMMAND_CACHE_INVALIDATION
-    messenger_module.tcp_client.message(COMMAND_CACHE_INVALIDATION, {
-        'category': 'main', 'name': 'languages:*', 'values': None})
+    # client_cache_manager.delete('main', 'languages:*')
 
     return HttpResponseRest(request, result)
 

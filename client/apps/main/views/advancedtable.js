@@ -1130,7 +1130,7 @@ var View = Marionette.CompositeView.extend({
                     sort_by: this.collection.sort_by,
                     more: more
                 }
-            }).done(function (data) {
+            }).then(function (data) {
                 // var scrollElement = view.getScrollElement();
 
                 if (scroll) {

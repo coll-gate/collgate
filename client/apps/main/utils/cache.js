@@ -91,12 +91,6 @@ Cache.prototype = {
 
         if (cacheType in this.data) {
             let category = this.data[cacheType];
-/*
-            // @todo maybe collection could be connected to cache or move this like ranks
-            if (key.startsWith('languages:')) {
-                window.application.main.collections.languages.fetch({reset: true});
-                return;
-            }*/
 
             if (values) {
                 // @todo an invalidate per value
@@ -111,14 +105,14 @@ Cache.prototype = {
                 }
 
                 for (let i = 0; i < rmList.length; ++i) {
-                    console.warn("invalidate", cacheType + "__" + rmList[i]);
+                    console.debug("Cache invalidation", cacheType + "__" + rmList[i]);
                     delete category[rmList[i]];
                 }
 
                 if (cacheType in this.collection) {
                     for (key in this.collection[cacheType]) {
                         if (key.endsWith(match)) {
-                            console.warn("invalidate", cacheType + "__" + key);
+                            console.debug("Cache invalidation", cacheType + "__" + key);
                             this.collection[cacheType][key].fetch({reset: true});
                         }
                     }
@@ -134,20 +128,20 @@ Cache.prototype = {
                 }
 
                 for (let i = 0; i < rmList.length; ++i) {
-                    console.warn("invalidate", cacheType + "__" + rmList[i]);
+                    console.debug("Cache invalidation", cacheType + "__" + rmList[i]);
                     delete category[rmList[i]];
                 }
 
                 if (cacheType in this.collection) {
                     for (key in this.collection[cacheType]) {
                         if (key.startsWith(match)) {
-                            console.warn("invalidate", cacheType + "__" + key);
+                            console.debug("Cache invalidation", cacheType + "__" + key);
                             this.collection[cacheType][key].fetch({reset: true});
                         }
                     }
                 }
             } else if (key in category) {
-                console.warn("invalidate", cacheType + "__" + key);
+                console.debug("Cache invalidation", cacheType + "__" + key);
                 delete category[key];
             }
         }

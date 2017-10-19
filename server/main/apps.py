@@ -28,6 +28,12 @@ class CollGateMain(ApplicationMain):
         from main.cache import cache_manager
         cache_manager.register('main')
 
+        from messenger.cache import client_cache_manager
+        client_cache_manager.register('main')
+
+        from main.models import main_register_models
+        main_register_models(CollGateMain.name)
+
         main_module = Module('main', base_url='coll-gate')
         main_module.include_urls((
             'base',
@@ -40,13 +46,6 @@ class CollGateMain(ApplicationMain):
             'eventmessage'
             )
         )
-
-        # profile menu (merged directly into main/index.html
-        # menu_profile = ModuleMenu('profile', _('Profile'), auth=AUTH_USER, order=1000)
-        # menu_profile.add_entry(MenuEntry('edit', _('Edit information'), "#main/profile/edit/", icon=FaGlyphv('user'), order=8))
-        # menu_profile.add_entry(MenuSeparator(9))
-        # menu_profile.add_entry(MenuEntry('logout', _('Logout'), "#main/profile/logout/", icon=FaGlyph('off'), order=10))
-        # main_module.add_menu(menu_profile)
 
         # administration menu
         menu_administration = ModuleMenu('administration', _('Administration'), order=999, auth=AUTH_STAFF)

@@ -8,8 +8,6 @@
 # @license MIT (see LICENSE file)
 # @details
 
-import datetime
-
 from django.core.cache import cache
 
 
@@ -58,33 +56,6 @@ class CacheManager(object):
         else:
             cache.delete("%s__%s" % (category, name))
 
-        # if name.endswith('*'):
-        #     match = name.rstrip('*')
-        #     rm_list = []
-        #
-        #     for cache_entry in cache_category:
-        #         if cache_entry.startswith(match):
-        #             rm_list.append(cache_entry)
-        #
-        #     for cache_entry in rm_list:
-        #         cache_category[cache_entry].clear()
-        #         del cache_category[cache_entry]
-        #
-        # elif name.startswith('*'):
-        #     match = name.lstrip('*')
-        #     rm_list = []
-        #
-        #     for cache_entry in cache_category:
-        #         if cache_entry.endswith(match):
-        #             rm_list.append(cache_entry)
-        #
-        #     for cache_entry in rm_list:
-        #         cache_category[cache_entry].clear()
-        #         del cache_category[cache_entry]
-        #
-        # elif name in cache_category:
-        #     del cache_category[name]
-
     def get(self, category, name):
         cache_category = self.categories.get(category)
 
@@ -105,7 +76,7 @@ class CacheManager(object):
         return ":".join(kargs)
 
 
-# Singleton of cache
+# Singleton of server cache manager
 cache_manager = CacheManager()
 
 

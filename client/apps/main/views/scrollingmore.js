@@ -8,9 +8,9 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
+let Marionette = require('backbone.marionette');
 
-var View = Marionette.View.extend({
+let View = Marionette.View.extend({
     template: require('../templates/scrollingmore.html'),
     tagName: 'div',
     className: 'scrolling-more',
@@ -41,9 +41,9 @@ var View = Marionette.View.extend({
             this.more = -1;
         }
 
-        var collection = this.getOption('collection');
+        let collection = this.getOption('collection');
         if (collection && collection.count) {
-            // update count and reset position on on count signal
+            // update count and reset position on count signal
             this.listenTo(collection, 'count', this.onUpdateCount, this);
 
             // update position on reset collection
@@ -73,13 +73,13 @@ var View = Marionette.View.extend({
             return;
         }
 
-        var top = this.targetView.ui.tbody.parent().parent().offset().top;
-        var found = false;
+        let top = this.targetView.ui.tbody.parent().parent().offset().top;
+        let found = false;
 
         if (this.previousTopElement) {
             if (this.previousTopElement.offset().top <= top) {
-                var element = this.previousTopElement;
-                var i = this.previousTopElementIndex;
+                let element = this.previousTopElement;
+                let i = this.previousTopElementIndex;
 
                 this.previousTopElement = null;
 
@@ -96,8 +96,8 @@ var View = Marionette.View.extend({
                     ++i;
                 }
             } else if (this.previousTopElement.offset().top > top) {
-                var element = this.previousTopElement;
-                var i = this.previousTopElementIndex;
+                let element = this.previousTopElement;
+                let i = this.previousTopElementIndex;
 
                 this.previousTopElement = null;
 
@@ -117,14 +117,14 @@ var View = Marionette.View.extend({
         }
 
         if (!found) {
-            var rows = this.targetView.ui.tbody.children('tr');
-            var view = this;
+            let rows = this.targetView.ui.tbody.children('tr');
+            let view = this;
 
             this.previousTopElement = null;
             this.previousTopElementIndex = 0;
 
             $.each(rows, function (i, el) {
-                var element = $(el);
+                let element = $(el);
 
                 if (element.offset().top + element.height() >= top) {
                     view.previousTopElement = element;
@@ -135,9 +135,9 @@ var View = Marionette.View.extend({
             });
         }
 
-        var bottom = top + this.targetView.ui.tbody.parent().parent().height();
-        var element = this.previousTopElement;
-        var i = this.previousTopElementIndex;
+        let bottom = top + this.targetView.ui.tbody.parent().parent().height();
+        let element = this.previousTopElement;
+        let i = this.previousTopElementIndex;
 
         while (element && element.length) {
             if (element.offset().top >= bottom) {
@@ -148,8 +148,8 @@ var View = Marionette.View.extend({
             ++i;
         }
 
-        var first = this.previousTopElement ? this.previousTopElementIndex + 1 : 0;
-        var last = i;
+        let first = this.previousTopElement ? this.previousTopElementIndex + 1 : 0;
+        let last = i;
 
         this.ui.collection_position.html(first + " - " + last);
     },
@@ -169,7 +169,6 @@ var View = Marionette.View.extend({
     },
 
     onScroll: function(e) {
-
         if (this.targetView) {
             if (this.scrollEvent) {
                 return;
@@ -193,8 +192,8 @@ var View = Marionette.View.extend({
         if (this.targetView && this.targetView.scrollOnePage) {
             this.targetView.scrollOnePage(-1);
         } else if (this.targetView) {
-            var scrollElement = this.targetView.$el.parent();
-            var clientHeight = scrollElement.prop('clientHeight');
+            let scrollElement = this.targetView.$el.parent();
+            let clientHeight = scrollElement.prop('clientHeight');
 
             // view page scrolling
             scrollElement.scrollTop(scrollElement.scrollTop() - clientHeight);
@@ -203,7 +202,7 @@ var View = Marionette.View.extend({
 
     onScrollMore: function() {
         if (this.targetView && this.targetView.moreResults) {
-            var moreResults = true;
+            let moreResults = true;
 
             if (this.targetView.isNeedMoreResults) {
                 moreResults = this.targetView.isNeedMoreResults();
@@ -215,8 +214,8 @@ var View = Marionette.View.extend({
                 this.targetView.scrollOnePage(1);
             }
         } else if (this.targetView) {
-            var scrollElement = this.targetView.$el.parent();
-            var clientHeight = scrollElement.prop('clientHeight');
+            let scrollElement = this.targetView.$el.parent();
+            let clientHeight = scrollElement.prop('clientHeight');
 
             // view page scrolling
             scrollElement.scrollTop(scrollElement.scrollTop() + clientHeight);

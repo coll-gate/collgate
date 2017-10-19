@@ -8,10 +8,10 @@
  * @details 
  */
 
-let CacheCollection = require('../collections/cachedcollection');
+let CachedCollection = require('../collections/cachedcollection');
 let LanguageModel = require('../models/language');
 
-let LanguageCollection = CacheCollection.extend({
+let LanguageCollection = CachedCollection.extend({
     url: window.application.url(['main', 'language']),
     model: LanguageModel,
 

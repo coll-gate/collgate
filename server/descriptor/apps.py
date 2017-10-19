@@ -41,10 +41,12 @@ class CollGateDescriptor(ApplicationMain):
 
         # register descriptor cache category
         from main.cache import cache_manager
-        cache_manager.register('_descriptor')
-        cache_manager.register('_entity_columns')
-        cache_manager.register('descriptors')
+        cache_manager.register('descriptor')
         cache_manager.register('entity_columns')
+
+        from messenger.cache import client_cache_manager
+        client_cache_manager.register('descriptors')
+        client_cache_manager.register('entity_columns')
 
         from main.models import main_register_models
         main_register_models(CollGateDescriptor.name)

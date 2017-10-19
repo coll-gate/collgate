@@ -47,3 +47,6 @@ class CollGateMessenger(ApplicationMain):
         # create a connector to messenger service
         messenger_module.tcp_client = tcpclient.TCPClient()
         messenger_module.tcp_client.daemon = True
+
+        from . import cache
+        cache.client_cache_manager.bind()
