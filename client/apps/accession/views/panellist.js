@@ -101,6 +101,8 @@ var View = AdvancedTable.extend({
         contextView.on("panel:intersection", function () {
             view.onIntersection();
         });
+
+        View.__super__.onShowTab.apply(this, arguments);
     }
 });
 

@@ -189,6 +189,7 @@ def get_accession_list_count(request):
 
         for criteria in search:
             if criteria.get('field') == 'panels':
+                AccessionView._meta.model_name = "accession"
                 cq = CursorQuery(AccessionView)
                 break
 
@@ -236,7 +237,7 @@ def get_accession_list(request):
 
         for criteria in search:
             if criteria.get('field') == 'panels':
-                AccessionView._meta.model_name = 'accession'
+                AccessionView._meta.model_name = "accession"
                 cq = CursorQuery(AccessionView)
                 break
 
