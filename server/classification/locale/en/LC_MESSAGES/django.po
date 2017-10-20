@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-10-19 16:46+0200\n"
+"POT-Creation-Date: 2017-10-20 15:16+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -36,69 +36,69 @@ msgstr ""
 msgid "List classifications entries"
 msgstr ""
 
-#: classification.py:221
+#: classification.py:223
 msgid "You are not allowed to create a classification"
 msgstr ""
 
-#: classification.py:232 classification.py:570 classificationentry.py:110
+#: classification.py:234 classification.py:572 classificationentry.py:110
 msgid "The language is not supported"
 msgstr ""
 
-#: classification.py:235
+#: classification.py:237
 msgid "A classification already exists with this name"
 msgstr ""
 
-#: classification.py:274 classification.py:385 classification.py:558
-#: classification.py:613 classification.py:711
+#: classification.py:276 classification.py:387 classification.py:560
+#: classification.py:615 classification.py:713
 msgid "You are not allowed to modify a classification"
 msgstr ""
 
-#: classification.py:289 classification.py:351 classification.py:395
-#: classification.py:575
+#: classification.py:291 classification.py:353 classification.py:397
+#: classification.py:577
 msgid "This classification is locked"
 msgstr ""
 
-#: classification.py:297
+#: classification.py:299
 msgid "The name of classification already exists"
 msgstr ""
 
-#: classification.py:341 classification.py:655
+#: classification.py:343 classification.py:657
 msgid "You are not allowed to remove a classification"
 msgstr ""
 
-#: classification.py:354
+#: classification.py:356
 msgid "There is some ranks into this classification"
 msgstr ""
 
-#: classification.py:403 classification.py:731
+#: classification.py:405 classification.py:733
 msgid "Unsupported language identifier"
 msgstr ""
 
-#: classification.py:559
+#: classification.py:561
 msgid "You are not allowed to create a classification rank"
 msgstr ""
 
-#: classification.py:578
+#: classification.py:580
 msgid "A rank of classification already exists with this name"
 msgstr ""
 
-#: classification.py:614 classification.py:712
+#: classification.py:616 classification.py:714
 msgid "You are not allowed to modify a classification rank"
 msgstr ""
 
-#: classification.py:626 classification.py:666 classification.py:723
+#: classification.py:628 classification.py:668 classification.py:725
 msgid "The classification owning this rank is locked"
 msgstr ""
 
-#: classification.py:634
+#: classification.py:636
 msgid "The name of classification rank already exists"
 msgstr ""
 
-#: classification.py:656
+#: classification.py:658
 msgid "You are not allowed to remove a classification rank"
 msgstr ""
 
-#: classification.py:669
+#: classification.py:671
 msgid "There is one or more entities using this classification rank"
 msgstr ""
 
@@ -106,33 +106,33 @@ msgstr ""
 msgid "You are not allowed to create a classification entry"
 msgstr ""
 
-#: classificationentry.py:156 classificationentry.py:228
-#: classificationentry.py:533 classificationentry.py:616
-#: classificationentry.py:748 classificationentry.py:823
+#: classificationentry.py:156 classificationentry.py:230
+#: classificationentry.py:537 classificationentry.py:620
+#: classificationentry.py:752 classificationentry.py:827
 msgid "You are not allowed to list the classifications entries"
 msgstr ""
 
-#: classificationentry.py:392 classificationentrysynonym.py:141
+#: classificationentry.py:396 classificationentrysynonym.py:141
 #: classificationentrysynonym.py:172 classificationentrysynonym.py:200
 msgid "You are not allowed to modify a classification entry"
 msgstr ""
 
-#: classificationentry.py:417
+#: classificationentry.py:421
 msgid ""
 "The rank of the parent must be lowest than the classification entry itself"
 msgstr ""
 
-#: classificationentry.py:513
+#: classificationentry.py:517
 msgid "You are not allowed to remove a classification entry"
 msgstr ""
 
-#: classificationentry.py:521
+#: classificationentry.py:525
 msgid ""
 "This classification entry is referred by one or more entities. It cannot be "
 "deleted."
 msgstr ""
 
-#: classificationentry.py:525
+#: classificationentry.py:529
 msgid "This classification entry has sub-ranks. It cannot be deleted."
 msgstr ""
 

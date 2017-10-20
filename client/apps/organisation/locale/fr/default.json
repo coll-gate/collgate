@@ -1,6 +1,6 @@
 {
   "Acronym": "Acronyme",
-  "Add establishment": "",
+  "Add establishment": "Ajouter un site",
   "Apply": "Appliquer",
   "Cancel": "Annuler",
   "Code": "Code",
@@ -9,7 +9,6 @@
   "Create": "Créer",
   "Create an establishment": "Créer un établissement",
   "Create an organisation or a partner": "Créer une organisation ou un partenaire",
-  "Defines": "",
   "Description": "Description",
   "Descriptors": "Descripteurs",
   "Done": "Fait",
@@ -19,7 +18,6 @@
   "GRC details": "Détails du CRB",
   "GRC partner": "Partenaire CRB",
   "Identifier": "Identifiant",
-  "List of GRC partners": "Liste des partenaires du CRB",
   "List of organisations": "Liste des organisations",
   "Location": "Localisation",
   "Manage establishments of the organisation": "Gérer les sites de l'organisation",

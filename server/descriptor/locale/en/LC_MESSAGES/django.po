@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-10-19 16:46+0200\n"
+"POT-Creation-Date: 2017-10-20 15:16+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,19 +16,19 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: apps.py:114
+#: apps.py:116
 msgid "Administration"
 msgstr ""
 
-#: apps.py:119
+#: apps.py:121
 msgid "List groups of descriptors"
 msgstr ""
 
-#: apps.py:122
+#: apps.py:124
 msgid "List models of descriptor"
 msgstr ""
 
-#: apps.py:125
+#: apps.py:127
 msgid "List meta-models of descriptor"
 msgstr ""
 
