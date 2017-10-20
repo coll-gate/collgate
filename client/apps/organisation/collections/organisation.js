@@ -8,16 +8,12 @@
  * @details 
  */
 
-var OrganisationModel = require('../models/organisation');
-var CountableCollection = require('../../main/collections/countable');
+let OrganisationModel = require('../models/organisation');
+let CountableCollection = require('../../main/collections/countable');
 
-var Collection = CountableCollection.extend({
+let Collection = CountableCollection.extend({
     url: function() {
-        if (this.grc) {
-            return window.application.url(['organisation', 'grc', 'organisation']);
-        } else {
-            return window.application.url(['organisation', 'organisation']);
-        }
+        return window.application.url(['organisation', 'organisation']);
     },
     model: OrganisationModel,
 
@@ -27,8 +23,6 @@ var Collection = CountableCollection.extend({
         options || (options = {});
 
         Collection.__super__.initialize.apply(this, arguments);
-
-        this.grc = options.grc || false;
     }
 });
 

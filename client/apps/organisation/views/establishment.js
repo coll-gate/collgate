@@ -8,12 +8,18 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
+let Marionette = require('backbone.marionette');
 
-var View = Marionette.View.extend({
+let View = Marionette.View.extend({
     tagName: 'tr',
-    template: require('../templates/establishment.html'),
-    className: "object establishment",
+    className: "object establishment element",
+    attributes: function() {
+        return {
+            'scope': 'row',
+            'element-id': this.model.get('id')
+        }
+    },
+    template: require("../../descriptor/templates/entity.html"),
 
     templateContext: function () {
         return {

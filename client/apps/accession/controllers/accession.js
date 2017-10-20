@@ -8,17 +8,17 @@
  * @details
  */
 
-var Marionette = require('backbone.marionette');
+let Marionette = require('backbone.marionette');
 
-var AccessionModel = require('../models/accession');
+let AccessionModel = require('../models/accession');
 
-var DefaultLayout = require('../../main/views/defaultlayout');
-var TitleView = require('../../main/views/titleview');
-var Dialog = require('../../main/views/dialog');
-var AccessionLayout = require('../views/accessionlayout');
-var SearchEntityDialog = require('../views/search');
+let DefaultLayout = require('../../main/views/defaultlayout');
+let TitleView = require('../../main/views/titleview');
+let Dialog = require('../../main/views/dialog');
+let AccessionLayout = require('../views/accessionlayout');
+let SearchEntityDialog = require('../views/search');
 
-var Controller = Marionette.Object.extend({
+let Controller = Marionette.Object.extend({
 
     create: function() {
         $.ajax({
@@ -26,7 +26,7 @@ var Controller = Marionette.Object.extend({
             url: window.application.url(['descriptor', 'meta-model', 'for-describable', 'accession.accession']),
             dataType: 'json'
         }).done(function(data) {
-            var CreateAccessionDialog = Dialog.extend({
+            let CreateAccessionDialog = Dialog.extend({
                 attributes: {
                     'id': 'dlg_create_accession'
                 },
@@ -61,8 +61,8 @@ var Controller = Marionette.Object.extend({
                     // map descriptor meta models by theirs ids
                     this.descriptorMetaModels = {};
 
-                    for (var i = 0; i < data.length; ++i) {
-                        var dmm = data[i];
+                    for (let i = 0; i < data.length; ++i) {
+                        let dmm = data[i];
                         this.descriptorMetaModels[dmm.id] = dmm;
                     }
                 },
@@ -79,9 +79,9 @@ var Controller = Marionette.Object.extend({
                 },
 
                 getDescriptorMetaModelClassifications: function () {
-                    var descriptorMetaModelId = parseInt(this.ui.descriptor_meta_model.val());
+                    let descriptorMetaModelId = parseInt(this.ui.descriptor_meta_model.val());
 
-                    var value = Object.resolve(descriptorMetaModelId + ".parameters.data.primary_classification", this.descriptorMetaModels);
+                    let value = Object.resolve(descriptorMetaModelId + ".parameters.data.primary_classification", this.descriptorMetaModels);
                     if (value) {
                         return [value];
                     }
@@ -102,17 +102,17 @@ var Controller = Marionette.Object.extend({
                 },
 
                 onChangeDescriptorMetaModel: function() {
-                    var select = this.ui.primary_classification;
+                    let select = this.ui.primary_classification;
 
                     select.children().remove();
                     select.selectpicker('destroy');
 
                     // classifications list according to the related meta model of accession
-                    var ClassificationCollection = require('../../classification/collections/classification');
-                    var classificationCollection = new ClassificationCollection();
+                    let ClassificationCollection = require('../../classification/collections/classification');
+                    let classificationCollection = new ClassificationCollection();
 
-                    var SelectOption = require('../../main/renderers/selectoption');
-                    var classifications = new SelectOption({
+                    let SelectOption = require('../../main/renderers/selectoption');
+                    let classifications = new SelectOption({
                         className: "classification",
                         collection: classificationCollection,
                         filters: [{
@@ -123,7 +123,7 @@ var Controller = Marionette.Object.extend({
                         }]
                     });
 
-                    var self = this;
+                    let self = this;
 
                     classifications.drawSelect(select).done(function () {
                         self.onChangePrimaryClassification();
@@ -131,8 +131,8 @@ var Controller = Marionette.Object.extend({
                 },
 
                 onChangePrimaryClassification: function () {
-                    var classificationId = parseInt(this.ui.primary_classification.val());
-                    var select = $(this.ui.primary_classification_entry);
+                    let classificationId = parseInt(this.ui.primary_classification.val());
+                    let select = $(this.ui.primary_classification_entry);
 
                     if (select.data('select2')) {
                         select.select2('destroy');
@@ -170,9 +170,9 @@ var Controller = Marionette.Object.extend({
                                     params.next = data.next || null;
                                 }
 
-                                var results = [];
+                                let results = [];
 
-                                for (var i = 0; i < data.items.length; ++i) {
+                                for (let i = 0; i < data.items.length; ++i) {
                                     results.push({
                                         id: data.items[i].id,
                                         text: data.items[i].label
@@ -194,10 +194,10 @@ var Controller = Marionette.Object.extend({
                 },
 
                 onCodeInput: function () {
-                    var code = this.ui.code.val().trim();
+                    let code = this.ui.code.val().trim();
 
                     if (this.validateCode()) {
-                        var filters = {
+                        let filters = {
                             method: 'ieq',
                             fields: ['code'],
                             'code': code
@@ -211,8 +211,8 @@ var Controller = Marionette.Object.extend({
                             data: {filters: JSON.stringify(filters)},
                             el: this.ui.code,
                             success: function(data) {
-                                for (var i in data.items) {
-                                    var t = data.items[i];
+                                for (let i in data.items) {
+                                    let t = data.items[i];
 
                                     if (t.value.toUpperCase() === code.toUpperCase()) {
                                         $(this.el).validateField('failed', _t('Code of accession already used'));
@@ -227,12 +227,12 @@ var Controller = Marionette.Object.extend({
                 },
 
                 onNameInput: function () {
-                    var name = this.ui.name.val().trim();
-                    var self = this;
+                    let name = this.ui.name.val().trim();
+                    let self = this;
 
                     // @todo must respect the nomenclature from the meta-model
                     if (this.validateName()) {
-                        var filters = {
+                        let filters = {
                             method: 'ieq',
                             fields: ['name'],
                             'name': name
@@ -245,10 +245,10 @@ var Controller = Marionette.Object.extend({
                             contentType: 'application/json; charset=utf8',
                             data: {filters: JSON.stringify(filters)},
                         }).done(function (data) {
-                            var accessionCodeId = application.accession.collections.accessionSynonymTypes.findWhere({name: "accession_code"}).get('id');
+                            let accessionCodeId = application.accession.collections.accessionSynonymTypes.findWhere({name: "accession_code"}).get('id');
 
-                            for (var i in data.items) {
-                                var t = data.items[i];
+                            for (let i in data.items) {
+                                let t = data.items[i];
 
                                 if (t.synonym_type === accessionCodeId && t.label.toUpperCase() === name.toUpperCase()) {
                                     self.ui.name.validateField('failed', _t('Synonym used as accession code'));
@@ -262,7 +262,7 @@ var Controller = Marionette.Object.extend({
                 },
 
                 validateCode: function() {
-                    var v = this.ui.code.val().trim();
+                    let v = this.ui.code.val().trim();
 
                     if (v.length > 128) {
                         this.ui.code.validateField('failed', _t('characters_max', {count: 128}));
@@ -281,7 +281,7 @@ var Controller = Marionette.Object.extend({
                 },
 
                 validateName: function() {
-                    var v = this.ui.name.val().trim();
+                    let v = this.ui.name.val().trim();
 
                     if (v.length > 128) {
                         this.ui.name.validateField('failed', _t('characters_max', {count: 128}));
@@ -300,9 +300,9 @@ var Controller = Marionette.Object.extend({
                 },
 
                 validate: function() {
-                    var valid = this.validateName();
-                    var descriptorMetaModelId = parseInt(this.ui.descriptor_meta_model.val());
-                    var primaryClassificationEntryId = parseInt(this.ui.primary_classification_entry.val());
+                    let valid = this.validateName();
+                    let descriptorMetaModelId = parseInt(this.ui.descriptor_meta_model.val());
+                    let primaryClassificationEntryId = parseInt(this.ui.primary_classification_entry.val());
 
                     if (isNaN(descriptorMetaModelId)) {
                         $.alert.error(_t("The meta-model of descriptors must be defined"));
@@ -329,17 +329,17 @@ var Controller = Marionette.Object.extend({
                 },
 
                 onContinue: function() {
-                    var view = this;
+                    let view = this;
 
                     if (this.validate()) {
-                        var code = this.ui.code.val().trim();
-                        var name = this.ui.name.val().trim();
+                        let code = this.ui.code.val().trim();
+                        let name = this.ui.name.val().trim();
 
-                        var descriptorMetaModelId = parseInt(this.ui.descriptor_meta_model.val());
-                        var primaryClassificationEntryId = parseInt(this.ui.primary_classification_entry.val());
+                        let descriptorMetaModelId = parseInt(this.ui.descriptor_meta_model.val());
+                        let primaryClassificationEntryId = parseInt(this.ui.primary_classification_entry.val());
 
                         // create a new local model and open an edit view with this model
-                        var model = new AccessionModel({
+                        let model = new AccessionModel({
                             code: code,
                             name: name,
                             primary_classification_entry: primaryClassificationEntryId,
@@ -349,7 +349,7 @@ var Controller = Marionette.Object.extend({
 
                         view.destroy();
 
-                        var defaultLayout = new DefaultLayout();
+                        let defaultLayout = new DefaultLayout();
                         application.main.showContent(defaultLayout);
 
                         defaultLayout.showChildView('title', new TitleView({
@@ -357,19 +357,19 @@ var Controller = Marionette.Object.extend({
                             model: model
                         }));
 
-                        var accessionLayout = new AccessionLayout({model: model});
+                        let accessionLayout = new AccessionLayout({model: model});
                         defaultLayout.showChildView('content', accessionLayout);
                     }
                 }
             });
 
-            var createAccessionView = new CreateAccessionDialog();
+            let createAccessionView = new CreateAccessionDialog();
             createAccessionView.render();
         });
     },
 
     search: function () {
-        var searchEntityDialog = new SearchEntityDialog();
+        let searchEntityDialog = new SearchEntityDialog();
         searchEntityDialog.render();
      }
 });

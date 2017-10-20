@@ -8,10 +8,10 @@
  * @details 
  */
 
-var CountableCollection = require('../../main/collections/countable');
-var ClassificationEntryModel = require('../models/classificationentry');
+let CountableCollection = require('../../main/collections/countable');
+let ClassificationEntryModel = require('../models/classificationentry');
 
-var Collection = CountableCollection.extend({
+let Collection = CountableCollection.extend({
     url: function() {
         if (this.classification_id) {
             return window.application.url(['classification', 'classification', this.classification_id, 'classificationentry']);
@@ -28,7 +28,7 @@ var Collection = CountableCollection.extend({
     initialize: function(models, options) {
         options || (options = {});
 
-        CountableCollection.__super__.initialize.apply(this, arguments);
+        Collection.__super__.initialize.apply(this, arguments);
 
         if (options.classification_id) {
             this.classification_id = options.classification_id;

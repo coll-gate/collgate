@@ -8,19 +8,19 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
+let Marionette = require('backbone.marionette');
 
-var BatchModel = require('../models/batch');
-var BatchCollection = require('../collections/batch');
-var BatchListView = require('../views/batchlist');
-var EntityListFilterView = require('../../descriptor/views/entitylistfilter');
+let BatchModel = require('../models/batch');
+let BatchCollection = require('../collections/batch');
+let BatchListView = require('../views/batchlist');
+let EntityListFilterView = require('../../descriptor/views/entitylistfilter');
 
-var DefaultLayout = require('../../main/views/defaultlayout');
-var ScrollingMoreView = require('../../main/views/scrollingmore');
-var TitleView = require('../../main/views/titleview');
-var BatchLayout = require('../views/batchlayout');
+let DefaultLayout = require('../../main/views/defaultlayout');
+let ScrollingMoreView = require('../../main/views/scrollingmore');
+let TitleView = require('../../main/views/titleview');
+let BatchLayout = require('../views/batchlayout');
 
-var Router = Marionette.AppRouter.extend({
+let Router = Marionette.AppRouter.extend({
     routes : {
         "app/accession/batch/": "getBatchList",
         "app/accession/accession/:id/batch/": "getAccessionBatchList",
@@ -30,23 +30,23 @@ var Router = Marionette.AppRouter.extend({
     getBatchList : function(options) {
         options || (options = {});
 
-        var collection = new BatchCollection([], {
+        let collection = new BatchCollection([], {
             filters: (options.filters || {}),
             search: (options.search || {})
         });
 
-        var defaultLayout = new DefaultLayout({});
+        let defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
         defaultLayout.showChildView('title', new TitleView({title: _t("List of all batches")}));
 
-        var columns = application.main.cache.lookup({
+        let columns = application.main.cache.lookup({
             type: 'entity_columns',
             format: {model: 'accession.batch'}
         });
 
         columns.done(function (data) {
-            var batchListView  = new BatchListView({
+            let batchListView  = new BatchListView({
                 collection: collection, columns: data[0].value,
                 onRender: function () {
                     this.onShowTab();
@@ -64,21 +64,21 @@ var Router = Marionette.AppRouter.extend({
     },
 
     getAccessionBatchList : function(id) {
-        var collection = new BatchCollection({accession_id: id});
+        let collection = new BatchCollection({accession_id: id});
 
-        var defaultLayout = new DefaultLayout({});
+        let defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
         defaultLayout.showChildView('title', new TitleView({title: _t("List of batches for the accession")}));
 
         // get available columns
-        var columns = application.main.cache.lookup({
+        let columns = application.main.cache.lookup({
             type: 'entity_columns',
             format: {model: 'accession.batch'}
         });
 
         $.when(columns, collection.fetch()).then(function (data) {
-            var batchListView = new BatchListView({collection : collection, columns: data[0].value});
+            let batchListView = new BatchListView({collection : collection, columns: data[0].value});
 
             defaultLayout.showChildView('content', batchListView);
             defaultLayout.showChildView('content-bottom', new ScrollingMoreView({targetView: batchListView}));
@@ -88,12 +88,12 @@ var Router = Marionette.AppRouter.extend({
     getBatch : function(id, tab) {
         tab || (tab = "");
 
-        var batch = new BatchModel({id: id});
+        let batch = new BatchModel({id: id});
 
-        var defaultLayout = new DefaultLayout();
+        let defaultLayout = new DefaultLayout();
         application.main.showContent(defaultLayout);
 
-        var batchLayout = new BatchLayout({model: batch, initialTab: tab.replace('/', '')});
+        let batchLayout = new BatchLayout({model: batch, initialTab: tab.replace('/', '')});
 
         batch.fetch().then(function() {
             defaultLayout.showChildView('title', new TitleView({title: _t("Batch"), model: batch}));

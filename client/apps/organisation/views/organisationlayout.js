@@ -8,13 +8,14 @@
  * @details 
  */
 
-var LayoutView = require('../../main/views/layout');
-var ScrollingMoreView = require('../../main/views/scrollingmore');
-var ContentBottomFooterLayout = require('../../main/views/contentbottomfooterlayout');
-var OrganisationDetailsView = require('../views/organisationdetails');
-var DescriptorEditView = require('../views/descriptoredit');
+let LayoutView = require('../../main/views/layout');
+let ScrollingMoreView = require('../../main/views/scrollingmore');
+let ContentBottomFooterLayout = require('../../main/views/contentbottomfooterlayout');
+let OrganisationDetailsView = require('../views/organisationdetails');
+let DescriptorEditView = require('../views/descriptoredit');
+let EntityListFilterView = require('../../descriptor/views/entitylistfilter');
 
-var Layout = LayoutView.extend({
+let Layout = LayoutView.extend({
     template: require("../templates/organisationlayout.html"),
 
     ui: {
@@ -49,7 +50,7 @@ var Layout = LayoutView.extend({
         if (value == null) {
             this.getRegion('descriptors').empty();
         } else {
-            var organisationLayout = this;
+            let organisationLayout = this;
 
             // get the layout before creating the view
             $.ajax({
@@ -57,8 +58,8 @@ var Layout = LayoutView.extend({
                 url: window.application.url(['descriptor', 'meta-model', value, 'layout']),
                 dataType: 'json'
             }).done(function (data) {
-                var DescriptorView = require('../views/descriptor');
-                var descriptorView = new DescriptorView({
+                let DescriptorView = require('../views/descriptor');
+                let descriptorView = new DescriptorView({
                     model: model,
                     descriptorMetaModelLayout: data
                 });
@@ -72,7 +73,7 @@ var Layout = LayoutView.extend({
     },
 
     onRender: function() {
-        var organisationLayout = this;
+        let organisationLayout = this;
 
         // details view
         if (!this.model.isNew()) {
@@ -80,23 +81,36 @@ var Layout = LayoutView.extend({
             organisationLayout.showChildView('details', new OrganisationDetailsView({model: this.model}));
 
             // establishments tab
-            var EstablishmentCollection = require('../collections/establishment');
-            var establishments = new EstablishmentCollection([], {organisation_id: this.model.get('id')});
+            let EstablishmentCollection = require('../collections/establishment');
+            let establishments = new EstablishmentCollection([], {organisation_id: this.model.get('id')});
 
-            establishments.fetch().then(function() {
-                var EstablishmentListView = require('../views/establishmentlist');
-                var establishmentListView  = new EstablishmentListView({collection: establishments, model: organisationLayout.model});
+            // get available columns
+            let columns = application.main.cache.lookup({
+                type: 'entity_columns',
+                format: {model: 'organisation.establishment'}
+            });
 
-                var contentBottomFooterLayout = new ContentBottomFooterLayout();
+            $.when(columns, establishments.fetch()).then(function (data) {
+                if (!organisationLayout.isRendered()) {
+                    return;
+                }
+
+                let EstablishmentListView = require('../views/establishmentlist');
+                let establishmentListView = new EstablishmentListView({
+                    collection: establishments, columns: data[0].value, model: organisationLayout.model
+                });
+
+                let contentBottomFooterLayout = new ContentBottomFooterLayout();
                 organisationLayout.showChildView('establishments', contentBottomFooterLayout);
 
                 contentBottomFooterLayout.showChildView('content', establishmentListView);
-                contentBottomFooterLayout.showChildView('bottom', new ScrollingMoreView({targetView: establishmentListView}));
+                contentBottomFooterLayout.showChildView('bottom', new ScrollingMoreView({
+                    collection: establishments,
+                    targetView: establishmentListView
+                }));
 
-                var EstablishmentListFilterView = require('./establishmentlistfilter');
-                contentBottomFooterLayout.showChildView('footer', new EstablishmentListFilterView({
-                    organisation: organisationLayout.model,
-                    collection: establishments
+                contentBottomFooterLayout.showChildView('footer', new EntityListFilterView({
+                    collection: establishments, columns: data[0].value
                 }));
             });
 
@@ -112,7 +126,7 @@ var Layout = LayoutView.extend({
                 url: window.application.url(['descriptor', 'meta-model', this.model.get('descriptor_meta_model'), 'layout']),
                 dataType: 'json'
             }).done(function(data) {
-                var descriptorView = new DescriptorEditView({
+                let descriptorView = new DescriptorEditView({
                     model: organisationLayout.model, descriptorMetaModelLayout: data});
 
                 organisationLayout.showChildView('descriptors', descriptorView);

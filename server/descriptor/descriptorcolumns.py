@@ -81,15 +81,15 @@ def get_columns_name_for_describable_content_type(request, content_type_name):
     # entity model
     for dmt in dmts:
         descriptor_format = dmt.descriptor_type.format
-        query = True if DescriptorFormatTypeManager.get(descriptor_format).related_model(descriptor_format) else False
-
         dft = DescriptorFormatTypeManager.get(descriptor_format)
+
+        query = True if dft.related_model(descriptor_format) else False
 
         # display_fields comes by default from dft is defined
         if dft.display_fields is not None and 'display_fields' not in descriptor_format:
             descriptor_format['display_fields'] = dft.display_fields
 
-        if DescriptorFormatTypeManager.get(descriptor_format).column_display is True:
+        if dft.column_display is True:
             columns['#' + dmt.name] = {
                 'group': dmt.descriptor_type.group_id,
                 'type': dmt.descriptor_type_id,
@@ -115,15 +115,16 @@ def get_columns_name_for_describable_content_type(request, content_type_name):
                 descriptor_type_group_id = 0
                 descriptor_type_id = 0
 
-            columns[name] = {
-                'group': descriptor_type_group_id,
-                'type': descriptor_type_id,
-                'field': column.get('field', None),
-                'label': column.get('label', name),
-                'query': column.get('query', False),
-                'format': descriptor_format,
-                'available_operators': column.get('available_operators')
-            }
+            if column.get('column_display', True):
+                columns[name] = {
+                    'group': descriptor_type_group_id,
+                    'type': descriptor_type_id,
+                    'field': column.get('field', None),
+                    'label': column.get('label', name),
+                    'query': column.get('query', False),
+                    'format': descriptor_format,
+                    'available_operators': column.get('available_operators')
+                }
 
     results = {
         'cacheable': True,

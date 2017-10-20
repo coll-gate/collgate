@@ -19,6 +19,7 @@ from descriptor.describable import DescriptorsBuilder
 from descriptor.models import DescriptorMetaModel, DescriptorModelType
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
+from main.cursor import CursorQuery
 from organisation.models import Organisation, Establishment
 
 from .base import RestOrganisationModule
@@ -28,6 +29,11 @@ from .organisation import RestOrganisationId
 class RestEstablishment(RestOrganisationModule):
     regex = r'^establishment/$'
     name = 'establishment'
+
+
+class RestEstablishmentSearch(RestEstablishment):
+    regex = r'^search/$'
+    suffix = 'search'
 
 
 class RestEstablishmentId(RestEstablishment):
@@ -40,9 +46,9 @@ class RestOrganisationIdEstablishment(RestOrganisationId):
     suffix = 'establishment'
 
 
-class RestEstablishmentSearch(RestEstablishment):
-    regex = r'^search/$'
-    suffix = 'search'
+class RestOrganisationIdEstablishmentCount(RestOrganisationIdEstablishment):
+    regex = r'^count/$'
+    name = 'count'
 
 
 @RestOrganisationIdEstablishment.def_auth_request(Method.GET, Format.JSON)
@@ -51,43 +57,31 @@ def get_establishment_list_for_organisation(request, org_id):
     List all establishments for a specific organisation.
     """
     results_per_page = int_arg(request.GET.get('more', 30))
-    cursor = request.GET.get('cursor')
+    cursor = json.loads(request.GET.get('cursor', 'null'))
     limit = results_per_page
+    sort_by = json.loads(request.GET.get('sort_by', '[]'))
 
-    filters = request.GET.get('filters')
-
-    if filters:
-        filters = json.loads(filters)
-
-    organisation = get_object_or_404(Organisation, id=int(org_id))
-
-    if cursor:
-        cursor_name, cursor_id = cursor.rsplit('/', 1)
-        qs = organisation.establishments.filter(Q(name__gt=cursor_name))
+    if not len(sort_by) or sort_by[-1] not in ('id', '+id', '-id'):
+        order_by = sort_by + ['id']
     else:
-        qs = organisation.establishments.all()
+        order_by = sort_by
 
-    if filters:
-        name = filters.get('name')
-        name_code = filters.get('name_code')
-        name_method = filters.get('method', 'ieq')
+    cq = CursorQuery(Establishment)
+    cq.filter(organisation=int(org_id))
 
-        if name:
-            if name_method == 'icontains':
-                qs = qs.filter(Q(name__icontains=name))
-            elif name_method == 'ieq':
-                qs = qs.filter(Q(name__iexact=name))
+    if request.GET.get('search'):
+        cq.filter(json.loads(request.GET['search']))
 
-        if name_code:
-            if name_method == 'icontains':
-                qs = qs.filter(Q(name__icontains=name_code) | Q(descriptors__establishment_code=name_code))
-            elif name_method == 'ieq':
-                qs = qs.filter(Q(name__iexact=name_code) | Q(descriptors__establishment_code=name_code))
+    if request.GET.get('filters'):
+        cq.filter(json.loads(request.GET['filters']))
 
-    qs = qs.select_related("organisation").order_by('name')[:limit]
+    cq.cursor(cursor, order_by)
+    cq.order_by(order_by).limit(limit)
+    cq.select_related('organisation->id', 'organisation->name')
 
-    items_list = []
-    for establishment in qs:
+    establishment_items = []
+
+    for establishment in cq:
         t = {
             'id': establishment.pk,
             'name': establishment.name,
@@ -100,26 +94,36 @@ def get_establishment_list_for_organisation(request, org_id):
             }
         }
 
-        items_list.append(t)
-
-    if len(items_list) > 0:
-        # prev cursor (asc order)
-        item = items_list[0]
-        prev_cursor = "%s/%s" % (item['name'], item['id'])
-
-        # next cursor (asc order)
-        item = items_list[-1]
-        next_cursor = "%s/%s" % (item['name'], item['id'])
-    else:
-        prev_cursor = None
-        next_cursor = None
+        establishment_items.append(t)
 
     results = {
         'perms': [],
-        'items': items_list,
-        'prev': prev_cursor,
+        'items': establishment_items,
+        'prev': cq.prev_cursor,
         'cursor': cursor,
-        'next': next_cursor,
+        'next': cq.next_cursor
+    }
+
+    return HttpResponseRest(request, results)
+
+
+@RestOrganisationIdEstablishmentCount.def_auth_request(Method.GET, Format.JSON)
+def get_count_establishment_list_for_organisation(request, org_id):
+    """
+    Count establishment for an organisation.
+    """
+    cq = CursorQuery(Establishment)
+    cq.filter(organisation=int(org_id))
+
+    if request.GET.get('search'):
+        cq.filter(json.loads(request.GET['search']))
+
+    if request.GET.get('filters'):
+        cq.filter(json.loads(request.GET['filters']))
+
+    results = {
+        'perms': [],
+        'count': cq.count()
     }
 
     return HttpResponseRest(request, results)

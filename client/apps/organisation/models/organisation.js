@@ -8,9 +8,9 @@
  * @details 
  */
 
-var Backbone = require('backbone');
+let Backbone = require('backbone');
 
-var Model = Backbone.Model.extend({
+let Model = Backbone.Model.extend({
     url: function() {
         if (this.isNew())
             return window.application.url(['organisation', 'organisation']);
@@ -29,4 +29,3 @@ var Model = Backbone.Model.extend({
 });
 
 module.exports = Model;
-

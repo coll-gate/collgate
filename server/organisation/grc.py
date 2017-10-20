@@ -8,13 +8,11 @@
 # @license MIT (see LICENSE file)
 # @details 
 
-from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
 from organisation.models import GRC
-from organisation.organisation import filter_organisation
 from .base import RestOrganisationModule
 
 
@@ -78,21 +76,3 @@ def update_grc(request):
     }
 
     return HttpResponseRest(request, response)
-
-
-@RestGRCOrganisation.def_auth_request(Method.GET, Format.JSON)
-def get_grc_organisation_list(request):
-    """
-    List of organisations related to the GRC.
-    """
-    results_per_page = int_arg(request.GET.get('more', 30))
-    cursor = request.GET.get('cursor')
-    limit = results_per_page
-
-    filters = request.GET.get('filters')
-
-    if filters:
-        filters = json.loads(filters)
-
-    results = filter_organisation(filters, cursor, limit, True)
-    return HttpResponseRest(request, results)

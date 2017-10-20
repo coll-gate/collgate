@@ -8,10 +8,10 @@
  * @details 
  */
 
-var DescriptorFormatType = require('./descriptorformattype');
-var Marionette = require('backbone.marionette');
+let DescriptorFormatType = require('./descriptorformattype');
+let Marionette = require('backbone.marionette');
 
-var EnumSingle = function() {
+let EnumSingle = function() {
     DescriptorFormatType.call(this);
 
     this.name = "enum_single";
@@ -29,7 +29,7 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
         });
 
         if (readOnly) {
-            var input = null;
+            let input = null;
 
             // autocomplete or dropdown
             if (format.list_type === "autocomplete") {
@@ -45,19 +45,19 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
             if (format.list_type === "autocomplete") {
                 this.autocomplete = true;
 
-                var select = $('<select style="width: 100%;" ' + (options.multiple ? "multiple" : "") + '></select>');
+                let select = $('<select style="width: 100%;" ' + (options.multiple ? "multiple" : "") + '></select>');
                 this.groupEl = this._createInputGroup(parent, "glyphicon-list", select);
 
                 // init the autocomplete
-                var url = window.application.url(['descriptor', 'group', descriptorTypeGroup, 'type', descriptorTypeId]);
-                var initials = [];
+                let url = window.application.url(['descriptor', 'group', descriptorTypeGroup, 'type', descriptorTypeId]);
+                let initials = [];
 
-                var container = parent.closest('div.modal-dialog').parent();
+                let container = parent.closest('div.modal-dialog').parent();
                 if (container.length === 0) {
                     container = this.groupEl;  // parent.closest('div.panel');
                 }
 
-                var params = {
+                let params = {
                     data: initials,
                     dropdownParent: container,
                     ajax: {
@@ -79,9 +79,9 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
                                 params.next = data.next || null;
                             }
 
-                            var results = [];
+                            let results = [];
 
-                            for (var i = 0; i < data.items.length; ++i) {
+                            for (let i = 0; i < data.items.length; ++i) {
                                 results.push({
                                     id: data.items[i].id,
                                     text: data.items[i].label
@@ -109,29 +109,29 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
             } else if (format.list_type === "dropdown") {
                 this.autocomplete = false;
 
-                var select = $('<select style="width: 100%;" ' + (options.multiple ? "multiple" : "") + '></select>');
+                let select = $('<select style="width: 100%;" ' + (options.multiple ? "multiple" : "") + '></select>');
                 this.groupEl = this._createInputGroup(parent, "glyphicon-list", select);
 
                 select.selectpicker({container: 'body', style: 'btn-default'});
 
                 // init the selectpicker
-                var url = window.application.url(['descriptor', 'group', descriptorTypeGroup, 'type', descriptorTypeId]);
+                let url = window.application.url(['descriptor', 'group', descriptorTypeGroup, 'type', descriptorTypeId]);
 
                 // refresh values
                 this.promise = $.ajax({
                     url: url + 'value/display/',
                     dataType: 'json'
                 }).done(function (data) {
-                    for (var i = 0; i < data.length; ++i) {
-                        var option = $("<option></option>");
+                    for (let i = 0; i < data.length; ++i) {
+                        let option = $("<option></option>");
 
                         option.attr("value", data[i].value);
                         option.attr("title", data[i].label);
 
                         // for LTR languages add prefix
                         if (data[i].offset) {
-                            var offset = "";
-                            for (var j = 0; j < data[i].offset; ++j) {
+                            let offset = "";
+                            for (let j = 0; j < data[i].offset; ++j) {
                                 offset += "&#160;&#160;&#160;&#160;";
                             }
 
@@ -198,10 +198,10 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
 
         definesValues = this.isValueDefined(definesValues, defaultValues);
 
-        var url = window.application.url(['descriptor', 'group', descriptorTypeGroup, 'type', descriptorTypeId]);
+        let url = window.application.url(['descriptor', 'group', descriptorTypeGroup, 'type', descriptorTypeId]);
 
         if (this.readOnly) {
-            var type = this;
+            let type = this;
 
             if (definesValues) {
                 this.el.attr('value', defaultValues);
@@ -216,10 +216,10 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
             }
         } else {
             if (definesValues) {
-                var type = this;
+                let type = this;
 
                 if (this.autocomplete) {
-                    var initials = [];
+                    let initials = [];
 
                     // @todo multiple ?
 
@@ -240,7 +240,7 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
                         }).done(function (data) {
                             initials.push({id: data.id, text: data.name});
 
-                            var option = new Option(data.name, data.id, true, true);
+                            let option = new Option(data.name, data.id, true, true);
                             type.el.append(option).trigger('change');
 
                             type.el.trigger({
@@ -256,14 +256,14 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
                     // this.el.select2('destroy');
                     //
                     // // init the autocomplete
-                    // var initials = [];
+                    // let initials = [];
                     //
-                    // var container = this.parent.closest('div.modal-dialog').parent();
+                    // let container = this.parent.closest('div.modal-dialog').parent();
                     // if (container.length === 0) {
                     //     container = this.groupEl;  // parent.closest('div.panel');
                     // }
                     //
-                    // var params = {
+                    // let params = {
                     //     data: initials,
                     //     dropdownParent: container,
                     //     ajax: {
@@ -285,9 +285,9 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
                     //                 params.next = data.next || null;
                     //             }
                     //
-                    //             var results = [];
+                    //             let results = [];
                     //
-                    //             for (var i = 0; i < data.items.length; ++i) {
+                    //             for (let i = 0; i < data.items.length; ++i) {
                     //                 results.push({
                     //                     id: data.items[i].id,
                     //                     text: data.items[i].label
@@ -393,22 +393,22 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
     },
 
     onValueChanged: function(e) {
-        var display = this.checkCondition(this.conditionType, this.conditionValues);
+        let display = this.checkCondition(this.conditionType, this.conditionValues);
 
         // show or hide the parent element
         if (display) {
-            for (var i = 0; i < this.listeners.length; ++i) {
+            for (let i = 0; i < this.listeners.length; ++i) {
                 this.listeners[i].parent.parent().show(true);
             }
         } else {
-            for (var i = 0; i < this.listeners.length; ++i) {
+            for (let i = 0; i < this.listeners.length; ++i) {
                 this.listeners[i].parent.parent().hide(true);
             }
         }
     },
 
     onValueUnselected: function(e) {
-        var display = false;
+        let display = false;
 
         switch (this.conditionType) {
             case 0:
@@ -429,11 +429,11 @@ _.extend(EnumSingle.prototype, DescriptorFormatType.prototype, {
 
         // show or hide the parent element
         if (display) {
-            for (var i = 0; i < this.listeners.length; ++i) {
+            for (let i = 0; i < this.listeners.length; ++i) {
                 this.listeners[i].parent.parent().show(true);
             }
         } else {
-            for (var i = 0; i < this.listeners.length; ++i) {
+            for (let i = 0; i < this.listeners.length; ++i) {
                 this.listeners[i].parent.parent().hide(true);
             }
         }
@@ -461,7 +461,7 @@ EnumSingle.DescriptorTypeDetailsView = Marionette.View.extend({
         this.ui.sort_by_field.selectpicker({style: 'btn-default'});
         this.ui.list_type.selectpicker({style: 'btn-default'});
 
-        var format = this.model.get('format');
+        let format = this.model.get('format');
 
         if (format.fields != undefined) {
             if (format.fields.length >= 1)

@@ -8,16 +8,16 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
+let Marionette = require('backbone.marionette');
 
-var EstablishmentModel = require('../models/establishment');
+let EstablishmentModel = require('../models/establishment');
 
-var EstablishmentLayout = require('../views/establishmentlayout');
-var DefaultLayout = require('../../main/views/defaultlayout');
-var TitleView = require('../../main/views/titleview');
+let EstablishmentLayout = require('../views/establishmentlayout');
+let DefaultLayout = require('../../main/views/defaultlayout');
+let TitleView = require('../../main/views/titleview');
 
 
-var Router = Marionette.AppRouter.extend({
+let Router = Marionette.AppRouter.extend({
     routes : {
         "app/organisation/establishment/:id/*tab": "getEstablishment"
     },
@@ -25,12 +25,12 @@ var Router = Marionette.AppRouter.extend({
     getEstablishment : function(id, tab) {
         tab || (tab = "");
 
-        var establishment = new EstablishmentModel({id: id});
+        let establishment = new EstablishmentModel({id: id});
 
-        var defaultLayout = new DefaultLayout();
+        let defaultLayout = new DefaultLayout();
         application.main.showContent(defaultLayout);
 
-        var establishmentLayout = new EstablishmentLayout({model: establishment, initialTab: tab.replace('/', '')});
+        let establishmentLayout = new EstablishmentLayout({model: establishment, initialTab: tab.replace('/', '')});
 
         establishment.fetch().then(function() {
             defaultLayout.showChildView('title', new TitleView({title: _t("Establishment"), model: establishment}));
@@ -40,4 +40,3 @@ var Router = Marionette.AppRouter.extend({
 });
 
 module.exports = Router;
-

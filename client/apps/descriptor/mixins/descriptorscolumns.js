@@ -8,24 +8,26 @@
  * @details 
  */
 
-var DescriptorsColumnsView = {
+let DescriptorsColumnsView = {
+    template: require("../../descriptor/templates/entitylist.html"),
+
     onRefreshChildren: function (full, columnsList) {
-        var columns = columnsList || this.displayedColumns || [];
-        var promises = [];
-        var modelList = this.getLastModels();
+        let columns = columnsList || this.displayedColumns || [];
+        let promises = [];
+        let modelList = this.getLastModels();
 
         if (full) {
             modelList = this.collection.models;
         }
 
         // one query by list of value
-        for (var i = 0; i < columns.length; ++i) {
+        for (let i = 0; i < columns.length; ++i) {
             // make the list of values
-            var columnName = columns[i];
-            var options = this.getOption('columns')[columnName];
-            var done = false;
+            let columnName = columns[i];
+            let options = this.getOption('columns')[columnName];
+            let done = false;
 
-            var cellClassName = "";
+            let cellClassName = "";
             if (typeof(options.event) === "string") {
                 cellClassName = "action " + options.event;
             }
@@ -33,12 +35,12 @@ var DescriptorsColumnsView = {
             if (options.query) {
                 // and fetch data (standard or descriptor)
                 if (columnName.startsWith('#')) {
-                    var promise = this._fetchDescriptorsValue(modelList, columnName, options);
+                    let promise = this._fetchDescriptorsValue(modelList, columnName, options);
                     if (promise) {
                         promises.push(promise);
                     }
                 } else {
-                    var promise = this._fetchStandardValue(modelList, columnName, options);
+                    let promise = this._fetchStandardValue(modelList, columnName, options);
                     if (promise) {
                         promises.push(promise);
                     }
@@ -46,10 +48,10 @@ var DescriptorsColumnsView = {
 
                 done = true;
             } else if ("custom" in options && options.custom) {
-                for (var j = 0; j < modelList.length; ++j) {
-                    var model = modelList[j];
-                    var childView = this.children.findByModel(model);
-                    var cell = childView.$el.find('td[name="' + columnName + '"]');
+                for (let j = 0; j < modelList.length; ++j) {
+                    let model = modelList[j];
+                    let childView = this.children.findByModel(model);
+                    let cell = childView.$el.find('td[name="' + columnName + '"]');
 
                     if (options.custom) {
                         childView[options.custom](cell);
@@ -62,14 +64,14 @@ var DescriptorsColumnsView = {
 
                 done = true;
             } else if ("format" in options && options.format) {
-                var dft = application.descriptor.widgets.getElement(options.format.type);
+                let dft = application.descriptor.widgets.getElement(options.format.type);
                 if (dft && dft.format) {
                     if (columnName.startsWith('#')) {
-                        for (var j = 0; j < modelList.length; ++j) {
-                            var model = modelList[j];
-                            var childView = this.children.findByModel(model);
-                            var value = model.get('descriptors')[columnName.replace(/^#/, '')];
-                            var cell = childView.$el.find('td[name="' + columnName + '"]');
+                        for (let j = 0; j < modelList.length; ++j) {
+                            let model = modelList[j];
+                            let childView = this.children.findByModel(model);
+                            let value = model.get('descriptors')[columnName.replace(/^#/, '')];
+                            let cell = childView.$el.find('td[name="' + columnName + '"]');
 
                             // simply replace the value
                             cell.html(dft.format(value));
@@ -87,10 +89,10 @@ var DescriptorsColumnsView = {
             // default if not continue
             if (!done) {
                 if (cellClassName || options.autoSelect) {
-                    for (var j = 0; j < modelList.length; ++j) {
-                        var model = modelList[j];
-                        var childView = this.children.findByModel(model);
-                        var cell = childView.$el.find('td[name="' + columnName + '"]');
+                    for (let j = 0; j < modelList.length; ++j) {
+                        let model = modelList[j];
+                        let childView = this.children.findByModel(model);
+                        let cell = childView.$el.find('td[name="' + columnName + '"]');
 
                         if (cellClassName) {
                             cell.addClass(cellClassName);
@@ -105,7 +107,7 @@ var DescriptorsColumnsView = {
             }
         }
 
-        var view = this;
+        let view = this;
 
         // return the promise
         return $.when.apply($, promises).done(function () {
@@ -116,25 +118,25 @@ var DescriptorsColumnsView = {
     },
 
     _fetchDescriptorsValue: function(modelList, columnName, options) {
-        var descriptorName = columnName.replace(/^#/, '');
-        var cache = application.main.cache.get('descriptors', descriptorName);
+        let descriptorName = columnName.replace(/^#/, '');
+        let cache = application.main.cache.get('descriptors', descriptorName);
 
-        var toFetch = false;
-        var now = Date.now();
+        let toFetch = false;
+        let now = Date.now();
 
         // make the list of keys
-        var keys = new Set();
-        var models = [];
+        let keys = new Set();
+        let models = [];
 
-        var cellClassName = "";
+        let cellClassName = "";
         if (typeof(options.event) === "string") {
             cellClassName = "action " + options.event;
         }
 
-        for (var i = 0; i < modelList.length; ++i) {
-            var model = modelList[i];
-            var key = model.get('descriptors')[descriptorName];
-            var entry = undefined;
+        for (let i = 0; i < modelList.length; ++i) {
+            let model = modelList[i];
+            let key = model.get('descriptors')[descriptorName];
+            let entry = undefined;
 
             toFetch = false;
 
@@ -147,8 +149,8 @@ var DescriptorsColumnsView = {
                 if (entry.expire !== null && entry.expire <= now) {
                     toFetch = true;
                 } else {
-                    var childView = this.children.findByModel(model);
-                    var cell = childView.$el.find('td[name="' + columnName + '"]');
+                    let childView = this.children.findByModel(model);
+                    let cell = childView.$el.find('td[name="' + columnName + '"]');
 
                     if (options.custom) {
                         // manage custom cell for some complex cases
@@ -172,30 +174,30 @@ var DescriptorsColumnsView = {
             }
         }
 
-        var self = this;
-        var parameters = {
+        let self = this;
+        let parameters = {
             'type': 'descriptors',
             'format': {
                 'name': descriptorName
             }
         };
 
-        var promise = application.main.cache.fetch(parameters, Array.from(keys), false);
+        let promise = application.main.cache.fetch(parameters, Array.from(keys), false);
 
         if (promise) {
             promise.done(function (data) {
-                var cellClassName = "";
+                let cellClassName = "";
                 if (typeof(options.event) === "string") {
                     cellClassName = "action " + options.event;
                 }
 
                 // process cell for value newly cached
-                for (var i = 0; i < models.length; ++i) {
-                    var model = models[i];
-                    var childView = self.children.findByModel(model);
-                    var key = model.get('descriptors')[descriptorName];
+                for (let i = 0; i < models.length; ++i) {
+                    let model = models[i];
+                    let childView = self.children.findByModel(model);
+                    let key = model.get('descriptors')[descriptorName];
 
-                    var cell = childView.$el.find('td[name="' + columnName + '"]');
+                    let cell = childView.$el.find('td[name="' + columnName + '"]');
                     if (key !== undefined) {
                         if (options.custom) {
                             // manage custom cell for some complex cases
@@ -212,16 +214,16 @@ var DescriptorsColumnsView = {
                 }
             }).fail(function () {
                 // add an Error message to un-fetched cells
-                var message = _t("Error");
+                let message = _t("Error");
 
-                for (var i = 0; i < models.length; ++i) {
-                    var model = models[i];
-                    var childView = this.view.children.findByModel(model);
-                    var key = model.get('descriptors')[descriptorName];
+                for (let i = 0; i < models.length; ++i) {
+                    let model = models[i];
+                    let childView = this.view.children.findByModel(model);
+                    let key = model.get('descriptors')[descriptorName];
 
-                    var cell = childView.$el.find('td[name="' + columnName + '"]');
+                    let cell = childView.$el.find('td[name="' + columnName + '"]');
                     if (key !== undefined) {
-                        var span = $('<span class="label label-danger">' + message + '</span>');
+                        let span = $('<span class="label label-danger">' + message + '</span>');
                         cell.append(span)
                     }
                 }
@@ -232,7 +234,7 @@ var DescriptorsColumnsView = {
     },
 
     _fetchStandardValue: function(modelList, columnName, options) {
-        var parameters = {};
+        let parameters = {};
 
         if (options.format.type === "descriptor_meta_model" && application.main.cache.hasFetcher('descriptor_meta_model')) {
             parameters.type = 'descriptor_meta_model';
@@ -250,25 +252,25 @@ var DescriptorsColumnsView = {
             return null;
         }
 
-        var cache = application.main.cache.get(parameters.type, options.format.model);
+        let cache = application.main.cache.get(parameters.type, options.format.model);
 
-        var toFetch = false;
-        var now = Date.now();
+        let toFetch = false;
+        let now = Date.now();
 
         // make the list of keys
-        var keys = new Set();
-        var models = [];
+        let keys = new Set();
+        let models = [];
 
-        var cellClassName = "";
+        let cellClassName = "";
         if (typeof(options.event) === "string") {
             cellClassName = "action " + options.event;
         }
 
         // lookup into the global cache
-        for (var j = 0; j < modelList.length; ++j) {
-            var model = modelList[j];
-            var key = model.get(columnName);
-            var entry = undefined;
+        for (let j = 0; j < modelList.length; ++j) {
+            let model = modelList[j];
+            let key = model.get(columnName);
+            let entry = undefined;
 
             toFetch = false;
 
@@ -281,8 +283,8 @@ var DescriptorsColumnsView = {
                 if (entry.expire !== null && entry.expire <= now) {
                     toFetch = true;
                 } else {
-                    var childView = this.children.findByModel(model);
-                    var cell = childView.$el.find('td[name="' + columnName + '"]');
+                    let childView = this.children.findByModel(model);
+                    let cell = childView.$el.find('td[name="' + columnName + '"]');
 
                     if (options.custom) {
                         // manage custom cell for some complex cases
@@ -306,23 +308,23 @@ var DescriptorsColumnsView = {
             }
         }
 
-        var self = this;
-        var promise = application.main.cache.fetch(parameters, Array.from(keys), false);
+        let self = this;
+        let promise = application.main.cache.fetch(parameters, Array.from(keys), false);
 
         if (promise) {
             promise.done(function (data) {
-                var cellClassName = "";
+                let cellClassName = "";
                 if (typeof(options.event) === "string") {
                     cellClassName = "action " + options.event;
                 }
 
                 // process cell for value newly cached
-                for (var i = 0; i < models.length; ++i) {
-                    var model = models[i];
-                    var childView = self.children.findByModel(model);
-                    var key = model.get(columnName);
+                for (let i = 0; i < models.length; ++i) {
+                    let model = models[i];
+                    let childView = self.children.findByModel(model);
+                    let key = model.get(columnName);
 
-                    var cell = childView.$el.find('td[name="' + columnName + '"]');
+                    let cell = childView.$el.find('td[name="' + columnName + '"]');
                     if (key !== undefined) {
                         if (options.custom) {
                             // manage custom cell for some complex cases
@@ -339,16 +341,16 @@ var DescriptorsColumnsView = {
                 }
             }).fail(function () {
                 // add an Error message to un-fetched cells
-                var message = _t("Error");
+                let message = _t("Error");
 
-                for (var i = 0; i < models.length; ++i) {
-                    var model = models[i];
-                    var childView = this.view.children.findByModel(model);
-                    var key = model.get(columnName);
+                for (let i = 0; i < models.length; ++i) {
+                    let model = models[i];
+                    let childView = this.view.children.findByModel(model);
+                    let key = model.get(columnName);
 
-                    var cell = childView.$el.find('td[name="' + columnName + '"]');
+                    let cell = childView.$el.find('td[name="' + columnName + '"]');
                     if (key !== undefined) {
-                        var span = $('<span class="label label-danger">' + message + '</span>');
+                        let span = $('<span class="label label-danger">' + message + '</span>');
                         cell.append(span)
                     }
                 }

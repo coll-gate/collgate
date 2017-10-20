@@ -20,6 +20,7 @@ from descriptor.describable import DescriptorsBuilder
 from descriptor.models import DescriptorMetaModel, DescriptorModelType
 from igdectk.rest.handler import *
 from igdectk.rest.response import HttpResponseRest
+from main.cursor import CursorQuery
 from organisation.models import Organisation, GRC
 
 from .base import RestOrganisationModule
@@ -28,6 +29,11 @@ from .base import RestOrganisationModule
 class RestOrganisation(RestOrganisationModule):
     regex = r'^organisation/$'
     name = 'organisation'
+
+
+class RestOrganisationCount(RestOrganisation):
+    regex = r'^count/$'
+    name = 'count'
 
 
 class RestOrganisationId(RestOrganisation):
@@ -114,104 +120,73 @@ def get_organisation_list(request):
     List all organisations.
     """
     results_per_page = int_arg(request.GET.get('more', 30))
-    cursor = request.GET.get('cursor')
+    cursor = json.loads(request.GET.get('cursor', 'null'))
     limit = results_per_page
+    sort_by = json.loads(request.GET.get('sort_by', '[]'))
 
-    filters = request.GET.get('filters')
-
-    if filters:
-        filters = json.loads(filters)
-
-    results = filter_organisation(filters, cursor, limit, False)
-    return HttpResponseRest(request, results)
-
-
-def filter_organisation(filters, cursor, limit, grc_only):
-    """
-    Filter organisation according to some parameters.
-
-    :param cursor: Cursor string of the last query or None
-    :param limit: Limit number of results
-    :param filters: Filter dict parameters or None
-    :param grc_only:
-    :return:
-    """
-    if grc_only:
-        organisations = GRC.objects.all()[0].organisations
-
-        if cursor:
-            cursor_name, cursor_id = cursor.rsplit('/', 1)
-            qs = organisations.filter(Q(name__gt=cursor_name))
-        else:
-            qs = organisations.all()
+    if not len(sort_by) or sort_by[-1] not in ('id', '+id', '-id'):
+        order_by = sort_by + ['id']
     else:
-        if cursor:
-            cursor_name, cursor_id = cursor.rsplit('/', 1)
-            qs = Organisation.objects.filter(Q(name__gt=cursor_name))
-        else:
-            qs = Organisation.objects.all()
+        order_by = sort_by
 
-    if filters:
-        name = filters.get('name')
-        name_acronym = filters.get('name_acronym')
-        organisation_type = filters.get('type')
+    cq = CursorQuery(Organisation)
 
-        if name:
-            if filters.get('method', 'icontains') == 'icontains':
-                qs = qs.filter(Q(name__icontains=name))
-            else:
-                qs = qs.filter(Q(name__iexact=name))
+    if request.GET.get('search'):
+        cq.filter(json.loads(request.GET['search']))
 
-        if name_acronym:
-            if filters.get('method', 'icontains') == 'icontains':
-                qs = qs.filter(Q(name__icontains=name_acronym) |
-                               Q(descriptors__organisation_acronym__as_text__icontains=name_acronym))
-            else:
-                qs = qs.filter(Q(name__iexact=name_acronym) | Q(descriptors__organisation_acronym=name_acronym))
+    if request.GET.get('filters'):
+        cq.filter(json.loads(request.GET['filters']))
 
-        if organisation_type:
-            if filters.get('type_method', 'eq') == 'eq':
-                qs = qs.filter(Q(type=organisation_type))
-            else:
-                qs = qs.exclude(Q(type=organisation_type))
+    cq.cursor(cursor, order_by)
+    cq.order_by(order_by).limit(limit)
+    cq.set_count('establishments')
+    cq.prefetch_related('grc_set')
 
-    qs = qs.annotate(Count('establishments'))
-    qs = qs.order_by('name')[:limit]
+    organisation_items = []
 
-    items_list = []
-    for organisation in qs:
+    for organisation in cq:
         t = {
             'id': organisation.pk,
             'name': organisation.name,
             'type': organisation.type,
             'descriptors': organisation.descriptors,
             'descriptor_meta_model': organisation.descriptor_meta_model_id,
-            'num_establishments': organisation.establishments__count
+            'num_establishments': organisation.establishments__count,
+            'grc': [x for x in organisation.grc_set.all().values_list('id', flat=True)]
         }
 
-        items_list.append(t)
-
-    if len(items_list) > 0:
-        # prev cursor (asc order)
-        item = items_list[0]
-        prev_cursor = "%s/%s" % (item['name'], item['id'])
-
-        # next cursor (asc order)
-        item = items_list[-1]
-        next_cursor = "%s/%s" % (item['name'], item['id'])
-    else:
-        prev_cursor = None
-        next_cursor = None
+        organisation_items.append(t)
 
     results = {
         'perms': [],
-        'items': items_list,
-        'prev': prev_cursor,
+        'items': organisation_items,
+        'prev': cq.prev_cursor,
         'cursor': cursor,
-        'next': next_cursor,
+        'next': cq.next_cursor
     }
 
-    return results
+    return HttpResponseRest(request, results)
+
+
+@RestOrganisationCount.def_auth_request(Method.GET, Format.JSON)
+def get_count_organisation_list(request):
+    """
+    Count organisations.
+    """
+    cq = CursorQuery(Organisation)
+
+    if request.GET.get('search'):
+        cq.filter(json.loads(request.GET['search']))
+
+    if request.GET.get('filters'):
+        cq.filter(json.loads(request.GET['filters']))
+
+    results = {
+        'perms': [],
+        'count': cq.count()
+    }
+
+    return HttpResponseRest(request, results)
 
 
 @RestOrganisationSearch.def_auth_request(Method.GET, Format.JSON, ('filters',))

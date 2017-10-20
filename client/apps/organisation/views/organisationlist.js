@@ -8,32 +8,18 @@
  * @details 
  */
 
-var AdvancedTable = require('../../main/views/advancedtable');
-var OrganisationView = require('../views/organisation');
-var DescriptorsColumnsView = require('../../descriptor/mixins/descriptorscolumns');
+let OrganisationView = require('./organisation');
+let AdvancedTable = require('../../main/views/advancedtable');
+let DescriptorsColumnsView = require('../../descriptor/mixins/descriptorscolumns');
 
-var View = AdvancedTable.extend({
-    template: require("../templates/organisationlist.html"),
-    className: "object organisation-list advanced-table-container",
+let View = AdvancedTable.extend({
+    className: "organisation-list advanced-table-container",
     childView: OrganisationView,
-    childViewContainer: 'tbody.organisation-list',
 
-    userSettingName: '_organisation_list_columns',
-    userSettingVersion: '1.0',
-
-    templateContext: function () {
-        return {
-            columnsList: this.displayedColumns,
-            columnsOptions: this.getOption('columns')
-        }
-    },
-
-    childViewOptions: function () {
-        return {
-            columnsList: this.displayedColumns,
-            columnsOptions: this.getOption('columns')
-        }
-    },
+    // defaultSortBy: ['name'],
+    
+    userSettingName: 'organisation_list_columns',
+    userSettingVersion: '1.1',
 
     defaultColumns: [
         {name: 'name', width: 'auto', sort_by: '+0'},
@@ -53,10 +39,25 @@ var View = AdvancedTable.extend({
         }
     },
 
+    templateContext: function () {
+        return {
+            columnsList: this.displayedColumns,
+            columnsOptions: this.getOption('columns')
+        }
+    },
+
+    childViewOptions: function () {
+        return {
+            columnsList: this.displayedColumns,
+            columnsOptions: this.getOption('columns')
+        }
+    },
+
     initialize: function(options) {
         View.__super__.initialize.apply(this, arguments);
+        // this.filters = this.getOption('filters');
 
-        this.listenTo(this.collection, 'reset', this.render, this);
+        //this.listenTo(this.collection, 'reset', this.render, this);
     }
 });
 

@@ -8,12 +8,18 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
+let Marionette = require('backbone.marionette');
 
-var View = Marionette.View.extend({
+let View = Marionette.View.extend({
     tagName: 'tr',
-    template: require('../templates/organisation.html'),
-    className: "object organisation",
+    className: "object organisation element",
+    attributes: function() {
+        return {
+            'scope': 'row',
+            'element-id': this.model.get('id')
+        }
+    },
+    template: require("../../descriptor/templates/entity.html"),
 
     templateContext: function () {
         return {
@@ -68,16 +74,16 @@ var View = Marionette.View.extend({
     },
 
     organisationTypeCell: function(td) {
-        var el = $('<span></span>');
+        let el = $('<span></span>');
 
-        var type = application.organisation.collections.organisationTypes.findLabel(this.model.get('type'));
+        let type = application.organisation.collections.organisationTypes.findLabel(this.model.get('type'));
         el.html(type);
 
         td.html(el);
     },
 
     numEstablishmentsCell: function(td) {
-        var el = $('<span class="badge" style="cursor: pointer;">' + this.model.get('num_establishments') + '</span>');
+        let el = $('<span class="badge" style="cursor: pointer;">' + this.model.get('num_establishments') + '</span>');
         el.attr('title', _t('Manage establishments of the organisation'));
 
         td.html(el);

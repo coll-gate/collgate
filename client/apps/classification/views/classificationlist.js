@@ -8,10 +8,10 @@
  * @details
  */
 
-var ClassificationView = require('../views/classification');
-var AdvancedTable = require('../../main/views/advancedtable');
+let ClassificationView = require('../views/classification');
+let AdvancedTable = require('../../main/views/advancedtable');
 
-var View = AdvancedTable.extend({
+let View = AdvancedTable.extend({
     template: require("../templates/classificationlist.html"),
     className: "object classification-list advanced-table-container",
     childView: ClassificationView,

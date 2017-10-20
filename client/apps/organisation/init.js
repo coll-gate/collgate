@@ -48,6 +48,9 @@ OrganisationModule.prototype = {
         let OrganisationController = require('./controllers/organisation');
         this.controllers.organisation = new OrganisationController();
 
+        let EstablishmentController = require('./controllers/establishment');
+        this.controllers.establishment = new EstablishmentController();
+
         //
         // routers
         //
