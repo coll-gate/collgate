@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-10-16 12:05+0200\n"
+"POT-Creation-Date: 2017-10-19 16:46+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -37,32 +37,32 @@ msgstr "La langue n'est pas supportée"
 msgid "The code and the name of the accession must be different"
 msgstr "Le code and le nom de l'accession doivent être différents"
 
-#: accession.py:172 accession.py:196 accessionpanel.py:533
-#: accessionpanel.py:553
+#: accession.py:181 accession.py:212 accessionpanel.py:611
+#: accessionpanel.py:631
 msgid "You are not allowed to list the accessions"
 msgstr "Vous n'êtes pas autorisé à lister les accessions"
 
-#: accession.py:277 accessionbatch.py:39 accessionbatch.py:100 batch.py:220
+#: accession.py:300 accessionbatch.py:39 accessionbatch.py:100 batch.py:220
 #: batch.py:284 batch.py:348 batch.py:428
 msgid "You are not allowed to get an accession"
 msgstr "Vous n'êtes pas autorisé à récupérer une accession"
 
-#: accession.py:289 accessionbatch.py:53 accessionbatch.py:119
-#: accessionclassificationentry.py:49 accessionclassificationentry.py:169
+#: accession.py:313 accessionbatch.py:53 accessionbatch.py:119
+#: accessionclassificationentry.py:49 accessionclassificationentry.py:148
 #: batch.py:237 batch.py:301
 msgid "Invalid permission to access to this accession"
 msgstr "Permissions invalides pour accéder à cette accession"
 
-#: accession.py:313
+#: accession.py:348
 msgid "You are not allowed to search accessions"
 msgstr "Vous n'êtes pas autorisé à rechercher des accessions"
 
-#: accession.py:416 accessionsynonym.py:139 accessionsynonym.py:170
+#: accession.py:451 accessionsynonym.py:139 accessionsynonym.py:170
 #: accessionsynonym.py:197
 msgid "You are not allowed to modify an accession"
 msgstr "Vous n'êtes pas autorisé à modifier une accession"
 
-#: accession.py:474
+#: accession.py:509
 msgid "You are not allowed to delete an accession"
 msgstr "Vous n'êtes pas autorisé à supprimer une accession"
 
@@ -70,70 +70,70 @@ msgstr "Vous n'êtes pas autorisé à supprimer une accession"
 msgid "You are not allowed to list batches for an accession"
 msgstr "Vous n'êtes pas autorisé à lister les lots pour une accession"
 
-#: accessionclassificationentry.py:154
+#: accessionclassificationentry.py:133
 #, fuzzy
 #| msgid "You are not allowed to get an accession"
 msgid "You are not allowed to change an accession"
 msgstr "Vous n'êtes pas autorisé à récupérer une accession"
 
-#: accessionclassificationentry.py:176
+#: accessionclassificationentry.py:155
 #, fuzzy
 #| msgid "You are not allowed to add a synonym of accession"
 msgid "You are not allowed to add an entry of classification to an accession"
 msgstr "Vous n'êtes pas autorisé à rajouter un synonyme sur une accession"
 
-#: accessionclassificationentry.py:179
+#: accessionclassificationentry.py:158
 msgid "Already defined as primary classification"
 msgstr ""
 
-#: accessionclassificationentry.py:184
+#: accessionclassificationentry.py:163
 msgid "It is not permit to add twice the same classification entry"
 msgstr ""
 
-#: accessionclassificationentry.py:191
+#: accessionclassificationentry.py:170
 #, fuzzy
 #| msgid "You are not allowed to list batches for an accession"
 msgid ""
 "You are not allowed to remove an entry of classification from an accession"
 msgstr "Vous n'êtes pas autorisé à lister les lots pour une accession"
 
-#: accessionclassificationentry.py:194
+#: accessionclassificationentry.py:173
 #, fuzzy
 #| msgid "It is not possible to remove a primary name"
 msgid "It is not permit to remove the primary classification entry"
 msgstr "Il n'est pas possible de retirer un nom principal"
 
-#: accessionpanel.py:126
+#: accessionpanel.py:205
 #, fuzzy
 #| msgid "You are not allowed to create a batch"
 msgid "You are not allowed to create a batch panel"
 msgstr "Vous n'êtes pas autorisé à créer un lot"
 
-#: accessionpanel.py:141 accessionpanel.py:269 accessionpanel.py:461
+#: accessionpanel.py:220 accessionpanel.py:348 accessionpanel.py:540
 #, fuzzy
 #| msgid "The name of the batch is already used"
 msgid "The name of the panel is already used"
 msgstr "Ce nom de lot est déjà utilisé"
 
-#: accessionpanel.py:254
+#: accessionpanel.py:333
 #, fuzzy
 #| msgid "You are not allowed to create an accession"
 msgid "You are not allowed to create an accession panel"
 msgstr "Vous n'êtes pas autorisé à créer une accession"
 
-#: accessionpanel.py:350 accessionpanel.py:370
+#: accessionpanel.py:429 accessionpanel.py:449
 #, fuzzy
 #| msgid "You are not allowed to list the accessions"
 msgid "You are not allowed to list the accession panels"
 msgstr "Vous n'êtes pas autorisé à lister les accessions"
 
-#: accessionpanel.py:418
+#: accessionpanel.py:497
 #, fuzzy
 #| msgid "You are not allowed to delete an accession"
 msgid "You are not allowed to delete accession panel"
 msgstr "Vous n'êtes pas autorisé à supprimer une accession"
 
-#: accessionpanel.py:428 accessionpanel.py:674
+#: accessionpanel.py:507 accessionpanel.py:752
 #, fuzzy
 #| msgid "You are not allowed to modify an accession"
 msgid "You are not allowed to modify accession panel"
@@ -272,91 +272,95 @@ msgid ""
 "The list of descriptor meta-models of batches must refers to existing objects"
 msgstr ""
 
-#: models.py:80
+#: models.py:80 models.py:625
 msgid "Classification"
 msgstr "Classification"
 
-#: models.py:91 models.py:241 models.py:455 models.py:496
+#: models.py:91 models.py:259 models.py:473 models.py:514 models.py:636
 msgid "Model"
 msgstr "Modèle"
 
-#: models.py:101
+#: models.py:101 models.py:646
 msgid "Synonym"
 msgstr "Synonyme"
 
-#: models.py:111 models.py:251 models.py:465 models.py:506
+#: models.py:111 models.py:269 models.py:483 models.py:524 models.py:656
 msgid "Name"
-msgstr ""
+msgstr "Nom"
 
-#: models.py:120
+#: models.py:120 models.py:665
 msgid "Code"
-msgstr ""
+msgstr "Code"
 
-#: models.py:131
+#: models.py:129
+msgid "Linked panels"
+msgstr "Panels associés"
+
+#: models.py:149 models.py:598
 msgid "accession"
 msgstr "accession"
 
-#: models.py:203
+#: models.py:221
 msgid "accession synonym"
 msgstr "synonyme d'accession"
 
-#: models.py:262
+#: models.py:280
 msgid "batch"
 msgstr "lot"
 
-#: models.py:326
+#: models.py:344
 msgid "sample"
 msgstr "échantillon"
 
-#: models.py:374
+#: models.py:392
 msgid "Introduction"
 msgstr "Introduction"
 
-#: models.py:375
+#: models.py:393
 msgid "Multiplication"
 msgstr "Multiplication"
 
-#: models.py:376
+#: models.py:394
 msgid "Regeneration"
 msgstr "Regénération"
 
-#: models.py:377
+#: models.py:395
 msgid "Test"
 msgstr "Test"
 
-#: models.py:378
+#: models.py:396
 msgid "Clean-up"
 msgstr "Assainissement"
 
-#: models.py:379
+#: models.py:397
 msgid "Sample"
 msgstr "Echantillon"
 
-#: models.py:380
+#: models.py:398
 msgid "Dispatch"
 msgstr "Expédition"
 
-#: models.py:381
+#: models.py:399
 msgid "Elimination"
 msgstr "Elimination"
 
-#: models.py:410
+#: models.py:428
 msgid "batch action"
 msgstr "action de lot"
 
-#: models.py:476
+#: models.py:494
 #, fuzzy
 #| msgid "batch action"
 msgid "batch panel"
 msgstr "action de lot"
 
-#: models.py:515
+#: models.py:533
 #, fuzzy
 #| msgid "Accession"
 msgid "Accessions amount"
 msgstr "Accession"
 
-#: models.py:527
+#: models.py:545
 #, fuzzy
 #| msgid "accession"
 msgid "accession panel"

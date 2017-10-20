@@ -299,7 +299,7 @@ class CursorQuery(object):
         # adjust value in some cases
         if cmp in ('isnull', 'notnull'):
             return 'NULL'
-        elif cmp in ('contains', 'icontains'):
+        elif cmp in ('contains', 'icontains') and not isinstance(value, list):
             return "%%" + value + "%%"
         elif cmp in ('startswith', 'istartswith'):
             return value + "%%"

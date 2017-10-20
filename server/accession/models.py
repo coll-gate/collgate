@@ -126,7 +126,7 @@ class Accession(DescribableEntity):
                 'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
             },
             'panels': {
-                'label': _('Panels'),
+                'label': _('Linked panels'),
                 'field': 'name',
                 'query': False,  # done by a prefetch related
                 'format': {
@@ -136,8 +136,6 @@ class Accession(DescribableEntity):
                 'available_operators': [
                     'contains',
                     'not_contains',
-                    'contained_by',
-                    'not_contained_by',
                     'overlap',
                     'not_overlap'
                 ],
@@ -604,6 +602,7 @@ class AccessionView(models.Model):
             ("list_accession", "Can list accessions"),
             ("search_accession", "Can search for accessions")
         )
+
 
     def natural_name(self):
         return self.name
