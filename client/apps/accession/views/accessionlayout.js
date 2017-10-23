@@ -195,7 +195,7 @@ let Layout = LayoutView.extend({
                     return;
                 }
 
-                let AccessionPanelListView = require('../views/panellist');
+                let AccessionPanelListView = require('../views/accessionpanellist');
                 let accessionPanelListView  = new AccessionPanelListView({
                     collection: accessionPanels, model: accessionLayout.model, columns: data[0].value});
 
