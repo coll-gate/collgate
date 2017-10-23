@@ -440,16 +440,16 @@ def search_accession(request):
 
 
 @RestAccessionId.def_auth_request(Method.PATCH, Format.JSON, content={
-    "type": "object",
-    "properties": {
-        "primary_classification_entry": {"type": "integer", "required": False},
-        "entity_status": Accession.ENTITY_STATUS_VALIDATOR_OPTIONAL,
-        "descriptors": {"type": "object", "required": False},
+        "type": "object",
+        "properties": {
+            "primary_classification_entry": {"type": "integer", "required": False},
+            "entity_status": Accession.ENTITY_STATUS_VALIDATOR_OPTIONAL,
+            "descriptors": {"type": "object", "required": False},
+        },
     },
-},
-                                  perms={
-                                      'accession.change_accession': _("You are not allowed to modify an accession"),
-                                  })
+    perms={
+      'accession.change_accession': _("You are not allowed to modify an accession"),
+    })
 def patch_accession(request, acc_id):
     accession = get_object_or_404(Accession, id=int(acc_id))
 

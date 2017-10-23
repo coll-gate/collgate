@@ -1,5 +1,6 @@
 {
   "Acronym": "Acronyme",
+  "Add establishment": "Ajouter un site",
   "Apply": "Appliquer",
   "Cancel": "Annuler",
   "Code": "Code",
@@ -17,7 +18,6 @@
   "GRC details": "Détails du CRB",
   "GRC partner": "Partenaire CRB",
   "Identifier": "Identifiant",
-  "List of GRC partners": "Liste des partenaires du CRB",
   "List of organisations": "Liste des organisations",
   "Location": "Localisation",
   "Manage establishments of the organisation": "Gérer les sites de l'organisation",

@@ -137,9 +137,11 @@ def get_classification_list_count(request):
     """
     cq = CursorQuery(Classification)
 
+    if request.GET.get('search'):
+        cq.filter(json.loads(request.GET['search']))
+
     if request.GET.get('filters'):
-        filters = json.loads(request.GET['filters'])
-        cq.filter(filters)
+        cq.filter(json.loads(request.GET['filters']))
 
     results = {
         'perms': [],

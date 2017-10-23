@@ -8,16 +8,13 @@
  * @details 
  */
 
-var AdvancedTable = require('../../main/views/advancedtable');
-var EstablishmentView = require('../views/establishment');
+let AdvancedTable = require('../../main/views/advancedtable');
+let EstablishmentView = require('../views/establishment');
+let DescriptorsColumnsView = require('../../descriptor/mixins/descriptorscolumns');
 
-var DescriptorsColumnsView = require('../../descriptor/mixins/descriptorscolumns');
-
-var View = AdvancedTable.extend({
-    template: require("../templates/establishmentlist.html"),
-    className: "object establishment-list advanced-table-container",
+let View = AdvancedTable.extend({
+    className: "establishment-list advanced-table-container",
     childView: EstablishmentView,
-    childViewContainer: 'tbody.establishment-list',
 
     userSettingName: '_establishment_list_columns',
     userSettingVersion: '1.0',
@@ -54,8 +51,37 @@ var View = AdvancedTable.extend({
     initialize: function(options) {
         View.__super__.initialize.apply(this, arguments);
 
-        this.listenTo(this.collection, 'reset', this.render, this);
-    }
+        // this.listenTo(this.collection, 'reset', this.render, this);
+    },
+    
+    onShowTab: function() {
+        let view = this;
+
+        let contextLayout = application.getView().getChildView('right');
+        if (!contextLayout) {
+            let DefaultLayout = require('../../main/views/defaultlayout');
+            contextLayout = new DefaultLayout();
+            application.getView().showChildView('right', contextLayout);
+        }
+
+        let TitleView = require('../../main/views/titleview');
+        contextLayout.showChildView('title', new TitleView({title: _t("Establishment")}));
+
+        let actions = ['add'];
+
+        let EstablishmentListContextView = require('./establishmentlistcontext');
+        let contextView = new EstablishmentListContextView({actions: actions});
+        contextLayout.showChildView('content', contextView);
+
+        contextView.on("establishment:add", function () {
+            window.application.organisation.controllers.establishment.create(
+                view.getOption('model'), view.collection);
+        });
+    },
+
+    onHideTab: function() {
+        application.main.defaultRightView();
+    },    
 });
 
 // support of descriptors columns extension

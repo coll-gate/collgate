@@ -16,8 +16,8 @@ let OrganisationModel = require('../models/organisation');
 let OrganisationCollection = require('../collections/organisation');
 
 let OrganisationListView = require('../views/organisationlist');
-let OrganisationListFilterView = require('../views/organisationlistfilter');
 let OrganisationLayout = require('../views/organisationlayout');
+let EntityListFilterView = require('../../descriptor/views/entitylistfilter');
 
 let DefaultLayout = require('../../main/views/defaultlayout');
 let ScrollingMoreView = require('../../main/views/scrollingmore');
@@ -26,7 +26,6 @@ let TitleView = require('../../main/views/titleview');
 let Router = Marionette.AppRouter.extend({
     routes : {
         "app/organisation/grc/": "getGRC",
-        "app/organisation/grc/organisation/": "getGRCOrganisationList",
         "app/organisation/organisation/": "getOrganisationList",
         "app/organisation/organisation/:id/*tab": "getOrganisation"
     },
@@ -46,40 +45,42 @@ let Router = Marionette.AppRouter.extend({
         });
     },
 
-    getGRCOrganisationList : function() {
-        let collection = new OrganisationCollection([], {grc: true});
+    getOrganisationList : function(options) {
+        options || (options = {});
 
-        let defaultLayout = new DefaultLayout({});
-        application.main.showContent(defaultLayout);
-
-        defaultLayout.showChildView('title', new TitleView({title: _t("List of GRC partners")}));
-
-        collection.fetch().then(function () {
-            let organisationListView = new OrganisationListView({collection : collection});
-
-            defaultLayout.showChildView('content', organisationListView);
-            defaultLayout.showChildView('content-bottom', new ScrollingMoreView({targetView: organisationListView}));
+        let collection = new OrganisationCollection([], {
+            filters: (options.filters || {}),
+            search: (options.search || {})
         });
-
-        defaultLayout.showChildView('bottom', new OrganisationListFilterView({collection: collection}));
-    },
-
-    getOrganisationList : function() {
-        let collection = new OrganisationCollection([]);
 
         let defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
         defaultLayout.showChildView('title', new TitleView({title: _t("List of organisations")}));
 
-        collection.fetch().then(function () {
-            let organisationListView = new OrganisationListView({collection : collection});
-
-            defaultLayout.showChildView('content', organisationListView);
-            defaultLayout.showChildView('content-bottom', new ScrollingMoreView({targetView: organisationListView}));
+        // get available columns
+        let columns = application.main.cache.lookup({
+            type: 'entity_columns',
+            format: {model: 'organisation.organisation'}
         });
 
-        defaultLayout.showChildView('bottom', new OrganisationListFilterView({collection: collection}));
+        columns.done(function (data) {
+            let organisationListView = new OrganisationListView({
+                collection: collection, columns: data[0].value
+            });
+
+            defaultLayout.showChildView('content', organisationListView);
+            defaultLayout.showChildView('content-bottom', new ScrollingMoreView({
+                collection: collection,
+                targetView: organisationListView
+            }));
+
+            defaultLayout.showChildView('bottom', new EntityListFilterView({
+                collection: collection, columns: data[0].value
+            }));
+
+            organisationListView.query();
+        });
     },
 
     getOrganisation : function(id, tab) {

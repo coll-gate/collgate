@@ -30,12 +30,15 @@ var TableBody = Marionette.CollectionView.extend({
 */
 
 // @todo evolve to CollectionView and a layout before Mn remove CompositeView
-var View = Marionette.CompositeView.extend({
+let View = Marionette.CompositeView.extend({
     rowHeight: 1 + 8 + 20 + 8,
     scrollViewInitialized: false,
     userSettingName: null,
     userSettingVersion: null,
     scrollbarWidth: $.position.scrollbarWidth(),
+
+    className: 'advanced-table-container',
+    childViewContainer: 'tbody.entity-list',
 
     attributes: {},
 

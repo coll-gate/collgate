@@ -8,19 +8,19 @@
  * @details
  */
 
-var Marionette = require('backbone.marionette');
+let Marionette = require('backbone.marionette');
 
-var AccessionModel = require('../models/accession');
-var AccessionCollection = require('../collections/accession');
-var AccessionListView = require('../views/accessionlist');
-var EntityListFilterView = require('../../descriptor/views/entitylistfilter');
+let AccessionModel = require('../models/accession');
+let AccessionCollection = require('../collections/accession');
+let AccessionListView = require('../views/accessionlist');
+let EntityListFilterView = require('../../descriptor/views/entitylistfilter');
 
-var DefaultLayout = require('../../main/views/defaultlayout');
-var ScrollingMoreView = require('../../main/views/scrollingmore');
-var TitleView = require('../../main/views/titleview');
-var AccessionLayout = require('../views/accessionlayout');
+let DefaultLayout = require('../../main/views/defaultlayout');
+let ScrollingMoreView = require('../../main/views/scrollingmore');
+let TitleView = require('../../main/views/titleview');
+let AccessionLayout = require('../views/accessionlayout');
 
-var Router = Marionette.AppRouter.extend({
+let Router = Marionette.AppRouter.extend({
     routes : {
         "app/accession/accession/": "getAccessionList",
         "app/accession/accession/:id/*tab": "getAccession"
@@ -29,24 +29,24 @@ var Router = Marionette.AppRouter.extend({
     getAccessionList : function(options) {
         options || (options = {});
 
-        var collection = new AccessionCollection([], {
+        let collection = new AccessionCollection([], {
             filters: (options.filters || {}),
             search: (options.search || {})
         });
 
-        var defaultLayout = new DefaultLayout({});
+        let defaultLayout = new DefaultLayout({});
         application.main.showContent(defaultLayout);
 
         defaultLayout.showChildView('title', new TitleView({title: _t("List of accessions")}));
 
         // get available columns
-        var columns = application.main.cache.lookup({
+        let columns = application.main.cache.lookup({
             type: 'entity_columns',
             format: {model: 'accession.accession'}
         });
 
         columns.done(function (data) {
-            var accessionListView = new AccessionListView({
+            let accessionListView = new AccessionListView({
                 collection : collection, columns: data[0].value,
                 onRender: function () {
                     this.onShowTab();
@@ -69,9 +69,9 @@ var Router = Marionette.AppRouter.extend({
     getAccession : function(id, tab) {
         tab || (tab = "");
 
-        var accession = new AccessionModel({id: id});
+        let accession = new AccessionModel({id: id});
 
-        var defaultLayout = new DefaultLayout();
+        let defaultLayout = new DefaultLayout();
         application.main.showContent(defaultLayout);
 
         accession.fetch().then(function() {
@@ -81,7 +81,7 @@ var Router = Marionette.AppRouter.extend({
 
             defaultLayout.showChildView('title', new TitleView({title: _t("Accession"), model: accession}));
 
-            var accessionLayout = new AccessionLayout({model: accession, initialTab: tab.replace('/', '')});
+            let accessionLayout = new AccessionLayout({model: accession, initialTab: tab.replace('/', '')});
             defaultLayout.showChildView('content', accessionLayout);
         });
     }

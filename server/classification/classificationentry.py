@@ -169,8 +169,10 @@ def get_classification_entry_list(request):
     cq = CursorQuery(ClassificationEntry)
 
     if request.GET.get('filters'):
-        filters = json.loads(request.GET['filters'])
-        cq.filter(filters)
+        cq.filter(json.loads(request.GET['filters']))
+
+    if request.GET.get('search'):
+        cq.filter(json.loads(request.GET['search']))
 
     cq.prefetch_related(Prefetch(
             "synonyms",
@@ -232,8 +234,10 @@ def get_classification_list_count(request):
     cq = CursorQuery(ClassificationEntry)
 
     if request.GET.get('filters'):
-        filters = json.loads(request.GET['filters'])
-        cq.filter(filters)
+        cq.filter(json.loads(request.GET['filters']))
+
+    if request.GET.get('search'):
+        cq.filter(json.loads(request.GET['search']))
 
     count = cq.count()
 

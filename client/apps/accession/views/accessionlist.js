@@ -8,15 +8,13 @@
  * @details
  */
 
-var AccessionView = require('../views/accession');
-var AdvancedTable = require('../../main/views/advancedtable');
-var DescriptorsColumnsView = require('../../descriptor/mixins/descriptorscolumns');
+let AccessionView = require('../views/accession');
+let AdvancedTable = require('../../main/views/advancedtable');
+let DescriptorsColumnsView = require('../../descriptor/mixins/descriptorscolumns');
 
-var View = AdvancedTable.extend({
-    template: require("../../descriptor/templates/entitylist.html"),
-    className: 'advanced-table-container',
+let View = AdvancedTable.extend({
+    className: 'accession-list advanced-table-container',
     childView: AccessionView,
-    childViewContainer: 'tbody.entity-list',
     userSettingName: 'accessions_list_columns',
     userSettingVersion: '1.1',
 
@@ -77,30 +75,30 @@ var View = AdvancedTable.extend({
         this.relatedEntity = this.getOption('relatedEntity');
         this.filters = this.getOption('filters');
 
-        // var context_menu = options.context_menu;
+        // let context_menu = options.context_menu;
         // this.listenTo(this.collection, 'reset', this.render, this);
     },
 
     onShowTab: function () {
-        var view = this;
+        let view = this;
 
-        var contextLayout = application.getView().getChildView('right');
+        let contextLayout = application.getView().getChildView('right');
         if (!contextLayout) {
-            var DefaultLayout = require('../../main/views/defaultlayout');
+            let DefaultLayout = require('../../main/views/defaultlayout');
             contextLayout = new DefaultLayout();
             application.getView().showChildView('right', contextLayout);
         }
 
-        var TitleView = require('../../main/views/titleview');
+        let TitleView = require('../../main/views/titleview');
         contextLayout.showChildView('title', new TitleView({title: _t("Accession actions"), glyphicon: 'fa-wrench'}));
 
-        var actions = [
+        let actions = [
             'create-panel',
             'link-to-panel'
         ];
 
-        var AccessionListContextView = require('./accessionlistcontext');
-        var contextView = new AccessionListContextView({actions: actions});
+        let AccessionListContextView = require('./accessionlistcontext');
+        let contextView = new AccessionListContextView({actions: actions});
         contextLayout.showChildView('content', contextView);
 
         contextView.on("panel:create", function () {

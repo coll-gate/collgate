@@ -47,14 +47,43 @@ class Organisation(DescribableEntity):
     @classmethod
     def get_defaults_columns(cls):
         return {
+            'name': {
+                'label': _('Name'),
+                'query': False,
+                'format': {
+                    'type': 'string',
+                    'model': 'organisation.organisation'
+                },
+                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
+            },
+            'descriptor_meta_model': {
+                'label': _('Model'),
+                'field': 'name',
+                'query': True,
+                'format': {
+                    'type': 'descriptor_meta_model',
+                    'model': 'organisation.organisation'
+                },
+                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'in', 'notin']
+            },
             'type': {
                 'label': _('Type'),
                 'field': 'name',
                 'query': False,
+                'code': Organisation.TYPE_CODE,  # @todo dynamic ?
                 'format': {
                     'type': 'enum_single',
-                    'code': Organisation.TYPE_CODE
+                    'fields': ['name'],
+                    'trans': True,
+                    'list_type': 'dropdown',
+                    'display_fields': 'value0',
+                    'sortby_field': 'value0'
                 }
+            },
+            'num_establishments': {
+                'label': _('Establishments'),
+                'query': False,
+                'column_display': False
             }
         }
 
@@ -144,6 +173,30 @@ class Establishment(DescribableEntity):
     @classmethod
     def make_search_by_name(cls, term):
         return Q(name__istartswith=term)
+
+    @classmethod
+    def get_defaults_columns(cls):
+        return {
+            'name': {
+                'label': _('Name'),
+                'query': False,
+                'format': {
+                    'type': 'string',
+                    'model': 'organisation.establishment'
+                },
+                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'icontains']
+            },
+            'descriptor_meta_model': {
+                'label': _('Model'),
+                'field': 'name',
+                'query': True,
+                'format': {
+                    'type': 'descriptor_meta_model',
+                    'model': 'organisation.establishment'
+                },
+                'available_operators': ['isnull', 'notnull', 'eq', 'neq', 'in', 'notin']
+            }
+        }
 
     def audit_create(self, user):
         return {

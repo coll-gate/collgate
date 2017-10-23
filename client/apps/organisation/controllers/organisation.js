@@ -8,17 +8,17 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
+let Marionette = require('backbone.marionette');
 
-var OrganisationModel = require('../models/organisation');
+let OrganisationModel = require('../models/organisation');
 
-var DefaultLayout = require('../../main/views/defaultlayout');
-var TitleView = require('../../main/views/titleview');
-var Dialog = require('../../main/views/dialog');
-var OrganisationLayout = require('../views/organisationlayout');
+let DefaultLayout = require('../../main/views/defaultlayout');
+let TitleView = require('../../main/views/titleview');
+let Dialog = require('../../main/views/dialog');
+let OrganisationLayout = require('../views/organisationlayout');
 
 
-var Controller = Marionette.Object.extend({
+let Controller = Marionette.Object.extend({
 
     create: function() {
         $.ajax({
@@ -26,7 +26,7 @@ var Controller = Marionette.Object.extend({
             url: window.application.url(['descriptor', 'meta-model', 'for-describable', 'organisation.organisation']),
             dataType: 'json'
         }).done(function(data) {
-            var CreateOrganisationView = Dialog.extend({
+            let CreateOrganisationView = Dialog.extend({
                 attributes: {
                     'id': 'dlg_create_organisation'
                 },
@@ -63,10 +63,10 @@ var Controller = Marionette.Object.extend({
                 },
 
                 onNameInput: function () {
-                    var name = this.ui.name.val().trim();
+                    let name = this.ui.name.val().trim();
 
                     if (this.validateName()) {
-                        var filters = {
+                        let filters = {
                             method: 'ieq',
                             fields: ['name'],
                             'name': name
@@ -80,8 +80,8 @@ var Controller = Marionette.Object.extend({
                             el: this.ui.name,
                             success: function (data) {
                                 if (data.items.length > 0) {
-                                    for (var i in data.items) {
-                                        var t = data.items[i];
+                                    for (let i in data.items) {
+                                        let t = data.items[i];
 
                                         if (t.value.toUpperCase() === name.toUpperCase()) {
                                             $(this.el).validateField('failed', _t('Organisation name already in usage'));
@@ -97,7 +97,7 @@ var Controller = Marionette.Object.extend({
                 },
 
                 validateName: function () {
-                    var v = this.ui.name.val().trim();
+                    let v = this.ui.name.val().trim();
 
                     if (v.length > 255) {
                         $(this.ui.name).validateField('failed', _t('characters_max', {count: 255}));
@@ -111,7 +111,7 @@ var Controller = Marionette.Object.extend({
                 },
 
                 validate: function () {
-                    var valid = this.validateName();
+                    let valid = this.validateName();
 
                     if (this.ui.name.hasClass('invalid') || this.ui.type.hasClass('invalid')) {
                         valid = false;
@@ -121,11 +121,11 @@ var Controller = Marionette.Object.extend({
                 },
 
                 onCreate: function () {
-                    var name = this.ui.name.val().trim();
-                    var to_grc = this.ui.grc.val() === "grc-partner";
+                    let name = this.ui.name.val().trim();
+                    let to_grc = this.ui.grc.val() === "grc-partner";
 
                     if (this.validate()) {
-                        var model = new OrganisationModel({
+                        let model = new OrganisationModel({
                             descriptor_meta_model: data[0].id,
                             name: name,
                             type: this.ui.type.val(),
@@ -134,7 +134,7 @@ var Controller = Marionette.Object.extend({
 
                         this.destroy();
 
-                        var defaultLayout = new DefaultLayout();
+                        let defaultLayout = new DefaultLayout();
                         application.main.showContent(defaultLayout);
 
                         defaultLayout.showChildView('title', new TitleView({
@@ -142,17 +142,16 @@ var Controller = Marionette.Object.extend({
                             model: model
                         }));
 
-                        var organisationLayout = new OrganisationLayout({model: model});
+                        let organisationLayout = new OrganisationLayout({model: model});
                         defaultLayout.showChildView('content', organisationLayout);
                     }
                 }
             });
 
-            var dialog = new CreateOrganisationView();
+            let dialog = new CreateOrganisationView();
             dialog.render();
         });
     }
 });
 
 module.exports = Controller;
-

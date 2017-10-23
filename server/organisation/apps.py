@@ -58,23 +58,17 @@ class CollGateOrganisation(ApplicationMain):
         menu_organisation.add_entry(
             MenuEntry('grc-details', _('Manage GRC'), "#organisation/grc/", icon=FaGlyph('cloud'), order=1))
         menu_organisation.add_entry(
-            MenuEntry('grc-organisation',
-                      _('Manage GRC partners'),
-                      "#organisation/grc/organisation/",
-                      icon=FaGlyph('bookmark'),
-                      order=2))
-        menu_organisation.add_entry(
             MenuEntry('organisation',
                       _('Manage organisations'),
                       "#organisation/organisation/",
                       icon=FaGlyph('map-marker'),
-                      order=3))
+                      order=2))
         menu_organisation.add_entry(
             MenuEntry('create-organisation',
                       _('Create an organisation or a partner'),
                       "~organisation/organisation/create/",
                       icon=FaGlyph('plus'),
-                      order=4))
+                      order=34))
 
         organisation_module.add_menu(menu_organisation)
 

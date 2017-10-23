@@ -1,85 +1,32 @@
 /**
- * @file establishmentlistfilter.js
- * @brief Filter the list of establishment
+ * @file establishment.js
+ * @brief Establishment controller
  * @author Frédéric SCHERMA (INRA UMR1095)
- * @date 2017-03-09
+ * @date 2017-10-20
  * @copyright Copyright (c) 2017 INRA/CIRAD
  * @license MIT (see LICENSE file)
- * @details 
+ * @details
  */
 
-var Marionette = require('backbone.marionette');
+let Marionette = require('backbone.marionette');
 
-var Dialog = require('../../main/views/dialog');
-var EstablishmentModel = require('../models/establishment');
-var DefaultLayout = require('../../main/views/defaultlayout');
-var TitleView = require('../../main/views/titleview');
-var EstablishmentLayout = require('../views/establishmentlayout');
+let EstablishmentModel = require('../models/establishment');
+
+let DefaultLayout = require('../../main/views/defaultlayout');
+let TitleView = require('../../main/views/titleview');
+let Dialog = require('../../main/views/dialog');
+let EstablishmentLayout = require('../views/establishmentlayout');
 
 
-var View = Marionette.View.extend({
-    tagName: 'div',
-    className: 'establishment-filter',
-    template: require('../templates/establishmentlistfilter.html'),
+let Controller = Marionette.Object.extend({
 
-    ui: {
-        filter_btn: 'button.establishment-filter',
-        establishment_name: 'input.establishment-name',
-        create_establishment: 'button.create-establishment'
-    },
-
-    events: {
-        'click @ui.filter_btn': 'onFilter',
-        'input @ui.establishment_name': 'onEstablishmentNameInput',
-        'click @ui.create_establishment': 'onCreateEstablishment'
-    },
-
-    initialize: function(options) {
-        this.collection = options.collection;
-    },
-
-    onRender: function() {
-    },
-
-    onFilter: function () {
-        if (this.validateEstablishmentName()) {
-            this.collection.filters = {
-                name_code: this.ui.establishment_name.val().trim(),
-                method: "icontains"
-            };
-
-            this.collection.fetch({reset: true});
-        }
-    },
-
-    validateEstablishmentName: function() {
-        var v = this.ui.establishment_name.val().trim();
-
-        if (v.length > 0 && v.length < 3) {
-            $(this.ui.establishment_name).validateField('failed', _t('characters_min', {count: 3}));
-            return false;
-        } else if (this.ui.establishment_name.val().length === 0) {
-            $(this.ui.establishment_name).cleanField();
-            return true;
-        } else {
-            $(this.ui.establishment_name).validateField('ok');
-            return true;
-        }
-    },
-
-    onEstablishmentNameInput: function () {
-        return this.validateEstablishmentName();
-    },
-
-    onCreateEstablishment: function() {
-        var view = this;
-
+    create: function(organisation, collection) {
         $.ajax({
             type: "GET",
             url: window.application.url(['descriptor', 'meta-model', 'for-describable', 'organisation.establishment']),
             dataType: 'json'
         }).done(function(data) {
-            var CreateEstablishmentView = Dialog.extend({
+            let CreateEstablishmentView = Dialog.extend({
                 attributes: {
                     'id': 'dlg_create_establishment'
                 },
@@ -114,10 +61,10 @@ var View = Marionette.View.extend({
                 },
 
                 onNameInput: function () {
-                    var name = this.ui.name.val().trim();
+                    let name = this.ui.name.val().trim();
 
                     if (this.validateName()) {
-                        var filters = {
+                        let filters = {
                             method: 'ieq',
                             fields: ['name'],
                             name: name
@@ -131,8 +78,8 @@ var View = Marionette.View.extend({
                             el: this.ui.name,
                             success: function (data) {
                                 if (data.items.length > 0) {
-                                    for (var i in data.items) {
-                                        var t = data.items[i];
+                                    for (let i in data.items) {
+                                        let t = data.items[i];
 
                                         if (t.value.toUpperCase() === name.toUpperCase()) {
                                             $(this.el).validateField('failed', _t('Establishment name already in usage'));
@@ -148,7 +95,7 @@ var View = Marionette.View.extend({
                 },
 
                 validateName: function () {
-                    var v = this.ui.name.val().trim();
+                    let v = this.ui.name.val().trim();
 
                     if (v.length > 255) {
                         $(this.ui.name).validateField('failed', _t('characters_max', {count: 255}));
@@ -162,7 +109,7 @@ var View = Marionette.View.extend({
                 },
 
                 validate: function () {
-                    var valid = this.validateName();
+                    let valid = this.validateName();
 
                     if (this.ui.name.hasClass('invalid')) {
                         valid = false;
@@ -172,10 +119,10 @@ var View = Marionette.View.extend({
                 },
 
                 onCreate: function () {
-                    var name = this.ui.name.val().trim();
+                    let name = this.ui.name.val().trim();
 
                     if (this.validate()) {
-                        var model = new EstablishmentModel({
+                        let model = new EstablishmentModel({
                             descriptor_meta_model: data[0].id,
                             name: name,
                             organisation: this.getOption('organisation').get('id')
@@ -183,7 +130,7 @@ var View = Marionette.View.extend({
 
                         this.destroy();
 
-                        var defaultLayout = new DefaultLayout();
+                        let defaultLayout = new DefaultLayout();
                         application.main.showContent(defaultLayout);
 
                         defaultLayout.showChildView('title', new TitleView({
@@ -192,15 +139,15 @@ var View = Marionette.View.extend({
                             organisation: this.getOption('organisation').get('id')
                         }));
 
-                        var establishmentLayout = new EstablishmentLayout({model: model});
+                        let establishmentLayout = new EstablishmentLayout({model: model});
                         defaultLayout.showChildView('content', establishmentLayout);
                     }
                 }
             });
 
-            var dialog = new CreateEstablishmentView({
-                organisation: view.getOption('organisation'),
-                collection: view.collection
+            let dialog = new CreateEstablishmentView({
+                organisation: organisation,
+                collection: collection
             });
 
             dialog.render();
@@ -208,4 +155,4 @@ var View = Marionette.View.extend({
     }
 });
 
-module.exports = View;
+module.exports = Controller;

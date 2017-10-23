@@ -8,27 +8,27 @@
  * @details 
  */
 
-var DescribableDetails = require('../../descriptor/views/describabledetails');
-var DescriptorEditView = require('../views/descriptoredit');
+let DescribableDetails = require('../../descriptor/views/describabledetails');
+let DescriptorEditView = require('../views/descriptoredit');
 
-var View = DescribableDetails.extend({
+let View = DescribableDetails.extend({
     onShowTab: function() {
-        var view = this;
+        let view = this;
 
-        var contextLayout = application.getView().getChildView('right');
+        let contextLayout = application.getView().getChildView('right');
         if (!contextLayout) {
-            var DefaultLayout = require('../../main/views/defaultlayout');
+            let DefaultLayout = require('../../main/views/defaultlayout');
             contextLayout = new DefaultLayout();
             application.getView().showChildView('right', contextLayout);
         }
 
-        var TitleView = require('../../main/views/titleview');
+        let TitleView = require('../../main/views/titleview');
         contextLayout.showChildView('title', new TitleView({title: _t("Descriptors")}));
 
-        var actions = ['modify'];
+        let actions = ['modify'];
 
-        var DescriptorContextView = require('./descriptorcontext');
-        var contextView = new DescriptorContextView({actions: actions});
+        let DescriptorContextView = require('./descriptorcontext');
+        let contextView = new DescriptorContextView({actions: actions});
         contextLayout.showChildView('content', contextView);
 
         contextView.on("describable:modify", function () {
@@ -42,12 +42,12 @@ var View = DescribableDetails.extend({
 
     onModify: function () {
         // does not reload models, just redo the views
-        var name = this.model.get('name');
+        let name = this.model.get('name');
 
         // update the layout content
-        var layout = application.main.viewContent().getChildView('content');
+        let layout = application.main.viewContent().getChildView('content');
 
-        var view = new DescriptorEditView({model: this.model, descriptorMetaModelLayout: this.descriptorMetaModelLayout});
+        let view = new DescriptorEditView({model: this.model, descriptorMetaModelLayout: this.descriptorMetaModelLayout});
         layout.showChildView('descriptors', view);
     }
 });

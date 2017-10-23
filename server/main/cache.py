@@ -81,8 +81,9 @@ class CacheManager(object):
         return ":".join(kargs)
 
     def purge(self):
-        for category in self.categories:
-            cache.delete_pattern("%s__*" % category)
+        cache.delete_pattern("*")
+        # for category in self.categories:
+        #     cache.delete_pattern("%s__*" % category)
 
 
 # Singleton of server cache manager

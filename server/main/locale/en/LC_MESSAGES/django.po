@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-10-19 16:46+0200\n"
+"POT-Creation-Date: 2017-10-20 15:16+0200\n"
 "PO-Revision-Date: 2016-02-01 11:53+0100\n"
 "Last-Translator: Frederic SCHERMA <frederic.scherma@clermont.inra.fr>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,31 +17,31 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: apps.py:52
+#: apps.py:51
 msgid "Administration"
 msgstr ""
 
-#: apps.py:56
+#: apps.py:55
 msgid "Server configuration"
 msgstr ""
 
-#: apps.py:60
+#: apps.py:59
 msgid "Configured languages"
 msgstr ""
 
-#: apps.py:64
+#: apps.py:63
 msgid "Configured types of synonyms"
 msgstr ""
 
-#: apps.py:70
+#: apps.py:69
 msgid "Help"
 msgstr ""
 
-#: apps.py:72
+#: apps.py:71
 msgid "Manual index"
 msgstr ""
 
-#: apps.py:75
+#: apps.py:74
 msgid "About Coll-Gate IS..."
 msgstr ""
 
@@ -57,7 +57,7 @@ msgstr ""
 msgid "You are not allowed to modify a synonym type of entity"
 msgstr ""
 
-#: entity.py:341 eventmessage.py:127 language.py:168
+#: entity.py:341 eventmessage.py:127 language.py:160
 msgid "Unsupported language identifier"
 msgstr ""
 
@@ -93,60 +93,60 @@ msgstr ""
 msgid "French"
 msgstr ""
 
-#: models.py:117
+#: models.py:126
 msgid "Pending"
 msgstr ""
 
-#: models.py:118
+#: models.py:127
 msgid "Valid"
 msgstr ""
 
-#: models.py:119
+#: models.py:128
 msgid "Archived"
 msgstr ""
 
-#: models.py:120
+#: models.py:129
 msgid "Removed"
 msgstr ""
 
-#: models.py:283
+#: models.py:292
 msgid ""
 "It is not allowed to change the status of an entity from valid to pending"
 msgstr ""
 
-#: models.py:286
+#: models.py:295
 msgid "It is not allowed to change the status of a removed entity"
 msgstr ""
 
-#: models.py:289
+#: models.py:298
 msgid "It is not allowed to change the status of an archived entity"
 msgstr ""
 
-#: models.py:480
+#: models.py:489
 msgid "Invalid language code"
 msgstr ""
 
-#: models.py:483
+#: models.py:492
 msgid "No language is supported for a synonym of this type"
 msgstr ""
 
-#: models.py:486
+#: models.py:495
 msgid "A language must be defined for a synonym of this type"
 msgstr ""
 
-#: models.py:492 models.py:532
+#: models.py:501 models.py:541
 msgid "A similar synonym of this type exists for this entity"
 msgstr ""
 
-#: models.py:498 models.py:539
+#: models.py:507 models.py:548
 msgid "The synonym must be unique"
 msgstr ""
 
-#: models.py:504 models.py:546
+#: models.py:513 models.py:555
 msgid "Only a single synonym of this type per entity is allowed"
 msgstr ""
 
-#: models.py:566
+#: models.py:575
 msgid "Unable to rename the synonym of the entity"
 msgstr ""
 
