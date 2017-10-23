@@ -12,13 +12,21 @@ var PanelModel = require('../models/panel');
 var CountableCollection = require('../../main/collections/countable');
 
 var Collection = CountableCollection.extend({
-    url: window.application.url(['accession', 'accessionpanel']),
+    url: function () {
+        if (this.accession_id) {
+            return window.application.url(['accession', 'accession', this.accession_id, 'panels'])
+        } else {
+            return window.application.url(['accession', 'accessionpanel'])
+        }
+    },
     model: PanelModel,
 
     initialize: function (options) {
         options || (options = {});
-        this.accession_id = options.accession_id;
+
         Collection.__super__.initialize.apply(this, arguments);
+
+        this.accession_id = options.accession_id;
     }
 });
 

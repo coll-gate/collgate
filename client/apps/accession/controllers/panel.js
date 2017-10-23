@@ -164,7 +164,7 @@ var Controller = Marionette.Object.extend({
         createPanelDialog.render();
     },
 
-    linkAccessions: function (selection, related_entity, filters, search) {
+    linkAccessions: function (selection, related_entity, filters, search, collection) {
         related_entity || (related_entity = null);
         filters || (filters = {});
         search || (search = {});
@@ -224,6 +224,9 @@ var Controller = Marionette.Object.extend({
                             }
                         })
                     }).done(function () {
+                        if (collection) {
+                           collection.fetch();
+                        }
                         view.destroy();
                         if (go_to_panel) {
                             Backbone.history.navigate('app/accession/accessionpanel/' + panel_id + '/accessions/', {trigger: true});

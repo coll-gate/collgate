@@ -5,7 +5,7 @@
  * @date 2017-01-16
  * @copyright Copyright (c) 2017 INRA/CIRAD
  * @license MIT (see LICENSE file)
- * @details 
+ * @details
  */
 
 var LayoutView = require('../../main/views/layout');
@@ -36,7 +36,7 @@ var Layout = LayoutView.extend({
         'panels': "div.tab-pane[name=panels]",
     },
 
-    initialize: function(options) {
+    initialize: function (options) {
         Layout.__super__.initialize.apply(this, arguments);
 
         this.listenTo(this.model, 'change:descriptor_meta_model', this.onDescriptorMetaModelChange, this);
@@ -46,12 +46,15 @@ var Layout = LayoutView.extend({
         }
     },
 
-    onAccessionCreate: function(model, value) {
+    onAccessionCreate: function (model, value) {
         // re-render once created
         this.render();
 
         // and update history
-        Backbone.history.navigate('app/accession/accession/' + this.model.get('id') + '/', {/*trigger: true,*/ replace: false});
+        Backbone.history.navigate('app/accession/accession/' + this.model.get('id') + '/', {
+            /*trigger: true,*/
+            replace: false
+        });
     },
 
     disableSynonymsTab: function () {
@@ -70,14 +73,14 @@ var Layout = LayoutView.extend({
         this.ui.panels_tab.parent().addClass('disabled');
     },
 
-    enableTabs: function() {
+    enableTabs: function () {
         this.ui.synonyms_tab.parent().removeClass('disabled');
         this.ui.batches_tab.parent().removeClass('disabled');
         this.ui.classifications_entries_tab.parent().removeClass('disabled');
         this.ui.panels_tab.parent().removeClass('disabled');
     },
 
-    onDescriptorMetaModelChange: function(model, value) {
+    onDescriptorMetaModelChange: function (model, value) {
         if (value == null) {
             this.getRegion('descriptors').empty();
         } else {
@@ -103,7 +106,7 @@ var Layout = LayoutView.extend({
         }
     },
 
-    onRender: function() {
+    onRender: function () {
         var accessionLayout = this;
 
         // details view
@@ -141,8 +144,9 @@ var Layout = LayoutView.extend({
                 }
 
                 var BatchListView = require('../views/batchlist');
-                var batchListView  = new BatchListView({
-                    collection: accessionBatches, model: accessionLayout.model, columns: data[0].value});
+                var batchListView = new BatchListView({
+                    collection: accessionBatches, model: accessionLayout.model, columns: data[0].value
+                });
 
                 var contentBottomLayout = new ContentBottomLayout();
                 accessionLayout.showChildView('batches', contentBottomLayout);
@@ -167,8 +171,9 @@ var Layout = LayoutView.extend({
                 }
 
                 var AccessionClassificationEntryListView = require('../views/accessionclassificationentries');
-                var accessionClassificationEntryListView  = new AccessionClassificationEntryListView({
-                    collection: accessionClassificationEntries, model: accessionLayout.model, columns: data[0].value});
+                var accessionClassificationEntryListView = new AccessionClassificationEntryListView({
+                    collection: accessionClassificationEntries, model: accessionLayout.model, columns: data[0].value
+                });
 
                 var contentBottomFooterLayout = new ContentBottomFooterLayout();
                 accessionLayout.showChildView('classifications-entries', contentBottomFooterLayout);
@@ -182,7 +187,7 @@ var Layout = LayoutView.extend({
 
             // panels tab
             var PanelCollection = require('../collections/panel');
-            var accessionPanels = new PanelCollection([], {accession_id: this.model.get('id')});
+            var accessionPanels = new PanelCollection({accession_id: this.model.get('id')});
 
             // get available columns
             var columns3 = application.main.cache.lookup({
@@ -195,17 +200,18 @@ var Layout = LayoutView.extend({
                     return;
                 }
 
-                var PanelListView = require('../views/panellist');
-                var panelListView  = new PanelListView({
-                    collection: accessionPanels, model: accessionLayout.model, columns: data[0].value});
+                var AccessionPanelListView = require('../views/accessionpanellist');
+                var accessionPanelListView = new AccessionPanelListView({
+                    collection: accessionPanels, model: accessionLayout.model, columns: data[0].value
+                });
 
                 var contentBottomLayout = new ContentBottomLayout();
                 accessionLayout.showChildView('panels', contentBottomLayout);
 
-                contentBottomLayout.showChildView('content', panelListView);
-                contentBottomLayout.showChildView('bottom', new ScrollingMoreView({targetView: panelListView}));
+                contentBottomLayout.showChildView('content', accessionPanelListView);
+                contentBottomLayout.showChildView('bottom', new ScrollingMoreView({targetView: accessionPanelListView}));
 
-                panelListView.query();
+                accessionPanelListView.query();
             });
 
             this.onDescriptorMetaModelChange(this.model, this.model.get('descriptor_meta_model'));
@@ -213,13 +219,14 @@ var Layout = LayoutView.extend({
         } else {
             // details
             var classificationEntry = new ClassificationEntryModel({id: this.model.get('primary_classification_entry')});
-            classificationEntry.fetch().then(function() {
+            classificationEntry.fetch().then(function () {
                 if (!accessionLayout.isRendered()) {
                     return;
                 }
 
                 accessionLayout.showChildView('details', new EntityPathView({
-                    model: accessionLayout.model, classificationEntry: classificationEntry, noLink: true}));
+                    model: accessionLayout.model, classificationEntry: classificationEntry, noLink: true
+                }));
             });
 
             // descriptors edit tab
@@ -227,13 +234,14 @@ var Layout = LayoutView.extend({
                 method: "GET",
                 url: window.application.url(['descriptor', 'meta-model', this.model.get('descriptor_meta_model'), 'layout']),
                 dataType: 'json'
-            }).done(function(data) {
+            }).done(function (data) {
                 if (!accessionLayout.isRendered()) {
                     return;
                 }
 
                 var accessionDescriptorView = new AccessionDescriptorEditView({
-                    model: accessionLayout.model, descriptorMetaModelLayout: data});
+                    model: accessionLayout.model, descriptorMetaModelLayout: data
+                });
 
                 accessionLayout.showChildView('descriptors', accessionDescriptorView);
             });

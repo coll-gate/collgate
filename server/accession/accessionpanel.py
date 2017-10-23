@@ -754,7 +754,6 @@ def get_panel_accession_list(request, panel_id):
 def modify_panel_accessions(request, panel_id):
     action = request.data['action']
     selection = request.data['selection']['select']
-    related_entity = request.data['selection']['from']
     panel = AccessionPanel.objects.get(id=int_arg(panel_id))
 
     from main.cursor import CursorQuery
@@ -766,7 +765,8 @@ def modify_panel_accessions(request, panel_id):
     if request.data['selection'].get('search'):
         cq.filter(request.data['selection'].get('search'))
 
-    if related_entity:
+    if request.data['selection'].get('from'):
+        related_entity = request.data['selection']['from']
         label, model = related_entity['content_type'].split('.')
         content_type = get_object_or_404(ContentType, app_label=label, model=model)
         model_class = content_type.model_class()
