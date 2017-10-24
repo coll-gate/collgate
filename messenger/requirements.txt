@@ -1,0 +1,10 @@
+django>=1.10
+setuptools>=19.4
+httplib2>=0.9.1
+#file:/home/mboulnemour/collgate/igdectk#egg=igdectk
+pyasn1>=0.1.9
+validictory>=1.0.1
+psycopg2>=2.6.1
+python-magic>=0.4
+packaging>=2.2.0
+channels>=1.1.8

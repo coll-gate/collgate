@@ -87,7 +87,7 @@ def ws_connect_null(message):
 
 
 def ws_connect(message):
-    query_string = message.get.get('query_string', b'').decode('utf8')
+    query_string = message.get('query_string', b'').decode('utf8')
     parameters = urllib.parse.parse_qs(query_string)
 
     username = parameters.get('username', [''])[0]

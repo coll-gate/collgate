@@ -617,9 +617,9 @@ class CursorQuery(object):
 
                 if self.FIELDS_SEP in f:
                     ff = f.split(self.FIELDS_SEP)
-                    field_model = self.model_fields[ff[1]]
-                    op = self.ARRAY_OPERATORS_MAP.get(cmp) if field_model[0] == 'ARRAY' else self.OPERATORS_MAP.get(
-                        cmp)
+                    field_model = self._related_tables[ff[0]][1][ff[1]]
+                    op = self.ARRAY_OPERATORS_MAP.get(cmp) if field_model[0] == 'ARRAY' else self.OPERATORS_MAP.get(cmp)
+
                     # cmp is used with descriptor, otherwise map to a SQL operator
                     if not op:
                         raise CursorQueryValueError('Unrecognized term operator')

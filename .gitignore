@@ -11,6 +11,7 @@ __pycache__
 /build/
 /static/
 /docs/_build/
+/venv/
 /client/npm-debug.log
 /client/apps/**/locale/**/LC_MESSAGES/default.json
 /client/build/
@@ -20,5 +21,9 @@ __pycache__
 /server/main/static/main/js/app.min.js
 /server/main/static/main/js/app.min.js.map
 /server/media
+/server/geonames/data
 /server/venv/
 /server/settings/developmentuser.py
+/messenger/logs/collgate-messenger.log
+/messenger/venv/
+/dist/
