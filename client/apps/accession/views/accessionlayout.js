@@ -182,7 +182,7 @@ let Layout = LayoutView.extend({
 
             // panels tab
             let PanelCollection = require('../collections/panel');
-            let accessionPanels = new PanelCollection([], {accession_id: this.model.get('id')});
+            let accessionPanels = new PanelCollection({accession_id: this.model.get('id')});
 
             // get available columns
             let columns3 = application.main.cache.lookup({
@@ -195,17 +195,17 @@ let Layout = LayoutView.extend({
                     return;
                 }
 
-                let PanelListView = require('../views/panellist');
-                let panelListView  = new PanelListView({
+                let AccessionPanelListView = require('../views/accessionpanellist');
+                let accessionPanelListView  = new AccessionPanelListView({
                     collection: accessionPanels, model: accessionLayout.model, columns: data[0].value});
 
                 let contentBottomLayout = new ContentBottomLayout();
                 accessionLayout.showChildView('panels', contentBottomLayout);
 
-                contentBottomLayout.showChildView('content', panelListView);
-                contentBottomLayout.showChildView('bottom', new ScrollingMoreView({targetView: panelListView}));
+                contentBottomLayout.showChildView('content', accessionPanelListView);
+                contentBottomLayout.showChildView('bottom', new ScrollingMoreView({targetView: accessionPanelListView}));
 
-                panelListView.query();
+                accessionPanelListView.query();
             });
 
             this.onDescriptorMetaModelChange(this.model, this.model.get('descriptor_meta_model'));
