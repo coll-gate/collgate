@@ -1,13 +1,13 @@
-const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin3');
 const I18NextWebpackPlugin = require('./translation');
 
-var fs = require("fs");
-var webpack = require('webpack');
-var path = require('path');
+let fs = require("fs");
+let webpack = require('webpack');
+let path = require('path');
 
 module.exports = function (env) {
 
-    var defaults = {
+    let defaults = {
         entry: './apps/driver.js',
         externals: {
             'jquery': '$'
@@ -101,15 +101,24 @@ module.exports = function (env) {
         defaults.plugins.push(
             new webpack.BannerPlugin(fs.readFileSync('../LICENSE', 'utf8')),
             new webpack.LoaderOptionsPlugin({debug: false}),
-            new UglifyJSPlugin({
-                mangle: {
-                    except: ['$super', '$', 'exports', 'require']
-                },
-                comments: /Coll-Gate IS /,
-                sourceMap: false,  // true, not for release
-                minimize: true,
-                compress: {
-                    warnings: false
+            new /*webpack.optimize.*/UglifyJsPlugin({
+                parallel: true,
+                sourceMap: false,  // not for release
+                uglifyOptions: {
+                    ecma: 8,
+                    ie8: false,
+                    mangle: {
+                        //except: ['$super', '$', 'exports', 'require']
+                    },
+                    comments: /Coll-Gate IS /,
+                    minimize: true,
+                    output: {
+                        comments: false,
+                        beautify: false
+                    },
+                    compress: {
+                        warnings: false
+                    }
                 }
             }));
         defaults.output.filename = 'app.min.js';

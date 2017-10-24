@@ -67,6 +67,7 @@ function I18NextWebpackPlugin(options) {
     this.functionName = options.functionName || '_t';
     this.failOnMissing = !!this.options.failOnMissing;
     this.modifiedAppModules = new Set();
+    this.i18nFiles = new Set();
 }
 
 // function extractArgs(arg) {

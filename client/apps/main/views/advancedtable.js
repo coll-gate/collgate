@@ -9,7 +9,7 @@
  * fetching on collection using infinite scrolling. Also support sorting and multi-columns sorting.
  */
 
-var Marionette = require('backbone.marionette');
+let Marionette = require('backbone.marionette');
 
 const EXPONENT_MAP = {
     0: '¹',
