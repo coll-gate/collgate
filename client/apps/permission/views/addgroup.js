@@ -8,9 +8,9 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
+let Marionette = require('backbone.marionette');
 
-var View = Marionette.View.extend({
+let View = Marionette.View.extend({
     tagName: 'div',
     className: 'group-add',
     template: require('../templates/addgroup.html'),
@@ -31,7 +31,7 @@ var View = Marionette.View.extend({
     },
 
     addGroup: function () {
-        var v = this.ui.add_group_name.val().trim();
+        let v = this.ui.add_group_name.val().trim();
 
         if (!this.ui.add_group_name.hasClass('invalid') && v.length) {
             this.collection.create({name: v}, {wait: true});
@@ -40,8 +40,8 @@ var View = Marionette.View.extend({
     },
 
     validateGroupName: function() {
-        var v = this.ui.add_group_name.val().trim();
-        var re = /^[a-zA-Z0-9_\-]+$/i;
+        let v = this.ui.add_group_name.val().trim();
+        let re = /^[a-zA-Z0-9_\-]+$/i;
 
         if (v.length > 0 && !re.test(v)) {
             $(this.ui.add_group_name).validateField('failed', _t("Invalid characters (alphanumeric, _ and - only)"));
@@ -60,25 +60,26 @@ var View = Marionette.View.extend({
                 type: "GET",
                 url: window.application.url(['permission', 'group', 'search']),
                 dataType: 'json',
-                data: {filters: JSON.stringify({
-                    method: 'ieq',
-                    fields: 'name',
-                    name: this.ui.add_group_name.val()})
+                data: {
+                    filters: JSON.stringify({
+                        method: 'ieq',
+                        fields: 'name',
+                        name: this.ui.add_group_name.val()
+                    })
                 },
-                el: this.ui.add_group_name,
-                success: function(data) {
-                    if (data.items.length > 0) {
-                        for (var i in data.items) {
-                            var t = data.items[i];
+                el: this.ui.add_group_name
+            }).done(function(data) {
+                if (data.items.length > 0) {
+                    for (let i in data.items) {
+                        let t = data.items[i];
 
-                            if (t.value.toUpperCase() === this.el.val().toUpperCase()) {
-                                $(this.el).validateField('failed', _t('Group name already in usage'));
-                                break;
-                            }
+                        if (t.value.toUpperCase() === this.el.val().toUpperCase()) {
+                            $(this.el).validateField('failed', _t('Group name already in usage'));
+                            break;
                         }
-                    } else {
-                        $(this.el).validateField('ok');
                     }
+                } else {
+                    $(this.el).validateField('ok');
                 }
             });
         }

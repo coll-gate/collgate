@@ -228,7 +228,7 @@ def entity_post_save(sender, instance, created, **kwargs):
         # add the uuid of the instance
         if hasattr(instance, 'uuid'):
             fields['uuid'] = str(instance.uuid)
-    elif instance.entity_status == EntityStatus.REMOVED:
+    elif hasattr(instance, 'entity_status') and instance.entity_status == EntityStatus.REMOVED:
         a_type = AuditType.REMOVE
 
         if hasattr(sender, 'audit_update'):

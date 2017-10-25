@@ -60,7 +60,8 @@ def search_classification_entry_synonym(request):
     limit = results_per_page
 
     if cursor:
-        cursor_name, cursor_id = cursor.rsplit('/', 1)
+        cursor = json.loads(cursor)
+        cursor_name, cursor_id = cursor
         qs = ClassificationEntrySynonym.objects.filter(Q(name__gt=cursor_name) | (
             Q(name=cursor_name) & Q(id__gt=cursor_id)))
     else:
@@ -108,11 +109,11 @@ def search_classification_entry_synonym(request):
     if len(items_list) > 0:
         # prev cursor (asc order)
         obj = items_list[0]
-        prev_cursor = "%s/%i" % (obj['label'], obj['id'])
+        prev_cursor = (obj['label'], obj['id'])
 
         # next cursor (asc order)
         obj = items_list[-1]
-        next_cursor = "%s/%i" % (obj['label'], obj['id'])
+        next_cursor = (obj['label'], obj['id'])
     else:
         prev_cursor = None
         next_cursor = None

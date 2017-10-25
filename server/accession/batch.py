@@ -237,7 +237,8 @@ def get_batch_batches_list(request, bat_id):
         raise PermissionDenied(_('Invalid permission to access to this accession'))
 
     if cursor:
-        cursor_name, cursor_id = cursor.rsplit('/', 1)
+        cursor = json.loads(cursor)
+        cursor_name, cursor_id = cursor
         batches = parent_batch.children.filter(Q(name__gt=cursor_name))
     else:
         batches = parent_batch.children.all()
@@ -260,11 +261,11 @@ def get_batch_batches_list(request, bat_id):
     if len(items_list) > 0:
         # prev cursor (asc order)
         obj = items_list[0]
-        prev_cursor = "%s/%i" % (obj['name'], obj['id'])
+        prev_cursor = (obj['name'], obj['id'])
 
         # next cursor (asc order)
         obj = items_list[-1]
-        next_cursor = "%s/%i" % (obj['name'], obj['id'])
+        next_cursor = (obj['name'], obj['id'])
     else:
         prev_cursor = None
         next_cursor = None
@@ -301,7 +302,8 @@ def get_batch_parents_batches_list(request, bat_id):
         raise PermissionDenied(_('Invalid permission to access to this accession'))
 
     if cursor:
-        cursor_name, cursor_id = cursor.rsplit('/', 1)
+        cursor = json.loads(cursor)
+        cursor_name, cursor_id = cursor
         batches = parent_batch.batches.filter(Q(name__gt=cursor_name))
     else:
         batches = parent_batch.batches.all()
@@ -324,11 +326,11 @@ def get_batch_parents_batches_list(request, bat_id):
     if len(items_list) > 0:
         # prev cursor (asc order)
         obj = items_list[0]
-        prev_cursor = "%s/%i" % (obj['name'], obj['id'])
+        prev_cursor = (obj['name'], obj['id'])
 
         # next cursor (asc order)
         obj = items_list[-1]
-        next_cursor = "%s/%i" % (obj['name'], obj['id'])
+        next_cursor = (obj['name'], obj['id'])
     else:
         prev_cursor = None
         next_cursor = None
@@ -365,7 +367,8 @@ def search_batch(request):
     limit = results_per_page
 
     if cursor:
-        cursor_name, cursor_id = cursor.rsplit('/', 1)
+        cursor = json.loads(cursor)
+        cursor_name, cursor_id = cursor
         qs = Batch.objects.filter(Q(name__gt=cursor_name))
     else:
         qs = Batch.objects.all()
@@ -404,11 +407,11 @@ def search_batch(request):
     if len(items_list) > 0:
         # prev cursor (asc order)
         obj = items_list[0]
-        prev_cursor = "%s/%i" % (obj['value'], obj['id'])
+        prev_cursor = (obj['value'], obj['id'])
 
         # next cursor (asc order)
         obj = items_list[-1]
-        next_cursor = "%s/%i" % (obj['value'], obj['id'])
+        next_cursor = (obj['value'], obj['id'])
     else:
         prev_cursor = None
         next_cursor = None

@@ -8,9 +8,10 @@
  * @details 
  */
 
-var ClassificationEntryEntityModel = require('../models/classificationentryentity');
+let CountableCollection = require('../../main/collections/countable');
+let ClassificationEntryEntityModel = require('../models/classificationentryentity');
 
-var Collection = Backbone.Collection.extend({
+let Collection = CountableCollection.extend({
     url: function() {
         return window.application.url(['classification', 'classificationentry', this.model_id, 'entities']);
     },
@@ -21,30 +22,8 @@ var Collection = Backbone.Collection.extend({
     initialize: function(models, options) {
         options || (options = {});
         this.model_id = options.model_id;
-    },
 
-    parse: function(data) {
-        this.prev = data.prev;
-        this.cursor = data.cursor;
-        this.next = data.next;
-
-        return data.items;
-    },
-
-    fetch: function(options) {
-        options || (options = {});
-        var data = (options.data || {});
-
-        options.data = data;
-
-        this.cursor = options.data.cursor;
-        this.sort_by = options.data.sort_by;
-
-        if (this.filters) {
-            options.data.filters = JSON.stringify(this.filters)
-        }
-
-        return Backbone.Collection.prototype.fetch.call(this, options);
+        Collection.__super__.initialize.apply(this, arguments);
     }
 });
 

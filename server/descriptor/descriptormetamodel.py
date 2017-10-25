@@ -503,7 +503,8 @@ def list_descriptor_panels_for_meta_model(request, dmm_id):
     dmm = get_object_or_404(DescriptorMetaModel, id=int(dmm_id))
 
     if cursor:
-        cursor_position, cursor_id = cursor.rsplit('/', 1)
+        cursor = json.loads(cursor)
+        cursor_position, cursor_id = cursor
         qs = DescriptorPanel.objects.filter(Q(descriptor_meta_model=dmm.id), Q(position__gt=cursor_position))
     else:
         qs = DescriptorPanel.objects.filter(Q(descriptor_meta_model=dmm.id))
@@ -528,11 +529,11 @@ def list_descriptor_panels_for_meta_model(request, dmm_id):
     if len(panels_list) > 0:
         # prev cursor (asc order)
         panel = panels_list[0]
-        prev_cursor = "%s/%s" % (panel['position'], panel['id'])
+        prev_cursor = (panel['position'], panel['id'])
 
         # next cursor (asc order)
         panel = panels_list[-1]
-        next_cursor = "%s/%s" % (panel['position'], panel['id'])
+        next_cursor = (panel['position'], panel['id'])
     else:
         prev_cursor = None
         next_cursor = None

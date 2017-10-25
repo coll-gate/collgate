@@ -8,9 +8,10 @@
  * @details 
  */
 
-var DescriptorModelTypeModel = require('../models/descriptormodeltype');
+let DescriptorModelTypeModel = require('../models/descriptormodeltype');
+let CountableCollection = require('../../main/collections/countable');
 
-var Collection = Backbone.Collection.extend({
+let Collection = CountableCollection.extend({
     url: function() {
         return window.application.url(['descriptor', 'model', this.model_id, 'type']);
     },
@@ -20,15 +21,10 @@ var Collection = Backbone.Collection.extend({
 
     initialize: function(models, options) {
         options || (options = {});
+
+        Collection.__super__.initialize.apply(this, arguments);
+
         this.model_id = options.model_id;
-    },
-
-    parse: function(data) {
-        this.prev = data.prev;
-        this.cursor = data.cursor;
-        this.next = data.next;
-
-        return data.items;
     }
 });
 

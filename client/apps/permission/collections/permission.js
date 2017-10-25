@@ -8,9 +8,9 @@
  * @details 
  */
 
-var PermissionModel = require('../models/permission');
+let PermissionModel = require('../models/permission');
 
-var PermissionCollection = Backbone.Collection.extend({
+let PermissionCollection = Backbone.Collection.extend({
     url: function() {
         if (this.is_group)
             return window.application.url(['permission', 'group', this.group_id, 'permission']);

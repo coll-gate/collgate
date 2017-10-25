@@ -365,7 +365,8 @@ def search_accession(request):
     limit = results_per_page
 
     if cursor:
-        cursor_name, cursor_id = cursor.rsplit('/', 1)
+        cursor = json.loads(cursor)
+        cursor_name, cursor_id = cursor
         qs = Accession.objects.filter(Q(name__gt=cursor_name))
     else:
         qs = Accession.objects.all()
@@ -419,11 +420,11 @@ def search_accession(request):
     if len(items_list) > 0:
         # prev cursor (asc order)
         obj = items_list[0]
-        prev_cursor = "%s/%i" % (obj['value'], obj['id'])
+        prev_cursor = (obj['value'], obj['id'])
 
         # next cursor (asc order)
         obj = items_list[-1]
-        next_cursor = "%s/%i" % (obj['value'], obj['id'])
+        next_cursor = (obj['value'], obj['id'])
     else:
         prev_cursor = None
         next_cursor = None

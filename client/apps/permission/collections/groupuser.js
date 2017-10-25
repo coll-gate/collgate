@@ -8,9 +8,10 @@
  * @details 
  */
 
-var PermissionGroupUserModel = require('../models/groupuser');
+let PermissionGroupUserModel = require('../models/groupuser');
+let CountableCollection = require('../../main/collections/countable');
 
-var Collection = Backbone.Collection.extend({
+let Collection = CountableCollection.extend({
     url: function() {
         return window.application.url(['permission', 'group', this.group_id, 'user']);
     },
@@ -19,31 +20,8 @@ var Collection = Backbone.Collection.extend({
     initialize: function(models, options) {
         options || (options = {});
         this.group_id = options.group_id;
-    },
 
-    parse: function(data) {
-        this.perms = data.perms;
-        this.cursor = data.cursor;
-        this.prev = data.prev;
-        this.next = data.next;
-
-        return data.items;
-    },
-
-    fetch: function(options) {
-        options || (options = {});
-        var data = (options.data || {});
-
-        options.data = data;
-
-        this.cursor = options.data.cursor;
-        this.sort_by = options.data.sort_by;
-
-        if (this.filters) {
-            options.data.filters = JSON.stringify(this.filters)
-        }
-
-        return Backbone.Collection.prototype.fetch.call(this, options);
+        Collection.__super__.initialize.apply(this, arguments);
     }
 });
 

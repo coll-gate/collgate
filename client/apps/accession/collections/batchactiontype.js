@@ -8,23 +8,23 @@
  * @details 
  */
 
-var BatchActionTypeModel = require('../models/batchactiontype');
+let BatchActionTypeModel = require('../models/batchactiontype');
 
-var Collection = Backbone.Collection.extend({
+let Collection = Backbone.Collection.extend({
     url: window.application.url(['accession', 'batch-action-type']),
     model: BatchActionTypeModel,
 
     findValue: function(id) {
-        for (var r in this.models) {
-            var m = this.models[r];
+        for (let r in this.models) {
+            let m = this.models[r];
             if (m.get('id') === id)
                 return m.get('value');
         }
     },
 
     findLabel: function(value) {
-        for (var r in this.models) {
-            var m = this.models[r];
+        for (let r in this.models) {
+            let m = this.models[r];
             if (m.get('value') === value)
                 return m.get('label');
         }

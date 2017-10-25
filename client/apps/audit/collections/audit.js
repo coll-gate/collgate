@@ -8,9 +8,9 @@
  * @details 
  */
 
-var AuditModel = require('../models/audit');
+let AuditModel = require('../models/audit');
 
-var Collection = Backbone.Collection.extend({
+let Collection = Backbone.Collection.extend({
     url: function() {
         return window.application.url(['audit' ,'search']);
     },
@@ -41,7 +41,7 @@ var Collection = Backbone.Collection.extend({
 
     fetch: function(options) {
         options || (options = {});
-        var data = (options.data || {});
+        let data = (options.data || {});
 
         if (typeof(this.username) !== "undefined") {
             data.username = this.username;
@@ -58,4 +58,3 @@ var Collection = Backbone.Collection.extend({
 });
 
 module.exports = Collection;
-

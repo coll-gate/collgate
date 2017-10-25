@@ -8,9 +8,9 @@
  * @details 
  */
 
-var Backbone = require('backbone');
+let Backbone = require('backbone');
 
-var ClassificationEntryModel = Backbone.Model.extend({
+let ClassificationEntryModel = Backbone.Model.extend({
     url: function() {
         if (this.isNew())
             return window.application.url(['classification', 'classificationentry']);
@@ -35,8 +35,8 @@ var ClassificationEntryModel = Backbone.Model.extend({
     },
 
     validate: function(attrs) {
-        var errors = {};
-        var hasError = false;
+        let errors = {};
+        let hasError = false;
         if (!attrs.name) {
            errors.name = 'Name must be valid and at least 3 characters length';
             hasError = true;
@@ -52,7 +52,7 @@ var ClassificationEntryModel = Backbone.Model.extend({
     },
 
     addSynonym: function(type, name, language) {
-        var synonyms = this.get('synonyms');
+        let synonyms = this.get('synonyms');
         synonyms.push({
             type: type,
             name: name,
@@ -61,8 +61,8 @@ var ClassificationEntryModel = Backbone.Model.extend({
     },
 
     removeSynonym: function(type, name, language) {
-        var synonyms = this.get('synonyms');
-        for (var i = 0; i < synonyms.length; ++i) {
+        let synonyms = this.get('synonyms');
+        for (let i = 0; i < synonyms.length; ++i) {
             if (synonyms[i].type === type && synonyms[i].name === name && synonyms[i].language === language) {
                 synonyms.splice(i, 1);
                 return;
@@ -71,8 +71,8 @@ var ClassificationEntryModel = Backbone.Model.extend({
     },
 
     renameSynonym: function(type, name, language, oldName) {
-        var synonyms = this.get('synonyms');
-        for (var i = 0; i < synonyms.length; ++i) {
+        let synonyms = this.get('synonyms');
+        for (let i = 0; i < synonyms.length; ++i) {
             if (synonyms[i].type === type && synonyms[i].name === oldName && synonyms[i].language === language) {
                 synonyms[i].name = name;
                 return;

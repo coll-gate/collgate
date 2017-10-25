@@ -1,16 +1,12 @@
 # -*- coding: utf-8; -*-
 #
 # @file accessionbatch.py
-# @brief 
+# @brief coll-gate accession batch rest handler
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2017-01-03
 # @copyright Copyright (c) 2017 INRA/CIRAD
 # @license MIT (see LICENSE file)
 # @details 
-
-"""
-coll-gate accession batch rest handler
-"""
 
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
@@ -53,7 +49,8 @@ def accession_batches_list(request, acc_id):
         raise PermissionDenied(_('Invalid permission to access to this accession'))
 
     if cursor:
-        cursor_name, cursor_id = cursor.rsplit('/', 1)
+        cursor = json.loads(cursor)
+        cursor_name, cursor_id = cursor
         batches = accession.batches.filter(Q(name__gt=cursor_name))
     else:
         batches = accession.batches.all()
@@ -76,11 +73,11 @@ def accession_batches_list(request, acc_id):
     if len(items_list) > 0:
         # prev cursor (asc order)
         obj = items_list[0]
-        prev_cursor = "%s/%i" % (obj['name'], obj['id'])
+        prev_cursor = (obj['name'], obj['id'])
 
         # next cursor (asc order)
         obj = items_list[-1]
-        next_cursor = "%s/%i" % (obj['name'], obj['id'])
+        next_cursor = (obj['name'], obj['id'])
     else:
         prev_cursor = None
         next_cursor = None
@@ -119,7 +116,8 @@ def search_batches_for_accession(request, acc_id):
         raise PermissionDenied(_('Invalid permission to access to this accession'))
 
     if cursor:
-        cursor_name, cursor_id = cursor.rsplit('/', 1)
+        cursor = json.loads(cursor)
+        cursor_name, cursor_id = cursor
         batches = accession.batches.filter(Q(name__gt=cursor_name))
     else:
         batches = accession.batches.all()
@@ -150,11 +148,11 @@ def search_batches_for_accession(request, acc_id):
     if len(items_list) > 0:
         # prev cursor (asc order)
         obj = items_list[0]
-        prev_cursor = "%s/%i" % (obj['name'], obj['id'])
+        prev_cursor = (obj['name'], obj['id'])
 
         # next cursor (asc order)
         obj = items_list[-1]
-        next_cursor = "%s/%i" % (obj['name'], obj['id'])
+        next_cursor = (obj['name'], obj['id'])
     else:
         prev_cursor = None
         next_cursor = None
@@ -168,4 +166,3 @@ def search_batches_for_accession(request, acc_id):
     }
 
     return HttpResponseRest(request, results)
-

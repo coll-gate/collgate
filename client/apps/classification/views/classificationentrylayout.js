@@ -8,13 +8,14 @@
  * @details 
  */
 
-var LayoutView = require('../../main/views/layout');
-var ScrollingMoreView = require('../../main/views/scrollingmore');
-var ContentBottomLayout = require('../../main/views/contentbottomlayout');
-var ClassificationEntryDescriptorEditView = require('./classificationentrydescriptoredit');
-var ClassificationEntryDetailsView = require('./classificationentrydetails');
+let LayoutView = require('../../main/views/layout');
+let ScrollingMoreView = require('../../main/views/scrollingmore');
+let ContentBottomLayout = require('../../main/views/contentbottomlayout');
+let ClassificationEntryDescriptorEditView = require('./classificationentrydescriptoredit');
+let ClassificationEntryDetailsView = require('./classificationentrydetails');
+let ClassificationEntryModel = require('../models/classificationentry');
 
-var Layout = LayoutView.extend({
+let Layout = LayoutView.extend({
     template: require("../templates/classificationentrylayout.html"),
 
     ui: {
@@ -195,7 +196,33 @@ var Layout = LayoutView.extend({
             this.enableTabs();
         } else {
             // details views
-            this.showChildView('details', new ClassificationEntryDetailsView({model: this.model}));
+            if (this.model.get('parent') && !this.model.get('parent_details').length) {
+                // query parent details
+                let parentClassificationEntry = new ClassificationEntryModel({id: this.model.get('parent')});
+                parentClassificationEntry.fetch().then(function () {
+                    if (!classificationEntryLayout.isRendered()) {
+                       return;
+                    }
+
+                    let parentDetails = [];
+
+                    parentDetails.push({
+                        id: parentClassificationEntry.get('id'),
+                        name: parentClassificationEntry.get('name'),
+                        rank: parentClassificationEntry.get('rank'),
+                        parent: parentClassificationEntry.get('parent')
+                    });
+
+                    parentDetails.push.apply(parentDetails, parentClassificationEntry.get('parent_details'));
+                    classificationEntryLayout.model.set('parent_details', parentDetails);
+
+                    classificationEntryLayout.showChildView('details', new ClassificationEntryDetailsView({
+                        model: classificationEntryLayout.model, noLink: true}));
+                });
+            } else {
+                // parent details provided
+                this.showChildView('details', new ClassificationEntryDetailsView({model: this.model, noLink: true}));
+            }
 
             // descriptors edit tab
             $.ajax({

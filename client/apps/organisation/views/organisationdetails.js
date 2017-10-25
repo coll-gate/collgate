@@ -8,10 +8,10 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
-var Dialog = require('../../main/views/dialog');
+let Marionette = require('backbone.marionette');
+let Dialog = require('../../main/views/dialog');
 
-var View = Marionette.View.extend({
+let View = Marionette.View.extend({
     tagName: "div",
     template: require('../templates/organisationdetails.html'),
 
@@ -37,7 +37,7 @@ var View = Marionette.View.extend({
     },
 
     onChangeType: function () {
-        var EditOrganisation = Dialog.extend({
+        let EditOrganisation = Dialog.extend({
             template: require('../templates/organisationedit.html'),
 
             attributes: {
@@ -74,11 +74,11 @@ var View = Marionette.View.extend({
             },
 
             onNameInput: function () {
-                var name = this.ui.name.val().trim();
-                var organisation_id = this.model.get('id');
+                let name = this.ui.name.val().trim();
+                let organisation_id = this.model.get('id');
 
                 if (this.validateName()) {
-                    var filters = {
+                    let filters = {
                         method: 'ieq',
                         fields: ['name'],
                         'name': name
@@ -89,27 +89,26 @@ var View = Marionette.View.extend({
                         url: window.application.url(['organisation', 'organisation', 'search']),
                         dataType: 'json',
                         data: {filters: JSON.stringify(filters)},
-                        el: this.ui.name,
-                        success: function (data) {
-                            if (data.items.length > 0) {
-                                for (var i in data.items) {
-                                    var t = data.items[i];
+                        el: this.ui.name
+                    }).done(function (data) {
+                        if (data.items.length > 0) {
+                            for (let i in data.items) {
+                                let t = data.items[i];
 
-                                    if (t.value.toUpperCase() === name.toUpperCase() && t.id !== organisation_id) {
-                                        $(this.el).validateField('failed', _t('Organisation name already in usage'));
-                                        break;
-                                    }
+                                if (t.value.toUpperCase() === name.toUpperCase() && t.id !== organisation_id) {
+                                    $(this.el).validateField('failed', _t('Organisation name already in usage'));
+                                    break;
                                 }
-                            } else {
-                                $(this.el).validateField('ok');
                             }
+                        } else {
+                            $(this.el).validateField('ok');
                         }
                     });
                 }
             },
 
             validateName: function () {
-                var v = this.ui.name.val().trim();
+                let v = this.ui.name.val().trim();
 
                 if (v.length > 255) {
                     $(this.ui.name).validateField('failed', _t('characters_max', {count: 255}));
@@ -123,7 +122,7 @@ var View = Marionette.View.extend({
             },
 
             validate: function () {
-                var valid = this.validateName();
+                let valid = this.validateName();
 
                 if (this.ui.name.hasClass('invalid') || this.ui.type.hasClass('invalid')) {
                     valid = false;
@@ -133,11 +132,11 @@ var View = Marionette.View.extend({
             },
 
             onApply: function() {
-                var model = this.getOption('model');
-                var name = this.ui.name.val().trim();
-                var type = this.ui.type.val();
+                let model = this.getOption('model');
+                let name = this.ui.name.val().trim();
+                let type = this.ui.type.val();
 
-                var data = {};
+                let data = {};
 
                 if (name !== model.get('name')) {
                     data.name = name;
@@ -163,7 +162,7 @@ var View = Marionette.View.extend({
             }
         });
 
-        var editOrganisation = new EditOrganisation({
+        let editOrganisation = new EditOrganisation({
             model: this.model
         });
 

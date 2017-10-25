@@ -1,16 +1,13 @@
 # -*- coding: utf-8; -*-
 #
 # @file eventmessage.py
-# @brief 
+# @brief Views related to the event message model.
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2016-09-01
 # @copyright Copyright (c) 2016 INRA/CIRAD
 # @license MIT (see LICENSE file)
 # @details 
 
-"""
-Views related to the event message model.
-"""
 from django.core.exceptions import SuspiciousOperation
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
@@ -44,7 +41,8 @@ def get_event_messages(request):
     limit = results_per_page
 
     if cursor:
-        cursor_time, cursor_id = cursor.rsplit('/', 1)
+        cursor = json.loads(cursor)
+        cursor_time, cursor_id = cursor
         qs = EventMessage.objects.filter(Q(timestamp__lt=cursor_time) | (
             Q(timestamp=cursor_time) & Q(id__lt=cursor_id)))
     else:
@@ -77,10 +75,10 @@ def get_event_messages(request):
 
     if len(items_list) > 0:
         item = items_list[0]
-        prev_cursor = "%s/%s" % (item['created_date'].isoformat(), item['id'])
+        prev_cursor = (item['created_date'].isoformat(), item['id'])
 
         item = items_list[-1]
-        next_cursor = "%s/%s" % (item['created_date'].isoformat(), item['id'])
+        next_cursor = (item['created_date'].isoformat(), item['id'])
     else:
         prev_cursor = None
         next_cursor = None
@@ -148,4 +146,3 @@ def create_event_message(request):
     }
 
     return HttpResponseRest(request, response)
-

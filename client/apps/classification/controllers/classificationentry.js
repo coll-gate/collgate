@@ -8,24 +8,25 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
+let Marionette = require('backbone.marionette');
 
-var DefaultLayout = require('../../main/views/defaultlayout');
-var TitleView = require('../../main/views/titleview');
-var Dialog = require('../../main/views/dialog');
-var ClassificationEntryLayout = require('../views/classificationentrylayout');
+let DefaultLayout = require('../../main/views/defaultlayout');
+let TitleView = require('../../main/views/titleview');
+let Dialog = require('../../main/views/dialog');
+let Search = require('../../main/utils/search');
 
-var ClassificationEntryModel = require('../models/classificationentry');
+let ClassificationEntryLayout = require('../views/classificationentrylayout');
+let ClassificationEntryModel = require('../models/classificationentry');
 
 
-var Controller = Marionette.Object.extend({
+let Controller = Marionette.Object.extend({
     create: function() {
         $.ajax({
             type: "GET",
             url: window.application.url(['descriptor', 'meta-model', 'for-describable', 'classification.classificationentry']),
             dataType: 'json'
         }).done(function(data) {
-            var CreateClassificationEntryDialog = Dialog.extend({
+            let CreateClassificationEntryDialog = Dialog.extend({
                 attributes: {
                     'id': 'dlg_create_classification_entry'
                 },
@@ -61,8 +62,8 @@ var Controller = Marionette.Object.extend({
                     // map descriptor meta models by theirs ids
                     this.descriptorMetaModels = {};
 
-                    for (var i = 0; i < data.length; ++i) {
-                        var dmm = data[i];
+                    for (let i = 0; i < data.length; ++i) {
+                        let dmm = data[i];
                         this.descriptorMetaModels[dmm.id] = dmm;
                     }
                 },
@@ -95,9 +96,9 @@ var Controller = Marionette.Object.extend({
                 },
 
                 getDescriptorMetaModelClassifications: function () {
-                    var descriptorMetaModelId = parseInt(this.ui.descriptor_meta_model.val());
+                    let descriptorMetaModelId = parseInt(this.ui.descriptor_meta_model.val());
 
-                    var value = Object.resolve(descriptorMetaModelId + ".parameters.data.classification", this.descriptorMetaModels);
+                    let value = Object.resolve(descriptorMetaModelId + ".parameters.data.classification", this.descriptorMetaModels);
                     if (value) {
                         return [value];
                     }
@@ -106,17 +107,17 @@ var Controller = Marionette.Object.extend({
                 },
 
                 onChangeDescriptorMetaModel: function() {
-                    var select = this.ui.classification;
+                    let select = this.ui.classification;
 
                     select.children().remove();
                     select.selectpicker('destroy');
 
                     // classifications list according to the related meta model of accession
-                    var ClassificationCollection = require('../../classification/collections/classification');
-                    var classificationCollection = new ClassificationCollection();
+                    let ClassificationCollection = require('../../classification/collections/classification');
+                    let classificationCollection = new ClassificationCollection();
 
-                    var SelectOption = require('../../main/renderers/selectoption');
-                    var classifications = new SelectOption({
+                    let SelectOption = require('../../main/renderers/selectoption');
+                    let classifications = new SelectOption({
                         className: "classification",
                         collection: classificationCollection,
                         filters: [{
@@ -127,7 +128,7 @@ var Controller = Marionette.Object.extend({
                         }]
                     });
 
-                    var self = this;
+                    let self = this;
 
                     classifications.drawSelect(select).done(function () {
                         self.onChangeClassification();
@@ -135,8 +136,8 @@ var Controller = Marionette.Object.extend({
                 },
 
                 onChangeClassification: function () {
-                    var classificationId = parseInt(this.ui.classification.val());
-                    var select = $(this.ui.rank);
+                    let classificationId = parseInt(this.ui.classification.val());
+                    let select = $(this.ui.rank);
 
                     select.children().remove();
                     select.selectpicker('destroy');
@@ -146,21 +147,21 @@ var Controller = Marionette.Object.extend({
                     }
 
                     // classifications rank list according to the related classification
-                    var ClassificationRankCollection = require('../../classification/collections/classificationrank');
-                    var classificationRankCollection = new ClassificationRankCollection([], {classification_id: classificationId});
+                    let ClassificationRankCollection = require('../../classification/collections/classificationrank');
+                    let classificationRankCollection = new ClassificationRankCollection([], {classification_id: classificationId});
 
-                    var SelectOption = require('../../main/renderers/selectoption');
-                    var classificationRanks = new SelectOption({
+                    let SelectOption = require('../../main/renderers/selectoption');
+                    let classificationRanks = new SelectOption({
                         className: "classification-rank",
                         collection: classificationRankCollection
                     });
 
-                    var self = this;
+                    let self = this;
 
                     classificationRanks.drawSelect(select).done(function () {
                         self.classificationRanks = {};
 
-                        for (var i = 0; i < classificationRankCollection.models.length; ++i) {
+                        for (let i = 0; i < classificationRankCollection.models.length; ++i) {
                             self.classificationRanks[classificationRankCollection.models[i].get('id')] =
                                 classificationRankCollection.models[i].get('level');
                         }
@@ -170,10 +171,10 @@ var Controller = Marionette.Object.extend({
                 },
 
                 onChangeRank: function () {
-                    var classificationId = parseInt(this.ui.classification.val());
-                    var classificationRankId = parseInt(this.ui.rank.val());
-                    var level = this.classificationRanks[classificationRankId];
-                    var select = $(this.ui.parent);
+                    let classificationId = parseInt(this.ui.classification.val());
+                    let classificationRankId = parseInt(this.ui.rank.val());
+                    let level = this.classificationRanks[classificationRankId];
+                    let select = $(this.ui.parent);
 
                     if (level === 0) {
                         this.ui.parent_group.hide(false);
@@ -190,62 +191,30 @@ var Controller = Marionette.Object.extend({
                         return;
                     }
 
-                    select.select2({
-                        dropdownParent: select.parent(),
-                        ajax: {
-                            url: window.application.url(['classification', 'classificationentry', 'search']),
-                            dataType: 'json',
-                            delay: 250,
-                            data: function (params) {
-                                params.term || (params.term = '');
-
-                                return {
-                                    filters: JSON.stringify({
-                                        method: 'icontains',
-                                        classification_method: 'eq',
-                                        fields: ['name', 'classification', 'level'],
-                                        'name': params.term.trim(),
-                                        'classification': classificationId,
-                                        'level': level
-                                    }),
-                                    cursor: params.next
-                                };
-                            },
-                            processResults: function (data, params) {
-                                params.next = null;
-
-                                if (data.items.length >= 30) {
-                                    params.next = data.next || null;
-                                }
-
-                                var results = [];
-
-                                for (var i = 0; i < data.items.length; ++i) {
-                                    results.push({
-                                        id: data.items[i].id,
-                                        text: data.items[i].label
-                                    });
-                                }
-
-                                return {
-                                    results: results,
-                                    pagination: {
-                                        more: params.next != null
-                                    }
-                                };
-                            },
-                            cache: true
-                        },
-                        minimumInputLength: 1,
-                        placeholder: _t("Enter a classification entry name.")
-                    }).fixSelect2Position();
+                    select.select2(Search(
+                        select.parent(),
+                        window.application.url(['classification', 'classificationentry', 'search']),
+                        function (params) {
+                            return {
+                                method: 'icontains',
+                                classification_method: 'eq',
+                                fields: ['name', 'classification', 'level'],
+                                'name': params.term.trim(),
+                                'classification': classificationId,
+                                'level': level
+                            };
+                        }, {
+                                minimumInputLength: 1,
+                            placeholder: _t("Enter a classification entry name.")
+                        })
+                    ).fixSelect2Position();
                 },
 
                 onNameInput: function () {
-                    var name = this.ui.name.val().trim();
+                    let name = this.ui.name.val().trim();
 
                     if (this.validateName()) {
-                        var filters = {
+                        let filters = {
                             method: 'ieq',
                             fields: ['name'],
                             'name': name
@@ -257,27 +226,26 @@ var Controller = Marionette.Object.extend({
                             dataType: 'json',
                             contentType: 'application/json; charset=utf8',
                             data: {filters: JSON.stringify(filters)},
-                            el: this.ui.name,
-                            success: function (data) {
-                                if (data.items.length > 0) {
-                                    for (var i in data.items) {
-                                        var t = data.items[i];
+                            el: this.ui.name
+                        }).done(function (data) {
+                            if (data.items.length > 0) {
+                                for (let i in data.items) {
+                                    let t = data.items[i];
 
-                                        if (t.label.toUpperCase() === name.toUpperCase()) {
-                                            $(this.el).validateField('failed', _t('Classification entry name already in usage'));
-                                            break;
-                                        }
+                                    if (t.label.toUpperCase() === name.toUpperCase()) {
+                                        $(this.el).validateField('failed', _t('Classification entry name already in usage'));
+                                        break;
                                     }
-                                } else {
-                                    $(this.el).validateField('ok');
                                 }
+                            } else {
+                                $(this.el).validateField('ok');
                             }
                         });
                     }
                 },
 
                 validateName: function () {
-                    var v = this.ui.name.val().trim();
+                    let v = this.ui.name.val().trim();
 
                     if (v.length > 128) {
                         $(this.ui.name).validateField('failed', _t('characters_max', {count: 128}));
@@ -291,11 +259,11 @@ var Controller = Marionette.Object.extend({
                 },
 
                 validate: function () {
-                    var valid = this.validateName();
+                    let valid = this.validateName();
 
                     // need parent if not family
-                    var rankId = parseInt(this.ui.rank.val());
-                    var parentId = 0;
+                    let rankId = parseInt(this.ui.rank.val());
+                    let parentId = 0;
 
                     if (this.ui.parent.val()) {
                         parentId = parseInt(this.ui.parent.val());
@@ -321,17 +289,17 @@ var Controller = Marionette.Object.extend({
                 },
 
                 onCreate: function () {
-                    var view = this;
+                    let view = this;
 
                     if (this.validate()) {
-                        var name = this.ui.name.val().trim();
+                        let name = this.ui.name.val().trim();
 
-                        var descriptorMetaModelId = parseInt(this.ui.descriptor_meta_model.val());
-                        var rankId = parseInt(this.ui.rank.val());
-                        var parentId = parseInt(this.ui.parent.val()) || null;
+                        let descriptorMetaModelId = parseInt(this.ui.descriptor_meta_model.val());
+                        let rankId = parseInt(this.ui.rank.val());
+                        let parentId = parseInt(this.ui.parent.val()) || null;
 
                         // create a new local model and open an edit view with this model
-                        var model = new ClassificationEntryModel({
+                        let model = new ClassificationEntryModel({
                             name: name,
                             descriptor_meta_model: descriptorMetaModelId,
                             parent: parentId,
@@ -341,7 +309,7 @@ var Controller = Marionette.Object.extend({
 
                         view.destroy();
 
-                        var defaultLayout = new DefaultLayout();
+                        let defaultLayout = new DefaultLayout();
                         application.main.showContent(defaultLayout);
 
                         defaultLayout.showChildView('title', new TitleView({
@@ -349,13 +317,13 @@ var Controller = Marionette.Object.extend({
                             model: model
                         }));
 
-                        var classificationEntryLayout = new ClassificationEntryLayout({model: model});
+                        let classificationEntryLayout = new ClassificationEntryLayout({model: model});
                         defaultLayout.showChildView('content', classificationEntryLayout);
                     }
                 }
             });
 
-            var dialog = new CreateClassificationEntryDialog();
+            let dialog = new CreateClassificationEntryDialog();
             dialog.render();
         });
     }

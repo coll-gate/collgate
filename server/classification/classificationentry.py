@@ -277,12 +277,14 @@ def get_classification_entry_details_json(request, cls_id):
     }
 
     for s in classification_entry.synonyms.all().order_by('synonym_type', 'language'):
-        result['synonyms'].append({
+        synonym = {
             'id': s.id,
             'name': s.name,
             'synonym_type': s.synonym_type_id,
             'language': s.language,
-        })
+        }
+
+        result['synonyms'].append(synonym)
 
     return HttpResponseRest(request, result)
 
@@ -299,7 +301,8 @@ def search_classification_entry(request):
     limit = results_per_page
 
     if cursor:
-        cursor_name, cursor_id = cursor.rsplit('/', 1)
+        cursor = json.loads(cursor)
+        cursor_name, cursor_id = cursor
         qs = ClassificationEntry.objects.filter(Q(name__gt=cursor_name))
     else:
         qs = ClassificationEntry.objects.all()
@@ -363,11 +366,11 @@ def search_classification_entry(request):
     if len(items_list) > 0:
         # prev cursor (asc order)
         obj = items_list[0]
-        prev_cursor = "%s/%i" % (obj['value'], obj['id'])
+        prev_cursor = (obj['value'], obj['id'])
 
         # next cursor (asc order)
         obj = items_list[-1]
-        next_cursor = "%s/%i" % (obj['value'], obj['id'])
+        next_cursor = (obj['value'], obj['id'])
     else:
         prev_cursor = None
         next_cursor = None
@@ -412,7 +415,7 @@ def patch_classification_entry(request, cls_id):
         else:
             pcls_id = int(request.data['parent'])
 
-            parent = get_object_or_404(classification_entry, id=pcls_id)
+            parent = get_object_or_404(ClassificationEntry, id=pcls_id)
 
             classification_entry.parent = parent
 
@@ -439,7 +442,7 @@ def patch_classification_entry(request, cls_id):
             result['parent_list'] = parents
             result['parent_details'] = parents
 
-            classification_entry.update_field(['parent', 'parent_list'])
+        classification_entry.update_field(['parent', 'parent_list'])
 
     try:
         with transaction.atomic():
@@ -662,7 +665,8 @@ def get_classification_entry_entities(request, cls_id):
     classification_entry = get_object_or_404(ClassificationEntry, id=int(cls_id))
 
     if cursor:
-        cursor_name, cursor_content_type, cursor_id = cursor.rsplit('/', 2)
+        cursor = json.loads(cursor)
+        cursor_name, cursor_content_type, cursor_id = cursor
     else:
         cursor_name = cursor_content_type = cursor_id = None
 
@@ -728,11 +732,11 @@ def get_classification_entry_entities(request, cls_id):
     if len(items) > 0:
         # prev cursor (asc order)
         item = items[0]
-        prev_cursor = "%s/%s/%s" % (item['name'], item['content_type'], item['id'])
+        prev_cursor = (item['name'], item['content_type'], item['id'])
 
         # next cursor (asc order)
         item = items[-1]
-        next_cursor = "%s/%s/%s" % (item['name'], item['content_type'], item['id'])
+        next_cursor = (item['name'], item['content_type'], item['id'])
     else:
         prev_cursor = None
         next_cursor = None

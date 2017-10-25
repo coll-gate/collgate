@@ -8,25 +8,26 @@
  * @details
  */
 
-var Marionette = require('backbone.marionette');
+let Marionette = require('backbone.marionette');
 
-var BatchModel = require('../models/batch');
+let BatchModel = require('../models/batch');
 
-var DefaultLayout = require('../../main/views/defaultlayout');
-var TitleView = require('../../main/views/titleview');
-var Dialog = require('../../main/views/dialog');
-var BatchLayout = require('../views/batchlayout');
-var SearchEntityDialog = require('../views/search');
+let DefaultLayout = require('../../main/views/defaultlayout');
+let TitleView = require('../../main/views/titleview');
+let Dialog = require('../../main/views/dialog');
+let Search = require('../../main/utils/search');
 
-var Controller = Marionette.Object.extend({
+let BatchLayout = require('../views/batchlayout');
+let SearchEntityDialog = require('../views/search');
 
+let Controller = Marionette.Object.extend({
     create: function () {
         $.ajax({
             type: "GET",
             url: window.application.url(['descriptor', 'meta-model', 'for-describable', 'accession.batch']),
             dataType: 'json'
         }).done(function (data) {
-            var CreateBatchView = Dialog.extend({
+            let CreateBatchView = Dialog.extend({
                 attributes: {
                     'id': 'dlg_create_batch'
                 },
@@ -56,52 +57,19 @@ var Controller = Marionette.Object.extend({
                     application.main.views.languages.drawSelect(this.ui.language);
                     this.ui.meta_model.selectpicker({});
 
-                    $(this.ui.accession).select2({
-                        dropdownParent: this.ui.accession.parent(),
-                        ajax: {
-                            url: window.application.url(['accession', 'accession', 'search']),
-                            dataType: 'json',
-                            delay: 250,
-                            data: function (params) {
-                                params.term || (params.term = '');
-
-                                return {
-                                    filters: JSON.stringify({
-                                        method: 'icontains',
-                                        fields: ['name'],
-                                        'name': params.term.trim()
-                                    }),
-                                    cursor: params.next
-                                };
-                            },
-                            processResults: function (data, params) {
-                                params.next = null;
-
-                                if (data.items.length >= 30) {
-                                    params.next = data.next || null;
-                                }
-
-                                var results = [];
-
-                                for (var i = 0; i < data.items.length; ++i) {
-                                    results.push({
-                                        id: data.items[i].id,
-                                        text: data.items[i].label
-                                    });
-                                }
-
-                                return {
-                                    results: results,
-                                    pagination: {
-                                        more: params.next != null
-                                    }
-                                };
-                            },
-                            cache: true
-                        },
-                        minimumInputLength: 3,
-                        placeholder: _t("Enter a accession name. 3 characters at least for auto-completion")
-                    });
+                    this.ui.accession.select2(Search(
+                        this.ui.accession.parent(),
+                        window.application.url(['accession', 'accession', 'search']),
+                        function (params) {
+                            return {
+                                method: 'icontains',
+                                fields: ['name'],
+                                'name': params.term.trim()
+                            };
+                        }, {
+                            placeholder: _t("Enter a accession name. 3 characters at least for auto-completion")
+                        })
+                    );
                 },
 
                 onBeforeDestroy: function () {
@@ -112,10 +80,10 @@ var Controller = Marionette.Object.extend({
                 },
 
                 onNameInput: function () {
-                    var name = this.ui.name.val().trim();
+                    let name = this.ui.name.val().trim();
 
                     if (this.validateName()) {
-                        var filters = {
+                        let filters = {
                             method: 'ieq',
                             fields: ['name'],
                             'name': name
@@ -127,24 +95,23 @@ var Controller = Marionette.Object.extend({
                             dataType: 'json',
                             contentType: 'application/json; charset=utf8',
                             data: {filters: JSON.stringify(filters)},
-                            el: this.ui.name,
-                            success: function (data) {
-                                for (var i in data.items) {
-                                    var t = data.items[i];
-                                    if (t.label.toUpperCase() === name.toUpperCase()) {
-                                        $(this.el).validateField('failed', _t('Batch name already exist'));
-                                        return;
-                                    }
+                            el: this.ui.name
+                        }).done(function (data) {
+                            for (let i in data.items) {
+                                let t = data.items[i];
+                                if (t.label.toUpperCase() === name.toUpperCase()) {
+                                    $(this.el).validateField('failed', _t('Batch name already exist'));
+                                    return;
                                 }
-
-                                $(this.el).validateField('ok');
                             }
+
+                            $(this.el).validateField('ok');
                         });
                     }
                 },
 
                 validateName: function () {
-                    var v = this.ui.name.val().trim();
+                    let v = this.ui.name.val().trim();
 
                     if (v.length > 128) {
                         $(this.ui.name).validateField('failed', _t('characters_max', {count: 128}));
@@ -157,7 +124,7 @@ var Controller = Marionette.Object.extend({
                 },
 
                 validateAccession: function () {
-                    var accessionId = 0;
+                    let accessionId = 0;
 
                     if (this.ui.accession.val())
                         accessionId = parseInt(this.ui.accession.val());
@@ -172,21 +139,21 @@ var Controller = Marionette.Object.extend({
                 },
 
                 validate: function () {
-                    var valid_name = this.validateName();
-                    var valid_accession = this.validateAccession();
+                    let valid_name = this.validateName();
+                    let valid_accession = this.validateAccession();
                     return (valid_name && valid_accession);
                 },
 
                 onContinue: function () {
-                    var view = this;
+                    let view = this;
 
                     if (this.validate()) {
-                        var name = this.ui.name.val().trim();
-                        var accession = parseInt(this.ui.accession.val());
-                        var metaModel = parseInt(this.ui.meta_model.val());
+                        let name = this.ui.name.val().trim();
+                        let accession = parseInt(this.ui.accession.val());
+                        let metaModel = parseInt(this.ui.meta_model.val());
 
                         // create a new local model and open an edit view with this model
-                        var model = new BatchModel({
+                        let model = new BatchModel({
                             name: name,
                             accession: accession,
                             descriptor_meta_model: metaModel
@@ -194,7 +161,7 @@ var Controller = Marionette.Object.extend({
 
                         view.destroy();
 
-                        var defaultLayout = new DefaultLayout();
+                        let defaultLayout = new DefaultLayout();
                         application.main.showContent(defaultLayout);
 
                         defaultLayout.showChildView('title', new TitleView({
@@ -202,19 +169,19 @@ var Controller = Marionette.Object.extend({
                             model: model
                         }));
 
-                        var batchLayout = new BatchLayout({model: model});
+                        let batchLayout = new BatchLayout({model: model});
                         defaultLayout.showChildView('content', batchLayout);
                     }
                 }
             });
 
-            var createBatchView = new CreateBatchView();
+            let createBatchView = new CreateBatchView();
             createBatchView.render();
         });
     },
 
     search: function () {
-        var searchEntityDialog = new SearchEntityDialog();
+        let searchEntityDialog = new SearchEntityDialog();
         searchEntityDialog.render();
     }
 });

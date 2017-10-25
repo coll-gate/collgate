@@ -66,10 +66,10 @@ class ClassificationEntryManager(object):
             raise SuspiciousOperation(_("The given classification rank does not exists"))
 
         if parent:
-            if parent.classification_id != classification_rank.classification_id:
+            if parent.rank.classification_id != classification_rank.classification_id:
                 raise SuspiciousOperation(_("The parent and the children classification rank must be of the same nature"))
 
-            if parent.level >= classification_rank.level:
+            if parent.rank.level >= classification_rank.level:
                 raise SuspiciousOperation(_(
                     "The rank level of the parent must be lesser than the rank level of the new classification entry"))
 

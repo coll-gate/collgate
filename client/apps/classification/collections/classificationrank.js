@@ -8,9 +8,9 @@
  * @details 
  */
 
-var ClassificationRankModel = require('../models/classificationrank');
+let ClassificationRankModel = require('../models/classificationrank');
 
-var Collection = Backbone.Collection.extend({
+let Collection = Backbone.Collection.extend({
     url: function() {
         if (this.classification_id) {
             return window.application.url(['classification', 'classification', this.classification_id, 'classificationrank']);
@@ -28,16 +28,16 @@ var Collection = Backbone.Collection.extend({
     },
 
     findValue: function(id) {
-        for (var r in this.models) {
-            var rank = this.models[r];
+        for (let r in this.models) {
+            let rank = this.models[r];
             if (rank.get('id') === id)
                 return rank.get('value');
         }
     },
 
     findLabel: function(id) {
-        for (var r in this.models) {
-            var rank = this.models[r];
+        for (let r in this.models) {
+            let rank = this.models[r];
             if (rank.get('id') === id)
                 return rank.get('label');
         }
@@ -53,12 +53,12 @@ var Collection = Backbone.Collection.extend({
             return;
         }
 
-        var levels = [];
-        var srcModel = this.get(srcId);
-        var dstModel = dstId ? this.get(dstId) : null;
+        let levels = [];
+        let srcModel = this.get(srcId);
+        let dstModel = dstId ? this.get(dstId) : null;
 
-        var level = srcModel.get('level');
-        var newLevel = 0;
+        let level = srcModel.get('level');
+        let newLevel = 0;
 
         if (dstModel) {
             newLevel = dstModel.get('level');
@@ -67,10 +67,10 @@ var Collection = Backbone.Collection.extend({
         }
 
         if (dstModel && dstModel.get('level') < srcModel.get('level')) {
-            var to_rshift = [];
+            let to_rshift = [];
 
-            for (var i in this.models) {
-                var model = this.models[i];
+            for (let i in this.models) {
+                let model = this.models[i];
                 if (model !== srcModel) {
                     if (model.get('level') >= newLevel) {
                         to_rshift.push(model);
@@ -80,17 +80,17 @@ var Collection = Backbone.Collection.extend({
 
             srcModel.set('level', newLevel);
 
-            var nextLevel = newLevel + 1;
+            let nextLevel = newLevel + 1;
 
-            for (var i = 0; i < to_rshift.length; ++i) {
+            for (let i = 0; i < to_rshift.length; ++i) {
                 to_rshift[i].set('level', nextLevel);
                 ++nextLevel;
             }
         } else {
-            var to_lshift = [];
+            let to_lshift = [];
 
-            for (var i in this.models) {
-                var model = this.models[i];
+            for (let i in this.models) {
+                let model = this.models[i];
                 if (model !== srcModel) {
                     if (model.get('level') <= newLevel) {
                         to_lshift.push(model);
@@ -100,15 +100,15 @@ var Collection = Backbone.Collection.extend({
 
             srcModel.set('level', newLevel);
 
-            var nextLevel = 0;
+            let nextLevel = 0;
 
-            for (var i = 0; i < to_lshift.length; ++i) {
+            for (let i = 0; i < to_lshift.length; ++i) {
                 to_lshift[i].set('level', nextLevel);
                 ++nextLevel;
             }
         }
 
-        for (var i = 0; i < this.models.length; ++i) {
+        for (let i = 0; i < this.models.length; ++i) {
             levels.push({id: this.models[i].get('id'), level: this.models[i].get('level')});
         }
 

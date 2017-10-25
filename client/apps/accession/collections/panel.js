@@ -8,10 +8,10 @@
  * @details
  */
 
-var PanelModel = require('../models/panel');
-var CountableCollection = require('../../main/collections/countable');
+let PanelModel = require('../models/panel');
+let CountableCollection = require('../../main/collections/countable');
 
-var Collection = CountableCollection.extend({
+let Collection = CountableCollection.extend({
     url: function () {
         if (this.accession_id) {
             return window.application.url(['accession', 'accession', this.accession_id, 'panels'])

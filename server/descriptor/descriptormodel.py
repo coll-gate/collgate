@@ -266,7 +266,8 @@ def list_descriptor_model_types_for_model(request, des_id):
     dm = get_object_or_404(DescriptorModel, id=int(des_id))
 
     if cursor:
-        cursor_position, cursor_id = cursor.rsplit('/', 1)
+        cursor = json.loads(cursor)
+        cursor_position, cursor_id = cursor
         qs = dm.descriptor_model_types.filter(Q(position__gt=cursor_position))
     else:
         qs = dm.descriptor_model_types.all()
@@ -293,11 +294,11 @@ def list_descriptor_model_types_for_model(request, des_id):
     if len(items_list) > 0:
         # prev cursor (asc order)
         obj = items_list[0]
-        prev_cursor = "%i/%i" % (obj['position'], obj['id'])
+        prev_cursor = (obj['position'], obj['id'])
 
         # next cursor (asc order)
         obj = items_list[-1]
-        next_cursor = "%i/%i" % (obj['position'], obj['id'])
+        next_cursor = (obj['position'], obj['id'])
     else:
         prev_cursor = None
         next_cursor = None

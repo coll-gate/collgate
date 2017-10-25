@@ -8,11 +8,13 @@
  * @details 
  */
 
-var Marionette = require('backbone.marionette');
+let Marionette = require('backbone.marionette');
 
-var Dialog = require('../../main/views/dialog');
+let Dialog = require('../../main/views/dialog');
+let Search = require('../../main/utils/search');
+let ClassificationEntryModel = require('../models/classificationentry');
 
-var View = Marionette.View.extend({
+let View = Marionette.View.extend({
     tagName: 'div',
     className: 'object classification-entry',
     template: require('../templates/classificationentrydetails.html'),
@@ -32,8 +34,37 @@ var View = Marionette.View.extend({
         'click @ui.change_parent': 'onChangeParent'
     },
 
-    initialize: function() {
+    noLink: false,
+
+    initialize: function(options) {
         this.listenTo(this.model, 'change', this.render, this);
+        this.listenTo(this.model, 'change:parent', this.updateParent, this);
+    },
+
+    updateParent: function(model, value) {
+        let view = this;
+
+        // update the parent
+        let parentClassificationEntry = new ClassificationEntryModel({id: this.model.get('parent')});
+        parentClassificationEntry.fetch().then(function () {
+            if (!view.isRendered()) {
+                return;
+            }
+
+            let parentDetails = [];
+
+            parentDetails.push({
+                id: parentClassificationEntry.get('id'),
+                name: parentClassificationEntry.get('name'),
+                rank: parentClassificationEntry.get('rank'),
+                parent: parentClassificationEntry.get('parent')
+            });
+
+            parentDetails.push.apply(parentDetails, parentClassificationEntry.get('parent_details'));
+
+            view.model.set('parent_details', parentDetails);
+            view.render();
+        });
     },
 
     onRender: function() {
@@ -58,16 +89,24 @@ var View = Marionette.View.extend({
                 details: true
             }
         });
+
+        if (this.getOption('noLink')) {
+            this.ui.view_classification_entry.removeClass('action');
+        }
     },
 
     onViewClassificationEntry: function(e) {
-        var cls_id = $(e.target).data('classification-entry-id');
+        if (this.getOption('noLink')) {
+            return;
+        }
+
+        let cls_id = $(e.target).data('classification-entry-id');
 
         Backbone.history.navigate("app/classification/classificationentry/" + cls_id + "/", {trigger: true});
     },
 
     onChangeParent: function () {
-        var ChangeParent = Dialog.extend({
+        let ChangeParent = Dialog.extend({
             template: require('../templates/classificationentrychangeparent.html'),
 
             attributes: {
@@ -85,54 +124,22 @@ var View = Marionette.View.extend({
             onRender: function () {
                 ChangeParent.__super__.onRender.apply(this);
 
-                var rank = parseInt(this.model.get('rank'));
+                let rank = parseInt(this.model.get('rank'));
 
-                $(this.ui.parent).select2({
-                    dropdownParent: $(this.el),
-                    ajax: {
-                        url: window.application.url(['classification', 'classificationentry', 'search']),
-                        dataType: 'json',
-                        delay: 250,
-                        data: function (params) {
-                            params.term || (params.term = '');
-
-                            var filters = {
-                                method: 'icontains',
-                                fields: ['name', 'rank'],
-                                'name': params.term,
-                                'rank': rank
-                            };
-
-                            return {
-                                page: params.page,
-                                filters: JSON.stringify(filters),
-                            };
-                        },
-                        processResults: function (data, params) {
-                            // no pagination
-                            params.page = params.page || 1;
-
-                            var results = [];
-
-                            for (var i = 0; i < data.items.length; ++i) {
-                                results.push({
-                                    id: data.items[i].id,
-                                    text: data.items[i].label
-                                });
-                            }
-
-                            return {
-                                results: results,
-                                pagination: {
-                                    more: (params.page * 30) < data.total_count
-                                }
-                            };
-                        },
-                        cache: true
-                    },
-                    minimumInputLength: 3,
-                    placeholder: _t("Enter a classification entry name. 3 characters at least for auto-completion"),
-                });
+                this.ui.parent.select2(Search(
+                    this.$el,
+                    window.application.url(['classification', 'classificationentry', 'search']),
+                    function (params) {
+                        return {
+                            method: 'icontains',
+                            fields: ['name', 'rank'],
+                            'name': params.term,
+                            'rank': rank
+                        };
+                    }, {
+                        placeholder: _t("Enter a classification entry name. 3 characters at least for auto-completion")
+                    })
+                );
             },
 
             onBeforeDestroy: function() {
@@ -142,20 +149,25 @@ var View = Marionette.View.extend({
             },
 
             onApply: function() {
-                var model = this.getOption('model');
-                var parent = null;
+                let model = this.getOption('model');
+                let parentId = parseInt(this.ui.parent.val());
 
-                if (this.ui.parent.val()) {
-                    parent = parseInt($(this.ui.parent).val());
+                if (isNaN(parentId)) {
+                    $.alert.error(_t('Undefined classification entry.'));
+                    return false;
                 }
 
-                model.save({parent: parent}, {patch: true, wait: true});
+                if (model.isNew()) {
+                    model.set('parent', parentId);
+                } else {
+                    model.save({parent: parentId}, {patch: true, wait: true});
+                }
 
                 this.destroy();
             }
         });
 
-        var changeParent = new ChangeParent({
+        let changeParent = new ChangeParent({
             model: this.model
         });
 

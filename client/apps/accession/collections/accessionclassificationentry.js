@@ -8,10 +8,10 @@
  * @details
  */
 
-var CountableCollection = require('../../main/collections/countable');
-var ClassificationModel = require('../../classification/models/classification');
+let CountableCollection = require('../../main/collections/countable');
+let ClassificationModel = require('../../classification/models/classification');
 
-var Collection = CountableCollection.extend({
+let Collection = CountableCollection.extend({
     url: function() {
         return window.application.url(['accession', 'accession', this.accession_id, 'classificationentry']);
     },

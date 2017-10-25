@@ -8,10 +8,10 @@
  * @details
  */
 
-var AccessionModel = require('../models/accession');
-var CountableCollection = require('../../main/collections/countable');
+let AccessionModel = require('../models/accession');
+let CountableCollection = require('../../main/collections/countable');
 
-var Collection = CountableCollection.extend({
+let Collection = CountableCollection.extend({
     model: AccessionModel,
 
     url: function() {

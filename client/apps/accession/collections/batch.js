@@ -8,10 +8,10 @@
  * @details 
  */
 
-var BatchModel = require('../models/batch');
-var CountableCollection = require('../../main/collections/countable');
+let BatchModel = require('../models/batch');
+let CountableCollection = require('../../main/collections/countable');
 
-var Collection = CountableCollection.extend({
+let Collection = CountableCollection.extend({
     url: function() {
         if (this.panel_id) {
             return window.application.url(['accession', 'batchpanel', this.panel_id, 'batches']);

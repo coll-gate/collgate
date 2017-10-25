@@ -75,20 +75,19 @@ let Controller = Marionette.Object.extend({
                             url: window.application.url(['organisation', 'establishment', 'search']),
                             dataType: 'json',
                             data: {filters: JSON.stringify(filters)},
-                            el: this.ui.name,
-                            success: function (data) {
-                                if (data.items.length > 0) {
-                                    for (let i in data.items) {
-                                        let t = data.items[i];
+                            el: this.ui.name
+                        }).done(function (data) {
+                            if (data.items.length > 0) {
+                                for (let i in data.items) {
+                                    let t = data.items[i];
 
-                                        if (t.value.toUpperCase() === name.toUpperCase()) {
-                                            $(this.el).validateField('failed', _t('Establishment name already in usage'));
-                                            break;
-                                        }
+                                    if (t.value.toUpperCase() === name.toUpperCase()) {
+                                        $(this.el).validateField('failed', _t('Establishment name already in usage'));
+                                        break;
                                     }
-                                } else {
-                                    $(this.el).validateField('ok');
                                 }
+                            } else {
+                                $(this.el).validateField('ok');
                             }
                         });
                     }

@@ -825,6 +825,7 @@ def search_accession_panel(request):
     limit = results_per_page
 
     if cursor:
+        cursor = json.loads(cursor)
         qs = AccessionPanel.objects.filter(Q(id__gt=int_arg(cursor)))
     else:
         qs = AccessionPanel.objects.all()

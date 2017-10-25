@@ -15,6 +15,8 @@ let AccessionModel = require('../models/accession');
 let DefaultLayout = require('../../main/views/defaultlayout');
 let TitleView = require('../../main/views/titleview');
 let Dialog = require('../../main/views/dialog');
+let Search = require('../../main/utils/search');
+
 let AccessionLayout = require('../views/accessionlayout');
 let SearchEntityDialog = require('../views/search');
 
@@ -143,54 +145,22 @@ let Controller = Marionette.Object.extend({
                         return;
                     }
 
-                    select.select2({
-                        dropdownParent: this.ui.primary_classification_entry.parent(),
-                        ajax: {
-                            url: window.application.url(['classification' ,'classificationentry', 'search']),
-                            dataType: 'json',
-                            delay: 250,
-                            data: function (params) {
-                                params.term || (params.term = '');
-
-                                return {
-                                    filters: JSON.stringify({
-                                        method: 'icontains',
-                                        classification_method: 'eq',
-                                        fields: ['name', 'classification'],
-                                        'name': params.term.trim(),
-                                        'classification': classificationId
-                                    }),
-                                    cursor: params.next
-                                };
-                            },
-                            processResults: function (data, params) {
-                                params.next = null;
-
-                                if (data.items.length >= 30) {
-                                    params.next = data.next || null;
-                                }
-
-                                let results = [];
-
-                                for (let i = 0; i < data.items.length; ++i) {
-                                    results.push({
-                                        id: data.items[i].id,
-                                        text: data.items[i].label
-                                    });
-                                }
-
-                                return {
-                                    results: results,
-                                    pagination: {
-                                        more: params.next != null
-                                    }
-                                };
-                            },
-                            cache: true
-                        },
-                        minimumInputLength: 1,
-                        placeholder: _t("Enter a classification entry name.")
-                    }).fixSelect2Position();
+                    select.select2(Search(
+                        this.ui.primary_classification_entry.parent(),
+                        window.application.url(['classification', 'classificationentry', 'search']),
+                        function (params) {
+                            return {
+                                method: 'icontains',
+                                classification_method: 'eq',
+                                fields: ['name', 'classification'],
+                                'name': params.term.trim(),
+                                'classification': classificationId
+                            };
+                        }, {
+                            minimumInputLength: 1,
+                            placeholder: _t("Enter a classification entry name.")
+                        })
+                    ).fixSelect2Position();
                 },
 
                 onCodeInput: function () {
@@ -205,23 +175,22 @@ let Controller = Marionette.Object.extend({
 
                         $.ajax({
                             type: "GET",
-                            url: window.application.url(['accession' ,'accession', 'search']),
+                            url: window.application.url(['accession', 'accession', 'search']),
                             dataType: 'json',
                             contentType: 'application/json; charset=utf8',
                             data: {filters: JSON.stringify(filters)},
                             el: this.ui.code,
-                            success: function(data) {
-                                for (let i in data.items) {
-                                    let t = data.items[i];
+                        }).done(function (data) {
+                            for (let i in data.items) {
+                                let t = data.items[i];
 
-                                    if (t.value.toUpperCase() === code.toUpperCase()) {
-                                        $(this.el).validateField('failed', _t('Code of accession already used'));
-                                        return;
-                                    }
+                                if (t.value.toUpperCase() === code.toUpperCase()) {
+                                    $(this.el).validateField('failed', _t('Code of accession already used'));
+                                    return;
                                 }
-
-                                $(this.el).validateField('ok');
                             }
+
+                            $(this.el).validateField('ok');
                         });
                     }
                 },
