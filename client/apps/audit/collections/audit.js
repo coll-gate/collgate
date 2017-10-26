@@ -19,6 +19,9 @@ let Collection = Backbone.Collection.extend({
     initialize: function(models, options) {
         options || (options = {});
 
+        this.filters = (options.filters || {});
+        this.search = (options.search || {});
+
          if (typeof(options.username) !== "undefined") {
              this.username = options.username;
         } else if (typeof(options.entity) !== "undefined") {
@@ -32,8 +35,9 @@ let Collection = Backbone.Collection.extend({
 
     parse: function(data) {
         this.prev = data.prev;
-        this.page = data.page;
+        this.cursor = data.cursor;
         this.next = data.next;
+        this.perms = data.perms;
 
         this.perms = data.perms;
         return data.items;
@@ -43,6 +47,12 @@ let Collection = Backbone.Collection.extend({
         options || (options = {});
         let data = (options.data || {});
 
+        let opts = _.clone(options);
+        opts.data = data;
+
+        this.cursor = data.cursor;
+        this.sort_by = data.sort_by;
+
         if (typeof(this.username) !== "undefined") {
             data.username = this.username;
         } else if (typeof(this.entity) !== "undefined") {
@@ -51,9 +61,23 @@ let Collection = Backbone.Collection.extend({
             data.object_id = this.entity.object_id;
         }
 
-        options.data = data;
+        if (this.search && this.search.length) {
+            opts.data.search = JSON.stringify(this.search)
+        }
 
-        return Backbone.Collection.prototype.fetch.call(this, options);
+        if (this.filters && this.filters.length) {
+            opts.data.filters = JSON.stringify(this.filters)
+        }
+
+        if (data.cursor && typeof data.cursor !== 'string') {
+            opts.data.cursor = JSON.stringify(data.cursor);
+        }
+
+        if (data.sort_by && typeof data.sort_by !== 'string') {
+            opts.data.sort_by = JSON.stringify(data.sort_by);
+        }
+
+        return Backbone.Collection.prototype.fetch.call(this, opts);
     }
 });
 

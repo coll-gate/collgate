@@ -8,6 +8,23 @@
  - @details 
 -->
 
+<td class="glyph-fixed-column">
+<% if (type == 0) { %>
+    <span title="<%= _t('Created') %>"class="fa fa-plus-circle" style="color: #4cae4c;"></span>
+<% } else if (type == 1) { %>
+    <span title="<%= _t('Modified') %>" class="fa fa-retweet" style="color: #c77405;"></span>
+<% } else if (type == 2) { %>
+    <span title="<%= _t('Deleted') %>" class="fa fa-times-circle-o" style="color: #ac2925;"></span>
+<% } else if (type == 3) { %>
+    <span title="<%= _t('Removed') %>" class="fa fa-trash" style="color: #ac2925"></span>
+<% } else if (type == 4) { %>
+    <span title="<%= _t('Action') %>" class="fa fa-tasks" style="color: #4cae4c;"></span>
+<% } else if (type == 5) { %>
+    <span title="<%= _t('Relation changed') %>" class="fa fa-share-square-o" style="color: #c77405;"></span>
+<% } else { %>
+    <span title="<%= _t('Unkown') %>" class="fa fa-question-circle"></span>
+<% } %>
+</td>
 <td><%- username %></td>
 <!--<td class="datetime" date="<%- timestamp %>"><%- timestamp %></td>-->
 <td><abbr class="datetime" date="<%- timestamp %>" title="<%- timestamp %>"><%- timestamp %></abbr></td>
@@ -19,21 +36,4 @@
 <td>N/A</td>
 <% } %>
 <td><abbr class="content-type" title="<%- content_type %>" value="<%- content_type %>"></abbr></td>
-<td>
-<% if (type == 0) { %>
-    <abbr title="<%= _t('Created') %>"><span class="fa fa-plus-circle" style="color: #4cae4c;"></span></abbr>
-<% } else if (type == 1) { %>
-    <abbr title="<%= _t('Modified') %>"><span class="fa glyphfaicon-retweet" style="color: #c77405;"></span></abbr>
-<% } else if (type == 2) { %>
-    <abbr title="<%= _t('Deleted') %>"><span class="fa fa-times-circle-o" style="color: #ac2925;"></span></abbr>
-<% } else if (type == 3) { %>
-    <abbr title="<%= _t('Removed') %>"><span class="fa fa-trash" style="color: #ac2925"></span></abbr>
-<% } else if (type == 4) { %>
-    <abbr title="<%= _t('Action') %>"><span class="fa fa-tasks" style="color: #4cae4c;"></span></abbr>
-<% } else if (type == 5) { %>
-    <abbr title="<%= _t('Relation changed') %>"><span class="fa fa-share-square-o" style="color: #c77405;"></span></abbr>
-<% } else { %>
-    <abbr title="<%= _t('Unkown') %>"><span class="fa fa-question-circle"></span></abbr>
-<% } %>
-</td>
 <td><span class="btn btn-xs btn-success show-entity">Show</span></td>

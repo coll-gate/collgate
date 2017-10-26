@@ -1,16 +1,12 @@
 # -*- coding: utf-8; -*-
 #
 # @file base.py
-# @brief 
+# @brief coll-gate permission REST API
 # @author Frédéric SCHERMA (INRA UMR1095)
 # @date 2016-09-01
 # @copyright Copyright (c) 2016 INRA/CIRAD
 # @license MIT (see LICENSE file)
 # @details 
-
-"""
-coll-gate permission REST API
-"""
 
 import operator
 
@@ -62,7 +58,8 @@ def search_audit_for_username(request):
     user = get_object_or_404(User, username=request.GET['username'])
 
     if cursor:
-        cursor_time, cursor_id = cursor.rsplit('/', 1)
+        cursor = json.loads(cursor)
+        cursor_time, cursor_id = cursor
         qs = Audit.objects.filter(Q(user=user),
                                   Q(timestamp__lt=cursor_time) | (Q(timestamp=cursor_time) & Q(id__lt=cursor_id)))
     else:
@@ -106,9 +103,9 @@ def search_audit_for_username(request):
     # prev/next cursor (desc order)
     if len(audit_list) > 0:
         audit = audit_list[0]
-        prev_cursor = "%s/%s" % (audit['timestamp'].isoformat(), audit['id'])
+        prev_cursor = (audit['timestamp'].isoformat(), audit['id'])
         audit = audit_list[-1]
-        next_cursor = "%s/%s" % (audit['timestamp'].isoformat(), audit['id'])
+        next_cursor = (audit['timestamp'].isoformat(), audit['id'])
     else:
         prev_cursor = None
         next_cursor = None
@@ -143,7 +140,8 @@ def search_audit_for_entity(request):
     limit = results_per_page
 
     if cursor:
-        cursor_time, cursor_id = cursor.rsplit('/', 1)
+        cursor = json.loads(cursor)
+        cursor_time, cursor_id = cursor
         qs = Audit.objects.filter(Q(content_type=content_type),
                                   Q(object_id=object_id),
                                   Q(timestamp__lt=cursor_time) | (Q(timestamp=cursor_time) & Q(id__lt=cursor_id)))
@@ -170,14 +168,14 @@ def search_audit_for_entity(request):
     # prev cursor (desc order)
     if len(audit_list) > 0:
         audit = audit_list[0]
-        prev_cursor = "%s/%s" % (audit['timestamp'].isoformat(), audit['id'])
+        prev_cursor = (audit['timestamp'].isoformat(), audit['id'])
     else:
         prev_cursor = None
 
     # next cursor (desc order)
     if len(audit_list) > 0:
         audit = audit_list[-1]
-        next_cursor = "%s/%s" % (audit['timestamp'].isoformat(), audit['id'])
+        next_cursor = (audit['timestamp'].isoformat(), audit['id'])
     else:
         next_cursor = None
 
@@ -191,4 +189,3 @@ def search_audit_for_entity(request):
     }
 
     return HttpResponseRest(request, results)
-
