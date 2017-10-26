@@ -414,7 +414,8 @@ span.column-action {
 }
 
 .table.table-advanced thead tr td.glyph-fixed-column div, .table.table-advanced thead tr th.glyph-fixed-column div {
-    width: 20px;
+    /*width: 20px;*/
+    width: 22px;
 }
 
 .table.table-advanced thead tr th div.column-sizer {
@@ -543,10 +544,26 @@ div.add-column-menu div.btn-group {
     margin: 0px 10px 10px 10px;
 }
 
+/* fix center fa glyph into columns */
+th.glyph-fixed-column > div > span, td.glyph-fixed-column > span {
+    padding-left: 3px;
+}
+
+/* fix fa glyph large size aliasing */
 span.fa.fa-lg {
     font-size: 1.27em;
 }
 
+/* fix double text decoration */
+abbr[title] {
+    border-bottom: none;
+}
+
+span[title] {
+    cursor: help;
+}
+
+/* setup form control feedback position */
 .fa-form-control-feedback {
     top: 0px;
     right: 0;

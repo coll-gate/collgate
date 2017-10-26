@@ -208,7 +208,7 @@ let View = Marionette.CompositeView.extend({
             // cleanup
             var headers = this.ui.thead.children('tr').children('th,td').find('div.table-advanced-label');
             headers.children('span.column-sorter').removeClass(
-                'sortby-asc-column sortby-desc-column fa-sort-alpha-asc fa-sort-alpha-desc')
+                'sortby-asc-column sortby-desc-column fa-sort-asc fa-sort-desc')
                 .attr('sort-position', null)
                 .empty();
 
@@ -252,9 +252,9 @@ let View = Marionette.CompositeView.extend({
                 }
 
                 if (order === '+') {
-                    sorter.addClass('sortby-asc-column fa-sort-alpha-asc');
+                    sorter.addClass('sortby-asc-column fa-sort-asc');
                 } else if (order === '-') {
-                    sorter.addClass('sortby-desc-column fa-sort-alpha-desc');
+                    sorter.addClass('sortby-desc-column fa-sort-desc');
                 } else {
                     sorter.addClass('fa-sort');
                 }
@@ -1637,14 +1637,14 @@ let View = Marionette.CompositeView.extend({
         if (!this.controlKeyDown) {
             // cleanup
             headers.children('span.column-sorter').removeClass(
-                'sortby-asc-column sortby-desc-column fa-sort-alpha-asc fa-sort-alpha-desc')
+                'sortby-asc-column sortby-desc-column fa-sort-asc fa-sort-desc')
                 .attr('sort-position', null)
                 .empty();
 
             if (order === '+') {
-                el.addClass('sortby-asc-column fa-sort-alpha-asc');
+                el.addClass('sortby-asc-column fa-sort-asc');
             } else if (order === '-') {
-                el.addClass('sortby-desc-column fa-sort-alpha-desc');
+                el.addClass('sortby-desc-column fa-sort-desc');
             } else {
                 el.addClass('fa-sort');
             }
@@ -1658,13 +1658,13 @@ let View = Marionette.CompositeView.extend({
         } else {
             // multiple
             if (order === '+') {
-                el.removeClass('sortby-desc-column fa-sort-alpha-desc');
-                el.addClass('sortby-asc-column fa-sort-alpha-asc');
+                el.removeClass('sortby-desc-column fa-sort-desc');
+                el.addClass('sortby-asc-column fa-sort-asc');
             } else if (order === '-') {
-                el.removeClass('sortby-asc-column fa-sort-alpha-desc');
-                el.addClass('sortby-desc-column fa-sort-alpha-dsec');
+                el.removeClass('sortby-asc-column fa-sort-asc');
+                el.addClass('sortby-desc-column fa-sort-desc');
             } else {
-                el.removeClass('sortby-asc-column sortby-desc-column fa-sort-alpha-asc fa-sort-alpha-desc');
+                el.removeClass('sortby-asc-column sortby-desc-column fa-sort-asc fa-sort-desc');
                 el.addClass('fa-sort');
                 el.attr('sort-position', null);
             }
