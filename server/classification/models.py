@@ -324,7 +324,7 @@ class ClassificationEntry(Entity):
                     'type': 'synonym',
                     'model': 'classification.classificationsynonym'
                 }
-            }
+            },
         }
 
     class Meta:

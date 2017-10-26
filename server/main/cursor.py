@@ -123,7 +123,7 @@ class CursorQuery(object):
             elif type(field) is models.fields.reverse_related.ManyToManyRel:
                 self.model_fields[field.name] = ('M2M', '', field.null)
             elif type(field) is models.fields.reverse_related.ManyToOneRel:
-                self.model_fields[field.name] = ('M2O', '', field.null)
+                self.model_fields[field.name] = ('M2O', 'INTEGER', field.null)
             elif type(field) is models.fields.related.ManyToManyField:
                 self.model_fields[field.name] = ('M2M', '', field.null)
             elif type(field) is models.fields.related.ForeignKey:
@@ -190,6 +190,10 @@ class CursorQuery(object):
             for field in self._cursor_fields:
                 f = field.lstrip('+-#')
                 is_descriptor = field[0] == '#' or field[1] == '#'
+
+                if f in self._counts:
+                    continue
+
                 op = '<' if field[0] == '-' else '>'
                 ope = '<=' if field[0] == '-' else '>='
 
@@ -366,11 +370,13 @@ class CursorQuery(object):
 
     def _process_order_by(self):
         db_table = self._model._meta.db_table
+        model_name = self._model._meta.model_name
 
         for field in self._order_by:
             f = field.lstrip('+-#')
             order = "DESC NULLS LAST" if field[0] == '-' else "ASC NULLS FIRST"
             is_descriptor = field[0] == '#' or field[1] == '#'
+            is_count = f in self._counts
 
             if self.FIELDS_SEP in f:
                 ff = f.split(self.FIELDS_SEP)
@@ -386,6 +392,9 @@ class CursorQuery(object):
                 if is_descriptor:
                     description = self._description[f]
                     cast_type = description['handler'].data
+                # count field
+                elif is_count:
+                    cast_type = 'INTEGER'
                 else:
                     cast_type = self.model_fields[f][1]
 
@@ -406,6 +415,10 @@ class CursorQuery(object):
                     self.query_order_by.append('"%s" %s' % ("_".join(ff), order))
                 elif self.model_fields[f][0] == 'FK':
                     self.query_order_by.append('"%s"."%s_id" %s' % (db_table, f, order))
+                # count field
+                elif is_count:
+                    self.query_order_by.append('"%s__count" %s' % (f, order))
+                    self.query_group_by.append('"%s"."%s_id"' % (f, model_name))
                 else:
                     self.query_order_by.append('"%s"."%s" %s' % (db_table, f, order))
 
@@ -438,6 +451,7 @@ class CursorQuery(object):
                 for field in self._order_by:
                     f = field.lstrip('+-#')
                     is_descriptor = field[0] == '#' or field[1] == '#'
+                    is_count = f in self._counts
 
                     # prev cursor
                     if is_descriptor:
@@ -453,6 +467,8 @@ class CursorQuery(object):
                             self._prev_cursor.append(getattr(first_entity, "_".join(ff)))
                         elif self.model_fields[f][0] == 'FK':
                             self._prev_cursor.append(getattr(first_entity, f + '_id'))
+                        elif is_count:
+                            self._prev_cursor.append(getattr(first_entity, f + '__count'))
                         else:
                             self._prev_cursor.append(getattr(first_entity, f))
 
@@ -470,6 +486,8 @@ class CursorQuery(object):
                             self._next_cursor.append(getattr(last_entity, "_".join(ff)))
                         elif self.model_fields[f][0] == 'FK':
                             self._next_cursor.append(getattr(last_entity, f + '_id'))
+                        elif is_count:
+                            self._next_cursor.append(getattr(last_entity, f + '__count'))
                         else:
                             self._next_cursor.append(getattr(last_entity, f))
 
@@ -781,7 +799,7 @@ class CursorQuery(object):
                 # model_fields[field.name] = ('M2M', '', field.null)
                 pass
             elif type(field) is models.fields.reverse_related.ManyToOneRel:
-                # model_fields[field.name] = ('M2O', '', field.null)
+                # model_fields[field.name] = ('M2O', 'INTEGER', field.null)
                 pass
             elif type(field) is models.fields.related.ManyToManyField:
                 # model_fields[field.name] = ('M2M', '', field.null)

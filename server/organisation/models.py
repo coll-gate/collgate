@@ -82,8 +82,12 @@ class Organisation(DescribableEntity):
             },
             'num_establishments': {
                 'label': _('Establishments'),
+                'field': 'establishments',
                 'query': False,
-                'column_display': False
+                'format': {
+                    'type': 'count',
+                    'fields': ['establishments']
+                }
             }
         }
 
